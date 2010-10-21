@@ -10,6 +10,8 @@
 @property (retain) NSArray *courses;
 
 - (id) initWithTitle: (NSString *)title courses:(NSArray *)courseGroup;
+- (NSString *) serialize;
++ (StellarCourseGroup *) deserialize: (NSString *)serializedCourseGroup;
 + (NSArray *) allCourseGroups: (NSArray *)stellarCourses;
 @end
 

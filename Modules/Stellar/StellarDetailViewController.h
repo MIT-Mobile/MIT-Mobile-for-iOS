@@ -1,7 +1,7 @@
-
 #import <Foundation/Foundation.h>
 #import "StellarModel.h"
 #import "TabViewControl.h"
+#import "MITModuleURL.h"
 
 
 @class StellarDetailViewController;
@@ -53,7 +53,10 @@ typedef enum {
 	NSString *currentTabName;
 	NSMutableArray *currentTabNames; 
 
+	BOOL refreshClass;
 	StellarNewsLoadingState loadingState;
+	
+	MITModuleURL *url;
 }
 
 @property (nonatomic, retain) ClassInfoLoader *currentClassInfoLoader;
@@ -72,11 +75,18 @@ typedef enum {
 
 @property (nonatomic, retain) NSMutableArray *dataSources;
 
+@property (nonatomic, assign) BOOL refreshClass;
 @property (nonatomic, assign) StellarNewsLoadingState loadingState;
 
-+ (void) launchClass: (StellarClass *)stellarClass viewController: (UIViewController *)controller;
+@property (readonly) MITModuleURL *url;
+
++ (StellarDetailViewController *) launchClass: (StellarClass *)stellarClass viewController: (UIViewController *)controller;
 
 - (id) initWithClass: (StellarClass *)stellarClass;
+
+- (void) loadClassInfo:(StellarClass *)class;
+
+- (void) setCurrentTab: (NSString *)tabName;
 
 - (void) openSite;
 

@@ -27,7 +27,7 @@
 	[multiPartAttribute release];
 	
 	// populate remaining contents to be displayed
-	self.sectionArray = [[NSMutableArray alloc] init];
+	self.sectionArray = [[[NSMutableArray alloc] init] autorelease];
 	
 	NSArray *jobSection = [NSArray arrayWithObjects:@"title", @"dept", nil];
 	NSArray *phoneSection = [NSArray arrayWithObjects:@"phone", @"fax", nil];
@@ -122,6 +122,9 @@
 		}
 	}
 }
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
+	return NO;
+}
 
 /*
 -(void)handleConnectionFailure
@@ -206,7 +209,8 @@
 	NSInteger row = indexPath.row;
 	NSInteger section = indexPath.section;
 	if (section == [self.sectionArray count]) {
-		return 44.0;
+        return tableView.rowHeight;
+		//return 44.0;
 	}
 	
 	NSArray *personInfo = [[self.sectionArray objectAtIndex:section] objectAtIndex:row];

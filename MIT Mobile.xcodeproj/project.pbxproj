@@ -12,6 +12,8 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28AD73600D9D9599002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD735F0D9D9599002E5188 /* MainWindow.xib */; };
+		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
+		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
 		294AC7B010E46786003830C3 /* MITMapScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 294AC7AF10E46786003830C3 /* MITMapScrollView.m */; };
 		296F086610CDDF07004B02E4 /* MITMobileWebAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
@@ -21,22 +23,84 @@
 		2970D4F210DA871F00F770DF /* StaffDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2970D4F110DA871F00F770DF /* StaffDataSource.m */; };
 		2971CE0B10DB116800FAF160 /* StellarAnnouncementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2971CE0A10DB116800FAF160 /* StellarAnnouncementViewController.m */; };
 		2973D49F110E6E6B00CA6973 /* pin_shuttle_stop_complete_next.png in Resources */ = {isa = PBXBuildFile; fileRef = 2973D49E110E6E6B00CA6973 /* pin_shuttle_stop_complete_next.png */; };
+		29747C70114AEFBA0091F18C /* StellarClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 29747C6F114AEFBA0091F18C /* StellarClass.m */; };
 		297746D010D3526200ACFCE6 /* StellarStaffMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 297746C710D3526100ACFCE6 /* StellarStaffMember.m */; };
 		297746D110D3526200ACFCE6 /* StellarAnnouncement.m in Sources */ = {isa = PBXBuildFile; fileRef = 297746C910D3526100ACFCE6 /* StellarAnnouncement.m */; };
 		297746D210D3526200ACFCE6 /* StellarClassTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 297746CB10D3526100ACFCE6 /* StellarClassTime.m */; };
 		297746D310D3526200ACFCE6 /* StellarCourse.m in Sources */ = {isa = PBXBuildFile; fileRef = 297746CD10D3526200ACFCE6 /* StellarCourse.m */; };
 		2978864510F03656002670CC /* MITDeviceRegistration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2978864210F03656002670CC /* MITDeviceRegistration.m */; };
 		2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 2978864410F03656002670CC /* MITUnreadNotifications.m */; };
-		29796E3A10DBFD70005C224E /* StellarClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 29796E3910DBFD70005C224E /* StellarClass.m */; };
 		2980C03210D9728800F19FF0 /* NewsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2980C03110D9728800F19FF0 /* NewsDataSource.m */; };
 		298152A211027107007AFAD0 /* shuttle-alert-toggle-off.png in Resources */ = {isa = PBXBuildFile; fileRef = 298152A111027107007AFAD0 /* shuttle-alert-toggle-off.png */; };
 		29859FFA10F7C37600D137D6 /* MITSearchEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 29859FF910F7C37600D137D6 /* MITSearchEffects.m */; };
 		2989AE7110FEE037002DD6C4 /* shuttle-alert-toggle-on.png in Resources */ = {isa = PBXBuildFile; fileRef = 2989AE7010FEE037002DD6C4 /* shuttle-alert-toggle-on.png */; };
 		298F42E11102AD7B001963AB /* shuttle-alert-descriptive.png in Resources */ = {isa = PBXBuildFile; fileRef = 298F42E01102AD7B001963AB /* shuttle-alert-descriptive.png */; };
 		299149A010DDB50300B01A8E /* StellarSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2991499F10DDB50300B01A8E /* StellarSearch.m */; };
+		29974B711160F1DA009D03B9 /* URLShortener.m in Sources */ = {isa = PBXBuildFile; fileRef = 29974B701160F1DA009D03B9 /* URLShortener.m */; };
 		29A0D12110CDD0E8009FC010 /* StellarCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 29A0D11E10CDD0E8009FC010 /* StellarCache.m */; };
 		29A0D12210CDD0E8009FC010 /* StellarClassesTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 29A0D12010CDD0E8009FC010 /* StellarClassesTableController.m */; };
+		29B6038D11541AB200064E0A /* TwitterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B6038C11541AB200064E0A /* TwitterViewController.m */; };
 		29C136B610FBFA8800CB5F00 /* unread-message.png in Resources */ = {isa = PBXBuildFile; fileRef = 29C136B510FBFA8800CB5F00 /* unread-message.png */; };
+		29C4546D118B55E100A321B0 /* jQueryInject.txt in Resources */ = {isa = PBXBuildFile; fileRef = 29C45425118B55E100A321B0 /* jQueryInject.txt */; };
+		29C4546E118B55E100A321B0 /* jQueryInjectLandscape.txt in Resources */ = {isa = PBXBuildFile; fileRef = 29C45426118B55E100A321B0 /* jQueryInjectLandscape.txt */; };
+		29C4546F118B55E100A321B0 /* ExchangeCredentialsOperation.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45429118B55E100A321B0 /* ExchangeCredentialsOperation.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C45470118B55E100A321B0 /* ExchangeCredentialsOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C4542A118B55E100A321B0 /* ExchangeCredentialsOperation.m */; };
+		29C45471118B55E100A321B0 /* ExchangeCredentialsOperationDelegate.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4542B118B55E100A321B0 /* ExchangeCredentialsOperationDelegate.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C45472118B55E100A321B0 /* XAuthTwitterEngine.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4542C118B55E100A321B0 /* XAuthTwitterEngine.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C45473118B55E100A321B0 /* XAuthTwitterEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C4542D118B55E100A321B0 /* XAuthTwitterEngine.m */; };
+		29C45474118B55E100A321B0 /* XAuthTwitterEngineDelegate.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4542E118B55E100A321B0 /* XAuthTwitterEngineDelegate.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C45475118B55E100A321B0 /* libOAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 29C45430118B55E100A321B0 /* libOAuth.a */; };
+		29C45476118B55E100A321B0 /* NSMutableURLRequest+Parameters.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45431118B55E100A321B0 /* NSMutableURLRequest+Parameters.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C45477118B55E100A321B0 /* NSString+URLEncoding.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45432118B55E100A321B0 /* NSString+URLEncoding.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C45478118B55E100A321B0 /* NSURL+Base.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45433118B55E100A321B0 /* NSURL+Base.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C45479118B55E100A321B0 /* OAAsynchronousDataFetcher.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45434118B55E100A321B0 /* OAAsynchronousDataFetcher.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C4547A118B55E100A321B0 /* OAConsumer.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45435118B55E100A321B0 /* OAConsumer.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C4547B118B55E100A321B0 /* OADataFetcher.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45436118B55E100A321B0 /* OADataFetcher.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C4547C118B55E100A321B0 /* OAHMAC_SHA1SignatureProvider.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45437118B55E100A321B0 /* OAHMAC_SHA1SignatureProvider.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C4547D118B55E100A321B0 /* OAMutableURLRequest.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45438118B55E100A321B0 /* OAMutableURLRequest.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C4547E118B55E100A321B0 /* OAPlaintextSignatureProvider.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45439118B55E100A321B0 /* OAPlaintextSignatureProvider.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C4547F118B55E100A321B0 /* OARequestParameter.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4543A118B55E100A321B0 /* OARequestParameter.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C45480118B55E100A321B0 /* OAServiceTicket.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4543B118B55E100A321B0 /* OAServiceTicket.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C45481118B55E100A321B0 /* OASignatureProviding.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4543C118B55E100A321B0 /* OASignatureProviding.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C45482118B55E100A321B0 /* OAToken.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4543D118B55E100A321B0 /* OAToken.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C45483118B55E100A321B0 /* OAToken_KeychainExtensions.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4543E118B55E100A321B0 /* OAToken_KeychainExtensions.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C45484118B55E100A321B0 /* OAuthConsumer.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4543F118B55E100A321B0 /* OAuthConsumer.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers/OAuthConsumer"; }; };
+		29C45485118B55E100A321B0 /* MGTwitterEngine.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45441118B55E100A321B0 /* MGTwitterEngine.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C45486118B55E100A321B0 /* MGTwitterEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C45442118B55E100A321B0 /* MGTwitterEngine.m */; };
+		29C45487118B55E100A321B0 /* MGTwitterEngineDelegate.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45443118B55E100A321B0 /* MGTwitterEngineDelegate.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C45488118B55E100A321B0 /* MGTwitterEngineGlobalHeader.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45444118B55E100A321B0 /* MGTwitterEngineGlobalHeader.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C45489118B55E100A321B0 /* MGTwitterHTTPURLConnection.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45445118B55E100A321B0 /* MGTwitterHTTPURLConnection.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C4548A118B55E100A321B0 /* MGTwitterHTTPURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C45446118B55E100A321B0 /* MGTwitterHTTPURLConnection.m */; };
+		29C4548B118B55E100A321B0 /* MGTwitterLibXMLParser.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45447118B55E100A321B0 /* MGTwitterLibXMLParser.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C4548C118B55E100A321B0 /* MGTwitterLibXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C45448118B55E100A321B0 /* MGTwitterLibXMLParser.m */; };
+		29C4548D118B55E100A321B0 /* MGTwitterMessagesLibXMLParser.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45449118B55E100A321B0 /* MGTwitterMessagesLibXMLParser.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C4548E118B55E100A321B0 /* MGTwitterMessagesLibXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C4544A118B55E100A321B0 /* MGTwitterMessagesLibXMLParser.m */; };
+		29C4548F118B55E100A321B0 /* MGTwitterMessagesParser.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4544B118B55E100A321B0 /* MGTwitterMessagesParser.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C45490118B55E100A321B0 /* MGTwitterMessagesParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C4544C118B55E100A321B0 /* MGTwitterMessagesParser.m */; };
+		29C45493118B55E100A321B0 /* MGTwitterMiscLibXMLParser.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4544F118B55E100A321B0 /* MGTwitterMiscLibXMLParser.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C45494118B55E100A321B0 /* MGTwitterMiscLibXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C45450118B55E100A321B0 /* MGTwitterMiscLibXMLParser.m */; };
+		29C45495118B55E100A321B0 /* MGTwitterMiscParser.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45451118B55E100A321B0 /* MGTwitterMiscParser.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C45496118B55E100A321B0 /* MGTwitterMiscParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C45452118B55E100A321B0 /* MGTwitterMiscParser.m */; };
+		29C45499118B55E100A321B0 /* MGTwitterParserDelegate.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45455118B55E100A321B0 /* MGTwitterParserDelegate.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C4549A118B55E100A321B0 /* MGTwitterRequestTypes.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45456118B55E100A321B0 /* MGTwitterRequestTypes.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C4549D118B55E100A321B0 /* MGTwitterStatusesLibXMLParser.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45459118B55E100A321B0 /* MGTwitterStatusesLibXMLParser.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C4549E118B55E100A321B0 /* MGTwitterStatusesLibXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C4545A118B55E100A321B0 /* MGTwitterStatusesLibXMLParser.m */; };
+		29C4549F118B55E100A321B0 /* MGTwitterStatusesParser.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4545B118B55E100A321B0 /* MGTwitterStatusesParser.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C454A0118B55E100A321B0 /* MGTwitterStatusesParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C4545C118B55E100A321B0 /* MGTwitterStatusesParser.m */; };
+		29C454A3118B55E100A321B0 /* MGTwitterUsersLibXMLParser.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4545F118B55E100A321B0 /* MGTwitterUsersLibXMLParser.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C454A4118B55E100A321B0 /* MGTwitterUsersLibXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C45460118B55E100A321B0 /* MGTwitterUsersLibXMLParser.m */; };
+		29C454A5118B55E100A321B0 /* MGTwitterUsersParser.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45461118B55E100A321B0 /* MGTwitterUsersParser.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C454A6118B55E100A321B0 /* MGTwitterUsersParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C45462118B55E100A321B0 /* MGTwitterUsersParser.m */; };
+		29C454A9118B55E100A321B0 /* MGTwitterXMLParser.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45465118B55E100A321B0 /* MGTwitterXMLParser.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C454AA118B55E100A321B0 /* MGTwitterXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C45466118B55E100A321B0 /* MGTwitterXMLParser.m */; };
+		29C454AD118B55E100A321B0 /* NSData+MGTwitterBase64.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C45469118B55E100A321B0 /* NSData+MGTwitterBase64.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C454AE118B55E100A321B0 /* NSData+MGTwitterBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C4546A118B55E100A321B0 /* NSData+MGTwitterBase64.m */; };
+		29C454AF118B55E100A321B0 /* NSString+UUID.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C4546B118B55E100A321B0 /* NSString+UUID.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Common/Libraries & Headers"; }; };
+		29C454B0118B55E100A321B0 /* NSString+UUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C4546C118B55E100A321B0 /* NSString+UUID.m */; };
+		29C454C0118B61CA00A321B0 /* SFHFKeychainUtils.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29C454BE118B61CA00A321B0 /* SFHFKeychainUtils.h */; settings = {JAVA_ARCHIVE_SUBDIR = Common; }; };
+		29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */; };
+		29E308861176018C005211A7 /* MITModuleURL.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29E308841176018C005211A7 /* MITModuleURL.h */; settings = {JAVA_ARCHIVE_SUBDIR = Common; }; };
+		29E308871176018C005211A7 /* MITModuleURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E308851176018C005211A7 /* MITModuleURL.m */; };
 		29E572021101067700DBE666 /* mystellar-off-pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 29E571FE1101067700DBE666 /* mystellar-off-pressed.png */; };
 		29E572031101067700DBE666 /* mystellar-off.png in Resources */ = {isa = PBXBuildFile; fileRef = 29E571FF1101067700DBE666 /* mystellar-off.png */; };
 		29E572041101067700DBE666 /* mystellar-on-pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 29E572001101067700DBE666 /* mystellar-on-pressed.png */; };
@@ -50,10 +114,13 @@
 		3AA21C561039DDEA00DB7637 /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA21C551039DDEA00DB7637 /* CoreDataManager.m */; };
 		4405F9ED10F6245B00F699FE /* shuttle_location.png in Resources */ = {isa = PBXBuildFile; fileRef = 4405F9EC10F6245B00F699FE /* shuttle_location.png */; };
 		441009DE110A6DAF00451B23 /* CampusMapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 441009DD110A6DAF00451B23 /* CampusMapToolbar.m */; };
+		4415CA8B11AC679A002B6847 /* bookmark_off_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 4415CA8711AC679A002B6847 /* bookmark_off_pressed.png */; };
+		4415CA8C11AC679A002B6847 /* bookmark_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 4415CA8811AC679A002B6847 /* bookmark_off.png */; };
+		4415CA8D11AC679A002B6847 /* bookmark_on_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 4415CA8911AC679A002B6847 /* bookmark_on_pressed.png */; };
+		4415CA8E11AC679A002B6847 /* bookmark_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 4415CA8A11AC679A002B6847 /* bookmark_on.png */; };
 		4420F23110E9513700A8CD05 /* ShuttleDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4420F23010E9513700A8CD05 /* ShuttleDataManager.m */; };
 		4420F31B10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4420F31A10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m */; };
 		4420F62910EBA5D000A8CD05 /* ShuttleStopViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4420F62810EBA5D000A8CD05 /* ShuttleStopViewController.m */; };
-		4420F68F10EBC67000A8CD05 /* RouteStopSchedule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4420F68E10EBC67000A8CD05 /* RouteStopSchedule.m */; };
 		44259C7110DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 44259C7010DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.m */; };
 		44293B4210DABD3700273119 /* map_button_shuttle.png in Resources */ = {isa = PBXBuildFile; fileRef = 44293B3410DABD3700273119 /* map_button_shuttle.png */; };
 		44293B4310DABD3700273119 /* map_button_location.png in Resources */ = {isa = PBXBuildFile; fileRef = 44293B3510DABD3700273119 /* map_button_location.png */; };
@@ -69,8 +136,6 @@
 		44293B4D10DABD3700273119 /* map_pin_shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = 44293B3F10DABD3700273119 /* map_pin_shadow.png */; };
 		44293B4E10DABD3700273119 /* map_button_icon_locate.png in Resources */ = {isa = PBXBuildFile; fileRef = 44293B4010DABD3700273119 /* map_button_icon_locate.png */; };
 		44293B4F10DABD3700273119 /* map_button_icon_shuttle.png in Resources */ = {isa = PBXBuildFile; fileRef = 44293B4110DABD3700273119 /* map_button_icon_shuttle.png */; };
-		44293C3010DAE86D00273119 /* CategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44293C2E10DAE86D00273119 /* CategoriesViewController.m */; };
-		44293C3110DAE86D00273119 /* CategoriesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44293C2F10DAE86D00273119 /* CategoriesViewController.xib */; };
 		44293C3510DAE88500273119 /* MITMapSearchResultsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 44293C3310DAE88500273119 /* MITMapSearchResultsVC.m */; };
 		44293C3610DAE88500273119 /* MITMapSearchResultsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44293C3410DAE88500273119 /* MITMapSearchResultsVC.xib */; };
 		442C11DF10EC112700CB44EC /* TouchableTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 442C11DE10EC112700CB44EC /* TouchableTableView.m */; };
@@ -88,14 +153,12 @@
 		4463CC9A10D6F4A50048CA83 /* MITMapUserLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8C10D6F4A50048CA83 /* MITMapUserLocation.m */; };
 		4463CC9B10D6F4A50048CA83 /* MITMapSearchResultAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8E10D6F4A50048CA83 /* MITMapSearchResultAnnotation.m */; };
 		4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC9010D6F4A50048CA83 /* MITMapAnnotationView.m */; };
-		4463CCAE10D6F5540048CA83 /* PostData.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CCAC10D6F5540048CA83 /* PostData.m */; };
 		4463CCB210D6F5750048CA83 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4463CCB110D6F5750048CA83 /* CoreLocation.framework */; };
 		4463CCEA10D6F7090048CA83 /* map_red_pin.png in Resources */ = {isa = PBXBuildFile; fileRef = 4463CCE710D6F7090048CA83 /* map_red_pin.png */; };
 		4463CE8F10D8052A0048CA83 /* MITMapSearchResultCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CE8E10D8052A0048CA83 /* MITMapSearchResultCell.m */; };
 		4463D09410D92CB00048CA83 /* MITMapDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463D09210D92CB00048CA83 /* MITMapDetailViewController.m */; };
 		4463D09510D92CB00048CA83 /* MITMapDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4463D09310D92CB00048CA83 /* MITMapDetailViewController.xib */; };
 		4463D0A010D92F6B0048CA83 /* TabViewControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463D09F10D92F6B0048CA83 /* TabViewControl.m */; };
-		4463D3F310D97E720048CA83 /* MITMapCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463D3F210D97E720048CA83 /* MITMapCategory.m */; };
 		4463D5E210DA74240048CA83 /* MITMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463D5E110DA74240048CA83 /* MITMapView.m */; };
 		448B309410F685B0007A91E4 /* map_grid_placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 448B309310F685B0007A91E4 /* map_grid_placeholder.png */; };
 		448B32AF10F770A6007A91E4 /* shuttle-bus-location-arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 448B32AB10F770A6007A91E4 /* shuttle-bus-location-arrow.png */; };
@@ -103,13 +166,31 @@
 		448B32B110F770A6007A91E4 /* shuttle-stop-dot-next.png in Resources */ = {isa = PBXBuildFile; fileRef = 448B32AD10F770A6007A91E4 /* shuttle-stop-dot-next.png */; };
 		448B32B210F770A6007A91E4 /* shuttle-stop-dot.png in Resources */ = {isa = PBXBuildFile; fileRef = 448B32AE10F770A6007A91E4 /* shuttle-stop-dot.png */; };
 		448FF58F10FA4BDE00850BC0 /* ShuttleRouteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */; };
+		4499332D11A371CF00A7041B /* RecentSearchesViewController.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 4499332B11A371CE00A7041B /* RecentSearchesViewController.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Modules/Campus Map"; }; };
+		4499332E11A371CF00A7041B /* RecentSearchesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4499332C11A371CF00A7041B /* RecentSearchesViewController.m */; };
+		4499341E11A5E53D00A7041B /* CategoriesTableViewController.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 4499341C11A5E53D00A7041B /* CategoriesTableViewController.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Modules/Campus Map"; }; };
+		4499341F11A5E53D00A7041B /* CategoriesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4499341D11A5E53D00A7041B /* CategoriesTableViewController.m */; };
 		449BB28110E159C2008D5818 /* map_disclosure.png in Resources */ = {isa = PBXBuildFile; fileRef = 449BB28010E159C2008D5818 /* map_disclosure.png */; };
 		44A33BAC1105E7FA00D06097 /* button-icon-reset-zoom.png in Resources */ = {isa = PBXBuildFile; fileRef = 44A33BAB1105E7FA00D06097 /* button-icon-reset-zoom.png */; };
+		44ACF76C1187884300F1F4B2 /* BookmarksTableViewController.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 44ACF7681187884300F1F4B2 /* BookmarksTableViewController.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Modules/Campus Map"; }; };
+		44ACF76D1187884300F1F4B2 /* BookmarksTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */; };
+		44ACF76E1187884300F1F4B2 /* MapBookmarkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44ACF76A1187884300F1F4B2 /* MapBookmarkManager.m */; };
+		44ACF76F1187884300F1F4B2 /* MapBookmarkManager.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 44ACF76B1187884300F1F4B2 /* MapBookmarkManager.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Modules/Campus Map"; }; };
+		44ACF7711187886500F1F4B2 /* searchfield_star.png in Resources */ = {isa = PBXBuildFile; fileRef = 44ACF7701187886500F1F4B2 /* searchfield_star.png */; };
 		44BF5A4C10FFEF7300E150D5 /* shuttle-off.png in Resources */ = {isa = PBXBuildFile; fileRef = 44BF5A4A10FFEF7300E150D5 /* shuttle-off.png */; };
 		44BF5A4D10FFEF7300E150D5 /* shuttle.png in Resources */ = {isa = PBXBuildFile; fileRef = 44BF5A4B10FFEF7300E150D5 /* shuttle.png */; };
 		44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BF5B421100A75C00E150D5 /* RouteInfoTitleCell.m */; };
 		44BF602011050AC000E150D5 /* ShuttleStopCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BF601F11050AC000E150D5 /* ShuttleStopCell.m */; };
 		44BF602211050ACE00E150D5 /* ShuttleStopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */; };
+		44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */; };
+		44C1A3CE11A33905000FD653 /* MapSelectionController.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 44C1A3CC11A33905000FD653 /* MapSelectionController.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Modules/Campus Map"; }; };
+		44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A3CD11A33905000FD653 /* MapSelectionController.m */; };
+		44C1A4C411A412E2000FD653 /* MapSearch.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 44C1A4C211A412E2000FD653 /* MapSearch.h */; settings = {JAVA_ARCHIVE_SUBDIR = "Modules/Campus Map/CampusMap.xcdatamodeld"; }; };
+		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; };
+		4B108E9511A6D20B00FBF35A /* twitter_signout_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B108E9411A6D20B00FBF35A /* twitter_signout_pressed.png */; };
+		4B108E9711A6D21E00FBF35A /* twitter_signout.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B108E9611A6D21E00FBF35A /* twitter_signout.png */; };
+		950A8BA511AC0CDC00686132 /* map_viewall_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 950A8BA311AC0CDC00686132 /* map_viewall_pressed.png */; };
+		950A8BA611AC0CDC00686132 /* map_viewall.png in Resources */ = {isa = PBXBuildFile; fileRef = 950A8BA411AC0CDC00686132 /* map_viewall.png */; };
 		BD1E9309103B5D60004429AA /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92F6103B5D60004429AA /* NSObject+SBJSON.m */; };
 		BD1E930A103B5D60004429AA /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92F8103B5D60004429AA /* NSString+SBJSON.m */; };
 		BD1E930B103B5D60004429AA /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92FA103B5D60004429AA /* SBJSON.m */; };
@@ -123,10 +204,10 @@
 		DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1B4D7110CE17B30073BABC /* MITJSON.m */; };
 		DE47589710D0BEE700139BC1 /* MITTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE47589510D0BEE700139BC1 /* MITTabBarController.m */; };
 		DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4AB0B310ED5148007476D9 /* NewsStory.m */; };
+		DE5E99D31124B57C00498760 /* emergency_template.html in Resources */ = {isa = PBXBuildFile; fileRef = DE5E99D21124B57C00498760 /* emergency_template.html */; };
 		DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */; };
 		DE6D32F610346D02008A5823 /* ShuttleModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D32F510346D02008A5823 /* ShuttleModule.m */; };
 		DE6D332B10346F6D008A5823 /* ShuttleRoutes.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D332A10346F6D008A5823 /* ShuttleRoutes.m */; };
-		DE6D332D10346F78008A5823 /* ShuttleRoutes.xib in Resources */ = {isa = PBXBuildFile; fileRef = DE6D332C10346F78008A5823 /* ShuttleRoutes.xib */; };
 		DE6D570610F05C59006431A8 /* TabScrollerBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D570510F05C59006431A8 /* TabScrollerBackgroundView.m */; };
 		DE6D579B10F07212006431A8 /* news_story_template.html in Resources */ = {isa = PBXBuildFile; fileRef = DE6D579A10F07212006431A8 /* news_story_template.html */; };
 		DE6D907111095B2D00DAF213 /* MITMoreListController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D907011095B2D00DAF213 /* MITMoreListController.m */; };
@@ -142,6 +223,7 @@
 		DE6F046111139CA40046684B /* FBPermissionDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6F045611139CA40046684B /* FBPermissionDialog.m */; };
 		DE6F046211139CA40046684B /* FBStreamDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6F045811139CA40046684B /* FBStreamDialog.m */; };
 		DE6F046311139CA40046684B /* FBConnect.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DE6F045911139CA40046684B /* FBConnect.bundle */; };
+		DE6F537E11AB167B009E8A7F /* bookmark_button.png in Resources */ = {isa = PBXBuildFile; fileRef = DE6F537D11AB167B009E8A7F /* bookmark_button.png */; };
 		DE705493103FB792003B5F41 /* ShuttleRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705491103FB792003B5F41 /* ShuttleRoute.m */; };
 		DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705496103FB79D003B5F41 /* EmergencyData.m */; };
 		DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705498103FB79D003B5F41 /* EmergencyModule.m */; };
@@ -150,11 +232,9 @@
 		DE71537C102FD66A005E6111 /* MITModuleList.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71537B102FD66A005E6111 /* MITModuleList.m */; };
 		DE71F6E3104234F900661DED /* ShuttleRouteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */; };
 		DE71F7D510424E3400661DED /* ShuttleStop.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F7D410424E3400661DED /* ShuttleStop.m */; };
-		DE728E3F10D6FF0E00BFED37 /* leftscroll.png in Resources */ = {isa = PBXBuildFile; fileRef = DE728E3710D6FF0E00BFED37 /* leftscroll.png */; };
 		DE728E4010D6FF0E00BFED37 /* navbackground.png in Resources */ = {isa = PBXBuildFile; fileRef = DE728E3810D6FF0E00BFED37 /* navbackground.png */; };
 		DE728E4110D6FF0E00BFED37 /* navbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = DE728E3910D6FF0E00BFED37 /* navbutton.png */; };
 		DE728E4210D6FF0E00BFED37 /* navbuttonbackground.png in Resources */ = {isa = PBXBuildFile; fileRef = DE728E3A10D6FF0E00BFED37 /* navbuttonbackground.png */; };
-		DE728E4310D6FF0E00BFED37 /* rightscroll.png in Resources */ = {isa = PBXBuildFile; fileRef = DE728E3B10D6FF0E00BFED37 /* rightscroll.png */; };
 		DE728E6C10D6FF4700BFED37 /* StoryThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E4610D6FF4700BFED37 /* StoryThumbnailView.m */; };
 		DE728E7B10D6FF4700BFED37 /* StoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6510D6FF4700BFED37 /* StoryDetailViewController.m */; };
 		DE728E7C10D6FF4700BFED37 /* StoryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6710D6FF4700BFED37 /* StoryListViewController.m */; };
@@ -182,13 +262,23 @@
 		DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */; };
 		DEE6AF201117477E0037F03C /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = DEE6AF1F1117477E0037F03C /* credits.html */; };
 		DEE6B1CD111774300037F03C /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = DEE6B1CC111774300037F03C /* Entitlements.plist */; };
-		EB3EE78010D6ADCA00F6D707 /* MultiLineTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3EE77F10D6ADCA00F6D707 /* MultiLineTableViewCell.m */; };
+		EB32946F1166777500DEDC8A /* CalendarEventMapAnnotation.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EB32946D1166777500DEDC8A /* CalendarEventMapAnnotation.h */; settings = {JAVA_ARCHIVE_SUBDIR = Modules/Calendar; }; };
+		EB3294701166777500DEDC8A /* CalendarEventMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = EB32946E1166777500DEDC8A /* CalendarEventMapAnnotation.m */; };
+		EB3F0951118F0FFE00540B8A /* CalendarMapView.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EB3F094F118F0FFE00540B8A /* CalendarMapView.h */; settings = {JAVA_ARCHIVE_SUBDIR = Modules/Calendar; }; };
+		EB3F0952118F0FFE00540B8A /* CalendarMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3F0950118F0FFE00540B8A /* CalendarMapView.m */; };
 		EB54943810DFF03600B708B3 /* icons in Resources */ = {isa = PBXBuildFile; fileRef = EB54942710DFF03600B708B3 /* icons */; };
 		EB54947310DFF7E200B708B3 /* global in Resources */ = {isa = PBXBuildFile; fileRef = EB54947210DFF7E200B708B3 /* global */; };
+		EB676032114A9316004596BB /* ShuttleRouteCache.m in Sources */ = {isa = PBXBuildFile; fileRef = EB67602F114A9316004596BB /* ShuttleRouteCache.m */; };
+		EB676033114A9316004596BB /* ShuttleStopLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = EB676031114A9316004596BB /* ShuttleStopLocation.m */; };
+		EB6DEE4011D246EA00B65CE3 /* MultiLineTableViewCell.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EB6DEE3E11D246EA00B65CE3 /* MultiLineTableViewCell.h */; settings = {JAVA_ARCHIVE_SUBDIR = Common; }; };
+		EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */; };
 		EB6F2B6610E901E000A29A2A /* UITableView+MITUIAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6F2B6210E901E000A29A2A /* UITableView+MITUIAdditions.m */; };
 		EB6F2B6710E901E000A29A2A /* UITableViewCell+MITUIAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6F2B6410E901E000A29A2A /* UITableViewCell+MITUIAdditions.m */; };
 		EB6F2B6D10E9026200A29A2A /* PeopleDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6F2B6C10E9026200A29A2A /* PeopleDetailsTableViewCell.m */; };
 		EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */; };
+		EB6FDACF119B73E70055DD2A /* shuttle-blank.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6FDACE119B73E70055DD2A /* shuttle-blank.png */; };
+		EB74ED2E11924E7C006673F9 /* ShareDetailViewController.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EB74ED2C11924E7C006673F9 /* ShareDetailViewController.h */; settings = {JAVA_ARCHIVE_SUBDIR = Common; }; };
+		EB74ED2F11924E7C006673F9 /* ShareDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB74ED2D11924E7C006673F9 /* ShareDetailViewController.m */; };
 		EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EB7F326A10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld */; };
 		EB7F328110CD6C5B00188BCD /* PersonDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7F326F10CD6C5B00188BCD /* PersonDetails.m */; };
 		EB7F328210CD6C5B00188BCD /* PartialHighlightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7F327110CD6C5B00188BCD /* PartialHighlightTableViewCell.m */; };
@@ -204,13 +294,46 @@
 		EB7F32D710CD6FBB00188BCD /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB7F32D610CD6FBB00188BCD /* AddressBookUI.framework */; };
 		EB7F33B710CD87DA00188BCD /* redbutton2.png in Resources */ = {isa = PBXBuildFile; fileRef = EB7F33B210CD87DA00188BCD /* redbutton2.png */; };
 		EB7F33B810CD87DA00188BCD /* redbutton2highlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = EB7F33B310CD87DA00188BCD /* redbutton2highlighted.png */; };
+		EB83923C1163ECC20067C0A3 /* CalendarDetailViewController.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EB83923A1163ECC20067C0A3 /* CalendarDetailViewController.h */; settings = {JAVA_ARCHIVE_SUBDIR = Modules/Calendar; }; };
+		EB83923D1163ECC20067C0A3 /* CalendarDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB83923B1163ECC20067C0A3 /* CalendarDetailViewController.m */; };
+		EB8392461163EF340067C0A3 /* MITCalendarEvent.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EB8392421163EF340067C0A3 /* MITCalendarEvent.h */; settings = {JAVA_ARCHIVE_SUBDIR = Modules/Calendar; }; };
+		EB8392471163EF340067C0A3 /* MITCalendarEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = EB8392431163EF340067C0A3 /* MITCalendarEvent.m */; };
+		EB8392481163EF340067C0A3 /* EventCategory.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EB8392441163EF340067C0A3 /* EventCategory.h */; settings = {JAVA_ARCHIVE_SUBDIR = Modules/Calendar; }; };
+		EB8392491163EF340067C0A3 /* EventCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = EB8392451163EF340067C0A3 /* EventCategory.m */; };
+		EB83926B1163F7B00067C0A3 /* CalendarDataManager.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EB8392691163F7B00067C0A3 /* CalendarDataManager.h */; settings = {JAVA_ARCHIVE_SUBDIR = Modules/Calendar; }; };
+		EB83926C1163F7B00067C0A3 /* CalendarDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = EB83926A1163F7B00067C0A3 /* CalendarDataManager.m */; };
+		EB8392A01163FD6E0067C0A3 /* Calendar.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EB83929F1163FD6E0067C0A3 /* Calendar.xcdatamodeld */; };
+		EB86944D115120C4003AEDFA /* ShuttleRouteStop.m in Sources */ = {isa = PBXBuildFile; fileRef = EB86944C115120C4003AEDFA /* ShuttleRouteStop.m */; };
+		EB86CA6F115D276700C8F3D1 /* CalendarModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EB86CA6E115D276700C8F3D1 /* CalendarModule.m */; };
+		EB86CAC6115D4ED500C8F3D1 /* CalendarEventsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB86CAC5115D4ED500C8F3D1 /* CalendarEventsViewController.m */; };
 		EB9236B4110A6F07007291FF /* toolbar-background.png in Resources */ = {isa = PBXBuildFile; fileRef = EB9236B3110A6F07007291FF /* toolbar-background.png */; };
+		EB976D17116CF6630036A18E /* EventListTableView.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EB976D15116CF6630036A18E /* EventListTableView.h */; settings = {JAVA_ARCHIVE_SUBDIR = Modules/Calendar; }; };
+		EB976D18116CF6630036A18E /* EventListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB976D16116CF6630036A18E /* EventListTableView.m */; };
+		EB976D1B116CF6A10036A18E /* EventCategoriesTableView.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EB976D19116CF6A10036A18E /* EventCategoriesTableView.h */; settings = {JAVA_ARCHIVE_SUBDIR = Modules/Calendar; }; };
+		EB976D1C116CF6A10036A18E /* EventCategoriesTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB976D1A116CF6A10036A18E /* EventCategoriesTableView.m */; };
 		EB9DFCC4110D142700ECC1C9 /* scrim-button-background.png in Resources */ = {isa = PBXBuildFile; fileRef = EB9DFCC3110D142700ECC1C9 /* scrim-button-background.png */; };
 		EB9DFCC6110D14E400ECC1C9 /* scrim-button-background-highlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = EB9DFCC5110D14E400ECC1C9 /* scrim-button-background-highlighted.png */; };
 		EBA0A46710D405F5005B0D96 /* Stellar.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EBA0A46610D405F5005B0D96 /* Stellar.xcdatamodeld */; };
+		EBA273E911760BAE0033DD27 /* CalendarConstants.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EBA273E711760BAE0033DD27 /* CalendarConstants.h */; settings = {JAVA_ARCHIVE_SUBDIR = Modules/Calendar; }; };
+		EBA273EA11760BAE0033DD27 /* CalendarConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA273E811760BAE0033DD27 /* CalendarConstants.m */; };
 		EBA2865610E07E140003BA01 /* PeopleSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */; };
 		EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2867810E082010003BA01 /* MITLoadingActivityView.m */; };
+		EBAB15C311BE970900D481B5 /* DatePickerViewController.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EBAB15C111BE970900D481B5 /* DatePickerViewController.h */; settings = {JAVA_ARCHIVE_SUBDIR = Modules/Calendar; }; };
+		EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB15C211BE970900D481B5 /* DatePickerViewController.m */; };
+		EBAB164111BEC3E800D481B5 /* MITSearchDisplayController.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = EBAB163F11BEC3E800D481B5 /* MITSearchDisplayController.h */; settings = {JAVA_ARCHIVE_SUBDIR = Common; }; };
+		EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */; };
+		EBB1C5231178BC7A0099BEC2 /* events_template.html in Resources */ = {isa = PBXBuildFile; fileRef = EBB1C5221178BC7A0099BEC2 /* events_template.html */; };
+		EBB1C5641178F0420099BEC2 /* news_chevron_small.png in Resources */ = {isa = PBXBuildFile; fileRef = EBB1C5621178F0420099BEC2 /* news_chevron_small.png */; };
+		EBB1C5651178F0420099BEC2 /* news_comments.png in Resources */ = {isa = PBXBuildFile; fileRef = EBB1C5631178F0420099BEC2 /* news_comments.png */; };
+		EBB1C5671178F0510099BEC2 /* news_tags.png in Resources */ = {isa = PBXBuildFile; fileRef = EBB1C5661178F0510099BEC2 /* news_tags.png */; };
+		EBB1C56A1178F0600099BEC2 /* share_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = EBB1C5681178F0600099BEC2 /* share_pressed.png */; };
+		EBB1C56B1178F0600099BEC2 /* share.png in Resources */ = {isa = PBXBuildFile; fileRef = EBB1C5691178F0600099BEC2 /* share.png */; };
+		EBB1C56F1178F06F0099BEC2 /* subheadbar_background.png in Resources */ = {isa = PBXBuildFile; fileRef = EBB1C56C1178F06F0099BEC2 /* subheadbar_background.png */; };
+		EBB1C5701178F06F0099BEC2 /* subheadbar_button_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = EBB1C56D1178F06F0099BEC2 /* subheadbar_button_pressed.png */; };
+		EBB1C5711178F06F0099BEC2 /* subheadbar_button.png in Resources */ = {isa = PBXBuildFile; fileRef = EBB1C56E1178F06F0099BEC2 /* subheadbar_button.png */; };
 		EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */; };
+		EBCFFBDE11A6C54700086C3C /* shuttle_routelist_header.png in Resources */ = {isa = PBXBuildFile; fileRef = EBCFFBDD11A6C54700086C3C /* shuttle_routelist_header.png */; };
+		EBDB0C4D11484072008AAE42 /* ShuttleTrack.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EBDB0C4C11484072008AAE42 /* ShuttleTrack.xcdatamodeld */; };
 		EF3B3B15103F072400E8AA05 /* MIT-Mobile-Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3B3B14103F072400E8AA05 /* MIT-Mobile-Icon.png */; };
 /* End PBXBuildFile section */
 
@@ -222,6 +345,8 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		28A0AAE50D9B0CCF005BE974 /* MIT_Mobile_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT_Mobile_Prefix.pch; sourceTree = "<group>"; };
 		28AD735F0D9D9599002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		294AC7AE10E46774003830C3 /* MITMapScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapScrollView.h; sourceTree = "<group>"; };
 		294AC7AF10E46786003830C3 /* MITMapScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapScrollView.m; sourceTree = "<group>"; };
 		296F086410CDDF07004B02E4 /* MITMobileWebAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileWebAPI.h; sourceTree = "<group>"; };
@@ -238,6 +363,8 @@
 		2971CE0910DB116800FAF160 /* StellarAnnouncementViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StellarAnnouncementViewController.h; sourceTree = "<group>"; };
 		2971CE0A10DB116800FAF160 /* StellarAnnouncementViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StellarAnnouncementViewController.m; sourceTree = "<group>"; };
 		2973D49E110E6E6B00CA6973 /* pin_shuttle_stop_complete_next.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pin_shuttle_stop_complete_next.png; path = Resources/pin_shuttle_stop_complete_next.png; sourceTree = "<group>"; };
+		29747C6E114AEFBA0091F18C /* StellarClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StellarClass.h; sourceTree = "<group>"; };
+		29747C6F114AEFBA0091F18C /* StellarClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StellarClass.m; sourceTree = "<group>"; };
 		297746C610D3526100ACFCE6 /* StellarStaffMember.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StellarStaffMember.h; sourceTree = "<group>"; };
 		297746C710D3526100ACFCE6 /* StellarStaffMember.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StellarStaffMember.m; sourceTree = "<group>"; };
 		297746C810D3526100ACFCE6 /* StellarAnnouncement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StellarAnnouncement.h; sourceTree = "<group>"; };
@@ -250,8 +377,6 @@
 		2978864210F03656002670CC /* MITDeviceRegistration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDeviceRegistration.m; path = "App Delegate/MITDeviceRegistration.m"; sourceTree = "<group>"; };
 		2978864310F03656002670CC /* MITUnreadNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITUnreadNotifications.h; path = "App Delegate/MITUnreadNotifications.h"; sourceTree = "<group>"; };
 		2978864410F03656002670CC /* MITUnreadNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITUnreadNotifications.m; path = "App Delegate/MITUnreadNotifications.m"; sourceTree = "<group>"; };
-		29796E3810DBFD70005C224E /* StellarClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StellarClass.h; sourceTree = "<group>"; };
-		29796E3910DBFD70005C224E /* StellarClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StellarClass.m; sourceTree = "<group>"; };
 		2980C03010D9728800F19FF0 /* NewsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsDataSource.h; sourceTree = "<group>"; };
 		2980C03110D9728800F19FF0 /* NewsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsDataSource.m; sourceTree = "<group>"; };
 		298152A111027107007AFAD0 /* shuttle-alert-toggle-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "shuttle-alert-toggle-off.png"; path = "Resources/shuttle-alert-toggle-off.png"; sourceTree = "<group>"; };
@@ -261,12 +386,77 @@
 		298F42E01102AD7B001963AB /* shuttle-alert-descriptive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "shuttle-alert-descriptive.png"; path = "Resources/shuttle-alert-descriptive.png"; sourceTree = "<group>"; };
 		2991499E10DDB50300B01A8E /* StellarSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StellarSearch.h; sourceTree = "<group>"; };
 		2991499F10DDB50300B01A8E /* StellarSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StellarSearch.m; sourceTree = "<group>"; };
+		29974B6F1160F1DA009D03B9 /* URLShortener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLShortener.h; sourceTree = "<group>"; };
+		29974B701160F1DA009D03B9 /* URLShortener.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLShortener.m; sourceTree = "<group>"; };
 		29A0D11D10CDD0E8009FC010 /* StellarCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StellarCache.h; sourceTree = "<group>"; };
 		29A0D11E10CDD0E8009FC010 /* StellarCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StellarCache.m; sourceTree = "<group>"; };
 		29A0D11F10CDD0E8009FC010 /* StellarClassesTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StellarClassesTableController.h; sourceTree = "<group>"; };
 		29A0D12010CDD0E8009FC010 /* StellarClassesTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StellarClassesTableController.m; sourceTree = "<group>"; };
+		29B14B71114842D200BC8CCE /* Stellar 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Stellar 3.xcdatamodel"; sourceTree = "<group>"; };
+		29B6038B11541AB200064E0A /* TwitterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwitterViewController.h; sourceTree = "<group>"; };
+		29B6038C11541AB200064E0A /* TwitterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwitterViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29C136B510FBFA8800CB5F00 /* unread-message.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "unread-message.png"; path = "Resources/unread-message.png"; sourceTree = "<group>"; };
+		29C45425118B55E100A321B0 /* jQueryInject.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jQueryInject.txt; sourceTree = "<group>"; };
+		29C45426118B55E100A321B0 /* jQueryInjectLandscape.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jQueryInjectLandscape.txt; sourceTree = "<group>"; };
+		29C45429118B55E100A321B0 /* ExchangeCredentialsOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExchangeCredentialsOperation.h; sourceTree = "<group>"; };
+		29C4542A118B55E100A321B0 /* ExchangeCredentialsOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExchangeCredentialsOperation.m; sourceTree = "<group>"; };
+		29C4542B118B55E100A321B0 /* ExchangeCredentialsOperationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExchangeCredentialsOperationDelegate.h; sourceTree = "<group>"; };
+		29C4542C118B55E100A321B0 /* XAuthTwitterEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XAuthTwitterEngine.h; sourceTree = "<group>"; };
+		29C4542D118B55E100A321B0 /* XAuthTwitterEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XAuthTwitterEngine.m; sourceTree = "<group>"; };
+		29C4542E118B55E100A321B0 /* XAuthTwitterEngineDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XAuthTwitterEngineDelegate.h; sourceTree = "<group>"; };
+		29C45430118B55E100A321B0 /* libOAuth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOAuth.a; sourceTree = "<group>"; };
+		29C45431118B55E100A321B0 /* NSMutableURLRequest+Parameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableURLRequest+Parameters.h"; sourceTree = "<group>"; };
+		29C45432118B55E100A321B0 /* NSString+URLEncoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+URLEncoding.h"; sourceTree = "<group>"; };
+		29C45433118B55E100A321B0 /* NSURL+Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+Base.h"; sourceTree = "<group>"; };
+		29C45434118B55E100A321B0 /* OAAsynchronousDataFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAAsynchronousDataFetcher.h; sourceTree = "<group>"; };
+		29C45435118B55E100A321B0 /* OAConsumer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAConsumer.h; sourceTree = "<group>"; };
+		29C45436118B55E100A321B0 /* OADataFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OADataFetcher.h; sourceTree = "<group>"; };
+		29C45437118B55E100A321B0 /* OAHMAC_SHA1SignatureProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAHMAC_SHA1SignatureProvider.h; sourceTree = "<group>"; };
+		29C45438118B55E100A321B0 /* OAMutableURLRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAMutableURLRequest.h; sourceTree = "<group>"; };
+		29C45439118B55E100A321B0 /* OAPlaintextSignatureProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAPlaintextSignatureProvider.h; sourceTree = "<group>"; };
+		29C4543A118B55E100A321B0 /* OARequestParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OARequestParameter.h; sourceTree = "<group>"; };
+		29C4543B118B55E100A321B0 /* OAServiceTicket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAServiceTicket.h; sourceTree = "<group>"; };
+		29C4543C118B55E100A321B0 /* OASignatureProviding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OASignatureProviding.h; sourceTree = "<group>"; };
+		29C4543D118B55E100A321B0 /* OAToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAToken.h; sourceTree = "<group>"; };
+		29C4543E118B55E100A321B0 /* OAToken_KeychainExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAToken_KeychainExtensions.h; sourceTree = "<group>"; };
+		29C4543F118B55E100A321B0 /* OAuthConsumer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAuthConsumer.h; sourceTree = "<group>"; };
+		29C45441118B55E100A321B0 /* MGTwitterEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterEngine.h; sourceTree = "<group>"; };
+		29C45442118B55E100A321B0 /* MGTwitterEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterEngine.m; sourceTree = "<group>"; };
+		29C45443118B55E100A321B0 /* MGTwitterEngineDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterEngineDelegate.h; sourceTree = "<group>"; };
+		29C45444118B55E100A321B0 /* MGTwitterEngineGlobalHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterEngineGlobalHeader.h; sourceTree = "<group>"; };
+		29C45445118B55E100A321B0 /* MGTwitterHTTPURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterHTTPURLConnection.h; sourceTree = "<group>"; };
+		29C45446118B55E100A321B0 /* MGTwitterHTTPURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterHTTPURLConnection.m; sourceTree = "<group>"; };
+		29C45447118B55E100A321B0 /* MGTwitterLibXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterLibXMLParser.h; sourceTree = "<group>"; };
+		29C45448118B55E100A321B0 /* MGTwitterLibXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterLibXMLParser.m; sourceTree = "<group>"; };
+		29C45449118B55E100A321B0 /* MGTwitterMessagesLibXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterMessagesLibXMLParser.h; sourceTree = "<group>"; };
+		29C4544A118B55E100A321B0 /* MGTwitterMessagesLibXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterMessagesLibXMLParser.m; sourceTree = "<group>"; };
+		29C4544B118B55E100A321B0 /* MGTwitterMessagesParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterMessagesParser.h; sourceTree = "<group>"; };
+		29C4544C118B55E100A321B0 /* MGTwitterMessagesParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterMessagesParser.m; sourceTree = "<group>"; };
+		29C4544F118B55E100A321B0 /* MGTwitterMiscLibXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterMiscLibXMLParser.h; sourceTree = "<group>"; };
+		29C45450118B55E100A321B0 /* MGTwitterMiscLibXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterMiscLibXMLParser.m; sourceTree = "<group>"; };
+		29C45451118B55E100A321B0 /* MGTwitterMiscParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterMiscParser.h; sourceTree = "<group>"; };
+		29C45452118B55E100A321B0 /* MGTwitterMiscParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterMiscParser.m; sourceTree = "<group>"; };
+		29C45455118B55E100A321B0 /* MGTwitterParserDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterParserDelegate.h; sourceTree = "<group>"; };
+		29C45456118B55E100A321B0 /* MGTwitterRequestTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterRequestTypes.h; sourceTree = "<group>"; };
+		29C45459118B55E100A321B0 /* MGTwitterStatusesLibXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterStatusesLibXMLParser.h; sourceTree = "<group>"; };
+		29C4545A118B55E100A321B0 /* MGTwitterStatusesLibXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterStatusesLibXMLParser.m; sourceTree = "<group>"; };
+		29C4545B118B55E100A321B0 /* MGTwitterStatusesParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterStatusesParser.h; sourceTree = "<group>"; };
+		29C4545C118B55E100A321B0 /* MGTwitterStatusesParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterStatusesParser.m; sourceTree = "<group>"; };
+		29C4545F118B55E100A321B0 /* MGTwitterUsersLibXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterUsersLibXMLParser.h; sourceTree = "<group>"; };
+		29C45460118B55E100A321B0 /* MGTwitterUsersLibXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterUsersLibXMLParser.m; sourceTree = "<group>"; };
+		29C45461118B55E100A321B0 /* MGTwitterUsersParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterUsersParser.h; sourceTree = "<group>"; };
+		29C45462118B55E100A321B0 /* MGTwitterUsersParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterUsersParser.m; sourceTree = "<group>"; };
+		29C45465118B55E100A321B0 /* MGTwitterXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTwitterXMLParser.h; sourceTree = "<group>"; };
+		29C45466118B55E100A321B0 /* MGTwitterXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTwitterXMLParser.m; sourceTree = "<group>"; };
+		29C45469118B55E100A321B0 /* NSData+MGTwitterBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+MGTwitterBase64.h"; sourceTree = "<group>"; };
+		29C4546A118B55E100A321B0 /* NSData+MGTwitterBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+MGTwitterBase64.m"; sourceTree = "<group>"; };
+		29C4546B118B55E100A321B0 /* NSString+UUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UUID.h"; sourceTree = "<group>"; };
+		29C4546C118B55E100A321B0 /* NSString+UUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UUID.m"; sourceTree = "<group>"; };
+		29C454BE118B61CA00A321B0 /* SFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFHFKeychainUtils.h; sourceTree = "<group>"; };
+		29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFHFKeychainUtils.m; sourceTree = "<group>"; };
+		29E308841176018C005211A7 /* MITModuleURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITModuleURL.h; sourceTree = "<group>"; };
+		29E308851176018C005211A7 /* MITModuleURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITModuleURL.m; sourceTree = "<group>"; };
 		29E571FE1101067700DBE666 /* mystellar-off-pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "mystellar-off-pressed.png"; path = "Resources/mystellar-off-pressed.png"; sourceTree = "<group>"; };
 		29E571FF1101067700DBE666 /* mystellar-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "mystellar-off.png"; path = "Resources/mystellar-off.png"; sourceTree = "<group>"; };
 		29E572001101067700DBE666 /* mystellar-on-pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "mystellar-on-pressed.png"; path = "Resources/mystellar-on-pressed.png"; sourceTree = "<group>"; };
@@ -286,14 +476,16 @@
 		4405F9EC10F6245B00F699FE /* shuttle_location.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = shuttle_location.png; path = Resources/shuttle_location.png; sourceTree = "<group>"; };
 		441009DC110A6DAF00451B23 /* CampusMapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CampusMapToolbar.h; sourceTree = "<group>"; };
 		441009DD110A6DAF00451B23 /* CampusMapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CampusMapToolbar.m; sourceTree = "<group>"; };
+		4415CA8711AC679A002B6847 /* bookmark_off_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bookmark_off_pressed.png; path = Resources/bookmark_off_pressed.png; sourceTree = "<group>"; };
+		4415CA8811AC679A002B6847 /* bookmark_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bookmark_off.png; path = Resources/bookmark_off.png; sourceTree = "<group>"; };
+		4415CA8911AC679A002B6847 /* bookmark_on_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bookmark_on_pressed.png; path = Resources/bookmark_on_pressed.png; sourceTree = "<group>"; };
+		4415CA8A11AC679A002B6847 /* bookmark_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bookmark_on.png; path = Resources/bookmark_on.png; sourceTree = "<group>"; };
 		4420F22F10E9513700A8CD05 /* ShuttleDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleDataManager.h; sourceTree = "<group>"; };
 		4420F23010E9513700A8CD05 /* ShuttleDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleDataManager.m; sourceTree = "<group>"; };
 		4420F31910E96EBE00A8CD05 /* ShuttleStopMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleStopMapAnnotation.h; sourceTree = "<group>"; };
 		4420F31A10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleStopMapAnnotation.m; sourceTree = "<group>"; };
 		4420F62710EBA5D000A8CD05 /* ShuttleStopViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleStopViewController.h; sourceTree = "<group>"; };
 		4420F62810EBA5D000A8CD05 /* ShuttleStopViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleStopViewController.m; sourceTree = "<group>"; };
-		4420F68D10EBC67000A8CD05 /* RouteStopSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouteStopSchedule.h; sourceTree = "<group>"; };
-		4420F68E10EBC67000A8CD05 /* RouteStopSchedule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouteStopSchedule.m; sourceTree = "<group>"; };
 		44259C6F10DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapAnnotationCalloutView.h; sourceTree = "<group>"; };
 		44259C7010DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapAnnotationCalloutView.m; sourceTree = "<group>"; };
 		44293B3410DABD3700273119 /* map_button_shuttle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = map_button_shuttle.png; path = Resources/map_button_shuttle.png; sourceTree = "<group>"; };
@@ -310,9 +502,6 @@
 		44293B3F10DABD3700273119 /* map_pin_shadow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = map_pin_shadow.png; path = Resources/map_pin_shadow.png; sourceTree = "<group>"; };
 		44293B4010DABD3700273119 /* map_button_icon_locate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = map_button_icon_locate.png; path = Resources/map_button_icon_locate.png; sourceTree = "<group>"; };
 		44293B4110DABD3700273119 /* map_button_icon_shuttle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = map_button_icon_shuttle.png; path = Resources/map_button_icon_shuttle.png; sourceTree = "<group>"; };
-		44293C2D10DAE86D00273119 /* CategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategoriesViewController.h; sourceTree = "<group>"; };
-		44293C2E10DAE86D00273119 /* CategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoriesViewController.m; sourceTree = "<group>"; };
-		44293C2F10DAE86D00273119 /* CategoriesViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CategoriesViewController.xib; sourceTree = "<group>"; };
 		44293C3210DAE88500273119 /* MITMapSearchResultsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapSearchResultsVC.h; sourceTree = "<group>"; };
 		44293C3310DAE88500273119 /* MITMapSearchResultsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapSearchResultsVC.m; sourceTree = "<group>"; };
 		44293C3410DAE88500273119 /* MITMapSearchResultsVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MITMapSearchResultsVC.xib; sourceTree = "<group>"; };
@@ -346,8 +535,6 @@
 		4463CC8E10D6F4A50048CA83 /* MITMapSearchResultAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapSearchResultAnnotation.m; sourceTree = "<group>"; };
 		4463CC8F10D6F4A50048CA83 /* MITMapAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapAnnotationView.h; sourceTree = "<group>"; };
 		4463CC9010D6F4A50048CA83 /* MITMapAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapAnnotationView.m; sourceTree = "<group>"; };
-		4463CCAC10D6F5540048CA83 /* PostData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostData.m; sourceTree = "<group>"; };
-		4463CCAD10D6F5540048CA83 /* PostData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostData.h; sourceTree = "<group>"; };
 		4463CCB110D6F5750048CA83 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		4463CCE710D6F7090048CA83 /* map_red_pin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = map_red_pin.png; path = Resources/map_red_pin.png; sourceTree = "<group>"; };
 		4463CE8D10D8052A0048CA83 /* MITMapSearchResultCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapSearchResultCell.h; sourceTree = "<group>"; };
@@ -357,8 +544,6 @@
 		4463D09310D92CB00048CA83 /* MITMapDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MITMapDetailViewController.xib; sourceTree = "<group>"; };
 		4463D09E10D92F6B0048CA83 /* TabViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabViewControl.h; sourceTree = "<group>"; };
 		4463D09F10D92F6B0048CA83 /* TabViewControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabViewControl.m; sourceTree = "<group>"; };
-		4463D3F110D97E720048CA83 /* MITMapCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapCategory.h; sourceTree = "<group>"; };
-		4463D3F210D97E720048CA83 /* MITMapCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategory.m; sourceTree = "<group>"; };
 		4463D5E010DA74240048CA83 /* MITMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapView.h; sourceTree = "<group>"; };
 		4463D5E110DA74240048CA83 /* MITMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapView.m; sourceTree = "<group>"; };
 		448B309310F685B0007A91E4 /* map_grid_placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = map_grid_placeholder.png; path = Resources/map_grid_placeholder.png; sourceTree = "<group>"; };
@@ -367,8 +552,17 @@
 		448B32AD10F770A6007A91E4 /* shuttle-stop-dot-next.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "shuttle-stop-dot-next.png"; path = "Resources/shuttle-stop-dot-next.png"; sourceTree = "<group>"; };
 		448B32AE10F770A6007A91E4 /* shuttle-stop-dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "shuttle-stop-dot.png"; path = "Resources/shuttle-stop-dot.png"; sourceTree = "<group>"; };
 		448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShuttleRouteViewController.xib; sourceTree = "<group>"; };
+		4499332B11A371CE00A7041B /* RecentSearchesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentSearchesViewController.h; sourceTree = "<group>"; };
+		4499332C11A371CF00A7041B /* RecentSearchesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentSearchesViewController.m; sourceTree = "<group>"; };
+		4499341C11A5E53D00A7041B /* CategoriesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategoriesTableViewController.h; sourceTree = "<group>"; };
+		4499341D11A5E53D00A7041B /* CategoriesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoriesTableViewController.m; sourceTree = "<group>"; };
 		449BB28010E159C2008D5818 /* map_disclosure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = map_disclosure.png; path = Resources/map_disclosure.png; sourceTree = "<group>"; };
 		44A33BAB1105E7FA00D06097 /* button-icon-reset-zoom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "button-icon-reset-zoom.png"; path = "Resources/button-icon-reset-zoom.png"; sourceTree = "<group>"; };
+		44ACF7681187884300F1F4B2 /* BookmarksTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarksTableViewController.h; sourceTree = "<group>"; };
+		44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarksTableViewController.m; sourceTree = "<group>"; };
+		44ACF76A1187884300F1F4B2 /* MapBookmarkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapBookmarkManager.m; sourceTree = "<group>"; };
+		44ACF76B1187884300F1F4B2 /* MapBookmarkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapBookmarkManager.h; sourceTree = "<group>"; };
+		44ACF7701187886500F1F4B2 /* searchfield_star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = searchfield_star.png; path = Resources/searchfield_star.png; sourceTree = "<group>"; };
 		44BF5A4A10FFEF7300E150D5 /* shuttle-off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "shuttle-off.png"; path = "Resources/shuttle-off.png"; sourceTree = "<group>"; };
 		44BF5A4B10FFEF7300E150D5 /* shuttle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = shuttle.png; path = Resources/shuttle.png; sourceTree = "<group>"; };
 		44BF5B411100A75C00E150D5 /* RouteInfoTitleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouteInfoTitleCell.h; sourceTree = "<group>"; };
@@ -376,7 +570,16 @@
 		44BF601E11050ABF00E150D5 /* ShuttleStopCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleStopCell.h; sourceTree = "<group>"; };
 		44BF601F11050AC000E150D5 /* ShuttleStopCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleStopCell.m; sourceTree = "<group>"; };
 		44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShuttleStopCell.xib; sourceTree = "<group>"; };
+		44C1A26E11A2EA04000FD653 /* CampusMap.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = CampusMap.xcdatamodel; sourceTree = "<group>"; };
+		44C1A3CC11A33905000FD653 /* MapSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapSelectionController.h; sourceTree = "<group>"; };
+		44C1A3CD11A33905000FD653 /* MapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSelectionController.m; sourceTree = "<group>"; };
+		44C1A4C211A412E2000FD653 /* MapSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapSearch.h; sourceTree = "<group>"; };
+		44C1A4C311A412E2000FD653 /* MapSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSearch.m; sourceTree = "<group>"; };
+		4B108E9411A6D20B00FBF35A /* twitter_signout_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = twitter_signout_pressed.png; path = Resources/twitter_signout_pressed.png; sourceTree = "<group>"; };
+		4B108E9611A6D21E00FBF35A /* twitter_signout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = twitter_signout.png; path = Resources/twitter_signout.png; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		950A8BA311AC0CDC00686132 /* map_viewall_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = map_viewall_pressed.png; path = Resources/map_viewall_pressed.png; sourceTree = "<group>"; };
+		950A8BA411AC0CDC00686132 /* map_viewall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = map_viewall.png; path = Resources/map_viewall.png; sourceTree = "<group>"; };
 		BD1E92F4103B5D60004429AA /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		BD1E92F5103B5D60004429AA /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
 		BD1E92F6103B5D60004429AA /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
@@ -395,6 +598,7 @@
 		DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITBuildInfo.m; sourceTree = "<group>"; };
 		DE0F6B3211109BC500F064D6 /* AboutMITVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutMITVC.h; sourceTree = "<group>"; };
 		DE0F6B3311109BC500F064D6 /* AboutMITVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutMITVC.m; sourceTree = "<group>"; };
+		DE10571411985D4B0090A505 /* News 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "News 2.xcdatamodel"; sourceTree = "<group>"; };
 		DE1348F910FFC2CC006FFF33 /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
 		DE1348FA10FFC2CC006FFF33 /* 10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10.png; sourceTree = "<group>"; };
 		DE1348FB10FFC2CC006FFF33 /* 11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 11.png; sourceTree = "<group>"; };
@@ -422,20 +626,20 @@
 		DE47589510D0BEE700139BC1 /* MITTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITTabBarController.m; path = "App Delegate/MITTabBarController.m"; sourceTree = "<group>"; };
 		DE4AB0B210ED5148007476D9 /* NewsStory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsStory.h; sourceTree = "<group>"; };
 		DE4AB0B310ED5148007476D9 /* NewsStory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsStory.m; sourceTree = "<group>"; };
+		DE5E99D21124B57C00498760 /* emergency_template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = emergency_template.html; path = Resources/emergency_template.html; sourceTree = "<group>"; };
 		DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Foundation+MITAdditions.h"; sourceTree = "<group>"; };
 		DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Foundation+MITAdditions.m"; sourceTree = "<group>"; };
 		DE6D32F410346D02008A5823 /* ShuttleModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleModule.h; sourceTree = "<group>"; };
 		DE6D32F510346D02008A5823 /* ShuttleModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleModule.m; sourceTree = "<group>"; };
 		DE6D332910346F6D008A5823 /* ShuttleRoutes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleRoutes.h; sourceTree = "<group>"; };
 		DE6D332A10346F6D008A5823 /* ShuttleRoutes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleRoutes.m; sourceTree = "<group>"; };
-		DE6D332C10346F78008A5823 /* ShuttleRoutes.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShuttleRoutes.xib; sourceTree = "<group>"; };
 		DE6D570410F05C59006431A8 /* TabScrollerBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabScrollerBackgroundView.h; sourceTree = "<group>"; };
 		DE6D570510F05C59006431A8 /* TabScrollerBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabScrollerBackgroundView.m; sourceTree = "<group>"; };
 		DE6D579A10F07212006431A8 /* news_story_template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = news_story_template.html; path = Resources/news_story_template.html; sourceTree = "<group>"; };
 		DE6D906F11095B2D00DAF213 /* MITMoreListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMoreListController.h; path = "App Delegate/MITMoreListController.h"; sourceTree = "<group>"; };
 		DE6D907011095B2D00DAF213 /* MITMoreListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMoreListController.m; path = "App Delegate/MITMoreListController.m"; sourceTree = "<group>"; };
-		DE6D9318110A8EFA00DAF213 /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTableViewController.h; sourceTree = "<group>"; };
-		DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTableViewController.m; sourceTree = "<group>"; };
+		DE6D9318110A8EFA00DAF213 /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsTableViewController.h; path = Settings/SettingsTableViewController.h; sourceTree = "<group>"; };
+		DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingsTableViewController.m; path = Settings/SettingsTableViewController.m; sourceTree = "<group>"; };
 		DE6E1552110BA934002D9C60 /* shuttle-secondary-scrim.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "shuttle-secondary-scrim.png"; path = "Resources/shuttle-secondary-scrim.png"; sourceTree = "<group>"; };
 		DE6F044611139CA40046684B /* FBConnect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FBConnect.h; path = "Facebook Connect/FBConnect/FBConnect.h"; sourceTree = "<group>"; };
 		DE6F044711139CA40046684B /* FBConnectGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FBConnectGlobal.h; path = "Facebook Connect/FBConnect/FBConnectGlobal.h"; sourceTree = "<group>"; };
@@ -457,6 +661,7 @@
 		DE6F045711139CA40046684B /* FBStreamDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FBStreamDialog.h; path = "Facebook Connect/FBConnect/FBStreamDialog.h"; sourceTree = "<group>"; };
 		DE6F045811139CA40046684B /* FBStreamDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FBStreamDialog.m; path = "Facebook Connect/FBStreamDialog.m"; sourceTree = "<group>"; };
 		DE6F045911139CA40046684B /* FBConnect.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = FBConnect.bundle; path = "Facebook Connect/FBConnect.bundle"; sourceTree = "<group>"; };
+		DE6F537D11AB167B009E8A7F /* bookmark_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bookmark_button.png; path = Resources/bookmark_button.png; sourceTree = "<group>"; };
 		DE705490103FB792003B5F41 /* ShuttleRoute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleRoute.h; sourceTree = "<group>"; };
 		DE705491103FB792003B5F41 /* ShuttleRoute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleRoute.m; sourceTree = "<group>"; };
 		DE705495103FB79D003B5F41 /* EmergencyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmergencyData.h; sourceTree = "<group>"; };
@@ -473,11 +678,9 @@
 		DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleRouteViewController.m; sourceTree = "<group>"; };
 		DE71F7D310424E3400661DED /* ShuttleStop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleStop.h; sourceTree = "<group>"; };
 		DE71F7D410424E3400661DED /* ShuttleStop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleStop.m; sourceTree = "<group>"; };
-		DE728E3710D6FF0E00BFED37 /* leftscroll.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = leftscroll.png; path = Resources/leftscroll.png; sourceTree = "<group>"; };
 		DE728E3810D6FF0E00BFED37 /* navbackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = navbackground.png; path = Resources/navbackground.png; sourceTree = "<group>"; };
 		DE728E3910D6FF0E00BFED37 /* navbutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = navbutton.png; path = Resources/navbutton.png; sourceTree = "<group>"; };
 		DE728E3A10D6FF0E00BFED37 /* navbuttonbackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = navbuttonbackground.png; path = Resources/navbuttonbackground.png; sourceTree = "<group>"; };
-		DE728E3B10D6FF0E00BFED37 /* rightscroll.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rightscroll.png; path = Resources/rightscroll.png; sourceTree = "<group>"; };
 		DE728E4510D6FF4700BFED37 /* StoryThumbnailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryThumbnailView.h; sourceTree = "<group>"; };
 		DE728E4610D6FF4700BFED37 /* StoryThumbnailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryThumbnailView.m; sourceTree = "<group>"; };
 		DE728E6410D6FF4700BFED37 /* StoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryDetailViewController.h; sourceTree = "<group>"; };
@@ -522,10 +725,18 @@
 		DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutCreditsVC.m; sourceTree = "<group>"; };
 		DEE6AF1F1117477E0037F03C /* credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = credits.html; path = Resources/credits.html; sourceTree = "<group>"; };
 		DEE6B1CC111774300037F03C /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
-		EB3EE77E10D6ADCA00F6D707 /* MultiLineTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiLineTableViewCell.h; sourceTree = "<group>"; };
-		EB3EE77F10D6ADCA00F6D707 /* MultiLineTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiLineTableViewCell.m; sourceTree = "<group>"; };
+		EB32946D1166777500DEDC8A /* CalendarEventMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarEventMapAnnotation.h; sourceTree = "<group>"; };
+		EB32946E1166777500DEDC8A /* CalendarEventMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarEventMapAnnotation.m; sourceTree = "<group>"; };
+		EB3F094F118F0FFE00540B8A /* CalendarMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarMapView.h; sourceTree = "<group>"; };
+		EB3F0950118F0FFE00540B8A /* CalendarMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarMapView.m; sourceTree = "<group>"; };
 		EB54942710DFF03600B708B3 /* icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icons; path = Resources/icons; sourceTree = "<group>"; };
 		EB54947210DFF7E200B708B3 /* global */ = {isa = PBXFileReference; lastKnownFileType = folder; name = global; path = Resources/global; sourceTree = "<group>"; };
+		EB67602E114A9316004596BB /* ShuttleRouteCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShuttleRouteCache.h; path = Model/ShuttleRouteCache.h; sourceTree = "<group>"; };
+		EB67602F114A9316004596BB /* ShuttleRouteCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShuttleRouteCache.m; path = Model/ShuttleRouteCache.m; sourceTree = "<group>"; };
+		EB676030114A9316004596BB /* ShuttleStopLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShuttleStopLocation.h; path = Model/ShuttleStopLocation.h; sourceTree = "<group>"; };
+		EB676031114A9316004596BB /* ShuttleStopLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShuttleStopLocation.m; path = Model/ShuttleStopLocation.m; sourceTree = "<group>"; };
+		EB6DEE3E11D246EA00B65CE3 /* MultiLineTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiLineTableViewCell.h; sourceTree = "<group>"; };
+		EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiLineTableViewCell.m; sourceTree = "<group>"; };
 		EB6F2B6110E901E000A29A2A /* UITableView+MITUIAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITableView+MITUIAdditions.h"; sourceTree = "<group>"; };
 		EB6F2B6210E901E000A29A2A /* UITableView+MITUIAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableView+MITUIAdditions.m"; sourceTree = "<group>"; };
 		EB6F2B6310E901E000A29A2A /* UITableViewCell+MITUIAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITableViewCell+MITUIAdditions.h"; sourceTree = "<group>"; };
@@ -535,6 +746,9 @@
 		EB6F2B6C10E9026200A29A2A /* PeopleDetailsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleDetailsTableViewCell.m; sourceTree = "<group>"; };
 		EB6FD1F710E19D7900D56BE1 /* SecondaryGroupedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondaryGroupedTableViewCell.h; sourceTree = "<group>"; };
 		EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondaryGroupedTableViewCell.m; sourceTree = "<group>"; };
+		EB6FDACE119B73E70055DD2A /* shuttle-blank.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "shuttle-blank.png"; path = "Resources/shuttle-blank.png"; sourceTree = "<group>"; };
+		EB74ED2C11924E7C006673F9 /* ShareDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareDetailViewController.h; sourceTree = "<group>"; };
+		EB74ED2D11924E7C006673F9 /* ShareDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareDetailViewController.m; sourceTree = "<group>"; };
 		EB7F326E10CD6C5B00188BCD /* PersonDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PersonDetails.h; sourceTree = "<group>"; };
 		EB7F326F10CD6C5B00188BCD /* PersonDetails.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PersonDetails.m; sourceTree = "<group>"; };
 		EB7F327010CD6C5B00188BCD /* PartialHighlightTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartialHighlightTableViewCell.h; sourceTree = "<group>"; };
@@ -559,17 +773,53 @@
 		EB7F32D610CD6FBB00188BCD /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		EB7F33B210CD87DA00188BCD /* redbutton2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = redbutton2.png; path = Resources/redbutton2.png; sourceTree = "<group>"; };
 		EB7F33B310CD87DA00188BCD /* redbutton2highlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = redbutton2highlighted.png; path = Resources/redbutton2highlighted.png; sourceTree = "<group>"; };
+		EB83923A1163ECC20067C0A3 /* CalendarDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarDetailViewController.h; sourceTree = "<group>"; };
+		EB83923B1163ECC20067C0A3 /* CalendarDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarDetailViewController.m; sourceTree = "<group>"; };
+		EB8392401163ED440067C0A3 /* Calendar.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = Calendar.xcdatamodel; sourceTree = "<group>"; };
+		EB8392421163EF340067C0A3 /* MITCalendarEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarEvent.h; sourceTree = "<group>"; };
+		EB8392431163EF340067C0A3 /* MITCalendarEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarEvent.m; sourceTree = "<group>"; };
+		EB8392441163EF340067C0A3 /* EventCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventCategory.h; sourceTree = "<group>"; };
+		EB8392451163EF340067C0A3 /* EventCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventCategory.m; sourceTree = "<group>"; };
+		EB8392691163F7B00067C0A3 /* CalendarDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarDataManager.h; sourceTree = "<group>"; };
+		EB83926A1163F7B00067C0A3 /* CalendarDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarDataManager.m; sourceTree = "<group>"; };
+		EB86944B115120C4003AEDFA /* ShuttleRouteStop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShuttleRouteStop.h; path = Model/ShuttleRouteStop.h; sourceTree = "<group>"; };
+		EB86944C115120C4003AEDFA /* ShuttleRouteStop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShuttleRouteStop.m; path = Model/ShuttleRouteStop.m; sourceTree = "<group>"; };
+		EB86CA6D115D276700C8F3D1 /* CalendarModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarModule.h; sourceTree = "<group>"; };
+		EB86CA6E115D276700C8F3D1 /* CalendarModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarModule.m; sourceTree = "<group>"; };
+		EB86CAC4115D4ED500C8F3D1 /* CalendarEventsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarEventsViewController.h; sourceTree = "<group>"; };
+		EB86CAC5115D4ED500C8F3D1 /* CalendarEventsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarEventsViewController.m; sourceTree = "<group>"; };
 		EB9236B3110A6F07007291FF /* toolbar-background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "toolbar-background.png"; path = "Resources/toolbar-background.png"; sourceTree = "<group>"; };
+		EB976D15116CF6630036A18E /* EventListTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventListTableView.h; sourceTree = "<group>"; };
+		EB976D16116CF6630036A18E /* EventListTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventListTableView.m; sourceTree = "<group>"; };
+		EB976D19116CF6A10036A18E /* EventCategoriesTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventCategoriesTableView.h; sourceTree = "<group>"; };
+		EB976D1A116CF6A10036A18E /* EventCategoriesTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventCategoriesTableView.m; sourceTree = "<group>"; };
 		EB9DFCC3110D142700ECC1C9 /* scrim-button-background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "scrim-button-background.png"; path = "Resources/scrim-button-background.png"; sourceTree = "<group>"; };
 		EB9DFCC5110D14E400ECC1C9 /* scrim-button-background-highlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "scrim-button-background-highlighted.png"; path = "Resources/scrim-button-background-highlighted.png"; sourceTree = "<group>"; };
 		EBA0A46810D405F5005B0D96 /* Stellar 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Stellar 2.xcdatamodel"; sourceTree = "<group>"; };
+		EBA273E711760BAE0033DD27 /* CalendarConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarConstants.h; sourceTree = "<group>"; };
+		EBA273E811760BAE0033DD27 /* CalendarConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarConstants.m; sourceTree = "<group>"; };
 		EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleSearchViewController.m; sourceTree = "<group>"; };
 		EBA2867710E082010003BA01 /* MITLoadingActivityView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLoadingActivityView.h; sourceTree = "<group>"; };
 		EBA2867810E082010003BA01 /* MITLoadingActivityView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLoadingActivityView.m; sourceTree = "<group>"; };
 		EBAA9F6210FFAB8B003379A5 /* PeopleDataModel 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PeopleDataModel 5.xcdatamodel"; sourceTree = "<group>"; };
+		EBAB15C111BE970900D481B5 /* DatePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatePickerViewController.h; sourceTree = "<group>"; };
+		EBAB15C211BE970900D481B5 /* DatePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatePickerViewController.m; sourceTree = "<group>"; };
+		EBAB163F11BEC3E800D481B5 /* MITSearchDisplayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITSearchDisplayController.h; sourceTree = "<group>"; };
+		EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITSearchDisplayController.m; sourceTree = "<group>"; };
+		EBB1C5221178BC7A0099BEC2 /* events_template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = events_template.html; path = Resources/events_template.html; sourceTree = "<group>"; };
+		EBB1C5621178F0420099BEC2 /* news_chevron_small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = news_chevron_small.png; path = Resources/news_chevron_small.png; sourceTree = "<group>"; };
+		EBB1C5631178F0420099BEC2 /* news_comments.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = news_comments.png; path = Resources/news_comments.png; sourceTree = "<group>"; };
+		EBB1C5661178F0510099BEC2 /* news_tags.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = news_tags.png; path = Resources/news_tags.png; sourceTree = "<group>"; };
+		EBB1C5681178F0600099BEC2 /* share_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = share_pressed.png; path = Resources/share_pressed.png; sourceTree = "<group>"; };
+		EBB1C5691178F0600099BEC2 /* share.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = share.png; path = Resources/share.png; sourceTree = "<group>"; };
+		EBB1C56C1178F06F0099BEC2 /* subheadbar_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = subheadbar_background.png; path = Resources/subheadbar_background.png; sourceTree = "<group>"; };
+		EBB1C56D1178F06F0099BEC2 /* subheadbar_button_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = subheadbar_button_pressed.png; path = Resources/subheadbar_button_pressed.png; sourceTree = "<group>"; };
+		EBB1C56E1178F06F0099BEC2 /* subheadbar_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = subheadbar_button.png; path = Resources/subheadbar_button.png; sourceTree = "<group>"; };
 		EBCA123210CEF3C400577C5D /* PeopleSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleSearchViewController.h; sourceTree = "<group>"; };
 		EBCB4DEC10D30AA1001219FD /* EmergencyContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmergencyContactsViewController.h; sourceTree = "<group>"; };
 		EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmergencyContactsViewController.m; sourceTree = "<group>"; };
+		EBCFFBDD11A6C54700086C3C /* shuttle_routelist_header.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = shuttle_routelist_header.png; path = Resources/shuttle_routelist_header.png; sourceTree = "<group>"; };
+		EBDB0C4811484057008AAE42 /* ShuttleTrack.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = ShuttleTrack.xcdatamodel; sourceTree = "<group>"; };
 		EF3B3B14103F072400E8AA05 /* MIT-Mobile-Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "MIT-Mobile-Icon.png"; path = "Resources/MIT-Mobile-Icon.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -589,6 +839,9 @@
 				EB7F32D710CD6FBB00188BCD /* AddressBookUI.framework in Frameworks */,
 				4463CCB210D6F5750048CA83 /* CoreLocation.framework in Frameworks */,
 				296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */,
+				29C45475118B55E100A321B0 /* libOAuth.a in Frameworks */,
+				29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */,
+				29366C1E118E4151009D6863 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -598,6 +851,11 @@
 		080E96DDFE201D6D7F000001 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				EB6DEE3E11D246EA00B65CE3 /* MultiLineTableViewCell.h */,
+				EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */,
+				29C454BE118B61CA00A321B0 /* SFHFKeychainUtils.h */,
+				29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */,
+				29C45423118B55E100A321B0 /* Twitter+OAuth */,
 				DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */,
 				DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */,
 				DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */,
@@ -621,9 +879,17 @@
 				EB6F2B6410E901E000A29A2A /* UITableViewCell+MITUIAdditions.m */,
 				3AA21C481039DDBA00DB7637 /* Connection */,
 				3AA21C491039DDBD00DB7637 /* Core Data */,
+				29974B6F1160F1DA009D03B9 /* URLShortener.h */,
+				29974B701160F1DA009D03B9 /* URLShortener.m */,
 				BD1E92F3103B5D60004429AA /* JSON */,
 				29859FF810F7C37600D137D6 /* MITSearchEffects.h */,
 				29859FF910F7C37600D137D6 /* MITSearchEffects.m */,
+				29E308841176018C005211A7 /* MITModuleURL.h */,
+				29E308851176018C005211A7 /* MITModuleURL.m */,
+				EB74ED2C11924E7C006673F9 /* ShareDetailViewController.h */,
+				EB74ED2D11924E7C006673F9 /* ShareDetailViewController.m */,
+				EBAB163F11BEC3E800D481B5 /* MITSearchDisplayController.h */,
+				EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -663,35 +929,19 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				2973D49E110E6E6B00CA6973 /* pin_shuttle_stop_complete_next.png */,
-				EB9DFCC5110D14E400ECC1C9 /* scrim-button-background-highlighted.png */,
-				EB9DFCC3110D142700ECC1C9 /* scrim-button-background.png */,
-				EB9236B3110A6F07007291FF /* toolbar-background.png */,
+				4415CA8711AC679A002B6847 /* bookmark_off_pressed.png */,
+				4415CA8811AC679A002B6847 /* bookmark_off.png */,
+				4415CA8911AC679A002B6847 /* bookmark_on_pressed.png */,
+				4415CA8A11AC679A002B6847 /* bookmark_on.png */,
+				DE6F537D11AB167B009E8A7F /* bookmark_button.png */,
 				44A33BAB1105E7FA00D06097 /* button-icon-reset-zoom.png */,
-				298F42E01102AD7B001963AB /* shuttle-alert-descriptive.png */,
-				298152A111027107007AFAD0 /* shuttle-alert-toggle-off.png */,
-				29E571FE1101067700DBE666 /* mystellar-off-pressed.png */,
-				29E571FF1101067700DBE666 /* mystellar-off.png */,
-				29E572001101067700DBE666 /* mystellar-on-pressed.png */,
-				29E572011101067700DBE666 /* mystellar-on.png */,
-				44BF5A4A10FFEF7300E150D5 /* shuttle-off.png */,
-				44BF5A4B10FFEF7300E150D5 /* shuttle.png */,
-				DE1348F810FFC2CC006FFF33 /* debug_tiles */,
-				2989AE7010FEE037002DD6C4 /* shuttle-alert-toggle-on.png */,
 				DEC8C75B10FD8F3F000835E3 /* button-zoom-in.png */,
-				DEC57D4F10FD07960086A8B9 /* news-placeholder.png */,
-				448B32AB10F770A6007A91E4 /* shuttle-bus-location-arrow.png */,
-				448B32AC10F770A6007A91E4 /* shuttle-bus-location.png */,
-				448B32AD10F770A6007A91E4 /* shuttle-stop-dot-next.png */,
-				448B32AE10F770A6007A91E4 /* shuttle-stop-dot.png */,
-				EB54947210DFF7E200B708B3 /* global */,
-				29C136B510FBFA8800CB5F00 /* unread-message.png */,
-				EB54942710DFF03600B708B3 /* icons */,
 				44293B3410DABD3700273119 /* map_button_shuttle.png */,
-				4405F9EC10F6245B00F699FE /* shuttle_location.png */,
 				44293B3510DABD3700273119 /* map_button_location.png */,
 				448B309310F685B0007A91E4 /* map_grid_placeholder.png */,
 				449BB28010E159C2008D5818 /* map_disclosure.png */,
+				950A8BA311AC0CDC00686132 /* map_viewall_pressed.png */,
+				950A8BA411AC0CDC00686132 /* map_viewall.png */,
 				44293B3610DABD3700273119 /* map_location_complete.png */,
 				44293B3710DABD3700273119 /* map_location.png */,
 				44293B3810DABD3700273119 /* map_external_link.png */,
@@ -704,22 +954,58 @@
 				44293B3F10DABD3700273119 /* map_pin_shadow.png */,
 				44293B4010DABD3700273119 /* map_button_icon_locate.png */,
 				44293B4110DABD3700273119 /* map_button_icon_shuttle.png */,
-				DE728E3710D6FF0E00BFED37 /* leftscroll.png */,
+				4463CCE710D6F7090048CA83 /* map_red_pin.png */,
+				EF3B3B14103F072400E8AA05 /* MIT-Mobile-Icon.png */,
+				29E571FE1101067700DBE666 /* mystellar-off-pressed.png */,
+				29E571FF1101067700DBE666 /* mystellar-off.png */,
+				29E572001101067700DBE666 /* mystellar-on-pressed.png */,
+				29E572011101067700DBE666 /* mystellar-on.png */,
 				DE728E3810D6FF0E00BFED37 /* navbackground.png */,
 				DE728E3910D6FF0E00BFED37 /* navbutton.png */,
 				DE728E3A10D6FF0E00BFED37 /* navbuttonbackground.png */,
-				DE728E3B10D6FF0E00BFED37 /* rightscroll.png */,
-				4463CCE710D6F7090048CA83 /* map_red_pin.png */,
+				DE89FB93103D019A000E35B4 /* navbar_mit_logo.png */,
+				EBB1C5661178F0510099BEC2 /* news_tags.png */,
+				EBB1C5621178F0420099BEC2 /* news_chevron_small.png */,
+				EBB1C5631178F0420099BEC2 /* news_comments.png */,
+				DEC57D4F10FD07960086A8B9 /* news-placeholder.png */,
+				2973D49E110E6E6B00CA6973 /* pin_shuttle_stop_complete_next.png */,
 				EB7F33B210CD87DA00188BCD /* redbutton2.png */,
 				EB7F33B310CD87DA00188BCD /* redbutton2highlighted.png */,
+				EB9DFCC5110D14E400ECC1C9 /* scrim-button-background-highlighted.png */,
+				EB9DFCC3110D142700ECC1C9 /* scrim-button-background.png */,
+				298F42E01102AD7B001963AB /* shuttle-alert-descriptive.png */,
+				298152A111027107007AFAD0 /* shuttle-alert-toggle-off.png */,
+				2989AE7010FEE037002DD6C4 /* shuttle-alert-toggle-on.png */,
+				EB6FDACE119B73E70055DD2A /* shuttle-blank.png */,
+				448B32AB10F770A6007A91E4 /* shuttle-bus-location-arrow.png */,
+				448B32AC10F770A6007A91E4 /* shuttle-bus-location.png */,
+				448B32AD10F770A6007A91E4 /* shuttle-stop-dot-next.png */,
+				448B32AE10F770A6007A91E4 /* shuttle-stop-dot.png */,
+				EBCFFBDD11A6C54700086C3C /* shuttle_routelist_header.png */,
 				DE6E1552110BA934002D9C60 /* shuttle-secondary-scrim.png */,
-				EF3B3B14103F072400E8AA05 /* MIT-Mobile-Icon.png */,
+				44ACF7701187886500F1F4B2 /* searchfield_star.png */,
+				EBB1C56E1178F06F0099BEC2 /* subheadbar_button.png */,
+				EBB1C5681178F0600099BEC2 /* share_pressed.png */,
+				EBB1C5691178F0600099BEC2 /* share.png */,
+				44BF5A4A10FFEF7300E150D5 /* shuttle-off.png */,
+				44BF5A4B10FFEF7300E150D5 /* shuttle.png */,
+				4405F9EC10F6245B00F699FE /* shuttle_location.png */,
+				EBB1C56C1178F06F0099BEC2 /* subheadbar_background.png */,
+				EBB1C56D1178F06F0099BEC2 /* subheadbar_button_pressed.png */,
+				EB9236B3110A6F07007291FF /* toolbar-background.png */,
+				4B108E9611A6D21E00FBF35A /* twitter_signout.png */,
+				4B108E9411A6D20B00FBF35A /* twitter_signout_pressed.png */,
+				EBB1C5221178BC7A0099BEC2 /* events_template.html */,
+				DE1348F810FFC2CC006FFF33 /* debug_tiles */,
+				EB54947210DFF7E200B708B3 /* global */,
+				29C136B510FBFA8800CB5F00 /* unread-message.png */,
+				EB54942710DFF03600B708B3 /* icons */,
 				DE89FB82103D019A000E35B4 /* Modules */,
-				DE89FB93103D019A000E35B4 /* navbar_mit_logo.png */,
 				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */,
 				DED3CCE810418F5F003D3B74 /* Default.png */,
 				DEE6AF1F1117477E0037F03C /* credits.html */,
+				DE5E99D21124B57C00498760 /* emergency_template.html */,
 				DE6D579A10F07212006431A8 /* news_story_template.html */,
 				DEE6B1CC111774300037F03C /* Entitlements.plist */,
 			);
@@ -740,8 +1026,113 @@
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				DE7720D810C57DBC00620A7D /* CoreGraphics.framework */,
 				DE7720DF10C57E1C00620A7D /* QuartzCore.framework */,
+				29366C19118E401C009D6863 /* libxml2.dylib */,
+				29366C1D118E4151009D6863 /* Security.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		29C45423118B55E100A321B0 /* Twitter+OAuth */ = {
+			isa = PBXGroup;
+			children = (
+				29C45424118B55E100A321B0 /* Libraries & Headers */,
+			);
+			name = "Twitter+OAuth";
+			sourceTree = "<group>";
+		};
+		29C45424118B55E100A321B0 /* Libraries & Headers */ = {
+			isa = PBXGroup;
+			children = (
+				29C45440118B55E100A321B0 /* MGTwitterEngine */,
+				29C45427118B55E100A321B0 /* XAuthTwitterEngine */,
+				29C45425118B55E100A321B0 /* jQueryInject.txt */,
+				29C4542F118B55E100A321B0 /* OAuthConsumer */,
+				29C45426118B55E100A321B0 /* jQueryInjectLandscape.txt */,
+			);
+			path = "Libraries & Headers";
+			sourceTree = "<group>";
+		};
+		29C45427118B55E100A321B0 /* XAuthTwitterEngine */ = {
+			isa = PBXGroup;
+			children = (
+				29C4542C118B55E100A321B0 /* XAuthTwitterEngine.h */,
+				29C4542D118B55E100A321B0 /* XAuthTwitterEngine.m */,
+				29C4542E118B55E100A321B0 /* XAuthTwitterEngineDelegate.h */,
+				29C45428118B55E100A321B0 /* Operations */,
+			);
+			name = XAuthTwitterEngine;
+			sourceTree = "<group>";
+		};
+		29C45428118B55E100A321B0 /* Operations */ = {
+			isa = PBXGroup;
+			children = (
+				29C45429118B55E100A321B0 /* ExchangeCredentialsOperation.h */,
+				29C4542A118B55E100A321B0 /* ExchangeCredentialsOperation.m */,
+				29C4542B118B55E100A321B0 /* ExchangeCredentialsOperationDelegate.h */,
+			);
+			name = Operations;
+			sourceTree = "<group>";
+		};
+		29C4542F118B55E100A321B0 /* OAuthConsumer */ = {
+			isa = PBXGroup;
+			children = (
+				29C45430118B55E100A321B0 /* libOAuth.a */,
+				29C45431118B55E100A321B0 /* NSMutableURLRequest+Parameters.h */,
+				29C45432118B55E100A321B0 /* NSString+URLEncoding.h */,
+				29C45433118B55E100A321B0 /* NSURL+Base.h */,
+				29C45434118B55E100A321B0 /* OAAsynchronousDataFetcher.h */,
+				29C45435118B55E100A321B0 /* OAConsumer.h */,
+				29C45436118B55E100A321B0 /* OADataFetcher.h */,
+				29C45437118B55E100A321B0 /* OAHMAC_SHA1SignatureProvider.h */,
+				29C45438118B55E100A321B0 /* OAMutableURLRequest.h */,
+				29C45439118B55E100A321B0 /* OAPlaintextSignatureProvider.h */,
+				29C4543A118B55E100A321B0 /* OARequestParameter.h */,
+				29C4543B118B55E100A321B0 /* OAServiceTicket.h */,
+				29C4543C118B55E100A321B0 /* OASignatureProviding.h */,
+				29C4543D118B55E100A321B0 /* OAToken.h */,
+				29C4543E118B55E100A321B0 /* OAToken_KeychainExtensions.h */,
+				29C4543F118B55E100A321B0 /* OAuthConsumer.h */,
+			);
+			path = OAuthConsumer;
+			sourceTree = "<group>";
+		};
+		29C45440118B55E100A321B0 /* MGTwitterEngine */ = {
+			isa = PBXGroup;
+			children = (
+				29C45441118B55E100A321B0 /* MGTwitterEngine.h */,
+				29C45442118B55E100A321B0 /* MGTwitterEngine.m */,
+				29C45443118B55E100A321B0 /* MGTwitterEngineDelegate.h */,
+				29C45444118B55E100A321B0 /* MGTwitterEngineGlobalHeader.h */,
+				29C45445118B55E100A321B0 /* MGTwitterHTTPURLConnection.h */,
+				29C45446118B55E100A321B0 /* MGTwitterHTTPURLConnection.m */,
+				29C45447118B55E100A321B0 /* MGTwitterLibXMLParser.h */,
+				29C45448118B55E100A321B0 /* MGTwitterLibXMLParser.m */,
+				29C45449118B55E100A321B0 /* MGTwitterMessagesLibXMLParser.h */,
+				29C4544A118B55E100A321B0 /* MGTwitterMessagesLibXMLParser.m */,
+				29C4544B118B55E100A321B0 /* MGTwitterMessagesParser.h */,
+				29C4544C118B55E100A321B0 /* MGTwitterMessagesParser.m */,
+				29C4544F118B55E100A321B0 /* MGTwitterMiscLibXMLParser.h */,
+				29C45450118B55E100A321B0 /* MGTwitterMiscLibXMLParser.m */,
+				29C45451118B55E100A321B0 /* MGTwitterMiscParser.h */,
+				29C45452118B55E100A321B0 /* MGTwitterMiscParser.m */,
+				29C45455118B55E100A321B0 /* MGTwitterParserDelegate.h */,
+				29C45456118B55E100A321B0 /* MGTwitterRequestTypes.h */,
+				29C45459118B55E100A321B0 /* MGTwitterStatusesLibXMLParser.h */,
+				29C4545A118B55E100A321B0 /* MGTwitterStatusesLibXMLParser.m */,
+				29C4545B118B55E100A321B0 /* MGTwitterStatusesParser.h */,
+				29C4545C118B55E100A321B0 /* MGTwitterStatusesParser.m */,
+				29C4545F118B55E100A321B0 /* MGTwitterUsersLibXMLParser.h */,
+				29C45460118B55E100A321B0 /* MGTwitterUsersLibXMLParser.m */,
+				29C45461118B55E100A321B0 /* MGTwitterUsersParser.h */,
+				29C45462118B55E100A321B0 /* MGTwitterUsersParser.m */,
+				29C45465118B55E100A321B0 /* MGTwitterXMLParser.h */,
+				29C45466118B55E100A321B0 /* MGTwitterXMLParser.m */,
+				29C45469118B55E100A321B0 /* NSData+MGTwitterBase64.h */,
+				29C4546A118B55E100A321B0 /* NSData+MGTwitterBase64.m */,
+				29C4546B118B55E100A321B0 /* NSString+UUID.h */,
+				29C4546C118B55E100A321B0 /* NSString+UUID.m */,
+			);
+			name = MGTwitterEngine;
 			sourceTree = "<group>";
 		};
 		3AA21C481039DDBA00DB7637 /* Connection */ = {
@@ -764,6 +1155,33 @@
 				3AA21C551039DDEA00DB7637 /* CoreDataManager.m */,
 			);
 			path = "Core Data";
+			sourceTree = "<group>";
+		};
+		44C1A26011A2E865000FD653 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				44C1A4C211A412E2000FD653 /* MapSearch.h */,
+				44C1A4C311A412E2000FD653 /* MapSearch.m */,
+				44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		44C1A3C511A3388A000FD653 /* Selection */ = {
+			isa = PBXGroup;
+			children = (
+				44ACF76B1187884300F1F4B2 /* MapBookmarkManager.h */,
+				44ACF76A1187884300F1F4B2 /* MapBookmarkManager.m */,
+				44ACF7681187884300F1F4B2 /* BookmarksTableViewController.h */,
+				44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */,
+				4499332B11A371CE00A7041B /* RecentSearchesViewController.h */,
+				4499332C11A371CF00A7041B /* RecentSearchesViewController.m */,
+				44C1A3CC11A33905000FD653 /* MapSelectionController.h */,
+				44C1A3CD11A33905000FD653 /* MapSelectionController.m */,
+				4499341C11A5E53D00A7041B /* CategoriesTableViewController.h */,
+				4499341D11A5E53D00A7041B /* CategoriesTableViewController.m */,
+			);
+			name = Selection;
 			sourceTree = "<group>";
 		};
 		BD1E92F3103B5D60004429AA /* JSON */ = {
@@ -860,6 +1278,7 @@
 		DE715445102FE468005E6111 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				EB86CA6C115D273800C8F3D1 /* Calendar */,
 				EB7F326610CD6C5B00188BCD /* People */,
 				DE81CF5F10C6BC390085573D /* News */,
 				DE715446102FE468005E6111 /* Campus Map */,
@@ -876,12 +1295,12 @@
 		DE715446102FE468005E6111 /* Campus Map */ = {
 			isa = PBXGroup;
 			children = (
+				44C1A3C511A3388A000FD653 /* Selection */,
+				44C1A26011A2E865000FD653 /* Model */,
 				441009DC110A6DAF00451B23 /* CampusMapToolbar.h */,
 				441009DD110A6DAF00451B23 /* CampusMapToolbar.m */,
 				294AC7AF10E46786003830C3 /* MITMapScrollView.m */,
 				294AC7AE10E46774003830C3 /* MITMapScrollView.h */,
-				4463CCAC10D6F5540048CA83 /* PostData.m */,
-				4463CCAD10D6F5540048CA83 /* PostData.h */,
 				4463CC7910D6F4A50048CA83 /* CampusMapViewController.h */,
 				4463CC7A10D6F4A50048CA83 /* CampusMapViewController.m */,
 				4463CC7B10D6F4A50048CA83 /* MapLevel.h */,
@@ -911,13 +1330,8 @@
 				4463D09310D92CB00048CA83 /* MITMapDetailViewController.xib */,
 				4463D09E10D92F6B0048CA83 /* TabViewControl.h */,
 				4463D09F10D92F6B0048CA83 /* TabViewControl.m */,
-				4463D3F110D97E720048CA83 /* MITMapCategory.h */,
-				4463D3F210D97E720048CA83 /* MITMapCategory.m */,
 				4463D5E010DA74240048CA83 /* MITMapView.h */,
 				4463D5E110DA74240048CA83 /* MITMapView.m */,
-				44293C2D10DAE86D00273119 /* CategoriesViewController.h */,
-				44293C2E10DAE86D00273119 /* CategoriesViewController.m */,
-				44293C2F10DAE86D00273119 /* CategoriesViewController.xib */,
 				44293C3210DAE88500273119 /* MITMapSearchResultsVC.h */,
 				44293C3310DAE88500273119 /* MITMapSearchResultsVC.m */,
 				44293C3410DAE88500273119 /* MITMapSearchResultsVC.xib */,
@@ -935,8 +1349,6 @@
 		DE715447102FE468005E6111 /* Emergency */ = {
 			isa = PBXGroup;
 			children = (
-				EB3EE77E10D6ADCA00F6D707 /* MultiLineTableViewCell.h */,
-				EB3EE77F10D6ADCA00F6D707 /* MultiLineTableViewCell.m */,
 				DE705495103FB79D003B5F41 /* EmergencyData.h */,
 				DE705496103FB79D003B5F41 /* EmergencyData.m */,
 				DE705497103FB79D003B5F41 /* EmergencyModule.h */,
@@ -953,36 +1365,34 @@
 		DE715449102FE468005E6111 /* ShuttleTrack */ = {
 			isa = PBXGroup;
 			children = (
-				DE6D32F410346D02008A5823 /* ShuttleModule.h */,
-				DE6D32F510346D02008A5823 /* ShuttleModule.m */,
 				DE6D332910346F6D008A5823 /* ShuttleRoutes.h */,
 				DE6D332A10346F6D008A5823 /* ShuttleRoutes.m */,
-				DE6D332C10346F78008A5823 /* ShuttleRoutes.xib */,
-				DE705490103FB792003B5F41 /* ShuttleRoute.h */,
-				DE705491103FB792003B5F41 /* ShuttleRoute.m */,
+				44BF5B411100A75C00E150D5 /* RouteInfoTitleCell.h */,
+				44BF5B421100A75C00E150D5 /* RouteInfoTitleCell.m */,
 				DE71F6E1104234F900661DED /* ShuttleRouteViewController.h */,
 				DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */,
 				448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */,
+				442C192710F3AE3400CB44EC /* RouteMapViewController.h */,
+				442C192810F3AE3400CB44EC /* RouteMapViewController.m */,
+				442C192910F3AE3400CB44EC /* RouteMapViewController.xib */,
+				4420F62710EBA5D000A8CD05 /* ShuttleStopViewController.h */,
+				4420F62810EBA5D000A8CD05 /* ShuttleStopViewController.m */,
+				44BF601E11050ABF00E150D5 /* ShuttleStopCell.h */,
+				44BF601F11050AC000E150D5 /* ShuttleStopCell.m */,
+				44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */,
+				EBDB0C4711483FE3008AAE42 /* Model */,
+				DE6D32F410346D02008A5823 /* ShuttleModule.h */,
+				DE6D32F510346D02008A5823 /* ShuttleModule.m */,
+				DE705490103FB792003B5F41 /* ShuttleRoute.h */,
+				DE705491103FB792003B5F41 /* ShuttleRoute.m */,
 				DE71F7D310424E3400661DED /* ShuttleStop.h */,
 				DE71F7D410424E3400661DED /* ShuttleStop.m */,
 				4420F22F10E9513700A8CD05 /* ShuttleDataManager.h */,
 				4420F23010E9513700A8CD05 /* ShuttleDataManager.m */,
-				4420F62710EBA5D000A8CD05 /* ShuttleStopViewController.h */,
-				4420F62810EBA5D000A8CD05 /* ShuttleStopViewController.m */,
-				4420F68D10EBC67000A8CD05 /* RouteStopSchedule.h */,
-				4420F68E10EBC67000A8CD05 /* RouteStopSchedule.m */,
-				442C192710F3AE3400CB44EC /* RouteMapViewController.h */,
-				442C192810F3AE3400CB44EC /* RouteMapViewController.m */,
-				442C192910F3AE3400CB44EC /* RouteMapViewController.xib */,
 				442C1CA110F4FE8900CB44EC /* ShuttleLocation.h */,
 				442C1CA210F4FE8900CB44EC /* ShuttleLocation.m */,
 				29EB610910FE47220085D32B /* ShuttleSubscriptionManager.h */,
 				29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */,
-				44BF5B411100A75C00E150D5 /* RouteInfoTitleCell.h */,
-				44BF5B421100A75C00E150D5 /* RouteInfoTitleCell.m */,
-				44BF601E11050ABF00E150D5 /* ShuttleStopCell.h */,
-				44BF601F11050AC000E150D5 /* ShuttleStopCell.m */,
-				44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */,
 			);
 			path = ShuttleTrack;
 			sourceTree = "<group>";
@@ -1079,6 +1489,8 @@
 				DE728E6B10D6FF4700BFED37 /* StoryXMLParser.m */,
 				DE6D570410F05C59006431A8 /* TabScrollerBackgroundView.h */,
 				DE6D570510F05C59006431A8 /* TabScrollerBackgroundView.m */,
+				29B6038B11541AB200064E0A /* TwitterViewController.h */,
+				29B6038C11541AB200064E0A /* TwitterViewController.m */,
 			);
 			path = News;
 			sourceTree = "<group>";
@@ -1136,8 +1548,8 @@
 		EB7F328910CD6CB100188BCD /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				29796E3810DBFD70005C224E /* StellarClass.h */,
-				29796E3910DBFD70005C224E /* StellarClass.m */,
+				29747C6E114AEFBA0091F18C /* StellarClass.h */,
+				29747C6F114AEFBA0091F18C /* StellarClass.m */,
 				297746C610D3526100ACFCE6 /* StellarStaffMember.h */,
 				297746C710D3526100ACFCE6 /* StellarStaffMember.m */,
 				297746C810D3526100ACFCE6 /* StellarAnnouncement.h */,
@@ -1151,7 +1563,129 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		EB83923F1163ED140067C0A3 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				EB83929F1163FD6E0067C0A3 /* Calendar.xcdatamodeld */,
+				EB8392421163EF340067C0A3 /* MITCalendarEvent.h */,
+				EB8392431163EF340067C0A3 /* MITCalendarEvent.m */,
+				EB8392441163EF340067C0A3 /* EventCategory.h */,
+				EB8392451163EF340067C0A3 /* EventCategory.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		EB86CA6C115D273800C8F3D1 /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				EB83923F1163ED140067C0A3 /* Model */,
+				EB86CA6D115D276700C8F3D1 /* CalendarModule.h */,
+				EB86CA6E115D276700C8F3D1 /* CalendarModule.m */,
+				EB86CAC4115D4ED500C8F3D1 /* CalendarEventsViewController.h */,
+				EB86CAC5115D4ED500C8F3D1 /* CalendarEventsViewController.m */,
+				EB83923A1163ECC20067C0A3 /* CalendarDetailViewController.h */,
+				EB83923B1163ECC20067C0A3 /* CalendarDetailViewController.m */,
+				EB8392691163F7B00067C0A3 /* CalendarDataManager.h */,
+				EB83926A1163F7B00067C0A3 /* CalendarDataManager.m */,
+				EB32946D1166777500DEDC8A /* CalendarEventMapAnnotation.h */,
+				EB32946E1166777500DEDC8A /* CalendarEventMapAnnotation.m */,
+				EB976D15116CF6630036A18E /* EventListTableView.h */,
+				EB976D16116CF6630036A18E /* EventListTableView.m */,
+				EB976D19116CF6A10036A18E /* EventCategoriesTableView.h */,
+				EB976D1A116CF6A10036A18E /* EventCategoriesTableView.m */,
+				EBA273E711760BAE0033DD27 /* CalendarConstants.h */,
+				EBA273E811760BAE0033DD27 /* CalendarConstants.m */,
+				EB3F094F118F0FFE00540B8A /* CalendarMapView.h */,
+				EB3F0950118F0FFE00540B8A /* CalendarMapView.m */,
+				EBAB15C111BE970900D481B5 /* DatePickerViewController.h */,
+				EBAB15C211BE970900D481B5 /* DatePickerViewController.m */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
+		EBDB0C4711483FE3008AAE42 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				EB67602E114A9316004596BB /* ShuttleRouteCache.h */,
+				EB67602F114A9316004596BB /* ShuttleRouteCache.m */,
+				EB676030114A9316004596BB /* ShuttleStopLocation.h */,
+				EB676031114A9316004596BB /* ShuttleStopLocation.m */,
+				EB86944B115120C4003AEDFA /* ShuttleRouteStop.h */,
+				EB86944C115120C4003AEDFA /* ShuttleRouteStop.m */,
+				EBDB0C4C11484072008AAE42 /* ShuttleTrack.xcdatamodeld */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
+
+/* Begin PBXJavaArchiveBuildPhase section */
+		EB83923E1163ECC30067C0A3 /* JavaArchive */ = {
+			isa = PBXJavaArchiveBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB83923C1163ECC20067C0A3 /* CalendarDetailViewController.h in JavaArchive */,
+				EB8392461163EF340067C0A3 /* MITCalendarEvent.h in JavaArchive */,
+				EB8392481163EF340067C0A3 /* EventCategory.h in JavaArchive */,
+				EB83926B1163F7B00067C0A3 /* CalendarDataManager.h in JavaArchive */,
+				EB32946F1166777500DEDC8A /* CalendarEventMapAnnotation.h in JavaArchive */,
+				EB976D17116CF6630036A18E /* EventListTableView.h in JavaArchive */,
+				EB976D1B116CF6A10036A18E /* EventCategoriesTableView.h in JavaArchive */,
+				EBA273E911760BAE0033DD27 /* CalendarConstants.h in JavaArchive */,
+				29E308861176018C005211A7 /* MITModuleURL.h in JavaArchive */,
+				44ACF76C1187884300F1F4B2 /* BookmarksTableViewController.h in JavaArchive */,
+				44ACF76F1187884300F1F4B2 /* MapBookmarkManager.h in JavaArchive */,
+				29C4546F118B55E100A321B0 /* ExchangeCredentialsOperation.h in JavaArchive */,
+				29C45471118B55E100A321B0 /* ExchangeCredentialsOperationDelegate.h in JavaArchive */,
+				29C45472118B55E100A321B0 /* XAuthTwitterEngine.h in JavaArchive */,
+				29C45474118B55E100A321B0 /* XAuthTwitterEngineDelegate.h in JavaArchive */,
+				29C45476118B55E100A321B0 /* NSMutableURLRequest+Parameters.h in JavaArchive */,
+				29C45477118B55E100A321B0 /* NSString+URLEncoding.h in JavaArchive */,
+				29C45478118B55E100A321B0 /* NSURL+Base.h in JavaArchive */,
+				29C45479118B55E100A321B0 /* OAAsynchronousDataFetcher.h in JavaArchive */,
+				29C4547A118B55E100A321B0 /* OAConsumer.h in JavaArchive */,
+				29C4547B118B55E100A321B0 /* OADataFetcher.h in JavaArchive */,
+				29C4547C118B55E100A321B0 /* OAHMAC_SHA1SignatureProvider.h in JavaArchive */,
+				29C4547D118B55E100A321B0 /* OAMutableURLRequest.h in JavaArchive */,
+				29C4547E118B55E100A321B0 /* OAPlaintextSignatureProvider.h in JavaArchive */,
+				29C4547F118B55E100A321B0 /* OARequestParameter.h in JavaArchive */,
+				29C45480118B55E100A321B0 /* OAServiceTicket.h in JavaArchive */,
+				29C45481118B55E100A321B0 /* OASignatureProviding.h in JavaArchive */,
+				29C45482118B55E100A321B0 /* OAToken.h in JavaArchive */,
+				29C45483118B55E100A321B0 /* OAToken_KeychainExtensions.h in JavaArchive */,
+				29C45484118B55E100A321B0 /* OAuthConsumer.h in JavaArchive */,
+				29C45485118B55E100A321B0 /* MGTwitterEngine.h in JavaArchive */,
+				29C45487118B55E100A321B0 /* MGTwitterEngineDelegate.h in JavaArchive */,
+				29C45488118B55E100A321B0 /* MGTwitterEngineGlobalHeader.h in JavaArchive */,
+				29C45489118B55E100A321B0 /* MGTwitterHTTPURLConnection.h in JavaArchive */,
+				29C4548B118B55E100A321B0 /* MGTwitterLibXMLParser.h in JavaArchive */,
+				29C4548D118B55E100A321B0 /* MGTwitterMessagesLibXMLParser.h in JavaArchive */,
+				29C4548F118B55E100A321B0 /* MGTwitterMessagesParser.h in JavaArchive */,
+				29C45493118B55E100A321B0 /* MGTwitterMiscLibXMLParser.h in JavaArchive */,
+				29C45495118B55E100A321B0 /* MGTwitterMiscParser.h in JavaArchive */,
+				29C45499118B55E100A321B0 /* MGTwitterParserDelegate.h in JavaArchive */,
+				29C4549A118B55E100A321B0 /* MGTwitterRequestTypes.h in JavaArchive */,
+				29C4549D118B55E100A321B0 /* MGTwitterStatusesLibXMLParser.h in JavaArchive */,
+				29C4549F118B55E100A321B0 /* MGTwitterStatusesParser.h in JavaArchive */,
+				29C454A3118B55E100A321B0 /* MGTwitterUsersLibXMLParser.h in JavaArchive */,
+				29C454A5118B55E100A321B0 /* MGTwitterUsersParser.h in JavaArchive */,
+				29C454A9118B55E100A321B0 /* MGTwitterXMLParser.h in JavaArchive */,
+				29C454AD118B55E100A321B0 /* NSData+MGTwitterBase64.h in JavaArchive */,
+				29C454AF118B55E100A321B0 /* NSString+UUID.h in JavaArchive */,
+				29C454C0118B61CA00A321B0 /* SFHFKeychainUtils.h in JavaArchive */,
+				EB3F0951118F0FFE00540B8A /* CalendarMapView.h in JavaArchive */,
+				EB74ED2E11924E7C006673F9 /* ShareDetailViewController.h in JavaArchive */,
+				44C1A3CE11A33905000FD653 /* MapSelectionController.h in JavaArchive */,
+				4499332D11A371CF00A7041B /* RecentSearchesViewController.h in JavaArchive */,
+				44C1A4C411A412E2000FD653 /* MapSearch.h in JavaArchive */,
+				4499341E11A5E53D00A7041B /* CategoriesTableViewController.h in JavaArchive */,
+				EBAB15C311BE970900D481B5 /* DatePickerViewController.h in JavaArchive */,
+				EBAB164111BEC3E800D481B5 /* MITSearchDisplayController.h in JavaArchive */,
+				EB6DEE4011D246EA00B65CE3 /* MultiLineTableViewCell.h in JavaArchive */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXJavaArchiveBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		1D6058900D05DD3D006BFB54 /* MIT Mobile */ = {
@@ -1162,6 +1696,7 @@
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				EB83923E1163ECC30067C0A3 /* JavaArchive */,
 			);
 			buildRules = (
 			);
@@ -1202,7 +1737,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				28AD73600D9D9599002E5188 /* MainWindow.xib in Resources */,
-				DE6D332D10346F78008A5823 /* ShuttleRoutes.xib in Resources */,
 				DE89FB95103D019A000E35B4 /* Modules in Resources */,
 				DE89FB96103D019A000E35B4 /* navbar_mit_logo.png in Resources */,
 				EF3B3B15103F072400E8AA05 /* MIT-Mobile-Icon.png in Resources */,
@@ -1210,11 +1744,9 @@
 				EB7F33B710CD87DA00188BCD /* redbutton2.png in Resources */,
 				EB7F33B810CD87DA00188BCD /* redbutton2highlighted.png in Resources */,
 				4463CCEA10D6F7090048CA83 /* map_red_pin.png in Resources */,
-				DE728E3F10D6FF0E00BFED37 /* leftscroll.png in Resources */,
 				DE728E4010D6FF0E00BFED37 /* navbackground.png in Resources */,
 				DE728E4110D6FF0E00BFED37 /* navbutton.png in Resources */,
 				DE728E4210D6FF0E00BFED37 /* navbuttonbackground.png in Resources */,
-				DE728E4310D6FF0E00BFED37 /* rightscroll.png in Resources */,
 				4463D09510D92CB00048CA83 /* MITMapDetailViewController.xib in Resources */,
 				44293B4210DABD3700273119 /* map_button_shuttle.png in Resources */,
 				44293B4310DABD3700273119 /* map_button_location.png in Resources */,
@@ -1230,7 +1762,6 @@
 				44293B4D10DABD3700273119 /* map_pin_shadow.png in Resources */,
 				44293B4E10DABD3700273119 /* map_button_icon_locate.png in Resources */,
 				44293B4F10DABD3700273119 /* map_button_icon_shuttle.png in Resources */,
-				44293C3110DAE86D00273119 /* CategoriesViewController.xib in Resources */,
 				44293C3610DAE88500273119 /* MITMapSearchResultsVC.xib in Resources */,
 				EB54943810DFF03600B708B3 /* icons in Resources */,
 				EB54947310DFF7E200B708B3 /* global in Resources */,
@@ -1266,6 +1797,30 @@
 				DE6F046311139CA40046684B /* FBConnect.bundle in Resources */,
 				DEE6AF201117477E0037F03C /* credits.html in Resources */,
 				DEE6B1CD111774300037F03C /* Entitlements.plist in Resources */,
+				DE5E99D31124B57C00498760 /* emergency_template.html in Resources */,
+				EBB1C5231178BC7A0099BEC2 /* events_template.html in Resources */,
+				EBB1C5641178F0420099BEC2 /* news_chevron_small.png in Resources */,
+				EBB1C5651178F0420099BEC2 /* news_comments.png in Resources */,
+				EBB1C5671178F0510099BEC2 /* news_tags.png in Resources */,
+				EBB1C56A1178F0600099BEC2 /* share_pressed.png in Resources */,
+				EBB1C56B1178F0600099BEC2 /* share.png in Resources */,
+				EBB1C56F1178F06F0099BEC2 /* subheadbar_background.png in Resources */,
+				EBB1C5701178F06F0099BEC2 /* subheadbar_button_pressed.png in Resources */,
+				EBB1C5711178F06F0099BEC2 /* subheadbar_button.png in Resources */,
+				44ACF7711187886500F1F4B2 /* searchfield_star.png in Resources */,
+				29C4546D118B55E100A321B0 /* jQueryInject.txt in Resources */,
+				29C4546E118B55E100A321B0 /* jQueryInjectLandscape.txt in Resources */,
+				EB6FDACF119B73E70055DD2A /* shuttle-blank.png in Resources */,
+				4B108E9511A6D20B00FBF35A /* twitter_signout_pressed.png in Resources */,
+				4B108E9711A6D21E00FBF35A /* twitter_signout.png in Resources */,
+				EBCFFBDE11A6C54700086C3C /* shuttle_routelist_header.png in Resources */,
+				DE6F537E11AB167B009E8A7F /* bookmark_button.png in Resources */,
+				950A8BA511AC0CDC00686132 /* map_viewall_pressed.png in Resources */,
+				950A8BA611AC0CDC00686132 /* map_viewall.png in Resources */,
+				4415CA8B11AC679A002B6847 /* bookmark_off_pressed.png in Resources */,
+				4415CA8C11AC679A002B6847 /* bookmark_off.png in Resources */,
+				4415CA8D11AC679A002B6847 /* bookmark_on_pressed.png in Resources */,
+				4415CA8E11AC679A002B6847 /* bookmark_on.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1343,7 +1898,6 @@
 				297746D310D3526200ACFCE6 /* StellarCourse.m in Sources */,
 				EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */,
 				DE47589710D0BEE700139BC1 /* MITTabBarController.m in Sources */,
-				EB3EE78010D6ADCA00F6D707 /* MultiLineTableViewCell.m in Sources */,
 				4463CC9110D6F4A50048CA83 /* CampusMapViewController.m in Sources */,
 				4463CC9210D6F4A50048CA83 /* MapLevel.m in Sources */,
 				4463CC9310D6F4A50048CA83 /* MapTileExtent.m in Sources */,
@@ -1354,7 +1908,6 @@
 				4463CC9A10D6F4A50048CA83 /* MITMapUserLocation.m in Sources */,
 				4463CC9B10D6F4A50048CA83 /* MITMapSearchResultAnnotation.m in Sources */,
 				4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */,
-				4463CCAE10D6F5540048CA83 /* PostData.m in Sources */,
 				DE728E6C10D6FF4700BFED37 /* StoryThumbnailView.m in Sources */,
 				DE728E7B10D6FF4700BFED37 /* StoryDetailViewController.m in Sources */,
 				DE728E7C10D6FF4700BFED37 /* StoryListViewController.m in Sources */,
@@ -1366,12 +1919,9 @@
 				4463D09410D92CB00048CA83 /* MITMapDetailViewController.m in Sources */,
 				4463D0A010D92F6B0048CA83 /* TabViewControl.m in Sources */,
 				DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */,
-				4463D3F310D97E720048CA83 /* MITMapCategory.m in Sources */,
 				4463D5E210DA74240048CA83 /* MITMapView.m in Sources */,
-				44293C3010DAE86D00273119 /* CategoriesViewController.m in Sources */,
 				44293C3510DAE88500273119 /* MITMapSearchResultsVC.m in Sources */,
 				2971CE0B10DB116800FAF160 /* StellarAnnouncementViewController.m in Sources */,
-				29796E3A10DBFD70005C224E /* StellarClass.m in Sources */,
 				44259C7110DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.m in Sources */,
 				299149A010DDB50300B01A8E /* StellarSearch.m in Sources */,
 				2970ABE610E053F700C543D7 /* StellarClassTableCell.m in Sources */,
@@ -1386,7 +1936,6 @@
 				4420F31B10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m in Sources */,
 				DE821E8110EAB4F500B4C4C8 /* UIKit+MITAdditions.m in Sources */,
 				4420F62910EBA5D000A8CD05 /* ShuttleStopViewController.m in Sources */,
-				4420F68F10EBC67000A8CD05 /* RouteStopSchedule.m in Sources */,
 				442C11DF10EC112700CB44EC /* TouchableTableView.m in Sources */,
 				DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */,
 				DE6D570610F05C59006431A8 /* TabScrollerBackgroundView.m in Sources */,
@@ -1422,6 +1971,54 @@
 				DE6F046111139CA40046684B /* FBPermissionDialog.m in Sources */,
 				DE6F046211139CA40046684B /* FBStreamDialog.m in Sources */,
 				DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */,
+				29747C70114AEFBA0091F18C /* StellarClass.m in Sources */,
+				EBDB0C4D11484072008AAE42 /* ShuttleTrack.xcdatamodeld in Sources */,
+				EB676032114A9316004596BB /* ShuttleRouteCache.m in Sources */,
+				EB676033114A9316004596BB /* ShuttleStopLocation.m in Sources */,
+				EB86944D115120C4003AEDFA /* ShuttleRouteStop.m in Sources */,
+				29B6038D11541AB200064E0A /* TwitterViewController.m in Sources */,
+				29974B711160F1DA009D03B9 /* URLShortener.m in Sources */,
+				EB86CA6F115D276700C8F3D1 /* CalendarModule.m in Sources */,
+				EB86CAC6115D4ED500C8F3D1 /* CalendarEventsViewController.m in Sources */,
+				EB83923D1163ECC20067C0A3 /* CalendarDetailViewController.m in Sources */,
+				EB8392A01163FD6E0067C0A3 /* Calendar.xcdatamodeld in Sources */,
+				EB8392471163EF340067C0A3 /* MITCalendarEvent.m in Sources */,
+				EB8392491163EF340067C0A3 /* EventCategory.m in Sources */,
+				EB83926C1163F7B00067C0A3 /* CalendarDataManager.m in Sources */,
+				EB3294701166777500DEDC8A /* CalendarEventMapAnnotation.m in Sources */,
+				EB976D18116CF6630036A18E /* EventListTableView.m in Sources */,
+				EB976D1C116CF6A10036A18E /* EventCategoriesTableView.m in Sources */,
+				EBA273EA11760BAE0033DD27 /* CalendarConstants.m in Sources */,
+				29E308871176018C005211A7 /* MITModuleURL.m in Sources */,
+				44ACF76D1187884300F1F4B2 /* BookmarksTableViewController.m in Sources */,
+				44ACF76E1187884300F1F4B2 /* MapBookmarkManager.m in Sources */,
+				29C45470118B55E100A321B0 /* ExchangeCredentialsOperation.m in Sources */,
+				29C45473118B55E100A321B0 /* XAuthTwitterEngine.m in Sources */,
+				29C45486118B55E100A321B0 /* MGTwitterEngine.m in Sources */,
+				29C4548A118B55E100A321B0 /* MGTwitterHTTPURLConnection.m in Sources */,
+				29C4548C118B55E100A321B0 /* MGTwitterLibXMLParser.m in Sources */,
+				29C4548E118B55E100A321B0 /* MGTwitterMessagesLibXMLParser.m in Sources */,
+				29C45490118B55E100A321B0 /* MGTwitterMessagesParser.m in Sources */,
+				29C45494118B55E100A321B0 /* MGTwitterMiscLibXMLParser.m in Sources */,
+				29C45496118B55E100A321B0 /* MGTwitterMiscParser.m in Sources */,
+				29C4549E118B55E100A321B0 /* MGTwitterStatusesLibXMLParser.m in Sources */,
+				29C454A0118B55E100A321B0 /* MGTwitterStatusesParser.m in Sources */,
+				29C454A4118B55E100A321B0 /* MGTwitterUsersLibXMLParser.m in Sources */,
+				29C454A6118B55E100A321B0 /* MGTwitterUsersParser.m in Sources */,
+				29C454AA118B55E100A321B0 /* MGTwitterXMLParser.m in Sources */,
+				29C454AE118B55E100A321B0 /* NSData+MGTwitterBase64.m in Sources */,
+				29C454B0118B55E100A321B0 /* NSString+UUID.m in Sources */,
+				29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */,
+				EB3F0952118F0FFE00540B8A /* CalendarMapView.m in Sources */,
+				EB74ED2F11924E7C006673F9 /* ShareDetailViewController.m in Sources */,
+				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
+				44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */,
+				4499332E11A371CF00A7041B /* RecentSearchesViewController.m in Sources */,
+				44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */,
+				4499341F11A5E53D00A7041B /* CategoriesTableViewController.m in Sources */,
+				EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */,
+				EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */,
+				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1438,6 +2035,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
+					"${SDK_DIR}/usr/include/libxml2",
+				);
 				PRODUCT_NAME = "MIT Mobile";
 			};
 			name = "Debug - Development";
@@ -1450,6 +2052,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
+					"${SDK_DIR}/usr/include/libxml2",
+				);
 				PRODUCT_NAME = "MIT Mobile";
 			};
 			name = "Release - Production";
@@ -1463,8 +2070,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DUSE_MOBILE_DEV";
 				OTHER_LDFLAGS = (
@@ -1486,8 +2095,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -1506,8 +2117,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -1515,6 +2128,7 @@
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "33A1EE45-68B9-4353-BB39-822B2C1CDEA1";
 				SDKROOT = iphoneos4.0;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = "Distribution - Production - App Store";
 		};
@@ -1527,6 +2141,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
+					"${SDK_DIR}/usr/include/libxml2",
+				);
 				PRODUCT_NAME = "MIT Mobile";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 			};
@@ -1541,8 +2160,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-DUSE_MOBILE_STAGE";
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -1561,6 +2182,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
+					"${SDK_DIR}/usr/include/libxml2",
+				);
 				PRODUCT_NAME = "MIT Mobile";
 			};
 			name = "Debug - Staging";
@@ -1574,8 +2200,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -1593,6 +2221,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
+					"${SDK_DIR}/usr/include/libxml2",
+				);
 				PRODUCT_NAME = "MIT Mobile";
 			};
 			name = "Debug - Production";
@@ -1606,8 +2239,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-DUSE_MOBILE_STAGE";
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -1626,6 +2261,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
+					"${SDK_DIR}/usr/include/libxml2",
+				);
 				PRODUCT_NAME = "MIT Mobile";
 			};
 			name = "Release - Staging";
@@ -1640,15 +2280,18 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
 				);
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6D4E4408-4F17-480E-9796-64857BBB49B6";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2301A1E0-88F6-49BD-8CFE-564AA6B7DD02";
 				SDKROOT = iphoneos4.0;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = "Distribution - Production - Ad Hoc";
 		};
@@ -1661,6 +2304,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
+					"${SDK_DIR}/usr/include/libxml2",
+				);
 				PRODUCT_NAME = "MIT Mobile";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 			};
@@ -1676,16 +2324,19 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_CFLAGS = "-DUSE_MOBILE_STAGE";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
 				);
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6D4E4408-4F17-480E-9796-64857BBB49B6";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2301A1E0-88F6-49BD-8CFE-564AA6B7DD02";
 				SDKROOT = iphoneos4.0;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = "Distribution - Staging - Ad Hoc";
 		};
@@ -1697,7 +2348,16 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"${SDK_DIR}/usr/include/libxml2",
+					"\"Facebook Connect\"",
+				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
+					"${SDK_DIR}/usr/include/libxml2",
+				);
 				PRODUCT_NAME = "MIT Mobile";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 			};
@@ -1739,12 +2399,23 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
+		44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				44C1A26E11A2EA04000FD653 /* CampusMap.xcdatamodel */,
+			);
+			currentVersion = 44C1A26E11A2EA04000FD653 /* CampusMap.xcdatamodel */;
+			path = CampusMap.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
 		DE18F9ED10F19105009A69B9 /* News.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				DE18F9E910F19085009A69B9 /* News.xcdatamodel */,
+				DE10571411985D4B0090A505 /* News 2.xcdatamodel */,
 			);
-			currentVersion = DE18F9E910F19085009A69B9 /* News.xcdatamodel */;
+			currentVersion = DE10571411985D4B0090A505 /* News 2.xcdatamodel */;
 			path = News.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
@@ -1769,13 +2440,35 @@
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
+		EB83929F1163FD6E0067C0A3 /* Calendar.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				EB8392401163ED440067C0A3 /* Calendar.xcdatamodel */,
+			);
+			currentVersion = EB8392401163ED440067C0A3 /* Calendar.xcdatamodel */;
+			path = Calendar.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
 		EBA0A46610D405F5005B0D96 /* Stellar.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				EBA0A46810D405F5005B0D96 /* Stellar 2.xcdatamodel */,
+				29B14B71114842D200BC8CCE /* Stellar 3.xcdatamodel */,
 			);
-			currentVersion = EBA0A46810D405F5005B0D96 /* Stellar 2.xcdatamodel */;
+			currentVersion = 29B14B71114842D200BC8CCE /* Stellar 3.xcdatamodel */;
 			path = Stellar.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		EBDB0C4C11484072008AAE42 /* ShuttleTrack.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				EBDB0C4811484057008AAE42 /* ShuttleTrack.xcdatamodel */,
+			);
+			currentVersion = EBDB0C4811484057008AAE42 /* ShuttleTrack.xcdatamodel */;
+			name = ShuttleTrack.xcdatamodeld;
+			path = Model/ShuttleTrack.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

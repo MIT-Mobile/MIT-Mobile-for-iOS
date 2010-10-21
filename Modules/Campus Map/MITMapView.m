@@ -9,6 +9,11 @@
 #define kTileSize 256
 #define LogRect(rect, message) NSLog(@"%@ rect: %f %f %f %f", message,  rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
 
+#define kRadiusOfEarthInMeters	      6378100.0
+#define kMinAccuracyToBounceAnimation	  110.0
+#define kMaxPixelRadiusToMinimize		   25.0
+#define kPinDropTimerFrequency				0.05
+#define kPinDropAnimationDuration			1.6
 
 @interface MITMapView(Private) 
 
@@ -25,6 +30,17 @@
 // get the tiles that should be onscreen. Tiles are returned as dictionaries with level, row and col values. 
 -(void) onscreenTilesLevel:(int*)level row:(int*)row col:(int*)col;
 
+-(void) animateCircleLayerForLocations:(NSArray*)locationsArray;
+-(void) bounceAccuracyAnimationForLocation:(CLLocation*)location;
+-(void) animateToBounceForLocation:(CLLocation*)location;
+-(void) animateToAccuracyOfLocation:(CLLocation*)location;
+-(CABasicAnimation*) animationToRadiusPathForLocation:(CLLocation*)location;
+-(CGMutablePathRef) newRadiusPathFromLocation:(CLLocation*)location;
+-(void) addRadiationAnimationForLocation:(CLLocation*)location;
+-(void) removeRadiationAnimation;
+-(void) handleLayerAnimationDuringScroll;
+-(void) locationDeniedMessage;
+
 @end
 
 @implementation MITMapView
@@ -32,6 +48,8 @@
 @synthesize showsUserLocation = _showsUserLocation;
 @synthesize stayCenteredOnUserLocation = _stayCenteredOnUserLocation;
 @synthesize delegate = _mapDelegate;
+@synthesize shouldNotDropPins = _shouldNotDropPins;
+@dynamic currentAnnotation;
 
 
 - (void)dealloc {
@@ -49,11 +67,16 @@
 	
 	[_locationView release];
 	
+	[_lastLocation release];
+	_lastLocation = nil;
+	
 	[_locationManager release];
 	
 	[_userLocationAnnotation release];
 	
 	[_annotationViews release];
+	
+	[_annotationShadowViews release];
 
 	[_annotations release];
 	
@@ -159,6 +182,10 @@
 	
 }
 
+-(void) cacheReset:(NSNotification*) notification
+{
+	[_tiledLayer setNeedsDisplay];
+}
 -(void) drewTile:(NSNotification*) notification
 {
 	
@@ -184,6 +211,7 @@
 {
 		
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(drewTile:) name:@"DrewTile" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cacheReset:) name:MapCacheReset object:nil];
 	
 	self.multipleTouchEnabled = YES;
 	self.clipsToBounds = YES;
@@ -213,13 +241,12 @@
 	self.mapLevels = mapLevels;
 	_scrollView.maximumZoomScale = pow(2, self.mapLevels.count);
 	
-	CLLocationCoordinate2D initialLocation;
 	NSDictionary* initialLocationInfo = [mapInfo objectForKey:@"InitialLocation"];
 	
-	initialLocation.latitude = [[initialLocationInfo objectForKey:@"Latitude"] doubleValue];
-	initialLocation.longitude = [[initialLocationInfo objectForKey:@"Longitude"] doubleValue];
+	_initialLocation.latitude = [[initialLocationInfo objectForKey:@"Latitude"] doubleValue];
+	_initialLocation.longitude = [[initialLocationInfo objectForKey:@"Longitude"] doubleValue];
 	
-	CGFloat initialZoom = [[initialLocationInfo objectForKey:@"Zoom"] doubleValue];
+    _initialZoom = [[initialLocationInfo objectForKey:@"Zoom"] doubleValue];
 	
 	// set the service url so the cache can download tiles. 
 	[MapTileCache cache].serviceURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", MITMobileWebAPIURLString, @"map"]];
@@ -258,7 +285,7 @@
 	_scrollView.opaque = YES;
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	_scrollView.showsVerticalScrollIndicator = NO;
-    _scrollView.scrollsToTop = NO;
+    //_scrollView.scrollsToTop = NO;
 	_scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
 	[_scrollView addSubview:_mapContentView];
 
@@ -266,8 +293,8 @@
 	[self addSubview:_scrollView];
 	
 	// move to the initial point
-	_scrollView.zoomScale = initialZoom;
-	[self setCenterCoordinate:initialLocation animated:NO];
+	_scrollView.zoomScale = _initialZoom;
+	[self setCenterCoordinate:_initialLocation animated:NO];
 	
 	// copute the grographic range of the map. 
 	_nw = [self coordinateForScreenPoint:CGPointMake(0, 0)];
@@ -395,6 +422,39 @@
 	return coordinate;
 }
 
+/*
+ *	This calculates the correct radius in pixels for the location based on its coordinate and horizontal accuracy.
+ */
+-(CGFloat) pixelRadiusForAccuracyOfLocation:(CLLocation*)location
+{
+	if (location) {
+		// get the screen point for the coordinate
+		CGPoint firstScreenPoint = [self screenPointForCoordinate:location.coordinate];
+		
+		// calculate where the other coordinate is -- use due south to make calculations easy
+		double distanceInRadians = location.horizontalAccuracy / kRadiusOfEarthInMeters;
+		double oldLatitudeInRadians = location.coordinate.latitude * M_PI / 180;
+		// new latitude is lat1 - distance (all in radians)
+		double newLatitudeInRadians = oldLatitudeInRadians + distanceInRadians;
+		double newLatitudeInDegrees = newLatitudeInRadians * 180 / M_PI;
+		
+		CLLocationCoordinate2D secondCoordinate;
+		secondCoordinate.latitude = newLatitudeInDegrees;
+		secondCoordinate.longitude = location.coordinate.longitude;
+		
+		// get the screen point for the other coordinate
+		CGPoint secondScreenPoint = [self screenPointForCoordinate:secondCoordinate];
+		
+		// subtract
+		CGFloat pixelRadius = firstScreenPoint.y-secondScreenPoint.y;
+		
+		return pixelRadius;
+	} else {
+		return 300;
+	}
+
+}
+
 
 -(void) setShowsUserLocation:(BOOL)showsUserLocation
 {
@@ -408,6 +468,7 @@
 			_locationManager = [[CLLocationManager alloc] init];
 		}
 		
+		_displayedLocationDenied = NO;
 		[_locationManager setDelegate:self];
 		[_locationManager setDesiredAccuracy:kCLLocationAccuracyBest];
 		[_locationManager setDistanceFilter:kCLDistanceFilterNone];
@@ -415,18 +476,45 @@
 		
 		if (nil == _locationView) 
 		{
+			// create and add the location layer
+			_locationLayer = [CALayer layer];
+			_locationLayer.frame = CGRectMake(-200, -200, self.frame.size.width, self.frame.size.height);
+			_locationLayer.anchorPoint = CGPointMake(0.5, 0.5);
+
+			[self.layer addSublayer:_locationLayer];
+			
 			// create the location view and move it offscreen until a location is found
-			_locationView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"map_location_complete.png"]];
-			_locationView.frame = CGRectMake(-200, -200, _locationView.frame.size.width, _locationView.frame.size.height);
-			[self.layer addSublayer:_locationView.layer];
+			_locationView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"map_location_complete.png"]]; 
+			_locationView.layer.anchorPoint = CGPointMake(0.5, 0.5);
+			_locationView.frame = CGRectMake(_locationLayer.frame.size.width/2-_locationView.frame.size.width/2, 
+											 _locationLayer.frame.size.height/2-_locationView.frame.size.height/2, 
+											 _locationView.frame.size.width, 
+											 _locationView.frame.size.height); 
+			
+//			_locationView.layer.bounds = CGRectMake(0, 0, 320, 416);
+//			[self.layer addSublayer:_locationView.layer];
+			[_locationLayer addSublayer:_locationView.layer];
+
 			//[self addSubview:_locationView];				 
 		}
 	}
 	else {
 		[_locationView.layer removeFromSuperlayer];
-		//[_locationView removeFromSuperview];
 		[_locationView release];
 		_locationView = nil;
+		//[_locationView removeFromSuperview];
+		[_locationAccuracyCircleLayer removeFromSuperlayer];
+		[_locationAccuracyCircleLayer release];
+		_locationAccuracyCircleLayer = nil;
+		[_radiationLayer1 removeFromSuperlayer];
+		[_radiationLayer1 release];
+		_radiationLayer1 = nil;
+		[_radiationLayer2 removeFromSuperlayer];
+		[_radiationLayer2 release];
+		_radiationLayer2 = nil;
+		[_locationLayer removeFromSuperlayer];
+		[_locationLayer release];
+		_locationLayer = nil;
 		
 		[_locationManager setDelegate:nil];
 		[_locationManager stopUpdatingLocation];
@@ -452,13 +540,14 @@
 	
 	CLLocationCoordinate2D coordinate = _userLocationAnnotation.coordinate;
 	
+	
 	// determine pixel coordinates for our location relative to the full view of our map
 	CGPoint mapPoint = [self unscaledScreenPointForCoordinate:coordinate];
 	
 	CGFloat zoomScale = _scrollView.zoomScale;
 	
-	_locationView.layer.position = CGPointMake(mapPoint.x * zoomScale - _scrollView.contentOffset.x,
-											  mapPoint.y * zoomScale - _scrollView.contentOffset.y);
+	_locationLayer.position = CGPointMake(mapPoint.x * zoomScale - _scrollView.contentOffset.x,
+											   mapPoint.y * zoomScale - _scrollView.contentOffset.y);
 	
 	
 	// if we're centering on the user location, scroll to it here
@@ -479,13 +568,10 @@
 -(MITMapUserLocation*) userLocation
 {
 	MITMapUserLocation* userLocation = [[[MITMapUserLocation alloc] init] autorelease];
-	if (nil != _locationManager) {
-		CLLocation* location = _locationManager.location;
-		if (location) 
-		{
-			[userLocation updateToCoordinate:_locationManager.location.coordinate];	
-		}
+	if (nil != _locationManager && nil != _lastLocation) {
 		
+		[userLocation updateToCoordinate:_lastLocation.coordinate];	
+				
 	}
 	
 	return userLocation;
@@ -494,9 +580,22 @@
 
 -(void) setStayCenteredOnUserLocation:(BOOL)centerOnUser
 {
+	
 	_stayCenteredOnUserLocation = centerOnUser;
 	
-	if(_stayCenteredOnUserLocation)
+	if(_locationDenied && _stayCenteredOnUserLocation)
+	{
+		if([_mapDelegate respondsToSelector:@selector(locateUserFailed)])
+			[_mapDelegate locateUserFailed];
+	
+		_stayCenteredOnUserLocation = NO;
+		_displayedLocationDenied = NO;
+		[self locationDeniedMessage];
+		
+		return;
+	}
+	
+	if(_stayCenteredOnUserLocation && _userLocationAnnotation)
 	{
 		CLLocationCoordinate2D coordinate =  _userLocationAnnotation.coordinate;
 		
@@ -534,6 +633,40 @@
 	}
 
 }
+
+
+- (NSString *)serializeCurrentRegion
+{
+	MKCoordinateRegion region = self.region;
+	return [NSString stringWithFormat:@"%.8f:%.8f:%.8f:%.8f", region.center.latitude, region.center.longitude, region.span.latitudeDelta, region.span.longitudeDelta];
+}
+
+- (void)unserializeRegion:(NSString *)regionString
+{
+	NSArray *components = [regionString componentsSeparatedByString:@":"];
+	if ([components count] == 4) {
+		CLLocationCoordinate2D theCenter = { latitude: [[components objectAtIndex:0] doubleValue], longitude: [[components objectAtIndex:1] doubleValue] };
+		MKCoordinateSpan theSpan = MKCoordinateSpanMake([[components objectAtIndex:2] doubleValue], [[components objectAtIndex:3] doubleValue]);
+		MKCoordinateRegion theRegion = MKCoordinateRegionMake(theCenter, theSpan);
+		self.region = theRegion;
+	}
+}
+
+-(void) locationDeniedMessage
+{
+	if(!_displayedLocationDenied)
+	{
+		_displayedLocationDenied = YES;
+		
+		UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Location Required", nil)
+													 message:NSLocalizedString(@"Please restart this application, and when prompted, select \"OK\" to allow the application to locate you.", nil) 
+													delegate:nil
+										   cancelButtonTitle:NSLocalizedString(@"OK", nil)
+										   otherButtonTitles:nil] autorelease];
+		[alert show];
+	}
+}
+
 #pragma mark Center coordinate property
 -(void) setCenterCoordinate:(CLLocationCoordinate2D) coordinate animated:(BOOL)animated
 {
@@ -566,7 +699,6 @@
 	
 	return coordinate;
 }
-
 
 -(MKCoordinateRegion) region
 {
@@ -651,18 +783,346 @@
 	if (nil == _userLocationAnnotation) {
 		_userLocationAnnotation = [[MITMapUserLocation alloc] init];
 	}
-	
+
 	[_userLocationAnnotation updateToCoordinate:newLocation.coordinate];
 	
+	NSArray* locationsArray = [NSArray arrayWithObjects:newLocation, oldLocation, nil];
+	[self performSelectorOnMainThread:@selector(animateCircleLayerForLocations:) withObject:locationsArray waitUntilDone:NO];
+	
+	[_lastLocation release];
+	_lastLocation = nil;
+	_lastLocation = [newLocation retain];
 	[self updateLocationIcon:YES];
 }
 
+- (void)locationManager:(CLLocationManager *)manager
+	   didFailWithError:(NSError *)error
+{
+	if (error.code == kCLErrorDenied) 
+	{
+		if([_mapDelegate respondsToSelector:@selector(locateUserFailed)])
+			[_mapDelegate locateUserFailed];
+		
+		if(_receivedFirstLocationDenied && _stayCenteredOnUserLocation)
+			[self locationDeniedMessage];
+		else {
+			_receivedFirstLocationDenied = YES;
+		}
+		
+		_stayCenteredOnUserLocation = NO;
+
+	}
+	
+	_locationDenied = YES;
+}
+
+#pragma mark Circle Animation
+/*
+ *	This method adds three layers to the location layer: an accuracy circle and two radiating circles.
+ *	Different animations are called on these layers based on the accuracy of the new and previous points.
+ */
+-(void) animateCircleLayerForLocations:(NSArray*)locationsArray
+{
+	CLLocation* newLocation = [locationsArray objectAtIndex:0];
+	CLLocation* oldLocation = nil;
+	if (locationsArray.count > 1) {
+		oldLocation = [locationsArray objectAtIndex:1];
+	}
+	
+//	NSLog(@"new point: %@", newLocation);
+	
+	if (!_locationAccuracyCircleLayer) 
+	{
+		CGPoint center = _locationView.center;
+		
+		_locationAccuracyCircleLayer = [CAShapeLayer layer];
+		_locationAccuracyCircleLayer.fillColor = [UIColor colorWithRed:0 green:0.5 blue:0.9 alpha:0.1].CGColor;
+		_locationAccuracyCircleLayer.strokeColor = [UIColor colorWithRed:0 green:0.5 blue:0.9 alpha:0.8].CGColor;
+		_locationAccuracyCircleLayer.lineWidth = 2.0;
+		_locationAccuracyCircleLayer.fillRule = kCAFillRuleNonZero;
+		
+		[_locationLayer insertSublayer:_locationAccuracyCircleLayer below:_locationView.layer];
+		
+		CGMutablePathRef hugePath = CGPathCreateMutable();
+		CGPathAddEllipseInRect(hugePath, nil, CGRectMake(center.x-300, center.y-300, 600, 600));
+		_locationAccuracyCircleLayer.path = hugePath;
+		
+		_radiationLayer1 = [CAShapeLayer layer];
+		_radiationLayer1.fillColor = [UIColor clearColor].CGColor;
+		_radiationLayer1.strokeColor = [UIColor colorWithRed:0 green:0.5 blue:0.9 alpha:0.8].CGColor;
+		
+		_radiationLayer2 = [CAShapeLayer layer];
+		_radiationLayer2.fillColor = [UIColor clearColor].CGColor;
+		_radiationLayer2.strokeColor = [UIColor colorWithRed:0 green:0.5 blue:0.9 alpha:0.8].CGColor;
+		
+		[_locationLayer insertSublayer:_radiationLayer1 below:_locationAccuracyCircleLayer];
+		[_locationLayer insertSublayer:_radiationLayer2 below:_locationAccuracyCircleLayer];
+		
+		CGMutablePathRef tinyPath = CGPathCreateMutable();
+		CGPathAddEllipseInRect(tinyPath, nil, CGRectMake(center.x-1, center.y-1, 2, 2));
+		
+		CGMutablePathRef tinyOutsidePath = CGPathCreateMutable();
+		CGPathAddEllipseInRect(tinyOutsidePath, nil, CGRectMake(center.x-3, center.y-3, 6, 6));
+		
+		_radiationLayer1.path = tinyPath;
+		_radiationLayer2.path = tinyOutsidePath;
+		
+		[self animateToBounceForLocation:newLocation];
+		[self bounceAccuracyAnimationForLocation:newLocation]; 
+		if (newLocation.horizontalAccuracy) {
+			[self animateToAccuracyOfLocation:newLocation];
+		}
+		CGPathRelease(hugePath);
+		CGPathRelease(tinyPath);
+		CGPathRelease(tinyOutsidePath);
+	} else {
+		if (newLocation.horizontalAccuracy > kMinAccuracyToBounceAnimation) {
+			[self removeRadiationAnimation];
+			// if the new accuracy is too big, we want to show the bounce animation.
+			if (oldLocation != nil && oldLocation.horizontalAccuracy < kMinAccuracyToBounceAnimation) {
+				// if they are changing from good accuracy to bad/bouncy, we need to get them to that bounce size before bouncing.
+				[self animateToBounceForLocation:newLocation];
+			}
+			if (!_animationIsBouncing) {
+				[self bounceAccuracyAnimationForLocation:newLocation];
+			}
+		} else {
+			if (oldLocation != nil && fabs(newLocation.horizontalAccuracy - oldLocation.horizontalAccuracy) > 3) {
+				_animationIsRadiating = NO;
+			}
+			[self animateToAccuracyOfLocation:newLocation];
+			[self addRadiationAnimationForLocation:newLocation];
+		}
+	}
+}
+
+/*
+ *	This animates the accuracy circle to the appropriate radius to begin bounce animation.  
+ *	It should be called if accuracy changes from good to poor.
+ */
+-(void) animateToBounceForLocation:(CLLocation*)location 
+{
+	CABasicAnimation* animation = [self animationToRadiusPathForLocation:location];
+	
+	[_locationAccuracyCircleLayer addAnimation:animation forKey:@"animateToBounce"];
+}
+
+/*	
+ *	This animates the accuracy circle endlessly between two paths when accuracy is poor.
+ */
+-(void) bounceAccuracyAnimationForLocation:(CLLocation*)location
+{
+
+	_animationIsBouncing = YES;
+	[self removeRadiationAnimation];
+	CGFloat pixelRadius = [self pixelRadiusForAccuracyOfLocation:location];
+	
+	CGPoint center = _locationView.center;
+	
+	// create the three shapes we need
+	
+	CGMutablePathRef radiusPath = CGPathCreateMutable();
+	CGPathAddEllipseInRect(radiusPath, nil, CGRectMake(center.x-(pixelRadius), center.y-(pixelRadius), (pixelRadius)*2, (pixelRadius)*2));
+	
+	CGMutablePathRef wobblePath = CGPathCreateMutable();
+	CGPathAddEllipseInRect(wobblePath, nil, CGRectMake(center.x-(pixelRadius*0.9), center.y-(pixelRadius*0.9), (pixelRadius*0.9)*2, (pixelRadius*0.9)*2));
+	
+	//create the animation
+	CABasicAnimation* animation = [CABasicAnimation animationWithKeyPath:@"path"];
+	animation.duration = 0.6;
+	animation.repeatCount = 1e100f;
+	animation.autoreverses = YES;
+	animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+	animation.fromValue = (id)radiusPath;
+	animation.toValue = (id)wobblePath;
+	
+	[_locationAccuracyCircleLayer addAnimation:animation forKey:@"animationPath"];
+	
+	CGPathRelease(radiusPath);
+	CGPathRelease(wobblePath);
+}
+
+/*
+ *	This animates the accuracy circle from its bounce radius to the accuracy radius.
+ */
+-(void) animateToAccuracyOfLocation:(CLLocation*)location
+{
+	_animationIsBouncing = NO;
+		
+	CABasicAnimation* animation = [self animationToRadiusPathForLocation:location];
+	[_locationAccuracyCircleLayer addAnimation:animation forKey:@"animationPath"];
+	CGMutablePathRef radiusPath = [self newRadiusPathFromLocation:(CLLocation*)location];
+	_locationAccuracyCircleLayer.path = radiusPath;
+	CGPathRelease(radiusPath);
+}
+
+/*
+ *	This is a convenience method called in the above methods.  It returns the animation from the accuracy
+ *	circle's present (radius) path to the path (radius) for its current accuracy. 
+ */
+-(CABasicAnimation*) animationToRadiusPathForLocation:(CLLocation*)location
+{	
+	CAShapeLayer* presentationLayer = (CAShapeLayer*)[_locationAccuracyCircleLayer presentationLayer];
+	CGMutablePathRef presentPath = CGPathCreateMutableCopy([presentationLayer path]);
+	
+	if (!presentPath) {
+		CGPoint center = _locationView.center;
+		presentPath = CGPathCreateMutable();
+		CGPathAddEllipseInRect(presentPath, nil, CGRectMake(center.x-300, center.y-300, 600, 600));
+	}
+	
+	CGMutablePathRef radiusPath = [self newRadiusPathFromLocation:(CLLocation*)location];
+	
+	CABasicAnimation* animation = [CABasicAnimation animationWithKeyPath:@"path"];
+	animation.fromValue = (id)presentPath;
+	animation.toValue = (id)radiusPath;
+	CGPathRelease(presentPath);
+	CGPathRelease(radiusPath);
+	return animation;
+}
+
+/*
+ *	This returns the correct path given the location of the GPS point.
+ */
+-(CGMutablePathRef) newRadiusPathFromLocation:(CLLocation*)location
+{
+	CGFloat pixelRadius = [self pixelRadiusForAccuracyOfLocation:location];
+	
+	// we want the circle to disapear if it's too close to the dot
+	pixelRadius = (pixelRadius < kMaxPixelRadiusToMinimize) ? 0 : pixelRadius;
+	if (pixelRadius < kMaxPixelRadiusToMinimize)
+		[self removeRadiationAnimation];
+	
+	CGPoint center = _locationView.center;
+	
+	CGMutablePathRef radiusPath = CGPathCreateMutable();
+	CGPathAddEllipseInRect(radiusPath, nil, CGRectMake(center.x-pixelRadius, center.y-pixelRadius, pixelRadius*2, pixelRadius*2));
+
+	return radiusPath;
+}
+
+/*
+ *	This animates the two radiation circle layers.  
+ *	First it calculates the radius of the radiation circles so they are the same radius as the present accuracy circle.
+ *	Then it animates both circles path and opacity.
+ */
+-(void) addRadiationAnimationForLocation:(CLLocation*)location
+{
+	if (!_animationIsRadiating) 
+	{
+		_animationIsRadiating = YES;
+		CGPoint center = _locationView.center;
+		CGMutablePathRef tinyPath = CGPathCreateMutable();
+		CGPathAddEllipseInRect(tinyPath, nil, CGRectMake(center.x-1, center.y-1, 2, 2));
+		
+		CGMutablePathRef tinyOutsidePath = CGPathCreateMutable();
+		CGPathAddEllipseInRect(tinyOutsidePath, nil, CGRectMake(center.x-3, center.y-3, 6, 6));
+		
+		CGFloat pixelRadius = [self pixelRadiusForAccuracyOfLocation:location];
+		pixelRadius = (pixelRadius < kMaxPixelRadiusToMinimize) ? 0 : pixelRadius;
+		
+		CGMutablePathRef radiusPath = CGPathCreateMutable();
+		CGPathAddEllipseInRect(radiusPath, nil, CGRectMake(center.x-pixelRadius, center.y-pixelRadius, pixelRadius*2, pixelRadius*2));
+		
+		CGMutablePathRef radiusOutsidePath = CGPathCreateMutable();
+		CGPathAddEllipseInRect(radiusOutsidePath, nil, CGRectMake(center.x-pixelRadius-4, center.y-pixelRadius-4, (pixelRadius+4)*2, (pixelRadius+4)*2));
+		
+		CABasicAnimation* pathAnimation = [CABasicAnimation animationWithKeyPath:@"path"];
+		pathAnimation.fromValue = (id)tinyPath;
+		pathAnimation.toValue = (id)radiusPath;
+		
+		CABasicAnimation* opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+		opacityAnimation.fromValue = [NSNumber numberWithFloat:1.0];
+		opacityAnimation.toValue = [NSNumber numberWithFloat:0.0];
+		
+		CAAnimationGroup* animationGroup = [CAAnimationGroup animation];
+		animationGroup.animations = [NSArray arrayWithObjects:pathAnimation, opacityAnimation, nil];
+		animationGroup.duration = 2;
+		animationGroup.autoreverses = NO;
+		animationGroup.repeatCount = 1e100f;
+		
+		CABasicAnimation* outsidePathAnimation = [CABasicAnimation animationWithKeyPath:@"path"];
+		outsidePathAnimation.fromValue = (id)tinyOutsidePath;
+		outsidePathAnimation.toValue = (id)radiusOutsidePath;
+		
+		CAAnimationGroup* animationGroupOutside = [CAAnimationGroup animation];
+		animationGroupOutside.animations = [NSArray arrayWithObjects:outsidePathAnimation, opacityAnimation, nil];
+		animationGroupOutside.duration = 2;
+		animationGroupOutside.autoreverses = NO;
+		animationGroupOutside.repeatCount = 1e100f;
+		
+		[_radiationLayer1 addAnimation:animationGroup forKey:@"group"];
+		[_radiationLayer2 addAnimation:animationGroupOutside forKey:@"group"];
+		
+		CGPathRelease(tinyPath);
+		CGPathRelease(tinyOutsidePath);
+		CGPathRelease(radiusPath);
+		CGPathRelease(radiusOutsidePath);
+	}
+}
+
+/*
+ *	This removes all animations from the radiation layers.  It should be called whenever accuracy becomes poor.
+ */
+-(void) removeRadiationAnimation
+{
+	[_radiationLayer1 removeAllAnimations];
+	[_radiationLayer2 removeAllAnimations];
+	_animationIsRadiating = NO;
+}
+
+/*
+ *	When the user scrolls, we update the sizes of our circle layers appropriately.
+ */
+-(void) handleLayerAnimationDuringScroll
+{
+	CGFloat pixelRadius = [self pixelRadiusForAccuracyOfLocation:_lastLocation];
+	if (!_animationIsBouncing && _lastLocation) {
+		if (pixelRadius >= kMaxPixelRadiusToMinimize) {
+			if (_locationCircleIsMinimized) {
+				// animate out to accuracy circle
+				[self animateToAccuracyOfLocation:_lastLocation];
+				_locationCircleIsMinimized = NO;
+				[self addRadiationAnimationForLocation:_lastLocation];
+			} else {
+				// change layer to new path without animation
+				CGMutablePathRef radiusPath = [self newRadiusPathFromLocation:(CLLocation*)_lastLocation];
+				_locationAccuracyCircleLayer.path = radiusPath;
+				[self addRadiationAnimationForLocation:_lastLocation];
+				CGPathRelease(radiusPath);
+			}
+		} else {
+			// we want the circle to animate to disapear if it's too close to the dot
+			_locationCircleIsMinimized = YES;
+			[self animateToAccuracyOfLocation:_lastLocation];
+			[self removeRadiationAnimation];
+		}
+	} else if (_animationIsBouncing && _lastLocation) {
+		if (pixelRadius > kMaxPixelRadiusToMinimize) {
+			[self animateToAccuracyOfLocation:_lastLocation];
+			[self bounceAccuracyAnimationForLocation:_lastLocation];
+		}
+	}
+}
+
 #pragma mark UIScrollViewDelegate
+- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
+{
+    if (_scrollView) { // these variables were initialized in the same block
+        self.stayCenteredOnUserLocation = NO;
+        self.centerCoordinate = _initialLocation;
+        _scrollView.zoomScale = _initialZoom;
+    }
+    return NO;
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
 	[self updateLocationIcon:NO];
 	[self positionAnnotationViews];
 	//[self positionCurrentCallout];
+	
+	[self performSelectorOnMainThread:@selector(handleLayerAnimationDuringScroll) withObject:nil waitUntilDone:NO];
 
 	[_routeView setNeedsDisplay];
 }
@@ -674,6 +1134,10 @@
 	if ([self.delegate respondsToSelector:@selector(mapViewRegionWillChange:)]) {
 		[self.delegate mapViewRegionWillChange:self];
 	}
+	// set the location layer to not animate position
+	NSMutableDictionary* noPositionAnimationDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[NSNull null], @"position", nil];
+	_locationLayer.actions = noPositionAnimationDict;
+	[noPositionAnimationDict release];
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
@@ -689,6 +1153,12 @@
 	if ([self.delegate respondsToSelector:@selector(mapViewRegionDidChange:)]) {
 		[self.delegate mapViewRegionDidChange:self];
 	}
+	
+	if (!_animationIsBouncing && _lastLocation) {
+		// Change the size of the radiation circles
+		_animationIsRadiating = NO;
+		[self performSelectorOnMainThread:@selector(addRadiationAnimationForLocation:) withObject:_lastLocation waitUntilDone:NO];
+	} 
 }
 
 
@@ -710,6 +1180,11 @@
 	if ([self.delegate respondsToSelector:@selector(mapViewRegionDidChange:)]) {
 		[self.delegate mapViewRegionDidChange:self];
 	}
+	// set the layers actions back to the default (so the dot & circle will animate to new position)
+	id defaultPositionAction = [CALayer defaultActionForKey:@"position"];
+	NSMutableDictionary* defaultPositionAnimationDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:defaultPositionAction, @"position", nil];
+	_locationLayer.actions = defaultPositionAnimationDict;
+	[defaultPositionAnimationDict release];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
@@ -731,6 +1206,26 @@
 	return [NSArray arrayWithArray:_routes];
 }
 
+-(void) positionAnnotationViews
+{	
+	for (MITMapAnnotationView* annotationView in _annotationViews)
+	{
+		//		// if any of these annotations have not been placed on the map yet, use the timer to drop them sequentially
+		if (annotationView.alreadyOnMap) {
+			[self positionAnnotationView:annotationView];
+		} else if (!annotationView.hasBeenDropped) {
+			if (_pinDropTimer == nil) {
+				_pinDropTimer = [[NSTimer scheduledTimerWithTimeInterval:kPinDropTimerFrequency target:self selector:@selector(pinDropTimerFired:) userInfo:nil repeats:YES] retain];
+			}
+		}
+		
+	}
+}
+
+/*
+ *	If the annotationView is already on the map, this positions it appropriately given its location and image size.
+ *	If the annotationView is not yet on the map, this calls the animation code on the main thread so pin appears to drop from above with shadow.
+ */
 -(void) positionAnnotationView:(MITMapAnnotationView*)annotationView
 {
 	// determine pixel coordinates for our location relative to the full view of our map
@@ -742,13 +1237,170 @@
 		y += (int)round(annotationView.frame.size.height / 2);
 	}
 	
-	annotationView.layer.frame = CGRectMake(mapPoint.x - (int)round(annotationView.frame.size.width / 2),
-										y,
-									  annotationView.frame.size.width,
-									  annotationView.frame.size.height);
+	if (annotationView.alreadyOnMap) {
+		annotationView.layer.frame = CGRectMake(mapPoint.x - (int)round(annotationView.frame.size.width / 2),
+												y,
+												annotationView.frame.size.width,
+												annotationView.frame.size.height);
+	} else {
+		[self performSelectorOnMainThread:@selector(animateAnnotationOntoMap:) withObject:annotationView waitUntilDone:NO];
+	}
 	
 	if (_currentCallout.annotation == annotationView.annotation) {
 		[self positionCurrentCallout];
+	}
+}
+
+/*
+ *	This creates the keyframe animations for one pin and shadow to drop onto the map.
+ */
+-(void) animateAnnotationOntoMap:(MITMapAnnotationView*)annotationView
+{
+	
+	CGPoint mapPoint = [self screenPointForCoordinate:annotationView.annotation.coordinate];
+	CGFloat y = mapPoint.y - (int)round(annotationView.frame.size.height);
+	if (annotationView.centeredVertically) {
+		y += (int)round(annotationView.frame.size.height / 2);
+	}
+	
+	// animate pins dropping
+	UIImageView* annotationShadowView;
+	if (annotationView.shadowView != nil) {
+		annotationShadowView = annotationView.shadowView;
+		annotationShadowView.alpha = 1.0;
+		annotationShadowView.layer.frame = CGRectMake(mapPoint.x-(int)round(annotationView.frame.size.width / 2) + 260, 
+													  y-160, 
+													  annotationShadowView.frame.size.width, 
+													  annotationShadowView.frame.size.height);
+	}
+	
+	annotationView.layer.frame = CGRectMake(mapPoint.x - (int)round(annotationView.frame.size.width / 2), 
+											y-480, 
+											annotationView.frame.size.width, 
+											annotationView.frame.size.height);
+	
+	CGFloat animationY = mapPoint.y - (int)round(annotationView.frame.size.height/2);
+	CAKeyframeAnimation* pinDropAnimation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+	pinDropAnimation.duration = kPinDropAnimationDuration;
+	CGPoint startingPoint = CGPointMake(mapPoint.x, mapPoint.y-480);
+	CGPoint endingPoint = CGPointMake(mapPoint.x, mapPoint.y);
+	pinDropAnimation.values = [NSMutableArray arrayWithObjects:[NSValue valueWithCGPoint:startingPoint], 
+							   [NSValue valueWithCGPoint:endingPoint], 
+							   [NSValue valueWithCGPoint:endingPoint], 
+							   [NSValue valueWithCGPoint:endingPoint], 
+							   nil];
+	pinDropAnimation.keyTimes = [NSMutableArray arrayWithObjects:[NSNumber numberWithFloat:0.0], [NSNumber numberWithFloat:0.75], [NSNumber numberWithFloat:0.8], [NSNumber numberWithFloat:1.0], nil];
+	pinDropAnimation.timingFunctions = [NSMutableArray arrayWithObjects:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn],
+										[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn],
+										[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut],
+										nil];
+	pinDropAnimation.delegate = self;
+
+	[annotationView.layer addAnimation:pinDropAnimation forKey:@"pinDrop"];
+	
+	CAKeyframeAnimation* pinSquishAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale.y"];
+	pinSquishAnimation.duration = kPinDropAnimationDuration;
+	pinSquishAnimation.values = [NSMutableArray arrayWithObjects:[NSNumber numberWithFloat:1.0], [NSNumber numberWithFloat:1.0], [NSNumber numberWithFloat:0.8], [NSNumber numberWithFloat:1.0], nil];
+	pinSquishAnimation.keyTimes = [NSMutableArray arrayWithObjects:[NSNumber numberWithFloat:0.0], [NSNumber numberWithFloat:0.75], [NSNumber numberWithFloat:0.8], [NSNumber numberWithFloat:1.0], nil];
+	pinSquishAnimation.timingFunctions = [NSMutableArray arrayWithObjects:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn],
+										[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn],
+										[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut],
+										nil];
+	[annotationView.layer addAnimation:pinSquishAnimation forKey:@"squish"];
+	
+	// set the final values
+	annotationView.layer.frame = CGRectMake(mapPoint.x - (int)round(annotationView.frame.size.width / 2),
+											y,
+											annotationView.frame.size.width,
+											annotationView.frame.size.height);
+	
+	if (annotationView.shadowView != nil) {
+		CAKeyframeAnimation* shadowDropAnimation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+		shadowDropAnimation.duration = kPinDropAnimationDuration;
+		CGPoint shadowStartingPoint = CGPointMake(mapPoint.x+320, animationY-200);
+		CGPoint shadowEndingPoint = CGPointMake(mapPoint.x, animationY);
+		shadowDropAnimation.values = [NSMutableArray arrayWithObjects:[NSValue valueWithCGPoint:shadowStartingPoint], 
+									  [NSValue valueWithCGPoint:shadowEndingPoint], 
+									  [NSValue valueWithCGPoint:shadowEndingPoint], 
+									  [NSValue valueWithCGPoint:shadowEndingPoint], 
+									  nil];
+		shadowDropAnimation.keyTimes = [NSMutableArray arrayWithObjects:[NSNumber numberWithFloat:0.0], [NSNumber numberWithFloat:0.75], [NSNumber numberWithFloat:0.8], [NSNumber numberWithFloat:1.0], nil];
+		shadowDropAnimation.timingFunctions = [NSMutableArray arrayWithObjects:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn],
+											   [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut],
+											[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn],
+											[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut],
+											nil];
+		[annotationShadowView.layer addAnimation:shadowDropAnimation forKey:@"pinDrop"];
+		
+		CAKeyframeAnimation* shadowOpacityAnimation = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
+		shadowOpacityAnimation.duration = kPinDropAnimationDuration;
+		shadowOpacityAnimation.values = [NSMutableArray arrayWithObjects:[NSNumber numberWithFloat:0.0], [NSNumber numberWithFloat:0.8], [NSNumber numberWithFloat:1.0], [NSNumber numberWithFloat:1.0], nil];
+		shadowOpacityAnimation.keyTimes = [NSMutableArray arrayWithObjects:[NSNumber numberWithFloat:0.0], [NSNumber numberWithFloat:0.75], [NSNumber numberWithFloat:0.8], [NSNumber numberWithFloat:1.0], nil];
+		shadowOpacityAnimation.timingFunctions = [NSMutableArray arrayWithObjects:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn],
+												  [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut],
+											   [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn],
+											   [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut],
+											   nil];
+		[annotationShadowView.layer addAnimation:shadowOpacityAnimation forKey:@"opacity"];
+		
+		CAKeyframeAnimation* shadowSquishAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale.x"];
+		shadowSquishAnimation.duration = kPinDropAnimationDuration;
+		shadowSquishAnimation.values = [NSMutableArray arrayWithObjects:[NSNumber numberWithFloat:1.0], [NSNumber numberWithFloat:1.0], [NSNumber numberWithFloat:0.8], [NSNumber numberWithFloat:1.0], nil];
+		shadowSquishAnimation.keyTimes = [NSMutableArray arrayWithObjects:[NSNumber numberWithFloat:0.0], [NSNumber numberWithFloat:0.75], [NSNumber numberWithFloat:0.8], [NSNumber numberWithFloat:1.0], nil];
+		pinSquishAnimation.timingFunctions = [NSMutableArray arrayWithObjects:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn],
+											  [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn],
+											  [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut],
+											  nil];
+		[annotationShadowView.layer addAnimation:shadowSquishAnimation forKey:@"squish"];
+		
+		annotationShadowView.layer.frame = CGRectMake(mapPoint.x - (int)round(annotationView.frame.size.width / 2),
+													  y,
+													  annotationView.frame.size.width,
+													  annotationView.frame.size.height);
+		
+		// set the final values
+		annotationShadowView.layer.frame = CGRectMake(mapPoint.x - (int)round(annotationView.frame.size.width / 2),
+													  y,
+													  annotationView.frame.size.width,
+													  annotationView.frame.size.height);
+	}
+}
+
+/*
+ *	After each pin drop animation has finished, we mark that annotation view as alreadyOnMap and replace the two layers (pin and shadow)
+ *	with one UIImageView that has the combined image.
+ */
+- (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag
+{
+	UIImageView* pinWithShadowImageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"map_pin_complete.png"]] autorelease];
+	// switch image on annotationView layer and remove shadow layer
+	for (MITMapAnnotationView* annotationView in _annotationViews) {
+		if (!annotationView.hasBeenDropped || annotationView.alreadyOnMap) {
+			continue;
+		} else {
+			annotationView.alreadyOnMap = YES;
+			[annotationView addSubview:pinWithShadowImageView];
+
+			UIImageView* shadowView = annotationView.shadowView;
+
+			[shadowView.layer removeFromSuperlayer];
+			
+			annotationView.shadowView = nil;
+			[_annotationShadowViews removeObject:shadowView];
+						
+			break;
+		}
+	}
+
+	if (_annotationShadowViews.count == 0) {
+		[_annotationShadowViews release];
+		_annotationShadowViews = nil;
+	}
+	
+	// if there is only one annotation on the map, select it
+	if (_annotationViews.count == 1) {
+		MITMapAnnotationView* annotationView = [_annotationViews objectAtIndex:0];
+		[self selectAnnotation:annotationView.annotation];
 	}
 }
 
@@ -757,15 +1409,8 @@
 	if(nil == _currentCallout)
 		return;
 	
-	//CGPoint annotationPoint = [self unscaledScreenPointForCoordinate:_currentCallout.annotation.coordinate];
 	MITMapAnnotationView* annotationView = [self viewForAnnotation:_currentCallout.annotation];
 	
-	//CGFloat zoomScale = _scrollView.zoomScale;
-	/*
-	_currentCallout.frame = CGRectMake((int)round(annotationPoint.x * zoomScale -  _scrollView.contentOffset.x - _currentCallout.frame.size.width / 2),
-									   (int)round(annotationPoint.y * zoomScale - _scrollView.contentOffset.y - annotationView.frame.size.height * annotationView.layer.anchorPoint.y - _currentCallout.frame.size.height),
-									   _currentCallout.frame.size.width, _currentCallout.frame.size.height);
-	*/
 	_currentCallout.frame = CGRectMake((int)round(annotationView.frame.origin.x + annotationView.frame.size.width / 2 - _currentCallout.frame.size.width / 2),
 									   (int)(annotationView.frame.origin.y - _currentCallout.frame.size.height),
 									   _currentCallout.frame.size.width, _currentCallout.frame.size.height);
@@ -779,6 +1424,10 @@
 	[_currentCallout removeFromSuperview];
 	[_currentCallout release];
 	_currentCallout = nil;
+	
+	if ([_mapDelegate respondsToSelector:@selector(annotationCalloutDidDisappear)]) {
+		[_mapDelegate annotationCalloutDidDisappear];
+	}
 }
 
 -(void) refreshCallout
@@ -790,12 +1439,26 @@
 	
 	[self selectAnnotation:annotation animated:NO withRecenter:NO];
 }
--(void) positionAnnotationViews
-{
 
+/*
+ *	If there are pins to animate onto the map, this timer is created.  Each time it is fired, we drop one pin onto the map.
+ */
+-(void) pinDropTimerFired:(NSTimer*)timer
+{
+	BOOL allPinsDropped = YES;
 	for (MITMapAnnotationView* annotationView in _annotationViews)
 	{
-		[self positionAnnotationView:annotationView];
+		if (!annotationView.hasBeenDropped) {
+			annotationView.hasBeenDropped = YES;
+			[self positionAnnotationView:annotationView];
+			allPinsDropped = NO;
+			break;
+		} 
+	}
+	if (allPinsDropped) {
+		[_pinDropTimer invalidate];
+		[_pinDropTimer release];
+		_pinDropTimer = nil;
 	}
 }
 
@@ -820,51 +1483,74 @@
 	
 	// if it was null, give them a default pin annotation
 	if(nil == annotationView)
-	{
+	{	
 		annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation] autorelease];
-		UIImage* pin = [UIImage imageNamed:@"map_pin_complete.png"];
-		UIImageView* imageView = [[[UIImageView alloc] initWithImage:pin] autorelease];
-		annotationView.frame = imageView.frame;
-		[annotationView addSubview:imageView];
 		annotationView.canShowCallout = YES;
 		annotationView.backgroundColor = [UIColor clearColor];
 		annotationView.layer.anchorPoint = CGPointMake(0.5, 1.0);
+		
+		UIImageView* imageView = nil;
+		if (_shouldNotDropPins) {
+			annotationView.alreadyOnMap = YES;
+			imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"map_pin_complete.png"]] autorelease];
+		} else {
+			imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"map_pin.png"]] autorelease];
+			// add its shadow
+			if (_annotationShadowViews == nil) {
+				_annotationShadowViews = [[NSMutableArray alloc] init];
+			}
+			UIImage* shadow = [UIImage imageNamed:@"map_pin_shadow.png"];
+			UIImageView* annotationShadowView = [[[UIImageView alloc] initWithImage:shadow] autorelease];		// these are released after the pin drop animation
+			[_annotationShadowViews addObject:annotationShadowView];
+			[self.layer addSublayer:annotationShadowView.layer];
+			annotationView.shadowView = annotationShadowView;
+			
+			annotationShadowView.center = CGPointMake(-50, -50);
+		}
+		annotationView.frame = imageView.frame;
+		[annotationView addSubview:imageView];
+
+		annotationView.center = CGPointMake(-50, -50);
 	}
 	
 	if(nil != annotationView)
 	{
 		annotationView.mapView = self;
 		
-		// we need to insert the annotation view at the right spot. Annotations views should run from north most to south most
-		BOOL added = NO;
+		// we need to insert the annotation view at the right spot in both the array and the layer tree. 
+		// Annotations views should fall east-most first, but should be layered northern under southern
+		BOOL addedToArray = NO;
+
 		for (int idx = 0; idx < _annotationViews.count; idx++) {
-			MITMapAnnotationView* previousAnnnotationView = [_annotationViews objectAtIndex:idx];
+			MITMapAnnotationView* prevAnnnotationView = [_annotationViews objectAtIndex:idx];
 			
-			if (annotation.coordinate.latitude > previousAnnnotationView.annotation.coordinate.latitude) {
-				added = YES;
-				CALayer* layer = [annotationView layer];
+			if (annotation.coordinate.latitude > prevAnnnotationView.annotation.coordinate.latitude) {
+				addedToArray = YES;
 				
 				[_annotationViews insertObject:annotationView atIndex:idx];
 				
-				
-				[self.layer insertSublayer:layer below:previousAnnnotationView.layer];
-				//[annotationView setNeedsDisplay];
-				
-				//[self insertSubview:annotationView belowSubview:previousAnnnotationView];
-				
+				CALayer* layer = [annotationView layer];
+				[self.layer insertSublayer:layer below:prevAnnnotationView.layer];
+								
 				break;
 			}
 		}
-		
-		if(!added)
-		{
+
+		if (!addedToArray) {
 			// just add them at the end. 
 			[_annotationViews addObject:annotationView];
-			//[self addSubview:annotationView];
-			[self.layer addSublayer:annotationView.layer];
+			[self.layer addSublayer:annotationView.layer];	//
 		}
+
 		
-		[self positionAnnotationView:annotationView];
+		// if any of these annotations have not been placed on the map yet, use the timer to drop them sequentially
+		if (annotationView.alreadyOnMap) {
+			[self positionAnnotationView:annotationView];
+		} else {
+			if (_pinDropTimer == nil) {
+				_pinDropTimer = [[NSTimer scheduledTimerWithTimeInterval:kPinDropTimerFrequency target:self selector:@selector(pinDropTimerFired:) userInfo:nil repeats:YES] retain];
+			}
+		}
 	}
 	
 }
@@ -875,14 +1561,36 @@
 	{
 		[self addAnnotation:annotation];
 	}
+	
+	
+	if(_shouldNotDropPins && _annotationViews.count == 1)
+	{ 
+		MITMapAnnotationView * annotationView = [_annotationViews objectAtIndex:0];
+		[self selectAnnotation:annotationView.annotation animated:NO withRecenter:NO];
+	}
+	
 }
 
 - (void)removeAnnotation:(id <MKAnnotation>)annotation
 {
 	MITMapAnnotationView* annotationView = [self viewForAnnotation:annotation];
+    
+    if (nil == annotationView) { NSLog(@"found an orphaned annotation %@", [annotation description]); }
 	
 	if(nil != annotationView)
 	{
+		
+		UIImageView* shadowView = annotationView.shadowView;
+		if(nil != shadowView)
+		{
+			[shadowView.layer removeFromSuperlayer];
+			
+			annotationView.shadowView = nil;
+			[_annotationShadowViews removeObject:shadowView];
+            //[shadowView release];
+		}
+		
+		
 		[annotationView.layer removeFromSuperlayer];
 		//[annotationView removeFromSuperview];
 	
@@ -895,7 +1603,6 @@
 	
 	}
 	[_annotations removeObject:annotation];
-	
 }
 
 - (void)removeAnnotations:(NSArray *)annotations
@@ -906,7 +1613,13 @@
 	}
 }
 
-
+- (void)removeAllAnnotations
+{
+	for (int idx = _annotations.count - 1; idx >= 0; idx--) {
+		[self removeAnnotation:[_annotations objectAtIndex:idx]];
+	}
+}
+		 
 - (void)addRoute:(id<MITMapRoute>) route
 {
 	if (nil == _routes) {
@@ -956,20 +1669,6 @@
 
 - (void)selectAnnotation:(id<MKAnnotation>)annotation animated:(BOOL)animated withRecenter:(BOOL)recenter
 {
-	if([annotation isKindOfClass:[MITMapSearchResultAnnotation class]])
-	{
-		MITMapSearchResultAnnotation* searchAnnotation = (MITMapSearchResultAnnotation*)annotation;
-		// if the annotation is not fully loaded, try to load it
-		if (!searchAnnotation.dataPopulated) 
-		{
-			NSString* searchURL = [NSString stringWithFormat:[MITMapSearchResultAnnotation urlSearchString], [searchAnnotation.bldgnum stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-			NSLog(@"searchURL = %@", searchURL);
-			PostData* postData = [[[PostData alloc] initWithDelegate:self] autorelease];
-			postData.userData = [NSDictionary dictionaryWithObject:annotation forKey:@"annotation"];
-			postData.api = @"search";
-			[postData postDataInDictionary:nil toURL:[NSURL URLWithString:searchURL]];
-		}
-	}
 	MITMapAnnotationCalloutView* callout = [[MITMapAnnotationCalloutView alloc] initWithAnnotation:annotation andMapView:self];
 	[_currentCallout removeFromSuperview];
 	[_currentCallout release];
@@ -988,6 +1687,10 @@
 		
 		[self setCenterCoordinate:coordinate animated:animated];
 
+	}
+	
+	if ([_mapDelegate respondsToSelector:@selector(annotationSelected:)]) {
+		[_mapDelegate annotationSelected:annotation];
 	}
 
 }
@@ -1010,50 +1713,15 @@
 	return nil;
 	
 }
-
-#pragma mark PostDataDelegate
-// data was received from the post data request. 
--(void) postData:(PostData*)postData receivedData:(NSData*) data
+	
+// there was an error connecting to the specified URL. 
+- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request 
 {
-	if ([postData.api isEqualToString:@"search"]) 
-	{
-		MITMapSearchResultAnnotation* oldAnnotation = [postData.userData objectForKey:@"annotation"];
-		
-		NSString* string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-		NSArray* results = [string JSONValue];
-		
-		if (results.count > 0) 
-		{
-			MITMapSearchResultAnnotation* newAnnotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:[results objectAtIndex:0]] autorelease];
-			
-			BOOL isViewingAnnotation = (_currentCallout.annotation == oldAnnotation);
-			
-			[self removeAnnotation:oldAnnotation];
-			[self addAnnotation:newAnnotation];
-			
-			if (isViewingAnnotation) {
-				[self selectAnnotation:newAnnotation animated:NO withRecenter:NO];
-			}
-			
-			/*
-			// if the user was looking at the old annotation, update its callout view. 
-			if (_currentCallout.annotation == oldAnnotation) 
-			{
-				[_currentCallout setAnnotation:newAnnotation];
-				[_currentCallout setNeedsDisplay];
-				[self positionCurrentCallout];
-			}
-			 */
-			
-		}
-	}
+	
 }
 
-// there was an error connecting to the specified URL. 
--(void) postData:(PostData*)postData error:(NSString*)error
-{
-	
-	
+- (id<MKAnnotation>) currentAnnotation {
+	return _currentCallout.annotation;
 }
 
 @end

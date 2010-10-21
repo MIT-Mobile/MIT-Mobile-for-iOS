@@ -13,7 +13,6 @@
     return self;
 }
 
-
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
 
     [super setSelected:selected animated:animated];
@@ -21,6 +20,10 @@
     // Configure the view for the selected state
 }
 
+- (void)setFrame:(CGRect)frame {
+    [super setFrame:frame];
+    _backgroundImage.frame = frame;    
+}
 
 - (void)dealloc {
     [super dealloc];
@@ -33,9 +36,6 @@
 	else {
 		self.routeTitleLabel.text = routeInfo.title;
 	}
-
-	UIImage* backgroundImagePattern = [UIImage imageNamed:MITImageNameBackground];
-	self.contentView.backgroundColor = [UIColor colorWithPatternImage:backgroundImagePattern];
 
 	CGSize descriptionSize = [routeInfo.fullSummary sizeWithFont:self.routeDescriptionLabel.font
 										 constrainedToSize:CGSizeMake(self.routeDescriptionLabel.frame.size.width, 400)

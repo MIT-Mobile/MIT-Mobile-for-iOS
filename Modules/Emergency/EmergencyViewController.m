@@ -15,6 +15,7 @@
 - (id)initWithStyle:(UITableViewStyle)style {
     // Override initWithStyle: if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
     if (self = [super initWithStyle:style]) {
+		refreshButtonPressed = NO;
         infoWebView = nil;
         self.title = @"Emergency Info";
     }
@@ -23,22 +24,24 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshInfo)];
-
-    infoWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, self.view.frame.size.width - 20 - 20, 32)];
-    infoWebView.delegate = self;
-    infoWebView.dataDetectorTypes = UIDataDetectorTypeAll;
-    infoWebView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	self.htmlString = [NSString stringWithString:@"<html>"
-					   "<head>"
-					   "<style type=\"text/css\" media=\"screen\">"
-					   "body { margin: 0; padding: 0; font-family: Helvetica; font-size: 17px; } "
-					   "</style>"
-					   "</head>"
-					   "<body>"
-					   "Loading..."
-					   "</body>"
-					   "</html>"];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshInfo:)];
+	
+	infoWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, self.view.frame.size.width - 20 - 20, 32)];
+	infoWebView.delegate = self;
+	infoWebView.dataDetectorTypes = UIDataDetectorTypeAll;
+	infoWebView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	htmlFormatString = [@"<html>"
+						"<head>"
+						"<style type=\"text/css\" media=\"screen\">"
+						"body { margin: 0; padding: 0; font-family: Helvetica; font-size: 17px; } "
+						"</style>"
+						"</head>"
+						"<body>"
+						"%@"
+						"</body>"
+						"</html>" retain];
+	
+	self.htmlString = [NSString stringWithFormat:htmlFormatString, @"Loading..."];
     
 	[self.tableView applyStandardColors];
 }
@@ -47,6 +50,7 @@
     [super viewWillAppear:animated];
     // register for emergencydata notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidLoad:) name:EmergencyInfoDidLoadNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidFailToLoad:) name:EmergencyInfoDidFailToLoadNotification object:nil];
     
 	if ([[[EmergencyData sharedData] lastUpdated] compare:[NSDate distantPast]] == NSOrderedDescending) {
 		[self infoDidLoad:nil];
@@ -56,9 +60,9 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	EmergencyModule *emergencyModule = (EmergencyModule *)[appDelegate moduleForTag:EmergencyTag];
-	[emergencyModule syncUnreadNotifications];	
+	EmergencyModule *emergencyModule = (EmergencyModule *)[MIT_MobileAppDelegate moduleForTag:EmergencyTag];
+	[emergencyModule syncUnreadNotifications];
+	[emergencyModule resetURL];
 }
 
 /*
@@ -92,19 +96,49 @@
 	// e.g. self.myOutlet = nil;
 }
 
-- (void)refreshInfo {
+- (void)refreshInfo:(id)sender {
+	refreshButtonPressed = (sender != nil);
     [[EmergencyData sharedData] checkForEmergencies];
 }
 
 - (void)infoDidLoad:(NSNotification *)aNotification {
+	refreshButtonPressed = NO;
     self.htmlString = [[EmergencyData sharedData] htmlString];
     [self.infoWebView loadHTMLString:self.htmlString baseURL:nil];
 }
 
+- (void)infoDidFailToLoad:(NSNotification *)aNotification {
+	if ([[EmergencyData sharedData] hasNeverLoaded]) {
+		// Since emergency has never loaded successfully report failure
+		self.htmlString = [NSString stringWithFormat:htmlFormatString, @"Failed to load notice."];
+		[self.infoWebView loadHTMLString:self.htmlString baseURL:nil];
+	}
+	
+	if (refreshButtonPressed) {
+		UIAlertView *alertView = [[UIAlertView alloc] 
+			initWithTitle:@"Connection Failed" 
+			message:@"Failed to load notice from server." 
+			delegate:nil 
+			cancelButtonTitle:@"OK" 
+			otherButtonTitles:nil];
+		[alertView show];
+		[alertView release];
+	}
+	
+	// touch handled
+	refreshButtonPressed = NO;
+}
+	
 #pragma mark -
 #pragma mark UIWebView delegation
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
+	if ([[EmergencyData sharedData] hasNeverLoaded]) {
+		// do not recalulate the size for placeholder text
+		[self.tableView reloadData];
+		return;
+	}
+	
     if (webView == infoWebView) {
         NSString *output = [webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"something_unique\").offsetHeight;"];
         CGRect frame = webView.frame;
@@ -313,6 +347,9 @@
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[htmlFormatString release];
+	self.htmlString = nil;
+	self.infoWebView = nil;
     [super dealloc];
 }
 

@@ -67,7 +67,11 @@
 
 - (BOOL)handleNotification:(MITNotification *)notification appDelegate: (MIT_MobileAppDelegate *)appDelegate shouldOpen: (BOOL)shouldOpen {
 	if(shouldOpen) {
-		[appDelegate showModuleForTag:self.tag];
+		[self popToRootViewController];
+		[mainViewController refreshInfo:nil];
+		self.currentPath = @"";
+		hasLaunchedBegun = YES;
+		[self becomeActiveTab];
 	}
 	return YES;
 }

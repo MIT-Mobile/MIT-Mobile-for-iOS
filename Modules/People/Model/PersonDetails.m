@@ -15,14 +15,9 @@
 	if (uid.length > 8) {
 		uid = [uid substringToIndex:8];
 	}
-	NSFetchRequest *request = [[NSFetchRequest alloc] init];
-	[request setEntity:[NSEntityDescription entityForName:PersonDetailsEntityName 
-								   inManagedObjectContext:[CoreDataManager managedObjectContext]]];
 	NSPredicate *pred = [NSPredicate predicateWithFormat:@"(uid = %@)", uid];
-	[request setPredicate:pred];
-	NSError *error;
-	NSArray *results = [[CoreDataManager managedObjectContext] executeFetchRequest:request error:&error];
-    [request release];
+	NSArray *results = [CoreDataManager objectsForEntity:PersonDetailsEntityName matchingPredicate:pred];
+
 	if ([results count] == 0)
 		return [PeopleRecentsData createFromSearchResult:selectedResult];
 	else 

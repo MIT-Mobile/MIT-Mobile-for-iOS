@@ -1,15 +1,15 @@
-
 #import "ShuttleStopViewController.h"
 #import "ShuttleStop.h"
 #import "ShuttleRoute.h"
-#import "RouteStopSchedule.h"
 #import "ShuttleSubscriptionManager.h"
 #import "UITableViewCell+MITUIAdditions.h"
 #import "UITableView+MITUIAdditions.h"
 #import "MITUIConstants.h"
 #import "MITModule.h"
 #import "ShuttleStopMapAnnotation.h"
+#import "ShuttleDataManager.h"
 #import "RouteMapViewController.h"
+#import "ShuttleRouteViewController.h"
 
 #define NOTIFICATION_MINUTES 5
 #define MARGIN 10
@@ -18,10 +18,12 @@
 
 @interface ShuttleStopViewController(Private)
 
--(void) loadRouteData;
+//-(void) loadRouteData;
 
 // load our individual stop full data from an item in the full list of stops
--(void) loadStopFromStops:(NSArray*) stops;
+//-(void) loadStopFromStops:(NSArray*) stops;
+
+- (void)requestStop;
 
 -(void) findScheduledSubscriptions;
 
@@ -31,7 +33,7 @@
 
 -(void) removeFromLoadingSubscriptionRequests: (NSIndexPath *)indexPath;
 
--(ShuttleRoute *) routeForSection: (NSInteger)section;
+//-(ShuttleRoute *) routeForSection: (NSInteger)section;
 
 @end
 
@@ -39,23 +41,18 @@
 @implementation ShuttleStopViewController
 @synthesize shuttleStop = _shuttleStop;
 @synthesize annotation = _shuttleStopAnnotation;
-@synthesize routes = _routes; 
 @synthesize shuttleStopSchedules = _shuttleStopSchedules;
 @synthesize subscriptions = _subscriptions;
 @synthesize loadingSubscriptionRequests = _loadingSubscriptionRequests;
-@synthesize route = _route;
 @synthesize mapButton = _mapButton;
-
-// it appears this code depends on the 2 arrays self.routes self.shuttleStopSchedules being
-// in sync this may cause problems in the future, maybe should be reorganized in the future
 
 - (void)dealloc 
 {
+	[url release];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
     
 	self.shuttleStop = nil;
-	self.routes = nil;
-	self.route = nil;
+
 	self.annotation = nil;
 	self.loadingSubscriptionRequests = nil;
 	self.shuttleStopSchedules = nil;
@@ -66,6 +63,10 @@
     
 	[_mapButton release];
 	[_mapThumbnail release];
+	
+	// shouldn't [super dealloc] do this?
+	self.tableView.delegate = nil;
+	self.tableView.dataSource = nil;
 	
  	[super dealloc];
 }
@@ -78,6 +79,19 @@
 	
 	
 	[[ShuttleDataManager sharedDataManager] registerDelegate:self];
+
+	_shuttleStopSchedules = [[NSMutableArray alloc] initWithCapacity:[self.shuttleStop.routeStops count]];
+    // make sure selected route is sorted first
+	for (ShuttleRouteStop *routeStop in self.shuttleStop.routeStops) {
+        NSError *error = nil;
+        ShuttleStop *aStop = [ShuttleDataManager stopWithRoute:[routeStop routeID] stopID:[routeStop stopID] error:&error];
+        if ([[routeStop routeID] isEqualToString:self.shuttleStop.routeID]) {
+            [_shuttleStopSchedules insertObject:aStop atIndex:0];
+        } else {
+            [_shuttleStopSchedules addObject:aStop];
+        }
+	}
+	
 	self.title = NSLocalizedString(@"Shuttle Stop", nil);
 	
 	UIView *headerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 135)] autorelease];
@@ -106,6 +120,7 @@
 	// add the map view thumbnail
 	_mapThumbnail = [[MITMapView alloc] initWithFrame:CGRectMake(2.0, 2.0, mapSize - 4.0, mapSize - 4.0)];
 	_mapThumbnail.delegate = self;
+	_mapThumbnail.shouldNotDropPins = YES;
 	[_mapThumbnail addAnnotation:self.annotation];
 	_mapThumbnail.centerCoordinate = self.annotation.coordinate;
 	_mapThumbnail.scrollEnabled = NO;
@@ -153,9 +168,11 @@
 	
 	[self.tableView applyStandardColors];
 	
-	[self loadRouteData];
+	[self requestStop];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadSubscriptions) name:ShuttleAlertRemoved object:nil];
+	
+	url = [[MITModuleURL alloc] initWithTag:ShuttleTag];	 
 }
 
 -(void) viewWillDisappear:(BOOL)animated
@@ -179,13 +196,26 @@
 													 repeats:YES] retain];
 }
 
+-(void) viewDidAppear:(BOOL)animated 
+{
+	[super viewDidAppear:animated];
+	
+	// get the parent, and it it is the ShuttleRouteViewController, we can set the url.
+	UIViewController *parentController = (ShuttleRouteViewController *)[[MIT_MobileAppDelegate moduleForTag:ShuttleTag] parentForViewController:self];
+	ShuttleRouteViewController *shuttleVC = (ShuttleRouteViewController*) parentController;
+	NSString *routeID = shuttleVC.route.routeID;
+	NSString *root = [[shuttleVC.url.path componentsSeparatedByString:@"/"] objectAtIndex:0];
+	[url setPath:[NSString stringWithFormat:@"%@/%@/%@/stops", root, routeID, self.shuttleStop.stopID] query:nil];
+	[url setAsModulePath];
+}
+
 -(IBAction) mapThumbnailPressed:(id)sender
 {
 	
 	// push a map view onto the stack
 	
 	RouteMapViewController* routeMap = [[[RouteMapViewController alloc] initWithNibName:@"RouteMapViewController" bundle:nil] autorelease];
-	routeMap.route = self.route;
+	routeMap.route = [[ShuttleDataManager sharedDataManager].shuttleRoutesByID objectForKey:self.shuttleStop.routeID];
 	
 	// ensure the view and map view are loaded
 	routeMap.view;
@@ -203,60 +233,8 @@
 	
 	// Release any cached data, images, etc that aren't in use.
 }
-#pragma mark ShuttleStopViewController(Private) Methods
--(void) loadRouteData
-{	
-	// if we don't have full data for this stop, see if we have the stops array. If not, request it
-	if (!self.shuttleStop.dataPopulated) 
-	{
-		NSArray* stops = [[ShuttleDataManager sharedDataManager] shuttleStops];
-		if(nil == stops)
-		{
-			[[ShuttleDataManager sharedDataManager] requestStops];
-		}
-		else {
-			[self loadStopFromStops:[[ShuttleDataManager sharedDataManager] shuttleStops]];
-		}
-        
-	}
-	// if we don't have routes, request them. 
-	if (nil == [[ShuttleDataManager sharedDataManager] shuttleRoutes]) {
-		[[ShuttleDataManager sharedDataManager] requestRoutes];
-	}
-	
-	else 
-	{
-		// we do have route data, so populate the routes dictionary with those routes that run through this stop
-		NSMutableDictionary *routes = [NSMutableDictionary dictionary];
-		
-		for (NSString* routeID in self.shuttleStop.routes)
-		{
-			ShuttleRoute* route = [[[ShuttleDataManager sharedDataManager] shuttleRoutesByID] objectForKey:routeID];
-			
-			if (nil != route) {
-				[routes setObject:route forKey:routeID];
-			}
-		}
-		
-		self.routes = routes;
-		
-		// request the stop schedule data
-		[[ShuttleDataManager sharedDataManager] requestStop:self.shuttleStop.stopID];
-	}
-    
-}
 
--(void) loadStopFromStops:(NSArray*) stops
-{
-	for (ShuttleStop* stop in stops)
-	{
-		if ([stop.stopID isEqualToString:self.shuttleStop.stopID]) {
-			self.shuttleStop = stop;
-			break;
-		}
-	}
-	
-}
+#pragma mark ShuttleStopViewController(Private) Methods
 
 -(void)requestStop {
 	[[ShuttleDataManager sharedDataManager] requestStop:self.shuttleStop.stopID];
@@ -265,19 +243,20 @@
 #pragma mark Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return self.shuttleStop.routes.count;
+    return self.shuttleStopSchedules.count;
 }
 
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    
+    	
 	if (section < self.shuttleStopSchedules.count) 
 	{
 		// determine the route schedule
-		RouteStopSchedule* schedule = [self.shuttleStopSchedules objectAtIndex:section];
+		ShuttleStop* schedule = [self.shuttleStopSchedules objectAtIndex:section];
 		
-		return schedule.predictions.count + 1;
+        // if nextScheduled is not defined, the first row will be negative
+		return (schedule.nextScheduled != 0) ? schedule.predictions.count + 1 : 0;
         
 	}
 	
@@ -298,7 +277,7 @@
     if (indexPath.section < self.shuttleStopSchedules.count) 
 	{
 		// determine the route schedule
-		RouteStopSchedule* schedule = [self.shuttleStopSchedules objectAtIndex:indexPath.section];
+		ShuttleStop* schedule = [self.shuttleStopSchedules objectAtIndex:indexPath.section];
 		
 		NSDate* date = [schedule dateForPredictionAtIndex:indexPath.row];
 		NSTimeInterval timeInterval = [date timeIntervalSinceNow];
@@ -314,7 +293,8 @@
 		} else {
 			minutesText = [NSString stringWithFormat:@"(%d minutes)", minutes];	
 		}
-		cell.detailTextLabel.text = minutesText;	
+		cell.detailTextLabel.text = minutesText;
+        cell.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
 		
 		cell.accessoryView = nil;
         
@@ -337,15 +317,12 @@
     return cell;
 }
 
-- (ShuttleRoute *) routeForSection: (NSInteger)section {
-	return [self.routes objectForKey:((RouteStopSchedule *)[self.shuttleStopSchedules objectAtIndex:section]).routeID];
-}
-
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	ShuttleStop *stop = [self.shuttleStopSchedules objectAtIndex:section];
 	NSString *headerTitle = nil;
 	
 	if (section < self.shuttleStopSchedules.count) {
-		headerTitle = [NSString stringWithFormat:@"%@:", [[self routeForSection:section] title]];
+		headerTitle = [NSString stringWithFormat:@"%@:", [(ShuttleRouteCache *)[stop.routeStop route] title]];
 	} else {
 		if(section == 0) {
 			headerTitle = @"Loading...";
@@ -364,7 +341,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    RouteStopSchedule *schedule = [self.shuttleStopSchedules objectAtIndex:indexPath.section];
+    ShuttleStop *schedule = [self.shuttleStopSchedules objectAtIndex:indexPath.section];
     
 	NSDate *date = [schedule dateForPredictionAtIndex:indexPath.row];
 	NSTimeInterval timeInterval = [date timeIntervalSinceNow];
@@ -384,7 +361,7 @@
 		[alertView release];
 		return;
 	}
-    
+	
     UIRemoteNotificationType types = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
     
     if (types == UIRemoteNotificationTypeNone) {
@@ -424,7 +401,7 @@
 		[alertView release];
 		return;
     }
-    
+	
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
     MITModule *shuttleModule = [appDelegate moduleForTag:ShuttleTag];
     if (!shuttleModule.pushNotificationEnabled) {
@@ -451,18 +428,17 @@
 		// reload the table to see the activity indicator start animator
 		[self.tableView reloadData];
 		
-		ShuttleRoute *route = [self routeForSection:indexPath.section];
 		if(![self hasSubscription:indexPath]) {
 			[ShuttleSubscriptionManager 
-             subscribeForRoute:route
-             atStop:self.shuttleStop 
+             subscribeForRoute:schedule.routeID
+             atStop:schedule.stopID
              scheduleTime:date
              delegate:self 
              object:indexPath];
 		} else {
 			[ShuttleSubscriptionManager 
-             unsubscribeForRoute:route
-             atStop:self.shuttleStop 
+             unsubscribeForRoute:schedule.routeID
+             atStop:schedule.stopID
              delegate:self 
              object:indexPath];
 		}
@@ -476,19 +452,19 @@
 	[self.tableView reloadData];
 }		
 
-- (void) subscriptionFailedWithObject: (id)object {
+- (void) subscriptionFailedWithObject: (id)object passkeyError:(BOOL)passkeyError {
 	[self removeFromLoadingSubscriptionRequests:((NSIndexPath *)object)];
-	[self.tableView reloadData];
-    
-	UIAlertView *alertView = [[UIAlertView alloc]
-                              initWithTitle:@"Subscription failed" 
-                              message:@"We are sorry, we failed to register your device for a shuttle notification" 
-                              delegate:nil 
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil];
-    
-	[alertView show];
-	[alertView release];	
+	if(passkeyError) {
+		UIAlertView *alertView = [[UIAlertView alloc]
+							  initWithTitle:@"Subscription failed"
+							  message:@"We are sorry, we failed to register your device for a shuttle notification"
+							  delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil];
+		[alertView show];
+		[alertView release];
+	}
+	[self.tableView reloadData];	
 }
 
 #pragma mark MITMapViewDelegate
@@ -506,6 +482,7 @@
 		[annotationView addSubview:imageView];
 		annotationView.backgroundColor = [UIColor clearColor];
 		annotationView.centeredVertically = YES;
+		annotationView.alreadyOnMap = YES;
 		//annotationView.layer.anchorPoint = CGPointMake(0.5, 0.5);
 	}
 	
@@ -516,7 +493,7 @@
 // message sent when routes were received. If request failed, this is called with a nil routes array
 -(void) routesReceived:(NSArray*) routes
 {
-	[self loadRouteData];
+	//[self loadRouteData];
 	[self.tableView reloadData];
 }
 
@@ -530,14 +507,13 @@
 	}
 	
 	NSMutableArray *otherSchedules = [NSMutableArray array];
-	self.shuttleStopSchedules = [NSArray array];
 	self.shuttleStopSchedules = [NSMutableArray array];
 	
 	if ([self.shuttleStop.stopID isEqualToString:stopID]) 
 	{
 		// need to make sure the main route is first
-		for(RouteStopSchedule *routeStopSchedule in shuttleStopSchedules) {
-			if([routeStopSchedule.routeID isEqualToString:self.route.routeID]) {
+		for(ShuttleStop *routeStopSchedule in shuttleStopSchedules) {
+			if([routeStopSchedule.routeID isEqualToString:self.shuttleStop.routeID]) {
 				self.shuttleStopSchedules = [NSArray arrayWithObject:routeStopSchedule];
 			} else {
 				[otherSchedules addObject:routeStopSchedule];
@@ -557,15 +533,16 @@
 	
 }
 
+/*
+// do we need this here?
 -(void) stopsReceived:(NSArray *)stops
 {
-	if (nil != stops) 
-	{
-		[self loadStopFromStops:stops];
-		[self loadRouteData];
+	if (nil != stops) {
+		[self.tableView reloadData];
 	}
     
 }
+*/
 
 -(void) reloadSubscriptions {
 	[self findScheduledSubscriptions];
@@ -576,18 +553,19 @@
 	// determine which schedule stops are subscribed for notifications;		
 	self.subscriptions = [NSMutableDictionary dictionary];
     
-	for(RouteStopSchedule *schedule in self.shuttleStopSchedules) {
-		ShuttleRoute *route = [self.routes objectForKey:schedule.routeID];
+	for(ShuttleStop *schedule in self.shuttleStopSchedules) {
+		//ShuttleRoute *route = [self.routes objectForKey:schedule.routeID];
 		
 		NSInteger i;
 		
 		for(i=0; i < [schedule predictionCount]; i++) {
             
 			NSDate *prediction = [schedule dateForPredictionAtIndex:i];
+			NSString *routeID = schedule.routeID;
 			
-			if([ShuttleSubscriptionManager hasSubscription:route atStop:self.shuttleStop scheduleTime:prediction]) {
+			if([ShuttleSubscriptionManager hasSubscription:routeID atStop:self.shuttleStop.stopID scheduleTime:prediction]) {
                 
-				[self.subscriptions setObject:[NSNumber numberWithInt:i] forKey:route.routeID];
+				[self.subscriptions setObject:[NSNumber numberWithInt:i] forKey:routeID];
                 
 				break;
 			}
@@ -607,7 +585,7 @@
 }
 
 -(BOOL) hasSubscription: (NSIndexPath *)indexPath {
-	NSString *routeID = ((RouteStopSchedule *)[self.shuttleStopSchedules objectAtIndex:indexPath.section]).routeID;
+	NSString *routeID = ((ShuttleStop *)[self.shuttleStopSchedules objectAtIndex:indexPath.section]).routeID;
 	NSNumber *subscriptionIndex = [self.subscriptions objectForKey:routeID];
 	if(subscriptionIndex) {
 		if([subscriptionIndex intValue] == indexPath.row) {

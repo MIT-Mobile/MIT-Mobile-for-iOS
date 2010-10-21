@@ -50,9 +50,15 @@ static PeopleRecentsData *instance = nil;
 #pragma mark -
 #pragma mark Core data interface
 
++ (PersonDetails *)personWithUID:(NSString *)uid
+{
+	PersonDetails *person = [CoreDataManager getObjectForEntity:PersonDetailsEntityName attribute:@"uid" value:uid];
+	return person;
+}
+
 - (id)init
 {
-	recents = [NSMutableArray arrayWithCapacity:0];
+	recents = [[NSMutableArray alloc] initWithCapacity:0];
 	NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lastUpdate" ascending:NO];
 	for (PersonDetails *person in [CoreDataManager fetchDataForAttribute:PersonDetailsEntityName 
 														  sortDescriptor:sortDescriptor]) {
@@ -122,8 +128,7 @@ static PeopleRecentsData *instance = nil;
 + (PersonDetails *)createFromSearchResult:(NSDictionary *)searchResult 
 {
 	
-	PersonDetails *personDetails = (PersonDetails *)[NSEntityDescription insertNewObjectForEntityForName:PersonDetailsEntityName 
-																		 inManagedObjectContext:[CoreDataManager managedObjectContext]];
+	PersonDetails *personDetails = (PersonDetails *)[CoreDataManager insertNewObjectForEntityForName:PersonDetailsEntityName];
 	
 	[self updatePerson:personDetails withSearchResult:searchResult];
 	

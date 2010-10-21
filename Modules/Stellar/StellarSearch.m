@@ -1,4 +1,3 @@
-
 #import "StellarSearch.h"
 #import "StellarClass.h"
 #import "StellarDetailViewController.h"
@@ -15,18 +14,21 @@
 @synthesize activeMode;
 @synthesize searchBar;
 
-- (void) cancelSearch {
+- (void) endSearchMode {
 	activeMode = NO;
-	[viewController.searchController setActive:NO animated:YES];
+	[searchBar setShowsCancelButton:NO animated:YES];
+	[searchBar resignFirstResponder];
 	
 	[viewController hideSearchResultsTable];
-	[viewController hideTranslucentOverlay];
 	[viewController hideLoadingView];
 	[viewController reloadMyStellarUI];
+	
+	[viewController.url setPath:@"" query:nil];
+	[viewController.url setAsModulePath];
 }
 
 - (BOOL) isSearchResultsVisible {
-	return hasSearchCompleted && activeMode;
+	return hasSearchInitiated && activeMode;
 }
 	
 - (id) initWithSearchBar: theSearchBar viewController: (StellarMainTableController *)controller{
@@ -36,7 +38,7 @@
         searchBar.delegate = self;
 		viewController = controller;
 		self.lastResults = [NSArray array];
-		hasSearchCompleted = NO;
+		hasSearchInitiated = NO;
 	}
 	return self;
 }
@@ -56,7 +58,7 @@
 - (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [aTableView dequeueReusableCellWithIdentifier:@"StellarSearch"];
 	if(cell == nil) {
-		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"StellarSearch"] autorelease];
+		cell = [[[StellarClassTableCell alloc] initWithReusableCellIdentifier:@"StellarSearch"] autorelease];
 	}
 
 	StellarClass *stellarClass = [self.lastResults objectAtIndex:indexPath.row];
@@ -64,33 +66,23 @@
 	return cell;
 }
 
+- (CGFloat) tableView: (UITableView *)tableView heightForRowAtIndexPath: (NSIndexPath *)indexPath {
+	return [StellarClassTableCell cellHeightForTableView:tableView class:[self.lastResults objectAtIndex:indexPath.row]];
+}
+			
 - (NSInteger) numberOfSectionsInTableView: (UITableView *)tableView {
 	return 1;
-}
-
-- (NSString *) tableView: (UITableView *)tableView titleForHeaderInSection: (NSInteger)section {
-	if([lastResults count]) {
-		if([lastResults count]==1) {
-			return @"1 match found.";
-		} else {
-			return [NSString stringWithFormat:@"%i matches found.", [lastResults count]];
-		}
-	}
-	return nil;
 }
 
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	NSString *headerTitle = nil;
 	
 	if([lastResults count]) {
-		if([lastResults count]==1) {
-			headerTitle = @"1 match found.";
-		} else {
-			headerTitle = [NSString stringWithFormat:@"%i matches found.", [lastResults count]];
-		}
-		return [UITableView ungroupedSectionHeaderWithTitle:headerTitle];
+		headerTitle = [NSString stringWithFormat:@"%i found", [lastResults count]];
+	} else {
+		headerTitle = @"No matches found";
 	}
-	return nil;
+	return [UITableView ungroupedSectionHeaderWithTitle:headerTitle];
 }
 
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -99,98 +91,98 @@
 
 #pragma mark UITableViewDelegate methods
 - (void) tableView: (UITableView *)tableView didSelectRowAtIndexPath: (NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 	[StellarDetailViewController 
 		launchClass:(StellarClass *)[self.lastResults objectAtIndex:indexPath.row]
 		viewController:viewController];
-}
-
-#pragma mark UISearchDisplayController methods
-- (BOOL) searchDisplayController: (UISearchDisplayController *)controller shouldReloadTableForSearchString: (NSString *)searchString {
-	return NO;
-}
-
-- (BOOL) searchDisplayController: (UISearchDisplayController *)controller shouldReloadTableForSearchScope: (NSInteger)searchOption {
-	return NO;
-}
-
-- (void) searchDisplayController: (UISearchDisplayController *)controller didShowSearchResultsTableView: (UITableView *)tableView {
-	if(!hasSearchCompleted) {
-		[viewController hideSearchResultsTable];
-	}
 }
 
 #pragma mark ClassesSearchDelegate methods
 - (void) searchComplete: (NSArray *)classes searchTerms:searchTerms {
 	if([searchBar.text isEqualToString:searchTerms]) {
 		self.lastResults = classes;
-		hasSearchCompleted = YES;
-		[viewController.translucentOverlay removeFromSuperview];
-		
-		[viewController.searchController.searchResultsTableView applyStandardCellHeight];
-		viewController.searchController.searchResultsTableView.allowsSelection = YES;
-		[viewController.searchController.searchResultsTableView reloadData];
 		[viewController hideLoadingView];
-		[viewController hideTranslucentOverlay];
-		[viewController showSearchResultsTable];
 		
-		// if exactly one result found forward user to that result
-		if([classes count] == 1) {
-			[StellarDetailViewController 
-				launchClass:(StellarClass *)[classes lastObject]
-				viewController: viewController];
+		if(self.lastResults.count) {		
+			[viewController.searchResultsTableView applyStandardCellHeight];
+			viewController.searchResultsTableView.allowsSelection = YES;
+			[viewController.searchResultsTableView reloadData];
+			[viewController showSearchResultsTable];
+		
+			// if exactly one result found forward user to that result
+			if([classes count] == 1) {
+				[StellarDetailViewController 
+					launchClass:(StellarClass *)[classes lastObject]
+					viewController: viewController];
+			}
+		} else {
+			UIAlertView *alertView = [[UIAlertView alloc] 
+				initWithTitle:nil message:@"no classes found" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+			[alertView show];
+			[alertView release];
 		}
 	}
 }
 
 - (void) handleCouldNotReachStellarWithSearchTerms: (NSString *)searchTerms {
 	if([searchBar.text isEqualToString:searchTerms]) {
-		[viewController hideLoadingView];
-		UIAlertView *alert = [[UIAlertView alloc]
-			initWithTitle:@"Connection Failed" 
-			message:@"Could not connect to Stellar to execute search, please try again later."
-			delegate:nil
-			cancelButtonTitle:@"OK" 
-			otherButtonTitles:nil];
-		
-		[viewController.searchController.searchResultsTableView reloadData];
-		[alert show];
-		[alert release];
+		[searchBar setShowsCancelButton:NO animated:YES];
+		[viewController hideLoadingView];		
+		[viewController.searchResultsTableView reloadData];
+		[searchBar becomeFirstResponder];
 	}
 }
 
 #pragma mark UISearchBarDelegate methods
 - (void) searchBarSearchButtonClicked: (UISearchBar *)theSearchBar {
 	[viewController showLoadingView];
+	hasSearchInitiated = YES;
+	
+	[searchBar resignFirstResponder];
 	[StellarModel executeStellarSearch:theSearchBar.text delegate:self];
+	
+	[viewController.url setPath:@"search-complete" query:theSearchBar.text];
+	[viewController.url setAsModulePath];
 }
 
-- (void) searchDisplayControllerWillBeginSearch: (UISearchDisplayController *)controller {
+- (void) searchBarTextDidBeginEditing:(UISearchBar *)aSearchBar {
 	activeMode = YES;
+	NSString *query = nil;
+	
+	[aSearchBar setShowsCancelButton:YES animated:YES];
+	if(self.lastResults.count || searchBar.text.length) {
+		query = aSearchBar.text;
+	}
+	
+	[viewController.url setPath:@"search-begin" query:query];
+	[viewController.url setAsModulePath];
 }
 
-- (void) searchDisplayControllerDidEndSearch: (UISearchDisplayController *)controller {
-	[self cancelSearch];
+- (void) searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+	[self endSearchMode];
 }
 
 - (void) searchBar: (UISearchBar *)searchBar textDidChange: (NSString *)searchText {
-	[viewController hideSearchResultsTable];
-	
 	[viewController hideLoadingView]; // just in case the loading view is showing
 	
 	// this is to simulate the native searchDisplayControllers overlay for many characters
 	
 	// we use a delay to work around the issue where apple draws the headers of
 	// the tableView behind the Overlay after drawing the overlay
-	if(viewController.myStellarUIisUpToDate) {
-		// use the delay trick as little as possible (it causes a flicker)
-		[viewController showTranslucentOverlay];
-	} else {
-		[viewController performSelector:@selector(showTranslucentOverlay) withObject:nil afterDelay:0.001];
-	}
+	// but minimize the use of delay to reduce flicker
 	
 	[viewController reloadMyStellarUI];
 	
-	hasSearchCompleted = NO;
+	hasSearchInitiated = NO;
+	
+	[viewController.url setPath:@"search-begin" query:searchText];
+	[viewController.url setAsModulePath];
+}
+
+#pragma mark UIAlertViewDelegate for no classes found alert
+
+- (void) alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	[searchBar becomeFirstResponder];
 }
 
 @end

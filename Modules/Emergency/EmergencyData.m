@@ -3,6 +3,7 @@
 #import "MIT_MobileAppDelegate.h"
 #import "CoreDataManager.h"
 #import "MITMobileWebAPI.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation EmergencyData
 
@@ -89,6 +90,7 @@ static EmergencyData *sharedEmergencyData = nil;
 }
 
 - (void)fetchContacts {
+    [allPhoneNumbers release];
     NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
     NSSortDescriptor *sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"ordinality" ascending:YES] autorelease];
     allPhoneNumbers = [[CoreDataManager objectsForEntity:EmergencyContactEntityName matchingPredicate:predicate sortDescriptors:[NSArray arrayWithObject:sortDescriptor]] retain];
@@ -100,6 +102,10 @@ static EmergencyData *sharedEmergencyData = nil;
 
 #pragma mark -
 #pragma mark Accessors
+
+- (BOOL) hasNeverLoaded {
+	return ([[info valueForKey:@"htmlString"] length] == 0);
+}
 
 - (NSDate *)lastUpdated {
     return [info valueForKey:@"lastUpdated"];
@@ -117,24 +123,21 @@ static EmergencyData *sharedEmergencyData = nil;
     NSString *lastUpdatedString = [formatter stringFromDate:lastUpdated];
     [formatter release];
     
-    NSString *htmlString = [NSString stringWithFormat:
-                            @"<html>"
-                            "<head>"
-                            "<style type=\"text/css\" media=\"screen\">"
-                            "body { margin: 0; padding: 0; overflow: hidden; font-family: Helvetica; font-size: 17px; }"
-                            "a { color: #990000; }"
-                            ".stamp { font-size: 14px; }"
-                            "</style>"
-                            "</head>"
-                            "<body>"
-                            "<div id=\"something_unique\">"
-                            "%@"
-                            "<p class=\"stamp\">Posted %@</p>"
-                            "</div>"
-                            "</body>"
-                            "</html>",
-                            [info valueForKey:@"htmlString"], lastUpdatedString];
+    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
+    NSURL *fileURL = [NSURL URLWithString:@"emergency_template.html" relativeToURL:baseURL];
     
+    NSError *error = nil;
+    NSMutableString *htmlString = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
+    if (!htmlString) {
+        //NSLog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
+        return nil;
+    }
+    
+    NSArray *keys = [NSArray arrayWithObjects:@"__BODY__", @"__POST_DATE__", nil];
+    
+    NSArray *values = [NSArray arrayWithObjects:[info valueForKey:@"htmlString"], lastUpdatedString, nil];
+    
+    [htmlString replaceOccurrencesOfStrings:keys withStrings:values options:NSLiteralSearch];
     
     return htmlString;
 }
@@ -144,33 +147,136 @@ static EmergencyData *sharedEmergencyData = nil;
 
 // Send request
 - (void)checkForEmergencies {
+    if (infoRequest != nil) {
+        return;
+    }
+
+    infoRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
+    BOOL dispatchedSuccessfully = [infoRequest requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"emergency", @"module", nil]];
+    if (!dispatchedSuccessfully) {
+        NSLog(@"failed to fetch emergency info");
+    }
+    
+    /*
     if ([self.infoConnection isConnected]) {
         return; // a connection already exists
     }
     // TODO: use Reachability to wait until app gets a connection to perform check
     self.infoConnection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-    NSURL *url = [MITMobileWebAPI buildQuery:[NSDictionary dictionaryWithObjectsAndKeys:@"emergency", @"module", nil]
-                                   queryBase:MITMobileWebAPIURLString];
+    NSURL *url = [MITMobileWebAPI buildURL:[NSDictionary dictionaryWithObjectsAndKeys:@"emergency", @"module", nil]
+								 queryBase:MITMobileWebAPIURLString];
     BOOL dispatchedSuccessfully = [infoConnection requestDataFromURL:url];
     if (dispatchedSuccessfully) {
         [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
     }
+    */
 }
 
 // request contacts
 - (void)reloadContacts {
+    if (contactsRequest != nil) {
+        return;
+    }
+    contactsRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
+    if (![contactsRequest requestObjectFromModule:@"emergency" command:@"contacts" parameters:nil]) {
+        NSLog(@"failed to fetch emergency contacts");
+    }
+    
+    /*
     if ([self.contactsConnection isConnected]) {
         return; // a connection already exists
     }
     self.contactsConnection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-    NSURL *url = [MITMobileWebAPI buildQuery:[NSDictionary dictionaryWithObjectsAndKeys:@"emergency", @"module", @"contacts", @"command", nil]
-                                   queryBase:MITMobileWebAPIURLString];
+    NSURL *url = [MITMobileWebAPI buildURL:[NSDictionary dictionaryWithObjectsAndKeys:@"emergency", @"module", @"contacts", @"command", nil]
+								 queryBase:MITMobileWebAPIURLString];
     if ([self.contactsConnection requestDataFromURL:url]) {
         [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
     }
+    */
 }
 
 // Receive response
+
+- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)jsonObject {
+    if (request == infoRequest) {
+        
+        if (![jsonObject isKindOfClass:[NSArray class]]) {
+            NSLog(@"%@ received json result as %@, not NSArray.", NSStringFromClass([self class]), NSStringFromClass([jsonObject class]));
+        } else {
+            NSDictionary *response = [(NSArray *)jsonObject lastObject];
+            
+            NSDate *lastUpdated = [NSDate dateWithTimeIntervalSince1970:[[response objectForKey:@"unixtime"] doubleValue]];
+            NSDate *previouslyUpdated = [info valueForKey:@"lastUpdated"];
+            
+            if (!previouslyUpdated || [lastUpdated timeIntervalSinceDate:previouslyUpdated] > 0) {
+                [info setValue:lastUpdated forKey:@"lastUpdated"];
+                [info setValue:[NSDate date] forKey:@"lastFetched"];
+                [info setValue:[response objectForKey:@"text"] forKey:@"htmlString"];
+                [CoreDataManager saveData];
+                
+                [self fetchEmergencyInfo];
+                // notify listeners that this is a new emergency
+                [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:self];
+            }
+            // notify listeners that the info is done loading, regardless of whether it's changed
+            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidLoadNotification object:self];
+        }
+        
+        infoRequest = nil;
+        
+    } else if (request == contactsRequest) {
+        
+        if (jsonObject && [jsonObject isKindOfClass:[NSArray class]]) {
+            NSArray *contactsArray = (NSArray *)jsonObject;
+            
+            // delete all of the old numbers
+            NSArray *oldContacts = [CoreDataManager fetchDataForAttribute:EmergencyContactEntityName];
+            if ([oldContacts count] > 0) {
+                [CoreDataManager deleteObjects:oldContacts];
+            }
+            
+            // create new entry for each contact in contacts
+            NSInteger i = 0;
+            for (NSDictionary *contactDict in contactsArray) {
+                NSManagedObject *contact = [CoreDataManager insertNewObjectForEntityForName:EmergencyContactEntityName];
+                [contact setValue:[contactDict objectForKey:@"contact"] forKey:@"title"];
+                [contact setValue:[contactDict objectForKey:@"description"] forKey:@"summary"];
+                [contact setValue:[contactDict objectForKey:@"phone"] forKey:@"phone"];
+                [contact setValue:[NSNumber numberWithInteger:i] forKey:@"ordinality"];
+                i++;
+            }
+            [CoreDataManager saveData];
+            [self fetchContacts];
+            
+            // notify listeners that contacts have finished loading
+            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
+        }
+        
+        contactsRequest = nil;
+    }
+}
+
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
+    return NO;
+}
+
+
+- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
+    // TODO: possibly retry at a later date if connection dropped or server was unavailable
+    if (request == infoRequest) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:self];
+        infoRequest = nil;
+    } else if (request == contactsRequest) {
+        contactsRequest = nil;
+    }
+}
+
+/*
+- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error;
+- (id<UIAlertViewDelegate>)request:(MITMobileWebAPI *)request alertViewDelegateForError:(NSError *)error;
+*/
+ 
+/*
 - (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
     [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
     if (wrapper == infoConnection) {
@@ -237,11 +343,13 @@ static EmergencyData *sharedEmergencyData = nil;
     // TODO: possibly retry at a later date if connection dropped or server was unavailable
     if (wrapper == infoConnection) {
         self.infoConnection = nil;
+		[[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:self];
     } else if (wrapper == contactsConnection) {
         self.contactsConnection = nil;
     }
 }
-
+*/
+/*
 #pragma mark -
 #pragma mark Synchronous HTTP - less preferred
 
@@ -265,5 +373,5 @@ static EmergencyData *sharedEmergencyData = nil;
     result = [[NSString alloc] initWithData:urlData encoding:NSUTF8StringEncoding];
 	return [result autorelease];
 }
-
+*/
 @end

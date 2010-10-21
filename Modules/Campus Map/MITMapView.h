@@ -9,7 +9,7 @@
 #import "MITMapAnnotationCalloutView.h"
 #import "MITMapScrollView.h"
 #import "MITProjection.h"
-#import "PostData.h"
+#import "MITMobileWebAPI.h"
 #import "MITMapRoute.h"
 
 @class MapLevel;
@@ -35,9 +35,15 @@
 // any touch on the map will invoke this.  
 - (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch;
 
+- (void)annotationSelected:(id <MKAnnotation>)annotation;
+
+- (void)annotationCalloutDidDisappear;
+
+- (void)locateUserFailed;
+
 @end
 
-@interface MITMapView : UIView <UIScrollViewDelegate, CLLocationManagerDelegate, PostDataDelegate >{
+@interface MITMapView : UIView <UIScrollViewDelegate, CLLocationManagerDelegate>{
 
 	NSArray* _mapLevels;
 	
@@ -47,7 +53,19 @@
 	
 	CATiledLayer* _tiledLayer;
 	
-	UIImageView* _locationView;
+	CALayer* _locationLayer;								// a layer for the blue dot and animated circles
+	
+	UIImageView* _locationView;								// this is the blue dot that marks your current location
+	
+	CAShapeLayer* _locationAccuracyCircleLayer;				// this is the animated circle that grows & shrinks to tell you how accurate your location is
+	CAShapeLayer* _radiationLayer1;
+	CAShapeLayer* _radiationLayer2;							// these two layers create the radiation bwoop
+	
+	BOOL _animationIsBouncing;								// the bounce animation (when accuracy is poor) shouldn't be interrupted by another bounce animation
+	BOOL _animationIsRadiating;								// the radiation animation (when accuracy is good) shouldn't be interrupted by another radiation animation
+	BOOL _locationCircleIsMinimized;						// the magic blue circle is hidden under the dot. we need to know this if they zoom while it's hidden.
+	
+	CLLocation* _lastLocation;								// this allows us to redraw the accuracy circle for different zoom scales
 		
 	BOOL _showsUserLocation;
 	
@@ -62,6 +80,10 @@
 	NSMutableArray* _annotations;
 	
 	NSMutableArray* _annotationViews;
+	NSMutableArray* _annotationShadowViews;					// holds the annotations shadows while they drop so they can be removed 
+	NSTimer* _pinDropTimer;									// this triggers pin drop animation when it fires so pins fall in series
+	BOOL _shouldNotDropPins;								// if false, pins are animated onto map.  shouldNotDropPins is set to true for 
+																// MITMapDetailViewController, RouteMapViewController, and ShuttleStopViewController.
 	
 	NSMutableArray* _routes;
 		
@@ -73,9 +95,18 @@
 	
 	RouteView* _routeView;
 	
+    // default view of the map.
+    CLLocationCoordinate2D _initialLocation;
+    CGFloat _initialZoom;
+    
 	// NorthWest and SouthEast corners of the map
 	CLLocationCoordinate2D _nw;
 	CLLocationCoordinate2D _se;
+	
+	// flag indicating whether the user denied access to CLLocationManager
+	BOOL _locationDenied;
+	BOOL _displayedLocationDenied;
+	BOOL _receivedFirstLocationDenied;
 
 }
 
@@ -91,6 +122,8 @@
 @property (readonly) CGFloat zoomLevel;
 @property MKCoordinateRegion region;
 
+@property BOOL shouldNotDropPins;
+
 
 // get the unscaled screen coordinate for a location
 -(CGPoint) unscaledScreenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
@@ -100,7 +133,6 @@
 // get the geographic coordinate for a point on our map
 -(CLLocationCoordinate2D) coordinateForScreenPoint:(CGPoint) point;
 
-
 -(void) setCenterCoordinate:(CLLocationCoordinate2D) coordinate animated:(BOOL)animated;
 
 -(void) hideCallout;
@@ -109,14 +141,20 @@
 
 -(void) positionAnnotationView:(MITMapAnnotationView *)annotationView;
 
+// region helper functions for modules who want to save region
+- (NSString *)serializeCurrentRegion;
+- (void)unserializeRegion:(NSString *)regionString;
+
 #pragma mark Annotations
 @property (nonatomic, readonly) NSArray *annotations;
 @property (nonatomic, readonly) NSArray *routes;
+@property (nonatomic, readonly) id<MKAnnotation> currentAnnotation;
 
 - (void)addAnnotation:(id <MKAnnotation>)annotation;
 - (void)addAnnotations:(NSArray *)annotations;
 - (void)removeAnnotation:(id <MKAnnotation>)annotation;
 - (void)removeAnnotations:(NSArray *)annotations;
+- (void)removeAllAnnotations;
 
 - (void)addRoute:(id<MITMapRoute>) route;
 - (void)removeRoute:(id<MITMapRoute>) route;
@@ -131,5 +169,6 @@
 
 
 - (MITMapAnnotationView *)viewForAnnotation:(id <MKAnnotation>)annotation;
+
 
 @end

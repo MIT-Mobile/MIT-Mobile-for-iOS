@@ -3,30 +3,15 @@
 #import "StellarClass.h"
 
 @interface StellarCache : NSObject {
-	NSMutableDictionary *stellarClassLists;
-	NSMutableDictionary *stellarClassInfo;
+	NSMutableDictionary *stellarClassIds;
 }
 
 + (StellarCache *) stellarCache;
 
-- (void) addClassList:(NSArray *)classList forCourse:(StellarCourse *)stellarCourse;
-+ (void) addClassList:(NSArray *)classList forCourse:(StellarCourse *)stellarCourse;
+- (void) addClassIds:(NSArray *)ids forName:(NSString *)name;
++ (void) addClassIds:(NSArray *)ids forName:(NSString *)name;
 
-- (NSArray *) getClassListForCourse: (StellarCourse *)stellarCourse;
-+ (NSArray *) getClassListForCourse: (StellarCourse *)stellarCourse;
-
-- (StellarClass *) getGeneralClassInfo: (StellarClass *)class;
-+ (StellarClass *) getGeneralClassInfo: (StellarClass *)class;
-
-- (StellarClass *) getAllClassInfo: (StellarClass *)class;
-+ (StellarClass *) getAllClassInfo: (StellarClass *)class;
-
-- (void) addAllClassInfo: (StellarClass *)class;
-+ (void) addAllClassInfo: (StellarClass *)class;
-
-
-
-
-
+- (NSArray *) getClassIdsForName:(NSString *)name;
++ (NSArray *) getClassIdsForName:(NSString *)name;
 
 @end

@@ -1,4 +1,3 @@
-
 #import <Foundation/Foundation.h>
 #import "ConnectionWrapper.h"
 #import "StellarCourse.h"
@@ -12,7 +11,6 @@ extern NSString * const MyStellarChanged;
 #pragma mark Course Loading 
 @protocol CoursesLoadedDelegate <NSObject>
 - (void) coursesLoaded;
-- (void) handleCouldNotReachStellar;
 @end
 
 @interface CoursesRequest : NSObject <JSONLoadedDelegate> {
@@ -28,6 +26,7 @@ extern NSString * const MyStellarChanged;
 @protocol ClassesLoadedDelegate <NSObject>
 - (void) classesLoaded: (NSArray *)classes;
 - (void) handleCouldNotReachStellar;
+- (id<UIAlertViewDelegate>) standardErrorAlertDelegate;  
 @end
 
 @interface ClassesRequest : NSObject <JSONLoadedDelegate> {
@@ -37,7 +36,15 @@ extern NSString * const MyStellarChanged;
 @property(nonatomic, retain) id<ClassesLoadedDelegate> classesLoadedDelegate;
 @property(nonatomic, retain) StellarCourse *stellarCourse;
 
-- (id) initWithDelegate: (id<ClassesLoadedDelegate>)delegate course: (StellarCourse *)stellarCourse;
+- (id) initWithDelegate: (NSObject<ClassesLoadedDelegate>*)delegate course: (StellarCourse *)stellarCourse;
+- (void) notifyClassesLoadedDelegate;
+- (void) markCourseAsNew;
+@end
+
+@interface ClassesChecksumRequest : NSObject <JSONLoadedDelegate> {
+	ClassesRequest *classesRequest;
+}
+- (id) initWithClassesRequest:(ClassesRequest *)aClassesRequest;
 @end
 
 #pragma mark Class Info Loading
@@ -95,7 +102,7 @@ extern NSString * const MyStellarChanged;
 
 + (void) loadCoursesFromServerAndNotify: (id<CoursesLoadedDelegate>)delegate;
 
-+ (void) loadClassesForCourse: (StellarCourse *)stellarCourse delegate: (id<ClassesLoadedDelegate>)delegate;
++ (void) loadClassesForCourse: (StellarCourse *)stellarCourse delegate: (NSObject<ClassesLoadedDelegate> *)delegate;
 
 + (void) loadAllClassInfo: (StellarClass *)stellarClass delegate: (id<ClassInfoLoadedDelegate>)delegate;
 
@@ -106,14 +113,16 @@ extern NSString * const MyStellarChanged;
 
 // lookup the current semester from the server and remove old classes based on server response
 + (void) removeOldFavorites: (id<ClearMyStellarDelegate>)delegate;
-+ (StellarClass *) getOldClass: (StellarClass *)class;
 
 + (NSArray *) allCourses;
 
 + (NSArray *) myStellarClasses;
 
++ (NSArray *) sortedAnnouncements: (StellarClass *)class;
+
 #pragma mark factory methods for stellar data objects (currently using CoreData)
-+ (StellarClass *) emptyClassWithMasterId: (NSString *)masterSubjectId;
++ (StellarCourse *) courseWithId: (NSString *)courseId;
++ (StellarClass *) classWithMasterId: (NSString *)masterId;
 
 #pragma mark factory JSON -> Stellar
 + (StellarClass *) StellarClassFromDictionary: (NSDictionary *)aDict;
@@ -122,5 +131,3 @@ extern NSString * const MyStellarChanged;
 + (StellarAnnouncement *) stellarAnnouncementFromDict: (NSDictionary *)dict;
 
 @end
-
-NSInteger classNameCompare(id class1, id class2, void *context);

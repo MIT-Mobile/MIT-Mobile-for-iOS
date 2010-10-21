@@ -1,27 +1,38 @@
-
 #import "StellarClassesTableController.h"
+#import "StellarCoursesTableController.h"
 #import "StellarDetailViewController.h"
 #import "StellarClassTableCell.h"
+#import "MITModuleList.h"
+#import "MITModule.h"
 #import "MITLoadingActivityView.h"
 #import "MITSearchEffects.h"
 #import "UITableView+MITUIAdditions.h"
+#import "MultiLineTableViewCell.h"
 
+
+@interface StellarClassesTableController (Private)
+- (void) alertViewCancel: (UIAlertView *)alertView;
+- (void) alertView:(UIAlertView *)alertView didDismissWithButtonIndex: (NSInteger)buttonIndex;
+@end
 
 @implementation StellarClassesTableController
 @synthesize classes, currentClassLoader;
 @synthesize loadingView;
+@synthesize url;
 
 - (id) initWithCourse: (StellarCourse *)aCourse {
 	if (self = [super initWithStyle:UITableViewStylePlain]) {
 		course = [aCourse retain];
 		classes = [[NSArray array] retain];
 		loadingView = nil;
+		url = [[MITModuleURL alloc] initWithTag:StellarTag];
 	}
 	return self;
 }
 
 - (void) dealloc {
 	currentClassLoader.tableController = nil;
+	[url release];
 	[loadingView release];
 	[currentClassLoader release];
 	[classes release];
@@ -40,6 +51,8 @@
 }
 	
 - (void) viewDidLoad {
+    [MultiLineTableViewCell setNeedsRedrawing:YES];
+    
 	self.title = [@"Course " stringByAppendingString:course.number];
 	self.currentClassLoader = [[LoadClassesInTable new] autorelease];
 	self.currentClassLoader.tableController = self;
@@ -52,6 +65,12 @@
 	[self showLoadingView];
 	
 	[StellarModel loadClassesForCourse:course delegate:self.currentClassLoader];
+	
+	[url setPathWithViewController:self extension:course.number];
+}
+
+- (void) viewDidAppear: (BOOL)animated {
+	[url setAsModulePath];
 }
 
 - (NSInteger) numberOfSectionsInTableView: (UITableView *)tableView {
@@ -61,7 +80,7 @@
 - (UITableViewCell *)tableView: (UITableView *)tableView cellForRowAtIndexPath: (NSIndexPath *)indexPath {
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"StellarClasses"];
 	if(cell == nil) {
-		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"StellarClasses"] autorelease];
+		cell = [[[StellarClassTableCell alloc] initWithReusableCellIdentifier:@"StellarClasses"] autorelease];
 	}
 	
 	StellarClass *stellarClass = [classes objectAtIndex:indexPath.row];
@@ -76,6 +95,10 @@
 	[StellarDetailViewController 
 		launchClass:(StellarClass *)[classes objectAtIndex:indexPath.row]
 		viewController: self];
+}
+
+- (CGFloat) tableView: (UITableView *)tableView heightForRowAtIndexPath: (NSIndexPath *)indexPath {
+	return [StellarClassTableCell cellHeightForTableView:tableView class:[classes objectAtIndex:indexPath.row]];
 }
 
 - (void) alertView:(UIAlertView *)alertView didDismissWithButtonIndex: (NSInteger)buttonIndex {
@@ -103,15 +126,15 @@
 - (void) handleCouldNotReachStellar {
 	if(tableController.currentClassLoader == self) {
 		[tableController hideLoadingView];
-		
-		UIAlertView *alert = [[UIAlertView alloc] 
-			initWithTitle:@"Connection Failed" 
-			message:[NSString stringWithFormat:@"Could not connect to Stellar to retrieve classes for %@, please try again later", tableController.title]
-			delegate:tableController
-			cancelButtonTitle:@"OK" 
-			otherButtonTitles:nil];
-		[alert show];
-        [alert release];
 	}
 }
+
+- (id<UIAlertViewDelegate>) standardErrorAlertDelegate {
+	if(tableController.currentClassLoader == self) {
+		return tableController;
+	} else {
+		return nil;
+	}
+}
+	
 @end

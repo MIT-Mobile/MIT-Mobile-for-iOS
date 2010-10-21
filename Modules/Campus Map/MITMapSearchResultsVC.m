@@ -7,6 +7,7 @@
 #import "TouchableTableView.h"
 #import "MITUIConstants.h"
 #import "UITableView+MITUIAdditions.h"
+#import "MultiLineTableViewCell.h"
 
 @implementation MITMapSearchResultsVC
 @synthesize searchResults = _searchResults;
@@ -67,10 +68,9 @@
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+	static NSString* CellIdentifier = @"Cell";
+	
+	UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[MITMapSearchResultCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
@@ -97,7 +97,8 @@
 	MITMapDetailViewController* detailsVC = [[[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
 																						  bundle:nil] autorelease];
 	
-	detailsVC.annotation = [self.searchResults objectAtIndex:indexPath.row];
+	MITMapSearchResultAnnotation* annotation = (MITMapSearchResultAnnotation*)[self.searchResults objectAtIndex:indexPath.row];
+	detailsVC.annotation = annotation;
 	detailsVC.title = @"Info";
 	detailsVC.campusMapVC = self.campusMapVC;
 
@@ -108,6 +109,9 @@
 	else if(self.campusMapVC.lastSearchText != nil && self.campusMapVC.lastSearchText.length > 0)
 	{
 		detailsVC.queryText = self.campusMapVC.lastSearchText;
+		[self.campusMapVC.url setPath:[NSString stringWithFormat:@"detail/%@", annotation.uniqueID] query:self.campusMapVC.lastSearchText];
+		[self.campusMapVC.url setAsModulePath];
+		[self.campusMapVC setURLPathUserLocation];
 	}
 	
 	[self.campusMapVC.navigationController pushViewController:detailsVC animated:YES];
@@ -124,9 +128,9 @@
 	
 	MITMapSearchResultAnnotation* annotation = [self.searchResults objectAtIndex:indexPath.row];
 	
-	CGFloat width = self.view.frame.size.width - 47.0;
+	CGFloat width = self.view.frame.size.width - 33.0;
 	
-	CGSize labelSize = [annotation.name sizeWithFont:[UIFont systemFontOfSize:17]
+	CGSize labelSize = [annotation.name sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
 								   constrainedToSize:CGSizeMake(width, self.view.frame.size.height)
 									   lineBreakMode:UILineBreakModeWordWrap];
 	
@@ -134,18 +138,19 @@
 	
 	NSString *detailString = [NSString stringWithFormat:@"Building %@", annotation.bldgnum];
 	
-	labelSize = [detailString sizeWithFont:[UIFont systemFontOfSize:14]
+	labelSize = [detailString sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
 						 constrainedToSize:CGSizeMake(width, 200.0)
 							 lineBreakMode:UILineBreakModeWordWrap];
 	
-	return (height + labelSize.height) * 1.2 + 6.0;
+	CGFloat cellheight = round((height + labelSize.height) * 1.2 + 6.0);
 	
-	
+	return cellheight;
+
 }
 
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	return [UITableView ungroupedSectionHeaderWithTitle:
-			[NSString stringWithFormat:@"%d matches found.", self.searchResults.count]];
+			[NSString stringWithFormat:@"%d found", self.searchResults.count]];
 }
 
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

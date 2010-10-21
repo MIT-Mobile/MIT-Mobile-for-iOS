@@ -17,18 +17,25 @@
 // keys for NSUserDefaults dictionary go here (app preferences)
 NSString * const MITModuleTabOrderKey = @"MITModuleTabOrder";
 NSString * const MITActiveModuleKey = @"ActiveModule";
+NSString * const MITNewsTwoFirstRunKey = @"MITNews2ClearedCachedArticles";
+NSString * const MITEventsModuleInSortOrderKey = @"MITEventsModuleInSortOrder";
 NSString * const EmergencyUnreadCountKey = @"UnreadEmergencyCount";
 NSString * const ShuttleSubscriptionsKey = @"ActiveShuttleSubscriptions";
+NSString * const StellarTermKey = @"StellarTerm";
+NSString * const TwitterShareUsernameKey = @"TwitterShareUsername";
 NSString * const MITDeviceIdKey = @"device_id";
 NSString * const MITPassCodeKey = @"pass_key";
 NSString * const DeviceTokenKey = @"DeviceToken";
 NSString * const MITUnreadNotificationsKey = @"UnreadNotifications";
 NSString * const PushNotificationSettingsKey = @"ModulesDisabledForPush";
+NSString * const MITModulesSavedStateKey = @"MITModulesSavedState";
+NSString * const CachedMapSearchQueryKey = @"CachedMapSearchQuerey";
 
 NSString * const MITInternalURLScheme = @"mitmobile";
 
 
 // module tags
+NSString * const CalendarTag   = @"calendar";
 NSString * const EmergencyTag  = @"emergencyinfo";
 NSString * const CampusMapTag  = @"campusmap";
 NSString * const NewsOfficeTag = @"newsoffice";
@@ -41,12 +48,15 @@ NSString * const AboutTag      = @"about";
 
 // notification names
 NSString * const EmergencyInfoDidLoadNotification = @"MITEmergencyInfoDidLoadNotification";
+NSString * const EmergencyInfoDidFailToLoadNotification = @"MITEmergencyInfoDidFailToLoadNotification";
 NSString * const EmergencyInfoDidChangeNotification = @"MITEmergencyInfoDidChangeNotification";
 NSString * const EmergencyContactsDidLoadNotification = @"MITEmergencyContactsDidLoadNotification";
 
 NSString * const ShuttleAlertRemoved = @"MITShuttleAlertRemovedNotification";
 
 NSString * const UnreadBadgeValuesChangeNotification = @"UnreadBadgeValuesChangeNotification";
+
+NSString * const MyStellarAlertNotification = @"MyStellarAlertNotification";
 
 // core data entity names
 NSString * const NewsStoryEntityName = @"NewsStory";
@@ -61,6 +71,12 @@ NSString * const StellarStaffMemberEntityName = @"StellarStaffMember";
 NSString * const StellarAnnouncementEntityName = @"StellarAnnouncement";
 NSString * const EmergencyInfoEntityName = @"EmergencyInfo";
 NSString * const EmergencyContactEntityName = @"EmergencyContact";
+NSString * const ShuttleRouteEntityName = @"ShuttleRouteCache";
+NSString * const ShuttleStopEntityName = @"ShuttleStopLocation";
+NSString * const ShuttleRouteStopEntityName = @"ShuttleRouteStop";
+NSString * const CalendarEventEntityName = @"MITCalendarEvent";
+NSString * const CalendarCategoryEntityName = @"EventCategory";
+NSString * const CampusMapSearchEntityName = @"MapSearch";
 
 // resource names
 
@@ -86,3 +102,11 @@ NSString * const MITImageNameScrollTabBackgroundTranslucent = @"global/scrolltab
 NSString * const MITImageNameScrollTabLeftEndCap = @"global/scrolltabs-leftarrow.png";
 NSString * const MITImageNameScrollTabRightEndCap = @"global/scrolltabs-rightarrow.png";
 NSString * const MITImageNameScrollTabSelectedTab = @"global/scrolltabs-selected.png";
+
+NSString * const MITImageNameLeftArrow = @"global/arrow-white-left.png";
+NSString * const MITImageNameRightArrow = @"global/arrow-white-right.png";
+NSString * const MITImageNameUpArrow = @"global/arrow-white-up.png";
+NSString * const MITImageNameDownArrow = @"global/arrow-white-down.png";
+
+NSString * const MITImageNameSearch = @"global/search.png";
+NSString * const MITImageNameBookmark = @"global/bookmark.png";

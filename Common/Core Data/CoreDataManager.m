@@ -46,15 +46,6 @@
 	return [[CoreDataManager coreDataManager] insertNewObjectWithNoContextForEntity:entityName];
 }
 
-// note this function will not handle objects that have circular references correctly
-+(id)insertObjectGraph:(NSManagedObject *)managedObject {
-	return [[CoreDataManager coreDataManager] insertObjectGraph:managedObject];
-}
-
-+(id)insertObjectGraph:(NSManagedObject *)managedObject context:(NSManagedObjectContext *)context {
-	return [[CoreDataManager coreDataManager] insertObjectGraph:managedObject context:context];
-}
-
 +(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate sortDescriptors:(NSArray *)sortDescriptors {
     return [[CoreDataManager coreDataManager] objectsForEntity:entityName matchingPredicate:predicate sortDescriptors:sortDescriptors];
 }
@@ -79,6 +70,13 @@
 	[[CoreDataManager coreDataManager] saveData];
 }
 
++(void)saveDataWithTemporaryMergePolicy:(id)temporaryMergePolicy {
+    NSManagedObjectContext *context = [CoreDataManager managedObjectContext];
+    id originalMergePolicy = [context mergePolicy];
+    [context setMergePolicy:NSOverwriteMergePolicy];
+	[self saveData];
+	[context setMergePolicy:originalMergePolicy];
+}
 
 +(NSManagedObjectModel *)managedObjectModel {
 	return [[CoreDataManager coreDataManager] managedObjectModel];
@@ -152,52 +150,6 @@
 	return [self insertNewObjectForEntityForName:entityName context:nil];
 }
 
-/*
- This method is not yet fully general it would not handle circular references or attributes that
- are other managedObjects.
- */
--(id)insertObjectGraph:(NSManagedObject *)managedObject context:(NSManagedObjectContext *)context {
-	Class objectClass = [managedObject class];
-	NSManagedObject *newManagedObject = [self insertNewObjectForEntityForName:NSStringFromClass(objectClass) context:context];	
-	
-	unsigned int outCount, i;
-	
-	objc_property_t *properties = class_copyPropertyList(objectClass, &outCount);
-	
-	for (i = 0; i < outCount; i++) {
-		objc_property_t property = properties[i];
-		NSString *propertyName = [NSString stringWithCString:property_getName(property) encoding:NSASCIIStringEncoding];
-
-		id propertyValue = [managedObject performSelector:NSSelectorFromString(propertyName)];
-		
-		NSString *propertyNameWithCapital = [propertyName 
-			stringByReplacingCharactersInRange:NSMakeRange(0, 1) 
-			withString:[[propertyName substringToIndex:1] uppercaseString]];
-		
-		if(strcmp(property_getAttributes(property), "T@\"NSSet\",&,D,N") == 0) {
-			for(NSManagedObject *element in [((NSSet *)propertyValue) allObjects]) {
-				[newManagedObject 
-				 performSelector:NSSelectorFromString([NSString stringWithFormat:@"add%@Object:", propertyNameWithCapital])
-				 withObject:[self insertObjectGraph:element context:context]];
-			}
-		} else {				
-			if(![propertyValue isKindOfClass:[NSManagedObject class]]) {
-				[newManagedObject 
-					performSelector:NSSelectorFromString(
-						[NSString stringWithFormat:@"set%@:", propertyNameWithCapital])
-					withObject:[[propertyValue copy] autorelease]];
-			}
-		}
-	}
-
-	free(properties);
-	return newManagedObject;
-}
-
--(id) insertObjectGraph:(NSManagedObject *)managedObject {
-	return [self insertObjectGraph:managedObject context:self.managedObjectContext];
-}
-
 -(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate sortDescriptors:(NSArray *)sortDescriptors {
 	NSEntityDescription *entity = [NSEntityDescription entityForName:entityName inManagedObjectContext:self.managedObjectContext];
 	NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
@@ -218,7 +170,8 @@
 }
 
 -(id)getObjectForEntity:(NSString *)entityName attribute:(NSString *)attributeName value:(id)value {	
-	NSPredicate *predicate = [NSPredicate predicateWithFormat:[attributeName stringByAppendingString:@" like %@"], value];
+	NSString *predicateFormat = [attributeName stringByAppendingString:@" like %@"];
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:predicateFormat, value];
     NSArray *objects = [self objectsForEntity:entityName matchingPredicate:predicate];
     return ([objects count] > 0) ? [objects lastObject] : nil;
 }
@@ -226,16 +179,16 @@
 -(void)saveData {
 	NSError *error;
 	if (![self.managedObjectContext save:&error]) {
-//        NSLog(@"Failed to save to data store: %@", [error localizedDescription]);
-//        NSArray* detailedErrors = [[error userInfo] objectForKey:NSDetailedErrorsKey];
-//        if(detailedErrors != nil && [detailedErrors count] > 0) {
-//            for(NSError* detailedError in detailedErrors) {
-//                NSLog(@"  DetailedError: %@", [detailedError userInfo]);
-//            }
-//        }
-//        else {
-//            NSLog(@"  %@", [error userInfo]);
-//        }
+        NSLog(@"Failed to save to data store: %@", [error localizedDescription]);
+        NSArray* detailedErrors = [[error userInfo] objectForKey:NSDetailedErrorsKey];
+        if(detailedErrors != nil && [detailedErrors count] > 0) {
+            for(NSError* detailedError in detailedErrors) {
+                NSLog(@"  DetailedError: %@", [detailedError userInfo]);
+            }
+        }
+        else {
+            NSLog(@"  %@", [error userInfo]);
+        }
 	}	
 }
 
@@ -270,7 +223,7 @@
 	// override the autogenerated method -- see http://iphonedevelopment.blogspot.com/2009/09/core-data-migration-problems.html
 	NSMutableArray *models = [[NSMutableArray alloc] initWithCapacity:2];
 	// list all xcdatamodeld's here
-	NSArray *allModels = [NSArray arrayWithObjects:@"Stellar", @"PeopleDataModel", @"News", @"Emergency", nil];
+	NSArray *allModels = [NSArray arrayWithObjects:@"Stellar", @"PeopleDataModel", @"News", @"Emergency", @"ShuttleTrack", @"Calendar", @"CampusMap", nil];
 	for (NSString *modelName in allModels) {
 		NSString *path = [[NSBundle mainBundle] pathForResource:modelName ofType:@"momd"];
         NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path]];
@@ -295,7 +248,8 @@
         return persistentStoreCoordinator;
     }
 	
-	NSURL *storeURL = [NSURL fileURLWithPath:[self storeFileName]];
+    NSString *storePath = [self storeFileName];
+	NSURL *storeURL = [NSURL fileURLWithPath:storePath];
 	
 	NSError *error;
     persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: [self managedObjectModel]];
@@ -311,15 +265,35 @@
 		if (![[self storeFileName] isEqualToString:[self currentStoreFileName]]) {
 			NSLog(@"This app has been upgraded since last use of Core Data. If it crashes on launch, reinstalling should fix it.");
 			if ([self migrateData]) {
-				NSLog(@"Attempting to recreate the persistent store...");
+                // storeFileName has changed
 				storeURL = [NSURL fileURLWithPath:[self storeFileName]];
-				if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType 
-															  configuration:nil URL:storeURL options:options error:&error]) {
-					NSLog(@"Failed to recreate the persistent store: %@", [error userInfo]);
-				}
 			} else {
-				NSLog(@"Could not migrate data");
+				NSLog(@"Data migration failed! Wiping out core data.");
+                
+#ifdef USE_MOBILE_DEV
+                NSString *backupPath = [storePath stringByAppendingString:@".bak"];
+                if (![[NSFileManager defaultManager] copyItemAtPath:storePath toPath:backupPath error:&error]) {
+                    NSLog(@"Failed to copy old store, error %d: %@", [error code], [error userInfo]);
+                } else if (![[NSFileManager defaultManager] removeItemAtPath:storePath error:&error]) {
+                    NSLog(@"Failed to remove old store with error %d: %@", [error code], [error userInfo]);
+                    NSLog(@"Old store is at %@", storePath);
+                } else {
+                    NSLog(@"Old store is backed up at %@", backupPath);
+                }
+#else
+                // TODO: make this into a separate wipeout function that migrateData
+                // calls at the end regardless of outcome
+                if (![[NSFileManager defaultManager] removeItemAtPath:storePath error:&error]) {
+                    NSLog(@"Failed to remove old store with error %d: %@", [error code], [error userInfo]);
+                }
+#endif
 			}
+            
+            NSLog(@"Attempting to recreate the persistent store...");
+            if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType 
+                                                          configuration:nil URL:storeURL options:options error:&error]) {
+                NSLog(@"Failed to recreate the persistent store: %@", [error userInfo]);
+            }
 		}
     }
 	
@@ -347,7 +321,7 @@
 		NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self applicationDocumentsDirectory] error:NULL];
 		// find all files like CoreDataXML.* and pick the latest one
 		for (NSString *file in files) {
-			if ([file hasPrefix:@"CoreDataXML."]) {
+			if ([file hasPrefix:SQLLITE_PREFIX] && [file hasSuffix:@".sqlite"]) {
 				// if version is something like 3:4M, this takes 3 to be the pre-existing version
 				NSInteger version = [[[file componentsSeparatedByString:@"."] objectAtIndex:1] intValue];
 				if (version >= maxVersion) {

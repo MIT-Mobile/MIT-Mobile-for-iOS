@@ -43,10 +43,11 @@
 
 			StellarClassTime *classTime = [self.viewController.times objectAtIndex:indexPath.row];
 			if([classTime.location length]) {
+                cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
 				cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
 				cell.selectionStyle = UITableViewCellSelectionStyleBlue;
 			} else {
-				cell.accessoryView = nil;
+                cell.accessoryType = UITableViewCellAccessoryNone;
 				cell.selectionStyle = UITableViewCellSelectionStyleNone;
 			}
 			cell.textLabel.text = [self locationAndTime:indexPath.row];
@@ -86,13 +87,35 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	switch (indexPath.section) {
 		case TIMES:
-			return [MultiLineTableViewCell
-				cellHeightForTableView:tableView
-				main:[self locationAndTime:indexPath.row]
-				detail:nil
-				widthAdjustment: 26];
-			
+        {
+            StellarClassTime *classTime = [self.viewController.times objectAtIndex:indexPath.row];
+			if([classTime.location length]) {
+                return [MultiLineTableViewCell cellHeightForTableView:tableView
+                                                                 text:[self locationAndTime:indexPath.row]
+                                                           detailText:nil
+                                                        accessoryType:UITableViewCellAccessoryDetailDisclosureButton];
+			} else {
+                return [MultiLineTableViewCell cellHeightForTableView:tableView
+                                                                 text:[self locationAndTime:indexPath.row]
+                                                           detailText:nil
+                                                        accessoryType:UITableViewCellAccessoryNone];
+			}
+            /*
+             return [MultiLineTableViewCell
+             cellHeightForTableView:tableView
+             main:[self locationAndTime:indexPath.row]
+             detail:nil
+             widthAdjustment: 26];
+             */
+        }			
 		case DESCRIPTION:
+            
+            return [MultiLineTableViewCell cellHeightForTableView:tableView
+                                                             text:@"Description"
+                                                       detailText:self.viewController.stellarClass.blurb
+                                                    accessoryType:UITableViewCellAccessoryNone]
+            - (CELL_VERTICAL_PADDING - DESCRIPTION_PADDING);
+            /*
 			return [MultiLineTableViewCell 
 					cellHeightForTableView:tableView
 					main:@"Description"
@@ -100,6 +123,7 @@
 					accessoryType:UITableViewCellAccessoryNone
 					isGrouped:NO
 					topPadding:DESCRIPTION_PADDING]; 
+            */
 	}
 	return 0;
 } 

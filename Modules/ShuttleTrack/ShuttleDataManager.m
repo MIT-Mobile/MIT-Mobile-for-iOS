@@ -1,70 +1,34 @@
-
 #import "ShuttleDataManager.h"
-#import "NSString+SBJSON.h"
 #import "ShuttleRoute.h"
 #import "ShuttleStop.h"
-#import "RouteStopSchedule.h"
+#import "ShuttleRouteStop.h"
+#import "CoreDataManager.h"
+#import "MITConstants.h"
 
 static ShuttleDataManager* s_dataManager = nil;
-
-@interface ShuttleDataManager ()
-
-@property (nonatomic, readonly) NSString *s_apiRoutes;
-@property (nonatomic, readonly) NSString *s_apiStops;
-@property (nonatomic, readonly) NSString *s_apiRouteInfo;
-@property (nonatomic, readonly) NSString *s_apiStopInfo;
-
-@end
-
 
 @interface ShuttleDataManager(Private)
 
 -(void) sendRoutesToDelegates:(NSArray*)routes;
 -(void) sendStopsToDelegates:(NSArray*)routes;
 -(void) sendStopToDelegates:(NSArray*)shuttleStopSchedules forStopID:(NSString*)stopID;
--(void) sendRouteToDelegates:(ShuttleRoute*)shuttleRoute forRouteID:(NSString*)routeID;
+-(void) sendRouteToDelegates:(ShuttleRoute *)route forRouteID:(NSString*)routeID;
+
+- (ShuttleRoute *)shuttleRouteWithID:(NSString *)routeID;
+- (ShuttleRouteCache *)routeCacheWithID:(NSString *)routeID;
+- (ShuttleStop *)stopWithRoute:(NSString *)routeID stopID:(NSString *)stopID error:(NSError **)error;
+- (ShuttleStopLocation *)stopLocationWithID:(NSString *)stopID;
 
 @end
 
 
 @implementation ShuttleDataManager
 @synthesize shuttleRoutes = _shuttleRoutes;
-@synthesize shuttleStops = _shuttleStops;
 @synthesize shuttleRoutesByID = _shuttleRoutesByID;
+@synthesize stopLocations = _stopLocations;
+@synthesize stopLocationsByID = _stopLocationsByID;
 
-@dynamic s_apiRoutes, s_apiStops, s_apiRouteInfo, s_apiStopInfo;
-
-- (NSString *)s_apiRoutes {
-    static NSString* s_apiRoutes = nil;
-    if (!s_apiRoutes) {
-        s_apiRoutes = [[NSString stringWithFormat:@"%@shuttles/?command=routes&compact=true", MITMobileWebAPIURLString] retain];
-    }
-    return s_apiRoutes;
-}
-
-- (NSString *)s_apiStops {
-    static NSString* s_apiStops = nil;
-    if (!s_apiStops) {
-        s_apiStops = [[NSString stringWithFormat:@"%@shuttles/?command=stops", MITMobileWebAPIURLString] retain];
-    }
-    return s_apiStops;
-}
-
-- (NSString *)s_apiRouteInfo {
-    static NSString* s_apiRouteInfo = nil;
-    if (!s_apiRouteInfo) {
-        s_apiRouteInfo = [[NSString stringWithFormat:@"%@shuttles/?command=routeInfo&id=%%@&full=true", MITMobileWebAPIURLString] retain];
-    }
-    return s_apiRouteInfo;
-}
-
-- (NSString *)s_apiStopInfo {
-    static NSString* s_apiStopInfo = nil;
-    if (!s_apiStopInfo) {
-        s_apiStopInfo = [[NSString stringWithFormat:@"%@shuttles/?command=stopInfo&id=%%@", MITMobileWebAPIURLString] retain];
-    }
-    return s_apiStopInfo;
-}
+NSString * const shuttlePathExtension = @"shuttles/";
 
 + (ShuttleDataManager *)sharedDataManager {
     @synchronized(self) {
@@ -80,7 +44,6 @@ static ShuttleDataManager* s_dataManager = nil;
 -(void) dealloc
 {
 	[_shuttleRoutes release];
-	[_shuttleStops release];
 	[_shuttleRoutesByID release];
 	
 	[_registeredDelegates release];
@@ -88,44 +51,193 @@ static ShuttleDataManager* s_dataManager = nil;
 	[super dealloc];
 }
 
+
+- (id)init {
+	_shuttleRoutes = nil;
+	_shuttleRoutesByID = nil;
+	_stopLocations = nil;
+	_stopLocationsByID = nil;
+	
+	// populate route cache in memory
+	_shuttleRoutes = [[NSMutableArray alloc] init];	
+	_shuttleRoutesByID = [[NSMutableDictionary alloc] init];
+	
+	NSPredicate *matchAll = [NSPredicate predicateWithFormat:@"TRUEPREDICATE"];
+    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"sortOrder" ascending:YES];
+    NSArray *cachedRoutes = [CoreDataManager objectsForEntity:ShuttleRouteEntityName
+                                            matchingPredicate:matchAll
+                                              sortDescriptors:[NSArray arrayWithObject:sort]];
+	[sort release];
+	//NSLog(@"%d routes cached", [cachedRoutes count]);
+	
+	for (ShuttleRouteCache *cachedRoute in cachedRoutes) {
+		NSString *routeID = cachedRoute.routeID;
+		ShuttleRoute *route = [[ShuttleRoute alloc] initWithCache:cachedRoute];
+		//NSLog(@"fetched route %@ from core data", route.routeID);
+		[_shuttleRoutes addObject:route];
+		[_shuttleRoutesByID setValue:route forKey:routeID];
+		[route release];
+	}
+	
+	return self;
+}
+
+# pragma mark core data abstraction
+
+- (NSArray *)shuttleStops
+{
+	NSArray *routeStops = [CoreDataManager objectsForEntity:ShuttleRouteStopEntityName
+										  matchingPredicate:[NSPredicate predicateWithFormat:@"TRUEPREDICATE"]];
+	NSMutableArray *stops = [NSMutableArray arrayWithCapacity:[routeStops count]];
+	for (ShuttleRouteStop *routeStop in routeStops) {
+		ShuttleStop *stop = [[[ShuttleStop alloc] initWithRouteStop:routeStop] autorelease];
+		[stops addObject:stop];
+	}
+	
+	return stops;
+}
+
++ (ShuttleRoute *)shuttleRouteWithID:(NSString *)routeID
+{
+	return [[ShuttleDataManager sharedDataManager] shuttleRouteWithID:routeID];
+}
+
+- (ShuttleRoute *)shuttleRouteWithID:(NSString *)routeID
+{
+	return [_shuttleRoutesByID objectForKey:routeID];
+}
+
++ (ShuttleRouteCache *)routeCacheWithID:(NSString *)routeID
+{
+	return [[ShuttleDataManager sharedDataManager] routeCacheWithID:routeID];
+}
+
+- (ShuttleRouteCache *)routeCacheWithID:(NSString *)routeID
+{
+	NSPredicate *pred = [NSPredicate predicateWithFormat:@"routeID LIKE %@", routeID];
+	NSArray *routeCaches = [CoreDataManager objectsForEntity:ShuttleRouteEntityName matchingPredicate:pred];
+	ShuttleRouteCache *routeCache = nil;
+	if ([routeCaches count] == 0) {
+		NSManagedObject *newRoute = [CoreDataManager insertNewObjectForEntityForName:ShuttleRouteEntityName];
+		[newRoute setValue:routeID forKey:@"routeID"];
+		routeCache = (ShuttleRouteCache *)newRoute;
+	} else {
+		routeCache = [routeCaches lastObject];
+	}
+	return routeCache;
+}
+
++ (ShuttleStop *)stopWithRoute:(NSString *)routeID stopID:(NSString *)stopID error:(NSError **)error
+{
+	return [[ShuttleDataManager sharedDataManager] stopWithRoute:routeID stopID:stopID error:error];
+}
+
+- (ShuttleStop *)stopWithRoute:(NSString *)routeID stopID:(NSString *)stopID error:(NSError **)error
+{
+	ShuttleStop *stop = nil;
+	ShuttleRoute *route = [_shuttleRoutesByID objectForKey:routeID];
+	if (route != nil) {
+        for (ShuttleStop *aStop in route.stops) {
+            if ([aStop.stopID isEqualToString:stopID]) {
+                stop = aStop;
+                break;
+            }
+        }
+        
+        if (stop == nil) {
+            //NSLog(@"attempting to create new ShuttleStop for stop %@ on route %@", stopID, routeID);
+            ShuttleStopLocation *stopLocation = [self stopLocationWithID:stopID];
+            stop = [[[ShuttleStop alloc] initWithStopLocation:stopLocation routeID:routeID] autorelease];
+        }
+        
+	} else {
+		if (error != NULL) {
+        NSString *message = [NSString stringWithFormat:@"route %@ does not exist", routeID];
+        *error = [NSError errorWithDomain:@"MIT Mobile" code:4567 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:message, @"message", nil]];
+    }
+		return nil;
+    }
+	
+	return stop;
+}
+
++ (ShuttleStopLocation *)stopLocationWithID:(NSString *)stopID
+{
+	return [[ShuttleDataManager sharedDataManager] stopLocationWithID:stopID];
+}
+
+- (ShuttleStopLocation *)stopLocationWithID:(NSString *)stopID
+{
+	if (_stopLocations == nil) {
+		// populate stop cache in memory
+		
+		_stopLocations = [[NSMutableArray alloc] init];
+		_stopLocationsByID = [[NSMutableDictionary alloc] init];
+		NSPredicate *matchAll = [NSPredicate predicateWithFormat:@"TRUEPREDICATE"];
+		NSArray *stopLocations = [CoreDataManager objectsForEntity:ShuttleStopEntityName matchingPredicate:matchAll];
+		
+		for (ShuttleStopLocation *stopLocation in stopLocations) {
+			NSString *stopID = [stopLocation stopID];
+			[_stopLocations addObject:stopLocation];
+			[_stopLocationsByID setObject:stopLocation forKey:stopID];
+		}
+	}
+	
+	ShuttleStopLocation *stopLocation = [_stopLocationsByID objectForKey:stopID];
+	if (stopLocation == nil) {
+		NSManagedObject *newStopLocation = [CoreDataManager insertNewObjectForEntityForName:ShuttleStopEntityName];
+		[newStopLocation setValue:stopID forKey:@"stopID"];
+		stopLocation = (ShuttleStopLocation *)newStopLocation;	
+		[_stopLocations addObject:stopLocation];
+		[_stopLocationsByID setObject:stopLocation forKey:stopID];
+	}
+	return stopLocation;
+}
+
+#pragma mark -
+
 -(void) requestRoutes
 {
-	PostData* postData = [[[PostData alloc] initWithDelegate:self] autorelease];
-	postData.api = self.s_apiRoutes;
-	postData.useNetworkActivityIndicator = YES;
-	[postData getDataFromURL:[NSURL URLWithString:self.s_apiRoutes]];
+	MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
+	BOOL dispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"routes", @"command", @"true", @"compact", nil]
+						   pathExtension:shuttlePathExtension];
+	if (!dispatched) {
+		NSLog(@"%@", @"problem making routes api request");
+	}
 }
 
 -(void) requestStops
 {
-	PostData* postData = [[[PostData alloc] initWithDelegate:self] autorelease];
-	postData.api = self.s_apiStops;
-	postData.useNetworkActivityIndicator = YES;
-	[postData getDataFromURL:[NSURL URLWithString:self.s_apiStops]];
+	MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
+	BOOL dispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"stops", @"command", nil]
+						   pathExtension:shuttlePathExtension];
+	if (!dispatched) {
+		NSLog(@"%@", @"problem making stops api request");
+	}
 }
 
 
 -(void) requestStop:(NSString*)stopID
 {
-	NSString* urlString = [NSString stringWithFormat:self.s_apiStopInfo, stopID];
-	PostData* postData = [[[PostData alloc] initWithDelegate:self] autorelease];
-	postData.api = self.s_apiStopInfo;
-	postData.userData = [NSDictionary dictionaryWithObject:stopID forKey:@"stopID"];
-	postData.useNetworkActivityIndicator = YES;
-	[postData getDataFromURL:[NSURL URLWithString:urlString]];
+	MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
+	BOOL dispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"stopInfo", @"command", stopID, @"id", nil]
+						   pathExtension:shuttlePathExtension];
+	if (!dispatched) {
+		NSLog(@"%@", @"problem making single stop api request");
+	}
 }
 
 -(void) requestRoute:(NSString*)routeID
-{
-	NSString* urlString = [NSString stringWithFormat:self.s_apiRouteInfo, routeID];
-	PostData* postData = [[[PostData alloc] initWithDelegate:self] autorelease];
-	postData.api = self.s_apiRouteInfo;
-	postData.userData = [NSDictionary dictionaryWithObject:routeID forKey:@"routeID"];
-	postData.useNetworkActivityIndicator = YES;
-	[postData getDataFromURL:[NSURL URLWithString:urlString]];
+{	MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
+	BOOL dispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"routeInfo", @"command", routeID, @"id", @"true", @"full", nil]
+						   pathExtension:shuttlePathExtension];
+	if (!dispatched) {
+		NSLog(@"%@", @"problem making single route api request");
+	}
 }
 
 #pragma mark Delegate Message distribution
+
 -(void) sendRoutesToDelegates:(NSArray*)routes
 {
 	for (id<ShuttleDataManagerDelegate> delegate in _registeredDelegates)
@@ -156,12 +268,12 @@ static ShuttleDataManager* s_dataManager = nil;
 	}
 }
 
--(void) sendRouteToDelegates:(ShuttleRoute*)shuttleRoute forRouteID:(NSString*)routeID
-{
+-(void) sendRouteToDelegates:(ShuttleRoute *)route forRouteID:(NSString*)routeID
+{	
 	for (id<ShuttleDataManagerDelegate> delegate in _registeredDelegates)
 	{
 		if ([delegate respondsToSelector:@selector(routeInfoReceived:forRouteID:)]) {
-			[delegate routeInfoReceived:shuttleRoute forRouteID:routeID];
+			[delegate routeInfoReceived:route forRouteID:routeID];
 		}
 	}
 }
@@ -183,120 +295,145 @@ static ShuttleDataManager* s_dataManager = nil;
 -(void) unregisterDelegate:(id<ShuttleDataManagerDelegate>)delegate
 {
 	[_registeredDelegates removeObject:delegate];
+
+	if ([[CoreDataManager managedObjectContext] hasChanges]) {
+		[CoreDataManager saveData];
+	}
 }
 
 
+#pragma mark JSONLoadedDelegate
 
-#pragma mark PostDataDelegate
+- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result
+{	
+	if ([[request.params valueForKey:@"command"] isEqualToString:@"routes"] && [result isKindOfClass:[NSArray class]]) {
 
-// data was received from the post data request. 
--(void) postData:(PostData*)postData receivedData:(NSData*) data
-{
-	NSString* results = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-	
-	if ([postData.api isEqualToString:(NSString*)self.s_apiRoutes]) {
-		NSArray* routesArray = [results JSONValue];
+		BOOL routesChanged = NO;
 		
-		NSMutableArray* array = [[NSMutableArray alloc] initWithCapacity:routesArray.count];
-		NSMutableDictionary* routesDict = [[NSMutableDictionary alloc] initWithCapacity:routesArray.count];
+		NSMutableArray *routeIDs = [[NSMutableArray alloc] initWithCapacity:[result count]];
+        NSInteger sortOrder = 0;
 		
-		for (NSDictionary* dictionary in routesArray) 
-		{
-			ShuttleRoute* route = [[[ShuttleRoute alloc] initWithDictionary:dictionary] autorelease];
-			[array addObject:route];
-			[routesDict setObject:route forKey:route.routeID];
-		}
-		
-		@synchronized(self)
-		{
-			[_shuttleRoutes release];
-			_shuttleRoutes = nil;
-			_shuttleRoutes = array;
+		for (NSDictionary *routeInfo in result) {
+
+			NSString *routeID = [routeInfo objectForKey:@"route_id"];
+
+			[routeIDs addObject:routeID];
 			
-			[_shuttleRoutesByID release];
-			_shuttleRoutesByID = nil;
-			_shuttleRoutesByID = routesDict;
+			ShuttleRoute *route = [_shuttleRoutesByID objectForKey:routeID];
+			if (route == nil) {
+				route = [[[ShuttleRoute alloc] initWithDictionary:routeInfo] autorelease];
+				[_shuttleRoutes addObject:route];
+				[_shuttleRoutesByID setValue:route forKey:routeID];
+				routesChanged = YES;
+			}
+			[route updateInfo:routeInfo];
+            if (route.sortOrder != sortOrder) {
+                route.sortOrder = sortOrder;
+                routesChanged = YES;
+            }
+            sortOrder++;
+		}
+
+		// prune routes that don't exist anymore
+		NSPredicate *missing = [NSPredicate predicateWithFormat:@"NOT (routeID IN %@)", routeIDs];
+		NSArray *missingRoutes = [_shuttleRoutes filteredArrayUsingPredicate:missing];
+		
+		for (ShuttleRoute *route in missingRoutes) {
+			NSString *routeID = route.routeID;
+			[CoreDataManager deleteObject:route.cache];
+			[_shuttleRoutesByID setValue:nil forKey:routeID];
+			[_shuttleRoutes removeObject:route];
+			route = nil;
+			routesChanged = YES;
 		}
 		
+		if (routesChanged) {
+			[CoreDataManager saveData];
+		}
+		
+		[routeIDs release];
 		
 		[self sendRoutesToDelegates:_shuttleRoutes];
-		
-		
 	}
-	else if([postData.api isEqualToString:(NSString*)self.s_apiStops])
-	{
-		NSArray* stopsArray = [results JSONValue];
+	else if ([[request.params valueForKey:@"command"] isEqualToString:@"stops"] && [result isKindOfClass:[NSArray class]]) {
+
+		NSMutableArray* array = [[NSMutableArray alloc] initWithCapacity:[result count]];
 		
-		NSMutableArray* array = [[NSMutableArray alloc] initWithCapacity:stopsArray.count];
-	
-		for (NSDictionary* dictionary in stopsArray)
-		{
+		for (NSDictionary* dictionary in result) {
 			ShuttleStop* shuttleStop = [[[ShuttleStop alloc] initWithDictionary:dictionary] autorelease];
 			[array addObject:shuttleStop];
 		}
 		
-		@synchronized(self)
-		{
-			[_shuttleStops release];
-			_shuttleStops = nil;
-			_shuttleStops = array;
-		}
-		
-		[self sendStopsToDelegates:_shuttleStops];
+		[self sendStopsToDelegates:array];
 		
 	}
-	else if([postData.api isEqualToString:(NSString*) self.s_apiStopInfo])
-	{
-		NSDictionary* dict = [results JSONValue];
-		NSArray* routesAtStop = [dict objectForKey:@"stops"];
+	else if ([[request.params valueForKey:@"command"] isEqualToString:@"stopInfo"] && [result isKindOfClass:[NSDictionary class]]) {
+
+		NSArray* routesAtStop = [result objectForKey:@"stops"]; // the api should've called this "routes", this is confusing
 		
 		NSMutableArray* schedules = [NSMutableArray arrayWithCapacity:routesAtStop.count];
-		
-		NSString* stopID = [postData.userData objectForKey:@"stopID"];
+		NSString* stopID = [request.params objectForKey:@"id"];
 		
 		for (NSDictionary* routeAtStop in routesAtStop) 
 		{
-			RouteStopSchedule* routeStopSchedule =  [[[RouteStopSchedule alloc] initWithStopID:stopID andDictionary:routeAtStop] autorelease];
-			[schedules addObject:routeStopSchedule];
+            NSError *error = nil;
+			ShuttleStop *stop = [ShuttleDataManager stopWithRoute:[routeAtStop objectForKey:@"route_id"] stopID:stopID error:&error];
+            
+            if (error != nil) {
+                NSLog(@"error getting shuttle stop. code: %d; userinfo: %@", error.code, error.userInfo);
+            }
+
+            if (stop != nil) {
+                NSNumber* next = [routeAtStop objectForKey:@"next"];
+                if (nil == next)
+                    next = [routeAtStop objectForKey:@"nextScheduled"];
+                stop.nextScheduled = [next intValue];
+                stop.predictions = [routeAtStop objectForKey:@"predictions"];
+                
+                [schedules addObject:stop];
+            }
 		}
 		
-		[self sendStopToDelegates:schedules forStopID:[postData.userData objectForKey:@"stopID"]];
+		[self sendStopToDelegates:schedules forStopID:stopID];
 	}
-	else if([postData.api isEqualToString:(NSString*) self.s_apiRouteInfo])
-	{
-		NSDictionary* routeInfo = [results JSONValue];
-		ShuttleRoute* route = [[[ShuttleRoute alloc] initWithDictionary:routeInfo] autorelease];
-		route.routeID = [postData.userData objectForKey:@"routeID"];
+	else if ([[request.params valueForKey:@"command"] isEqualToString:@"routeInfo"] && [result isKindOfClass:[NSDictionary class]]) {
+
+		NSString *routeID = [result objectForKey:@"route_id"];
+		
+		ShuttleRoute *route = [_shuttleRoutesByID objectForKey:routeID];
+		if (route == nil) {
+			ShuttleRoute *route = [[[ShuttleRoute alloc] init] autorelease];
+			[_shuttleRoutes addObject:route];
+			[_shuttleRoutesByID setValue:route forKey:routeID];
+		}
+		[route updateInfo:result];
+		
 		[self sendRouteToDelegates:route forRouteID:route.routeID];
 	}
 }
 
-// there was an error connecting to the specified URL. 
--(void) postData:(PostData*)postData error:(NSString*)error
+
+- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
 {
-	// there was an error. The delegates need to know that the request failed.
-	// Send the delegates nil responses to signal a failure
-	
-	if ([postData.api isEqualToString:self.s_apiRoutes]) 
-	{
+	if ([[request.params valueForKey:@"command"] isEqualToString:@"routes"]) {
 		[self sendRoutesToDelegates:nil];
 	}
-	else if([postData.api isEqualToString:self.s_apiStops])
-	{
+	else if ([[request.params valueForKey:@"command"] isEqualToString:@"stops"]) {
 		[self sendStopsToDelegates:nil];
 	}
-	else if([postData.api isEqualToString:self.s_apiStopInfo])
-	{
-		NSString* stopID = [postData.userData objectForKey:@"stopID"];
-		[self sendStopToDelegates:nil forStopID:stopID];
+	else if ([[request.params valueForKey:@"command"] isEqualToString:@"stopInfo"]) {
+		[self sendStopToDelegates:nil forStopID:[request.params valueForKey:@"id"]];
 	}
-	else if([postData.api isEqualToString:self.s_apiRouteInfo])
-	{
-		NSString* routeID = [postData.userData objectForKey:@"routeID"];
-		[self sendRouteToDelegates:nil forRouteID:routeID];
+	else if ([[request.params valueForKey:@"command"] isEqualToString:@"routeInfo"]) {
+		[self sendRouteToDelegates:nil forRouteID:[request.params valueForKey:@"id"]];
 	}
-	
 }
 
+-(BOOL) request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
+	// since the logic for when errors are silent versus shown is a little complicated
+	// we just turn off error messages by default and leave it to the View Controllers to implement error messages
+	// this has the disadvantage of not being to able to distinguish network errors from timeout errors
+	return NO;
+}
 
 @end

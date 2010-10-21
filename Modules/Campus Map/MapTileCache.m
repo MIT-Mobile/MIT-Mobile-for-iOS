@@ -1,6 +1,6 @@
 
 #import "MapTileCache.h"
-#import "PostData.h"
+//#import "PostData.h"
 #import "SaveOperation.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MapLevel.h"
@@ -9,6 +9,10 @@
 #define kTileSize 256
 #define LogRect(rect, message) NSLog(@"%@ rect: %f %f %f %f", message,  rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
 
+#define kLastUpdatedKey @"last_updated"
+
+
+NSString * const MapCacheReset           = @"MapCacheReset";
 
 static MapTileCache* s_cache;
 
@@ -35,6 +39,14 @@ static MapTileCache* s_cache;
 	if(self = [super init])
 	{
 		_saveOperationQueue = [[NSOperationQueue alloc] init];
+		
+		
+		NSDictionary* dictionary = [NSDictionary dictionaryWithContentsOfFile:[self mapTimestampFilename]];
+		_mapTimestamp = [[dictionary objectForKey:kLastUpdatedKey] longLongValue];
+		
+		MITMobileWebAPI* api = [MITMobileWebAPI jsonLoadedDelegate:self];
+		[api requestObject:[NSDictionary dictionaryWithObject:@"tilesupdated" forKey:@"command"] pathExtension:@"map"];
+		
 		//_recentTilesIndex = [[NSMutableArray alloc] initWithCapacity:kInMemoryTileLimit + 1];
 		//_recentTiles = [[NSMutableDictionary alloc] initWithCapacity:kInMemoryTileLimit + 1];
 	}
@@ -114,7 +126,7 @@ static MapTileCache* s_cache;
         NSString *sUrl = [NSString stringWithFormat:@"%@/%d.png", [[NSBundle mainBundle] resourcePath], level]; 
         NSURL *url = [NSURL fileURLWithPath:sUrl];
 #else
-        NSString* sUrl = [[_serviceURL absoluteString] stringByAppendingFormat:@"/tile/%d/%d/%d", level, row, col];
+        NSString* sUrl = [[_serviceURL absoluteString] stringByAppendingFormat:@"/tile2/%d/%d/%d", level, row, col];
         NSURL* url = [NSURL URLWithString:sUrl];
 #endif
 		NSURLRequest* request = [[NSURLRequest alloc] initWithURL:url];
@@ -160,7 +172,7 @@ static MapTileCache* s_cache;
 	
 }
 
-
+/*
 #pragma mark PostDataDelegate
 // data was received from the post data request. 
 -(void) postData:(PostData*)postData receivedData:(NSData*) data
@@ -187,7 +199,8 @@ static MapTileCache* s_cache;
 {
 	
 }
-
+*/
+ 
 #pragma mark SaveOperationDelegate
 -(void) saveOperationCompleteForFile:(NSString*)path withUserData:(NSDictionary*)userData
 {
@@ -263,4 +276,52 @@ static MapTileCache* s_cache;
 	
 	
 }
+
+-(NSString*) mapTimestampFilename
+{
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	NSString* documentPath = [paths objectAtIndex:0];
+	return [documentPath stringByAppendingPathComponent:@"mapTimestamp.plist"];	
+}
+
+#pragma mark JSONLoadedDelegate
+- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject
+{
+	NSDictionary* dictionary = (NSDictionary*)JSONObject;
+	
+	long long newMapTimestamp = [[dictionary objectForKey:kLastUpdatedKey] longLongValue];
+	
+	if (newMapTimestamp > _mapTimestamp) 
+	{
+		//NSLog(@"New tiles on server. Wiping out map cache");
+		
+		// store the new timestamp and wipe out the cache.
+		[dictionary writeToFile:[self mapTimestampFilename] atomically:YES];
+		
+		NSString* tileCachePath = [MapTileCache tileCachePath];
+        
+        if ([[NSFileManager defaultManager] fileExistsAtPath:tileCachePath]) {
+            NSError* error = nil;
+            [[NSFileManager defaultManager] removeItemAtPath:tileCachePath error:&error];
+            
+            if(nil != error)
+            {
+                NSLog(@"Error wiping out map cache: %@", error);
+            }
+        }
+
+		// send a notification to any observers that the map cache was reset. 
+		[[NSNotificationCenter defaultCenter] postNotificationName:MapCacheReset object:self];
+	}
+}
+
+- (BOOL) request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
+	return NO;
+}
+
+- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
+{
+	NSLog(@"Check tile update failed. ");	
+}
+
 @end

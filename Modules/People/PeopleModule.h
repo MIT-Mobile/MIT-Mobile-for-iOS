@@ -1,5 +1,6 @@
 #import "MITModule.h"
-#import "PeopleSearchViewController.h"
+
+@class PeopleSearchViewController;
 
 @interface PeopleModule : MITModule {
 	

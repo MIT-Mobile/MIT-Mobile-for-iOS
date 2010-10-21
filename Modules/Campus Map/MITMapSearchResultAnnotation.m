@@ -16,10 +16,14 @@
 @synthesize dataPopulated = _dataPopulated;
 @synthesize snippets = _snippets;
 @synthesize city = _city;
+@synthesize info = _info;
+@synthesize bookmark = _bookmark;
 
-+(NSString*) urlSearchString
-{
-	return [NSString stringWithFormat:@"%@map/?command=search&q=%%@", MITMobileWebAPIURLString];
++(void) executeServerSearchWithQuery:(NSString *)query jsonDelegate:(id<JSONLoadedDelegate>)delegate object:(id)object {
+	MITMobileWebAPI *apiRequest = [MITMobileWebAPI jsonLoadedDelegate:delegate];
+	apiRequest.userData = object;
+	[apiRequest requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"search", @"command", query, @"q", nil]
+				pathExtension:@"map/"];
 }
 
 -(void) dealloc
@@ -35,6 +39,7 @@
 	self.contents = nil;
 	self.snippets = nil;
 	self.city = nil;
+	self.info = nil;
 	
 	[super dealloc];
 }
@@ -43,6 +48,8 @@
 {
 	if(self = [super init])
 	{
+		self.info = info;
+		
 		self.architect = [info objectForKey:@"architect"];
 		self.bldgimg =   [info objectForKey:@"bldgimg"];
 		self.bldgnum =   [info objectForKey:@"bldgnum"];
@@ -76,6 +83,42 @@
 	
 }
 
+-(NSDictionary*) info
+{
+	// if there is a dictionary of info, return it. Otherwise construct the dictionary based on what we do have. 
+	if(nil != _info)
+		return _info;
+	
+	NSMutableDictionary* info = [NSMutableDictionary dictionary];
+	if (nil == self.architect)	[info setObject:self.architect	forKey:@"architect"];
+	if (nil == self.bldgimg)		[info setObject:self.bldgimg	forKey:@"bldgimg"];
+	if (nil == self.bldgnum)		[info setObject:self.bldgnum	forKey:@"bldgnum"];
+	if (nil == self.uniqueID)	[info setObject:self.uniqueID	forKey:@"id"];
+	if (nil == self.mailing)		[info setObject:self.mailing	forKey:@"mailing"];
+	if (nil == self.name)		[info setObject:self.name		forKey:@"name"];
+	if (nil == self.street)		[info setObject:self.street		forKey:@"street"];
+	if (nil == self.viewAngle)	[info setObject:self.viewAngle	forKey:@"viewangle"];
+	if (nil == self.city)		[info setObject:self.city		forKey:@"city"];
+	
+	[info setObject:[NSNumber numberWithDouble:_coordinate.latitude]	forKey:@"lat_wgs84"];
+	[info setObject:[NSNumber numberWithDouble:_coordinate.longitude]	forKey:@"long_wgs84"];
+	
+	if(nil != self.contents)
+	{
+		NSMutableArray* contents = [NSMutableArray arrayWithCapacity:self.contents.count];
+		for (NSString* content in self.contents) {
+			[contents addObject:[NSDictionary dictionaryWithObject:content forKey:@"name"]];
+		}
+		
+		[info setObject:contents forKey:@"contents"];
+	}
+
+	if(nil != self.snippets) [info setObject:self.snippets forKey:@"snippets"];
+	
+	return info;
+	
+	
+}
 -(id) initWithCoordinate:(CLLocationCoordinate2D) coordinate
 {
 	if(self = [super init])

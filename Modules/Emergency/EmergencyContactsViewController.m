@@ -4,6 +4,8 @@
 #import "UIKit+MITAdditions.h"
 #import "UITableViewCell+MITUIAdditions.h"
 #import "EmergencyData.h"
+#import "MITModuleList.h"
+#import "MITModule.h"
 
 @interface EmergencyContactsViewController(Private)
 
@@ -16,6 +18,11 @@
 
 @synthesize emergencyContacts;
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [MultiLineTableViewCell setNeedsRedrawing:YES];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	self.emergencyContacts = [[EmergencyData sharedData] allPhoneNumbers];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contactsDidLoad:) name:EmergencyContactsDidLoadNotification object:nil];
@@ -23,6 +30,8 @@
     if (!self.emergencyContacts) {
         [[EmergencyData sharedData] reloadContacts];
     }
+	
+	[MIT_MobileAppDelegate moduleForTag:EmergencyTag].currentPath = @"contacts";
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -64,11 +73,18 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
 	NSManagedObject *contactInfo = [self.emergencyContacts objectAtIndex:indexPath.row];
+    return [MultiLineTableViewCell cellHeightForTableView:tableView
+                                                     text:[self mainText:contactInfo] 
+                                               detailText:[self detailText:contactInfo] 
+                                            accessoryType:UITableViewCellAccessoryDetailDisclosureButton];
+    
+    /*
 	return [MultiLineTableViewCell
 			cellHeightForTableView:tableView
 			main:[self mainText:contactInfo]
 			detail:[self detailText:contactInfo]
 			widthAdjustment: 26];	
+    */
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -77,6 +93,7 @@
     MultiLineTableViewCell *cell = (MultiLineTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
         UIImageView *imageView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
         cell.accessoryView = imageView;
 		[cell applyStandardFonts];

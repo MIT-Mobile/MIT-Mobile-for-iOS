@@ -1,15 +1,14 @@
 #import <Foundation/Foundation.h>
 #import "MITMapRoute.h"
+#import "ShuttleRouteCache.h"
 
 @interface ShuttleRoute : NSObject <MITMapRoute> {
     NSString *_tag;
-    NSString *_title;
-    NSString *_summary;
-	NSString *_routeID;
     BOOL _gpsActive;
-    NSInteger _interval;
     BOOL _isRunning;
-    BOOL _isSafeRide;
+	BOOL _liveStatusFailed;
+	ShuttleRouteCache *_cache;
+
     NSMutableArray *_stops;
 	
 	// parsed path locations for the entire route. 
@@ -22,21 +21,27 @@
 	NSArray* _vehicleLocations;
 }
 
-- (id)initWithDictionary:(NSDictionary *)dict;
-- (void)setStopsWithArray:(NSArray *)anArray;
+- (id)initWithCache:(ShuttleRouteCache *)cachedRoute;
+- (void)updateInfo:(NSDictionary *)routeInfo;
+- (NSString *)trackingStatus;
+- (void)getStopsFromCache;
+- (void)updatePath;
 
 @property (readwrite, retain) NSString *tag;
-@property (readwrite, retain) NSString *title;
-@property (readwrite, retain) NSString *summary;
-@property (nonatomic, retain) NSString *routeID;
 @property (readwrite, retain) NSArray* vehicleLocations;
 
 @property (readonly) NSString *fullSummary;
 @property (assign) BOOL gpsActive;
-@property (assign) NSInteger interval;
 @property (assign) BOOL isRunning;
+@property (assign) BOOL liveStatusFailed;
+@property (readwrite, retain) ShuttleRouteCache *cache;
+
+@property (readwrite, retain) NSString *title;
+@property (readwrite, retain) NSString *summary;
+@property (nonatomic, retain) NSString *routeID;
+@property (assign) NSInteger interval;
 @property (assign) BOOL isSafeRide;
 @property (readwrite, retain) NSMutableArray *stops;
-
+@property (assign) NSInteger sortOrder;
 
 @end

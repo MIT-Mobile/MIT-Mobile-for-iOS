@@ -1,4 +1,3 @@
-
 #import "StellarModel.h"
 #import "StellarCourse.h"
 #import "StellarClass.h"
@@ -7,21 +6,34 @@
 #import "ConnectionWrapper.h"
 #import "CoreDataManager.h"
 
-#define MONTH 30 * 24 * 60 * 60
+#define DAY 24 * 60 * 60
+#define MONTH 30 * DAY
 
+NSString * const StellarHeader = @"Stellar";
 NSString * const MyStellarChanged = @"MyStellarChanged";
 
 /** This class is responsible for grabbing stellar data 
  the methods are written to accept callbacks, so everything is asynchronous
  
- there are three levels of data retrieval (depending on the type of query being executed)
- 
- StellarCache  (in local memory, disappears after every application launch)
+ there are two levels of data retrieval (depending on the type of query being executed)
  
  CoreData (semi permanent on disk storage)
  
  MITMobileWebAPI (requires server connection to call the mit mobile web server)
 **/
+
+
+NSInteger classNameCompare(id class1, id class2, void *context);
+NSInteger classNameInCourseCompare(id class1, id class2, void *context);
+NSString* cleanPersonName(NSString *personName);
+
+@interface StellarModel (Private)
+
++ (BOOL) classesFreshForCourse: (StellarCourse *)course;
++ (NSArray *) classesForCourse: (StellarCourse *)course;
++ (void) classesForCourseCompleteRequest:(ClassesRequest *)classesRequest;
+
+@end
 
 @implementation StellarModel
 
@@ -35,8 +47,6 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 	}
 }
 
-// TODO: Everyone of the load* calls leaks an instance each of MITMobileWebAPI and its *Request. It might take a slight redesign of this class to make them not leak.
-
 + (void) loadCoursesFromServerAndNotify: (id<CoursesLoadedDelegate>)delegate {
 	if([StellarModel coursesCached]) {
 		[delegate coursesLoaded];
@@ -49,19 +59,68 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 	[apiRequest requestObjectFromModule:@"stellar" command:@"courses" parameters:nil];
 }
 
-+ (void) loadClassesForCourse: (StellarCourse *)stellarCourse delegate: (id<ClassesLoadedDelegate>) delegate {
-	NSArray *classes = [StellarCache getClassListForCourse:stellarCourse];
-	if(classes != nil) {
-		[delegate classesLoaded:classes];
-	} else {
-		MITMobileWebAPI *apiRequest = [MITMobileWebAPI
-			jsonLoadedDelegate:[[[ClassesRequest alloc] 
-				initWithDelegate:delegate course:stellarCourse] autorelease]];
-		[apiRequest 
-			requestObjectFromModule:@"stellar" 
-			command:@"subjectList" 
-			parameters:[NSDictionary dictionaryWithObject: stellarCourse.number forKey:@"id"]];
++ (BOOL) classesFreshForCourse: (StellarCourse *)course term: (NSString *)term {
+	// check for an existance of a last cached date first
+	if (![course.term length] || !course.lastCache || !term) {
+		return NO;
 	}
+
+	// check if term is old
+	if (![course.term isEqualToString:term]) {
+		// new term remove all the classes for this course
+		[course removeStellarClasses:course.stellarClasses];
+		course.lastChecksum = nil;
+		course.lastCache = nil;
+		[CoreDataManager saveData];
+		return NO;
+	}
+		
+	return (-[course.lastCache timeIntervalSinceNow] < 2 * DAY);
+}
+	
++ (void) loadClassesForCourse: (StellarCourse *)stellarCourse delegate: (NSObject<ClassesLoadedDelegate>*) delegate {
+	ClassesRequest *classesRequest = [[[ClassesRequest alloc] initWithDelegate:delegate course:stellarCourse] autorelease];
+	// check if the current class list cache for course is old
+
+	NSString *term = [[NSUserDefaults standardUserDefaults] objectForKey:StellarTermKey];
+	if ([StellarModel classesFreshForCourse:stellarCourse term:term]) {
+		[classesRequest performSelector:@selector(notifyClassesLoadedDelegate) withObject:nil afterDelay:0.1];
+	} else {
+		// see if the class info has changed using a checksum		
+		if(stellarCourse.lastChecksum) {
+			MITMobileWebAPI *apiRequest = [MITMobileWebAPI
+										   jsonLoadedDelegate:[[[ClassesChecksumRequest alloc] initWithClassesRequest:classesRequest] autorelease]];
+		
+			[apiRequest 
+				requestObjectFromModule:@"stellar" 
+				command:@"subjectList" 
+				parameters:[NSDictionary dictionaryWithObjectsAndKeys: 
+					stellarCourse.number, @"id", 
+					@"true", @"checksum", 
+					nil]];
+		} else {
+			[self classesForCourseCompleteRequest:classesRequest];
+		}
+	}
+}
+
+/* this method is the final call to the server, to retreive all the classes for a given course
+   along with a checksum for detecting changes to a course
+ */
++ (void) classesForCourseCompleteRequest:(ClassesRequest *)classesRequest {
+	MITMobileWebAPI *apiRequest = [MITMobileWebAPI jsonLoadedDelegate:classesRequest];
+	[apiRequest 
+	 requestObjectFromModule:@"stellar" 
+	 command:@"subjectList" 
+	 parameters:[NSDictionary dictionaryWithObjectsAndKeys: 
+		classesRequest.stellarCourse.number, @"id",
+		@"true", @"checksum",
+		@"true", @"full",
+		nil]];
+}
+
++ (NSArray *) classesForCourse:(StellarCourse *)course {
+	return [[course.stellarClasses allObjects] sortedArrayUsingFunction:classNameInCourseCompare context:course];
 }
 
 + (void) executeStellarSearch: (NSString *)searchTerms delegate: (id<ClassesSearchDelegate>)delegate {
@@ -79,38 +138,30 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 }
 
 + (NSArray *) myStellarClasses {
-	NSMutableArray *classesWithNoContext = [[NSMutableArray new] autorelease];
-	for(StellarClass *class in [CoreDataManager fetchDataForAttribute:StellarClassEntityName]) {
-		[classesWithNoContext addObject:[CoreDataManager insertObjectGraph:class context:nil]];
-	}
-	[classesWithNoContext sortUsingFunction:classNameCompare context:NULL];
-	return classesWithNoContext;
+	return [[CoreDataManager objectsForEntity:StellarClassEntityName 
+				matchingPredicate:[NSPredicate predicateWithFormat:@"isFavorited == 1"]]
+			 sortedArrayUsingFunction:classNameCompare context:NULL];
+				
+}
+
++ (NSArray *) sortedAnnouncements: (StellarClass *)class {
+	return [[class.announcement allObjects]
+	 sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"pubDate" ascending:NO] autorelease]]];
 }
 
 + (void) loadAllClassInfo: (StellarClass *)class delegate: (id<ClassInfoLoadedDelegate>)delegate {
 	// there three states class info can exist in
 	// 1) just contains general information such as the name and location and instructors
-	// 2) contains all the class information (including details such as the annoucements) but may not be up-to-date
-	// 3) contains all the information and has been recently retrived from the mobile web server (therefore is up-to-date)
+	// 2) contains all the information and has been recently retrived from the mobile web server (therefore is up-to-date)
 	
-	StellarClass *generalClassInfo = [StellarCache getGeneralClassInfo:class];	
-	if(generalClassInfo) {
-		[delegate generalClassInfoLoaded:generalClassInfo];
+	
+	if([class.name length]) {
+		[delegate generalClassInfoLoaded:class];
 	}
 	
-	// check if some version of all the class data is available in cache or CoreData
-	StellarClass *allClassInfo = [StellarCache getAllClassInfo:class];
-	if(allClassInfo) {
-		[delegate initialAllClassInfoLoaded:allClassInfo];
-	} else {
-		allClassInfo = [self getOldClass:class];
-		if(allClassInfo) {
-			allClassInfo = [CoreDataManager insertObjectGraph:allClassInfo context:nil];
-			[StellarCache addAllClassInfo:allClassInfo];
-		}
-		
+	if([class.isFavorited boolValue]) {
+		[delegate initialAllClassInfoLoaded:class];
 	}
-	[delegate initialAllClassInfoLoaded:allClassInfo];
 	
 	// finally we call the server to get the most definitive data
 	MITMobileWebAPI *apiRequest = [MITMobileWebAPI
@@ -123,19 +174,8 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 		parameters:[NSDictionary dictionaryWithObject: class.masterSubjectId forKey:@"id"]];
 }
 
-+ (StellarClass *) getOldClass: (StellarClass *)class {
-	return [CoreDataManager getObjectForEntity:StellarClassEntityName attribute:@"masterSubjectId" value:class.masterSubjectId];
-}
-
 + (void) saveClassToFavorites: (StellarClass *)class {
-	StellarClass *oldClassInfo = [self getOldClass:class];
-	if(oldClassInfo) {
-		[CoreDataManager deleteObject:oldClassInfo];
-        [CoreDataManager saveData];
-	}
-	
 	class.isFavorited = [NSNumber numberWithInt:1];
-	[CoreDataManager insertObjectGraph:class];
 	[CoreDataManager saveData];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:MyStellarChanged object:nil];
@@ -143,12 +183,8 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 
 + (void) removeClassFromFavorites: (StellarClass *)class notify: (BOOL)sendNotification{
 	class.isFavorited = [NSNumber numberWithInt:0];
-	NSManagedObject *managedObject = [CoreDataManager getObjectForEntity:StellarClassEntityName attribute:@"masterSubjectId" value:class.masterSubjectId];
-	if(managedObject) {
-		[CoreDataManager deleteObject:managedObject];
-        [CoreDataManager saveData];
-	}
-	
+	[CoreDataManager saveData];
+
 	if(sendNotification) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:MyStellarChanged object:nil];
 	}
@@ -159,65 +195,88 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 }
 
 + (void) removeOldFavorites: (id<ClearMyStellarDelegate>)delegate {
+	// we call the server to get the current semester
 	NSArray *favorites = [self myStellarClasses];
-	if([favorites count]) {
-		// we call the server to get the current semester
-		MITMobileWebAPI *apiRequest = [MITMobileWebAPI
-			jsonLoadedDelegate:[[[TermRequest alloc] 
-				initWithClearMyStellarDelegate:delegate stellarClasses:favorites] autorelease]];
+	MITMobileWebAPI *apiRequest = [MITMobileWebAPI
+		jsonLoadedDelegate:[[[TermRequest alloc] 
+			initWithClearMyStellarDelegate:delegate stellarClasses:favorites] autorelease]];
 		
-		[apiRequest requestObjectFromModule:@"stellar" command:@"term" parameters:nil];
-	}
+	[apiRequest requestObjectFromModule:@"stellar" command:@"term" parameters:nil];
 }
 
-+ (StellarClass *) emptyClassWithMasterId: (NSString *)masterSubjectId {
-	StellarClass *stellarClass = (StellarClass *)[CoreDataManager insertNewObjectWithNoContextForEntity:StellarClassEntityName];
-	stellarClass.masterSubjectId = masterSubjectId;
++ (StellarCourse *) courseWithId: (NSString *)courseId {
+	return [CoreDataManager getObjectForEntity:StellarCourseEntityName attribute:@"number" value:courseId];
+}
+
++ (StellarClass *) classWithMasterId: (NSString *)masterSubjectId {
+	StellarClass *stellarClass;
+	NSArray *stellarClasses = [CoreDataManager objectsForEntity:StellarClassEntityName 
+		matchingPredicate:[NSPredicate predicateWithFormat:@"masterSubjectId == %@", masterSubjectId]];
+	if([stellarClasses count]) {
+		stellarClass = [stellarClasses objectAtIndex:0];
+	} else {
+		stellarClass = (StellarClass *)[CoreDataManager insertNewObjectForEntityForName:StellarClassEntityName];
+		stellarClass.masterSubjectId = masterSubjectId;
+	}
 	return stellarClass;
 }
 	
 + (StellarClass *) StellarClassFromDictionary: (NSDictionary *)aDict {
-	StellarClass *stellarClass = (StellarClass *)[CoreDataManager insertNewObjectWithNoContextForEntity:StellarClassEntityName];
-	stellarClass.masterSubjectId = [aDict objectForKey:@"masterId"];
-	stellarClass.name = [aDict objectForKey:@"name"];
-	stellarClass.title = [aDict objectForKey:@"title"];
-	stellarClass.blurb = [aDict objectForKey:@"description"];
-	stellarClass.term = [aDict objectForKey:@"term"];
-	stellarClass.url = [aDict objectForKey:@"stellarUrl"];
-	stellarClass.lastAccessedDate = [NSDate date];
+	StellarClass *stellarClass = [StellarModel classWithMasterId:[aDict objectForKey:@"masterId"]];
 	
-	// add the class times
-	NSInteger orderId = 0;
-	for(NSDictionary *time in (NSArray *)[aDict objectForKey:@"times"]) {
-		[stellarClass addTimesObject:[StellarModel stellarTimeFromDictionary:time class:stellarClass orderId:orderId]];
-		orderId++;
-	}
+	NSString *name = [aDict objectForKey:@"name"];
+	// if name is not defined do not attempt to overwrite with new information
+	if([name length]) {		
+		stellarClass.name = name;
+		stellarClass.title = [aDict objectForKey:@"title"];
+		stellarClass.blurb = [aDict objectForKey:@"description"];
+		stellarClass.term = [aDict objectForKey:@"term"];
+		stellarClass.url = [aDict objectForKey:@"stellarUrl"];
+		stellarClass.lastAccessedDate = [NSDate date];
 	
-	// add the class staff
-	NSDictionary *staff = (NSDictionary *)[aDict objectForKey:@"staff"];
-	NSArray *instructors = (NSArray *)[staff objectForKey:@"instructors"];
-	NSArray *tas = (NSArray *)[staff objectForKey:@"tas"];	
-	for(NSString *staff in instructors) {
-		[stellarClass addStaffObject:[StellarModel stellarStaffFromName:staff class:stellarClass type:@"instructor"]];
-	}
-	for(NSString *staff in tas) {
-		[stellarClass addStaffObject:[StellarModel stellarStaffFromName:staff class:stellarClass type:@"ta"]];
-	}
+		// add the class times
+		for(NSManagedObject *managedObject in stellarClass.times) {
+			// remove the old version of the class times
+			[CoreDataManager deleteObject:managedObject];
+		}
+		NSInteger orderId = 0;
+		for(NSDictionary *time in (NSArray *)[aDict objectForKey:@"times"]) {
+			[stellarClass addTimesObject:[StellarModel stellarTimeFromDictionary:time class:stellarClass orderId:orderId]];
+			orderId++;
+		}
+	
+		// add the class staff
+		for(NSManagedObject *managedObject in stellarClass.staff) {
+			// remove the old version of the class staff
+			[CoreDataManager deleteObject:managedObject];
+		}
+		NSDictionary *staff = (NSDictionary *)[aDict objectForKey:@"staff"];
+		NSArray *instructors = (NSArray *)[staff objectForKey:@"instructors"];
+		NSArray *tas = (NSArray *)[staff objectForKey:@"tas"];
+		for(NSString *staff in instructors) {
+			[stellarClass addStaffObject:[StellarModel stellarStaffFromName:staff class:stellarClass type:@"instructor"]];
+		}
+		for(NSString *staff in tas) {
+			[stellarClass addStaffObject:[StellarModel stellarStaffFromName:staff class:stellarClass type:@"ta"]];
+		}
 
-	
-	// add the annoucements
-	NSArray *annoucements;
-	if(annoucements = [aDict objectForKey:@"announcements"]) {
-		for(NSDictionary *annoucementDict in annoucements) {
-			[stellarClass addAnnouncementObject:[StellarModel stellarAnnouncementFromDict:annoucementDict]];
+		// add the annoucements
+		NSArray *annoucements;
+		if(annoucements = [aDict objectForKey:@"announcements"]) {
+			for(NSManagedObject *managedObject in stellarClass.announcement) {
+				// remove the old version of the class annoucements
+				[CoreDataManager deleteObject:managedObject];
+			}
+			for(NSDictionary *annoucementDict in annoucements) {
+				[stellarClass addAnnouncementObject:[StellarModel stellarAnnouncementFromDict:annoucementDict]];
+			}
 		}
 	}
-	
 	return stellarClass;
 }
 
 + (StellarClassTime *) stellarTimeFromDictionary: (NSDictionary *)time class:(StellarClass *)class orderId: (NSInteger)orderId {
-	StellarClassTime *stellarClassTime = (StellarClassTime *)[CoreDataManager insertNewObjectWithNoContextForEntity:StellarClassTimeEntityName];
+	StellarClassTime *stellarClassTime = (StellarClassTime *)[CoreDataManager insertNewObjectForEntityForName:StellarClassTimeEntityName];
 	stellarClassTime.stellarClass = class;
 	stellarClassTime.title = [time objectForKey:@"title"];
 	stellarClassTime.location = [time objectForKey:@"location"];
@@ -227,15 +286,15 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 }
 
 + (StellarStaffMember *) stellarStaffFromName: (NSString *)name class:(StellarClass *)class type: (NSString *)type {
-	StellarStaffMember *stellarStaffMember = (StellarStaffMember *)[CoreDataManager insertNewObjectWithNoContextForEntity:StellarStaffMemberEntityName];
+	StellarStaffMember *stellarStaffMember = (StellarStaffMember *)[CoreDataManager insertNewObjectForEntityForName:StellarStaffMemberEntityName];
 	stellarStaffMember.stellarClass = class;
-	stellarStaffMember.name = name;
+	stellarStaffMember.name = cleanPersonName(name);
 	stellarStaffMember.type = type;
 	return stellarStaffMember;
 }
 
 + (StellarAnnouncement *) stellarAnnouncementFromDict: (NSDictionary *)dict {
-	StellarAnnouncement *stellarAnnouncement = (StellarAnnouncement *)[CoreDataManager insertNewObjectWithNoContextForEntity:StellarAnnouncementEntityName];
+	StellarAnnouncement *stellarAnnouncement = (StellarAnnouncement *)[CoreDataManager insertNewObjectForEntityForName:StellarAnnouncementEntityName];
 	stellarAnnouncement.pubDate = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)[(NSNumber *)[dict objectForKey:@"unixtime"] doubleValue]];
 	stellarAnnouncement.title = (NSString *)[dict objectForKey:@"title"];
 	stellarAnnouncement.text = (NSString *)[dict objectForKey:@"text"];
@@ -255,13 +314,23 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 }
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
-	for(NSDictionary *aDict in (NSArray *)object) {
-		StellarCourse *stellarCourse = [CoreDataManager getObjectForEntity:StellarCourseEntityName attribute:@"number" value:[aDict objectForKey:@"short"]];
-		if(stellarCourse == nil) {
-			stellarCourse = (StellarCourse *)[CoreDataManager insertNewObjectForEntityForName:StellarCourseEntityName];
-			stellarCourse.number = [aDict objectForKey:@"short"];
+	NSArray *courses = (NSArray *)object;
+	if (courses.count == 0) {
+		// no courses to save
+		return;
+	}
+
+	for(NSDictionary *aDict in courses) {
+		StellarCourse *oldStellarCourse = [CoreDataManager getObjectForEntity:StellarCourseEntityName attribute:@"number" value:[aDict objectForKey:@"short"]];
+		if(oldStellarCourse) {
+			// delete old course (will replace all the data, occasionally non-critical relationships
+			// between a course and its subject will be lost
+			[CoreDataManager deleteObject:oldStellarCourse];
 		}
-		stellarCourse.title = [aDict objectForKey:@"name"];
+		
+		StellarCourse *newStellarCourse = (StellarCourse *)[CoreDataManager insertNewObjectForEntityForName:StellarCourseEntityName];
+		newStellarCourse.number = [aDict objectForKey:@"short"];
+		newStellarCourse.title = [aDict objectForKey:@"name"];
 	}
 	[CoreDataManager saveData];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"stellarCoursesLastSaved"];
@@ -274,11 +343,57 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 }
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	[self.coursesLoadedDelegate handleCouldNotReachStellar];
+	if([StellarModel allCourses].count) {
+		// courses failed to load, but we still have courses save on disk so it is okay
+		[self.coursesLoadedDelegate coursesLoaded];
+	}
+}
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
+	return ([StellarModel allCourses].count == 0);
+}
+
+- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error {
+	return StellarHeader;
 }
 
 @end
 
+@implementation ClassesChecksumRequest
+- (id) initWithClassesRequest: (ClassesRequest *)aClassesRequest {
+	if (self = [super init]) {
+		classesRequest = [aClassesRequest retain];
+	}
+	return self;
+}
+
+- (void) dealloc {
+	[classesRequest release];
+	[super dealloc];
+}
+
+- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
+	if([classesRequest.stellarCourse.lastChecksum isEqualToString:[(NSDictionary *)object objectForKey:@"checksum"]]) {
+		// checksum is the same no need to update class list
+		[classesRequest markCourseAsNew];
+		[classesRequest notifyClassesLoadedDelegate];
+	} else {
+		[StellarModel classesForCourseCompleteRequest:classesRequest];
+	}
+}
+
+- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
+	[classesRequest handleConnectionFailureForRequest:request];
+}
+
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
+	return YES;
+}
+
+- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error {
+	return StellarHeader;
+}
+
+@end
 @implementation ClassesRequest
 @synthesize classesLoadedDelegate, stellarCourse;
 
@@ -291,13 +406,24 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 }
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
-	NSMutableArray *classes = [NSMutableArray array];
-	for(NSDictionary *aDict in (NSArray *)object) {
-		[classes addObject:[StellarModel StellarClassFromDictionary:aDict]];
+	NSArray *classes = [object objectForKey:@"classes"];
+	for(NSDictionary *aDict in classes) {
+		[[StellarModel StellarClassFromDictionary:aDict] addCourseObject:self.stellarCourse];
 	}
-	[StellarCache addClassList:classes forCourse:self.stellarCourse];
-	[self.classesLoadedDelegate classesLoaded:classes];
+	self.stellarCourse.lastChecksum = [object objectForKey:@"checksum"];
+	[self markCourseAsNew];
+	[self notifyClassesLoadedDelegate];
 }	
+
+- (void) markCourseAsNew {
+	self.stellarCourse.lastCache = [NSDate dateWithTimeIntervalSinceNow:0];
+	self.stellarCourse.term = [[NSUserDefaults standardUserDefaults] objectForKey:StellarTermKey];
+	[CoreDataManager saveData];
+}
+	
+- (void) notifyClassesLoadedDelegate {
+	[self.classesLoadedDelegate classesLoaded:[StellarModel classesForCourse:self.stellarCourse]];
+}
 
 - (void) dealloc {
 	[classesLoadedDelegate release];
@@ -306,6 +432,18 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
 	[self.classesLoadedDelegate handleCouldNotReachStellar];
+}
+
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
+	return YES;
+}
+
+- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
+	return StellarHeader;
+}
+
+- (id<UIAlertViewDelegate>)request:(MITMobileWebAPI *)request alertViewDelegateForError:(NSError *)error {
+	return [self.classesLoadedDelegate standardErrorAlertDelegate];
 }
 
 @end
@@ -325,6 +463,7 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 	for(NSDictionary *aDict in (NSArray *)object) {
 		[classes addObject:[StellarModel StellarClassFromDictionary:aDict]];
 	}
+	[CoreDataManager saveData];
 	[classesSearchDelegate searchComplete:classes searchTerms:searchTerms];
 }	
 
@@ -336,6 +475,14 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
 	[classesSearchDelegate handleCouldNotReachStellarWithSearchTerms:searchTerms];
+}
+
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
+	return YES;
+}
+
+- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error {
+	return StellarHeader;
 }
 
 @end
@@ -361,27 +508,22 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 		return;
 	}
 	
-	// check if this class exists in the CoreData store (ie the application had some reason to save it previously)
-	// if it saved it previously we want update Class Info in the CoreData store
-	StellarClass *classFromServer = [StellarModel StellarClassFromDictionary:(NSDictionary *)object];
+	StellarClass *class = [StellarModel StellarClassFromDictionary:(NSDictionary *)object];
 	
-	StellarClass *oldClassInfo = [StellarModel getOldClass:classFromServer];
-	
-	if(oldClassInfo) {
-		// an old copy exists on disk, so remove and be sure that new copy is commited/saved to disk right now
-		classFromServer.isFavorited = oldClassInfo.isFavorited;
-		
-		[CoreDataManager deleteObject:oldClassInfo];
-		[CoreDataManager insertObjectGraph:classFromServer];
-		[CoreDataManager saveData];
-	} 
-	
-	[StellarCache addAllClassInfo:classFromServer];
-	[self.classInfoLoadedDelegate finalAllClassInfoLoaded:classFromServer];
+	[CoreDataManager saveData];
+	[self.classInfoLoadedDelegate finalAllClassInfoLoaded:class];
 }
 
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
+- (void) handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
 	[self.classInfoLoadedDelegate handleCouldNotReachStellar];
+}
+
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
+	return YES;
+}
+
+- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error {
+	return StellarHeader;
 }
 
 @end
@@ -406,6 +548,8 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
 	NSString *term = [(NSDictionary *)object objectForKey:@"term"];
+	[[NSUserDefaults standardUserDefaults] setObject:term forKey:StellarTermKey];
+	
 	NSMutableArray *oldClasses = [NSMutableArray array];
 	for(StellarClass *class in myStellarClasses) {
 		if(![term isEqualToString:class.term]) {
@@ -420,50 +564,133 @@ NSString * const MyStellarChanged = @"MyStellarChanged";
 	}
 }
 
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
+	return NO;
+}
+    
 @end
 
 
-NSInteger classNameCompare(id class1, id class2, void *context) {
-	// examples.. if class is "6.002 / 8.003", course=@"6", classPart=@"002" firstWord="6.002"
-
-	NSString *name1 = ((StellarClass *)class1).name;
-	NSString *firstWord1 = [[name1 componentsSeparatedByString:@" "] objectAtIndex:0];
-	NSArray *numberParts1 = [firstWord1 componentsSeparatedByString:@"."];
-	NSString *course1 = [numberParts1 objectAtIndex:0];
-	NSString *classPart1=nil;
-	if([numberParts1 count] > 1) {
-		classPart1 = [numberParts1 objectAtIndex:1];
-	}
-	
-	NSString *name2 = ((StellarClass *)class2).name;
-	NSString *firstWord2 = [[name2 componentsSeparatedByString:@" "] objectAtIndex:0];
-	NSArray *numberParts2 = [firstWord2 componentsSeparatedByString:@"."];
-	NSString *course2 = [numberParts2 objectAtIndex:0];
-	NSString *classPart2=nil;
-	if([numberParts2 count] > 1) {
-		classPart2 = [numberParts2 objectAtIndex:1];
-	}
-	
+NSInteger classIdCompare(NSDictionary *classId1, NSDictionary *classId2) {
 	// check the nil cases first
-	// we first order by course number
-	if(!classPart1 && !classPart2) {
-		// nothing of the format X.YYY found in the classes name string (so just do a raw comparison)
-		return [name1 compare:name2];
+	if(!classId1 && !classId2) {
+		return 0;
 	}
-	if(!classPart1) {
+	if(!classId1) {
 		return 1;
 	}
-	if(!classPart2) {
+	if(!classId2) {
 		return -1;
 	}
 	
-	if([course1 compare:course2 options:NSNumericSearch] != 0) {
-		return [course1 compare:course2 options:NSNumericSearch];
+	NSString *coursePart1 = [classId1 objectForKey:@"coursePart"];
+	NSString *classPart1 = [classId1 objectForKey:@"classPart"];
+	NSString *coursePart2 = [classId2 objectForKey:@"coursePart"];
+	NSString *classPart2 = [classId2 objectForKey:@"classPart"];
+	
+	if([coursePart1 compare:coursePart2 options:NSNumericSearch] != 0) {
+		return [coursePart1 compare:coursePart2 options:NSNumericSearch];
 	}
 	
-	if([classPart1 compare:classPart2] != 0) {
-		return [classPart1 compare:classPart2];
+	return [classPart1 compare:classPart2];
+}	
+	
+NSArray *extractClassIds(StellarClass *class) {
+	// implementing a cache for this function because
+	// this function apparantly is performance bottleneck
+	NSArray *classIds = [StellarCache getClassIdsForName:class.name];
+	if (classIds) {
+		return classIds;
 	}
 	
+	NSArray *words = [class.name componentsSeparatedByString:@" "];
+	
+	classIds = [NSArray array];
+    //filter out words that our class ids
+	for(NSString *word in words) {
+		NSArray *parts = [word componentsSeparatedByString:@"."];
+		if([parts count] == 2) {
+			classIds = [classIds arrayByAddingObject:[NSDictionary 
+				dictionaryWithObjectsAndKeys:[parts objectAtIndex:0], @"coursePart", [parts objectAtIndex:1], @"classPart", nil]
+			];
+		}
+	}
+	
+	if(class.name) {
+		[StellarCache addClassIds:classIds forName:class.name];
+	}
+	return classIds;
+}
+
+NSDictionary *firstClassId(StellarClass *class) {
+	NSArray *classIds = extractClassIds(class);
+	if([classIds count]) {
+		return [classIds objectAtIndex:0];
+	}
+	return nil;
+}
+
+// compares any two class names
+NSInteger classNameCompare(id class1, id class2, void *context) {
+	// examples.. if class is "6.002 / 8.003", coursePart=@"6", classPart=@"002" 
+
+	NSString *name1 = ((StellarClass *)class1).name;
+	NSDictionary *classId1 = firstClassId((StellarClass *)class1);
+	
+	NSString *name2 = ((StellarClass *)class2).name;
+	NSDictionary *classId2 = firstClassId((StellarClass *)class2);
+
+	NSInteger classIdCompareResult = classIdCompare(classId1, classId2);
+	if(classIdCompareResult) {
+		return classIdCompareResult;
+	}
 	return [name1 compare:name2];
+}
+
+// compares class name by the part of the name that corresponds to certain class
+NSInteger classNameInCourseCompare(id class1, id class2, void *context) {
+	NSString *courseId = ((StellarCourse *)context).number;
+	StellarClass *stellarClass1 = class1;
+	StellarClass *stellarClass2 = class2;
+	
+	NSDictionary *classId1 = nil;
+	NSArray *classIds1 = extractClassIds((StellarClass *)class1);
+	for(NSDictionary *classId in classIds1) {
+		if([[classId objectForKey:@"coursePart"] isEqualToString:courseId]) {
+			classId1 = classId;
+			break;
+		}
+	}
+	
+	NSDictionary *classId2 = nil;
+	NSArray *classIds2 = extractClassIds((StellarClass *)class2);
+	for(NSDictionary *classId in classIds2) {
+		if([[classId objectForKey:@"coursePart"] isEqualToString:courseId]) {
+			classId2 = classId;
+			break;
+		}
+	}
+	
+	NSInteger classIdCompareResult = classIdCompare(classId1, classId2);
+	if(classIdCompareResult) {
+		return classIdCompareResult;
+	}
+	
+	NSInteger nameCompare = [stellarClass1.name compare:stellarClass2.name];
+	if(nameCompare) {
+		return nameCompare;
+	}
+	
+	return [stellarClass1.title compare:stellarClass2.title];
+}	
+
+NSString* cleanPersonName(NSString *personName) {
+	NSArray *parts = [personName componentsSeparatedByString:@" "];
+	NSMutableArray *cleanParts = [NSMutableArray array];
+	for (NSString *part in parts) {
+		if([part length]) {
+			[cleanParts addObject:part];
+		}
+	}
+	return [cleanParts componentsJoinedByString:@" "];
 }

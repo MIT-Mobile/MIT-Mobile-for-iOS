@@ -84,7 +84,7 @@
 - (void)layoutSubviews {
     imageView.frame = self.bounds;
     if (self.loadingView) {
-        loadingView.center = self.center;
+        loadingView.center = CGPointMake(self.center.x - loadingView.frame.size.width / 2, self.center.y - loadingView.frame.size.height / 2);
     }
 }
 
@@ -112,7 +112,7 @@
     if (!self.loadingView) {
         loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         [self addSubview:self.loadingView];
-        loadingView.center = self.center;
+        loadingView.center = CGPointMake(self.center.x - loadingView.frame.size.width / 2, self.center.y - loadingView.frame.size.height / 2);
     }
     imageView.hidden = YES;
     loadingView.hidden = NO;

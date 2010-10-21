@@ -1,6 +1,6 @@
-
 #import <Foundation/Foundation.h>
 #import "StellarModel.h"
+#import "MITModuleURL.h"
 
 @class StellarClassesTableController;
 @interface LoadClassesInTable : NSObject<ClassesLoadedDelegate> {
@@ -16,15 +16,15 @@
 	NSArray *classes;
 	LoadClassesInTable *currentClassLoader;
 	UIView *loadingView;
+	
+	MITModuleURL *url;
 }
 
 @property (nonatomic, retain) NSArray *classes;
 @property (nonatomic, retain) LoadClassesInTable *currentClassLoader;
 @property (nonatomic, retain) UIView *loadingView;
 
+@property (readonly) MITModuleURL *url;
+
 - (id) initWithCourse: (StellarCourse *)course;
-
-- (void) alertViewCancel: (UIAlertView *)alertView;
-- (void) alertView:(UIAlertView *)alertView didDismissWithButtonIndex: (NSInteger)buttonIndex;
-
 @end

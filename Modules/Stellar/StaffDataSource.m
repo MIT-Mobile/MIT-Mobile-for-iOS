@@ -136,6 +136,13 @@
 @implementation StaffTableViewHeaderCell
 @synthesize height;
 
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+	if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+		self.backgroundColor = [UIColor whiteColor];
+	}
+	return self;
+}
+				
 - (void) drawRect: (CGRect)Rect {
 	[super drawRect:Rect];
 	

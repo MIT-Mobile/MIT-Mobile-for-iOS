@@ -2,19 +2,25 @@
 #import <UIKit/UIKit.h>
 #import "TabViewControl.h"
 #import "MITMapView.h"
-#import "PostData.h"
+#import "MITMobileWebAPI.h"
+#import "ConnectionWrapper.h"
 
 
 @class MITMapSearchResultAnnotation;
 @class CampusMapViewController;
 
-@interface MITMapDetailViewController : UIViewController <TabViewControlDelegate, PostDataDelegate> {
+@interface MITMapDetailViewController : UIViewController <ConnectionWrapperDelegate, TabViewControlDelegate, JSONLoadedDelegate> {
 
 	// tab controller for which we are a delegate.
 	IBOutlet TabViewControl* _tabViewControl;
 	
+	IBOutlet UIButton* _bookmarkButton;
+	
 	// label for the name
 	IBOutlet UILabel* _nameLabel;
+	
+	// label for the second line of the name;
+	IBOutlet UILabel* _nameLabel2;
 	
 	// label for the location
 	IBOutlet UILabel* _locationLabel;
@@ -78,6 +84,15 @@
 	NSString* _queryText;
 	
 	CGFloat _tabViewContainerMinHeight;
+	
+	// Connection Wrapper used for loading building images
+	ConnectionWrapper *imageConnectionWrapper;
+	
+	// network activity status for loading building image
+	BOOL networkActivity;
+	
+	// to persist saved state
+	int _startingTab;
 }
 
 @property (nonatomic, retain) MITMapSearchResultAnnotation* annotation;
@@ -87,8 +102,13 @@
 
 @property (nonatomic, retain) NSString* queryText;
 
+@property (nonatomic, retain) ConnectionWrapper *imageConnectionWrapper;
+@property int startingTab;
+
 // user tapped on the map thumbnail
 -(IBAction) mapThumbnailPressed:(id)sender;
 
+// user tapped the bookmark/favorite button
+-(IBAction) bookmarkButtonTapped;
 
 @end

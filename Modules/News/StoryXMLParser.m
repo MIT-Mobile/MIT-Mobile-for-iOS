@@ -6,6 +6,7 @@
 
 @interface StoryXMLParser (Private)
 
+- (void)detachAndParseURL:(NSURL *)url;
 - (void)downloadAndParse:(NSURL *)url;
 - (NSArray *)itemWhitelist;
 - (NSArray *)imageWhitelist;
@@ -26,7 +27,11 @@
 
 @synthesize delegate;
 @synthesize parsingTopStories;
+@synthesize isSearch;
+@synthesize loadingMore;
+@synthesize totalAvailableResults;
 @synthesize connection;
+@synthesize xmlParser;
 @synthesize currentElement;
 @synthesize currentStack;
 @synthesize currentContents;
@@ -61,6 +66,7 @@ NSString * const NewsTagImageHeight     = @"height";
     self = [super init];
     if (self != nil) {
         delegate = nil;
+		thread = nil;
         expectedStoryCount = 0;
         parsingTopStories = NO;
         connection = nil;
@@ -71,6 +77,9 @@ NSString * const NewsTagImageHeight     = @"height";
         newStories = nil;
         downloadAndParsePool = nil;
         done = NO;
+		isSearch = NO;
+		loadingMore = NO;
+		totalAvailableResults = 0;
         parseSuccessful = NO;
         shouldAbort = NO;
     }
@@ -78,19 +87,25 @@ NSString * const NewsTagImageHeight     = @"height";
 }
 
 - (void)dealloc {
+	if (![thread isFinished]) {
+		NSLog(@"***** %s called before parsing finished", __PRETTY_FUNCTION__);
+	}
+	[thread release];
+	thread = nil;
     self.delegate = nil;
     self.connection = nil;
+	self.xmlParser = nil;
     self.newStories = nil;
     self.currentElement = nil;
     self.currentStack = nil;
     self.currentContents = nil;
     self.currentImage = nil;
-    
-    self.downloadAndParsePool = nil;
+	self.downloadAndParsePool = nil;
     [super dealloc];
 }
 
 - (void)loadStoriesForCategory:(NSInteger)category afterStoryId:(NSInteger)storyId count:(NSInteger)count {
+	self.isSearch = NO;
 #ifdef USE_MOBILE_DEV
     NSString *newsPath = @"newsoffice-dev";
 #else
@@ -104,8 +119,9 @@ NSString * const NewsTagImageHeight     = @"height";
     } else {
         parsingTopStories = TRUE;
     }
-
+	self.loadingMore = NO;
     if (storyId != 0) {
+		self.loadingMore = YES;
         [params addObject:[NSString stringWithFormat:@"story_id=%d", storyId]];
     }
     if ([params count] > 0) {
@@ -116,11 +132,40 @@ NSString * const NewsTagImageHeight     = @"height";
     
     expectedStoryCount = 10; // if the server is ever made to support a range param, set this to count instead
     
-	[NSThread detachNewThreadSelector:@selector(downloadAndParse:) toTarget:self withObject:fullURL];
+	[self detachAndParseURL:fullURL];
+}
+
+- (void)loadStoriesforQuery:(NSString *)query afterIndex:(NSInteger)start count:(NSInteger)count {
+	self.isSearch = YES;
+	self.loadingMore = (start == 0) ? NO : YES;
+	
+	// before getting new results, clear old search results if this is a new search request
+	if (self.isSearch && !self.loadingMore) {
+		NSPredicate *predicate = [NSPredicate predicateWithFormat:@"searchResult == YES"];
+		NSArray *results = [CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate];
+		for (NewsStory *aStory in results) {
+			aStory.searchResult = NO;
+		}
+		[CoreDataManager saveDataWithTemporaryMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+	}
+	
+    NSURL *fullURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://web.mit.edu/newsoffice/index.php?option=com_search&view=isearch&searchword=%@&ordering=newest&limit=%d&start=%d", [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], count, start]];
+    expectedStoryCount = count;
+    
+	[self detachAndParseURL:fullURL];
+}
+
+- (void)detachAndParseURL:(NSURL *)url {
+	if (thread) {
+		NSLog(@"***** %s called twice on the same instance", __PRETTY_FUNCTION__);
+	}
+	thread = [[NSThread alloc] initWithTarget:self selector:@selector(downloadAndParse:) object:url];
+	[thread start];
 }
 
 - (void)abort {
     shouldAbort = YES;
+	[thread cancel];
 }
 
 // should be spawned on a separate thread
@@ -135,9 +180,18 @@ NSString * const NewsTagImageHeight     = @"height";
     BOOL requestStarted = [connection requestDataFromURL:url];
 	if (requestStarted) {
         [self performSelectorOnMainThread:@selector(didStartDownloading) withObject:nil waitUntilDone:NO];
-        // set the merge policy to deal with conflicts: the most recently parsed articles always win
-        [[CoreDataManager managedObjectContext] setMergePolicy:NSOverwriteMergePolicy];
 		do {
+			if ([[NSThread currentThread] isCancelled]) {
+				if (self.connection) {
+					[self.connection cancel];
+					self.connection = nil;
+				}
+				if (self.xmlParser) {
+					[self.xmlParser abortParsing];
+					self.xmlParser = nil;
+				}
+				break;
+			}
 			[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
 		} while (!done);
 	} else {
@@ -148,15 +202,17 @@ NSString * const NewsTagImageHeight     = @"height";
 }
 
 - (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
-	parser.delegate = self;
+	if (shouldAbort) {
+		return;
+	}
+    self.connection = nil;
+    self.xmlParser = [[[NSXMLParser alloc] initWithData:data] autorelease];
+	self.xmlParser.delegate = self;
     self.currentContents = [NSMutableDictionary dictionary];
     self.currentStack = [NSMutableArray array];
-	[parser parse];
-	[parser release];
+	[self.xmlParser parse];
+	self.xmlParser = nil;
     self.currentStack = nil;
-    parser = nil;
-    self.connection = nil;
 	done = YES;
 }
 
@@ -231,12 +287,18 @@ NSString * const NewsTagImageHeight     = @"height";
         }
     } else if ([elementName isEqualToString:NewsTagSmallURL] && currentImage) {
         [currentImage setObject:attributeDict forKey:@"smallSize"];
-    }
+    } else if ([elementName isEqualToString:NewsTagFullURL] && currentImage) {
+        [currentImage setObject:attributeDict forKey:@"fullSize"];
+    } else if ([elementName isEqualToString:@"items"]) {
+		NSNumber *totalResults = [attributeDict objectForKey:@"totalResults"];
+		if (totalResults) {
+			self.totalAvailableResults = [totalResults integerValue];
+		}
+	}
     [currentStack addObject:elementName];
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
-    
     if (shouldAbort) {
         [parser abortParsing];
         return;
@@ -297,6 +359,7 @@ NSString * const NewsTagImageHeight     = @"height";
                 // because NewsStory objects are shared between categories, only set this to YES, never revert it to NO
                 story.topStory = [NSNumber numberWithBool:parsingTopStories];
             }
+			story.searchResult = [NSNumber numberWithBool:isSearch]; // gets reset to NO before every search
 
             story.featured = [NSNumber numberWithBool:[[currentContents objectForKey:NewsTagFeatured] boolValue]];
             
@@ -339,7 +402,8 @@ NSString * const NewsTagImageHeight     = @"height";
         NSString *smallURL = [imageDict objectForKey:NewsTagSmallURL];
         NSString *fullURL = [imageDict objectForKey:NewsTagFullURL];
         NSDictionary *smallSize = [imageDict objectForKey:@"smallSize"];
-        
+        NSDictionary *fullSize = [imageDict objectForKey:@"fullSize"];
+		
         // every <image> in the feed has at least a <fullURL>, so index on that
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fullImage.url == %@", fullURL];
         newsImage = [[CoreDataManager objectsForEntity:NewsImageEntityName matchingPredicate:predicate] lastObject];
@@ -351,10 +415,14 @@ NSString * const NewsTagImageHeight     = @"height";
         newsImage.caption = caption;
         newsImage.thumbImage = [self imageRepForURLString:thumbURL];
         newsImage.smallImage = [self imageRepForURLString:smallURL];
-        newsImage.fullImage = [self imageRepForURLString:fullURL];
         if (smallSize) {
             newsImage.smallImage.width = [NSNumber numberWithInteger:[[smallSize objectForKey:NewsTagImageWidth] integerValue]];
             newsImage.smallImage.height = [NSNumber numberWithInteger:[[smallSize objectForKey:NewsTagImageHeight] integerValue]];
+        }
+        newsImage.fullImage = [self imageRepForURLString:fullURL];
+        if (fullSize) {
+            newsImage.fullImage.width = [NSNumber numberWithInteger:[[fullSize objectForKey:NewsTagImageWidth] integerValue]];
+            newsImage.fullImage.height = [NSNumber numberWithInteger:[[fullSize objectForKey:NewsTagImageHeight] integerValue]];
         }
     }
     return newsImage;
@@ -362,7 +430,7 @@ NSString * const NewsTagImageHeight     = @"height";
 
 - (NewsImageRep *)imageRepForURLString:(NSString *)urlString {
     NewsImageRep *imageRep = nil;
-    if (urlString) {
+    if (urlString && [urlString length] > 0) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"url == %@", urlString];
         imageRep = [[CoreDataManager objectsForEntity:NewsImageRepEntityName matchingPredicate:predicate] lastObject];
         if (!imageRep) {
@@ -409,7 +477,7 @@ NSString * const NewsTagImageHeight     = @"height";
     }
     
     parseSuccessful = YES;
-    [CoreDataManager saveData];
+	[CoreDataManager saveDataWithTemporaryMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
     if (parseSuccessful) {
         [self performSelectorOnMainThread:@selector(parseEnded) withObject:nil waitUntilDone:NO];
     }

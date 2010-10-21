@@ -8,11 +8,17 @@
 #import "MobileWebModule.h"
 #import "SettingsModule.h"
 #import "AboutModule.h"
+#import "CalendarModule.h"
 #import "MITTabBarController.h"
 
 // #import your module's header here
 
 @implementation MIT_MobileAppDelegate (ModuleListAdditions)
+#pragma mark class methods
++ (MITModule *)moduleForTag:(NSString *)aTag {
+	MIT_MobileAppDelegate *delegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+	return [delegate moduleForTag:aTag];
+}
 
 #pragma mark Basics
 - (NSMutableArray *)createModules {
@@ -24,6 +30,7 @@
     [result addObject:[[[NewsModule alloc] init] autorelease]];
     [result addObject:[[[ShuttleModule alloc] init] autorelease]];
 	[result addObject:[[[CMModule alloc] init] autorelease]];
+	[result addObject:[[[CalendarModule alloc] init] autorelease]];
 	[result addObject:[[[StellarModule alloc] init] autorelease]];
 	[result addObject:[[[PeopleModule alloc] init] autorelease]];
     [result addObject:[[[EmergencyModule alloc] init] autorelease]];
@@ -67,12 +74,17 @@
 }
 
 #pragma mark Preferences
-- (void)registerDefaultModuleOrder {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+- (NSArray *)defaultModuleOrder {
     NSMutableArray *moduleNames = [NSMutableArray arrayWithCapacity:[self.modules count]];
     for (MITModule *aModule in self.modules) {
         [moduleNames addObject:aModule.tag];
     }
+	return moduleNames;
+}
+
+- (void)registerDefaultModuleOrder {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *moduleNames = [self defaultModuleOrder];
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
                           moduleNames, MITModuleTabOrderKey, nil];                          
     // Register defaults -- only has an effect if this is the first time this app has run on the device
@@ -81,9 +93,15 @@
 }
 
 - (void)loadSavedModuleOrder {
+	// Banking on the chance that most users haven't done any tab bar customization, and therefore will be happy rather than upset that we're wiping any previous customizations to the tab bar when they upgrade to 2.0.
+	BOOL wipeSavedOrder = ([[[NSUserDefaults standardUserDefaults] objectForKey:MITEventsModuleInSortOrderKey] boolValue] == NO);
     NSArray *savedModuleOrder = [[NSUserDefaults standardUserDefaults] objectForKey:MITModuleTabOrderKey];
     NSMutableArray *oldModules = [[self.modules mutableCopy] autorelease];
     NSMutableArray *newModules = [NSMutableArray arrayWithCapacity:[self.modules count]];
+	if (wipeSavedOrder) {
+		savedModuleOrder = [self defaultModuleOrder];
+		[[NSUserDefaults standardUserDefaults] setBool:YES forKey:MITEventsModuleInSortOrderKey];
+	}
     for (NSString *aTag in savedModuleOrder) {
         MITModule *aModule = [self moduleForTag:aTag];
         if (aModule) {
@@ -124,6 +142,16 @@
     [[NSUserDefaults standardUserDefaults] setObject:[self activeModuleTag] forKey:MITActiveModuleKey];
 }
 
+- (void)saveModulesState {
+	NSMutableDictionary *modulesSavedState = [NSMutableDictionary dictionary];
+    for (MITModule *aModule in self.modules) {
+		if (aModule.currentPath && aModule.currentQuery) {
+			[modulesSavedState setObject:[NSDictionary dictionaryWithObjectsAndKeys:aModule.currentPath, @"path", aModule.currentQuery, @"query", nil] forKey:aModule.tag];
+		}
+	}
+	[[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
+}
+		
 - (NSString *) activeModuleTag {
 	return [[self moduleForTabBarItem:self.tabBarController.activeItem] tag];
 }

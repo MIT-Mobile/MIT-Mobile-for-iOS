@@ -25,6 +25,7 @@
 	
 	UIImage* _shuttleRunningImage;
 	UIImage* _shuttleNotRunningImage;
+	UIImage *_shuttleLoadingImage;
 
 	NSArray* _contactInfo;
 }

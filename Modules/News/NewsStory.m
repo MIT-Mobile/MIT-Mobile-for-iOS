@@ -18,6 +18,8 @@
 @dynamic body;
 @dynamic categories;
 @dynamic topStory;
+@dynamic searchResult;
+@dynamic bookmarked;
 @dynamic summary;
 @dynamic featured;
 @dynamic link;

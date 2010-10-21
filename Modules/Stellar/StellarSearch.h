@@ -8,12 +8,12 @@
 @interface StellarSearch : NSObject <
 	UITableViewDataSource, 
 	UITableViewDelegate, 
-	UISearchDisplayDelegate, 
 	UISearchBarDelegate,
+	UIAlertViewDelegate,
 	ClassesSearchDelegate> {
 
 		BOOL activeMode;
-		BOOL hasSearchCompleted;
+		BOOL hasSearchInitiated;
 		NSArray *lastResults;
 		StellarMainTableController *viewController;
 		UISearchBar *searchBar;
@@ -25,7 +25,7 @@
 
 - (id) initWithSearchBar: (UISearchBar *)theSearchBar viewController: (StellarMainTableController *)controller;
 
-- (void) cancelSearch;
+- (void) endSearchMode;
 
 - (BOOL) isSearchResultsVisible;
 

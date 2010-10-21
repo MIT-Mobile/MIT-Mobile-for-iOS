@@ -3,14 +3,18 @@
 #import "MIT_MobileAppDelegate.h"
 #import "MITJSON.h"
 
+#define TIMED_OUT_CODE -1001
+#define JSON_ERROR_CODE -2
+
 @implementation MITMobileWebAPI
 
-@synthesize jsonDelegate, connectionWrapper;
+@synthesize jsonDelegate, connectionWrapper, params, userData;
 
 - (id) initWithJSONLoadedDelegate: (id<JSONLoadedDelegate>)delegate {
 	if(self = [super init]) {
 		jsonDelegate = [delegate retain];
         connectionWrapper = nil;
+		userData = nil;
 	}
 	return self;
 }
@@ -25,6 +29,8 @@
     [connectionWrapper release];
 	[jsonDelegate release];
     jsonDelegate = nil;
+	self.userData = nil;
+	self.params = nil;
 	[super dealloc];
 }
 
@@ -36,7 +42,7 @@
         self.connectionWrapper = nil;
 		[self release];	
 	} else {
-		NSError *error = [NSError errorWithDomain:@"MITMobileWebAPI" code:0 
+		NSError *error = [NSError errorWithDomain:@"MITMobileWebAPI" code:JSON_ERROR_CODE 
 										 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"failed to handle JSON data", @"message", data, @"data", nil]];
 		[self connection:wrapper handleConnectionFailureWithError:error];
 	}
@@ -51,9 +57,53 @@
 	if([jsonDelegate respondsToSelector:@selector(handleConnectionFailureForRequest:)]) {
 		[jsonDelegate handleConnectionFailureForRequest:self];
 	}
+	
+	if([jsonDelegate request:self shouldDisplayStandardAlertForError:error]) {
+		NSString *header;
+		if ([jsonDelegate respondsToSelector:@selector(request:displayHeaderForError:)]) {
+			header = [jsonDelegate request:self displayHeaderForError:error];
+		} else {
+			header = @"Network Error";
+		}
+		
+		id<UIAlertViewDelegate> alertViewDelegate = nil;
+		if ([jsonDelegate respondsToSelector:@selector(request:alertViewDelegateForError:)]) {
+			alertViewDelegate = [jsonDelegate request:self alertViewDelegateForError:error];
+		} 
+		
+		[MITMobileWebAPI showError:error header:header alertViewDelegate:alertViewDelegate];
+	}
+
 	[self release];
 }
 
++ (void)showErrorWithHeader:(NSString *)header {
+	[self showError:nil header:header alertViewDelegate:nil];
+}
+
++ (void)showError:(NSError *)error header:(NSString *)header alertViewDelegate:(id<UIAlertViewDelegate>)alertViewDelegate {
+	
+	// Generic message
+	NSString *message = @"Connection Failure. Please try again later.";
+	// if the error can be classifed we will use a more specific error message
+	if(error) {
+		if ([[error domain] isEqualToString:@"NSURLErrorDomain"] && ([error code] == TIMED_OUT_CODE)) {
+			message = @"Connection Timed Out. Please try again later.";
+		} else if ([[error domain] isEqualToString:@"MITMobileWebAPI"] && ([error code] == JSON_ERROR_CODE)) {
+			message = @"Server Failure. Please try again later.";
+		}
+	}
+
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:header 
+														message:message
+													   delegate:alertViewDelegate 
+											  cancelButtonTitle:@"OK" 
+											  otherButtonTitles:nil];
+	
+	[alertView show];
+	[alertView release];
+}
+	
 - (void)abortRequest {
 	if (connectionWrapper != nil) {
 		[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
@@ -84,6 +134,7 @@
 
 - (BOOL)requestObject:(NSDictionary *)parameters pathExtension: (NSString *)extendedPath {
 	[self retain]; // retain self until connection completes;
+	self.params = parameters;
 	
 	NSString *path;
 	if(extendedPath) {
@@ -96,7 +147,7 @@
 	
     // TODO: see if this needs and autorelease
 	self.connectionWrapper = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-	BOOL requestSuccessfullyBegun = [connectionWrapper requestDataFromURL:[MITMobileWebAPI buildQuery:parameters queryBase:path]];
+	BOOL requestSuccessfullyBegun = [connectionWrapper requestDataFromURL:[MITMobileWebAPI buildURL:self.params queryBase:path]];
 	
 	[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) showNetworkActivityIndicator];
 	
@@ -106,21 +157,20 @@
 	return requestSuccessfullyBegun;
 }
 
-// internal method used to construct URL
-+(NSURL *)buildQuery:(NSDictionary *)dict queryBase:(NSString *)base {
-	NSMutableString *urlString = [[NSMutableString alloc] initWithString:base];
++ (NSString *)buildQuery:(NSDictionary *)dict {
 	NSArray *keys = [dict allKeys];
-	for (int i = 0; i < [dict count]; i++ ) {
-		if (i == 0) {
-			[urlString appendString:@"?"];
-		} else {
-			[urlString appendString:@"&"];
-		}
-		NSString *key = [keys objectAtIndex:i];
-		[urlString appendString:[NSString stringWithFormat:@"%@=%@", key, [[dict objectForKey:key] stringByReplacingOccurrencesOfString:@" " withString:@"+"]]];
+	NSMutableArray *components = [NSMutableArray arrayWithCapacity:[keys count]];
+	for (NSString *key in keys) {
+		NSString *value = [[dict objectForKey:key] stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+		[components addObject:[NSString stringWithFormat:@"%@=%@", key, value]];
 	}
+	return [components componentsJoinedByString:@"&"];
+}
+
+// internal method used to construct URL
++(NSURL *)buildURL:(NSDictionary *)dict queryBase:(NSString *)base {
+	NSString *urlString = [NSString stringWithFormat:@"%@?%@", base, [MITMobileWebAPI buildQuery:dict]];	
 	NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-	[urlString release];
 	return url;
 }
 

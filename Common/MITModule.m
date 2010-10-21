@@ -2,10 +2,12 @@
 #import "MITModuleList.h"
 #import "Foundation+MITAdditions.h"
 #import "MITTabBarItem.h"
+#import "MITMoreListController.h"
 
 @implementation MITModule
 
 @synthesize tag, shortName, longName, iconName, tabNavController, isMovableTab, canBecomeDefault, pushNotificationSupported, pushNotificationEnabled;
+@synthesize hasLaunchedBegun, currentPath, currentQuery;
 @dynamic badgeValue, icon, tabBarIcon;
 
 #pragma mark -
@@ -28,7 +30,12 @@
         self.iconName = nil;
         self.isMovableTab = TRUE;
         self.canBecomeDefault = TRUE;
-        
+		
+		// state related properties
+		self.hasLaunchedBegun = NO;
+		self.currentPath = nil;
+		self.currentQuery = nil;
+		
         self.pushNotificationSupported = NO;
         // self.pushNotificationEnabled is set in applicationDidFinishLaunching, because that's when the tag is set
 
@@ -93,6 +100,11 @@
     return NO;
 }
 
+- (void)resetURL {
+	self.currentPath = @"";
+	self.currentQuery = @"";
+}
+
 - (BOOL)handleNotification:(MITNotification *)notification appDelegate: (MIT_MobileAppDelegate *)appDelegate shouldOpen: (BOOL)shouldOpen {
 	//NSLog(@"%@ can not handle notification %@", NSStringFromClass([self class]), notification);
 	return NO;
@@ -131,8 +143,10 @@
 }
 
 - (void)becomeActiveTab {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate showModuleForTag:self.tag];
+	if(![self isActiveTab]) {
+		MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+		[appDelegate showModuleForTag:self.tag];
+	}
 }
 
 - (BOOL)isActiveTab {
@@ -161,5 +175,50 @@
     [pushDisabledSettings release];
 }
 
+#pragma mark tabNavController methods
+
+// these methods make sure to pop and push from the current UINavigationController
+// which may not be the same as self.tabNavController
+- (void) popToRootViewController {
+	[[self rootViewController].navigationController popToViewController:[self rootViewController] animated:NO];
+}
+
+- (UIViewController *) rootViewController {
+	if(tabNavController.viewControllers.count > 0) {
+		UIViewController *firstViewController = [tabNavController.viewControllers objectAtIndex:0];
+		if(![firstViewController isKindOfClass:[MITMoreListController class]]) {
+			// we only want to return a ViewController that belongs to the module
+			// not More List view controller, which can be the root, for modules in the more list
+			return firstViewController;
+		} else if (tabNavController.viewControllers.count > 1) {
+			return [tabNavController.viewControllers objectAtIndex:1];
+		}
+	}
+	return nil;
+}
+		 
+- (void) pushViewController: (UIViewController *)viewController {
+	[[self rootViewController].navigationController pushViewController:viewController animated:NO];
+}
+
+- (UIViewController *) parentForViewController:(UIViewController *)viewController {
+	UIViewController *previousViewController = nil;
+	NSArray *viewControllers;
+	if(tabNavController.viewControllers.count > viewController.navigationController.viewControllers.count) {
+		viewControllers = tabNavController.viewControllers;
+	} else {
+		viewControllers = viewController.navigationController.viewControllers;
+	}
+
+	for (UIViewController *currentViewController in viewControllers) {
+		if (currentViewController == viewController) {
+			return previousViewController;
+		}
+		if (![currentViewController isKindOfClass:[MITMoreListController class]]) {
+			previousViewController = currentViewController;
+		}
+	}
+	return nil;
+}
 
 @end

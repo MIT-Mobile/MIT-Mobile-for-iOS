@@ -1,6 +1,6 @@
 
 #import "MITMapSearchResultCell.h"
-
+#import "MITUIConstants.h"
 
 @implementation MITMapSearchResultCell
 
@@ -10,7 +10,9 @@
 	[super layoutSubviews];
 	
 	// adjust textLabel to fit height of contents
-	self.textLabel.font = [UIFont systemFontOfSize:17];
+	self.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
+	self.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
+	
 	CGSize labelSize = [self.textLabel.text sizeWithFont:self.textLabel.font 
 									   constrainedToSize:CGSizeMake(self.textLabel.frame.size.width, 200.0) 
 										   lineBreakMode:UILineBreakModeWordWrap];
@@ -22,7 +24,8 @@
 	self.textLabel.numberOfLines = 0;
 	
 	// adjust detailTextLabel to fit height of contents
-	self.detailTextLabel.font = [UIFont systemFontOfSize:14];
+	self.detailTextLabel.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
+	self.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
 	
 	labelSize = [self.detailTextLabel.text sizeWithFont:self.detailTextLabel.font 
 									  constrainedToSize:CGSizeMake(self.detailTextLabel.frame.size.width, 200.0) 
@@ -39,7 +42,7 @@
 -(CGFloat) projectedHeight
 {
 	
-	CGSize labelSize = [self.textLabel.text sizeWithFont:[UIFont systemFontOfSize:17]
+	CGSize labelSize = [self.textLabel.text sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
 									   constrainedToSize:CGSizeMake(self.textLabel.frame.size.width, 200.0) 
 										   lineBreakMode:UILineBreakModeWordWrap];
 	

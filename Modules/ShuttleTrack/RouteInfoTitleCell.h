@@ -5,6 +5,7 @@
 
 @interface RouteInfoTitleCell : UITableViewCell {
 
+    IBOutlet UIImageView* _backgroundImage;
 	IBOutlet UILabel* _routeTitleLabel;
 	IBOutlet UILabel* _rotueDescriptionLabel;
 }

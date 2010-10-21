@@ -20,17 +20,16 @@
 +(NSArray *)fetchDataForAttribute:(NSString *)attributeName sortDescriptor:(NSSortDescriptor *)sortDescriptor;
 +(void)clearDataForAttribute:(NSString *)attributeName;
 
-+(id)insertNewObjectForEntityForName:(NSString *)entityName;
++(id)insertNewObjectForEntityForName:(NSString *)entityName; //added by blpatt
 +(id)insertNewObjectWithNoContextForEntity:(NSString *)entityName;
-+(id)insertObjectGraph:(NSManagedObject *)managedObject;
-+(id)insertObjectGraph:(NSManagedObject *)managedObject context:(NSManagedObjectContext *)context;
 +(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate sortDescriptors:(NSArray *)sortDescriptors;
 +(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate;
-+(id)getObjectForEntity:(NSString *)entityName attribute:(NSString *)attributeName value:(id)value;
++(id)getObjectForEntity:(NSString *)entityName attribute:(NSString *)attributeName value:(id)value; //added by blpatt
 
 +(void)deleteObjects:(NSArray *)objects;
 +(void)deleteObject:(NSManagedObject *)object;
 +(void)saveData;
++(void)saveDataWithTemporaryMergePolicy:(id)temporaryMergePolicy;
 
 +(NSManagedObjectModel *)managedObjectModel;
 +(NSManagedObjectContext *)managedObjectContext;
@@ -40,13 +39,11 @@
 -(NSArray *)fetchDataForAttribute:(NSString *)attributeName sortDescriptor:(NSSortDescriptor *)sortDescriptor;
 -(void)clearDataForAttribute:(NSString *)attributeName;
 
--(id)insertNewObjectForEntityForName:(NSString *)entityName;
+-(id)insertNewObjectForEntityForName:(NSString *)entityName; //added by blpatt
 -(id)insertNewObjectWithNoContextForEntity:(NSString *)entityName;
--(id)insertObjectGraph:(NSManagedObject *)managedObject;
--(id)insertObjectGraph:(NSManagedObject *)managedObject context:(NSManagedObjectContext *)context;
 -(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate sortDescriptors:(NSArray *)sortDescriptors;
 -(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate;
--(id)getObjectForEntity:(NSString *)entityName attribute:(NSString *)attributeName value:(id)value;
+-(id)getObjectForEntity:(NSString *)entityName attribute:(NSString *)attributeName value:(id)value; //added by blpatt
 
 -(void)deleteObjects:(NSArray *)objects;
 -(void)deleteObject:(NSManagedObject *)object;

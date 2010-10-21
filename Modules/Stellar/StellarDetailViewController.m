@@ -1,5 +1,6 @@
-
 #import "MIT_MobileAppDelegate.h"
+#import "MITModuleList.h"
+#import "MITModule.h"
 #import "MITUnreadNotifications.h"
 #import "StellarDetailViewController.h"
 #import "UITableView+MITUIAdditions.h"
@@ -38,8 +39,10 @@ NSString * termText(NSString *termCode) {
 	return [NSString stringWithFormat:@"%@ 20%@", seasonName, year];
 }
 
-@interface StellarDetailViewController(Private) 
+@interface StellarDetailViewController (Private) 
 - (void) resizeFooter;
+- (void) switchTab:(NSInteger)index;
+- (void) setCurrentTabName: (NSString *)tabName;
 @end
 
 @implementation StellarDetailViewController
@@ -50,11 +53,13 @@ NSString * termText(NSString *termCode) {
 @synthesize myStellarButton;
 @synthesize dataSources;
 @synthesize loadingState;
+@synthesize url;
+@synthesize refreshClass;
 
-+ (void) launchClass: (StellarClass *)stellarClass viewController: (UIViewController *)controller {
++ (StellarDetailViewController *) launchClass: (StellarClass *)stellarClass viewController: (UIViewController *)controller {
 	StellarDetailViewController *detailViewController = [[StellarDetailViewController alloc] initWithClass:stellarClass];
 	[controller.navigationController pushViewController:detailViewController animated:YES];
-	[detailViewController release];
+	return [detailViewController autorelease];
 }
 
 - (id) initWithClass: (StellarClass *)class {
@@ -66,20 +71,25 @@ NSString * termText(NSString *termCode) {
 		self.tas = [NSArray array];
 		self.times = [NSArray array];
 		
-		self.dataSources = [[NSMutableArray alloc] initWithCapacity:3];
+		self.dataSources = [[[NSMutableArray alloc] initWithCapacity:3] autorelease];
 		
 		actionButton = nil;
 		
-		currentTabName = @"News";
+		self.currentTabName = @"News";
 		currentTabNames = [[NSMutableArray alloc] initWithCapacity:3];
 		tabViewControl = nil;
 		myStellarButton = nil;
 		loadingState = StellarNewsLoadingInProcess;
+		url = [[MITModuleURL alloc] initWithTag:StellarTag];
+		self.title = @"Class Info";
+		refreshClass = YES;
 	}
 	return self;
 }
 
 - (void) dealloc {
+	[url release];
+	
 	currentClassInfoLoader.viewController = nil;
 	myStellarStatusDelegate.viewController = nil;
 	
@@ -95,13 +105,14 @@ NSString * termText(NSString *termCode) {
 	[tas release];
 	[times release];
 	
+	[currentTabNames release];
+	self.currentTabName = nil;
 	[dataSources release];
 	
 	[super dealloc];
 }
 
 - (void) viewDidLoad {
-	self.title = @"Class Info";
 	
 	self.tableView.tableHeaderView = [[UIView alloc]
 		initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, headerHeight)];
@@ -145,11 +156,27 @@ NSString * termText(NSString *termCode) {
 	actionButton.enabled = NO; // will enabled it when valid actions are known to exist
 	self.navigationItem.rightBarButtonItem = actionButton;
 	
-	// initiate server-side data collection
-	self.currentClassInfoLoader = [[ClassInfoLoader new] autorelease];
-	self.currentClassInfoLoader.viewController = self;
+	if (refreshClass) {
+		// initiate server-side data collection
+		self.currentClassInfoLoader = [[ClassInfoLoader new] autorelease];
+		self.currentClassInfoLoader.viewController = self;
 	
-	[StellarModel loadAllClassInfo:self.stellarClass delegate:self.currentClassInfoLoader];
+		[StellarModel loadAllClassInfo:self.stellarClass delegate:self.currentClassInfoLoader];
+	} else {
+		// this mode is used in instances when we want to disable refresh
+		// specifically if loading up a news item from the previous use of the app
+		loadingState = StellarNewsLoadingFailed;
+		[self loadClassInfo:self.stellarClass];
+		// we normally wait till the class info is loaded to enable this button
+		// because we not loading from server, we just enable it now
+		myStellarButton.enabled = YES;
+	}
+	
+	[url setPath:[NSString stringWithFormat:@"class/%@/News", self.stellarClass.masterSubjectId] query:nil];
+}
+
+- (void) viewDidAppear:(BOOL)animated {
+	[url setAsModulePath];
 }
 
 - (void) myStellarButtonToggled {
@@ -171,9 +198,16 @@ NSString * termText(NSString *termCode) {
 
 		myStellarButton.selected = !(myStellarButton.selected);
 	} else {
+		NSString *message;
+		if([[UIApplication sharedApplication] enabledRemoteNotificationTypes] == UIRemoteNotificationTypeNone) {
+			message = @"Notifications are currently disabled, Quit this application and go to Settings > Notifications to enable them.";
+		} else {
+			message = @"Can not register your device for myStellar notifications, try restarting the application to register device.";
+		}
+
 		UIAlertView *alert = [[UIAlertView alloc] 
-			initWithTitle:@"Unregistered device"
-			message:@"Can not register your device for myStellar notifications, try restarting the application to register device"
+			initWithTitle:@"Unregistered Device"
+			message:message
 			delegate:nil
 			cancelButtonTitle:@"OK" 
 			otherButtonTitles:nil];
@@ -182,12 +216,14 @@ NSString * termText(NSString *termCode) {
 	}
 }
 
+// this method is only activated by an actual user interaction with the tab
 - (void) tabControl: (TabViewControl*)control changedToIndex:(int)tabIndex tabText:(NSString*)tabText {
-	currentTabName = tabText;
-	self.tableView.dataSource = [dataSources objectAtIndex:tabIndex];
-	self.tableView.delegate = [dataSources objectAtIndex:tabIndex];
-	[self resizeFooter];
-	[self.tableView reloadData];
+	self.currentTabName = tabText;
+	[self switchTab:tabIndex];
+	
+	// save the tab state
+	[url setPath:[NSString stringWithFormat:@"class/%@/%@", self.stellarClass.masterSubjectId, currentTabName] query:nil];
+	[url setAsModulePath];
 }
 
 - (void) resizeFooter {
@@ -231,22 +267,44 @@ NSString * termText(NSString *termCode) {
 		[self addTabName:@"Staff" dataSource:[StaffDataSource viewController:self]];
 	}
 	
-	// now figure out which tab to set as active
-	NSUInteger activeIndex = [currentTabNames indexOfObjectIdenticalTo:currentTabName];
-	if(activeIndex == NSNotFound) {
-		currentTabName = [currentTabNames objectAtIndex:0];
-		activeIndex = 0;
-	}
-	
-	// set the dataSource and delegate based on current tab
-	// and tell the tabViewControl the initial tab we want open
-	self.tableView.delegate = [dataSources objectAtIndex:activeIndex];
-	self.tableView.dataSource = [dataSources objectAtIndex:activeIndex];
-	tabViewControl.selectedTab = activeIndex;
-	
+	[self setCurrentTab:currentTabName];	
 	[self.tableView.tableHeaderView addSubview:tabViewControl];
 	[tabViewControl release];
 }	
+
+
+// this method is always called when tabs change (no matter what initiates the change)
+- (void) switchTab: (NSInteger)index {
+	// set the dataSource and delegate based on current tab
+	// and tell the tabViewControl the tab we want open
+	self.tableView.delegate = [dataSources objectAtIndex:index];
+	self.tableView.dataSource = [dataSources objectAtIndex:index];
+	tabViewControl.selectedTab = index;
+	
+	[self resizeFooter];
+	[self.tableView reloadData];
+}
+
+- (void) setCurrentTab: (NSString *)tabName {
+	self.currentTabName = tabName;
+	if (currentTabNames.count) {
+		// manually search for the tab, could not find a builtin API to do this
+		NSUInteger activeIndex = NSNotFound;
+		for (NSUInteger index=0; index < currentTabNames.count; index++) {
+			if ([[currentTabNames objectAtIndex:index] isEqualToString:tabName]) {
+				activeIndex = index;
+				break;
+			}
+		}
+
+		if(activeIndex == NSNotFound) {
+			self.currentTabName = [currentTabNames objectAtIndex:0];
+			activeIndex = 0;
+		}
+
+		[self switchTab:activeIndex];
+	}
+}
 	
 - (void) loadClassInfo: (StellarClass *)class {
 	self.stellarClass = class;
@@ -254,8 +312,7 @@ NSString * termText(NSString *termCode) {
 	myStellarButton.selected = [class.isFavorited boolValue];
 
 	// order the news and staff for display
-	self.news = [[class.announcement allObjects]
-		sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"pubDate" ascending:NO] autorelease]]];
+	self.news = [StellarModel sortedAnnouncements:class];
 	self.instructors = [[[class.staff allObjects]
 		filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"type like 'instructor'"]]
 		sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES] autorelease]]];
@@ -301,9 +358,6 @@ NSString * termText(NSString *termCode) {
 	if([class.url length]) {
 		self.navigationItem.rightBarButtonItem.enabled = YES;
 	}
-	
-	[self resizeFooter];
-	[self.tableView reloadData];
 }
 
 - (void) openSite {
@@ -313,6 +367,15 @@ NSString * termText(NSString *termCode) {
 - (BOOL) dataLoadingComplete {
 	return (loadingState != StellarNewsLoadingInProcess);
 }
+
+- (void) setCurrentTabName: (NSString *)tabName {
+	if (currentTabName != tabName) {
+		[currentTabName release];
+		currentTabName = [tabName retain];
+	}
+}
+
+
 @end
 
 @implementation ClassInfoLoader
@@ -347,30 +410,33 @@ NSString * termText(NSString *termCode) {
 			[MITUnreadNotifications removeNotifications:[NSArray arrayWithObject:notification]];
 		}
 		[notification release];
+		self.viewController.myStellarButton.enabled = YES;
 	}
 }
 
-- (void) showErrorTitle: (NSString *)errorTile message: (NSString *)message {
+- (void) showErrorWithTitle: (NSString *)errorTitle message: (NSString *)message {
 	if(self.viewController.currentClassInfoLoader == self) {
 		self.viewController.loadingState = StellarNewsLoadingFailed;
 		[self.viewController.tableView reloadData];
-		UIAlertView *alert = [[UIAlertView alloc] 
-			initWithTitle:errorTile 
-			message:message
-			delegate:nil
-			cancelButtonTitle:@"OK" 
-			otherButtonTitles:nil];
-		[alert show];
-		[alert release];
+		if(errorTitle) {
+			UIAlertView *alert = [[UIAlertView alloc] 
+				initWithTitle:errorTitle 
+				message:message
+				delegate:nil
+				cancelButtonTitle:@"OK" 
+				otherButtonTitles:nil];
+			[alert show];
+			[alert release];
+		}
 	}
 }
 	
 - (void) handleClassNotFound {
-	[self showErrorTitle:@"Class not found" message:@"This is probably an old class or a class not being taught this semester"];
+	[self showErrorWithTitle:@"Class not found" message:@"This is probably an old class or a class not being taught this semester"];
 }
 
 - (void) handleCouldNotReachStellar {
-	[self showErrorTitle:@"Connection Failed" message:@"Could not connect to Stellar to retrieve class info, please try again later"];
+	[self showErrorWithTitle:nil message:nil];
 }
 	
 @end
@@ -403,12 +469,10 @@ NSString * termText(NSString *termCode) {
 }
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)JSONObject {
-	if(viewController.myStellarStatusDelegate == self) {
-		if(status) {
-			[StellarModel saveClassToFavorites:stellarClass];
-		} else {
-			[StellarModel removeClassFromFavorites:stellarClass];
-		}
+	if(status) {
+		[StellarModel saveClassToFavorites:stellarClass];
+	} else {
+		[StellarModel removeClassFromFavorites:stellarClass];
 	}
 }
 
@@ -427,6 +491,10 @@ NSString * termText(NSString *termCode) {
 	[alert show];
     [alert release];
 }		
+
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
+	return NO;
+}
 
 @end
 

@@ -8,20 +8,27 @@ extern NSString * const MITMobileWebAPIURLString;
 // keys for NSUserDefaults dictionary go here (app preferences)
 extern NSString * const MITModuleTabOrderKey;
 extern NSString * const MITActiveModuleKey;
+extern NSString * const MITNewsTwoFirstRunKey;
+extern NSString * const MITEventsModuleInSortOrderKey;
 extern NSString * const EmergencyInfoKey;
 extern NSString * const EmergencyLastUpdatedKey;
 extern NSString * const EmergencyUnreadCountKey;
 extern NSString * const ShuttleSubscriptionsKey;
+extern NSString * const StellarTermKey;
+extern NSString * const TwitterShareUsernameKey;
 extern NSString * const MITDeviceIdKey;
 extern NSString * const MITPassCodeKey;
 extern NSString * const DeviceTokenKey;
 extern NSString * const MITUnreadNotificationsKey;
 extern NSString * const PushNotificationSettingsKey;
+extern NSString * const MITModulesSavedStateKey;
+extern NSString * const CachedMapSearchQueryKey;
 
 extern NSString * const MITInternalURLScheme;
 
 
 // module tags
+extern NSString * const CalendarTag;
 extern NSString * const EmergencyTag;
 extern NSString * const CampusMapTag;
 extern NSString * const NewsOfficeTag;
@@ -34,12 +41,15 @@ extern NSString * const AboutTag;
 
 // notification names
 extern NSString * const EmergencyInfoDidLoadNotification;
+extern NSString * const EmergencyInfoDidFailToLoadNotification;
 extern NSString * const EmergencyInfoDidChangeNotification;
 extern NSString * const EmergencyContactsDidLoadNotification;
 
 extern NSString * const ShuttleAlertRemoved;
 
 extern NSString * const UnreadBadgeValuesChangeNotification;
+
+extern NSString * const MyStellarAlertNotification;
 
 // core data entity names
 
@@ -55,7 +65,12 @@ extern NSString * const StellarStaffMemberEntityName;
 extern NSString * const StellarAnnouncementEntityName;
 extern NSString * const EmergencyInfoEntityName;
 extern NSString * const EmergencyContactEntityName;
-
+extern NSString * const ShuttleRouteEntityName;
+extern NSString * const ShuttleStopEntityName;
+extern NSString * const ShuttleRouteStopEntityName;
+extern NSString * const CalendarEventEntityName;
+extern NSString * const CalendarCategoryEntityName;
+extern NSString * const CampusMapSearchEntityName;
 // resource names
 extern NSString * const MITImageNameBackground;
 
@@ -79,6 +94,14 @@ extern NSString * const MITImageNameScrollTabBackgroundTranslucent;
 extern NSString * const MITImageNameScrollTabLeftEndCap;
 extern NSString * const MITImageNameScrollTabRightEndCap;
 extern NSString * const MITImageNameScrollTabSelectedTab;
+
+extern NSString * const MITImageNameLeftArrow;
+extern NSString * const MITImageNameRightArrow;
+extern NSString * const MITImageNameUpArrow;
+extern NSString * const MITImageNameDownArrow;
+
+extern NSString * const MITImageNameSearch;
+extern NSString * const MITImageNameBookmark;
 
 // action accessory types
 

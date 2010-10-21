@@ -36,7 +36,21 @@
     [tabbedViewControllers release];
     [self updateCustomizableViewControllers];
     
-    [self loadActiveModule];
+	// set modules state
+	NSDictionary *modulesState = [[NSUserDefaults standardUserDefaults] objectForKey:MITModulesSavedStateKey];
+	for (MITModule *aModule in self.modules) {
+		NSDictionary *pathAndQuery = [modulesState objectForKey:aModule.tag];
+		aModule.currentPath = [pathAndQuery objectForKey:@"path"];
+		aModule.currentQuery = [pathAndQuery objectForKey:@"query"];
+	}
+	
+	//APNS dictionary generated from the json of a push notificaton
+	NSDictionary *apnsDict = [launchOptions objectForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
+	if (!apnsDict) {
+		// application was not opened in response to a notification
+		// so do the regular load process
+		[self loadActiveModule];
+	}
     
     // Set up window
     [self.window addSubview:theTabBarController.view];
@@ -63,9 +77,8 @@
 	[MITUnreadNotifications updateUI];
 	[MITUnreadNotifications synchronizeWithMIT];
 	
-	// check if launchOptions are an APNS dictionary generated from the json of a push notificaton
-	NSDictionary *apnsDict;
-	if(apnsDict = [launchOptions objectForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"]) {
+	// check if application was opened in response to a notofication
+	if(apnsDict) {
 		MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
 		[[self moduleForTag:notification.moduleName] handleNotification:notification appDelegate:self shouldOpen:YES];
 		//NSLog(@"Application opened in response to notification=%@", notification);
@@ -105,6 +118,7 @@
         // right now expecting URLs like mitmobile://people/search?Some%20Guy
         NSString *query = [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         
+		module.hasLaunchedBegun = YES;
         canHandle = [module handleLocalPath:path query:query];
     } else {
         //NSLog(@"%s couldn't handle url: %@", _cmd, url);
@@ -113,16 +127,26 @@
     return canHandle;
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application {
+- (void)applicationShouldSaveState:(UIApplication *)application {
     // Let each module perform clean up as necessary
     for (MITModule *aModule in self.modules) {
         [aModule applicationWillTerminate];
     }
     
+	[self saveModulesState];
     [self saveModuleOrder];
     // Save preferences
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
+- (void)applicationWillTerminate:(UIApplication *)application {
+	[self applicationShouldSaveState:application];
+}
+
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+	[self applicationShouldSaveState:application];
+}
+
 
 #pragma mark -
 #pragma mark Memory management
@@ -160,6 +184,16 @@
 - (void)tabBarController:(MITTabBarController *)tabBarController didShowItem:(UITabBarItem *)item {
     if ([tabBarController isEqual:self.tabBarController]) {
         MITModule *theModule = [self moduleForTabBarItem:item];
+		// recover saved state on first appearanace
+		//NSLog(@"recovering saved state for: %@  HasLaunched? %d.  Path: %@; Query: %@", theModule, theModule.hasLaunchedBegun, theModule.currentPath, theModule.currentQuery);
+		if (!theModule.hasLaunchedBegun && theModule.currentPath && theModule.currentQuery) {
+			[theModule handleLocalPath:theModule.currentPath query:theModule.currentQuery];
+			// due to a work around implemented for the MITMoreController
+			// force the view to load immediately so the chain of viewControllers is
+			// the expected viewControllers
+			theModule.tabNavController.topViewController.view;
+		}
+		theModule.hasLaunchedBegun = YES;
         [theModule didAppear];
     }
 }
@@ -282,6 +316,11 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	
 	MITNotification *notification = [MITUnreadNotifications addNotification:apnsDictionary];
+	BOOL shouldOpen = (buttonIndex == 1);
+	if (shouldOpen) {
+		[appDelegate dismissAppModalViewControllerAnimated:YES];
+	}
+
 	[[appDelegate moduleForTag:notification.moduleName] handleNotification:notification appDelegate:appDelegate shouldOpen:(buttonIndex == 1)];
 	
 	[self release];

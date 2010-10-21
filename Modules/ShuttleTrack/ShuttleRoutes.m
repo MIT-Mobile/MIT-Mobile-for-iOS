@@ -5,6 +5,7 @@
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 #import "UITableView+MITUIAdditions.h"
+#import "MITModuleList.h"
 
 @implementation ShuttleRoutes
 
@@ -23,6 +24,7 @@
 	
 	[_shuttleRunningImage release];
 	[_shuttleNotRunningImage release];
+	[_shuttleLoadingImage release];
 	[_contactInfo release];
 	
     [super dealloc];
@@ -53,29 +55,28 @@
 																						 @"(617.258.6510)", @"formattedPhoneNumber", nil, nil],
 					 [NSDictionary dictionaryWithObjectsAndKeys:@"Saferide", @"description",
 																@"16172532997", @"phoneNumber",
-																@"(617.253.2997)", @"formattedPhoneNumber", nil, nil], nil] retain];
-
-	ShuttleDataManager* dataManager = [ShuttleDataManager sharedDataManager];
-	[dataManager registerDelegate:self];	
+					  @"(617.253.2997)", @"formattedPhoneNumber", nil, nil], nil] retain];
 	
 	_shuttleRunningImage = [[UIImage imageNamed:@"shuttle.png"] retain];
 	_shuttleNotRunningImage = [[UIImage imageNamed:@"shuttle-off.png"] retain];
+	_shuttleLoadingImage = [[UIImage imageNamed:@"shuttle-blank.png"] retain];
 	
     [self.tableView applyStandardColors];
+
+	ShuttleDataManager* dataManager = [ShuttleDataManager sharedDataManager];
+	[dataManager registerDelegate:self];
     
-	NSArray* shuttleRoutes = [dataManager shuttleRoutes];
+	[self setShuttleRoutes:[dataManager shuttleRoutes]];
 	
-	if(nil == self.shuttleRoutes)
-	{
+	/*
+	if (nil == _shuttleRoutes) {
 		// when setting isLoading, will tell the tableview to show loading cell
 		self.isLoading = YES;
 		[self.tableView reloadData];
-		[dataManager requestRoutes];
 	}
-	else 
-	{
-		self.shuttleRoutes = shuttleRoutes;
-	}
+	 */
+	self.isLoading = YES;
+	[dataManager requestRoutes];
 
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshRoutes)];
 }
@@ -91,30 +92,10 @@
 	}
 }
 
-
-/*
 - (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+	[super viewDidAppear:animated];
+	[[MIT_MobileAppDelegate moduleForTag:ShuttleTag] resetURL];
 }
-*/
-/*
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-*/
-/*
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-*/
-
-/*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-*/
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -128,7 +109,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView 
 {
-	if (self.isLoading) {
+	if (nil == _shuttleRoutes) {
 		return 1;
 	}
 	
@@ -138,10 +119,6 @@
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	
-	if (self.isLoading) {
-		return 1;
-	}
 	
 	NSArray* routes = [[self.sections objectAtIndex:section] objectForKey:@"routes"];
 	if (nil != routes) {
@@ -169,26 +146,6 @@
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    
-	if (self.isLoading) {
-		
-		static NSString *loadingCellID = @"LoadingCell";
-		UITableViewCell* loadingCell = [tableView dequeueReusableCellWithIdentifier:loadingCellID];
-		if(nil == loadingCell)
-		{
-			loadingCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:loadingCellID] autorelease];
-		
-			// create the isLoading Cell
-			loadingCell.textLabel.text = @"Loading Routes";
-			UIActivityIndicatorView* activityIndicator = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease];
-			[loadingCell.contentView addSubview:activityIndicator];
-			activityIndicator.frame = CGRectMake(200, 15, activityIndicator.frame.size.width, activityIndicator.frame.size.height);
-			[activityIndicator startAnimating];
-		}
-		
-		return loadingCell;
-	}
 	
 	NSArray* routes = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"routes"];
 	NSArray* phoneNumbers = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"phoneNumbers"];
@@ -209,14 +166,24 @@
 		ShuttleRoute* route = [routes objectAtIndex:indexPath.row];
 		
 		cell.textLabel.text = route.title;
-			
-		//ShuttleRoute *aRoute = [[[self.model.routes objectAtIndex:indexPath.section] objectForKey:@"routes"] objectAtIndex:indexPath.row];
-		//NSString *cellText = aRoute.title;
 		
-		// Set up the cell...
-		//cell.textLabel.text = cellText;
-		cell.imageView.image = route.isRunning ? _shuttleRunningImage : _shuttleNotRunningImage;
-		
+		if (_isLoading) {
+			cell.imageView.image = _shuttleLoadingImage;
+			UIActivityIndicatorView *spinny = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+			// TODO: hard coded values for center
+			spinny.center = CGPointMake(18.0, 22.0);
+			[spinny startAnimating];
+			[cell.contentView addSubview:spinny];
+			[spinny release];
+		} else {
+			for (UIView *aView in cell.contentView.subviews) {
+				if ([aView isKindOfClass:[UIActivityIndicatorView class]]) {
+					[aView removeFromSuperview];
+				}
+			}
+			cell.imageView.image = route.isRunning ? _shuttleRunningImage : _shuttleNotRunningImage;
+		}
+
 		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	}
 	else if(nil != phoneNumbers)
@@ -260,7 +227,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 	
 	NSArray* routes = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"routes"];
@@ -346,8 +312,7 @@
 	for (ShuttleRoute* route in self.shuttleRoutes) {
 		if (route.isSafeRide) {
 			[saferideRoutes addObject:route];
-		}
-		else {
+		} else {
 			[nonSaferideRoutes addObject: route];
 		}
 		
@@ -394,13 +359,7 @@
 	self.shuttleRoutes = routes;
 	
 	if (nil == routes) {
-		UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"Error Connecting"
-														message:@"There was a problem retrieving shuttle data. Please check your connection and try again"
-													   delegate:nil
-											  cancelButtonTitle:@"OK"
-											  otherButtonTitles:nil] autorelease];
-		[alert show];
-		
+		[MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
 		self.shuttleRoutes = oldRoutes;
 	}
 }

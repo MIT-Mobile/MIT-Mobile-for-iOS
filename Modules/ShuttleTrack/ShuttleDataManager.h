@@ -1,9 +1,10 @@
-
 #import <Foundation/Foundation.h>
-#import "PostData.h"
+#import "MITMobileWebAPI.h"
 
 @class ShuttleStop;
 @class ShuttleRoute;
+@class ShuttleRouteCache;
+@class ShuttleStopLocation;
 
 @protocol ShuttleDataManagerDelegate<NSObject>
 
@@ -25,16 +26,17 @@
 @end
 
 
-@interface ShuttleDataManager : NSObject <PostDataDelegate> {
+@interface ShuttleDataManager : NSObject <JSONLoadedDelegate> {
 
 	// cached shuttle routes.
-	NSArray* _shuttleRoutes;
+	NSMutableArray* _shuttleRoutes;
 	
 	// cached shuttle routes sorted by route ID
-	NSDictionary* _shuttleRoutesByID;
+	NSMutableDictionary* _shuttleRoutesByID;
 	
-	// cached shuttle stops. 
-	NSArray* _shuttleStops;
+	// cached shuttle stops locations. 
+	NSMutableArray* _stopLocations;
+	NSMutableDictionary *_stopLocationsByID;
 	
 	// registered delegates
 	NSMutableArray* _registeredDelegates;
@@ -42,11 +44,23 @@
 
 @property (readonly) NSArray* shuttleRoutes;
 @property (readonly) NSDictionary* shuttleRoutesByID;
-
-@property (readonly) NSArray* shuttleStops;
+@property (readonly) NSArray* stopLocations;
+@property (readonly) NSDictionary *stopLocationsByID;
 
 // get the signleton data manager
 +(ShuttleDataManager*) sharedDataManager;
+
+// return a list of all shuttle stops.
+// this method is only here for backwards compatibility with CampusMapViewController
+// which includes a function to display all shuttle stops on the map
+// though that function is not used as we decided to get rid of the shuttle button from the UI
+// so this can go away if that goes away
+- (NSArray *)shuttleStops;
+
++ (ShuttleRoute *)shuttleRouteWithID:(NSString *)routeID;
++ (ShuttleRouteCache *)routeCacheWithID:(NSString *)routeID;
++ (ShuttleStop *)stopWithRoute:(NSString *)routeID stopID:(NSString *)stopID error:(NSError **)error;
++ (ShuttleStopLocation *)stopLocationWithID:(NSString *)stopID;
 
 // delegate registration and unregistration
 -(void) registerDelegate:(id<ShuttleDataManagerDelegate>)delegate;

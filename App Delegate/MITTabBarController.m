@@ -385,6 +385,7 @@
     NSInteger i = [allItems indexOfObject:item];
     UIViewController *vc = [viewControllers objectAtIndex:i];
     NSMutableArray *navStack = [moreNavigationController.viewControllers mutableCopy];
+    self.activeItem = vc.tabBarItem;
     // We can't push one UINavigationController onto another, so we copy 
     // over its entire navigation stack instead. But 
     // -[UINavigationController setViewControllers:animated:] is broken
@@ -401,10 +402,10 @@
     } else {
         [navStack addObject:vc];
     }
-    self.activeItem = vc.tabBarItem;
     self.activeTabNavStack = navStack;
     pendingNavigationStack = navStack;
     [moreNavigationController pushViewController:[navStack lastObject] animated:animated];    
 }
+
 
 @end

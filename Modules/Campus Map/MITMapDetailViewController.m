@@ -5,6 +5,8 @@
 #import "CampusMapViewController.h"
 #import "NSString+SBJSON.h"
 #import "MITUIConstants.h"
+#import "MIT_MobileAppDelegate.h"
+#import "MapBookmarkManager.h"
 
 @interface MITMapDetailViewController(Private)
 
@@ -22,11 +24,26 @@
 @synthesize annotationDetails = _annotationDetails;
 @synthesize campusMapVC = _campusMapVC;
 @synthesize queryText = _queryText;
+@synthesize imageConnectionWrapper;
+@synthesize startingTab = _startingTab;
+
+- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+		networkActivity = NO;
+	}
+	return self;
+}
 
 - (void)dealloc 
 {	
 	self.annotation = nil;
 	self.annotationDetails = nil;
+	if (networkActivity) {
+		//[(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
+		[self.imageConnectionWrapper cancel];
+	}
+	self.imageConnectionWrapper.delegate = nil;
+	self.imageConnectionWrapper = nil;
 	
     [super dealloc];
 }
@@ -38,7 +55,27 @@
     [super viewDidLoad];
 	
 	_tabViews = [[NSMutableArray alloc] initWithCapacity:2];
-		
+	
+	// check if this item is already bookmarked
+	MapBookmarkManager* bookmarkManager = [MapBookmarkManager defaultManager];
+	if ([bookmarkManager isBookmarked:self.annotation.uniqueID]) {
+		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on.png"] forState:UIControlStateNormal];
+		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
+	}
+	
+	/*
+	NSString* docsFolder = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+	NSArray* bookmarks = [NSArray arrayWithContentsOfFile:[docsFolder stringByAppendingPathComponent:@"bookmarks.plist"]];
+	for (NSDictionary* bookmark in bookmarks) {
+		if ([[bookmark objectForKey:@"bldgnum"] isEqualToString:self.annotation.bldgnum]) {
+			[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on.png"] forState:UIControlStateNormal];
+			[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
+			break;
+		}
+	}
+	*/
+	
+	_mapView.shouldNotDropPins = YES;
 	[_mapView addAnnotation:self.annotation];
 	_mapView.scrollEnabled = NO;
 	_mapView.userInteractionEnabled = NO;
@@ -75,7 +112,6 @@
 		_locationLabel.frame = CGRectMake(_locationLabel.frame.origin.x, _locationLabel.frame.origin.y - _queryLabel.frame.size.height,
 										  _locationLabel.frame.size.width, _locationLabel.frame.size.height);
 	}
-
 	
 	// if the annotation was not fully loaded, go get the rest of the data. 
 	if (!self.annotation.dataPopulated) 
@@ -88,17 +124,16 @@
 		
 		[_scrollView addSubview:_loadingResultView];
 		
-		
-		NSString* searchURL = [NSString stringWithFormat:[MITMapSearchResultAnnotation urlSearchString], [self.annotation.bldgnum stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-		PostData* postData = [[[PostData alloc] initWithDelegate:self] autorelease];
-		postData.api = @"search";
-		[postData postDataInDictionary:nil toURL:[NSURL URLWithString:searchURL]];
+		[MITMapSearchResultAnnotation executeServerSearchWithQuery:self.annotation.bldgnum jsonDelegate:self object:nil];		
 	}
 	else {
 		self.annotationDetails = self.annotation;
 		[self loadAnnotationContent];
 	}
 
+	if (_startingTab) {
+		_tabViewControl.selectedTab = _startingTab;
+	}
 }
 
 -(void) externalMapButtonPressed:(id) sender
@@ -217,9 +252,9 @@
 	if (self.annotationDetails.bldgimg) 
 	{
 		// go get the image.
-		PostData* postData = [[[PostData alloc] initWithDelegate:self] autorelease];
-		postData.api = @"buildingImage";
-		[postData getDataFromURL:[NSURL URLWithString:self.annotationDetails.bldgimg]];
+		self.imageConnectionWrapper = [[ConnectionWrapper new] autorelease];
+		self.imageConnectionWrapper.delegate = self;
+		[imageConnectionWrapper requestDataFromURL:[NSURL URLWithString:self.annotationDetails.bldgimg] allowCachedResponse:YES];
 		
 		NSString* decriptionText = self.annotationDetails.viewAngle ? [NSString stringWithFormat:@"View from: %@", self.annotationDetails.viewAngle] : nil ;
 		_buildingImageDescriptionLabel.text = decriptionText;
@@ -247,10 +282,6 @@
 	
 	// set the labels
 	//NSString* nameString = [self nameString];
-	
-
-	
-	
 	_nameLabel.text = self.annotation.title;
 	_nameLabel.numberOfLines = 0;
 	CGSize stringSize = [self.annotation.title sizeWithFont:_nameLabel.font 
@@ -261,10 +292,12 @@
 								  _nameLabel.frame.size.width, stringSize.height);
 	
 	_locationLabel.text = self.annotationDetails.street;
-	
+	CGSize addressSize = [self.annotationDetails.street sizeWithFont:_locationLabel.font 
+										  constrainedToSize:CGSizeMake(_locationLabel.frame.size.width, 200.0)
+											  lineBreakMode:UILineBreakModeWordWrap];
 	_locationLabel.frame = CGRectMake(_locationLabel.frame.origin.x, 
 									  _nameLabel.frame.size.height + _nameLabel.frame.origin.y + 1,
-									  _locationLabel.frame.size.width, _locationLabel.frame.size.height);
+									  _locationLabel.frame.size.width, addressSize.height);
 	
 	
 	if (_locationLabel.frame.origin.y + _locationLabel.frame.size.height + 5 > _tabViewControl.frame.origin.y) {
@@ -336,6 +369,7 @@
 	
 }
 
+#pragma mark User Actions
 -(IBAction) mapThumbnailPressed:(id)sender
 {
 	
@@ -347,6 +381,31 @@
 	
 	// pop back to the map view. 
 	[self.navigationController popToViewController:self.campusMapVC animated:YES];
+	
+}
+
+-(IBAction) bookmarkButtonTapped
+{
+	MapBookmarkManager* bookmarkManager = [MapBookmarkManager defaultManager];
+	if ([bookmarkManager isBookmarked:self.annotation.uniqueID])
+	{
+		// remove the bookmark and set the images
+		[bookmarkManager removeBookmark:self.annotation.uniqueID];
+		
+		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_off.png"] forState:UIControlStateNormal];
+		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_off_pressed.png"] forState:UIControlStateHighlighted];
+	}
+	else 
+	{
+		NSString* subTitle = nil;
+		if (self.annotation.bldgnum != nil) {
+			subTitle = [NSString stringWithFormat:@"Building %@", self.annotation.bldgnum];
+		}
+		[bookmarkManager addBookmark:self.annotation.uniqueID title:self.annotation.name subtitle:subTitle data:self.annotation.info];
+		
+		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on.png"] forState:UIControlStateNormal];
+		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
+	}
 	
 }
 
@@ -365,42 +424,56 @@
 										 _tabViewContainer.frame.origin.y + viewToAdd.frame.size.height);
 	
 	[_tabViewContainer addSubview:viewToAdd];
+	
+	if (_campusMapVC.displayingList)
+		[_campusMapVC.url setPath:[NSString stringWithFormat:@"list/detail/%@/%d", _annotation.uniqueID, tabIndex] query:_campusMapVC.lastSearchText];
+	else 
+		[_campusMapVC.url setPath:[NSString stringWithFormat:@"detail/%@/%d", _annotation.uniqueID, tabIndex] query:_campusMapVC.lastSearchText];
+	[_campusMapVC.url setAsModulePath];
+	[_campusMapVC setURLPathUserLocation];
+}
+
+
+#pragma mark JSONLoadedDelegate
+// data was received from the MITMobileWeb request. 
+-(void) request:request jsonLoaded:(id)results {
+	if ([(NSArray *)results count] > 0) {
+		MITMapSearchResultAnnotation* annotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:[results objectAtIndex:0]] autorelease];
+		self.annotationDetails = annotation;
+		
+		// load the new contents. 
+		[self loadAnnotationContent];
+	}
+}
+
+- (BOOL) request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
+	return NO;
+}
+
+#pragma mark ConnectionWrapper
+-(void) connectionDidReceiveResponse: (ConnectionWrapper *)connectionWrapper {
+	//[(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
+	networkActivity = YES;
+}
+
+-(void) connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
+	//[(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
+	networkActivity = NO;
+	
+	_loadingImageView.hidden = YES;
+	
+	// create an image from the data and set it on the view
+	UIImage* image = [UIImage imageWithData:data];
+	_buildingImageView.image = image;
+	self.imageConnectionWrapper = nil;
 }
 	
-
-#pragma mark PostDataDelegate
-// data was received from the post data request. 
--(void) postData:(PostData*)postData receivedData:(NSData*) data
-{
-	if ([postData.api isEqualToString:@"buildingImage"])
-	{
-		_loadingImageView.hidden = YES;
-		
-		// create an image from the data and set it on the view
-		UIImage* image = [UIImage imageWithData:data];
-		_buildingImageView.image = image;		
-	}
-	else if([postData.api isEqualToString:@"search"])
-	{
-		NSString* string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
-		NSArray* results = [string JSONValue];
-
-		if (results.count > 0) {
-			MITMapSearchResultAnnotation* annotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:[results objectAtIndex:0]] autorelease];
-			self.annotationDetails = annotation;
-			
-			// load the new contents. 
-			[self loadAnnotationContent];
-		}
-	}
-
-		
-}
-
-// there was an error connecting to the specified URL. 
--(void) postData:(PostData*)postData error:(NSString*)error
-{
-		_loadingImageView.hidden = YES;
+-(void) connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
+	//[(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
+	networkActivity = NO;
+	
+	self.imageConnectionWrapper = nil;
+	_loadingImageView.hidden = YES;
 }
 
 @end

@@ -1,21 +1,22 @@
 #import <UIKit/UIKit.h>
-#import "FBConnect.h"
-#import <MessageUI/MFMailComposeViewController.h>
+#import "ShareDetailViewController.h"
 
 @class NewsStory;
+@class StoryListViewController;
 
-@interface StoryDetailViewController : UIViewController <UIWebViewDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate, FBSessionDelegate, FBDialogDelegate> {
-    
+@interface StoryDetailViewController : ShareDetailViewController <UIWebViewDelegate, ShareItemDelegate> {
+	StoryListViewController *newsController;
     NewsStory *story;
+	
+	UISegmentedControl *storyPager;
     
     UIWebView *storyView;
-    
-    FBSession *fbSession;
 }
 
+@property (nonatomic, retain) StoryListViewController *newsController;
 @property (nonatomic, retain) NewsStory *story;
 @property (nonatomic, retain) UIWebView *storyView;
 
-@property (nonatomic, retain) FBSession *fbSession;
+- (void)displayStory:(NewsStory *)aStory;
 
 @end

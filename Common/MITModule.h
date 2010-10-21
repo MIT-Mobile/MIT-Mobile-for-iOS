@@ -28,6 +28,12 @@
     BOOL canBecomeDefault; // TRUE if this module can become the default tab at startup
     BOOL pushNotificationSupported;
     BOOL pushNotificationEnabled; // toggled by user in SettingsModule
+	
+	// properties used for saving and restoring state
+	// if module keeps track of its state it is required respond to handleLocalPath:query
+	BOOL hasLaunchedBegun; // keeps track of if the module has been opened at lease once, since application launch
+	NSString *currentPath; // the path of the URL representing current module state
+	NSString *currentQuery; // query of the URL representing current module state
 }
 
 #pragma mark Required methods (must override in subclass)
@@ -46,6 +52,8 @@
 
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query;
 
+- (void)resetURL; // reset the URL, (i.e. path and query to empty strings)
+
 - (BOOL)handleNotification: (MITNotification *)notification appDelegate: (MIT_MobileAppDelegate *)appDelegate shouldOpen: (BOOL)shouldOpen; // Called when a push notification arrives
 
 - (void)handleUnreadNotificationsSync: (NSArray *)unreadNotifications; // called to let the module know the unreads may have changed
@@ -53,6 +61,19 @@
 - (void)becomeActiveTab;
 
 - (BOOL)isActiveTab;
+
+#pragma mark tabNavController methods
+
+- (void) popToRootViewController;
+
+- (UIViewController *) rootViewController;
+
+- (void) pushViewController: (UIViewController *)viewController;
+
+- (UIViewController *) parentForViewController:(UIViewController *)viewController;
+
+
+
 
 @property (nonatomic, copy) NSString *tag;
 @property (nonatomic, copy) NSString *shortName;
@@ -67,5 +88,9 @@
 @property (nonatomic, retain) NSString *badgeValue;          // What appears in the red bubble in the module's tab. Set to nil to make it disappear. Will eventually show in the More tab's table as well.
 @property (nonatomic, readonly) UIImage *icon;       // The icon used for the More tab's table (color)
 @property (nonatomic, readonly) UIImage *tabBarIcon; // The icon used for the UITabBar (black and white)
+
+@property (nonatomic) BOOL hasLaunchedBegun;
+@property (nonatomic, retain) NSString *currentPath;
+@property (nonatomic, retain) NSString *currentQuery;
 
 @end

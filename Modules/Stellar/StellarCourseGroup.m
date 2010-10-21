@@ -1,8 +1,9 @@
-
 #import "StellarCourseGroup.h"
 #import "StellarCourse.h"
+#import "StellarModel.h"
 
 NSInteger courseNameCompare(id course1, id course2, void *context);
+NSString *stripLetters(NSString *courseNumber);
 
 @implementation StellarCourseGroup
 @synthesize title, courses;
@@ -37,9 +38,9 @@ NSInteger courseNameCompare(id course1, id course2, void *context);
 		if([sortedCourseGroup count] > 0) {
 			NSString *title;
 			if([criteria isNumeric]) {
-				title = [@"Courses " stringByAppendingString:((StellarCourse *)[sortedCourseGroup objectAtIndex:0]).number];
-				title = [title stringByAppendingString:@"-"];
-				title = [title stringByAppendingString:((StellarCourse *)[sortedCourseGroup lastObject]).number];
+				NSString *firstCourseNumber = stripLetters(((StellarCourse *)[sortedCourseGroup objectAtIndex:0]).number);
+				NSString *lastCourseNumber = stripLetters(((StellarCourse *)[sortedCourseGroup lastObject]).number);
+				title = [NSString stringWithFormat:@"Courses %@-%@", firstCourseNumber, lastCourseNumber];
 			} else {
 				title = @"Other Courses";
 			}
@@ -49,7 +50,39 @@ NSInteger courseNameCompare(id course1, id course2, void *context);
 	}
 	return courseGroups;
 }
+
+- (NSString *) serialize {
+	BOOL first = YES;
+	NSMutableString *coursesString = [NSMutableString string];
+	for (StellarCourse *course in courses) {
+		if (!first) {
+			[coursesString appendString:@"-"];
+		} else {
+			first = NO;
+		}
+		[coursesString appendString:course.number];
+	}
 	
+	return [NSString stringWithFormat:@"%@:%@", title, coursesString];
+}
+	
++ (StellarCourseGroup *) deserialize: (NSString *)serializedCourseGroup {
+	NSArray *partsByColon = [serializedCourseGroup componentsSeparatedByString:@":"];
+	NSString *title = [partsByColon objectAtIndex:0];
+	NSArray *courseIds = [[partsByColon objectAtIndex:1] componentsSeparatedByString:@"-"];
+	NSMutableArray *courses = [NSMutableArray arrayWithCapacity:courseIds.count];
+	for (NSString *courseId in courseIds) {
+		StellarCourse *course = [StellarModel courseWithId:courseId];
+		if (course) {
+			[courses addObject:course];
+		} else {
+			// if we fail to look up a course
+			// consider the whole deserialization a failure
+			return nil;
+		}
+	}
+	return [[[StellarCourseGroup alloc] initWithTitle:title courses:courses] autorelease];
+}
 
 - (void) dealloc {
 	[title release];
@@ -121,3 +154,15 @@ NSInteger courseNameCompare(id course1, id course2, void *context);
 NSInteger courseNameCompare(id course1, id course2, void *context) {
 	return [((StellarCourse *)course1).number compare:((StellarCourse *)course2).number options:NSNumericSearch];
 }
+
+NSString* stripLetters(NSString *courseNumber) {
+	NSString *noLetters = @"";
+	NSCharacterSet *digits = [NSCharacterSet decimalDigitCharacterSet];
+	for (NSUInteger i=0; i < courseNumber.length; i++) {
+		unichar aChar = [courseNumber characterAtIndex:i];
+		if ([digits characterIsMember:aChar]) {
+			noLetters = [NSString stringWithFormat:@"%@%C", noLetters, aChar];
+		}
+	}
+	return noLetters;
+} 

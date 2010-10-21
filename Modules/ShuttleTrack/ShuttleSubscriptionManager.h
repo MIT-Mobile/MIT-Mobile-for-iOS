@@ -5,12 +5,12 @@
 
 @class ShuttleStop;
 @class ShuttleRoute;
-@class RouteStopSchedule;
+//@class RouteStopSchedule;
 
 @protocol ShuttleSubscriptionDelegate <NSObject>
 
 - (void) subscriptionSucceededWithObject: (id)object;
-- (void) subscriptionFailedWithObject: (id)object;
+- (void) subscriptionFailedWithObject: (id)object passkeyError: (BOOL)passkeyError;
 
 @end
 
@@ -19,17 +19,17 @@
 	NSDictionary *loadingSubscription;
 }
 
-+ (void) subscribeForRoute: (ShuttleRoute *)route atStop: (ShuttleStop *)stop scheduleTime: (NSDate *)time delegate: (id<ShuttleSubscriptionDelegate>)delegate object: (id)object;
++ (void)subscribeForRoute:(NSString *)routeID atStop:(NSString *)stopID scheduleTime:(NSDate *)time delegate: (id<ShuttleSubscriptionDelegate>)delegate object:(id)object;
 
-+ (void) unsubscribeForRoute: (ShuttleRoute *)route atStop: (ShuttleStop *)stop delegate: (id<ShuttleSubscriptionDelegate>)delegate object: (id)object;
++ (void)unsubscribeForRoute:(NSString *)routeID atStop:(NSString *)stopID delegate:(id<ShuttleSubscriptionDelegate>)delegate object:(id)object;
 
-+ (BOOL) hasSubscription: (ShuttleRoute *)route atStop: (ShuttleStop *)stop scheduleTime: (NSDate *)time;
++ (BOOL)hasSubscription:(NSString *)routeID atStop:(NSString *)stopID scheduleTime:(NSDate *)time;
 
-+ (void) addSubscriptionForRouteId: (NSString *)routeId atStopId: (NSString *)stopId startTime: (NSDate *)startTime endTime: (NSDate *)endTime;
++ (void)addSubscriptionForRouteID:(NSString *)routeID atStopID:(NSString *)stopID startTime:(NSDate *)startTime endTime:(NSDate *)endTime;
 
-+ (void) removeSubscriptionForRouteId: (NSString *)routeId atStopId: (NSString *)stopId;
++ (void)removeSubscriptionForRouteID:(NSString *)routeID atStopID:(NSString *)stopID;
 
-+ (void) pruneSubscriptions;
++ (void)pruneSubscriptions;
 
 @end
 
@@ -37,11 +37,13 @@
 {
 	id object;
 	id<ShuttleSubscriptionDelegate> delegate;
-	ShuttleRoute *route;
-	ShuttleStop *stop;
+	NSString *routeID;
+	NSString *stopID;
+	//ShuttleRoute *route;
+	//ShuttleStop *stop;
 }
 
-- (id) initWithDelegate: (id<ShuttleSubscriptionDelegate>)delegate route: (ShuttleRoute *)route stop: (ShuttleStop *)stop object: (id)object ;
+- (id)initWithDelegate:(id<ShuttleSubscriptionDelegate>)delegate routeID:(NSString *)routeID stopID:(NSString *)stopID object: (id)object;
 
 @end
 
@@ -49,10 +51,12 @@
 {
 	id object;
 	id<ShuttleSubscriptionDelegate> delegate;
-	ShuttleRoute *route;
-	ShuttleStop *stop;
+	NSString *routeID;
+	NSString *stopID;
+	//ShuttleRoute *route;
+	//ShuttleStop *stop;
 }
 
-- (id) initWithDelegate: (id<ShuttleSubscriptionDelegate>)delegate route: (ShuttleRoute *)route stop: (ShuttleStop *)stop object: (id)object ;
+- (id)initWithDelegate:(id<ShuttleSubscriptionDelegate>)delegate routeID:(NSString *)routeID stopID:(NSString *)stopID object:(id)object;
 
 @end

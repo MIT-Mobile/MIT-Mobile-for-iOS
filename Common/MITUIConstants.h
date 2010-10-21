@@ -15,7 +15,7 @@
 
 #define TABLE_HEADER_FONT_SIZE 20.0
 
-#define TABLE_SEPARATOR_COLOR [UIColor colorWithWhite:0.8 alpha:0.0] /* #BBBBBB */
+#define TABLE_SEPARATOR_COLOR [UIColor colorWithWhite:0.8 alpha:1.0] /* #BBBBBB */
 
 #define PRIMARY_GROUP_BACKGROUND_COLOR [UIColor whiteColor]
 #define SECONDARY_GROUP_BACKGROUND_COLOR [UIColor colorWithWhite:1.0 alpha:0.65]
@@ -43,4 +43,7 @@
 #define STANDARD_CONTENT_FONT_SIZE 17.0
 #define STANDARD_CONTENT_FONT_COLOR [UIColor colorWithHexString:@"#202020"];
 #define EMBEDDED_LINK_FONT_COLOR [UIColor colorWithHexString:@"#993333"];
+
+/*** Layout constants ***/
+#define NAVIGATION_BAR_HEIGHT 44.0f
 

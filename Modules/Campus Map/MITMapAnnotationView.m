@@ -8,6 +8,9 @@ NSString* const kMITMapAnnotationViewTapped = @"MITMapViewAnnotationViewTouchesE
 @synthesize canShowCallout = _canShowCallout;
 @synthesize mapView = _mapView;
 @synthesize centeredVertically = _centeredVertically;
+@synthesize shadowView = _shadowView;
+@synthesize alreadyOnMap = _alreadyOnMap;
+@synthesize hasBeenDropped = _hasBeenDropped;
 
 - (id)initWithAnnotation:(id <MKAnnotation>)annotation
 {
@@ -28,6 +31,7 @@ NSString* const kMITMapAnnotationViewTapped = @"MITMapViewAnnotationViewTouchesE
 - (void)dealloc {
 	self.annotation = nil;
 	self.mapView = nil;
+    self.shadowView = nil;
 	
     [super dealloc];
 }
@@ -55,5 +59,9 @@ NSString* const kMITMapAnnotationViewTapped = @"MITMapViewAnnotationViewTouchesE
 
 }
 
+-(NSString*) description
+{
+	return [NSString stringWithFormat:@"dropped: %@.  on map: %@.", _hasBeenDropped ? @"YES" : @"NO", _alreadyOnMap ? @"YES" : @"NO"];
+}
 
 @end

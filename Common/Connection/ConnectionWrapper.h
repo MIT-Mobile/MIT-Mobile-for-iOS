@@ -35,7 +35,6 @@
 @property (nonatomic, assign) id<ConnectionWrapperDelegate> delegate;
 
 - (id)initWithDelegate:(id<ConnectionWrapperDelegate>)theDelegate;
-- (BOOL)requestDataFromURLString:(NSString *)urlString;
 - (void)cancel;
 
 - (void)resetObjects;

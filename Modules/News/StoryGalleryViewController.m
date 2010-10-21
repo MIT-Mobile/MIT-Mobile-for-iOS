@@ -48,14 +48,15 @@
     
     if (imageCount > 0) {
         if (imageCount > 1) {
-            UISegmentedControl* segmentedControl = [[UISegmentedControl alloc] initWithItems:[NSArray array]];
+            UISegmentedControl* segmentedControl = [[UISegmentedControl alloc] initWithItems:
+													[NSArray arrayWithObjects:
+													 [UIImage imageNamed:MITImageNameUpArrow], 
+													 [UIImage imageNamed:MITImageNameDownArrow], 
+													 nil]];
             [segmentedControl setMomentary:YES];
-            [segmentedControl insertSegmentWithImage:[UIImage imageNamed:@"global/left-arrow-white.png"] atIndex:0 animated:NO];
-            [segmentedControl insertSegmentWithImage:[UIImage imageNamed:@"global/right-arrow-white.png"] atIndex:1 animated:NO];
-            [segmentedControl setWidth:60.0 forSegmentAtIndex:0];
-            [segmentedControl setWidth:60.0 forSegmentAtIndex:1];
             segmentedControl.autoresizingMask = UIViewAutoresizingFlexibleWidth;
             segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
+			segmentedControl.frame = CGRectMake(0, 0, 80.0, segmentedControl.frame.size.height);
             [segmentedControl addTarget:self action:@selector(didPressNavButton:) forControlEvents:UIControlEventValueChanged];
             
             UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView: segmentedControl];
@@ -155,18 +156,29 @@
 
 - (void)changeImage {
     self.title = [NSString stringWithFormat:@"%d of %d", imageIndex + 1, [self.images count]];
-    
+	
     NewsImage *anImage = [self.images objectAtIndex:imageIndex];
-    // resize to 200 so its activity indicator is visible while loading
     CGRect frame = storyImageView.frame;
-    frame.size.height = 200;
+	CGFloat imageWidth = [anImage.fullImage.width floatValue];
+	CGFloat imageHeight = [anImage.fullImage.height floatValue];
+    frame.size.height = (frame.size.width >= imageWidth) ? imageHeight : (imageHeight * frame.size.width / imageWidth); // scale height to predict how aspect scaling will affect the image's height
     storyImageView.frame = frame;
     storyImageView.imageRep = anImage.fullImage;
+	[storyImageView setNeedsLayout];
+    
     captionLabel.text = anImage.caption;
     [self resizeLabelWithFixedWidth:captionLabel];
     creditLabel.text = anImage.credits;
     [self resizeLabelWithFixedWidth:creditLabel];
 
+    frame = captionLabel.frame;
+    frame.origin.y = ceil(CGRectGetMaxY(storyImageView.frame) + 3.0);
+    captionLabel.frame = frame;
+    
+    frame = creditLabel.frame;
+    frame.origin.y = ceil(CGRectGetMaxY(captionLabel.frame) + 3.0);
+    creditLabel.frame = frame;
+	
     [storyImageView loadImage];
 }
 

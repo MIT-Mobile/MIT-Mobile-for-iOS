@@ -10,10 +10,7 @@
 // designated initializer
 - (id)initWithDelegate:(id<ConnectionWrapperDelegate>)theDelegate {
     self = [self init];
-    tempData = nil;
-    isConnected = false;
     self.delegate = theDelegate;
-    self.urlConnection = nil;
     return self;
 }
 
@@ -21,6 +18,9 @@
 	self = [super init];
 
 	if (self != nil) {
+		isConnected = false;
+		tempData = nil;
+		self.urlConnection = nil;
 		[self resetObjects];
 	}
 	
@@ -39,11 +39,6 @@
 	isConnected = false;
 	[tempData release];
     tempData = nil;
-}
-
-// TODO: return NSError explaining failure
-- (BOOL)requestDataFromURLString:(NSString *)urlString {
-	return [self requestDataFromURL:[NSURL URLWithString:urlString]];
 }
 
 - (void)cancel {

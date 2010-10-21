@@ -2,6 +2,7 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "MITMobileWebAPI.h"
 
 @interface MITMapSearchResultAnnotation : NSObject <MKAnnotation>{
 
@@ -24,6 +25,11 @@
 	
 	// has the data of this object been populated yet
 	BOOL _dataPopulated;
+	
+	NSDictionary* _info;
+	
+	// flag indicating if this instance was loaded from a bookmark
+	BOOL _bookmark;
 }
 
 @property (nonatomic, retain) NSString* architect;
@@ -38,11 +44,14 @@
 @property (nonatomic, retain) NSArray* snippets;
 @property (nonatomic, retain) NSString* city;
 
+@property (nonatomic, retain) NSDictionary* info;
+
 @property BOOL dataPopulated;
+@property BOOL bookmark;
 
-// url you can use to search for these things. 
-+(NSString*) urlSearchString;
++(void) executeServerSearchWithQuery:(NSString *)query jsonDelegate: (id<JSONLoadedDelegate>)delegate object:(id)object;
 
+// initialize the annotation with data from the MIT webservice.
 -(id) initWithInfo:(NSDictionary*)info;
 
 -(id) initWithCoordinate:(CLLocationCoordinate2D) coordinate;

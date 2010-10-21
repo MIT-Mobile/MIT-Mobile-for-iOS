@@ -2,8 +2,11 @@
 #import <Foundation/Foundation.h>
 
 #import "SaveOperation.h"
+#import "MITMobileWebAPI.h"
 
-@interface MapTileCache : NSObject  <SaveOperationDelegate> {
+extern NSString * const MapCacheReset;
+
+@interface MapTileCache : NSObject  <SaveOperationDelegate, JSONLoadedDelegate> {
 
 	// map service URL from where we will pull map cells
 	NSURL* _serviceURL;
@@ -18,6 +21,8 @@
 	NSMutableArray* _recentTilesIndex;
 	
 	NSMutableArray* _registeredDelegates;
+	
+	long long _mapTimestamp;
 }
 
 @property (nonatomic, retain) NSURL* serviceURL;
@@ -35,5 +40,8 @@
 
 // get the tile but only if it is in the cache (depending on onlyFromCache bool)
 -(UIImage*) getTileForLevel:(int)level row:(int)row col:(int)col onlyFromCache:(BOOL)onlyFromCache;
+
+// path where we store the current timestamp of the server's reported map cache
+-(NSString*) mapTimestampFilename;
 
 @end

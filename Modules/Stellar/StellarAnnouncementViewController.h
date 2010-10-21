@@ -1,6 +1,6 @@
-
 #import <UIKit/UIKit.h>
 #import "StellarAnnouncement.h"
+#import "MITModuleURL.h"
 
 @interface StellarAnnouncementViewController : UITableViewController {
 	StellarAnnouncement *announcement;
@@ -10,7 +10,10 @@
 	UIFont *titleFont;
 	UIFont *dateFont;
 	UIFont *textFont;	
+	
+	MITModuleURL *url;
+	NSUInteger rowIndex;
 }
 
-- (id) initWithAnnouncement: (StellarAnnouncement *)announcement;
+- (id) initWithAnnouncement: (StellarAnnouncement *)announcement rowIndex: (NSUInteger)index;
 @end

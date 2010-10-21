@@ -7,9 +7,12 @@
 {
 }
 
+@property (nonatomic, retain) NSDate * lastCache;
+@property (nonatomic, retain) NSString * lastChecksum;
 @property (nonatomic, retain) NSString * number;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSSet* stellarClasses;
+@property (nonatomic, retain) NSString * term;
 
 @end
 

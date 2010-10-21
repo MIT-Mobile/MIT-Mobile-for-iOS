@@ -147,7 +147,7 @@
     BOOL validImage = [self displayImage];
     if (validImage) {
         imageRep.data = data;
-        [CoreDataManager saveData];
+        [CoreDataManager saveDataWithTemporaryMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
     }
 
     self.connection = nil;

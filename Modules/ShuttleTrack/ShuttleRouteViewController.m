@@ -10,32 +10,25 @@
 
 -(void) displayTypeChanged:(id)sender;
 
+-(void) setUrl:(MITModuleURL *)moduleURL;
 @end
 
 
 @implementation ShuttleRouteViewController
 
+@synthesize url;
 @synthesize route = _route;
-@synthesize routeInfo = _routeInfo;
 @synthesize tableView = _tableView;
 @synthesize routeMapViewController = _routeMapViewController;
-
-/*
-- (id)initWithStyle:(UITableViewStyle)style {
-    // Override initWithStyle: if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-    if (self = [super initWithStyle:style]) {
-    }
-    return self;
-}
-*/
-
 
 - (void)dealloc {
 	[_viewTypeButton release];
 	
 	self.route = nil;
-	self.routeInfo = nil;
 	self.tableView = nil;
+	self.view = nil;
+	[self setUrl:nil];
+	
 	//self.routeMapViewController = nil;
 	[_routeMapViewController release];
 	
@@ -53,6 +46,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+	if (_route.stops == nil) {
+		[_route getStopsFromCache];
+	}
     
     self.title = @"Route";
 	
@@ -60,14 +57,20 @@
 													   style:UIBarButtonItemStylePlain 
 													  target:self
 													  action:@selector(displayTypeChanged:)];
-	_viewTypeButton.enabled = NO;										  
+	//_viewTypeButton.enabled = NO;										  
 	self.navigationItem.rightBarButtonItem = _viewTypeButton;
 	
 	_smallStopImage = [[UIImage imageNamed:@"shuttle-stop-dot.png"] retain];
 	_smallUpcomingStopImage = [[UIImage imageNamed:@"shuttle-stop-dot-next.png"] retain];
 	
+	[self setUrl:[[[MITModuleURL alloc] initWithTag:ShuttleTag] autorelease]];
+    [url setPath:[NSString stringWithFormat:@"route-list/%@", self.route.routeID] query:nil];
+    
+    [_titleCell setRouteInfo:self.route];
+	_titleCell.frame = CGRectMake(_titleCell.frame.origin.x, _titleCell.frame.origin.y, _titleCell.frame.size.width, [_titleCell heightForCellWithRoute:self.route]);
+    [self.view addSubview:_titleCell];
+    self.tableView.frame = CGRectMake(0.0, _titleCell.frame.size.height - 4.0, self.view.frame.size.width, self.view.frame.size.height - _titleCell.frame.size.height + 4.0);
 }
-
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -84,11 +87,10 @@
 													 repeats:YES] retain];
 }
 
-/*
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+	[url setAsModulePath];
 }
-*/
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[[ShuttleDataManager sharedDataManager] unregisterDelegate:self];
@@ -132,83 +134,32 @@
 
 #pragma mark Table view methods
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-
-    if(!_routeLoaded || _shownError)
-		return 1; 
-	
-	// Info and Stops and phone info
-    return 2;
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView 
+{
+	return 1;
 }
 
 
 // Customize the number of rows in the table view.
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSInteger num = 0;
-
-	if(!_routeLoaded || _shownError)
-		num =  1;
-	else
-	{
-		
-		switch (section) {
-			case 0:
-				num = 1;
-				break;
-			case 1:
-				num = self.routeInfo.stops.count;
-				break;
-		}
-	}
-	
-    return num;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
+{
+    return self.route.stops.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
-	CGFloat height = 0;
-	
-    if (indexPath.section == 0) {
-		if (!_routeLoaded || _shownError) 
-			height = _loadingCell.frame.size.height;
-		else
-			height = [_titleCell heightForCellWithRoute:self.routeInfo];
-	}
-	else 
-	{
-		CGSize constraintSize = CGSizeMake(280.0f, 2009.0f);
-		NSString* cellText = @"A"; // just something to guarantee one line
-		UIFont* cellFont = [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]];	
-
-		CGSize labelSize = [cellText sizeWithFont:cellFont constrainedToSize:constraintSize lineBreakMode:UILineBreakModeWordWrap];
-		height = labelSize.height + 20.0f;
-	}
-
-	return height;
-    
-
+	CGSize constraintSize = CGSizeMake(280.0f, 2009.0f);
+	NSString* cellText = @"A"; // just something to guarantee one line
+	UIFont* cellFont = [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]];
+	CGSize labelSize = [cellText sizeWithFont:cellFont constrainedToSize:constraintSize lineBreakMode:UILineBreakModeWordWrap];
+	return labelSize.height + 20.0f;
 }
 
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-//    static NSString *InfoCellIdentifier = @"InfoCell";
     static NSString *StopCellIdentifier = @"StopCell";
-
-
-	if (indexPath.section == 0) {
-		if (!_routeLoaded || _shownError) {
-			return _loadingCell;
-		}
-		
-		[_titleCell setRouteInfo:self.routeInfo];
-		[_titleCell setSelectionStyle:UITableViewCellSelectionStyleNone];
-		
-		return _titleCell;
-		
-	}
 
 	ShuttleStopCell* cell = (ShuttleStopCell*)[tableView dequeueReusableCellWithIdentifier:StopCellIdentifier];
 	if (nil == cell) {
@@ -218,11 +169,7 @@
 	
     // Set up the cell...
     ShuttleStop *aStop = nil;
-	if(nil != self.routeInfo && self.routeInfo.stops.count > indexPath.row)
-	{
-		aStop = [self.routeInfo.stops objectAtIndex:indexPath.row];
-	}
-	if (nil == aStop) {
+	if(nil != self.route && self.route.stops.count > indexPath.row) {
 		aStop = [self.route.stops objectAtIndex:indexPath.row];
 	}
 	
@@ -236,45 +183,69 @@
 	
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	
-	if (indexPath.section == 1) {
-
-		
-		
-		
-		_selectedStopAnnotation = [self.route.annotations objectAtIndex:indexPath.row];
-
-		ShuttleStopViewController* shuttleStopVC = [[[ShuttleStopViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
-		shuttleStopVC.shuttleStop = [_selectedStopAnnotation shuttleStop];
-		shuttleStopVC.annotation = _selectedStopAnnotation;
-		shuttleStopVC.route = self.route;
-	
-		
-		[self.navigationController pushViewController:shuttleStopVC animated:YES];
-		
-		[shuttleStopVC.mapButton addTarget:self action:@selector(showSelectedStop:) forControlEvents:UIControlEventTouchUpInside];
-		
-		/*
-		 [self loadRouteMap];
-		 
-		// ensure the view and map view are loaded
-		self.routeMapViewController.view;
-	
-		MITMapView* mapView = self.routeMapViewController.mapView;
-	
-		[mapView selectAnnotation:annotation];
-	
-		[self.navigationController pushViewController:self.routeMapViewController animated:YES];
-		 */
-		 
-	}
+	[self pushStopViewControllerWithStop:[self.route.stops objectAtIndex:indexPath.row] 
+							  annotation:[self.route.annotations objectAtIndex:indexPath.row] 
+								animated:YES];
 }
 
+-(void) pushStopViewControllerWithStop:(ShuttleStop *)stop annotation:(ShuttleStopMapAnnotation *)annotation animated:(BOOL)animated {
+	_selectedStopAnnotation = annotation;
+	ShuttleStopViewController* shuttleStopVC = [[[ShuttleStopViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+	shuttleStopVC.shuttleStop = stop;
+	shuttleStopVC.annotation = annotation;
+	[self.navigationController pushViewController:shuttleStopVC animated:animated];
+	shuttleStopVC.view;
+	[shuttleStopVC.mapButton addTarget:self action:@selector(showSelectedStop:) forControlEvents:UIControlEventTouchUpInside];
+}
+	
+	
 -(void) showSelectedStop:(id)sender
 {
-	[self.navigationController popToViewController:self animated:YES];
+	[self showStop:_selectedStopAnnotation animated:YES];
+}	
 
-	[self displayTypeChanged:_viewTypeButton];
-	[_routeMapViewController.mapView selectAnnotation:_selectedStopAnnotation];
+-(void) showStop:(ShuttleStopMapAnnotation *)annotation animated:(BOOL)animated {	
+	[self.navigationController popToViewController:self animated:animated];
+	[self setMapViewMode:YES animated:animated];
+
+	[_routeMapViewController.mapView selectAnnotation:annotation];
+}
+
+// set the view to either map or list mode
+-(void) setMapViewMode:(BOOL)showMap animated:(BOOL)animated {
+	//NSLog(@"map is showing=%i", _mapShowing);
+	if (_mapShowing == showMap) {
+		// nothing to change
+		return;
+	}
+	
+	
+	// flip to the correct view. 
+	if (animated) {
+		[UIView beginAnimations:@"flip" context:nil];
+		[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.view cache:NO];
+	}
+	
+	if (!showMap) {
+		[self.routeMapViewController viewWillDisappear:YES];
+		[self.routeMapViewController.view removeFromSuperview];
+		[self.view addSubview:self.tableView];	
+		self.routeMapViewController = nil;
+		_viewTypeButton.title = @"Map";
+	} else {
+		[self.tableView removeFromSuperview];
+		[self loadRouteMap];
+		self.routeMapViewController.parentViewController = self;
+		[self.view addSubview:self.routeMapViewController.view];
+		[self.routeMapViewController viewWillAppear:YES];
+		_viewTypeButton.title = @"List";
+	}
+	
+	if(animated) {
+		[UIView commitAnimations];
+	}
+	
+	_mapShowing = showMap;
 }
 
 #pragma mark ShuttleRouteViewController(Private)
@@ -293,37 +264,14 @@
 
 #pragma mark User Actions
 -(void) displayTypeChanged:(id)sender
-{
-	// flip to the correct view. 
-	[UIView beginAnimations:@"flip" context:nil];
-	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.view cache:NO];
+{	
+	[self setMapViewMode:!_mapShowing animated:YES];
 	
-	if(_mapShowing)
-	{
-		[self.routeMapViewController viewWillDisappear:YES];
-		[self.routeMapViewController.view removeFromSuperview];
-		[self.view addSubview:self.tableView];	
-		self.tableView.frame = self.view.frame;
-		self.routeMapViewController = nil;
-		_viewTypeButton.title = @"Map";
-	}
-	else
-	{
-		[self.tableView removeFromSuperview];
-		[self loadRouteMap];
-		self.routeMapViewController.parentsNavController = self.navigationController;
-		[self.view addSubview:self.routeMapViewController.view];
-		[self.routeMapViewController viewWillAppear:YES];
-		_viewTypeButton.title = @"List"; 
-	}
-
-	_mapShowing = !_mapShowing;
-	
-	
-	[UIView commitAnimations];
-
+	NSString *basePath = _mapShowing ? @"route-map" : @"route-list";
+	[url setPath:[NSString stringWithFormat:@"%@/%@", basePath, self.route.routeID] query:nil];
+	[url setAsModulePath];
 }
-
+	
 #pragma mark ShuttleDataManagerDelegate
 -(void) routeInfoReceived:(ShuttleRoute*)shuttleRoute forRouteID:(NSString*)routeID
 {
@@ -333,43 +281,53 @@
 		if (!_shownError) {
 			_shownError = YES;
 			
-			UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:nil
-															 message:@"Problem loading shuttle info. Please check your internet connection."
-															delegate:self
-												   cancelButtonTitle:@"OK"
-												   otherButtonTitles:nil] autorelease];
-			[alert show];
-		}
+			[MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
+			
+			if([routeID isEqualToString:self.route.routeID]) {
+				self.route.liveStatusFailed = YES;
+				[_titleCell setRouteInfo:self.route];
+			}
+		}		
+	} 
+	else 
+	{
+		shuttleRoute.liveStatusFailed = NO;
+		if ([routeID isEqualToString:self.route.routeID]) {
+			if (!self.route.isRunning && [_pollingTimer isValid]) {
+				[_pollingTimer invalidate];
+			}
 		
+			_shownError = NO;
+		
+			//self.routeInfo = shuttleRoute;
+			self.route = shuttleRoute;
+				if (self.route.annotations.count <= 0) {
+					self.route = shuttleRoute;
+				}
+			[_titleCell setRouteInfo:self.route];
+        
+			//_routeLoaded = YES;
+			[self.tableView reloadData];
+		
+			//_viewTypeButton.enabled = YES;
+		}	 
 	}
 	
-	else if ([routeID isEqualToString:self.route.routeID]) 
-	{
-		if (!self.route.isRunning && [_pollingTimer isValid]) {
-			[_pollingTimer invalidate];
+	if ([routeID isEqualToString:self.routeMapViewController.route.routeID]) {
+		if (shuttleRoute) {
+			self.routeMapViewController.route = shuttleRoute;
+		} else {
+			self.routeMapViewController.route.liveStatusFailed = YES;
 		}
-		
-		_shownError = NO;
-		
-		self.routeInfo = shuttleRoute;
-		if (self.route.annotations.count <= 0) {
-			self.route = shuttleRoute;
-		}
-		
-		_routeLoaded = YES;
-		[self.tableView reloadData];
-		
-		_viewTypeButton.enabled = YES;
+
+		[self.routeMapViewController refreshRouteTitleInfo];
 	}
-	 
 }
 
-
-#pragma mark UIAlertViewDelegate
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-	if (!_routeLoaded) {
-		[self.navigationController popViewControllerAnimated:YES];
+-(void) setUrl:(MITModuleURL *)moduleURL {
+	if(url != moduleURL) {
+		[url release];
+		url = [moduleURL retain];
 	}
 }
 

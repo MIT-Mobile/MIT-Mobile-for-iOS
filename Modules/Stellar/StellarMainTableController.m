@@ -1,4 +1,3 @@
-
 #import "StellarModule.h"
 #import "StellarMainTableController.h"
 #import "StellarCoursesTableController.h"
@@ -8,69 +7,141 @@
 #import "StellarSearch.h"
 #import "UITableView+MITUIAdditions.h"
 #import "UITableViewCell+MITUIAdditions.h"
+#import "MITConstants.h"
 #import "MITUIConstants.h"
 #import "MITLoadingActivityView.h"
+#import "MITModuleURL.h"
 
 #define myStellarGroup 0
 #define browseGroup 1
 
-#define searchBarHeight 44
+#define searchBarHeight NAVIGATION_BAR_HEIGHT
+@interface StellarMainTableController(Private)
+@property (nonatomic, retain) NSString *doSearchTerms;
+@end
+
 @implementation StellarMainTableController
 
 @synthesize courseGroups, myStellar;
-@synthesize searchController;
-@synthesize translucentOverlay, loadingView;
+@synthesize mainTableView;
+@synthesize loadingView, searchResultsTableView;
 @synthesize myStellarUIisUpToDate;
+@synthesize url;
+@synthesize searchBar;
+
+- (id) init {
+	if (self = [super init]) {
+		url = [[MITModuleURL alloc] initWithTag:StellarTag];
+		isViewAppeared = NO;
+	}
+	return self;
+}
+
+- (void) dealloc {
+	[url release];
+	[super dealloc];
+}
 
 - (void) viewDidLoad {
-	[self.tableView applyStandardColors];
+	[super viewDidLoad];
+	self.mainTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, searchBarHeight, self.view.frame.size.width, self.view.frame.size.height-searchBarHeight) style:UITableViewStyleGrouped];
+	self.mainTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	self.mainTableView.delegate = self;
+	self.mainTableView.dataSource = self;
+	[self.view addSubview:self.mainTableView];
+	[self.mainTableView applyStandardColors];
 	
 	// initialize with an empty array, to be replaced with data when available
 	self.courseGroups = [NSArray array];
 	self.myStellar = [NSArray array];
 	
 	CGRect viewFrame = self.view.frame;
-	UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, viewFrame.size.width, searchBarHeight)];
-	searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
+	self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, viewFrame.size.width, searchBarHeight)];
+	searchBar.tintColor = SEARCH_BAR_TINT_COLOR;	
+	[self.view addSubview:searchBar];	
 	
-	self.tableView.tableHeaderView = searchBar;	
-	
-	self.searchController = [[[UISearchDisplayController alloc] 
-		initWithSearchBar:searchBar contentsController:self] autorelease];
-	
+	CGRect frame = CGRectMake(0.0, searchBar.frame.size.height, searchBar.frame.size.width, self.view.frame.size.height - searchBar.frame.size.height);
+    searchResultsTableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain];
+
 	stellarSearch = [[StellarSearch alloc] initWithSearchBar:searchBar viewController:self];	
-	self.searchController.delegate = stellarSearch;
-	self.searchController.searchResultsDelegate = stellarSearch;
-	self.searchController.searchResultsDataSource = stellarSearch;
+	searchResultsTableView.delegate = stellarSearch;
+	searchResultsTableView.dataSource = stellarSearch;
+	
 	searchBar.placeholder = @"Search by keyword or subject #";
-	self.translucentOverlay = [MITSearchEffects overlayForTableviewController:self];
+    searchController = [[MITSearchDisplayController alloc] initWithSearchBar:searchBar contentsController:self];
+    searchController.searchResultsTableView = searchResultsTableView;
 	 
-	self.loadingView = [[[MITLoadingActivityView alloc] 
-		initWithFrame:[MITSearchEffects frameWithHeader:searchBar]]
-			autorelease];
+	self.loadingView = nil;
 	
 	[self reloadMyStellarData];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadMyStellarData) name:MyStellarChanged object:nil];	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadMyStellarNotifications) name:MyStellarAlertNotification object:nil];
 	
 	// load all course groups (asynchronously) in case it requires server access
 	[StellarModel loadCoursesFromServerAndNotify:self];
 	
 	[StellarModel removeOldFavorites:self];
+	
+	self.doSearchTerms = nil;
+	
+	//translucentOverlayActive = NO;
 }
- 
+
+- (void) viewDidUnload {
+	self.searchBar = nil;
+	[searchResultsTableView release];
+	[doSearchTerms release];
+	self.mainTableView.delegate = nil;
+	self.mainTableView.dataSource = nil;
+	self.mainTableView = nil;
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	
+	[myStellar release];
+	[courseGroups release];
+	[stellarSearch release];
+	
+	[loadingView release];
+	[super viewDidUnload];
+}
+
+- (void) viewDidAppear:(BOOL)animated {
+	isViewAppeared = YES;
+	if (doSearchTerms) {
+		[self doSearch:doSearchTerms execute:doSearchExecute];
+	}
+	[url setAsModulePath];
+}
+
+- (void) viewDidDisappear:(BOOL)animated {
+	isViewAppeared = NO;
+}
+
 - (void) reloadMyStellarData {
 	self.myStellar = [StellarModel myStellarClasses];
 	if(![stellarSearch isSearchResultsVisible]) {
-		[self.tableView reloadData];
+		[self.mainTableView reloadData];
 		myStellarUIisUpToDate = YES;
 	} else {
 		myStellarUIisUpToDate = NO;
 	}
 }
 	
+- (void) reloadMyStellarNotifications {
+	if(myStellar.count) {
+		NSMutableArray *indexPaths = [NSMutableArray array];
+		for (NSUInteger rowIndex=0; rowIndex < myStellar.count; rowIndex++) {
+			[indexPaths addObject:[NSIndexPath indexPathForRow:rowIndex inSection:myStellarGroup]];
+		}
+		if (self.mainTableView.dataSource) {
+			[self.mainTableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
+		}
+	}
+}
+		
 - (void) reloadMyStellarUI {
 	if(!myStellarUIisUpToDate) {
-		[self.tableView reloadData];
+		[self.mainTableView reloadData];
 	    myStellarUIisUpToDate = YES;
 	}
 }
@@ -100,7 +171,7 @@
 
 - (void) coursesLoaded {
 	self.courseGroups = [StellarCourseGroup allCourseGroups:[StellarModel allCourses]];
-	[self.tableView reloadData];
+	[self.mainTableView reloadData];
 }
 
 // "DataSource" methods
@@ -188,60 +259,64 @@
 				initWithCourseGroup: (StellarCourseGroup *)[courseGroups objectAtIndex:indexPath.row]] autorelease]
 			animated:YES];
 	}
+	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
-- (void) handleCouldNotReachStellar {
-	UIAlertView *alert = [[UIAlertView alloc] 
-		initWithTitle:@"Connection Failed" 
-		message:@"Could not connect to Stellar, please try again later"
-		delegate:nil
-		cancelButtonTitle:@"OK" 
-		otherButtonTitles:nil];
-	[alert show];
-    [alert release];
+- (void) searchOverlayTapped {
+	[stellarSearch endSearchMode];
 }
 
-- (void) cancelSearch {
-	[stellarSearch cancelSearch];
+- (void) doSearch:(NSString *)searchTerms execute:(BOOL)execute {
+	if(isViewAppeared) {
+		searchBar.text = searchTerms;
+		if (execute) {
+			searchBar.text = searchTerms;
+			[stellarSearch performSelector:@selector(searchBarSearchButtonClicked:) withObject:searchBar afterDelay:0.3];
+		} else {
+			// using a delay gets rid of a mysterious wait_fences warning
+			[searchBar performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0.001];
+		}
+		self.doSearchTerms = nil;
+	} else {
+		// since view has not appeared yet, this search needs to be delay to either viewWillAppear or viewDidAppear
+		// this is a work around for funky behavior when module is in the more list controller
+		self.doSearchTerms = searchTerms;
+		doSearchExecute = execute;
+	}
+}
+
+- (void) setDoSearchTerms:(NSString *)searhTerms {
+	[doSearchTerms release];
+	doSearchTerms = [searhTerms retain];
+}
+
+- (NSString *) doSearchTerms {
+	return doSearchTerms;
 }
 
 - (void) showSearchResultsTable {
-	[self.view addSubview:searchController.searchResultsTableView];
-}
-
-- (void) showTranslucentOverlay {
-	[self.view addSubview:translucentOverlay];
+	self.mainTableView.delegate = nil;
+	self.mainTableView.dataSource = nil;
+	[self.view addSubview:searchResultsTableView];
 }
 
 - (void) showLoadingView {
+	if (!loadingView) {
+		self.loadingView = [[[MITLoadingActivityView alloc] 
+		  initWithFrame:CGRectMake(0, searchBar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height-searchBar.frame.size.height)]
+		 autorelease];
+	}
 	[self.view addSubview:loadingView];
 }
 
 - (void) hideSearchResultsTable {
-	[searchController.searchResultsTableView removeFromSuperview];
-}
-
-- (void) hideTranslucentOverlay {
-	[translucentOverlay removeFromSuperview];
+	[searchResultsTableView removeFromSuperview];
+	self.mainTableView.delegate = self;
+	self.mainTableView.dataSource = self;
 }
 
 - (void) hideLoadingView {
 	[loadingView removeFromSuperview];
-}
-
-- (void) dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	
-	[myStellar release];
-	[courseGroups release];
-	[stellarSearch release];
-	[searchController release];
-	
-	translucentOverlay.controller = nil;
-	[translucentOverlay release];
-	
-	[loadingView release];
-	[super dealloc];
 }
 
 @end

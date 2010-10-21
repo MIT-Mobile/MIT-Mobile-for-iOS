@@ -20,6 +20,8 @@
 
 @property (nonatomic, retain) NSSet *categories;
 @property (nonatomic, retain) NSNumber *topStory;
+@property (nonatomic, retain) NSNumber *searchResult;
+@property (nonatomic, retain) NSNumber *bookmarked;
 
 @property (nonatomic, retain) NewsImage *inlineImage;
 @property (nonatomic, retain) NSSet *galleryImages;
