@@ -7,8 +7,11 @@ typedef enum {
 } MITNavigationParadigm;
 
 // common URLs
+// Deprecated due to MITMobileServerConfiguration functions
+/*
 extern NSString * const MITMobileWebDomainString;
 extern NSString * const MITMobileWebAPIURLString;
+ */
 
 // keys for NSUserDefaults dictionary go here (app preferences)
 extern NSString * const MITModuleTabOrderKey;

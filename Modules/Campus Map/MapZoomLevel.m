@@ -2,6 +2,7 @@
 #import "MITProjection.h"
 #import "SaveOperation.h"
 #import "MIT_MobileAppDelegate.h"
+#import "MITMobileServerConfiguration.h"
 
 @implementation MapTile
 
@@ -50,7 +51,7 @@
     MapTile *tile = [[[MapTile alloc] initWithFrame:rect path:[self pathForTileAtRow:row col:col]] autorelease];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:tile.path]) {
-        NSString *sUrl = [NSString stringWithFormat:@"%@map/tile2/%d/%d/%d", MITMobileWebAPIURLString, level, row, col];
+        NSString *sUrl = [NSString stringWithFormat:@"%@/map/tile2/%d/%d/%d", [MITMobileWebGetCurrentServerURL() absoluteString], level, row, col];
         NSURL *url = [NSURL URLWithString:sUrl];
         //NSLog(@"requesting from %@", sUrl);
         

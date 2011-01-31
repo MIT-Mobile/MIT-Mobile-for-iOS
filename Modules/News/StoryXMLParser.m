@@ -3,6 +3,7 @@
 #import "CoreDataManager.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITMobileWebAPI.h"
+#import "MITMobileServerConfiguration.h"
 
 @interface StoryXMLParser (Private)
 
@@ -116,12 +117,16 @@ NSString * const NewsTagImageHeight     = @"height";
 
 - (void)loadStoriesForCategory:(NSInteger)category afterStoryId:(NSInteger)storyId count:(NSInteger)count {
 	self.isSearch = NO;
-#ifdef USE_MOBILE_DEV
-    NSString *newsPath = @"newsoffice-dev";
-#else
-    NSString *newsPath = @"newsoffice";
-#endif
-    NSURL *baseURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/", MITMobileWebAPIURLString, newsPath]];
+    NSString *newsPath = nil;
+    
+    if (MITMobileWebGetCurrentServerType() == MITMobileWebDevelopment) {
+        newsPath = @"newsoffice-dev";
+    } else {
+        newsPath = @"newsoffice";
+    }
+    
+    NSURL *host = MITMobileWebGetCurrentServerURL();
+    NSURL *baseURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/", [host absoluteString], newsPath]];
     NSMutableString *pathString = [NSMutableString stringWithCapacity:22];
     NSMutableArray *params = [NSMutableArray arrayWithCapacity:2];
     if (category != 0) {

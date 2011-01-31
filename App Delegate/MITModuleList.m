@@ -12,6 +12,7 @@
 #import "ToursModule.h"
 #import "AnniversaryModule.h"
 #import "MITTabBarController.h"
+#import "MITMobileServerConfiguration.h"
 
 // #import your module's header here
 
@@ -74,7 +75,7 @@
 
 - (void)showModuleForTag:(NSString *)tag {
     if ([tag isEqualToString:MobileWebTag]) {
-        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/", MITMobileWebDomainString]];
+        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/", MITMobileWebGetCurrentServerDomain()]];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url];
         }

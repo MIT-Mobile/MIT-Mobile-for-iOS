@@ -1,5 +1,6 @@
 #import "ConnectionDetector.h"
 #import "Reachability.h"
+#import "MITMobileServerConfiguration.h"
 
 @implementation ConnectionDetector
 
@@ -21,7 +22,7 @@
 
 -(id)init {
 	if (self=[super init]) {
-		[[Reachability sharedReachability] setHostName:MITMobileWebDomainString];	// when we check for an internet connection, ping our server
+		[[Reachability sharedReachability] setHostName:MITMobileWebGetCurrentServerDomain()];	// when we check for an internet connection, ping our server
 	}
 	return self;
 }

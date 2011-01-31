@@ -16,7 +16,7 @@
 }
 
 - (void)willAppear {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://%@/", MITMobileWebDomainString]]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://%@/", MITMobileWebGetCurrentServerDomain()]]];
 }
 
 @end

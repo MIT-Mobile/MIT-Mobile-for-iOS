@@ -8,6 +8,7 @@
 #import "StoryGalleryViewController.h"
 #import "ConnectionDetector.h"
 #import "URLShortener.h"
+#import "MITMobileServerConfiguration.h"
 
 @implementation StoryDetailViewController
 
@@ -192,7 +193,7 @@
 }
 
 - (NSString *)twitterUrl {
-	return [NSString stringWithFormat:@"http://%@/n/%@", MITMobileWebDomainString, [URLShortener compressedIdFromNumber:story.story_id]];
+	return [NSString stringWithFormat:@"http://%@/n/%@", MITMobileWebGetCurrentServerDomain(), [URLShortener compressedIdFromNumber:story.story_id]];
 }
 
 - (NSString *)twitterTitle {

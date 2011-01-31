@@ -1,5 +1,6 @@
 
 #import "MITMobileWebAPI.h"
+#import "MITMobileServerConfiguration.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITJSON.h"
 
@@ -11,7 +12,7 @@
 @synthesize jsonDelegate, connectionWrapper, params, userData;
 
 - (id) initWithJSONLoadedDelegate: (id<JSONLoadedDelegate>)delegate {
-	if(self = [super init]) {
+	if((self = [super init])) {
 		jsonDelegate = [delegate retain];
         connectionWrapper = nil;
 		userData = nil;
@@ -137,10 +138,14 @@
 	self.params = parameters;
 	
 	NSString *path;
+    NSString *url = [MITMobileWebGetCurrentServerURL() absoluteString];
 	if(extendedPath) {
-		path = [MITMobileWebAPIURLString stringByAppendingString:extendedPath];
+		path = [url stringByAppendingFormat:@"/%@",extendedPath];
 	} else {
-		path = MITMobileWebAPIURLString;
+        if ([url hasSuffix:@"/"])
+            path = url;
+        else
+            path = [url stringByAppendingString:@"/"];
 	}
 	
 	NSAssert(!self.connectionWrapper, @"The connection wrapper is already in use");
