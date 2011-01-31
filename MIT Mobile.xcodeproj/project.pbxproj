@@ -96,6 +96,8 @@
 		29E308861176018C005211A7 /* MITModuleURL.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 29E308841176018C005211A7 /* MITModuleURL.h */; settings = {JAVA_ARCHIVE_SUBDIR = Common; }; };
 		29E308871176018C005211A7 /* MITModuleURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E308851176018C005211A7 /* MITModuleURL.m */; };
 		29EB610B10FE47220085D32B /* ShuttleSubscriptionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */; };
+		2CC689AF12F73071002B9A50 /* MITMobileServerConfiguration.h in JavaArchive */ = {isa = PBXBuildFile; fileRef = 2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */; settings = {JAVA_ARCHIVE_SUBDIR = Common; }; };
+		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; };
 		3A827081103DAA0500BB4109 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A827080103DAA0500BB4109 /* Reachability.m */; };
 		3A82708D103DAA2400BB4109 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */; };
 		3A827171103DBC6F00BB4109 /* ConnectionDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A82716F103DBC6F00BB4109 /* ConnectionDetector.m */; };
@@ -491,6 +493,8 @@
 		29E308851176018C005211A7 /* MITModuleURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITModuleURL.m; sourceTree = "<group>"; };
 		29EB610910FE47220085D32B /* ShuttleSubscriptionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleSubscriptionManager.h; sourceTree = "<group>"; };
 		29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleSubscriptionManager.m; sourceTree = "<group>"; };
+		2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileServerConfiguration.h; sourceTree = "<group>"; };
+		2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileServerConfiguration.m; sourceTree = "<group>"; };
 		3A82707F103DAA0500BB4109 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A827080103DAA0500BB4109 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = ../../../../../System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SOURCE_ROOT; };
@@ -916,6 +920,8 @@
 		080E96DDFE201D6D7F000001 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */,
+				2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */,
 				EB07B06512B89440005D6A4C /* NavScrollerView.h */,
 				EB07B06612B89440005D6A4C /* NavScrollerView.m */,
 				EBBFAF93129C2A23009AAEE0 /* TabViewControl.h */,
@@ -1857,6 +1863,7 @@
 				DE2E59A312B86C3B009857A1 /* CorridorDetailViewController.h in JavaArchive */,
 				EBF8C20512BABBF400D39AE6 /* CoreLocation+MITAdditions.h in JavaArchive */,
 				EB13860C12F1FC8E004DBB7C /* Secret.h in JavaArchive */,
+				2CC689AF12F73071002B9A50 /* MITMobileServerConfiguration.h in JavaArchive */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2189,6 +2196,7 @@
 				DE2E59A412B86C3B009857A1 /* CorridorDetailViewController.m in Sources */,
 				EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */,
 				EB13860D12F1FC8E004DBB7C /* Secret.m in Sources */,
+				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
