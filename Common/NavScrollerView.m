@@ -29,6 +29,7 @@ scrollView = _scrollView, navScrollerDelegate, currentXOffset = _currentXOffset;
         self.contentView = [[UIView alloc] initWithFrame:frame];
         self.contentView.tag = CONTENT_VIEW_TAG;
         self.currentXOffset = 0.0;
+        _pressedButton = nil;
         
         self.opaque = NO;
         self.tag = SELF_TAG;
@@ -85,6 +86,7 @@ scrollView = _scrollView, navScrollerDelegate, currentXOffset = _currentXOffset;
         [aButton removeFromSuperview];
     }
 	[_buttons removeAllObjects];
+    _pressedButton = nil;
     self.currentXOffset = 0.0;
 }
 
@@ -166,8 +168,10 @@ scrollView = _scrollView, navScrollerDelegate, currentXOffset = _currentXOffset;
         && pressedButton != _pressedButton
         && [self.buttons containsObject:pressedButton]) {
 
-        [_pressedButton setTitleColor:[UIColor colorWithHexString:@"#E0E0E0"] forState:UIControlStateNormal];
-        [_pressedButton setBackgroundImage:nil forState:UIControlStateNormal];
+        if (_pressedButton != nil) {
+            [_pressedButton setTitleColor:[UIColor colorWithHexString:@"#E0E0E0"] forState:UIControlStateNormal];
+            [_pressedButton setBackgroundImage:nil forState:UIControlStateNormal];
+        }
         
         UIImage *buttonImage = [UIImage imageNamed:MITImageNameScrollTabSelectedTab];
         UIImage *stretchableButtonImage = [buttonImage stretchableImageWithLeftCapWidth:15 topCapHeight:0];

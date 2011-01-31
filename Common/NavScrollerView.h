@@ -15,7 +15,7 @@
     UIButton *_leftScrollButton;
     UIButton *_rightScrollButton;
     NSMutableArray *_buttons;
-    UIButton *_pressedButton;
+    __weak UIButton *_pressedButton;
     UIView *_contentView;
     
     CGFloat _currentXOffset;
