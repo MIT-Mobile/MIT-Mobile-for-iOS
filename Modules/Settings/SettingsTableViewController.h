@@ -4,9 +4,13 @@
 
 @interface SettingsTableViewController : UITableViewController <JSONLoadedDelegate> {
 
-    NSArray *notifications;
-	NSMutableDictionary *apiRequests;
-	
+    NSArray *_notifications;
+    NSDictionary *_pushServers;
+	NSMutableDictionary *_apiRequests;
+    UIGestureRecognizer *_showAdvancedGesture;
+    UIGestureRecognizer *_hideAdvancedGesture;
+    BOOL                _advancedOptionsVisible;
+    NSUInteger          _selectedRow;
 }
 
 - (void)switchDidToggle:(id)sender;
