@@ -8,12 +8,14 @@ Contributions are welcome!
 
 #Building the app
 
+Sensitive information like API keys for Facebook and Twitter are kept within Common/Secret.m. Before building, create your own Secret.m from Secret.m.in.
+
 MIT Mobile for iPhone will build for the iPhone Simulator without any modifications. To build for a device, you must change the `CFBundleIdentifier` in MIT_Mobile-Info.plist from `edu.mit.mitmobile` to your own app id.
 
 #Technical Details
 
-- Base SDK is iPhone OS 4.0
-- Deployment Target is iPhone OS 3.0
+- Base SDK is iPhone OS 4.2
+- Deployment Target is iPhone OS 4.0
 
 #Feedback
 
