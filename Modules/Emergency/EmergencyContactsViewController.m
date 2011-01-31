@@ -2,7 +2,6 @@
 #import "MIT_MobileAppDelegate.h"
 #import "MultiLineTableViewCell.h"
 #import "UIKit+MITAdditions.h"
-#import "UITableViewCell+MITUIAdditions.h"
 #import "EmergencyData.h"
 #import "MITModuleList.h"
 #import "MITModule.h"

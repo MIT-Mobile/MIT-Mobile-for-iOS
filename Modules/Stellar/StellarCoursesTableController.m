@@ -3,8 +3,7 @@
 #import "StellarClassesTableController.h"
 #import "MITModuleList.h"
 #import "MITModule.h"
-#import "UITableView+MITUIAdditions.h"
-#import "UITableViewCell+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 #import "MultiLineTableViewCell.h"
 
 

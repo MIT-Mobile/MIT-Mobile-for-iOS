@@ -3,7 +3,7 @@
 #import "StellarDetailViewController.h"
 #import "StellarMainTableController.h"
 #import "StellarClassTableCell.h"
-#import "UITableView+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 
 

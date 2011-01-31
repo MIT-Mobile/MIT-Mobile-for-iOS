@@ -1,6 +1,11 @@
 #import <Foundation/Foundation.h>
 #import "MITBuildInfo.h"
 
+typedef enum {
+    MITNavigationParadigmTabBar,
+    MITNavigationParadigmSpringboard,
+} MITNavigationParadigm;
+
 // common URLs
 extern NSString * const MITMobileWebDomainString;
 extern NSString * const MITMobileWebAPIURLString;
@@ -35,6 +40,8 @@ extern NSString * const NewsOfficeTag;
 extern NSString * const DirectoryTag;
 extern NSString * const StellarTag;
 extern NSString * const ShuttleTag;
+extern NSString * const ToursTag;
+extern NSString * const AnniversaryTag;
 extern NSString * const MobileWebTag;
 extern NSString * const SettingsTag;
 extern NSString * const AboutTag;
@@ -71,9 +78,13 @@ extern NSString * const ShuttleRouteStopEntityName;
 extern NSString * const CalendarEventEntityName;
 extern NSString * const CalendarCategoryEntityName;
 extern NSString * const CampusMapSearchEntityName;
+extern NSString * const CampusTourEntityName;
+extern NSString * const TourSiteOrRouteEntityName;
+extern NSString * const CampusTourSideTripEntityName;
+extern NSString * const TourStartLocationEntityName;
+
 // resource names
 extern NSString * const MITImageNameBackground;
-
 extern NSString * const MITImageNameEmail;
 extern NSString * const MITImageNameEmailHighlight;
 extern NSString * const MITImageNameMap;

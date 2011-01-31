@@ -59,8 +59,8 @@
 	// check if this item is already bookmarked
 	MapBookmarkManager* bookmarkManager = [MapBookmarkManager defaultManager];
 	if ([bookmarkManager isBookmarked:self.annotation.uniqueID]) {
-		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on.png"] forState:UIControlStateNormal];
-		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
+		[_bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on.png"] forState:UIControlStateNormal];
+		[_bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
 	}
 	
 	/*
@@ -75,18 +75,25 @@
 	}
 	*/
 	
-	_mapView.shouldNotDropPins = YES;
-	[_mapView addAnnotation:self.annotation];
+	_mapView.delegate = self;
+
 	_mapView.scrollEnabled = NO;
 	_mapView.userInteractionEnabled = NO;
 	_mapView.layer.cornerRadius = 6.0;
 	_mapViewContainer.layer.cornerRadius = 8.0;
 	
 	// buffer the annotation by 5px so it fits in the map thumbnail window.
-	CGPoint screenPoint = [_mapView unscaledScreenPointForCoordinate:self.annotation.coordinate];
-	screenPoint.y -= 5;
-	CLLocationCoordinate2D coordinate = [_mapView coordinateForScreenPoint:screenPoint];
-	_mapView.centerCoordinate = coordinate;
+	//CGPoint screenPoint = [_mapView unscaledScreenPointForCoordinate:self.annotation.coordinate];
+	//screenPoint.y -= 5;
+	//CLLocationCoordinate2D coordinate = [_mapView coordinateForScreenPoint:screenPoint];
+	//_mapView.centerCoordinate = coordinate;
+	[_mapView addAnnotation:self.annotation];
+	_mapView.centerCoordinate = self.annotation.coordinate;
+	[_mapView setRegion:MKCoordinateRegionMake(self.annotation.coordinate, MKCoordinateSpanMake(0.003, 0.003))];
+	
+	
+	
+	[_mapView deselectAnnotation:self.annotation animated:NO];
 	
 	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Google Map"
 																			   style:UIBarButtonItemStylePlain
@@ -295,20 +302,23 @@
 	CGSize addressSize = [self.annotationDetails.street sizeWithFont:_locationLabel.font 
 										  constrainedToSize:CGSizeMake(_locationLabel.frame.size.width, 200.0)
 											  lineBreakMode:UILineBreakModeWordWrap];
-	_locationLabel.frame = CGRectMake(_locationLabel.frame.origin.x, 
-									  _nameLabel.frame.size.height + _nameLabel.frame.origin.y + 1,
-									  _locationLabel.frame.size.width, addressSize.height);
+    
+    CGRect frame = _locationLabel.frame;
+    frame.origin.y = _nameLabel.frame.size.height + _nameLabel.frame.origin.y + 1;
+    frame.size.height = addressSize.height;
+    _locationLabel.frame = frame;
+    
+    CGFloat originY = _locationLabel.frame.origin.y + _locationLabel.frame.size.height + 5;
 	
-	
-	if (_locationLabel.frame.origin.y + _locationLabel.frame.size.height + 5 > _tabViewControl.frame.origin.y) {
-		_tabViewControl.frame = CGRectMake(_tabViewControl.frame.origin.x, _locationLabel.frame.origin.y + _locationLabel.frame.size.height + 5, 
-										   _tabViewControl.frame.size.width, 
-										   _tabViewControl.frame.size.height);
-		_tabViewContainer.frame = CGRectMake(_tabViewContainer.frame.origin.x,
-											 _tabViewControl.frame.origin.y + _tabViewControl.frame.size.height,
-											 _tabViewContainer.frame.size.width,
-											 (_tabViewContainer.frame.size.height > _tabViewContainerMinHeight) ? _tabViewContainer.frame.size.height : _tabViewContainerMinHeight);
-		
+	if (originY > _tabViewControl.frame.origin.y) {
+        frame = _tabViewControl.frame;
+        frame.origin.y = originY;
+        _tabViewControl.frame = frame;
+        
+        frame = _tabViewContainer.frame;
+        frame.origin.y = _tabViewControl.frame.origin.y + _tabViewControl.frame.size.height;
+        frame.size.height = (_tabViewContainer.frame.size.height > _tabViewContainerMinHeight) ? _tabViewContainer.frame.size.height : _tabViewContainerMinHeight;
+        _tabViewControl.frame = frame;
 	}
 	
 	// force the correct tab to load
@@ -392,8 +402,8 @@
 		// remove the bookmark and set the images
 		[bookmarkManager removeBookmark:self.annotation.uniqueID];
 		
-		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_off.png"] forState:UIControlStateNormal];
-		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_off_pressed.png"] forState:UIControlStateHighlighted];
+		[_bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off.png"] forState:UIControlStateNormal];
+		[_bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off_pressed.png"] forState:UIControlStateHighlighted];
 	}
 	else 
 	{
@@ -403,8 +413,8 @@
 		}
 		[bookmarkManager addBookmark:self.annotation.uniqueID title:self.annotation.name subtitle:subTitle data:self.annotation.info];
 		
-		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on.png"] forState:UIControlStateNormal];
-		[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
+		[_bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on.png"] forState:UIControlStateNormal];
+		[_bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
 	}
 	
 }
@@ -474,6 +484,27 @@
 	
 	self.imageConnectionWrapper = nil;
 	_loadingImageView.hidden = YES;
+}
+
+#pragma mark MITMapViewDelegate
+- (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
+{
+	MITMapAnnotationView* annotationView = nil;
+	
+	if ([annotation isKindOfClass:[MITMapSearchResultAnnotation class]]) 
+	{
+		annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pin"] autorelease];
+		UIImage* pin = [UIImage imageNamed:@"map/map_pin_complete.png"];
+		UIImageView* imageView = [[[UIImageView alloc] initWithImage:pin] autorelease];
+		annotationView.frame = imageView.frame;
+		annotationView.showsCustomCallout = NO;
+		[annotationView addSubview:imageView];
+		annotationView.backgroundColor = [UIColor clearColor];
+		annotationView.centeredVertically = YES;
+		//annotationView.alreadyOnMap = YES;
+	}
+	
+	return annotationView;
 }
 
 @end

@@ -100,6 +100,7 @@
 	
 	NSMutableArray *newStops = [NSMutableArray array];
 	BOOL hasNewStops = NO;
+    BOOL pathChanged = NO;
 	
 	NSMutableSet *oldRouteStops = [[NSMutableSet alloc] initWithSet:self.cache.stops];
 	NSMutableSet *newRouteStops = [NSMutableSet setWithCapacity:[stops count]];
@@ -137,6 +138,12 @@
 			hasNewStops = YES;
 		}
 		
+        NSArray *newPath = [stopInfo objectForKey:@"path"];
+        if (newPath == nil) { newPath = [NSArray array]; }
+        if ([shuttleStop.path isEqualToArray: newPath] == NO) {
+            // NSLog(@"Arrays are different: %@ vs %@", newPath, shuttleStop.path);
+            pathChanged = YES;
+        }
 		[shuttleStop updateInfo:stopInfo];
 		[newStops addObject:shuttleStop];
 
@@ -145,14 +152,14 @@
 	}
 	
 	// check if we added new stops or shouldn't include old ones
-	if (hasNewStops || [_stops count] > [stops count]) {
+	if (pathChanged || hasNewStops || [_stops count] > [stops count]) {
 		
 		_stops = [newStops retain];
 		
 		// prune cached stops no longer on the route
 		self.cache.stops = newRouteStops;
 		[oldRouteStops minusSet:newRouteStops];
-        //NSLog(@"deleting route stops: %@", [oldRouteStops description]);
+        NSLog(@"deleting route stops: %@", [oldRouteStops description]);
 		[CoreDataManager deleteObjects:[oldRouteStops allObjects]];
 		
 		pathShouldUpdate = YES;
@@ -375,7 +382,7 @@
     return [self.title compare:aRoute.title];
 }
 
-#pragma mark MITMapRoute
+#pragma mark MITMapRoute delegation
 
 // array of CLLocations making up the path of this route
 -(NSArray*) pathLocations
@@ -389,9 +396,11 @@
 	return _stopAnnotations;
 }
 
-// color of the route line to be rendered
--(UIColor*) lineColor
-{
+- (UIColor *)strokeColor {
+	return [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.75];
+}
+
+- (UIColor *)fillColor {
 	return [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.75];
 }
 

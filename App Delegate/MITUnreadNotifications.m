@@ -46,7 +46,7 @@
 	int badgeCountInt = 0;
 	
 	NSMutableDictionary *modulesBadgeString = [NSMutableDictionary dictionary];
-	NSArray *notifications = [self unreadNotifications];
+	NSArray *notifications = [MITUnreadNotifications unreadNotifications];
 	for(MITNotification *notification in notifications) {
 		if(badgeCount = [modulesBadgeString objectForKey:notification.moduleName]) {
 			badgeCountInt = [badgeCount intValue] + 1;
@@ -139,6 +139,8 @@
 		
 			[sbjson release];
 		}
+        
+        [MITUnreadNotifications updateUI];
 	}
 }
 

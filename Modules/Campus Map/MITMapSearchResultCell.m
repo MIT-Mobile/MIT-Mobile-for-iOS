@@ -1,5 +1,3 @@
-
-#import "MITMapSearchResultCell.h"
 #import "MITUIConstants.h"
 
 @implementation MITMapSearchResultCell

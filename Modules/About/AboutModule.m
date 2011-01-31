@@ -13,12 +13,21 @@
         self.iconName = @"about";
         self.isMovableTab = FALSE;
         
-        AboutTableViewController *aboutVC = [[[AboutTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
-        aboutVC.title = self.longName;
+        //moduleHomeController.title = self.longName;
         
-        [self.tabNavController setViewControllers:[NSArray arrayWithObject:aboutVC]];
+        //AboutTableViewController *aboutVC = [[[AboutTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+        //aboutVC.title = self.longName;
+        
+        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:aboutVC]];
     }
     return self;
+}
+
+- (UIViewController *)moduleHomeController {
+    if (!moduleHomeController) {
+        moduleHomeController = [[AboutTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    }
+    return moduleHomeController;
 }
 
 @end

@@ -68,12 +68,12 @@ NSString * const shuttlePathExtension = @"shuttles/";
                                             matchingPredicate:matchAll
                                               sortDescriptors:[NSArray arrayWithObject:sort]];
 	[sort release];
-	//NSLog(@"%d routes cached", [cachedRoutes count]);
+	NSLog(@"%d routes cached", [cachedRoutes count]);
 	
 	for (ShuttleRouteCache *cachedRoute in cachedRoutes) {
 		NSString *routeID = cachedRoute.routeID;
 		ShuttleRoute *route = [[ShuttleRoute alloc] initWithCache:cachedRoute];
-		//NSLog(@"fetched route %@ from core data", route.routeID);
+		NSLog(@"fetched route %@ from core data", route.routeID);
 		[_shuttleRoutes addObject:route];
 		[_shuttleRoutesByID setValue:route forKey:routeID];
 		[route release];
@@ -145,7 +145,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
         }
         
         if (stop == nil) {
-            //NSLog(@"attempting to create new ShuttleStop for stop %@ on route %@", stopID, routeID);
+            NSLog(@"attempting to create new ShuttleStop for stop %@ on route %@", stopID, routeID);
             ShuttleStopLocation *stopLocation = [self stopLocationWithID:stopID];
             stop = [[[ShuttleStop alloc] initWithStopLocation:stopLocation routeID:routeID] autorelease];
         }
@@ -203,16 +203,6 @@ NSString * const shuttlePathExtension = @"shuttles/";
 						   pathExtension:shuttlePathExtension];
 	if (!dispatched) {
 		NSLog(@"%@", @"problem making routes api request");
-	}
-}
-
--(void) requestStops
-{
-	MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
-	BOOL dispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"stops", @"command", nil]
-						   pathExtension:shuttlePathExtension];
-	if (!dispatched) {
-		NSLog(@"%@", @"problem making stops api request");
 	}
 }
 

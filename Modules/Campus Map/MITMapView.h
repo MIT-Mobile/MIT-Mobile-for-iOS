@@ -1,7 +1,4 @@
-
 #import <UIKit/UIKit.h>
-
-#import "MapTileCache.h"
 #import <QuartzCore/QuartzCore.h>
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
@@ -17,158 +14,105 @@
 @class MITMapView;
 @class MITMapSearchResultAnnotation;
 @class RouteView;
-@class GridLayer;
-
+@class GridLayer; // not used
+@class MapTileOverlay;
 
 @protocol MITMapViewDelegate<NSObject>
 
 @optional
 
-- (void)mapViewRegionWillChange:(MITMapView*)mapView ;
+// MKMapView-like methods
+- (void)mapView:(MITMapView *)mapView annotationSelected:(id <MKAnnotation>)annotation;
+- (void)annotationCalloutDidDisappear:(MITMapView *)mapView; // TODO: this doesn't get called
+- (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)location;
+- (void)locateUserFailed:(MITMapView *)mapView;
 
--(void) mapViewRegionDidChange:(MITMapView*)mapView;
-
+// MKMapViewDelegate forwarding
+- (MKOverlayView *)mapView:(MITMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay;
+- (void)mapViewRegionWillChange:(MITMapView*)mapView;
+- (void)mapViewRegionDidChange:(MITMapView*)mapView;
 - (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
+- (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view;
+- (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views;
 
-- (void)mapView:(MITMapView *)mapView annotationViewcalloutAccessoryTapped:(MITMapAnnotationCalloutView *)view; 
-
-// any touch on the map will invoke this.  
+// any touch on the map will invoke this.
 - (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch;
-
-- (void)annotationSelected:(id <MKAnnotation>)annotation;
-
-- (void)annotationCalloutDidDisappear;
-
-- (void)locateUserFailed;
 
 @end
 
-@interface MITMapView : UIView <UIScrollViewDelegate, CLLocationManagerDelegate>{
 
-	NSArray* _mapLevels;
-	
-	UIView* _mapContentView;
-	
-	MITMapScrollView* _scrollView;
-	
-	CATiledLayer* _tiledLayer;
-	
-	CALayer* _locationLayer;								// a layer for the blue dot and animated circles
-	
-	UIImageView* _locationView;								// this is the blue dot that marks your current location
-	
-	CAShapeLayer* _locationAccuracyCircleLayer;				// this is the animated circle that grows & shrinks to tell you how accurate your location is
-	CAShapeLayer* _radiationLayer1;
-	CAShapeLayer* _radiationLayer2;							// these two layers create the radiation bwoop
-	
-	BOOL _animationIsBouncing;								// the bounce animation (when accuracy is poor) shouldn't be interrupted by another bounce animation
-	BOOL _animationIsRadiating;								// the radiation animation (when accuracy is good) shouldn't be interrupted by another radiation animation
-	BOOL _locationCircleIsMinimized;						// the magic blue circle is hidden under the dot. we need to know this if they zoom while it's hidden.
-	
-	CLLocation* _lastLocation;								// this allows us to redraw the accuracy circle for different zoom scales
-		
-	BOOL _showsUserLocation;
-	
+@interface MITMapView : UIView <MKMapViewDelegate> {
+
+    MKMapView *_mapView;
 	BOOL _stayCenteredOnUserLocation;
-	
-	CLLocationManager* _locationManager;
-	
-	MITMapUserLocation* _userLocationAnnotation;
-	
 	id<MITMapViewDelegate> _mapDelegate;
-	
-	NSMutableArray* _annotations;
-	
-	NSMutableArray* _annotationViews;
-	NSMutableArray* _annotationShadowViews;					// holds the annotations shadows while they drop so they can be removed 
-	NSTimer* _pinDropTimer;									// this triggers pin drop animation when it fires so pins fall in series
-	BOOL _shouldNotDropPins;								// if false, pins are animated onto map.  shouldNotDropPins is set to true for 
-																// MITMapDetailViewController, RouteMapViewController, and ShuttleStopViewController.
-	
-	NSMutableArray* _routes;
-		
-	// dictionary of uiimageviews used for preloading some map data. These views 
-	// should be removed as the data actually loads. 
-	NSMutableDictionary* _preloadedLayers;
-	
-	MITMapAnnotationCalloutView *_currentCallout;
-	
-	RouteView* _routeView;
-	
-    // default view of the map.
-    CLLocationCoordinate2D _initialLocation;
-    CGFloat _initialZoom;
-    
-	// NorthWest and SouthEast corners of the map
-	CLLocationCoordinate2D _nw;
-	CLLocationCoordinate2D _se;
-	
-	// flag indicating whether the user denied access to CLLocationManager
-	BOOL _locationDenied;
-	BOOL _displayedLocationDenied;
-	BOOL _receivedFirstLocationDenied;
 
+	NSMutableArray* _routes;
+    NSMutableDictionary *_routePolylines; // kluge way to associate routes with polylines
+
+	MITMapAnnotationCalloutView * customCallOutView;
+	
+	// didDeselectAnnotationView is always triggered after didSelectAnnotationView.
+	// This BOOL value helps when selecting another Annotation while one is already displaying a custom callout
+	BOOL addRemoveCustomAnnotationCombo;
+    
+    MapTileOverlay *tileOverlay;
 }
 
-@property (nonatomic, retain) NSArray* mapLevels;
+// message sent by MITMKProjection to let us know we can add tiles
+- (void)enableProjectedFeatures;
+
+- (void)fixateOnCampus;
+
 @property (nonatomic, assign) id<MITMapViewDelegate> delegate;
-@property CLLocationCoordinate2D centerCoordinate;
-@property (nonatomic, readonly) MITMapUserLocation* userLocation;
-
-@property BOOL showsUserLocation;
+@property (nonatomic, retain) MKMapView *mapView;
 @property BOOL stayCenteredOnUserLocation;
-@property BOOL scrollEnabled;
+@property CGFloat zoomLevel;
 
-@property (readonly) CGFloat zoomLevel;
+#pragma mark MKMapView forwarding
+
+//- (void)didUpdateUserLocation:(MKUserLocation *)userLocation;
+- (void)setCenterCoordinate:(CLLocationCoordinate2D)coord animated:(BOOL)animated;
+- (CGPoint)convertCoordinate:(CLLocationCoordinate2D)coordinate toPointToView:(UIView *)view;
+- (CLLocationCoordinate2D)convertPoint:(CGPoint)point toCoordinateFromView:(UIView *)view;
+
 @property MKCoordinateRegion region;
-
-@property BOOL shouldNotDropPins;
-
-
-// get the unscaled screen coordinate for a location
--(CGPoint) unscaledScreenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
-
--(CGPoint) screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
-
-// get the geographic coordinate for a point on our map
--(CLLocationCoordinate2D) coordinateForScreenPoint:(CGPoint) point;
-
--(void) setCenterCoordinate:(CLLocationCoordinate2D) coordinate animated:(BOOL)animated;
-
--(void) hideCallout;
-
--(void) refreshCallout;
-
--(void) positionAnnotationView:(MITMapAnnotationView *)annotationView;
-
-// region helper functions for modules who want to save region
-- (NSString *)serializeCurrentRegion;
-- (void)unserializeRegion:(NSString *)regionString;
+@property CLLocationCoordinate2D centerCoordinate;
+@property BOOL scrollEnabled;
+@property BOOL showsUserLocation;
+@property (readonly) MKUserLocation *userLocation;
 
 #pragma mark Annotations
-@property (nonatomic, readonly) NSArray *annotations;
-@property (nonatomic, readonly) NSArray *routes;
-@property (nonatomic, readonly) id<MKAnnotation> currentAnnotation;
-
-- (void)addAnnotation:(id <MKAnnotation>)annotation;
-- (void)addAnnotations:(NSArray *)annotations;
-- (void)removeAnnotation:(id <MKAnnotation>)annotation;
-- (void)removeAnnotations:(NSArray *)annotations;
-- (void)removeAllAnnotations;
-
-- (void)addRoute:(id<MITMapRoute>) route;
-- (void)removeRoute:(id<MITMapRoute>) route;
-
-// Notification callback.
-- (void)annotationTapped:(NSNotification*)notif;
 
 // programmatically select and recenter on an annotation. Must be in our list of annotations
-- (void)selectAnnotation:(id<MKAnnotation>) annotation;
+- (void)refreshCallout;
+- (void)adjustCustomCallOut;
+- (void)positionAnnotationView:(MITMapAnnotationView*)annotationView;
+- (MKCoordinateRegion)regionForAnnotations:(NSArray *)annotations;
 
+- (void)selectAnnotation:(id<MKAnnotation>)annotation;
 - (void)selectAnnotation:(id<MKAnnotation>)annotation animated:(BOOL)animated withRecenter:(BOOL)recenter;
+- (void)deselectAnnotation:(id<MKAnnotation>)annotation animated:(BOOL)animated;
+- (void)addAnnotation:(id<MKAnnotation>)anAnnotation;
+- (void)addAnnotations:(NSArray *)annotations;
+- (void)removeAnnotations:(NSArray *)annotations;
+- (void)removeAnnotation:(id<MKAnnotation>)annotation;
+- (void)removeAllAnnotations:(BOOL)includeUserLocation;
 
+@property (nonatomic, readonly) NSArray *annotations;
+@property (nonatomic, readonly) id<MKAnnotation> currentAnnotation;
 
-- (MITMapAnnotationView *)viewForAnnotation:(id <MKAnnotation>)annotation;
+#pragma mark Overlays
 
+- (void)addRoute:(id<MITMapRoute>)route;
+- (MKCoordinateRegion)regionForRoute:(id<MITMapRoute>)route;
+- (void)removeAllRoutes;
+- (void)removeRoute:(id<MITMapRoute>) route;
+
+- (void)addTileOverlay;
+- (void)removeTileOverlay;
+- (void)removeAllOverlays;
+
+@property (nonatomic, readonly) NSArray *routes;
 
 @end

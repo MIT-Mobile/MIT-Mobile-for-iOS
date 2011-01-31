@@ -1,67 +1,70 @@
-
+#import <QuartzCore/QuartzCore.h>
 #import "MITMapAnnotationView.h"
-
-NSString* const kMITMapAnnotationViewTapped = @"MITMapViewAnnotationViewTouchesEnded";
+#import "MITMapView.h"
 
 @implementation MITMapAnnotationView
 @synthesize annotation = _annotation;
-@synthesize canShowCallout = _canShowCallout;
+@synthesize showsCustomCallout = _showsCustomCallout;
 @synthesize mapView = _mapView;
 @synthesize centeredVertically = _centeredVertically;
-@synthesize shadowView = _shadowView;
-@synthesize alreadyOnMap = _alreadyOnMap;
-@synthesize hasBeenDropped = _hasBeenDropped;
 
-- (id)initWithAnnotation:(id <MKAnnotation>)annotation
+- (id)initWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier
 {
-	if(self = [super init])
+	if(self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier])
 	{
 		self.annotation = annotation;
 		self.multipleTouchEnabled = YES;
+        self.canShowCallout = NO; // override built-in callout
+        self.showsCustomCallout = YES;
 	}
 	
 	return self;
 }
 
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-
-
 - (void)dealloc {
 	self.annotation = nil;
 	self.mapView = nil;
-    self.shadowView = nil;
 	
     [super dealloc];
 }
 
-- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
-{
-	if (event.allTouches.count > 1) 
-	{
-		[super touchesEnded:touches withEvent:event];
-	}
-	else
-	{
-		[[NSNotificationCenter defaultCenter] postNotificationName:kMITMapAnnotationViewTapped object:self];		
-	}
+@end
 
 
+#define kPinDropAnimationDuration 1.6
+
+@implementation MITPinAnnotationView
+
+@synthesize shadowView = _shadowView;
+
+- (id)initWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier {
+    if (self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier]) {
+        self.canShowCallout = NO;
+        self.backgroundColor = [UIColor clearColor];
+        self.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        self.layer.anchorPoint = CGPointMake(0.5, 1.0);
+    }
+    return self;
 }
 
--(void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-	if (event.allTouches.count > 1) 
-	{	
-		[super touchesBegan:touches withEvent:event];		
-	}
-
+- (void)setAnimatesDrop:(BOOL)animatesDrop {
+    _animatesDrop = animatesDrop;
+    // TODO: separate pin drop from shadow appearing
+    if (_animatesDrop) {
+        self.image = [UIImage imageNamed:@"map/map_pin_complete.png"];
+    } else {
+        self.image = [UIImage imageNamed:@"map/map_pin_complete.png"];
+    }
 }
 
--(NSString*) description
-{
-	return [NSString stringWithFormat:@"dropped: %@.  on map: %@.", _hasBeenDropped ? @"YES" : @"NO", _alreadyOnMap ? @"YES" : @"NO"];
+- (BOOL)animatesDrop {
+    return _animatesDrop;
+}
+
+- (void)dealloc {
+    self.shadowView = nil;
+    [super dealloc];
 }
 
 @end
+

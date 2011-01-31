@@ -1,3 +1,7 @@
+//
+//  MITMapAnnotationCalloutView.m
+//  MIT Mobile
+
 #import "MITMapAnnotationCalloutView.h"
 #import "MITMapView.h"
 
@@ -15,25 +19,23 @@ static const CGFloat kSubTitleFontSize = 12;
 
 @interface MITMapAnnotationCalloutView(Private) 
 
--(CGRect) rectForAccessory;
+- (void)setupSubviews;
 
 @end
 
 
 @implementation MITMapAnnotationCalloutView
-@synthesize annotation = _annotation;
 
-- (id)initWithAnnotation:(id <MKAnnotation>)annotation andMapView:(MITMapView*)mapView
+@synthesize annotationView = _annotationView, mapView = _mapView;
+
+- (id)initWithAnnotationView:(MITMapAnnotationView *)annotationView mapView:(MITMapView*)mapView
 {
 	if (self = [super initWithFrame:CGRectMake(10, 150, 275, 125)])
 	{
-		_calloutAccessoryImage = [[UIImage imageNamed:@"map_disclosure.png"] retain];
-
 		_mapView = mapView;
-		
-		self.annotation = annotation;
+		self.annotationView = annotationView;
 		self.opaque = NO;
-		
+		[self setupSubviews];
 	}
 	
 	return self;
@@ -41,42 +43,33 @@ static const CGFloat kSubTitleFontSize = 12;
 
 - (void)dealloc
 {
-	[_annotation release];
-	
-	[_calloutAccessoryImage release];
-	
+    self.annotationView = nil;
 	[super dealloc];
 }
-
+/*
 - (void)setOrigin:(CGPoint)origin
 {
 	CGRect frame = self.frame;
 	frame.origin.x = origin.x;
-	frame.origin.y = origin.y - (frame.size.height / 2);
+	frame.origin.y = origin.y - frame.size.height / 2;
 	[self setNeedsDisplay];
 }
-
--(void) setAnnotation:(id<MKAnnotation>)annotation
+*/
+- (void)setupSubviews
 {
-	[_annotation release];
-	_annotation = [annotation retain];
+    UIImage *calloutImage = [UIImage imageNamed:@"map/map_disclosure.png"];
 	
 	// setting the annotation determines the frame based on the content of the annotation.
-	CGSize size = [[_annotation title] sizeWithFont:[UIFont boldSystemFontOfSize:kTitleFontSize] 
-					constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - _calloutAccessoryImage.size.width, 400) 
+	CGSize size = [[_annotationView.annotation title] sizeWithFont:[UIFont boldSystemFontOfSize:kTitleFontSize] 
+					constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - calloutImage.size.width, 400) 
 						lineBreakMode:UILineBreakModeWordWrap];
 	
 	size.height += kBuffer * 2; // buffer for above and below the title
 	
-	
-	NSString* subtitle = nil;
-	if([_annotation respondsToSelector:@selector(subtitle)])
-		subtitle = [_annotation subtitle];
-
-	if (nil != subtitle) 
-	{
+	if ([_annotationView.annotation respondsToSelector:@selector(subtitle)]) {
+		NSString *subtitle = [_annotationView.annotation subtitle];
 		CGSize subSize = [subtitle sizeWithFont:[UIFont systemFontOfSize:kSubTitleFontSize] 
-						constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - _calloutAccessoryImage.size.width, 400) 
+						constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - calloutImage.size.width, 400) 
 							lineBreakMode:UILineBreakModeWordWrap];
 		
 		size.height += (subSize.height);
@@ -89,31 +82,21 @@ static const CGFloat kSubTitleFontSize = 12;
 	size.height += kChevronHeight;
 	
 	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y,
-							size.width + kBuffer * 3 + _calloutAccessoryImage.size.width, size.height);
+							size.width + kBuffer * 3 + calloutImage.size.width, size.height);
 	
-}
-
--(void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-	// if the touch was inside our rect, navigate. 
-	UITouch* touch = [touches anyObject];
+	UIButton *accessoryButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+	accessoryButton.exclusiveTouch = YES;
+	accessoryButton.enabled = YES;
+	[accessoryButton addTarget:self 
+						action:@selector(calloutAccessoryTapped:) 
+			  forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchCancel];
 	
-	CGPoint locationInView = [touch locationInView:self];
-	
-	CGRect accessoryRect = [self rectForAccessory];
-	
-	// pad the rect a little so it is more easily hit
-	accessoryRect = CGRectMake(accessoryRect.origin.x - 5, accessoryRect.origin.y - 5, accessoryRect.size.width + 10, accessoryRect.size.height + 10);
-	
-	if(CGRectContainsPoint(accessoryRect, locationInView))
-	{
-		if ([_mapView.delegate respondsToSelector:@selector(mapView:annotationViewcalloutAccessoryTapped:)]) {
-			[_mapView.delegate mapView:_mapView annotationViewcalloutAccessoryTapped:self];
-		}
-	}
-	
-	
-	
+	accessoryButton.frame = CGRectMake(self.bounds.size.width - accessoryButton.frame.size.width - 10, 
+									   round((self.bounds.size.height - kChevronHeight - accessoryButton.frame.size.height) / 2.0), 
+									   accessoryButton.frame.size.width, 
+									   accessoryButton.frame.size.height);
+    
+	[self addSubview:accessoryButton];
 }
 
 - (void)drawRect:(CGRect)rect
@@ -156,8 +139,8 @@ static const CGFloat kSubTitleFontSize = 12;
 						kCornerRadius
 						);
 	
-	CGFloat midX = (rect.origin.x + rect.size.width) / 2;
-	CGFloat halfChevWidth = kChevronWidth / 2;
+	CGFloat midX = round((rect.origin.x + rect.size.width) / 2);
+	CGFloat halfChevWidth = round(kChevronWidth / 2);
 	CGPathAddLineToPoint(path, NULL, midX + halfChevWidth, rect.origin.y + rect.size.height);
 	CGPathAddLineToPoint(path, NULL, midX,                 rect.origin.y + rect.size.height + kChevronHeight);
 	CGPathAddLineToPoint(path, NULL, midX - halfChevWidth, rect.origin.y + rect.size.height);
@@ -203,25 +186,24 @@ static const CGFloat kSubTitleFontSize = 12;
 	CGGradientRelease(gradient);
 	
 	// Draw the title.
+    UIImage *calloutImage = [UIImage imageNamed:@"map/map_disclosure.png"];
+
 	CGContextSetFillColorWithColor(context, [UIColor blackColor].CGColor);
-	[[_annotation title] drawInRect:CGRectMake(kBuffer, kBuffer, rect.size.width - kBuffer * 2 - _calloutAccessoryImage.size.width, 400)
+	[[_annotationView.annotation title] drawInRect:CGRectMake(kBuffer, kBuffer, rect.size.width - kBuffer * 2 - calloutImage.size.width, 400)
 						   withFont:[UIFont boldSystemFontOfSize:kTitleFontSize]
 					  lineBreakMode:UILineBreakModeWordWrap];
 	
-	NSString* subTitle = nil;
-	if ([_annotation respondsToSelector:@selector(subtitle)]) {
-		subTitle = [_annotation subtitle];
-	}
-	if(nil != subTitle)
-	{
+	if ([_annotationView.annotation respondsToSelector:@selector(subtitle)]) {
+		NSString *subTitle = [_annotationView.annotation subtitle];
+
 		// get the size of the text that was drawn for the title
-		CGSize titleSize = [[_annotation title] sizeWithFont:[UIFont boldSystemFontOfSize:kTitleFontSize] 
-										   constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - _calloutAccessoryImage.size.width, 400) 
-											   lineBreakMode:UILineBreakModeWordWrap];
+		CGSize titleSize = [[_annotationView.annotation title] sizeWithFont:[UIFont boldSystemFontOfSize:kTitleFontSize] 
+                                                          constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - calloutImage.size.width, 400) 
+                                                              lineBreakMode:UILineBreakModeWordWrap];
 		
 		// draw the subtitle below the title
 		CGSize subTitleSize = [subTitle sizeWithFont:[UIFont systemFontOfSize:kSubTitleFontSize]
-								   constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - _calloutAccessoryImage.size.width, 400)
+								   constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - calloutImage.size.width, 400)
 									   lineBreakMode:UILineBreakModeWordWrap];
 		
 		
@@ -229,38 +211,13 @@ static const CGFloat kSubTitleFontSize = 12;
 		[subTitle drawInRect:subTitleRect withFont:[UIFont systemFontOfSize:kSubTitleFontSize] lineBreakMode:UILineBreakModeWordWrap];
 		 
 	 }
-	
-	
-	CGRect accessoryRect = [self rectForAccessory];
-	
-	// draw the callout accessory
-	[_calloutAccessoryImage drawInRect:accessoryRect];
-	
+
 }
 
--(CGRect) rectForAccessory
-{
-	
-	CGSize size = [[_annotation title] sizeWithFont:[UIFont boldSystemFontOfSize:kTitleFontSize] 
-								  constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - _calloutAccessoryImage.size.width, 400) 
-									  lineBreakMode:UILineBreakModeWordWrap];
-	
-	NSString* subTitle = [_annotation subtitle];
-	
-	if(nil != subTitle)
-	{
-		CGSize subTitleSize = [subTitle sizeWithFont:[UIFont systemFontOfSize:kSubTitleFontSize]
-								   constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - _calloutAccessoryImage.size.width, 400)
-									   lineBreakMode:UILineBreakModeWordWrap];
-		if (subTitleSize.width > size.width) {
-			size.width = subTitleSize.width;
-		}
-	}
-	
-	CGRect rect = CGRectMake(size.width + kBuffer * 2, (self.frame.size.height - kChevronHeight - _calloutAccessoryImage.size.height) / 2,
-							 _calloutAccessoryImage.size.width, _calloutAccessoryImage.size.height);
-	
-	return rect;
+
+- (void)calloutAccessoryTapped:(id)sender {
+    // _mapView.mapView is the MKMapView object attached to the MITMapView
+    [_mapView mapView:_mapView.mapView annotationView:self.annotationView calloutAccessoryControlTapped:sender];
 }
 
 @end

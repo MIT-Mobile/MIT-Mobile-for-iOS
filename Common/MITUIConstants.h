@@ -1,5 +1,3 @@
-#import "UITableView+MITUIAdditions.h"
-#import "UITableViewCell+MITUIAdditions.h"
 #import "UIKit+MITAdditions.h"
 
 /*** universal font constants ***/

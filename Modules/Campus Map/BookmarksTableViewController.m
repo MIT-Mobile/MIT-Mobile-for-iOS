@@ -4,7 +4,6 @@
 #import "CampusMapViewController.h"
 #import "MITUIConstants.h"
 #import "MapSelectionController.h"
-#import "MITMapSearchResultCell.h"
 
 @implementation BookmarksTableViewController
 

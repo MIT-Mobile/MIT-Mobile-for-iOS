@@ -3,13 +3,16 @@
 #import "UIKit+MITAdditions.h"
 #import "AboutMITVC.h"
 #import "AboutCreditsVC.h"
-#import "UITableView+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
+#import "MITMailComposeController.h"
 
 @implementation AboutTableViewController
 
 - (void)viewDidLoad {
     [self.tableView applyStandardColors];
+    self.title = @"About";
+    
     showBuildNumber = NO;
     
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(10, 0, self.view.frame.size.width - 20, 45)];
@@ -150,27 +153,9 @@
                 break;
             }
             case 2: {
-                Class mailClass = (NSClassFromString(@"MFMailComposeViewController"));
+                NSString *email = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"];
                 NSString *subject = [NSString stringWithFormat:@"Feedback for MIT Mobile %@ (%@)", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], MITBuildNumber];
-                if ((mailClass != nil) && [mailClass canSendMail]) {
-                    
-                    MFMailComposeViewController *aController = [[MFMailComposeViewController alloc] init];
-                    aController.mailComposeDelegate = self;
-                    
-                    [aController setSubject:subject];
-                    [aController setToRecipients:[NSArray arrayWithObject:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"]]];
-                    
-                    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-                    [appDelegate presentAppModalViewController:aController animated:YES];
-                    [aController release];
-                    
-                } else {
-                    NSString *mailtoString = [NSString stringWithFormat:@"mailto://?subject=%@", subject];
-                    
-                    NSURL *externURL = [NSURL URLWithString:mailtoString];
-                    if ([[UIApplication sharedApplication] canOpenURL:externURL])
-                        [[UIApplication sharedApplication] openURL:externURL];
-                }
+                [MITMailComposeController presentMailControllerWithEmail:email subject:subject body:nil];
             }            
             default:
                 break;

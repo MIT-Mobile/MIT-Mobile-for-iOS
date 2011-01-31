@@ -9,7 +9,7 @@
 @class MITMapSearchResultAnnotation;
 @class CampusMapViewController;
 
-@interface MITMapDetailViewController : UIViewController <ConnectionWrapperDelegate, TabViewControlDelegate, JSONLoadedDelegate> {
+@interface MITMapDetailViewController : UIViewController <ConnectionWrapperDelegate, TabViewControlDelegate, JSONLoadedDelegate, MITMapViewDelegate> {
 
 	// tab controller for which we are a delegate.
 	IBOutlet TabViewControl* _tabViewControl;

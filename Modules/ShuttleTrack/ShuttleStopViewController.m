@@ -2,8 +2,7 @@
 #import "ShuttleStop.h"
 #import "ShuttleRoute.h"
 #import "ShuttleSubscriptionManager.h"
-#import "UITableViewCell+MITUIAdditions.h"
-#import "UITableView+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 #import "MITModule.h"
 #import "ShuttleStopMapAnnotation.h"
@@ -120,23 +119,23 @@
 	// add the map view thumbnail
 	_mapThumbnail = [[MITMapView alloc] initWithFrame:CGRectMake(2.0, 2.0, mapSize - 4.0, mapSize - 4.0)];
 	_mapThumbnail.delegate = self;
-	_mapThumbnail.shouldNotDropPins = YES;
 	[_mapThumbnail addAnnotation:self.annotation];
 	_mapThumbnail.centerCoordinate = self.annotation.coordinate;
+	[_mapThumbnail setRegion:MKCoordinateRegionMake(self.annotation.coordinate, MKCoordinateSpanMake(0.003, 0.003))];
 	_mapThumbnail.scrollEnabled = NO;
 	_mapThumbnail.userInteractionEnabled = NO;
 	_mapThumbnail.layer.cornerRadius = 6.0;
-	
+
 	// add a button on top of the map
 	_mapButton = [[UIButton alloc] initWithFrame:CGRectMake(mapBuffer, mapBuffer, mapSize, mapSize)];
-    
+    //[_mapButton addTarget:self action:@selector(mapThumbnailPressed:) forControlEvents:UIControlEventTouchUpInside];
 	_mapButton.backgroundColor = [UIColor whiteColor];
 	_mapButton.layer.cornerRadius = 8.0;
 	[_mapButton addSubview:_mapThumbnail];
     
 	[headerView addSubview:_mapButton];
 	
-	UIImageView *alertHeaderIcon = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle-alert-descriptive.png"]] autorelease];
+	UIImageView *alertHeaderIcon = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/shuttle-alert-descriptive.png"]] autorelease];
 	CGRect alertHeaderIconFrame = alertHeaderIcon.frame;
 	alertHeaderIconFrame.origin = CGPointMake(MARGIN, mapSize + mapBuffer * 2);
 	alertHeaderIcon.frame = alertHeaderIconFrame;
@@ -220,16 +219,17 @@
 	// ensure the view and map view are loaded
 	routeMap.view;
 	
-	MITMapView* mapView = routeMap.mapView;
+	//MITMapView* mapView = routeMap.mapView;
 	
-	[mapView selectAnnotation:self.annotation];
+	[routeMap.mapView selectAnnotation:self.annotation];
+	routeMap.mapView.centerCoordinate = self.annotation.coordinate;
 	
 	[self.navigationController pushViewController:routeMap animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
-    //[super didReceiveMemoryWarning];
+    [super didReceiveMemoryWarning];
 	
 	// Release any cached data, images, etc that aren't in use.
 }
@@ -301,9 +301,9 @@
         if(minutes > NOTIFICATION_MINUTES) {
             
             if([self hasSubscription:indexPath]) {
-                cell.accessoryView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle-alert-toggle-on.png"]] autorelease];
+                cell.accessoryView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-on.png"]] autorelease];
             } else {
-                cell.accessoryView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle-alert-toggle-off.png"]] autorelease];
+                cell.accessoryView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-off.png"]] autorelease];
             }
             
             
@@ -474,15 +474,12 @@
 	
 	if ([annotation isKindOfClass:[ShuttleStopMapAnnotation class]]) 
 	{
-		annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation] autorelease];
-		UIImage* pin = [UIImage imageNamed:@"map_pin_shuttle_stop_complete.png"];
-		UIImageView* imageView = [[[UIImageView alloc] initWithImage:pin] autorelease];
-		annotationView.frame = imageView.frame;
-		annotationView.canShowCallout = YES;
-		[annotationView addSubview:imageView];
+		annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"stop"] autorelease];
+        annotationView.image = [UIImage imageNamed:@"shuttle/map_pin_shuttle_stop_complete.png"];
+		annotationView.showsCustomCallout = NO;
 		annotationView.backgroundColor = [UIColor clearColor];
 		annotationView.centeredVertically = YES;
-		annotationView.alreadyOnMap = YES;
+		//annotationView.alreadyOnMap = YES;
 		//annotationView.layer.anchorPoint = CGPointMake(0.5, 0.5);
 	}
 	

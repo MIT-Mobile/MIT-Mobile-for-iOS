@@ -60,6 +60,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    [[EmergencyData sharedData] setLastRead:[NSDate date]];
 	EmergencyModule *emergencyModule = (EmergencyModule *)[MIT_MobileAppDelegate moduleForTag:EmergencyTag];
 	[emergencyModule syncUnreadNotifications];
 	[emergencyModule resetURL];
@@ -105,6 +106,11 @@
 	refreshButtonPressed = NO;
     self.htmlString = [[EmergencyData sharedData] htmlString];
     [self.infoWebView loadHTMLString:self.htmlString baseURL:nil];
+    if (self.navigationController.visibleViewController == self) {
+        [[EmergencyData sharedData] setLastRead:[NSDate date]];
+        EmergencyModule *emergencyModule = (EmergencyModule *)[MIT_MobileAppDelegate moduleForTag:EmergencyTag];
+        [emergencyModule syncUnreadNotifications];
+    }
 }
 
 - (void)infoDidFailToLoad:(NSNotification *)aNotification {

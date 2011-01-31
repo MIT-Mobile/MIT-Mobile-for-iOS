@@ -2,7 +2,6 @@
 #import "MapSelectionController.h"
 #import "MITMapSearchResultAnnotation.h"
 #import "CampusMapViewController.h"
-#import "MITSearchEffects.h"
 #import "MITUIConstants.h"
 
 #define kAPICategoryTitles	@"CategoryTitles"
@@ -53,6 +52,12 @@
     self.title = @"Browse";
 	self.navigationItem.leftBarButtonItem.title = @"Back";
 	self.navigationItem.rightBarButtonItem = self.mapSelectionController.cancelButton;
+    
+    CGRect loadingFrame = self.view.frame;
+    CGFloat navbarHeight = self.navigationController.navigationBar.frame.size.height;
+    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+    loadingFrame.origin.y += navbarHeight;
+    loadingFrame.size.height -= (navbarHeight + appDelegate.tabBarController.tabBar.frame.size.height);
 	
 	if (_topLevel) {
 		_headerText = @"Browse map by:";
@@ -64,7 +69,7 @@
 		if (!_loadingView) 
 		{
 			self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-			_loadingView = [[[MITLoadingActivityView alloc] initWithFrame:[MITSearchEffects frameWithHeader:self.navigationController.navigationBar]]
+			_loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame]
 							retain];
 			[self.view addSubview:_loadingView];
 		}
@@ -75,7 +80,7 @@
 		if (!_loadingView) 
 		{
 			self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-			_loadingView = [[[MITLoadingActivityView alloc] initWithFrame:[MITSearchEffects frameWithHeader:self.navigationController.navigationBar]]
+			_loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame]
 							retain];
 			[self.view addSubview:_loadingView];
 		}
@@ -190,14 +195,12 @@
 		[searchResultsArray addObject:annotation];
 		
 		// this will remove any old annotations and add the new ones. 
-		//[[self.mapSelectionController.mapVC mapView] setShouldNotDropPins:YES];
 		[self.mapSelectionController.mapVC setSearchResults:searchResultsArray];
 		
 		// on the map, select the current annotation
 		//[[self.mapSelectionController.mapVC mapView] selectAnnotation:annotation animated:NO withRecenter:YES];
 		
 		[self dismissModalViewControllerAnimated:YES];
-		//[[self.mapSelectionController.mapVC mapView] setShouldNotDropPins:NO];
 	} else {
 	
 		CategoriesTableViewController* newCategoriesTVC = nil;
@@ -244,10 +247,10 @@
 			headerView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
 			headerLabel.frame = CGRectMake(headerLabel.frame.origin.x, headerLabel.frame.origin.y, 200, headerLabel.frame.size.height);
 			UIButton* viewAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			UIImage* viewAllImage = [UIImage imageNamed:@"map_viewall.png"];
+			UIImage* viewAllImage = [UIImage imageNamed:@"map/map_viewall.png"];
 			viewAllButton.frame = CGRectMake(320-viewAllImage.size.width-10, 10, viewAllImage.size.width, viewAllImage.size.height);
 			[viewAllButton setImage:viewAllImage forState:UIControlStateNormal];
-			[viewAllButton setImage:[UIImage imageNamed:@"map_viewall_pressed.png"] forState:UIControlStateHighlighted];
+			[viewAllButton setImage:[UIImage imageNamed:@"map/map_viewall_pressed.png"] forState:UIControlStateHighlighted];
 			[viewAllButton addTarget:self action:@selector(mapAllButtonTapped) forControlEvents:UIControlEventTouchUpInside];
 			[headerView addSubview:viewAllButton];
 		}
@@ -275,11 +278,9 @@
 	}
 	
 	// this will remove any old annotations and add the new ones. 
-	//[[self.mapSelectionController.mapVC mapView] setShouldNotDropPins:YES];
 	[self.mapSelectionController.mapVC setSearchResults:searchResultsArray];
 		
 	[self dismissModalViewControllerAnimated:YES];
-	//[[self.mapSelectionController.mapVC mapView] setShouldNotDropPins:NO];
 }
 
 

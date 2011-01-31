@@ -4,7 +4,7 @@
 
 NSInteger strLenSort(NSString *str1, NSString *str2, void *context);
 
-@interface PeopleSearchViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UISearchDisplayDelegate, JSONLoadedDelegate, UIAlertViewDelegate, UIActionSheetDelegate> {
+@interface PeopleSearchViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MITSearchDisplayDelegate, JSONLoadedDelegate, UIAlertViewDelegate, UIActionSheetDelegate> {
 	
     MITSearchDisplayController *searchController;
     UITableView *theTableView;

@@ -1,6 +1,7 @@
 #import <CoreData/CoreData.h>
 
 @class EventCategory;
+@class MITEventList;
 
 @interface MITCalendarEvent :  NSManagedObject  
 {
@@ -19,24 +20,27 @@
 @property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSSet* categories;
 @property (nonatomic, retain) NSDate * lastUpdated;
-@property (nonatomic, retain) NSNumber * isRegular;
+@property (nonatomic, retain) NSSet* lists;
 
 - (NSString *)subtitle;
 - (NSString *)dateStringWithDateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle separator:(NSString *)separator ;
 - (BOOL)hasCoords;
 - (void)updateWithDict:(NSDictionary *)dict;
-
-// wrapper for addCategoriesObject that sets isRegular
-- (void)addCategory:(EventCategory *)category;
+- (BOOL)hasMoreDetails;
 
 @end
 
 
 @interface MITCalendarEvent (CoreDataGeneratedAccessors)
-- (void)addCategoriesObject:(NSManagedObject *)value;
-- (void)removeCategoriesObject:(NSManagedObject *)value;
+- (void)addCategoriesObject:(EventCategory *)value;
+- (void)removeCategoriesObject:(EventCategory *)value;
 - (void)addCategories:(NSSet *)value;
 - (void)removeCategories:(NSSet *)value;
+
+- (void)addListsObject:(MITEventList *)value;
+- (void)removeListsObject:(MITEventList *)value;
+- (void)addLists:(NSSet *)value;
+- (void)removeLists:(NSSet *)value;
 
 @end
 

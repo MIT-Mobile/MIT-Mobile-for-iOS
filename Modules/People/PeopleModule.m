@@ -19,13 +19,22 @@ static NSString * const PeopleStateDetail = @"detail";
         self.shortName = @"Directory";
         self.longName = @"People Directory";
         self.iconName = @"people";
-
-		viewController = [[[PeopleSearchViewController alloc] init] autorelease];
-		viewController.navigationItem.title = self.longName;
         
-        [self.tabNavController setViewControllers:[NSArray arrayWithObject:viewController]];
+        //moduleHomeController.title = self.longName;
+
+		//viewController = [[[PeopleSearchViewController alloc] init] autorelease];
+		//viewController.navigationItem.title = self.longName;
+        
+        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:viewController]];
     }
     return self;
+}
+
+- (UIViewController *)moduleHomeController {
+    if (!viewController) {
+        viewController = [[PeopleSearchViewController alloc] init];
+    }
+    return viewController;
 }
 
 - (void)applicationWillTerminate
@@ -121,6 +130,7 @@ static NSString * const PeopleStateDetail = @"detail";
 
 - (void)dealloc
 {
+    [viewController release];
 	[super dealloc];
 }
 

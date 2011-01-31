@@ -27,6 +27,7 @@
 - (void)setViewControllers:(NSArray *)newViewControllers;
 - (NSArray *)customizableViewControllers;
 - (void)setCustomizableViewControllers:(NSArray *)newCustomizableViewControllers;
+- (void)updateCustomizableViewControllers:(NSArray *)modules;
 - (void)updateTabBarItems;
 - (void)showViewController:(UIViewController *)viewController;
 - (void)showItem:(UITabBarItem *)item;

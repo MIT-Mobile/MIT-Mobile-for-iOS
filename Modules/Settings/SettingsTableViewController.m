@@ -1,7 +1,7 @@
 #import "SettingsTableViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
-#import "UITableView+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 
 NSString * const SectionTitleString = @"Notifications";
@@ -17,6 +17,8 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title = @"Settings";
+    
     [self.tableView applyStandardColors];
 	self.apiRequests = [[NSMutableDictionary alloc] initWithCapacity:1];
 

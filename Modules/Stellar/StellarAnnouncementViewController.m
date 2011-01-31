@@ -2,7 +2,7 @@
 #import "StellarAnnouncementViewController.h"
 #import "MultiLineTableViewCell.h"
 #import "MITUIConstants.h"
-#import "UITableView+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 #define titleRow 0
 #define textRow 1
 #define textWidth 290

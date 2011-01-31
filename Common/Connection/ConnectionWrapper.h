@@ -15,6 +15,7 @@
 
 -(void)connectionDidReceiveResponse:(ConnectionWrapper *)wrapper; // an opportunity to turn on the spinny, i.e. [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 -(void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error;
+- (void)connection:(ConnectionWrapper *)wrapper madeProgress:(CGFloat)progress;
 
 @end
 
@@ -25,6 +26,7 @@
     NSURL *theURL;
     NSURLConnection *urlConnection;
 	BOOL isConnected;
+    long long contentLength;
 	
 	id<ConnectionWrapperDelegate> delegate;
 }

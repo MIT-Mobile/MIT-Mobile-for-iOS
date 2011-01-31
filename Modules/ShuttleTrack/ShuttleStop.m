@@ -207,11 +207,14 @@
 		self.nextScheduled = [num unsignedLongValue];
 
 	NSArray *array = nil;
-	if ((array = [stopInfo objectForKey:@"path"]) != nil)
+	if ((array = [stopInfo objectForKey:@"path"]) != nil) {
 		self.path = array;
+    } else {
+        self.path = [NSArray array];
+    }
     if ((array = [stopInfo objectForKey:@"predictions"]) != nil)
         self.predictions = array;
-	
+
 }
 
 #pragma mark methods from RouteStopSchedule

@@ -3,7 +3,6 @@
 #import "Foundation+MITAdditions.h"
 #import "MultiLineTableViewCell.h"
 #import "UIKit+MITAdditions.h"
-#import "UITableViewCell+MITUIAdditions.h"
 #import "MITUIConstants.h"
 
 #define TIMES 0

@@ -38,14 +38,14 @@
 
 	if (shuttleStop.upcoming) 
 	{
-		_shuttleStopImageView.image = [UIImage imageNamed:@"shuttle-stop-dot-next.png"] ;
+		_shuttleStopImageView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"] ;
 		_shuttleTimeLabel.textColor = SEARCH_BAR_TINT_COLOR;
         _shuttleTimeLabel.font = [UIFont boldSystemFontOfSize:16.0];
 		
 	}
 	else 
 	{
-		_shuttleStopImageView.image = [UIImage imageNamed:@"shuttle-stop-dot.png"];
+		_shuttleStopImageView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot.png"];
 		_shuttleTimeLabel.textColor = [UIColor blackColor];
         _shuttleTimeLabel.font = [UIFont systemFontOfSize:16.0];
 	}

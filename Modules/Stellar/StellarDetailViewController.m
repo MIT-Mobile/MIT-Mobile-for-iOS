@@ -3,7 +3,7 @@
 #import "MITModule.h"
 #import "MITUnreadNotifications.h"
 #import "StellarDetailViewController.h"
-#import "UITableView+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 #import "NewsDataSource.h"
 #import "InfoDataSource.h"
 #import "StaffDataSource.h"
@@ -144,10 +144,10 @@ NSString * termText(NSString *termCode) {
 		self.tableView.tableHeaderView.frame.size.width-leftMargin-buttonWidth, myStellarPadding,
 		buttonWidth, buttonHeight);
 	myStellarButton.enabled = NO;
-	[myStellarButton setImage:[UIImage imageNamed:@"mystellar-off.png"] forState:UIControlStateNormal];
-	[myStellarButton setImage:[UIImage imageNamed:@"mystellar-off-pressed.png"] forState:(UIControlStateNormal | UIControlStateHighlighted)];
-	[myStellarButton setImage:[UIImage imageNamed:@"mystellar-on.png"] forState:UIControlStateSelected];
-	[myStellarButton setImage:[UIImage imageNamed:@"mystellar-on-pressed.png"] forState:(UIControlStateSelected | UIControlStateHighlighted)];
+	[myStellarButton setImage:[UIImage imageNamed:@"stellar/mystellar-off.png"] forState:UIControlStateNormal];
+	[myStellarButton setImage:[UIImage imageNamed:@"stellar/mystellar-off-pressed.png"] forState:(UIControlStateNormal | UIControlStateHighlighted)];
+	[myStellarButton setImage:[UIImage imageNamed:@"stellar/mystellar-on.png"] forState:UIControlStateSelected];
+	[myStellarButton setImage:[UIImage imageNamed:@"stellar/mystellar-on-pressed.png"] forState:(UIControlStateSelected | UIControlStateHighlighted)];
 	[myStellarButton addTarget:self action:@selector(myStellarButtonToggled) forControlEvents:UIControlEventTouchUpInside];
 	[self.tableView.tableHeaderView addSubview:myStellarButton];
 	

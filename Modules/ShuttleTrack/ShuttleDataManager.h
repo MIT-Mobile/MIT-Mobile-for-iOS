@@ -70,9 +70,6 @@
 // request the routes from the server.
 -(void) requestRoutes;
 
-// request the stops
--(void) requestStops;
-
 // request full information about a particular stop
 -(void) requestStop:(NSString*)stopID;
 

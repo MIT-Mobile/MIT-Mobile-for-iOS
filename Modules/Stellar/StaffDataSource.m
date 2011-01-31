@@ -5,7 +5,6 @@
 #import "PeopleModule.h"
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
-#import "UITableViewCell+MITUIAdditions.h"
 #import "MITUIConstants.h"
 
 #define INSTRUCTORS_PADDING 15

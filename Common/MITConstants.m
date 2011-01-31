@@ -37,11 +37,13 @@ NSString * const MITInternalURLScheme = @"mitmobile";
 // module tags
 NSString * const CalendarTag   = @"calendar";
 NSString * const EmergencyTag  = @"emergencyinfo";
-NSString * const CampusMapTag  = @"campusmap";
+NSString * const CampusMapTag  = @"map";
 NSString * const NewsOfficeTag = @"newsoffice";
 NSString * const DirectoryTag  = @"people";
 NSString * const StellarTag    = @"stellar";
 NSString * const ShuttleTag    = @"shuttletrack";
+NSString * const ToursTag      = @"tours";
+NSString * const AnniversaryTag = @"mit150";
 NSString * const MobileWebTag  = @"mobileweb";
 NSString * const SettingsTag   = @"settings";
 NSString * const AboutTag      = @"about";
@@ -77,6 +79,10 @@ NSString * const ShuttleRouteStopEntityName = @"ShuttleRouteStop";
 NSString * const CalendarEventEntityName = @"MITCalendarEvent";
 NSString * const CalendarCategoryEntityName = @"EventCategory";
 NSString * const CampusMapSearchEntityName = @"MapSearch";
+NSString * const CampusTourEntityName = @"CampusTour";
+NSString * const TourSiteOrRouteEntityName = @"TourSiteOrRoute";
+NSString * const CampusTourSideTripEntityName = @"CampusTourSideTrip";
+NSString * const TourStartLocationEntityName = @"TourStartLocation";
 
 // resource names
 

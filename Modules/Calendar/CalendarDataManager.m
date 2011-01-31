@@ -1,43 +1,218 @@
 #import "CalendarDataManager.h"
 #import "MITConstants.h"
 #import "CoreDataManager.h"
+#import "MITEventList.h"
+
+NSString * const CalendarStateEventList = @"events";
+NSString * const CalendarStateCategoryList = @"categories";
+NSString * const CalendarStateCategoryEventList = @"category";
+//NSString * const CalendarStateSearchHome = @"search";
+//NSString * const CalendarStateSearchResults = @"results";
+NSString * const CalendarStateEventDetail = @"detail";
+
+NSString * const CalendarEventAPIDay = @"day";
+NSString * const CalendarEventAPISearch = @"search";
+
+@interface CalendarDataManager (Private)
+
++ (NSArray *)staticEventTypes;
+- (void)requestEventLists;
+
+@end
+
 
 @implementation CalendarDataManager
 
-+ (NSArray *)eventsWithStartDate:(NSDate *)startDate listType:(CalendarEventListType)listType category:(NSNumber *)catID
+static CalendarDataManager *s_sharedManager = nil;
+
++ (CalendarDataManager *)sharedManager {
+	if (s_sharedManager == nil) {
+		s_sharedManager = [[CalendarDataManager alloc] init];
+	}
+	return s_sharedManager;
+}
+
+- (id)init {
+	if (self = [super init]) {
+		_eventLists = [[NSSet alloc] init];
+		[self requestEventLists];
+	}
+	return self;
+}
+
+- (NSArray *)eventLists {
+	if (_eventLists.count)
+		return _eventLists;
+	return nil;
+}
+
+- (NSArray *)staticEventListIDs {
+	return _staticEventListIDs;
+}
+
+- (void)registerDelegate:(id<CalendarDataManagerDelegate>)aDelegate {
+	_delegate = aDelegate;
+}
+
+- (void)dealloc {
+	_delegate = nil;
+	[_eventLists release];
+	[super dealloc];
+}
+
+- (void)requestEventLists {
+	// first assemble anything we already have
+	NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
+	[_eventLists release];
+	_eventLists = [[CoreDataManager objectsForEntity:@"MITEventList" matchingPredicate:nil sortDescriptors:[NSArray arrayWithObject:sort]] retain];
+
+	NSArray *staticLists = [CalendarDataManager staticEventTypes];
+	
+	NSMutableArray *mutableStaticEvents = [NSMutableArray arrayWithCapacity:staticLists.count];
+	for (MITEventList *aList in staticLists) {
+		[mutableStaticEvents addObject:aList.listID];
+	}
+	[_staticEventListIDs release];
+	_staticEventListIDs = [[NSArray alloc] initWithArray:mutableStaticEvents];
+
+	// then make a request for more updated data
+	MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
+	[api requestObjectFromModule:CalendarTag command:@"extraTopLevels" parameters:nil];
+}
+
+- (BOOL)isDailyEvent:(MITEventList *)listType {
+	if ([listType.listID isEqualToString:@"Events"]) {
+		return YES;
+	}
+	return ![_staticEventListIDs containsObject:listType.listID];
+}
+
+- (MITEventList *)eventListWithID:(NSString *)listID {
+	for (MITEventList *aList in _eventLists) {
+		if ([aList.listID isEqualToString:listID])
+			return aList;
+	}
+	return nil;
+}
+
++ (NSArray *)staticEventTypes {
+	NSString *path = [[NSBundle mainBundle] pathForResource:@"staticEventTypes" ofType:@"plist" inDirectory:@"calendar"];
+	NSArray *staticEventData = [NSArray arrayWithContentsOfFile:path];
+	NSMutableArray *mutableArray = [NSMutableArray array];
+	for (NSDictionary *listInfo in staticEventData) {
+		MITEventList *eventList = [CalendarDataManager eventListWithID:[listInfo objectForKey:@"listID"]];
+		if (!eventList.title || !eventList.sortOrder) {
+			eventList.title = [listInfo objectForKey:@"title"];
+			eventList.sortOrder = [NSNumber numberWithInt:[[listInfo objectForKey:@"sortOrder"] integerValue]];
+			[CoreDataManager saveData];
+		}
+		[mutableArray addObject:eventList];
+	}
+	return [NSArray arrayWithArray:mutableArray];
+}
+
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
+	return YES;
+}
+
+- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
+	NSMutableArray *newLists = [NSMutableArray arrayWithArray:[CalendarDataManager staticEventTypes]];
+	if (JSONObject && [JSONObject isKindOfClass:[NSArray class]]) {
+		NSInteger sortOrder = 1;
+		for (id anObject in JSONObject) {
+			if (![anObject isKindOfClass:[NSDictionary class]]) {
+				[self handleConnectionFailureForRequest:request];
+				return;
+			}
+			NSDictionary *dict = (NSDictionary *)anObject;
+			NSString *listID = [dict objectForKey:@"type"];
+			MITEventList *list = [CalendarDataManager eventListWithID:listID];
+			if (!list.title)
+				list.title = [dict objectForKey:@"shortName"];
+			if ([list.sortOrder integerValue] != sortOrder)
+				list.sortOrder = [NSNumber numberWithInt:sortOrder];
+			sortOrder++;
+			[newLists addObject:list];
+		}
+	}
+	if ([[CoreDataManager managedObjectContext] hasChanges]) {
+		NSLog(@"event lists have changed");
+		[CoreDataManager saveData];
+
+		// check for deleted categories
+		NSMutableSet *newEventListIDs = [NSMutableSet setWithCapacity:newLists.count];
+		for (MITEventList *newEventList in newLists) {
+			[newEventListIDs addObject:newEventList.listID];
+		}
+
+		for (MITEventList *oldEventList in _eventLists) {
+			if (![newEventListIDs containsObject:oldEventList.listID]) {
+				NSLog(@"deleting old list %@", [oldEventList description]);
+				[CoreDataManager deleteObject:oldEventList];
+			}
+		}
+		
+		NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
+		[_eventLists release];
+		_eventLists = [[newLists sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]] retain];
+		[_delegate calendarListsLoaded];
+	}
+}
+
+- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
+	if ([[CoreDataManager managedObjectContext] hasChanges]) {
+		[[CoreDataManager managedObjectContext] rollback];
+	}
+	[_delegate calendarListsFailedToLoad];
+}
+
+#pragma mark -
+
++ (MITEventList *)eventListWithID:(NSString *)listID {
+	MITEventList *result = nil;
+	
+	NSPredicate *pred = [NSPredicate predicateWithFormat:@"listID like %@", listID];
+	NSArray *lists = [CoreDataManager objectsForEntity:@"MITEventList" matchingPredicate:pred];
+	if ([lists count]) {
+		result = [lists lastObject];
+	} else {
+		result = [CoreDataManager insertNewObjectForEntityForName:@"MITEventList"];
+		result.listID = listID;
+	}
+	return result;
+}
+
++ (NSArray *)eventsWithStartDate:(NSDate *)startDate listType:(MITEventList *)listType category:(NSNumber *)catID
 {
 	// search from beginning of (day|month|fiscalYear) for (regular|academic|holiday) calendars
     NSDateComponents *components = nil;
-    switch (listType) {
-        case CalendarEventListTypeHoliday:
-            components = [[NSCalendar currentCalendar] components:(NSYearCalendarUnit | NSMonthCalendarUnit)
-                                                         fromDate:startDate];
-            int year = [components month] <= 6 ? [components year] - 1 : [components year];
-            [components setYear:year];
-            [components setMonth:7];
-            break;
-        case CalendarEventListTypeAcademic:
-            components = [[NSCalendar currentCalendar] components:(NSYearCalendarUnit | NSMonthCalendarUnit)
-                                                         fromDate:startDate];
-            break;
-        default:
-            components = [[NSCalendar currentCalendar] components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit)
-                                                         fromDate:startDate];
-            break;
+	if ([listType.listID isEqualToString:@"holidays"]) {
+		components = [[NSCalendar currentCalendar] components:(NSYearCalendarUnit | NSMonthCalendarUnit)
+													 fromDate:startDate];
+		int year = [components month] <= 6 ? [components year] - 1 : [components year];
+		[components setYear:year];
+		[components setMonth:7];
+	} else if ([listType.listID isEqualToString:@"academic"]) {
+		components = [[NSCalendar currentCalendar] components:(NSYearCalendarUnit | NSMonthCalendarUnit)
+													 fromDate:startDate];
+	} else {
+		components = [[NSCalendar currentCalendar] components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit)
+													 fromDate:startDate];
     }
     
 	startDate = [[NSCalendar currentCalendar] dateFromComponents:components];
 	
-	NSTimeInterval interval = [CalendarConstants intervalForEventType:listType
-															 fromDate:startDate
-															  forward:YES];
+	NSTimeInterval interval = [CalendarDataManager intervalForEventType:listType
+															   fromDate:startDate
+																forward:YES];
 	NSDate *endDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:startDate];
 
     NSPredicate *pred = nil;
 	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"start" ascending:YES];
     NSArray *events = nil;
-    if (listType == CalendarEventListTypeEvents && catID == nil) {
-        pred = [NSPredicate predicateWithFormat:@"(start >= %@) and (start < %@) and (isRegular == YES)", startDate, endDate];
+    //if (listType == CalendarEventListTypeEvents && catID == nil) {
+	if ([listType.listID isEqualToString:@"Events"]) {
+        pred = [NSPredicate predicateWithFormat:@"(start >= %@) and (start < %@) and (ANY lists.title like '%@')", startDate, endDate, @"Events"];
         events = [CoreDataManager objectsForEntity:CalendarEventEntityName matchingPredicate:pred sortDescriptors:[NSArray arrayWithObject:sort]];
         
         // simple check for whether the cached events are from a previous load of
@@ -51,27 +226,8 @@
         
     } else {
         pred = [NSPredicate predicateWithFormat:@"(start >= %@) and (start < %@)", startDate, endDate];
-        EventCategory *category = nil;
-        switch (listType) {
-            case CalendarEventListTypeEvents:
-                category = [CalendarDataManager categoryWithID:[catID intValue]];
-                break;
-            case CalendarEventListTypeExhibits:
-                category = [CalendarDataManager categoryForExhibits];
-                break;
-            case CalendarEventListTypeAcademic:
-                category = [CalendarDataManager categoryWithID:kCalendarAcademicCategoryID];
-                break;
-            case CalendarEventListTypeHoliday:
-                category = [CalendarDataManager categoryWithID:kCalendarHolidayCategoryID];
-                break;
-            default:
-                break;
-        }
-        
-        // there are so few holidays that we won't filter out ones that have passed
-        NSSet *eventSet;
-        eventSet = [[category events] filteredSetUsingPredicate:pred];
+		
+		NSSet *eventSet = [listType.events filteredSetUsingPredicate:pred];
         events = [[eventSet allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
     }
     [sort release];
@@ -123,11 +279,6 @@
 	if (!category) {
         category = (EventCategory *)[CoreDataManager insertNewObjectForEntityForName:CalendarCategoryEntityName];
 		category.catID = [NSNumber numberWithInt:catID];
-        if (catID == kCalendarAcademicCategoryID) {
-            category.title = [CalendarConstants titleForEventType:CalendarEventListTypeAcademic];
-        } else if (catID == kCalendarHolidayCategoryID) {
-            category.title = [CalendarConstants titleForEventType:CalendarEventListTypeHoliday];
-        }
         [CoreDataManager saveData];
 	} else {
         //NSLog(@"%@", [[category.events allObjects] description]);
@@ -182,6 +333,82 @@
         [CoreDataManager saveData];
     }
     [freshDate release];
+}
+
+#pragma mark formerly defined in CalendarConstants
+
++ (NSString *)apiCommandForEventType:(MITEventList *)listType
+{
+	if (![[CalendarDataManager sharedManager] isDailyEvent:listType]) {
+		return listType.listID;
+	} else {
+		return CalendarEventAPIDay;
+	}
+}
+
++ (NSString *)dateStringForEventType:(MITEventList *)listType forDate:(NSDate *)aDate
+{
+	NSDate *now = [NSDate date];
+	if ([[CalendarDataManager sharedManager] isDailyEvent:listType]
+		&& [now compare:aDate] != NSOrderedAscending
+		&& [now timeIntervalSinceDate:aDate] < [CalendarDataManager intervalForEventType:listType fromDate:aDate forward:YES]) {
+		return @"Today";
+	}
+	
+	NSString *dateString = nil;
+	NSDateFormatter *df = [[NSDateFormatter alloc] init];
+	if ([listType.listID isEqualToString:@"academic"]) {
+		[df setDateFormat:@"MMMM yyyy"];
+		dateString = [df stringFromDate:aDate];
+	} else if ([listType.listID isEqualToString:@"holidays"]) {
+		[df setDateFormat:@"yyyy"];
+		
+		// align year with MIT fiscal year.
+		// this means our results will be incorrect if MIT ever decides to change
+		// the start date of their fiscal year
+		// but i doubt that will happen in the next several years
+		NSCalendar *calendar = [NSCalendar currentCalendar];
+		NSDateComponents *comps = [[NSDateComponents alloc] init];
+		if ([comps month] <= 6) {
+			[comps setYear:-1];
+			NSDate *earlierDate = [calendar dateByAddingComponents:comps toDate:aDate options:0];
+			dateString = [NSString stringWithFormat:@"%@-%@", [df stringFromDate:earlierDate], [df stringFromDate:aDate]];
+		} else {
+			[comps setYear:1];
+			NSDate *laterDate = [calendar dateByAddingComponents:comps toDate:aDate options:0];
+			dateString = [NSString stringWithFormat:@"%@-%@", [df stringFromDate:aDate], [df stringFromDate:laterDate]];
+		}
+		[comps release];
+	} else {
+		[df setDateStyle:kCFDateFormatterMediumStyle];
+		dateString = [df stringFromDate:aDate];
+    }
+    [df release];
+	
+	return dateString;
+}
+
++ (NSTimeInterval)intervalForEventType:(MITEventList *)listType fromDate:(NSDate *)aDate forward:(BOOL)forward
+{
+	NSInteger sign = forward ? 1 : -1;
+	if ([listType.listID isEqualToString:@"academic"]) {
+		NSCalendar *calendar = [NSCalendar currentCalendar];
+		NSDateComponents *comps = [[NSDateComponents alloc] init];
+		[comps setMonth:sign];
+		NSDate *targetDate = [calendar dateByAddingComponents:comps toDate:aDate options:0];
+		[comps release];
+		return [targetDate timeIntervalSinceDate:aDate];
+	}
+	else if ([listType.listID isEqualToString:@"holidays"]) {
+		NSCalendar *calendar = [NSCalendar currentCalendar];
+		NSDateComponents *comps = [[NSDateComponents alloc] init];
+		[comps setYear:sign];
+		NSDate *targetDate = [calendar dateByAddingComponents:comps toDate:aDate options:0];
+		[comps release];
+		return [targetDate timeIntervalSinceDate:aDate];
+	} else {
+		return 86400.0 * sign;
+	}
 }
 
 @end

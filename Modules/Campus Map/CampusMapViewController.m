@@ -9,11 +9,10 @@
 #import "ShuttleStopViewController.h"
 #import "MITUIConstants.h"
 #import "MITConstants.h"
-
 #import "MapSearch.h"
 #import "CoreDataManager.h"
-
 #import "MapSelectionController.h"
+#import "CoreLocation+MITAdditions.h"
 
 // TODO: Remove this import when done integrating the new bookmark table
 #import "BookmarksTableViewController.h"
@@ -27,6 +26,7 @@
 #define kNoSearchResultsTag 31678
 
 #define kPreviousSearchLimit 25
+
 
 @interface CampusMapViewController(Private)
 
@@ -48,14 +48,15 @@
 @synthesize searchBar = _searchBar;
 @synthesize url;
 @synthesize campusMapModule = _campusMapModule;
+@synthesize userLocation = _userLocation;
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
 	
 	// create our own view
-	self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 364)] autorelease];
+	self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 364)] retain];
 	
-	_viewTypeButton = [[[UIBarButtonItem alloc] initWithTitle:@"List" style:UIBarButtonItemStylePlain target:self action:@selector(viewTypeChanged:)] autorelease];
+	_viewTypeButton = [[UIBarButtonItem alloc] initWithTitle:@"List" style:UIBarButtonItemStylePlain target:self action:@selector(viewTypeChanged:)];
 	self.navigationItem.rightBarButtonItem = _viewTypeButton;
 	
 	// add a search bar to our view
@@ -71,8 +72,10 @@
 	_mapView = [[MITMapView alloc] initWithFrame: CGRectMake(0, _searchBar.frame.size.height, 320, self.view.frame.size.height - _searchBar.frame.size.height)];
 	_mapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	
+	[_mapView setRegion:MKCoordinateRegionMake(DEFAULT_MAP_CENTER, DEFAULT_MAP_SPAN)];
 	[self.view addSubview:_mapView];
 	_mapView.delegate = self;
+    [_mapView fixateOnCampus];
 	
 	// add the rest of the toolbar to which we can add buttons
 	_toolBar = [[CampusMapToolbar alloc] initWithFrame:CGRectMake(kSearchBarWidth, 0, 320 - kSearchBarWidth, NAVIGATION_BAR_HEIGHT)];
@@ -81,21 +84,13 @@
 	[self.view addSubview:_toolBar];
 	
 	// create toolbar button item for geolocation  
-	UIImage* image = [UIImage imageNamed:@"map_button_icon_locate.png"];
+	UIImage* image = [UIImage imageNamed:@"map/map_button_icon_locate.png"];
 	_geoButton = [[UIBarButtonItem alloc] initWithImage:image
 												  style:UIBarButtonItemStyleBordered
 												 target:self
 												 action:@selector(geoLocationTouched:)];
 	_geoButton.width = image.size.width + 10;
 
-	/*
-	_shuttleButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map_button_shuttle.png"]
-													  style:UIBarButtonItemStyleBordered
-													 target:self
-													 action:@selector(shuttleButtonTouched:)];
-	_shuttleButton.width = image.size.width + 10;
-	[_toolBar setItems:[NSArray arrayWithObjects:_geoButton, _shuttleButton, nil]];
-	*/
 	[_toolBar setItems:[NSArray arrayWithObjects:_geoButton, nil]];
 	
 	// register for shuttle notifications
@@ -104,7 +99,7 @@
 	// add our own bookmark button item since we are not using the default
 	// bookmark button of the UISearchBar
 	_bookmarkButton = [[UIButton alloc] initWithFrame:CGRectMake(231, 8, 32, 28)];
-	[_bookmarkButton setImage:[UIImage imageNamed:@"searchfield_star.png"] forState:UIControlStateNormal];
+	[_bookmarkButton setImage:[UIImage imageNamed:@"map/searchfield_star.png"] forState:UIControlStateNormal];
 	[self.view addSubview:_bookmarkButton];
 	[_bookmarkButton addTarget:self action:@selector(bookmarkButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -116,41 +111,13 @@
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
-
-	
 	[super viewDidLoad];
+	self.title = @"Campus Map";
 	
-	
-	/*
-	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-	
-	if ([defaults objectForKey:@"mapCenterLat"] != nil) {
-		CLLocationCoordinate2D center;
-		center.latitude = [[defaults objectForKey:@"mapCenterLat"] doubleValue];
-		center.longitude = [[defaults objectForKey:@"mapCenterLon"] doubleValue];
-		
-		MKCoordinateRegion region = MKCoordinateRegionMake(center, 
-														   MKCoordinateSpanMake([[defaults objectForKey:@"mapLatDelta"] doubleValue],
-																				[[defaults objectForKey:@"mapLonDelta"] doubleValue]));
-		_mapView.region = region;
-	}
-	*/
-	
+    
+    
 	// turn on the location dot
 	_mapView.showsUserLocation = YES;
-}
-
--(void) hideAnnotations:(BOOL)hide
-{
-	for (id<MKAnnotation> annotation in _searchResults) {
-		MITMapAnnotationView* annotationView = [_mapView viewForAnnotation:annotation];
-		[annotationView setHidden:hide];
-	}
-	
-	for (id<MKAnnotation> annotation in _filteredSearchResults) {
-		MITMapAnnotationView* annotationView = [_mapView viewForAnnotation:annotation];
-		[annotationView setHidden:hide];		
-	}
 }
 
 -(void) viewWillAppear:(BOOL)animated
@@ -159,7 +126,11 @@
 	{
 		self.navigationItem.rightBarButtonItem.title = @"Map";
 	}
-	else if(_hasSearchResults)
+    else {
+        [self.mapView addTileOverlay];
+    }
+    
+    if(_hasSearchResults)
 	{
 		if (_displayingList) {
 			self.navigationItem.rightBarButtonItem.title = @"Map";
@@ -175,14 +146,12 @@
 
 -(void) viewWillDisappear:(BOOL)animated
 {
-	// hide the annotations
-	//[self hideAnnotations:YES];
+    [self.mapView removeTileOverlay];
 }
 
 -(void) viewDidAppear:(BOOL)animated
 {
 	// show the annotations
-	//[self hideAnnotations:NO];
 	
 	[super viewDidAppear:animated];
 	
@@ -207,7 +176,9 @@
 			[self setURLPathUserLocation];
 		}
 	}
-	[self saveRegion];
+	//[_mapView setRegion:MKCoordinateRegionMake(DEFAULT_MAP_CENTER, DEFAULT_MAP_SPAN)];
+	//[self saveRegion];
+	self.view.hidden = NO;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -267,7 +238,7 @@
 	_filteredSearchResults = nil;
 	
 	// remove any remaining annotations
-	[_mapView removeAllAnnotations];
+	[_mapView removeAllAnnotations:NO];
 	
 	if (nil != _searchResultsVC) {
 		_searchResultsVC.searchResults = _searchResults;
@@ -310,7 +281,7 @@
 			}
 			
 		}
-		if (_mapView.stayCenteredOnUserLocation) {
+		/*if (_mapView.stayCenteredOnUserLocation) {
 			if ([_mapView.userLocation coordinate].latitude < minLat)
 				minLat = [_mapView.userLocation coordinate].latitude;
 			if ([_mapView.userLocation coordinate].latitude > maxLat)
@@ -319,7 +290,7 @@
 				minLon = [_mapView.userLocation coordinate].longitude;
 			if ([_mapView.userLocation coordinate].longitude > maxLon)
 				maxLon = [_mapView.userLocation coordinate].longitude;
-		}
+		}*/
 		
 		CLLocationCoordinate2D center;
 		center.latitude = minLat + (maxLat - minLat) / 2;
@@ -339,6 +310,10 @@
 		// turn off locate me
 		_geoButton.style = UIBarButtonItemStyleBordered;
 		_mapView.stayCenteredOnUserLocation = NO;
+		
+		if ([_searchResults count] == 1) {
+			[_mapView selectAnnotation:[searchResults objectAtIndex:0]];
+		}
 	}
 	
 	[self saveRegion];
@@ -394,6 +369,79 @@
 	
 }
 
+-(MKCoordinateRegion)regionForAnnotations:(NSArray *) annotations {
+	
+	if (annotations.count > 0) 
+	{
+		// determine the region for the search results
+		double minLat = 90;
+		double maxLat = -90;
+		double minLon = 180;
+		double maxLon = -180;
+		
+		for (id<MKAnnotation> annotation in annotations) 
+		{
+			CLLocationCoordinate2D coordinate = annotation.coordinate;
+			
+			if (coordinate.latitude < minLat) 
+			{
+				minLat = coordinate.latitude;
+			}
+			if (coordinate.latitude > maxLat )
+			{
+				maxLat = coordinate.latitude;
+			}
+			if (coordinate.longitude < minLon) 
+			{
+				minLon = coordinate.longitude;
+			}
+			if(coordinate.longitude > maxLon)
+			{
+				maxLon = coordinate.longitude;
+			}
+			
+		}
+		/*if (_mapView.stayCenteredOnUserLocation) {
+		 if ([_mapView.userLocation coordinate].latitude < minLat)
+		 minLat = [_mapView.userLocation coordinate].latitude;
+		 if ([_mapView.userLocation coordinate].latitude > maxLat)
+		 maxLat = [_mapView.userLocation coordinate].latitude;
+		 if ([_mapView.userLocation coordinate].longitude < minLon)
+		 minLon = [_mapView.userLocation coordinate].longitude;
+		 if ([_mapView.userLocation coordinate].longitude > maxLon)
+		 maxLon = [_mapView.userLocation coordinate].longitude;
+		 }*/
+		
+		CLLocationCoordinate2D center;
+		center.latitude = minLat + (maxLat - minLat) / 2;
+		center.longitude = minLon + (maxLon - minLon) / 2;
+		
+		// create the span and region with a little padding
+		double latDelta = maxLat - minLat;
+		double lonDelta = maxLon - minLon;
+		
+		if (latDelta < .002) latDelta = .002;
+		if (lonDelta < .002) lonDelta = .002;
+		
+		MKCoordinateRegion region = MKCoordinateRegionMake(center, 	MKCoordinateSpanMake(latDelta + latDelta / 4 , lonDelta + lonDelta / 4));
+		
+		//_mapView.region = region;
+		
+		// turn off locate me
+		_geoButton.style = UIBarButtonItemStyleBordered;
+		_mapView.stayCenteredOnUserLocation = NO;
+		
+		[self saveRegion];
+		return region;
+	}
+	
+	else {
+		[self saveRegion];
+		return MKCoordinateRegionMake(DEFAULT_MAP_CENTER, DEFAULT_MAP_SPAN);
+	}
+
+}
+
 #pragma mark ShuttleDataManagerDelegate
 
 // message sent when routes were received. If request failed, this is called with a nil routes array
@@ -438,11 +486,11 @@
 
 -(void) setURLPathUserLocation {
 	NSMutableArray *components = [NSMutableArray arrayWithArray:[url.path componentsSeparatedByString:@"/"]];
-	if (_mapView.stayCenteredOnUserLocation && ![[components lastObject] isEqualToString:@"userLoc"]) {
+	if (_mapView.showsUserLocation && ![[components lastObject] isEqualToString:@"userLoc"]) {
 		[url setPath:[NSString stringWithFormat:@"%@/%@", url.path, @"userLoc"] query:_lastSearchText];
 		[url setAsModulePath];
 	}
-	if (!_mapView.stayCenteredOnUserLocation && [[components lastObject] isEqualToString:@"userLoc"]) {
+	if (!_mapView.showsUserLocation && [[components lastObject] isEqualToString:@"userLoc"]) {
 		[url setPath:[url.path stringByReplacingOccurrencesOfString:@"userLoc" withString:@""] query:_lastSearchText];
 		[url setAsModulePath];
 	}
@@ -474,40 +522,34 @@
 
 
 #pragma mark User actions
+
 -(void) geoLocationTouched:(id)sender
 {
-	//_mapVC.showsUserLocation = !_mapVC.showsUserLocation;
-	_mapView.stayCenteredOnUserLocation = !_mapView.stayCenteredOnUserLocation;
-	
-	_geoButton.style = _mapView.stayCenteredOnUserLocation ? UIBarButtonItemStyleDone : UIBarButtonItemStyleBordered;
-	
+    if (self.userLocation) {
+        CLLocationCoordinate2D center = self.userLocation.coordinate;
+        self.mapView.region = MKCoordinateRegionMake(center, DEFAULT_MAP_SPAN);
+    }
+    
+    else {
+        // messages to be shown when user taps locate me button off campus
+        NSString *message = nil;
+        if (arc4random() & 1) {
+            message = NSLocalizedString(@"Off Campus Warning 1", nil);
+        } else {
+            message = NSLocalizedString(@"Off Campus Warning 2", nil); 
+        }
+        
+        UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Off Campus", nil)
+                                                         message:message 
+                                                        delegate:nil
+                                               cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                               otherButtonTitles:nil] autorelease];
+        [alert show];
+        
+        self.mapView.showsUserLocation = NO; // turn off location updating
+    }
+    
 	[self setURLPathUserLocation];
-}
-
--(void) shuttleButtonTouched:(id)sender
-{
-	_displayShuttles = !_displayShuttles;
-	
-	_shuttleButton.style = _displayShuttles ? UIBarButtonItemStyleDone : UIBarButtonItemStyleBordered;
-	
-	if (_displayShuttles) 
-	{
-		// if we already have the shuttle information, just display it. If not, file a request. 
-		if (nil != [[ShuttleDataManager sharedDataManager] shuttleStops]) {
-			[self addAnnotationsForShuttleStops:[[ShuttleDataManager sharedDataManager] shuttleStops]];
-		}
-		else 
-		{
-			[[ShuttleDataManager sharedDataManager] requestStops];
-		}
-
-	}
-	else {
-		[_mapView removeAnnotations:_shuttleAnnotations];
-		[_shuttleAnnotations release];
-		_shuttleAnnotations = nil;
-	}
-
 }
 
 -(void) showListView:(BOOL)showList
@@ -615,10 +657,6 @@
 
 -(void) receivedNewSearchResults:(NSArray*)searchResults forQuery:(NSString *)searchQuery
 {
-	// clear the map view's annotations, and add new ones for these search results
-	//[_mapView removeAnnotations:_searchResults];
-	//[_searchResults release];
-	//_searchResults = nil;
 	
 	NSMutableArray* searchResultsArr = [NSMutableArray arrayWithCapacity:searchResults.count];
 	
@@ -635,30 +673,7 @@
 	NSString* searchResultsFilename = [docsFolder stringByAppendingPathComponent:@"searchResults.plist"];
 	[searchResults writeToFile:searchResultsFilename atomically:YES];
 	[[NSUserDefaults standardUserDefaults] setObject:searchQuery forKey:CachedMapSearchQueryKey];
-	
-	/*
-	// if we have 2 view controllers, push a new search results controller onto the stack
-	if (self.navigationController.viewControllers.count == 2) {
-		MITMapSearchResultsVC* searchResultsVC = [[[MITMapSearchResultsVC alloc] initWithNibName:@"MITMapSearchResultsVC"
-																												bundle:nil] autorelease];
-		searchResultsVC.view;
-		searchResultsVC.navigationItem.rightBarButtonItem = self.navigationItem.rightBarButtonItem;
-		searchResultsVC.title = @"Campus Map";
-		searchResultsVC.searchResults = self.searchResults;
-		searchResultsVC.navigationItem.hidesBackButton = YES;
-		
-		searchResultsVC.campusMapVC = self;
-				
-		[self.navigationController pushViewController:searchResultsVC animated:YES];
-	}
-	
-	// if we have 3 view controllers, update the search results in the search results view controller. 
-	if (self.navigationController.viewControllers.count == 3) {
-		MITMapSearchResultsVC* searchResultsVC = (MITMapSearchResultsVC*)[self.navigationController.viewControllers objectAtIndex:2];
-		searchResultsVC.searchResults = self.searchResults;
-	}
-	 */
-	
+
 }
 
 
@@ -806,58 +821,20 @@
 	//[self presentModalViewController:navController animated:YES];
 }
 
-#pragma mark MITMapViewControllerDelegate
+#pragma mark MITMapViewDelegate
+
 -(void) mapViewRegionDidChange:(MITMapView*)mapView
 {
-	_geoButton.style = _mapView.stayCenteredOnUserLocation ? UIBarButtonItemStyleDone : UIBarButtonItemStyleBordered;
-	
 	[self setURLPathUserLocation];
 	
 	[self saveRegion];
-
-		/*
-	MKCoordinateRegion region =  mapView.region;
-	
-	// save the region
-
-	NSNumber* centerLat = [NSNumber numberWithDouble:region.center.latitude];
-	NSNumber* centerLon = [NSNumber numberWithDouble:region.center.longitude];
-	NSNumber* latDelta = [NSNumber numberWithDouble:region.span.latitudeDelta];
-	NSNumber* lonDelta = [NSNumber numberWithDouble:region.span.longitudeDelta];
-
-	NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-	
-	[standardDefaults setValue:centerLat forKey:@"mapCenterLat"];
-	[standardDefaults setValue:centerLon forKey:@"mapCenterLon"];
-	[standardDefaults setValue:latDelta  forKey:@"mapLatDelta"];
-	[standardDefaults setValue:lonDelta  forKey:@"mapLonDelta"];
-	*/
 }
 
 - (void)mapViewRegionWillChange:(MITMapView*)mapView
 {
-	_geoButton.style = _mapView.stayCenteredOnUserLocation ? UIBarButtonItemStyleDone : UIBarButtonItemStyleBordered;
+	//_geoButton.style = _mapView.stayCenteredOnUserLocation ? UIBarButtonItemStyleDone : UIBarButtonItemStyleBordered;
 	
 	[self setURLPathUserLocation];
-}
-
-- (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
-{
-	MITMapAnnotationView* annotationView = nil;
-	
-	if ([annotation isKindOfClass:[ShuttleStopMapAnnotation class]]) 
-	{
-		annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation] autorelease];
-		UIImage* pin = [UIImage imageNamed:@"map_pin_shuttle_stop_complete.png"];
-		UIImageView* imageView = [[[UIImageView alloc] initWithImage:pin] autorelease];
-		annotationView.frame = imageView.frame;
-		annotationView.canShowCallout = YES;
-		[annotationView addSubview:imageView];
-		annotationView.backgroundColor = [UIColor clearColor];
-		annotationView.layer.anchorPoint = CGPointMake(0.5, 1.0);
-	}
-	
-	return annotationView;
 }
 
 -(void) pushAnnotationDetails:(id <MKAnnotation>) annotation animated:(BOOL)animated
@@ -906,7 +883,7 @@
 }
 
 // a callout accessory control was tapped. 
-- (void)mapView:(MITMapView *)mapView annotationViewcalloutAccessoryTapped:(MITMapAnnotationCalloutView *)view 
+- (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view 
 {
 	[self pushAnnotationDetails:view.annotation animated:YES];
 }
@@ -916,7 +893,7 @@
 	[_searchBar resignFirstResponder];
 }
 
-- (void) annotationSelected:(id<MKAnnotation>)annotation {
+- (void)mapView:(MITMapView *)mapView annotationSelected:(id<MKAnnotation>)annotation {
 	if([annotation isKindOfClass:[MITMapSearchResultAnnotation class]])
 	{
 		MITMapSearchResultAnnotation* searchAnnotation = (MITMapSearchResultAnnotation*)annotation;
@@ -929,10 +906,13 @@
 		[url setPath:[NSString stringWithFormat:@"search/%@", searchAnnotation.uniqueID] query:_lastSearchText];
 		[url setAsModulePath];
 		[self setURLPathUserLocation];
+		
+		/*MITMapCustomCallOut * customCallOutAnnotation = [[[MITMapCustomCallOut alloc] initWithSourceAnnotation:annotation] autorelease];
+		[self.mapView addAnnotation:customCallOutAnnotation];*/
 	}
 }
 
--(void) locateUserFailed
+-(void) locateUserFailed:(MITMapView *)mapView
 {
 	if (_mapView.stayCenteredOnUserLocation) 
 	{
@@ -940,7 +920,15 @@
 	}	
 }
 
+- (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)userLocation {
+
+    if ([userLocation isNearCampus]) {
+        self.userLocation = userLocation;
+    }
+}
+
 #pragma mark JSONLoadedDelegate
+
 - (void) request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject
 {	
 	NSArray *searchResults = JSONObject;

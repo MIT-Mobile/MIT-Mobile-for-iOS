@@ -18,7 +18,7 @@
  */
 - (void)setEvents:(NSArray *)events
 {
-    [self removeAnnotations:[self annotations]];
+    [self removeAllAnnotations:YES];
     
     [_events release];
 	_events = [events retain];
@@ -34,7 +34,7 @@
             if ([event hasCoords]) {
                 CalendarEventMapAnnotation *annotation = [[[CalendarEventMapAnnotation alloc] initWithEvent:event] autorelease];
                 [self addAnnotation:annotation];
-                
+				
                 double eventLat = [event.latitude doubleValue];
                 double eventLon = [event.longitude doubleValue];
                 if (eventLat < minLat) {
@@ -65,7 +65,12 @@
         MKCoordinateSpan span = MKCoordinateSpanMake(latDelta + latDelta / 4, lonDelta + lonDelta / 4);
         
         [self setRegion:MKCoordinateRegionMake(center, span)];
+
+    } else {
+        
+        [self setRegion:MKCoordinateRegionMake(DEFAULT_MAP_CENTER, DEFAULT_MAP_SPAN)];
     }
+    
 }
 
 - (void)dealloc {

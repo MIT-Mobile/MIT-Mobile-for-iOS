@@ -15,7 +15,7 @@
 	
 	BOOL _isCategory;
 	
-	IBOutlet TouchableTableView* _tableView;
+	IBOutlet UITableView* _tableView;
 
 }
 

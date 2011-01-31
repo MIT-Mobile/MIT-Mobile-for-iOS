@@ -1,9 +1,15 @@
-MIT\ Mobile.xcodeproj/*.mode1v3
-MIT\ Mobile.xcodeproj/*.pbxuser
-MIT\ Mobile.xcodeproj/*.perspectivev3
-build
-Facebook\ Connect/build
-Facebook\ Connect/FBConnect.xcodeproj/*.mode1v3
-Facebook\ Connect/FBConnect.xcodeproj/*.pbxuser
-Facebook\ Connect/FBConnect.xcodeproj/*.perspectivev3
+build/
+.DS_Store
+*~.nib
+*.mode1v3
+*.mode2v3
+*.pbxuser
+*.perspective
+*.perspectivev3
+*/xcuserdata/*
+*/project.xcworkspace/xcuserdata/*
+
 Common/MITBuildInfo.m
+Common/Secret.m
+
+Resources/mit150/*.mp4

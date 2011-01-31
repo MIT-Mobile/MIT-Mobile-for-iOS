@@ -38,20 +38,19 @@
 {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	
-	NSError* error;
-	[[NSFileManager defaultManager] createDirectoryAtPath:self.path
-							  withIntermediateDirectories:YES
-											   attributes:nil
-													error:&error];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:self.path]) {
+        NSError* error = nil;
+        [[NSFileManager defaultManager] createDirectoryAtPath:self.path
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&error];
+    }
 	
-	
-	NSString* fullPath = [self.path stringByAppendingPathComponent:self.filename];
-	if([self.dataToSave writeToFile:fullPath atomically:YES])
+	NSString *fullPath = [self.path stringByAppendingPathComponent:self.filename];
+	if ([self.dataToSave writeToFile:fullPath atomically:YES])
 	{
 		[self.delegate saveOperationCompleteForFile:fullPath withUserData:self.userData];
 	}
-	
-	
 	[pool release];
 }
 

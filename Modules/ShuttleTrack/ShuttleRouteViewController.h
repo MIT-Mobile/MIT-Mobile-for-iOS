@@ -57,4 +57,5 @@
 //@property (nonatomic, retain) ShuttleRoute* routeInfo;
 @property (nonatomic, retain) UITableView* tableView;
 @property (nonatomic, retain) RouteMapViewController* routeMapViewController;
+
 @end

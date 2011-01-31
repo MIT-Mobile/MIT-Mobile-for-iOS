@@ -5,8 +5,7 @@
 #import "StellarCourseGroup.h"
 #import "StellarModel.h"
 #import "StellarSearch.h"
-#import "UITableView+MITUIAdditions.h"
-#import "UITableViewCell+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 #import "MITConstants.h"
 #import "MITUIConstants.h"
 #import "MITLoadingActivityView.h"
@@ -44,6 +43,8 @@
 
 - (void) viewDidLoad {
 	[super viewDidLoad];
+    self.title = @"MIT Stellar";
+    
 	self.mainTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, searchBarHeight, self.view.frame.size.width, self.view.frame.size.height-searchBarHeight) style:UITableViewStyleGrouped];
 	self.mainTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	self.mainTableView.delegate = self;
@@ -69,6 +70,7 @@
 	
 	searchBar.placeholder = @"Search by keyword or subject #";
     searchController = [[MITSearchDisplayController alloc] initWithSearchBar:searchBar contentsController:self];
+    searchController.delegate = stellarSearch;
     searchController.searchResultsTableView = searchResultsTableView;
 	 
 	self.loadingView = nil;
@@ -209,7 +211,7 @@
 			
 		// check if the class has an unread notice
 		if([MITUnreadNotifications hasUnreadNotification:[[[MITNotification alloc] initWithModuleName:StellarTag noticeId:myStellarClass.masterSubjectId] autorelease]]) {
-			cell.imageView.image = [UIImage imageNamed:@"unread-message.png"];
+			cell.imageView.image = [UIImage imageNamed:@"global/unread-message.png"];
 		} else {
 			cell.imageView.image = nil;
 		}

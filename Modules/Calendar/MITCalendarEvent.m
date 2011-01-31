@@ -18,7 +18,7 @@
 @dynamic url;
 @dynamic categories;
 @dynamic lastUpdated;
-@dynamic isRegular;
+@dynamic lists;
 
 - (NSString *)subtitle
 {
@@ -29,6 +29,14 @@
 	} else {
 		return dateString;
 	}	
+}
+
+- (BOOL)hasMoreDetails {
+	MITEventList *aList = [self.lists anyObject];
+	if (aList) {
+		return [[CalendarDataManager sharedManager] isDailyEvent:aList];
+	}
+	return YES; // if we have no idea what the source is, then always try to get more details
 }
 
 - (NSString *)dateStringWithDateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle separator:(NSString *)separator {
@@ -50,21 +58,32 @@
 	if (timeStyle != NSDateFormatterNoStyle) {
 		[formatter setTimeStyle:timeStyle];
 		NSString *timeString = nil;
-	
-		NSCalendar *calendar = [NSCalendar currentCalendar];
-		NSDateComponents *startComps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.start];
-		NSDateComponents *endComps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.end];
-	
-		NSTimeInterval interval = [self.end timeIntervalSinceDate:self.start];
-		if (startComps.hour == 0 && startComps.minute == 0 && endComps.hour == 0 && endComps.minute == 0) {
-			timeString = [NSString string];
-		} else if (interval == 0) {
-			timeString = [formatter stringFromDate:self.start];
-		} else if (interval == 86340.0) { // seconds between 12:00am and 11:59pm
-			timeString = [NSString stringWithString:@"All day"];
-		} else {
-			timeString = [NSString stringWithFormat:@"%@-%@", [formatter stringFromDate:self.start], [formatter stringFromDate:self.end]];
-		}
+        
+        if (self.end) {
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            NSDateComponents *startComps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.start];
+            NSDateComponents *endComps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.end];
+            NSTimeInterval interval = [self.end timeIntervalSinceDate:self.start];
+            // only a date with no time -> no time displayed
+            if (startComps.hour == 0 && startComps.minute == 0 && endComps.hour == 0 && endComps.minute == 0) {
+                timeString = [NSString string];
+                // identical start and end times -> just start time displayed
+            } else if (interval == 0 ||
+                       // starts at the same time every day -> just start time displayed
+                       // TODO: account for daylight savings time boundaries
+                       fmod(interval, 24 * 60 * 60) == 0) {
+                timeString = [formatter stringFromDate:self.start];
+                // ?
+            } else if (interval == 86340.0) { // seconds between 12:00am and 11:59pm
+                timeString = [NSString stringWithString:@"All day"];
+                // fallback to showing time range
+            } else {
+                timeString = [NSString stringWithFormat:@"%@-%@", [formatter stringFromDate:self.start], [formatter stringFromDate:self.end]];
+            }
+        } else {
+            timeString = [formatter stringFromDate:self.start];
+        }
 		
 		[parts addObject:timeString];
 	}
@@ -84,7 +103,10 @@
 	self.eventID = [NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]];
 
 	self.start = [NSDate dateWithTimeIntervalSince1970:[[dict objectForKey:@"start"] doubleValue]];
-	self.end = [NSDate dateWithTimeIntervalSince1970:[[dict objectForKey:@"end"] doubleValue]];
+    double endTime = [[dict objectForKey:@"end"] doubleValue];
+    if (endTime) {
+        self.end = [NSDate dateWithTimeIntervalSince1970:endTime];
+    }
 	self.summary = [dict objectForKey:@"description"];
 	self.title = [dict objectForKey:@"title"];
 
@@ -122,33 +144,17 @@
             if (category.title == nil) {
                 category.title = name;
             }
-            [self addCategory:category];
-			// TODO: also remove events from categories if they changed
+			[self addCategoriesObject:category];
 		}
 	}
     
     self.lastUpdated = [NSDate date];
 	[CoreDataManager saveData];
 }
-
-- (void)addCategory:(EventCategory *)category
-{
-    if (![self.categories containsObject:category]) {
-        [self addCategoriesObject:category];
-        
-        NSInteger catID = [category.catID intValue];
-        if (catID == kCalendarAcademicCategoryID || catID == kCalendarHolidayCategoryID) {
-            
-            self.isRegular = [NSNumber numberWithBool:NO];
-        }
-        
-        [CoreDataManager saveData];
-    }
-}
-
+/*
 - (NSString *)description
 {
     return self.title;
 }
-
+*/
 @end

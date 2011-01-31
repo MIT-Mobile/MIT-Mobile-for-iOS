@@ -4,12 +4,15 @@
 #import "CoreDataManager.h"
 #import "MITMobileWebAPI.h"
 #import "Foundation+MITAdditions.h"
+#import "EmergencyModule.h"
 
 @implementation EmergencyData
 
 @synthesize primaryPhoneNumbers, allPhoneNumbers, infoConnection, contactsConnection;
 
 @dynamic htmlString, lastUpdated, lastFetched;
+
+NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 
 #pragma mark -
 #pragma mark Singleton Boilerplate
@@ -102,6 +105,26 @@ static EmergencyData *sharedEmergencyData = nil;
 
 #pragma mark -
 #pragma mark Accessors
+
+- (BOOL) didReadMessage {
+    NSDate *lastUpdate = [self lastUpdated];
+    NSDate *lastRead = [self lastRead];
+#ifdef USE_MOBILE_DEV
+    NSTimeInterval timeout = 60 * 30;
+#else
+    NSTimeInterval timeout = 24 * 60 * 60 * 7;
+#endif
+    // return YES if this is a first install, lastUpdate is over a week old, or user has read the message since lastUpdate
+    return ([self hasNeverLoaded] || -[lastUpdate timeIntervalSinceNow] > timeout || [lastRead timeIntervalSinceDate:lastUpdate] > 0);
+}
+
+- (NSDate *)lastRead {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:EmergencyMessageLastRead];
+}
+
+- (void)setLastRead:(NSDate *)date {
+    [[NSUserDefaults standardUserDefaults] setObject:date forKey:EmergencyMessageLastRead];
+}
 
 - (BOOL) hasNeverLoaded {
 	return ([[info valueForKey:@"htmlString"] length] == 0);
@@ -208,6 +231,10 @@ static EmergencyData *sharedEmergencyData = nil;
             NSDate *lastUpdated = [NSDate dateWithTimeIntervalSince1970:[[response objectForKey:@"unixtime"] doubleValue]];
             NSDate *previouslyUpdated = [info valueForKey:@"lastUpdated"];
             
+            if (!previouslyUpdated) { // user has never opened the app, set a baseline date
+                [self setLastRead:[NSDate date]];
+            }
+            
             if (!previouslyUpdated || [lastUpdated timeIntervalSinceDate:previouslyUpdated] > 0) {
                 [info setValue:lastUpdated forKey:@"lastUpdated"];
                 [info setValue:[NSDate date] forKey:@"lastFetched"];
@@ -216,7 +243,8 @@ static EmergencyData *sharedEmergencyData = nil;
                 
                 [self fetchEmergencyInfo];
                 // notify listeners that this is a new emergency
-                [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:self];
+                
+                //[[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:self];
             }
             // notify listeners that the info is done loading, regardless of whether it's changed
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidLoadNotification object:self];

@@ -8,7 +8,7 @@
 #pragma mark Basics
 - (NSMutableArray *)createModules;
 - (MITModule *)moduleForTabBarItem:(UITabBarItem *)item;
-- (MITModule *)moduleForViewController:(UIViewController *)aViewController;
+//- (MITModule *)moduleForViewController:(UIViewController *)aViewController;
 - (MITModule *)moduleForTag:(NSString *)aTag;
 
 - (void)showModuleForTag:(NSString *)tag;

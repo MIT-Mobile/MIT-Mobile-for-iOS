@@ -1,6 +1,5 @@
 #import <UIKit/UIKit.h>
 #import "FBConnect.h"
-#import <MessageUI/MFMailComposeViewController.h>
 
 @protocol ShareItemDelegate
 
@@ -25,7 +24,7 @@
 @end
 
 
-@interface ShareDetailViewController : UIViewController <UIActionSheetDelegate, MFMailComposeViewControllerDelegate, FBSessionDelegate, FBDialogDelegate> {
+@interface ShareDetailViewController : UIViewController <UIActionSheetDelegate, FBSessionDelegate, FBDialogDelegate> {
 
 	FBSession *fbSession;
 	id<ShareItemDelegate> shareDelegate;
@@ -35,7 +34,6 @@
 @property (nonatomic, retain) FBSession *fbSession;
 @property (nonatomic, retain) id<ShareItemDelegate> shareDelegate;
 
-- (void)sendEmailWithSubject:(NSString *)emailSubject body:(NSString *)emailBody;
 - (void)share:(id)sender;
 - (void)showTwitterView;
 - (void)showFacebookDialog;

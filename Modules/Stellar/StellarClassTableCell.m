@@ -1,5 +1,5 @@
 #import "StellarClassTableCell.h"
-#import "UITableViewCell+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 
 
 @implementation StellarClassTableCell

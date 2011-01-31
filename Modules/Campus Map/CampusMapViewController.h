@@ -7,6 +7,8 @@
 #import "MITModuleURL.h"
 #import "CMModule.h"
 
+
+
 //@class MITMapSearchResultsTable;
 @class MITMapSearchResultsVC;
 @class MapSelectionController;
@@ -68,12 +70,15 @@
 	
 	// these are used for saving state
 	MITModuleURL* url;
+    
+    CLLocation *_userLocation;
 }
 
 @property (nonatomic, retain) UIBarButtonItem* geoButton;
 @property (nonatomic, retain) NSArray* searchResults;
 @property (nonatomic, assign) CMModule* campusMapModule;
 
+@property (nonatomic, retain) CLLocation *userLocation;
 @property (readonly) MITMapView* mapView;
 @property (nonatomic, retain) NSString* lastSearchText;
 @property BOOL hasSearchResults;

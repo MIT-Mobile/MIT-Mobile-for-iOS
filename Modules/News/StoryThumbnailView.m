@@ -15,7 +15,7 @@
 @synthesize imageRep, connection, imageData, loadingView, imageView;
 
 + (UIImage *)placeholderImage {
-    static NSString * const placeholderImageName = @"news-placeholder.png";
+    static NSString * const placeholderImageName = @"news/news-placeholder.png";
     static UIImage *placeholderImage = nil;
     if (!placeholderImage) {
         placeholderImage = [[UIImage imageNamed:placeholderImageName] retain];

@@ -21,22 +21,31 @@
         self.longName = @"MIT Stellar";
         self.iconName = @"stellar";
         self.pushNotificationSupported = YES;
+        
+        //moduleHomeController.title = self.longName;
 		
-		StellarMainTableController *stellarMainTableController = [[[StellarMainTableController alloc] init] autorelease];
-		stellarMainTableController.navigationItem.title = @"MIT Stellar";
-        [self.tabNavController setViewControllers:[NSArray arrayWithObject:stellarMainTableController]];
+		//StellarMainTableController *stellarMainTableController = [[[StellarMainTableController alloc] init] autorelease];
+		//stellarMainTableController.navigationItem.title = @"MIT Stellar";
+        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:stellarMainTableController]];
     }
     return self;
 }
 
+- (UIViewController *)moduleHomeController {
+    if (!moduleHomeController) {
+        moduleHomeController = [[StellarMainTableController alloc] init];
+    }
+    return moduleHomeController;
+}
 
-- (BOOL)handleNotification:(MITNotification *)notification appDelegate: (MIT_MobileAppDelegate *)appDelegate shouldOpen: (BOOL)shouldOpen {
+
+- (BOOL)handleNotification:(MITNotification *)notification shouldOpen: (BOOL)shouldOpen {
 	[[NSNotificationCenter defaultCenter] postNotificationName:MyStellarAlertNotification object:nil];
 	
 	if(shouldOpen) {		
 		// mark Launch as begun so we dont handle the path twice.
 		hasLaunchedBegun = YES;
-		[appDelegate showModuleForTag:self.tag];	
+		[(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showModuleForTag:self.tag];	
 		
 		[self handleLocalPath:[NSString stringWithFormat:@"class/%@/News", notification.noticeId] query:nil];
 

@@ -6,7 +6,7 @@
 
 @implementation MITModule
 
-@synthesize tag, shortName, longName, iconName, tabNavController, isMovableTab, canBecomeDefault, pushNotificationSupported, pushNotificationEnabled;
+@synthesize tag, shortName, longName, iconName, tabNavController, isMovableTab, canBecomeDefault, pushNotificationSupported, pushNotificationEnabled, springboardButton;
 @synthesize hasLaunchedBegun, currentPath, currentQuery;
 @dynamic badgeValue, icon, tabBarIcon;
 
@@ -38,26 +38,75 @@
 		
         self.pushNotificationSupported = NO;
         // self.pushNotificationEnabled is set in applicationDidFinishLaunching, because that's when the tag is set
-
-        // Give it a throwaway view controller because it cannot start with nothing.
-        UIViewController *dummyVC = [[UIViewController alloc] initWithNibName:nil bundle:nil];
-        dummyVC.navigationItem.title = @"Placeholder";
-        tabNavController = [[UINavigationController alloc] initWithRootViewController:dummyVC];
-		
-        // Custom tab bar item supports having a different icon in the tab bar and the More list
-        MITTabBarItem *item = [[MITTabBarItem alloc] initWithTitle:self.shortName image:self.tabBarIcon tag:0];
-        tabNavController.tabBarItem = item;
-        [item release];
         
-		tabNavController.navigationBar.opaque = NO;
-        tabNavController.navigationBar.barStyle = UIBarStyleBlack;
-		
-		// set overall background
-		tabNavController.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];	
-        tabNavController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [dummyVC release];
+        tabNavController = nil;
+        /*
+        MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+        if ([appDelegate usesTabBar]) {
+            
+            // Give it a throwaway view controller because it cannot start with nothing.
+            UIViewController *dummyVC = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+            dummyVC.navigationItem.title = @"Placeholder";
+            tabNavController = [[UINavigationController alloc] initWithRootViewController:dummyVC];
+            
+            // Custom tab bar item supports having a different icon in the tab bar and the More list
+            MITTabBarItem *item = [[MITTabBarItem alloc] initWithTitle:self.shortName image:self.tabBarIcon tag:0];
+            tabNavController.tabBarItem = item;
+            [item release];
+            
+            tabNavController.navigationBar.opaque = NO;
+            tabNavController.navigationBar.barStyle = UIBarStyleBlack;
+            
+            // set overall background
+            tabNavController.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];	
+            tabNavController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            [dummyVC release];
+            
+            UIViewController *homeController = [self moduleHomeController];
+            if (homeController) {
+                [tabNavController setViewControllers:[NSArray arrayWithObject:[self moduleHomeController]]];
+            }
+            
+        }
+        */
     }
     return self;
+}
+
+- (void)loadTabNavController {
+    if (!tabNavController) {
+		MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+        
+        // Give it a throwaway view controller because it cannot start with nothing.
+        UIViewController *dummyVC = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+        dummyVC.navigationItem.title = @"Placeholder";
+        tabNavController = [[UINavigationController alloc] initWithRootViewController:dummyVC];
+        
+        if ([appDelegate usesTabBar]) {
+            // Custom tab bar item supports having a different icon in the tab bar and the More list
+            MITTabBarItem *item = [[MITTabBarItem alloc] initWithTitle:self.shortName image:self.tabBarIcon tag:0];
+            tabNavController.tabBarItem = item;
+            [item release];
+            
+            tabNavController.navigationBar.opaque = NO;
+            tabNavController.navigationBar.barStyle = UIBarStyleBlack;
+            
+            // set overall background
+            tabNavController.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];	
+            tabNavController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        }
+        
+        UIViewController *homeController = [self moduleHomeController];
+        if (homeController) {
+            [tabNavController setViewControllers:[NSArray arrayWithObject:[self moduleHomeController]]];
+        }
+    }
+}
+
+- (UIViewController *)moduleHomeController {
+    // return view controller that serves as module's home screen
+    NSLog(@"home controller not defined for module %@", self.tag);
+    return nil;
 }
 
 #pragma mark -
@@ -90,6 +139,14 @@
     // Keep in mind -[MIT_MobileAppDelegate applicationWillTerminate] already writes NSUserDefaults to disk.
 }
 
+- (void)applicationDidEnterBackground {
+    // stop all url loading, video playing, animations etc.
+}
+
+- (void)applicationWillEnterForeground {
+    // resume interaction if needed.
+}
+
 - (void)didAppear {
     // Called whenever a module is made visible: tab tapped or entry tapped in More list.
     // If your module needs to do something whenever it appears and it doesn't make sense to do so in a view controller, override this.
@@ -105,7 +162,7 @@
 	self.currentQuery = @"";
 }
 
-- (BOOL)handleNotification:(MITNotification *)notification appDelegate: (MIT_MobileAppDelegate *)appDelegate shouldOpen: (BOOL)shouldOpen {
+- (BOOL)handleNotification:(MITNotification *)notification shouldOpen: (BOOL)shouldOpen {
 	//NSLog(@"%@ can not handle notification %@", NSStringFromClass([self class]), notification);
 	return NO;
 }
@@ -117,18 +174,35 @@
 #pragma mark Use, but don't override
 
 - (NSString *)badgeValue {
-    return self.tabNavController.tabBarItem.badgeValue;
+    if ([(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] usesTabBar]) {
+        return self.tabNavController.tabBarItem.badgeValue;
+    } else {
+        return self.springboardButton.badgeValue;
+    }
 }
 
 - (void)setBadgeValue:(NSString *)newBadgeValue {
-    self.tabNavController.tabBarItem.badgeValue = newBadgeValue;
+    if ([(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] usesTabBar]) {
+        self.tabNavController.tabBarItem.badgeValue = newBadgeValue;
+    } else {
+        self.springboardButton.badgeValue = newBadgeValue;
+    }
 }
 
 - (UIImage *)icon {
     UIImage *result = nil;
     if (self.iconName) {
-        NSString *iconPath = [NSString stringWithFormat:@"%@%@%@%@", [[NSBundle mainBundle] resourcePath], @"/icons/module-", self.iconName, @".png"];
-        result = [UIImage imageWithContentsOfFile:iconPath];
+        NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"icons/module-", self.iconName, @".png"];
+        result = [UIImage imageNamed:iconPath];
+    }
+    return result;
+}
+
+- (UIImage *)springboardIcon {
+    UIImage *result = nil;
+    if (self.iconName) {
+        NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"icons/home-", self.iconName, @".png"];
+        result = [UIImage imageNamed:iconPath];
     }
     return result;
 }
@@ -136,8 +210,8 @@
 - (UIImage *)tabBarIcon {
     UIImage *result = nil;
     if (self.iconName) {
-        NSString *iconPath = [NSString stringWithFormat:@"%@%@%@%@", [[NSBundle mainBundle] resourcePath], @"/icons/tab-", self.iconName, @".png"];
-        result = [UIImage imageWithContentsOfFile:iconPath];
+        NSString *iconPath = [NSString stringWithFormat:@"%@%@%@", @"/icons/tab-", self.iconName, @".png"];
+        result = [UIImage imageNamed:iconPath];
     }
     return result;
 }

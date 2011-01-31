@@ -12,3 +12,11 @@
 - (void)replaceOccurrencesOfStrings:(NSArray *)targets withStrings:(NSArray *)replacements options:(NSStringCompareOptions)options;
 
 @end
+
+@interface NSString (MITAdditions)
+
+- (NSInteger)lengthOfLineWithFont:(UIFont *)font constrainedToSize:(CGSize)size;
+
+- (NSString *)substringToMaxIndex:(NSUInteger)to;
+
+@end

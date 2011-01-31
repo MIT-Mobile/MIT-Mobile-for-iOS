@@ -1,5 +1,7 @@
 #import "UIKit+MITAdditions.h"
-
+#import "MITUIConstants.h"
+#import "MIT_MobileAppDelegate.h"
+#import "MITTabBarController.h"
 
 @implementation UIColor (MITAdditions)
 
@@ -87,4 +89,119 @@
     return [accessoryView autorelease];
 }
 
++ (UIImageView *)accessoryViewForInternalURL:(NSString *)url {
+	// we should really check for whether this url fits our internal scheme
+	NSArray *pathComponents = [url pathComponents];
+	if (pathComponents.count > 1) {
+		NSString *localPath = [pathComponents objectAtIndex:1];
+		if ([localPath isEqualToString:CampusMapTag]) {
+			return [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+		} else if ([localPath isEqualToString:DirectoryTag]) {
+			return [UIImageView accessoryViewWithMITType:MITAccessoryViewPeople];
+		} else if ([localPath isEqualToString:EmergencyTag]) {
+			return [UIImageView accessoryViewWithMITType:MITAccessoryViewEmergency];
+		}
+	}
+	return nil;
+}
+
 @end
+
+@implementation UIView (MITAdditions)
+
+- (void)removeAllSubviews {
+    for (UIView *aView in self.subviews) {
+        [aView removeFromSuperview];
+    }
+}
+
+@end
+
+@implementation UITableViewCell (MITAdditions)
+
+- (void)applyStandardFonts {
+	self.textLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+	self.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
+    
+	if (self.detailTextLabel != nil) {
+		self.detailTextLabel.font = [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE];
+		self.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
+	}
+}
+
+
+- (void)addAccessoryImage:(UIImage *)image {
+	UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+	self.accessoryView = imageView;
+	[imageView release];
+}
+
+@end
+
+@implementation UITableView (MITAdditions)
+
+- (void)applyStandardColors {
+	self.backgroundColor = [UIColor clearColor]; // allows background to show through
+	self.separatorColor = TABLE_SEPARATOR_COLOR;
+}
+
+- (void)applyStandardCellHeight {
+	self.rowHeight = CELL_TWO_LINE_HEIGHT;
+}
+
++ (UIView *)groupedSectionHeaderWithTitle:(NSString *)title {
+	UIFont *font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
+	CGSize size = [title sizeWithFont:font];
+	CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 8.0, appFrame.size.width - 20.0, size.height)];
+	
+	label.text = title;
+	label.textColor = GROUPED_SECTION_FONT_COLOR;
+	label.font = font;
+	label.backgroundColor = [UIColor clearColor];
+	
+	UIView *labelContainer = [[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, appFrame.size.width, GROUPED_SECTION_HEADER_HEIGHT)] autorelease];
+	labelContainer.backgroundColor = [UIColor clearColor];
+	
+	[labelContainer addSubview:label];
+	[label release];
+	
+	return labelContainer;
+}
+
++ (UIView *)ungroupedSectionHeaderWithTitle:(NSString *)title {
+	UIFont *font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
+	CGSize size = [title sizeWithFont:font];
+	CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, appFrame.size.width - 20.0, size.height)];
+	
+	label.text = title;
+	label.textColor = UNGROUPED_SECTION_FONT_COLOR;
+	label.font = font;
+	label.backgroundColor = [UIColor clearColor];
+	
+	UIView *labelContainer = [[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, appFrame.size.width, UNGROUPED_SECTION_HEADER_HEIGHT)] autorelease];
+	labelContainer.backgroundColor = UNGROUPED_SECTION_BACKGROUND_COLOR;
+	
+	[labelContainer addSubview:label];	
+	[label release];
+	
+	return labelContainer;
+}
+
+@end
+
+@implementation UIActionSheet (MITAdditions)
+
+- (void)showFromAppDelegate {
+    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[UIApplication sharedApplication].delegate;
+    if ([appDelegate usesTabBar]) {
+        [self showFromTabBar:appDelegate.tabBarController.tabBar];
+    } else {
+        [self showInView:appDelegate.normalNavController.view];
+    }
+}
+
+@end
+
+

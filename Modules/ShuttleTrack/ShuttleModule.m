@@ -15,10 +15,17 @@
         self.iconName = @"shuttle";
         self.pushNotificationSupported = YES;
 
-        ShuttleRoutes *theVC = [[[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
-        [self.tabNavController setViewControllers:[NSArray arrayWithObject:theVC]];
+        //ShuttleRoutes *theVC = [[[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:theVC]];
     }
     return self;
+}
+
+- (UIViewController *)moduleHomeController {
+    if (!moduleHomeController) {
+        moduleHomeController = [[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped];
+    }
+    return moduleHomeController;
 }
 
 - (void) didAppear {
@@ -36,13 +43,13 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:ShuttleAlertRemoved object:notification];
 }
 	
-- (BOOL) handleNotification:(MITNotification *)notification appDelegate: (MIT_MobileAppDelegate *)appDelegate shouldOpen: (BOOL)shouldOpen {
+- (BOOL) handleNotification:(MITNotification *)notification shouldOpen: (BOOL)shouldOpen {
 	// for now just open the module in response to a notification
 	[self removeSubscriptionByNotification:notification];
 	
 	if(shouldOpen) {
 		NSString *routeID = [[notification.noticeId componentsSeparatedByString:@":"] objectAtIndex:0];
-		[appDelegate showModuleForTag:self.tag];
+		[(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showModuleForTag:self.tag];
 		[self handleLocalPath:[NSString stringWithFormat:@"route-list/%@", routeID] query:nil];
 	}
 	

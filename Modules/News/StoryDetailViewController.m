@@ -60,7 +60,7 @@
 	[storyPager setEnabled:[self.newsController canSelectNextStory] forSegmentAtIndex:1];
 
 	NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-    NSURL *fileURL = [NSURL URLWithString:@"news_story_template.html" relativeToURL:baseURL];
+    NSURL *fileURL = [NSURL URLWithString:@"news/news_story_template.html" relativeToURL:baseURL];
     
     NSError *error = nil;
     NSMutableString *htmlString = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
@@ -140,7 +140,7 @@
 
 		if ([[url path] rangeOfString:[baseURL path] options:NSAnchoredSearch].location == NSNotFound) {
             [[UIApplication sharedApplication] openURL:url];
-            result = YES;
+            result = NO;
         } else {
 			if ([[url path] rangeOfString:@"image" options:NSBackwardsSearch].location != NSNotFound) {
 				StoryGalleryViewController *galleryVC = [[StoryGalleryViewController alloc] init];

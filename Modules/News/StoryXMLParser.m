@@ -53,6 +53,7 @@ NSString * const NewsTagBody            = @"body";
 NSString * const NewsTagImage           = @"image";
 NSString * const NewsTagOtherImages     = @"otherImages";
 NSString * const NewsTagThumbnailURL    = @"thumbURL";
+NSString * const NewsTagThumbnail2xURL  = @"thumb152";
 NSString * const NewsTagSmallURL        = @"smallURL";
 NSString * const NewsTagFullURL         = @"fullURL";
 NSString * const NewsTagImageCredits    = @"imageCredits";
@@ -60,6 +61,15 @@ NSString * const NewsTagImageCaption    = @"imageCaption";
 
 NSString * const NewsTagImageWidth      = @"width";
 NSString * const NewsTagImageHeight     = @"height";
+
+- (NSString *)newsTagThumbURL {
+    if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]
+        && [[UIScreen mainScreen] scale] == 2.0)
+    {
+        return NewsTagThumbnail2xURL;
+    }
+    return NewsTagThumbnailURL;
+}
 
 - (id) init
 {
@@ -246,7 +256,7 @@ NSString * const NewsTagImageHeight     = @"height";
     
     if (!imageWhitelist) {
         imageWhitelist = [[NSArray arrayWithObjects:
-                      NewsTagThumbnailURL,
+                      [self newsTagThumbURL],
                       NewsTagSmallURL,
                       NewsTagFullURL,
                       NewsTagImageCredits,
@@ -398,7 +408,7 @@ NSString * const NewsTagImageHeight     = @"height";
     if (imageDict) {
         NSString *credits = [imageDict objectForKey:NewsTagImageCredits];
         NSString *caption = [imageDict objectForKey:NewsTagImageCaption];
-        NSString *thumbURL = [imageDict objectForKey:NewsTagThumbnailURL];
+        NSString *thumbURL = [imageDict objectForKey:[self newsTagThumbURL]];
         NSString *smallURL = [imageDict objectForKey:NewsTagSmallURL];
         NSString *fullURL = [imageDict objectForKey:NewsTagFullURL];
         NSDictionary *smallSize = [imageDict objectForKey:@"smallSize"];

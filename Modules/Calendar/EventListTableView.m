@@ -71,7 +71,7 @@
     cell.textLabel.text = event.title;
 
 	// show time only if date is shown; date plus time otherwise
-	BOOL showTimeOnly = !isSearchResults && ([CalendarConstants intervalForEventType:self.parentViewController.activeEventList fromDate:self.parentViewController.startDate forward:YES] == 86400.0);
+	BOOL showTimeOnly = !isSearchResults && ([CalendarDataManager intervalForEventType:self.parentViewController.activeEventList fromDate:self.parentViewController.startDate forward:YES] == 86400.0);
     
     if (showTimeOnly) {
         cell.detailTextLabel.text = [event dateStringWithDateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterShortStyle separator:@" "];
@@ -139,6 +139,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
 	MITCalendarEvent *event = [self.events objectAtIndex:indexPath.row];
+	NSLog(@"%@", [event description]);
 		
 	CalendarDetailViewController *detailVC = [[CalendarDetailViewController alloc] initWithNibName:nil bundle:nil];//initWithStyle:UITableViewStylePlain];
 	detailVC.event = event;

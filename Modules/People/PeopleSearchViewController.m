@@ -33,12 +33,15 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+    self.title = @"People Directory";
+    
 	requestWasDispatched = NO;
 	
 	// set up search bar
 	theSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, NAVIGATION_BAR_HEIGHT)];
+    theSearchBar.tintColor = SEARCH_BAR_TINT_COLOR;
 	
-	theSearchBar.delegate = self;
+	//theSearchBar.delegate = self;
 	theSearchBar.placeholder = @"Search";
 	if ([self.searchTerms length] > 0)
 		theSearchBar.text = self.searchTerms;
@@ -94,9 +97,9 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 	[button setTitle:@"Clear Recents" forState:UIControlStateNormal];
 	
 	// based on code from stackoverflow.com/questions/1427818/iphone-sdk-creating-a-big-red-uibutton
-	[button setBackgroundImage:[[UIImage imageNamed:@"redbutton2.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
+	[button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
 					  forState:UIControlStateNormal];
-	[button setBackgroundImage:[[UIImage imageNamed:@"redbutton2highlighted.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
+	[button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2highlighted.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
 					  forState:UIControlStateHighlighted];
 	
 	[button addTarget:self action:@selector(showActionSheet) forControlEvents:UIControlEventTouchUpInside];	
@@ -113,7 +116,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 - (void)viewWillAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
-    if (![self.searchController active]) {
+    if (![self.searchController isActive]) {
         [self.tableView reloadData];
     } else {
         [searchResultsTableView deselectRowAtIndexPath:[searchResultsTableView indexPathForSelectedRow] animated:YES];
@@ -279,7 +282,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 		NSArray *detailAttribute = nil;
 		if ((detailAttribute = [searchResult objectForKey:@"title"]) != nil) {
 			cell.detailTextLabel.text = [detailAttribute objectAtIndex:0];
-		} else if ((detailAttribute = [searchResult objectForKey:@"title"]) != nil) {
+		} else if ((detailAttribute = [searchResult objectForKey:@"dept"]) != nil) {
 			cell.detailTextLabel.text = [detailAttribute objectAtIndex:0];
 		}
 		
@@ -377,6 +380,8 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 		detailView.personDetails = personDetails;
 		[self.navigationController pushViewController:detailView animated:YES];
 		[detailView release];
+        
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
 		
 	} else { // we are on home screen and user selected phone or emergency contacts
 		
@@ -444,9 +449,12 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 
 - (void)showActionSheet
 {
-	UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Clear Recents?" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Clear" otherButtonTitles:nil];
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[UIApplication sharedApplication].delegate;
-    [sheet showFromTabBar:appDelegate.tabBarController.tabBar];
+	UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Clear Recents?"
+                                                       delegate:self
+                                              cancelButtonTitle:@"Cancel"
+                                         destructiveButtonTitle:@"Clear"
+                                              otherButtonTitles:nil];
+    [sheet showFromAppDelegate];
     [sheet release];
 }
 

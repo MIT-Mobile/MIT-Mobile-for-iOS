@@ -4,7 +4,6 @@
 #import "SecondaryGroupedTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
-#import "UITableView+MITUIAdditions.h"
 #import "MITModuleList.h"
 
 @implementation ShuttleRoutes
@@ -57,9 +56,9 @@
 																@"16172532997", @"phoneNumber",
 					  @"(617.253.2997)", @"formattedPhoneNumber", nil, nil], nil] retain];
 	
-	_shuttleRunningImage = [[UIImage imageNamed:@"shuttle.png"] retain];
-	_shuttleNotRunningImage = [[UIImage imageNamed:@"shuttle-off.png"] retain];
-	_shuttleLoadingImage = [[UIImage imageNamed:@"shuttle-blank.png"] retain];
+	_shuttleRunningImage = [[UIImage imageNamed:@"shuttle/shuttle.png"] retain];
+	_shuttleNotRunningImage = [[UIImage imageNamed:@"shuttle/shuttle-off.png"] retain];
+	_shuttleLoadingImage = [[UIImage imageNamed:@"shuttle/shuttle-blank.png"] retain];
 	
     [self.tableView applyStandardColors];
 
@@ -99,7 +98,7 @@
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
-    //[super didReceiveMemoryWarning];
+    [super didReceiveMemoryWarning];
 	
 	// Release any cached data, images, etc that aren't in use.
 }

@@ -1,5 +1,12 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CLLocation.h>
+#import <MapKit/MapKit.h>
+#import "MITMobileWebAPI.h"
+
+// this file interacts with an arcgis rest server
+// only using the json metadata api and tiles
+// so no layer/query operstions or other api.
+
 
 // http://en.wikipedia.org/wiki/Mercator_projection
 
@@ -40,3 +47,95 @@
 - (CLLocationCoordinate2D)coordForPixelPoint:(CGPoint)pixelPoint zoomLevel:(NSInteger)zoomLevel;
 
 @end
+
+
+
+#define DEGREES_PER_RADIAN 180.0 / M_PI
+#define RADIANS_PER_DEGREE M_PI / 180.0
+
+#define DEFAULT_MAP_CENTER CLLocationCoordinate2DMake(42.35913,-71.09325)
+#define DEFAULT_MAP_SPAN MKCoordinateSpanMake(0.006, 0.006)
+
+@class MapZoomLevel;
+@class MITMapView;
+@class MapZoomLevel;
+
+// variation of MITProjection designed to work with MIT's ArcGIS server and MapKit
+@interface MITMKProjection : NSObject <JSONLoadedDelegate> {
+    
+    NSMutableArray *_observers;
+    
+    NSArray *_mapLevels;
+    
+    NSMutableDictionary *_serverInfo;
+    MapZoomLevel *_baseMapLevel;
+    CGFloat _maximumZoomScale;
+    CGFloat _minimumZoomScale;
+    
+    CGFloat _originX;
+    CGFloat _originY;
+    CGFloat _tileHeight;
+    CGFloat _tileWidth;
+    CGFloat _xMax;
+    CGFloat _xMin;
+    CGFloat _yMax;
+    CGFloat _yMin;
+    
+    MKCoordinateRegion _defaultRegion;
+    CGFloat _defaultXMin;
+    CGFloat _defaultXMax;
+    CGFloat _defaultYMin;
+    CGFloat _defaultYMax;
+    
+    MKMapRect _mapRectForFullExtent;
+    
+    // earth measurements (for mercator projections)
+    CGFloat _pixelsPerProjectedUnit;
+    CGFloat _circumferenceInProjectedUnits;
+    CGFloat _radiusInProjectedUnits;
+    CGFloat _meridianLengthInProjectedUnits;
+    BOOL _isWebMercator;
+    
+    long long _mapTimestamp;
+}
+
++ (MITMKProjection *)sharedProjection;
+
+// TODO: rename this method to something more appropriate
+- (void)addObserver:(MITMapView *)observer;
+
+- (CGFloat)maximumZoomScale;
+- (CGFloat)minimumZoomScale;
+
+- (NSArray *)mapLevels;
+- (CGFloat)tileWidth;
+- (CGFloat)tileHeight;
+
+- (CGFloat)originX;
+- (CGFloat)originY;
+
+- (CLLocationCoordinate2D)northWestBoundary;
+- (CLLocationCoordinate2D)southEastBoundary;
+
+- (CGFloat)circumferenceInProjectedUnits;
+- (CGFloat)meridianLengthInProjectedUnits;
+
+- (MKCoordinateRegion)defaultRegion;
+- (MKMapRect)mapRectForFullExtent;
+
+- (MapZoomLevel *)rootMapLevel;
+- (MapZoomLevel *)highestMapLevel;
+
+- (CGFloat)pixelsPerProjectedUnit;
+- (CGPoint)projectedPointForMapPoint:(MKMapPoint)mapPoint;
+- (MKMapPoint)mapPointForProjectedPoint:(CGPoint)point;
+
+- (CGPoint)projectedPointForCoord:(CLLocationCoordinate2D)coord error:(NSError **)error;
+- (CLLocationCoordinate2D)coordForProjectedPoint:(CGPoint)point error:(NSError **)error;
+
++ (NSString *)serverInfoFilename;
++ (NSString *)mapTimestampFilename;
++ (NSString *)tileCachePath;
+
+@end
+

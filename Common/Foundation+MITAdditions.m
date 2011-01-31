@@ -31,3 +31,34 @@
 }
 
 @end
+
+@implementation NSString (MITAdditions)
+
+- (NSInteger)lengthOfLineWithFont:(UIFont *)font constrainedToSize:(CGSize)size {
+    NSMutableString *mutableString = [NSMutableString string];
+    NSArray *lines = [self componentsSeparatedByString:@"\n"];
+    if (lines.count > 0) {
+        NSString *line = [lines objectAtIndex:0];
+        NSArray *words = [line componentsSeparatedByString:@" "];
+        NSInteger count = words.count;
+        if (count > 0) {
+            NSInteger index = 0;
+            [mutableString appendString:[words objectAtIndex:index]];
+            CGSize fullSize = [mutableString sizeWithFont:font];
+            index++;
+            while (index < count && fullSize.width < size.width) {
+                [mutableString appendString:[NSString stringWithFormat:@" %@", [words objectAtIndex:index]]];
+                fullSize = [mutableString sizeWithFont:font];
+                index++;
+            }
+        }
+    }
+    return [mutableString length];
+}
+
+- (NSString *)substringToMaxIndex:(NSUInteger)to {
+	NSUInteger maxLength = [self length] - 1;
+	return [self substringToIndex:(to > maxLength) ? maxLength : to];
+}
+
+@end

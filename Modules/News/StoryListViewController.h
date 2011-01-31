@@ -1,5 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "StoryXMLParser.h"
+#import "MITSearchDisplayController.h"
+#import "NavScrollerView.h"
 
 typedef enum {
     NewsCategoryIdTopNews = 0,
@@ -11,10 +13,9 @@ typedef enum {
     NewsCategoryIdCampus = 99
 } NewsCategoryId;
 
-@class MITSearchEffects;
 @class NewsStory;
 
-@interface StoryListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, StoryXMLParserDelegate> {
+@interface StoryListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, MITSearchDisplayDelegate, StoryXMLParserDelegate, NavScrollerDelegate> {
 	UITableView *storyTable;
     NSArray *stories;
     NSArray *categories;
@@ -24,16 +25,17 @@ typedef enum {
     NSArray *navButtons;
     
 	// Nav Scroll View
-	UIScrollView *navScrollView;
-	UIButton *leftScrollButton;
-	UIButton *rightScrollButton;  
+    NavScrollerView *navScrollView;
+	//UIScrollView *navScrollView;
+	//UIButton *leftScrollButton;
+	//UIButton *rightScrollButton;  
 
 	// Search bits
 	NSString *searchQuery;
 	NSArray *searchResults;
 	NSInteger searchTotalAvailableResults;
 	UISearchBar *theSearchBar;
-	MITSearchEffects *searchOverlay;
+    MITSearchDisplayController *searchController;
 	
 	BOOL hasBookmarks;
 	BOOL showingBookmarks;

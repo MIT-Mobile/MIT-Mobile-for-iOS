@@ -7,7 +7,6 @@
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "TabScrollerBackgroundView.h"
-#import "MITSearchEffects.h"
 #import "MITUIConstants.h"
 #import "MITMobileWebAPI.h"
 
@@ -32,7 +31,7 @@
 
 - (void)setupNavScroller;
 - (void)setupNavScrollButtons;
-- (void)sideButtonPressed:(id)sender;
+//- (void)sideButtonPressed:(id)sender;
 - (void)buttonPressed:(id)sender;
 
 - (void)setupActivityIndicator;
@@ -41,11 +40,12 @@
 - (void)setProgress:(CGFloat)value;
 
 - (void)showSearchBar;
-- (void)focusSearchBar;
-- (void)unfocusSearchBar;
+//- (void)focusSearchBar;
+//- (void)unfocusSearchBar;
 - (void)hideSearchBar;
-- (void)showSearchOverlay;
-- (void)hideSearchOverlay;
+//- (void)showSearchOverlay;
+//- (void)hideSearchOverlay;
+- (void)releaseSearchBar;
 
 @end
 
@@ -211,6 +211,10 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     categories = nil;
     [xmlParser release];
     xmlParser = nil;
+    [theSearchBar release];
+    theSearchBar = nil;
+    [searchController release];
+    searchController = nil;
     [super dealloc];
 }
 
@@ -269,7 +273,9 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
 - (void)setupNavScroller {
     // Nav Scroller View
-
+    navScrollView = [[NavScrollerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44.0)];
+    navScrollView.navScrollerDelegate = self;
+    /*
     // load scroller's background first to find its height
     UIImage *backgroundImage = [UIImage imageNamed:MITImageNameScrollTabBackgroundOpaque];
    
@@ -282,9 +288,9 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 	navScrollView.tag = 1000; // make sure it doesn't overlap with any of the buttons
 
 	[navScrollView setBackgroundColor:[UIColor colorWithPatternImage:backgroundImage]];
-
+    */
 	[self.view addSubview:navScrollView];
-    
+    /*
 	// Prep left and right scrollers
 	UIImage *leftScrollImage = [UIImage imageNamed:MITImageNameScrollTabLeftEndCap];
     leftScrollButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -305,9 +311,11 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 	[self.view addSubview:rightScrollButton];
 	
 	[self setupNavScrollButtons];
+    */
 }
 
 - (void)setupNavScrollButtons {
+    /*
     // load scroller's background first to find its height
 	UIImage *buttonImage = [UIImage imageNamed:MITImageNameScrollTabSelectedTab];
 	UIImage *stretchableButtonImage = [buttonImage stretchableImageWithLeftCapWidth:15 topCapHeight:0];
@@ -318,15 +326,17 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 	contentView.tag = 1001;
 	
 	CGFloat leftOffset = 0.0;
-	
+	*/
+    [navScrollView removeAllButtons];
+    
 	// add search button
 	
 	UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	UIImage *searchImage = [UIImage imageNamed:MITImageNameSearch];
 	[searchButton setImage:searchImage forState:UIControlStateNormal];
 	searchButton.adjustsImageWhenHighlighted = NO;
-	searchButton.tag = SEARCH_BUTTON_TAG; // random number that won't conflict with event list types
-	
+	searchButton.tag = SEARCH_BUTTON_TAG; // random number that won't conflict with news categories
+	/*
 	// we want the search image to line up exactly with the gray magnifying glass in the search bar
 	// but there's no good way to determine the gray image's real position, so these pixel numbers
 	// are produced by eyeballing and hoping the position is similar in sdk versions other than 3.0
@@ -338,18 +348,19 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 	searchButton.imageEdgeInsets = UIEdgeInsetsMake(-1,0,0,0);
 	
 	[contentView addSubview:searchButton];
-	
-	leftOffset += searchButton.frame.size.width;
+    */
+    [navScrollView addButton:searchButton shouldHighlight:NO];
+	//leftOffset += searchButton.frame.size.width;
 	
 	if (hasBookmarks) {
 		UIButton *bookmarkButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		UIImage *bookmarkImage = [UIImage imageNamed:MITImageNameBookmark];
 		[bookmarkButton setImage:bookmarkImage forState:UIControlStateNormal];
 		bookmarkButton.adjustsImageWhenHighlighted = NO;
-        [bookmarkButton setBackgroundImage:nil forState:UIControlStateNormal];
-        [bookmarkButton setBackgroundImage:stretchableButtonImage forState:UIControlStateHighlighted];            
-		bookmarkButton.tag = BOOKMARK_BUTTON_TAG; // random number that won't conflict with event list types
-		
+        //[bookmarkButton setBackgroundImage:nil forState:UIControlStateNormal];
+        //[bookmarkButton setBackgroundImage:stretchableButtonImage forState:UIControlStateHighlighted];            
+		bookmarkButton.tag = BOOKMARK_BUTTON_TAG; // random number that won't conflict with news categories
+		/*
 		bookmarkButton.frame = CGRectMake(leftOffset - 4.0,
 										  0,
 										  bookmarkImage.size.width + 14.0,
@@ -360,6 +371,8 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 		[contentView addSubview:bookmarkButton];
 		
 		leftOffset += bookmarkButton.frame.size.width;
+        */
+        [navScrollView addButton:bookmarkButton shouldHighlight:NO];
 	}
 	// add pile of text buttons
 	
@@ -371,15 +384,16 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
                              NewsCategoryArchitecture, NewsCategoryHumanities, 
                              nil];
     
-    NSMutableArray *buttons = [[NSMutableArray alloc] initWithCapacity:[buttonTitles count]];
+    //NSMutableArray *buttons = [[NSMutableArray alloc] initWithCapacity:[buttonTitles count]];
     
     NSInteger i = 0;
     for (NSString *buttonTitle in buttonTitles) {
         UIButton *aButton = [UIButton buttonWithType:UIButtonTypeCustom];
         aButton.tag = buttonCategories[i];
-        [aButton setBackgroundImage:nil forState:UIControlStateNormal];
-        [aButton setBackgroundImage:stretchableButtonImage forState:UIControlStateHighlighted];            
+        //[aButton setBackgroundImage:nil forState:UIControlStateNormal];
+        //[aButton setBackgroundImage:stretchableButtonImage forState:UIControlStateHighlighted];            
         [aButton setTitle:buttonTitle forState:UIControlStateNormal];
+        /*
         [aButton setTitleColor:[UIColor colorWithHexString:@"#FCCFCF"] forState:UIControlStateNormal];
         [aButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
         aButton.titleLabel.font = [UIFont boldSystemFontOfSize:13.0];
@@ -399,9 +413,11 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         
         [buttons addObject:aButton];
         [contentView addSubview:aButton];
+        */
         i++;
+        [navScrollView addButton:aButton shouldHighlight:YES];
     }
-    
+    /*
     [buttonTitles release];
     navButtons = buttons;
 	
@@ -416,13 +432,16 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 	navScrollView.contentSize = contentView.frame.size;
 	[navScrollView addSubview:contentView];
 	[contentView release];
-	
-	// highlight active category
+
+    // highlight active category
     UIButton *homeButton = (UIButton *)[navScrollView viewWithTag:self.activeCategoryId];
     [homeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[homeButton setBackgroundImage:stretchableButtonImage forState:UIControlStateNormal];
+    */
+    UIButton *homeButton = [navScrollView buttonWithTag:self.activeCategoryId];
+    [navScrollView buttonPressed:homeButton];
 }
-
+/*
 - (void)sideButtonPressed:(id)sender {
 	// This is a slight cheat. The bumpers scroll the next text button so it fits completely into view, 
 	// but if all of the buttons in navbuttons are already in view, this scrolls by default to the far
@@ -467,9 +486,10 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 		}
 	}
 }
-
+*/
 - (void)buttonPressed:(id)sender {
     UIButton *pressedButton = (UIButton *)sender;
+    /*
     NSMutableArray *buttons = [navButtons mutableCopy];
 
 	UIButton *bookmarkButton = (UIButton *)[navScrollView viewWithTag:BOOKMARK_BUTTON_TAG];
@@ -495,6 +515,12 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     }
     
     [buttons release];
+    */
+    if (pressedButton.tag == SEARCH_BUTTON_TAG) {
+        [self showSearchBar];
+    } else {
+        [self switchToCategory:pressedButton.tag];
+    }
 }
 
 #pragma mark -
@@ -504,76 +530,44 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 	if (!theSearchBar) {
 		theSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, 44.0)];
 		theSearchBar.tintColor = SEARCH_BAR_TINT_COLOR;
-		theSearchBar.delegate = self;
 		theSearchBar.alpha = 0.0;
 		[self.view addSubview:theSearchBar];
 	}
+    
+    if (!searchController) {
+        CGRect frame = CGRectMake(0.0, theSearchBar.frame.size.height, self.view.frame.size.width,
+                                  self.view.frame.size.height - (theSearchBar.frame.size.height + activityView.frame.size.height));
+        searchController = [[MITSearchDisplayController alloc] initWithFrame:frame searchBar:theSearchBar contentsController:self];
+        searchController.delegate = self;
+    }
+    
 	[self.view bringSubviewToFront:theSearchBar];
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.4];
 	theSearchBar.alpha = 1.0;
 	[UIView commitAnimations];
-	[self focusSearchBar];
-}
-
-- (void)focusSearchBar {
-	// focus the search field, bring in the cancel button
-	[theSearchBar setShowsCancelButton:YES animated:YES];
-	[theSearchBar becomeFirstResponder];
-
-	// put a dim overlay on the table
-	[self showSearchOverlay];
-}
-
-- (void)unfocusSearchBar {
-	if (theSearchBar) {
-		[theSearchBar resignFirstResponder];
-		[theSearchBar setShowsCancelButton:NO animated:YES];
-	}
+    
+    [searchController setActive:YES animated:YES];
 }
 
 - (void)hideSearchBar {
 	if (theSearchBar) {
 		[UIView beginAnimations:nil context:NULL];
 		[UIView setAnimationDuration:0.4];
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDidStopSelector:@selector(releaseSearchBar)];
 		theSearchBar.alpha = 0.0;
 		[UIView commitAnimations];
-		// TODO: add an animation callback to remove the searchbar view and release it
 	}
 }
 
-- (void)showSearchOverlay {
-	if (!searchOverlay) {
-		searchOverlay = [[MITSearchEffects alloc] initWithFrame:CGRectMake(0.0, theSearchBar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - (theSearchBar.frame.size.height + activityView.frame.size.height))];
-		searchOverlay.controller = self;
-		searchOverlay.alpha = 0.0;
-		[self.view addSubview:searchOverlay];
-	}
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.4];
-	searchOverlay.alpha = 1.0;
-	[UIView commitAnimations];
-}
-
-- (void)hideSearchOverlay {
-	if (searchOverlay) {
-		[UIView beginAnimations:nil context:NULL];
-		[UIView setAnimationDuration:0.4];
-		searchOverlay.alpha = 0.0;
-		[UIView commitAnimations];
-		// TODO: add an animation callback to remove the overlay view and release it
-	}
-}
-
-// called when searchOverlay is touched
-- (void)searchOverlayTapped {
-	// if there is a search result already up, just get rid of the searchOverlay
-	if (self.searchResults) {
-		[self unfocusSearchBar];
-		[self hideSearchOverlay];
-	} else {
-		[self searchBarCancelButtonClicked:theSearchBar];
-	}
+- (void)releaseSearchBar {
+    [theSearchBar removeFromSuperview];
+    [theSearchBar release];
+    theSearchBar = nil;
+    
+    [searchController release];
+    searchController = nil;
 }
 
 #pragma mark UISearchBar delegation
@@ -586,22 +580,14 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 	}
 	
 	// hide search interface
-	theSearchBar.text = nil;
-	[self unfocusSearchBar];
 	[self hideSearchBar];
-	[self hideSearchOverlay];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-	[self unfocusSearchBar];
+	//[self unfocusSearchBar];
 
 	self.searchQuery = searchBar.text;
 	[self loadSearchResultsFromServer:NO forQuery:self.searchQuery];
-}
-
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-	[self focusSearchBar];
-	[self showSearchOverlay];
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
@@ -805,7 +791,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 		self.stories = results;
 		
 		// hide translucent overlay
-		[self hideSearchOverlay];
+        [searchController hideSearchOverlayAnimated:YES];
 		
 		// show results
 		[storyTable reloadData];
@@ -814,7 +800,8 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 }
 
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
-	[self focusSearchBar];
+    NSLog(@"make sure search bar is first responder right now");
+	//[self focusSearchBar];
 }
 
 - (void)loadSearchResultsFromServer:(BOOL)loadMore forQuery:(NSString *)query {

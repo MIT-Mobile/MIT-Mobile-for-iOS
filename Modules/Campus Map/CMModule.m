@@ -14,14 +14,24 @@
         self.shortName = @"Map";
         self.longName = @"Campus Map";
         self.iconName = @"map";
+        
+        self.campusMapVC.title = self.longName;
        
-		self.campusMapVC = [[[CampusMapViewController alloc] init] autorelease];
-		self.campusMapVC.title = @"Campus Map";
-		self.campusMapVC.campusMapModule = self;
+		//self.campusMapVC = [[[CampusMapViewController alloc] init] autorelease];
+		//self.campusMapVC.title = @"Campus Map";
+		//self.campusMapVC.campusMapModule = self;
 		
-        [self.tabNavController setViewControllers:[NSArray arrayWithObject:self.campusMapVC]];
+        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:self.campusMapVC]];
     }
     return self;
+}
+
+- (UIViewController *)moduleHomeController {
+    if (!self.campusMapVC) {
+        self.campusMapVC = [[[CampusMapViewController alloc] init] autorelease];
+        self.campusMapVC.campusMapModule = self;
+    }
+    return self.campusMapVC;
 }
 
 -(void) dealloc
@@ -29,6 +39,18 @@
 	self.campusMapVC = nil;
 	
 	[super dealloc];
+}
+
+- (void)applicationDidEnterBackground {
+    if (self.tabNavController.visibleViewController == self.campusMapVC) {
+        [self.campusMapVC viewWillDisappear:NO];
+    }
+}
+
+- (void)applicationWillEnterForeground {
+    if (self.tabNavController.visibleViewController == self.campusMapVC) {
+        [self.campusMapVC viewWillAppear:NO];
+    }
 }
 
 /*
@@ -67,10 +89,11 @@
 	
 	// force the map view to load
 	self.campusMapVC.view;
-	// make sure the map is the active bar
-	[self becomeActiveTab];		
-	// make sure the campus map is the root view controller
-	[self popToRootViewController];
+    
+    if ([(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] usesTabBar]) {
+        // make sure the campus map is the root view controller
+        [self popToRootViewController];
+    }
 	
 	if (localPath.length==0) {
 		if (regionDictionary != nil) {
@@ -88,8 +111,6 @@
 		// populate search bar
 		self.campusMapVC.searchBar.text = query;
 		self.campusMapVC.lastSearchText = query;
-		// don't drop pins (we set this back at the end of this method)
-		self.campusMapVC.mapView.shouldNotDropPins = YES;
 		self.campusMapVC.hasSearchResults = YES;
 		
 		// grab our search results
@@ -114,6 +135,7 @@
 		} else {
 			// perform the search from the network
 			[self.campusMapVC search:query];
+            [self becomeActiveTab];
 			return YES;
 		}
 
@@ -147,7 +169,7 @@
 				[components removeObjectAtIndex:0];
 			}
 		}
-		if ([pathRoot isEqualToString:@"detail"]) {	
+		else if ([pathRoot isEqualToString:@"detail"]) {	
 			// push the details page onto the stack for the item selected. 
 			MITMapDetailViewController* detailsVC = [[[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
 																								  bundle:nil] autorelease];
@@ -179,9 +201,10 @@
 		// set the url's path and query to these
 		[self.campusMapVC.url setPath:localPath query:query];
 		[self.campusMapVC.url setAsModulePath];
+        
+        // make sure the map is the active bar
+        [self becomeActiveTab];
 		
-		// reset the map to drop pins for the next search
-		self.campusMapVC.mapView.shouldNotDropPins = NO;
 		return YES;
 	}
 	

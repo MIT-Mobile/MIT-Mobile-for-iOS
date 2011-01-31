@@ -1,7 +1,6 @@
 #import "EventCategoriesTableView.h"
 #import "EventCategory.h"
 #import "CalendarEventsViewController.h"
-#import "CalendarConstants.h"
 
 @implementation EventCategoriesTableView
 
@@ -56,13 +55,14 @@
 	vc.showScroller = NO;
 
 	if ([category hasSubCategories] && ![self isSubcategoryView]) {
-		vc.activeEventList = CalendarEventListTypeCategory;
+		//vc.activeEventList = CalendarEventListTypeCategory;
+		vc.activeEventList = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
 		
 	} else {
 	
 		NSArray *events = [category.events allObjects];	
 		vc.events = events;
-		vc.activeEventList = CalendarEventListTypeEvents;
+		//vc.activeEventList = CalendarEventListTypeEvents;
 		vc.showList = YES;
 	}
 

@@ -60,8 +60,8 @@
 	//_viewTypeButton.enabled = NO;										  
 	self.navigationItem.rightBarButtonItem = _viewTypeButton;
 	
-	_smallStopImage = [[UIImage imageNamed:@"shuttle-stop-dot.png"] retain];
-	_smallUpcomingStopImage = [[UIImage imageNamed:@"shuttle-stop-dot-next.png"] retain];
+	_smallStopImage = [[UIImage imageNamed:@"shuttle/shuttle-stop-dot.png"] retain];
+	_smallUpcomingStopImage = [[UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"] retain];
 	
 	[self setUrl:[[[MITModuleURL alloc] initWithTag:ShuttleTag] autorelease]];
     [url setPath:[NSString stringWithFormat:@"route-list/%@", self.route.routeID] query:nil];
@@ -125,7 +125,7 @@
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
-    //[super didReceiveMemoryWarning];
+    [super didReceiveMemoryWarning];
 	
 	// Release any cached data, images, etc that aren't in use.
 }
@@ -208,7 +208,9 @@
 	[self.navigationController popToViewController:self animated:animated];
 	[self setMapViewMode:YES animated:animated];
 
-	[_routeMapViewController.mapView selectAnnotation:annotation];
+	[self.routeMapViewController.mapView selectAnnotation:annotation];
+	[self.routeMapViewController.mapView setCenterCoordinate:self.routeMapViewController.mapView.region.center animated:NO];
+
 }
 
 // set the view to either map or list mode

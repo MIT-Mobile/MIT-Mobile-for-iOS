@@ -5,20 +5,12 @@
 #import "MultiLineTableViewCell.h"
 #import "Foundation+MITAdditions.h"
 #import "URLShortener.h"
+#import "CalendarDataManager.h"
 
 #define WEB_VIEW_PADDING 10.0
 #define BUTTON_PADDING 10.0
 #define kCategoriesWebViewTag 521
 #define kDescriptionWebViewTag 516
-
-enum CalendarDetailRowTypes {
-	CalendarDetailRowTypeTime,
-	CalendarDetailRowTypeLocation,
-	CalendarDetailRowTypePhone,
-	CalendarDetailRowTypeURL,
-	CalendarDetailRowTypeDescription,
-	CalendarDetailRowTypeCategories
-};
 
 @implementation CalendarDetailViewController
 
@@ -37,10 +29,6 @@ enum CalendarDetailRowTypes {
 	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 
 	[self.view addSubview:_tableView];
-    
-    if (isRegularEvent) {
-        [self setupShareButton];
-    }
 	
 	// setup nav bar
 	if (self.events.count > 1) {
@@ -62,7 +50,7 @@ enum CalendarDetailRowTypes {
 	
 	// set up table rows
 	[self reloadEvent];
-    if (isRegularEvent && [self.event.summary length] == 0) {
+    if ([self.event hasMoreDetails] && [self.event.summary length] == 0) {
         [self requestEventDetails];
     }
 	
@@ -86,7 +74,7 @@ enum CalendarDetailRowTypes {
 		}
 		self.event = [self.events objectAtIndex:currentEventIndex];
 		[self reloadEvent];
-        if (isRegularEvent && [self.event.summary length] == 0) {
+        if ([self.event hasMoreDetails] && [self.event.summary length] == 0) {
             [self requestEventDetails];
         }
     }
@@ -110,6 +98,10 @@ enum CalendarDetailRowTypes {
 
 - (void)reloadEvent
 {
+    if (event.url) {
+        [self setupShareButton];
+	}
+	
 	[self setupHeader];
     
     if ([self.events count] > 1) {
@@ -122,7 +114,7 @@ enum CalendarDetailRowTypes {
 		free(rowTypes);
 	}
 	
-	rowTypes = malloc(sizeof(CalendarEventListType) * 5);
+	rowTypes = malloc(sizeof(CalendarDetailRowType) * 5);
 	numRows = 0;
 	if (self.event.start) {
 		rowTypes[numRows] = CalendarDetailRowTypeTime;
@@ -140,13 +132,13 @@ enum CalendarDetailRowTypes {
 		rowTypes[numRows] = CalendarDetailRowTypeURL;
 		numRows++;
 	}
-	if (self.event.summary) {
+	if (self.event.summary.length) {
 		rowTypes[numRows] = CalendarDetailRowTypeDescription;
         [descriptionString release];
         descriptionString = [[self htmlStringFromString:self.event.summary] retain];
 		numRows++;
 	}
-	if ([self.event.categories count] > 0 && isRegularEvent) {
+	if ([self.event.categories count] > 0) {
         rowTypes[numRows] = CalendarDetailRowTypeCategories;
         
         [categoriesString release];
@@ -177,13 +169,13 @@ enum CalendarDetailRowTypes {
     if (!shareButton) {
         CGRect tableFrame = self.tableView.frame;
         shareButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
-        UIImage *buttonImage = [UIImage imageNamed:@"share.png"];
+        UIImage *buttonImage = [UIImage imageNamed:@"global/share.png"];
         shareButton.frame = CGRectMake(tableFrame.size.width - buttonImage.size.width - BUTTON_PADDING,
                                        BUTTON_PADDING,
                                        buttonImage.size.width,
                                        buttonImage.size.height);
         [shareButton setImage:buttonImage forState:UIControlStateNormal];
-        [shareButton setImage:[UIImage imageNamed:@"share_pressed.png"] forState:(UIControlStateNormal | UIControlStateHighlighted)];
+        [shareButton setImage:[UIImage imageNamed:@"global/share_pressed.png"] forState:(UIControlStateNormal | UIControlStateHighlighted)];
         [shareButton addTarget:self action:@selector(share:) forControlEvents:UIControlEventTouchUpInside];
     }
 }
@@ -193,7 +185,7 @@ enum CalendarDetailRowTypes {
 	
 	CGFloat titlePadding = 10.0;
     CGFloat titleWidth;
-    if (isRegularEvent) {
+    if ([self.event hasMoreDetails]) {
         titleWidth = tableFrame.size.width - shareButton.frame.size.width - BUTTON_PADDING * 2 - titlePadding;
         self.tableView.separatorColor = [UIColor colorWithWhite:0.8 alpha:1.0];
     } else {
@@ -217,7 +209,7 @@ enum CalendarDetailRowTypes {
 	CGRect titleFrame = CGRectMake(0.0, 0.0, tableFrame.size.width, titleSize.height + titlePadding * 2);
 	self.tableView.tableHeaderView = [[[UIView alloc] initWithFrame:titleFrame] autorelease];
 	[self.tableView.tableHeaderView addSubview:titleView];
-    if (isRegularEvent) {
+    if ([self.event hasMoreDetails]) {
         [self.tableView.tableHeaderView addSubview:shareButton];
     }
 	[titleView release];
@@ -239,16 +231,14 @@ enum CalendarDetailRowTypes {
 }
 
 - (void)setEvent:(MITCalendarEvent *)anEvent {
-    event = anEvent;
+	[event release];
+    event = [anEvent retain];
     
     [descriptionString release];
     [categoriesString release];
 
     descriptionString = nil;
     categoriesString = nil;
-
-    NSInteger catID = [[[self.event.categories anyObject] catID] intValue];
-    isRegularEvent = (catID != kCalendarAcademicCategoryID && catID != kCalendarHolidayCategoryID);
 }
 
 #pragma mark Table view methods
@@ -319,6 +309,14 @@ enum CalendarDetailRowTypes {
             CGRect frame = CGRectMake(WEB_VIEW_PADDING, WEB_VIEW_PADDING, self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING, webViewHeight);
             if (!webView) {
                 webView = [[UIWebView alloc] initWithFrame:frame];
+				
+				// prevent webView from scrolling separately from the parent scrollview
+				for (id subview in webView.subviews) {
+					if ([[subview class] isSubclassOfClass: [UIScrollView class]]) {
+						((UIScrollView *)subview).bounces = NO;
+					}
+				}
+				
                 webView.delegate = self;
                 [webView loadHTMLString:descriptionString baseURL:nil];
                 webView.tag = kDescriptionWebViewTag;
@@ -337,6 +335,14 @@ enum CalendarDetailRowTypes {
             CGRect frame = CGRectMake(WEB_VIEW_PADDING, WEB_VIEW_PADDING, self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING, categoriesHeight);
             if (!webView) {
                 webView = [[UIWebView alloc] initWithFrame:frame];
+				
+				// prevent webView from scrolling separately from the parent scrollview
+				for (id subview in webView.subviews) {
+					if ([[subview class] isSubclassOfClass: [UIScrollView class]]) {
+						((UIScrollView *)subview).bounces = NO;
+					}
+				}
+				
                 [webView loadHTMLString:categoriesString baseURL:nil];
                 webView.tag = kCategoriesWebViewTag;
                 [cell.contentView addSubview:webView];
@@ -355,15 +361,20 @@ enum CalendarDetailRowTypes {
 
 - (NSString *)htmlStringFromString:(NSString *)source {
 	NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-	NSURL *fileURL = [NSURL URLWithString:@"events_template.html" relativeToURL:baseURL];
+	NSURL *fileURL = [NSURL URLWithString:@"calendar/events_template.html" relativeToURL:baseURL];
 	NSError *error;
 	NSMutableString *target = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
 	if (!target) {
 		NSLog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
 	}
+
+    NSString *maxWidth = [NSString stringWithFormat:@"%.0f", self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING];
+    [target replaceOccurrencesOfString:@"__WIDTH__" withString:maxWidth options:NSLiteralSearch range:NSMakeRange(0, target.length)];
+    
 	[target replaceOccurrencesOfStrings:[NSArray arrayWithObject:@"__BODY__"] 
 							withStrings:[NSArray arrayWithObject:source] 
 								options:NSLiteralSearch];
+
 	return target;
 }
 
@@ -387,7 +398,7 @@ enum CalendarDetailRowTypes {
 		case CalendarDetailRowTypeDescription:
 			// this is the same font defined in the html template
 			if(descriptionHeight > 0) {
-				return (CGFloat) descriptionHeight + CELL_VERTICAL_PADDING * 2;
+				return descriptionHeight + CELL_VERTICAL_PADDING * 2;
 			} else {
 				return 400.0;
 			}
@@ -481,7 +492,8 @@ enum CalendarDetailRowTypes {
 }
 
 - (NSString *)twitterUrl {
-	return [NSString stringWithFormat:@"http://%@/e/%@", MITMobileWebDomainString, [URLShortener compressedIdFromNumber:event.eventID]];
+    return event.url;
+	//return [NSString stringWithFormat:@"http://%@/e/%@", MITMobileWebDomainString, [URLShortener compressedIdFromNumber:event.eventID]];
 }
 
 - (NSString *)twitterTitle {
@@ -531,7 +543,11 @@ enum CalendarDetailRowTypes {
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
 	// calculate webView height, if it change we need to reload table
-	NSInteger newDescriptionHeight =[[webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"main-content\").offsetHeight;"] intValue];
+	CGFloat newDescriptionHeight = [[webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"main-content\").scrollHeight;"] floatValue];
+    CGRect frame = webView.frame;
+    frame.size.height = newDescriptionHeight;
+    webView.frame = frame;
+
 	if(newDescriptionHeight != descriptionHeight) {
 		descriptionHeight = newDescriptionHeight;
 		[self.tableView reloadData];

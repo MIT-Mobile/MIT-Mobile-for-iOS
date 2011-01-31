@@ -2,10 +2,9 @@
 #import	"StellarCourseGroup.h"
 #import "StellarModel.h"
 #import "StellarSearch.h"
-#import "MITSearchEffects.h"
 #import "MITModuleURL.h"
-#import "MITSearchDisplayController.h"
 
+@class MITSearchDisplayController;
 
 @interface StellarMainTableController : UIViewController <CoursesLoadedDelegate, ClearMyStellarDelegate, UITableViewDelegate, UITableViewDataSource> {
 	NSArray *courseGroups;

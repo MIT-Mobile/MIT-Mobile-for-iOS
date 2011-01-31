@@ -1,26 +1,32 @@
 #import <UIKit/UIKit.h>
 #import "MITMobileWebAPI.h"
-#import "CalendarConstants.h"
 #import "ShareDetailViewController.h"
 
 @class MITCalendarEvent;
 
+typedef enum {
+	CalendarDetailRowTypeTime,
+	CalendarDetailRowTypeLocation,
+	CalendarDetailRowTypePhone,
+	CalendarDetailRowTypeURL,
+	CalendarDetailRowTypeDescription,
+	CalendarDetailRowTypeCategories
+} CalendarDetailRowType;
+
 @interface CalendarDetailViewController : ShareDetailViewController <UITableViewDelegate, UITableViewDataSource, JSONLoadedDelegate, ShareItemDelegate, UIWebViewDelegate> {
 	
-    BOOL isRegularEvent;
-    
     MITMobileWebAPI *apiRequest;
     BOOL isLoading;
     
 	MITCalendarEvent *event;
-	CalendarEventListType* rowTypes;
+	CalendarDetailRowType* rowTypes;
 	NSInteger numRows;
 	
 	UITableView *_tableView;
 	UIButton *shareButton;
     UISegmentedControl *eventPager;
 	
-    NSInteger descriptionHeight;
+    CGFloat descriptionHeight;
 	NSMutableString *descriptionString;
 	
     CGFloat categoriesHeight;

@@ -3,6 +3,7 @@
 #import "MITModuleList.h"
 #import "MITModule.h"
 #import "MITMoreListController.h"
+#import "DummyRotatingViewController.h"
 
 #define TAB_COUNT 4
 
@@ -90,13 +91,27 @@
     }
 }
 
-/*
-// Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+    if (appDelegate.appModalHolder.modalViewController) {
+        return appDelegate.appModalHolder.canRotate;
+    }
+    return NO;
 }
-*/
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+    if (appDelegate.appModalHolder.modalViewController) {
+        [appDelegate.appModalHolder.modalViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    }
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+    if (appDelegate.appModalHolder.modalViewController) {
+        [appDelegate.appModalHolder.modalViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    }
+}
 
 - (void)dealloc {
     [super dealloc];
@@ -270,6 +285,16 @@
         self.activeTabNavStack = nil;
     }
     self.activeItem = item;    
+}
+
+- (void)updateCustomizableViewControllers:(NSArray *)modules {
+    NSMutableArray *customizableVCs = [[self.customizableViewControllers mutableCopy] autorelease];
+    for (MITModule *aModule in modules) {
+        if (!aModule.isMovableTab) {
+            [customizableVCs removeObject:aModule.tabNavController];
+        }
+    }
+    [self setCustomizableViewControllers:customizableVCs];
 }
 
 #pragma mark -

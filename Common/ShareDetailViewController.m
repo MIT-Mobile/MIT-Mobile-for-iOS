@@ -1,6 +1,9 @@
 #import "ShareDetailViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "TwitterViewController.h"
+#import "UIKit+MITAdditions.h"
+#import "MITMailComposeController.h"
+#import "Secret.h"
 
 @implementation ShareDetailViewController
 
@@ -36,36 +39,8 @@
 												   cancelButtonTitle:@"Cancel"
 											  destructiveButtonTitle:nil
 												   otherButtonTitles:@"Email", @"Facebook", @"Twitter", nil];
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[UIApplication sharedApplication].delegate;
-    [shareSheet showFromTabBar:appDelegate.tabBarController.tabBar];
+    [shareSheet showFromAppDelegate];
     [shareSheet release];
-}
-
-- (void)sendEmailWithSubject:(NSString *)emailSubject body:(NSString *)emailBody
-{
-	Class mailClass = (NSClassFromString(@"MFMailComposeViewController"));
-	if ((mailClass != nil) && [mailClass canSendMail]) {
-		
-		MFMailComposeViewController *aController = [[MFMailComposeViewController alloc] init];
-		aController.mailComposeDelegate = self;
-		
-		[aController setSubject:emailSubject];
-		
-		[aController setMessageBody:emailBody isHTML:NO];
-		
-		MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-		[appDelegate presentAppModalViewController:aController animated:YES];
-		[aController release];
-		
-	} else {
-		NSString *mailtoString = [NSString stringWithFormat:@"mailto://?subject=%@&body=%@", 
-								  [emailSubject stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding],
-								  [emailBody stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]];
-		
-		NSURL *externURL = [NSURL URLWithString:mailtoString];
-		if ([[UIApplication sharedApplication] canOpenURL:externURL])
-			[[UIApplication sharedApplication] openURL:externURL];
-	}
 }
 
 // subclasses should make sure emailBody and emailSubject are set up before this gets called
@@ -73,8 +48,7 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 0) {
 		// Email
-        [self sendEmailWithSubject:[self.shareDelegate emailSubject]
-							  body:[self.shareDelegate emailBody]];
+        [MITMailComposeController presentMailControllerWithEmail:nil subject:[self.shareDelegate emailSubject] body:[self.shareDelegate emailBody]];
 	}
     else if (buttonIndex == 1) {
 		// Facebook session
@@ -86,23 +60,12 @@
 }
 
 #pragma mark -
-#pragma mark MFMailComposeViewController delegation
-
-- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error 
-{	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
-}
-
-#pragma mark -
 #pragma mark Facebook delegation
 
 - (void)showFacebookDialog {
 	BOOL resuming = NO;
 	if (!self.fbSession && !(self.fbSession = [FBSession session])) {
-		NSString *apiKey = @"facebook_key";
-		NSString *apiSecret = @"facebook_secret";
-		self.fbSession = [FBSession sessionForApplication:apiKey secret:apiSecret delegate:self];
+		self.fbSession = [FBSession sessionForApplication:FacebookAPIKey secret:FacebookAPISecret delegate:self];
 		resuming = [self.fbSession resume];
 	}
 	

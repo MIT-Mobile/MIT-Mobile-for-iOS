@@ -51,7 +51,7 @@ static MapTileCache* s_cache;
 		//_recentTiles = [[NSMutableDictionary alloc] initWithCapacity:kInMemoryTileLimit + 1];
 	}
 	
-	NSString* path = [[NSBundle mainBundle] pathForResource:@"MapLevels" ofType:@"plist" inDirectory:@"Modules/Campus Map"];
+	NSString* path = [[NSBundle mainBundle] pathForResource:@"MapLevels" ofType:@"plist" inDirectory:@"map"];
 	NSDictionary* mapInfo = [NSDictionary dictionaryWithContentsOfFile:path];
 	
 	NSArray* levels = [mapInfo objectForKey:@"MapLevels"];

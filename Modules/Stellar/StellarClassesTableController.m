@@ -5,8 +5,7 @@
 #import "MITModuleList.h"
 #import "MITModule.h"
 #import "MITLoadingActivityView.h"
-#import "MITSearchEffects.h"
-#import "UITableView+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 #import "MultiLineTableViewCell.h"
 
 
@@ -59,8 +58,13 @@
 	
 	[self.tableView applyStandardCellHeight];
 	
-	self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:[MITSearchEffects frameWithHeader:self.navigationController.navigationBar]]
-		autorelease];
+    CGRect loadingFrame = self.view.frame;
+    CGFloat navbarHeight = self.navigationController.navigationBar.frame.size.height;
+    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+    loadingFrame.origin.y += navbarHeight;
+    loadingFrame.size.height -= (navbarHeight + appDelegate.tabBarController.tabBar.frame.size.height);
+    
+	self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
 	
 	[self showLoadingView];
 	

@@ -1,12 +1,9 @@
-
 #import "MITMapSearchResultsVC.h"
-#import "MITMapSearchResultCell.h"
 #import "MITMapSearchResultAnnotation.h"
 #import "MITMapDetailViewController.h"
 #import "CampusMapViewController.h"
 #import "TouchableTableView.h"
 #import "MITUIConstants.h"
-#import "UITableView+MITUIAdditions.h"
 #import "MultiLineTableViewCell.h"
 
 @implementation MITMapSearchResultsVC
@@ -72,7 +69,7 @@
 	
 	UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[MITMapSearchResultCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
     
 	// get the annotation for this index
@@ -142,7 +139,7 @@
 						 constrainedToSize:CGSizeMake(width, 200.0)
 							 lineBreakMode:UILineBreakModeWordWrap];
 	
-	CGFloat cellheight = round((height + labelSize.height) * 1.2 + 6.0);
+	CGFloat cellheight = round((height + labelSize.height) * 1.2 + 12.0);
 	
 	return cellheight;
 

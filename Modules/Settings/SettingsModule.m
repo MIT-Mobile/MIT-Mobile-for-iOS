@@ -12,12 +12,21 @@
         self.iconName = @"settings";
         self.isMovableTab = FALSE;
         
-        SettingsTableViewController *settingsVC = [[[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
-        settingsVC.title = self.longName;
+        //moduleHomeController.title = self.longName;
+        
+        //SettingsTableViewController *settingsVC = [[[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+        //settingsVC.title = self.longName;
 		
-        [self.tabNavController setViewControllers:[NSArray arrayWithObject:settingsVC]];
+        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:settingsVC]];
     }
     return self;
+}
+
+- (UIViewController *)moduleHomeController {
+    if (!moduleHomeController) {
+        moduleHomeController = [[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    }
+    return moduleHomeController;
 }
 
 @end

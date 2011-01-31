@@ -3,7 +3,7 @@
 #import "StellarAnnouncement.h"
 #import "StellarAnnouncementViewController.h"
 #import "MITUIConstants.h"
-#import "UITableViewCell+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 
 #define announcementsLoadingMessage @"Announcements loading..."
 #define noAnnouncementsMessage @"No announcements"

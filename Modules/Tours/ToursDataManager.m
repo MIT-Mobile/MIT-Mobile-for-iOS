@@ -1,0 +1,474 @@
+#import "ToursDataManager.h"
+#import "CoreDataManager.h"
+#import "CampusTourSideTrip.h"
+#import "TourSiteOrRoute.h"
+#import "CampusTour.h"
+#import "MITMapRoute.h"
+#import "TourStartLocation.h"
+#import "TourLink.h"
+
+@interface ToursDataManager (Private)
+
+- (void)populateComponentsForTour;
+- (CampusTour *)tourWithID:(NSString *)tourID;
+- (TourSiteOrRoute *)tourSiteWithID:(NSString *)siteID;
+- (TourSiteOrRoute *)tourRouteWithStartID:(NSString *)siteID;
+- (NSManagedObject *)managedObjectWithEntityName:(NSString *)entityName predicate:(NSPredicate *)predicate;
+- (void)requestTourList;
+- (void)requestTour:(NSString *)tourID;
+- (TourSiteOrRoute *)findSiteWithID:(NSString *)siteID;
+- (TourStartLocation *)tourStartLocationWithID:(NSString *)locationID;
+
+@end
+
+NSString * const TourInfoLoadedNotification = @"TourInfoDidLoad";
+NSString * const TourInfoFailedToLoadNotification = @"TourInfoFailedToLoad";
+NSString * const TourDetailsLoadedNotification = @"TourDetailsDidLoad";
+NSString * const TourDetailsFailedToLoadNotification = @"TourDetailsFailedToLoad";
+
+@implementation ToursDataManager
+
+static ToursDataManager *s_toursDataManager = nil;
+
+#pragma mark Constants
+
++ (UIImage *)imageForVisitStatus:(TourSiteVisitStatus)visitStatus {
+    switch (visitStatus) {
+        case TourSiteVisited:
+            return [UIImage imageNamed:@"tours/map_past.png"];
+        case TourSiteVisiting:
+            return [UIImage imageNamed:@"tours/map_currentstop.png"];
+        case TourSiteNotVisited:
+            return [UIImage imageNamed:@"tours/map_future.png"];
+        default:
+            return nil;
+    }
+}
+
++ (NSString *)labelForVisitStatus:(TourSiteVisitStatus)visitStatus {
+    switch (visitStatus) {
+        case TourSiteVisited:
+            return [NSString stringWithString:@"Visited"];
+        case TourSiteVisiting:
+            return [NSString stringWithString:@"Current stop"];
+        case TourSiteNotVisited:
+            return [NSString stringWithString:@"Not yet visited"];
+        default:
+            return nil;
+    }
+}
+
+#pragma mark Public
+
++ (ToursDataManager *)sharedManager {
+    if (s_toursDataManager == nil) {
+        s_toursDataManager = [[ToursDataManager alloc] init];
+        [s_toursDataManager requestTourList];
+    }
+    return s_toursDataManager;
+}
+
+- (BOOL)setActiveTourID:(NSString *)tourID {
+    [_activeTour release];
+    [_routes release];
+    _routes = nil;
+    [_sites release];
+    _sites = nil;
+    [_mapRoute release];
+    _mapRoute = nil;
+    
+    _activeTour = [[_tours objectForKey:tourID] retain];
+    if (_activeTour == nil) {
+        _activeTour = [[self tourWithID:tourID] retain];
+    }
+    return (_activeTour != nil);
+}
+
+- (CampusTour *)activeTour {
+    return _activeTour;
+}
+
+- (NSArray *)allTours {
+    // TODO: this needs to be sorted when we have multiple tours
+    if ([_tours count]) {
+        return [_tours allValues];
+    } else {
+        [self requestTourList];
+    }
+    return nil;
+}
+
+- (void)populateComponentsForTour {
+    NSMutableArray *sites = [NSMutableArray array];
+    NSMutableArray *routes = [NSMutableArray array];
+    
+    NSSet *components = _activeTour.components;
+    if (!components.count) {
+        [self requestTour:_activeTour.tourID];
+        return;
+    }
+    
+	NSArray *descriptors = [NSArray arrayWithObjects:
+							[NSSortDescriptor sortDescriptorWithKey:@"type" ascending:NO],       // put sites first
+							[NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES], // so we ignore route sortOrder
+							nil];
+	NSArray *sortedComponents = [components sortedArrayUsingDescriptors:descriptors];
+	TourSiteOrRoute *firstComponent = [sortedComponents objectAtIndex:0];
+    if ([firstComponent.type isEqualToString:@"site"]) {
+        [sites addObject:firstComponent];
+    } else if ([firstComponent.type isEqualToString:@"route"]) {
+        [routes addObject:firstComponent];
+    }
+    
+    TourSiteOrRoute *currentComponent = firstComponent.nextComponent;
+    while (currentComponent != firstComponent) {
+        if ([currentComponent.type isEqualToString:@"site"]) {
+            [sites addObject:currentComponent];
+        }
+        else if ([currentComponent.type isEqualToString:@"route"]) {
+            [routes addObject:currentComponent];
+        }
+        currentComponent = currentComponent.nextComponent;
+    }
+    
+    _routes = [[NSArray alloc] initWithArray:routes];
+    _sites = [[NSArray alloc] initWithArray:sites];
+}
+
+- (NSArray *)allRoutesForTour {
+    if (!_activeTour) return nil;
+    
+    if (!_routes) {
+        [self populateComponentsForTour];
+    }
+    return _routes;
+}
+
+- (MITGenericMapRoute *)mapRouteForTour {
+    if (!_activeTour) return nil;
+    
+    if (!_mapRoute) {
+        NSMutableArray *pathLocations = [NSMutableArray array];
+        for (TourSiteOrRoute *aRoute in [self allRoutesForTour]) {
+            [pathLocations addObjectsFromArray:[aRoute pathAsArray]];
+        }
+        _mapRoute = [[MITGenericMapRoute alloc] init];
+        UIColor *color = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
+        _mapRoute.fillColor = color;
+        _mapRoute.strokeColor = color;
+        _mapRoute.pathLocations = pathLocations;
+    }
+    return _mapRoute;
+}
+
+- (NSArray *)allSitesForTour {
+    if (!_activeTour) return nil;
+    
+    if (!_sites) {
+        [self populateComponentsForTour];
+    }
+    return _sites;
+}
+
+- (NSArray *)allSitesStartingFrom:(TourSiteOrRoute *)site {
+    NSArray *defaultSites = [self allSitesForTour];
+    NSInteger index = [defaultSites indexOfObject:site];
+    if (index == NSNotFound) {
+        index = [defaultSites indexOfObject:site.nextComponent.nextComponent];
+    }
+    NSInteger len = [defaultSites count] - index;
+    NSMutableArray *orderedSites = [NSMutableArray arrayWithArray:[defaultSites subarrayWithRange:NSMakeRange(index, len)]];
+    [orderedSites addObjectsFromArray:[defaultSites subarrayWithRange:NSMakeRange(0, index)]];
+    return orderedSites;
+}
+
+- (NSArray *)allRoutesStartingFrom:(TourSiteOrRoute *)route {
+    NSArray *defaultRoutes = [self allRoutesForTour];
+    NSInteger index = [defaultRoutes indexOfObject:route];
+    if (index == NSNotFound) {
+        for (TourSiteOrRoute *aRoute in defaultRoutes) {
+            index++;
+            if ([aRoute.componentID isEqualToString:route.componentID] || [aRoute.nextComponent.componentID isEqualToString:route.componentID]) {
+                break;
+            }
+        }
+    }
+    NSInteger len = [defaultRoutes count] - index;
+    NSMutableArray *orderedRoutes = [NSMutableArray arrayWithArray:[defaultRoutes subarrayWithRange:NSMakeRange(index, len)]];
+    [orderedRoutes addObjectsFromArray:[defaultRoutes subarrayWithRange:NSMakeRange(0, index)]];
+    
+    return orderedRoutes;
+}
+
+- (NSArray *)startLocationsForTour {
+    if (!_activeTour) return nil;
+
+	NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"componentID" ascending:NO];
+	NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
+
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startSite IN %@", _activeTour.components];
+	NSArray *locations = [CoreDataManager objectsForEntity:TourStartLocationEntityName
+											matchingPredicate:predicate
+											  sortDescriptors:sortDescriptors];
+
+    if ([locations count] == 0) {
+        locations = nil;
+        [self requestTour:_activeTour.tourID];
+    }
+    return locations;
+}
+
+- (TourSiteOrRoute *)findSiteWithID:(NSString *)siteID {
+    NSString *fullID = [NSString stringWithFormat:@"site-%@", siteID];
+    return [CoreDataManager getObjectForEntity:TourSiteOrRouteEntityName attribute:@"componentID" value:fullID];
+}
+
+#pragma mark -
+#pragma mark Core Data object creation
+
+- (CampusTour *)tourWithID:(NSString *)tourID {
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"tourID=%@", tourID];
+    CampusTour *theTour = (CampusTour *)[self managedObjectWithEntityName:CampusTourEntityName predicate:pred];
+    if (theTour.tourID == nil)
+        theTour.tourID = tourID;
+    return theTour;
+}
+
+- (TourSiteOrRoute *)tourSiteWithID:(NSString *)siteID {
+    NSString *fullID = [NSString stringWithFormat:@"site-%@", siteID];
+    
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"componentID=%@", fullID];
+    TourSiteOrRoute *component = (TourSiteOrRoute *)[self managedObjectWithEntityName:TourSiteOrRouteEntityName predicate:pred];
+    if (component.componentID == nil)
+        component.componentID = fullID;
+    if (component.type == nil)
+        component.type = @"site";
+    return component;
+}
+
+- (TourSiteOrRoute *)tourRouteWithStartID:(NSString *)siteID {
+    NSString *fullID = [NSString stringWithFormat:@"route-%@", siteID];
+    
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"componentID=%@", fullID];
+    TourSiteOrRoute *component = (TourSiteOrRoute *)[self managedObjectWithEntityName:TourSiteOrRouteEntityName predicate:pred];
+    if (component.componentID == nil)
+        component.componentID = fullID;
+    if (component.type == nil)
+        component.type = @"route";
+    return component;
+}
+
+- (TourStartLocation *)tourStartLocationWithID:(NSString *)locationID {
+    NSString *fullID = [NSString stringWithFormat:@"startloc-%@", locationID];
+    
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"componentID=%@", fullID];
+    TourStartLocation *component = (TourStartLocation *)[self managedObjectWithEntityName:TourStartLocationEntityName predicate:pred];
+    if (component.componentID == nil)
+        component.componentID = fullID;
+    return component;
+}
+
+- (NSManagedObject *)managedObjectWithEntityName:(NSString *)entityName predicate:(NSPredicate *)predicate {
+    NSArray *matches = [CoreDataManager objectsForEntity:entityName matchingPredicate:predicate];
+    NSManagedObject *result = nil;
+    if ([matches count]) {
+        result = [matches lastObject];
+    } else {
+        result = [CoreDataManager insertNewObjectForEntityForName:entityName];
+    }
+    return result;
+}
+
+#pragma mark -
+#pragma mark API Requests
+
+- (void)requestTourList {
+    MITMobileWebAPI *api = [[[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self] autorelease];
+    api.userData = @"toursList";
+    [api requestObjectFromModule:@"tours" command:@"toursList" parameters:nil];
+}
+
+- (void)requestTour:(NSString *)tourID {
+    MITMobileWebAPI *api = [[[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self] autorelease];
+    api.userData = @"tourDetails";
+    [api requestObjectFromModule:@"tours" command:@"tourDetails" parameters:[NSDictionary dictionaryWithObjectsAndKeys:tourID, @"tourId", nil]];
+}
+
+#pragma mark JSONLoadedDelegate
+
+- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
+    NSString *command = [request.params objectForKey:@"command"];
+    
+    // TODO: sanity check all inputs
+    
+    if ([command isEqualToString:@"toursList"]
+        && [JSONObject isKindOfClass:[NSArray class]])
+    {
+        NSMutableSet *oldTourKeys = [NSMutableSet setWithArray:[_tours allKeys]];
+        
+        for (NSDictionary *tourData in JSONObject) {
+            NSString *tourID = [tourData objectForKey:@"id"];
+            CampusTour *aTour = [self tourWithID:tourID];
+
+            NSInteger lastModified = [[tourData objectForKey:@"last-modified"] integerValue];
+            NSDate *remoteModified = [NSDate dateWithTimeIntervalSince1970:lastModified];
+            if (lastModified) {
+                NSDate *localModified = aTour.lastModified;
+                if (!localModified || [remoteModified compare:localModified] == NSOrderedDescending) {
+                    NSLog(@"local: %@ remote: %@", localModified, remoteModified);
+
+                    aTour.title = [tourData objectForKey:@"title"];
+                    aTour.summary = [tourData objectForKey:@"description"];
+                    aTour.lastModified = remoteModified;
+
+                    NSLog(@"deleting old data for tour %@ (%@)", aTour.title, aTour.tourID);
+                    for (TourSiteOrRoute *aComponent in aTour.components) {
+                        [aComponent deleteCachedMedia];
+                        [CoreDataManager deleteObject:aComponent];
+                    }
+                    
+                    for (TourLink *aLink in aTour.links) {
+                        [CoreDataManager deleteObject:aLink];
+                    }
+                }
+            }
+            [_tours setObject:aTour forKey:tourID];
+            [oldTourKeys removeObject:tourID];
+        }
+        
+        for (NSString *oldTourKey in oldTourKeys) {
+            CampusTour *aTour = [self tourWithID:oldTourKey];
+            NSLog(@"deleting old tour %@ (%@)", aTour.title, aTour.tourID);
+            [_tours removeObjectForKey:aTour.tourID];
+            [aTour deleteCachedMedia];
+            [CoreDataManager deleteObject:aTour];
+        }
+        [CoreDataManager saveData];
+        
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:TourInfoLoadedNotification object:nil]];
+    }
+    
+    else if ([command isEqualToString:@"tourDetails"]
+             &&[JSONObject isKindOfClass:[NSDictionary class]])
+    {
+        NSString *tourID = [request.params objectForKey:@"tourId"];
+        CampusTour *aTour = [self tourWithID:tourID];
+        aTour.title = [JSONObject objectForKey:@"title"];
+        aTour.summary = [JSONObject objectForKey:@"description-top"];
+        aTour.moreInfo = [JSONObject objectForKey:@"description-bottom"];
+        aTour.feedbackSubject = [[JSONObject objectForKey:@"feedback"] objectForKey:@"subject"];
+        
+        NSInteger sortOrder = 0;
+        for (NSDictionary *linkInfo in [JSONObject objectForKey:@"links"]) {
+            TourLink *aLink = [CoreDataManager insertNewObjectForEntityForName:@"TourLink"];
+            aLink.title = [linkInfo objectForKey:@"title"];
+            aLink.url = [linkInfo objectForKey:@"url"];
+            aLink.sortOrder = [NSNumber numberWithInt:sortOrder];
+            aLink.tour = aTour;
+            sortOrder++;
+        }
+        
+        TourSiteOrRoute *firstSite = nil;
+        TourSiteOrRoute *lastRoute = nil;
+        
+        sortOrder = 0;
+        for (NSDictionary *siteInfo in [JSONObject objectForKey:@"sites"]) {
+            NSString *siteID = [siteInfo objectForKey:@"id"];
+            TourSiteOrRoute *aSite = [self tourSiteWithID:siteID];
+            aSite.title = [siteInfo objectForKey:@"title"];
+            aSite.tour = aTour;
+            aSite.previousComponent = lastRoute;
+            
+            NSDictionary *coords = [siteInfo objectForKey:@"latlon"];
+            if (coords) {
+                aSite.latitude = [NSNumber numberWithFloat:[[coords objectForKey:@"latitude"] floatValue]];
+                aSite.longitude = [NSNumber numberWithFloat:[[coords objectForKey:@"longitude"] floatValue]];
+            }
+            aSite.photoURL = [siteInfo objectForKey:@"photo-url"];
+            aSite.audioURL = [siteInfo objectForKey:@"audio-url"];
+            
+            [aSite updateBody:[siteInfo objectForKey:@"content"]];
+            NSDictionary *routeInfo = [siteInfo objectForKey:@"exit-directions"];
+
+            lastRoute = [self tourRouteWithStartID:siteID];
+            [lastRoute updateRouteWithInfo:routeInfo];
+            lastRoute.previousComponent = aSite;
+            lastRoute.tour = aTour;
+            
+            if (firstSite == nil)
+                firstSite = aSite;
+            
+            aSite.sortOrder = [NSNumber numberWithInt:sortOrder];
+            sortOrder++;
+        }
+        
+        // link last stop to first to make a loop
+        firstSite.previousComponent = lastRoute;
+        [CoreDataManager saveData];
+        
+        NSDictionary *startInfo = [JSONObject objectForKey:@"start-locations"];
+        aTour.startLocationHeader = [startInfo objectForKey:@"header"];
+        NSArray *startLocations = [startInfo objectForKey:@"items"];
+        
+        for (NSDictionary *siteInfo in startLocations) {
+            NSString *locationID = [siteInfo objectForKey:@"id"];
+            TourStartLocation *aStartLocation = [self tourStartLocationWithID:locationID];
+            
+            aStartLocation.title = [siteInfo objectForKey:@"title"];
+            aStartLocation.photoURL = [siteInfo objectForKey:@"photo-url"];
+            aStartLocation.body = [siteInfo objectForKey:@"content"];
+            NSString *siteID = [siteInfo objectForKey:@"start-site"];
+            aStartLocation.startSite = [self findSiteWithID:siteID];
+        }
+        
+        [CoreDataManager saveData];
+        
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:TourDetailsLoadedNotification object:tourID]];
+    }
+}
+
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
+    return YES;
+}
+
+- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
+    if ([request.userData isEqualToString:@"toursList"]) {
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:TourInfoFailedToLoadNotification object:nil]];
+    } else {
+        NSString *tourID = [request.params objectForKey:@"tourId"];
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:TourDetailsFailedToLoadNotification object:tourID]];
+    }
+}
+
+/*
+ - (id<UIAlertViewDelegate>)request:(MITMobileWebAPI *)request alertViewDelegateForError:(NSError *)error
+ - (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error;
+ */
+
+#pragma mark -
+
+- (id)init {
+    if (self == [super init]) {
+        _tours = [[NSMutableDictionary alloc] init];
+        NSArray *allTours = [CoreDataManager objectsForEntity:CampusTourEntityName matchingPredicate:nil];
+        for (CampusTour *aTour in allTours) {
+            [_tours setObject:aTour forKey:aTour.tourID];
+        }
+        _activeTour = nil;
+        _routes = nil;
+        _sites = nil;
+        _mapRoute = nil;
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [_activeTour release];
+    [_routes release];
+    [_sites release];
+    [_mapRoute release];
+    [_tours release];
+    [super dealloc];
+}
+
+@end

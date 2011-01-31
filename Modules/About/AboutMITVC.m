@@ -1,5 +1,5 @@
 #import "AboutMITVC.h"
-#import "UITableView+MITUIAdditions.h"
+#import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 
 @implementation AboutMITVC

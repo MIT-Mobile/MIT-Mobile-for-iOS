@@ -1,6 +1,5 @@
 #import <UIKit/UIKit.h>
 #import "CalendarEventsViewController.h"
-#import "CalendarConstants.h"
 
 @interface EventListTableView : UITableView <UITableViewDelegate, UITableViewDataSource> {
 

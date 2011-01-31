@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
-#import <MessageUI/MFMailComposeViewController.h>
 #import "PersonDetails.h"
 #import "MITMobileWebAPI.h"
 
@@ -9,9 +8,8 @@
 	<ABPeoplePickerNavigationControllerDelegate, 
 	 ABNewPersonViewControllerDelegate, 
 	 ABPersonViewControllerDelegate, 
-	 JSONLoadedDelegate,
 	 //UIAlertViewDelegate, 
-	 MFMailComposeViewControllerDelegate> 
+     JSONLoadedDelegate> 
 {
 
 	PersonDetails *personDetails;

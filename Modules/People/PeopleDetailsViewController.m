@@ -6,6 +6,7 @@
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
+#import "MITMailComposeController.h"
 
 @implementation PeopleDetailsViewController
 
@@ -496,33 +497,7 @@
 
 - (void)emailIconTapped:(NSString *)email
 {
-	Class mailClass = (NSClassFromString(@"MFMailComposeViewController"));
-	if ((mailClass != nil) && [mailClass canSendMail]) {
-		
-		MFMailComposeViewController *aController = [[MFMailComposeViewController alloc] init];
-		aController.mailComposeDelegate = self;
-		
-		NSArray *toRecipient = [NSArray arrayWithObject:email]; 
-		[aController setToRecipients:toRecipient];
-		
-		MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-		[appDelegate presentAppModalViewController:aController animated:YES];
-		[aController release];
-		
-	} else {
-		NSURL *externURL = [NSURL URLWithString:[NSString stringWithFormat:@"mailto://%@", email]];
-		if ([[UIApplication sharedApplication] canOpenURL:externURL])
-			[[UIApplication sharedApplication] openURL:externURL];
-	}
-}
-
-#pragma mark Email modal view controller methods
-
-// Dismisses the email composition interface when users tap Cancel or Send. Proceeds to update the message field with the result of the operation.
-- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error 
-{	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
+    [MITMailComposeController presentMailControllerWithEmail:email subject:nil body:nil];
 }
 
 

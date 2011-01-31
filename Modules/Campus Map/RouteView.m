@@ -16,7 +16,7 @@
 
 - (void)drawRect:(CGRect)rect 
 {
-
+/*
 	// get the context 
 	CGContextRef c = UIGraphicsGetCurrentContext();	
 	
@@ -49,7 +49,7 @@
 		///CGContextClosePath(c);
 		//CGContextStrokePath(c);
 	}
-	
+	*/
 }
 
 

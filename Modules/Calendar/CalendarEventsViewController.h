@@ -1,20 +1,26 @@
 #import <UIKit/UIKit.h>
 #import "MITMobileWebAPI.h"
 #import "MITMapView.h"
-#import "CalendarConstants.h"
 #import "EventCategoriesTableView.h"
 #import "EventListTableView.h"
 #import "CalendarMapView.h"
 #import "DatePickerViewController.h"
+#import "MITSearchDisplayController.h"
+#import "CalendarDataManager.h"
+#import "NavScrollerView.h"
 
 @class MITSearchDisplayController;
 
 @class EventListTableView;
 @class CalendarEventMapAnnotation;
+@class MITEventList;
 
-@interface CalendarEventsViewController : UIViewController <UIScrollViewDelegate, UISearchBarDelegate, MITMapViewDelegate, JSONLoadedDelegate, DatePickerViewControllerDelegate> {
+@interface CalendarEventsViewController : UIViewController <UIScrollViewDelegate, UISearchBarDelegate,
+MITMapViewDelegate, MITSearchDisplayDelegate, JSONLoadedDelegate, NavScrollerDelegate,
+DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 
-	CalendarEventListType activeEventList; // today, browse, acad, holidays...
+	//CalendarEventListType activeEventList; // today, browse, acad, holidays...
+	MITEventList *activeEventList;
 	NSDate *startDate;
 	NSDate *endDate;
 	NSArray *events;
@@ -24,11 +30,8 @@
 	CalendarMapView *theMapView;
 	
 	// views in the header
-	UIScrollView *navScrollView;
+	NavScrollerView *navScrollView;
 	UISearchBar *theSearchBar;
-	NSMutableArray *navButtons;
-	UIButton *leftScrollButton;
-	UIButton *rightScrollButton;
 	
 	UIView *datePicker;
 	
@@ -50,12 +53,17 @@
 
     MITMobileWebAPI *categoriesRequest;
 	BOOL categoriesRequestDispatched;
+	
+	NSInteger loadingIndicatorCount;
+    
+    NSString *queuedButton;
 }
 
 @property (nonatomic, assign) BOOL showScroller;
 @property (nonatomic, assign) BOOL showList;
 @property (nonatomic, assign) NSInteger catID;
-@property (nonatomic, assign) CalendarEventListType activeEventList;
+//@property (nonatomic, assign) CalendarEventListType activeEventList;
+@property (nonatomic, retain) MITEventList *activeEventList;
 
 @property (nonatomic, retain) UITableView *tableView;
 @property (nonatomic, retain) CalendarMapView *mapView;
@@ -72,10 +80,11 @@
 
 - (void)mapButtonToggled;
 - (void)listButtonToggled;
-- (void)sideButtonPressed:(id)sender;
-- (void)buttonPressed:(id)sender;
+//- (void)sideButtonPressed:(id)sender;
+//- (void)buttonPressed:(id)sender;
 
-- (void)reloadView:(CalendarEventListType)listType;
+//- (void)reloadView:(CalendarEventListType)listType;
+- (void)reloadView:(MITEventList *)listType;
 - (void)selectScrollerButton:(NSString *)buttonTitle;
 
 

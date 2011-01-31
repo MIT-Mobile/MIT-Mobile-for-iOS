@@ -5,13 +5,11 @@
 
 @interface MITSearchDisplayController (Private)
 
-- (void)showSearchOverlayAnimated:(BOOL)animated;
-- (void)hideSearchOverlayAnimated:(BOOL)animated;
 - (void)releaseSearchOverlay;
 - (void)searchOverlayTapped;
-- (void)setupSearchResultsTableView;
 
 @end
+
 
 
 @implementation MITSearchDisplayController
@@ -19,34 +17,47 @@
 @synthesize searchBar = _searchBar,
 searchContentsController = _searchContentsController,
 searchResultsTableView = _searchResultsTableView,
-delegate = _delegate;
-
-@dynamic active, searchResultsDelegate, searchResultsDataSource;
+delegate = _delegate,
+searchResultsDelegate = _searchResultsDelegate,
+searchResultsDataSource = _searchResultsDataSource,
+active = _active;
 
 - (id)initWithSearchBar:(UISearchBar *)searchBar contentsController:(UIViewController *)viewController
 {
     if (self = [super init]) {
         _searchBar = searchBar;
         _searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
-
-        _searchBarDelegate = _searchBar.delegate;
         _searchBar.delegate = self;
-        
         _searchContentsController = viewController;
-        _delegate = nil;
-        _searchResultsDelegate = nil;
-        _searchResultsDataSource = nil;
-        
-        _searchResultsTableView = nil;
-        
+        CGRect frame = CGRectMake(0.0, _searchBar.frame.size.height, viewController.view.frame.size.width,
+                                  viewController.view.frame.size.height - _searchBar.frame.size.height);
+        self.searchResultsTableView = [[[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain] autorelease];
+        self.searchResultsTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        _searchResultsTableIsDefault = YES;
+    }
+    return self;
+}
+
+- (id)initWithFrame:(CGRect)frame searchBar:(UISearchBar *)searchBar contentsController:(UIViewController *)viewController {
+    if (self = [super init]) {
+        _searchBar = searchBar;
+        _searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
+        _searchBar.delegate = self;
+        _searchContentsController = viewController;
+        self.searchResultsTableView = [[[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain] autorelease];
+        self.searchResultsTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        _searchResultsTableIsDefault = YES;
     }
     return self;
 }
 
 - (void)setSearchResultsTableView:(UITableView *)tableView {
-    _searchResultsTableView = [tableView retain];
-    _searchResultsTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    
+    if (_searchResultsTableView != tableView) {
+        if (_searchResultsTableIsDefault)
+            [_searchResultsTableView release];
+        _searchResultsTableIsDefault = NO;
+        _searchResultsTableView = [tableView retain];
+    }
     if (tableView.delegate != nil) {
         _searchResultsDelegate = tableView.delegate;
     }
@@ -60,21 +71,9 @@ delegate = _delegate;
     _searchResultsTableView.delegate = delegate;
 }
 
-- (id<UITableViewDelegate>)searchResultsDelegate {
-    return _searchResultsDelegate;
-}
-
 - (void)setSearchResultsDataSource:(id<UITableViewDataSource>)dataSource {
     _searchResultsDataSource = dataSource;
     _searchResultsTableView.dataSource = dataSource;
-}
-
-- (id<UITableViewDataSource>)searchResultsDataSource {
-    return _searchResultsDataSource;
-}
-
-- (BOOL)active {
-    return _active;
 }
 
 - (void)setActive:(BOOL)active {
@@ -85,27 +84,37 @@ delegate = _delegate;
     if (active != _active) {
         _active = active;
         
-        [_searchBar setShowsCancelButton:active animated:animated];
-
-        if (active) {
+        if (_active) {
             [self showSearchOverlayAnimated:animated];
-            [_searchBar becomeFirstResponder];
+            [self focusSearchBarAnimated:animated];
         } else {
             [self hideSearchOverlayAnimated:animated];
-            [_searchBar resignFirstResponder];
+            [self unfocusSearchBarAnimated:animated];
         }
     }
 }
 
 - (void)showSearchOverlayAnimated:(BOOL)animated {
-	if (!_searchOverlay) {
-        CGRect frame = CGRectMake(0.0, _searchBar.frame.size.height, _searchBar.frame.size.width, _searchContentsController.view.frame.size.height - _searchBar.frame.size.height);
-		_searchOverlay = [[UIControl alloc] initWithFrame:frame];
+    if (_searchOverlay) {
+        [_searchOverlay removeFromSuperview];
+    }
+    else {
+        CGRect frame;
+        if (self.searchResultsTableView != nil) {
+            frame = _searchResultsTableView.frame;
+        } else {
+            CGFloat yOrigin = _searchBar.frame.origin.y + _searchBar.frame.size.height;
+            CGSize containerSize = _searchContentsController.view.frame.size;
+            frame = CGRectMake(0.0, yOrigin, containerSize.width, containerSize.height - yOrigin);
+        }
+        _searchOverlay = [[UIControl alloc] initWithFrame:frame];
         _searchOverlay.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.8];
         [_searchOverlay addTarget:self action:@selector(searchOverlayTapped) forControlEvents:UIControlEventTouchDown];
-		_searchOverlay.alpha = 0.0;
-		[_searchContentsController.view addSubview:_searchOverlay];
-	}
+    }
+    
+    _searchOverlay.alpha = 0.0;
+    [_searchContentsController.view addSubview:_searchOverlay];
+
     if (animated) {
         [UIView beginAnimations:nil context:NULL];
         [UIView setAnimationDuration:kSearchOverlayAnimationDuration];
@@ -119,20 +128,18 @@ delegate = _delegate;
 }
 
 - (void)hideSearchOverlayAnimated:(BOOL)animated {
-	if (_searchOverlay) {
+    if (_searchOverlay) {
         if (animated) {
             [UIView beginAnimations:nil context:NULL];
             [UIView setAnimationDuration:kSearchOverlayAnimationDuration];
             [UIView setAnimationDelegate:self];
             [UIView setAnimationDidStopSelector:@selector(releaseSearchOverlay)];
-        }
-        
-		_searchOverlay.alpha = 0.0;
-
-        if (animated) {
+            _searchOverlay.alpha = 0.0;
             [UIView commitAnimations];
+        } else {
+            [self releaseSearchOverlay];
         }
-	}
+    }
 }
 
 - (void)releaseSearchOverlay {
@@ -143,110 +150,122 @@ delegate = _delegate;
 
 - (void)searchOverlayTapped {
     // if there are still search results, keep them up
-	if ([_searchResultsTableView numberOfSections] && [_searchResultsTableView numberOfRowsInSection:0]) {
+	//if ([_searchResultsTableView numberOfSections] && [_searchResultsTableView numberOfRowsInSection:0]) {
+    if ([_searchBar.text length]) {
 		[self setActive:NO animated:YES];
 	} else {
 		[self searchBarCancelButtonClicked:_searchBar];
 	}
+    
+    if ([self.delegate respondsToSelector:@selector(searchOverlayTapped)]) {
+        [self.delegate searchOverlayTapped];
+    }
 }
+
+- (void)focusSearchBarAnimated:(BOOL)animated {
+    [_searchBar setShowsCancelButton:YES animated:animated];
+    [_searchBar becomeFirstResponder];
+}
+
+- (void)unfocusSearchBarAnimated:(BOOL)animated {
+    [_searchBar setShowsCancelButton:NO animated:animated];
+    [_searchBar resignFirstResponder];
+    _active = NO;
+}
+
+#pragma mark UISearchBarDelegate forwarding
 
 #pragma mark -
 #pragma mark UISearchBarDelegate wrapper
 
 - (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBar:selectedScopeButtonIndexDidChange:)]) {
-        [_searchBarDelegate searchBar:searchBar selectedScopeButtonIndexDidChange:selectedScope];
+    if ([self.delegate respondsToSelector:@selector(searchBar:selectedScopeButtonIndexDidChange:)]) {
+        [self.delegate searchBar:searchBar selectedScopeButtonIndexDidChange:selectedScope];
     }
 }
 
 - (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBar:shouldChangeTextInRange:replacementText:)]) {
-        return [_searchBarDelegate searchBar:searchBar shouldChangeTextInRange:range replacementText:text];
+    if ([self.delegate respondsToSelector:@selector(searchBar:shouldChangeTextInRange:replacementText:)]) {
+        return [self.delegate searchBar:searchBar shouldChangeTextInRange:range replacementText:text];
     }
     return YES;
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBar:textDidChange:)]) {
-        [_searchBarDelegate searchBar:searchBar textDidChange:searchText];
-    }
-    
-    if ([_delegate respondsToSelector:@selector(searchDisplayController:shouldReloadTableForSearchString:)]) {
-        if ([_delegate searchDisplayController:nil shouldReloadTableForSearchString:searchText]) {
-            [_searchResultsTableView reloadData];
-        }
+    if ([self.delegate respondsToSelector:@selector(searchBar:textDidChange:)]) {
+        [self.delegate searchBar:searchBar textDidChange:searchText];
     }
 }
 
 - (void)searchBarBookmarkButtonClicked:(UISearchBar *)searchBar {
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBarBookmarkButtonClicked:)]) {
-        [_searchBarDelegate searchBarBookmarkButtonClicked:searchBar];
+    if ([self.delegate respondsToSelector:@selector(searchBarBookmarkButtonClicked:)]) {
+        [self.delegate searchBarBookmarkButtonClicked:searchBar];
     }
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     _searchBar.text = nil;
-    [_searchResultsTableView removeFromSuperview];
     [self setActive:NO animated:YES];
+    [_searchResultsTableView removeFromSuperview];
     
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBarCancelButtonClicked:)]) {
-        [_searchBarDelegate searchBarCancelButtonClicked:searchBar];
+    if ([self.delegate respondsToSelector:@selector(searchBarCancelButtonClicked:)]) {
+        [self.delegate searchBarCancelButtonClicked:searchBar];
     }
 }
 
-/*
 // available in OS 3.2 and later.
 - (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar {
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBarResultsListButtonClicked:)]) {
-        [_searchBarDelegate searchBarResultsListButtonClicked:searchBar];
+    if ([self.delegate respondsToSelector:@selector(searchBarResultsListButtonClicked:)]) {
+        [self.delegate searchBarResultsListButtonClicked:searchBar];
     }
 }
-*/
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    [self setActive:NO animated:YES];
+    [self unfocusSearchBarAnimated:YES];
     
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBarSearchButtonClicked:)]) {
-        [_searchBarDelegate searchBarSearchButtonClicked:searchBar];
+    if ([self.delegate respondsToSelector:@selector(searchBarSearchButtonClicked:)]) {
+        [self.delegate searchBarSearchButtonClicked:searchBar];
     }
 }
 
 // called before searchDisplayControllerWillBeginSearch:
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
-    [self setActive:YES animated:YES];
-    
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBarShouldBeginEditing:)]) {
-        return [_searchBarDelegate searchBarShouldBeginEditing:searchBar];
+    if ([self.delegate respondsToSelector:@selector(searchBarShouldBeginEditing:)]) {
+        return [self.delegate searchBarShouldBeginEditing:searchBar];
     }
     return YES;
 }
 
 // called between searchDisplayControllerWillEndSearch: and searchDisplayControllerDidEndSearch:
 - (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar {
-    if ([_delegate respondsToSelector:@selector(searchDisplayControllerWillEndSearch:)]) {
-        [_delegate searchDisplayControllerWillEndSearch:nil];
-    }
-    
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBarShouldEndEditing:)]) {
-        return [_searchBarDelegate searchBarShouldEndEditing:searchBar];
+    if ([self.delegate respondsToSelector:@selector(searchBarShouldEndEditing:)]) {
+        return [self.delegate searchBarShouldEndEditing:searchBar];
     }
     return YES;
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBarTextDidBeginEditing:)]) {
-        [_searchBarDelegate searchBarTextDidBeginEditing:searchBar];
+    [self setActive:YES animated:YES];
+    
+    if ([self.delegate respondsToSelector:@selector(searchBarTextDidBeginEditing:)]) {
+        [self.delegate searchBarTextDidBeginEditing:searchBar];
     }
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
-    if ([_searchBarDelegate respondsToSelector:@selector(searchBarTextDidEndEditing:)]) {
-        [_searchBarDelegate searchBarTextDidEndEditing:searchBar];
+    if ([self.delegate respondsToSelector:@selector(searchBarTextDidEndEditing:)]) {
+        [self.delegate searchBarTextDidEndEditing:searchBar];
     }
 }
 
 - (void)dealloc {
-    [_searchResultsTableView release];
+    self.delegate = nil;
+    _searchResultsDelegate = nil;
+    _searchResultsDataSource = nil;
+    self.searchResultsTableView = nil;
+    
+    _searchBar = nil;
+    _searchContentsController = nil;
     [super dealloc];
 }
 

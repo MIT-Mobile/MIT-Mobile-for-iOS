@@ -30,6 +30,7 @@
 +(void)deleteObject:(NSManagedObject *)object;
 +(void)saveData;
 +(void)saveDataWithTemporaryMergePolicy:(id)temporaryMergePolicy;
++(BOOL)wipeData;
 
 +(NSManagedObjectModel *)managedObjectModel;
 +(NSManagedObjectContext *)managedObjectContext;
@@ -48,6 +49,7 @@
 -(void)deleteObjects:(NSArray *)objects;
 -(void)deleteObject:(NSManagedObject *)object;
 -(void)saveData;
+-(BOOL)wipeData;
 
 // added for migrating store
 -(NSString *)storeFileName;

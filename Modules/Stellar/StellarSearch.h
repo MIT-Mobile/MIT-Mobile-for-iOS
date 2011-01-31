@@ -1,7 +1,7 @@
 
 #import <Foundation/Foundation.h>
 #import "StellarModel.h"
-
+#import "MITSearchDisplayController.h"
 
 @class StellarMainTableController;
 
@@ -9,6 +9,7 @@
 	UITableViewDataSource, 
 	UITableViewDelegate, 
 	UISearchBarDelegate,
+    MITSearchDisplayDelegate,
 	UIAlertViewDelegate,
 	ClassesSearchDelegate> {
 

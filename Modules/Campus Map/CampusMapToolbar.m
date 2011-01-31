@@ -13,7 +13,7 @@
 
 
 - (void)drawRect:(CGRect)rect {
-	UIImage *image = [[UIImage imageNamed:@"toolbar-background.png"] stretchableImageWithLeftCapWidth:0.0 topCapHeight:0.0];
+	UIImage *image = [[UIImage imageNamed:@"global/toolbar-background.png"] stretchableImageWithLeftCapWidth:0.0 topCapHeight:0.0];
 	[image drawInRect:rect];
 }
 

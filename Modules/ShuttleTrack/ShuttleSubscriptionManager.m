@@ -135,19 +135,24 @@
 }
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)jsonObject {
-	NSDictionary *jsonDict = jsonObject;
-	
-	if([jsonDict objectForKey:@"success"]) {		
-		NSNumber *startTimeNumber = [jsonDict objectForKey:@"start_time"];
-		NSNumber *endTimeNumber = [jsonDict objectForKey:@"expire_time"];
+	if ([jsonObject isKindOfClass:[NSDictionary class]]) {
+		NSDictionary *jsonDict = jsonObject;
 		
-		NSDate *startTime = [NSDate dateWithTimeIntervalSince1970:[startTimeNumber doubleValue]];
-		NSDate *endTime = [NSDate dateWithTimeIntervalSince1970:[endTimeNumber doubleValue]];
-		
-		[ShuttleSubscriptionManager addSubscriptionForRouteID:routeID atStopID:stopID startTime:startTime endTime:endTime];
-		[delegate subscriptionSucceededWithObject:object];
+		if([jsonDict objectForKey:@"success"]) {		
+			NSNumber *startTimeNumber = [jsonDict objectForKey:@"start_time"];
+			NSNumber *endTimeNumber = [jsonDict objectForKey:@"expire_time"];
+			
+			NSDate *startTime = [NSDate dateWithTimeIntervalSince1970:[startTimeNumber doubleValue]];
+			NSDate *endTime = [NSDate dateWithTimeIntervalSince1970:[endTimeNumber doubleValue]];
+			
+			[ShuttleSubscriptionManager addSubscriptionForRouteID:routeID atStopID:stopID startTime:startTime endTime:endTime];
+			[delegate subscriptionSucceededWithObject:object];
+		} else {
+			[delegate subscriptionFailedWithObject:object passkeyError:YES];
+		}
 	} else {
-		[delegate subscriptionFailedWithObject:object passkeyError:YES];
+		NSLog(@"%s received non-dictionary response for %@", __FUNCTION__, request);
+		NSLog(@"response was %@", jsonObject);
 	}
 }
 
