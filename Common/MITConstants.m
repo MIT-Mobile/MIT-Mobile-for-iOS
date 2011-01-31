@@ -1,17 +1,15 @@
 #import "MITConstants.h"
 
 // common URLs
-#ifdef USE_MOBILE_DEV
+#if defined(USE_MOBILE_DEV)
     NSString * const MITMobileWebDomainString =        @"mobile-dev.mit.edu";
     NSString * const MITMobileWebAPIURLString = @"http://mobile-dev.mit.edu/api/";
-#else
-    #ifdef USE_MOBILE_STAGE
+#elif defined(USE_MOBILE_STAGE)
     NSString * const MITMobileWebDomainString =        @"mobile-stage.mit.edu";
     NSString * const MITMobileWebAPIURLString = @"http://mobile-stage.mit.edu/api/";
-    #else
+#else
     NSString * const MITMobileWebDomainString =        @"m.mit.edu";
     NSString * const MITMobileWebAPIURLString = @"http://m.mit.edu/api/";
-    #endif
 #endif
 
 // keys for NSUserDefaults dictionary go here (app preferences)
