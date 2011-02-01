@@ -1,4 +1,5 @@
 #import "MobileWebModule.h"
+#import "MITMobileServerConfiguration.h"
 
 @implementation MobileWebModule
 

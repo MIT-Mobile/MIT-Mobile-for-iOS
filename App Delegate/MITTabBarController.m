@@ -4,6 +4,7 @@
 #import "MITModule.h"
 #import "MITMoreListController.h"
 #import "DummyRotatingViewController.h"
+#import "MITMobileServerConfiguration.h"
 
 #define TAB_COUNT 4
 
