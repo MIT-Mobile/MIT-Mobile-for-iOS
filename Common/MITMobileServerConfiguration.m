@@ -2,32 +2,30 @@
 //  MITMobileServerConfiguration.m
 //
 
+#include <assert.h>
 #import "MITMobileServerConfiguration.h"
+#import "Secret.h"
 
-#define MMW_DEFAULT_SERVER_INDEX 0
+#ifndef MobileAPI_DefaultServerIndex
+    #define MobileAPI_DefaultServerIndex 0
+#endif
 
 NSArray* MITMobileWebGetAPIServerList( void ) {
     static NSMutableArray* array = nil;
     
     if (array == nil) {
         array = [[NSMutableArray alloc] init];
-        [array addObject:[NSURL URLWithString:@"http://mobile-stage.mit.edu/api"]];
+        for (int i = 0; MobileAPIServers[i] != nil; ++i) {
+            NSURL *url = [NSURL URLWithString:MobileAPIServers[i]];
+            if (url != nil) {
+                NSLog( @"Got %@", [url absoluteString]);
+                [array addObject:url];
+            } else {
+                NSLog(@"API URL '%@' is malformed", *url);
+            }
+        }
         
-        /* I am basing the below URLs from the behavior between the different
-         *  build schemes currently in use. A 'Debug' build may use any
-         *  of the URLs but will default to the Dev server. A 'Release' build
-         *  can use either the staging or the production server and will
-         *  default to the production URL.
-         */
-#if defined(USE_MOBILE_DEV)
-        [array addObject:[NSURL URLWithString:@"http://m.mit.edu/api"]];
-        [array insertObject:[NSURL URLWithString:@"http://mobile-dev.mit.edu/api"]
-                    atIndex:MMW_DEFAULT_SERVER_INDEX];
-#else
-        [array insertObject:[NSURL URLWithString:@"http://m.mit.edu/api"]
-                    atIndex:MMW_DEFAULT_SERVER_INDEX];
-#endif
-        
+        assert([array count] >= 1);
     }
     
     return [[array copy] autorelease];
@@ -35,7 +33,7 @@ NSArray* MITMobileWebGetAPIServerList( void ) {
 
 
 NSURL* MITMobileWebGetDefaultServerURL( void ) {
-    return [[[MITMobileWebGetAPIServerList() objectAtIndex:MMW_DEFAULT_SERVER_INDEX] copy] autorelease];
+    return [[[MITMobileWebGetAPIServerList() objectAtIndex:MobileAPI_DefaultServerIndex] copy] autorelease];
 }
 
 
