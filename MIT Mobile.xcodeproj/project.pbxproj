@@ -2211,7 +2211,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1D6058940D05DD3E006BFB54 /* Debug - Development */ = {
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -2235,9 +2235,9 @@
 				PRODUCT_NAME = "MIT Mobile";
 				SDKROOT = iphoneos;
 			};
-			name = "Debug - Development";
+			name = Debug;
 		};
-		1D6058950D05DD3E006BFB54 /* Release - Production */ = {
+		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -2259,9 +2259,9 @@
 				PRODUCT_NAME = "MIT Mobile";
 				SDKROOT = iphoneos;
 			};
-			name = "Release - Production";
+			name = Release;
 		};
-		C01FCF4F08A954540054247B /* Debug - Development */ = {
+		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -2274,7 +2274,7 @@
 					"\"Facebook Connect\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				OTHER_CFLAGS = "-DUSE_MOBILE_DEV";
+				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -2283,9 +2283,9 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos4.2;
 			};
-			name = "Debug - Development";
+			name = Debug;
 		};
-		C01FCF5008A954540054247B /* Release - Production */ = {
+		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -2305,9 +2305,9 @@
 				PREBINDING = NO;
 				SDKROOT = iphoneos4.2;
 			};
-			name = "Release - Production";
+			name = Release;
 		};
-		DE30C9EE112205BA00598A1A /* Distribution - Production - App Store */ = {
+		DE30C9EE112205BA00598A1A /* Distribution - App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -2329,9 +2329,9 @@
 				SDKROOT = iphoneos4.2;
 				VALIDATE_PRODUCT = YES;
 			};
-			name = "Distribution - Production - App Store";
+			name = "Distribution - App Store";
 		};
-		DE30C9EF112205BA00598A1A /* Distribution - Production - App Store */ = {
+		DE30C9EF112205BA00598A1A /* Distribution - App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -2355,149 +2355,9 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 			};
-			name = "Distribution - Production - App Store";
+			name = "Distribution - App Store";
 		};
-		DE8B4CF7110F92DC00B7D991 /* Debug - Staging */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"${SDK_DIR}/usr/include/libxml2",
-					"\"Facebook Connect\"",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				OTHER_CFLAGS = "-DUSE_MOBILE_STAGE";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
-				PREBINDING = NO;
-				SDKROOT = iphoneos4.2;
-			};
-			name = "Debug - Staging";
-		};
-		DE8B4CF8110F92DC00B7D991 /* Debug - Staging */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
-				HEADER_SEARCH_PATHS = (
-					ZXing/ZXingWidget/Classes,
-					ZXing/ZXingWidget/CoreSrc,
-					"${SDK_DIR}/usr/include/libxml2",
-					"\"Facebook Connect\"",
-				);
-				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
-					"${SDK_DIR}/usr/include/libxml2",
-				);
-				PRODUCT_NAME = "MIT Mobile";
-				SDKROOT = iphoneos;
-			};
-			name = "Debug - Staging";
-		};
-		DE8B4DBE110FAB1100B7D991 /* Debug - Production */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"${SDK_DIR}/usr/include/libxml2",
-					"\"Facebook Connect\"",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
-				PREBINDING = NO;
-				SDKROOT = iphoneos4.2;
-			};
-			name = "Debug - Production";
-		};
-		DE8B4DBF110FAB1100B7D991 /* Debug - Production */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
-				HEADER_SEARCH_PATHS = (
-					ZXing/ZXingWidget/Classes,
-					ZXing/ZXingWidget/CoreSrc,
-					"${SDK_DIR}/usr/include/libxml2",
-					"\"Facebook Connect\"",
-				);
-				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
-					"${SDK_DIR}/usr/include/libxml2",
-				);
-				PRODUCT_NAME = "MIT Mobile";
-				SDKROOT = iphoneos;
-			};
-			name = "Debug - Production";
-		};
-		DEB0B3DD11122D3200021561 /* Release - Staging */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"${SDK_DIR}/usr/include/libxml2",
-					"\"Facebook Connect\"",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				OTHER_CFLAGS = "-DUSE_MOBILE_STAGE";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
-				PREBINDING = NO;
-				SDKROOT = iphoneos4.2;
-			};
-			name = "Release - Staging";
-		};
-		DEB0B3DE11122D3200021561 /* Release - Staging */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
-				HEADER_SEARCH_PATHS = (
-					ZXing/ZXingWidget/Classes,
-					ZXing/ZXingWidget/CoreSrc,
-					"${SDK_DIR}/usr/include/libxml2",
-					"\"Facebook Connect\"",
-				);
-				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
-					"${SDK_DIR}/usr/include/libxml2",
-				);
-				PRODUCT_NAME = "MIT Mobile";
-				SDKROOT = iphoneos;
-			};
-			name = "Release - Staging";
-		};
-		DEF93C661110C9C4009DF154 /* Distribution - Production - Ad Hoc */ = {
+		DEF93C661110C9C4009DF154 /* Distribution - Ad Hoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -2520,9 +2380,9 @@
 				SDKROOT = iphoneos4.2;
 				VALIDATE_PRODUCT = YES;
 			};
-			name = "Distribution - Production - Ad Hoc";
+			name = "Distribution - Ad Hoc";
 		};
-		DEF93C671110C9C4009DF154 /* Distribution - Production - Ad Hoc */ = {
+		DEF93C671110C9C4009DF154 /* Distribution - Ad Hoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -2546,59 +2406,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 			};
-			name = "Distribution - Production - Ad Hoc";
-		};
-		EB7F340710CD97D200188BCD /* Distribution - Staging - Ad Hoc */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Massachusetts Institute of Technology";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"${SDK_DIR}/usr/include/libxml2",
-					"\"Facebook Connect\"",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				OTHER_CFLAGS = "-DUSE_MOBILE_STAGE";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
-				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2301A1E0-88F6-49BD-8CFE-564AA6B7DD02";
-				SDKROOT = iphoneos4.2;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = "Distribution - Staging - Ad Hoc";
-		};
-		EB7F340810CD97D200188BCD /* Distribution - Staging - Ad Hoc */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				COPY_PHASE_STRIP = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
-				HEADER_SEARCH_PATHS = (
-					ZXing/ZXingWidget/Classes,
-					ZXing/ZXingWidget/CoreSrc,
-					"${SDK_DIR}/usr/include/libxml2",
-					"\"Facebook Connect\"",
-				);
-				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
-					"${SDK_DIR}/usr/include/libxml2",
-				);
-				PRODUCT_NAME = "MIT Mobile";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos;
-			};
-			name = "Distribution - Staging - Ad Hoc";
+			name = "Distribution - Ad Hoc";
 		};
 /* End XCBuildConfiguration section */
 
@@ -2606,32 +2414,24 @@
 		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MIT Mobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1D6058940D05DD3E006BFB54 /* Debug - Development */,
-				DE8B4CF8110F92DC00B7D991 /* Debug - Staging */,
-				DE8B4DBF110FAB1100B7D991 /* Debug - Production */,
-				DEB0B3DE11122D3200021561 /* Release - Staging */,
-				1D6058950D05DD3E006BFB54 /* Release - Production */,
-				EB7F340810CD97D200188BCD /* Distribution - Staging - Ad Hoc */,
-				DEF93C671110C9C4009DF154 /* Distribution - Production - Ad Hoc */,
-				DE30C9EF112205BA00598A1A /* Distribution - Production - App Store */,
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+				DEF93C671110C9C4009DF154 /* Distribution - Ad Hoc */,
+				DE30C9EF112205BA00598A1A /* Distribution - App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Release - Production";
+			defaultConfigurationName = Release;
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MIT Mobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C01FCF4F08A954540054247B /* Debug - Development */,
-				DE8B4CF7110F92DC00B7D991 /* Debug - Staging */,
-				DE8B4DBE110FAB1100B7D991 /* Debug - Production */,
-				DEB0B3DD11122D3200021561 /* Release - Staging */,
-				C01FCF5008A954540054247B /* Release - Production */,
-				EB7F340710CD97D200188BCD /* Distribution - Staging - Ad Hoc */,
-				DEF93C661110C9C4009DF154 /* Distribution - Production - Ad Hoc */,
-				DE30C9EE112205BA00598A1A /* Distribution - Production - App Store */,
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+				DEF93C661110C9C4009DF154 /* Distribution - Ad Hoc */,
+				DE30C9EE112205BA00598A1A /* Distribution - App Store */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Release - Production";
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

@@ -109,7 +109,7 @@ static EmergencyData *sharedEmergencyData = nil;
 - (BOOL) didReadMessage {
     NSDate *lastUpdate = [self lastUpdated];
     NSDate *lastRead = [self lastRead];
-#ifdef USE_MOBILE_DEV
+#ifdef DEBUG
     NSTimeInterval timeout = 60 * 30;
 #else
     NSTimeInterval timeout = 24 * 60 * 60 * 7;

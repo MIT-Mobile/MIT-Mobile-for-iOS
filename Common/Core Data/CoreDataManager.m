@@ -205,7 +205,7 @@
 - (BOOL)wipeData {
     NSError *error = nil;
     NSString *storePath = [self storeFileName];
-#ifdef USE_MOBILE_DEV
+#ifdef DEBUG
     NSString *backupPath = [storePath stringByAppendingString:@".bak"];
     if (![[NSFileManager defaultManager] copyItemAtPath:storePath toPath:backupPath error:&error]) {
         NSLog(@"Failed to copy old store, error %d: %@", [error code], [error description]);
