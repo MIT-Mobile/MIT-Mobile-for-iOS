@@ -2,7 +2,7 @@
 //  MITMobileServerConfiguration.m
 //
 
-#include <assert.h>
+#import <Foundation/Foundation.h>
 #import "MITMobileServerConfiguration.h"
 #import "Secret.h"
 
@@ -21,11 +21,11 @@ NSArray* MITMobileWebGetAPIServerList( void ) {
                 NSLog( @"Got %@", [url absoluteString]);
                 [array addObject:url];
             } else {
-                NSLog(@"API URL '%@' is malformed", *url);
+                NSLog(@"API URL '%@' is malformed", url);
             }
         }
         
-        assert([array count] >= 1);
+        NSCAssert(([array count] >= 1),@"There must be at least 1 valid API server");
     }
     
     return [[array copy] autorelease];
