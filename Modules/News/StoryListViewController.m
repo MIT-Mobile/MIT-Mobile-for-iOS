@@ -377,12 +377,12 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 	// add pile of text buttons
 	
 	// create buttons for nav scroller view
-    NSArray *buttonTitles = [[NSArray alloc] initWithObjects:
-                             NewsCategoryTopNews, NewsCategoryCampus, 
-                             NewsCategoryEngineering, 
-                             NewsCategoryScience, NewsCategoryManagement, 
-                             NewsCategoryArchitecture, NewsCategoryHumanities, 
-                             nil];
+    NSArray *buttonTitles = [NSArray arrayWithObjects:
+                                NewsCategoryTopNews, NewsCategoryCampus, 
+                                NewsCategoryEngineering, 
+                                NewsCategoryScience, NewsCategoryManagement, 
+                                NewsCategoryArchitecture, NewsCategoryHumanities, 
+                                nil];
     
     //NSMutableArray *buttons = [[NSMutableArray alloc] initWithCapacity:[buttonTitles count]];
     
