@@ -9,6 +9,7 @@
 #import "TabScrollerBackgroundView.h"
 #import "MITUIConstants.h"
 #import "MITMobileWebAPI.h"
+#include <objc/runtime.h>
 
 #define SCROLL_TAB_HORIZONTAL_PADDING 5.0
 #define SCROLL_TAB_HORIZONTAL_MARGIN  5.0
@@ -1109,7 +1110,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 				
                 result = cell;
             } else {
-                NSLog(@"%s attempted to show non-existent row (%d) with actual count of %d", _cmd, indexPath.row, self.stories.count);
+                NSLog(@"%s attempted to show non-existent row (%d) with actual count of %d", sel_getName(_cmd), indexPath.row, self.stories.count);
             }
         }
             break;
