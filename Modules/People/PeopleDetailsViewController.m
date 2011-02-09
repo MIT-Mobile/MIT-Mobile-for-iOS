@@ -16,16 +16,9 @@
 {
 	self.title = @"Info";
 	[self.tableView applyStandardColors];
-	
-	// get fullname for header
-	NSMutableArray *multiPartAttribute = [[NSMutableArray alloc] initWithCapacity:2];	
-	NSString *value;
-	if (value = [self.personDetails valueForKey:@"givenname"])
-		[multiPartAttribute addObject:value];
-	if (value = [self.personDetails valueForKey:@"surname"])
-		[multiPartAttribute addObject:value];
-	self.fullname = [multiPartAttribute componentsJoinedByString:@" "];
-	[multiPartAttribute release];
+    
+    // get fullname for header
+    self.fullname = [self.personDetails displayName];
 	
 	// populate remaining contents to be displayed
 	self.sectionArray = [[[NSMutableArray alloc] init] autorelease];

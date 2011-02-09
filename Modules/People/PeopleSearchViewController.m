@@ -249,14 +249,15 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
 			PersonDetails *recent = [[[PeopleRecentsData sharedData] recents] objectAtIndex:indexPath.row];
-			cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", [recent valueForKey:@"givenname"], [recent valueForKey:@"surname"]];
-			
+			cell.textLabel.text = [recent displayName];
+            
 			// show person's title, dept, or email as cell's subtitle text
 			cell.detailTextLabel.text = @" "; // put something there so other cells' contents won't get drawn here
 			NSArray *displayPriority = [NSArray arrayWithObjects:@"title", @"dept", nil];
 			NSString *displayText;
 			for (NSString *tag in displayPriority) {
-				if (displayText = [recent valueForKey:tag]) {
+				displayText = [recent valueForKey:tag];
+				if (displayText) {
 					cell.detailTextLabel.text = displayText;
 					break;
 				}

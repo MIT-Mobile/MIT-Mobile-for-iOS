@@ -24,5 +24,25 @@
 		return [results objectAtIndex:0];
 }
 
+- (NSString*)displayName {
+    NSString *display = nil;
+    NSString *givenName = self.givenname;
+    NSString *surName = self.surname;
+    
+    if (givenName && [givenName length]) {
+        display = givenName;
+    }
+    
+    if (surName && [surName length]) {
+        if (display == nil) {
+            display = surName;
+        } else {
+            display = [NSString stringWithFormat:@"%@ %@", givenName, surName];
+        }
+    }
+    
+    return [NSString stringWithString:display];
+}
+
 
 @end

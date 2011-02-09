@@ -43,6 +43,7 @@
 @property (nonatomic, retain) NSDate *lastUpdate;
 
 + (PersonDetails *)retrieveOrCreate:(NSDictionary *)selectedResult;
+- (NSString*)displayName;
 
 @end
 
