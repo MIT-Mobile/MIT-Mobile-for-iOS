@@ -126,11 +126,8 @@
 		return;
 	}
 	
-	UITouch* touch = nil;
-	NSEnumerator* enumerator = [touches objectEnumerator];
-	
-	while (touch = [enumerator nextObject]) {
+    for (UITouch *touch in touches) {
 		[mapView.delegate mapView:mapView wasTouched:touch];
-	}
+    }
 }
 @end

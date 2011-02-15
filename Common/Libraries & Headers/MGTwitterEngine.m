@@ -189,11 +189,10 @@
 		NSURL *url = [NSURL URLWithString:urlString];
 		
 		NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-		NSEnumerator *enumerator = [[cookieStorage cookiesForURL:url] objectEnumerator];
-		NSHTTPCookie *cookie = nil;
-		while (cookie = [enumerator nextObject]) {
+        
+        for (NSHTTPCookie *cookie in [cookieStorage cookiesForURL:url]) {
 			[cookieStorage deleteCookie:cookie];
-		}
+        }
 	}
 }
 
