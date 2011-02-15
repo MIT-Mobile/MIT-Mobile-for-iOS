@@ -117,7 +117,8 @@
 @implementation SubscribeRequest
 
 - (id) initWithDelegate: (id<ShuttleSubscriptionDelegate>)theDelegate routeID:(NSString *)theRouteID stopID:(NSString *)theStopID object:(id)theObject {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		delegate = [theDelegate retain];
 		object = [theObject retain];
 		routeID = [theRouteID retain];
@@ -173,7 +174,8 @@
 @implementation UnsubscribeRequest
 
 - (id)initWithDelegate:(id<ShuttleSubscriptionDelegate>)theDelegate routeID:(NSString *)theRouteID stopID:(NSString *)theStopID object:(id)theObject {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		delegate = [theDelegate retain];
 		object = [theObject retain];
 		routeID = [theRouteID retain];

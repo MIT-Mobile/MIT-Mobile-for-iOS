@@ -29,7 +29,7 @@ static MITProjection *sharedProjection = nil;
 - (id) init
 {
     self = [super init];
-    if (self != nil) {
+    if (self) {
         NSInteger err = 0;
         tileSize = TILE_SIZE;
         maxZoomLevel = MAX_ZOOM_LEVEL;
@@ -142,7 +142,8 @@ static NSString * kMapPathExtension = @"map/";
 }
 
 - (id)init {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
         BOOL didSetup = NO;
         
         _observers = [[NSMutableArray alloc] init];

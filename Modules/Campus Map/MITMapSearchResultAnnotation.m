@@ -46,8 +46,8 @@
 
 -(id) initWithInfo:(NSDictionary*)info
 {
-	if(self = [super init])
-	{
+	self = [super init];
+	if (self) {
 		self.info = info;
 		
 		self.architect = [info objectForKey:@"architect"];
@@ -121,8 +121,8 @@
 }
 -(id) initWithCoordinate:(CLLocationCoordinate2D) coordinate
 {
-	if(self = [super init])
-	{
+	self = [super init];
+	if (self) {
 		_coordinate = coordinate;
 	}
 	

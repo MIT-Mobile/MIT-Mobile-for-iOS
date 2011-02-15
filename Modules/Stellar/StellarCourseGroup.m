@@ -9,7 +9,8 @@ NSString *stripLetters(NSString *courseNumber);
 @synthesize title, courses;
 
 - (id) initWithTitle: (NSString *)aTitle courses:(NSArray *)aCourseGroup {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		self.title = aTitle;
 		self.courses = aCourseGroup;
 	}

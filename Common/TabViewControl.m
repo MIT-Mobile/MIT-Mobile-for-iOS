@@ -33,7 +33,8 @@
 @synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame]) {
+    self = [super initWithFrame:frame];
+    if (self) {
 		self.opaque = NO;
 		[self addTarget:self action:@selector(touchUpInside:forEvent:) forControlEvents:UIControlEventTouchUpInside];
 		[self addTarget:self action:@selector(touchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
@@ -45,8 +46,8 @@
 
 -(id) initWithCoder:(NSCoder *)aDecoder
 {
-	if(self = [super initWithCoder:aDecoder])
-	{
+	self = [super initWithCoder:aDecoder];
+	if (self) {
 		self.opaque = NO;
 
 		[self addTarget:self action:@selector(touchUpInside:forEvent:) forControlEvents:UIControlEventTouchUpInside];

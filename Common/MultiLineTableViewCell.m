@@ -88,7 +88,8 @@ static NSInteger s_numberOfCells = 0;
 }
 
 - (id) initWithStyle: (UITableViewCellStyle)cellStyle reuseIdentifier: (NSString *)reuseIdentifier {
-    if(self = [super initWithStyle:cellStyle reuseIdentifier:reuseIdentifier]) {		
+    self = [super initWithStyle:cellStyle reuseIdentifier:reuseIdentifier];
+    if (self) {		
 		topPadding = DEFAULT_TOP_PADDING;
 		bottomPadding = DEFAULT_BOTTOM_PADDING;
         

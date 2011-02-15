@@ -189,7 +189,8 @@
 }
 	
 - (id) initWithModuleName: (NSString *)aModuleName noticeId: (NSString *)anId {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		moduleName = [aModuleName retain];
 		noticeId = [anId retain];
 	}

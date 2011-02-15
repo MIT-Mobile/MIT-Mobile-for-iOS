@@ -10,8 +10,8 @@
 
 -(id) initWithStopID:(NSString*) stopID andDictionary:(NSDictionary*)dictionary
 {
-	if(self = [super init])
-	{
+	self = [super init];
+	if (self) {
 		self.stopID = stopID;
 		self.routeID = [dictionary objectForKey:@"route_id"];
 		

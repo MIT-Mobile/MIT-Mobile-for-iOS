@@ -32,7 +32,8 @@
 }
 	
 - (id) initWithSearchBar: theSearchBar viewController: (StellarMainTableController *)controller{
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		activeMode = NO;
 		searchBar = [theSearchBar retain];
         searchBar.delegate = self;

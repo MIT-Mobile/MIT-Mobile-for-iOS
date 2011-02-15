@@ -20,8 +20,8 @@
 
 -(id) initWithMapSelectionController:(MapSelectionController*)mapSelectionController
 {
-	if(self = [super initWithStyle:UITableViewStyleGrouped])
-	{
+	self = [super initWithStyle:UITableViewStyleGrouped];
+	if (self) {
 		_mapSelectionController = [mapSelectionController retain];
 	}
 	
@@ -30,8 +30,8 @@
 
 -(id) initWithMapSelectionController:(MapSelectionController *)mapSelectionController andStyle:(UITableViewStyle)style
 {
-	if(self = [super initWithStyle:style])
-	{
+	self = [super initWithStyle:style];
+	if (self) {
 		_mapSelectionController = [mapSelectionController retain];
 	}
 	

@@ -194,8 +194,8 @@ static yajl_callbacks callbacks = {
 	responseType:(MGTwitterResponseType)respType URL:(NSURL *)theURL
 	deliveryOptions:(MGTwitterEngineDeliveryOptions)theDeliveryOptions
 {
-	if (self = [super init])
-	{
+	self = [super init];
+	if (self) {
 		json = [theJSON retain];
 		identifier = [theIdentifier retain];
 		requestType = reqType;

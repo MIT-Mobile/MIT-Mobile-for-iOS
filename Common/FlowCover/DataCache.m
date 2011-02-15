@@ -49,7 +49,8 @@ woody@chaosinmotion.com. Chaos In Motion is at http://www.chaosinmotion.com
 
 - (id)initWithCapacity:(int)cap
 {
-	if (nil != (self = [super init])) {
+    self = [super init];
+	if (self) {
 		fCapacity = cap;
 		fDictionary = [[NSMutableDictionary alloc] initWithCapacity:cap];
 		fAge = [[NSMutableArray alloc] initWithCapacity:cap];

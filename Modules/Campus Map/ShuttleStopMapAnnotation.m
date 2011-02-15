@@ -7,7 +7,8 @@
 
 -(id) initWithShuttleStop:(ShuttleStop*)shuttleStop
 {
-	if (self = [super init]) {
+	self = [super init];
+	if (self) {
 		_shuttleStop = [shuttleStop retain];
 	}
 	

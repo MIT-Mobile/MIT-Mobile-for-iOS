@@ -232,18 +232,18 @@
 			NSString *value;
 		
 			// set single value properties
-			if (value = [self.personDetails valueForKey:@"givenname"])
+			if ((value = [self.personDetails valueForKey:@"givenname"]))
 				ABRecordSetValue(person, kABPersonFirstNameProperty, value, &error);
-			if (value = [self.personDetails valueForKey:@"surname"])
+			if ((value = [self.personDetails valueForKey:@"surname"]))
 				ABRecordSetValue(person, kABPersonLastNameProperty, value, &error);
-			if (value = [self.personDetails valueForKey:@"title"])
+			if ((value = [self.personDetails valueForKey:@"title"]))
 				ABRecordSetValue(person, kABPersonJobTitleProperty, value, &error);
-			if (value = [self.personDetails valueForKey:@"dept"])
+			if ((value = [self.personDetails valueForKey:@"dept"]))
 				ABRecordSetValue(person, kABPersonDepartmentProperty, value, &error);
 		
 			// set multivalue properties: email and phone numbers
 			ABMutableMultiValueRef multiEmail = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-			if (value = [self.personDetails valueForKey:@"email"]) {
+			if ((value = [self.personDetails valueForKey:@"email"])) {
 				for (NSString *email in [value componentsSeparatedByString:@","])
 					ABMultiValueAddValueAndLabel(multiEmail, email, kABWorkLabel, NULL);
 				ABRecordSetValue(person, kABPersonEmailProperty, multiEmail, &error);
@@ -252,13 +252,13 @@
 		
 			BOOL haveValues = NO;
 			ABMutableMultiValueRef multiPhone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-			if (value = [self.personDetails valueForKey:@"phone"]) {
+			if ((value = [self.personDetails valueForKey:@"phone"])) {
 				for (NSString *phone in [value componentsSeparatedByString:@","])
 					ABMultiValueAddValueAndLabel(multiPhone, phone, kABWorkLabel, NULL);
 				ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
 				haveValues = YES;
 			}
-			if (value = [self.personDetails valueForKey:@"fax"]) {
+			if ((value = [self.personDetails valueForKey:@"fax"])) {
 				ABMultiValueAddValueAndLabel(multiPhone, value, kABPersonPhoneWorkFAXLabel, NULL);
 				haveValues = YES;
 			}
@@ -356,7 +356,7 @@
 		ABRecordSetValue(newPerson, kABPersonFirstNameProperty, recordValue, &error);
         CFRelease(recordValue);
     }
-	else if (ldapValue = [self.personDetails valueForKey:@"givenname"])
+	else if ((ldapValue = [self.personDetails valueForKey:@"givenname"]))
 		ABRecordSetValue(newPerson, kABPersonFirstNameProperty, ldapValue, &error);
 	
     recordValue = ABRecordCopyValue(person, kABPersonLastNameProperty);
@@ -364,7 +364,7 @@
         ABRecordSetValue(newPerson, kABPersonLastNameProperty, recordValue, &error);
         CFRelease(recordValue);
     }
-	else if (ldapValue = [self.personDetails valueForKey:@"surname"])
+	else if ((ldapValue = [self.personDetails valueForKey:@"surname"]))
 		ABRecordSetValue(newPerson, kABPersonLastNameProperty, ldapValue, &error);
 	
     recordValue = ABRecordCopyValue(person, kABPersonJobTitleProperty);
@@ -372,7 +372,7 @@
         ABRecordSetValue(newPerson, kABPersonJobTitleProperty, recordValue, &error);
         CFRelease(recordValue);
     }
-	else if (ldapValue = [self.personDetails valueForKey:@"title"])
+	else if ((ldapValue = [self.personDetails valueForKey:@"title"]))
 		ABRecordSetValue(newPerson, kABPersonJobTitleProperty, ldapValue, &error);
 	
     recordValue = ABRecordCopyValue(person, kABPersonDepartmentProperty);
@@ -380,14 +380,14 @@
         ABRecordSetValue(newPerson, kABPersonDepartmentProperty, recordValue, &error);
         CFRelease(recordValue);
     }
-	else if (ldapValue = [self.personDetails valueForKey:@"dept"])
+	else if ((ldapValue = [self.personDetails valueForKey:@"dept"]))
 		ABRecordSetValue(newPerson, kABPersonDepartmentProperty, ldapValue, &error);
 		
 	// multi value phone property
 	ABMultiValueRef multi = ABRecordCopyValue(person, kABPersonPhoneProperty);
 	ABMutableMultiValueRef phone = ABMultiValueCreateMutableCopy(multi);
 	NSArray *existingPhones = (NSArray *)ABMultiValueCopyArrayOfAllValues(phone);
-	if (ldapValue = [self.personDetails valueForKey:@"phone"]) {
+	if ((ldapValue = [self.personDetails valueForKey:@"phone"])) {
 		for (NSString *value in [ldapValue componentsSeparatedByString:@","]) {
 			if (![existingPhones containsObject:value]) {
 				ABMultiValueAddValueAndLabel(phone, value, kABWorkLabel, NULL);
@@ -406,7 +406,7 @@
 	multi = ABRecordCopyValue(person, kABPersonEmailProperty);
 	ABMutableMultiValueRef email = ABMultiValueCreateMutableCopy(multi);
 	NSArray *existingEmails = (NSArray *)ABMultiValueCopyArrayOfAllValues(email);
-	if (ldapValue = [self.personDetails valueForKey:@"email"]) {
+	if ((ldapValue = [self.personDetails valueForKey:@"email"])) {
 		for (NSString *value in [ldapValue componentsSeparatedByString:@","]) {
 			if (![existingEmails containsObject:value]) {
 				ABMultiValueAddValueAndLabel(email, value, kABWorkLabel, NULL);

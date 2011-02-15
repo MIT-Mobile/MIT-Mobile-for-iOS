@@ -33,7 +33,8 @@ static CalendarDataManager *s_sharedManager = nil;
 }
 
 - (id)init {
-	if (self = [super init]) {
+	self = [super init];
+	if (self) {
 		_eventLists = [[NSSet alloc] init];
 		[self requestEventLists];
 	}

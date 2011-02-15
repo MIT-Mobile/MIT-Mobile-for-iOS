@@ -36,8 +36,8 @@ static MapTileCache* s_cache;
 
 -(id) init
 {
-	if(self = [super init])
-	{
+	self = [super init];
+	if (self) {
 		_saveOperationQueue = [[NSOperationQueue alloc] init];
 		
 		

@@ -13,7 +13,8 @@
 @implementation StellarAnnouncementViewController
 
 - (id) initWithAnnouncement: (StellarAnnouncement *)anAnnouncement rowIndex:(NSUInteger)index{
-	if(self = [super initWithStyle:UITableViewStyleGrouped]) {
+	self = [super initWithStyle:UITableViewStyleGrouped];
+	if (self) {
 		announcement = [anAnnouncement retain];
 		dateFormatter = [NSDateFormatter new];
 		[dateFormatter setDateFormat:@"EEEE, MMMM d, y @ H:mm"];

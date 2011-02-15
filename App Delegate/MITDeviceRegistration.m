@@ -7,7 +7,8 @@
 @synthesize deviceID, passKey;
 
 - (id) initWithDeviceId: (NSString *)aDeviceId passKey: (NSString *)aPassKey {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		deviceID = [aDeviceId retain];
 		passKey = [aPassKey retain];
 	}

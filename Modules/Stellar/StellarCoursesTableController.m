@@ -12,7 +12,8 @@
 @synthesize url;
 
 - (id) initWithCourseGroup: (StellarCourseGroup *)aCourseGroup {
-	if(self = [super initWithStyle:UITableViewStyleGrouped]) {
+	self = [super initWithStyle:UITableViewStyleGrouped];
+	if (self) {
 		self.courseGroup = aCourseGroup;
 		NSString *path = [NSString stringWithFormat:@"courses/%@", [courseGroup serialize]];
 		url = [[MITModuleURL alloc] initWithTag:StellarTag path:path query:nil];

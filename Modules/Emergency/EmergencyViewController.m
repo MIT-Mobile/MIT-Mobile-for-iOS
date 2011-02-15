@@ -14,7 +14,8 @@
 
 - (id)initWithStyle:(UITableViewStyle)style {
     // Override initWithStyle: if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-    if (self = [super initWithStyle:style]) {
+    self = [super initWithStyle:style];
+    if (self) {
 		refreshButtonPressed = NO;
         infoWebView = nil;
         self.title = @"Emergency Info";

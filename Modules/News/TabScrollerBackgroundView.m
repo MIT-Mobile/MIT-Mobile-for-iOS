@@ -8,7 +8,8 @@
 
 
 - (id)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame]) {
+    self = [super initWithFrame:frame];
+    if (self) {
         backgroundImage = [[UIImage imageNamed:MITImageNameScrollTabBackgroundTranslucent] retain];
         self.backgroundColor = [UIColor clearColor];
         self.opaque = NO;
@@ -24,6 +25,7 @@
 
 
 - (void)dealloc {
+    [backgroundImage release];
     [super dealloc];
 }
 

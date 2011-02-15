@@ -13,7 +13,8 @@
 @implementation NewsDataSource
 
 - (id) init {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		dateFormatter = [NSDateFormatter new];
 		[dateFormatter setDateFormat:@"(M/d H:mm)"];		
 	}
@@ -185,7 +186,8 @@
 @synthesize dateTextLabel;
 
 - (id)initWithStyle:(UITableViewCellStyle)cellStyle reuseIdentifier:(NSString *)reuseIdentifier {
-    if(self = [super initWithStyle:cellStyle reuseIdentifier:reuseIdentifier]) {		
+    self = [super initWithStyle:cellStyle reuseIdentifier:reuseIdentifier];
+    if (self) {		
 		dateTextLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 16)];		
 		[[self contentView] addSubview:dateTextLabel];
 		dateTextLabel.highlightedTextColor = [UIColor whiteColor];

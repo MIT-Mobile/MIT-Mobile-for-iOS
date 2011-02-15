@@ -19,7 +19,8 @@
 - (id)initWithRequest:(NSURLRequest *)request delegate:(id)delegate 
           requestType:(MGTwitterRequestType)requestType responseType:(MGTwitterResponseType)responseType
 {
-    if (self = [super initWithRequest:request delegate:delegate]) {
+    self = [super initWithRequest:request delegate:delegate];
+    if (self) {
         _data = [[NSMutableData alloc] initWithCapacity:0];
         _identifier = [[NSString stringWithNewUUID] retain];
         _requestType = requestType;

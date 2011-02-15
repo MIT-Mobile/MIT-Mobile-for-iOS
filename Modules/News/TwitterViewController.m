@@ -47,7 +47,8 @@ MIT_MobileAppDelegate *appDelegate();
 @implementation TwitterViewController
 
 - (id) initWithMessage: (NSString *)aMessage url:(NSString *)aLongUrl {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		passwordField = nil;
 		usernameField = nil;
 		
@@ -391,7 +392,8 @@ MIT_MobileAppDelegate *appDelegate();
 @implementation UsernameFieldDelegate
 
 - (id) initWithPasswordField: (UITextField *)aPasswordField {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		passwordField = [aPasswordField retain];
 	}
 	return self;
@@ -427,7 +429,8 @@ MIT_MobileAppDelegate *appDelegate();
 @implementation MessageFieldDelegate 
 
 - (id) initWithMessage: (NSString *)message counter: (UILabel *)aCounter {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		counter = [aCounter retain];
 		[self updateCounter:message delta:0];
 	}

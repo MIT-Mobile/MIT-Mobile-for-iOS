@@ -12,8 +12,8 @@
 
 -(id) initWithData:(NSData*) data saveToPath:(NSString*)path filename:(NSString*)filename userData:(NSDictionary*)userData
 {
-	if(self = [super init])
-	{
+	self = [super init];
+	if (self) {
 		self.dataToSave = data;
 		self.path = path;
 		self.filename = filename;

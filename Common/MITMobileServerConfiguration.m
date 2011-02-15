@@ -18,7 +18,9 @@ NSArray* MITMobileWebGetAPIServerList( void ) {
         for (int i = 0; MobileAPIServers[i] != nil; ++i) {
             NSURL *url = [NSURL URLWithString:MobileAPIServers[i]];
             if (url != nil) {
+#ifdef DEBUG
                 NSLog( @"Got %@", [url absoluteString]);
+#endif
                 [array addObject:url];
             } else {
                 NSLog(@"API URL '%@' is malformed", url);
@@ -72,9 +74,8 @@ NSString* MITMobileWebGetCurrentServerDomain( void ) {
 
 MITMobileWebServerType MITMobileWebGetCurrentServerType( void ) {
     NSURL *server = MITMobileWebGetCurrentServerURL();
-    NSRange foundRange = NSMakeRange(NSNotFound, 0);
-    
-    foundRange = [[server host] rangeOfString:@"-dev."];
+    NSRange foundRange = [[server host] rangeOfString:@"-dev."];
+
     if (foundRange.location != NSNotFound) {
         return MITMobileWebDevelopment;
     }

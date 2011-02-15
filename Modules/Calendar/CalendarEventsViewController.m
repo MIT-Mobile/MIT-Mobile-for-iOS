@@ -48,7 +48,8 @@
 @synthesize tableView = theTableView, mapView = theMapView, catID = theCatID;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
 		startDate = [[NSDate date] retain];
 		endDate = [[NSDate date] retain];
 		

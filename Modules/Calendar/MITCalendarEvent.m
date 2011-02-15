@@ -127,15 +127,15 @@
 		self.url = [dict objectForKey:@"infourl"];
 	}
 
-	NSDictionary *coordinate = nil;
-	if (coordinate = [dict objectForKey:@"coordinate"]) {
+	NSDictionary *coordinate = [dict objectForKey:@"coordinate"];
+	if (coordinate) {
 		self.latitude = [NSNumber numberWithDouble:[[coordinate objectForKey:@"lat"] doubleValue]];
 		self.longitude = [NSNumber numberWithDouble:[[coordinate objectForKey:@"lon"] doubleValue]];
 	}
     
 	// populate event-category relationships
-	NSArray *catArray = nil;
-	if (catArray = [dict objectForKey:@"categories"]) {
+	NSArray *catArray = [dict objectForKey:@"categories"];
+	if (catArray) {
 		for (NSDictionary *catDict in catArray) {
 			NSString *name = [catDict objectForKey:@"name"];
 			NSInteger catID = [[catDict objectForKey:@"catid"] intValue];

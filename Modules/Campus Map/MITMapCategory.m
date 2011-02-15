@@ -15,8 +15,8 @@
 
 -(id) initWithInfo:(NSDictionary*)info
 {
-	if(self = [super init])
-	{
+	self = [super init];
+	if (self) {
 		self.categoryName = [info objectForKey:@"categoryName"];
 
 		NSArray *categoryItems = [info objectForKey:@"categoryItems"];

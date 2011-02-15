@@ -15,8 +15,8 @@
 
 -(id) initWithMinRow:(int)minRow minCol:(int)minCol maxRow:(int)maxRow maxCol:(int)maxCol
 {
-	if(self = [super init])
-	{
+	self = [super init];
+	if (self) {
 		self.minRow = minRow;
 		self.minCol = minCol;
 		self.maxRow = maxRow;

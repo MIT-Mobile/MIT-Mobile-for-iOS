@@ -14,7 +14,8 @@ static NSString * const PeopleStateDetail = @"detail";
 
 - (id)init
 {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
         self.tag = DirectoryTag;
         self.shortName = @"Directory";
         self.longName = @"People Directory";

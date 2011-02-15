@@ -261,8 +261,8 @@ NSString* cleanPersonName(NSString *personName);
 		}
 
 		// add the annoucements
-		NSArray *annoucements;
-		if(annoucements = [aDict objectForKey:@"announcements"]) {
+		NSArray *annoucements = [aDict objectForKey:@"announcements"];
+		if(annoucements) {
 			for(NSManagedObject *managedObject in stellarClass.announcement) {
 				// remove the old version of the class annoucements
 				[CoreDataManager deleteObject:managedObject];
@@ -307,7 +307,8 @@ NSString* cleanPersonName(NSString *personName);
 @synthesize coursesLoadedDelegate;
 
 - (id) initWithCoursesDelegate: (id<CoursesLoadedDelegate>)delegate {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		self.coursesLoadedDelegate = delegate;
 	}
 	return self;
@@ -360,7 +361,8 @@ NSString* cleanPersonName(NSString *personName);
 
 @implementation ClassesChecksumRequest
 - (id) initWithClassesRequest: (ClassesRequest *)aClassesRequest {
-	if (self = [super init]) {
+	self = [super init];
+	if (self) {
 		classesRequest = [aClassesRequest retain];
 	}
 	return self;
@@ -398,7 +400,8 @@ NSString* cleanPersonName(NSString *personName);
 @synthesize classesLoadedDelegate, stellarCourse;
 
 - (id) initWithDelegate: (id<ClassesLoadedDelegate>)delegate course: (StellarCourse *)course {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		self.classesLoadedDelegate = delegate;
 		self.stellarCourse = course;
 	}
@@ -451,7 +454,8 @@ NSString* cleanPersonName(NSString *personName);
 @implementation ClassesSearchRequest
 
 - (id) initWithDelegate: (id<ClassesSearchDelegate>)delegate searchTerms: (NSString *)theSearchTerms {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		classesSearchDelegate = [delegate retain];
 		searchTerms = [theSearchTerms retain];
 	}
@@ -491,7 +495,8 @@ NSString* cleanPersonName(NSString *personName);
 @synthesize classInfoLoadedDelegate;
 
 - (id) initWithClassInfoDelegate: (id<ClassInfoLoadedDelegate>)delegate {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		self.classInfoLoadedDelegate = delegate;
 	}
 	return self;
@@ -532,7 +537,8 @@ NSString* cleanPersonName(NSString *personName);
 @implementation TermRequest
 
 - (id) initWithClearMyStellarDelegate: (id<ClearMyStellarDelegate>)delegate stellarClasses: (NSArray *)theMyStellarClasses {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		clearMyStellarDelegate = [delegate retain];
 		myStellarClasses = [theMyStellarClasses retain];
 		

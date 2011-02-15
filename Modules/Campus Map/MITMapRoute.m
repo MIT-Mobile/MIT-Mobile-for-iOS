@@ -5,7 +5,8 @@
 @synthesize pathLocations, fillColor, strokeColor, lineWidth;
 
 - (id)init {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
         // TODO: define default fill/stroke colors in config
         self.fillColor = [UIColor redColor];
         self.strokeColor = [UIColor redColor];

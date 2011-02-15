@@ -13,7 +13,8 @@
 }
 
 - (id) init {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		stellarClassIds = [NSMutableDictionary new];
 	}
 	return self;

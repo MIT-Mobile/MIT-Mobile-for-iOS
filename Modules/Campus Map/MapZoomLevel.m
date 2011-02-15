@@ -5,22 +5,26 @@
 #import "MITMobileServerConfiguration.h"
 
 @implementation MapTile
+@synthesize path = _path, frame = _frame;
 
 - (id)initWithFrame:(MKMapRect)frame path:(NSString *)path {
-    if (self = [super init]) {
-        _frame = frame;
-        _path = path;
+    self = [super init];
+    if (self) {
+        self.frame = frame;
+        self.path = path;
     }
     return self;
 }
 
-@synthesize path = _path, frame = _frame;
+- (void)dealloc {
+    self.path = nil;
+    [super dealloc];
+}
 
 @end
 
 
 @implementation MapZoomLevel
-
 @synthesize level, resolution, scale, maxCol, maxRow, minCol, minRow, zoomScale;
 
 - (CGSize)totalSizeInPixels {

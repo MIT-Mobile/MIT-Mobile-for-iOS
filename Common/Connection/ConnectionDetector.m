@@ -21,7 +21,8 @@
 }
 
 -(id)init {
-	if (self=[super init]) {
+	self = [super init];
+	if (self) {
 		[[Reachability sharedReachability] setHostName:MITMobileWebGetCurrentServerDomain()];	// when we check for an internet connection, ping our server
 	}
 	return self;

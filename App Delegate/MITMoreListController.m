@@ -14,7 +14,8 @@
 /*
 - (id)initWithStyle:(UITableViewStyle)style {
     // Override initWithStyle: if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-    if (self = [super initWithStyle:style]) {
+    self = [super initWithStyle:style];
+    if (self) {
     }
     return self;
 }
@@ -144,7 +145,8 @@
 @dynamic badgeValue;
 			
 - (id) initWithStyle: (UITableViewCellStyle)style reuseIdentifier: (NSString *)identifier {
-	if(self = [super initWithStyle:style reuseIdentifier:identifier]) {
+	self = [super initWithStyle:style reuseIdentifier:identifier];
+	if (self) {
 		self.textLabel.opaque = NO;
 		badgeView = [[TableCellBadgeView alloc] initWithFrame:CGRectMake(230, 9, 60, 25)];
 		[self.contentView addSubview:badgeView];
@@ -172,7 +174,8 @@
 @synthesize badgeValue;
 
 - (id) initWithFrame: (CGRect)frame {
-	if(self = [super initWithFrame:frame]) {
+	self = [super initWithFrame:frame];
+	if (self) {
 		self.badgeValue = nil;
 		self.opaque = NO;
 	}

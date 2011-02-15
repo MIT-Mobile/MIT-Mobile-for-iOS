@@ -33,7 +33,8 @@ connectionIdentifier:(NSString *)identifier requestType:(MGTwitterRequestType)re
 connectionIdentifier:(NSString *)theIdentifier requestType:(MGTwitterRequestType)reqType 
      responseType:(MGTwitterResponseType)respType
 {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
 		
 		self.dateFormatter = [[NSDateFormatter alloc] init];
 		[self.dateFormatter setDateFormat:kMGTwitterDateFormatString];		

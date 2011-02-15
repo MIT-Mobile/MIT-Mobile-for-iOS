@@ -205,13 +205,13 @@
 	self.gpsActive = [[routeInfo objectForKey:@"gpsActive"] boolValue];
 	self.isRunning = [[routeInfo objectForKey:@"isRunning"] boolValue];
 	
-	NSArray *stops = nil;
-	if (stops = [routeInfo objectForKey:@"stops"]) {
+	NSArray *stops = [routeInfo objectForKey:@"stops"];
+	if (stops) {
 		self.stops = (NSMutableArray *)stops;
 	}
 	
 	NSArray* vehicleLocations = [routeInfo objectForKey:@"vehicleLocations"];
-	if (nil != vehicleLocations && [NSNull null] != (id)vehicleLocations) 
+	if (vehicleLocations && ![[NSNull null] isEqual:vehicleLocations])
 	{
 		self.vehicleLocations = nil;
 		

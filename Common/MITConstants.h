@@ -3,7 +3,7 @@
 
 typedef enum {
     MITNavigationParadigmTabBar,
-    MITNavigationParadigmSpringboard,
+    MITNavigationParadigmSpringboard
 } MITNavigationParadigm;
 
 // common URLs

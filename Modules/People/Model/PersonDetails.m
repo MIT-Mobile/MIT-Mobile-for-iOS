@@ -18,7 +18,7 @@
 	NSPredicate *pred = [NSPredicate predicateWithFormat:@"(uid = %@)", uid];
 	NSArray *results = [CoreDataManager objectsForEntity:PersonDetailsEntityName matchingPredicate:pred];
 
-	if ([results count] == 0)
+	if ((results == nil) || ([results count] == 0))
 		return [PeopleRecentsData createFromSearchResult:selectedResult];
 	else 
 		return [results objectAtIndex:0];

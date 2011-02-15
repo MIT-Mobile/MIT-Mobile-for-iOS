@@ -19,7 +19,8 @@ scrollView = _scrollView, navScrollerDelegate, currentXOffset = _currentXOffset;
 
 - (id)initWithFrame:(CGRect)frame
 {
-    if (self = [super initWithFrame:frame]) {
+    self = [super initWithFrame:frame];
+    if (self) {
         self.buttons = [NSMutableArray array];
         self.scrollView = [[UIScrollView alloc] initWithFrame:frame];
         self.scrollView.delegate = self;

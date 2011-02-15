@@ -63,7 +63,8 @@ NSString * termText(NSString *termCode) {
 }
 
 - (id) initWithClass: (StellarClass *)class {
-	if(self = [super initWithStyle:UITableViewStylePlain]) {
+	self = [super initWithStyle:UITableViewStylePlain];
+	if (self) {
 		self.stellarClass = class;
 		
 		self.news = [NSArray array];
@@ -455,7 +456,8 @@ NSString * termText(NSString *termCode) {
 @implementation MyStellarStatusDelegate
 @synthesize viewController;
 - (id) initWithClass: (StellarClass *)class status: (BOOL)newStatus viewController: (StellarDetailViewController *)controller {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		viewController = controller;
 		status = newStatus;
 		stellarClass = [class retain];

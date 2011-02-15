@@ -9,7 +9,8 @@
 }
 
 - (id) initWithTag:(NSString *)tag path:(NSString *)aPath query:(NSString *)aQuery {
-	if(self = [super init]) {
+	self = [super init];
+	if (self) {
 		[self setPath:aPath query:aQuery];
 		moduleTag = [tag retain];
 	}
@@ -43,7 +44,11 @@
 	UIViewController *parentController = [[MIT_MobileAppDelegate moduleForTag:moduleTag] parentForViewController:viewController];
 	parentController.view;// make sure the parent view controller has loaded (so that the url is defined)
 	MITModuleURL *parentURL = ((id<MITModuleURLContainer>)parentController).url;
-	[self setPath:[NSString stringWithFormat:@"%@/%@", parentURL.path, extension] query:nil];
+    if (parentURL) {
+        [self setPath:[NSString stringWithFormat:@"%@/%@", parentURL.path, extension] query:nil];
+    } else {
+        NSLog(@"Error: Attempting to load nil path");
+    }
 }
 	
 - (void) setAsModulePath {

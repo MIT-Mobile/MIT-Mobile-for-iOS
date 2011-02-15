@@ -64,8 +64,9 @@
 }
 
 
-- (XAuthTwitterEngine *) initXAuthWithDelegate: (NSObject *) delegate {
-    if (self = (id) [super initWithDelegate: delegate]) {
+- (id) initXAuthWithDelegate:(id) delegate {
+    self = [super initWithDelegate:delegate];
+    if (self) {
 		self.accessTokenURL = [NSURL URLWithString: @"http://twitter.com/oauth/access_token"];
 		self.operationQueue = [[NSOperationQueue alloc] init];
 	}

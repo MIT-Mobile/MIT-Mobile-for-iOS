@@ -5,7 +5,8 @@
 @implementation MapTileOverlay
 
 - (id)init {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
         CLLocationCoordinate2D nw = [[MITMKProjection sharedProjection] northWestBoundary];
         CLLocationCoordinate2D se = [[MITMKProjection sharedProjection] southEastBoundary];
         MKMapPoint mapNW = MKMapPointForCoordinate(nw);
@@ -39,7 +40,8 @@
 @implementation MapTileOverlayView
 
 - (id)initWithOverlay:(id <MKOverlay>)overlay {
-    if (self = [super initWithOverlay:overlay]) {
+    self = [super initWithOverlay:overlay];
+    if (self) {
         //NSLog(@"%@", [overlay description]);
     }
     return self;

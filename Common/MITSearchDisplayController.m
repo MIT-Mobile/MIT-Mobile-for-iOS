@@ -24,7 +24,8 @@ active = _active;
 
 - (id)initWithSearchBar:(UISearchBar *)searchBar contentsController:(UIViewController *)viewController
 {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
         _searchBar = searchBar;
         _searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
         _searchBar.delegate = self;
@@ -39,7 +40,8 @@ active = _active;
 }
 
 - (id)initWithFrame:(CGRect)frame searchBar:(UISearchBar *)searchBar contentsController:(UIViewController *)viewController {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
         _searchBar = searchBar;
         _searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
         _searchBar.delegate = self;

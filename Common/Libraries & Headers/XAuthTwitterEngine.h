@@ -37,7 +37,7 @@
 @property (nonatomic, retain) NSOperationQueue *operationQueue;
 
 + (XAuthTwitterEngine *) XAuthTwitterEngineWithDelegate: (NSObject *) delegate;
-- (XAuthTwitterEngine *) initXAuthWithDelegate: (NSObject *) delegate;
+- (id) initXAuthWithDelegate:(id)delegate;
 - (void) exchangeAccessTokenForUsername:(NSString *)username password:(NSString *)password;
 - (void)setAccessTokenFromTokenString:(NSString *)tokenString;
 - (BOOL) isAuthorized;

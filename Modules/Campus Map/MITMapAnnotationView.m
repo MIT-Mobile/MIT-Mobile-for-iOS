@@ -10,8 +10,8 @@
 
 - (id)initWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier
 {
-	if(self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier])
-	{
+	self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
+	if (self) {
 		self.annotation = annotation;
 		self.multipleTouchEnabled = YES;
         self.canShowCallout = NO; // override built-in callout
@@ -38,7 +38,8 @@
 @synthesize shadowView = _shadowView;
 
 - (id)initWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier {
-    if (self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier]) {
+    self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
+    if (self) {
         self.canShowCallout = NO;
         self.backgroundColor = [UIColor clearColor];
         self.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];

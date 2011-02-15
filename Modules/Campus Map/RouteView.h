@@ -4,8 +4,7 @@
 @class MITMapView;
 
 @interface RouteView : UIView {
-
-	MITMapView* _map;
+	__weak MITMapView* _map;
 }
 
 @property (nonatomic, assign) MITMapView* map;

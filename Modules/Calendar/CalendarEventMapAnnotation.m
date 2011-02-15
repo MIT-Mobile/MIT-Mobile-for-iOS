@@ -6,7 +6,8 @@
 @synthesize event;
 
 - (id)initWithEvent:(MITCalendarEvent *)anEvent {
-    if (self = [super init]) {
+    self = [super init];
+    if (self) {
         event = anEvent;
     }
     return self;

@@ -20,7 +20,8 @@
 @synthesize url;
 
 - (id) initWithCourse: (StellarCourse *)aCourse {
-	if (self = [super initWithStyle:UITableViewStylePlain]) {
+    self = [super initWithStyle:UITableViewStylePlain];
+	if (self) {
 		course = [aCourse retain];
 		classes = [[NSArray array] retain];
 		loadingView = nil;

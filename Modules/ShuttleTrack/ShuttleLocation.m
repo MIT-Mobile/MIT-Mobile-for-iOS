@@ -10,8 +10,8 @@
 
 -(id) initWithDictionary:(NSDictionary*)dictionary
 {
-	if(self = [super init])
-	{
+	self = [super init];
+	if (self) {
 		_coordinate.latitude = [[dictionary objectForKey:@"lat"] doubleValue];
 		_coordinate.longitude = [[dictionary objectForKey:@"lon"] doubleValue];
 		

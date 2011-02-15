@@ -61,7 +61,8 @@
 
 
 - (id)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame]) 
+    self = [super initWithFrame:frame];
+    if (self) 
 	{
 		self.stayCenteredOnUserLocation = NO;
         _mapView = [[MKMapView alloc] initWithFrame:frame];
@@ -75,8 +76,8 @@
 
 -(id) initWithCoder:(NSCoder *)aDecoder
 {
-	if(self = [super initWithCoder:aDecoder])
-	{
+	self = [super initWithCoder:aDecoder];
+	if (self) {
 		//[self createSubviews];
 		self.stayCenteredOnUserLocation = NO;
         _mapView = [[MKMapView alloc] initWithCoder:aDecoder];

@@ -30,8 +30,8 @@ static MapBookmarkManager* s_mapBookmarksManager = nil;
 
 -(id) init
 {
-	if(self = [super init])
-	{
+	self = [super init];
+	if (self) {
 		NSString* filename = [self getBookmarkFilename];
 		
 		// see if we can load the bookmarks from disk. 
