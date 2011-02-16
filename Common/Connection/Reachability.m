@@ -58,7 +58,21 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 static NSString *kLinkLocalAddressKey = @"169.254.0.0";
 static NSString *kDefaultRouteKey = @"0.0.0.0";
 
-static Reachability *_sharedReachability;
+static Reachability *_sharedReachability = nil;
+
+/*
+ When reachability change notifications are posted, the callback method 'ReachabilityCallback' is called
+ and posts a notification that the client application can observe to learn about changes.
+ */
+static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
+    // Post a notification to notify the client that the network reachability changed.
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"kNetworkReachabilityChangedNotification" object:nil];
+	
+	[pool release];
+}
 
 // A class extension that declares internal methods for this class.
 @interface Reachability()
@@ -195,16 +209,6 @@ static Reachability *_sharedReachability;
     return [self isReachableWithoutRequiringConnection:addressReachabilityFlags];
 }
 
-// ReachabilityCallback is registered as the callback for network state changes in startListeningForReachabilityChanges.
-static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)
-{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
-    // Post a notification to notify the client that the network reachability changed.
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"kNetworkReachabilityChangedNotification" object:nil];
-	
-	[pool release];
-}
 
 // Perform a reachability query for the address 0.0.0.0. If that address is reachable without
 // requiring a connection, a network interface is available. We'll have to do more work to
@@ -262,10 +266,8 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 	// Walk through the cache that holds SCNetworkReachabilityRefs for reachability
 	// queries to particular hosts or addresses.
 	NSEnumerator *enumerator = [self.reachabilityQueries objectEnumerator];
-	ReachabilityQuery *reachabilityQuery;
     
-	while (reachabilityQuery = [enumerator nextObject]) {
-		
+    for (ReachabilityQuery *reachabilityQuery in enumerator) {
 		CFArrayRef runLoops = reachabilityQuery.runLoops;
 		NSUInteger runLoopCounter, maxRunLoops = CFArrayGetCount(runLoops);
         
@@ -276,7 +278,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 		}
         
         CFArrayRemoveAllValues(reachabilityQuery.runLoops);
-	}
+    }
 }
 
 /*
