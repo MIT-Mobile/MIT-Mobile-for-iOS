@@ -141,7 +141,7 @@ static EmergencyData *sharedEmergencyData = nil;
 - (NSString *)htmlString {
     NSDate *lastUpdated = [info valueForKey:@"lastUpdated"];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"M/d/y h:m a zz"];
+    [formatter setDateFormat:@"M/d/y h:mm a zz"];
     [formatter setTimeZone:[NSTimeZone localTimeZone]];
     NSString *lastUpdatedString = [formatter stringFromDate:lastUpdated];
     [formatter release];
