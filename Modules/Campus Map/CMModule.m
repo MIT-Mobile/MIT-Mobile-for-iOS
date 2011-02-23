@@ -165,7 +165,6 @@
 			[self.campusMapVC showListView:YES];
 			
 			if (components.count > 1) {
-				pathRoot = [components objectAtIndex:1];
 				[components removeObjectAtIndex:0];
 			}
 		}
