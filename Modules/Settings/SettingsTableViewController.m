@@ -334,6 +334,7 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
 	if (object && [object isKindOfClass:[NSDictionary class]] && [object objectForKey:@"success"]) {
+        id foundTag = nil;
 		for (id moduleTag in self.apiRequests) {
 			MITMobileWebAPI *aRequest = [self.apiRequests objectForKey:moduleTag];
 			if (aRequest == request) {
@@ -349,28 +350,28 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
 				BOOL enabled = aSwitch.isOn;
 				[module setPushNotificationEnabled:enabled];
 				
-                // FIXME: Don't mutate a container while enumerating it!
-				[self.apiRequests removeObjectForKey:moduleTag];
+                foundTag = moduleTag;
 				break;
 			}
 		}
+        
+        if (foundTag)
+            [self.apiRequests removeObjectForKey:foundTag];
 	}
 }
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
+    id foundTag = nil;
     for (id moduleTag in self.apiRequests) {
 		MITMobileWebAPI *aRequest = [self.apiRequests objectForKey:moduleTag];
 		if (aRequest == request) {
-            // FIXME: Don't mutate a container while enumerating it!
-			[self.apiRequests removeObjectForKey:moduleTag];
+            foundTag = moduleTag;
 			break;
 		}
 	}
-	
-	//for (MITModule *aModule in notifications) {
-	//	NSLog(@"%@ %@", [aModule description], aModule.pushNotificationEnabled ? @"yes" : @"no");
-	//}
-	
+    
+    if (foundTag)
+        [self.apiRequests removeObjectForKey:foundTag];
 	[self reloadSettings];
 }
 
