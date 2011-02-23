@@ -34,7 +34,7 @@
         if (body != nil) {
              [array addObject:[NSString stringWithFormat:@"&body=%@", [body stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
         }
-        NSString *urlString = [NSString stringWithFormat:@"mailto://%@?%@",
+        NSString *urlString = [NSString stringWithFormat:@"mailto:%@?%@",
                                (email != nil ? email : @""),
                                [array componentsJoinedByString:@"&"]];
         
