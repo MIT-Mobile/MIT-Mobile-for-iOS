@@ -33,8 +33,7 @@
 + (ParsedResult *)parsedResultForString:(NSString *)s {
   NSRange prefixRange = [s rangeOfString:PREFIX options:NSCaseInsensitiveSearch];
   if (prefixRange.location == 0) {
-    int restStart = prefixRange.location + prefixRange.length;
-    return [[[GeoParsedResult alloc] initWithLocation:[s substringFromIndex:restStart]]
+    return [[[GeoParsedResult alloc] initWithLocation:[s substringFromIndex:prefixRange.length]]
             autorelease];
   }
   return nil;
