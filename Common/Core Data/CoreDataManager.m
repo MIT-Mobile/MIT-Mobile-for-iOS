@@ -149,7 +149,6 @@
 }
 
 -(id)insertNewObjectForEntityForName:(NSString *)entityName context:(NSManagedObjectContext *)aManagedObjectContext {
-    self.managedObjectContext;
 	NSEntityDescription *entityDescription = [[managedObjectModel entitiesByName] objectForKey:entityName];
 	return [[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:aManagedObjectContext] autorelease];
 }
@@ -169,10 +168,11 @@
         [request setSortDescriptors:sortDescriptors];
     }
 	
-	NSError *error;
+	NSError *error = nil;
 	NSArray *objects = [self.managedObjectContext executeFetchRequest:request error:&error];
 
-    return ([objects count] > 0) ? objects : nil;
+    // Should only return 'nil' on error
+    return objects;
 }
 
 -(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate {
