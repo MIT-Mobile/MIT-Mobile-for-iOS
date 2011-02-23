@@ -42,13 +42,13 @@
 
 // this method will update the badge numbers in the tab bar
 + (void) updateUI {
-	NSNumber *badgeCount = nil;
 	int badgeCountInt = 0;
 	
 	NSMutableDictionary *modulesBadgeString = [NSMutableDictionary dictionary];
 	NSArray *notifications = [MITUnreadNotifications unreadNotifications];
 	for(MITNotification *notification in notifications) {
-		if(badgeCount = [modulesBadgeString objectForKey:notification.moduleName]) {
+        NSNumber *badgeCount = [modulesBadgeString objectForKey:notification.moduleName];
+		if(badgeCount) {
 			badgeCountInt = [badgeCount intValue] + 1;
 		} else {
 			badgeCountInt = 1;
@@ -61,10 +61,10 @@
 	// update the badge values for each tab item
 	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 	for(MITModule *module in appDelegate.modules) {
-		NSNumber *badgeValue = nil;
+		NSNumber *badgeValue = [modulesBadgeString objectForKey:module.tag];
 		NSString *badgeString = nil;
-		if(badgeValue = [modulesBadgeString objectForKey:module.tag]) {
-			badgeString = [badgeValue description];
+		if (badgeValue) {
+			badgeString = [badgeValue stringValue];
 		}
 		[module setBadgeValue:badgeString];
 	}
@@ -83,8 +83,8 @@
 		MITModule *module = [appDelegate moduleForTabBarItem:tabBarItem];
 		NSString *badgeValue = [module badgeValue];
 		if([badgeValue length]) {
-			NSInteger badgeInteger;
-			if(badgeInteger = [badgeValue integerValue]) {
+			NSInteger badgeInteger = [badgeValue integerValue];
+			if(badgeInteger) {
 				moreTabTotal = moreTabTotal + badgeInteger;
 			} else {
 				// badge value is not empty string, thats not a decimal expression
