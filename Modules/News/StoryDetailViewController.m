@@ -1,14 +1,17 @@
-#import "StoryDetailViewController.h"
-#import "MIT_MobileAppDelegate.h"
 #import <QuartzCore/QuartzCore.h>
-#import "NewsStory.h"
+
+#import "StoryDetailViewController.h"
+
+#import "ConnectionDetector.h"
 #import "CoreDataManager.h"
 #import "Foundation+MITAdditions.h"
+#import "MFMailComposeViewController+RFC2368.h"
+#import "MIT_MobileAppDelegate.h"
+#import "MITMobileServerConfiguration.h"
+#import "NewsStory.h"
 #import "StoryListViewController.h"
 #import "StoryGalleryViewController.h"
-#import "ConnectionDetector.h"
 #import "URLShortener.h"
-#import "MITMobileServerConfiguration.h"
 
 @implementation StoryDetailViewController
 
@@ -139,23 +142,29 @@
 		NSURL *url = [request URL];
         NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath]];
 
-		if ([[url path] rangeOfString:[baseURL path] options:NSAnchoredSearch].location == NSNotFound) {
+        if ([[url scheme] caseInsensitiveCompare:@"mailto"] == NSOrderedSame) {
+            if ([MFMailComposeViewController canSendMail]) {
+                MFMailComposeViewController *mailController = [[[MFMailComposeViewController alloc] initWithURL:url] autorelease];
+                mailController.mailComposeDelegate = self;
+                [self presentModalViewController:mailController animated:YES];
+            }
+        } else if ([[url path] rangeOfString:[baseURL path] options:NSAnchoredSearch].location == NSNotFound) {
             [[UIApplication sharedApplication] openURL:url];
             result = NO;
         } else {
-			if ([[url path] rangeOfString:@"image" options:NSBackwardsSearch].location != NSNotFound) {
-				StoryGalleryViewController *galleryVC = [[StoryGalleryViewController alloc] init];
-				galleryVC.images = story.allImages;
-				[self.navigationController pushViewController:galleryVC animated:YES];
-				[galleryVC release];
-				result = NO;
-			} else if ([[url path] rangeOfString:@"bookmark" options:NSBackwardsSearch].location != NSNotFound) {
-				// toggle bookmarked state
-				self.story.bookmarked = [NSNumber numberWithBool:([self.story.bookmarked boolValue]) ? NO : YES];
-				[CoreDataManager saveData];
-			} else if ([[url path] rangeOfString:@"share" options:NSBackwardsSearch].location != NSNotFound) {
-				[self share:nil];
-			}
+            if ([[url path] rangeOfString:@"image" options:NSBackwardsSearch].location != NSNotFound) {
+                StoryGalleryViewController *galleryVC = [[StoryGalleryViewController alloc] init];
+                galleryVC.images = story.allImages;
+                [self.navigationController pushViewController:galleryVC animated:YES];
+                [galleryVC release];
+                result = NO;
+            } else if ([[url path] rangeOfString:@"bookmark" options:NSBackwardsSearch].location != NSNotFound) {
+                // toggle bookmarked state
+                self.story.bookmarked = [NSNumber numberWithBool:([self.story.bookmarked boolValue]) ? NO : YES];
+                [CoreDataManager saveData];
+            } else if ([[url path] rangeOfString:@"share" options:NSBackwardsSearch].location != NSNotFound) {
+                [self share:nil];
+            }
 		}
 	}
 	return result;
@@ -210,4 +219,11 @@
     [super dealloc];
 }
 
+#pragma mark MFMailComposeViewControllerDelegate
+- (void)mailComposeController:(MFMailComposeViewController*)controller
+          didFinishWithResult:(MFMailComposeResult)result
+                        error:(NSError*)error
+{
+    [self dismissModalViewControllerAnimated:YES];
+}
 @end
