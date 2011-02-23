@@ -72,11 +72,13 @@
 	[fetchRequest release];
 	[frc release];
 	
-	NSError *error;
+	NSError *error = nil;
 	BOOL success = [frc performFetch:&error];
 	if (!success) {
 		NSLog(@"%s failed", __FUNCTION__);
-		NSLog(@"%@", [error description]);
+        
+        if (error)
+            NSLog(@"%@", [error description]);
 	}
 }
 
@@ -287,7 +289,6 @@
 		[self performSelector:@selector(resetToIdle:) withObject:nil afterDelay:1.5];
 		[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[self moreRowIndexPath]] withRowAnimation:UITableViewRowAnimationFade];
 	}
-	oldTotal = newTotal;
 }
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
