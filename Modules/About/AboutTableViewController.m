@@ -155,7 +155,15 @@
             case 2: {
                 NSString *email = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"];
                 NSString *subject = [NSString stringWithFormat:@"Feedback for MIT Mobile %@ (%@)", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], MITBuildNumber];
-                [MITMailComposeController presentMailControllerWithEmail:email subject:subject body:nil];
+                
+                if ([MFMailComposeViewController canSendMail]) {
+                    MFMailComposeViewController *mailView = [[MFMailComposeViewController alloc] init];
+                    [mailView setMailComposeDelegate:self];
+                    [mailView setSubject:subject];
+                    [mailView setToRecipients:[NSArray arrayWithObject:email]];
+                    [self presentModalViewController:mailView
+                                            animated:YES]; 
+                }
             }            
             default:
                 break;
@@ -168,9 +176,9 @@
 
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error 
 {	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate dismissAppModalViewControllerAnimated:YES];
-    [self viewWillAppear:NO];
+	[self dismissModalViewControllerAnimated:YES];
+    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow]
+                                  animated:YES];
 }
 
 - (void)dealloc {
