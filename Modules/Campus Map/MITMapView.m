@@ -563,70 +563,74 @@
     return annotationView;
 }
 
-
-#define kPinDropAnimationDuration 1.6
-
-static int sortAnnotationViews(id a, id b, void *context) {
-    MITPinAnnotationView *view1 = (MITPinAnnotationView *)a;
-    MITPinAnnotationView *view2 = (MITPinAnnotationView *)b;
-    
-    CGFloat x1 = view1.frame.origin.x;
-    CGFloat x2 = view2.frame.origin.x;
-    
-    if (x1 < x2) return NSOrderedAscending;
-    if (x2 < x1) return NSOrderedDescending;
-    
-    return NSOrderedSame;
-}
-
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
 {
-    NSArray *sortedViews = [views sortedArrayUsingFunction:sortAnnotationViews context:NULL];
+    NSArray *sortedViews = [views sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        MITPinAnnotationView *view1 = (MITPinAnnotationView *)a;
+        MITPinAnnotationView *view2 = (MITPinAnnotationView *)b;
+        
+        CGFloat x1 = view1.frame.origin.x;
+        CGFloat x2 = view2.frame.origin.x;
+        
+        if (x1 < x2) return NSOrderedAscending;
+        if (x2 < x1) return NSOrderedDescending;
+        
+        return NSOrderedSame;
+    }];
     
+    // animation completion callback
+    void (^autoSelectLonelyAnnotation)(BOOL) = ^(BOOL finished) {
+        NSMutableArray *annotations = [mapView.annotations mutableCopy];
+        NSInteger count = [annotations count];
+        
+        if (count > 3
+        || mapView.userInteractionEnabled == NO 
+        || [mapView.selectedAnnotations count] > 0) {
+            return;
+        }
+        
+        NSIndexSet *selectableIndexes = [annotations indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+            if ([obj isKindOfClass:[MKUserLocation class]] 
+            || [obj isKindOfClass:[InvisibleAnnotation class]]) {
+                return NO;
+            } else {
+                return YES;
+            }
+        }];
+        
+        if ([selectableIndexes count] == 1) {
+            id<MKAnnotation> annotation = [annotations objectAtIndex:[selectableIndexes firstIndex]];
+            [mapView selectAnnotation:annotation animated:YES];
+        }
+    };
+    
+    // animate pins dropping
+    CGFloat pinDropDuration = 0.7;
     CGFloat pinDropDelay = 0;
     CGFloat pinDropInterval = 0.07;
     
+    NSInteger i = 0, limit = [sortedViews count];
     for (MKAnnotationView *aView in sortedViews) {
+        i++;
         if ([aView isKindOfClass:[MITPinAnnotationView class]]) {
             MITPinAnnotationView *pin = (MITPinAnnotationView *)aView;
             if (pin.animatesDrop) {
-                
                 CGRect dstFrame = pin.frame;
                 CGRect srcFrame = pin.frame;
                 srcFrame.origin.y -= mapView.frame.size.height;
                 pin.frame = srcFrame;
                 
-                [UIView beginAnimations:@"pindrop" context:nil];
-                [UIView setAnimationDelay:pinDropDelay];
-                pin.frame = dstFrame;
-                [UIView commitAnimations];
-                
+                // only call completion when the last pin lands
+                void (^completionBlock)(BOOL) = (i < limit) ? nil : autoSelectLonelyAnnotation;
+                // ease in provides the same fake gravity seen in Maps.app
+                [UIView animateWithDuration:pinDropDuration 
+                                      delay:pinDropDelay 
+                                    options:UIViewAnimationOptionCurveEaseIn 
+                                 animations:^(void) { pin.frame = dstFrame; }
+                                 completion:completionBlock];
                 pinDropDelay += pinDropInterval;
             }
         }
-    }
-    
-    NSInteger count = [mapView.annotations count];
-    // Grab a reference to any pin now for efficiency
-    // The auto-select-single-search-result chunk beneath here was choking due to its reliance on the idea that MKUserLocation and InvisibleAnnotation would never be the lastObject in annotations. Trying to select the MKUserLocation sends MKMapView into an endless recursive dive through -mapView:didAddAnnotationViews:. This makes sure that 'annotation' is a real selectable thing.
-    id<MKAnnotation> annotation = nil; // this will hold the last pin found
-    if (count <= 3) {
-        for (id<MKAnnotation> anAnnotation in mapView.annotations) {
-            if ([anAnnotation isKindOfClass:[MKUserLocation class]] 
-                || [anAnnotation isKindOfClass:[InvisibleAnnotation class]]) {
-                count--;
-            } else {
-                annotation = anAnnotation;
-            }
-        }
-    }
-    
-	if (mapView.userInteractionEnabled // don't show callouts in map thumbnails
-        && count == 1
-        && annotation
-        && [mapView.selectedAnnotations count] == 0)
-    {
-        [mapView selectAnnotation:annotation animated:YES];
     }
     
     if ([self.delegate respondsToSelector:@selector(mapView:didAddAnnotationViews:)]) {

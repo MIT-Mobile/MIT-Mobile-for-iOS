@@ -310,10 +310,6 @@
 		// turn off locate me
 		_geoButton.style = UIBarButtonItemStyleBordered;
 		_mapView.stayCenteredOnUserLocation = NO;
-		
-		if ([_searchResults count] == 1) {
-			[_mapView selectAnnotation:[searchResults objectAtIndex:0]];
-		}
 	}
 	
 	[self saveRegion];
