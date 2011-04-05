@@ -511,7 +511,7 @@
 -(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
 	// if the alert view was "no search results", give focus back to the search bar
-	if (alertView.tag = kNoSearchResultsTag) {
+	if (alertView.tag == kNoSearchResultsTag) {
 		[_searchBar becomeFirstResponder];
 	}
 }
