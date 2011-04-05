@@ -92,7 +92,7 @@
 				stop = [ShuttleDataManager stopWithRoute:routeID stopID:stopID error:&error];
 				
 				// need to force routeViewController to load to initialize the route annotations
-				routeViewController.view;
+				(void)routeViewController.view;
 				for (ShuttleStopMapAnnotation *anAnnotation in [routeViewController.route annotations]) {
 					if ([anAnnotation.shuttleStop.stopID isEqualToString:stopID]) {
 						annotation = anAnnotation;

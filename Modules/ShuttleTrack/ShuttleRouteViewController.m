@@ -194,7 +194,7 @@
 	shuttleStopVC.shuttleStop = stop;
 	shuttleStopVC.annotation = annotation;
 	[self.navigationController pushViewController:shuttleStopVC animated:animated];
-	shuttleStopVC.view;
+	(void)shuttleStopVC.view;
 	[shuttleStopVC.mapButton addTarget:self action:@selector(showSelectedStop:) forControlEvents:UIControlEventTouchUpInside];
 }
 	

@@ -245,7 +245,7 @@
 			// due to a work around implemented for the MITMoreController
 			// force the view to load immediately so the chain of viewControllers is
 			// the expected viewControllers
-			theModule.tabNavController.topViewController.view;
+			(void)theModule.tabNavController.topViewController.view;
 		}
 		theModule.hasLaunchedBegun = YES;
         [theModule didAppear];

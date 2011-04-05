@@ -129,7 +129,7 @@
 		
 	} else if ([pathRoot isEqualToString:@"search-begin"] || [pathRoot isEqualToString:@"search-complete"]) {
 		// need to force the view to load before activating the doSearch method
-		rootController.view;
+		(void)rootController.view;
 		[rootController doSearch:query execute:[pathRoot isEqualToString:@"search-complete"]];
 	}
 

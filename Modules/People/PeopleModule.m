@@ -86,7 +86,7 @@ static NSString * const PeopleStateDetail = @"detail";
 	
 	// search
 	else if ([localPath isEqualToString:PeopleStateSearchBegin]) {
-		viewController.view;
+		(void)viewController.view;
 		if (query != nil) {
 			viewController.searchBar.text = query;
 		}
@@ -99,14 +99,14 @@ static NSString * const PeopleStateDetail = @"detail";
 		didHandle = NO;
 		
 	} else if ([localPath isEqualToString:PeopleStateSearchComplete]) {
-		viewController.view;
+		(void)viewController.view;
         [viewController beginExternalSearch:query];
 		didHandle = YES;
 		
 	} else if ([localPath isEqualToString:PeopleStateSearchExternal]) {
 		// this path is reserved for calling from other modules
 		// do not save state with this path       
-		viewController.view;
+		(void)viewController.view;
         [viewController beginExternalSearch:query];
         [self becomeActiveTab];
         didHandle = YES;

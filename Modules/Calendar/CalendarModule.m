@@ -61,7 +61,7 @@
                     if ([[queryParts objectAtIndex:0] isEqualToString:@"catID"]) {
                         [self popToRootViewController];
 
-                        self.moduleHomeController.view;
+                        (void)self.moduleHomeController.view;
                         [calendarVC selectScrollerButton:@"Categories"];
 
                         NSInteger catID = [[queryParts objectAtIndex:1] integerValue];
@@ -90,7 +90,7 @@
         if ([queryParts count] == 2) {
             if ([[queryParts objectAtIndex:0] isEqualToString:@"source"]) {
                 NSString *buttonTitle = [queryParts objectAtIndex:1];
-                self.moduleHomeController.view;
+                (void)self.moduleHomeController.view;
                 [(CalendarEventsViewController *)self.moduleHomeController selectScrollerButton:buttonTitle];
                 [self becomeActiveTab];
                 didHandle = YES;

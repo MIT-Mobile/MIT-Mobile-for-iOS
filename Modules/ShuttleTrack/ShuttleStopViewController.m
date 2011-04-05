@@ -217,7 +217,7 @@
 	routeMap.route = [[ShuttleDataManager sharedDataManager].shuttleRoutesByID objectForKey:self.shuttleStop.routeID];
 	
 	// ensure the view and map view are loaded
-	routeMap.view;
+	(void)routeMap.view;
 	
 	//MITMapView* mapView = routeMap.mapView;
 	

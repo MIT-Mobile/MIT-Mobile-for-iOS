@@ -88,7 +88,7 @@
 	}
 	
 	// force the map view to load
-	self.campusMapVC.view;
+	(void)self.campusMapVC.view;
     
     if ([(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] usesTabBar]) {
         // make sure the campus map is the root view controller
