@@ -607,18 +607,25 @@ static int sortAnnotationViews(id a, id b, void *context) {
     }
     
     NSInteger count = [mapView.annotations count];
+    // Grab a reference to any pin now for efficiency
+    // The auto-select-single-search-result chunk beneath here was choking due to its reliance on the idea that MKUserLocation and InvisibleAnnotation would never be the lastObject in annotations. Trying to select the MKUserLocation sends MKMapView into an endless recursive dive through -mapView:didAddAnnotationViews:. This makes sure that 'annotation' is a real selectable thing.
+    id<MKAnnotation> annotation = nil; // this will hold the last pin found
     if (count <= 3) {
         for (id<MKAnnotation> anAnnotation in mapView.annotations) {
-            if ([anAnnotation isKindOfClass:[MKUserLocation class]] || [anAnnotation isKindOfClass:[InvisibleAnnotation class]])
+            if ([anAnnotation isKindOfClass:[MKUserLocation class]] 
+                || [anAnnotation isKindOfClass:[InvisibleAnnotation class]]) {
                 count--;
+            } else {
+                annotation = anAnnotation;
+            }
         }
     }
     
 	if (mapView.userInteractionEnabled // don't show callouts in map thumbnails
         && count == 1
+        && annotation
         && [mapView.selectedAnnotations count] == 0)
     {
-        id<MKAnnotation> annotation = [mapView.annotations lastObject];
         [mapView selectAnnotation:annotation animated:YES];
     }
     
