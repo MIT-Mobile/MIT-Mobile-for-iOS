@@ -116,6 +116,7 @@
 		BD9FA7EE1047A05E00BC3C0A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */; };
 		DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */; };
 		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; };
+		DE12901A134B748E00BEBDA2 /* MITLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = DE129019134B748E00BEBDA2 /* MITLogging.m */; };
 		DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DE18F9ED10F19105009A69B9 /* News.xcdatamodeld */; };
 		DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1B4D7110CE17B30073BABC /* MITJSON.m */; };
 		DE2E588212B81029009857A1 /* CorridorListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2E588012B81029009857A1 /* CorridorListViewController.m */; };
@@ -507,6 +508,8 @@
 		DE0F6B3211109BC500F064D6 /* AboutMITVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutMITVC.h; sourceTree = "<group>"; };
 		DE0F6B3311109BC500F064D6 /* AboutMITVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutMITVC.m; sourceTree = "<group>"; };
 		DE10571411985D4B0090A505 /* News 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "News 2.xcdatamodel"; sourceTree = "<group>"; };
+		DE129018134B748E00BEBDA2 /* MITLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLogging.h; sourceTree = "<group>"; };
+		DE129019134B748E00BEBDA2 /* MITLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLogging.m; sourceTree = "<group>"; };
 		DE1348F910FFC2CC006FFF33 /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
 		DE1348FA10FFC2CC006FFF33 /* 10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10.png; sourceTree = "<group>"; };
 		DE1348FB10FFC2CC006FFF33 /* 11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 11.png; sourceTree = "<group>"; };
@@ -881,6 +884,8 @@
 				EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */,
 				EB13860A12F1FC8E004DBB7C /* Secret.h */,
 				EB13860B12F1FC8E004DBB7C /* Secret.m */,
+				DE129018134B748E00BEBDA2 /* MITLogging.h */,
+				DE129019134B748E00BEBDA2 /* MITLogging.m */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -2016,6 +2021,7 @@
 				EB13860D12F1FC8E004DBB7C /* Secret.m in Sources */,
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
 				2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */,
+				DE12901A134B748E00BEBDA2 /* MITLogging.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2143,6 +2149,7 @@
 					"\"Facebook Connect\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -2195,6 +2202,7 @@
 					"\"Facebook Connect\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",

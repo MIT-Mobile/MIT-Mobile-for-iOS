@@ -12,4 +12,5 @@
     #import <Foundation/Foundation.h>
     #import <UIKit/UIKit.h>
     #import "MITConstants.h" // shared constants (common URLs, NSUserDefaults keys, etc)
+    #import "MITLogging.h" // DLog(), WLog(), ELog()
 #endif
