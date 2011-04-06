@@ -14,10 +14,6 @@
 #import "MapSelectionController.h"
 #import "CoreLocation+MITAdditions.h"
 
-// TODO: Remove this import when done integrating the new bookmark table
-#import "BookmarksTableViewController.h"
-
-
 #define kSearchBarWidth 270
 #define kSearchBarCancelWidthDiff 28
 
@@ -144,8 +140,7 @@
 	}
 }
 
--(void) viewWillDisappear:(BOOL)animated
-{
+- (void) viewDidDisappear:(BOOL)animated {
     [self.mapView removeTileOverlay];
 }
 
