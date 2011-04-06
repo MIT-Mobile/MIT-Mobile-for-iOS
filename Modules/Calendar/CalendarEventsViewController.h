@@ -2,6 +2,7 @@
 #import "MITMobileWebAPI.h"
 #import "MITMapView.h"
 #import "EventCategoriesTableView.h"
+#import "OpenHouseTableView.h"
 #import "EventListTableView.h"
 #import "CalendarMapView.h"
 #import "DatePickerViewController.h"
@@ -42,7 +43,8 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 	CalendarMapView *searchResultsMapView;
 	
 	// category parameter for list of events in a category
-	NSInteger theCatID;
+	//NSInteger theCatID;
+    EventCategory *theCategory;
 	
 	BOOL showList;
 	BOOL showScroller;
@@ -53,6 +55,9 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 
     MITMobileWebAPI *categoriesRequest;
 	BOOL categoriesRequestDispatched;
+    
+    MITMobileWebAPI *openHouseCategoriesRequest;
+	BOOL openHouseCategoriesRequestDispatched;
 	
 	NSInteger loadingIndicatorCount;
     
@@ -61,7 +66,8 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 
 @property (nonatomic, assign) BOOL showScroller;
 @property (nonatomic, assign) BOOL showList;
-@property (nonatomic, assign) NSInteger catID;
+@property (nonatomic, retain) EventCategory *category;
+//@property (nonatomic, assign) NSInteger catID;
 //@property (nonatomic, assign) CalendarEventListType activeEventList;
 @property (nonatomic, retain) MITEventList *activeEventList;
 

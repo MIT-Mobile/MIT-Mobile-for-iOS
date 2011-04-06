@@ -101,6 +101,8 @@
 		44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */; };
 		44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A3CD11A33905000FD653 /* MapSelectionController.m */; };
 		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; };
+		4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */; };
+		4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */; };
 		569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3381282ADAB00BA0794 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33C1282ADBC00BA0794 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33B1282ADBC00BA0794 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33F1282ADC000BA0794 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33E1282ADC000BA0794 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -478,6 +480,11 @@
 		44C1A3CD11A33905000FD653 /* MapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSelectionController.m; sourceTree = "<group>"; };
 		44C1A4C211A412E2000FD653 /* MapSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapSearch.h; sourceTree = "<group>"; };
 		44C1A4C311A412E2000FD653 /* MapSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSearch.m; sourceTree = "<group>"; };
+		4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Calendar 3.xcdatamodel"; sourceTree = "<group>"; };
+		4BB9C54F134BA78200B7F135 /* CalendarCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarCategoriesViewController.h; sourceTree = "<group>"; };
+		4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarCategoriesViewController.m; sourceTree = "<group>"; };
+		4BB9C551134BA78200B7F135 /* OpenHouseTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenHouseTableView.h; sourceTree = "<group>"; };
+		4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenHouseTableView.m; sourceTree = "<group>"; };
 		569DC3381282ADAB00BA0794 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = iphoneos4.0/System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		569DC33B1282ADBC00BA0794 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = iphoneos4.0/System/Library/Frameworks/CoreMedia.framework; sourceTree = "<group>"; };
 		569DC33E1282ADC000BA0794 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = iphoneos4.0/System/Library/Frameworks/CoreVideo.framework; sourceTree = "<group>"; };
@@ -1596,6 +1603,10 @@
 		EB86CA6C115D273800C8F3D1 /* Calendar */ = {
 			isa = PBXGroup;
 			children = (
+				4BB9C54F134BA78200B7F135 /* CalendarCategoriesViewController.h */,
+				4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */,
+				4BB9C551134BA78200B7F135 /* OpenHouseTableView.h */,
+				4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */,
 				EB83923F1163ED140067C0A3 /* Model */,
 				EB86CA6D115D276700C8F3D1 /* CalendarModule.h */,
 				EB86CA6E115D276700C8F3D1 /* CalendarModule.m */,
@@ -2016,6 +2027,8 @@
 				EB13860D12F1FC8E004DBB7C /* Secret.m in Sources */,
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
 				2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */,
+				4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */,
+				4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2315,10 +2328,11 @@
 		EB83929F1163FD6E0067C0A3 /* Calendar.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */,
 				EB8392401163ED440067C0A3 /* Calendar.xcdatamodel */,
 				EB07AD8F12B88662005D6A4C /* Calendar 2.xcdatamodel */,
 			);
-			currentVersion = EB07AD8F12B88662005D6A4C /* Calendar 2.xcdatamodel */;
+			currentVersion = 4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */;
 			path = Calendar.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

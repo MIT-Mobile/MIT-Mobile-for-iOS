@@ -7,13 +7,14 @@
 }
 
 @property (nonatomic, retain) NSNumber * catID;
+@property (nonatomic, retain) NSString * listID;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSSet* subCategories;
 @property (nonatomic, retain) EventCategory * parentCategory;
 @property (nonatomic, retain) NSSet* events;
 
 - (BOOL)hasSubCategories;
-- (void)updateWithDict:(NSDictionary *)dict;
+- (void)updateWithDict:(NSDictionary *)dict forListID:(NSString *)listID;
 
 @end
 

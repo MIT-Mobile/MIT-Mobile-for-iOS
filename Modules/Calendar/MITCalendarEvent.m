@@ -140,14 +140,14 @@
 			NSString *name = [catDict objectForKey:@"name"];
 			NSInteger catID = [[catDict objectForKey:@"catid"] intValue];
 			
-			EventCategory *category = [CalendarDataManager categoryWithID:catID];
+			EventCategory *category = [CalendarDataManager categoryWithID:catID forListID:nil];
             if (category.title == nil) {
                 category.title = name;
             }
 			[self addCategoriesObject:category];
 		}
 	}
-    
+
     self.lastUpdated = [NSDate date];
 	[CoreDataManager saveData];
 }
