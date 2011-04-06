@@ -947,6 +947,7 @@
 		for (UIViewController *aController in self.navigationController.viewControllers) {
 			if ([aController isKindOfClass:[CampusTourHomeController class]]) {
 				theController = (CampusTourHomeController *)aController;
+                break;
 			}
 		}
 		if (theController) {

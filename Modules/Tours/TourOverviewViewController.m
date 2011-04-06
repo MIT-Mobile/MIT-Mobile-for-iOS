@@ -59,7 +59,7 @@ enum {
     [self.mapView addTileOverlay];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
+- (void)viewDidDisappear:(BOOL)animated
 {
     [self.mapView removeTileOverlay];
 }
