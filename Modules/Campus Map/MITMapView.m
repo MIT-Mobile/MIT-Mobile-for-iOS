@@ -580,7 +580,7 @@
     
     // animation completion callback
     void (^autoSelectLonelyAnnotation)(BOOL) = ^(BOOL finished) {
-        NSMutableArray *annotations = [mapView.annotations mutableCopy];
+        NSMutableArray *annotations = [[mapView.annotations mutableCopy] autorelease];
         NSInteger count = [annotations count];
         
         if (count > 3
