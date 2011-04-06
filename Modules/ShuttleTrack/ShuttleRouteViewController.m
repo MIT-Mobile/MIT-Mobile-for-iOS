@@ -74,33 +74,41 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-	
-	// request up to date route information
-	[[ShuttleDataManager sharedDataManager] registerDelegate:self];
-	[[ShuttleDataManager sharedDataManager] requestRoute:self.route.routeID];
-	
-	// poll for stop times every 20 seconds 
-	_pollingTimer = [[NSTimer scheduledTimerWithTimeInterval:20
-													  target:self 
-													selector:@selector(requestRoute)
-													userInfo:nil 
-													 repeats:YES] retain];
+
+	// RouteMapViewController has its own polling timer
+    // So, let it do polling if it's visible.
+    if(_mapShowing) {
+		[self.routeMapViewController viewWillAppear:animated];
+	} else {
+        // request up to date route information
+        [[ShuttleDataManager sharedDataManager] registerDelegate:self];
+        [[ShuttleDataManager sharedDataManager] requestRoute:self.route.routeID];
+        
+        // poll for stop times every 20 seconds 
+        _pollingTimer = [[NSTimer scheduledTimerWithTimeInterval:20
+                                                          target:self 
+                                                        selector:@selector(requestRoute)
+                                                        userInfo:nil 
+                                                         repeats:YES] retain];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 	[url setAsModulePath];
+    if(_mapShowing) {
+		[self.routeMapViewController viewDidAppear:animated];
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
 	[[ShuttleDataManager sharedDataManager] unregisterDelegate:self];
 	
-	if(_mapShowing)
-	{
+	if(_mapShowing) {
 		[self.routeMapViewController viewWillDisappear:animated];
 	}
 	
-	[super viewWillDisappear:animated];
 	if ([_pollingTimer isValid]) {
 		[_pollingTimer invalidate];
 	}
@@ -108,12 +116,12 @@
 	_pollingTimer = nil;
 }
 
-
-/*
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
+    if(_mapShowing) {
+		[self.routeMapViewController viewDidDisappear:animated];
+	}
 }
-*/
 
 /*
 // Override to allow orientations other than the default portrait orientation.
@@ -231,6 +239,7 @@
 	if (!showMap) {
 		[self.routeMapViewController viewWillDisappear:YES];
 		[self.routeMapViewController.view removeFromSuperview];
+        [self.routeMapViewController viewDidDisappear:YES];
 		[self.view addSubview:self.tableView];	
 		self.routeMapViewController = nil;
 		_viewTypeButton.title = @"Map";
@@ -238,8 +247,9 @@
 		[self.tableView removeFromSuperview];
 		[self loadRouteMap];
 		self.routeMapViewController.parentViewController = self;
-		[self.view addSubview:self.routeMapViewController.view];
 		[self.routeMapViewController viewWillAppear:YES];
+		[self.view addSubview:self.routeMapViewController.view];
+        [self.routeMapViewController viewDidAppear:YES];
 		_viewTypeButton.title = @"List";
 	}
 	

@@ -76,21 +76,7 @@
 	_routeStatusLabel.text = [_route trackingStatus];
 }
 
--(void)viewWillDisappear:(BOOL)animated
-{
-	[super viewWillDisappear:animated];
-    [_mapView removeTileOverlay];
-    
-	[[ShuttleDataManager sharedDataManager] unregisterDelegate:self];
-	if ([_pollingTimer isValid]) {
-		[_pollingTimer invalidate];
-	}
-	[_pollingTimer release];
-	_pollingTimer = nil;
-}
-
--(void) viewWillAppear:(BOOL)animated
-{
+-(void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
     
     [_mapView addTileOverlay];
@@ -100,21 +86,31 @@
 	
 	// start polling for new vehicle locations every 10 seconds. 
 	_pollingTimer = [[NSTimer scheduledTimerWithTimeInterval:10
-													 target:self 
-												   selector:@selector(pollShuttleLocations)
-												   userInfo:nil 
+                                                      target:self 
+                                                    selector:@selector(pollShuttleLocations)
+                                                    userInfo:nil 
 													 repeats:YES] retain];
 }
 
--(void) viewDidAppear:(BOOL)animated
-{
+-(void) viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	[self becomeFirstResponder];
-	
-
-
 }
 
+-(void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	[[ShuttleDataManager sharedDataManager] unregisterDelegate:self];
+	if ([_pollingTimer isValid]) {
+		[_pollingTimer invalidate];
+	}
+	[_pollingTimer release];
+	_pollingTimer = nil;
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [_mapView removeTileOverlay];
+}
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
