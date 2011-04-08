@@ -3,6 +3,7 @@
 #import "ConnectionWrapper.h"
 
 @class MITSpringboard;
+@class IconGrid;
 
 @protocol MITSpringboardDelegate <NSObject>
 
@@ -19,6 +20,7 @@
 	NSInteger navStackDepth;
 
     NSArray *primaryModules;
+    IconGrid *grid;
     
 	NSTimer *checkBannerTimer;
 	
@@ -29,6 +31,7 @@
 }
 
 @property (nonatomic, assign) id<MITSpringboardDelegate> delegate;
+@property (nonatomic, retain) IconGrid *grid;
 @property (nonatomic, retain) NSArray *primaryModules;
 @property (nonatomic, retain) ConnectionWrapper *connection;
 

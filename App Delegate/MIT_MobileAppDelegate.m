@@ -53,7 +53,7 @@
         [self.tabBarController updateCustomizableViewControllers:self.modules];
     }
     else {
-        MITSpringboard *springboard = [[[MITSpringboard alloc] init] autorelease];
+        MITSpringboard *springboard = [[[MITSpringboard alloc] initWithNibName:nil bundle:nil] autorelease];
         NSMutableArray *primaryModules = [NSMutableArray array];
         for (MITModule *aModule in self.modules) {
 			[primaryModules addObject:aModule];
