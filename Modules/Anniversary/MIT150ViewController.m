@@ -61,6 +61,8 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
     [api requestObjectFromModule:@"features" command:@"list" parameters:nil];
 }
 
+// TODO: replace Icon Grid in table header with custom tableviewcells similar to how photo albums work
+
 - (void)setupTableHeader {
     if (!self.tableView.tableHeaderView) {
         NSSortDescriptor *sort = [[[NSSortDescriptor alloc] initWithKey:@"sortOrder" ascending:YES] autorelease];
@@ -80,8 +82,8 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
         IconGrid *grid = [[[IconGrid alloc] initWithFrame:frame] autorelease];
 		grid.backgroundColor = [UIColor whiteColor];
 		grid.delegate = self;
-        grid.padding = GridPaddingMake(8, 8, 8, 8);
-        grid.spacing = GridSpacingMake(8, 8);
+//        grid.padding = GridPaddingMake(8, 8, 8, 8);
+//        grid.spacing = GridSpacingMake(8, 8);
         grid.icons = buttons;
         self.tableView.tableHeaderView = grid;
     }
