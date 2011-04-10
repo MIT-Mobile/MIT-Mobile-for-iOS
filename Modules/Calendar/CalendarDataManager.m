@@ -78,7 +78,8 @@ static CalendarDataManager *s_sharedManager = nil;
 
 	// then make a request for more updated data
 	MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
-	[api requestObjectFromModule:CalendarTag command:@"extraTopLevels" parameters:nil];
+    NSDictionary *params = [NSDictionary dictionaryWithObject:@"2" forKey:@"version"];
+	[api requestObjectFromModule:CalendarTag command:@"extraTopLevels" parameters:params];
 }
 
 - (BOOL)isDailyEvent:(MITEventList *)listType {
@@ -251,7 +252,7 @@ static CalendarDataManager *s_sharedManager = nil;
 
 + (NSArray *)topLevelCategories
 {
-	NSPredicate *pred = [NSPredicate predicateWithFormat:@"TRUEPREDICATE"];
+	NSPredicate *pred = [NSPredicate predicateWithFormat:@"listID == nil"];
 	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES];
 	NSSet *categories = [CoreDataManager objectsForEntity:CalendarCategoryEntityName
 										matchingPredicate:pred
@@ -272,14 +273,24 @@ static CalendarDataManager *s_sharedManager = nil;
 	return nil;
 }
 
-+ (EventCategory *)categoryWithID:(NSInteger)catID
++ (NSArray *)openHouseCategories
+{
+	NSPredicate *pred = [NSPredicate predicateWithFormat:@"listID == %@", @"OpenHouse"];
+	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES];
+	return [CoreDataManager objectsForEntity:CalendarCategoryEntityName
+										matchingPredicate:pred
+										  sortDescriptors:[NSArray arrayWithObject:sort]];
+}
+
++ (EventCategory *)categoryWithID:(NSInteger)catID forListID:(NSString *)listID;
 {	
-	NSPredicate *pred = [NSPredicate predicateWithFormat:@"catID == %d", catID];
+	NSPredicate *pred = [NSPredicate predicateWithFormat:@"catID == %d AND listID == %@", catID, listID];
 	EventCategory *category = [[CoreDataManager objectsForEntity:CalendarCategoryEntityName
 											   matchingPredicate:pred] lastObject];
 	if (!category) {
         category = (EventCategory *)[CoreDataManager insertNewObjectForEntityForName:CalendarCategoryEntityName];
 		category.catID = [NSNumber numberWithInt:catID];
+        category.listID = listID;
         [CoreDataManager saveData];
 	} else {
         //NSLog(@"%@", [[category.events allObjects] description]);
@@ -287,11 +298,11 @@ static CalendarDataManager *s_sharedManager = nil;
 	return category;
 }
 
-+ (EventCategory *)categoryWithDict:(NSDictionary *)dict
++ (EventCategory *)categoryWithDict:(NSDictionary *)dict forListID:(NSString *)listID;
 {
     NSInteger catID = [[dict objectForKey:@"catid"] intValue];
-	EventCategory *category = [CalendarDataManager categoryWithID:catID];
-	[category updateWithDict:dict];
+	EventCategory *category = [CalendarDataManager categoryWithID:catID forListID:listID];
+	[category updateWithDict:dict forListID:listID];
 	return category;
 }
 

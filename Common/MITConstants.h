@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "MITBuildInfo.h"
 
 typedef enum {
     MITNavigationParadigmTabBar,
@@ -34,7 +33,6 @@ extern NSString * const CachedMapSearchQueryKey;
 
 extern NSString * const MITInternalURLScheme;
 
-
 // module tags
 extern NSString * const CalendarTag;
 extern NSString * const EmergencyTag;
@@ -62,7 +60,6 @@ extern NSString * const UnreadBadgeValuesChangeNotification;
 extern NSString * const MyStellarAlertNotification;
 
 // core data entity names
-
 extern NSString * const NewsStoryEntityName;
 extern NSString * const NewsCategoryEntityName;
 extern NSString * const NewsImageEntityName;
@@ -118,7 +115,6 @@ extern NSString * const MITImageNameSearch;
 extern NSString * const MITImageNameBookmark;
 
 // action accessory types
-
 typedef enum {
     MITAccessoryViewEmail,
     MITAccessoryViewMap,
@@ -128,3 +124,7 @@ typedef enum {
 	MITAccessoryViewEmergency,
     MITAccessoryViewSecure
 } MITAccessoryViewType;
+
+// Info.plist additions
+extern NSString * const MITBuildRevisionKey;
+extern NSString * const MITBuildDescriptionKey;

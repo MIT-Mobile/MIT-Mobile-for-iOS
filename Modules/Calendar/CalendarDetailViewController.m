@@ -146,6 +146,9 @@
         NSMutableString *categoriesBody = [NSMutableString stringWithString:@"Categorized as:<ul>"];
         for (EventCategory *category in event.categories) {
             NSString *catIDString = [NSString stringWithFormat:@"catID=%d", [category.catID intValue]];
+            if(category.listID) {
+                catIDString = [catIDString stringByAppendingFormat:@"&listID=%@", category.listID];
+            }
             NSURL *categoryURL = [NSURL internalURLWithModuleTag:CalendarTag path:CalendarStateCategoryEventList query:catIDString];
             [categoriesBody appendString:[NSString stringWithFormat:
                                           @"<li><a href=\"%@\">%@</a></li>", [categoryURL absoluteString], category.title]];

@@ -6,6 +6,7 @@
 @implementation EventCategory 
 
 @dynamic catID;
+@dynamic listID;
 @dynamic title;
 @dynamic subCategories;
 @dynamic parentCategory;
@@ -17,7 +18,7 @@
 	return ([self.subCategories count] > 1);
 }
 
-- (void)updateWithDict:(NSDictionary *)dict
+- (void)updateWithDict:(NSDictionary *)dict forListID:(NSString *)listID;
 {
 	self.catID = [NSNumber numberWithInt:[[dict objectForKey:@"catid"] intValue]];
 	self.title = [dict objectForKey:@"name"];
@@ -26,7 +27,7 @@
 		self.parentCategory = self;
 		for (NSDictionary *subcatDict in subcatArray) {
 			NSInteger subcatID = [[subcatDict objectForKey:@"catid"] intValue];
-			EventCategory *subCategory = [CalendarDataManager categoryWithID:subcatID];
+			EventCategory *subCategory = [CalendarDataManager categoryWithID:subcatID forListID:listID];
 			subCategory.parentCategory = self;
 			subCategory.title = [subcatDict objectForKey:@"name"];
 		}

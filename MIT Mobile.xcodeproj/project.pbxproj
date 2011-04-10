@@ -101,6 +101,8 @@
 		44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */; };
 		44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A3CD11A33905000FD653 /* MapSelectionController.m */; };
 		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; };
+		4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */; };
+		4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */; };
 		569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3381282ADAB00BA0794 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33C1282ADBC00BA0794 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33B1282ADBC00BA0794 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33F1282ADC000BA0794 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33E1282ADC000BA0794 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -114,6 +116,7 @@
 		BD1E930D103B5D60004429AA /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92FE103B5D60004429AA /* SBJsonParser.m */; };
 		BD1E930E103B5D60004429AA /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E9300103B5D60004429AA /* SBJsonWriter.m */; };
 		BD9FA7EE1047A05E00BC3C0A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */; };
+		DE03763C1350F5080041DDBD /* MIT150Button.m in Sources */ = {isa = PBXBuildFile; fileRef = DE03763B1350F5080041DDBD /* MIT150Button.m */; };
 		DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */; };
 		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; };
 		DE12901A134B748E00BEBDA2 /* MITLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = DE129019134B748E00BEBDA2 /* MITLogging.m */; };
@@ -149,6 +152,8 @@
 		DE71537C102FD66A005E6111 /* MITModuleList.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71537B102FD66A005E6111 /* MITModuleList.m */; };
 		DE71F6E3104234F900661DED /* ShuttleRouteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */; };
 		DE71F7D510424E3400661DED /* ShuttleStop.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F7D410424E3400661DED /* ShuttleStop.m */; };
+		DE7287591350A1F60088450A /* MultiControlCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE7287581350A1F60088450A /* MultiControlCell.m */; };
+		DE72875F1350A4150088450A /* BorderedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE72875E1350A4150088450A /* BorderedTableViewCell.m */; };
 		DE728E6C10D6FF4700BFED37 /* StoryThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E4610D6FF4700BFED37 /* StoryThumbnailView.m */; };
 		DE728E7B10D6FF4700BFED37 /* StoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6510D6FF4700BFED37 /* StoryDetailViewController.m */; };
 		DE728E7C10D6FF4700BFED37 /* StoryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6710D6FF4700BFED37 /* StoryListViewController.m */; };
@@ -479,6 +484,11 @@
 		44C1A3CD11A33905000FD653 /* MapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSelectionController.m; sourceTree = "<group>"; };
 		44C1A4C211A412E2000FD653 /* MapSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapSearch.h; sourceTree = "<group>"; };
 		44C1A4C311A412E2000FD653 /* MapSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSearch.m; sourceTree = "<group>"; };
+		4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Calendar 3.xcdatamodel"; sourceTree = "<group>"; };
+		4BB9C54F134BA78200B7F135 /* CalendarCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarCategoriesViewController.h; sourceTree = "<group>"; };
+		4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarCategoriesViewController.m; sourceTree = "<group>"; };
+		4BB9C551134BA78200B7F135 /* OpenHouseTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenHouseTableView.h; sourceTree = "<group>"; };
+		4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenHouseTableView.m; sourceTree = "<group>"; };
 		569DC3381282ADAB00BA0794 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = iphoneos4.0/System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		569DC33B1282ADBC00BA0794 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = iphoneos4.0/System/Library/Frameworks/CoreMedia.framework; sourceTree = "<group>"; };
 		569DC33E1282ADC000BA0794 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = iphoneos4.0/System/Library/Frameworks/CoreVideo.framework; sourceTree = "<group>"; };
@@ -503,6 +513,8 @@
 		BD1E92FF103B5D60004429AA /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		BD1E9300103B5D60004429AA /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		DE03763A1350F5080041DDBD /* MIT150Button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT150Button.h; sourceTree = "<group>"; };
+		DE03763B1350F5080041DDBD /* MIT150Button.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIT150Button.m; sourceTree = "<group>"; };
 		DE0A62AA10CDAEA90058B2C2 /* MITBuildInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITBuildInfo.h; sourceTree = "<group>"; };
 		DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITBuildInfo.m; sourceTree = "<group>"; };
 		DE0F6B3211109BC500F064D6 /* AboutMITVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutMITVC.h; sourceTree = "<group>"; };
@@ -592,6 +604,10 @@
 		DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleRouteViewController.m; sourceTree = "<group>"; };
 		DE71F7D310424E3400661DED /* ShuttleStop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleStop.h; sourceTree = "<group>"; };
 		DE71F7D410424E3400661DED /* ShuttleStop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleStop.m; sourceTree = "<group>"; };
+		DE7287571350A1F60088450A /* MultiControlCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiControlCell.h; sourceTree = "<group>"; };
+		DE7287581350A1F60088450A /* MultiControlCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiControlCell.m; sourceTree = "<group>"; };
+		DE72875D1350A4150088450A /* BorderedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BorderedTableViewCell.h; sourceTree = "<group>"; };
+		DE72875E1350A4150088450A /* BorderedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BorderedTableViewCell.m; sourceTree = "<group>"; };
 		DE728E4510D6FF4700BFED37 /* StoryThumbnailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryThumbnailView.h; sourceTree = "<group>"; };
 		DE728E4610D6FF4700BFED37 /* StoryThumbnailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryThumbnailView.m; sourceTree = "<group>"; };
 		DE728E6410D6FF4700BFED37 /* StoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryDetailViewController.h; sourceTree = "<group>"; };
@@ -1521,6 +1537,12 @@
 				DE2E588012B81029009857A1 /* CorridorListViewController.m */,
 				DE2E59A112B86C3B009857A1 /* CorridorDetailViewController.h */,
 				DE2E59A212B86C3B009857A1 /* CorridorDetailViewController.m */,
+				DE7287571350A1F60088450A /* MultiControlCell.h */,
+				DE7287581350A1F60088450A /* MultiControlCell.m */,
+				DE72875D1350A4150088450A /* BorderedTableViewCell.h */,
+				DE72875E1350A4150088450A /* BorderedTableViewCell.m */,
+				DE03763A1350F5080041DDBD /* MIT150Button.h */,
+				DE03763B1350F5080041DDBD /* MIT150Button.m */,
 			);
 			path = Anniversary;
 			sourceTree = "<group>";
@@ -1601,6 +1623,10 @@
 		EB86CA6C115D273800C8F3D1 /* Calendar */ = {
 			isa = PBXGroup;
 			children = (
+				4BB9C54F134BA78200B7F135 /* CalendarCategoriesViewController.h */,
+				4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */,
+				4BB9C551134BA78200B7F135 /* OpenHouseTableView.h */,
+				4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */,
 				EB83923F1163ED140067C0A3 /* Model */,
 				EB86CA6D115D276700C8F3D1 /* CalendarModule.h */,
 				EB86CA6E115D276700C8F3D1 /* CalendarModule.m */,
@@ -1682,11 +1708,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MIT Mobile" */;
 			buildPhases = (
-				DEE2B550104C17860037A4AB /* Run Script */,
 				2C6894FE1316F4B700245391 /* Run Script */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				DEE2B550104C17860037A4AB /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -1803,8 +1829,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = "/usr/bin/perl -w";
-			shellScript = "# Xcode auto-versioning script for Subversion\n# by Axel Andersson, modified by Daniel Jalkut to add\n# \"--revision HEAD\" to the svn info line, which allows\n# the latest revision to always be used.\n# Modified by Justin Anderson to work with iPhone\n# code signing.\n# Modified by Blake Skinner to add support for git\n\n# Run this first script as a Run Script Build Phase to the beginning of your app target.\n\nuse strict;\n\ndie \"$0: Must be run from Xcode\" unless $ENV{\"BUILT_PRODUCTS_DIR\"};\n\n# Get the current subversion revision number\nmy $REV = `svnversion -n ./`;\n\nif ($REV == 'exported') {\n    $REV = `git describe`;\n}\n\nmy $special_path = \"$ENV{PROJECT_DIR}\" . \"/Common/MITBuildInfo.m\";\n\nfor ($REV) {\n    s/^\\s+//;\n    s/\\s+$//;\n}\n\nmy $version = $REV;\n\ndie \"$0: No revision information found\" unless $version;\n\n# write the svn revision to an svn:ignored header file which is included in the prefix header\n# \n# outputs a Common/MITBuildInfo.m like:\n# #import \"MITBuildInfo.h\";\n# \n# NSString * MITBuildNumber const = @\"60\";\n\nopen(FH, \">$special_path\") or die \"$0: $special_path: $!\";\nprint FH '#import \"MITBuildInfo.h\";\n\nNSString * const MITBuildNumber = @\"' . $version . '\";';\n\nclose(FH);\n";
+			shellPath = /usr/bin/ruby;
+			shellScript = "# Xcode auto-versioning script for git\n#\n# Based on a Ruby script by Jason Sallis, which was in turn\n# based on original Perl script by Marcus S. Zarra and Matt Long at\n#   (http://www.cimgf.com/2008/04/13/git-and-xcode-a-git-build-number-script/)\n\n# Fail if not run from Xcode\nraise \"Must be run from Xcode\" unless ENV['XCODE_VERSION_ACTUAL']\n\ninfo_plist = \"#{ENV['BUILT_PRODUCTS_DIR']}/#{ENV['INFOPLIST_PATH']}\"\n\n# Get the current git description\ndescription = `/usr/bin/git describe`.chomp!\n\n# Get the current git revision hash\nrevision = `/usr/bin/git rev-parse HEAD`.chomp!\n\n# Temporarily turn plist into text\n`/usr/bin/plutil -convert xml1 \"#{info_plist}\"`\n\n# Open Info.plist and set the CFBundleVersion value to the revision hash\nlines = IO.readlines(info_plist).join\n\nlines.gsub! /(<key>MITBuildDescription<\\/key>\\n\\t<string>).*?(<\\/string>)/, \"\\\\1#{description}\\\\2\"\nlines.gsub! /(<key>MITBuildRevision<\\/key>\\n\\t<string>).*?(<\\/string>)/, \"\\\\1#{revision}\\\\2\"\n\n# Overwrite the original Info.plist file with our updated version\nFile.open(info_plist, 'w') {|f| f.puts lines}\n\n# Convert plist back into binary\n`/usr/bin/plutil -convert binary1 \"#{info_plist}\"`\n\n# Report to the user\nputs \"MITBuildDescription in #{info_plist} set to '#{description}'\"\nputs \"MITBuildRevision in #{info_plist} set to '#{revision}'\"";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -2021,6 +2047,11 @@
 				EB13860D12F1FC8E004DBB7C /* Secret.m in Sources */,
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
 				2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */,
+				4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */,
+				4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */,
+				DE7287591350A1F60088450A /* MultiControlCell.m in Sources */,
+				DE72875F1350A4150088450A /* BorderedTableViewCell.m in Sources */,
+				DE03763C1350F5080041DDBD /* MIT150Button.m in Sources */,
 				DE12901A134B748E00BEBDA2 /* MITLogging.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2110,7 +2141,7 @@
 				);
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos4.2;
+				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
@@ -2132,7 +2163,7 @@
 					"-ObjC",
 				);
 				PREBINDING = NO;
-				SDKROOT = iphoneos4.2;
+				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
@@ -2156,7 +2187,7 @@
 				);
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "33A1EE45-68B9-4353-BB39-822B2C1CDEA1";
-				SDKROOT = iphoneos4.2;
+				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Distribution - App Store";
@@ -2209,7 +2240,7 @@
 				);
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2301A1E0-88F6-49BD-8CFE-564AA6B7DD02";
-				SDKROOT = iphoneos4.2;
+				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Distribution - Ad Hoc";
@@ -2323,10 +2354,11 @@
 		EB83929F1163FD6E0067C0A3 /* Calendar.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */,
 				EB8392401163ED440067C0A3 /* Calendar.xcdatamodel */,
 				EB07AD8F12B88662005D6A4C /* Calendar 2.xcdatamodel */,
 			);
-			currentVersion = EB07AD8F12B88662005D6A4C /* Calendar 2.xcdatamodel */;
+			currentVersion = 4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */;
 			path = Calendar.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

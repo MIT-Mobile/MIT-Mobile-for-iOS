@@ -38,6 +38,8 @@
 - (void)showSearchResultsMapView;
 - (void)showSearchResultsTableView;
 
+// used for open house (should be deleted after open house)
+- (void)makeOpenHouseCategoriesRequest;
 @end
 
 
@@ -45,7 +47,7 @@
 
 @synthesize startDate, endDate, events;
 @synthesize activeEventList, showList, showScroller;
-@synthesize tableView = theTableView, mapView = theMapView, catID = theCatID;
+@synthesize tableView = theTableView, mapView = theMapView, category = theCategory;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -55,7 +57,7 @@
 		
 		loadingIndicatorCount = 0;
 		showScroller = YES;
-		theCatID = kCalendarTopLevelCategoryID;
+		theCategory = nil;
         queuedButton = nil;
         showList = YES;
     }
@@ -139,6 +141,8 @@
     
     [datePicker release];
     datePicker = nil;
+    
+    self.category = nil;
     
     [super viewDidUnload];
 }
@@ -320,7 +324,7 @@
 		self.mapView.delegate = self;
 	}
 
-	if (dateRangeDidChange && ![activeEventList.listID isEqualToString:@"categories"]) {
+	if (dateRangeDidChange && [self shouldShowDatePicker:activeEventList]) {
         [self abortEventListRequest];
 		requestNeeded = YES;
 	}
@@ -332,7 +336,7 @@
 	if ([activeEventList.listID isEqualToString:@"categories"]) {
         NSArray *someEvents = [CalendarDataManager eventsWithStartDate:startDate
                                                               listType:activeEventList
-                                                              category:(theCatID == kCalendarTopLevelCategoryID) ? nil : [NSNumber numberWithInt:theCatID]];
+                                                              category:self.category.catID];
         
         if (someEvents != nil && [someEvents count]) {
             self.events = someEvents;
@@ -360,12 +364,11 @@
                 // populate (sub)categories from core data
                 // if we receive nil from core data, then make a trip to the server
                 NSArray *categories = nil;
-                if (theCatID != kCalendarTopLevelCategoryID) {
-                    EventCategory *category = [CalendarDataManager categoryWithID:theCatID];
-                    NSMutableArray *subCategories = [[[category.subCategories allObjects] mutableCopy] autorelease];
+                if (self.category) {
+                    NSMutableArray *subCategories = [[[self.category.subCategories allObjects] mutableCopy] autorelease];
                     // sort "All" category, i.e. the category that is a subcategory of itself, to the beginning
-                    [subCategories removeObject:category];
-                    categories = [[NSArray arrayWithObject:category] arrayByAddingObjectsFromArray:subCategories];
+                    [subCategories removeObject:self.category];
+                    categories = [[NSArray arrayWithObject:self.category] arrayByAddingObjectsFromArray:subCategories];
                 } else {
                     categories = [CalendarDataManager topLevelCategories];
 					if (!categories) {
@@ -376,7 +379,26 @@
             }
             requestNeeded = NO;
 
-		} else {
+		} else if([activeEventList.listID isEqualToString:@"OpenHouse"]) {
+            OpenHouseTableView *openHouseTV = [[OpenHouseTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped];
+            [openHouseTV applyStandardColors];
+            self.tableView = openHouseTV;
+            self.tableView.delegate = openHouseTV;
+            self.tableView.dataSource = openHouseTV;
+            openHouseTV.parentViewController = self;
+  
+            NSArray *categories = nil;
+            categories = [CalendarDataManager openHouseCategories];
+            if(![categories count]) {
+                [self makeOpenHouseCategoriesRequest];
+            }
+            if(openHouseCategoriesRequestDispatched) {
+                [self addLoadingIndicatorForSearch:NO];
+            } 
+            openHouseTV.categories = categories;
+            requestNeeded = NO;
+            
+        } else {
 			self.tableView = [[EventListTableView alloc] initWithFrame:contentFrame];
 			self.tableView.delegate = (EventListTableView *)self.tableView;
 			self.tableView.dataSource = (EventListTableView *)self.tableView;
@@ -466,7 +488,7 @@
 }
 
 - (BOOL)shouldShowDatePicker:(MITEventList *)listType {
-	return ![listType.listID isEqualToString:@"categories"];
+	return !([listType.listID isEqualToString:@"categories"] || [listType.listID isEqualToString:@"OpenHouse"]);
 }
 
 - (void)setupDatePicker
@@ -746,6 +768,23 @@
 	}
 }
 
+- (void)makeOpenHouseCategoriesRequest
+{
+    if (openHouseCategoriesRequestDispatched) return;
+    
+    if (!openHouseCategoriesRequest) {
+        openHouseCategoriesRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
+    }
+    
+    NSDictionary *params = [NSDictionary dictionaryWithObject:@"OpenHouse" forKey:@"type"];
+    if ([openHouseCategoriesRequest requestObjectFromModule:CalendarTag
+										   command:@"categories"
+                                        parameters:params]) {
+        
+		openHouseCategoriesRequestDispatched = YES;
+	}
+}
+
 - (void)makeRequest
 {
 	[self abortEventListRequest];
@@ -757,12 +796,16 @@
 		NSTimeInterval interval = [startDate timeIntervalSince1970];
 		NSString *timeString = [NSString stringWithFormat:@"%d", (int)interval];
 		
-		if (theCatID != kCalendarTopLevelCategoryID) {
+		if (self.category) {
+            NSMutableDictionary *params = [NSMutableDictionary dictionary];
+            [params setObject:[NSString stringWithFormat:@"%d", [self.category.catID intValue]] forKey:@"id"];
+            [params setObject:timeString forKey:@"start"];
+            if(self.category.listID) {
+                [params setObject:self.category.listID forKey:@"type"];
+            }
 			requestDispatched = [apiRequest requestObjectFromModule:CalendarTag
 															command:@"category"
-														 parameters:[NSDictionary dictionaryWithObjectsAndKeys:
-																	 [NSString stringWithFormat:@"%d", theCatID], @"id",
-																	 timeString, @"start", nil]];
+														 parameters:params];
 		} else {
 			
 			requestDispatched = [apiRequest requestObjectFromModule:CalendarTag
@@ -886,7 +929,7 @@
         categoriesRequest = nil;
         
         for (NSDictionary *catDict in result) {
-            [CalendarDataManager categoryWithDict:catDict]; // save this to core data
+            [CalendarDataManager categoryWithDict:catDict forListID:nil]; // save this to core data
 			[CoreDataManager saveData];
         }
 		
@@ -895,6 +938,23 @@
 			[self.tableView reloadData];
 		}
 
+        return;
+    }
+    
+    if (request == openHouseCategoriesRequest) {
+        openHouseCategoriesRequestDispatched = NO;
+        openHouseCategoriesRequest = nil;
+        
+        for (NSDictionary *catDict in result) {
+            [CalendarDataManager categoryWithDict:catDict forListID:@"OpenHouse"]; // save this to core data
+			[CoreDataManager saveData];
+        }
+		
+		if ([activeEventList.listID isEqualToString:@"OpenHouse"]) {
+			[(OpenHouseTableView *)self.tableView setCategories:[CalendarDataManager openHouseCategories]];
+			[self.tableView reloadData];
+		}
+        
         return;
     }
     
@@ -944,11 +1004,11 @@
 		
         EventCategory *category = nil;
 		
-		if ([activeEventList.listID isEqualToString:@"events"]) {
-			category = [CalendarDataManager categoryWithID:theCatID];
-		} else if ([activeEventList.listID isEqualToString:@"Exhibits"]) {
+		if ([activeEventList.listID isEqualToString:@"Exhibits"]) {
 			category = [CalendarDataManager categoryForExhibits];
-		}
+		} else {
+            category = self.category;
+        }
         
         for (NSDictionary *eventDict in result) {
             MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];

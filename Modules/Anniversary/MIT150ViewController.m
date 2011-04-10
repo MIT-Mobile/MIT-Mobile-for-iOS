@@ -3,10 +3,13 @@
 #import "FeatureLink.h"
 #import "UIKit+MITAdditions.h"
 #import "CoreDataManager.h"
-#import <QuartzCore/QuartzCore.h>
 #import "Foundation+MITAdditions.h"
 #import "WelcomeViewController.h"
 #import "CorridorListViewController.h"
+#import "MIT150Button.h"
+#import "MultiControlCell.h"
+#import "BorderedTableViewCell.h"
+
 
 #define DEFAULT_BUTTON_HEIGHT 100
 #define DEFAULT_BUTTON_WIDTH 80
@@ -19,7 +22,7 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
 - (FeatureSection *)featureSectionForSection:(NSInteger)section;
 - (FeatureLink *)featureLinkForIndexPath:(NSIndexPath *)indexPath;
 
-- (void)setupTableHeader;
+- (void)rebuildFeaturedButtons;
 - (void)requestFeatures;
 
 @end
@@ -27,18 +30,7 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
 
 @implementation MIT150ViewController
 
-#pragma mark -
-#pragma mark Initialization
-
-/*
-- (id)initWithStyle:(UITableViewStyle)style {
-    // Override initWithStyle: if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-    if ((self = [super initWithStyle:style])) {
-    }
-    return self;
-}
-*/
-
+@synthesize featuredButtonGroups, buttonMargins;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -48,11 +40,13 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
     self.title = @"MIT150";
     self.view.backgroundColor = [UIColor whiteColor];
 
+    self.buttonMargins = CGSizeMake(8.0, 8.0);
+    
     NSInteger lastUpdated = [[[NSUserDefaults standardUserDefaults] objectForKey:kMIT150LastUpdated] integerValue];
     if (!lastUpdated || [[NSDate date] timeIntervalSince1970] - lastUpdated > 60) {
         [self requestFeatures];
     } else {
-        [self setupTableHeader];
+        [self rebuildFeaturedButtons];
     }
 }
 
@@ -61,37 +55,61 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
     [api requestObjectFromModule:@"features" command:@"list" parameters:nil];
 }
 
-- (void)setupTableHeader {
-    if (!self.tableView.tableHeaderView) {
-        NSSortDescriptor *sort = [[[NSSortDescriptor alloc] initWithKey:@"sortOrder" ascending:YES] autorelease];
-		NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title = 'features'"];
-		FeatureSection *topSection = [[CoreDataManager objectsForEntity:@"FeatureSection" matchingPredicate:predicate] lastObject];
-        NSArray *featureLinks = [topSection.links sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
-		
-        NSMutableArray *buttons = [NSMutableArray arrayWithCapacity:featureLinks.count];
-        for (FeatureLink *featureLink in featureLinks) {
-            MIT150Button *aButton = [[[MIT150Button alloc] init] autorelease];
-            aButton.featureLink = featureLink;
-            [buttons addObject:aButton];
+- (void)rebuildFeaturedButtons {
+    NSSortDescriptor *sort = [[[NSSortDescriptor alloc] initWithKey:@"sortOrder" ascending:YES] autorelease];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title = 'features'"];
+    FeatureSection *topSection = [[CoreDataManager objectsForEntity:@"FeatureSection" matchingPredicate:predicate] lastObject];
+    NSArray *featureLinks = [topSection.links sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
+    
+    NSMutableArray *buttonGroups = [NSMutableArray array];
+    NSMutableArray *buttons = [NSMutableArray array];
+    
+    NSLog(@"MIT150 featured links: %@", featureLinks);
+    
+    CGFloat width, remainingWidth = self.view.frame.size.width - (self.buttonMargins.width * 2.0);
+    __block CGFloat spacing, height = 0;
+    NSInteger row = 0;
+    
+    void (^finalizeButtonGroup)(NSArray *, BOOL) = ^(NSArray *buttons, BOOL isFirstRow) {
+        NSInteger count = [buttons count];
+        height += (isFirstRow) ? (2.0 * self.buttonMargins.height) : self.buttonMargins.height;
+        spacing = (count > 1) ? remainingWidth / [buttons count] : 0;
+        [buttonGroups addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                 buttons, @"buttons", 
+                                 [NSNumber numberWithFloat:spacing], @"spacing",
+                                 [NSNumber numberWithFloat:height], @"height",
+                                 nil]];
+    };
+
+    for (FeatureLink *featureLink in featureLinks) {
+        // prep rows for featured data
+        if (remainingWidth < featureLink.size.width) {
+            finalizeButtonGroup(buttons, (row == 0));
+            buttons = [NSMutableArray array];
+            row += 1;
+            remainingWidth = width;
+            height = 0;
+            spacing = 0;
         }
+
+        remainingWidth -= featureLink.size.width;
+        height = MAX(height, featureLink.size.height);
         
-        CGRect frame = self.tableView.frame;
-        frame.size.height = DEFAULT_BUTTON_HEIGHT + 20;
-        IconGrid *grid = [[[IconGrid alloc] initWithFrame:frame] autorelease];
-		grid.backgroundColor = [UIColor whiteColor];
-		grid.delegate = self;
-        grid.padding = GridPaddingMake(8, 8, 8, 8);
-        grid.spacing = GridSpacingMake(8, 8);
-        grid.icons = buttons;
-        self.tableView.tableHeaderView = grid;
+        MIT150Button *aButton = [[[MIT150Button alloc] init] autorelease];
+        aButton.featureLink = featureLink;
+        
+        [buttons addObject:aButton];
+//        NSLog(@"%@ goes in row %d (%f px left)", featureLink, row, remainingWidth);
     }
+    // fill in last row
+    finalizeButtonGroup(buttons, (row == 0));
+
+    self.featuredButtonGroups = buttonGroups;
+    [self.tableView reloadData];
 }
 
 #pragma mark -
-#pragma mark IconGrid delegation
-- (void)iconGridFrameDidChange:(IconGrid *)iconGrid {
-	self.tableView.tableHeaderView = iconGrid;
-}
+#pragma mark Internal URL handlers
 
 - (void)showWelcome {
 	WelcomeViewController *welcomeVC = [[WelcomeViewController alloc] initWithNibName:nil bundle:nil];
@@ -104,34 +122,6 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
 	[self.navigationController pushViewController:corridorVC animated:YES];
 	[corridorVC release];
 }
-
-/*
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-*/
-/*
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-}
-*/
-/*
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-}
-*/
-/*
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-}
-*/
-/*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-*/
 
 #pragma mark -
 #pragma mark Table view data source
@@ -148,7 +138,6 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
 	NSArray *featureSections = [self allFeatureSections];
 	FeatureSection *aFeatureSection = nil;
 	
-	section += 1; // to skip the missing tableview section content used by the featured buttons at top
 	if ([featureSections count] >= section) {
 		aFeatureSection = [featureSections objectAtIndex:section];
 	}
@@ -165,41 +154,81 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	NSArray *featureSections = [self allFeatureSections];
-    // Return the number of sections.
-	NSInteger count = [featureSections count] - 1; // minus one for featured area at top
-    return (count > 0) ? count : 0;
+    return [[self allFeatureSections] count];
 }
-
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NSInteger sectionCount = 0;
 
-	FeatureSection *aFeatureSection = [self featureSectionForSection:section];
-	if (aFeatureSection) {
-		sectionCount = [aFeatureSection.links count];
-	}
+    if (section == 0) {
+        sectionCount = [self.featuredButtonGroups count];
+    } else {
+        FeatureSection *aFeatureSection = [self featureSectionForSection:section];
+        if (aFeatureSection) {
+            sectionCount = [aFeatureSection.links count];
+        }
+    }
 	
     return sectionCount;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    CGFloat height = self.tableView.rowHeight;
+    if (indexPath.section == 0) {
+        CGFloat cachedHeight = [[[self.featuredButtonGroups objectAtIndex:indexPath.row] objectForKey:@"height"] floatValue];
+        if (cachedHeight <= 0) {
+            NSLog(@"warning: cached height for %@ was %f", indexPath, cachedHeight);
+        }
+        height = cachedHeight;
+    }
+    return height;
 }
 
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    static NSString *CellIdentifier = @"Cell";
+    static NSString *featuredCellIdentifier = @"featuredCell";
+    static NSString *linkCellIdentifier = @"linkCell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+    UITableViewCell *cell = nil;
+    
+    /*
+     * In order to have a mix of separator / no separator sections in this 
+     * tableview, we need to turn separators off entirely and then bring 
+     * them back through a custom UITableViewCell
+     */
+    
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    // No separator for buttons in top section
+    if (indexPath.section == 0) {
+        cell = [tableView dequeueReusableCellWithIdentifier:featuredCellIdentifier];
+        if (cell == nil) {
+            cell = [[[MultiControlCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:featuredCellIdentifier] autorelease];
+        }
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.contentView.backgroundColor = [UIColor whiteColor];
+        NSDictionary *buttonGroup = [self.featuredButtonGroups objectAtIndex:indexPath.row];
+        ((MultiControlCell *)cell).position = indexPath.row;
+        ((MultiControlCell *)cell).margins = self.buttonMargins;
+        ((MultiControlCell *)cell).horizontalSpacing = [[buttonGroup objectForKey:@"spacing"] floatValue];
+        ((MultiControlCell *)cell).controls = [buttonGroup objectForKey:@"buttons"];
+//        NSLog(@"laid out row with %f left and %f right margins", self.buttonMargins.width, self.tableView.frame.size.width - xOffset);
+    // Separator via BorderedTableViewCell for other sections
+    } else {
+        cell = [tableView dequeueReusableCellWithIdentifier:linkCellIdentifier];
+        if (cell == nil) {
+            cell = [[[BorderedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:linkCellIdentifier] autorelease];
+        }
+        // use default border color
+        ((BorderedTableViewCell *)cell).borderColor = self.tableView.separatorColor;
+        
+        FeatureLink *link = [self featureLinkForIndexPath:indexPath];
+        cell.textLabel.text = link.title;
+        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     }
-    cell.contentView.backgroundColor = [UIColor whiteColor];
     
-	FeatureLink *link = [self featureLinkForIndexPath:indexPath];
-	
-	cell.textLabel.text = link.title;
-	cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
-	
     return cell;
 }
 
@@ -207,8 +236,12 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
 #pragma mark Table view delegate
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	FeatureSection *aFeatureSection = [self featureSectionForSection:section];
-    return [UITableView ungroupedSectionHeaderWithTitle:aFeatureSection.title];
+    UIView *header = nil;
+    if (section != 0) {
+        FeatureSection *aFeatureSection = [self featureSectionForSection:section];
+        header = [UITableView ungroupedSectionHeaderWithTitle:aFeatureSection.title];
+    }
+    return header;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -225,6 +258,7 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
+#pragma mark -
 #pragma mark JSONLoadedDelegate
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
@@ -277,8 +311,7 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
         }
     }
     
-    [self setupTableHeader];
-	[self.tableView reloadData];
+    [self rebuildFeaturedButtons];
 }
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
@@ -307,217 +340,3 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
 
 
 @end
-
-@implementation MIT150Button
-
-- (FeatureLink *)featureLink {
-    return _featureLink;
-}
-
-- (void)setFeatureLink:(FeatureLink *)featureLink {
-    [_featureLink release];
-    _featureLink = [featureLink retain];
-    
-    CGRect frame = self.frame;
-    
-    if (_featureLink.photo) {
-        // wasteful way to get image size
-        UIImage *image = [UIImage imageWithData:_featureLink.photo];
-        frame.size.width = image.size.width;
-        frame.size.height = image.size.height;
-    } else {
-        frame.size.width = DEFAULT_BUTTON_WIDTH;
-        frame.size.height = DEFAULT_BUTTON_HEIGHT;
-    }
-    self.frame = frame;
-    [self addTarget:self action:@selector(wasTapped:) forControlEvents:UIControlEventTouchUpInside];
-    
-    self.layer.masksToBounds = YES;
-    self.layer.cornerRadius = 5.0;
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    
-    CGRect frame = self.frame;
-    frame.origin = CGPointZero;
-    
-    // background
-    MITThumbnailView *thumbnail = (MITThumbnailView *)[self viewWithTag:8001];
-    if (!thumbnail) {
-        thumbnail = [[[MITThumbnailView alloc] initWithFrame:frame] autorelease];
-        thumbnail.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        thumbnail.delegate = self;
-        thumbnail.tag = 8001;
-        thumbnail.userInteractionEnabled = NO;
-        [self addSubview:thumbnail];
-    } else {
-        thumbnail.frame = frame;
-    }
-    if (self.featureLink.photo) {
-        thumbnail.imageData = self.featureLink.photo;
-    } else {
-        thumbnail.imageURL = self.featureLink.photoURL;
-    }
-    [thumbnail loadImage];
-    
-    UIColor *tintColor = [UIColor colorWithHexString:self.featureLink.tintColor];
-	
-    if (self.featureLink.title && !self.featureLink.subtitle) {
-        // title
-        UIFont *font = [UIFont boldSystemFontOfSize:13];
-        CGSize size = [self.featureLink.title sizeWithFont:font];
-        frame = CGRectMake(10, 4, self.frame.size.width - 20, size.height);
-        
-        UILabel *titleLabel = (UILabel *)[self viewWithTag:8003];
-        if (!titleLabel) {
-            titleLabel = [[[UILabel alloc] initWithFrame:frame] autorelease];
-            titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-            titleLabel.backgroundColor = [UIColor clearColor];
-            titleLabel.textColor = [UIColor whiteColor];
-            titleLabel.font = font;
-            titleLabel.tag = 8003;
-            titleLabel.userInteractionEnabled = NO;
-            titleLabel.text = self.featureLink.title;
-            [self addSubview:titleLabel];
-        } else {
-            titleLabel.frame = frame;
-        }
-        
-        // disclosure
-        CGRect triangleFrame = CGRectMake(titleLabel.frame.origin.x + size.width, titleLabel.frame.origin.y, 10, titleLabel.frame.size.height);
-        UILabel *triangleLabel = (UILabel *)[self viewWithTag:8005];
-        if (!triangleLabel) {
-            triangleLabel = [[[UILabel alloc] initWithFrame:triangleFrame] autorelease];
-            triangleLabel.textColor = tintColor;
-            triangleLabel.font = [UIFont systemFontOfSize:10];
-            triangleLabel.text = @"\u25b6";
-            triangleLabel.backgroundColor = [UIColor clearColor];
-            triangleLabel.tag = 8005;
-            [self addSubview:triangleLabel];
-        } else {
-            triangleLabel.frame = triangleFrame;
-        }
-        
-    } else if (self.featureLink.subtitle) {
-        
-        // overlay
-        frame.origin.y = round(self.frame.size.height * 0.6);
-        frame.size.height = round(self.frame.size.height * 0.4);
-        
-        UIView *overlay = [self viewWithTag:8002];
-        if (!overlay) {
-            CGFloat * colorComps = (CGFloat *)CGColorGetComponents([tintColor CGColor]);
-            
-            UIView *overlay = [[UIView alloc] initWithFrame:frame];
-            overlay.userInteractionEnabled = NO;
-            overlay.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-            overlay.backgroundColor = [UIColor colorWithRed:colorComps[0] * 0.3
-                                                      green:colorComps[1] * 0.3
-                                                       blue:colorComps[2] * 0.3
-                                                      alpha:0.6];
-            overlay.tag = 8002;
-            [self addSubview:overlay];
-        }
-        
-        // title
-        frame.origin.x += 10;
-        frame.origin.y += 8;
-        frame.size.width -= 20;
-        
-        UIFont *font = [UIFont fontWithName:@"Georgia-Italic" size:14];
-        CGSize size = [self.featureLink.title sizeWithFont:font];
-        frame.size.height = size.height;
-        
-        UILabel *titleLabel = (UILabel *)[self viewWithTag:8003];
-        if (!titleLabel) {
-            titleLabel = [[[UILabel alloc] initWithFrame:frame] autorelease];
-            titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-            titleLabel.backgroundColor = [UIColor clearColor];
-            titleLabel.textColor = tintColor;
-            titleLabel.font = font;
-            titleLabel.tag = 8003;
-            titleLabel.userInteractionEnabled = NO;
-            titleLabel.text = self.featureLink.title;
-            [self addSubview:titleLabel];
-        } else {
-            titleLabel.frame = frame;
-        }
-        
-        // subtitle
-        frame.origin.y += frame.size.height + 0;
-        
-        font = [UIFont systemFontOfSize:13];
-        size = [self.featureLink.subtitle sizeWithFont:font constrainedToSize:CGSizeMake(frame.size.width, 2000)];
-        frame.size.height = size.height;
-        
-        UILabel *subtitleLabel = (UILabel *)[self viewWithTag:8004];
-        if (!subtitleLabel) {
-            subtitleLabel = [[[UILabel alloc] initWithFrame:frame] autorelease];
-            subtitleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-            subtitleLabel.backgroundColor = [UIColor clearColor];
-            subtitleLabel.textColor = [UIColor whiteColor];
-            subtitleLabel.font = font;
-            subtitleLabel.lineBreakMode = UILineBreakModeWordWrap;
-            subtitleLabel.numberOfLines = 2;
-            subtitleLabel.tag = 8004;
-            subtitleLabel.userInteractionEnabled = NO;
-            subtitleLabel.text = self.featureLink.subtitle;
-            [self addSubview:subtitleLabel];
-        } else {
-            subtitleLabel.frame = frame;
-        }
-        
-        // disclosure
-        CGRect labelBounds = [subtitleLabel textRectForBounds:subtitleLabel.bounds limitedToNumberOfLines:1];
-        CGFloat originY;
-        NSInteger position = [subtitleLabel.text lengthOfLineWithFont:font constrainedToSize:labelBounds.size];
-        if (position < subtitleLabel.text.length) {
-            NSString *substring = [subtitleLabel.text substringFromIndex:position];
-            size = [substring sizeWithFont:font];
-            originY = frame.origin.y + size.height;
-        } else {
-            size = [subtitleLabel.text sizeWithFont:font];
-            originY = frame.origin.y;
-        }
-        CGRect triangleFrame = CGRectMake(subtitleLabel.frame.origin.x + size.width + 1, originY, 10, size.height);
-        
-        UILabel *triangleLabel = (UILabel *)[self viewWithTag:8005];
-        if (!triangleLabel) {
-            triangleLabel = [[[UILabel alloc] initWithFrame:triangleFrame] autorelease];
-            triangleLabel.textColor = tintColor;
-            triangleLabel.font = [UIFont systemFontOfSize:10];
-            triangleLabel.text = @"\u25b6";
-            triangleLabel.backgroundColor = [UIColor clearColor];
-            triangleLabel.tag = 8005;
-            [self addSubview:triangleLabel];
-        } else {
-            triangleLabel.frame = triangleFrame;
-        }
-    }
-}
-
-- (void)wasTapped:(id)sender {
-    NSURL *url = [NSURL URLWithString:self.featureLink.url];
-	NSLog(@"URL = %@", url);
-    if ([[UIApplication sharedApplication] canOpenURL:url]) {
-        [[UIApplication sharedApplication] openURL:url];
-    }
-}
-
-- (void)dealloc {
-    self.featureLink = nil;
-    [super dealloc];
-}
-
-- (void)thumbnail:(MITThumbnailView *)thumbnail didLoadData:(NSData *)data {
-    UIImage *image = [UIImage imageWithData:data];
-    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, image.size.width, image.size.height);
-    self.featureLink.photo = data;
-    [CoreDataManager saveData];
-    [self setNeedsLayout];
-    [self.superview setNeedsLayout];
-}
-
-@end
-

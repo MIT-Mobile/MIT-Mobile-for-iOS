@@ -2,14 +2,9 @@
 #import "EventCategory.h"
 #import "CalendarEventsViewController.h"
 
-@implementation EventCategoriesTableView
+@implementation OpenHouseTableView
 
 @synthesize categories, parentViewController;
-
-- (BOOL)isSubcategoryView
-{
-	return (parentViewController.category != nil);
-}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
@@ -34,11 +29,7 @@
     }
     
     EventCategory *category = [self.categories objectAtIndex:indexPath.row];
-	if ([self isSubcategoryView] && category.parentCategory == category) {
-		cell.textLabel.text = [NSString stringWithFormat:@"All %@", category.title];
-	} else {
-		cell.textLabel.text = category.title;
-	}
+	cell.textLabel.text = category.title;
 	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	
     return cell;
@@ -53,19 +44,10 @@
 	vc.category = category;
 	vc.navigationItem.title = category.title;
 	vc.showScroller = NO;
-
-	if ([category hasSubCategories] && ![self isSubcategoryView]) {
-		//vc.activeEventList = CalendarEventListTypeCategory;
-		vc.activeEventList = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
-		
-	} else {
-	
-		NSArray *events = [category.events allObjects];	
-		vc.events = events;
-		//vc.activeEventList = CalendarEventListTypeEvents;
-		vc.showList = YES;
-	}
-
+    NSArray *events = [category.events allObjects];	
+    vc.startDate = [NSDate dateWithTimeIntervalSince1970:OPEN_HOUSE_START_DATE];
+	vc.events = events;
+    vc.showList = YES;
 	[self.parentViewController.navigationController pushViewController:vc animated:YES];
 	[vc release];
 

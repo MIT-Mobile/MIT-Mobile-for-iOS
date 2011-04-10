@@ -117,3 +117,8 @@ NSString * const MITImageNameDownArrow = @"global/arrow-white-down.png";
 
 NSString * const MITImageNameSearch = @"global/search.png";
 NSString * const MITImageNameBookmark = @"global/bookmark.png";
+
+// Info.plist additions
+
+NSString * const MITBuildRevisionKey = @"MITBuildRevision";
+NSString * const MITBuildDescriptionKey = @"MITBuildDescription";

@@ -46,7 +46,11 @@
 }
 
 - (NSString *)description {
-	return self.title;
+	return [NSString stringWithFormat:@"\"%@\" %@", self.title, NSStringFromCGSize(self.size)];
+}
+
+- (CGSize)size {
+    return CGSizeMake([self.photoWidth floatValue], [self.photoHeight floatValue]);
 }
 
 @end

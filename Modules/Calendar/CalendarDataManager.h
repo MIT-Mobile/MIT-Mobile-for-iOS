@@ -49,10 +49,11 @@ extern NSString * const CalendarEventAPISearch;
 + (EventCategory *)categoryForExhibits;
 
 + (NSArray *)topLevelCategories;
-+ (EventCategory *)categoryWithID:(NSInteger)catID;
++ (NSArray *)openHouseCategories;
++ (EventCategory *)categoryWithID:(NSInteger)catID forListID:(NSString *)listID;
 + (MITCalendarEvent *)eventWithID:(NSInteger)eventID;
 + (MITCalendarEvent *)eventWithDict:(NSDictionary *)dict;
-+ (EventCategory *)categoryWithDict:(NSDictionary *)dict;
++ (EventCategory *)categoryWithDict:(NSDictionary *)dict forListID:(NSString *)listID;
 + (void)pruneOldEvents;
 
 + (NSString *)apiCommandForEventType:(MITEventList *)listType;

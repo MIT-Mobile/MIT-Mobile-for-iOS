@@ -7,6 +7,7 @@
 #import "CalendarEventMapAnnotation.h"
 #import <MapKit/MapKit.h>
 #import "MITEventList.h"
+#import "OpenHouseTableView.h"
 
 @interface CalendarModule (Private)
 
@@ -55,33 +56,42 @@
     
     for (NSString *pathComponent in pathComponents) {
         if ([pathComponent isEqualToString:CalendarStateCategoryEventList]) {
+            NSMutableDictionary *params = [NSMutableDictionary dictionary];
             for (NSString *queryComponent in queryComponents) {
                 NSArray *queryParts = [queryComponent componentsSeparatedByString:@"="];
                 if ([queryParts count] == 2) {
-                    if ([[queryParts objectAtIndex:0] isEqualToString:@"catID"]) {
-                        [self popToRootViewController];
-
-                        (void)self.moduleHomeController.view;
-                        [calendarVC selectScrollerButton:@"Categories"];
-
-                        NSInteger catID = [[queryParts objectAtIndex:1] integerValue];
-                        CalendarEventsViewController *childVC = [[[CalendarEventsViewController alloc] init] autorelease];
-                        MITEventList *eventList = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
-                        childVC.catID = catID;
-                        childVC.events = [CalendarDataManager eventsWithStartDate:calendarVC.startDate listType:eventList category:[NSNumber numberWithInt:catID]];
-                        childVC.showScroller = NO;
-                        
-                        EventCategory *category = [CalendarDataManager categoryWithID:catID];
-                        childVC.navigationItem.title = category.title;
-
-                        [self.moduleHomeController.navigationController pushViewController:childVC animated:NO];
-                        
-                        [self becomeActiveTab];
-                        didHandle = YES;
-                    }
+                    [params setObject:[queryParts objectAtIndex:1] forKey:[queryParts objectAtIndex:0]];
                 }
             }
-            
+             
+            if ([params objectForKey:@"catID"]) {
+                    
+                [self popToRootViewController];
+
+                (void)self.moduleHomeController.view;
+                
+                NSNumber *catID = [params objectForKey:@"catID"];
+                NSString *listID = [params objectForKey:@"listID"];
+                CalendarEventsViewController *childVC = [[[CalendarEventsViewController alloc] init] autorelease];
+                EventCategory *category = [CalendarDataManager categoryWithID:[catID intValue] forListID:listID];
+                childVC.category = category;
+                childVC.showScroller = NO;
+                childVC.navigationItem.title = category.title;
+                
+                if(!listID) {
+                    [calendarVC selectScrollerButton:@"Categories"];
+                    MITEventList *eventList = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
+                    childVC.events = [CalendarDataManager eventsWithStartDate:calendarVC.startDate listType:eventList category:catID];
+                } else if([listID isEqualToString:@"OpenHouse"]) {
+                    [calendarVC selectScrollerButton:@"Open House"];
+                    childVC.events = [category.events allObjects];
+                    childVC.startDate = [NSDate dateWithTimeIntervalSince1970:OPEN_HOUSE_START_DATE];
+                }
+                
+                [self.moduleHomeController.navigationController pushViewController:childVC animated:NO];
+                
+                [self becomeActiveTab];
+            }
         }
     }
     

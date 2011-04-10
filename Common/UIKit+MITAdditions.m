@@ -3,7 +3,33 @@
 #import "MIT_MobileAppDelegate.h"
 #import "MITTabBarController.h"
 
-@implementation UIColor (MITAdditions)
+@implementation NSString (MITUIAdditions)
+
+- (NSInteger)lengthOfLineWithFont:(UIFont *)font constrainedToSize:(CGSize)size {
+    NSMutableString *mutableString = [NSMutableString string];
+    NSArray *lines = [self componentsSeparatedByString:@"\n"];
+    if (lines.count > 0) {
+        NSString *line = [lines objectAtIndex:0];
+        NSArray *words = [line componentsSeparatedByString:@" "];
+        NSInteger count = words.count;
+        if (count > 0) {
+            NSInteger index = 0;
+            [mutableString appendString:[words objectAtIndex:index]];
+            CGSize fullSize = [mutableString sizeWithFont:font];
+            index++;
+            while (index < count && fullSize.width < size.width) {
+                [mutableString appendString:[NSString stringWithFormat:@" %@", [words objectAtIndex:index]]];
+                fullSize = [mutableString sizeWithFont:font];
+                index++;
+            }
+        }
+    }
+    return [mutableString length];
+}
+
+@end
+
+@implementation UIColor (MITUIAdditions)
 
 // snagged from http://arstechnica.com/apple/guides/2009/02/iphone-development-accessing-uicolor-components.ars
 // color must be either of the format @"0099FF" or @"#0099FF" or @"0x0099FF"
@@ -46,7 +72,7 @@
 
 @end
 
-@implementation UIImageView (MITAdditions)
+@implementation UIImageView (MITUIAdditions)
 
 + (UIImageView *)accessoryViewWithMITType:(MITAccessoryViewType)type {
     NSString *imageName = nil;
@@ -107,7 +133,7 @@
 
 @end
 
-@implementation UIView (MITAdditions)
+@implementation UIView (MITUIAdditions)
 
 - (void)removeAllSubviews {
     for (UIView *aView in self.subviews) {
@@ -117,7 +143,7 @@
 
 @end
 
-@implementation UITableViewCell (MITAdditions)
+@implementation UITableViewCell (MITUIAdditions)
 
 - (void)applyStandardFonts {
 	self.textLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
@@ -138,7 +164,7 @@
 
 @end
 
-@implementation UITableView (MITAdditions)
+@implementation UITableView (MITUIAdditions)
 
 - (void)applyStandardColors {
 	self.backgroundColor = [UIColor clearColor]; // allows background to show through
@@ -191,7 +217,7 @@
 
 @end
 
-@implementation UIActionSheet (MITAdditions)
+@implementation UIActionSheet (MITUIAdditions)
 
 - (void)showFromAppDelegate {
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[UIApplication sharedApplication].delegate;

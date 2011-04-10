@@ -9,7 +9,6 @@ build/
 xcuserdata/
 project.xcworkspace/
 
-Common/MITBuildInfo.m
 Common/Secret.m
 
 Resources/mit150/*.mp4

@@ -15,8 +15,6 @@
 
 @interface NSString (MITAdditions)
 
-- (NSInteger)lengthOfLineWithFont:(UIFont *)font constrainedToSize:(CGSize)size;
-
 - (NSString *)substringToMaxIndex:(NSUInteger)to;
 
 @end

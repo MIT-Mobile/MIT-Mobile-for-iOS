@@ -18,6 +18,8 @@
 @property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSNumber * sortOrder;
 
+@property (nonatomic, readonly) CGSize size;
+
 + (FeatureLink *)featureLinkWithDictionary:(NSDictionary *)aDict;
 
 @end

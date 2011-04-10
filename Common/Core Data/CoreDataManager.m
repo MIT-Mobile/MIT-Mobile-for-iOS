@@ -366,7 +366,7 @@
 }
 
 - (NSString *)currentStoreFileName {
-	return [[self applicationDocumentsDirectory] stringByAppendingPathComponent:[NSString stringWithFormat:@"CoreDataXML.%@.sqlite", MITBuildNumber]];
+	return [[self applicationDocumentsDirectory] stringByAppendingPathComponent:[NSString stringWithFormat:@"CoreDataXML.%@.sqlite", [MITBuildInfo revision]]];
 }
 
 #pragma mark -

@@ -18,23 +18,7 @@
 
 @implementation MITSpringboard
 
-@synthesize primaryModules, delegate, connection;
-
-/*
- // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
-        // Custom initialization
-    }
-    return self;
-}
-*/
-
-/*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
-}
-*/
+@synthesize grid, primaryModules, delegate, connection;
 
 - (void)showModuleForIcon:(id)sender {
     SpringboardIcon *icon = (SpringboardIcon *)sender;
@@ -62,8 +46,6 @@
     NSString *documentPath = [paths objectAtIndex:0];
     NSString *bannerFile = [documentPath stringByAppendingPathComponent:@"banner"];
 
-    //NSLog(@"%@", [bannerInfo description]);
-    
 	if ([[NSFileManager defaultManager] fileExistsAtPath:bannerFile]) {
 		UIImage *image = [[UIImage imageWithContentsOfFile:bannerFile] stretchableImageWithLeftCapWidth:0.0 topCapHeight:0.0];
         if (!image) return;
@@ -87,6 +69,11 @@
 		[control addTarget:self action:@selector(showModuleForBanner) forControlEvents:UIControlEventTouchUpInside];
 		
 		[self.view addSubview:control];
+        
+        // will trigger a relayout of grid if the frame is different
+        CGRect newGridFrame = grid.frame;
+        newGridFrame.size.height = self.view.frame.size.height - control.frame.size.height;
+        grid.frame = newGridFrame;
 	}
 }
 
@@ -226,11 +213,12 @@
     UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo.png"];
     self.navigationItem.titleView = [[[UIImageView alloc] initWithImage:logoView] autorelease];
 
-    // TODO: fix placeholder dimensions
-    IconGrid *grid = [[[IconGrid alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)] autorelease];
-    grid.padding = GridPaddingMake(10, 21, 10, 21);
-    grid.spacing = GridSpacingMake(30, 10);
-    grid.maxColumns = 3;
+    self.grid = [[[IconGrid alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)] autorelease];
+    self.grid.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.grid setHorizontalMargin:5.0 vertical:10.0];
+    [self.grid setHorizontalPadding:5.0 vertical:10.0];
+    [self.grid setMinimumColumns:3 maximum:4];
+
     NSMutableArray *buttons = [NSMutableArray array];
     UIFont *font = [UIFont boldSystemFontOfSize:12];
     for (MITModule *aModule in self.primaryModules) {
@@ -254,8 +242,8 @@
         [aButton addTarget:self action:@selector(showModuleForIcon:) forControlEvents:UIControlEventTouchUpInside];
         [buttons addObject:aButton];
     }
-    grid.icons = buttons;
-    [self.view addSubview:grid];
+    self.grid.icons = buttons;
+    [self.view addSubview:self.grid];
 	
     // prep data for showing banner
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -276,28 +264,6 @@
 													   selector:@selector(checkForFeaturedModule)
 													   userInfo:nil 
 														repeats:YES] retain];
-
-    /*
-    IconGrid *secondGrid = [[[IconGrid alloc] initWithFrame:CGRectMake(0, 320, 320, 110)] autorelease];
-    NSMutableArray *secondButtons = [NSMutableArray array];
-    secondGrid.padding = GridPaddingMake(20, 20, 20, 20);
-    secondGrid.spacing = GridSpacingMake(20, 20);
-    for (MITModule *aModule in self.secondaryModules) {
-        SpringboardIcon *aButton = [SpringboardIcon buttonWithType:UIButtonTypeCustom];
-        [aButton setImage:aModule.springboardIcon forState:UIControlStateNormal];
-        [aButton setTitle:aModule.shortName forState:UIControlStateNormal];
-        [aButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        aButton.moduleTag = aModule.tag;
-        aButton.frame = CGRectMake(0, 0, aModule.springboardIcon.size.width + 10, aModule.springboardIcon.size.height + 31);
-        aButton.imageEdgeInsets = UIEdgeInsetsMake(0, 5, 21, 5);
-        aButton.titleEdgeInsets = UIEdgeInsetsMake(aModule.springboardIcon.size.height + 5, -aModule.springboardIcon.size.width, 0, 0);
-        aButton.titleLabel.font = font;
-        [aButton addTarget:self action:@selector(showModuleForIcon:) forControlEvents:UIControlEventTouchUpInside];
-        [secondButtons addObject:aButton];
-    }
-    secondGrid.icons = secondButtons;
-    [self.view addSubview:secondGrid];
-    */
 }
 
 - (void)didReceiveMemoryWarning {
@@ -389,7 +355,7 @@
         frame.origin = CGPointMake(self.frame.size.width - floor(badgeView.frame.size.width / 2) - 5,
                                    - floor(badgeView.frame.size.height / 2) + 5);
         badgeView.frame = frame;
-        
+
         [self addSubview:badgeView];
     } else {
         [badgeView removeFromSuperview];
