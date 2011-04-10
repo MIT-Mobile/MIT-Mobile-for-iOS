@@ -42,17 +42,17 @@
 	}
 	
 	UISegmentedControl* seg = [[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"Bookmarks", @"Recents", @"Browse", nil]] autorelease];
-	[seg setSelectedSegmentIndex:segment];
-	[seg setSegmentedControlStyle:UISegmentedControlStyleBar];
-	[seg setFrame:CGRectMake(0, 0, 290, seg.frame.size.height)];
-	[seg setTintColor:[UIColor darkGrayColor]];
+	seg.selectedSegmentIndex = segment;
+	seg.segmentedControlStyle = UISegmentedControlStyleBar;
+	seg.tintColor = [UIColor darkGrayColor];
 	
 	[seg addTarget:self action:@selector(segmentChanged:) forControlEvents:UIControlEventValueChanged];
 	
+    // TODO: Find a way to make this center itself. Hardcoding sizes is awful.
 	UIBarButtonItem* item = [[[UIBarButtonItem alloc] initWithCustomView:seg] autorelease];
+    item.width = 308.0;
 	
 	_toolbarButtonItems = [[NSArray arrayWithObject:item] retain];
-
 	
 	[self setToolbarHidden:NO];
 	[self.toolbar setBarStyle:UIBarStyleBlack];
