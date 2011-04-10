@@ -182,32 +182,45 @@
 }
 
 - (void)viewDidUnload {
-
 	[[ShuttleDataManager sharedDataManager] unregisterDelegate:self];
 	
 	[url release];
+    url = nil;
 	
 	_mapView.delegate = nil;
 	[_mapView release];
-
+    _mapView = nil;
+    
 	[_toolBar release];
-
+    _toolBar = nil;
+    
 	[_geoButton release];
-	
+	_geoButton = nil;
+    
 	[_shuttleButton release];
-	
+	_shuttleButton = nil;
+    
 	[_shuttleAnnotations release];
-	
+	_shuttleAnnotations = nil;
+    
 	[_searchResults release];
 	_searchResults = nil;
+    self.hasSearchResults = NO;
+    self.displayingList = NO;
 	
 	[_viewTypeButton release];
+    _viewTypeButton = nil;
 	[_searchResultsVC release];
+    _searchResultsVC = nil;
 	[_searchBar release];
+    _searchBar = nil;
 	
 	[_bookmarkButton release];
+    _bookmarkButton = nil;
 	[_selectionVC release];
+    _selectionVC = nil;
 	[_cancelSearchButton release];
+    _cancelSearchButton = nil;
 
 }
 
