@@ -175,5 +175,9 @@
 	NSLog(@"request failed");
 }
 
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
+    return YES;
+}
+
 @end
 
