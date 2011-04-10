@@ -118,13 +118,11 @@
 
 -(void) viewWillAppear:(BOOL)animated
 {
+    [self.mapView addTileOverlay];
 	if(_displayingList)
 	{
 		self.navigationItem.rightBarButtonItem.title = @"Map";
 	}
-    else {
-        [self.mapView addTileOverlay];
-    }
     
     if(_hasSearchResults)
 	{
