@@ -1703,11 +1703,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MIT Mobile" */;
 			buildPhases = (
-				DEE2B550104C17860037A4AB /* Run Script */,
 				2C6894FE1316F4B700245391 /* Run Script */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				DEE2B550104C17860037A4AB /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -1824,8 +1824,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = "/usr/bin/perl -w";
-			shellScript = "# Xcode auto-versioning script for Subversion\n# by Axel Andersson, modified by Daniel Jalkut to add\n# \"--revision HEAD\" to the svn info line, which allows\n# the latest revision to always be used.\n# Modified by Justin Anderson to work with iPhone\n# code signing.\n# Modified by Blake Skinner to add support for git\n\n# Run this first script as a Run Script Build Phase to the beginning of your app target.\n\nuse strict;\n\ndie \"$0: Must be run from Xcode\" unless $ENV{\"BUILT_PRODUCTS_DIR\"};\n\n# Get the current subversion revision number\nmy $REV = `svnversion -n ./`;\n\nif ($REV == 'exported') {\n    $REV = `git describe`;\n}\n\nmy $special_path = \"$ENV{PROJECT_DIR}\" . \"/Common/MITBuildInfo.m\";\n\nfor ($REV) {\n    s/^\\s+//;\n    s/\\s+$//;\n}\n\nmy $version = $REV;\n\ndie \"$0: No revision information found\" unless $version;\n\n# write the svn revision to an svn:ignored header file which is included in the prefix header\n# \n# outputs a Common/MITBuildInfo.m like:\n# #import \"MITBuildInfo.h\";\n# \n# NSString * MITBuildNumber const = @\"60\";\n\nopen(FH, \">$special_path\") or die \"$0: $special_path: $!\";\nprint FH '#import \"MITBuildInfo.h\";\n\nNSString * const MITBuildNumber = @\"' . $version . '\";';\n\nclose(FH);\n";
+			shellPath = /usr/bin/ruby;
+			shellScript = "# Xcode auto-versioning script for git\n#\n# Based on a Ruby script by Jason Sallis, which was in turn\n# based on original Perl script by Marcus S. Zarra and Matt Long at\n#   (http://www.cimgf.com/2008/04/13/git-and-xcode-a-git-build-number-script/)\n\n# Fail if not run from Xcode\nraise \"Must be run from Xcode\" unless ENV['XCODE_VERSION_ACTUAL']\n\ninfo_plist = \"#{ENV['BUILT_PRODUCTS_DIR']}/#{ENV['INFOPLIST_PATH']}\"\n\n# Get the current git description\ndescription = `/usr/bin/git describe`.chomp!\n\n# Get the current git revision hash\nrevision = `/usr/bin/git rev-parse HEAD`.chomp!\n\n# Temporarily turn plist into text\n`/usr/bin/plutil -convert xml1 \"#{info_plist}\"`\n\n# Open Info.plist and set the CFBundleVersion value to the revision hash\nlines = IO.readlines(info_plist).join\n\nlines.gsub! /(<key>MITBuildDescription<\\/key>\\n\\t<string>).*?(<\\/string>)/, \"\\\\1#{description}\\\\2\"\nlines.gsub! /(<key>MITBuildRevision<\\/key>\\n\\t<string>).*?(<\\/string>)/, \"\\\\1#{revision}\\\\2\"\n\n# Overwrite the original Info.plist file with our updated version\nFile.open(info_plist, 'w') {|f| f.puts lines}\n\n# Convert plist back into binary\n`/usr/bin/plutil -convert binary1 \"#{info_plist}\"`\n\n# Report to the user\nputs \"MITBuildDescription in #{info_plist} set to '#{description}'\"\nputs \"MITBuildRevision in #{info_plist} set to '#{revision}'\"";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

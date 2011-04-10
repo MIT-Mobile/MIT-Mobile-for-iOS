@@ -6,6 +6,8 @@
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 #import "MITMailComposeController.h"
+#import "MITBuildInfo.h"
+#import  <QuartzCore/CALayer.h>
 
 @implementation AboutTableViewController
 
@@ -74,18 +76,29 @@
             switch (indexPath.row) {
                 case 0:
                 {
+                    cell.accessoryType = UITableViewCellAccessoryNone;
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    cell.backgroundColor = [UIColor whiteColor];
+                    cell.textLabel.textAlignment = UITextAlignmentCenter;
+                    cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0];
+        			cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
                     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
                     if (!showBuildNumber) {
                         cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", [infoDict objectForKey:@"CFBundleName"], [infoDict objectForKey:@"CFBundleVersion"]];
                     } else {
-                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@ (%@)", [infoDict objectForKey:@"CFBundleName"], [infoDict objectForKey:@"CFBundleVersion"], MITBuildNumber];
+                        cell.textLabel.text = [MITBuildInfo description];
+                        
+                        CGImageRef hashImage = [MITBuildInfo newHashImage];
+                        
+                        // turn off smooth scaling because hashImage starts as tiny pixel art
+                        [[cell.imageView layer] setMagnificationFilter:kCAFilterNearest];
+                        CGFloat imageWidth = (CGFloat)CGImageGetWidth(hashImage);
+                        CGFloat desiredWidth = 30.0;
+                        cell.imageView.image = [UIImage imageWithCGImage:hashImage 
+                                                                   scale:imageWidth / desiredWidth 
+                                                             orientation:UIImageOrientationUp];
+                        CGImageRelease(hashImage);
                     }
-                    cell.textLabel.textAlignment = UITextAlignmentCenter;
-                    cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0];
-        			cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
-                    cell.accessoryType = UITableViewCellAccessoryNone;
-                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                    cell.backgroundColor = [UIColor whiteColor];
                 }
                     break;
                 case 1:
@@ -136,7 +149,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0 && indexPath.row == 0) {
         showBuildNumber = !showBuildNumber;
-        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
+        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }
     else if (indexPath.section == 1) {
         switch (indexPath.row) {
@@ -154,7 +167,7 @@
             }
             case 2: {
                 NSString *email = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"];
-                NSString *subject = [NSString stringWithFormat:@"Feedback for MIT Mobile %@ (%@)", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], MITBuildNumber];
+                NSString *subject = [NSString stringWithFormat:@"Feedback for MIT Mobile %@ (%@)", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], [MITBuildInfo description]];
                 
                 if ([MFMailComposeViewController canSendMail]) {
                     MFMailComposeViewController *mailView = [[MFMailComposeViewController alloc] init];
@@ -163,7 +176,7 @@
                     [mailView setToRecipients:[NSArray arrayWithObject:email]];
                     [self presentModalViewController:mailView
                                             animated:YES]; 
-                }
+            }            
             }            
             default:
                 break;
@@ -175,7 +188,7 @@
 #pragma mark MFMailComposeViewController delegation
 
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error 
-{	
+{
 	[self dismissModalViewControllerAnimated:YES];
     [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow]
                                   animated:YES];

@@ -1,3 +1,10 @@
 #import <Foundation/Foundation.h>
 
-extern NSString * const MITBuildNumber;
+
+@interface MITBuildInfo : NSObject
+
++ (NSString *)revision;
++ (NSString *)description;
++ (CGImageRef)newHashImage;
+
+@end
