@@ -562,10 +562,6 @@
 			[url setAsModulePath];
 			[self setURLPathUserLocation];
 		}
-		
-		// we can always allow the user to switch back to the map
-		//_viewTypeButton.enabled = YES;
-		
 	}
 	else {
 		// if we're not already showing the map
@@ -646,11 +642,10 @@
 
 }
 
-
 #pragma mark UISearchBarDelegate
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-	_bookmarkButton.hidden = searchBar.text.length > 0;
+	_bookmarkButton.hidden = YES;
 	
 	// Add the cancel button, and remove the geo button. 
 	_cancelSearchButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered target:self action:@selector(cancelSearch)];
@@ -660,6 +655,7 @@
 	}
 	
 	[UIView beginAnimations:@"searching" context:nil];
+    [UIView setAnimationDuration:0.3];
 	_searchBar.frame = CGRectMake(0, 0, kSearchBarWidth - kSearchBarCancelWidthDiff, NAVIGATION_BAR_HEIGHT);
 	[_searchBar layoutSubviews];
 	_bookmarkButton.frame = CGRectMake(231 - kSearchBarCancelWidthDiff, 8, 32, 28);
@@ -745,15 +741,12 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-	// the bookmark button is only shown when there is no text. 
-	_bookmarkButton.hidden = searchText.length > 0;
-	
+	// clear search result if search string becomes empty
 	if (searchText.length == 0 ) {		
 		self.hasSearchResults = NO;
 		// tell the campus view controller to remove its search results. 
 		[self search:nil];
 	}
-
 }
 
 -(void) touchEnded
@@ -763,7 +756,6 @@
 
 -(void) cancelSearch
 {
-	_searchBar.text = @"";
 	[_searchBar resignFirstResponder];
 }
 
@@ -781,10 +773,6 @@
 	_selectionVC = [[MapSelectionController alloc]  initWithMapSelectionControllerSegment:MapSelectionControllerSegmentBookmarks campusMap:self];
 	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 	[appDelegate presentAppModalViewController:_selectionVC animated:YES];
-	
-		
-	//UINavigationController* navController = [[[UINavigationController alloc] initWithRootViewController:_bookmarksVC] autorelease];
-	//[self presentModalViewController:navController animated:YES];
 }
 
 #pragma mark MITMapViewDelegate
