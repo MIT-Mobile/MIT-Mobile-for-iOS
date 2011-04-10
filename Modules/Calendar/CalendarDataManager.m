@@ -276,7 +276,7 @@ static CalendarDataManager *s_sharedManager = nil;
 + (NSArray *)openHouseCategories
 {
 	NSPredicate *pred = [NSPredicate predicateWithFormat:@"listID == %@", @"OpenHouse"];
-	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES];
+	NSSortDescriptor *sort = [[[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES] autorelease];
 	return [CoreDataManager objectsForEntity:CalendarCategoryEntityName
 										matchingPredicate:pred
 										  sortDescriptors:[NSArray arrayWithObject:sort]];

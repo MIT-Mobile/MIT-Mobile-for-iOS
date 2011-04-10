@@ -66,7 +66,8 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
     
     NSLog(@"MIT150 featured links: %@", featureLinks);
     
-    CGFloat width, remainingWidth = self.view.frame.size.width - (self.buttonMargins.width * 2.0);
+    CGFloat width, remainingWidth;
+    width = remainingWidth = self.view.frame.size.width - (self.buttonMargins.width * 2.0);
     __block CGFloat spacing, height = 0;
     NSInteger row = 0;
     
