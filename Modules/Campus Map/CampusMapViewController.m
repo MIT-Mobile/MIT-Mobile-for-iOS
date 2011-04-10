@@ -51,13 +51,13 @@
 	// create our own view
 	self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 364)] retain];
 	
-	_viewTypeButton = [[UIBarButtonItem alloc] initWithTitle:@"List" style:UIBarButtonItemStylePlain target:self action:@selector(viewTypeChanged:)];
+	_viewTypeButton = [[UIBarButtonItem alloc] initWithTitle:@"Browse" style:UIBarButtonItemStylePlain target:self action:@selector(viewTypeChanged:)];
 	self.navigationItem.rightBarButtonItem = _viewTypeButton;
 	
 	// add a search bar to our view
 	_searchBar = [[ UISearchBar alloc] initWithFrame:CGRectMake(0, 0, kSearchBarWidth, NAVIGATION_BAR_HEIGHT)];
 	[_searchBar setDelegate:self];
-	_searchBar.placeholder = NSLocalizedString(@"Search MIT Campus Map", nil);
+	_searchBar.placeholder = NSLocalizedString(@"Search MIT Campus", nil);
 	_searchBar.translucent = NO;
 	_searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
 	_searchBar.showsBookmarkButton = NO; // we'll be adding a custom bookmark button
