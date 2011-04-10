@@ -26,11 +26,10 @@
 
 @interface CampusMapViewController(Private)
 
--(void) addAnnotationsForShuttleStops:(NSArray*)shuttleStops;
-
--(void) noSearchResultsAlert;
-
--(void) saveRegion;					// a convenience method for saving the mapView's current region (for saving state)
+- (void)updateMapListButton;
+- (void)addAnnotationsForShuttleStops:(NSArray*)shuttleStops;
+- (void)noSearchResultsAlert;
+- (void)saveRegion; // a convenience method for saving the mapView's current region (for saving state)
 
 @end
 
@@ -103,7 +102,25 @@
 	
 }
 
+- (void)setDisplayingList:(BOOL)displayingList {
+    _displayingList = displayingList;
+    [self updateMapListButton];
+}
 
+- (void)setHasSearchResults:(BOOL)hasSearchResults {
+    _hasSearchResults = hasSearchResults;
+    [self updateMapListButton];
+}
+
+- (void)updateMapListButton {
+    NSString *buttonTitle = @"Browse";
+	if (self.displayingList) {
+		buttonTitle = @"Map";
+	} else if (self.hasSearchResults) {
+        buttonTitle = @"List";
+    }
+    self.navigationItem.rightBarButtonItem.title = buttonTitle;
+}
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
@@ -116,26 +133,9 @@
 	_mapView.showsUserLocation = YES;
 }
 
--(void) viewWillAppear:(BOOL)animated
-{
+-(void) viewWillAppear:(BOOL)animated {
     [self.mapView addTileOverlay];
-	if(_displayingList)
-	{
-		self.navigationItem.rightBarButtonItem.title = @"Map";
-	}
-    
-    if(_hasSearchResults)
-	{
-		if (_displayingList) {
-			self.navigationItem.rightBarButtonItem.title = @"Map";
-		} else {
-			self.navigationItem.rightBarButtonItem.title = @"List";
-		}
-	}
-	else 
-	{
-		self.navigationItem.rightBarButtonItem.title = @"Browse";
-	}
+    [self updateMapListButton];
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
@@ -158,7 +158,7 @@
 	
 	
 	// if we're in the list view, save that state
-	if (_displayingList) {
+	if (self.displayingList) {
 		[url setPath:[NSString stringWithFormat:@"list", [(MITMapSearchResultAnnotation*)_mapView.currentAnnotation uniqueID]] query:_lastSearchText];
 		[url setAsModulePath];
 		[self setURLPathUserLocation];
@@ -306,12 +306,6 @@
 	}
 	
 	[self saveRegion];
-	
-	// if we're showing the map, only enable the list button if there are search results. 
-	//if (!_displayingList) {
-	//	_viewTypeButton.enabled = (_searchResults != nil && _searchResults.count > 0);
-	//}
-	
 }
 
 -(void) setSearchResults:(NSArray *)searchResults withFilter:(SEL)filter
@@ -350,12 +344,6 @@
 	_filteredSearchResults = [[mapSearchResults allValues] retain];
 	
 	[_mapView addAnnotations:_filteredSearchResults];
-	
-	// if we're showing the map, only enable the list button if there are search results. 
-	//if (!_displayingList) {
-	//	_viewTypeButton.enabled = (_searchResults != nil && _searchResults.count > 0);
-	//}
-	
 }
 
 -(MKCoordinateRegion)regionForAnnotations:(NSArray *) annotations {
@@ -544,14 +532,9 @@
 -(void) showListView:(BOOL)showList
 {
 
-	if (showList) 
-	{
+	if (showList) {
 		// if we are not already showing the list, do all this 
-		if (!_displayingList) 
-		{
-			
-			_viewTypeButton.title = @"Map";
-			
+		if (!self.displayingList) {
 			// show the list.
 			if(nil == _searchResultsVC)
 			{
@@ -584,13 +567,9 @@
 		//_viewTypeButton.enabled = YES;
 		
 	}
-	else 
-	{
+	else {
 		// if we're not already showing the map
-		if (_displayingList)
-		{
-			_viewTypeButton.title = @"List";
-			
+		if (self.displayingList) {
 			// show the map, by hiding the list. 
 			[_searchResultsVC.view removeFromSuperview];
 			[_searchResultsVC release];
@@ -608,17 +587,19 @@
 		}
 	
 		// only let the user switch to the list view if there are search results. 
-		//_viewTypeButton.enabled = (_searchResults != nil && _searchResults.count > 0);
-		if (_lastSearchText != nil && ![_lastSearchText isEqualToString:@""] && _mapView.currentAnnotation)
+		if (_lastSearchText != nil 
+        && ![_lastSearchText isEqualToString:@""] 
+        && _mapView.currentAnnotation) {
 			[url setPath:[NSString stringWithFormat:@"search/%@", [(MITMapSearchResultAnnotation*)_mapView.currentAnnotation uniqueID]] query:_lastSearchText];
-		else 
+        }
+		else {
 			[url setPath:@"" query:nil];
+        }
 		[url setAsModulePath];
 		[self setURLPathUserLocation];
 	}
 	
-	_displayingList = showList;
-	
+	self.displayingList = showList;
 }
 
 -(void) viewTypeChanged:(id)sender
@@ -627,7 +608,7 @@
 	[_searchBar resignFirstResponder];
 	
 	// if there is nothing in the search bar, we are browsing categories; otherwise go to list view
-	if (!_displayingList && !_hasSearchResults) {
+	if (!self.displayingList && !self.hasSearchResults) {
 		if(nil != _selectionVC)
 		{
 			[_selectionVC dismissModalViewControllerAnimated:NO];
@@ -639,7 +620,7 @@
 		MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 		[appDelegate presentAppModalViewController:_selectionVC animated:YES];
 	} else {	
-		[self showListView:!_displayingList];
+		[self showListView:!self.displayingList];
 	}
 	
 }
@@ -674,7 +655,7 @@
 	// Add the cancel button, and remove the geo button. 
 	_cancelSearchButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered target:self action:@selector(cancelSearch)];
 	
-	if (_displayingList) {
+	if (self.displayingList) {
 		_toolBar.frame = CGRectMake(320, 0, 320 - kSearchBarWidth + kSearchBarCancelWidthDiff, NAVIGATION_BAR_HEIGHT);
 	}
 	
@@ -698,11 +679,11 @@
 	
 	
 	[UIView beginAnimations:@"doneSearching" context:nil];
-	_searchBar.frame = CGRectMake(0, 0, _displayingList ? self.view.frame.size.width : kSearchBarWidth, NAVIGATION_BAR_HEIGHT);
+	_searchBar.frame = CGRectMake(0, 0, self.displayingList ? self.view.frame.size.width : kSearchBarWidth, NAVIGATION_BAR_HEIGHT);
 	[_searchBar layoutSubviews];
-	[_toolBar setItems:[NSArray arrayWithObjects:_displayingList ? nil : _geoButton , nil]];
-	_toolBar.frame = CGRectMake( _displayingList ? 320 : kSearchBarWidth, 0, 320 - kSearchBarWidth, NAVIGATION_BAR_HEIGHT);
-	_bookmarkButton.frame = _displayingList ? CGRectMake(281, 8, 32, 28) : CGRectMake(231, 8, 32, 28);
+	[_toolBar setItems:[NSArray arrayWithObjects:self.displayingList ? nil : _geoButton , nil]];
+	_toolBar.frame = CGRectMake( self.displayingList ? 320 : kSearchBarWidth, 0, 320 - kSearchBarWidth, NAVIGATION_BAR_HEIGHT);
+	_bookmarkButton.frame = self.displayingList ? CGRectMake(281, 8, 32, 28) : CGRectMake(231, 8, 32, 28);
 
 	[UIView commitAnimations];
 }
@@ -758,8 +739,7 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar
 {
-	self.navigationItem.rightBarButtonItem.title = _displayingList ? @"Map" : @"Browse";
-	_hasSearchResults = NO;
+	self.hasSearchResults = NO;
 	[searchBar resignFirstResponder];
 }
 
@@ -768,13 +748,10 @@
 	// the bookmark button is only shown when there is no text. 
 	_bookmarkButton.hidden = searchText.length > 0;
 	
-	if (searchText.length == 0 )
-	{		
-		self.navigationItem.rightBarButtonItem.title = _displayingList ? @"Map" : @"Browse";
-		_hasSearchResults = NO;
+	if (searchText.length == 0 ) {		
+		self.hasSearchResults = NO;
 		// tell the campus view controller to remove its search results. 
 		[self search:nil];
-		
 	}
 
 }
@@ -862,7 +839,7 @@
 	}
 	if ([annotation class] == [MITMapSearchResultAnnotation class]) {
 		MITMapSearchResultAnnotation* theAnnotation = (MITMapSearchResultAnnotation*)annotation;
-		if (_displayingList)
+		if (self.displayingList)
 			[url setPath:[NSString stringWithFormat:@"list/detail/%@", theAnnotation.uniqueID] query:_lastSearchText];
 		else 
 			[url setPath:[NSString stringWithFormat:@"detail/%@", theAnnotation.uniqueID] query:_lastSearchText];
@@ -935,12 +912,9 @@
 			// if there were no search results, tell the user about it. 
 			if(nil == searchResults || searchResults.count <= 0) {
 				[self noSearchResultsAlert];
-				_hasSearchResults = NO;
-				self.navigationItem.rightBarButtonItem.title = _displayingList ? @"Map" : @"Browse";
+				self.hasSearchResults = NO;
 			} else {
-				_hasSearchResults = YES;
-				if(!_displayingList)
-					self.navigationItem.rightBarButtonItem.title = @"List";
+				self.hasSearchResults = YES;
 			}
 		}
 	}
@@ -963,13 +937,10 @@
 			if (isViewingAnnotation) {
 				[_mapView selectAnnotation:newAnnotation animated:NO withRecenter:NO];
 			}
-			_hasSearchResults = YES;
-			self.navigationItem.rightBarButtonItem.title = @"List";
+			self.hasSearchResults = YES;
 		} else {
-			_hasSearchResults = NO;
-			self.navigationItem.rightBarButtonItem.title = @"Browse";
+			self.hasSearchResults = NO;
 		}
-
 	}	
 }
 
@@ -1010,7 +981,7 @@
 	{		
 		[MITMapSearchResultAnnotation executeServerSearchWithQuery:searchText jsonDelegate:self object:kAPISearch];
 	}
-	if (_displayingList)
+	if (self.displayingList)
 		[url setPath:@"list" query:searchText];
 	else if (searchText != nil && ![searchText isEqualToString:@""])
 		[url setPath:@"search" query:searchText];

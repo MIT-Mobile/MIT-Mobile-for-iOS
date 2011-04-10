@@ -79,12 +79,12 @@
 @property (nonatomic, assign) CMModule* campusMapModule;
 
 @property (nonatomic, retain) CLLocation *userLocation;
-@property (readonly) MITMapView* mapView;
+@property (nonatomic, readonly) MITMapView* mapView;
 @property (nonatomic, retain) NSString* lastSearchText;
-@property BOOL hasSearchResults;
-@property (readonly) BOOL displayingList;
-@property (readonly) UISearchBar* searchBar;
-@property (readonly) MITModuleURL* url;
+@property (nonatomic, assign) BOOL hasSearchResults;
+@property (nonatomic, assign) BOOL displayingList;
+@property (nonatomic, readonly) UISearchBar* searchBar;
+@property (nonatomic, readonly) MITModuleURL* url;
 
 // execute a search
 -(void) search:(NSString*)searchText;
