@@ -28,7 +28,7 @@
     NSInteger i = 0;
     NSInteger c = 0;
     NSInteger length = [hash length];
-    NSInteger limit = width * height * (bytesPerPixel - 1);
+    NSInteger limit = width * height * bytesPerPixel;
     char *p = NULL;
     for (i = 0; i < length; i++) {
         if (c <= limit) {
@@ -37,9 +37,16 @@
         }
         c++;
         // skip alpha
-        if (c % 4 == 3) {
+        if (c % bytesPerPixel == bytesPerPixel - 1) {
             c++;
         }
+    }
+    // keep repeating the pattern until we run out of pixels
+    while (c < limit) {
+        c += bytesPerPixel - (c % bytesPerPixel);
+        long remainder = limit - c;
+        memcpy(bitmapData + c, bitmapData, (remainder <= c) ? remainder : c);
+        c += limit - c;
     }
     
     CGImageRef image = CGBitmapContextCreateImage(offscreen);
