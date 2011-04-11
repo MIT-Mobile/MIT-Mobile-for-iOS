@@ -375,9 +375,13 @@ NSString * const shuttlePathExtension = @"shuttles/";
 
             if (stop != nil) {
                 NSNumber* next = [routeAtStop objectForKey:@"next"];
-                if (nil == next)
+                if (!next) {
                     next = [routeAtStop objectForKey:@"nextScheduled"];
-                stop.nextScheduled = [next intValue];
+                }
+                stop.nextScheduled = [next doubleValue];
+                NSNumber* now = [result objectForKey:@"now"];
+                stop.now = [now doubleValue];
+                
                 stop.predictions = [routeAtStop objectForKey:@"predictions"];
                 
                 [schedules addObject:stop];

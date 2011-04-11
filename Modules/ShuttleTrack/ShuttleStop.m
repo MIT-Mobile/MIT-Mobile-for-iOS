@@ -23,6 +23,7 @@
 
 // live stop-route properties
 @synthesize nextScheduled = _nextScheduled;
+@synthesize now = _now;
 @synthesize upcoming = _upcoming;
 //@synthesize predictions = _predictions;
 @dynamic nextScheduledDate;
@@ -125,8 +126,8 @@
     } else {
         NSMutableArray *absPredictions = [NSMutableArray arrayWithCapacity:_predictions.count];
         for (NSString *prediction in _predictions) {
-            NSInteger predictionTime = [prediction intValue] + self.nextScheduled;
-            [absPredictions addObject:[NSNumber numberWithInt:predictionTime]];
+            NSTimeInterval predictionTime = [prediction doubleValue] + self.now;
+            [absPredictions addObject:[NSNumber numberWithDouble:predictionTime]];
         }
         return [NSArray arrayWithArray:absPredictions];
     }
@@ -190,21 +191,26 @@
 - (void)updateInfo:(NSDictionary *)stopInfo
 {
 	NSString *property = nil;
-	if ((property = [stopInfo objectForKey:@"title"]) != nil)
+	if ((property = [stopInfo objectForKey:@"title"]) != nil) {
 		self.title = property;
-	if ((property = [stopInfo objectForKey:@"direction"]) != nil)
-		self.direction = property;
+    }
+	if ((property = [stopInfo objectForKey:@"direction"]) != nil) {
+        self.direction = property;
+    }
 	
 	NSNumber *num = nil;
-	if ((num = [stopInfo objectForKey:@"lon"]) != nil)
-		self.longitude = [num doubleValue];
-	if ((num = [stopInfo objectForKey:@"lat"]) != nil)
+	if ((num = [stopInfo objectForKey:@"lon"]) != nil) {
+        self.longitude = [num doubleValue];
+    }
+	if ((num = [stopInfo objectForKey:@"lat"]) != nil) {
 		self.latitude = [num doubleValue];
+    }
 	self.upcoming = ([stopInfo objectForKey:@"upcoming"] != nil); // upcoming only appears if it's true
 	
 	if ((num = [stopInfo objectForKey:@"next"]) != nil ||
-		(num = [stopInfo objectForKey:@"nextScheduled"]) != nil)
-		self.nextScheduled = [num unsignedLongValue];
+		(num = [stopInfo objectForKey:@"nextScheduled"]) != nil) {
+		self.nextScheduled = [num doubleValue];
+    }
 
 	NSArray *array = nil;
 	if ((array = [stopInfo objectForKey:@"path"]) != nil) {
@@ -212,9 +218,9 @@
     } else {
         self.path = [NSArray array];
     }
-    if ((array = [stopInfo objectForKey:@"predictions"]) != nil)
+    if ((array = [stopInfo objectForKey:@"predictions"]) != nil) {
         self.predictions = array;
-
+    }
 }
 
 #pragma mark methods from RouteStopSchedule
@@ -226,13 +232,13 @@
 
 -(NSDate*) dateForPredictionAtIndex:(int)index
 {
-	NSInteger prediction = 0;
+	NSTimeInterval prediction = 0;
 	
 	if (index == 0) {
 		prediction = self.nextScheduled;
 	}
 	else {
-		prediction = [[self.predictions objectAtIndex:index - 1] intValue];
+		prediction = [[self.predictions objectAtIndex:index - 1] doubleValue];
 	}
 	
 	return [NSDate dateWithTimeIntervalSince1970:prediction];

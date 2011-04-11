@@ -11,7 +11,8 @@
 
 @interface ShuttleStop : NSObject {
 	
-	NSInteger _nextScheduled; // timestamp
+	NSTimeInterval _nextScheduled;
+    NSTimeInterval _now;
 	
 	BOOL _upcoming;
 	NSArray *_predictions;
@@ -45,7 +46,8 @@
 @property (nonatomic, assign) NSInteger order;
 @property (nonatomic, retain) ShuttleRouteStop *routeStop;
 
-@property NSInteger nextScheduled;
+@property NSTimeInterval nextScheduled;
+@property NSTimeInterval now;
 @property (readonly) NSDate *nextScheduledDate;
 @property (nonatomic, retain) NSArray* predictions;
 @property BOOL upcoming;
