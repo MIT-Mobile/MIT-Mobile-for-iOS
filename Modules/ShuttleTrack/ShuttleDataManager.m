@@ -33,8 +33,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
 + (ShuttleDataManager *)sharedDataManager {
     @synchronized(self) {
         if (s_dataManager == nil) {
-            self = [[super allocWithZone:NULL] init]; 
-			s_dataManager = self;
+            s_dataManager = [[super allocWithZone:NULL] init]; 
         }
     }
 	
