@@ -1,6 +1,8 @@
 #import "MITTabBarController.h"
 #import "MITSpringboard.h"
 
+#define MITAppDelegate() ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate])
+
 @class MITModule;
 @class DummyRotatingViewController;
 
@@ -19,6 +21,8 @@
     
     NSInteger networkActivityRefCount; // the number of concurrent network connections the user should know about. If > 0, spinny in status bar is shown
 }
+
+- (BOOL)shouldShowMIT150Module;
 
 - (BOOL)usesTabBar;
 
