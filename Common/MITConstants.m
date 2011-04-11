@@ -1,20 +1,5 @@
 #import "MITConstants.h"
 
-// Deprecated due to MITMobileServerConfiguration functions
-// common URLs
-/*
-#if defined(USE_MOBILE_DEV)
-    NSString * const MITMobileWebDomainString =        @"mobile-dev.mit.edu";
-    NSString * const MITMobileWebAPIURLString = @"http://mobile-dev.mit.edu/api/";
-#elif defined(USE_MOBILE_STAGE)
-    NSString * const MITMobileWebDomainString =        @"mobile-stage.mit.edu";
-    NSString * const MITMobileWebAPIURLString = @"http://mobile-stage.mit.edu/api/";
-#else
-    NSString * const MITMobileWebDomainString =        @"m.mit.edu";
-    NSString * const MITMobileWebAPIURLString = @"http://m.mit.edu/api/";
-#endif
-*/
-
 // keys for NSUserDefaults dictionary go here (app preferences)
 NSString * const MITModuleTabOrderKey = @"MITModuleTabOrder";
 NSString * const MITActiveModuleKey = @"ActiveModule";

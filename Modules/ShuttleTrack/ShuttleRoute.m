@@ -208,6 +208,9 @@
 	NSArray *stops = [routeInfo objectForKey:@"stops"];
 	if (stops) {
 		self.stops = (NSMutableArray *)stops;
+        for (ShuttleStop *aStop in self.stops) {
+            aStop.now = [[routeInfo objectForKey:@"now"] doubleValue];
+        }
 	}
 	
 	NSArray* vehicleLocations = [routeInfo objectForKey:@"vehicleLocations"];

@@ -122,7 +122,6 @@
 {
     if (self.nextScheduled == 0) {
         return [NSArray array];
-
     } else {
         NSMutableArray *absPredictions = [NSMutableArray arrayWithCapacity:_predictions.count];
         for (NSString *prediction in _predictions) {
