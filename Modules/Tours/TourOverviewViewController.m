@@ -10,6 +10,17 @@
 #import "CoreLocation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
+
+typedef enum {
+    kOverviewSiteTitleLabelTag = 7283,
+    kOverviewSiteLegendTag,
+    kOverviewSiteScrimControlTag,
+    kOverviewSiteGoBackAlertTag,
+    kOverviewSiteCellThumbnailTag,
+    kOverviewSiteCellStatusViewTag
+}
+TourOverviewTags;
+
 @interface TourOverviewViewController (Private)
 
 - (void)requestImageForSite:(TourSiteOrRoute *)site;
@@ -20,6 +31,7 @@
 
 - (void)setupNotSureScrim;
 - (void)setupMapLegend;
+- (MITThumbnailView *)thumbnailViewForCell:(TourOverviewTableViewCell *)cell;
 
 @end
 
@@ -137,7 +149,7 @@ enum {
         CGRect labelFrame = CGRectMake(frame.size.width / 2 - 100, frame.size.height - 44, 200, 22);
         UILabel *label = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
         label.font = [UIFont systemFontOfSize:14];
-        label.tag = 7283;
+        label.tag = kOverviewSiteTitleLabelTag;
         label.textAlignment = UITextAlignmentCenter;
         label.backgroundColor = [UIColor clearColor];
         label.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
@@ -323,7 +335,7 @@ enum {
 }
 
 - (void)setupMapLegend {
-    UIView *legend = [self.view viewWithTag:102];
+    UIView *legend = [self.view viewWithTag:kOverviewSiteLegendTag];
     if (!legend) {
         CGFloat legendHeight  = 33;
         CGFloat markerSpacing = -3; // space between marker and label -- compensates for markers' built-in padding 
@@ -345,7 +357,7 @@ enum {
                                                            self.view.frame.size.width, legendHeight)] autorelease];
         legend.backgroundColor = [UIColor clearColor];
         legend.layer.cornerRadius = 5.0;
-        legend.tag = 102;
+        legend.tag = kOverviewSiteLegendTag;
         legend.userInteractionEnabled = NO;
         legend.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
         
@@ -390,7 +402,8 @@ enum {
 }
 
 - (void)setupNotSureScrim {
-    UIControl *control = (UIControl *)[self.view viewWithTag:777];
+    UIControl *control = 
+    (UIControl *)[self.view viewWithTag:kOverviewSiteScrimControlTag];
     if (!control) {
         UIImage *scrim = [UIImage imageNamed:@"tours/tour_notsure_scrim_top.png"];
         
@@ -398,7 +411,7 @@ enum {
         
         control = [[[UIControl alloc] initWithFrame:frame] autorelease];
         control.backgroundColor = [UIColor clearColor];
-        control.tag = 777;
+        control.tag = kOverviewSiteScrimControlTag;
         
         UIImageView *imageView = [[[UIImageView alloc] initWithImage:scrim] autorelease];
         [control addSubview:imageView];
@@ -490,7 +503,7 @@ enum {
                                                                 delegate:self
                                                        cancelButtonTitle:@"Cancel"
                                                        otherButtonTitles:@"OK", nil] autorelease];
-            alertView.tag = 14;
+            alertView.tag = kOverviewSiteGoBackAlertTag;
             [alertView show];
         }
         
@@ -523,7 +536,9 @@ enum {
     TourOverviewTableViewCell *cell = (TourOverviewTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[TourOverviewTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
-    }
+    }    
+    
+    cell.accessoryView = [self thumbnailViewForCell:cell];
     
     cell.site = [self.sites objectAtIndex:indexPath.row];
     if (self.userLocation) {
@@ -561,6 +576,26 @@ enum {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (MITThumbnailView *)thumbnailViewForCell:(TourOverviewTableViewCell *)cell {
+    MITThumbnailView *thumbView = 
+    (MITThumbnailView *)[cell.contentView viewWithTag:kOverviewSiteCellThumbnailTag];
+    if (!thumbView) {
+        CGRect frame = 
+        CGRectMake(0, 0, TOUR_SITE_ROW_HEIGHT, TOUR_SITE_ROW_HEIGHT);
+        thumbView = [[[MITThumbnailView alloc] initWithFrame:frame] autorelease];
+        thumbView.delegate = cell;
+        thumbView.tag = kOverviewSiteCellThumbnailTag;
+    }
+    if (cell.site.photo != nil) {
+        thumbView.imageData = cell.site.photo;
+    } else {
+        thumbView.imageURL = cell.site.photoURL;
+    }
+    //[cell.contentView addSubview:thumbView];
+    [thumbView loadImage];
+    return thumbView;
+}
+
 #pragma mark cover flow
 
 - (int)flowCoverNumberImages:(FlowCoverView *)view {
@@ -583,7 +618,7 @@ enum {
     TourSiteOrRoute *aSite = [self.sites objectAtIndex:cover];
     
     // change the label below the image
-    UILabel *label = (UILabel *)[coverView viewWithTag:7283];
+    UILabel *label = (UILabel *)[coverView viewWithTag:kOverviewSiteTitleLabelTag];
     label.text = aSite.title;
 }
 
@@ -834,30 +869,26 @@ enum {
 
 - (void)setVisitStatus:(TourSiteVisitStatus)status {
     visitStatus = status;
-    self.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-    self.accessoryView = [[[UIImageView alloc] initWithImage:[ToursDataManager imageForVisitStatus:status]] autorelease];
+    
+    //self.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+    UIImage *statusImage = [ToursDataManager imageForVisitStatus:status];
+    UIImageView *statusView = 
+    (UIImageView *)[self.contentView viewWithTag:kOverviewSiteCellStatusViewTag];
+    if (!statusView) {        
+        statusView = [[[UIImageView alloc] initWithImage:statusImage] autorelease];
+        statusView.tag = kOverviewSiteCellStatusViewTag;
+        [self.contentView addSubview:statusView];
+    }
+    else {
+        statusView.image = statusImage;
+    }
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    CGRect frame = CGRectMake(0, 0, TOUR_SITE_ROW_HEIGHT, TOUR_SITE_ROW_HEIGHT);
-    MITThumbnailView *thumbView = (MITThumbnailView *)[self.contentView viewWithTag:4681];
-    if (!thumbView) {
-        thumbView = [[[MITThumbnailView alloc] initWithFrame:frame] autorelease];
-        thumbView.delegate = self;
-        thumbView.tag = 4681;
-    }
-    if (self.site.photo != nil) {
-        thumbView.imageData = self.site.photo;
-    } else {
-        thumbView.imageURL = self.site.photoURL;
-    }
-    [self.contentView addSubview:thumbView];
-    [thumbView loadImage];
-    
-    CGFloat labelX = TOUR_SITE_ROW_HEIGHT + 10;
-    CGFloat labelWidth = self.frame.size.width - labelX - 40;
+    CGFloat labelX = 30;
+    CGFloat labelWidth = self.frame.size.width - labelX - 90;
 
     UIFont *font = [UIFont boldSystemFontOfSize:17];
     self.textLabel.text = self.site.title;
