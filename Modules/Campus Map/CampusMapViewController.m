@@ -88,9 +88,6 @@
 
 	[_toolBar setItems:[NSArray arrayWithObjects:_geoButton, nil]];
 	
-	// register for shuttle notifications
-	//[[ShuttleDataManager sharedDataManager] registerDelegate:self];
-	
 	// add our own bookmark button item since we are not using the default
 	// bookmark button of the UISearchBar
 	_bookmarkButton = [[UIButton alloc] initWithFrame:CGRectMake(231, 8, 32, 28)];
@@ -169,8 +166,6 @@
 			[self setURLPathUserLocation];
 		}
 	}
-	//[_mapView setRegion:MKCoordinateRegionMake(DEFAULT_MAP_CENTER, DEFAULT_MAP_SPAN)];
-	//[self saveRegion];
 	self.view.hidden = NO;
 }
 
@@ -415,8 +410,6 @@
 		
 		MKCoordinateRegion region = MKCoordinateRegionMake(center, 	MKCoordinateSpanMake(latDelta + latDelta / 4 , lonDelta + lonDelta / 4));
 		
-		//_mapView.region = region;
-		
 		// turn off locate me
 		_geoButton.style = UIBarButtonItemStyleBordered;
 		_mapView.stayCenteredOnUserLocation = NO;
@@ -498,7 +491,6 @@
 	NSString* docsFolder = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
 	NSString* regionFilename = [docsFolder stringByAppendingPathComponent:@"region.plist"];
 	[regionDict writeToFile:regionFilename atomically:YES];
-	//NSLog(@"saved region");
 }
 
 #pragma mark UIAlertViewDelegate
@@ -562,7 +554,6 @@
 			[self.view addSubview:_searchResultsVC.view];
 			
 			// hide the toolbar and stretch the search bar
-			//_toolBar.hidden = YES;
 			_toolBar.items = nil;
 			_toolBar.frame =  CGRectMake(kSearchBarWidth, 0, 0, NAVIGATION_BAR_HEIGHT);
 			_searchBar.frame = CGRectMake(_searchBar.frame.origin.x, 
@@ -584,8 +575,7 @@
 			[_searchResultsVC release];
 			_searchResultsVC = nil;
 			
-			// show the toolbar and shring the search bar. 
-			//_toolBar.hidden = NO;
+			// show the toolbar and shrink the search bar. 
 			_toolBar.frame =  CGRectMake(kSearchBarWidth, 0, 320 - kSearchBarWidth, NAVIGATION_BAR_HEIGHT);
 			_toolBar.items = [NSArray arrayWithObject:_geoButton];
 			_searchBar.frame = CGRectMake(_searchBar.frame.origin.x, 
@@ -864,7 +854,6 @@
 	if([annotation isKindOfClass:[MITMapSearchResultAnnotation class]])
 	{
 		MITMapSearchResultAnnotation* searchAnnotation = (MITMapSearchResultAnnotation*)annotation;
-		//NSLog(@"annotation bldgnum = %@", searchAnnotation.bldgnum);
 		// if the annotation is not fully loaded, try to load it
 		if (!searchAnnotation.dataPopulated) 
 		{	
@@ -873,9 +862,6 @@
 		[url setPath:[NSString stringWithFormat:@"search/%@", searchAnnotation.uniqueID] query:_lastSearchText];
 		[url setAsModulePath];
 		[self setURLPathUserLocation];
-		
-		/*MITMapCustomCallOut * customCallOutAnnotation = [[[MITMapCustomCallOut alloc] initWithSourceAnnotation:annotation] autorelease];
-		[self.mapView addAnnotation:customCallOutAnnotation];*/
 	}
 }
 

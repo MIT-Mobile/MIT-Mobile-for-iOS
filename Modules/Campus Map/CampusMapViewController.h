@@ -1,6 +1,5 @@
 #import <UIKit/UIKit.h>
 #import "MITMapView.h"
-//#import "ConnectionWrapper.h"
 #import "ShuttleDataManager.h"
 #import "CampusMapToolbar.h"
 #import "MITMobileWebAPI.h"
@@ -9,7 +8,6 @@
 
 
 
-//@class MITMapSearchResultsTable;
 @class MITMapSearchResultsVC;
 @class MapSelectionController;
 
