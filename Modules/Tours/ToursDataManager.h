@@ -31,6 +31,7 @@ extern NSString * const TourDetailsFailedToLoadNotification;
 - (CampusTour *)activeTour;
 - (NSArray *)startLocationsForTour;
 - (NSArray *)allSitesForTour;
+- (NSArray *)allSitesOrSideTripsForSites:(NSArray *)sites;
 - (NSArray *)allRoutesForTour;
 - (MITGenericMapRoute *)mapRouteForTour;
 - (NSArray *)allSitesStartingFrom:(TourSiteOrRoute *)site;
