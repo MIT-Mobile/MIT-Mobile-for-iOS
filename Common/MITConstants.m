@@ -88,6 +88,8 @@ NSString * const MITImageNameEmergency          = @"global/action-emergency.png"
 NSString * const MITImageNameEmergencyHighlight = @"global/action-emergency-highlight.png";
 NSString * const MITImageNameSecure           = @"global/action-secure.png";
 NSString * const MITImageNameSecureHighlight  = @"global/action-secure-highlight.png";
+NSString * const MITImageNameCalendar       = @"global/action-calendar";
+NSString * const MITImageNameCalendarHighlight  = @"global/action-calendar-highlight";
 
 NSString * const MITImageNameScrollTabBackgroundOpaque = @"global/scrolltabs-background-opaque.png";
 NSString * const MITImageNameScrollTabBackgroundTranslucent = @"global/scrolltabs-background-transparent.png";

@@ -296,8 +296,8 @@
             [event dateStringWithDateStyle:NSDateFormatterFullStyle 
                                  timeStyle:NSDateFormatterShortStyle 
                                  separator:@"\n"];
-            // TODO: Get icon for calendar.
-            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];            
+            cell.accessoryView = 
+            [UIImageView accessoryViewWithMITType:MITAccessoryViewCalendar];
 			break;
 		case CalendarDetailRowTypeLocation:
 			cell.textLabel.text = (event.location != nil) ? event.location : event.shortloc;
