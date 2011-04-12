@@ -291,9 +291,9 @@ static MapTileCache* s_cache;
 	
 	long long newMapTimestamp = [[dictionary objectForKey:kLastUpdatedKey] longLongValue];
 	
-	if (newMapTimestamp > _mapTimestamp) 
+	if (newMapTimestamp != _mapTimestamp) 
 	{
-		//NSLog(@"New tiles on server. Wiping out map cache");
+		DLog(@"New tiles on server. Wiping out map cache");
 		
 		// store the new timestamp and wipe out the cache.
 		[dictionary writeToFile:[self mapTimestampFilename] atomically:YES];
