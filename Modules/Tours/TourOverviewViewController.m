@@ -17,7 +17,9 @@ typedef enum {
     kOverviewSiteScrimControlTag,
     kOverviewSiteGoBackAlertTag,
     kOverviewSiteCellThumbnailTag,
-    kOverviewSiteCellStatusViewTag
+    kOverviewSiteCellStatusViewTag,
+    kOverviewSiteCellSideTripLabelTag,
+    kOverviewSiteCellSideTripIconTag
 }
 TourOverviewTags;
 
@@ -932,18 +934,44 @@ enum {
     CGFloat mainTextLabelY = 5;
     CGFloat mainTextLabelWidth = self.frame.size.width - mainTextLabelX - 90;
     
-    if ([self.tourComponent isKindOfClass:[CampusTourSideTrip class]]) {        
-        UILabel *sideTripLabel = 
+    UILabel *sideTripLabel = 
+    (UILabel *)[self.contentView viewWithTag:kOverviewSiteCellSideTripLabelTag];
+    if (!sideTripLabel) {
+        sideTripLabel = 
         [[UILabel alloc] initWithFrame:
-         CGRectMake(mainTextLabelX, 5, mainTextLabelWidth, 20)];
+         CGRectMake(mainTextLabelX + 20, 5, mainTextLabelWidth, 20)];
+        sideTripLabel.tag = kOverviewSiteCellSideTripLabelTag;
         sideTripLabel.textColor = [UIColor lightGrayColor];
-        sideTripLabel.text = @"\u21B3 Side Trip:";
+        sideTripLabel.text = @"Side Trip:";
         [self.contentView addSubview:sideTripLabel];
         [sideTripLabel release];
-        
-        mainTextLabelY += 25;
     }
-
+    
+    UIImageView *sideTripIconView = 
+    (UIImageView *)[self.contentView viewWithTag:kOverviewSiteCellSideTripIconTag];
+    if (!sideTripIconView) {
+        sideTripIconView = 
+        [[UIImageView alloc] initWithImage:
+         [UIImage imageNamed:@"tours/side_trip_arrow"]];
+        sideTripIconView.tag = kOverviewSiteCellSideTripIconTag;
+        CGRect iconFrame = sideTripIconView.frame;
+        iconFrame.origin.x = mainTextLabelX;
+        iconFrame.origin.y = 5;
+        sideTripIconView.frame = iconFrame;
+        [self.contentView addSubview:sideTripIconView];
+        [sideTripIconView release];
+    }
+    
+    if ([self.tourComponent isKindOfClass:[CampusTourSideTrip class]]) {
+        mainTextLabelY += 25;
+        sideTripLabel.alpha = 1.0f;
+        sideTripIconView.alpha = 1.0f;
+    }
+    else {
+        sideTripLabel.alpha = 0.0f;
+        sideTripIconView.alpha = 0.0f;
+    }
+    
     UIFont *font = [UIFont boldSystemFontOfSize:17];
     self.textLabel.text = [self.tourComponent title];
 	self.textLabel.numberOfLines = 2;
