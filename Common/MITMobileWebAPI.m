@@ -123,8 +123,12 @@
 		allParameters = [NSMutableDictionary dictionary];
 	}
 	
-	[allParameters setObject:moduleName	forKey:@"module"];
-	[allParameters setObject:command forKey:@"command"];
+    if (moduleName) {
+        [allParameters setObject:moduleName	forKey:@"module"];
+    }
+    if (command) {
+        [allParameters setObject:command forKey:@"command"];
+    }
 	
 	return [self requestObject:allParameters];
 }
