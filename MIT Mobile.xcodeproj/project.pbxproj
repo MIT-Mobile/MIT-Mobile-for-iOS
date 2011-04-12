@@ -2346,7 +2346,7 @@
 				4B1DC9EF1354E90F00FCD046 /* Tours 2.xcdatamodel */,
 				EB4C22561278961900058748 /* Tours.xcdatamodel */,
 			);
-			currentVersion = EB4C22561278961900058748 /* Tours.xcdatamodel */;
+			currentVersion = 4B1DC9EF1354E90F00FCD046 /* Tours 2.xcdatamodel */;
 			path = Tours.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
