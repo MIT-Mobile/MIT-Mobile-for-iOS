@@ -6,7 +6,7 @@
 @class MITModule;
 @class DummyRotatingViewController;
 
-@interface MIT_MobileAppDelegate : NSObject <UIApplicationDelegate, MITTabBarControllerDelegate, MITSpringboardDelegate> {
+@interface MIT_MobileAppDelegate : NSObject <UIApplicationDelegate, MITTabBarControllerDelegate, MITSpringboardDelegate, JSONLoadedDelegate> {
     
     UIWindow *window;
     // have references to both springbard and tabbar, set only one.
@@ -22,7 +22,7 @@
     NSInteger networkActivityRefCount; // the number of concurrent network connections the user should know about. If > 0, spinny in status bar is shown
 }
 
-- (BOOL)shouldShowMIT150Module;
+- (BOOL)shouldShowMIT150Content;
 
 - (BOOL)usesTabBar;
 

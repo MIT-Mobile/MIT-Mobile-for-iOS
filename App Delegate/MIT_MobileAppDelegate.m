@@ -7,6 +7,12 @@
 #import "MITSpringboard.h"
 #import "DummyRotatingViewController.h"
 
+@interface MIT_MobileAppDelegate ()
+
+- (void)updateBasicServerInfo;
+
+@end
+
 @implementation MIT_MobileAppDelegate
 
 @synthesize window, 
@@ -23,6 +29,8 @@
     
     networkActivityRefCount = 0;
     
+    [self updateBasicServerInfo];
+
     NSString *navParadigmClass = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITNavigationParadigm"];
     if ([navParadigmClass isEqualToString:@"MITTabBarController"]) {
         navParadigm = MITNavigationParadigmTabBar;
@@ -124,7 +132,7 @@
 		MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
 		[[self moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:YES];
 		//NSLog(@"Application opened in response to notification=%@", notification);
-	}	
+	}
     
     return YES;
 }
@@ -231,6 +239,70 @@
 //        NSLog(@"network indicator off");
     }
 }
+
+#pragma mark -
+#pragma mark This should probably go in another place
+
+
+/*
+ * The MIT150 module and all things related to it should suddenly 
+ * disappear about two weeks after the Open House on April 30th.
+ *
+ * If we want it to disappear sooner for some reason, we can flip 
+ * the "should_show_mit150" bit on http://m.mit.edu/?module=general.
+ */
+
+- (BOOL)shouldShowMIT150Content {
+    // roughly May 15, 2011. about two weeks after the Open House
+    NSDate *cutoffDate = [NSDate dateWithTimeIntervalSince1970:1305435600];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    BOOL serverSaysSo = ([defaults boolForKey:@"ShouldHideOpenHouse"] == NO);
+    BOOL notTooLate = ([[NSDate date] laterDate:cutoffDate] == cutoffDate);
+    BOOL shouldShow = (serverSaysSo && notTooLate);
+    return shouldShow;
+}
+
+- (void)updateBasicServerInfo {
+	MITMobileWebAPI *apiRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
+	
+	[apiRequest requestObjectFromModule:@"general" 
+								command:nil
+							 parameters:nil];
+}
+
+- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
+	if (result && [result isKindOfClass:[NSDictionary class]]) {
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSNumber *number = nil;
+        if ((number = [result objectForKey:@"should_show_mit150"])) {
+            DLog(@"Will %@ the MIT150 module on next launch", (([number boolValue]) ? @"show" : @"hide"));
+            [defaults setBool:![number boolValue] forKey:@"ShouldHideOpenHouse"];
+        }
+
+// These aren't necessary yet. Just focusing on hide / show of MIT150 for now.
+        
+//        if ((number = [result objectForKey:@"map_tiles_last_updated"])) {
+//            [defaults setBool:[number doubleValue] forKey:];
+//        }
+//        if ((number = [result objectForKey:@"emergency_contacts_last_updated"])) {
+//            [defaults setBool:[number doubleValue] forKey:];
+//        }
+//        if ((number = [result objectForKey:@"home_banner_last_updated"])) {
+//            [defaults setBool:[number doubleValue] forKey:];
+//        }
+        [defaults synchronize];
+	}
+}
+
+- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
+{
+	DLog(@"failed to get basic server info");
+}
+
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
+    return YES;
+}
+
 
 #pragma mark -
 #pragma mark Tab bar delegation

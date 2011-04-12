@@ -19,7 +19,7 @@
 @implementation MIT_MobileAppDelegate (ModuleListAdditions)
 #pragma mark class methods
 + (MITModule *)moduleForTag:(NSString *)aTag {
-	MIT_MobileAppDelegate *delegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+	MIT_MobileAppDelegate *delegate = ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]);
 	return [delegate moduleForTag:aTag];
 }
 
@@ -37,8 +37,11 @@
 	[result addObject:[[[StellarModule alloc] init] autorelease]];
 	[result addObject:[[[PeopleModule alloc] init] autorelease]];
     [result addObject:[[[ToursModule alloc] init] autorelease]];
-    [result addObject:[[[AnniversaryModule alloc] init] autorelease]];
+    if ([MITAppDelegate() shouldShowMIT150Content]) {
+        [result addObject:[[[AnniversaryModule alloc] init] autorelease]];
+    }
     [result addObject:[[[EmergencyModule alloc] init] autorelease]];
+    // QR reader should go here, and should have the same hiding behavior as AnniversaryModule
     [result addObject:[[[MobileWebModule alloc] init] autorelease]];
     [result addObject:[[[SettingsModule alloc] init] autorelease]];
     [result addObject:[[[AboutModule alloc] init] autorelease]];
