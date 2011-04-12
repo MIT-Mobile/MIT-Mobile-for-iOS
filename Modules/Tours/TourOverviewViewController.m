@@ -34,7 +34,7 @@ TourOverviewTags;
 - (void)setupNotSureScrim;
 - (void)setupMapLegend;
 - (MITThumbnailView *)thumbnailViewForCell:(TourOverviewTableViewCell *)cell;
-+ (TourSiteOrRoute *)siteForSourceObject:(TourComponent *)tourComponent;
++ (TourSiteOrRoute *)siteForTourComponent:(TourComponent *)tourComponent;
 
 @end
 
@@ -275,7 +275,7 @@ enum {
             [self.mapView addRoute:mapRoute];
             
             for (TourComponent *component in self.components) {
-                TourSiteOrRoute *aSite = [[self class] siteForSourceObject:component];
+                TourSiteOrRoute *aSite = [[self class] siteForTourComponent:component];
                 if (aSite) {                    
                     TourSiteMapAnnotation *annotation = [[[TourSiteMapAnnotation alloc] init] autorelease];
                     if (self.userLocation != nil) {
@@ -462,30 +462,33 @@ enum {
     [control release];
 }
 
-- (void)selectTourSite:(TourSiteOrRoute *)site {
+- (void)selectTourComponent:(TourComponent *)component {
     if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
         SiteDetailViewController *siteDetailVC = (SiteDetailViewController *)callingViewController;
         
-        if (siteDetailVC.showingConclusionScreen && siteDetailVC.siteOrRoute == site) {
+        if (siteDetailVC.showingConclusionScreen && 
+            siteDetailVC.siteOrRoute == component) {
             [siteDetailVC previousButtonPressed:nil];
             [self dismiss:nil];
         }
-        else if (siteDetailVC.siteOrRoute == site || siteDetailVC.siteOrRoute.nextComponent == site) {
+        else if (siteDetailVC.siteOrRoute == component || 
+                 siteDetailVC.siteOrRoute.nextComponent == component) {
             // user selected current stop, so just show then what they were looking at before
             [self dismiss:nil];
         }
-        else if (siteDetailVC.siteOrRoute.nextComponent.nextComponent == site && siteDetailVC.firstSite != site) {
+        else if (siteDetailVC.siteOrRoute.nextComponent.nextComponent == component && 
+                 siteDetailVC.firstSite != component) {
             // user selected next stop; show directions to it
             [siteDetailVC nextButtonPressed:nil];
             [self selectionDidComplete];
         }
         else {
             // user is skipping ahead or going back
-            selectedSiteIndex = [siteDetailVC.sites indexOfObject:site];
+            selectedSiteIndex = [siteDetailVC.sites indexOfObject:component];
             if (selectedSiteIndex == NSNotFound) {
                 for (TourSiteOrRoute *aSite in siteDetailVC.sites) {
                     selectedSiteIndex++;
-                    if ([aSite.componentID isEqualToString:site.componentID]) {
+                    if ([aSite.componentID isEqualToString:component.componentID]) {
                         break;
                     }
                 }
@@ -518,6 +521,7 @@ enum {
         
     } else {
         SiteDetailViewController *detailVC = [[[SiteDetailViewController alloc] init] autorelease];
+        TourSiteOrRoute *site = [[self class] siteForTourComponent:component];
         detailVC.siteOrRoute = site;
         detailVC.firstSite = site;
         [self hideCoverView];
@@ -550,7 +554,7 @@ enum {
     cell.accessoryView = [self thumbnailViewForCell:cell];
     
     cell.tourComponent = [self.components objectAtIndex:indexPath.row];
-    TourSiteOrRoute *site = [[self class] siteForSourceObject:cell.tourComponent];
+    TourSiteOrRoute *site = [[self class] siteForTourComponent:cell.tourComponent];
     
     if (self.userLocation) {
         cell.detailTextLabel.text = 
@@ -582,11 +586,12 @@ enum {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
+    TourComponent *component = [self.components objectAtIndex:indexPath.row];
     TourSiteOrRoute *site = 
-    [[self class] siteForSourceObject:[self.components objectAtIndex:indexPath.row]];
+    [[self class] siteForTourComponent:[self.components objectAtIndex:indexPath.row]];
 
     if (site) {
-        [self selectTourSite:site];
+        [self selectTourComponent:component];
         [self selectAnnotationForSite:site];
     }
     else {
@@ -616,7 +621,7 @@ enum {
     return thumbView;
 }
 
-+ (TourSiteOrRoute *)siteForSourceObject:(TourComponent *)tourComponent {
++ (TourSiteOrRoute *)siteForTourComponent:(TourComponent *)tourComponent {
     TourSiteOrRoute *site = nil;
     // This check to see if it's either a TourSiteOrRoute or a CampusTourSideTrip.
     if ([tourComponent isKindOfClass:[TourSiteOrRoute class]]) {
@@ -655,9 +660,10 @@ enum {
 }
 
 - (void)flowCover:(FlowCoverView *)view didSelect:(int)cover {
-    TourSiteOrRoute *site = [self.components objectAtIndex:cover];
+    TourComponent *component = [self.components objectAtIndex:cover];
+    TourSiteOrRoute *site = [[self class] siteForTourComponent:component];
     [self selectAnnotationForSite:site];
-    [self selectTourSite:site];
+    [self selectTourComponent:component];
 }
 
 
@@ -858,7 +864,7 @@ enum {
 - (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view {
     TourSiteMapAnnotation *annotation = (TourSiteMapAnnotation *)view.annotation;
     TourSiteOrRoute *site = annotation.site;
-    [self selectTourSite:site];
+    [self selectTourComponent:site];
 }
 
 - (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
