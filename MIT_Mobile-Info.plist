@@ -37,6 +37,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>3.1</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MITAboutAppText</key>
@@ -48,6 +50,8 @@ MIT's commitment to innovation has led to a host of scientific breakthroughs and
 	<key>MITBuildDescription</key>
 	<string></string>
 	<key>MITBuildRevision</key>
+	<string></string>
+	<key>MITCopyright</key>
 	<string></string>
 	<key>MITFeedbackAddress</key>
 	<string>iphone-app-feedback@mit.edu</string>

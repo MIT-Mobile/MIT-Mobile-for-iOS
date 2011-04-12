@@ -19,7 +19,7 @@
     
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(10, 0, self.view.frame.size.width - 20, 45)];
     UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, footerView.frame.size.width, 30)];
-    footerLabel.text = @"Copyright © 2011 Massachusetts Institute of Technology. All rights reserved.";
+    footerLabel.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITCopyright"];
     footerLabel.backgroundColor = [UIColor clearColor];
     footerLabel.textAlignment = UITextAlignmentCenter;
     footerLabel.textColor = CELL_DETAIL_FONT_COLOR;
