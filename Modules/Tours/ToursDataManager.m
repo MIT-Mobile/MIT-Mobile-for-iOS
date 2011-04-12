@@ -170,6 +170,25 @@ static ToursDataManager *s_toursDataManager = nil;
     return _sites;
 }
 
+/*
+ *  takes an array of sites of returns
+ *  an array of sites and side trips with
+ *  each site followed by its N side trips
+ *   
+ */
+- (NSArray *)allSitesOrSideTripsForSites:(NSArray *)sites {
+    NSMutableArray *sitesOrSideTrips = [NSMutableArray array];
+    for (TourSiteOrRoute *site in sites) {
+        [sitesOrSideTrips addObject:site];
+        
+        // not sure if this order is dependable
+        for (CampusTourSideTrip *aTrip in site.sideTrips) {
+            [sitesOrSideTrips addObject:aTrip];
+        }
+    }
+    return sitesOrSideTrips;
+}
+
 - (NSArray *)allSitesStartingFrom:(TourSiteOrRoute *)site {
     NSArray *defaultSites = [self allSitesForTour];
     NSInteger index = [defaultSites indexOfObject:site];
