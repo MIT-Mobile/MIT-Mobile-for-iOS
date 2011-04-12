@@ -157,4 +157,13 @@
     return self.title;
 }
 */
+
+- (void)setUpEKEvent:(EKEvent *)ekEvent {
+    ekEvent.title = self.title;
+    ekEvent.startDate = self.start;
+    ekEvent.endDate = self.end;
+    ekEvent.location = self.location;
+    ekEvent.notes = self.summary;
+}
+
 @end

@@ -6,6 +6,7 @@
 #import "Foundation+MITAdditions.h"
 #import "URLShortener.h"
 #import "CalendarDataManager.h"
+#import <EventKit/EventKit.h>
 
 #define WEB_VIEW_PADDING 10.0
 #define BUTTON_PADDING 10.0
@@ -215,6 +216,20 @@
     if ([self.event hasMoreDetails]) {
         [self.tableView.tableHeaderView addSubview:shareButton];
     }
+    
+    // Add border "between" header and first cell.
+    if ([self.event hasMoreDetails]) {
+        UIView *bottomBorder = 
+        [[UIView alloc] initWithFrame:
+         CGRectMake(0, 
+                    self.tableView.tableHeaderView.frame.size.height - 1, 
+                    self.tableView.tableHeaderView.frame.size.width, 
+                    1)];
+        bottomBorder.backgroundColor = [UIColor colorWithWhite:0.8 alpha:1.0];
+        [self.tableView.tableHeaderView addSubview:bottomBorder];
+        [bottomBorder release];
+    }
+    
 	[titleView release];
 }
 
@@ -279,6 +294,8 @@
 		case CalendarDetailRowTypeTime:
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 			cell.textLabel.text = [event dateStringWithDateStyle:NSDateFormatterFullStyle timeStyle:NSDateFormatterShortStyle separator:@"\n"];
+            // TODO: Get icon for calendar.
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];            
 			break;
 		case CalendarDetailRowTypeLocation:
 			cell.textLabel.text = (event.location != nil) ? event.location : event.shortloc;
@@ -436,6 +453,23 @@
 	NSInteger rowType = rowTypes[indexPath.row];
 	
 	switch (rowType) {
+        case CalendarDetailRowTypeTime:
+        {
+            // TODO: Prompt user or use EKEventViewController.
+            EKEventStore *eventStore = [[EKEventStore alloc] init];
+            EKEvent *newEvent = [EKEvent eventWithEventStore:eventStore];
+            newEvent.calendar = [eventStore defaultCalendarForNewEvents];
+            [self.event setUpEKEvent:newEvent];
+            NSError *error = NULL;
+            [eventStore saveEvent:newEvent span:EKSpanThisEvent error:&error];
+            if (error) {
+                // TODO: Prompt user.
+                NSLog(@"Could not save event. Error: %@", 
+                      [error localizedDescription]);
+            }   
+            [eventStore release];
+            break;
+        }
 		case CalendarDetailRowTypeLocation:
             if ([event hasCoords]) {
                 [[UIApplication sharedApplication] openURL:[NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:event.shortloc]];

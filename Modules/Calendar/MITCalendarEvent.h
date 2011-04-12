@@ -1,4 +1,5 @@
 #import <CoreData/CoreData.h>
+#import <EventKit/EventKit.h>
 
 @class EventCategory;
 @class MITEventList;
@@ -27,6 +28,7 @@
 - (BOOL)hasCoords;
 - (void)updateWithDict:(NSDictionary *)dict;
 - (BOOL)hasMoreDetails;
+- (void)setUpEKEvent:(EKEvent *)ekEvent;
 
 @end
 
