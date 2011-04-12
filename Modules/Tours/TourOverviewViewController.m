@@ -53,16 +53,17 @@ enum {
 @implementation TourOverviewViewController
 
 @synthesize mapView = _mapView, tableView = _tableView, callingViewController, components = _components, userLocation = _userLocation, selectedAnnotation;
+@synthesize sideTripsItem;
+@synthesize hideSideTrips;
 
-/*
  // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
         // Custom initialization
+        self.components = [NSMutableArray arrayWithCapacity:20];
     }
     return self;
 }
-*/
 
 /*
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
@@ -83,7 +84,8 @@ enum {
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
+    [self.components removeAllObjects];
 
     if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
         self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
@@ -92,16 +94,16 @@ enum {
                                                                                    style:UIBarButtonItemStyleBordered
                                                                                   target:self
                                                                                   action:@selector(dismiss:)] autorelease];
-        self.components = ((SiteDetailViewController *)callingViewController).sites;
+        [self.components addObjectsFromArray:
+         ((SiteDetailViewController *)callingViewController).sites];
     } else {
         self.navigationItem.title = @"Starting Point";
         NSArray *allSites = [[ToursDataManager sharedManager] allSitesForTour];
-        self.components = 
-        [[ToursDataManager sharedManager] allSitesOrSideTripsForSites:allSites];
+        [self.components addObjectsFromArray:
+         [[ToursDataManager sharedManager] allSitesOrSideTripsForSites:allSites]];
     }
     
     locateUserButton.image = [UIImage imageNamed:@"map/map_button_location.png"];
-    leftSideFixedSpace.width = locateUserButton.image.size.width + 22;
     
     [self showMap:YES];
 }
@@ -200,6 +202,7 @@ enum {
 
 
 - (void)dealloc {
+    [sideTripsItem release];
     [self.mapView removeTileOverlay];
     self.mapView.delegate = nil;
     self.mapView = nil;
@@ -235,6 +238,42 @@ enum {
         default:
             break;
     }
+}
+
+- (IBAction)toggleHideSideTrips:(id)sender {
+    self.hideSideTrips = !self.hideSideTrips;
+    // TODO: Update toolbar item title.
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
+    if (self.hideSideTrips) {
+        NSMutableArray *indexPathsToDelete = 
+        [NSMutableArray arrayWithCapacity:self.components.count];
+        NSMutableArray *componentsToRemove = 
+        [NSMutableArray arrayWithCapacity:self.components.count];
+        
+        [self.components enumerateObjectsUsingBlock:
+         ^(id obj, NSUInteger idx, BOOL *stop) {
+             if ([obj isKindOfClass:[CampusTourSideTrip class]]) {
+                 [componentsToRemove addObject:obj];
+                 [indexPathsToDelete addObject:
+                  [NSIndexPath indexPathForRow:idx inSection:0]];
+             }
+         }];
+        
+        [self.tableView beginUpdates];
+        
+        [self.components removeObjectsInArray:componentsToRemove];
+        [self.tableView deleteRowsAtIndexPaths:indexPathsToDelete 
+                              withRowAnimation:UITableViewRowAnimationFade];
+        
+        [self.tableView endUpdates];
+    }
+    else {
+        // TODO: Update self.components first.
+        [self.tableView reloadData];
+    }
+    
+    [pool release];
 }
 
 - (void)showStartSuggestions:(id)sender {
@@ -300,13 +339,12 @@ enum {
         }
         [self.view addSubview:self.mapView];
         
-        if (![toolbarItems containsObject:leftSideFixedSpace]) {
-            [toolbarItems insertObject:leftSideFixedSpace atIndex:0];
-        }
         if (![toolbarItems containsObject:locateUserButton]) {
             [toolbarItems addObject:locateUserButton];
         }
-        
+        if ([toolbarItems containsObject:self.sideTripsItem]) {
+            [toolbarItems removeObject:self.sideTripsItem];
+        }
     } else {
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
         
@@ -323,9 +361,17 @@ enum {
         if ([toolbarItems containsObject:locateUserButton]) {
             [toolbarItems removeObject:locateUserButton];
         }
-        if ([toolbarItems containsObject:leftSideFixedSpace]) {
-            [toolbarItems removeObject:leftSideFixedSpace];
+        // Add item hiding/showing side trips.
+        if (!self.sideTripsItem) {
+            self.sideTripsItem = 
+            [[[UIBarButtonItem alloc] 
+              initWithTitle:@"Hide side trips" 
+              style:UIBarButtonItemStyleBordered 
+              target:self 
+              action:@selector(toggleHideSideTrips:)]
+             autorelease];             
         }
+        [toolbarItems addObject:self.sideTripsItem];
     }
     
     displayingMap = showMap;

@@ -15,7 +15,7 @@
     UITableView *_tableView;
     MITMapView *_mapView;
     BOOL displayingMap;
-    NSArray *_components; // Will contain TourComponent objects.
+    NSMutableArray *_components; // Will contain TourComponent objects.
     FlowCoverView *coverView;
     CLLocation *_userLocation;
     BOOL _didSelectAnnotation;
@@ -24,7 +24,6 @@
     IBOutlet UISegmentedControl *mapListToggle;
 
     IBOutlet UIBarButtonItem *locateUserButton;
-    IBOutlet UIBarButtonItem *leftSideFixedSpace;
     
     NSInteger selectedSiteIndex;
     TourSiteMapAnnotation *selectedAnnotation;
@@ -39,17 +38,20 @@
 
 - (IBAction)mapListToggled:(id)sender;
 - (IBAction)locateUserPressed:(id)sender;
+- (IBAction)toggleHideSideTrips:(id)sender;
 
 - (void)hideCoverView;
 - (void)dismiss:(id)sender;
 - (void)selectAnnotationForSite:(TourSiteOrRoute *)currentSite;
 
 @property (nonatomic, retain) CLLocation *userLocation;
-@property (nonatomic, retain) NSArray *components;
+@property (nonatomic, retain) NSMutableArray *components;
 @property (nonatomic, retain) UITableView *tableView;
 @property (nonatomic, retain) MITMapView *mapView;
 @property (nonatomic, assign) UIViewController *callingViewController;
 @property (nonatomic, retain) TourSiteMapAnnotation *selectedAnnotation;
+@property (nonatomic, retain) UIBarButtonItem *sideTripsItem;
+@property (assign) BOOL hideSideTrips;
 
 @end
 
