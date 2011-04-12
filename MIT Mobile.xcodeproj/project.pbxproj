@@ -486,6 +486,7 @@
 		44C1A3CD11A33905000FD653 /* MapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSelectionController.m; sourceTree = "<group>"; };
 		44C1A4C211A412E2000FD653 /* MapSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapSearch.h; sourceTree = "<group>"; };
 		44C1A4C311A412E2000FD653 /* MapSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSearch.m; sourceTree = "<group>"; };
+		4B1DC9EF1354E90F00FCD046 /* Tours 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Tours 2.xcdatamodel"; sourceTree = "<group>"; };
 		4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Calendar 3.xcdatamodel"; sourceTree = "<group>"; };
 		4BB9C54F134BA78200B7F135 /* CalendarCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarCategoriesViewController.h; sourceTree = "<group>"; };
 		4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarCategoriesViewController.m; sourceTree = "<group>"; };
@@ -2342,6 +2343,7 @@
 		EB4C225A1278962000058748 /* Tours.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				4B1DC9EF1354E90F00FCD046 /* Tours 2.xcdatamodel */,
 				EB4C22561278961900058748 /* Tours.xcdatamodel */,
 			);
 			currentVersion = EB4C22561278961900058748 /* Tours.xcdatamodel */;
