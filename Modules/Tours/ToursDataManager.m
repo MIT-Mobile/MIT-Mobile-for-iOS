@@ -207,6 +207,10 @@ static ToursDataManager *s_toursDataManager = nil;
         for (CampusTourSideTrip *aTrip in site.sideTrips) {
             [sitesOrSideTrips addObject:aTrip];
         }
+        for(CampusTourSideTrip *aTrip in site.nextComponent.sideTrips) {
+            [sitesOrSideTrips addObject:aTrip];
+        }
+            
     }
     return sitesOrSideTrips;
 }

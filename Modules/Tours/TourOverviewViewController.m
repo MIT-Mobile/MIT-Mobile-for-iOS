@@ -575,11 +575,12 @@ enum {
         // This is the case in which the view controller that pushed us to the 
         // stack is not a SiteDetailViewController.
         SiteDetailViewController *detailVC = [[[SiteDetailViewController alloc] init] autorelease];
-        TourSiteOrRoute *site = [[self class] siteForTourComponent:component];
-        detailVC.siteOrRoute = site;
-        detailVC.firstSite = site;
         if ([component isKindOfClass:[CampusTourSideTrip class]]) {
             detailVC.sideTrip = (CampusTourSideTrip *)component;
+        } else {
+            TourSiteOrRoute *site = [[self class] siteForTourComponent:component];
+            detailVC.siteOrRoute = site;
+            detailVC.firstSite = site;
         }
         [self.navigationController pushViewController:detailVC animated:YES];
     }
