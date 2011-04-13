@@ -46,6 +46,7 @@ extern NSString * const AnniversaryTag;
 extern NSString * const MobileWebTag;
 extern NSString * const SettingsTag;
 extern NSString * const AboutTag;
+extern NSString * const QRReaderTag;
 
 // notification names
 extern NSString * const EmergencyInfoDidLoadNotification;
@@ -82,6 +83,7 @@ extern NSString * const CampusTourEntityName;
 extern NSString * const TourSiteOrRouteEntityName;
 extern NSString * const CampusTourSideTripEntityName;
 extern NSString * const TourStartLocationEntityName;
+extern NSString * const QRReaderResultEntityName;
 
 // resource names
 extern NSString * const MITImageNameBackground;

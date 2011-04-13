@@ -33,6 +33,7 @@ NSString * const AnniversaryTag = @"mit150";
 NSString * const MobileWebTag  = @"mobileweb";
 NSString * const SettingsTag   = @"settings";
 NSString * const AboutTag      = @"about";
+NSString * const QRReaderTag    = @"qrreader";
 
 // notification names
 NSString * const EmergencyInfoDidLoadNotification = @"MITEmergencyInfoDidLoadNotification";
@@ -69,6 +70,7 @@ NSString * const CampusTourEntityName = @"CampusTour";
 NSString * const TourSiteOrRouteEntityName = @"TourSiteOrRoute";
 NSString * const CampusTourSideTripEntityName = @"CampusTourSideTrip";
 NSString * const TourStartLocationEntityName = @"TourStartLocation";
+NSString * const QRReaderResultEntityName = @"QRReaderResult";
 
 // resource names
 
