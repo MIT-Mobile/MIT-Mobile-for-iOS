@@ -35,6 +35,7 @@ TourOverviewTags;
 - (void)setupMapLegend;
 - (MITThumbnailView *)thumbnailViewForCell:(TourOverviewTableViewCell *)cell;
 + (TourSiteOrRoute *)siteForTourComponent:(TourComponent *)tourComponent;
+- (void)updateTourComponents;
 
 @end
 
@@ -85,23 +86,21 @@ enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [self.components removeAllObjects];
-
     if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
         self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
         self.navigationItem.title = @"Tour Overview";
-        self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Cancel"
-                                                                                   style:UIBarButtonItemStyleBordered
-                                                                                  target:self
-                                                                                  action:@selector(dismiss:)] autorelease];
-        [self.components addObjectsFromArray:
-         ((SiteDetailViewController *)callingViewController).sites];
+        
+        self.navigationItem.rightBarButtonItem = 
+        [[[UIBarButtonItem alloc] 
+          initWithTitle:@"Cancel" 
+          style:UIBarButtonItemStyleBordered
+          target:self
+          action:@selector(dismiss:)] autorelease];
     } else {
         self.navigationItem.title = @"Starting Point";
-        NSArray *allSites = [[ToursDataManager sharedManager] allSitesForTour];
-        [self.components addObjectsFromArray:
-         [[ToursDataManager sharedManager] allSitesOrSideTripsForSites:allSites]];
-    }
+    }    
+    
+    [self updateTourComponents];
     
     locateUserButton.image = [UIImage imageNamed:@"map/map_button_location.png"];
     
@@ -267,10 +266,29 @@ enum {
                               withRowAnimation:UITableViewRowAnimationFade];
         
         [self.tableView endUpdates];
+        
+        self.sideTripsItem.title = @"Show side trips";
     }
     else {
-        // TODO: Update self.components first.
-        [self.tableView reloadData];
+        NSMutableArray *indexPathsToAdd = 
+        [NSMutableArray arrayWithCapacity:self.components.count];
+        NSArray *currentlyShowingComponents = [self.components copy];
+        [self updateTourComponents];
+        [self.components enumerateObjectsUsingBlock:
+         ^(id obj, NSUInteger idx, BOOL *stop) {
+             if (![currentlyShowingComponents containsObject:obj]) {
+                 [indexPathsToAdd addObject:
+                  [NSIndexPath indexPathForRow:idx inSection:0]];
+             }
+         }];
+        
+        [self.tableView beginUpdates];
+        
+        [self.tableView insertRowsAtIndexPaths:indexPathsToAdd
+                              withRowAnimation:UITableViewRowAnimationFade];
+        
+        [self.tableView endUpdates];
+        self.sideTripsItem.title = @"Hide side trips";
     }
     
     [pool release];
@@ -677,6 +695,21 @@ enum {
         site = (TourSiteOrRoute *)[(CampusTourSideTrip *)tourComponent component];
     }
     return site;
+}
+
+- (void)updateTourComponents {
+    [self.components removeAllObjects];
+    
+    NSArray *allSites = nil;
+    
+    if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+        allSites = ((SiteDetailViewController *)callingViewController).sites;
+    } else {
+        allSites = [[ToursDataManager sharedManager] allSitesForTour];
+    }    
+    
+    [self.components addObjectsFromArray:
+     [[ToursDataManager sharedManager] allSitesOrSideTripsForSites:allSites]];
 }
 
 #pragma mark cover flow
