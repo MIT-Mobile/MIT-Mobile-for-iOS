@@ -334,17 +334,20 @@ enum {
         if ([toolbarItems containsObject:locateUserButton]) {
             [toolbarItems removeObject:locateUserButton];
         }
-        // Add item hiding/showing side trips.
-        if (!self.sideTripsItem) {
-            self.sideTripsItem = 
-            [[[UIBarButtonItem alloc] 
-              initWithTitle:@"Hide side trips" 
-              style:UIBarButtonItemStyleBordered 
-              target:self 
-              action:@selector(toggleHideSideTrips:)]
-             autorelease];             
+        
+        if (![callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+            // Add item hiding/showing side trips.
+            if (!self.sideTripsItem) {
+                self.sideTripsItem = 
+                [[[UIBarButtonItem alloc] 
+                  initWithTitle:@"Hide side trips" 
+                  style:UIBarButtonItemStyleBordered 
+                  target:self 
+                  action:@selector(toggleHideSideTrips:)]
+                 autorelease];             
+            }
+            [toolbarItems addObject:self.sideTripsItem];
         }
-        [toolbarItems addObject:self.sideTripsItem];
     }
     
     displayingMap = showMap;
@@ -539,10 +542,15 @@ enum {
         }
         
     } else {
+        // This is the case in which the view controller that pushed us to the 
+        // stack is not a SiteDetailViewController.
         SiteDetailViewController *detailVC = [[[SiteDetailViewController alloc] init] autorelease];
         TourSiteOrRoute *site = [[self class] siteForTourComponent:component];
         detailVC.siteOrRoute = site;
         detailVC.firstSite = site;
+        if ([component isKindOfClass:[CampusTourSideTrip class]]) {
+            detailVC.sideTrip = (CampusTourSideTrip *)component;
+        }
         [self.navigationController pushViewController:detailVC animated:YES];
     }
 }
@@ -659,11 +667,13 @@ enum {
     if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
         allSites = ((SiteDetailViewController *)callingViewController).sites;
     } else {
-        allSites = [[ToursDataManager sharedManager] allSitesForTour];
+        // We want to show side trips only if we were NOT pushed to the nav stack 
+        // by a SiteDetailViewController.
+        allSites = [[ToursDataManager sharedManager] allSitesOrSideTripsForSites:
+                    [[ToursDataManager sharedManager] allSitesForTour]];
     }    
     
-    [self.components addObjectsFromArray:
-     [[ToursDataManager sharedManager] allSitesOrSideTripsForSites:allSites]];
+    [self.components addObjectsFromArray:allSites];
 }
 
 #pragma mark connection
