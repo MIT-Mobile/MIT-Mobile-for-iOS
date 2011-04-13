@@ -113,7 +113,6 @@ enum {
 }
 
 - (void)selectionDidComplete {
-    [self hideCoverView];
     
     // if we called from a side trip
     if (callingViewController.navigationController.visibleViewController != callingViewController) {
@@ -132,56 +131,13 @@ enum {
     UIDevice *device = [notification object];
     
     if (UIDeviceOrientationIsPortrait(device.orientation)) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-        [UIView beginAnimations:@"hideCover" context:nil];
-        [UIView setAnimationDuration:UINavigationControllerHideShowBarDuration];
-        [UIView setAnimationDelegate:self];
-        [UIView setAnimationDidStopSelector:@selector(hideCoverView)];
-        coverView.alpha = 0;
-        [UIView commitAnimations];
+		[[UIApplication sharedApplication] 
+         setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
         
     } else {
-        // coverflow
-        UIWindow *window = [[UIApplication sharedApplication] keyWindow];
-        CGRect frame = CGRectMake(0, 0, window.frame.size.height, window.frame.size.width); // make horizontal
-        if (coverView == nil) {
-            coverView = [[FlowCoverView alloc] initWithFrame:frame];
-            coverView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-            coverView.delegate = self;
-            coverView.backgroundColor = [UIColor whiteColor];
-        }
-        
-        // label for site title
-        CGRect labelFrame = CGRectMake(frame.size.width / 2 - 100, frame.size.height - 44, 200, 22);
-        UILabel *label = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
-        label.font = [UIFont systemFontOfSize:14];
-        label.tag = kOverviewSiteTitleLabelTag;
-        label.textAlignment = UITextAlignmentCenter;
-        label.backgroundColor = [UIColor clearColor];
-        label.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
-        [coverView addSubview:label];
-        
-        if (device.orientation == UIInterfaceOrientationLandscapeRight) {
-            coverView.layer.anchorPoint = CGPointMake((frame.size.height / 2) / window.frame.size.height,
-                                                      1 - (frame.size.width / 2) / window.frame.size.width);
-            coverView.transform = CGAffineTransformMakeRotation(M_PI_2);
-            
-        } else { // UIInterfaceOrientationLandscapeLeft
-            coverView.layer.anchorPoint = CGPointMake(1 - (frame.size.height / 2) / window.frame.size.height,
-                                                      (frame.size.width / 2) / window.frame.size.width);
-            coverView.transform = CGAffineTransformMakeRotation(-M_PI_2);
-        }
-
-        coverView.alpha = 0;
-        [window addSubview:coverView];
-
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-        [UIView beginAnimations:@"showCover" context:nil];
-        [UIView setAnimationDuration:UINavigationControllerHideShowBarDuration];
-        coverView.alpha = 1;
-        [UIView commitAnimations];
-    }
-    
+		[[UIApplication sharedApplication] 
+         setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    }    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -205,7 +161,6 @@ enum {
     [self.mapView removeTileOverlay];
     self.mapView.delegate = nil;
     self.mapView = nil;
-    [self hideCoverView]; // also releases coverview
     self.components = nil;
     self.userLocation = nil;
     self.callingViewController = nil;
@@ -588,7 +543,6 @@ enum {
         TourSiteOrRoute *site = [[self class] siteForTourComponent:component];
         detailVC.siteOrRoute = site;
         detailVC.firstSite = site;
-        [self hideCoverView];
         [self.navigationController pushViewController:detailVC animated:YES];
     }
 }
@@ -712,49 +666,6 @@ enum {
      [[ToursDataManager sharedManager] allSitesOrSideTripsForSites:allSites]];
 }
 
-#pragma mark cover flow
-
-- (int)flowCoverNumberImages:(FlowCoverView *)view {
-    return self.components.count;
-}
-
-- (UIImage *)flowCover:(FlowCoverView *)view cover:(int)cover {
-    TourComponent *component = [self.components objectAtIndex:cover];
-    
-    UIImage *image = [UIImage imageWithData:component.photo];
-    if (!image) {
-        image = [UIImage imageNamed:@"tours/tour_coverflow_loading.png"];
-        [self requestImageForComponent:component];
-    }
-    
-    return image;
-}
-
-- (void)flowCover:(FlowCoverView *)view didFocusOnCover:(int)cover {
-    TourSiteOrRoute *aSite = [self.components objectAtIndex:cover];
-    
-    // change the label below the image
-    UILabel *label = (UILabel *)[coverView viewWithTag:kOverviewSiteTitleLabelTag];
-    label.text = aSite.title;
-}
-
-- (void)flowCover:(FlowCoverView *)view didSelect:(int)cover {
-    TourComponent *component = [self.components objectAtIndex:cover];
-    TourSiteOrRoute *site = [[self class] siteForTourComponent:component];
-    [self selectAnnotationForSite:site];
-    [self selectTourComponent:component];
-}
-
-
-- (void)hideCoverView {
-    if (coverView) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-        [coverView removeFromSuperview];
-        [coverView release];
-        coverView = nil;
-    }
-}
-
 #pragma mark connection
 
 - (void)requestImageForComponent:(TourComponent *)component {
@@ -771,7 +682,6 @@ enum {
         TourSiteOrRoute *aSite = [self.components objectAtIndex:i];
         if ([aSite.photoURL isEqualToString:[wrapper.theURL absoluteString]]) {
             aSite.photo = data;
-            [coverView clearCacheAtIndex:i];
             break;
         }
     }

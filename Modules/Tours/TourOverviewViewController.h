@@ -1,22 +1,20 @@
 #import <UIKit/UIKit.h>
 #import "MITMapView.h"
-#import "FlowCoverView.h"
 #import "MITThumbnailView.h"
 #import "ConnectionWrapper.h"
 #import "ToursDataManager.h"
 #import "TourComponent.h"
 
 @class CampusTour;
-@class FlowCoverView;
 @class TourSiteMapAnnotation;
 
-@interface TourOverviewViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, MITMapViewDelegate, FlowCoverViewDelegate, UIAlertViewDelegate, ConnectionWrapperDelegate> {
+@interface TourOverviewViewController : UIViewController <UITableViewDataSource, 
+UITableViewDelegate, MITMapViewDelegate, UIAlertViewDelegate, ConnectionWrapperDelegate> {
     
     UITableView *_tableView;
     MITMapView *_mapView;
     BOOL displayingMap;
     NSMutableArray *_components; // Will contain TourComponent objects.
-    FlowCoverView *coverView;
     CLLocation *_userLocation;
     BOOL _didSelectAnnotation;
     
@@ -40,7 +38,6 @@
 - (IBAction)locateUserPressed:(id)sender;
 - (IBAction)toggleHideSideTrips:(id)sender;
 
-- (void)hideCoverView;
 - (void)dismiss:(id)sender;
 - (void)selectAnnotationForSite:(TourSiteOrRoute *)currentSite;
 
