@@ -7,7 +7,8 @@
 
 @class CampusTour;
 @class FlowCoverView;
-@class TourSiteMapAnnotation;
+@class TourMapAnnotation;
+@class CampusTourSideTrip;
 
 @interface TourOverviewViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, MITMapViewDelegate, FlowCoverViewDelegate, UIAlertViewDelegate, ConnectionWrapperDelegate> {
     
@@ -26,12 +27,16 @@
     IBOutlet UIBarButtonItem *leftSideFixedSpace;
     
     NSInteger selectedSiteIndex;
-    TourSiteMapAnnotation *selectedAnnotation;
+    TourMapAnnotation *selectedAnnotation;
 
     UIInterfaceOrientation currentOrientation;
     
     // currently we can be a modal view invoked from StartingLocationVC or SiteDetailVC
     UIViewController *callingViewController;
+    
+    // if we are invokded from a sideTrip
+    // this needs to be set
+    CampusTourSideTrip *sideTrip;
 }
 
 - (void)showMap:(BOOL)showMap;
@@ -48,7 +53,8 @@
 @property (nonatomic, retain) UITableView *tableView;
 @property (nonatomic, retain) MITMapView *mapView;
 @property (nonatomic, assign) UIViewController *callingViewController;
-@property (nonatomic, retain) TourSiteMapAnnotation *selectedAnnotation;
+@property (nonatomic, retain) CampusTourSideTrip *sideTrip;
+@property (nonatomic, retain) TourMapAnnotation *selectedAnnotation;
 
 @end
 

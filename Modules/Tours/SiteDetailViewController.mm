@@ -84,8 +84,16 @@
     TourOverviewViewController *vc = [[[TourOverviewViewController alloc] init] autorelease];
     if (self.sideTrip) {
         NSInteger indexOfTopVC = [self.navigationController.viewControllers indexOfObject:self];
-        UIViewController *siteDetailVC = [self.navigationController.viewControllers objectAtIndex:indexOfTopVC-1];
-        vc.callingViewController = siteDetailVC;
+        UIViewController *callingVC = [self.navigationController.viewControllers objectAtIndex:indexOfTopVC-1];
+        if ([callingVC isKindOfClass:[SiteDetailViewController class]]) {    
+            vc.callingViewController = callingVC;
+            vc.sideTrip = self.sideTrip;
+        } else {
+            // only way to get here is a sidetrip is selected from
+            // the starting map (so just pop back to that map)
+            [self.navigationController popViewControllerAnimated:YES];
+            return;
+        }
     } else {
         vc.callingViewController = self;
     }

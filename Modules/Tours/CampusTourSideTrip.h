@@ -1,9 +1,10 @@
 #import <CoreData/CoreData.h>
 #import "TourComponent.h"
+#import "TourGeoLocation.h"
 
 @class TourSiteOrRoute;
 
-@interface CampusTourSideTrip :  TourComponent  
+@interface CampusTourSideTrip :  TourComponent <TourGeoLocation>
 {
 }
 

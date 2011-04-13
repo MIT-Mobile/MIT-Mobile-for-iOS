@@ -13,6 +13,7 @@
 - (UIColor *)fillColor;
 - (UIColor *)strokeColor;
 - (CGFloat)lineWidth;
+- (NSArray *)lineDashPattern;
 
 @optional
 
@@ -26,11 +27,13 @@
     UIColor *fillColor;
     UIColor *strokeColor;
     CGFloat lineWidth;
+    NSArray *lineDashPattern;
 }
 
 @property (nonatomic, retain) NSArray *pathLocations;
 @property (nonatomic, retain) UIColor *fillColor;
 @property (nonatomic, retain) UIColor *strokeColor;
+@property (nonatomic, retain) NSArray *lineDashPattern;
 @property (nonatomic) CGFloat lineWidth;
 
 @end

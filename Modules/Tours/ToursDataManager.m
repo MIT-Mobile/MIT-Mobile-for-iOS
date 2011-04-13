@@ -4,6 +4,7 @@
 #import "TourSiteOrRoute.h"
 #import "CampusTour.h"
 #import "MITMapRoute.h"
+#import "MorseCodePattern.h"
 #import "TourStartLocation.h"
 #import "TourLink.h"
 
@@ -160,6 +161,27 @@ static ToursDataManager *s_toursDataManager = nil;
     }
     return _mapRoute;
 }
+
+- (MITGenericMapRoute *)mapRouteFromSideTripToSite:(CampusTourSideTrip *)sideTrip {
+    CLLocation *source = [[CLLocation alloc] initWithLatitude:[sideTrip.latitude floatValue] longitude:[sideTrip.longitude floatValue]];
+    TourSiteOrRoute *site = sideTrip.component;
+    CLLocation *dest = [[CLLocation alloc] initWithLatitude:[site.latitude floatValue] longitude:[site.longitude floatValue]];
+    
+    NSArray *pathLocations = [NSArray arrayWithObjects:source, dest, nil];
+    MITGenericMapRoute *mapRoute = [[MITGenericMapRoute alloc] init];
+    mapRoute.fillColor = [UIColor blackColor];
+    mapRoute.strokeColor = [UIColor blackColor];
+    mapRoute.pathLocations = pathLocations;
+    MorseCodePattern *morseCode = [MorseCodePattern new];
+    // MIT, M = dash dash, I = dot dot, T = dash
+    [[[[[[[[morseCode dash] dash] pause] dot] dot] pause] dash] pause];
+    mapRoute.lineDashPattern = [morseCode lineDashPattern];
+    [morseCode release];
+    //mapRoute.lineDashPattern = [NSArray arrayWithObjects:[NSNumber numberWithInt:3], [NSNumber numberWithInt:5], nil];
+    mapRoute.lineWidth = 2.0;
+    return mapRoute;
+}
+
 
 - (NSArray *)allSitesForTour {
     if (!_activeTour) return nil;

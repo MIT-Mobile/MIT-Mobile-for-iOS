@@ -12,7 +12,7 @@ extern NSString * const TourInfoFailedToLoadNotification;
 extern NSString * const TourDetailsLoadedNotification;
 extern NSString * const TourDetailsFailedToLoadNotification;
 
-@class CampusTour, TourSiteOrRoute, MITGenericMapRoute;
+@class CampusTour, TourSiteOrRoute, MITGenericMapRoute, CampusTourSideTrip;
 
 @interface ToursDataManager : NSObject <JSONLoadedDelegate> {
     NSMutableDictionary *_tours;
@@ -34,6 +34,7 @@ extern NSString * const TourDetailsFailedToLoadNotification;
 - (NSArray *)allSitesOrSideTripsForSites:(NSArray *)sites;
 - (NSArray *)allRoutesForTour;
 - (MITGenericMapRoute *)mapRouteForTour;
+- (MITGenericMapRoute *)mapRouteFromSideTripToSite:(CampusTourSideTrip *)sideTrip;
 - (NSArray *)allSitesStartingFrom:(TourSiteOrRoute *)site;
 - (NSArray *)allRoutesStartingFrom:(TourSiteOrRoute *)route;
 

@@ -101,6 +101,9 @@
 		44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */; };
 		44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A3CD11A33905000FD653 /* MapSelectionController.m */; };
 		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; };
+		4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */; };
+		4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */; };
+		4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9A4EA31355E24800E37876 /* MorseCodePattern.m */; };
 		4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */; };
 		4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */; };
 		569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3381282ADAB00BA0794 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -487,6 +490,13 @@
 		44C1A4C211A412E2000FD653 /* MapSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapSearch.h; sourceTree = "<group>"; };
 		44C1A4C311A412E2000FD653 /* MapSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSearch.m; sourceTree = "<group>"; };
 		4B1DC9EF1354E90F00FCD046 /* Tours 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Tours 2.xcdatamodel"; sourceTree = "<group>"; };
+		4B53F2A81354F6180081EA38 /* TourSideTripMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourSideTripMapAnnotation.h; sourceTree = "<group>"; };
+		4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourSideTripMapAnnotation.m; sourceTree = "<group>"; };
+		4B53F2AB1354F6460081EA38 /* TourMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourMapAnnotation.h; sourceTree = "<group>"; };
+		4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourMapAnnotation.m; sourceTree = "<group>"; };
+		4B53F2AE1355062D0081EA38 /* TourGeoLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourGeoLocation.h; sourceTree = "<group>"; };
+		4B9A4EA21355E24800E37876 /* MorseCodePattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MorseCodePattern.h; sourceTree = "<group>"; };
+		4B9A4EA31355E24800E37876 /* MorseCodePattern.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MorseCodePattern.m; sourceTree = "<group>"; };
 		4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Calendar 3.xcdatamodel"; sourceTree = "<group>"; };
 		4BB9C54F134BA78200B7F135 /* CalendarCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarCategoriesViewController.h; sourceTree = "<group>"; };
 		4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarCategoriesViewController.m; sourceTree = "<group>"; };
@@ -1504,10 +1514,16 @@
 				EBBFABAE129461C3009AAEE0 /* ScrollFadeImageView.m */,
 				EBBFB230129C7DED009AAEE0 /* TourSiteMapAnnotation.h */,
 				EBBFB231129C7DED009AAEE0 /* TourSiteMapAnnotation.m */,
+				4B53F2A81354F6180081EA38 /* TourSideTripMapAnnotation.h */,
+				4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */,
+				4B53F2AB1354F6460081EA38 /* TourMapAnnotation.h */,
+				4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */,
 				EBF114FA12A700510002D751 /* TourIntroViewController.h */,
 				EBF114FB12A700510002D751 /* TourIntroViewController.m */,
 				EBF8B5F112B5CAF600D39AE6 /* IntroToMITController.h */,
 				EBF8B5F212B5CAF600D39AE6 /* IntroToMITController.m */,
+				4B9A4EA21355E24800E37876 /* MorseCodePattern.h */,
+				4B9A4EA31355E24800E37876 /* MorseCodePattern.m */,
 			);
 			path = Tours;
 			sourceTree = "<group>";
@@ -1528,6 +1544,7 @@
 				EBF8AB1112B197FC00D39AE6 /* TourComponent.m */,
 				EBF8B8C212B6B8B400D39AE6 /* TourStartLocation.h */,
 				EBF8B8C312B6B8B400D39AE6 /* TourStartLocation.m */,
+				4B53F2AE1355062D0081EA38 /* TourGeoLocation.h */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -2062,6 +2079,9 @@
 				DE72875F1350A4150088450A /* BorderedTableViewCell.m in Sources */,
 				DE03763C1350F5080041DDBD /* MIT150Button.m in Sources */,
 				DE12901A134B748E00BEBDA2 /* MITLogging.m in Sources */,
+				4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */,
+				4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */,
+				4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

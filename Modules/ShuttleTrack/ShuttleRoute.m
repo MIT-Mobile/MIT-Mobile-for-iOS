@@ -413,4 +413,7 @@
 	return 3.0;
 }
 
+- (NSArray *)lineDashPattern {
+    return nil;
+}
 @end

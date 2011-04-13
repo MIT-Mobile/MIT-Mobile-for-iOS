@@ -2,7 +2,7 @@
 
 @implementation MITGenericMapRoute
 
-@synthesize pathLocations, fillColor, strokeColor, lineWidth;
+@synthesize pathLocations, fillColor, strokeColor, lineWidth, lineDashPattern;
 
 - (id)init {
     self = [super init];
@@ -19,6 +19,7 @@
     self.pathLocations = nil;
     self.fillColor = nil;
     self.strokeColor = nil;
+    self.lineDashPattern = nil;
     [super dealloc];
 }
 

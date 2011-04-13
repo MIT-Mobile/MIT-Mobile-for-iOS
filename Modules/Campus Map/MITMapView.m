@@ -235,8 +235,9 @@
 		if (nil != annoView) {
             
 			if (annoView.selected) {
+                [_mapView deselectAnnotation:annotation animated:NO];
 				[_mapView selectAnnotation:annotation animated:NO];
-			}
+            }
 		}
 	}
 }
@@ -519,6 +520,7 @@
                 polylineView.fillColor = [mapRoute fillColor];
                 polylineView.strokeColor = [mapRoute strokeColor];
                 polylineView.lineWidth = [mapRoute lineWidth];
+                polylineView.lineDashPattern = [mapRoute lineDashPattern];
             }
         }
         return polylineView;

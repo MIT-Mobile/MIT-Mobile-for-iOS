@@ -3,10 +3,15 @@
 
 @implementation TourSiteMapAnnotation
 
-@synthesize site, subtitle, hasTransform, transform;
+- (void)setSite:(TourSiteOrRoute *)aSite {
+    [site release];
+    site = nil;
+    site = [aSite retain];
+    self.tourGeoLocation = aSite;
+}
 
-- (CLLocationCoordinate2D)coordinate {
-    return CLLocationCoordinate2DMake([self.site.latitude floatValue], [self.site.longitude floatValue]);
+- (TourSiteOrRoute *)site {
+    return site;
 }
 
 - (NSString *)title {
@@ -14,8 +19,7 @@
 }
 
 - (void)dealloc {
-    self.site = nil;
-    self.subtitle = nil;
+    site = nil;
     [super dealloc];
 }
 
