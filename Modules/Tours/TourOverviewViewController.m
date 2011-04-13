@@ -325,12 +325,14 @@ enum {
                     annotation.site = aSite;
                     [self.mapView addAnnotation:annotation];
                     
-                    if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
-                        if (aSite == ((SiteDetailViewController *)callingViewController).siteOrRoute
-                            || aSite == ((SiteDetailViewController *)callingViewController).siteOrRoute.nextComponent)
-                        {
-                            [self.mapView selectAnnotation:selectedAnnotation animated:YES withRecenter:YES];
-                            self.selectedAnnotation = annotation; // attempt select again after annotation views are populated
+                    if (!self.sideTrip) { // dont select a stop (if sidetrip is specified) {
+                        if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+                            if (aSite == ((SiteDetailViewController *)callingViewController).siteOrRoute
+                                || aSite == ((SiteDetailViewController *)callingViewController).siteOrRoute.nextComponent)
+                            {
+                                [self.mapView selectAnnotation:selectedAnnotation animated:YES withRecenter:YES];
+                                self.selectedAnnotation = annotation; // attempt select again after annotation views are populated
+                            }
                         }
                     }
                 }
@@ -952,9 +954,8 @@ enum {
 
 - (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views {
     if (selectedAnnotation) {
-        TourMapAnnotation *annotationToSelect = selectedAnnotation;
+        [self.mapView selectAnnotation:selectedAnnotation animated:YES withRecenter:YES];
         self.selectedAnnotation = nil;
-        [self.mapView selectAnnotation:annotationToSelect animated:YES withRecenter:YES];
     }
 }
 
