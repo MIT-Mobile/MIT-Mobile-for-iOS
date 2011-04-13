@@ -137,7 +137,8 @@ static CalendarDataManager *s_sharedManager = nil;
 			[newLists addObject:list];
 		}
 	}
-	if ([[CoreDataManager managedObjectContext] hasChanges]) {
+
+	if ([[NSSet setWithArray:newLists] isEqualToSet:[NSSet setWithArray:_eventLists]] == NO) {
 		NSLog(@"event lists have changed");
 		[CoreDataManager saveData];
 
@@ -149,7 +150,7 @@ static CalendarDataManager *s_sharedManager = nil;
 
 		for (MITEventList *oldEventList in _eventLists) {
 			if (![newEventListIDs containsObject:oldEventList.listID]) {
-				NSLog(@"deleting old list %@", [oldEventList description]);
+				DLog(@"deleting old list %@", [oldEventList description]);
 				[CoreDataManager deleteObject:oldEventList];
 			}
 		}
