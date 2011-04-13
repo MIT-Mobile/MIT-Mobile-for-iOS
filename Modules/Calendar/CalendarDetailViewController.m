@@ -464,6 +464,23 @@
             newEvent.calendar = [eventStore defaultCalendarForNewEvents];
             [self.event setUpEKEvent:newEvent];
             
+            NSInteger rowCount = [self tableView:tableView numberOfRowsInSection:indexPath.section];
+            NSInteger likelyIndexOfDescriptionRow = rowCount - 2;
+            NSIndexPath *descriptionIndexPath = [NSIndexPath indexPathForRow:likelyIndexOfDescriptionRow inSection:indexPath.section];
+            if (descriptionIndexPath.row > 0) {
+                UITableViewCell *cell = [tableView cellForRowAtIndexPath:descriptionIndexPath];
+                UIWebView *webView = (UIWebView *)[cell viewWithTag:kDescriptionWebViewTag];
+                NSString *result = [webView stringByEvaluatingJavaScriptFromString:
+                                    @"function f(){ return document.body.innerText; } f();"];
+                result = @"";
+                for (NSInteger i = 0; i < 1000; i++) {
+                    result = [NSString stringWithFormat:@"%@%@", result, @"abcdefghij"];
+                }
+                if (result) {
+                    newEvent.notes = result;
+                }
+            }
+            
             EKEventEditViewController *eventViewController = 
             [[EKEventEditViewController alloc] init];
             eventViewController.event = newEvent;
