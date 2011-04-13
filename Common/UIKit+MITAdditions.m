@@ -107,6 +107,10 @@
             imageName = MITImageNameSecure;
             highlightedImageName = MITImageNameSecureHighlight;
             break;
+        case MITAccessoryViewCalendar:
+            imageName = MITImageNameCalendar;
+            highlightedImageName = MITImageNameCalendarHighlight;
+            break;
     }
     
     UIImage *image = [UIImage imageNamed:imageName];

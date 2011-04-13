@@ -99,6 +99,8 @@ extern NSString * const MITImageNameEmergency;
 extern NSString * const MITImageNameEmergencyHighlight;
 extern NSString * const MITImageNameSecure;
 extern NSString * const MITImageNameSecureHighlight;
+extern NSString * const MITImageNameCalendar;
+extern NSString * const MITImageNameCalendarHighlight;
 
 extern NSString * const MITImageNameScrollTabBackgroundOpaque;
 extern NSString * const MITImageNameScrollTabBackgroundTranslucent;
@@ -122,7 +124,8 @@ typedef enum {
     MITAccessoryViewPhone,
     MITAccessoryViewExternal,
 	MITAccessoryViewEmergency,
-    MITAccessoryViewSecure
+    MITAccessoryViewSecure,
+    MITAccessoryViewCalendar
 } MITAccessoryViewType;
 
 // Info.plist additions

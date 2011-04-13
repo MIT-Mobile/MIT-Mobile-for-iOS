@@ -292,10 +292,12 @@
 	
 	switch (rowType) {
 		case CalendarDetailRowTypeTime:
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-			cell.textLabel.text = [event dateStringWithDateStyle:NSDateFormatterFullStyle timeStyle:NSDateFormatterShortStyle separator:@"\n"];
-            // TODO: Get icon for calendar.
-            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];            
+			cell.textLabel.text = 
+            [event dateStringWithDateStyle:NSDateFormatterFullStyle 
+                                 timeStyle:NSDateFormatterShortStyle 
+                                 separator:@"\n"];
+            cell.accessoryView = 
+            [UIImageView accessoryViewWithMITType:MITAccessoryViewCalendar];
 			break;
 		case CalendarDetailRowTypeLocation:
 			cell.textLabel.text = (event.location != nil) ? event.location : event.shortloc;
@@ -455,18 +457,21 @@
 	switch (rowType) {
         case CalendarDetailRowTypeTime:
         {
-            // TODO: Prompt user or use EKEventViewController.
-            EKEventStore *eventStore = [[EKEventStore alloc] init];
+            EKEventStore *eventStore = [[EKEventStore alloc] init];            
+            NSAutoreleasePool *eventAddPool = [[NSAutoreleasePool alloc] init];
+            
             EKEvent *newEvent = [EKEvent eventWithEventStore:eventStore];
             newEvent.calendar = [eventStore defaultCalendarForNewEvents];
             [self.event setUpEKEvent:newEvent];
-            NSError *error = NULL;
-            [eventStore saveEvent:newEvent span:EKSpanThisEvent error:&error];
-            if (error) {
-                // TODO: Prompt user.
-                NSLog(@"Could not save event. Error: %@", 
-                      [error localizedDescription]);
-            }   
+            
+            EKEventEditViewController *eventViewController = 
+            [[EKEventEditViewController alloc] init];
+            eventViewController.event = newEvent;
+            eventViewController.eventStore = eventStore;
+            eventViewController.editViewDelegate = self;
+            [self presentModalViewController:eventViewController animated:YES];
+            
+            [eventAddPool release];            
             [eventStore release];
             break;
         }
@@ -598,6 +603,12 @@
 	}
 	
 	return YES;
+}
+
+#pragma mark EKEventEditViewDelegate
+- (void)eventEditViewController:(EKEventEditViewController *)controller 
+          didCompleteWithAction:(EKEventEditViewAction)action {
+    [controller dismissModalViewControllerAnimated:YES];
 }
 
 @end

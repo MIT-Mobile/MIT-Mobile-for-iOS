@@ -37,6 +37,10 @@
             aTrip.photoURL = [content objectForKey:@"photo-url"];
             aTrip.audioURL = [content objectForKey:@"audio-url"];
             
+            NSDictionary *coords = [content objectForKey:@"latlon"];
+            aTrip.latitude = [NSNumber numberWithFloat:[[coords objectForKey:@"latitude"] floatValue]];
+            aTrip.longitude = [NSNumber numberWithFloat:[[coords objectForKey:@"longitude"] floatValue]];
+            
             NSString *placeholder = [NSString stringWithFormat:@"__SIDE_TRIP_%@__", aTrip.componentID];
             [bodyText appendString:placeholder];
         }
