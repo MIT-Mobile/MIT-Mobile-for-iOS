@@ -387,7 +387,7 @@
 	NSError *error;
 	NSMutableString *target = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
 	if (!target) {
-		NSLog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
+		ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
 	}
 
     NSString *maxWidth = [NSString stringWithFormat:@"%.0f", self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING];
@@ -472,10 +472,6 @@
                 UIWebView *webView = (UIWebView *)[cell viewWithTag:kDescriptionWebViewTag];
                 NSString *result = [webView stringByEvaluatingJavaScriptFromString:
                                     @"function f(){ return document.body.innerText; } f();"];
-                result = @"";
-                for (NSInteger i = 0; i < 1000; i++) {
-                    result = [NSString stringWithFormat:@"%@%@", result, @"abcdefghij"];
-                }
                 if (result) {
                     newEvent.notes = result;
                 }
