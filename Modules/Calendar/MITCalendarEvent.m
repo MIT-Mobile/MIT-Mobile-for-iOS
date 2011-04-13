@@ -162,10 +162,12 @@
     ekEvent.title = self.title;
     ekEvent.startDate = self.start;
     ekEvent.endDate = self.end;
-    ekEvent.location = self.location;
-    // Summary is sometimes too large and contains html tags. If this is needed, 
-    // clean up the notes before setting the summary.
-    //ekEvent.notes = self.summary; 
+    if (self.location.length > 0) {
+        ekEvent.location = self.location;
+    }
+    else if (self.shortloc.length > 0) {
+        ekEvent.location = self.shortloc;
+    }
 }
 
 @end

@@ -986,6 +986,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A63DEE271353CF37001C52BF /* EventKit.framework */,
 				EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */,
 				EB4C40D41288988900058748 /* OpenGLES.framework */,
 				56D7D7BA12846C4100E9E5C9 /* MapKit.framework */,

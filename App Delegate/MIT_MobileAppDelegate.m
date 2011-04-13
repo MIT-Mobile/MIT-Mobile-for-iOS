@@ -252,14 +252,9 @@
  * the "should_show_mit150" bit on http://m.mit.edu/?module=general.
  */
 
-- (BOOL)shouldShowMIT150Content {
-    // roughly May 15, 2011. about two weeks after the Open House
-    NSDate *cutoffDate = [NSDate dateWithTimeIntervalSince1970:1305435600];
+- (BOOL)shouldShowOpenHouseContent {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    BOOL serverSaysSo = ([defaults boolForKey:@"ShouldHideOpenHouse"] == NO);
-    BOOL notTooLate = ([[NSDate date] laterDate:cutoffDate] == cutoffDate);
-    BOOL shouldShow = (serverSaysSo && notTooLate);
-    return shouldShow;
+    return ([defaults boolForKey:@"ShouldHideOpenHouse"] == NO);
 }
 
 - (void)updateBasicServerInfo {
@@ -275,11 +270,11 @@
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSNumber *number = nil;
         if ((number = [result objectForKey:@"should_show_mit150"])) {
-            DLog(@"Will %@ the MIT150 module on next launch", (([number boolValue]) ? @"show" : @"hide"));
+            DLog(@"Will %@ Open House content.", (([number boolValue]) ? @"show" : @"hide"));
             [defaults setBool:![number boolValue] forKey:@"ShouldHideOpenHouse"];
         }
 
-// These aren't necessary yet. Just focusing on hide / show of MIT150 for now.
+// These aren't necessary yet. Just focusing on hide / show of Open House content for now.
         
 //        if ((number = [result objectForKey:@"map_tiles_last_updated"])) {
 //            [defaults setBool:[number doubleValue] forKey:];

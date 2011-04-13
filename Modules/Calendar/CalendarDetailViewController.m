@@ -387,7 +387,7 @@
 	NSError *error;
 	NSMutableString *target = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
 	if (!target) {
-		NSLog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
+		ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
 	}
 
     NSString *maxWidth = [NSString stringWithFormat:@"%.0f", self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING];
@@ -463,6 +463,19 @@
             EKEvent *newEvent = [EKEvent eventWithEventStore:eventStore];
             newEvent.calendar = [eventStore defaultCalendarForNewEvents];
             [self.event setUpEKEvent:newEvent];
+            
+            NSInteger rowCount = [self tableView:tableView numberOfRowsInSection:indexPath.section];
+            NSInteger likelyIndexOfDescriptionRow = rowCount - 2;
+            NSIndexPath *descriptionIndexPath = [NSIndexPath indexPathForRow:likelyIndexOfDescriptionRow inSection:indexPath.section];
+            if (descriptionIndexPath.row > 0) {
+                UITableViewCell *cell = [tableView cellForRowAtIndexPath:descriptionIndexPath];
+                UIWebView *webView = (UIWebView *)[cell viewWithTag:kDescriptionWebViewTag];
+                NSString *result = [webView stringByEvaluatingJavaScriptFromString:
+                                    @"function f(){ return document.body.innerText; } f();"];
+                if (result) {
+                    newEvent.notes = result;
+                }
+            }
             
             EKEventEditViewController *eventViewController = 
             [[EKEventEditViewController alloc] init];
