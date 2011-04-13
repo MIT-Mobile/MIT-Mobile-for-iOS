@@ -928,7 +928,6 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				56D7D2951282B2ED00E9E5C9 /* ZXingWidget.xcodeproj */,
-				A63DEE271353CF37001C52BF /* EventKit.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -973,6 +972,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A63DEE271353CF37001C52BF /* EventKit.framework */,
 				EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */,
 				EB4C40D41288988900058748 /* OpenGLES.framework */,
 				56D7D7BA12846C4100E9E5C9 /* MapKit.framework */,
