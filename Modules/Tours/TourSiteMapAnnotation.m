@@ -7,15 +7,12 @@
     [site release];
     site = nil;
     site = [aSite retain];
+    self.component = site;
     self.tourGeoLocation = aSite;
 }
 
 - (TourSiteOrRoute *)site {
     return site;
-}
-
-- (NSString *)title {
-    return self.site.title;
 }
 
 - (void)dealloc {

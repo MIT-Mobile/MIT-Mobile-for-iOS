@@ -1,9 +1,10 @@
 #import "TourMapAnnotation.h"
 #import "TourGeoLocation.h"
+#import "TourComponent.h"
 
 @implementation TourMapAnnotation
 
-@synthesize title, subtitle, hasTransform, transform, tourGeoLocation;
+@synthesize component, subtitle, hasTransform, transform, tourGeoLocation;
 
 - (CLLocationCoordinate2D)coordinate {
     return CLLocationCoordinate2DMake(
@@ -12,8 +13,12 @@
 }
 
 
+- (NSString *) title {
+    return self.component.title;
+}
+
 - (void)dealloc {
-    self.title = nil;
+    self.component = nil;
     self.subtitle = nil;
     [super dealloc];
 }

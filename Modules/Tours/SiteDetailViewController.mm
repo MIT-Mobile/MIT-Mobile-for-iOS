@@ -91,6 +91,7 @@
         } else {
             // only way to get here is a sidetrip is selected from
             // the starting map (so just pop back to that map)
+            [(TourOverviewViewController *)callingVC showMap:YES];
             [self.navigationController popViewControllerAnimated:YES];
             return;
         }

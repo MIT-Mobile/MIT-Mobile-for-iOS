@@ -2,9 +2,11 @@
 
 #import "TourGeoLocation.h"
 
+@class  TourComponent;
+
 @interface TourMapAnnotation : NSObject <MKAnnotation> {
 
-    NSString *title;
+    TourComponent *component;
     NSString *subtitle;
     BOOL hasTransform;
     CGAffineTransform transform;
@@ -13,7 +15,8 @@
 }
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
-@property (nonatomic, retain) NSString *title;
+@property (readonly) NSString *title;
+@property (nonatomic, retain) TourComponent *component;
 @property (nonatomic, retain) NSString *subtitle;
 @property (nonatomic) BOOL hasTransform;
 @property (nonatomic) CGAffineTransform transform;
