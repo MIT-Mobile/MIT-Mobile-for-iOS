@@ -217,7 +217,7 @@
     self.grid.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.grid setHorizontalMargin:5.0 vertical:10.0];
     [self.grid setHorizontalPadding:5.0 vertical:10.0];
-    [self.grid setMinimumColumns:3 maximum:4];
+    [self.grid setMinimumColumns:4 maximum:4];
 
     NSMutableArray *buttons = [NSMutableArray array];
     UIFont *font = [UIFont boldSystemFontOfSize:12];
