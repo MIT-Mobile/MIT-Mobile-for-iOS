@@ -636,10 +636,10 @@ enum {
     if (cell == nil) {
         cell = [[[TourOverviewTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }    
-    
-    cell.accessoryView = [self thumbnailViewForCell:cell];
-    
+
     cell.tourComponent = [self.components objectAtIndex:indexPath.row];
+    cell.accessoryView = [self thumbnailViewForCell:cell];
+
     TourSiteOrRoute *site = [[self class] siteForTourComponent:cell.tourComponent];
                     
     if (self.userLocation) {
