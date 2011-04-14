@@ -17,7 +17,6 @@
 #import "QRReaderScanViewController.h"
 #import "NSDateFormatter+RelativeString.h"
 
-static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
 
 @interface QRReaderHistoryViewController ()
 @property (nonatomic,retain) UIView *contentView;
@@ -107,13 +106,8 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
     }
     
     self.helpView = [[[QRReaderHelpView alloc] initWithFrame:self.contentView.bounds] autorelease];
-    
-    BOOL hereBefore = [[NSUserDefaults standardUserDefaults] boolForKey:QRReaderFirstVisitKey];
 
-    if (hereBefore == NO) {
-        // This is the user's first launch of the QRReader module
-        [[NSUserDefaults standardUserDefaults] setBool:YES
-                                                forKey:QRReaderFirstVisitKey];
+    if ([_history.results count] == 0) {
         [self showHelp:nil];
     } else {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeInfoLight];
@@ -160,10 +154,14 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
 }
 
 - (IBAction)showHelp:(id)sender {
-    UIBarButtonItem *barButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                target:self
-                                                                                action:@selector(hideHelp:)] autorelease];
-    barButton.style = UIBarButtonItemStyleDone;
+    UIBarButtonItem *barButton = nil;
+    
+    if (sender) {
+        barButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                    target:self
+                                                                                    action:@selector(hideHelp:)] autorelease];
+        barButton.style = UIBarButtonItemStyleDone;
+    }
     
     [UIView transitionWithView:self.contentView
                       duration:(sender ? 1.0 : 0.0)
@@ -174,8 +172,10 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
                     }
                     completion:nil];
 
-    [self.navigationItem setRightBarButtonItem:barButton
-                                      animated:(sender != nil)];
+    if (sender) {
+        [self.navigationItem setRightBarButtonItem:barButton
+                                          animated:(sender != nil)];
+    }
 }
 
 - (IBAction)hideHelp:(id)sender {
