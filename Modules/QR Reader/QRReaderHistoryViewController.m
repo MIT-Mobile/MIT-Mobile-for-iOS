@@ -112,6 +112,8 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
 
     if (hereBefore == NO) {
         // This is the user's first launch of the QRReader module
+        [[NSUserDefaults standardUserDefaults] setBool:YES
+                                                forKey:QRReaderFirstVisitKey];
         [self showHelp:nil];
     } else {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeInfoLight];
