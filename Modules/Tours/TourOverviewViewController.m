@@ -266,6 +266,7 @@ enum {
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex != [alertView cancelButtonIndex]) {
         SiteDetailViewController *siteDetailVC = (SiteDetailViewController *)callingViewController;
+        siteDetailVC.sideTrip = nil;
         [siteDetailVC jumpToSite:selectedSiteIndex];
         
         [self selectionDidComplete];
@@ -525,6 +526,7 @@ enum {
 - (void)selectTourComponent:(TourComponent *)component {
     if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
         SiteDetailViewController *siteDetailVC = (SiteDetailViewController *)callingViewController;
+        selectedSiteIndex = [siteDetailVC.sites indexOfObject:component];
         if ([component isKindOfClass:[CampusTourSideTrip class]]) {
             [self dismiss:nil];
         }
@@ -536,17 +538,21 @@ enum {
         else if (siteDetailVC.siteOrRoute == component || 
                  siteDetailVC.siteOrRoute.nextComponent == component) {
             // user selected current stop, so just show then what they were looking at before
+            if(siteDetailVC.sideTrip) {
+                siteDetailVC.sideTrip = nil;
+                [siteDetailVC jumpToSite:selectedSiteIndex];
+            }
             [self dismiss:nil];
         }
         else if (siteDetailVC.siteOrRoute.nextComponent.nextComponent == component && 
                  siteDetailVC.firstSite != component) {
             // user selected next stop; show directions to it
+            siteDetailVC.sideTrip = nil;
             [siteDetailVC nextButtonPressed:nil];
             [self selectionDidComplete];
         }
         else {
             // user is skipping ahead or going back
-            selectedSiteIndex = [siteDetailVC.sites indexOfObject:component];
             if (selectedSiteIndex == NSNotFound) {
                 for (TourSiteOrRoute *aSite in siteDetailVC.sites) {
                     selectedSiteIndex++;
@@ -586,11 +592,18 @@ enum {
         // stack is not a SiteDetailViewController.
         SiteDetailViewController *detailVC = [[[SiteDetailViewController alloc] init] autorelease];
         if ([component isKindOfClass:[CampusTourSideTrip class]]) {
+
             CampusTourSideTrip *aSideTrip =  (CampusTourSideTrip *)component;
             detailVC.sideTrip = aSideTrip;
-            self.sideTrip = aSideTrip;
-            [self refreshAnnotationsAndRoutes];
-            
+            TourSiteOrRoute *siteOrRoute = (TourSiteOrRoute *)aSideTrip.component;
+            TourSiteOrRoute *site;            
+            if([siteOrRoute.type isEqualToString:@"site"]) {
+                site = siteOrRoute;
+            } else {
+                site = siteOrRoute.previousComponent;
+            }
+            detailVC.siteOrRoute = siteOrRoute;
+            detailVC.firstSite = site;           
         } else {
             TourSiteOrRoute *site = [[self class] siteForTourComponent:component];
             [self selectAnnotationForSite:site];
@@ -598,6 +611,7 @@ enum {
             detailVC.firstSite = site;
         }
         [self.navigationController pushViewController:detailVC animated:YES];
+
     }
 }
 

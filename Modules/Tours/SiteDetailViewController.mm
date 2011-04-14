@@ -27,6 +27,7 @@
 @interface SiteDetailViewController (Private)
 
 //- (void)setupIntroScreenForward:(BOOL)forward;
+- (void)setupBottomToolBar;
 - (void)setupContentAreaForward:(BOOL)forward;
 - (void)setupConclusionScreen;
 - (void)setupPrevNextArrows;
@@ -76,6 +77,7 @@
         TourSiteOrRoute *next = self.siteOrRoute.nextComponent;
         self.siteOrRoute = next;
 
+        [self setupBottomToolBar];
         [self setupContentAreaForward:YES];
     }
 }
@@ -84,20 +86,12 @@
     TourOverviewViewController *vc = [[[TourOverviewViewController alloc] init] autorelease];
     if (self.sideTrip) {
         NSInteger indexOfTopVC = [self.navigationController.viewControllers indexOfObject:self];
-        UIViewController *callingVC = [self.navigationController.viewControllers objectAtIndex:indexOfTopVC-1];
-        if ([callingVC isKindOfClass:[SiteDetailViewController class]]) {    
-            vc.callingViewController = callingVC;
-            vc.sideTrip = self.sideTrip;
-        } else {
-            // only way to get here is a sidetrip is selected from
-            // the starting map (so just pop back to that map)
-            [(TourOverviewViewController *)callingVC showMap:YES];
-            [self.navigationController popViewControllerAnimated:YES];
-            return;
-        }
-    } else {
-        vc.callingViewController = self;
-    }
+        UIViewController *callingVC = [self.navigationController.viewControllers objectAtIndex:indexOfTopVC-1]; 
+        vc.callingViewController = callingVC;
+        vc.sideTrip = self.sideTrip;
+    } 
+    
+    vc.callingViewController = self;
 	UINavigationController *dummyNavC = [[[UINavigationController alloc] initWithRootViewController:vc] autorelease];
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
     [appDelegate presentAppModalViewController:dummyNavC animated:YES];
@@ -341,21 +335,38 @@
     }
     */
 
+    [backArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_l.png"] forState:UIControlStateNormal];
+    [backArrow setTitle:nil forState:UIControlStateNormal];
+    [nextArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_r.png"] forState:UIControlStateNormal];
+    [nextArrow setTitle:nil forState:UIControlStateNormal];
+
+    fakeToolbarHeightFromNIB = fakeToolbar.frame.size.height;
+    [self setupBottomToolBar];    
+    [self setupContentAreaForward:YES];
+}
+
+#pragma mark View setup
+
+- (void)setupBottomToolBar {
     if (self.sideTrip == nil) {
         
         fakeToolbar.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"tours/progressbar_bkgrd.png"]];
         
+        CGRect frame = fakeToolbar.frame;
+        frame.origin.y += frame.size.height - fakeToolbarHeightFromNIB;
+        frame.size.height = fakeToolbarHeightFromNIB;
+        fakeToolbar.frame = frame;
+        
         progressbar.numberOfSegments = self.sites.count;
         [progressbar setNeedsDisplay];
         
-        [backArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_l.png"] forState:UIControlStateNormal];
-        [backArrow setTitle:nil forState:UIControlStateNormal];
-        [nextArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_r.png"] forState:UIControlStateNormal];
-        [nextArrow setTitle:nil forState:UIControlStateNormal];
+        progressbar.hidden = NO;
+        backArrow.hidden = NO;
+        nextArrow.hidden = NO;
         
     } else {
         self.navigationItem.title = @"Side Trip";
-
+        
         // resize the fake toolbar since there's no progress bar
         UIImage *toolbarImage = [UIImage imageNamed:@"tours/toolbar_bkgrd.png"];
         CGRect frame = fakeToolbar.frame;
@@ -364,15 +375,11 @@
         fakeToolbar.frame = frame;
         fakeToolbar.backgroundColor = [UIColor colorWithPatternImage:toolbarImage];
         
-        [progressbar removeFromSuperview];
-        [backArrow removeFromSuperview];
-        [nextArrow removeFromSuperview];
+        progressbar.hidden = YES;
+        backArrow.hidden = YES;
+        nextArrow.hidden = YES;
     }
-    
-    [self setupContentAreaForward:YES];
 }
-
-#pragma mark View setup
 
 - (void)setupPrevNextArrows {
     backArrow.enabled = self.siteOrRoute != self.firstSite;
@@ -725,6 +732,7 @@
     
     BOOL forward = currentSiteIndex < siteIndex;
     
+    [self setupBottomToolBar];
     [self setupContentAreaForward:forward];
 }
 
@@ -736,11 +744,15 @@
     if (firstSite != aSite) {
         [firstSite release];
         firstSite = [aSite retain];
-        
-        self.sites = [[ToursDataManager sharedManager] allSitesStartingFrom:firstSite];
-
         [lastSite release];
-        lastSite = [firstSite.previousComponent.previousComponent retain];
+        
+        if(firstSite != nil) {
+            self.sites = [[ToursDataManager sharedManager] allSitesStartingFrom:firstSite];
+            lastSite = [firstSite.previousComponent.previousComponent retain];
+        } else {
+            self.sites = nil;
+            lastSite = nil;
+        }
     }
 }
 
@@ -819,6 +831,7 @@
             SiteDetailViewController *sideTripVC = [[[SiteDetailViewController alloc] init] autorelease];
             sideTripVC.sideTrip = trip;
             sideTripVC.sites = self.sites;
+            sideTripVC.siteOrRoute = self.siteOrRoute;
             [self.navigationController pushViewController:sideTripVC animated:YES];
             return NO;
         }

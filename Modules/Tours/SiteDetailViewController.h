@@ -29,8 +29,8 @@ ConnectionWrapperDelegate, UITableViewDelegate, UITableViewDataSource> {
     IBOutlet UIButton *backArrow;
     IBOutlet UIButton *nextArrow;
     IBOutlet UIButton *overviewButton;
-    //IBOutlet UIButton *qrButton;
-        
+    //IBOutlet UIButton *qrButton;   
+    
     //BOOL showingIntroScreen;
     BOOL showingConclusionScreen;
     
@@ -42,6 +42,7 @@ ConnectionWrapperDelegate, UITableViewDelegate, UITableViewDataSource> {
     
     IBOutlet SuperThinProgressBar *progressbar;
     IBOutlet UIView *fakeToolbar;
+    CGFloat fakeToolbarHeightFromNIB; 
     
     AVAudioPlayer *audioPlayer;
     
