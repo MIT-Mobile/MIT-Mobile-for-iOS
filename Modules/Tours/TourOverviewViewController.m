@@ -272,12 +272,69 @@ enum {
     }
 }
 
+- (void)refreshAnnotationsAndRoutes {
+    [self.mapView removeAllRoutes];
+    [self.mapView removeAllAnnotations:NO];
+    
+    MITGenericMapRoute *mapRoute = [[ToursDataManager sharedManager] mapRouteForTour];
+    self.mapView.region = [self.mapView regionForRoute:mapRoute];
+    [self.mapView addRoute:mapRoute];
+    
+    if(self.sideTrip) {
+        // set custom zoom level
+        self.mapView.zoomLevel = [((TourSiteOrRoute *)self.sideTrip.component).zoom floatValue];
+        // route from sidetrip to its parent site
+        MITGenericMapRoute *sideTripRoute = [[ToursDataManager sharedManager] mapRouteFromSideTripToSite:self.sideTrip];
+        [self.mapView addRoute:sideTripRoute];
+        
+        // add sidetrip annotation
+        TourSideTripMapAnnotation *annotation = [[[TourSideTripMapAnnotation alloc] init] autorelease];
+        annotation.sideTrip = self.sideTrip;
+        if(self.userLocation != nil) {
+            annotation.subtitle = [self distanceTextForLocation:self.sideTrip];
+        }
+        [self.mapView addAnnotation:annotation];
+        [self.mapView selectAnnotation:annotation animated:YES withRecenter:YES];
+        self.selectedAnnotation = annotation; // attempt select again after annotation views are populated
+    }
+    
+    for (TourComponent *component in self.components) {
+        if([component isKindOfClass:[CampusTourSideTrip class]]) {
+            // dont add annotations for sidetrips (except for the one already added above
+            continue;
+        }
+        TourSiteOrRoute *aSite = (TourSiteOrRoute *)component;
+        if (aSite) {                    
+            TourSiteMapAnnotation *annotation = [[[TourSiteMapAnnotation alloc] init] autorelease];
+            if (self.userLocation != nil) {
+                annotation.subtitle = 
+                [self distanceTextForLocation:aSite];
+            }
+            annotation.site = aSite;
+            [self.mapView addAnnotation:annotation];
+            
+            if (!self.sideTrip) { // dont select a stop (if sidetrip is specified) {
+                if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+                    if (aSite == ((SiteDetailViewController *)callingViewController).siteOrRoute
+                        || aSite == ((SiteDetailViewController *)callingViewController).siteOrRoute.nextComponent)
+                    {
+                        [self.mapView selectAnnotation:annotation animated:YES withRecenter:YES];
+                        self.selectedAnnotation = annotation; // attempt select again after annotation views are populated
+                    }
+                }
+            }
+        }
+    }
+}
+
 - (void)showMap:(BOOL)showMap {
     
     CGRect frame = CGRectMake(0, 0, self.view.frame.size.width,
                               self.view.frame.size.height - toolBar.frame.size.height);
     
     NSMutableArray *toolbarItems = [toolBar.items mutableCopy];
+    
+    mapListToggle.selectedSegmentIndex = showMap ? MapListSegmentMap : MapListSegmentList;
     
     if (showMap) {
         //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -288,55 +345,7 @@ enum {
             self.mapView.delegate = self;
             self.mapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             
-            MITGenericMapRoute *mapRoute = [[ToursDataManager sharedManager] mapRouteForTour];
-            self.mapView.region = [self.mapView regionForRoute:mapRoute];
-            [self.mapView addRoute:mapRoute];
-            
-            if(self.sideTrip) {
-                // set custom zoom level
-                self.mapView.zoomLevel = [((TourSiteOrRoute *)self.sideTrip.component).zoom floatValue];
-                // route from sidetrip to its parent site
-                MITGenericMapRoute *sideTripRoute = [[ToursDataManager sharedManager] mapRouteFromSideTripToSite:self.sideTrip];
-                [self.mapView addRoute:sideTripRoute];
-                
-                // add sidetrip annotation
-                TourSideTripMapAnnotation *annotation = [[[TourSideTripMapAnnotation alloc] init] autorelease];
-                annotation.sideTrip = self.sideTrip;
-                if(self.userLocation != nil) {
-                    annotation.subtitle = [self distanceTextForLocation:self.sideTrip];
-                }
-                [self.mapView addAnnotation:annotation];
-                [self.mapView selectAnnotation:annotation animated:YES withRecenter:YES];
-                self.selectedAnnotation = annotation; // attempt select again after annotation views are populated
-            }
-            
-            for (TourComponent *component in self.components) {
-                if([component isKindOfClass:[CampusTourSideTrip class]]) {
-                    // dont add annotations for sidetrips (except for the one already added above
-                    continue;
-                }
-                TourSiteOrRoute *aSite = (TourSiteOrRoute *)component;
-                if (aSite) {                    
-                    TourSiteMapAnnotation *annotation = [[[TourSiteMapAnnotation alloc] init] autorelease];
-                    if (self.userLocation != nil) {
-                        annotation.subtitle = 
-                        [self distanceTextForLocation:aSite];
-                    }
-                    annotation.site = aSite;
-                    [self.mapView addAnnotation:annotation];
-                    
-                    if (!self.sideTrip) { // dont select a stop (if sidetrip is specified) {
-                        if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
-                            if (aSite == ((SiteDetailViewController *)callingViewController).siteOrRoute
-                                || aSite == ((SiteDetailViewController *)callingViewController).siteOrRoute.nextComponent)
-                            {
-                                [self.mapView selectAnnotation:selectedAnnotation animated:YES withRecenter:YES];
-                                self.selectedAnnotation = annotation; // attempt select again after annotation views are populated
-                            }
-                        }
-                    }
-                }
-            }
+            [self refreshAnnotationsAndRoutes];
             
             self.mapView.showsUserLocation = YES;
         }
@@ -576,9 +585,14 @@ enum {
         // stack is not a SiteDetailViewController.
         SiteDetailViewController *detailVC = [[[SiteDetailViewController alloc] init] autorelease];
         if ([component isKindOfClass:[CampusTourSideTrip class]]) {
-            detailVC.sideTrip = (CampusTourSideTrip *)component;
+            CampusTourSideTrip *aSideTrip =  (CampusTourSideTrip *)component;
+            detailVC.sideTrip = aSideTrip;
+            self.sideTrip = aSideTrip;
+            [self refreshAnnotationsAndRoutes];
+            
         } else {
             TourSiteOrRoute *site = [[self class] siteForTourComponent:component];
+            [self selectAnnotationForSite:site];
             detailVC.siteOrRoute = site;
             detailVC.firstSite = site;
         }
@@ -651,7 +665,6 @@ enum {
 
     if (site) {
         [self selectTourComponent:component];
-        [self selectAnnotationForSite:site];
     }
     else {
         VLog(@"Could not find TourSiteOrRoute for selected row!");
@@ -955,7 +968,7 @@ enum {
 
 - (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views {
     if (selectedAnnotation) {
-        [self.mapView selectAnnotation:selectedAnnotation animated:YES withRecenter:YES];
+        //[self.mapView selectAnnotation:selectedAnnotation animated:YES withRecenter:YES];
         self.selectedAnnotation = nil;
     }
 }
