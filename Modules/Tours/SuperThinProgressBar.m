@@ -12,6 +12,10 @@
     return self;
 }
 
+- (void)markAsDone {
+    self.currentPosition = numberOfSegments;
+}
+
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
@@ -28,7 +32,7 @@
     
     [background drawAsPatternInRect:rect];
     
-    if (numberOfSegments && currentPosition < numberOfSegments) {
+    if (numberOfSegments && currentPosition < numberOfSegments + 1) {
 
         CGFloat segmentLength = (rect.size.width - 4) / numberOfSegments;
         CGFloat passedLength = round(segmentLength * currentPosition);

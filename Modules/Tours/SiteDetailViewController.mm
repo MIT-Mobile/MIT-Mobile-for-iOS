@@ -69,7 +69,7 @@
 
 - (IBAction)nextButtonPressed:(id)sender {
     
-    if (self.siteOrRoute == lastSite && !showingConclusionScreen) {
+    if (self.siteOrRoute == lastSite.nextComponent && !showingConclusionScreen) {
         [self setupConclusionScreen];
     }
     else {
@@ -448,6 +448,8 @@
     
     [newSlidingView addSubview:tableView];
     
+    [progressbar markAsDone];
+    [progressbar setNeedsDisplay];
     [self animateViews:YES];
 }
 
