@@ -13,6 +13,7 @@
 #import "AnniversaryModule.h"
 #import "MITTabBarController.h"
 #import "MITMobileServerConfiguration.h"
+#import "QRReaderModule.h"
 
 // #import your module's header here
 
@@ -43,6 +44,7 @@
     [result addObject:[[[MobileWebModule alloc] init] autorelease]];
     [result addObject:[[[SettingsModule alloc] init] autorelease]];
     [result addObject:[[[AboutModule alloc] init] autorelease]];
+    [result addObject:[[[QRReaderModule alloc] init] autorelease]];
     
     return result;
 }
