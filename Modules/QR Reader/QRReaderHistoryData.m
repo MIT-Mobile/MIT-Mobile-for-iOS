@@ -34,14 +34,14 @@ static QRReaderHistoryData *sharedHistoryData = nil;
 }
 
 - (void)eraseAll {
-    [CoreDataManager deleteObjects:self.results];
-    [CoreDataManager saveData];
+    [[CoreDataManager coreDataManager] deleteObjects:self.results];
+    [[CoreDataManager coreDataManager] saveData];
     [_results removeAllObjects];
 }
 
-- (void)eraseResult:(QRReaderResult*)result {
-    [CoreDataManager deleteObject:result];
-    [CoreDataManager saveData];
+- (void)deleteScanResult:(QRReaderResult*)result {
+    [[CoreDataManager coreDataManager] deleteObject:result];
+    [[CoreDataManager coreDataManager] saveData];
     [_results removeObject:result];
 }
 

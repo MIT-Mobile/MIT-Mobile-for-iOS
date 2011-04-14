@@ -260,6 +260,19 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
     return 1;
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    QRReaderResult *result = [_history.results objectAtIndex:indexPath.row];
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        [_history deleteScanResult:result];
+        [tableView reloadData];
+    }
+}
+
 #pragma mark -
 #pragma mark UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView
