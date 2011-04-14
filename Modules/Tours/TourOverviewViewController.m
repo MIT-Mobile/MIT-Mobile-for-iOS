@@ -457,18 +457,17 @@ enum {
             
             frame.origin.x += label.frame.size.width + keySpacing;
         }
-    }
-
-    // resize map view so google logo shows
-    CGRect frame = self.mapView.frame;
-    frame.size.height -= legend.frame.size.height;
-    self.mapView.frame = frame;
-    
-    [legend retain];
-    [legend removeFromSuperview];
-    [self.view addSubview:legend];
-    [legend release];
-    
+        
+        // resize map view so google logo shows
+        CGRect mapFrame = self.mapView.frame;
+        mapFrame.size.height -= legend.frame.size.height;
+        self.mapView.frame = mapFrame;
+        
+        [legend retain];
+        [legend removeFromSuperview];
+        [self.view addSubview:legend];
+        [legend release];
+    }    
 }
 
 - (void)setupNotSureScrim {
