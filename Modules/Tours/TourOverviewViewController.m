@@ -773,6 +773,7 @@ enum {
         CLLocation *siteLocation = [[CLLocation alloc] initWithLatitude:[location.latitude floatValue]
                                                               longitude:[location.longitude floatValue]];
         CLLocationDistance meters = [siteLocation distanceFromLocation:self.userLocation];
+        [siteLocation release];
         text = [self textForDistance:meters];
     }
     return text;

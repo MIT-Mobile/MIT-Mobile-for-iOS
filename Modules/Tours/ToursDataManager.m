@@ -168,6 +168,8 @@ static ToursDataManager *s_toursDataManager = nil;
     CLLocation *dest = [[CLLocation alloc] initWithLatitude:[site.latitude floatValue] longitude:[site.longitude floatValue]];
     
     NSArray *pathLocations = [NSArray arrayWithObjects:source, dest, nil];
+    [source release];
+    [dest release];
     MITGenericMapRoute *mapRoute = [[MITGenericMapRoute alloc] init];
     mapRoute.fillColor = [UIColor blackColor];
     mapRoute.strokeColor = [UIColor blackColor];
@@ -179,7 +181,7 @@ static ToursDataManager *s_toursDataManager = nil;
     [morseCode release];
     //mapRoute.lineDashPattern = [NSArray arrayWithObjects:[NSNumber numberWithInt:3], [NSNumber numberWithInt:5], nil];
     mapRoute.lineWidth = 2.0;
-    return mapRoute;
+    return [mapRoute autorelease];
 }
 
 
