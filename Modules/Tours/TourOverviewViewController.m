@@ -1027,10 +1027,13 @@ enum {
         mainTextLabelY += 25;
         sideTripLabel.alpha = 1.0f;
         sideTripIconView.alpha = 1.0f;
+        // Don't show distance for side trips.
+        self.detailTextLabel.alpha = 0.0f;
     }
     else {
         sideTripLabel.alpha = 0.0f;
         sideTripIconView.alpha = 0.0f;
+        self.detailTextLabel.alpha = 1.0f;
     }
     
     UIFont *font = [UIFont boldSystemFontOfSize:17];
