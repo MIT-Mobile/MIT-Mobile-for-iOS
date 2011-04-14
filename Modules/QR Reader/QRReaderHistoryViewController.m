@@ -16,6 +16,7 @@
 #import "QRReaderResult.h"
 #import "QRReaderScanViewController.h"
 #import "NSDateFormatter+RelativeString.h"
+#import "QRReaderResultTransform.h"
 
 
 @interface QRReaderHistoryViewController ()
@@ -237,11 +238,13 @@
                                       reuseIdentifier:reusableCellId] autorelease];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.textLabel.font = [UIFont fontWithName:cell.textLabel.font.fontName
+                                              size:18.0];
     }
     
     QRReaderResult *result = [_history.results objectAtIndex:indexPath.row];
     
-    cell.textLabel.text = result.text;
+    cell.textLabel.text = [[QRReaderResultTransform sharedTransform] titleForScan:result.text];
     cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date
                                                                      toDate:[NSDate date]];
     
