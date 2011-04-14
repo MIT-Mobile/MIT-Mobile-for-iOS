@@ -525,8 +525,10 @@ enum {
 - (void)selectTourComponent:(TourComponent *)component {
     if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
         SiteDetailViewController *siteDetailVC = (SiteDetailViewController *)callingViewController;
-        
-        if (siteDetailVC.showingConclusionScreen && 
+        if ([component isKindOfClass:[CampusTourSideTrip class]]) {
+            [self dismiss:nil];
+        }
+        else if (siteDetailVC.showingConclusionScreen && 
             siteDetailVC.siteOrRoute == component) {
             [siteDetailVC previousButtonPressed:nil];
             [self dismiss:nil];
@@ -893,9 +895,9 @@ enum {
 }
 
 - (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view {
-    TourSiteMapAnnotation *annotation = (TourSiteMapAnnotation *)view.annotation;
-    TourSiteOrRoute *site = annotation.site;
-    [self selectTourComponent:site];
+    TourMapAnnotation *annotation = (TourSiteMapAnnotation *)view.annotation;
+    TourComponent *component = annotation.component;
+    [self selectTourComponent:component];
 }
 
 - (CGAffineTransform)transformForSource:(id<TourGeoLocation>)source andDest:(id<TourGeoLocation>)dest {

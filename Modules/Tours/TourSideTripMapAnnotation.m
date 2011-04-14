@@ -7,15 +7,12 @@
 - (void)setSideTrip:(CampusTourSideTrip *)aSidetrip {
     [sidetrip release];
     sidetrip = [aSidetrip retain];
+    self.component = sidetrip;
     self.tourGeoLocation  = sidetrip;
 }
 
 - (CampusTourSideTrip *)sideTrip {
     return sidetrip;
-}
-
-- (NSString *)title {
-    return self.sideTrip.title;
 }
 
 - (void)dealloc {
