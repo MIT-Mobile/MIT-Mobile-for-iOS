@@ -20,7 +20,7 @@
 #import "ResultParser.h"
 #import "ParsedResult.h"
 #import "ResultAction.h"
-#include <sys/types.h>2
+#include <sys/types.h>
 #include <sys/sysctl.h>
 
 #import <AVFoundation/AVFoundation.h>
@@ -52,7 +52,7 @@
 
 
 - (id)initWithDelegate:(id<ZXingDelegate>)scanDelegate showCancel:(BOOL)shouldShowCancel OneDMode:(BOOL)shouldUseoOneDMode {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     [self setDelegate:scanDelegate];
     self.oneDMode = shouldUseoOneDMode;
     self.showCancel = shouldShowCancel;
