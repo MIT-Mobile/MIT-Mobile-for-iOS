@@ -336,11 +336,22 @@
 }
 
 - (void)removeAllRoutes {
-    for (id<MITMapRoute> aRoute in self.routes) {
-        [self removeRoute:aRoute];
+    for (MKPolyline *polyline in [_routePolylines allValues]) {
+        [_mapView removeOverlay:polyline];
     }
+    for (id<MITMapRoute> route in _routes) {
+        if ([route respondsToSelector:@selector(annotations)]) {
+            [_mapView removeAnnotations:[route annotations]];
+        }
+    }
+    [_routes removeAllObjects];
+    [_routePolylines removeAllObjects];
 }
 
+/*
+ *  this method can easily fail if they keys for the polylines get
+ *  out of synch not sure the best way to fix this.
+ */
 - (void)removeRoute:(id<MITMapRoute>) route
 {
     if ([route respondsToSelector:@selector(annotations)]) {
