@@ -22,7 +22,7 @@
 @property (nonatomic,retain) AVCaptureVideoPreviewLayer *previewLayer;
 @property (nonatomic,retain) QRReaderOverlayView *overlayView;
 @property (nonatomic) BOOL isCaptureActive;
-@property (nonatomic,retain) UIControl *cancelButton;
+@property (nonatomic,retain) UIButton *cancelButton;
 
 - (BOOL)startCapture;
 - (void)stopCapture;
@@ -48,18 +48,14 @@
     self.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                   UIViewAutoresizingFlexibleWidth);
     
-    UISegmentedControl *cancelButton = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObject:@"Cancel"]];
-    cancelButton.segmentedControlStyle = UISegmentedControlStyleBar;
-    cancelButton.tintColor = [UIColor grayColor];
-    cancelButton.momentary = YES;
-    [cancelButton addTarget:self
-                     action:@selector(cancelScan:)
-           forControlEvents:UIControlEventValueChanged];
-    cancelButton.layer.cornerRadius = 5.0;
-    self.cancelButton = cancelButton;
-    [cancelButton release];
-    
-    self.cancelButton.frame = CGRectMake(103, 415, 115, 34);
+    self.cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [self.cancelButton setTitle:@"Cancel"
+                       forState:UIControlStateNormal];
+    [self.cancelButton addTarget:self
+                          action:@selector(cancelScan:)
+                forControlEvents:UIControlEventTouchUpInside];
+    [self.cancelButton.titleLabel setFont:[UIFont fontWithName:self.cancelButton.titleLabel.font.fontName
+                                                          size:14.0]];
     _decodedResult = NO;
 }
 
@@ -146,6 +142,11 @@
     }
     
     [self.view addSubview:self.overlayView];
+    
+    self.cancelButton.frame = CGRectMake((self.view.frame.size.width - 124) / 2,
+                                         self.view.frame.size.height - 82,
+                                         124,
+                                         50);
     [self.view insertSubview:self.cancelButton
                 aboveSubview:self.overlayView];
     
