@@ -7,7 +7,6 @@
 
 @interface QRReaderHistoryViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,QRReaderScanDelegate> {
     UITableView *_tableView;
-    UIToolbar *_toolbar;
     UIView *_contentView;
     QRReaderHelpView *_helpView;
     QRReaderScanViewController *_scanController;
@@ -16,7 +15,6 @@
 }
 
 @property (nonatomic,readonly,retain) IBOutlet UITableView *tableView;
-@property (nonatomic,readonly,retain) IBOutlet UIToolbar *toolbar;
 
 - (IBAction)showHelp:(id)sender;
 - (IBAction)hideHelp:(id)sender;
