@@ -65,6 +65,8 @@
     self.qrImage.layer.borderColor = [[UIColor blackColor] CGColor];
     self.qrImage.layer.borderWidth = 2.0;
     
+    CGFloat inset = 0.0;
+    
     if ([[QRReaderResultTransform sharedTransform] scanHasTitle:self.scanResult.text]) {
         [self.textView setText:[[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text]];
         [self.actionButton setTitle:@"View events"
@@ -73,6 +75,9 @@
                           forState:UIControlStateNormal];
         [self.actionButton setImage:[UIImage imageNamed:@"global/action-calendar-highlighted"]
                           forState:UIControlStateHighlighted];
+        
+        inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-calendar"].size.width + 8);
+        [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
     } else {
         [self.textView setText:self.scanResult.text];
         [self.actionButton setTitle:@"Open URL"
@@ -81,13 +86,24 @@
                           forState:UIControlStateNormal];
         [self.actionButton setImage:[UIImage imageNamed:@"global/action-external-highlighted"]
                           forState:UIControlStateHighlighted];
+        
+        inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-external"].size.width + 8);
+        [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
     }
+    
     
     [self.shareButton setTitle:@"Share this link"
                       forState:UIControlStateNormal];
     [self.shareButton setImage:[UIImage imageNamed:@"global/action-share"]
                       forState:UIControlStateNormal];
+    
+    inset = self.shareButton.frame.size.width - ([UIImage imageNamed:@"global/action-share"].size.width + 8);
+    [self.shareButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
+    
+    [self.actionButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.actionButton.frame.origin.x) + 8, 0, 0)];
+    [self.shareButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.shareButton.frame.origin.x) + 8, 0, 0)];
 }
+
 
 - (void)viewDidUnload
 {
@@ -99,6 +115,11 @@
     self.backgroundImageView = nil;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [self.navigationController setToolbarHidden:NO
+                                       animated:animated];
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
@@ -108,41 +129,57 @@
 #pragma mark -
 #pragma mark IBAction methods
 - (IBAction)pressedShareButton:(id)sender {
+    self.shareDelegate = self;
     [self share:self];
 }
 
 - (IBAction)pressedActionButton:(id)sender {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.scanResult.text]];
+    NSString *altURL = [[QRReaderResultTransform sharedTransform] alternateTextForScan:self.scanResult.text];
+    
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:altURL]];
+    
+    // Bouncing to an internal link
+    if ([altURL hasPrefix:@"mitmobile"]) {
+        [self.navigationController setToolbarHidden:YES
+                                           animated:YES];
+    }
 }
 
 
 #pragma mark -
 #pragma mark ShareItemDelegate (MIT)
-- (NSString*)actionSheetTitle {
-    return [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text];
+- (NSString *)actionSheetTitle {
+	return [NSString stringWithString:@"Share this link"];
 }
 
-- (NSString*)emailSubject {
-    
+- (NSString *)emailSubject {
+	return [NSString stringWithFormat:@"MIT link: %@", [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text]];
 }
 
-- (NSString*)emailBody {
-    
+- (NSString *)emailBody {
+	return [NSString stringWithFormat:@"I thought you might be interested in this link...\n\n%@", self.scanResult.text];
 }
 
-- (NSString*)fbDialogPrompt {
-    
+- (NSString *)fbDialogPrompt {
+	return nil;
 }
 
-- (NSString*)fbDialogAttachment {
-    
+- (NSString *)fbDialogAttachment {
+	return [NSString stringWithFormat:
+			@"{\"name\":\"%@\","
+			"\"href\":\"%@\","
+			"\"description\":\"%@\""
+			"}",
+			[[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text],
+            self.scanResult.text,
+            @"MIT QR Code"];
 }
 
-- (NSString*)twitterUrl {
-    
+- (NSString *)twitterUrl {
+    return self.scanResult.text;
 }
 
-- (NSString*)twitterTitle {
-    
+- (NSString *)twitterTitle {
+	return [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text];
 }
 @end
