@@ -129,6 +129,7 @@
 #pragma mark -
 #pragma mark IBAction methods
 - (IBAction)pressedShareButton:(id)sender {
+    self.shareDelegate = self;
     [self share:self];
 }
 
@@ -147,31 +148,38 @@
 
 #pragma mark -
 #pragma mark ShareItemDelegate (MIT)
-- (NSString*)actionSheetTitle {
-    return [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text];
+- (NSString *)actionSheetTitle {
+	return [NSString stringWithString:@"Share this link"];
 }
 
-- (NSString*)emailSubject {
-    
+- (NSString *)emailSubject {
+	return [NSString stringWithFormat:@"MIT link: %@", [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text]];
 }
 
-- (NSString*)emailBody {
-    
+- (NSString *)emailBody {
+	return [NSString stringWithFormat:@"I thought you might be interested in this link...\n\n%@", self.scanResult.text];
 }
 
-- (NSString*)fbDialogPrompt {
-    
+- (NSString *)fbDialogPrompt {
+	return nil;
 }
 
-- (NSString*)fbDialogAttachment {
-    
+- (NSString *)fbDialogAttachment {
+	return [NSString stringWithFormat:
+			@"{\"name\":\"%@\","
+			"\"href\":\"%@\","
+			"\"description\":\"%@\""
+			"}",
+			[[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text],
+            self.scanResult.text,
+            @"MIT QR Code"];
 }
 
-- (NSString*)twitterUrl {
-    
+- (NSString *)twitterUrl {
+    return self.scanResult.text;
 }
 
-- (NSString*)twitterTitle {
-    
+- (NSString *)twitterTitle {
+	return [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text];
 }
 @end
