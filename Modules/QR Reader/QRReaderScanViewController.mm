@@ -1,11 +1,3 @@
-//
-//  QRReaderScanViewController.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 4/6/11.
-//  Copyright 2011 MIT. All rights reserved.
-//
-
 #import <AVFoundation/AVFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
 

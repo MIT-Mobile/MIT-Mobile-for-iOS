@@ -1,9 +1,3 @@
-//
-//  MFMailComposeViewController+mailto.h
-//
-//  Created by Blake Skinner on 10/15/10.
-//
-
 #import <Foundation/Foundation.h>
 #import <MessageUI/MessageUI.h>
 

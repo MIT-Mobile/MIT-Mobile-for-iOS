@@ -1,11 +1,3 @@
-//
-//  QRReaderResultTransform.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 4/14/11.
-//  Copyright 2011 MIT. All rights reserved.
-//
-
 #import "QRReaderResultTransform.h"
 
 static QRReaderResultTransform *_sharedResultTransform = nil;

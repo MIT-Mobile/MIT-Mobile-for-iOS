@@ -1,11 +1,3 @@
-//
-//  QRReaderResultTransform.h
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 4/14/11.
-//  Copyright 2011 MIT. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 

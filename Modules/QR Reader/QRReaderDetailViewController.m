@@ -1,11 +1,3 @@
-//
-//  QRReaderDetailViewController.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 4/11/11.
-//  Copyright 2011 MIT. All rights reserved.
-//
-
 #import <QuartzCore/QuartzCore.h>
 
 #import "QRReaderDetailViewController.h"
