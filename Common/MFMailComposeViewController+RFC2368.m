@@ -1,9 +1,3 @@
-//
-//  MFMailComposeViewController+RFC2368.m
-//
-//  Created by Blake Skinner on 10/15/10.
-//
-
 #import "MFMailComposeViewController+RFC2368.h"
 
 @implementation MFMailComposeViewController (RFC2368)

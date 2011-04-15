@@ -1,11 +1,3 @@
-//
-//  QRReaderHistoryViewController.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 4/6/11.
-//  Copyright 2011 MIT. All rights reserved.
-//
-
 #import <QuartzCore/QuartzCore.h>
 
 #import "QRReaderHistoryViewController.h"

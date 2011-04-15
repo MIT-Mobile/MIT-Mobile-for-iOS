@@ -1,11 +1,3 @@
-//
-//  QRReaderHistoryData.h
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 4/7/11.
-//  Copyright 2011 MIT. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 @class QRReaderResult;
