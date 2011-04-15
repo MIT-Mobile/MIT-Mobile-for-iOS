@@ -42,6 +42,7 @@
 #pragma mark - View lifecycle
 
 - (void)loadView {
+    self.title = @"QR Codes";
     self.view = [[[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     self.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                   UIViewAutoresizingFlexibleWidth);
@@ -111,8 +112,6 @@
     if ([_history.results count] == 0) {
         [self showHelp:nil];
     }
-    
-    self.navigationItem.title = @"QR Codes";
 }
 
 - (void)viewDidUnload
@@ -201,7 +200,8 @@
     self.scanController = nil;
     
     [_history insertScanResult:result
-                      withDate:[NSDate date]];
+                      withDate:[NSDate date]
+                     withImage:image];
     
     if (self.helpView.superview == self.contentView) {
         [self hideHelp:nil];
@@ -234,14 +234,17 @@
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.font = [UIFont fontWithName:cell.textLabel.font.fontName
-                                              size:18.0];
+                                              size:16.0];
     }
     
     QRReaderResult *result = [_history.results objectAtIndex:indexPath.row];
     
     cell.textLabel.text = [[QRReaderResultTransform sharedTransform] titleForScan:result.text];
+    cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+    cell.textLabel.numberOfLines = 3;
     cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date
                                                                      toDate:[NSDate date]];
+    cell.imageView.image = result.image;
     
     return cell;
 }
@@ -284,5 +287,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [detailView setToolbarItems:self.toolbarItems];
     [self.navigationController pushViewController:detailView
                                          animated:YES];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 96.0;
 }
 @end
