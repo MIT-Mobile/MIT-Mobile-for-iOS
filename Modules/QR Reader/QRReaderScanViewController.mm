@@ -15,6 +15,8 @@
 #import "Decoder.h"
 #import "TwoDDecoderResult.h"
 
+#import "UIImage+Resize.h"
+
 @interface QRReaderScanViewController ()
 @property (nonatomic,retain) AVCaptureSession *captureSession;
 @property (nonatomic,retain) AVCaptureVideoPreviewLayer *previewLayer;
@@ -255,10 +257,26 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
     
-    CGImageRef cropped = CGImageCreateWithImageInRect(cgImage, [self.overlayView qrRect]);
+    CGRect clipRect = [self.overlayView qrRect];
+    clipRect = [self.previewLayer convertRect:clipRect
+                                    fromLayer:self.overlayView.layer];
+    
+    // Fix the origin for the clipping rect as the video capture is 4:3
+    // Will not work properly if the clipping rect is not centered on the
+    // screen
+    {
+        CGFloat height = (CGFloat)CGImageGetHeight(cgImage);
+        CGFloat width = (CGFloat)CGImageGetWidth(cgImage);
+        
+        clipRect.origin.x = (width - clipRect.size.width) / 2.0;
+        clipRect.origin.y = (height - clipRect.size.height) / 2.0;
+    }
+    
+    CGImageRef cropped = CGImageCreateWithImageInRect(cgImage, clipRect);
     UIImage *qrImage = [UIImage imageWithCGImage:cropped];
     CGImageRelease(cgImage);
     CGImageRelease(cropped);
+    
     
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     
@@ -282,13 +300,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
      withResult:(TwoDDecoderResult *)result {
     self.overlayView.highlightColor = [UIColor greenColor];
     self.overlayView.highlighted = YES;
+    
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     [self stopCapture];
     
+    UIImage *rotateImage = [UIImage imageWithCGImage:[image CGImage]
+                                               scale:1.0
+                                         orientation:UIImageOrientationRight];
+
+    rotateImage = [rotateImage resizedImage:image.size
+                       interpolationQuality:kCGInterpolationDefault];
+    
     if (self.scanDelegate) {
         [self.scanDelegate scanView:self
-                      didScanResult:result.text
-                          fromImage:image];
+                      didScanResult:[NSString stringWithString:result.text]
+                          fromImage:rotateImage];
     }
 }
 @end
