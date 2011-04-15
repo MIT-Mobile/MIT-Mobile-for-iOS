@@ -320,6 +320,7 @@
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
+    
     [super viewDidLoad];
     
     [overviewButton setImage:[UIImage imageNamed:@"tours/toolbar_map.png"] forState:UIControlStateNormal];
