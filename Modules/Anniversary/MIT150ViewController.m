@@ -64,7 +64,7 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
     NSMutableArray *buttonGroups = [NSMutableArray array];
     NSMutableArray *buttons = [NSMutableArray array];
     
-    NSLog(@"MIT150 featured links: %@", featureLinks);
+    DLog(@"MIT150 featured links: %@", featureLinks);
     
     CGFloat width, remainingWidth;
     width = remainingWidth = self.view.frame.size.width - (self.buttonMargins.width * 2.0);
@@ -100,7 +100,6 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
         aButton.featureLink = featureLink;
         
         [buttons addObject:aButton];
-//        NSLog(@"%@ goes in row %d (%f px left)", featureLink, row, remainingWidth);
     }
     // fill in last row
     finalizeButtonGroup(buttons, (row == 0));
@@ -178,7 +177,7 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
     if (indexPath.section == 0) {
         CGFloat cachedHeight = [[[self.featuredButtonGroups objectAtIndex:indexPath.row] objectForKey:@"height"] floatValue];
         if (cachedHeight <= 0) {
-            NSLog(@"warning: cached height for %@ was %f", indexPath, cachedHeight);
+            WLog(@"cached height for %@ was %f", indexPath, cachedHeight);
         }
         height = cachedHeight;
     }
@@ -215,7 +214,6 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
         ((MultiControlCell *)cell).margins = self.buttonMargins;
         ((MultiControlCell *)cell).horizontalSpacing = [[buttonGroup objectForKey:@"spacing"] floatValue];
         ((MultiControlCell *)cell).controls = [buttonGroup objectForKey:@"buttons"];
-//        NSLog(@"laid out row with %f left and %f right margins", self.buttonMargins.width, self.tableView.frame.size.width - xOffset);
     // Separator via BorderedTableViewCell for other sections
     } else {
         cell = [tableView dequeueReusableCellWithIdentifier:linkCellIdentifier];
@@ -227,7 +225,16 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
         
         FeatureLink *link = [self featureLinkForIndexPath:indexPath];
         cell.textLabel.text = link.title;
-        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+        NSURL *linkURL = [NSURL URLWithString:link.url];
+        if ([[linkURL scheme] isEqualToString:@"mitmobile"]) {
+            if ([[linkURL host] isEqualToString:@"calendar"]) {
+                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewCalendar];
+            } else {
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            }
+        } else {
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+        }
     }
     
     return cell;
@@ -250,7 +257,7 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
 	
 	NSURL *externalURL = [NSURL URLWithString:link.url];
 
-	NSLog(@"Opening external URL: %@", externalURL);
+	DLog(@"Opening external URL: %@", externalURL);
 	
     if ([[UIApplication sharedApplication] canOpenURL:externalURL]) {
         [[UIApplication sharedApplication] openURL:externalURL];
