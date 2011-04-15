@@ -65,6 +65,8 @@
     self.qrImage.layer.borderColor = [[UIColor blackColor] CGColor];
     self.qrImage.layer.borderWidth = 2.0;
     
+    CGFloat inset = 0.0;
+    
     if ([[QRReaderResultTransform sharedTransform] scanHasTitle:self.scanResult.text]) {
         [self.textView setText:[[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text]];
         [self.actionButton setTitle:@"View events"
@@ -73,6 +75,9 @@
                           forState:UIControlStateNormal];
         [self.actionButton setImage:[UIImage imageNamed:@"global/action-calendar-highlighted"]
                           forState:UIControlStateHighlighted];
+        
+        inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-calendar"].size.width + 8);
+        [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
     } else {
         [self.textView setText:self.scanResult.text];
         [self.actionButton setTitle:@"Open URL"
@@ -81,13 +86,24 @@
                           forState:UIControlStateNormal];
         [self.actionButton setImage:[UIImage imageNamed:@"global/action-external-highlighted"]
                           forState:UIControlStateHighlighted];
+        
+        inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-external"].size.width + 8);
+        [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
     }
+    
     
     [self.shareButton setTitle:@"Share this link"
                       forState:UIControlStateNormal];
     [self.shareButton setImage:[UIImage imageNamed:@"global/action-share"]
                       forState:UIControlStateNormal];
+    
+    inset = self.shareButton.frame.size.width - ([UIImage imageNamed:@"global/action-share"].size.width + 8);
+    [self.shareButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
+    
+    [self.actionButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.actionButton.frame.origin.x) + 8, 0, 0)];
+    [self.shareButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.shareButton.frame.origin.x) + 8, 0, 0)];
 }
+
 
 - (void)viewDidUnload
 {
