@@ -68,14 +68,15 @@ static const CGFloat kSubTitleFontSize = 12;
 	
 	if ([_annotationView.annotation respondsToSelector:@selector(subtitle)]) {
 		NSString *subtitle = [_annotationView.annotation subtitle];
-		CGSize subSize = [subtitle sizeWithFont:[UIFont systemFontOfSize:kSubTitleFontSize] 
+        if(subtitle) {
+            CGSize subSize = [subtitle sizeWithFont:[UIFont systemFontOfSize:kSubTitleFontSize] 
 						constrainedToSize:CGSizeMake(kCalloutWidth - kBuffer * 3 - calloutImage.size.width, 400) 
 							lineBreakMode:UILineBreakModeWordWrap];
 		
-		size.height += (subSize.height);
-		if(subSize.width > size.width)
-			size.width = subSize.width;
-			
+            size.height += (subSize.height);
+            if(subSize.width > size.width)
+                size.width = subSize.width;
+        }
 	}
 	
 	// add the chevron height
