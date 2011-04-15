@@ -20,6 +20,7 @@
     QRReaderHelpView *_helpView;
     QRReaderScanViewController *_scanController;
     __weak QRReaderHistoryData *_history;
+    __weak UIButton *_scanButton;
 }
 
 @property (nonatomic,readonly,retain) IBOutlet UITableView *tableView;

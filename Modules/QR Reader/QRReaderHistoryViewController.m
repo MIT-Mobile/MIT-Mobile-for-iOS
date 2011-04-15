@@ -16,8 +16,8 @@
 #import "QRReaderResult.h"
 #import "QRReaderScanViewController.h"
 #import "NSDateFormatter+RelativeString.h"
+#import "QRReaderResultTransform.h"
 
-static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
 
 @interface QRReaderHistoryViewController ()
 @property (nonatomic,retain) UIView *contentView;
@@ -69,8 +69,14 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
                                                                     320,44)] autorelease];
         self.toolbar.barStyle = UIBarStyleBlackOpaque;
         
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeInfoLight];
+        [button addTarget:self
+                   action:@selector(showHelp:)
+         forControlEvents:UIControlEventTouchUpInside];
+        _scanButton = button;
+        
         NSArray *toolItems = [NSArray arrayWithObjects:
-                              [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                              [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                              target:nil
                                                                              action:nil] autorelease],
                               [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
@@ -79,10 +85,16 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
                               [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                              target:nil
                                                                              action:nil] autorelease],
+                              [[[UIBarButtonItem alloc] initWithCustomView:button] autorelease],
                               nil];
         
-        UIBarButtonItem *scan = (UIBarButtonItem*)[toolItems objectAtIndex:1];
-        [scan setStyle:UIBarButtonItemStyleBordered];
+        UIBarButtonItem *item = nil;
+        
+        item = (UIBarButtonItem*)[toolItems objectAtIndex:0];
+        [item setWidth:128.0];
+        
+        item = (UIBarButtonItem*)[toolItems objectAtIndex:1];
+        [item setStyle:UIBarButtonItemStyleBordered];
         
         [self.toolbar setItems:toolItems];
         [self.view addSubview:self.toolbar];
@@ -107,21 +119,9 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
     }
     
     self.helpView = [[[QRReaderHelpView alloc] initWithFrame:self.contentView.bounds] autorelease];
-    
-    BOOL hereBefore = [[NSUserDefaults standardUserDefaults] boolForKey:QRReaderFirstVisitKey];
 
-    if (hereBefore == NO) {
-        // This is the user's first launch of the QRReader module
-        [[NSUserDefaults standardUserDefaults] setBool:YES
-                                                forKey:QRReaderFirstVisitKey];
+    if ([_history.results count] == 0) {
         [self showHelp:nil];
-    } else {
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeInfoLight];
-        [button addTarget:self
-                   action:@selector(showHelp:)
-         forControlEvents:UIControlEventTouchUpInside];
-        [self.navigationItem setRightBarButtonItem:[[[UIBarButtonItem alloc] initWithCustomView:button] autorelease]
-                                          animated:NO];
     }
     
     self.navigationItem.title = @"QR Codes";
@@ -140,6 +140,7 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
     self.tableView = nil;
     self.toolbar = nil;
     self.scanController = nil;
+    _scanButton = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -160,40 +161,43 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
 }
 
 - (IBAction)showHelp:(id)sender {
-    UIBarButtonItem *barButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                target:self
-                                                                                action:@selector(hideHelp:)] autorelease];
-    barButton.style = UIBarButtonItemStyleDone;
+    UIBarButtonItem *barButton = nil;
+    
+    if (sender) {
+        barButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                    target:self
+                                                                                    action:@selector(hideHelp:)] autorelease];
+        barButton.style = UIBarButtonItemStyleDone;
+    }
     
     [UIView transitionWithView:self.contentView
                       duration:(sender ? 1.0 : 0.0)
                        options:UIViewAnimationOptionTransitionCurlUp
                     animations:^{
+                        _scanButton.alpha = 0.0;
                         [self.contentView insertSubview:self.helpView
                                            aboveSubview:self.tableView];
                     }
                     completion:nil];
 
-    [self.navigationItem setRightBarButtonItem:barButton
-                                      animated:(sender != nil)];
+    if (sender) {
+        [self.navigationItem setRightBarButtonItem:barButton
+                                          animated:(sender != nil)];
+    }
 }
 
 - (IBAction)hideHelp:(id)sender {
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeInfoLight];
-    [button addTarget:self
-               action:@selector(showHelp:)
-     forControlEvents:UIControlEventTouchUpInside];
-    [self.navigationItem setRightBarButtonItem:[[[UIBarButtonItem alloc] initWithCustomView:button] autorelease]
+    [self.navigationItem setRightBarButtonItem:nil
                                       animated:(sender != nil)];
     
     [UIView transitionWithView:self.contentView
                       duration:(sender ? 1.0 : 0.0)
                        options:UIViewAnimationOptionTransitionCurlDown
                     animations:^{
+                        _scanButton.alpha = 1.0;
                         [self.helpView removeFromSuperview];
                     }
-                    completion:^(BOOL finished) {
-                    }];
+                    completion:nil];
 }
 
 #pragma mark -
@@ -237,11 +241,13 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
                                       reuseIdentifier:reusableCellId] autorelease];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.textLabel.font = [UIFont fontWithName:cell.textLabel.font.fontName
+                                              size:18.0];
     }
     
     QRReaderResult *result = [_history.results objectAtIndex:indexPath.row];
     
-    cell.textLabel.text = result.text;
+    cell.textLabel.text = [[QRReaderResultTransform sharedTransform] titleForScan:result.text];
     cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date
                                                                      toDate:[NSDate date]];
     
@@ -258,6 +264,23 @@ static NSString *QRReaderFirstVisitKey = @"QRReaderFirstVisit";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    QRReaderResult *result = [_history.results objectAtIndex:indexPath.row];
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        [_history deleteScanResult:result];
+        [tableView reloadData];
+        
+        if ([_history.results count] == 0) {
+            [self showHelp:nil];
+        }
+    }
 }
 
 #pragma mark -
