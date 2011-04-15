@@ -424,4 +424,44 @@ static CalendarDataManager *s_sharedManager = nil;
 	}
 }
 
+- (EventCategory *)openHouseCategoryWithTitle:(NSString *)title catId:(NSInteger)catId {
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+                          title, @"name",
+                          [NSNumber numberWithInt:catId], @"catid",
+                          nil];
+    
+    return [CalendarDataManager categoryWithDict:dict forListID:@"OpenHouse"];
+}
+
+- (void)makeOpenHouseCategoriesRequest {
+    // hard code the open house categories (to avoid the complexity that occurs
+    // when people scan QR codes for open house categories that have yet to be loaded
+    // from the server
+    [self openHouseCategoryWithTitle:@"Engineering, Technology, and Invention"  catId:39];
+    [self openHouseCategoryWithTitle:@"Energy, Environment, and Sustainability" catId:40];
+    [self openHouseCategoryWithTitle:@"Entrepreneurship and Management"         catId:41];
+    [self openHouseCategoryWithTitle:@"Life Sciences and Biotechnology"         catId:42];
+    [self openHouseCategoryWithTitle:@"The Sciences"                            catId:43];
+    [self openHouseCategoryWithTitle:@"Air and Space Flight"                    catId:44];
+    [self openHouseCategoryWithTitle:@"Architecture, Planning, and Design"      catId:45];
+    [self openHouseCategoryWithTitle:@"Arts, Humanities, and Social Sciences"   catId:46];
+    [self openHouseCategoryWithTitle:@"MIT Learning, Life, and Culture"         catId:47];
+}
+
+- (NSString *)getOpenHouseCatIdWithIdentifier:(NSString *)identifier {
+    NSMutableDictionary *catIds = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+        @"39", @"eng",
+        @"40", @"energy",
+        @"41", @"entrepreneurship",
+        @"42", @"biotech",
+        @"43", @"sciences",
+        @"44", @"air",
+        @"45", @"architecture",
+        @"46", @"humanities",
+        @"47", @"life",
+        nil];
+    
+    return [catIds objectForKey:identifier];
+}
+
 @end

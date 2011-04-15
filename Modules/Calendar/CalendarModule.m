@@ -64,6 +64,16 @@
                 }
             }
              
+            if ([params objectForKey:@"openHouseIdentifier"]) {
+                NSString *identifer = [params objectForKey:@"openHouseIdentifier"];
+                NSString *catID = [[CalendarDataManager sharedManager] getOpenHouseCatIdWithIdentifier:identifer];
+                [params setObject:catID forKey:@"catID"];
+            }
+            
+            if ([[params objectForKey:@"listID"] isEqualToString:@"OpenHouse"]) {
+                [[CalendarDataManager sharedManager] makeOpenHouseCategoriesRequest];
+            }
+            
             if ([params objectForKey:@"catID"]) {
                     
                 [self popToRootViewController];
@@ -89,7 +99,6 @@
                 }
                 
                 [self.moduleHomeController.navigationController pushViewController:childVC animated:NO];
-                
                 [self becomeActiveTab];
             }
         }

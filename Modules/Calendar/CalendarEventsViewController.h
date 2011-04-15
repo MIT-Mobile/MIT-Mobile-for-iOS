@@ -55,8 +55,6 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 
     MITMobileWebAPI *categoriesRequest;
 	BOOL categoriesRequestDispatched;
-    
-    MITMobileWebAPI *openHouseCategoriesRequest;
 	BOOL openHouseCategoriesRequestDispatched;
 	
 	NSInteger loadingIndicatorCount;

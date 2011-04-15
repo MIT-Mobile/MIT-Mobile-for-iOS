@@ -386,16 +386,10 @@
             self.tableView.delegate = openHouseTV;
             self.tableView.dataSource = openHouseTV;
             openHouseTV.parentViewController = self;
-  
-            NSArray *categories = nil;
-            categories = [CalendarDataManager openHouseCategories];
-            if(![categories count]) {
-                [self makeOpenHouseCategoriesRequest];
-            }
-            if(openHouseCategoriesRequestDispatched) {
-                [self addLoadingIndicatorForSearch:NO];
-            } 
+            [[CalendarDataManager sharedManager] makeOpenHouseCategoriesRequest];
+            NSArray *categories = [CalendarDataManager openHouseCategories];
             openHouseTV.categories = categories;
+            [self.tableView reloadData];
             requestNeeded = NO;
             
         } else {
@@ -768,23 +762,6 @@
 	}
 }
 
-- (void)makeOpenHouseCategoriesRequest
-{
-    if (openHouseCategoriesRequestDispatched) return;
-    
-    if (!openHouseCategoriesRequest) {
-        openHouseCategoriesRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-    }
-    
-    NSDictionary *params = [NSDictionary dictionaryWithObject:@"OpenHouse" forKey:@"type"];
-    if ([openHouseCategoriesRequest requestObjectFromModule:CalendarTag
-										   command:@"categories"
-                                        parameters:params]) {
-        
-		openHouseCategoriesRequestDispatched = YES;
-	}
-}
-
 - (void)makeRequest
 {
 	[self abortEventListRequest];
@@ -938,23 +915,6 @@
 			[self.tableView reloadData];
 		}
 
-        return;
-    }
-    
-    if (request == openHouseCategoriesRequest) {
-        openHouseCategoriesRequestDispatched = NO;
-        openHouseCategoriesRequest = nil;
-        
-        for (NSDictionary *catDict in result) {
-            [CalendarDataManager categoryWithDict:catDict forListID:@"OpenHouse"]; // save this to core data
-			[CoreDataManager saveData];
-        }
-		
-		if ([activeEventList.listID isEqualToString:@"OpenHouse"]) {
-			[(OpenHouseTableView *)self.tableView setCategories:[CalendarDataManager openHouseCategories]];
-			[self.tableView reloadData];
-		}
-        
         return;
     }
     
