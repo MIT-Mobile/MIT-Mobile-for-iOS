@@ -60,6 +60,11 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 	NSInteger loadingIndicatorCount;
     
     NSString *queuedButton;
+    
+    // this is just to temporarily store a view
+    // controller that needs to be pushed onto
+    // the stack (onlu used by can handle url functionality)
+    UIViewController *childViewController;
 }
 
 @property (nonatomic, assign) BOOL showScroller;
@@ -68,6 +73,7 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 //@property (nonatomic, assign) NSInteger catID;
 //@property (nonatomic, assign) CalendarEventListType activeEventList;
 @property (nonatomic, retain) MITEventList *activeEventList;
+@property (nonatomic, retain) UIViewController *childViewController;
 
 @property (nonatomic, retain) UITableView *tableView;
 @property (nonatomic, retain) CalendarMapView *mapView;
