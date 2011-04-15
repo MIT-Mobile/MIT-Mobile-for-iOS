@@ -281,8 +281,17 @@ enum {
     [self.mapView addRoute:mapRoute];
     
     if(self.sideTrip) {
-        // set custom zoom level
-        self.mapView.zoomLevel = [((TourSiteOrRoute *)self.sideTrip.component).zoom floatValue];
+        // set the map extent
+        CGFloat lat1 = [self.sideTrip.latitude floatValue];
+        CGFloat lon1 = [self.sideTrip.longitude floatValue];
+        CGFloat lat2 = [self.sideTrip.site.latitude floatValue];
+        CGFloat lon2 = [self.sideTrip.site.longitude floatValue];
+        CLLocationCoordinate2D center = CLLocationCoordinate2DMake(0.5 * (lat1 + lat2), 0.5 * (lon1 + lon2));
+
+        CGFloat deltaLat = fabsf(lat1 - lat2);
+        CGFloat deltaLon = fabsf(lon1 - lon2);
+        self.mapView.region = MKCoordinateRegionMake(center, MKCoordinateSpanMake(deltaLat*2.2, deltaLon*2.2));
+        
         // route from sidetrip to its parent site
         MITGenericMapRoute *sideTripRoute = [[ToursDataManager sharedManager] mapRouteFromSideTripToSite:self.sideTrip];
         [self.mapView addRoute:sideTripRoute];
