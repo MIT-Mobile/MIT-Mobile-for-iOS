@@ -69,12 +69,27 @@
     self.qrImage.layer.borderWidth = 2.0;
     
     if ([[QRReaderResultTransform sharedTransform] scanHasTitle:self.scanResult.text]) {
-        self.textView.text = [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text];
-        self.actionButton.titleLabel.text = @"View Events";
+        [self.textView setText:[[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text]];
+        [self.actionButton setTitle:@"View events"
+                           forState:UIControlStateNormal];
+        [self.actionButton setImage:[UIImage imageNamed:@"global/action-calendar"]
+                          forState:UIControlStateNormal];
+        [self.actionButton setImage:[UIImage imageNamed:@"global/action-calendar-highlighted"]
+                          forState:UIControlStateHighlighted];
     } else {
-        self.textView.text = self.scanResult.text;
-        self.actionButton.titleLabel.text = @"Go To URL";
+        [self.textView setText:self.scanResult.text];
+        [self.actionButton setTitle:@"Open URL"
+                           forState:UIControlStateNormal];
+        [self.actionButton setImage:[UIImage imageNamed:@"global/action-external"]
+                          forState:UIControlStateNormal];
+        [self.actionButton setImage:[UIImage imageNamed:@"global/action-external-highlighted"]
+                          forState:UIControlStateHighlighted];
     }
+    
+    [self.shareButton setTitle:@"Share this link"
+                      forState:UIControlStateNormal];
+    [self.shareButton setImage:[UIImage imageNamed:@"global/action-share"]
+                      forState:UIControlStateNormal];
 }
 
 - (void)viewDidUnload
