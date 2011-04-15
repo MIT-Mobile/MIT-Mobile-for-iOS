@@ -16,7 +16,6 @@ NSString * const CalendarEventAPISearch = @"search";
 @interface CalendarDataManager (Private)
 
 + (NSArray *)staticEventTypes;
-- (void)requestEventLists;
 
 @end
 
@@ -139,7 +138,7 @@ static CalendarDataManager *s_sharedManager = nil;
 	}
 
 	if ([[NSSet setWithArray:newLists] isEqualToSet:[NSSet setWithArray:_eventLists]] == NO) {
-		NSLog(@"event lists have changed");
+		DLog(@"event lists have changed");
 		[CoreDataManager saveData];
 
 		// check for deleted categories
@@ -293,9 +292,7 @@ static CalendarDataManager *s_sharedManager = nil;
 		category.catID = [NSNumber numberWithInt:catID];
         category.listID = listID;
         [CoreDataManager saveData];
-	} else {
-        //NSLog(@"%@", [[category.events allObjects] description]);
-    }
+	}
 	return category;
 }
 
