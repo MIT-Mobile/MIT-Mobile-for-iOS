@@ -50,6 +50,7 @@
 						<string key="NSFrameSize">{320, 372}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="40773725"/>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
@@ -76,20 +77,12 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
-						<object class="NSFont" key="IBUIFont" id="200341214">
+						<object class="NSFont" key="IBUIFont" id="71163423">
 							<string key="NSName">Helvetica-Bold</string>
-							<double key="NSSize">15</double>
+							<double key="NSSize">18</double>
 							<int key="NSfFlags">16</int>
 						</object>
 						<int key="IBUIButtonType">1</int>
-						<double key="IBUIContentEdgeInsets.top">0.0</double>
-						<double key="IBUIContentEdgeInsets.bottom">0.0</double>
-						<double key="IBUIContentEdgeInsets.left">16</double>
-						<double key="IBUIContentEdgeInsets.right">0.0</double>
-						<double key="IBUIImageEdgeInsets.top">0.0</double>
-						<double key="IBUIImageEdgeInsets.bottom">0.0</double>
-						<double key="IBUIImageEdgeInsets.left">224</double>
-						<double key="IBUIImageEdgeInsets.right">0.0</double>
 						<object class="NSColor" key="IBUIHighlightedTitleColor" id="631043864">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
@@ -113,16 +106,8 @@
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<int key="IBUIContentVerticalAlignment">0</int>
-						<reference key="IBUIFont" ref="200341214"/>
+						<reference key="IBUIFont" ref="71163423"/>
 						<int key="IBUIButtonType">1</int>
-						<double key="IBUIContentEdgeInsets.top">0.0</double>
-						<double key="IBUIContentEdgeInsets.bottom">0.0</double>
-						<double key="IBUIContentEdgeInsets.left">16</double>
-						<double key="IBUIContentEdgeInsets.right">0.0</double>
-						<double key="IBUIImageEdgeInsets.top">0.0</double>
-						<double key="IBUIImageEdgeInsets.bottom">0.0</double>
-						<double key="IBUIImageEdgeInsets.left">224</double>
-						<double key="IBUIImageEdgeInsets.right">0.0</double>
 						<reference key="IBUIHighlightedTitleColor" ref="631043864"/>
 						<reference key="IBUINormalTitleColor" ref="95275550"/>
 						<reference key="IBUINormalTitleShadowColor" ref="266516717"/>
@@ -163,7 +148,7 @@
 				<string key="NSFrame">{{0, 64}, {320, 372}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="40773725"/>
+				<reference key="NSNextKeyView" ref="361585985"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
 					<bytes key="NSWhite">MSAwAA</bytes>
