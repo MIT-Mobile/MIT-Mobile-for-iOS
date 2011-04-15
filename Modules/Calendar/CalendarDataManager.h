@@ -43,6 +43,8 @@ extern NSString * const CalendarEventAPISearch;
 - (MITEventList *)eventListWithID:(NSString *)listID; // grabs from memory
 - (BOOL)isDailyEvent:(MITEventList *)listType;
 
+- (void)requestEventLists;
+
 // delete after open house is done
 - (void)makeOpenHouseCategoriesRequest;
 - (NSString *)getOpenHouseCatIdWithIdentifier:(NSString *)identifier;

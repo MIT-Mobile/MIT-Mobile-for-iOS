@@ -20,9 +20,6 @@
 #define WEB_VIEW_TAG 646
 #define END_TOUR_ALERT_TAG 878
 #define CONNECTION_FAILED_TAG 451
-//#define QR_CODE_ALERT_VIEW 28
-
-//static NSString * const QRAlertUserDefaultString = @"QRCodeAlertDidShow";
 
 @interface SiteDetailViewController (Private)
 
@@ -98,35 +95,6 @@
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
     [appDelegate presentAppModalViewController:dummyNavC animated:YES];
 }
-
-/*
-- (IBAction)qrcodeButtonPressed:(id)sender {
-    ZXingWidgetController *widController = [[[ZXingWidgetController alloc] initWithDelegate:self showCancel:YES OneDMode:NO] autorelease];
-    QRCodeReader* qrcodeReader = [[[QRCodeReader alloc] init] autorelease];
-    NSSet *readers = [NSSet setWithObjects:qrcodeReader, nil];
-    widController.readers = readers;
-    widController.soundToPlay = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"tours/beep-beep" ofType:@"aiff"] isDirectory:NO];
-    
-    [self.navigationController setNavigationBarHidden:YES];
-    for (UIView *aView in self.view.subviews) {
-        aView.hidden = YES;
-    }
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate presentAppModalViewController:widController animated:YES];
-    
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:QRAlertUserDefaultString]) {
-        NSString *message = NSLocalizedString(@"QR_CODE_HINT", nil);
-        
-        UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:@"Scan QR Code"
-                                                             message:message
-                                                            delegate:self
-                                                   cancelButtonTitle:@"Cancel"
-                                                   otherButtonTitles:@"Scan", nil] autorelease];
-        alertView.tag = QR_CODE_ALERT_VIEW;
-        [alertView show];
-    }
-}
-*/
 
 #pragma mark Audio
 
@@ -328,16 +296,6 @@
     [overviewButton setImage:[UIImage imageNamed:@"tours/toolbar_map.png"] forState:UIControlStateNormal];
     [overviewButton setTitle:nil forState:UIControlStateNormal];
     
-    /*
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        [qrButton setImage:[UIImage imageNamed:@"tours/toolbar_qr.png"] forState:UIControlStateNormal];
-        [qrButton setTitle:nil forState:UIControlStateNormal];
-    } else {
-        [qrButton removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
-        [qrButton removeFromSuperview];
-    }
-    */
-
     [backArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_l.png"] forState:UIControlStateNormal];
     [backArrow setTitle:nil forState:UIControlStateNormal];
     [nextArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_r.png"] forState:UIControlStateNormal];
@@ -981,39 +939,6 @@
 			[self.navigationController popToViewController:theController animated:YES];
 		}
 	}
-	
-	/*
-    if (alertView.tag == QR_CODE_ALERT_VIEW) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:QRAlertUserDefaultString];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        
-        if (buttonIndex == [alertView cancelButtonIndex]) {
-            [[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO];
-            [self zxingControllerDidCancel:nil];
-        }
-    }
-	*/
-}
-/*
-#pragma mark ZXingDelegate
-
-- (void)zxingController:(ZXingWidgetController*)controller didScanResult:(NSString *)result {
-    // TODO: push "QR Code Result" screen behind modal VC
-    [self.navigationController setNavigationBarHidden:NO];
-    for (UIView *aView in self.view.subviews) {
-        aView.hidden = NO;
-    }
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate dismissAppModalViewControllerAnimated:YES];
 }
 
-- (void)zxingControllerDidCancel:(ZXingWidgetController*)controller {
-    [self.navigationController setNavigationBarHidden:NO];
-    for (UIView *aView in self.view.subviews) {
-        aView.hidden = NO;
-    }
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate dismissAppModalViewControllerAnimated:YES];
-}
-*/
 @end
