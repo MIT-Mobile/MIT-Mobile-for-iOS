@@ -59,6 +59,7 @@
 		29EB610B10FE47220085D32B /* ShuttleSubscriptionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */; };
 		2C00912C13567CDE001000D2 /* QRReaderHelpView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C00912B13567CDE001000D2 /* QRReaderHelpView.m */; };
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
+		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; };
 		2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */; };
 		2C77F0321355EE2500CD11D6 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C77F0311355EE2500CD11D6 /* QRReaderResult.m */; };
 		2C96776313575E8900F52BDB /* QRReaderResultTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C96776213575E8900F52BDB /* QRReaderResultTransform.m */; };
@@ -427,6 +428,8 @@
 		2C00912B13567CDE001000D2 /* QRReaderHelpView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderHelpView.m; sourceTree = "<group>"; };
 		2C0A33691355CEF300786493 /* QRReaderImageTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderImageTransformer.h; sourceTree = "<group>"; };
 		2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderImageTransformer.m; sourceTree = "<group>"; };
+		2C544B9B1358A24400685545 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
+		2C544B9C1358A24400685545 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		2C6AB73E13564F74003B174A /* NSDateFormatter+RelativeString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDateFormatter+RelativeString.h"; sourceTree = "<group>"; };
 		2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDateFormatter+RelativeString.m"; sourceTree = "<group>"; };
 		2C77F0301355EE2500CD11D6 /* QRReaderResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderResult.h; sourceTree = "<group>"; };
@@ -904,6 +907,8 @@
 			children = (
 				2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */,
 				2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */,
+				2C544B9B1358A24400685545 /* UIImage+Resize.h */,
+				2C544B9C1358A24400685545 /* UIImage+Resize.m */,
 				2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */,
 				2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */,
 				2C6AB73E13564F74003B174A /* NSDateFormatter+RelativeString.h */,
@@ -2209,6 +2214,7 @@
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				2C00912C13567CDE001000D2 /* QRReaderHelpView.m in Sources */,
 				2C96776313575E8900F52BDB /* QRReaderResultTransform.m in Sources */,
+				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

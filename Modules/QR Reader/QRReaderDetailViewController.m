@@ -7,6 +7,7 @@
 @interface QRReaderDetailViewController ()
 @property (nonatomic,retain) QRReaderResult *scanResult;
 @property (nonatomic,retain) UIImageView *qrImage;
+@property (nonatomic,retain) UIImageView *backgroundImageView;
 @property (nonatomic,retain) UITextView *textView;
 @property (nonatomic,retain) UIButton *actionButton;
 @property (nonatomic,retain) UIButton *shareButton;
@@ -18,6 +19,7 @@
 @synthesize textView = _textView;
 @synthesize actionButton = _actionButton;
 @synthesize shareButton = _shareButton;
+@synthesize backgroundImageView = _backgroundImageView;
 
 + (QRReaderDetailViewController*)detailViewControllerForResult:(QRReaderResult*)result {
     QRReaderDetailViewController *reader = [[self alloc] initWithNibName:@"QRReaderDetailViewController"
@@ -31,6 +33,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.scanResult = nil;
+        self.title = @"QR Details";
     }
     return self;
 }
@@ -51,6 +54,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.backgroundImageView.image = [UIImage imageNamed:@"global/body-background"];
+    
     if (self.scanResult.image) {
         self.qrImage.image = self.scanResult.image;
     } else {
@@ -91,6 +96,7 @@
     self.textView = nil;
     self.actionButton = nil;
     self.shareButton = nil;
+    self.backgroundImageView = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -102,7 +108,7 @@
 #pragma mark -
 #pragma mark IBAction methods
 - (IBAction)pressedShareButton:(id)sender {
-    
+    [self share:self];
 }
 
 - (IBAction)pressedActionButton:(id)sender {
@@ -113,7 +119,7 @@
 #pragma mark -
 #pragma mark ShareItemDelegate (MIT)
 - (NSString*)actionSheetTitle {
-    
+    return [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text];
 }
 
 - (NSString*)emailSubject {

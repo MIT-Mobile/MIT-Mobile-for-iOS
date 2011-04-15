@@ -16,14 +16,12 @@
 @property (nonatomic,retain) QRReaderHelpView *helpView;
 @property (nonatomic,retain) QRReaderScanViewController *scanController;
 @property (nonatomic,retain) UITableView *tableView;
-@property (nonatomic,retain) UIToolbar *toolbar;
 
 @end
 
 @implementation QRReaderHistoryViewController
 @synthesize tableView = _tableView;
 @synthesize scanController = _scanController;
-@synthesize toolbar = _toolbar;
 @synthesize helpView = _helpView;
 @synthesize contentView = _contentView;
 
@@ -44,6 +42,7 @@
 #pragma mark - View lifecycle
 
 - (void)loadView {
+    self.title = @"QR Codes";
     self.view = [[[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     self.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                   UIViewAutoresizingFlexibleWidth);
@@ -57,9 +56,8 @@
     
     // Setup the toolbar in the root UIView
     {
-        self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectMake(0,372,
-                                                                    320,44)] autorelease];
-        self.toolbar.barStyle = UIBarStyleBlackOpaque;
+        self.navigationController.toolbarHidden = NO;
+        self.navigationController.toolbar.barStyle = UIBarStyleBlackOpaque;
         
         UIButton *button = [UIButton buttonWithType:UIButtonTypeInfoLight];
         [button addTarget:self
@@ -88,8 +86,7 @@
         item = (UIBarButtonItem*)[toolItems objectAtIndex:1];
         [item setStyle:UIBarButtonItemStyleBordered];
         
-        [self.toolbar setItems:toolItems];
-        [self.view addSubview:self.toolbar];
+        [self setToolbarItems:toolItems];
     }
     
     // Setup the content view
@@ -115,8 +112,6 @@
     if ([_history.results count] == 0) {
         [self showHelp:nil];
     }
-    
-    self.navigationItem.title = @"QR Codes";
 }
 
 - (void)viewDidUnload
@@ -130,7 +125,6 @@
     self.contentView = nil;
     self.helpView = nil;
     self.tableView = nil;
-    self.toolbar = nil;
     self.scanController = nil;
     _scanButton = nil;
 }
@@ -144,6 +138,8 @@
 #pragma mark -
 #pragma mark IB Actions
 - (IBAction)beginQRScanning:(id)sender {
+    [self.navigationController popToViewController:self
+                                          animated:YES];
     self.scanController = [[[QRReaderScanViewController alloc] init] autorelease];
     self.scanController.reader = [QRReaderScanViewController defaultReader];
     self.scanController.scanDelegate = self;
@@ -162,29 +158,32 @@
         barButton.style = UIBarButtonItemStyleDone;
     }
     
-    [UIView transitionWithView:self.contentView
+    [UIView transitionWithView:[self.navigationController topViewController].view
                       duration:(sender ? 1.0 : 0.0)
-                       options:UIViewAnimationOptionTransitionCurlUp
+                       options:(sender ?
+                                UIViewAnimationOptionTransitionCurlUp :
+                                UIViewAnimationOptionTransitionNone)
                     animations:^{
                         _scanButton.alpha = 0.0;
-                        [self.contentView insertSubview:self.helpView
-                                           aboveSubview:self.tableView];
+                        [[self.navigationController topViewController].view addSubview:self.helpView];
                     }
                     completion:nil];
 
     if (sender) {
-        [self.navigationItem setRightBarButtonItem:barButton
-                                          animated:(sender != nil)];
+        [[self.navigationController topViewController].navigationItem setRightBarButtonItem:barButton
+                                                                                   animated:(sender != nil)];
     }
 }
 
 - (IBAction)hideHelp:(id)sender {
-    [self.navigationItem setRightBarButtonItem:nil
-                                      animated:(sender != nil)];
+    [[self.navigationController topViewController].navigationItem setRightBarButtonItem:nil
+                                                                               animated:(sender != nil)];
     
-    [UIView transitionWithView:self.contentView
+    [UIView transitionWithView:[self.navigationController topViewController].view
                       duration:(sender ? 1.0 : 0.0)
-                       options:UIViewAnimationOptionTransitionCurlDown
+                       options:(sender ?
+                                UIViewAnimationOptionTransitionCurlDown :
+                                UIViewAnimationOptionTransitionNone)
                     animations:^{
                         _scanButton.alpha = 1.0;
                         [self.helpView removeFromSuperview];
@@ -201,7 +200,8 @@
     self.scanController = nil;
     
     [_history insertScanResult:result
-                      withDate:[NSDate date]];
+                      withDate:[NSDate date]
+                     withImage:image];
     
     if (self.helpView.superview == self.contentView) {
         [self hideHelp:nil];
@@ -234,14 +234,17 @@
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.font = [UIFont fontWithName:cell.textLabel.font.fontName
-                                              size:18.0];
+                                              size:16.0];
     }
     
     QRReaderResult *result = [_history.results objectAtIndex:indexPath.row];
     
     cell.textLabel.text = [[QRReaderResultTransform sharedTransform] titleForScan:result.text];
+    cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+    cell.textLabel.numberOfLines = 3;
     cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date
                                                                      toDate:[NSDate date]];
+    cell.imageView.image = result.image;
     
     return cell;
 }
@@ -281,7 +284,12 @@
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     QRReaderResult *result = [_history.results objectAtIndex:indexPath.row];
     QRReaderDetailViewController *detailView = [QRReaderDetailViewController detailViewControllerForResult:result];
+    [detailView setToolbarItems:self.toolbarItems];
     [self.navigationController pushViewController:detailView
                                          animated:YES];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 96.0;
 }
 @end
