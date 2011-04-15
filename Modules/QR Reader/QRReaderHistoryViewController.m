@@ -201,24 +201,26 @@
 - (void)scanView:(QRReaderScanViewController*)scanView
    didScanResult:(NSString*)result
        fromImage:(UIImage*)image  {
-    [self dismissModalViewControllerAnimated:YES];
-    self.scanController = nil;
-    
-    [_history insertScanResult:result
-                      withDate:[NSDate date]
-                     withImage:image];
-    
-    if (self.helpView.superview == self.contentView) {
-        [self hideHelp:nil];
-    }
-    
-    [self.tableView reloadData];
-    [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0
-                                                            inSection:0]
-                                animated:NO
-                          scrollPosition:UITableViewScrollPositionNone];
-    [self tableView:self.tableView didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0
-                                                                              inSection:0]];
+    double delayInSeconds = 1.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self scanViewDidCancel:scanView];
+        [_history insertScanResult:result
+                          withDate:[NSDate date]
+                         withImage:image];
+        
+        if (self.helpView.superview == self.contentView) {
+            [self hideHelp:nil];
+        }
+        
+        [self.tableView reloadData];
+        [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0
+                                                                inSection:0]
+                                    animated:NO
+                              scrollPosition:UITableViewScrollPositionNone];
+        [self tableView:self.tableView didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0
+                                                                                  inSection:0]];
+    });
 }
 
 - (void)scanViewDidCancel:(QRReaderScanViewController*)scanView {
