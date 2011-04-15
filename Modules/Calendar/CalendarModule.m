@@ -63,7 +63,7 @@
                     [params setObject:[queryParts objectAtIndex:1] forKey:[queryParts objectAtIndex:0]];
                 }
             }
-             
+            
             if ([params objectForKey:@"openHouseIdentifier"]) {
                 NSString *identifer = [params objectForKey:@"openHouseIdentifier"];
                 NSString *catID = [[CalendarDataManager sharedManager] getOpenHouseCatIdWithIdentifier:identifer];
@@ -72,6 +72,9 @@
             
             if ([[params objectForKey:@"listID"] isEqualToString:@"OpenHouse"]) {
                 [[CalendarDataManager sharedManager] makeOpenHouseCategoriesRequest];
+                [calendarVC selectScrollerButton:@"Open House"];
+            } else {
+                [calendarVC selectScrollerButton:@"Categories"];
             }
             
             if ([params objectForKey:@"catID"]) {
@@ -89,18 +92,17 @@
                 childVC.navigationItem.title = category.title;
                 
                 if(!listID) {
-                    [calendarVC selectScrollerButton:@"Categories"];
                     MITEventList *eventList = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
                     childVC.events = [CalendarDataManager eventsWithStartDate:calendarVC.startDate listType:eventList category:catID];
                 } else if([listID isEqualToString:@"OpenHouse"]) {
-                    [calendarVC selectScrollerButton:@"Open House"];
                     childVC.events = [category.events allObjects];
                     childVC.startDate = [NSDate dateWithTimeIntervalSince1970:OPEN_HOUSE_START_DATE];
                 }
                 
-                [self.moduleHomeController.navigationController pushViewController:childVC animated:NO];
-                [self becomeActiveTab];
+                [(CalendarEventsViewController *)self.moduleHomeController setChildViewController:childVC];
             }
+            
+            [self becomeActiveTab];
         }
     }
     

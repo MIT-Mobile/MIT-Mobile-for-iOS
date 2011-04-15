@@ -38,8 +38,6 @@
 - (void)showSearchResultsMapView;
 - (void)showSearchResultsTableView;
 
-// used for open house (should be deleted after open house)
-- (void)makeOpenHouseCategoriesRequest;
 @end
 
 
@@ -48,6 +46,7 @@
 @synthesize startDate, endDate, events;
 @synthesize activeEventList, showList, showScroller;
 @synthesize tableView = theTableView, mapView = theMapView, category = theCategory;
+@synthesize childViewController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -80,6 +79,8 @@
 	[startDate release];
 	[endDate release];
 	
+    [childViewController release];
+    
     [super dealloc];
 }
 
@@ -114,6 +115,7 @@
     if (categories == nil) {
         [self makeCategoriesRequest];
     }
+    [self calendarListsLoaded]; // make sure the queued button loaded
     
 	self.view.backgroundColor = [UIColor clearColor];
 	
@@ -216,6 +218,15 @@
 	[searchResultsTableView deselectRowAtIndexPath:[searchResultsTableView indexPathForSelectedRow] animated:YES];
 }
 
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (childViewController) {
+        [self.navigationController pushViewController:childViewController animated:NO];
+        self.childViewController = nil;
+    }
+}
+
 - (NSArray *)events
 {
 	return events;
@@ -236,6 +247,7 @@
         ((EventListTableView *)self.tableView).events = events;
     }
 }
+
 
 #pragma mark Date manipulation
 
