@@ -84,14 +84,16 @@
 
 - (IBAction)overviewButtonPressed:(id)sender {
     TourOverviewViewController *vc = [[[TourOverviewViewController alloc] init] autorelease];
-    if (self.sideTrip) {
-        NSInteger indexOfTopVC = [self.navigationController.viewControllers indexOfObject:self];
-        UIViewController *callingVC = [self.navigationController.viewControllers objectAtIndex:indexOfTopVC-1]; 
+
+    NSInteger indexOfTopVC = [self.navigationController.viewControllers indexOfObject:self];
+    UIViewController *callingVC = [self.navigationController.viewControllers objectAtIndex:indexOfTopVC-1];     
+    if([callingVC isKindOfClass:[SiteDetailViewController class]]) {
         vc.callingViewController = callingVC;
-        vc.sideTrip = self.sideTrip;
-    } 
+    } else {
+        vc.callingViewController = self;
+    }
+    vc.sideTrip = self.sideTrip;
     
-    vc.callingViewController = self;
 	UINavigationController *dummyNavC = [[[UINavigationController alloc] initWithRootViewController:vc] autorelease];
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
     [appDelegate presentAppModalViewController:dummyNavC animated:YES];

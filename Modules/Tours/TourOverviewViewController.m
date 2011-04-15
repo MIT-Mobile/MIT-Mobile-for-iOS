@@ -119,12 +119,8 @@ enum {
 
 - (void)selectionDidComplete {
     
-    // if we called from a side trip
-    if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
-        SiteDetailViewController *callingVC = (SiteDetailViewController *)callingViewController;
-        if (callingVC.sideTrip) {
-            [callingViewController.navigationController popViewControllerAnimated:NO];
-        }
+    if (callingViewController.navigationController.visibleViewController != callingViewController) {
+        [callingViewController.navigationController popViewControllerAnimated:NO];
     }
     
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
