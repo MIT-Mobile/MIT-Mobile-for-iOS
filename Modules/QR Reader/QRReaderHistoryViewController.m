@@ -69,8 +69,14 @@
                                                                     320,44)] autorelease];
         self.toolbar.barStyle = UIBarStyleBlackOpaque;
         
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeInfoLight];
+        [button addTarget:self
+                   action:@selector(showHelp:)
+         forControlEvents:UIControlEventTouchUpInside];
+        _scanButton = button;
+        
         NSArray *toolItems = [NSArray arrayWithObjects:
-                              [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                              [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                              target:nil
                                                                              action:nil] autorelease],
                               [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
@@ -79,10 +85,16 @@
                               [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                              target:nil
                                                                              action:nil] autorelease],
+                              [[[UIBarButtonItem alloc] initWithCustomView:button] autorelease],
                               nil];
         
-        UIBarButtonItem *scan = (UIBarButtonItem*)[toolItems objectAtIndex:1];
-        [scan setStyle:UIBarButtonItemStyleBordered];
+        UIBarButtonItem *item = nil;
+        
+        item = (UIBarButtonItem*)[toolItems objectAtIndex:0];
+        [item setWidth:128.0];
+        
+        item = (UIBarButtonItem*)[toolItems objectAtIndex:1];
+        [item setStyle:UIBarButtonItemStyleBordered];
         
         [self.toolbar setItems:toolItems];
         [self.view addSubview:self.toolbar];
@@ -110,13 +122,6 @@
 
     if ([_history.results count] == 0) {
         [self showHelp:nil];
-    } else {
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeInfoLight];
-        [button addTarget:self
-                   action:@selector(showHelp:)
-         forControlEvents:UIControlEventTouchUpInside];
-        [self.navigationItem setRightBarButtonItem:[[[UIBarButtonItem alloc] initWithCustomView:button] autorelease]
-                                          animated:NO];
     }
     
     self.navigationItem.title = @"QR Codes";
@@ -135,6 +140,7 @@
     self.tableView = nil;
     self.toolbar = nil;
     self.scanController = nil;
+    _scanButton = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -168,6 +174,7 @@
                       duration:(sender ? 1.0 : 0.0)
                        options:UIViewAnimationOptionTransitionCurlUp
                     animations:^{
+                        _scanButton.alpha = 0.0;
                         [self.contentView insertSubview:self.helpView
                                            aboveSubview:self.tableView];
                     }
@@ -180,21 +187,17 @@
 }
 
 - (IBAction)hideHelp:(id)sender {
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeInfoLight];
-    [button addTarget:self
-               action:@selector(showHelp:)
-     forControlEvents:UIControlEventTouchUpInside];
-    [self.navigationItem setRightBarButtonItem:[[[UIBarButtonItem alloc] initWithCustomView:button] autorelease]
+    [self.navigationItem setRightBarButtonItem:nil
                                       animated:(sender != nil)];
     
     [UIView transitionWithView:self.contentView
                       duration:(sender ? 1.0 : 0.0)
                        options:UIViewAnimationOptionTransitionCurlDown
                     animations:^{
+                        _scanButton.alpha = 1.0;
                         [self.helpView removeFromSuperview];
                     }
-                    completion:^(BOOL finished) {
-                    }];
+                    completion:nil];
 }
 
 #pragma mark -
@@ -273,6 +276,10 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         [_history deleteScanResult:result];
         [tableView reloadData];
+        
+        if ([_history.results count] == 0) {
+            [self showHelp:nil];
+        }
     }
 }
 
