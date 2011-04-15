@@ -164,7 +164,7 @@ static ToursDataManager *s_toursDataManager = nil;
 
 - (MITGenericMapRoute *)mapRouteFromSideTripToSite:(CampusTourSideTrip *)sideTrip {
     CLLocation *source = [[CLLocation alloc] initWithLatitude:[sideTrip.latitude floatValue] longitude:[sideTrip.longitude floatValue]];
-    TourSiteOrRoute *site = sideTrip.component;
+    TourSiteOrRoute *site = sideTrip.site;
     CLLocation *dest = [[CLLocation alloc] initWithLatitude:[site.latitude floatValue] longitude:[site.longitude floatValue]];
     
     NSArray *pathLocations = [NSArray arrayWithObjects:source, dest, nil];

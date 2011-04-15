@@ -12,5 +12,7 @@
 @property (nonatomic, retain) NSNumber * longitude;
 @property (nonatomic, retain) NSNumber * latitude;
 
+@property (readonly) TourSiteOrRoute * site;
+
 
 @end

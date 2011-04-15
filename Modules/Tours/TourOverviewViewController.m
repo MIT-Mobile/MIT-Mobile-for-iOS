@@ -965,7 +965,7 @@ enum {
         if([annotation isKindOfClass:[TourSideTripMapAnnotation class]]) {
             TourSideTripMapAnnotation *sideTripAnnotation = annotation;
             CampusTourSideTrip *source = sideTripAnnotation.sideTrip;        
-            TourSiteOrRoute *dest = source.component;
+            TourSiteOrRoute *dest = source.site;
             annotationView.transform = [self transformForSource:source andDest:dest];
             annotationView.image = [UIImage imageNamed:@"tours/map_starting_arrow.png"];
         } else {
