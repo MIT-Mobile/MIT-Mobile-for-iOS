@@ -30,9 +30,13 @@
 		featureLink.photoURL = [aDict objectForKey:@"photo-url"];
 		
 		NSDictionary *dimensions = [aDict objectForKey:@"dimensions"];
-		if (dimensions) {
-			featureLink.photoWidth = [dimensions objectForKey:@"width"];
-			featureLink.photoHeight = [dimensions objectForKey:@"height"];
+        NSNumber *width = [dimensions objectForKey:@"width"];
+        NSNumber *height = [dimensions objectForKey:@"height"];
+        // check class in case we get back an NSNull
+		if ([width isKindOfClass:[NSNumber class]]
+        &&  [width isKindOfClass:[NSNumber class]]) {
+			featureLink.photoWidth = width;
+			featureLink.photoHeight = height;
 		}
 		
 		NSNumber *order = [aDict objectForKey:@"sort-order"];
@@ -46,7 +50,7 @@
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"\"%@\" %@", self.title, NSStringFromCGSize(self.size)];
+	return [NSString stringWithFormat:@"\"%@\" %@ <%@>", self.title, NSStringFromCGSize(self.size), self.url];
 }
 
 - (CGSize)size {
