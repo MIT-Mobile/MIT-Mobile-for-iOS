@@ -41,10 +41,10 @@
     [result addObject:[[[AnniversaryModule alloc] init] autorelease]];
     [result addObject:[[[EmergencyModule alloc] init] autorelease]];
     // QR reader should go here, and should have the same hiding behavior as AnniversaryModule
+    [result addObject:[[[QRReaderModule alloc] init] autorelease]];
     [result addObject:[[[MobileWebModule alloc] init] autorelease]];
     [result addObject:[[[SettingsModule alloc] init] autorelease]];
     [result addObject:[[[AboutModule alloc] init] autorelease]];
-    [result addObject:[[[QRReaderModule alloc] init] autorelease]];
     
     return result;
 }
