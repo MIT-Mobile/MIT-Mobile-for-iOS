@@ -115,6 +115,11 @@
     self.backgroundImageView = nil;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [self.navigationController setToolbarHidden:NO
+                                       animated:animated];
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
@@ -128,7 +133,15 @@
 }
 
 - (IBAction)pressedActionButton:(id)sender {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.scanResult.text]];
+    NSString *altURL = [[QRReaderResultTransform sharedTransform] alternateTextForScan:self.scanResult.text];
+    
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:altURL]];
+    
+    // Bouncing to an internal link
+    if ([altURL hasPrefix:@"mitmobile"]) {
+        [self.navigationController setToolbarHidden:YES
+                                           animated:YES];
+    }
 }
 
 
