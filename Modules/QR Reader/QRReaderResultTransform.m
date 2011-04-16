@@ -54,7 +54,7 @@ static QRReaderResultTransform *_sharedResultTransform = nil;
 
 - (void)updateTitles {
     [self.scanTitles setObject:@"MIT150 Open House"
-                        forKey:@"http://m.mit.edu/open-house"];
+                        forKey:@"http://m.mit.edu/open-house/"];
     [self.scanTitles setObject:@"MIT150 Open House: Engineering, Technology and Invention"
                         forKey:@"http://m.mit.edu/open-house/eng"];
     [self.scanTitles setObject:@"MIT150 Open House: Energy, Environment and Sustainability"
