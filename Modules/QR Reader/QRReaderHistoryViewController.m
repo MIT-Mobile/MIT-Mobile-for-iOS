@@ -108,7 +108,6 @@
     }
     
     self.helpView = [[[QRReaderHelpView alloc] initWithFrame:self.contentView.bounds] autorelease];
-
     if ([_history.results count] == 0) {
         [self showHelp:nil];
     }
@@ -117,6 +116,11 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self.navigationController setToolbarHidden:NO
                                        animated:animated];
+    if ([_history.results count] == 0) {
+        [self showHelp:nil];
+    } else {
+        [self hideHelp:nil];
+    }
 }
 
 - (void)viewDidUnload
@@ -162,38 +166,45 @@
                                                                                     action:@selector(hideHelp:)] autorelease];
         barButton.style = UIBarButtonItemStyleDone;
     }
-    
-    [UIView transitionWithView:[self.navigationController topViewController].view
-                      duration:(sender ? 1.0 : 0.0)
-                       options:(sender ?
-                                UIViewAnimationOptionTransitionCurlUp :
-                                UIViewAnimationOptionTransitionNone)
-                    animations:^{
-                        _scanButton.alpha = 0.0;
-                        [[self.navigationController topViewController].view addSubview:self.helpView];
-                    }
-                    completion:nil];
 
-    if (sender) {
-        [[self.navigationController topViewController].navigationItem setRightBarButtonItem:barButton
-                                                                                   animated:(sender != nil)];
+    if (!self.helpView) {
+        self.helpView = [[[QRReaderHelpView alloc] initWithFrame:self.contentView.bounds] autorelease];
+    }
+
+    if (![self.helpView superview]) {
+        [UIView transitionWithView:[self.navigationController topViewController].view
+                          duration:(sender ? 1.0 : 0.0)
+                           options:(sender ?
+                                    UIViewAnimationOptionTransitionCurlUp :
+                                    UIViewAnimationOptionTransitionNone)
+                        animations:^{
+                            _scanButton.alpha = 0.0;
+                            [[self.navigationController topViewController].view addSubview:self.helpView];
+                        }
+                        completion:nil];
+
+        if (sender) {
+            [[self.navigationController topViewController].navigationItem setRightBarButtonItem:barButton
+                                                                                       animated:(sender != nil)];
+        }
     }
 }
 
 - (IBAction)hideHelp:(id)sender {
-    [[self.navigationController topViewController].navigationItem setRightBarButtonItem:nil
+    if ([self.helpView superview]) {
+        [[self.navigationController topViewController].navigationItem setRightBarButtonItem:nil
                                                                                animated:(sender != nil)];
-    
-    [UIView transitionWithView:[self.navigationController topViewController].view
-                      duration:(sender ? 1.0 : 0.0)
-                       options:(sender ?
-                                UIViewAnimationOptionTransitionCurlDown :
-                                UIViewAnimationOptionTransitionNone)
-                    animations:^{
-                        _scanButton.alpha = 1.0;
-                        [self.helpView removeFromSuperview];
-                    }
-                    completion:nil];
+        [UIView transitionWithView:[self.navigationController topViewController].view
+                          duration:(sender ? 1.0 : 0.0)
+                           options:(sender ?
+                                    UIViewAnimationOptionTransitionCurlDown :
+                                    UIViewAnimationOptionTransitionNone)
+                        animations:^{
+                            _scanButton.alpha = 1.0;
+                            [self.helpView removeFromSuperview];
+                        }
+                        completion:nil];
+    }
 }
 
 #pragma mark -
