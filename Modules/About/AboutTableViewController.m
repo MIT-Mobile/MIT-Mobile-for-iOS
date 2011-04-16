@@ -84,7 +84,7 @@
         			cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
                     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
                     if (!showBuildNumber) {
-                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", [infoDict objectForKey:@"CFBundleName"], [infoDict objectForKey:@"CFBundleVersion"]];
+                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", [infoDict objectForKey:@"CFBundleDisplayName"], [infoDict objectForKey:@"CFBundleVersion"]];
                     } else {
                         cell.textLabel.text = [MITBuildInfo description];
                         
