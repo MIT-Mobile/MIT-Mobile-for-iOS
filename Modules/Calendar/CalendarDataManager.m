@@ -85,6 +85,9 @@ static CalendarDataManager *s_sharedManager = nil;
 	if ([listType.listID isEqualToString:@"Events"]) {
 		return YES;
 	}
+    if ([listType.listID isEqualToString:@"OpenHouse"]) {
+        return NO;
+    }
 	return ![_staticEventListIDs containsObject:listType.listID];
 }
 
