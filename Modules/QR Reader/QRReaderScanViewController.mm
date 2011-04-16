@@ -48,14 +48,15 @@
     self.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                   UIViewAutoresizingFlexibleWidth);
     
-    self.cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    self.cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.cancelButton setBackgroundImage:[UIImage imageNamed:@"global/bar-button-36"] forState:UIControlStateNormal];
     [self.cancelButton setTitle:@"Cancel"
                        forState:UIControlStateNormal];
     [self.cancelButton addTarget:self
                           action:@selector(cancelScan:)
                 forControlEvents:UIControlEventTouchUpInside];
-    [self.cancelButton.titleLabel setFont:[UIFont fontWithName:self.cancelButton.titleLabel.font.fontName
-                                                          size:14.0]];
+    self.cancelButton.titleLabel.font = [UIFont boldSystemFontOfSize:14.0];
+
     _decodedResult = NO;
 }
 
@@ -147,10 +148,9 @@
     
     [self.view addSubview:self.overlayView];
     
-    self.cancelButton.frame = CGRectMake((self.view.frame.size.width - 124) / 2,
-                                         self.view.frame.size.height - 82,
-                                         124,
-                                         50);
+    [self.cancelButton sizeToFit];
+    self.cancelButton.center = CGPointMake(self.view.frame.size.width / 2.0, self.view.frame.size.height - 64.0);
+
     [self.view insertSubview:self.cancelButton
                 aboveSubview:self.overlayView];
     
