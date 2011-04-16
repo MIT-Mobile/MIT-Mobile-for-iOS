@@ -2349,7 +2349,7 @@
 					"-ObjC",
 				);
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "33A1EE45-68B9-4353-BB39-822B2C1CDEA1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2402,7 +2402,7 @@
 					"-ObjC",
 				);
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2301A1E0-88F6-49BD-8CFE-564AA6B7DD02";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
