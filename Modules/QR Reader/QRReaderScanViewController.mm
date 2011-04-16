@@ -21,6 +21,7 @@
 @property (nonatomic,retain) AVCaptureSession *captureSession;
 @property (nonatomic,retain) AVCaptureVideoPreviewLayer *previewLayer;
 @property (nonatomic,retain) QRReaderOverlayView *overlayView;
+@property (nonatomic,retain) UILabel *adviceLabel;
 @property (nonatomic) BOOL isCaptureActive;
 @property (nonatomic,retain) UIButton *cancelButton;
 
@@ -32,6 +33,7 @@
 @synthesize captureSession = _captureSession;
 @synthesize previewLayer = _previewLayer;
 @synthesize overlayView = _overlayView;
+@synthesize adviceLabel;
 @synthesize isCaptureActive = _isCaptureActive;
 @synthesize reader = _reader;
 @synthesize scanDelegate = _scanDelegate;
@@ -47,6 +49,14 @@
     self.view.backgroundColor = [UIColor blackColor];
     self.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                   UIViewAutoresizingFlexibleWidth);
+    
+    self.adviceLabel = [[[UILabel alloc] init] autorelease];
+    self.adviceLabel.backgroundColor = [UIColor clearColor];
+    self.adviceLabel.textColor = [UIColor whiteColor];
+    self.adviceLabel.textAlignment = UITextAlignmentCenter;
+    self.adviceLabel.text = @"Frame a QR code to scan it.\nAvoid glare and shadows.";
+    self.adviceLabel.lineBreakMode = UILineBreakModeWordWrap;
+    self.adviceLabel.numberOfLines = 0;
     
     self.cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.cancelButton setBackgroundImage:[UIImage imageNamed:@"global/bar-button-36"] forState:UIControlStateNormal];
@@ -149,10 +159,15 @@
     [self.view addSubview:self.overlayView];
     
     [self.cancelButton sizeToFit];
-    self.cancelButton.center = CGPointMake(self.view.frame.size.width / 2.0, self.view.frame.size.height - 64.0);
+    self.cancelButton.center = CGPointMake(self.view.frame.size.width / 2.0, self.view.frame.size.height - 60.0);
 
     [self.view insertSubview:self.cancelButton
                 aboveSubview:self.overlayView];
+    
+    self.adviceLabel.frame = CGRectMake(0, 14.0, self.view.frame.size.width, 100.0);
+
+    
+    [self.view insertSubview:self.adviceLabel aboveSubview:self.overlayView];
     
     return (self.captureSession != nil);
 }

@@ -10,6 +10,7 @@
 @interface QRReaderScanViewController : UIViewController <AVCaptureVideoDataOutputSampleBufferDelegate,DecoderDelegate> {
     id<QRReaderScanDelegate> _scanDelegate;
     QRReaderOverlayView *_overlayView;
+    UILabel *adviceLabel;
     BOOL _isCaptureActive;
     BOOL _decodedResult;
     
@@ -22,6 +23,7 @@
 
 @property (nonatomic,retain) id<QRReaderScanDelegate> scanDelegate;
 @property (nonatomic,retain,readonly) IBOutlet QRReaderOverlayView *overlayView;
+@property (nonatomic,retain,readonly) UILabel *adviceLabel;
 @property (nonatomic,readonly) BOOL isCaptureActive;
 @property (nonatomic,retain) FormatReader *reader;
 
