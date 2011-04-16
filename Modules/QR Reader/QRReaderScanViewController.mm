@@ -63,6 +63,9 @@
 {
     self.captureSession = nil;
     self.cancelButton = nil;
+    self.overlayView = nil;
+    self.previewLayer = nil;
+
     [super dealloc];
 }
 
@@ -91,6 +94,7 @@
     
     [self stopCapture];
     self.overlayView = nil;
+    self.previewLayer = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -161,9 +165,6 @@
     [self.captureSession stopRunning];
     self.captureSession = nil;
     
-    [self.overlayView removeFromSuperview];
-    [self.previewLayer removeFromSuperlayer];
-    self.previewLayer = nil;
     self.isCaptureActive = NO;
 }
 
