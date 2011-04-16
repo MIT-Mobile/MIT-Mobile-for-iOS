@@ -9,6 +9,8 @@
 @property (nonatomic, retain) FeatureSection * featureSection;
 @property (nonatomic, retain) NSString * featureID;
 @property (nonatomic, retain) NSString * tintColor;
+@property (nonatomic, retain) NSString * titleColor;
+@property (nonatomic, retain) NSString * arrowColor;
 @property (nonatomic, retain) NSString * subtitle;
 @property (nonatomic, retain) NSString * title;
 @property (nonatomic, retain) NSData * photo;

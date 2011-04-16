@@ -699,6 +699,7 @@
 		DEAFF07C110001E300F0573E /* StoryImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryImageView.m; sourceTree = "<group>"; };
 		DEC02F9B110578240054BE32 /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
 		DEC02F9C110578240054BE32 /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
+		DEC8FFC91359152D0059D32F /* Anniversary 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Anniversary 2.xcdatamodel"; sourceTree = "<group>"; };
 		DECBF6A010F8F71D009FAE35 /* NewsImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsImage.h; sourceTree = "<group>"; };
 		DECBF6A110F8F71D009FAE35 /* NewsImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsImage.m; sourceTree = "<group>"; };
 		DECBF6B410F8F91B009FAE35 /* NewsImageRep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsImageRep.h; sourceTree = "<group>"; };
@@ -2561,9 +2562,10 @@
 		EBF8A52D12AEB7AA00D39AE6 /* Anniversary.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				DEC8FFC91359152D0059D32F /* Anniversary 2.xcdatamodel */,
 				EBF8A52912AEB71C00D39AE6 /* Anniversary.xcdatamodel */,
 			);
-			currentVersion = EBF8A52912AEB71C00D39AE6 /* Anniversary.xcdatamodel */;
+			currentVersion = DEC8FFC91359152D0059D32F /* Anniversary 2.xcdatamodel */;
 			path = Anniversary.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

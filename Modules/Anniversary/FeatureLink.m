@@ -6,6 +6,8 @@
 @dynamic featureSection;
 @dynamic featureID;
 @dynamic tintColor;
+@dynamic titleColor;
+@dynamic arrowColor;
 @dynamic subtitle;
 @dynamic title;
 @dynamic photo;
@@ -26,6 +28,9 @@
 		featureLink.title = [aDict objectForKey:@"title"];
 		featureLink.subtitle = [aDict objectForKey:@"subtitle"];
 		featureLink.tintColor = [aDict objectForKey:@"tint-color"];
+        featureLink.titleColor = [aDict objectForKey:@"title-color"];
+        featureLink.arrowColor = [aDict objectForKey:@"arrow-color"];
+        
 		featureLink.url = [aDict objectForKey:@"url"];
 		featureLink.photoURL = [aDict objectForKey:@"photo-url"];
 		

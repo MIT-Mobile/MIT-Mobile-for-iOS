@@ -50,7 +50,16 @@
     [thumbnail loadImage];
     
     UIColor *tintColor = [UIColor colorWithHexString:self.featureLink.tintColor];
-	
+    UIColor *titleColor = tintColor;
+	UIColor *arrowColor = tintColor;
+    
+    if (self.featureLink.titleColor) {
+        titleColor = [UIColor colorWithHexString:self.featureLink.titleColor];
+    }
+    if (self.featureLink.arrowColor) {
+        arrowColor = [UIColor colorWithHexString:self.featureLink.arrowColor];
+    }
+    
     if (self.featureLink.title && !self.featureLink.subtitle) {
         // title
         UIFont *font = [UIFont boldSystemFontOfSize:13];
@@ -77,7 +86,7 @@
         UILabel *triangleLabel = (UILabel *)[self viewWithTag:8005];
         if (!triangleLabel) {
             triangleLabel = [[[UILabel alloc] initWithFrame:triangleFrame] autorelease];
-            triangleLabel.textColor = tintColor;
+            triangleLabel.textColor = arrowColor;
             triangleLabel.font = [UIFont systemFontOfSize:10];
             triangleLabel.text = @"\u25b6";
             triangleLabel.backgroundColor = [UIColor clearColor];
@@ -122,7 +131,7 @@
             titleLabel = [[[UILabel alloc] initWithFrame:frame] autorelease];
             titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
             titleLabel.backgroundColor = [UIColor clearColor];
-            titleLabel.textColor = tintColor;
+            titleLabel.textColor = titleColor;
             titleLabel.font = font;
             titleLabel.tag = 8003;
             titleLabel.userInteractionEnabled = NO;
@@ -173,7 +182,7 @@
         UILabel *triangleLabel = (UILabel *)[self viewWithTag:8005];
         if (!triangleLabel) {
             triangleLabel = [[[UILabel alloc] initWithFrame:triangleFrame] autorelease];
-            triangleLabel.textColor = tintColor;
+            triangleLabel.textColor = arrowColor;
             triangleLabel.font = [UIFont systemFontOfSize:10];
             triangleLabel.text = @"\u25b6";
             triangleLabel.backgroundColor = [UIColor clearColor];
@@ -187,7 +196,6 @@
 
 - (void)wasTapped:(id)sender {
     NSURL *url = [NSURL URLWithString:self.featureLink.url];
-	NSLog(@"URL = %@", url);
     if ([[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
     }
