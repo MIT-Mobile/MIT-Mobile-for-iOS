@@ -66,17 +66,18 @@
     self.qrImage.layer.borderWidth = 2.0;
     
     CGFloat inset = 0.0;
+    CGFloat margin = 12.0;
     
     if ([[QRReaderResultTransform sharedTransform] scanHasTitle:self.scanResult.text]) {
         [self.textView setText:[[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text]];
-        [self.actionButton setTitle:@"View events"
+        [self.actionButton setTitle:@"View Events"
                            forState:UIControlStateNormal];
         [self.actionButton setImage:[UIImage imageNamed:@"global/action-calendar"]
                           forState:UIControlStateNormal];
         [self.actionButton setImage:[UIImage imageNamed:@"global/action-calendar-highlighted"]
                           forState:UIControlStateHighlighted];
         
-        inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-calendar"].size.width + 8);
+        inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-calendar"].size.width + margin);
         [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
     } else {
         [self.textView setText:self.scanResult.text];
@@ -87,7 +88,7 @@
         [self.actionButton setImage:[UIImage imageNamed:@"global/action-external-highlighted"]
                           forState:UIControlStateHighlighted];
         
-        inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-external"].size.width + 8);
+        inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-external"].size.width + margin);
         [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
     }
     
@@ -97,11 +98,11 @@
     [self.shareButton setImage:[UIImage imageNamed:@"global/action-share"]
                       forState:UIControlStateNormal];
     
-    inset = self.shareButton.frame.size.width - ([UIImage imageNamed:@"global/action-share"].size.width + 8);
+    inset = self.shareButton.frame.size.width - ([UIImage imageNamed:@"global/action-share"].size.width + margin);
     [self.shareButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
     
-    [self.actionButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.actionButton.frame.origin.x) + 8, 0, 0)];
-    [self.shareButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.shareButton.frame.origin.x) + 8, 0, 0)];
+    [self.actionButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.actionButton.frame.origin.x) + margin, 0, 0)];
+    [self.shareButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.shareButton.frame.origin.x) + margin, 0, 0)];
 }
 
 
@@ -149,11 +150,11 @@
 #pragma mark -
 #pragma mark ShareItemDelegate (MIT)
 - (NSString *)actionSheetTitle {
-	return [NSString stringWithString:@"Share this link"];
+	return [NSString stringWithString:@"Share This Link"];
 }
 
 - (NSString *)emailSubject {
-	return [NSString stringWithFormat:@"MIT link: %@", [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text]];
+	return [NSString stringWithFormat:@"%@", [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text]];
 }
 
 - (NSString *)emailBody {
