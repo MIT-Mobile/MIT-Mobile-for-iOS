@@ -121,6 +121,10 @@
     } else {
         [self hideHelp:nil];
     }
+    NSIndexPath *selectedRow = [self.tableView indexPathForSelectedRow];
+    if (selectedRow) {
+        [self.tableView deselectRowAtIndexPath:selectedRow animated:YES];
+    }
 }
 
 - (void)viewDidUnload
