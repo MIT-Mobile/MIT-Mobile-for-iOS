@@ -1,34 +1,41 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
+        
         <style type="text/css">
         <!--
             html {
                 background-color: transparent;
+                width: 320px;
             }
             
             p {
-                font: 16pt Helvetica;
+                font: 13pt Helvetica;
             }
             
             img#qr {
                 float: right;
-                margin: 0 15 0 15px;
+                margin: 0 0 0 10px;
                 padding: 0;
-                border 1px solid #fff;
                 height: 96px;
                 width: 96px;
+            }
+            body {
+                background: url('../global/body-background.png') no-repeat scroll top left;
+                padding: 0;
+                margin: 0;
+            }
+            #content {
+                margin: 16px;
             }
         -->
     </style>
     </head>
     <body>
-        <img src="qrreader/image-qr-sample.png" id="qr"/>
-        <p>QR codes are two-dimentional barcodes which can encode information such URLs. MIT is using color-keyed QR codes to help people find out more about different categories of MIT150 Open House event happening around campus.
-</p>
-        <p>To read a QR code, tap the camera icon below.
-</p>
+        <div id="content">
+            <img src="qrreader/image-qr-sample.png" id="qr"/>
+            <p>A QR code is a two-dimensional data matrix similar to a barcode for encoding URLs and other data.</p>
+            <p>MIT is using themed QR codes to help visitors learn more about the many activities happening on campus during its Open House, happening April 30, 2011.</p>
+            <p>Tap the camera icon below to being scanning a QR code.</p>
+        </div>
     </body>
 </html>
