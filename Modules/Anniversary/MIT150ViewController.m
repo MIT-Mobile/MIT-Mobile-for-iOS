@@ -231,6 +231,7 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewCalendar];
             } else {
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                cell.accessoryView = nil;
             }
         } else {
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
