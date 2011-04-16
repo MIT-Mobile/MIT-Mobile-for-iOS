@@ -1190,6 +1190,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = ZXingWidget;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
