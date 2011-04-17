@@ -57,7 +57,6 @@
             frame.origin.x = round(xOffset);
         } else {
             // explicitly make the last button flush right
-//            NSLog(@"making %@ flush", indexPath);
             frame.origin.x = self.frame.size.width - (frame.size.width + self.margins.width);
         }
         frame.origin.y = round(yOffset);

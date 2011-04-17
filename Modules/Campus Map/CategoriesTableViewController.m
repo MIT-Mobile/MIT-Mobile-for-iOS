@@ -262,7 +262,6 @@
 #pragma mark MapAll
 -(void) mapAllButtonTapped
 {
-	//NSLog(@"map all button tapped");
 	// make sure the map is showing. 
 	[self.mapSelectionController.mapVC showListView:NO];
 	

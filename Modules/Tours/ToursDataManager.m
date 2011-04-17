@@ -362,13 +362,13 @@ static ToursDataManager *s_toursDataManager = nil;
             if (lastModified) {
                 NSDate *localModified = aTour.lastModified;
                 if (!localModified || [remoteModified compare:localModified] == NSOrderedDescending) {
-                    NSLog(@"local: %@ remote: %@", localModified, remoteModified);
+                    DLog(@"local: %@ remote: %@", localModified, remoteModified);
 
                     aTour.title = [tourData objectForKey:@"title"];
                     aTour.summary = [tourData objectForKey:@"description"];
                     aTour.lastModified = remoteModified;
 
-                    NSLog(@"deleting old data for tour %@ (%@)", aTour.title, aTour.tourID);
+                    DLog(@"deleting old data for tour %@ (%@)", aTour.title, aTour.tourID);
                     for (TourSiteOrRoute *aComponent in aTour.components) {
                         [aComponent deleteCachedMedia];
                         [CoreDataManager deleteObject:aComponent];
@@ -385,7 +385,7 @@ static ToursDataManager *s_toursDataManager = nil;
         
         for (NSString *oldTourKey in oldTourKeys) {
             CampusTour *aTour = [self tourWithID:oldTourKey];
-            NSLog(@"deleting old tour %@ (%@)", aTour.title, aTour.tourID);
+            DLog(@"deleting old tour %@ (%@)", aTour.title, aTour.tourID);
             [_tours removeObjectForKey:aTour.tourID];
             [aTour deleteCachedMedia];
             [CoreDataManager deleteObject:aTour];

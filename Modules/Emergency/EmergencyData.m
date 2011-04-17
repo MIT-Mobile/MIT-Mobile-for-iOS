@@ -152,7 +152,7 @@ static EmergencyData *sharedEmergencyData = nil;
     NSError *error = nil;
     NSMutableString *htmlString = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
     if (!htmlString) {
-        //NSLog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
+        ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
         return nil;
     }
     
@@ -177,7 +177,7 @@ static EmergencyData *sharedEmergencyData = nil;
     infoRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
     BOOL dispatchedSuccessfully = [infoRequest requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"emergency", @"module", nil]];
     if (!dispatchedSuccessfully) {
-        NSLog(@"failed to fetch emergency info");
+        DLog(@"failed to fetch emergency info");
     }
     
     /*
@@ -202,7 +202,7 @@ static EmergencyData *sharedEmergencyData = nil;
     }
     contactsRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
     if (![contactsRequest requestObjectFromModule:@"emergency" command:@"contacts" parameters:nil]) {
-        NSLog(@"failed to fetch emergency contacts");
+        DLog(@"failed to fetch emergency contacts");
     }
     
     /*
@@ -224,7 +224,7 @@ static EmergencyData *sharedEmergencyData = nil;
     if (request == infoRequest) {
         
         if (![jsonObject isKindOfClass:[NSArray class]]) {
-            NSLog(@"%@ received json result as %@, not NSArray.", NSStringFromClass([self class]), NSStringFromClass([jsonObject class]));
+            ELog(@"%@ received json result as %@, not NSArray.", NSStringFromClass([self class]), NSStringFromClass([jsonObject class]));
         } else {
             NSDictionary *response = [(NSArray *)jsonObject lastObject];
             
@@ -299,107 +299,4 @@ static EmergencyData *sharedEmergencyData = nil;
     }
 }
 
-/*
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error;
-- (id<UIAlertViewDelegate>)request:(MITMobileWebAPI *)request alertViewDelegateForError:(NSError *)error;
-*/
- 
-/*
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    if (wrapper == infoConnection) {
-        self.infoConnection = nil;
-        id jsonObject = [MITJSON objectWithJSONData:data];
-        NSDictionary *response = nil;
-        
-        if (![jsonObject isKindOfClass:[NSArray class]]) {
-            NSLog(@"%@ received json result as %@, not NSArray.", NSStringFromClass([self class]), NSStringFromClass([jsonObject class]));
-        } else {
-            response = [(NSArray *)jsonObject lastObject];
-            
-            NSDate *lastUpdated = [NSDate dateWithTimeIntervalSince1970:[[response objectForKey:@"unixtime"] doubleValue]];
-            NSDate *previouslyUpdated = [info valueForKey:@"lastUpdated"];
-            
-            if (!previouslyUpdated || [lastUpdated timeIntervalSinceDate:previouslyUpdated] > 0) {
-                [info setValue:lastUpdated forKey:@"lastUpdated"];
-                [info setValue:[NSDate date] forKey:@"lastFetched"];
-                [info setValue:[response objectForKey:@"text"] forKey:@"htmlString"];
-                [CoreDataManager saveData];
-                
-                [self fetchEmergencyInfo];
-                // notify listeners that this is a new emergency
-                [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:self];
-            }
-            // notify listeners that the info is done loading, regardless of whether it's changed
-            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidLoadNotification object:self];
-        }
-    } else if (wrapper == contactsConnection) {
-        self.contactsConnection = nil;
-        id jsonObject = [MITJSON objectWithJSONData:data];
-        if (jsonObject && [jsonObject isKindOfClass:[NSArray class]]) {
-            NSArray *contactsArray = (NSArray *)jsonObject;
-            
-            // delete all of the old numbers
-            NSArray *oldContacts = [CoreDataManager fetchDataForAttribute:EmergencyContactEntityName];
-            if ([oldContacts count] > 0) {
-                [CoreDataManager deleteObjects:oldContacts];
-            }
-            
-            // create new entry for each contact in contacts
-            NSInteger i = 0;
-            for (NSDictionary *contactDict in contactsArray) {
-                NSManagedObject *contact = [CoreDataManager insertNewObjectForEntityForName:EmergencyContactEntityName];
-                [contact setValue:[contactDict objectForKey:@"contact"] forKey:@"title"];
-                [contact setValue:[contactDict objectForKey:@"description"] forKey:@"summary"];
-                [contact setValue:[contactDict objectForKey:@"phone"] forKey:@"phone"];
-                [contact setValue:[NSNumber numberWithInteger:i] forKey:@"ordinality"];
-                i++;
-            }
-            [CoreDataManager saveData];
-            [self fetchContacts];
-            
-            // notify listeners that contacts have finished loading
-            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
-        }
-    }
-    
-    
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    // TODO: possibly retry at a later date if connection dropped or server was unavailable
-    if (wrapper == infoConnection) {
-        self.infoConnection = nil;
-		[[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:self];
-    } else if (wrapper == contactsConnection) {
-        self.contactsConnection = nil;
-    }
-}
-*/
-/*
-#pragma mark -
-#pragma mark Synchronous HTTP - less preferred
-
-- (NSString *)stringWithUrl:(NSURL *)url
-{
-    NSString *result;
-	NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url
-                                                cachePolicy:NSURLRequestReturnCacheDataElseLoad
-                                            timeoutInterval:30];
-    // Fetch the JSON response
-	NSData *urlData;
-	NSURLResponse *response;
-	NSError *error;
-    
-	// Make synchronous request
-	urlData = [NSURLConnection sendSynchronousRequest:urlRequest
-                                    returningResponse:&response
-                                                error:&error];
-    
- 	// Construct a String around the Data from the response
-    result = [[NSString alloc] initWithData:urlData encoding:NSUTF8StringEncoding];
-	return [result autorelease];
-}
-*/
 @end

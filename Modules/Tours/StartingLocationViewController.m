@@ -40,7 +40,7 @@
     NSError *error = nil;
     NSMutableString *htmlString = [[[NSMutableString alloc] initWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error] autorelease];
     if (!htmlString) {
-        NSLog(@"failed to load template: %@", [error description]);
+        ELog(@"failed to load template: %@", [error description]);
     }
     
     NSString *header = [[ToursDataManager sharedManager] activeTour].startLocationHeader;

@@ -139,7 +139,6 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
 	MITCalendarEvent *event = [self.events objectAtIndex:indexPath.row];
-	NSLog(@"%@", [event description]);
 		
 	CalendarDetailViewController *detailVC = [[CalendarDetailViewController alloc] initWithNibName:nil bundle:nil];//initWithStyle:UITableViewStylePlain];
 	detailVC.event = event;

@@ -172,7 +172,7 @@
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
 {
-	NSLog(@"request failed");
+	DLog(@"request failed");
 }
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {

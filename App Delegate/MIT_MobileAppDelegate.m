@@ -37,7 +37,7 @@
     } else if ([navParadigmClass isEqualToString:@"MITSpringboard"]) {
         navParadigm = MITNavigationParadigmSpringboard;
     } else {
-        NSLog(@"No such paradigm %@; using springboard", navParadigmClass);
+        WLog(@"No such paradigm %@; using springboard", navParadigmClass);
         navParadigm = MITNavigationParadigmSpringboard;
     }
     
@@ -131,7 +131,7 @@
 	if(apnsDict) {
 		MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
 		[[self moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:YES];
-		//NSLog(@"Application opened in response to notification=%@", notification);
+		DLog(@"Application opened in response to notification=%@", notification);
 	}
     
     return YES;
@@ -172,9 +172,10 @@
             [module loadTabNavController];
             module.hasLaunchedBegun = YES;
         }
+        DLog(@"handling internal url: %@", url);
         canHandle = [module handleLocalPath:path query:query];
     } else {
-        //NSLog(@"%s couldn't handle url: %@", _cmd, url);
+        WLog(@"%s couldn't handle url: %@", _cmd, url);
     }
 
     return canHandle;
@@ -226,17 +227,17 @@
 - (void)showNetworkActivityIndicator {
     networkActivityRefCount++;
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-//    NSLog(@"network indicator ++ %d", networkActivityRefCount);
+    VLog(@"network indicator ++ %d", networkActivityRefCount);
 }
 
 - (void)hideNetworkActivityIndicator {
     if (networkActivityRefCount > 0) {
         networkActivityRefCount--;
-//        NSLog(@"network indicator -- %d", networkActivityRefCount);
+        VLog(@"network indicator -- %d", networkActivityRefCount);
     }
     if (networkActivityRefCount == 0) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-//        NSLog(@"network indicator off");
+        VLog(@"network indicator off");
     }
 }
 
@@ -306,7 +307,7 @@
     if ([tabBarController isEqual:self.tabBarController]) {
         MITModule *theModule = [self moduleForTabBarItem:item];
 		// recover saved state on first appearanace
-		//NSLog(@"recovering saved state for: %@  HasLaunched? %d.  Path: %@; Query: %@", theModule, theModule.hasLaunchedBegun, theModule.currentPath, theModule.currentQuery);
+		VLog(@"recovering saved state for: %@  HasLaunched? %d.  Path: %@; Query: %@", theModule, theModule.hasLaunchedBegun, theModule.currentPath, theModule.currentQuery);
 		if (!theModule.hasLaunchedBegun && theModule.currentPath && theModule.currentQuery) {
 			[theModule handleLocalPath:theModule.currentPath query:theModule.currentQuery];
 			// due to a work around implemented for the MITMoreController
@@ -411,7 +412,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
 
 - (void)application:(UIApplication *)application 
 didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-	//NSLog(@"Registered for push notifications. deviceToken == %@", deviceToken);
+	VLog(@"Registered for push notifications. deviceToken == %@", deviceToken);
     self.deviceToken = deviceToken;
     
 	MITIdentity *identity = [MITDeviceRegistration identity];
@@ -428,7 +429,7 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 
 - (void)application:(UIApplication *)application 
 didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-    //NSLog(@"Failed to register for remote notifications. Error: %@", error);
+    WLog(@"%@", [error localizedDescription]);
 	MITIdentity *identity = [MITDeviceRegistration identity];
 	if(!identity) {
 		[MITDeviceRegistration registerNewDeviceWithToken:nil];

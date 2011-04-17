@@ -801,7 +801,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 }
 
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
-    NSLog(@"make sure search bar is first responder right now");
+    DLog(@"make sure search bar is first responder right now");
 	//[self focusSearchBar];
 }
 
@@ -841,9 +841,9 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     if (parser == self.xmlParser) {
         // TODO: communicate download failure to user
         if ([error code] == NSURLErrorNotConnectedToInternet) {
-            NSLog(@"News download failed because there's no net connection");
+            ELog(@"News download failed because there's no net connection");
         } else {
-            NSLog(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
+            ELog(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
         }
 		[self setStatusText:@"Update failed"];
 		
@@ -1110,7 +1110,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 				
                 result = cell;
             } else {
-                NSLog(@"%s attempted to show non-existent row (%d) with actual count of %d", sel_getName(_cmd), indexPath.row, self.stories.count);
+                ELog(@"%s attempted to show non-existent row (%d) with actual count of %d", NSStringFromSelector(_cmd), indexPath.row, self.stories.count);
             }
         }
             break;

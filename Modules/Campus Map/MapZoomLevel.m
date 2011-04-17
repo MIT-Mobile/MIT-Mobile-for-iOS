@@ -57,7 +57,7 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath:tile.path]) {
         NSString *sUrl = [NSString stringWithFormat:@"%@/map/tile2/%d/%d/%d", [MITMobileWebGetCurrentServerURL() absoluteString], level, row, col];
         NSURL *url = [NSURL URLWithString:sUrl];
-        //NSLog(@"requesting from %@", sUrl);
+        DLog(@"Requesting map tile: %@", sUrl);
         
         requesting = YES;
 		MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];

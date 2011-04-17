@@ -99,7 +99,7 @@ NSString * const NewsTagImageHeight     = @"height";
 
 - (void)dealloc {
 	if (![thread isFinished]) {
-		NSLog(@"***** %s called before parsing finished", __PRETTY_FUNCTION__);
+		ELog(@"***** %s called before parsing finished", __PRETTY_FUNCTION__);
 	}
 	[thread release];
 	thread = nil;
@@ -172,7 +172,7 @@ NSString * const NewsTagImageHeight     = @"height";
 
 - (void)detachAndParseURL:(NSURL *)url {
 	if (thread) {
-		NSLog(@"***** %s called twice on the same instance", __PRETTY_FUNCTION__);
+		ELog(@"***** %s called twice on the same instance", __PRETTY_FUNCTION__);
 	}
 	thread = [[NSThread alloc] initWithTarget:self selector:@selector(downloadAndParse:) object:url];
 	[thread start];
@@ -276,7 +276,7 @@ NSString * const NewsTagImageHeight     = @"height";
     self.currentElement = elementName;
 	if ([elementName isEqualToString:NewsTagItem]) {
         if ([[currentContents allValues] count] > 0) {
-            NSLog(@"%s warning: found a nested <item> in the News XML.", __PRETTY_FUNCTION__);
+            ELog(@"%s warning: found a nested <item> in the News XML.", __PRETTY_FUNCTION__);
             [currentContents removeAllObjects];
         }
         NSArray *whitelist = [self itemWhitelist];

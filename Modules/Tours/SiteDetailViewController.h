@@ -3,7 +3,6 @@
 #import "MITMapView.h"
 #import "CampusTourInteriorController.h"
 #import "ConnectionWrapper.h"
-#import "ZXingWidgetController.h"
 
 @class TourSiteOrRoute;
 @class CampusTourSideTrip;
@@ -13,7 +12,7 @@
 @class MITMapRoute;
 
 @interface SiteDetailViewController : UIViewController
-<MITThumbnailDelegate, UIAlertViewDelegate, // ZXingDelegate,
+<MITThumbnailDelegate, UIAlertViewDelegate,
 UIWebViewDelegate, MITMapViewDelegate,
 ConnectionWrapperDelegate, UITableViewDelegate, UITableViewDataSource> {
 
@@ -64,6 +63,5 @@ ConnectionWrapperDelegate, UITableViewDelegate, UITableViewDataSource> {
 - (IBAction)previousButtonPressed:(id)sender;
 - (IBAction)nextButtonPressed:(id)sender;
 - (IBAction)overviewButtonPressed:(id)sender;
-//- (IBAction)qrcodeButtonPressed:(id)sender;
 
 @end

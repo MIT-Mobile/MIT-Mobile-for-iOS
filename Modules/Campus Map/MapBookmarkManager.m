@@ -65,8 +65,6 @@ static MapBookmarkManager* s_mapBookmarksManager = nil;
 {
 	NSString* filename = [self getBookmarkFilename];
 	[_bookmarks writeToFile:filename atomically:YES];
-	//BOOL saved = [_bookmarks writeToFile:filename atomically:YES];
-	//NSLog(@"Saved file: %@ %@", filename, saved ? @"SUCCESS" : @"FAIL");
 }
 
 

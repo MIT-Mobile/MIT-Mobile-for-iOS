@@ -53,7 +53,7 @@
 	[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
 	
     self.connectionWrapper = nil;
-	//NSLog(@"connection failed in %@, userinfo: %@, url: %@", [error domain], [error userInfo], wrapper.theURL);
+	VLog(@"connection failed in %@, userinfo: %@, url: %@", [error domain], [error userInfo], wrapper.theURL);
     
 	if([jsonDelegate respondsToSelector:@selector(handleConnectionFailureForRequest:)]) {
 		[jsonDelegate handleConnectionFailureForRequest:self];

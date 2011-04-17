@@ -152,8 +152,8 @@
 			[delegate subscriptionFailedWithObject:object passkeyError:YES];
 		}
 	} else {
-		NSLog(@"%s received non-dictionary response for %@", __FUNCTION__, request);
-		NSLog(@"response was %@", jsonObject);
+		ELog(@"%s received non-dictionary response for %@", __FUNCTION__, request);
+		ELog(@"response was %@", jsonObject);
 	}
 }
 

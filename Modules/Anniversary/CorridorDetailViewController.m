@@ -80,8 +80,8 @@
     NSError *error = nil;
     NSMutableString *htmlString = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
     if (!htmlString) {
-		NSLog(@"Failed to load %@", fileURL);
-		NSLog(@"%@", error);
+		ELog(@"Failed to load %@", fileURL);
+		ELog(@"%@", error);
         return;
     }
     

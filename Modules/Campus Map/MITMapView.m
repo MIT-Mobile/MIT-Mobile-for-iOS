@@ -472,17 +472,17 @@
         case 0:
             coord.latitude = 42.3614;
             coord.longitude = -71.0967;
-            NSLog(@"we are in n42");
+            DLog(@"Pretending that we are in n42");
             break;
         case 1:
             coord.latitude = 42.3629;
             coord.longitude = -71.0862;
-            NSLog(@"we are in kendall square");
+            DLog(@"Pretending that we are in kendall square");
             break;
         default:
             coord.latitude = 42.3948;
             coord.longitude = -71.1446;
-            NSLog(@"we are in alewife");
+            DLog(@"Pretending that we are in alewife");
             break;
     }
     

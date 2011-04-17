@@ -218,9 +218,9 @@ static NSString * kMapPathExtension = @"map/";
 - (void)saveData {
 	NSString *filename = [MITMKProjection serverInfoFilename];
 	BOOL saved = [_serverInfo writeToFile:filename atomically:YES];
-	NSLog(@"Saved file: %@ %@", filename, saved ? @"SUCCESS" : @"FAIL");
+	DLog(@"Saved file: %@ %@", filename, saved ? @"SUCCESS" : @"FAIL");
     if (!saved) {
-        NSLog(@"could not save file with contents %@", [_serverInfo description]);
+        ELog(@"could not save file with contents %@", [_serverInfo description]);
     }
 }
 
@@ -433,9 +433,9 @@ static NSString * kMapPathExtension = @"map/";
         NSDictionary* dictionary = (NSDictionary *)result;
         long long newMapTimestamp = [[dictionary objectForKey:kLastUpdatedKey] longLongValue];
         
-        if (newMapTimestamp > _mapTimestamp) {
+        if (newMapTimestamp != _mapTimestamp) {
             // store the new timestamp and wipe out the cache.
-            NSLog(@"new map tiles found");
+            DLog(@"New map tiles found. New timestamp: %ld Old timestamp: %ld", newMapTimestamp, _mapTimestamp);
             [dictionary writeToFile:[MITMKProjection mapTimestampFilename] atomically:YES];
             
             NSString* tileCachePath = [MITMKProjection tileCachePath];
@@ -443,7 +443,7 @@ static NSString * kMapPathExtension = @"map/";
             if ([[NSFileManager defaultManager] fileExistsAtPath:tileCachePath]) {
                 NSError* error = nil;
                 if (![[NSFileManager defaultManager] removeItemAtPath:tileCachePath error:&error]) {
-                    NSLog(@"Error wiping out map cache: %@", error);
+                    ELog(@"Error wiping out map cache: %@", error);
                 }
             }
         }
@@ -462,7 +462,7 @@ static NSString * kMapPathExtension = @"map/";
 }
 
 - (void)request:(MITMobileWebAPI *)request handleConnectionError:(NSError *)error {
-    NSLog(@"failed to get tile server info");
+    ELog(@"failed to get tile server info");
 	// TODO: handle connection failure
 }
 

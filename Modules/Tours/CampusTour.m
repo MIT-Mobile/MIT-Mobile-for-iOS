@@ -27,7 +27,7 @@
             for (NSString *filename in files) {
                 if ([filename rangeOfString:self.tourID].location == 0) {
                     NSString *path = [aDirectory stringByAppendingPathComponent:filename];
-                    NSLog(@"deleting file %@", path);
+                    DLog(@"deleting file %@", path);
                     [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
                 }
             }

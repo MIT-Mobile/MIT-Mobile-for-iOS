@@ -215,7 +215,6 @@
 
 // set the view to either map or list mode
 -(void) setMapViewMode:(BOOL)showMap animated:(BOOL)animated {
-	//NSLog(@"map is showing=%i", _mapShowing);
 	if (_mapShowing == showMap) {
 		// nothing to change
 		return;

@@ -873,7 +873,7 @@
 	}
 	
 	loadingIndicatorCount++;
-	NSLog(@"loading indicator count: %d", loadingIndicatorCount);
+	DLog(@"loading indicator count: %d", loadingIndicatorCount);
 	if (![loadingIndicator isDescendantOfView:self.view]) {
 		[self.view addSubview:loadingIndicator];
 	}
@@ -882,7 +882,7 @@
 - (void)removeLoadingIndicator
 {
 	loadingIndicatorCount--;
-	NSLog(@"loading indicator count: %d", loadingIndicatorCount);
+	DLog(@"loading indicator count: %d", loadingIndicatorCount);
 	if (loadingIndicatorCount <= 0) {
 		loadingIndicatorCount = 0;
 		[loadingIndicator removeFromSuperview];
@@ -904,7 +904,7 @@
 }
 
 - (void)calendarListsFailedToLoad {
-	NSLog(@"failed to load lists");
+	DLog(@"failed to load lists");
 }
 
 #pragma mark MITMobileWebAPI
@@ -941,7 +941,6 @@
 		NSMutableArray *arrayForTable = [NSMutableArray arrayWithCapacity:[resultEvents count]];
 		
         for (NSDictionary *eventDict in resultEvents) {
-			NSLog(@"%@", [eventDict description]);
             MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
             [arrayForTable addObject:event];
         }
@@ -1001,7 +1000,7 @@
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
 {
-	NSLog(@"request failed: %@", [[request userData] description]);
+	DLog(@"request failed: %@", [[request userData] description]);
 	
 	[self removeLoadingIndicator];
     

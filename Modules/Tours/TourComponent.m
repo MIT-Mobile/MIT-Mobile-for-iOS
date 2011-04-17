@@ -15,7 +15,7 @@
 - (void)deleteCachedMedia {
     for (NSString *path in [NSArray arrayWithObjects:[self photoFile], [self audioFile], nil]) {
         if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
-            NSLog(@"deleting file %@", path);
+            DLog(@"deleting file %@", path);
             [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
         }
     }

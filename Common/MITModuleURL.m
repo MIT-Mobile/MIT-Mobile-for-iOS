@@ -47,7 +47,7 @@
     if (parentURL) {
         [self setPath:[NSString stringWithFormat:@"%@/%@", parentURL.path, extension] query:nil];
     } else {
-        NSLog(@"Error: Attempting to load nil path");
+        ELog(@"Attempting to load nil path");
     }
 }
 	

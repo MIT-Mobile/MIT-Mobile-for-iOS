@@ -17,7 +17,6 @@
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	//NSLog(@"viewing %@", [self description]);
 	if (categories) {
 		return [categories count];
 	}

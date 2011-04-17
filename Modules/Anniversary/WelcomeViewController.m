@@ -49,7 +49,7 @@
 	// http://mobile-dev.mit.edu/api/anniversary.php
 	BOOL dispatched = [api requestObject:nil pathExtension:@"anniversary.php"];
 	if (!dispatched) {
-		NSLog(@"%@", @"problem making welcome api request");
+		ELog(@"problem making welcome api request");
 	}
 }
 

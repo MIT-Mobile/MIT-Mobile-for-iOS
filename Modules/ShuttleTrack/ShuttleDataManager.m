@@ -201,7 +201,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
 	BOOL dispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"routes", @"command", @"true", @"compact", nil]
 						   pathExtension:shuttlePathExtension];
 	if (!dispatched) {
-		NSLog(@"%@", @"problem making routes api request");
+		WLog(@"%@", @"problem making routes api request");
 	}
 }
 
@@ -212,7 +212,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
 	BOOL dispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"stopInfo", @"command", stopID, @"id", nil]
 						   pathExtension:shuttlePathExtension];
 	if (!dispatched) {
-		NSLog(@"%@", @"problem making single stop api request");
+		WLog(@"%@", @"problem making single stop api request");
 	}
 }
 
@@ -221,7 +221,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
 	BOOL dispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"routeInfo", @"command", routeID, @"id", @"true", @"full", nil]
 						   pathExtension:shuttlePathExtension];
 	if (!dispatched) {
-		NSLog(@"%@", @"problem making single route api request");
+		WLog(@"%@", @"problem making single route api request");
 	}
 }
 
@@ -369,7 +369,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
 			ShuttleStop *stop = [ShuttleDataManager stopWithRoute:[routeAtStop objectForKey:@"route_id"] stopID:stopID error:&error];
             
             if (error != nil) {
-                NSLog(@"error getting shuttle stop. code: %d; userinfo: %@", error.code, error.userInfo);
+                ELog(@"error getting shuttle stop. code: %d; userinfo: %@", error.code, error.userInfo);
             }
 
             if (stop != nil) {

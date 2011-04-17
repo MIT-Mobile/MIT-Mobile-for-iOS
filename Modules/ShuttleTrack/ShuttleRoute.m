@@ -159,7 +159,7 @@
 		// prune cached stops no longer on the route
 		self.cache.stops = newRouteStops;
 		[oldRouteStops minusSet:newRouteStops];
-        NSLog(@"deleting route stops: %@", [oldRouteStops description]);
+        DLog(@"deleting route stops: %@", [oldRouteStops description]);
 		[CoreDataManager deleteObjects:[oldRouteStops allObjects]];
 		
 		pathShouldUpdate = YES;

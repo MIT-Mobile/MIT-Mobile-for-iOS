@@ -75,10 +75,10 @@
 	NSError *error = nil;
 	BOOL success = [frc performFetch:&error];
 	if (!success) {
-		NSLog(@"%s failed", __FUNCTION__);
+		ELog(@"%s failed", __FUNCTION__);
         
         if (error)
-            NSLog(@"%@", [error description]);
+            ELog(@"%@", [error description]);
 	}
 }
 
@@ -257,7 +257,7 @@
 	// http://mobile-dev.mit.edu/api/?module=corridor&command=list&offset=2
 	BOOL dispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"corridor", @"module", @"list", @"command", [NSString stringWithFormat:@"%d", offset], @"offset", nil]];
 	if (!dispatched) {
-		NSLog(@"%@", @"problem making corridor api request");
+		DLog(@"%@", @"problem making corridor api request");
 	}
 }
 
@@ -276,8 +276,8 @@
 	NSError *error;
 	BOOL success = [frc performFetch:&error];
 	if (!success) {
-		NSLog(@"%s failed", __FUNCTION__);
-		NSLog(@"%@", [error description]);
+		ELog(@"%s failed", __FUNCTION__);
+		ELog(@"%@", [error description]);
 	}
 
 	NSUInteger newTotal = [[frc fetchedObjects] count];

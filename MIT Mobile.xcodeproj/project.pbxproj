@@ -212,7 +212,7 @@
 		EB4C225B1278962000058748 /* Tours.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EB4C225A1278962000058748 /* Tours.xcdatamodeld */; };
 		EB4C22691278BD6E00058748 /* CampusTourSideTrip.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C22611278BD6E00058748 /* CampusTourSideTrip.m */; };
 		EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C22651278BD6E00058748 /* CampusTour.m */; };
-		EB4C23AE1279E89A00058748 /* SiteDetailViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = EB4C23AC1279E89A00058748 /* SiteDetailViewController.mm */; };
+		EB4C23AE1279E89A00058748 /* SiteDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C23AC1279E89A00058748 /* SiteDetailViewController.m */; };
 		EB4C23B01279E8DD00058748 /* SiteDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB4C23AF1279E8DD00058748 /* SiteDetailViewController.xib */; };
 		EB4C2525127A0E8F00058748 /* MITThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C2523127A0E8F00058748 /* MITThumbnailView.m */; };
 		EB4C2914127B224800058748 /* IconGrid.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C2912127B224800058748 /* IconGrid.m */; };
@@ -736,7 +736,7 @@
 		EB4C22641278BD6E00058748 /* CampusTour.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CampusTour.h; sourceTree = "<group>"; };
 		EB4C22651278BD6E00058748 /* CampusTour.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CampusTour.m; sourceTree = "<group>"; };
 		EB4C23AB1279E89A00058748 /* SiteDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SiteDetailViewController.h; sourceTree = "<group>"; };
-		EB4C23AC1279E89A00058748 /* SiteDetailViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SiteDetailViewController.mm; sourceTree = "<group>"; };
+		EB4C23AC1279E89A00058748 /* SiteDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SiteDetailViewController.m; sourceTree = "<group>"; };
 		EB4C23AF1279E8DD00058748 /* SiteDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SiteDetailViewController.xib; sourceTree = "<group>"; };
 		EB4C2522127A0E8F00058748 /* MITThumbnailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITThumbnailView.h; sourceTree = "<group>"; };
 		EB4C2523127A0E8F00058748 /* MITThumbnailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITThumbnailView.m; sourceTree = "<group>"; };
@@ -1622,7 +1622,7 @@
 				EB4C21D712777C8D00058748 /* StartingLocationViewController.h */,
 				EB4C21D812777C8D00058748 /* StartingLocationViewController.m */,
 				EB4C23AB1279E89A00058748 /* SiteDetailViewController.h */,
-				EB4C23AC1279E89A00058748 /* SiteDetailViewController.mm */,
+				EB4C23AC1279E89A00058748 /* SiteDetailViewController.m */,
 				EB4C23AF1279E8DD00058748 /* SiteDetailViewController.xib */,
 				EB4C3A081283698000058748 /* TourOverviewViewController.h */,
 				EB4C3A091283698000058748 /* TourOverviewViewController.m */,
@@ -2158,7 +2158,7 @@
 				EB4C225B1278962000058748 /* Tours.xcdatamodeld in Sources */,
 				EB4C22691278BD6E00058748 /* CampusTourSideTrip.m in Sources */,
 				EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */,
-				EB4C23AE1279E89A00058748 /* SiteDetailViewController.mm in Sources */,
+				EB4C23AE1279E89A00058748 /* SiteDetailViewController.m in Sources */,
 				EB4C2525127A0E8F00058748 /* MITThumbnailView.m in Sources */,
 				EB4C2914127B224800058748 /* IconGrid.m in Sources */,
 				EB4C31BC1280AA9600058748 /* TourSiteOrRoute.m in Sources */,

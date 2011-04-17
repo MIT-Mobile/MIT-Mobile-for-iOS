@@ -145,7 +145,7 @@
 }
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	NSLog(@"request failed, using cache");
+	DLog(@"request failed, using cache");
 }
 
 #pragma mark ConnectionWrapper
@@ -156,10 +156,10 @@
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *documentPath = [paths objectAtIndex:0];
         NSString *bannerFile = [documentPath stringByAppendingPathComponent:@"banner"];
-        NSLog(@"writing to %@", bannerFile);
+        DLog(@"writing to %@", bannerFile);
         NSError *error = nil;
         if (![data writeToFile:bannerFile options:NSDataWritingAtomic error:&error]) {
-            NSLog(@"%@", [error description]);
+            ELog(@"%@", [error description]);
         }
     }
     

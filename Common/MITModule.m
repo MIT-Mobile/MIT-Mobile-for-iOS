@@ -105,7 +105,7 @@
 
 - (UIViewController *)moduleHomeController {
     // return view controller that serves as module's home screen
-    NSLog(@"home controller not defined for module %@", self.tag);
+    DLog(@"home controller not defined for module %@", self.tag);
     return nil;
 }
 

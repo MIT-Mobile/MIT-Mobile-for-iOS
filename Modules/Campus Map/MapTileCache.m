@@ -7,7 +7,7 @@
 
 #define kInMemoryTileLimit 4
 #define kTileSize 256
-#define LogRect(rect, message) NSLog(@"%@ rect: %f %f %f %f", message,  rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
+#define LogRect(rect, message) DLog(@"%@ rect: %f %f %f %f", message,  rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
 
 #define kLastUpdatedKey @"last_updated"
 
@@ -306,7 +306,7 @@ static MapTileCache* s_cache;
             
             if(nil != error)
             {
-                NSLog(@"Error wiping out map cache: %@", error);
+                ELog(@"Error wiping out map cache: %@", error);
             }
         }
 
@@ -321,7 +321,7 @@ static MapTileCache* s_cache;
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
 {
-	NSLog(@"Check tile update failed. ");	
+	DLog(@"Check tile update failed. ");	
 }
 
 @end

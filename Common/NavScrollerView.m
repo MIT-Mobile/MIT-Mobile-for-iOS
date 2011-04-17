@@ -99,7 +99,7 @@ scrollView = _scrollView, navScrollerDelegate, currentXOffset = _currentXOffset;
     
     // if we get to this point that means there's still some
     // subview that isn't being assigned a non-conflicting tag
-    NSLog(@"%@", [view description]);
+    WLog(@"%@", [view description]);
     
     return nil;
 }
@@ -182,7 +182,6 @@ scrollView = _scrollView, navScrollerDelegate, currentXOffset = _currentXOffset;
 
         _pressedButton = pressedButton;
     }
-    //NSLog(@"button tag: %d", pressedButton.tag);
     
     [self.navScrollerDelegate buttonPressed:sender];
 }
