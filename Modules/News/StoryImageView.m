@@ -60,7 +60,7 @@
         [self addSubview:imageView];
         imageView.frame = self.bounds;
         imageView.contentMode = UIViewContentModeScaleAspectFit;
-        imageView.autoresizingMask = (UIViewAutoresizingFlexibleWidth || UIViewAutoresizingFlexibleHeight);
+        imageView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
     }
     
     [loadingView stopAnimating];
