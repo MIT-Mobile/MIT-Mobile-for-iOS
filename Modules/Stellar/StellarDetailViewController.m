@@ -39,7 +39,7 @@ NSString * termText(NSString *termCode) {
 	return [NSString stringWithFormat:@"%@ 20%@", seasonName, year];
 }
 
-@interface StellarDetailViewController (Private) 
+@interface StellarDetailViewController (Private)
 - (void) resizeFooter;
 - (void) switchTab:(NSInteger)index;
 - (void) setCurrentTabName: (NSString *)tabName;
@@ -76,7 +76,7 @@ NSString * termText(NSString *termCode) {
 		
 		actionButton = nil;
 		
-		self.currentTabName = @"News";
+		[self setCurrentTabName: @"News"];
 		currentTabNames = [[NSMutableArray alloc] initWithCapacity:3];
 		tabViewControl = nil;
 		myStellarButton = nil;
@@ -107,7 +107,7 @@ NSString * termText(NSString *termCode) {
 	[times release];
 	
 	[currentTabNames release];
-	self.currentTabName = nil;
+	[self setCurrentTabName:nil];
 	[dataSources release];
 	
 	[super dealloc];
@@ -219,7 +219,7 @@ NSString * termText(NSString *termCode) {
 
 // this method is only activated by an actual user interaction with the tab
 - (void) tabControl: (TabViewControl*)control changedToIndex:(int)tabIndex tabText:(NSString*)tabText {
-	self.currentTabName = tabText;
+	[self setCurrentTabName:tabText];
 	[self switchTab:tabIndex];
 	
 	// save the tab state
@@ -287,7 +287,7 @@ NSString * termText(NSString *termCode) {
 }
 
 - (void) setCurrentTab: (NSString *)tabName {
-	self.currentTabName = tabName;
+	[self setCurrentTabName:tabName];
 	if (currentTabNames.count) {
 		// manually search for the tab, could not find a builtin API to do this
 		NSUInteger activeIndex = NSNotFound;
@@ -299,7 +299,7 @@ NSString * termText(NSString *termCode) {
 		}
 
 		if(activeIndex == NSNotFound) {
-			self.currentTabName = [currentTabNames objectAtIndex:0];
+            [self setCurrentTabName:[currentTabNames objectAtIndex:0]];
 			activeIndex = 0;
 		}
 
