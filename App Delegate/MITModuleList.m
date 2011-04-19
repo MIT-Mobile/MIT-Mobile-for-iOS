@@ -14,6 +14,7 @@
 #import "MITTabBarController.h"
 #import "MITMobileServerConfiguration.h"
 #import "QRReaderModule.h"
+#import "FacilitiesModule.h"
 
 // #import your module's header here
 
@@ -45,6 +46,7 @@
     [result addObject:[[[MobileWebModule alloc] init] autorelease]];
     [result addObject:[[[SettingsModule alloc] init] autorelease]];
     [result addObject:[[[AboutModule alloc] init] autorelease]];
+    [result addObject:[[[FacilitiesModule alloc] init] autorelease]];
     
     return result;
 }
