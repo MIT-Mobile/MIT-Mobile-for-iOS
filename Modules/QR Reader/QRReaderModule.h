@@ -1,7 +1,7 @@
 #import "MITModule.h"
 
 @interface QRReaderModule : MITModule {
-    UITabBarController *_viewController;
+    UIViewController *_viewController;
 }
 
 @end

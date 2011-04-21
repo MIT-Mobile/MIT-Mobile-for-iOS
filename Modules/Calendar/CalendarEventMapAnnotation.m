@@ -1,5 +1,5 @@
 #import "CalendarEventMapAnnotation.h"
-#import "MITCalendarEvent.h";
+#import "MITCalendarEvent.h"
 
 @implementation CalendarEventMapAnnotation
 

@@ -28,8 +28,8 @@
 
 
 @implementation TabViewControl
+@dynamic selectedTab;
 @synthesize tabs = _tabs;
-@synthesize selectedTab = _selectedTab;
 @synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame {
@@ -254,7 +254,11 @@
 
 }
 
--(void) setSelectedTab:(int) selectedTab
+- (int)selectedTab {
+    return _selectedTab;
+}
+
+- (void)setSelectedTab:(int)selectedTab
 {
 	int oldSelectedTab = _selectedTab;
 	
