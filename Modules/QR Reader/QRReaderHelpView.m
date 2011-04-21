@@ -11,7 +11,15 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"qr-reader-help"
+        
+        NSString *fileName = nil;
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            fileName = @"qr-reader-help";
+        } else {
+            fileName = @"qr-reader-help-no-camera";
+        }
+        
+        NSString *path = [[NSBundle mainBundle] pathForResource:fileName
                                                          ofType:@"html"
                                                     inDirectory:@"qrreader"];
         self.helpView = [[UIWebView alloc] initWithFrame:self.bounds];

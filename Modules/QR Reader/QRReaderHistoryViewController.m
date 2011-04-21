@@ -65,13 +65,21 @@
          forControlEvents:UIControlEventTouchUpInside];
         _scanButton = button;
         
+        UIBarButtonItem *cameraButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
+                                                                                       target:self
+                                                                                       action:@selector(beginQRScanning:)] autorelease];
+        
+        if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            cameraButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                          target:nil
+                                                                          action:nil] autorelease];
+        }
+        
         NSArray *toolItems = [NSArray arrayWithObjects:
                               [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                              target:nil
                                                                              action:nil] autorelease],
-                              [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
-                                                                             target:self
-                                                                             action:@selector(beginQRScanning:)] autorelease],
+                              cameraButton,
                               [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                              target:nil
                                                                              action:nil] autorelease],
@@ -130,10 +138,6 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    
-    for (UIView *view in self.view.subviews) {
-        [view removeFromSuperview];
-    }
     
     self.contentView = nil;
     self.helpView = nil;

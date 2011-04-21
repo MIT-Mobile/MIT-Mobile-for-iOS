@@ -45,8 +45,6 @@ ConnectionWrapperDelegate, UITableViewDelegate, UITableViewDataSource> {
     
     AVAudioPlayer *audioPlayer;
     
-    UIImagePickerController *imagePicker;
-    
     ConnectionWrapper *connection;
     UIProgressView *progressView;
 }
