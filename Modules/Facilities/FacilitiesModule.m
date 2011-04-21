@@ -1,4 +1,6 @@
 #import "FacilitiesModule.h"
+#import "MITConstants.h"
+#import "FacilitiesRootViewController.h"
 
 
 @implementation FacilitiesModule
@@ -22,7 +24,8 @@
 
 - (UIViewController *)moduleHomeController {
     if (_viewController == nil) {
-        _viewController = [[UIViewController alloc] init];
+        _viewController = [[FacilitiesRootViewController alloc] initWithNibName:@"FacilitiesRootViewController"
+                                                                         bundle:nil];
     }
     
     return _viewController;
