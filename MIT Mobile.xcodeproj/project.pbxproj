@@ -60,6 +60,9 @@
 		2C00912C13567CDE001000D2 /* QRReaderHelpView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C00912B13567CDE001000D2 /* QRReaderHelpView.m */; };
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
+		2C20332A135F60C90033E80A /* FacilitiesAbout.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C203329135F60C90033E80A /* FacilitiesAbout.xib */; };
+		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
+		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; };
 		2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */; };
 		2C77F0321355EE2500CD11D6 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C77F0311355EE2500CD11D6 /* QRReaderResult.m */; };
@@ -67,6 +70,7 @@
 		2CB645EC134CC63800E85E64 /* QRReaderHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */; };
 		2CB64608134CF13500E85E64 /* QRReaderScanViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; };
+		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
 		2CDF301F134DF504007C6813 /* qrreader in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF301E134DF504007C6813 /* qrreader */; };
 		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; };
@@ -431,6 +435,10 @@
 		2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderImageTransformer.m; sourceTree = "<group>"; };
 		2C1A45E7135DD146006A2EE4 /* FacilitiesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesModule.h; sourceTree = "<group>"; };
 		2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesModule.m; sourceTree = "<group>"; };
+		2C203329135F60C90033E80A /* FacilitiesAbout.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesAbout.xib; sourceTree = "<group>"; };
+		2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRootViewController.h; sourceTree = "<group>"; };
+		2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRootViewController.m; sourceTree = "<group>"; };
+		2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesRootViewController.xib; sourceTree = "<group>"; };
 		2C544B9B1358A24400685545 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
 		2C544B9C1358A24400685545 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		2C6AB73E13564F74003B174A /* NSDateFormatter+RelativeString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDateFormatter+RelativeString.h"; sourceTree = "<group>"; };
@@ -446,6 +454,7 @@
 		2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = QRReaderScanViewController.mm; sourceTree = "<group>"; };
 		2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileServerConfiguration.h; sourceTree = "<group>"; };
 		2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileServerConfiguration.m; sourceTree = "<group>"; };
+		2CD12D4E1360584F00A73ACA /* facilities */ = {isa = PBXFileReference; lastKnownFileType = folder; name = facilities; path = Resources/facilities; sourceTree = "<group>"; };
 		2CD8FEED13565E8B00B00B28 /* QRReaderResult.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QRReaderResult.xcdatamodel; sourceTree = "<group>"; };
 		2CDF301E134DF504007C6813 /* qrreader */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qrreader; path = Resources/qrreader; sourceTree = "<group>"; };
 		2CDF3020134E05ED007C6813 /* QRReaderHistoryData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderHistoryData.h; sourceTree = "<group>"; };
@@ -1009,6 +1018,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2CD12D4E1360584F00A73ACA /* facilities */,
 				2CDF301E134DF504007C6813 /* qrreader */,
 				EB07B06912B8971D005D6A4C /* calendar */,
 				EBF8A76012AF07B100D39AE6 /* mit150 */,
@@ -1171,12 +1181,32 @@
 		2C1A45E6135DD0A8006A2EE4 /* Facilities */ = {
 			isa = PBXGroup;
 			children = (
+				2C20332B135F64920033E80A /* FacilitiesRoot */,
+				2C203328135F5EB70033E80A /* FacilitiesAbout */,
 				2C1A45E7135DD146006A2EE4 /* FacilitiesModule.h */,
 				2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */,
 			);
 			name = Facilities;
 			path = Modules/Facilities;
 			sourceTree = SOURCE_ROOT;
+		};
+		2C203328135F5EB70033E80A /* FacilitiesAbout */ = {
+			isa = PBXGroup;
+			children = (
+				2C203329135F60C90033E80A /* FacilitiesAbout.xib */,
+			);
+			path = FacilitiesAbout;
+			sourceTree = "<group>";
+		};
+		2C20332B135F64920033E80A /* FacilitiesRoot */ = {
+			isa = PBXGroup;
+			children = (
+				2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */,
+				2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */,
+				2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */,
+			);
+			path = FacilitiesRoot;
+			sourceTree = "<group>";
 		};
 		2C927AD913561A41008A8A36 /* QRReaderHelpView */ = {
 			isa = PBXGroup;
@@ -1959,6 +1989,9 @@
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
 				2CDF301F134DF504007C6813 /* qrreader in Resources */,
 				2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */,
+				2C20332A135F60C90033E80A /* FacilitiesAbout.xib in Resources */,
+				2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */,
+				2CD12D4F1360584F00A73ACA /* facilities in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2231,6 +2264,7 @@
 				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,
 				2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */,
 				2CFCABA3135DE705006464AF /* QRReaderResultTransform.m in Sources */,
+				2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
