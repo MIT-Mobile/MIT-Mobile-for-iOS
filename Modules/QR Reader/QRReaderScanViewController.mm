@@ -5,7 +5,6 @@
 #include <sys/sysctl.h>
 
 // MIT
-#import "MITLogging.h"
 #import "QRReaderOverlayView.h"
 #import "QRReaderScanViewController.h"
 
@@ -119,9 +118,12 @@
 #pragma mark Private Methods
 - (BOOL)startCapture {
     NSError *error = nil;
-    AVCaptureDeviceInput *inputDevice = [AVCaptureDeviceInput deviceInputWithDevice:[AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo]
+    AVCaptureDeviceInput *inputDevice = [AVCaptureDeviceInput deviceInputWithDevice:[AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo]        
                                                                               error:&error];
-    if (error) {
+    if (inputDevice == nil) {
+        if (error) {
+            WLog(@"%@", [error localizedDescription]);
+        }
         return NO;
     } else if (self.isCaptureActive) {
         return NO;
