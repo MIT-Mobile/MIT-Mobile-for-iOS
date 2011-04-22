@@ -37,7 +37,21 @@
 
 #define MITNSLog(level, fmt, ...) NSLog((@"" level " [%s:%d] " fmt), __FILE__, __LINE__, ##__VA_ARGS__)
 #define MITPrintf(level, fmt, ...) MyLog(level, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+
+
+// Wrap the function prototype in an extern C
+// block if we are compiling this as C++ or
+// Objective-C++ otherwise the name mangling
+// will kick in and we'll get linking errors
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void MyLog(const char *level, const char *filepath, int line, NSString *format, ...) NS_FORMAT_FUNCTION(4,5);
+
+#ifdef __cplusplus
+}
+#endif
 
 // Use MITNSLog to include timestamps and the app's name
 // Use MITPrintf for narrower logs
