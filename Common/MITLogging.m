@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #import "MITLogging.h"
 
 // Based on code from bbum
