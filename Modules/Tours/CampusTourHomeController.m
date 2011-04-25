@@ -57,6 +57,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.view.clipsToBounds = YES;
+    
     self.navigationItem.title = @"Campus Tour";
     self.navigationItem.backBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Tour"
                                                                               style:UIBarButtonItemStyleBordered
