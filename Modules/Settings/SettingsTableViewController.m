@@ -291,23 +291,6 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
     
     [self performPushConfigurationForModule:aModule.tag
                                     enabled:aSwitch.isOn];
-     
-     /*
-    NSString *moduleTag = aModule.tag;
-	NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
-	[parameters setObject:moduleTag forKey:@"module_name"];
-	NSString *enabledString = aSwitch.on ? @"1" : @"0";
-	[parameters setObject:enabledString forKey:@"enabled"];
-	
-	MITMobileWebAPI *existingRequest = [self.apiRequests objectForKey:moduleTag];
-	if (existingRequest != nil) {
-		[existingRequest abortRequest];
-		[self.apiRequests removeObjectForKey:moduleTag];
-	}
-	MITMobileWebAPI *request = [MITMobileWebAPI jsonLoadedDelegate:self];
-	[request requestObjectFromModule:@"push" command:@"moduleSetting" parameters:parameters];
-	[self.apiRequests setObject:request forKey:moduleTag];
-    */
 }
 
 - (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled
