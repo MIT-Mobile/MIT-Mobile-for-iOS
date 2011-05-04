@@ -101,14 +101,17 @@
             break;
         
         case 1:
+            cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.textLabel.backgroundColor = [UIColor clearColor];
+            cell.detailTextLabel.backgroundColor = [UIColor clearColor];
+            
             switch (indexPath.row) {
                 case 0:
-                    cell.accessoryType = UITableViewCellAccessoryNone;
                     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
                     cell.textLabel.text = emailCellText;
                     break;
                 case 1:
-                    cell.accessoryType = UITableViewCellAccessoryNone;
                     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
                     cell.textLabel.text = callCellText;
                     break;
