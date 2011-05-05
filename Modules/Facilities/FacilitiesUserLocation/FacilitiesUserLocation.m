@@ -10,6 +10,7 @@
 
 #import "FacilitiesLocation.h"
 #import "FacilitiesLocationData.h"
+#import "MITLoadingActivityView.h"
 
 static const NSUInteger kMaxResultCount = 10;
 
@@ -19,7 +20,7 @@ static const NSUInteger kMaxResultCount = 10;
 
 @implementation FacilitiesUserLocation
 @synthesize tableView = _tableView;
-@synthesize activityIndicator = _activityIndicator;
+@synthesize loadingView = _loadingView;
 @synthesize locationManager = _locationManager;
 @synthesize filteredData = _filteredData;
 
@@ -59,10 +60,15 @@ static const NSUInteger kMaxResultCount = 10;
     self.locationManager.delegate = self;
     self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
     [self.locationManager startUpdatingLocation];
-    [self.activityIndicator startAnimating];
     
     self.view.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.hidden = YES;
+    
+    self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
+    [self.view insertSubview:self.loadingView
+                aboveSubview:self.tableView];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -107,6 +113,18 @@ static const NSUInteger kMaxResultCount = 10;
     cell.textLabel.text = location.name;
     
     return cell;
+}
+
+- (UIView*)tableView:(UITableView*)tableView viewForHeaderInSection:(NSInteger)section {
+    UITextView *textView = [[[UITextView alloc] init] autorelease];
+    
+    textView.text = @"We've narrowed down your location, please choose the closest location below:";
+    textView.textAlignment = UITextAlignmentLeft;
+    textView.editable = NO;
+    textView.scrollEnabled = NO;
+    [textView sizeToFit];
+    
+    return textView;
 }
 
 #pragma mark -
@@ -156,8 +174,9 @@ static const NSUInteger kMaxResultCount = 10;
     didUpdateToLocation:(CLLocation *)newLocation
            fromLocation:(CLLocation *)oldLocation
 {
-    if ([self.activityIndicator isAnimating]) {
-        [self.activityIndicator stopAnimating];
+    if (self.loadingView) {
+        [self.loadingView removeFromSuperview];
+        self.loadingView = nil;
         self.tableView.hidden = NO;
     }
     self.filteredData = [[FacilitiesLocationData sharedData] locationsWithinRadius:CGFLOAT_MAX

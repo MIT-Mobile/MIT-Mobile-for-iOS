@@ -13,7 +13,7 @@ typedef enum {
 extern const NSString *MITFacilitiesDidLoadNotification;
 extern const NSString *MITFacilitiesDidFinishLoadingNotification;
 
-typedef void (^FacilitiesUpdateCompleted)(void);
+typedef void (^FacilitiesDataAvailableBlock)(void);
 
 @class FacilitiesLocation;
 
@@ -37,5 +37,6 @@ typedef void (^FacilitiesUpdateCompleted)(void);
                        ofLocation:(CLLocation*)location
                      withCategory:(NSString*)categoryId;
 
-- (void)notifyOnLoadCompleted:(FacilitiesUpdateCompleted)completedBlock;
+- (void)notifyOnDataAvailable:(FacilitiesDataAvailableBlock)completedBlock;
+
 @end

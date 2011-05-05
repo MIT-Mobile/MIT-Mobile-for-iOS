@@ -117,7 +117,7 @@ static FacilitiesLocationData *_sharedData = nil;
     return sortedArray;
 }
 
-- (void)notifyOnLoadCompleted:(FacilitiesUpdateCompleted)completedBlock {
+- (void)notifyOnDataAvailable:(FacilitiesDataAvailableBlock)completedBlock {
     [_notificationBlocks addObject:[[completedBlock copy] autorelease]];
 }
 
@@ -149,13 +149,18 @@ static FacilitiesLocationData *_sharedData = nil;
     NSString *lastUpdate = [[NSUserDefaults standardUserDefaults] stringForKey:@"FacilitiesLastUpdateDate"];
     
     if (lastUpdate) {
+        dispatch_async(dispatch_get_main_queue(),^{
+            NSArray *blocks = [[_notificationBlocks copy] autorelease];
+            for(FacilitiesDataAvailableBlock block in blocks) {
+                dispatch_async(dispatch_get_main_queue(),block);
+            }
+        });
+        
         return;
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self loadCategories];
-        [self loadAllLocations];
-    });
+    [self loadCategories];
+    [self loadAllLocations];
 }
 
 - (void)loadCategories {
@@ -342,7 +347,7 @@ static FacilitiesLocationData *_sharedData = nil;
         if (queueEmpty) {
             dispatch_async(dispatch_get_main_queue(),^{
                 NSArray *blocks = [[_notificationBlocks copy] autorelease];
-                for(FacilitiesUpdateCompleted block in blocks) {
+                for(FacilitiesDataAvailableBlock block in blocks) {
                     dispatch_async(dispatch_get_main_queue(),block);
                 }
             });
@@ -388,4 +393,5 @@ static FacilitiesLocationData *_sharedData = nil;
 - (id)autorelease {
     return self;
 }
+
 @end

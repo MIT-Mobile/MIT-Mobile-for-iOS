@@ -7,6 +7,7 @@
 #import "FacilitiesLocationData.h"
 #import "FacilitiesUserLocation.h"
 #import "MITLogging.h"
+#import "MITLoadingActivityView.h"
 
 @interface FacilitiesLocationViewController ()
 @property (nonatomic,retain) NSArray* cachedData;
@@ -16,9 +17,7 @@
 
 @implementation FacilitiesLocationViewController
 @synthesize tableView = _tableView;
-
-@synthesize activityIndicator = _activityIndicator;
-@synthesize locationManager = _locationManager;
+@synthesize loadingView = _loadingView;
 
 @synthesize locationData = _locationData;
 @synthesize filteredData = _filteredData;
@@ -70,6 +69,16 @@
                                                                   target: nil
                                                                   action: nil];
     self.navigationItem.backBarButtonItem = [backButton autorelease];
+    
+    self.tableView.hidden = YES;
+    self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
+    [self.view insertSubview:self.loadingView
+                aboveSubview:self.tableView];
+    [[FacilitiesLocationData sharedData] notifyOnDataAvailable: ^{
+        [self.loadingView removeFromSuperview];
+        self.tableView.hidden = NO;
+        [self.tableView reloadInputViews];
+    }];
 }
 
 - (void)viewDidUnload
@@ -105,8 +114,6 @@
     FacilitiesLocationViewController *tmpView = nil;
     FacilitiesCategory *category = nil;
     
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
     UIViewController *nextViewController = nil;
     
     switch (self.viewMode) {
@@ -143,6 +150,9 @@
         [self.navigationController pushViewController:nextViewController
                                              animated:YES];
     }
+    
+    [tableView deselectRowAtIndexPath:indexPath
+                             animated:(nextViewController == nil)];
 }
 
 
