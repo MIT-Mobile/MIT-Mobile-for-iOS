@@ -33,7 +33,6 @@
         self.title = @"Where is it?";
         self.viewMode = viewMode;
         self.filterPredicate = [NSPredicate predicateWithFormat:@"(parent == nil) AND ((locations.@count > 0) OR (subcategories.@count > 0))"];
-        self.locationData = [FacilitiesLocationData sharedData];
     }
     return self;
 }
@@ -74,6 +73,7 @@
     self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
     [self.view insertSubview:self.loadingView
                 aboveSubview:self.tableView];
+    self.locationData = [FacilitiesLocationData sharedData];
     [[FacilitiesLocationData sharedData] notifyOnDataAvailable: ^{
         [self.loadingView removeFromSuperview];
         self.tableView.hidden = NO;

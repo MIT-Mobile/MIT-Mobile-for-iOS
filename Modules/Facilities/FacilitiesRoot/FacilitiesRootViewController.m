@@ -44,13 +44,6 @@
     self.view.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = [UIColor clearColor];
     self.textView.backgroundColor = [UIColor clearColor];
-    
-    _isLoadingData = YES;
-    
-    [[FacilitiesLocationData sharedData] notifyOnLoadCompleted: ^{
-        _isLoadingData = NO;
-        [self.tableView reloadData];
-    }];
 }
 
 - (void)viewDidUnload
@@ -98,16 +91,9 @@
     
     switch (indexPath.section) {
         case 0:
-            if (_isLoadingData) {
-                UIActivityIndicatorView *indicator = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease];
-                [indicator startAnimating];
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                cell.accessoryView = indicator;
-            } else {
-                cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-                cell.accessoryView = nil;
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            cell.accessoryView = nil;
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             cell.textLabel.text = reportCellText;
             break;
         
@@ -146,16 +132,14 @@
 #pragma mark UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if ((indexPath.section == 0) && (indexPath.row == 0)) {
-        if (_isLoadingData == NO) {
-            FacilitiesLocationViewController *vc = [[[FacilitiesLocationViewController alloc] initWithNibName:@"FacilitiesLocationViewController"
+        FacilitiesLocationViewController *vc = [[[FacilitiesLocationViewController alloc] initWithNibName:@"FacilitiesLocationViewController"
                                                                                                        bundle:nil] autorelease];
-            [self.navigationController pushViewController:vc
-                                                 animated:YES];
-        }
+        [self.navigationController pushViewController:vc
+                                             animated:YES];
     }
     
     [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
+                             animated:NO];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
