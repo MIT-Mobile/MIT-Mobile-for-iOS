@@ -24,6 +24,10 @@
                forKeyPath:@"highlightedTextColor"
                   options:0
                   context:NULL];
+        [self addObserver:self
+               forKeyPath:@"searchString"
+                  options:0
+                  context:NULL];
     }
     return self;
 }
