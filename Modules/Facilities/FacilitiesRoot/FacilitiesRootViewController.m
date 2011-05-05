@@ -1,12 +1,7 @@
-//
-//  FacilitiesRootViewController.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 4/20/11.
-//  Copyright 2011 MIT. All rights reserved.
-//
-
 #import "FacilitiesRootViewController.h"
+
+#import "FacilitiesLocationData.h"
+#import "FacilitiesLocationViewController.h"
 #import "UIKit+MITAdditions.h"
 
 #pragma mark -
@@ -49,6 +44,13 @@
     self.view.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = [UIColor clearColor];
     self.textView.backgroundColor = [UIColor clearColor];
+    
+    _isLoadingData = YES;
+    
+    [[FacilitiesLocationData sharedData] notifyOnLoadCompleted: ^{
+        _isLoadingData = NO;
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)viewDidUnload
@@ -96,7 +98,16 @@
     
     switch (indexPath.section) {
         case 0:
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            if (_isLoadingData) {
+                UIActivityIndicatorView *indicator = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease];
+                [indicator startAnimating];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                cell.accessoryView = indicator;
+            } else {
+                cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+                cell.accessoryView = nil;
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            }
             cell.textLabel.text = reportCellText;
             break;
         
@@ -134,7 +145,15 @@
 #pragma mark -
 #pragma mark UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"Tap detected for cell [%d,%d]", indexPath.section,indexPath.row);
+    if ((indexPath.section == 0) && (indexPath.row == 0)) {
+        if (_isLoadingData == NO) {
+            FacilitiesLocationViewController *vc = [[[FacilitiesLocationViewController alloc] initWithNibName:@"FacilitiesLocationViewController"
+                                                                                                       bundle:nil] autorelease];
+            [self.navigationController pushViewController:vc
+                                                 animated:YES];
+        }
+    }
+    
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];
 }
