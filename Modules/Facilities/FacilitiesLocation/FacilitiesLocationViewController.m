@@ -1,44 +1,28 @@
-#import <CoreLocation/CoreLocation.h>
+//
+//  FacilitiesCategoryViewController.m
+//  MIT Mobile
+//
+//  Created by Blake Skinner on 5/12/11.
+//  Copyright 2011 MIT. All rights reserved.
+//
 
 #import "FacilitiesLocationViewController.h"
-
 #import "FacilitiesCategory.h"
 #import "FacilitiesLocation.h"
-#import "FacilitiesLocationData.h"
-#import "FacilitiesUserLocation.h"
-#import "MITLogging.h"
-#import "MITLoadingActivityView.h"
+#import "FacilitiesRoomViewController.h"
+#import "HighlightTableViewCell.h"
 
-@interface FacilitiesLocationViewController ()
-@property (nonatomic,retain) NSArray* cachedData;
-@property (nonatomic,retain) NSArray* filteredData;
-@property (nonatomic) FacilitiesDisplayType viewMode;
-@end
 
 @implementation FacilitiesLocationViewController
-@synthesize tableView = _tableView;
-@synthesize loadingView = _loadingView;
+@synthesize category = _category;
 
-@synthesize locationData = _locationData;
-@synthesize filteredData = _filteredData;
-@synthesize cachedData = _cachedData;
-@synthesize viewMode = _viewMode;
-@dynamic filterPredicate;
-
-- (id)initWithViewMode:(FacilitiesDisplayType)viewMode
+- (id)init
 {
-    self = [super initWithNibName:@"FacilitiesLocationViewController"
-                           bundle:nil];
+    self = [super init];
     if (self) {
-        self.title = @"Where is it?";
-        self.viewMode = viewMode;
-        self.filterPredicate = [NSPredicate predicateWithFormat:@"(parent == nil) AND ((locations.@count > 0) OR (subcategories.@count > 0))"];
+        // Custom initialization
     }
     return self;
-}
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    return [self initWithViewMode:FacilitiesDisplayCategory];
 }
 
 - (void)dealloc
@@ -50,215 +34,145 @@
 {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-}
-
-#pragma mark - View lifecycle
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    self.tableView.dataSource = self;
-    self.tableView.delegate = self;
     
-    self.view.backgroundColor = [UIColor clearColor];
-    self.tableView.backgroundColor = [UIColor clearColor];
+    // Release any cached data, images, etc that aren't in use.
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle: @"Back"
-                                                                   style: UIBarButtonItemStyleBordered
-                                                                  target: nil
-                                                                  action: nil];
-    self.navigationItem.backBarButtonItem = [backButton autorelease];
-    
-    self.tableView.hidden = YES;
-    self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
-    [self.view insertSubview:self.loadingView
-                aboveSubview:self.tableView];
-    self.locationData = [FacilitiesLocationData sharedData];
-    [[FacilitiesLocationData sharedData] notifyOnDataAvailable: ^{
-        [self.loadingView removeFromSuperview];
-        self.tableView.hidden = NO;
-        [self.tableView reloadInputViews];
-    }];
+    [self.locationData addObserver:self
+                         withBlock:^(NSString *notification, BOOL updated, id userData) {
+                             if ([userData isEqualToString:FacilitiesLocationsKey]) {
+                                 [self.loadingView removeFromSuperview];
+                                 self.loadingView = nil;
+                                 self.tableView.hidden = NO;
+                                 
+                                 if ((self.cachedData == nil) || updated) {
+                                     self.cachedData = nil;
+                                     [self.tableView reloadData];
+                                 }
+                             }
+                         }];
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    self.tableView = nil;
-    self.cachedData = nil;
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.locationData removeObserver:self];
 }
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-
 
 #pragma mark -
-#pragma mark Dynamic Setters/Getters
-- (void)setFilterPredicate:(NSPredicate *)filterPredicate {
-    self.cachedData = nil;
-    [_filterPredicate release];
-    _filterPredicate = [filterPredicate retain];
+#pragma mark Public Methods
+- (NSArray*)dataForMainTableView {
+    NSArray *data = nil;
+    data = [self.locationData locationsMatchingPredicate:self.filterPredicate];
+    data = [data sortedArrayUsingComparator: ^(id obj1, id obj2) {
+        FacilitiesLocation *l1 = (FacilitiesLocation*)obj1;
+        FacilitiesLocation *l2 = (FacilitiesLocation*)obj2;
+        
+        return [l1.name compare:l2.name];
+    }];
+    
+    return data;
 }
-
-- (NSPredicate*)filterPredicate {
-    return _filterPredicate;
-}
-
 
 #pragma mark -
 #pragma mark UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    FacilitiesLocationViewController *tmpView = nil;
-    FacilitiesCategory *category = nil;
+    FacilitiesLocation *location = nil;
     
-    UIViewController *nextViewController = nil;
-    
-    switch (self.viewMode) {
-        case FacilitiesDisplayCategory:
-            if (indexPath.section == 0) {
-                nextViewController = [[[FacilitiesUserLocation alloc] init] autorelease];
-            } else {
-                category = (FacilitiesCategory*)[self.cachedData objectAtIndex:indexPath.row];
-                
-                if ([category.subcategories count] > 0) {
-                    tmpView = [[[FacilitiesLocationViewController alloc] initWithViewMode:FacilitiesDisplaySubcategory] autorelease];
-                    tmpView.filterPredicate = [NSPredicate predicateWithFormat:@"(parent != nil) AND (parent.uid == %@)",category.uid];
-                } else {
-                    tmpView = [[[FacilitiesLocationViewController alloc] initWithViewMode:FacilitiesDisplayLocation] autorelease];
-                    tmpView.filterPredicate = [NSPredicate predicateWithFormat:@"ANY categories.uid == %@",category.uid];
-                }
-                
-                nextViewController = tmpView;
-            }
-            break;
-        case FacilitiesDisplaySubcategory:
-            category = (FacilitiesCategory*)[self.cachedData objectAtIndex:indexPath.row];
-            tmpView = [[[FacilitiesLocationViewController alloc] initWithViewMode:FacilitiesDisplayLocation] autorelease];
-            tmpView.filterPredicate = [NSPredicate predicateWithFormat:@"ANY categories.uid == %@",category.uid];
-            nextViewController = tmpView;
-            break;
-        case FacilitiesDisplayLocation:
-            break;
-        case FacilitiesDisplayRoom:
-            break;
+    if (tableView == self.tableView) {
+        location = (FacilitiesLocation*)[self.cachedData objectAtIndex:indexPath.row];
+    } else {
+        location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
     }
     
-    if (nextViewController) {
-        [self.navigationController pushViewController:nextViewController
-                                             animated:YES];
-    }
+    FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
+    controller.location = location;
+    
+    [self.navigationController pushViewController:controller
+                                         animated:YES];
     
     [tableView deselectRowAtIndexPath:indexPath
-                             animated:(nextViewController == nil)];
+                             animated:YES];
 }
-
 
 #pragma mark -
 #pragma mark UITableViewDataSource Methods
-- (void)cacheDisplayData {
-    NSArray *data = nil;
-    
-    if (self.cachedData == nil) {
-        switch (self.viewMode) {
-            case FacilitiesDisplayCategory:
-                data = [self.locationData categoriesWithPredicate:self.filterPredicate];
-                self.cachedData = [data sortedArrayUsingComparator: ^(id obj1, id obj2) {
-                    FacilitiesCategory *c1 = (FacilitiesCategory*)obj1;
-                    FacilitiesCategory *c2 = (FacilitiesCategory*)obj2;
-                    
-                    return [c1.name compare:c2.name];
-                }];
-                break;
-                
-            case FacilitiesDisplaySubcategory:
-                data = [self.locationData categoriesWithPredicate:self.filterPredicate];
-                
-                self.cachedData = [data sortedArrayUsingComparator: ^(id obj1, id obj2) {
-                    FacilitiesCategory *c1 = (FacilitiesCategory*)obj1;
-                    FacilitiesCategory *c2 = (FacilitiesCategory*)obj2;
-                    
-                    return [c1.name compare:c2.name];
-                }];
-                break;
-                
-            case FacilitiesDisplayLocation:
-                data = [self.locationData locationsWithPredicate:self.filterPredicate];
-
-                self.cachedData = [data sortedArrayUsingComparator: ^(id obj1, id obj2) {
-                    FacilitiesLocation *l1 = (FacilitiesLocation*)obj1;
-                    FacilitiesLocation *l2 = (FacilitiesLocation*)obj2;
-                    
-                    return [l1.name compare:l2.name];
-                }];
-                break;
-            case FacilitiesDisplayRoom:
-                self.cachedData = [NSArray array];
-                break;
-        }
-    }
-}
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (self.viewMode == FacilitiesDisplayCategory) {
-        return ([CLLocationManager locationServicesEnabled] ? 2 : 1);
-    } else if (self.viewMode == FacilitiesDisplayRoom) {
-        return 2;
-    } else {
-        return 1;
-    }
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    [self cacheDisplayData];
-    
-    switch (self.viewMode) {
-        case FacilitiesDisplayCategory:
-            return ((section == 0) && [CLLocationManager locationServicesEnabled]) ? 1 : [self.cachedData count];
-        case FacilitiesDisplayRoom:
-            return (section == 0) ? 1 : [self.cachedData count];
-        default:
-            return [self.cachedData count];
+    if (tableView == self.tableView) {
+        return [self.cachedData count];
+    } else {
+        return [self.filteredData count];
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *reuseIdentifier = @"facilitiesCell";
+    static NSString *facilitiesIdentifier = @"facilitiesCell";
+    static NSString *searchIdentifier = @"searchCell";
+    UITableViewCell *cell = nil;
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
-    
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                       reuseIdentifier:reuseIdentifier] autorelease];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }
-    
-    [self cacheDisplayData];
-    
-    if (self.viewMode == FacilitiesDisplayCategory) {
-        if ((indexPath.section == 0) && [CLLocationManager locationServicesEnabled]) {
-            cell.textLabel.text = @"Use My Location";
-        } else {
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            FacilitiesCategory *category = [self.cachedData objectAtIndex:indexPath.row];
-            cell.textLabel.text = category.name;
+    if (tableView == self.tableView) {
+        cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
+        
+        if (cell == nil) {
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                           reuseIdentifier:facilitiesIdentifier] autorelease];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
-    } else if (self.viewMode == FacilitiesDisplaySubcategory) {
-        FacilitiesCategory *category = [self.cachedData objectAtIndex:indexPath.row];
-        cell.textLabel.text = category.name;
-    } else if (self.viewMode == FacilitiesDisplayLocation) {
+
         FacilitiesLocation *location = [self.cachedData objectAtIndex:indexPath.row];
         cell.textLabel.text = location.name;
-    } else if (self.viewMode == FacilitiesDisplayRoom) {
-        if (indexPath.section == 0) {
-            cell.textLabel.text = @"Outside";
-        } else {
-            
+        
+    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
+        HighlightTableViewCell *hlCell = (HighlightTableViewCell*)[tableView dequeueReusableCellWithIdentifier:searchIdentifier];
+        
+        if (hlCell == nil) {
+             hlCell = [[[HighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                     reuseIdentifier:searchIdentifier] autorelease];
         }
+        
+        FacilitiesLocation *location = [self.filteredData objectAtIndex:indexPath.row];
+        hlCell.highlightLabel.text = location.name;
+        hlCell.highlightLabel.searchString = self.searchString;
+        cell = hlCell;
     }
     
     return cell;
+}
+
+#pragma mark -
+#pragma mark UISearchBarDelegate
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    self.searchString = searchText;
+    self.filteredData = [self.cachedData filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name CONTAINS[c] %@",searchText]];
+    
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:[NSString stringWithFormat:@"\\b[\\S]*%@[\\S]*\\b",searchText]
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:NULL];
+    self.filteredData = [self.filteredData sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSString *key1 = [NSString stringWithString:[obj1 valueForKey:@"name"]];
+        NSString *key2 = [NSString stringWithString:[obj2 valueForKey:@"name"]];
+        
+        NSRange matchRange1 = [regex rangeOfFirstMatchInString:key1
+                                                       options:0
+                                                         range:NSMakeRange(0, [key1 length])];
+        NSRange matchRange2 = [regex rangeOfFirstMatchInString:key2
+                                                       options:0
+                                                         range:NSMakeRange(0, [key2 length])];
+        
+        if (matchRange1.location > matchRange2.location) {
+            return NSOrderedDescending;
+        } else if (matchRange1.location < matchRange2.location) {
+            return NSOrderedAscending;
+        } else {
+            return [key1 caseInsensitiveCompare:key2];
+        }
+    }];
+    
 }
 @end

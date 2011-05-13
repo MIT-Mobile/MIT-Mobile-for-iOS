@@ -1,25 +1,20 @@
+//
+//  FacilitiesCategoryViewController.h
+//  MIT Mobile
+//
+//  Created by Blake Skinner on 5/12/11.
+//  Copyright 2011 MIT. All rights reserved.
+//
+
 #import <UIKit/UIKit.h>
-#import "FacilitiesLocationData.h"
+#import "FacilitiesLocationDataViewController.h"
 
-@class MITLoadingActivityView;
+@class FacilitiesCategory;
 
-
-@interface FacilitiesLocationViewController : UIViewController <UITableViewDataSource,UITableViewDelegate> {
-    UITableView *_tableView;
-    MITLoadingActivityView *_loadingView;
-    
-    FacilitiesLocationData *_locationData;
-    FacilitiesDisplayType _viewMode;
-    NSArray *_cachedData;
-    NSArray *_filteredData;
-    NSPredicate *_filterPredicate;
-    
-    BOOL _isLoadingData;
+@interface FacilitiesLocationViewController : FacilitiesLocationDataViewController {
+    FacilitiesCategory *_category;
 }
 
-@property (nonatomic,retain) IBOutlet UITableView* tableView;
-@property (nonatomic,retain) MITLoadingActivityView* loadingView;
-@property (retain) FacilitiesLocationData* locationData;
-@property (nonatomic,retain) NSPredicate* filterPredicate;
+@property (nonatomic,retain) FacilitiesCategory* category;
 
 @end
