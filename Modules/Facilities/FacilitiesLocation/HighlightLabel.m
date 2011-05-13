@@ -2,6 +2,7 @@
 
 @implementation HighlightLabel
 @synthesize searchString = _searchString;
+@synthesize shouldHighlightAllMatches = _highlightAllMatches;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -11,6 +12,7 @@
         
         self.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
         self.highlightedTextColor = [UIColor redColor];
+        self.shouldHighlightAllMatches = YES;
         
         [self addObserver:self
                forKeyPath:@"font"
@@ -34,6 +36,17 @@
 
 - (void)dealloc
 {
+    [self removeObserver:self
+              forKeyPath:@"font"];
+    [self removeObserver:self
+              forKeyPath:@"highlightedTextColor"];
+    [self removeObserver:self
+              forKeyPath:@"text"];
+    [self removeObserver:self
+              forKeyPath:@"searchString"];
+    
+    [_attributedString release], _attributedString = nil;
+    
     [super dealloc];
 }
 
@@ -45,6 +58,7 @@
     if (_attributedString) {
         [_attributedString release];
         _attributedString = nil;
+        [self setNeedsDisplay];
     }
 }
 
@@ -55,96 +69,117 @@
     
     UIFont *labelFont = self.font;
     NSString *labelString = self.text;
-    NSMutableAttributedString *attributedString = [[[NSMutableAttributedString alloc] initWithString:labelString] autorelease];
-    NSRange stringRange = [labelString rangeOfString:self.searchString
-                                             options:NSCaseInsensitiveSearch];
     
-    NSMutableDictionary *attrDictionary = [NSMutableDictionary dictionary];
-    [attrDictionary setObject:labelFont.fontName
-                       forKey:(NSString*)kCTFontNameAttribute];
+    if (labelString == nil) {
+        return [[[NSAttributedString alloc] init] autorelease];
+    }
     
-    CTFontDescriptorRef descriptor = CTFontDescriptorCreateWithAttributes((CFDictionaryRef)attrDictionary);
-    CTFontRef ctFont = CTFontCreateWithFontDescriptor(descriptor,
-                                                      labelFont.pointSize,
-                                                      NULL);
-    CFRelease(descriptor);
+    NSMutableAttributedString *fullString = [[[NSMutableAttributedString alloc] initWithString:labelString] autorelease];
     
-    if (stringRange.location == NSNotFound) {
-        [attributedString addAttribute:(NSString*)kCTFontAttributeName
-                                 value:(id)ctFont
-                                 range:NSMakeRange(0,[labelString length])];
-    } else {
-        if (stringRange.location > 0) {
-            [attributedString addAttribute:(NSString*)kCTFontAttributeName
-                                     value:(id)ctFont
-                                     range:NSMakeRange(0,stringRange.location)];
+
+    CTFontRef ctFont = CTFontCreateWithName((CFStringRef)(self.font.fontName),
+                                            labelFont.pointSize,
+                                            NULL);
+
+    [fullString addAttribute:(NSString*)kCTFontAttributeName
+                       value:(id)ctFont
+                       range:NSMakeRange(0,[labelString length])];
+
+    [fullString addAttribute:(NSString*)kCTForegroundColorAttributeName
+                       value:(id)[self.textColor CGColor]
+                       range:NSMakeRange(0,[labelString length])];
+    
+    CTLineBreakMode breakMode = kCTLineBreakByTruncatingTail;
+    CTParagraphStyleSetting paragraphStyle[] = {
+        {
+            .spec = kCTParagraphStyleSpecifierLineBreakMode,
+            .valueSize = sizeof(CTLineBreakMode),
+            .value = &breakMode
         }
+    };
+    
+    [fullString addAttribute:(NSString*)kCTParagraphStyleAttributeName
+                       value:(id)CTParagraphStyleCreate(paragraphStyle,1)
+                       range:NSMakeRange(0,[labelString length])];
+    
+    
+    
+    NSString *searchString = self.searchString;
+    if (searchString && ([searchString length] > 0)) {
+        NSScanner *scanner = [NSScanner scannerWithString:labelString];
         
-        if ((stringRange.location + stringRange.length) < [labelString length]) {
-            NSUInteger startLoc = (stringRange.location + stringRange.length);
-            NSUInteger stopLoc = [labelString length] - startLoc;
-            [attributedString addAttribute:(NSString*)kCTFontAttributeName
-                                     value:(id)ctFont
-                                     range:NSMakeRange(startLoc,stopLoc)];
-        }
-        CFRelease(ctFont);
-        
-        descriptor = CTFontDescriptorCreateWithAttributes((CFDictionaryRef)attrDictionary);
-        ctFont = CTFontCreateWithFontDescriptor(descriptor,
-                                                labelFont.pointSize,
-                                                NULL);
-        [attributedString addAttribute:(NSString*)kCTFontAttributeName
+        while (![scanner isAtEnd]) {
+            [scanner scanUpToString:searchString
+                         intoString:NULL];
+            
+            NSString *resultString = nil;
+            BOOL scanned = [scanner scanString:searchString
+                                    intoString:&resultString];
+
+            if (scanned) {
+                NSRange matchRange = NSMakeRange([scanner scanLocation] - [searchString length], [searchString length]);
+                NSMutableAttributedString *hlString = [[[NSMutableAttributedString alloc] initWithString:resultString] autorelease];
+                
+                NSRange attrRange = NSMakeRange(0, matchRange.length);
+                [hlString addAttribute:(NSString*)kCTFontAttributeName
                                  value:(id)ctFont
-                                 range:stringRange];
-        [attributedString addAttribute:(NSString*)kCTForegroundColorAttributeName
+                                 range:attrRange];
+                [hlString addAttribute:(NSString*)kCTForegroundColorAttributeName
                                  value:(id)[self.highlightedTextColor CGColor]
-                                 range:stringRange];
-        CFRelease(descriptor);
+                                 range:attrRange];
+                [hlString addAttribute:(NSString*)kCTParagraphStyleAttributeName
+                                 value:(id)CTParagraphStyleCreate(paragraphStyle,1)
+                                 range:attrRange];
+                
+                [fullString replaceCharactersInRange:matchRange
+                                withAttributedString:hlString];
+            }
+            
+            if (self.shouldHighlightAllMatches == NO) {
+                [scanner setScanLocation:[labelString length]];
+            }
+        }
     }
     
     CFRelease(ctFont);
     
-    _attributedString = [[NSAttributedString alloc] initWithAttributedString:attributedString];
-    return [[[NSAttributedString alloc] initWithAttributedString:_attributedString] autorelease];
+    _attributedString = [[NSAttributedString alloc] initWithAttributedString:fullString];
+    return [[[NSAttributedString alloc] initWithAttributedString:fullString] autorelease];
 }
 
 - (void)drawTextInRect:(CGRect)rect {
-    if (self.searchString == nil) {
-        [super drawTextInRect:rect];
-    } else {
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        UIGraphicsPushContext(context);
-        CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-        CGContextTranslateCTM(context, 0, rect.size.height);
-        CGContextScaleCTM(context, 1.0, -1.0);
-        
-        CFAttributedStringRef stringRef = (CFAttributedStringRef)[self highlightedString];
-        
-        CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(stringRef);
-        CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, 
-                                                                       CFRangeMake(0, CFAttributedStringGetLength(stringRef)),
-                                                                       NULL,
-                                                                       rect.size,
-                                                                       NULL);
-        
-        CGRect stringRect = CGRectZero;
-        stringRect.size = fitSize;
-        stringRect.origin.y = (rect.size.height - fitSize.height) / 2.0;
-        stringRect.origin.x = rect.origin.x;
-        
-        CGMutablePathRef path = CGPathCreateMutable();
-        CGPathAddRect(path, NULL, stringRect);
-        CTFrameRef frame = CTFramesetterCreateFrame(framesetter,
-                                                    CFRangeMake(0, 0),
-                                                    path,
-                                                    NULL);
-        CGPathRelease(path);
-        CFRelease(framesetter);
-        
-        CTFrameDraw(frame,context);
-        CFRelease(frame);
-        UIGraphicsPopContext();
-    }
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+    CGContextTranslateCTM(context, 0, rect.size.height);
+    CGContextScaleCTM(context, 1.0f, -1.0f);
+    
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)[self highlightedString]);
+    
+    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, 
+                                                                   CFRangeMake(0, 0),
+                                                                   NULL,
+                                                                   rect.size,
+                                                                   NULL);
+
+    CGRect stringRect = CGRectZero;
+    stringRect.size.height = ceilf(fitSize.height);
+    stringRect.size.width = ceilf(fitSize.width);
+    stringRect.origin.y = ceilf((rect.size.height - fitSize.height) / 2.0);
+    stringRect.origin.x = rect.origin.x;
+    
+    
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathAddRect(path, NULL, stringRect);
+    CTFrameRef frame = CTFramesetterCreateFrame(framesetter,
+                                                CFRangeMake(0, 0),
+                                                path,
+                                                NULL);
+    CGPathRelease(path);
+    
+    CTFrameDraw(frame,context);
+    
+    CFRelease(framesetter);
+    CFRelease(frame);
 }
 
 @end

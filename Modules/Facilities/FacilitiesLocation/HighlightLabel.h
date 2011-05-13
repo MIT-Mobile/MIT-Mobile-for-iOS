@@ -9,7 +9,9 @@ extern const NSString* MITStrokeColorAttributeName;
 @interface HighlightLabel : UILabel {
     NSString *_searchString;
     NSAttributedString *_attributedString;
+    BOOL _highlightAllMatches;
 }
 @property (nonatomic,copy) NSString* searchString;
+@property (nonatomic) BOOL shouldHighlightAllMatches;
 
 @end
