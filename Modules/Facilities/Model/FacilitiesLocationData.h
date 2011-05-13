@@ -3,25 +3,19 @@
 
 #import "MITMobileWebAPI.h"
 
-typedef enum {
-    FacilitiesDisplayCategory = 0,
-    FacilitiesDisplaySubcategory,
-    FacilitiesDisplayLocation,
-    FacilitiesDisplayRoom
-} FacilitiesDisplayType;
+extern NSString* const FacilitiesDidLoadDataNotification;
+extern NSString* const FacilitiesCategoriesKey;
+extern NSString* const FacilitiesLocationsKey;
+extern NSString* const FacilitiesRoomsKey;
 
-extern const NSString *MITFacilitiesDidLoadNotification;
-extern const NSString *MITFacilitiesDidFinishLoadingNotification;
-
-typedef void (^FacilitiesDataAvailableBlock)(void);
+typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id userData);
 
 @class FacilitiesLocation;
 
 @interface FacilitiesLocationData : NSObject <JSONLoadedDelegate> {
     NSMutableDictionary *_requestsInFlight;
-    NSMutableArray *_notificationBlocks;
+    NSMutableDictionary *_notificationBlocks;
     dispatch_queue_t _requestUpdateQueue;
-    dispatch_group_t _defaultGroup;
 }
 
 + (FacilitiesLocationData*)sharedData;
@@ -30,13 +24,18 @@ typedef void (^FacilitiesDataAvailableBlock)(void);
 - (void)dealloc;
 
 - (NSArray*)allCategories;
-- (NSArray*)categoriesWithPredicate:(NSPredicate*)predicate;
+- (NSArray*)categoriesMatchingPredicate:(NSPredicate*)predicate;
+
 - (NSArray*)allLocations;
-- (NSArray*)locationsWithPredicate:(NSPredicate*)predicate;
+- (NSArray*)locationsMatchingPredicate:(NSPredicate*)predicate;
+- (NSArray*)locationsInCategory:(NSString*)categoryId;
 - (NSArray*)locationsWithinRadius:(CLLocationDistance)radiusInMeters
                        ofLocation:(CLLocation*)location
                      withCategory:(NSString*)categoryId;
 
-- (void)notifyOnDataAvailable:(FacilitiesDataAvailableBlock)completedBlock;
+- (NSArray*)roomsMatchingPredicate:(NSPredicate*)predicate;
+
+- (void)addObserver:(id)observer withBlock:(FacilitiesDidLoadBlock)block;
+- (void)removeObserver:(id)observer;
 
 @end

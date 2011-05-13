@@ -8,6 +8,7 @@
 }
 @property (nonatomic, retain) NSString * uid;
 @property (nonatomic, retain) NSString * name;
+@property (nonatomic, retain) NSDate * lastUpdated;
 @property (nonatomic, retain) NSSet* subcategories;
 @property (nonatomic, retain) NSSet* locations;
 @property (nonatomic, retain) FacilitiesCategory * parent;

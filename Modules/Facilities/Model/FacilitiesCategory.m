@@ -3,6 +3,7 @@
 @implementation FacilitiesCategory
 @dynamic uid;
 @dynamic name;
+@dynamic lastUpdated;
 @dynamic subcategories;
 @dynamic locations;
 @dynamic parent;
