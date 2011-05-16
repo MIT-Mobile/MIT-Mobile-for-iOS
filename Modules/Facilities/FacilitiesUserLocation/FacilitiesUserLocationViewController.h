@@ -3,7 +3,7 @@
 
 @class MITLoadingActivityView;
 
-@interface FacilitiesUserLocation : UIViewController <CLLocationManagerDelegate,UIAlertViewDelegate> {
+@interface FacilitiesUserLocationViewController : UIViewController <CLLocationManagerDelegate,UIAlertViewDelegate> {
     UITableView *_tableView;
     MITLoadingActivityView *_loadingView;
     

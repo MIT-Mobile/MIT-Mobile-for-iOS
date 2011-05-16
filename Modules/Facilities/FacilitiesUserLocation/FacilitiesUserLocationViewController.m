@@ -6,7 +6,7 @@
 //  Copyright 2011 MIT. All rights reserved.
 //
 
-#import "FacilitiesUserLocation.h"
+#import "FacilitiesUserLocationViewController.h"
 
 #import "FacilitiesLocation.h"
 #import "FacilitiesLocationData.h"
@@ -14,11 +14,11 @@
 
 static const NSUInteger kMaxResultCount = 10;
 
-@interface FacilitiesUserLocation ()
+@interface FacilitiesUserLocationViewController ()
 @property (nonatomic,retain) NSArray* filteredData;
 @end
 
-@implementation FacilitiesUserLocation
+@implementation FacilitiesUserLocationViewController
 @synthesize tableView = _tableView;
 @synthesize loadingView = _loadingView;
 @synthesize locationManager = _locationManager;
@@ -69,6 +69,18 @@ static const NSUInteger kMaxResultCount = 10;
     [self.view insertSubview:self.loadingView
                 aboveSubview:self.tableView];
     
+    CGRect headerRect = CGRectMake(0, 0, self.tableView.frame.size.width, 96);
+    UIView *view = [[[UIView alloc] initWithFrame:headerRect] autorelease];
+    UILabel *labelView = [[[UILabel alloc] initWithFrame:headerRect] autorelease];
+    
+    labelView.backgroundColor = [UIColor clearColor];
+    labelView.lineBreakMode = UILineBreakModeWordWrap;
+    labelView.text = @"We've narrowed down your location, please choose the closest location below:";
+    labelView.textAlignment = UITextAlignmentLeft;
+    
+    [view addSubview:labelView];
+    
+    self.tableView.tableHeaderView = view;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -115,20 +127,9 @@ static const NSUInteger kMaxResultCount = 10;
     return cell;
 }
 
-- (UIView*)tableView:(UITableView*)tableView viewForHeaderInSection:(NSInteger)section {
-    UITextView *textView = [[[UITextView alloc] init] autorelease];
-    
-    textView.text = @"We've narrowed down your location, please choose the closest location below:";
-    textView.textAlignment = UITextAlignmentLeft;
-    textView.editable = NO;
-    textView.scrollEnabled = NO;
-    [textView sizeToFit];
-    
-    return textView;
-}
-
 #pragma mark -
 #pragma mark UITableViewDelegate
+
 
 #pragma mark -
 #pragma mark CLLocationManagerDelegate
