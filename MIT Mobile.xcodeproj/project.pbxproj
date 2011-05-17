@@ -69,6 +69,7 @@
 		2C20332A135F60C90033E80A /* FacilitiesAbout.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C203329135F60C90033E80A /* FacilitiesAbout.xib */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
 		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
+		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
 		2C40A0F4136736AA00C83847 /* FacilitiesLocationDataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C40A0F2136736AA00C83847 /* FacilitiesLocationDataViewController.m */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; };
@@ -467,6 +468,8 @@
 		2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRootViewController.h; sourceTree = "<group>"; };
 		2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRootViewController.m; sourceTree = "<group>"; };
 		2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesRootViewController.xib; sourceTree = "<group>"; };
+		2C2E95401382F00200FA5557 /* FacilitiesConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesConstants.m; sourceTree = "<group>"; };
+		2C2E95411382F00200FA5557 /* FacilitiesConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesConstants.h; sourceTree = "<group>"; };
 		2C32BD24136F27D40015ACF6 /* FacilitiesLocations.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacilitiesLocations.xcdatamodel; sourceTree = "<group>"; };
 		2C40A0F1136736AA00C83847 /* FacilitiesLocationDataViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocationDataViewController.h; sourceTree = "<group>"; };
 		2C40A0F2136736AA00C83847 /* FacilitiesLocationDataViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationDataViewController.m; sourceTree = "<group>"; };
@@ -1250,6 +1253,8 @@
 				2C1807391382C2DA000CCB6F /* FacilitiesType */,
 				2C1A45E7135DD146006A2EE4 /* FacilitiesModule.h */,
 				2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */,
+				2C2E95411382F00200FA5557 /* FacilitiesConstants.h */,
+				2C2E95401382F00200FA5557 /* FacilitiesConstants.m */,
 			);
 			name = Facilities;
 			path = Modules/Facilities;
@@ -2395,6 +2400,7 @@
 				DEA57E9612B59FBD003211AC /* WelcomeViewController.m in Sources */,
 				29C45473118B55E100A321B0 /* XAuthTwitterEngine.m in Sources */,
 				2C18073C1382C32D000CCB6F /* FacilitiesTypeViewController.m in Sources */,
+				2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
