@@ -25,15 +25,9 @@ static const NSUInteger kMaxResultCount = 10;
 @synthesize filteredData = _filteredData;
 
 - (id)init {
-    return [self initWithNibName:@"FacilitiesUserLocation"
-                          bundle:nil];
-}
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    self = [super init];
     if (self) {
-        // Custom initialization
+        self.title = @"Where is it?";
     }
     return self;
 }
@@ -52,6 +46,76 @@ static const NSUInteger kMaxResultCount = 10;
 }
 
 #pragma mark - View lifecycle
+- (void)loadView {
+    CGRect screenFrame = [[UIScreen mainScreen] applicationFrame];
+    
+    UIView *mainView = [[[UIView alloc] initWithFrame:screenFrame] autorelease];
+    mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleWidth);
+    mainView.autoresizesSubviews = YES;
+    mainView.backgroundColor = [UIColor clearColor];
+
+    {
+        CGRect tableRect = screenFrame;
+        UITableView *tableView = [[[UITableView alloc] initWithFrame: tableRect
+                                                               style: UITableViewStyleGrouped] autorelease];
+        tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                      UIViewAutoresizingFlexibleWidth);
+        tableView.delegate = self;
+        tableView.dataSource = self;
+        tableView.backgroundColor = [UIColor clearColor];
+        tableView.hidden = YES;
+        tableView.scrollEnabled = YES;
+        tableView.autoresizesSubviews = YES;
+        
+        self.tableView = tableView;
+        [mainView addSubview:tableView];
+        
+    }
+     
+    {
+        NSString *labelText = @"We've narrowed down your location, please choose the closest location below";
+        UILabel *labelView = [[[UILabel alloc] init] autorelease];
+        CGRect headerRect = CGRectMake(0, 0, self.tableView.frame.size.width, 96);
+        CGSize strSize = [labelText sizeWithFont:labelView.font
+                               constrainedToSize:headerRect.size
+                                   lineBreakMode:labelView.lineBreakMode];
+        headerRect.size.height = strSize.height;
+        
+        
+        UIView *view = [[[UIView alloc] initWithFrame:headerRect] autorelease];
+        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleWidth);
+        view.autoresizesSubviews = YES;
+        
+        labelView.frame = headerRect;
+        labelView.backgroundColor = [UIColor clearColor];
+        labelView.lineBreakMode = UILineBreakModeWordWrap;
+        labelView.text = labelText;
+        labelView.textAlignment = UITextAlignmentLeft;
+        labelView.numberOfLines = 3;
+
+        [view addSubview:labelView];
+        self.tableView.tableHeaderView = view;
+    }
+    
+    
+    {
+        CGRect loadingFrame = screenFrame;
+        
+        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                        UIViewAutoresizingFlexibleWidth);
+        loadingView.backgroundColor = [UIColor redColor];
+        
+        self.loadingView = loadingView;
+        [mainView insertSubview:loadingView
+                   aboveSubview:self.tableView];
+    }
+    
+    self.view = mainView;
+}
+
 
 - (void)viewDidLoad
 {
@@ -64,23 +128,6 @@ static const NSUInteger kMaxResultCount = 10;
     self.view.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.hidden = YES;
-    
-    self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
-    [self.view insertSubview:self.loadingView
-                aboveSubview:self.tableView];
-    
-    CGRect headerRect = CGRectMake(0, 0, self.tableView.frame.size.width, 96);
-    UIView *view = [[[UIView alloc] initWithFrame:headerRect] autorelease];
-    UILabel *labelView = [[[UILabel alloc] initWithFrame:headerRect] autorelease];
-    
-    labelView.backgroundColor = [UIColor clearColor];
-    labelView.lineBreakMode = UILineBreakModeWordWrap;
-    labelView.text = @"We've narrowed down your location, please choose the closest location below:";
-    labelView.textAlignment = UITextAlignmentLeft;
-    
-    [view addSubview:labelView];
-    
-    self.tableView.tableHeaderView = view;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -94,8 +141,6 @@ static const NSUInteger kMaxResultCount = 10;
     [self.locationManager stopUpdatingLocation];
     self.locationManager.delegate = nil;
     self.locationManager = nil;
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -179,7 +224,9 @@ static const NSUInteger kMaxResultCount = 10;
         [self.loadingView removeFromSuperview];
         self.loadingView = nil;
         self.tableView.hidden = NO;
+        [self.view setNeedsDisplay];
     }
+    
     self.filteredData = [[FacilitiesLocationData sharedData] locationsWithinRadius:CGFLOAT_MAX
                                                                         ofLocation:newLocation
                                                                       withCategory:nil];
