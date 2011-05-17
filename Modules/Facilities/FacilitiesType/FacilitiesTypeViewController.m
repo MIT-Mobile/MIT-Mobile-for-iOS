@@ -8,6 +8,7 @@
 
 #import "FacilitiesTypeViewController.h"
 #import "FacilitiesSummaryViewController.h"
+#import "FacilitiesConstants.h"
 
 @implementation FacilitiesTypeViewController
 @synthesize userData = _userData;
@@ -128,12 +129,15 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:self.userData];
     [dict setObject:[[self repairTypes] objectAtIndex:indexPath.row]
-             forKey:@"FacilitiesRequestRepairType"];
+             forKey:FacilitiesRequestRepairTypeKey];
     
     FacilitiesSummaryViewController *vc = [[[FacilitiesSummaryViewController alloc] init] autorelease];
     vc.reportData = dict;
     [self.navigationController pushViewController:vc
                                          animated:YES];
+    
+    [tableView deselectRowAtIndexPath:indexPath
+                             animated:YES];
 }
 
 @end
