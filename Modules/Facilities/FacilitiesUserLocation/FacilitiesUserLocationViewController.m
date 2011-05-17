@@ -10,6 +10,7 @@
 
 #import "FacilitiesLocation.h"
 #import "FacilitiesLocationData.h"
+#import "FacilitiesRoomViewController.h"
 #import "MITLoadingActivityView.h"
 
 static const NSUInteger kMaxResultCount = 10;
@@ -174,6 +175,22 @@ static const NSUInteger kMaxResultCount = 10;
 
 #pragma mark -
 #pragma mark UITableViewDelegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    FacilitiesLocation *location = nil;
+    
+    if (tableView == self.tableView) {
+        location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
+    }
+    
+    FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
+    controller.location = location;
+    
+    [self.navigationController pushViewController:controller
+                                         animated:YES];
+    
+    [tableView deselectRowAtIndexPath:indexPath
+                             animated:YES];
+}
 
 
 #pragma mark -
