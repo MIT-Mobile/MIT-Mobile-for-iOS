@@ -1,7 +1,7 @@
 #import "FacilitiesRootViewController.h"
 
 #import "FacilitiesLocationData.h"
-#import "FacilitiesLocationViewController.h"
+#import "FacilitiesCategoryViewController.h"
 #import "UIKit+MITAdditions.h"
 
 #pragma mark -
@@ -132,8 +132,7 @@
 #pragma mark UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if ((indexPath.section == 0) && (indexPath.row == 0)) {
-        FacilitiesLocationViewController *vc = [[[FacilitiesLocationViewController alloc] initWithNibName:@"FacilitiesLocationViewController"
-                                                                                                       bundle:nil] autorelease];
+        FacilitiesLocationDataViewController *vc = [[[FacilitiesCategoryViewController alloc] init] autorelease];
         [self.navigationController pushViewController:vc
                                              animated:YES];
     }
