@@ -144,6 +144,12 @@
 	[self.managedObjectContext deleteObject:object];
 }
 
+- (void)deleteObjectsForEntity:(NSString*)entityName {
+    NSArray *objects = [self objectsForEntity:entityName
+                            matchingPredicate:[NSPredicate predicateWithValue:YES]];
+    [self deleteObjects:objects];
+}
+
 -(id)insertNewObjectForEntityForName:(NSString *)entityName {
 	return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:self.managedObjectContext];
 }

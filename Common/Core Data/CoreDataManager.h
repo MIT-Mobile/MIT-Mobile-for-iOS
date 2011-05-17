@@ -48,6 +48,7 @@
 
 -(void)deleteObjects:(NSArray *)objects;
 -(void)deleteObject:(NSManagedObject *)object;
+-(void)deleteObjectsForEntity:(NSString*)entityName;
 -(void)saveData;
 -(BOOL)wipeData;
 
