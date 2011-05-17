@@ -327,10 +327,14 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (void)updateLocationsWithArray:(NSArray*)locations {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
-    [cdm deleteObjectsForEntity:@"FacilitiesLocation"];
+    NSMutableSet *addedIds = [NSMutableSet set];
     
     for (NSDictionary *loc in locations) {
-        FacilitiesLocation *location = [cdm insertNewObjectForEntityForName:@"FacilitiesLocation"];
+        FacilitiesLocation *location = [self locationForId:[loc objectForKey:@"id"]];
+        
+        if (location == nil) {
+            location = [cdm insertNewObjectForEntityForName:@"FacilitiesLocation"];
+        }
         
         location.uid = [loc objectForKey:@"id"];
         location.name = [loc objectForKey:@"name"];
@@ -353,6 +357,17 @@ static FacilitiesLocationData *_sharedData = nil;
         if (location.number && ([location.number length] > 0)) {
             location.rooms = [NSSet setWithArray:[cdm objectsForEntity:@"FacilitiesRoom"
                                                      matchingPredicate:[NSPredicate predicateWithFormat:@"building.number == %@",location.number]]];
+        }
+        
+        [addedIds addObject:location.uid];
+    }
+    
+    NSArray *allLocations = [cdm objectsForEntity:@"FacilitiesLocation"
+                                matchingPredicate:[NSPredicate predicateWithValue:YES]];
+    
+    for (FacilitiesLocation *location in allLocations) {
+        if ([addedIds containsObject:location.uid] == NO) {
+            [cdm deleteObject:location];
         }
     }
     
