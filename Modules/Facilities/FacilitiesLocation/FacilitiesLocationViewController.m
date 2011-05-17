@@ -27,6 +27,7 @@
 
 - (void)dealloc
 {
+    self.category = nil;
     [super dealloc];
 }
 
@@ -76,6 +77,65 @@
     return data;
 }
 
+- (NSArray*)resultsForSearchString:(NSString *)searchText {
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:[NSString stringWithFormat:@"\\b[\\S]*%@[\\S]*\\b",searchText]
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:NULL];
+    NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"name CONTAINS [c] %@",searchText];
+    NSArray *results = [self.cachedData filteredArrayUsingPredicate:searchPredicate];
+    
+    results = [results sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSString *key1 = [obj1 valueForKey:@"name"];
+        NSString *key2 = [obj2 valueForKey:@"name"];
+        
+        NSRange matchRange1 = [regex rangeOfFirstMatchInString:key1
+                                                       options:0
+                                                         range:NSMakeRange(0, [key1 length])];
+        NSRange matchRange2 = [regex rangeOfFirstMatchInString:key2
+                                                       options:0
+                                                         range:NSMakeRange(0, [key2 length])];
+        
+        if (matchRange1.location > matchRange2.location) {
+            return NSOrderedDescending;
+        } else if (matchRange1.location < matchRange2.location) {
+            return NSOrderedAscending;
+        }
+        
+        
+        matchRange1 = [key1 rangeOfString:searchText
+                                  options:NSCaseInsensitiveSearch];
+        matchRange2 = [key2 rangeOfString:searchText
+                                  options:NSCaseInsensitiveSearch];
+        if (matchRange1.location > matchRange2.location) {
+            return NSOrderedDescending;
+        } else if (matchRange1.location < matchRange2.location) {
+            return NSOrderedAscending;
+        }
+        
+        return [key1 caseInsensitiveCompare:key2];
+    }];
+    
+    return results;
+}
+
+- (void)configureMainTableCell:(UITableViewCell*)cell
+                  forIndexPath:(NSIndexPath*)indexPath {
+    if ([self.cachedData count] >= indexPath.row) {
+        cell.textLabel.text = [[self.cachedData objectAtIndex:indexPath.row] valueForKey:@"name"];
+    }
+}
+
+
+- (void)configureSearchCell:(HighlightTableViewCell*)cell
+               forIndexPath:(NSIndexPath*)indexPath {
+    cell.highlightLabel.searchString = self.searchString;
+    
+    if ([self.cachedData count] >= indexPath.row) {
+        cell.highlightLabel.text = [[self.filteredData objectAtIndex:indexPath.row] valueForKey:@"name"];
+    }
+}
+
+
 #pragma mark -
 #pragma mark UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -95,84 +155,5 @@
     
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];
-}
-
-#pragma mark -
-#pragma mark UITableViewDataSource Methods
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView == self.tableView) {
-        return [self.cachedData count];
-    } else {
-        return [self.filteredData count];
-    }
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *facilitiesIdentifier = @"facilitiesCell";
-    static NSString *searchIdentifier = @"searchCell";
-    UITableViewCell *cell = nil;
-    
-    if (tableView == self.tableView) {
-        cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
-        
-        if (cell == nil) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                           reuseIdentifier:facilitiesIdentifier] autorelease];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        }
-
-        FacilitiesLocation *location = [self.cachedData objectAtIndex:indexPath.row];
-        cell.textLabel.text = location.name;
-        
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        HighlightTableViewCell *hlCell = (HighlightTableViewCell*)[tableView dequeueReusableCellWithIdentifier:searchIdentifier];
-        
-        if (hlCell == nil) {
-             hlCell = [[[HighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                     reuseIdentifier:searchIdentifier] autorelease];
-        }
-        
-        FacilitiesLocation *location = [self.filteredData objectAtIndex:indexPath.row];
-        hlCell.highlightLabel.text = location.name;
-        hlCell.highlightLabel.searchString = self.searchString;
-        cell = hlCell;
-    }
-    
-    return cell;
-}
-
-#pragma mark -
-#pragma mark UISearchBarDelegate
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    self.searchString = searchText;
-    self.filteredData = [self.cachedData filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name CONTAINS[c] %@",searchText]];
-    
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:[NSString stringWithFormat:@"\\b[\\S]*%@[\\S]*\\b",searchText]
-                                                                           options:NSRegularExpressionCaseInsensitive
-                                                                             error:NULL];
-    self.filteredData = [self.filteredData sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSString *key1 = [NSString stringWithString:[obj1 valueForKey:@"name"]];
-        NSString *key2 = [NSString stringWithString:[obj2 valueForKey:@"name"]];
-        
-        NSRange matchRange1 = [regex rangeOfFirstMatchInString:key1
-                                                       options:0
-                                                         range:NSMakeRange(0, [key1 length])];
-        NSRange matchRange2 = [regex rangeOfFirstMatchInString:key2
-                                                       options:0
-                                                         range:NSMakeRange(0, [key2 length])];
-        
-        if (matchRange1.location > matchRange2.location) {
-            return NSOrderedDescending;
-        } else if (matchRange1.location < matchRange2.location) {
-            return NSOrderedAscending;
-        } else {
-            return [key1 caseInsensitiveCompare:key2];
-        }
-    }];
-    
 }
 @end
