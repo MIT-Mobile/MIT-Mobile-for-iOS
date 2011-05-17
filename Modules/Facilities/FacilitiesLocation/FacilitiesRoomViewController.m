@@ -13,6 +13,7 @@
 #import "FacilitiesRoom.h"
 #import "HighlightTableViewCell.h"
 #import "FacilitiesTypeViewController.h"
+#import "FacilitiesConstants.h"
 
 
 @implementation FacilitiesRoomViewController
@@ -139,14 +140,38 @@
 #pragma mark -
 #pragma mark UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-/*
-    if ((tableView == self.tableView) && (indexPath.section == 1)) {
-        room = [self.cachedData objectAtIndex:indexPath.row];
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    FacilitiesRoom *room = nil;
+    NSString *altName = nil;
+    
+    if (tableView == self.tableView) {
+        if (indexPath.section == 0) {
+            altName = @"Outside";
+        } else if ([self.cachedData count] == 0) {
+            altName = @"Inside";
+        } else {
+            room = [self.cachedData objectAtIndex:indexPath.row];
+        }
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
         room = [self.filteredData objectAtIndex:indexPath.row];
     }
-*/    
-    [self.navigationController pushViewController:[[[FacilitiesTypeViewController alloc] init] autorelease]
+    
+    FacilitiesTypeViewController *vc = [[[FacilitiesTypeViewController alloc] init] autorelease];
+    
+    if (room) {
+        [dict setObject: room
+                 forKey: FacilitiesRequestLocationRoomKey];
+    } else {
+        [dict setObject: altName
+                 forKey: FacilitiesRequestLocationCustomKey];
+    }
+    
+    [dict setObject: self.location
+             forKey: FacilitiesRequestLocationBuildingKey];
+    
+    vc.userData = dict;
+    
+    [self.navigationController pushViewController:vc
                                          animated:YES];
     
     [tableView deselectRowAtIndexPath:indexPath
