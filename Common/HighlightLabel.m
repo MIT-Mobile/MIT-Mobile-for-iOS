@@ -2,7 +2,7 @@
 
 @implementation HighlightLabel
 @synthesize searchString = _searchString;
-@synthesize shouldHighlightAllMatches = _highlightAllMatches;
+@synthesize highlightsAllMatches = _highlightAllMatches;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -12,7 +12,7 @@
         
         self.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
         self.highlightedTextColor = [UIColor redColor];
-        self.shouldHighlightAllMatches = YES;
+        self.highlightsAllMatches = YES;
         
         [self addObserver:self
                forKeyPath:@"font"
@@ -135,7 +135,7 @@
                                 withAttributedString:hlString];
             }
             
-            if (self.shouldHighlightAllMatches == NO) {
+            if (self.highlightsAllMatches == NO) {
                 [scanner setScanLocation:[labelString length]];
             }
         }

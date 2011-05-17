@@ -12,6 +12,6 @@ extern const NSString* MITStrokeColorAttributeName;
     BOOL _highlightAllMatches;
 }
 @property (nonatomic,copy) NSString* searchString;
-@property (nonatomic) BOOL shouldHighlightAllMatches;
+@property (nonatomic) BOOL highlightsAllMatches;
 
 @end
