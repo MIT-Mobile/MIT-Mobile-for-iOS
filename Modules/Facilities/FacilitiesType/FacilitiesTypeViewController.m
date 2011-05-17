@@ -11,11 +11,13 @@
 
 @implementation FacilitiesTypeViewController
 @synthesize userData = _userData;
+@synthesize tableView = _tableView;
 
 - (id)init {
     self = [super init];
     
     if (self) {
+        self.title = @"What is it?";
         self.userData = nil;
     }
     
@@ -25,6 +27,8 @@
 - (void)dealloc
 {
     self.userData = nil;
+    self.tableView = nil;
+    self.view = nil;
     [super dealloc];
 }
 
@@ -51,6 +55,32 @@
 }
 
 #pragma mark - View lifecycle
+- (void)loadView {
+    UIView *mainView = nil;
+    CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
+    
+    {
+        mainView = [[[UIView alloc] initWithFrame:screenRect] autorelease];
+        mainView.autoresizesSubviews = YES;
+        mainView.backgroundColor = [UIColor clearColor];
+    }
+    
+    {
+        CGRect tableRect = screenRect;
+        tableRect.origin = CGPointZero;
+        
+        UITableView *table = [[[UITableView alloc] initWithFrame:tableRect
+                                                           style:UITableViewStyleGrouped] autorelease];
+        table.delegate = self;
+        table.dataSource = self;
+        table.hidden = NO;
+        
+        self.tableView = table;
+        [mainView addSubview:table];
+    }
+    
+    self.view = mainView;
+}
 
 - (void)viewDidLoad
 {
@@ -62,7 +92,7 @@
 {
     [super viewDidUnload];
     // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
+    self.tableView = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
