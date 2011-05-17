@@ -1,7 +1,10 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "FacilitiesSummaryViewController.h"
-
+#import "FacilitiesCategory.h"
+#import "FacilitiesLocation.h"
+#import "FacilitiesRoom.h"
+#import "FacilitiesConstants.h"
 
 @implementation FacilitiesSummaryViewController
 @synthesize imageView = _imageView;
@@ -56,6 +59,23 @@
     self.descriptionView.delegate = self;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    FacilitiesLocation *location = [self.reportData objectForKey:FacilitiesRequestLocationBuildingKey];
+    FacilitiesRoom *room = [self.reportData objectForKey:FacilitiesRequestLocationRoomKey];
+    NSString *customLocation = [[self.reportData objectForKey:FacilitiesRequestLocationCustomKey] lowercaseString];
+    NSString *type = [[self.reportData objectForKey:FacilitiesRequestRepairTypeKey] lowercaseString];
+
+    NSString *text = nil;
+    
+    if (room == nil) {
+        text = [NSString stringWithFormat:@"I'm reporting a problem with the %@ %@ %@.",type,customLocation,location.name];
+    } else {
+        text = [NSString stringWithFormat:@"I'm reporting a problem with the %@ at %@ near room %@.",type,location.name,[room displayString]];
+    }
+    
+    self.problemLabel.text = text;
+}
+
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -82,9 +102,14 @@
     if ([event type] == UIEventTypeTouches) {
         for (UITouch *touch in touches) {
             CGPoint touchPoint = [touch locationInView:self.view];
-            if (!CGRectContainsPoint(self.descriptionView.frame, touchPoint)) {
-                [self.descriptionView resignFirstResponder];
-                return;
+            UIView *view = [self.view hitTest:touchPoint
+                                    withEvent:event];
+            NSArray *views = [NSArray arrayWithObjects:self.descriptionView,self.emailField, nil];
+            
+            for (UIResponder *responder in views) {
+                if ((view != responder) && [responder isFirstResponder]) {
+                    [responder resignFirstResponder];
+                }
             }
         }
     }
