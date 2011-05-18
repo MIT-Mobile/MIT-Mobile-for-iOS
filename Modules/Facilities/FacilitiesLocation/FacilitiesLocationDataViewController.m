@@ -6,6 +6,7 @@
 #import "HighlightTableViewCell.h"
 #import "MITLogging.h"
 #import "MITLoadingActivityView.h"
+#import "UIKit+MITAdditions.h"
 
 @interface FacilitiesLocationDataViewController ()
 @end
@@ -79,11 +80,12 @@
         
         UITableView *tableView = [[[UITableView alloc] initWithFrame: tableRect
                                                                style: UITableViewStyleGrouped] autorelease];
+        [tableView applyStandardColors];
+        
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                            UIViewAutoresizingFlexibleWidth);
         tableView.delegate = self;
         tableView.dataSource = self;
-        tableView.backgroundColor = [UIColor clearColor];
         tableView.hidden = YES;
         tableView.scrollEnabled = YES;
         tableView.autoresizesSubviews = YES;
