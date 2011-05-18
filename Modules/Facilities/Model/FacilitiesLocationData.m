@@ -354,11 +354,6 @@ static FacilitiesLocationData *_sharedData = nil;
         
         location.categories = set;
         
-        if (location.number && ([location.number length] > 0)) {
-            location.rooms = [NSSet setWithArray:[cdm objectsForEntity:@"FacilitiesRoom"
-                                                     matchingPredicate:[NSPredicate predicateWithFormat:@"building.number == %@",location.number]]];
-        }
-        
         [addedIds addObject:location.uid];
     }
     
@@ -377,24 +372,15 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (void)updateRoomsWithArray:(NSArray*)rooms {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
-    NSArray *buildings = [cdm objectsForEntity:@"FacilitiesLocation"
-                             matchingPredicate:[NSPredicate predicateWithFormat:@"number != nil"]];
     
     [cdm deleteObjectsForEntity:@"FacilitiesRoom"];
-    for (FacilitiesLocation *location in buildings) {
-        if ([location.number length] == 0) {
-            continue;
-        }
 
-        NSArray *roomsData = [rooms filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.building == %@",location.number]];
+    for (NSDictionary *roomData in rooms) {
+        FacilitiesRoom *room = [cdm insertNewObjectForEntityForName:@"FacilitiesRoom"];
         
-        for (NSDictionary *roomData in roomsData) {
-            FacilitiesRoom *room = [cdm insertNewObjectForEntityForName:@"FacilitiesRoom"];
-            
-            room.floor = [roomData objectForKey:@"floor"];
-            room.number = [roomData objectForKey:@"room"];
-            room.building = location;
-        }
+        room.floor = [roomData objectForKey:@"floor"];
+        room.number = [roomData objectForKey:@"room"];
+        room.building = [roomData objectForKey:@"building"];
     }
     
     [cdm saveData];
