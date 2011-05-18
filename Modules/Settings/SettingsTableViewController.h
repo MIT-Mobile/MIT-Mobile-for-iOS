@@ -11,6 +11,8 @@
     UIGestureRecognizer *_hideAdvancedGesture;
     BOOL                _advancedOptionsVisible;
     NSUInteger          _selectedRow;
+    
+    dispatch_queue_t _requestQueue;
 }
 
 - (void)switchDidToggle:(id)sender;

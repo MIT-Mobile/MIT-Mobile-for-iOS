@@ -4,6 +4,8 @@
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 #import "MITMobileServerConfiguration.h"
+#import "MITDeviceRegistration.h"
+#import "MITLogging.h"
 
 NSString * const SectionTitleString = @"Notifications";
 NSString * const SectionSubtitleString = @"Turn off Notifications to disable alerts for that module.";
@@ -21,6 +23,11 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
 - (void)gestureWasRecognized:(UIGestureRecognizer*)gesture;
 - (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled;
 - (void)serverSelectionDidChangeFrom:(NSInteger)old to:(NSInteger)new;
+
+- (void)addRequest:(MITMobileWebAPI*)request withTag:(NSString*)tag;
+- (MITMobileWebAPI*)requestWithTag:(NSString*)tag;
+- (void)removeRequestWithTag:(NSString*)tag;
+- (NSUInteger)numberOfActiveRequests;
 @end
 
 @implementation SettingsTableViewController
@@ -30,12 +37,28 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
 @synthesize showServerListGesture = _showAdvancedGesture;
 @synthesize hideServerListGesture = _hideAdvancedGesture;
 
+
+- (void)dealloc {
+    self.notifications = nil;
+    self.showServerListGesture = nil;
+    self.hideServerListGesture = nil;
+    
+    if (_requestQueue) {
+        dispatch_release(_requestQueue);
+    }
+	self.apiRequests = nil;
+    
+    [super dealloc];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Settings";
     
+    _requestQueue = dispatch_queue_create("SettingsAPIQueue", NULL);
+    self.apiRequests = [[NSMutableDictionary alloc] init];
+    
     [self.tableView applyStandardColors];
-	self.apiRequests = [[NSMutableDictionary alloc] initWithCapacity:1];
 
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
     self.notifications = [appDelegate.modules filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"pushNotificationSupported == TRUE"]];
@@ -73,14 +96,6 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
     self.showServerListGesture = nil;
     self.hideServerListGesture = nil;
     _advancedOptionsVisible = NO;
-}
-
-- (void)dealloc {
-	self.apiRequests = nil;
-    self.notifications = nil;
-    self.showServerListGesture = nil;
-    self.hideServerListGesture = nil;
-    [super dealloc];
 }
 
 #pragma mark Advanced view methods
@@ -271,12 +286,19 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
     *  until ALL requests to the current server have completed
     *  before sending registration requests to the new server.
     */
-    while([self.apiRequests count] > 0) {
+    while([self numberOfActiveRequests] > 0) {
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
     }
     
     NSArray *server = MITMobileWebGetAPIServerList();
+    
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITDeviceIdKey];
+    [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+    
     MITMobileWebSetCurrentServerURL([server objectAtIndex:new]);
+    
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
+    
     for (MITModule *module in self.notifications) {
         if (module.pushNotificationEnabled) {
             [self performPushConfigurationForModule:module.tag
@@ -301,14 +323,18 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
     [parameters setObject:(enabled) ? @"1" : @"0"
                    forKey:@"enabled"];
     
-    MITMobileWebAPI *existingRequest = [self.apiRequests objectForKey:tag];
+    MITMobileWebAPI *existingRequest = [self requestWithTag:tag];
     if (existingRequest != nil) {
         [existingRequest abortRequest];
-        [self.apiRequests removeObjectForKey:tag];
+        [self removeRequestWithTag:tag];
     }
+    
     MITMobileWebAPI *request = [MITMobileWebAPI jsonLoadedDelegate:self];
-    [request requestObjectFromModule:@"push" command:@"moduleSetting" parameters:parameters];
-    [self.apiRequests setObject:request forKey:tag];
+    [self addRequest:request
+             withTag:tag];
+    [request requestObjectFromModule:@"push"
+                             command:@"moduleSetting"
+                          parameters:parameters];
 }
 
 - (void) reloadSettings {
@@ -317,53 +343,79 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
 	if (object && [object isKindOfClass:[NSDictionary class]] && [object objectForKey:@"success"]) {
-        id foundTag = nil;
-		for (id moduleTag in self.apiRequests) {
-			MITMobileWebAPI *aRequest = [self.apiRequests objectForKey:moduleTag];
-			if (aRequest == request) {
-				// this backwards finding would be a lot simpler if 
-				// the backend would just return module and enabled status
-				MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-				MITModule *module = [appDelegate moduleForTag:moduleTag];
-				NSUInteger tag = [self.notifications indexOfObject:module];
-				NSIndexPath *indexPath = [NSIndexPath indexPathForRow:tag inSection:0];
-				[indexPath indexPathByAddingIndex:tag];
-				UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-				UISwitch *aSwitch = (UISwitch *)cell.accessoryView;
-				BOOL enabled = aSwitch.isOn;
-				[module setPushNotificationEnabled:enabled];
-				
-                foundTag = moduleTag;
-				break;
-			}
-		}
+        MITMobileWebAPI *aRequest = [self requestWithTag:request.userData];
         
-        if (foundTag)
-            [self.apiRequests removeObjectForKey:foundTag];
+        if (aRequest) {
+            // this backwards finding would be a lot simpler if 
+            // the backend would just return module and enabled status
+            MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+            MITModule *module = [appDelegate moduleForTag:aRequest.userData];
+            
+            NSUInteger tag = [self.notifications indexOfObject:module];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:tag
+                                                        inSection:0];
+            [indexPath indexPathByAddingIndex:tag];
+            
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            UISwitch *aSwitch = (UISwitch *)cell.accessoryView;
+            [module setPushNotificationEnabled: aSwitch.isOn];
+            [self removeRequestWithTag: aRequest.userData];
+        }
 	}
 }
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-    id foundTag = nil;
-    for (id moduleTag in self.apiRequests) {
-		MITMobileWebAPI *aRequest = [self.apiRequests objectForKey:moduleTag];
-		if (aRequest == request) {
-            foundTag = moduleTag;
-			break;
-		}
-	}
-    
-    if (foundTag)
-        [self.apiRequests removeObjectForKey:foundTag];
+    [self removeRequestWithTag:request.userData];
 	[self reloadSettings];
 }
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
+    DLog(@"%@",[error localizedDescription]);
 	return YES;
 }
 
 - (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
 	return @"Settings";
+}
+
+- (void)addRequest:(MITMobileWebAPI*)request
+           withTag:(NSString*)tag
+{
+    dispatch_async(_requestQueue, ^(void) {
+        if ([self.apiRequests objectForKey:tag] == nil) {
+            request.userData = tag;
+            [self.apiRequests setObject:request
+                                 forKey:tag];
+        } else {
+            NSLog(@"Error: attempting to overwrite in-flight request with tag %@",tag);
+        }
+    });
+}
+
+- (MITMobileWebAPI*)requestWithTag:(NSString*)tag {
+    __block MITMobileWebAPI *request = nil;
+    
+    dispatch_sync(_requestQueue, ^(void) {
+        request = [self.apiRequests objectForKey:tag];
+    });
+    
+    return request;
+}
+
+- (void)removeRequestWithTag:(NSString*)tag {
+    dispatch_async(_requestQueue, ^(void) {
+        [self.apiRequests removeObjectForKey:tag];
+    });
+}
+
+- (NSUInteger)numberOfActiveRequests {
+    __block NSUInteger requestCount = 0;
+    
+    dispatch_sync(_requestQueue, ^(void) {
+        requestCount = [self.apiRequests count];
+    });
+    
+    return requestCount;
 }
 
 @end
