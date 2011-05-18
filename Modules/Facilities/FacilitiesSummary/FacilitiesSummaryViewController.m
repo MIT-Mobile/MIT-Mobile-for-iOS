@@ -5,6 +5,7 @@
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
 #import "FacilitiesConstants.h"
+#import "FacilitiesRootViewController.h"
 
 @implementation FacilitiesSummaryViewController
 @synthesize imageView = _imageView;
@@ -57,6 +58,13 @@
     self.descriptionView.layer.borderWidth = 2.0f;
     self.descriptionView.layer.borderColor = [[UIColor grayColor] CGColor];
     self.descriptionView.delegate = self;
+    
+    UIBarButtonItem *item = [[[UIBarButtonItem alloc] initWithTitle:@"Submit"
+                                                              style:UIBarButtonItemStyleDone
+                                                             target:self
+                                                             action:@selector(submitReport:)] autorelease];
+    item.title = @"Submit";
+    self.navigationItem.rightBarButtonItem = item;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -92,6 +100,16 @@
 {
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+- (IBAction)submitReport:(id)sender {
+    for (UIViewController *controller in self.navigationController.viewControllers) {
+        if ([controller isKindOfClass:[FacilitiesRootViewController class]]) {
+            [self.navigationController popToViewController:controller
+                                                  animated:YES];
+            break;
+        }
+    }
 }
 
 #pragma mark -
