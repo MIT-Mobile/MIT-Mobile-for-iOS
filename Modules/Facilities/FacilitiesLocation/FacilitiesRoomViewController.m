@@ -33,12 +33,6 @@
     [super dealloc];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -65,8 +59,7 @@
 #pragma mark -
 #pragma mark Public Methods
 - (NSArray*)dataForMainTableView {
-    NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"building.number == %@",self.location.number];
-    NSArray *data = [self.locationData roomsMatchingPredicate:searchPredicate];
+    NSArray *data = [self.locationData roomsForBuilding:self.location.number];
     data = [data sortedArrayUsingComparator: ^(id obj1, id obj2) {
         FacilitiesRoom *r1 = (FacilitiesRoom*)obj1;
         FacilitiesRoom *r2 = (FacilitiesRoom*)obj2;
