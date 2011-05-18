@@ -33,6 +33,7 @@ typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id user
                        ofLocation:(CLLocation*)location
                      withCategory:(NSString*)categoryId;
 
+- (NSArray*)roomsForBuilding:(NSString*)bldgnum;
 - (NSArray*)roomsMatchingPredicate:(NSPredicate*)predicate;
 
 - (void)addObserver:(id)observer withBlock:(FacilitiesDidLoadBlock)block;

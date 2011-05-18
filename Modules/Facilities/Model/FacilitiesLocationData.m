@@ -27,7 +27,8 @@ static FacilitiesLocationData *_sharedData = nil;
 - (void)updateCategoryData;
 - (void)updateLocationData;
 - (void)updateRoomData;
-- (void)updateDataForCommand:(NSString*)command;
+- (void)updateRoomDataForBuilding:(NSString*)bldgnum;
+- (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params;
 
 - (FacilitiesCategory*)categoryForId:(NSString*)categoryId;
 - (FacilitiesLocation*)locationForId:(NSString*)locationId;
@@ -144,6 +145,12 @@ static FacilitiesLocationData *_sharedData = nil;
     return sortedArray;
 }
 
+- (NSArray*)roomsForBuilding:(NSString*)bldgnum {
+    [self updateRoomDataForBuilding:bldgnum];
+    return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesRoom"
+                                             matchingPredicate:[NSPredicate predicateWithFormat:@"building == %@",bldgnum]];
+}
+
 - (NSArray*)roomsMatchingPredicate:(NSPredicate*)predicate {
     [self updateRoomData];
     return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesRoom"
@@ -210,18 +217,26 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 - (void)updateCategoryData {
-    [self updateDataForCommand:FacilitiesCategoriesKey];
+    [self updateDataForCommand:FacilitiesCategoriesKey
+                        params:nil];
 }
 
 - (void)updateLocationData {
-    [self updateDataForCommand:FacilitiesLocationsKey];
+    [self updateDataForCommand:FacilitiesLocationsKey
+                        params:nil];
 }
 
 - (void)updateRoomData {
-    [self updateDataForCommand:FacilitiesRoomsKey];
+    [self updateDataForCommand:FacilitiesRoomsKey
+                        params:nil];
 }
 
-- (void)updateDataForCommand:(NSString*)command {
+- (void)updateRoomDataForBuilding:(NSString*)bldgnum {
+    [self updateDataForCommand:FacilitiesRoomsKey
+                        params:[NSDictionary dictionaryWithObject:bldgnum forKey:@"id"]];
+}
+
+- (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
     BOOL dataWasUpdated = [self wasDataUpdatedForCommand:command];
     
     if ([self hasActiveRequestWithName:command]) {
@@ -237,11 +252,17 @@ static FacilitiesLocationData *_sharedData = nil;
         [self addRequest:web
                 withName:command];
         
-        NSMutableDictionary *params = [NSMutableDictionary dictionary];
-        [params setObject:command
+        NSMutableDictionary *paramDict = nil;
+        if (params) {
+            paramDict = [NSMutableDictionary dictionaryWithDictionary:params];
+        } else {
+            paramDict = [NSMutableDictionary dictionary];
+        }
+        
+        [paramDict setObject:command
                    forKey:@"command"];
         
-        [web requestObject:params
+        [web requestObject:paramDict
              pathExtension:@"map/"];
     }
 }
