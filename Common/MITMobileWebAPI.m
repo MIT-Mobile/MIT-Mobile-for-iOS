@@ -52,7 +52,6 @@
 - (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError: (NSError *)error {
 	[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
 	
-    self.connectionWrapper = nil;
 	VLog(@"connection failed in %@, userinfo: %@, url: %@", [error domain], [error userInfo], wrapper.theURL);
     
 	if([jsonDelegate respondsToSelector:@selector(handleConnectionFailureForRequest:)]) {
@@ -75,6 +74,7 @@
 		[MITMobileWebAPI showError:error header:header alertViewDelegate:alertViewDelegate];
 	}
 
+    self.connectionWrapper = nil;
 	[self release];
 }
 
@@ -106,12 +106,10 @@
 }
 	
 - (void)abortRequest {
-	if (connectionWrapper != nil) {
+	if (self.connectionWrapper != nil) {
 		[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
-		[connectionWrapper cancel];
-		self.connectionWrapper = nil;
+		[self.connectionWrapper cancel];
 	}
-	[self release];
 }
 
 - (BOOL) requestObjectFromModule:(NSString *)moduleName command:(NSString *)command parameters:(NSDictionary *)parameters {
