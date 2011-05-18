@@ -9,6 +9,7 @@
 #import "FacilitiesTypeViewController.h"
 #import "FacilitiesSummaryViewController.h"
 #import "FacilitiesConstants.h"
+#import "UIKit+MITAdditions.h"
 
 @implementation FacilitiesTypeViewController
 @synthesize userData = _userData;
@@ -72,6 +73,8 @@
         
         UITableView *table = [[[UITableView alloc] initWithFrame:tableRect
                                                            style:UITableViewStyleGrouped] autorelease];
+        [table applyStandardColors];
+        
         table.delegate = self;
         table.dataSource = self;
         table.hidden = NO;
