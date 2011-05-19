@@ -102,10 +102,8 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-- (IBAction)selectPicture:(id)sender {
-    BOOL supportsCamera = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
-    
-    if (supportsCamera) {
+- (IBAction)selectPicture:(id)sender { 
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:nil
                                                             delegate:self
                                                    cancelButtonTitle:@"Cancel"
@@ -113,8 +111,12 @@
                                                    otherButtonTitles:@"Take Photo",@"Choose Existing", nil] autorelease];
         sheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
         [sheet showInView:self.view];
-    } else {
-        
+    } else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+        UIImagePickerController *controller = [[[UIImagePickerController alloc] init] autorelease];
+        controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        controller.delegate = self;
+        [self presentModalViewController:controller
+                                animated:YES];
     }
 }
 
@@ -175,13 +177,33 @@ static NSUInteger kMaxCharacters = 150;
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    UIImagePickerController *controller = [[[UIImagePickerController alloc] init] autorelease];
     if (buttonIndex == 0) {
-        NSLog(@"%@",@"Take Photo");
+        controller.sourceType = UIImagePickerControllerSourceTypeCamera;
+        controller.showsCameraControls = YES;
     } else if (buttonIndex == 1) {
-        NSLog(@"%@",@"Choose Existing");
+        controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     } else if (buttonIndex == 2) {
-        NSLog(@"%@",@"Cancel");
+        return;
     }
+    
+    controller.delegate = self;
+    [self presentModalViewController:controller
+                            animated:YES];
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
+    
+    if (image == nil) {
+        image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    }
+    
+    if (image) {
+        self.imageView.image = image;
+        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    }
+    [self dismissModalViewControllerAnimated:YES];
 }
 
 @end

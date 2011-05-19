@@ -1,7 +1,8 @@
 #import <UIKit/UIKit.h>
 
 
-@interface FacilitiesSummaryViewController : UIViewController <UITextViewDelegate,UIActionSheetDelegate> {
+@interface FacilitiesSummaryViewController : UIViewController <UITextViewDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
+{
     UIImageView *_imageView;
     UIButton *_pictureButton;
     UILabel *_problemLabel;
