@@ -66,7 +66,8 @@
 #pragma mark Public Methods
 - (NSArray*)dataForMainTableView {
     NSArray *data = nil;
-    data = [self.locationData locationsMatchingPredicate:self.filterPredicate];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY categories.uid == %@",self.category.uid];
+    data = [self.locationData locationsMatchingPredicate:predicate];
     data = [data sortedArrayUsingComparator: ^(id obj1, id obj2) {
         FacilitiesLocation *l1 = (FacilitiesLocation*)obj1;
         FacilitiesLocation *l2 = (FacilitiesLocation*)obj2;
