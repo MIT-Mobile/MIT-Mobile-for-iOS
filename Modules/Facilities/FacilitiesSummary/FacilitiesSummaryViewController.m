@@ -102,6 +102,22 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+- (IBAction)selectPicture:(id)sender {
+    BOOL supportsCamera = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+    
+    if (supportsCamera) {
+        UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:nil
+                                                            delegate:self
+                                                   cancelButtonTitle:@"Cancel"
+                                              destructiveButtonTitle:nil
+                                                   otherButtonTitles:@"Take Photo",@"Choose Existing", nil] autorelease];
+        sheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+        [sheet showInView:self.view];
+    } else {
+        
+    }
+}
+
 - (IBAction)submitReport:(id)sender {
     for (UIViewController *controller in self.navigationController.viewControllers) {
         if ([controller isKindOfClass:[FacilitiesRootViewController class]]) {
@@ -157,4 +173,15 @@ static NSUInteger kMaxCharacters = 150;
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView {
     return YES;
 }
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 0) {
+        NSLog(@"%@",@"Take Photo");
+    } else if (buttonIndex == 1) {
+        NSLog(@"%@",@"Choose Existing");
+    } else if (buttonIndex == 2) {
+        NSLog(@"%@",@"Cancel");
+    }
+}
+
 @end

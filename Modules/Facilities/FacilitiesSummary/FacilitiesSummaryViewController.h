@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface FacilitiesSummaryViewController : UIViewController <UITextViewDelegate> {
+@interface FacilitiesSummaryViewController : UIViewController <UITextViewDelegate,UIActionSheetDelegate> {
     UIImageView *_imageView;
     UIButton *_pictureButton;
     UILabel *_problemLabel;
@@ -19,4 +19,7 @@
 @property (nonatomic,retain) IBOutlet UILabel* characterCount;
 @property (nonatomic,copy) NSDictionary* reportData;
 
+
+- (IBAction)selectPicture:(id)sender;
+- (IBAction)submitReport:(id)sender;
 @end
