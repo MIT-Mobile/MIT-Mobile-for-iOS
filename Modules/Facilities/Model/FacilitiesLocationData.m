@@ -11,7 +11,8 @@ NSString* const FacilitiesDidLoadDataNotification = @"MITFacilitiesDidLoadData";
 
 NSString * const FacilitiesCategoriesKey = @"categorylist";
 NSString * const FacilitiesLocationsKey = @"locations";
-NSString * const FacilitiesRoomsKey = @"rooms";
+//NSString * const FacilitiesRoomsKey = @"rooms";
+NSString * const FacilitiesRoomsKey = @"roomscompact";
 
 static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
@@ -391,17 +392,25 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 
-- (void)updateRoomsWithArray:(NSArray*)rooms {
+- (void)updateRoomsWithArray:(NSDictionary*)roomData {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
-    
-    [cdm deleteObjectsForEntity:@"FacilitiesRoom"];
 
-    for (NSDictionary *roomData in rooms) {
-        FacilitiesRoom *room = [cdm insertNewObjectForEntityForName:@"FacilitiesRoom"];
+    for (NSString *building in [roomData allKeys]) {
+        NSArray *buildings = [cdm objectsForEntity:@"FacilitiesRoom"
+                                 matchingPredicate:[NSPredicate predicateWithFormat:@"building == %@",building]];
+        [cdm deleteObjects:buildings];
         
-        room.floor = [roomData objectForKey:@"floor"];
-        room.number = [roomData objectForKey:@"room"];
-        room.building = [roomData objectForKey:@"building"];
+        NSDictionary *floorData = [roomData objectForKey:building];
+        for (NSString *floor in [floorData allKeys]) {
+            NSArray *rooms = [floorData objectForKey:floor];
+            
+            for (NSString *room in rooms) {
+                FacilitiesRoom *moRoom = [cdm insertNewObjectForEntityForName:@"FacilitiesRoom"];
+                moRoom.number = room;
+                moRoom.floor = floor;
+                moRoom.building = building;
+            }
+        }
     }
     
     [cdm saveData];
@@ -452,7 +461,7 @@ static FacilitiesLocationData *_sharedData = nil;
     } else if ([command isEqualToString:FacilitiesLocationsKey]) {
         [self updateLocationsWithArray:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesRoomsKey]) {
-        [self updateRoomsWithArray:(NSArray*)JSONObject];
+        [self updateRoomsWithArray:(NSDictionary*)JSONObject];
     }
     
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
