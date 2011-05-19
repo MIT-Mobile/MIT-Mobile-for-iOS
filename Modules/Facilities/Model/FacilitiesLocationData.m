@@ -10,7 +10,7 @@
 NSString* const FacilitiesDidLoadDataNotification = @"MITFacilitiesDidLoadData";
 
 NSString * const FacilitiesCategoriesKey = @"categorylist";
-NSString * const FacilitiesLocationsKey = @"locations";
+NSString * const FacilitiesLocationsKey = @"location";
 //NSString * const FacilitiesRoomsKey = @"rooms";
 NSString * const FacilitiesRoomsKey = @"roomscompact";
 
