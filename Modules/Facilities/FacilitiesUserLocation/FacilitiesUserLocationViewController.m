@@ -57,7 +57,9 @@ static const NSUInteger kMaxResultCount = 10;
     mainView.backgroundColor = [UIColor clearColor];
 
     {
-        CGRect tableRect = screenFrame;
+        CGRect tableRect = mainView.frame;
+        tableRect.origin = CGPointZero;
+        
         UITableView *tableView = [[[UITableView alloc] initWithFrame: tableRect
                                                                style: UITableViewStyleGrouped] autorelease];
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
@@ -77,10 +79,11 @@ static const NSUInteger kMaxResultCount = 10;
     {
         NSString *labelText = @"We've narrowed down your location, please choose the closest location below";
         UILabel *labelView = [[[UILabel alloc] init] autorelease];
-        CGRect headerRect = CGRectMake(0, 0, self.tableView.frame.size.width, 96);
+        CGRect headerRect = CGRectMake(0, 0, screenFrame.size.width, 60);
         CGSize strSize = [labelText sizeWithFont:labelView.font
                                constrainedToSize:headerRect.size
                                    lineBreakMode:labelView.lineBreakMode];
+        
         headerRect.size.height = strSize.height;
         
         
@@ -102,7 +105,8 @@ static const NSUInteger kMaxResultCount = 10;
     
     
     {
-        CGRect loadingFrame = screenFrame;
+        CGRect loadingFrame = mainView.frame;
+        loadingFrame.origin = CGPointZero;
         
         MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
