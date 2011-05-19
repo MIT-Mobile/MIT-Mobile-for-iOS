@@ -63,8 +63,8 @@
     data = [data sortedArrayUsingComparator: ^(id obj1, id obj2) {
         FacilitiesRoom *r1 = (FacilitiesRoom*)obj1;
         FacilitiesRoom *r2 = (FacilitiesRoom*)obj2;
-        NSString *s1 = [NSString stringWithFormat:@"%@-%@",r1.floor,r1.number];
-        NSString *s2 = [NSString stringWithFormat:@"%@-%@",r2.floor,r2.number];
+        NSString *s1 = [r1 displayString];
+        NSString *s2 = [r2 displayString];
         
         return [s1 caseInsensitiveCompare:s2];
     }];
