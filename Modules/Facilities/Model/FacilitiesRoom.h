@@ -16,7 +16,7 @@
 }
 @property (nonatomic, retain) NSString * floor;
 @property (nonatomic, retain) NSString * number;
-@property (nonatomic, retain) FacilitiesLocation * building;
+@property (nonatomic, retain) NSString * building;
 
 - (NSString*)displayString;
 - (NSString*)description;

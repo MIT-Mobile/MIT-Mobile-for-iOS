@@ -19,7 +19,7 @@
 }
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"%@-%@",self.building.number,[self displayString]];
+    return [NSString stringWithFormat:@"%@-%@",self.building,[self displayString]];
 }
 
 @end
