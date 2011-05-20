@@ -11,8 +11,7 @@ NSString* const FacilitiesDidLoadDataNotification = @"MITFacilitiesDidLoadData";
 
 NSString * const FacilitiesCategoriesKey = @"categorylist";
 NSString * const FacilitiesLocationsKey = @"location";
-//NSString * const FacilitiesRoomsKey = @"rooms";
-NSString * const FacilitiesRoomsKey = @"roomscompact";
+NSString * const FacilitiesRoomsKey = @"room";
 
 static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
@@ -22,7 +21,7 @@ static FacilitiesLocationData *_sharedData = nil;
 @property (nonatomic,retain) NSMutableDictionary* requestsInFlight;
 @property (nonatomic,retain) NSMutableDictionary* notificationBlocks;
 
-- (BOOL)wasDataUpdatedForCommand:(NSString*)command;
+- (BOOL)shouldUpdateDataWithRequestParams:(NSDictionary*)request;
 - (NSDate*)remoteDate;
 
 - (void)updateCategoryData;
@@ -188,21 +187,30 @@ static FacilitiesLocationData *_sharedData = nil;
 
 #pragma mark -
 #pragma mark Private Methods
-- (BOOL)wasDataUpdatedForCommand:(NSString*)command {
+- (BOOL)shouldUpdateDataWithRequestParams:(NSDictionary*)request {
+    NSString *command = [request objectForKey:@"command"];
+    
     if ([ConnectionDetector isConnected] == NO) {
         return NO;
     }
     
-    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey];
-    if (dict == nil) {
-        return YES;
+    NSDate *date = nil;
+    
+    if ([command isEqualToString:FacilitiesRoomsKey] && [request objectForKey:@"building"]) {
+        FacilitiesLocation *location = [self locationForId:[request objectForKey:@"building"]];
+        date = location.roomsUpdated;
+    } else {
+        NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey];
+        if (dict == nil) {
+            return YES;
+        }
+        
+        NSString *dateString = [dict objectForKey:command];
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        [df setDateFormat:@"yyyy-MM-dd"];
+        
+        date = [df dateFromString:dateString];
     }
-    
-    NSString *dateString = [dict objectForKey:command];
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    [df setDateFormat:@"yyyy-MM-dd"];
-    
-    NSDate *date = [df dateFromString:dateString];
     
     if (date == nil) {
         return YES;  
@@ -234,37 +242,35 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (void)updateRoomDataForBuilding:(NSString*)bldgnum {
     [self updateDataForCommand:FacilitiesRoomsKey
-                        params:[NSDictionary dictionaryWithObject:bldgnum forKey:@"id"]];
+                        params:[NSDictionary dictionaryWithObject:bldgnum forKey:@"building"]];
 }
 
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
-    BOOL dataWasUpdated = [self wasDataUpdatedForCommand:command];
-    
     if ([self hasActiveRequestWithName:command]) {
         return;
-    } else if (dataWasUpdated == NO) {
+    } 
+    
+    MITMobileWebAPI *web = [[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self];
+    [self addRequest:web
+            withName:command];
+    
+    NSMutableDictionary *paramDict = nil;
+    if (params) {
+        paramDict = [NSMutableDictionary dictionaryWithDictionary:params];
+    } else {
+        paramDict = [NSMutableDictionary dictionary];
+    }
+    
+    [paramDict setObject:command
+               forKey:@"command"];
+    
+    if ([self shouldUpdateDataWithRequestParams:paramDict]) {
+        [web requestObject:paramDict
+             pathExtension:@"map/"];
+    } else {
         [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
                              withUserData:command
                          newDataAvailable:NO];
-        return;
-    } else {
-        MITMobileWebAPI *web = [[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self];
-        
-        [self addRequest:web
-                withName:command];
-        
-        NSMutableDictionary *paramDict = nil;
-        if (params) {
-            paramDict = [NSMutableDictionary dictionaryWithDictionary:params];
-        } else {
-            paramDict = [NSMutableDictionary dictionary];
-        }
-        
-        [paramDict setObject:command
-                   forKey:@"command"];
-        
-        [web requestObject:paramDict
-             pathExtension:@"map/"];
     }
 }
 
@@ -394,11 +400,12 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (void)updateRoomsWithArray:(NSDictionary*)roomData {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
-
+    
     for (NSString *building in [roomData allKeys]) {
-        NSArray *buildings = [cdm objectsForEntity:@"FacilitiesRoom"
-                                 matchingPredicate:[NSPredicate predicateWithFormat:@"building == %@",building]];
-        [cdm deleteObjects:buildings];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"building == %@",building];
+        NSArray *bldgRooms = [cdm objectsForEntity:@"FacilitiesRoom"
+                                 matchingPredicate:predicate];
+        [cdm deleteObjects:bldgRooms];
         
         NSDictionary *floorData = [roomData objectForKey:building];
         for (NSString *floor in [floorData allKeys]) {
@@ -411,6 +418,9 @@ static FacilitiesLocationData *_sharedData = nil;
                 moRoom.building = building;
             }
         }
+        
+        FacilitiesLocation *location = [self locationForId:building];
+        location.roomsUpdated = [NSDate date];
     }
     
     [cdm saveData];
@@ -461,16 +471,28 @@ static FacilitiesLocationData *_sharedData = nil;
     } else if ([command isEqualToString:FacilitiesLocationsKey]) {
         [self updateLocationsWithArray:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesRoomsKey]) {
-        [self updateRoomsWithArray:(NSDictionary*)JSONObject];
+        NSDictionary *roomData = (NSDictionary*)JSONObject;
+        NSString *requestedId = [request.params objectForKey:@"building"];
+        
+        if (requestedId) {
+            roomData = [NSDictionary dictionaryWithObject:[roomData objectForKey:requestedId]
+                                                    forKey:requestedId];
+        }
+        
+        [self updateRoomsWithArray:roomData];
     }
     
-    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    [df setDateFormat:@"yyyy-MM-dd"];
-    [dict setValue:[df stringFromDate:[NSDate date]]
-            forKey:command];
-    [[NSUserDefaults standardUserDefaults] setObject:dict
-                                              forKey:FacilitiesFetchDatesKey];
+    BOOL shouldUpdateDate = !([command isEqualToString:FacilitiesRoomsKey] && [request.params objectForKey:@"building"]);
+    
+    if (shouldUpdateDate) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        [df setDateFormat:@"yyyy-MM-dd"];
+        [dict setValue:[df stringFromDate:[NSDate date]]
+                forKey:command];
+        [[NSUserDefaults standardUserDefaults] setObject:dict
+                                                  forKey:FacilitiesFetchDatesKey];
+    }
     
     [self removeRequestWithName:command];
     [self sendNotificationToObservers:FacilitiesDidLoadDataNotification

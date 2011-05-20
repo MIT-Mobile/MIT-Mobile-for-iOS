@@ -19,7 +19,7 @@
 @property (nonatomic, retain) NSString * uid;
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * longitude;
+@property (nonatomic, retain) NSDate * roomsUpdated;
 @property (nonatomic, retain) NSSet* categories;
-@property (nonatomic, retain) NSSet* rooms;
 
 @end
