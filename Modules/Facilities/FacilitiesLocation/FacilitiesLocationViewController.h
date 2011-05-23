@@ -1,20 +1,40 @@
-//
-//  FacilitiesCategoryViewController.h
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 5/12/11.
-//  Copyright 2011 MIT. All rights reserved.
-//
-
 #import <UIKit/UIKit.h>
-#import "FacilitiesLocationDataViewController.h"
 
 @class FacilitiesCategory;
 
-@interface FacilitiesLocationViewController : FacilitiesLocationDataViewController {
+@interface FacilitiesLocationViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate,UISearchBarDelegate> {
+    UITableView *_tableView;
+    MITLoadingActivityView *_loadingView;
+    
+    FacilitiesLocationData *_locationData;
+    NSArray *_cachedData;
+    NSArray *_filteredData;
+    NSPredicate *_filterPredicate;
+    NSString *_searchString;
     FacilitiesCategory *_category;
 }
 
+@property (nonatomic,retain) UITableView* tableView;
+@property (nonatomic,retain) MITLoadingActivityView* loadingView;
+@property (retain) FacilitiesLocationData* locationData;
+@property (nonatomic,retain) NSPredicate* filterPredicate;
+
+@property (nonatomic,retain) NSArray* cachedData;
+@property (nonatomic,retain) NSArray* filteredData;
+@property (nonatomic,retain) NSString* searchString;
+
 @property (nonatomic,retain) FacilitiesCategory* category;
+
+- (NSArray*)dataForMainTableView;
+- (NSArray*)resultsForSearchString:(NSString*)searchText;
+
+- (void)configureMainTableCell:(UITableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
+- (void)configureSearchCell:(HighlightTableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText;
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar;
 
 @end
