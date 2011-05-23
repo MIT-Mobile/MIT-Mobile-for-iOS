@@ -215,7 +215,7 @@
     if (tableView == self.tableView) {
         return [self.cachedData count];
     } else {
-        return [self.filteredData count];
+        return [self.filteredData count] + 1;
     }
 }
 
@@ -248,8 +248,16 @@
             hlCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
-        [self configureSearchCell:hlCell
-                     forIndexPath:indexPath];
+        if (indexPath.row == 0) {
+            hlCell.highlightLabel.searchString = nil;
+            hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use: %@",self.searchString];
+        } else {
+            NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1)
+                                                   inSection:indexPath.section];
+            [self configureSearchCell:hlCell
+                         forIndexPath:path];
+        }
+        
         
         return hlCell;
     } else {

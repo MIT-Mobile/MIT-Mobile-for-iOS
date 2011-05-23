@@ -38,7 +38,7 @@
     
     [self.locationData addObserver:self
                          withBlock:^(NSString *notification, BOOL updated, id userData) {
-                             if ([userData isEqualToString:FacilitiesRoomsKey]) {
+                             if ((notification == nil) || [userData isEqualToString:FacilitiesRoomsKey]) {
                                  [self.loadingView removeFromSuperview];
                                  self.loadingView = nil;
                                  self.tableView.hidden = NO;
@@ -146,7 +146,11 @@
             room = [self.cachedData objectAtIndex:indexPath.row];
         }
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-        room = [self.filteredData objectAtIndex:indexPath.row];
+        if (indexPath.row == 0) {
+            altName = self.searchString;
+        } else {
+            room = [self.filteredData objectAtIndex:indexPath.row];
+        }
     }
     
     FacilitiesTypeViewController *vc = [[[FacilitiesTypeViewController alloc] init] autorelease];
@@ -174,7 +178,11 @@
 #pragma mark -
 #pragma mark UITableViewDataSource Methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    if (tableView == self.tableView) {
+        return 2;
+    } else {
+        return 1;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -185,7 +193,7 @@
             return (section == 0) ? 1 : [self.cachedData count];
         } 
     } else {
-        return [self.filteredData count];
+        return [self.filteredData count] + 1;
     }
 }
 @end

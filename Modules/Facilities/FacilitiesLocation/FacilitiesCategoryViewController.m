@@ -10,7 +10,9 @@
 #import "FacilitiesLocationViewController.h"
 #import "FacilitiesUserLocationViewController.h"
 #import "FacilitiesRoomViewController.h"
+#import "FacilitiesTypeViewController.h"
 
+#import "FacilitiesConstants.h"
 #import "FacilitiesCategory.h"
 #import "FacilitiesLocation.h"
 #import "HighlightTableViewCell.h"
@@ -43,7 +45,7 @@
     
     [self.locationData addObserver:self
                          withBlock:^(NSString *notification, BOOL updated, id userData) {
-                             if ([userData isEqualToString:FacilitiesCategoriesKey]) {
+                             if ((notification == nil) || [userData isEqualToString:FacilitiesCategoriesKey]) {
                                  [self.loadingView removeFromSuperview];
                                  self.loadingView = nil;
                                  self.tableView.hidden = NO;
@@ -147,7 +149,7 @@
                 forIndexPath:(NSIndexPath *)indexPath
 {
     FacilitiesLocation *loc = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
-    
+        
     cell.highlightLabel.searchString = self.searchString;
     cell.highlightLabel.text = loc.name;
 }
@@ -168,10 +170,17 @@
             nextViewController = controller;
         }
     } else {
-        FacilitiesLocation *location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
-        FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
-        controller.location = location;
-        nextViewController = controller;
+        if (indexPath.row == 0) {
+            FacilitiesTypeViewController *vc = [[[FacilitiesTypeViewController alloc] init] autorelease];
+            vc.userData = [NSDictionary dictionaryWithObject: self.searchString
+                                                      forKey: FacilitiesRequestLocationCustomKey];
+            nextViewController = vc;
+        } else {
+            FacilitiesLocation *location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
+            FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
+            controller.location = location;
+            nextViewController = controller;
+        }
     }
     
     [self.navigationController pushViewController:nextViewController
@@ -195,7 +204,7 @@
     if (tableView == self.tableView) {
         return ((section == 0) && [self shouldShowLocationSection]) ? 1 : [self.cachedData count];
     } else {
-        return [self.filteredData count];
+        return [self.filteredData count] + 1;
     }
 }
 @end
