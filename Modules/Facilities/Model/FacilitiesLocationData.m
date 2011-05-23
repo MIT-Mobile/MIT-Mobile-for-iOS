@@ -493,7 +493,7 @@ static FacilitiesLocationData *_sharedData = nil;
         
         if (requestedId) {
             roomData = [NSDictionary dictionaryWithObject:[roomData objectForKey:requestedId]
-                                                    forKey:requestedId];
+                                                   forKey:requestedId];
         }
         
         [self updateRoomsWithArray:roomData];

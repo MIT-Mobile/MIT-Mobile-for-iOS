@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 
+@class FacilitiesLocation;
 @class FacilitiesCategory;
 @class MITLoadingActivityView;
 @class FacilitiesLocationData;

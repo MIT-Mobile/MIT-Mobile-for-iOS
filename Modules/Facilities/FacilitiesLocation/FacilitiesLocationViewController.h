@@ -1,6 +1,10 @@
 #import <UIKit/UIKit.h>
 
+@class FacilitiesLocation;
 @class FacilitiesCategory;
+@class MITLoadingActivityView;
+@class FacilitiesLocationData;
+@class HighlightTableViewCell;
 
 @interface FacilitiesLocationViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate,UISearchBarDelegate> {
     UITableView *_tableView;
