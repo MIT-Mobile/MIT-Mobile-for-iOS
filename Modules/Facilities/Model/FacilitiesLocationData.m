@@ -5,6 +5,7 @@
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
 #import "MITMobileWebAPI.h"
+#import "MITMobileServerConfiguration.h"
 #import "ConnectionDetector.h"
 
 NSString* const FacilitiesDidLoadDataNotification = @"MITFacilitiesDidLoadData";
@@ -187,6 +188,18 @@ static FacilitiesLocationData *_sharedData = nil;
 
 #pragma mark -
 #pragma mark Private Methods
+- (NSString*)stringForRequestParameters:(NSDictionary*)params {
+    NSMutableString *string = [NSMutableString string];
+    
+    [string appendFormat:@"%@?",[MITMobileWebGetCurrentServerURL() absoluteString]];
+    for (NSString *key in params) {
+        [string appendFormat:@"%@=%@&",key, [params objectForKey:key]];
+    }
+    
+    [string deleteCharactersInRange:NSMakeRange([string length]-1, 1)];
+    return [NSString stringWithString:string];
+}
+
 - (BOOL)shouldUpdateDataWithRequestParams:(NSDictionary*)request {
     NSString *command = [request objectForKey:@"command"];
     
@@ -246,10 +259,6 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
-    if ([self hasActiveRequestWithName:command]) {
-        return;
-    } 
-    
     MITMobileWebAPI *web = [[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self];
     
     NSMutableDictionary *paramDict = nil;
@@ -262,16 +271,19 @@ static FacilitiesLocationData *_sharedData = nil;
     [paramDict setObject:command
                forKey:@"command"];
     
-    if ([self shouldUpdateDataWithRequestParams:paramDict]) {
-        [self addRequest:web
-                withName:command];
-        [web requestObject:paramDict
-             pathExtension:@"map/"];
-    } else {
-        [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
-                             withUserData:command
-                         newDataAvailable:NO];
-    }
+    NSString *requestDescription = [self stringForRequestParameters:paramDict];
+    if ([self hasActiveRequestWithName:requestDescription] == NO) {
+        if ([self shouldUpdateDataWithRequestParams:paramDict]) {
+            [self addRequest:web
+                    withName:requestDescription];
+            [web requestObject:paramDict
+                 pathExtension:@"map/"];
+        } else {
+            [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
+                                 withUserData:command
+                             newDataAvailable:NO];
+        }
+    } 
 }
 
 
