@@ -4,8 +4,7 @@
 #import "FacilitiesCategoryViewController.h"
 #import "UIKit+MITAdditions.h"
 
-#pragma mark -
-#pragma mark Private Interface
+#pragma mark - Private Interface
 @interface FacilitiesRootViewController ()
 @property (nonatomic,retain) UITextView *textView;
 @property (nonatomic,retain) UITableView* tableView;
@@ -36,14 +35,14 @@
     [super didReceiveMemoryWarning];
 }
 
-#pragma mark - View lifecycle
 
+#pragma mark - View lifecycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor clearColor];
-    self.tableView.backgroundColor = [UIColor clearColor];
     self.textView.backgroundColor = [UIColor clearColor];
+    [self.tableView applyStandardColors];
 }
 
 - (void)viewDidUnload
@@ -58,8 +57,8 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-#pragma mark -
-#pragma mark UITableViewDelegate Methods
+
+#pragma mark - UITableViewDelegate Methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
         case 0:
@@ -128,11 +127,10 @@
 }
 
 
-#pragma mark -
-#pragma mark UITableViewDelegate Methods
+#pragma mark - UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if ((indexPath.section == 0) && (indexPath.row == 0)) {
-        FacilitiesLocationDataViewController *vc = [[[FacilitiesCategoryViewController alloc] init] autorelease];
+        FacilitiesCategoryViewController *vc = [[[FacilitiesCategoryViewController alloc] init] autorelease];
         [self.navigationController pushViewController:vc
                                              animated:YES];
     }
