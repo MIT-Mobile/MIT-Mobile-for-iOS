@@ -23,6 +23,7 @@
     ConnectionWrapper *connectionWrapper;
 	NSDictionary *params;
 	id userData;
+    NSURL *_requestURL;
 }
 
 - (id) initWithJSONLoadedDelegate: (id<JSONLoadedDelegate>)delegate;

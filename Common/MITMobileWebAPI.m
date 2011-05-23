@@ -7,9 +7,16 @@
 #define TIMED_OUT_CODE -1001
 #define JSON_ERROR_CODE -2
 
+@interface MITMobileWebAPI ()
+@property (nonatomic,retain) NSURL* requestURL;
+
+@end
+
 @implementation MITMobileWebAPI
 
 @synthesize jsonDelegate, connectionWrapper, params, userData;
+@synthesize requestURL = _requestURL;
+
 
 - (id) initWithJSONLoadedDelegate: (id<JSONLoadedDelegate>)delegate {
 	if((self = [super init])) {
@@ -154,7 +161,9 @@
 	
     // TODO: see if this needs and autorelease
 	self.connectionWrapper = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-	BOOL requestSuccessfullyBegun = [connectionWrapper requestDataFromURL:[MITMobileWebAPI buildURL:self.params queryBase:path]];
+    self.requestURL = [MITMobileWebAPI buildURL:self.params
+                                      queryBase:path];
+	BOOL requestSuccessfullyBegun = [connectionWrapper requestDataFromURL:self.requestURL];
 	
 	[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) showNetworkActivityIndicator];
 	
@@ -179,6 +188,18 @@
 	NSString *urlString = [NSString stringWithFormat:@"%@?%@", base, [MITMobileWebAPI buildQuery:dict]];	
 	NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 	return url;
+}
+
+- (NSString*)description {
+    if (self.requestURL) {
+        return [self.requestURL absoluteString];
+    } else {
+        return [super description];
+    }
+}
+
+- (NSUInteger)hash {
+    return [[self description] hash];
 }
 
 @end
