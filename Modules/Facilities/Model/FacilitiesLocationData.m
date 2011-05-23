@@ -251,8 +251,6 @@ static FacilitiesLocationData *_sharedData = nil;
     } 
     
     MITMobileWebAPI *web = [[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self];
-    [self addRequest:web
-            withName:command];
     
     NSMutableDictionary *paramDict = nil;
     if (params) {
@@ -265,6 +263,8 @@ static FacilitiesLocationData *_sharedData = nil;
                forKey:@"command"];
     
     if ([self shouldUpdateDataWithRequestParams:paramDict]) {
+        [self addRequest:web
+                withName:command];
         [web requestObject:paramDict
              pathExtension:@"map/"];
     } else {
@@ -408,6 +408,11 @@ static FacilitiesLocationData *_sharedData = nil;
         [cdm deleteObjects:bldgRooms];
         
         NSDictionary *floorData = [roomData objectForKey:building];
+        
+        if ([floorData isEqual:[NSNull null]]) {
+            continue;
+        }
+        
         for (NSString *floor in [floorData allKeys]) {
             NSArray *rooms = [floorData objectForKey:floor];
             
@@ -502,11 +507,11 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
     dispatch_sync(_requestUpdateQueue, ^{
-        for (MITMobileWebAPI *request in [_requestsInFlight allValues]) {
+        for (MITMobileWebAPI *request in [self.requestsInFlight allValues]) {
             [request abortRequest];
         }
         
-        [_requestsInFlight removeAllObjects];
+        [self.requestsInFlight removeAllObjects];
     });
     return YES;
 }
