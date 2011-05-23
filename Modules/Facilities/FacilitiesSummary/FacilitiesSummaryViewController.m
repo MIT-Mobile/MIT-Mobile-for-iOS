@@ -70,15 +70,21 @@
 - (void)viewWillAppear:(BOOL)animated {
     FacilitiesLocation *location = [self.reportData objectForKey:FacilitiesRequestLocationBuildingKey];
     FacilitiesRoom *room = [self.reportData objectForKey:FacilitiesRequestLocationRoomKey];
-    NSString *customLocation = [[self.reportData objectForKey:FacilitiesRequestLocationCustomKey] lowercaseString];
+    NSString *customLocation = [self.reportData objectForKey:FacilitiesRequestLocationCustomKey];
     NSString *type = [[self.reportData objectForKey:FacilitiesRequestRepairTypeKey] lowercaseString];
 
     NSString *text = nil;
     
-    if (room == nil) {
-        text = [NSString stringWithFormat:@"I'm reporting a problem with the %@ %@ %@.",type,customLocation,location.name];
+    if (location && room) {
+        text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ at %@ near room %@.",type,location.name,[room displayString]];
+    } else if (location) {
+        if ([customLocation hasSuffix:@"side"]) {
+            text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ %@ %@.",type,[customLocation lowercaseString],location.name];
+        } else {
+            text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ at %@ near %@.",type,location.name,[customLocation lowercaseString]];
+        }
     } else {
-        text = [NSString stringWithFormat:@"I'm reporting a problem with the %@ at %@ near room %@.",type,location.name,[room displayString]];
+        text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ in %@",type,customLocation];
     }
     
     self.problemLabel.text = text;
@@ -203,6 +209,7 @@ static NSUInteger kMaxCharacters = 150;
         self.imageView.image = image;
         self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     }
+    
     [self dismissModalViewControllerAnimated:YES];
 }
 
