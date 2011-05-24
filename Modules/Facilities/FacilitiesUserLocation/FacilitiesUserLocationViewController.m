@@ -1,11 +1,3 @@
-//
-//  FacilitiesUserLocation.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 5/4/11.
-//  Copyright 2011 MIT. All rights reserved.
-//
-
 #import "FacilitiesUserLocationViewController.h"
 
 #import "FacilitiesLocation.h"
@@ -35,6 +27,10 @@ static const NSUInteger kMaxResultCount = 10;
 
 - (void)dealloc
 {
+    self.tableView = nil;
+    self.loadingView = nil;
+    self.locationManager = nil;
+    self.filteredData = nil;
     [super dealloc];
 }
 
@@ -154,8 +150,7 @@ static const NSUInteger kMaxResultCount = 10;
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-#pragma mark -
-#pragma mark UITableViewDataSource
+#pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [self.filteredData count];
 }
@@ -177,8 +172,7 @@ static const NSUInteger kMaxResultCount = 10;
     return cell;
 }
 
-#pragma mark -
-#pragma mark UITableViewDelegate
+#pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     FacilitiesLocation *location = nil;
     
@@ -197,8 +191,7 @@ static const NSUInteger kMaxResultCount = 10;
 }
 
 
-#pragma mark -
-#pragma mark CLLocationManagerDelegate
+#pragma mark - CLLocationManagerDelegate
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     [self.locationManager startUpdatingLocation];
     self.locationManager = nil;
