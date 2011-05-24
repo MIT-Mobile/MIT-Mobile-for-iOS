@@ -216,7 +216,7 @@ static FacilitiesLocationData *_sharedData = nil;
         }
         
         NSString *dateString = [dict objectForKey:command];
-        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
         [df setDateFormat:@"yyyy-MM-dd"];
         
         date = [df dateFromString:dateString];
@@ -256,7 +256,7 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
-    MITMobileWebAPI *web = [[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self];
+    MITMobileWebAPI *web = [[[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self] autorelease];
     
     NSMutableDictionary *paramDict = nil;
     if (params) {
@@ -500,7 +500,7 @@ static FacilitiesLocationData *_sharedData = nil;
     
     if (shouldUpdateDate) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
-        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
         [df setDateFormat:@"yyyy-MM-dd"];
         [dict setValue:[df stringFromDate:[NSDate date]]
                 forKey:command];
@@ -516,8 +516,8 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
     dispatch_sync(_requestUpdateQueue, ^{
-        for (MITMobileWebAPI *request in [self.requestsInFlight allValues]) {
-            [request abortRequest];
+        for (MITMobileWebAPI *lrequest in [self.requestsInFlight allValues]) {
+            [lrequest abortRequest];
         }
         
         [self.requestsInFlight removeAllObjects];
