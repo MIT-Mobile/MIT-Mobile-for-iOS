@@ -39,11 +39,15 @@
 
 - (void)dealloc
 {
-    self.tableView = nil;
-    self.cachedData = nil;
-	self.filteredData = nil;
-	self.locationData = nil;
 	self.location = nil;
+    self.tableView = nil;
+    self.loadingView = nil;
+    self.locationData = nil;
+    self.searchString = nil;
+
+    self.filterPredicate = nil;
+    self.filteredData = nil;
+    self.cachedData = nil;
     [super dealloc];
 }
 
@@ -71,6 +75,7 @@
         searchController.delegate = self;
         searchController.searchResultsDataSource = self;
         searchController.searchResultsDelegate = self;
+        [searchController release];
         
         [searchBar sizeToFit];
         searchBarFrame = searchBar.frame;
@@ -120,13 +125,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back"
-                                                                   style:UIBarButtonItemStyleBordered
-                                                                  target:nil
-                                                                  action:nil];
-    self.navigationItem.backBarButtonItem = [backButton autorelease];
 }
 
 - (void)viewDidUnload

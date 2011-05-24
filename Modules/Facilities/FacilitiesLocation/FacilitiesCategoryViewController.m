@@ -10,7 +10,6 @@
 #import "FacilitiesUserLocationViewController.h"
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
-#import "MITLogging.h"
 #import "UIKit+MITAdditions.h"
 
 
@@ -25,12 +24,11 @@
 @implementation FacilitiesCategoryViewController
 @synthesize tableView = _tableView;
 @synthesize loadingView = _loadingView;
-
 @synthesize locationData = _locationData;
-@synthesize filteredData = _filteredData;
 @synthesize searchString = _searchString;
 
 @dynamic cachedData;
+@dynamic filteredData;
 @dynamic filterPredicate;
 
 - (id)init
@@ -50,6 +48,11 @@
     self.cachedData = nil;
 	self.filteredData = nil;
 	self.locationData = nil;
+    self.loadingView = nil;
+    self.searchString = nil;
+    self.filterPredicate = nil;
+    self.cachedData = nil;
+    self.filteredData = nil;
     [super dealloc];
 }
 
@@ -81,6 +84,7 @@
         searchController.delegate = self;
         searchController.searchResultsDataSource = self;
         searchController.searchResultsDelegate = self;
+        [searchController release];
         
         [searchBar sizeToFit];
         searchBarFrame = searchBar.frame;

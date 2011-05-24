@@ -4,25 +4,20 @@
 #import "FacilitiesConstants.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesLocationData.h"
-#import "FacilitiesLocationViewController.h"
 #import "FacilitiesRoomViewController.h"
 #import "FacilitiesTypeViewController.h"
-#import "FacilitiesUserLocationViewController.h"
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
-#import "MITLogging.h"
 #import "UIKit+MITAdditions.h"
 
 @implementation FacilitiesLocationViewController
 @synthesize tableView = _tableView;
 @synthesize loadingView = _loadingView;
-
 @synthesize locationData = _locationData;
-@synthesize filteredData = _filteredData;
 @synthesize searchString = _searchString;
-
 @synthesize category = _category;
 
+@dynamic filteredData;
 @dynamic cachedData;
 @dynamic filterPredicate;
 
@@ -40,6 +35,14 @@
 - (void)dealloc
 {
     self.category = nil;
+    self.tableView = nil;
+    self.loadingView = nil;
+    self.locationData = nil;
+    self.searchString = nil;
+
+    self.filterPredicate = nil;
+    self.filteredData = nil;
+    self.cachedData = nil;
     [super dealloc];
 }
 
@@ -71,6 +74,7 @@
         searchController.delegate = self;
         searchController.searchResultsDataSource = self;
         searchController.searchResultsDelegate = self;
+        [searchController release];
         
         [searchBar sizeToFit];
         searchBarFrame = searchBar.frame;
