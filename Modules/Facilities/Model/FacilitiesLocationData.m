@@ -251,8 +251,14 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 - (void)updateRoomDataForBuilding:(NSString*)bldgnum {
-    [self updateDataForCommand:FacilitiesRoomsKey
-                        params:[NSDictionary dictionaryWithObject:bldgnum forKey:@"building"]];
+    if ((bldgnum == 0) || ([bldgnum length] == 0)) {
+        [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
+                             withUserData:FacilitiesRoomsKey
+                         newDataAvailable:NO];
+    } else {
+        [self updateDataForCommand:FacilitiesRoomsKey
+                            params:[NSDictionary dictionaryWithObject:bldgnum forKey:@"building"]];
+    }
 }
 
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
