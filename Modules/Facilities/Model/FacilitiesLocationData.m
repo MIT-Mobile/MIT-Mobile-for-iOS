@@ -53,9 +53,7 @@ static FacilitiesLocationData *_sharedData = nil;
     if (self) {
         self.requestsInFlight = [NSMutableDictionary dictionary];
         self.notificationBlocks = [NSMutableDictionary dictionary];
-        _requestUpdateQueue = dispatch_queue_create("MITFacilitiesRequestUpdateQueue", NULL);
-        
-        [self updateCategoryData];
+        _requestUpdateQueue = dispatch_queue_create("edu.mit.mobile.facilities.requestQueue", NULL);
     }
     
     return self;
@@ -142,7 +140,6 @@ static FacilitiesLocationData *_sharedData = nil;
             return NSOrderedSame;
         }
     }];
-    
     return sortedArray;
 }
 
