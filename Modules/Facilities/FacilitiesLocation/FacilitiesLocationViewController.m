@@ -74,7 +74,6 @@
         searchController.delegate = self;
         searchController.searchResultsDataSource = self;
         searchController.searchResultsDelegate = self;
-        [searchController release];
         
         [searchBar sizeToFit];
         searchBarFrame = searchBar.frame;
@@ -303,7 +302,7 @@
                                      animated:YES];
             return;
         } else {
-            location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
+            location = (FacilitiesLocation*)[self.filteredData objectAtIndex:(indexPath.row-1)];
         }
     }
     

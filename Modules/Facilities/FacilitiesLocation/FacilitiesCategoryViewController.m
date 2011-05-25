@@ -84,7 +84,6 @@
         searchController.delegate = self;
         searchController.searchResultsDataSource = self;
         searchController.searchResultsDelegate = self;
-        [searchController release];
         
         [searchBar sizeToFit];
         searchBarFrame = searchBar.frame;
@@ -320,7 +319,7 @@
                                                       forKey: FacilitiesRequestLocationCustomKey];
             nextViewController = vc;
         } else {
-            FacilitiesLocation *location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
+            FacilitiesLocation *location = (FacilitiesLocation*)[self.filteredData objectAtIndex:(indexPath.row-1)];
             FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
             controller.location = location;
             nextViewController = controller;

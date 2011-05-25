@@ -75,7 +75,6 @@
         searchController.delegate = self;
         searchController.searchResultsDataSource = self;
         searchController.searchResultsDelegate = self;
-        [searchController release];
         
         [searchBar sizeToFit];
         searchBarFrame = searchBar.frame;
@@ -297,7 +296,7 @@
         if (indexPath.row == 0) {
             altName = self.searchString;
         } else {
-            room = [self.filteredData objectAtIndex:indexPath.row];
+            room = [self.filteredData objectAtIndex:(indexPath.row-1)];
         }
     }
     
