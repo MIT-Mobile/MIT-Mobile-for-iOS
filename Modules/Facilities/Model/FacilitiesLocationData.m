@@ -534,11 +534,13 @@ static FacilitiesLocationData *_sharedData = nil;
 
 #pragma mark -
 #pragma mark Singleton Implementation
-+ (FacilitiesLocationData*)sharedData {
++ (void)initialize {
     if (_sharedData == nil) {
         _sharedData = [[super allocWithZone:NULL] init];
     }
-    
+}
+
++ (FacilitiesLocationData*)sharedData {
     return _sharedData;
 }
 
