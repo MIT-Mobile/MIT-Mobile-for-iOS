@@ -7,6 +7,10 @@
 #import "FacilitiesConstants.h"
 #import "FacilitiesRootViewController.h"
 
+@interface FacilitiesSummaryViewController ()
+- (UIView*)firstResponderInView:(UIView*)view;
+@end
+
 @implementation FacilitiesSummaryViewController
 @synthesize scrollView = _scrollView;
 @synthesize imageView = _imageView;
@@ -55,6 +59,10 @@
 {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor clearColor];
+    self.scrollView.backgroundColor = [UIColor clearColor];
+    self.scrollView.autoresizesSubviews = NO;
+    self.scrollView.contentSize = self.scrollView.bounds.size;
+    
     self.imageView.image = [UIImage imageNamed:@"tours/button_photoopp"];
     
     self.descriptionView.layer.cornerRadius = 5.0f;
@@ -110,7 +118,7 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
+    
     self.imageView = nil;
     self.pictureButton = nil;
     self.problemLabel = nil;
@@ -121,7 +129,6 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
@@ -153,36 +160,15 @@
     }
 }
 
-#pragma mark -
-#pragma mark Touch Handling
-- (void)touchesBegan:(NSSet *)touches
-           withEvent:(UIEvent *)event
-{
-    if ([event type] == UIEventTypeTouches) {
-        for (UITouch *touch in touches) {
-            CGPoint touchPoint = [touch locationInView:self.scrollView];
-            UIView *view = [self.scrollView hitTest:touchPoint
-                                          withEvent:event];
-            NSArray *views = [NSArray arrayWithObjects:self.descriptionView,self.emailField, nil];
-            
-            for (UIResponder *responder in views) {
-                if ((view != responder) && [responder isFirstResponder]) {
-                    [responder resignFirstResponder];
-                }
-            }
-        }
-    }
-    
-    [super touchesBegan:touches
-              withEvent:event];
-}
-
 
 #pragma mark -
 #pragma mark UITextViewDelegate
 static NSUInteger kMaxCharacters = 150;
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
-    if ((range.length == 1) && ([text length] == 0)) {
+    if ([text isEqualToString:@"\n"]) {
+        [textView resignFirstResponder];
+        return NO;
+    } else if ((range.length == 1) && ([text length] == 0)) {
         return YES;
     } else if ((range.location + [text length]) >= kMaxCharacters) {
         return NO;
@@ -193,6 +179,11 @@ static NSUInteger kMaxCharacters = 150;
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView {
     return YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return NO;
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -227,18 +218,74 @@ static NSUInteger kMaxCharacters = 150;
 }
 
 #pragma mark - Notification Methods
+- (UIView*)firstResponderInView:(UIView*)view {
+    if ([view isKindOfClass:[UITextView class]]) {
+        NSLog(@"TextView: %d", [view isFirstResponder]);
+    }
+    
+    if ([view isFirstResponder]) {
+        return view;
+    }
+    
+    for (UIView *subview in view.subviews) {
+        UIView *fr = [self firstResponderInView:subview];
+        if (fr) {
+            return fr;
+        }
+    }
+    
+    return nil;
+}
+
 - (void)keyboardWillShow:(NSNotification*)notification {
-    NSValue *keyboardRect = [[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey];
-    CGSize keyboardSize = [keyboardRect CGRectValue].size;
+    NSValue *keyboard = [[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRect = [self.view convertRect:[keyboard CGRectValue]
+                                        fromView:nil];
+    CGSize keyboardSize = keyboardRect.size;
     
+    UIView *responder = [self firstResponderInView:self.view];
+    CGRect responderRect = CGRectZero;
+    if (responder) {
+        responderRect = responder.frame;
+    }
     
+    CGRect visibleRect = self.scrollView.frame;
+    visibleRect.size.height -= keyboardSize.height;
     
+    NSValue *durationValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    NSTimeInterval duration = 0;
+    [durationValue getValue:&duration];
+    
+    [UIView animateWithDuration:duration
+                     animations:^(void) {
+                         self.scrollView.frame = visibleRect;
+                         [self.scrollView scrollRectToVisible:responderRect
+                                                     animated:YES];
+                     }
+                     completion:nil];
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
-    NSValue *keyboardRect = [[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey];
+    NSValue *keyboardRect = [[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey];
     CGSize keyboardSize = [keyboardRect CGRectValue].size;
     
+    CGRect visibleRect = self.view.bounds;
+    
+    NSValue *durationValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    NSTimeInterval duration = 0;
+    [durationValue getValue:&duration];
+
+    NSValue *curveValue = [[notification userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey];
+    UIViewAnimationOptions curve = 0;
+    [curveValue getValue:&curve];
+    
+    [UIView animateWithDuration:duration
+                          delay:0.0
+                        options:curve
+                     animations:^(void) {
+                         self.scrollView.frame = visibleRect;
+                     }
+                     completion:nil];
 }
 
 @end
