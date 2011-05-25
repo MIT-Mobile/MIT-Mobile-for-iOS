@@ -8,6 +8,7 @@
 #import "FacilitiesRootViewController.h"
 
 @implementation FacilitiesSummaryViewController
+@synthesize scrollView = _scrollView;
 @synthesize imageView = _imageView;
 @synthesize pictureButton = _pictureButton;
 @synthesize problemLabel = _problemLabel;
@@ -34,6 +35,8 @@
     self.emailField = nil;
     self.characterCount = nil;
     self.reportData = nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [super dealloc];
 }
@@ -88,6 +91,20 @@
     }
     
     self.problemLabel.text = text;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidUnload
@@ -143,9 +160,9 @@
 {
     if ([event type] == UIEventTypeTouches) {
         for (UITouch *touch in touches) {
-            CGPoint touchPoint = [touch locationInView:self.view];
-            UIView *view = [self.view hitTest:touchPoint
-                                    withEvent:event];
+            CGPoint touchPoint = [touch locationInView:self.scrollView];
+            UIView *view = [self.scrollView hitTest:touchPoint
+                                          withEvent:event];
             NSArray *views = [NSArray arrayWithObjects:self.descriptionView,self.emailField, nil];
             
             for (UIResponder *responder in views) {
@@ -172,10 +189,6 @@ static NSUInteger kMaxCharacters = 150;
     }
     
     return YES;
-}
-
-- (void)textViewDidChange:(UITextView *)textView {
-    [self.characterCount setText:[NSString stringWithFormat:@"%3u/%03u",[textView.text length],kMaxCharacters]];
 }
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView {
@@ -211,6 +224,21 @@ static NSUInteger kMaxCharacters = 150;
     }
     
     [self dismissModalViewControllerAnimated:YES];
+}
+
+#pragma mark - Notification Methods
+- (void)keyboardWillShow:(NSNotification*)notification {
+    NSValue *keyboardRect = [[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGSize keyboardSize = [keyboardRect CGRectValue].size;
+    
+    
+    
+}
+
+- (void)keyboardWillHide:(NSNotification*)notification {
+    NSValue *keyboardRect = [[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGSize keyboardSize = [keyboardRect CGRectValue].size;
+    
 }
 
 @end

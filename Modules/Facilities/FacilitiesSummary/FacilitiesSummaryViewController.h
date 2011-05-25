@@ -3,6 +3,7 @@
 
 @interface FacilitiesSummaryViewController : UIViewController <UITextViewDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 {
+    UIScrollView *_scrollView;
     UIImageView *_imageView;
     UIButton *_pictureButton;
     UILabel *_problemLabel;
@@ -12,6 +13,7 @@
     NSDictionary *_reportData;
 }
 
+@property (nonatomic,retain) IBOutlet UIScrollView* scrollView;
 @property (nonatomic,retain) IBOutlet UIImageView* imageView;
 @property (nonatomic,retain) IBOutlet UIButton* pictureButton;
 @property (nonatomic,retain) IBOutlet UILabel* problemLabel;
