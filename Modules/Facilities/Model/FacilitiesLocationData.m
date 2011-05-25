@@ -252,9 +252,7 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (void)updateRoomDataForBuilding:(NSString*)bldgnum {
     if ((bldgnum == 0) || ([bldgnum length] == 0)) {
-        [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
-                             withUserData:FacilitiesRoomsKey
-                         newDataAvailable:NO];
+        return;
     } else {
         [self updateDataForCommand:FacilitiesRoomsKey
                             params:[NSDictionary dictionaryWithObject:bldgnum forKey:@"building"]];
@@ -514,7 +512,7 @@ static FacilitiesLocationData *_sharedData = nil;
                                                   forKey:FacilitiesFetchDatesKey];
     }
     
-    [self removeRequestWithName:command];
+    [self removeRequestWithName:[self stringForRequestParameters:request.params]];
     [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
                          withUserData:command
                      newDataAvailable:YES];
