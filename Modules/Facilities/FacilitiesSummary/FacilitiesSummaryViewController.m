@@ -49,10 +49,7 @@
 
 - (void)didReceiveMemoryWarning
 {
-    // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
 }
 
 #pragma mark - View lifecycle
@@ -114,11 +111,6 @@
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidHide:)
-                                                 name:UIKeyboardDidHideNotification
-                                               object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -171,8 +163,7 @@
 }
 
 
-#pragma mark -
-#pragma mark UITextViewDelegate
+#pragma mark - UITextViewDelegate
 static NSUInteger kMaxCharacters = 150;
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
     if ([text isEqualToString:@"\n"]) {
@@ -196,6 +187,7 @@ static NSUInteger kMaxCharacters = 150;
     return NO;
 }
 
+#pragma mark - UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     UIImagePickerController *controller = [[[UIImagePickerController alloc] init] autorelease];
     if (buttonIndex == 0) {
@@ -212,6 +204,7 @@ static NSUInteger kMaxCharacters = 150;
                             animated:YES];
 }
 
+#pragma mark - UIImagePickerDelegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     
@@ -311,8 +304,5 @@ static NSUInteger kMaxCharacters = 150;
                                                          animated:YES];
                          }
                      }];
-}
-
-- (void)keyboardDidHide:(NSNotification*)notification {
 }
 @end
