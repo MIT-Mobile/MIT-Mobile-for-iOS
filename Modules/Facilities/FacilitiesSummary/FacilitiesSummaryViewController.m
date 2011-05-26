@@ -1,4 +1,5 @@
 #import <QuartzCore/QuartzCore.h>
+#import <sys/ucred.h>
 
 #import "FacilitiesSummaryViewController.h"
 #import "FacilitiesCategory.h"
@@ -39,6 +40,7 @@
     self.emailField = nil;
     self.characterCount = nil;
     self.reportData = nil;
+    self.scrollView = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
@@ -59,8 +61,11 @@
 {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor clearColor];
+    
     self.scrollView.backgroundColor = [UIColor clearColor];
     self.scrollView.autoresizesSubviews = NO;
+    self.scrollView.scrollsToTop = NO;
+    self.scrollView.scrollEnabled = NO;
     self.scrollView.contentSize = self.scrollView.bounds.size;
     
     self.imageView.image = [UIImage imageNamed:@"tours/button_photoopp"];
@@ -108,6 +113,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidHide:)
+                                                 name:UIKeyboardDidHideNotification
                                                object:nil];
 }
 
@@ -219,10 +229,6 @@ static NSUInteger kMaxCharacters = 150;
 
 #pragma mark - Notification Methods
 - (UIView*)firstResponderInView:(UIView*)view {
-    if ([view isKindOfClass:[UITextView class]]) {
-        NSLog(@"TextView: %d", [view isFirstResponder]);
-    }
-    
     if ([view isFirstResponder]) {
         return view;
     }
@@ -242,50 +248,71 @@ static NSUInteger kMaxCharacters = 150;
     CGRect keyboardRect = [self.view convertRect:[keyboard CGRectValue]
                                         fromView:nil];
     CGSize keyboardSize = keyboardRect.size;
-    
+
+    NSValue *durationValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    NSTimeInterval duration = 0;
+    [durationValue getValue:&duration];
+
+    NSValue *curveValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    UIViewAnimationOptions options = 0;
+    [curveValue getValue:&options];
+    options |= UIViewAnimationOptionBeginFromCurrentState;
+    options |= UIViewAnimationOptionAllowAnimatedContent;
+
     UIView *responder = [self firstResponderInView:self.view];
     CGRect responderRect = CGRectZero;
     if (responder) {
         responderRect = responder.frame;
+        CGFloat minFrame = responderRect.origin.y + responderRect.size.height;
+        if (minFrame > keyboardSize.height) {
+    	    responderRect.origin.y += 10;
+        }
     }
-    
-    CGRect visibleRect = self.scrollView.frame;
-    visibleRect.size.height -= keyboardSize.height;
-    
-    NSValue *durationValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
-    NSTimeInterval duration = 0;
-    [durationValue getValue:&duration];
-    
+
+	CGRect viewFrame = self.scrollView.frame;
+	viewFrame.size.height -= keyboardSize.height;
+
     [UIView animateWithDuration:duration
-                     animations:^(void) {
-                         self.scrollView.frame = visibleRect;
+                          delay:0
+                        options:options
+                     animations:^ {
+                         [self.scrollView setFrame:viewFrame];
                          [self.scrollView scrollRectToVisible:responderRect
-                                                     animated:YES];
+                                                     animated:NO];
                      }
                      completion:nil];
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
-    NSValue *keyboardRect = [[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey];
-    CGSize keyboardSize = [keyboardRect CGRectValue].size;
-    
-    CGRect visibleRect = self.view.bounds;
-    
+    NSValue *keyboardValue = [[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey];
+    CGRect keyboardRect = [keyboardValue CGRectValue];
+
     NSValue *durationValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
     NSTimeInterval duration = 0;
     [durationValue getValue:&duration];
 
-    NSValue *curveValue = [[notification userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey];
-    UIViewAnimationOptions curve = 0;
-    [curveValue getValue:&curve];
+    NSValue *curveValue = [[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    UIViewAnimationOptions options = 0;
+    [curveValue getValue:&options];
+    options |= UIViewAnimationOptionBeginFromCurrentState;
     
+    CGRect visibleRect = self.scrollView.frame;
+    visibleRect.size.height += keyboardRect.size.height;
+
     [UIView animateWithDuration:duration
-                          delay:0.0
-                        options:curve
-                     animations:^(void) {
-                         self.scrollView.frame = visibleRect;
+                          delay:0
+                        options:options
+                     animations:^ {
+                         [self.scrollView setFrame:visibleRect];
                      }
-                     completion:nil];
+                     completion:^ (BOOL finished) {
+                         if (finished) {
+                             [self.scrollView scrollRectToVisible:CGRectMake(0, 0, 1, 1)
+                                                         animated:YES];
+                         }
+                     }];
 }
 
+- (void)keyboardDidHide:(NSNotification*)notification {
+}
 @end
