@@ -169,8 +169,7 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 
-- (void)addObserver:(id)observer withBlock:(FacilitiesDidLoadBlock)block
-{
+- (void)addObserver:(id)observer withBlock:(FacilitiesDidLoadBlock)block {
     [self.notificationBlocks setObject:[[block copy] autorelease]
                                 forKey:[observer description]];
     
@@ -184,8 +183,7 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 
-#pragma mark -
-#pragma mark Private Methods
+#pragma mark - Private Methods
 - (NSString*)stringForRequestParameters:(NSDictionary*)params {
     NSMutableString *string = [NSMutableString string];
     
@@ -491,8 +489,7 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 
-#pragma mark -
-#pragma mark JSONDataLoaded Delegate
+#pragma mark - JSONDataLoaded Delegate
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
     NSString *command = [request.params objectForKey:@"command"];
     
@@ -542,8 +539,7 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 
-#pragma mark -
-#pragma mark Singleton Implementation
+#pragma mark - Singleton Implementation
 + (void)initialize {
     if (_sharedData == nil) {
         _sharedData = [[super allocWithZone:NULL] init];
