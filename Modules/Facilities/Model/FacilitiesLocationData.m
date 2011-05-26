@@ -33,6 +33,7 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (FacilitiesCategory*)categoryForId:(NSString*)categoryId;
 - (FacilitiesLocation*)locationForId:(NSString*)locationId;
+- (FacilitiesLocation*)locationWithNumber:(NSString*)bldgNumber;
 - (void)sendNotificationToObservers:(NSString*)notificationName
                        withUserData:(id)userData
                    newDataAvailable:(BOOL)updated;
@@ -207,7 +208,7 @@ static FacilitiesLocationData *_sharedData = nil;
     NSDate *date = nil;
     
     if ([command isEqualToString:FacilitiesRoomsKey] && [request objectForKey:@"building"]) {
-        FacilitiesLocation *location = [self locationForId:[request objectForKey:@"building"]];
+        FacilitiesLocation *location = [self locationWithNumber:[request objectForKey:@"building"]];
         date = location.roomsUpdated;
     } else {
         NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey];
@@ -307,6 +308,17 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (FacilitiesLocation*)locationForId:(NSString*)locationId {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"uid == %@",locationId];
+    NSArray *fetchedData = [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
+                                                             matchingPredicate:predicate];
+    if (fetchedData && ([fetchedData count] > 0)) {
+        return [fetchedData objectAtIndex:0];
+    } else {
+        return nil;
+    }
+}
+
+- (FacilitiesLocation*)locationWithNumber:(NSString*)bldgNumber {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"number == %@",bldgNumber];
     NSArray *fetchedData = [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
                                                              matchingPredicate:predicate];
     if (fetchedData && ([fetchedData count] > 0)) {
@@ -436,8 +448,8 @@ static FacilitiesLocationData *_sharedData = nil;
                 moRoom.building = building;
             }
         }
-        
-        FacilitiesLocation *location = [self locationForId:building];
+
+        FacilitiesLocation *location = [self locationWithNumber:building];
         location.roomsUpdated = [NSDate date];
     }
     
