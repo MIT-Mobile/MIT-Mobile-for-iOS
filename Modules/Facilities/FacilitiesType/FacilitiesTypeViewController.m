@@ -2,6 +2,7 @@
 #import "FacilitiesSummaryViewController.h"
 #import "FacilitiesConstants.h"
 #import "UIKit+MITAdditions.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation FacilitiesTypeViewController
 @synthesize userData = _userData;
@@ -52,35 +53,47 @@
 - (void)loadView {
     UIView *mainView = nil;
     CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
+    CGRect toolbarRect = self.navigationController.navigationBar.frame;
+    screenRect.origin.y += toolbarRect.size.height;
+    screenRect.size.height -= toolbarRect.size.height;
     
     {
         mainView = [[[UIView alloc] initWithFrame:screenRect] autorelease];
-        mainView.autoresizesSubviews = YES;
         mainView.backgroundColor = [UIColor clearColor];
+        mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                     UIViewAutoresizingFlexibleWidth);
+        mainView.autoresizesSubviews = YES;
+        [self setView:mainView];
     }
     
     {
-        CGRect tableRect = screenRect;
-        tableRect.origin = CGPointZero;
+        CGRect tableRect = mainView.bounds;
+        tableRect.origin = CGPointMake(0, 0);
         
         UITableView *table = [[[UITableView alloc] initWithFrame:tableRect
                                                            style:UITableViewStyleGrouped] autorelease];
+        mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                     UIViewAutoresizingFlexibleWidth);
         [table applyStandardColors];
+        NSLog( @"%@ : %@",NSStringFromCGRect(tableRect),NSStringFromCGRect(mainView.frame));
         
         table.delegate = self;
         table.dataSource = self;
-        table.hidden = NO;
+        table.showsVerticalScrollIndicator = YES;
+        table.scrollEnabled = YES;
+        table.layer.borderColor = [[UIColor blackColor] CGColor];
+        table.layer.borderWidth = 1.0;
         
         self.tableView = table;
         [mainView addSubview:table];
     }
     
-    self.view = mainView;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.tableView reloadData];
     // Do any additional setup after loading the view from its nib.
 }
 
