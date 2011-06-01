@@ -7,6 +7,7 @@
 #import "FacilitiesRoom.h"
 #import "FacilitiesConstants.h"
 #import "FacilitiesRootViewController.h"
+#import "FacilitiesSubmitViewController.h"
 
 @interface FacilitiesSummaryViewController ()
 - (UIView*)firstResponderInView:(UIView*)view;
@@ -153,13 +154,8 @@
 }
 
 - (IBAction)submitReport:(id)sender {
-    for (UIViewController *controller in self.navigationController.viewControllers) {
-        if ([controller isKindOfClass:[FacilitiesRootViewController class]]) {
-            [self.navigationController popToViewController:controller
-                                                  animated:YES];
-            break;
-        }
-    }
+    [self.navigationController pushViewController:[[[FacilitiesSubmitViewController alloc] init] autorelease]
+                                         animated:YES];
 }
 
 
