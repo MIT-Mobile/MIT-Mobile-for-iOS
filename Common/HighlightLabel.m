@@ -11,7 +11,10 @@
         self.searchString = nil;
         
         self.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-        self.highlightedTextColor = [UIColor redColor];
+        self.highlightedTextColor = [UIColor colorWithRed:0.1
+                                                    green:0.55
+                                                     blue:0.1
+                                                    alpha:1.0];
         self.highlightsAllMatches = YES;
         
         [self addObserver:self
