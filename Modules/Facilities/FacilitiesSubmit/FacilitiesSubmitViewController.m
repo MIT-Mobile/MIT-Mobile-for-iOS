@@ -84,6 +84,10 @@
     [self setView:mainView];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    self.navigationItem.hidesBackButton = YES;
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     _demoQueue = dispatch_queue_create("edu.mit.mobile.ProgressDemo", 0);
     NSUInteger imageSize = 2000000; // Bytes
