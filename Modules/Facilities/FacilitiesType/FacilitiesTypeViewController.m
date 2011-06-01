@@ -75,7 +75,6 @@
         mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                      UIViewAutoresizingFlexibleWidth);
         [table applyStandardColors];
-        NSLog( @"%@ : %@",NSStringFromCGRect(tableRect),NSStringFromCGRect(mainView.frame));
         
         table.delegate = self;
         table.dataSource = self;
