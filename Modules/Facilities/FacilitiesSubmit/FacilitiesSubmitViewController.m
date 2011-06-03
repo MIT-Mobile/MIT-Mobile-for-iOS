@@ -90,7 +90,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     _demoQueue = dispatch_queue_create("edu.mit.mobile.ProgressDemo", 0);
-    NSUInteger imageSize = 2000000; // Bytes
+    NSUInteger imageSize = 768000; // Bytes
     NSUInteger uploadSpeed = 50000; // Bps
     
     [self.progressView setProgress:0.0];
@@ -143,7 +143,6 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
