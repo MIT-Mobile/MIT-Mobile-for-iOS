@@ -94,7 +94,6 @@
 		2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */; };
 		2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */; };
 		2CED98FB13537DEC0034F6F1 /* QRReaderOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98FA13537DEC0034F6F1 /* QRReaderOverlayView.m */; };
-		2CFBF916138EC2610080883D /* FacilitiesSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFBF915138EC2610080883D /* FacilitiesSubmitViewController.m */; };
 		2CFCABA3135DE705006464AF /* QRReaderResultTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCABA2135DE705006464AF /* QRReaderResultTransform.m */; };
 		3A827081103DAA0500BB4109 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A827080103DAA0500BB4109 /* Reachability.m */; };
 		3A82708D103DAA2400BB4109 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */; };
@@ -512,8 +511,6 @@
 		2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QRReaderDetailViewController.xib; sourceTree = "<group>"; };
 		2CED98F913537DEC0034F6F1 /* QRReaderOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderOverlayView.h; sourceTree = "<group>"; };
 		2CED98FA13537DEC0034F6F1 /* QRReaderOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderOverlayView.m; sourceTree = "<group>"; };
-		2CFBF914138EC2610080883D /* FacilitiesSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesSubmitViewController.h; sourceTree = "<group>"; };
-		2CFBF915138EC2610080883D /* FacilitiesSubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesSubmitViewController.m; sourceTree = "<group>"; };
 		2CFCABA2135DE705006464AF /* QRReaderResultTransform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResultTransform.m; sourceTree = "<group>"; };
 		3A82707F103DAA0500BB4109 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A827080103DAA0500BB4109 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
@@ -1248,7 +1245,6 @@
 				2C203328135F5EB70033E80A /* FacilitiesAbout */,
 				2C20332B135F64920033E80A /* FacilitiesRoot */,
 				2C5B30451371D47000870E6D /* FacilitiesUserLocation */,
-				2CFBF913138EC1620080883D /* FacilitiesSubmit */,
 				2C95A1D4137DB03E0025B28D /* FacilitiesSummary */,
 				2C40A0F01367362600C83847 /* FacilitiesLocation */,
 				2C1807391382C2DA000CCB6F /* FacilitiesType */,
@@ -1394,15 +1390,6 @@
 				2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */,
 			);
 			name = QRReaderDetailView;
-			sourceTree = "<group>";
-		};
-		2CFBF913138EC1620080883D /* FacilitiesSubmit */ = {
-			isa = PBXGroup;
-			children = (
-				2CFBF914138EC2610080883D /* FacilitiesSubmitViewController.h */,
-				2CFBF915138EC2610080883D /* FacilitiesSubmitViewController.m */,
-			);
-			path = FacilitiesSubmit;
 			sourceTree = "<group>";
 		};
 		3AA21C481039DDBA00DB7637 /* Connection */ = {
@@ -2408,7 +2395,6 @@
 				29C45473118B55E100A321B0 /* XAuthTwitterEngine.m in Sources */,
 				2C18073C1382C32D000CCB6F /* FacilitiesTypeViewController.m in Sources */,
 				2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */,
-				2CFBF916138EC2610080883D /* FacilitiesSubmitViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
