@@ -8,6 +8,11 @@
 #import "FacilitiesRootViewController.h"
 #import "FacilitiesSubmitViewController.h"
 
+enum {
+    FacilitiesFocusDescription = 1,
+    FacilitiesFocusEmail
+};
+
 @interface FacilitiesSummaryViewController ()
 - (UIView*)firstResponderInView:(UIView*)view;
 @end
@@ -25,7 +30,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        self.title = @"Detail";
     }
     return self;
 }
@@ -152,6 +157,17 @@
 
 - (IBAction)submitReport:(id)sender {
     if (_keyboardIsVisible) {
+        return;
+    }
+    
+    if ([self.descriptionView.text length] == 0) {
+        UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Information Missing"
+                                                         message:@"Please enter a description before continuing"
+                                                        delegate:self
+                                               cancelButtonTitle:@"Ok"
+                                               otherButtonTitles:nil] autorelease];
+        alert.tag = FacilitiesFocusDescription;
+        [alert show];
         return;
     }
     
