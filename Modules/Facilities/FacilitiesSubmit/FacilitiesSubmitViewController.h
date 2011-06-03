@@ -5,7 +5,6 @@
     UILabel *_statusLabel;
     UIProgressView *_progressView;
     UIButton *_completeButton;
-    dispatch_queue_t _demoQueue;
 }
 
 @property (nonatomic,retain) IBOutlet UILabel* statusLabel;

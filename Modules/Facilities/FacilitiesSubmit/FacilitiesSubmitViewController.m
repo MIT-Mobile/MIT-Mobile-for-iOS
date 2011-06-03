@@ -89,7 +89,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    _demoQueue = dispatch_queue_create("edu.mit.mobile.ProgressDemo", 0);
+    dispatch_queue_t demoQueue = dispatch_queue_create("edu.mit.mobile.ProgressDemo", 0);
     NSUInteger imageSize = 768000; // Bytes
     NSUInteger uploadSpeed = 50000; // Bps
     
@@ -100,15 +100,11 @@
     
     int blkCount = 0;
     for (NSUInteger chunk = 0; chunk < imageSize; chunk += uploadSpeed) {
-        dispatch_async(_demoQueue, ^(void) {
+        dispatch_async(demoQueue, ^(void) {
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 NSMutableString *string = [NSMutableString string];
                 for (int i = 0; i < ((blkCount % 3) + 1); i++) {
                     [string appendString:@"."];
-                }
-                
-                for (int i = 0; i < (2 - (blkCount % 3)); i++) {
-                    [string appendString:@" "];
                 }
                 
                 [self.statusLabel setText:[NSString stringWithFormat:@"Uploading picture%@",string]];
@@ -120,17 +116,15 @@
         blkCount++;
     }
 
-    dispatch_async(_demoQueue, ^(void) {
+    dispatch_async(demoQueue, ^(void) {
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             [self.statusLabel setText:@"Successfully submitted your report"];
             self.progressView.hidden = YES;
             self.completeButton.hidden = NO;
         });
     });
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    dispatch_release(_demoQueue);
+    
+    dispatch_release(demoQueue);
 }
 
 - (void)viewDidUnload

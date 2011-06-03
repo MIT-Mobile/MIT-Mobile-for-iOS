@@ -1,5 +1,4 @@
 #import <QuartzCore/QuartzCore.h>
-#import <sys/ucred.h>
 
 #import "FacilitiesSummaryViewController.h"
 #import "FacilitiesCategory.h"
@@ -16,12 +15,11 @@
 @implementation FacilitiesSummaryViewController
 @synthesize scrollView = _scrollView;
 @synthesize imageView = _imageView;
-@synthesize pictureButton = _pictureButton;
 @synthesize problemLabel = _problemLabel;
 @synthesize descriptionView = _descriptionView;
 @synthesize emailField = _emailField;
-@synthesize characterCount = _characterCount;
 @synthesize reportData = _reportData;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -35,16 +33,13 @@
 - (void)dealloc
 {
     self.imageView = nil;
-    self.pictureButton = nil;
     self.problemLabel = nil;
     self.descriptionView = nil;
     self.emailField = nil;
-    self.characterCount = nil;
     self.reportData = nil;
     self.scrollView = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
     [super dealloc];
 }
 
@@ -58,12 +53,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor clearColor];
     
-    self.scrollView.backgroundColor = [UIColor clearColor];
-    self.scrollView.autoresizesSubviews = NO;
     self.scrollView.scrollsToTop = NO;
-    self.scrollView.scrollEnabled = NO;
     self.scrollView.contentSize = self.scrollView.bounds.size;
     
     self.imageView.image = [UIImage imageNamed:@"tours/button_photoopp"];
@@ -82,6 +73,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
     FacilitiesLocation *location = [self.reportData objectForKey:FacilitiesRequestLocationBuildingKey];
     FacilitiesRoom *room = [self.reportData objectForKey:FacilitiesRequestLocationRoomKey];
     NSString *customLocation = [self.reportData objectForKey:FacilitiesRequestLocationCustomKey];
@@ -115,6 +108,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -123,11 +117,9 @@
     [super viewDidUnload];
     
     self.imageView = nil;
-    self.pictureButton = nil;
     self.problemLabel = nil;
     self.descriptionView = nil;
     self.emailField = nil;
-    self.characterCount = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -135,13 +127,18 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-- (IBAction)selectPicture:(id)sender { 
+#pragma mark - IBAction Methods
+- (IBAction)selectPicture:(id)sender {
+    if (_keyboardIsVisible) {
+        return;
+    }
+    
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:nil
                                                             delegate:self
                                                    cancelButtonTitle:@"Cancel"
                                               destructiveButtonTitle:nil
-                                                   otherButtonTitles:@"Take Photo",@"Choose Existing", nil] autorelease];
+                otherButtonTitles:@"Take Photo",@"Choose Existing", nil] autorelease];
         sheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
         [sheet showInView:self.view];
     } else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
@@ -154,8 +151,22 @@
 }
 
 - (IBAction)submitReport:(id)sender {
+    if (_keyboardIsVisible) {
+        return;
+    }
+    
     [self.navigationController pushViewController:[[[FacilitiesSubmitViewController alloc] init] autorelease]
-                                         animated:YES];
+                                                                           animated:YES];
+}
+
+- (IBAction)dismissKeyboard:(id)sender {
+    if (_keyboardIsVisible) {
+        UIView *firstResponder = [self firstResponderInView:self.view];
+        
+        if (firstResponder) {
+            [firstResponder resignFirstResponder];
+        }
+    }
 }
 
 
@@ -270,6 +281,7 @@ static NSUInteger kMaxCharacters = 150;
                                                      animated:NO];
                      }
                      completion:nil];
+    _keyboardIsVisible = YES;
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {
@@ -300,5 +312,6 @@ static NSUInteger kMaxCharacters = 150;
                                                          animated:YES];
                          }
                      }];
+    _keyboardIsVisible = NO;
 }
 @end
