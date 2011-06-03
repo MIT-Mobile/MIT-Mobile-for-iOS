@@ -75,7 +75,7 @@ static const NSUInteger kMaxResultCount = 10;
     {
         NSString *labelText = @"We've narrowed down your location, please choose the closest location below";
         UILabel *labelView = [[[UILabel alloc] init] autorelease];
-        CGRect headerRect = CGRectMake(0, 0, screenFrame.size.width, 60);
+        CGRect headerRect = CGRectMake(15, 0, screenFrame.size.width - 15, 60);
         CGSize strSize = [labelText sizeWithFont:labelView.font
                                constrainedToSize:headerRect.size
                                    lineBreakMode:labelView.lineBreakMode];
