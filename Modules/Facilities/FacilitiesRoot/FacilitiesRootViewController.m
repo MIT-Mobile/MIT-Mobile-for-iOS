@@ -1,6 +1,5 @@
 #import "FacilitiesRootViewController.h"
 
-#import "FacilitiesLocationData.h"
 #import "FacilitiesCategoryViewController.h"
 #import "UIKit+MITAdditions.h"
 

@@ -5,13 +5,9 @@
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
 #import "FacilitiesLocationData.h"
-#import "FacilitiesLocationViewController.h"
-#import "FacilitiesRoomViewController.h"
 #import "FacilitiesTypeViewController.h"
-#import "FacilitiesUserLocationViewController.h"
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
-#import "MITLogging.h"
 #import "UIKit+MITAdditions.h"
 
 @implementation FacilitiesRoomViewController
