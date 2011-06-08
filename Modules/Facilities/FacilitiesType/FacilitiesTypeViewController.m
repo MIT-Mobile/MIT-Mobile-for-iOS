@@ -86,7 +86,7 @@
     [super viewDidLoad];
     [[FacilitiesLocationData sharedData] addObserver:self
                                            withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
-                                               if ([name isEqualToString:FacilitiesRepairTypesKey] && dataUpdated) {
+                                               if ((name == nil) || [name isEqualToString:FacilitiesRepairTypesKey]) {
                                                    [self.loadingView removeFromSuperview];
                                                    self.loadingView = nil;
                                                    [self.tableView reloadData];
