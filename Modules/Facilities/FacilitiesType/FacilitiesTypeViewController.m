@@ -36,13 +36,7 @@
 }
 
 - (NSArray*)repairTypes {
-    static NSArray *types = nil;
-    
-    if (types == nil) {
-        types = [[[FacilitiesLocationData sharedData] allRepairTypes] retain];
-    }
-    
-    return types;
+    return [[FacilitiesLocationData sharedData] allRepairTypes];
 }
 
 #pragma mark - View lifecycle
@@ -94,11 +88,14 @@
     [super viewDidLoad];
     [[FacilitiesLocationData sharedData] addObserver:self
                                            withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
-                                               if ((name == nil) || [userData isEqualToString:FacilitiesRepairTypesKey]) {
+                                               if ([userData isEqualToString:FacilitiesRepairTypesKey]) {
                                                    [self.loadingView removeFromSuperview];
                                                    self.loadingView = nil;
                                                    self.tableView.hidden = NO;
-                                                   [self.tableView reloadData];
+                                                   
+                                                   if (dataUpdated) {
+                                                       [self.tableView reloadData];
+                                                   }
                                                }
                                            }];
 }
