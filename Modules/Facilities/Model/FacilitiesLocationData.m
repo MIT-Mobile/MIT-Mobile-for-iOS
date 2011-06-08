@@ -540,8 +540,8 @@ static FacilitiesLocationData *_sharedData = nil;
         [[NSUserDefaults standardUserDefaults] setObject:dict
                                                   forKey:FacilitiesFetchDatesKey];
     }
-    
-    [self removeRequestWithName:[self stringForRequestParameters:request.params]];
+
+    [self removeRequestWithName:[[request requestURL] absoluteString]];
     [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
                          withUserData:command
                      newDataAvailable:YES];
