@@ -7,6 +7,7 @@ extern NSString* const FacilitiesDidLoadDataNotification;
 extern NSString* const FacilitiesCategoriesKey;
 extern NSString* const FacilitiesLocationsKey;
 extern NSString* const FacilitiesRoomsKey;
+extern NSString* const FacilitiesRepairTypesKey;
 
 typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id userData);
 
@@ -35,6 +36,8 @@ typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id user
 
 - (NSArray*)roomsForBuilding:(NSString*)bldgnum;
 - (NSArray*)roomsMatchingPredicate:(NSPredicate*)predicate;
+
+- (NSArray*)allRepairTypes;
 
 - (void)addObserver:(id)observer withBlock:(FacilitiesDidLoadBlock)block;
 - (void)removeObserver:(id)observer;

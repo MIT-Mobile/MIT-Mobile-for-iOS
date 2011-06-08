@@ -7,12 +7,14 @@
 #import "MITMobileWebAPI.h"
 #import "MITMobileServerConfiguration.h"
 #import "ConnectionDetector.h"
+#import "FacilitiesRepairType.h"
 
 NSString* const FacilitiesDidLoadDataNotification = @"MITFacilitiesDidLoadData";
 
 NSString * const FacilitiesCategoriesKey = @"categorylist";
 NSString * const FacilitiesLocationsKey = @"location";
 NSString * const FacilitiesRoomsKey = @"room";
+NSString * const FacilitiesRepairTypesKey = @"problemtype";
 
 static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
@@ -29,6 +31,7 @@ static FacilitiesLocationData *_sharedData = nil;
 - (void)updateLocationData;
 - (void)updateRoomData;
 - (void)updateRoomDataForBuilding:(NSString*)bldgnum;
+- (void)updateRepairTypeData;
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params;
 
 - (FacilitiesCategory*)categoryForId:(NSString*)categoryId;
@@ -132,7 +135,7 @@ static FacilitiesLocationData *_sharedData = nil;
                                                        longitude:[b2.longitude doubleValue]] autorelease];
         CLLocationDistance d1 = [loc1 distanceFromLocation:location];
         CLLocationDistance d2 = [loc2 distanceFromLocation:location];
-        
+
         if (d1 > d2) {
             return NSOrderedDescending;
         } else if (d2 < d1) {
@@ -166,6 +169,12 @@ static FacilitiesLocationData *_sharedData = nil;
                                                          matchingPredicate:predicate];
     
     return ([results count] > 0) ? [results objectAtIndex:0] : nil;
+}
+
+- (FacilitiesRepairType*)allRepairTypes {
+    [self updateRepairTypeData];
+    return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesRepairType"
+                                             matchingPredicate:[NSPredicate predicateWithValue:YES]];
 }
 
 
@@ -258,26 +267,24 @@ static FacilitiesLocationData *_sharedData = nil;
     }
 }
 
+- (void)updateRepairTypeData {
+    [self updateDataForCommand:FacilitiesRepairTypesKey
+                        params:nil];
+}
+
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
-    MITMobileWebAPI *web = [[[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self] autorelease];
-    
-    NSMutableDictionary *paramDict = nil;
-    if (params) {
-        paramDict = [NSMutableDictionary dictionaryWithDictionary:params];
-    } else {
-        paramDict = [NSMutableDictionary dictionary];
-    }
-    
-    [paramDict setObject:command
-               forKey:@"command"];
-    
-    NSString *requestDescription = [self stringForRequestParameters:paramDict];
-    if ([self hasActiveRequestWithName:requestDescription] == NO) {
-        if ([self shouldUpdateDataWithRequestParams:paramDict]) {
+    //MITMobileWebAPI *web = [[[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self] autorelease];
+    MITMobileWebAPI *web = [[[MITMobileWebAPI alloc] initWithModule:@"facilities"
+                                                            command:command
+                                                         parameters:params] autorelease];
+    web.jsonDelegate = self;
+
+    NSString *description = [[web requestURL] absoluteString];
+    if ([self hasActiveRequestWithName:description] == NO) {
+        if ([self shouldUpdateDataWithRequestParams:web.params]) {
             [self addRequest:web
-                    withName:requestDescription];
-            [web requestObject:paramDict
-                 pathExtension:@"map/"];
+                    withName:description];
+            [web start];
         } else {
             [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
                                  withUserData:command
@@ -421,7 +428,7 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 
-- (void)updateRoomsWithArray:(NSDictionary*)roomData {
+- (void)updateRoomsWithData:(NSDictionary*)roomData {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     
     for (NSString *building in [roomData allKeys]) {
@@ -453,6 +460,19 @@ static FacilitiesLocationData *_sharedData = nil;
     
     [cdm saveData];
 }
+
+- (void)updateRepairTypesWithData:(NSArray*)typeData {
+    CoreDataManager *cdm = [CoreDataManager coreDataManager];
+    [cdm deleteObjectsForEntity:@"FacilitiesRepairType"];
+    
+    for (NSString *type in typeData) {
+        FacilitiesRepairType *repairType = [cdm insertNewObjectForEntityForName:@"FacilitiesRepairType"];
+        repairType.name = type;
+    }
+    
+    [cdm saveData];
+}
+
 
 
 - (void)addRequest:(MITMobileWebAPI*)request withName:(NSString*)name {
@@ -506,7 +526,7 @@ static FacilitiesLocationData *_sharedData = nil;
                                                    forKey:requestedId];
         }
         
-        [self updateRoomsWithArray:roomData];
+        [self updateRoomsWithData:roomData];
     }
     
     BOOL shouldUpdateDate = !([command isEqualToString:FacilitiesRoomsKey] && [request.params objectForKey:@"building"]);
