@@ -5,7 +5,6 @@
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
 #import "FacilitiesConstants.h"
-#import "FacilitiesRootViewController.h"
 #import "FacilitiesSubmitViewController.h"
 
 enum {
@@ -54,7 +53,6 @@ enum {
 }
 
 #pragma mark - View lifecycle
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
