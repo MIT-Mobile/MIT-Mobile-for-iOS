@@ -1,17 +1,21 @@
 #import "FacilitiesSubmitViewController.h"
-
 #import "FacilitiesRootViewController.h"
+
+@interface FacilitiesSubmitViewController ()
+@property BOOL abortRequest;
+@end
 
 @implementation FacilitiesSubmitViewController
 @synthesize statusLabel = _statusLabel;
 @synthesize progressView = _progressView;
 @synthesize completeButton = _completeButton;
+@synthesize abortRequest = _abortRequest;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        self.title = @"Submit Report";
     }
     return self;
 }
@@ -57,7 +61,7 @@
                                        self.progressView.frame.origin.y - height,
                                        frame.size.width - 30,
                                        height);
-
+        
         self.statusLabel = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
         self.statusLabel.textAlignment = UITextAlignmentCenter;
         self.statusLabel.backgroundColor = [UIColor clearColor];
@@ -85,7 +89,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    self.navigationItem.hidesBackButton = YES;
+    self.navigationItem.hidesBackButton = NO;
+    self.navigationItem.backBarButtonItem.title = @"Cancel";
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -101,21 +106,23 @@
     int blkCount = 0;
     for (NSUInteger chunk = 0; chunk < imageSize; chunk += uploadSpeed) {
         dispatch_async(demoQueue, ^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSMutableString *string = [NSMutableString string];
-                for (int i = 0; i < ((blkCount % 3) + 1); i++) {
-                    [string appendString:@"."];
-                }
+            if (self.abortRequest == NO) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSMutableString *string = [NSMutableString string];
+                    for (int i = 0; i < ((blkCount % 3) + 1); i++) {
+                        [string appendString:@"."];
+                    }
+                    
+                    [self.statusLabel setText:[NSString stringWithFormat:@"Uploading picture%@",string]];
+                    [self.progressView setProgress:((float)chunk / (float)imageSize)];
+                });
                 
-                [self.statusLabel setText:[NSString stringWithFormat:@"Uploading picture%@",string]];
-                [self.progressView setProgress:((float)chunk / (float)imageSize)];
-            });
-            
-            [NSThread sleepForTimeInterval:1.0f];
+                [NSThread sleepForTimeInterval:1.0f];
+            }
         });
         blkCount++;
     }
-
+    
     dispatch_async(demoQueue, ^{
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.statusLabel setText:@"Successfully submitted your report"];
@@ -125,6 +132,10 @@
     });
     
     dispatch_release(demoQueue);
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    self.abortRequest = YES;
 }
 
 - (void)viewDidUnload

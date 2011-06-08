@@ -4,6 +4,7 @@
     UILabel *_statusLabel;
     UIProgressView *_progressView;
     UIButton *_completeButton;
+    BOOL _abortRequest;
 }
 
 @property (nonatomic,retain) IBOutlet UILabel* statusLabel;
