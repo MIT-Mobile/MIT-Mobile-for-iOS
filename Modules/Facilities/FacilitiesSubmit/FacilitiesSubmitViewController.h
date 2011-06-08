@@ -1,6 +1,5 @@
 #import <UIKit/UIKit.h>
 
-
 @interface FacilitiesSubmitViewController : UIViewController {
     UILabel *_statusLabel;
     UIProgressView *_progressView;
