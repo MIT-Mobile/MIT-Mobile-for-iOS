@@ -235,8 +235,6 @@
     
     NSURL *reqURL = [MITMobileWebAPI buildURL:self.params
                                     queryBase:requestBase];
-    
-    NSLog(@"Sending request to '%@'",[reqURL absoluteString]);
     return reqURL;
 }
 
