@@ -3,6 +3,7 @@
 #import "FacilitiesConstants.h"
 #import "FacilitiesLocationData.h"
 #import "UIKit+MITAdditions.h"
+#import "FacilitiesRepairType.h"
 #import <QuartzCore/QuartzCore.h>
 
 @implementation FacilitiesTypeViewController
@@ -35,12 +36,19 @@
 }
 
 - (NSArray*)repairTypes {
-    return [[FacilitiesLocationData sharedData] allRepairTypes];
+    static NSArray *types = nil;
+    
+    if (types == nil) {
+        types = [[[FacilitiesLocationData sharedData] allRepairTypes] retain];
+    }
+    
+    return types;
 }
 
 #pragma mark - View lifecycle
 - (void)loadView {
     CGRect screenFrame = [[UIScreen mainScreen] applicationFrame];
+    screenFrame.origin = CGPointZero;
 
     UIView *mainView = [[[UIView alloc] initWithFrame:screenFrame] autorelease];
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
@@ -86,9 +94,10 @@
     [super viewDidLoad];
     [[FacilitiesLocationData sharedData] addObserver:self
                                            withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
-                                               if ((name == nil) || [name isEqualToString:FacilitiesRepairTypesKey]) {
+                                               if ((name == nil) || [userData isEqualToString:FacilitiesRepairTypesKey]) {
                                                    [self.loadingView removeFromSuperview];
                                                    self.loadingView = nil;
+                                                   self.tableView.hidden = NO;
                                                    [self.tableView reloadData];
                                                }
                                            }];
@@ -122,7 +131,8 @@
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
 
-    cell.textLabel.text = [[self repairTypes] objectAtIndex:indexPath.row];
+    FacilitiesRepairType *type = (FacilitiesRepairType *)[[self repairTypes] objectAtIndex:indexPath.row];
+    cell.textLabel.text = type.name;
 
     return cell;
 }
