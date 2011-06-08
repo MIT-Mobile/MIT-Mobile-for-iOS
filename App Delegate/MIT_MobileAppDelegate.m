@@ -122,7 +122,7 @@
     // Register for push notifications
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
     // get deviceToken if it exists
-    self.deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"MITDeviceToken"];
+    self.deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
 	
 	[MITUnreadNotifications updateUI];
 	[MITUnreadNotifications synchronizeWithMIT];
