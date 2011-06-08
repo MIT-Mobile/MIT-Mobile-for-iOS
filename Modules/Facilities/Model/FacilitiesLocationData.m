@@ -24,7 +24,7 @@ static FacilitiesLocationData *_sharedData = nil;
 @property (nonatomic,retain) NSMutableDictionary* requestsInFlight;
 @property (nonatomic,retain) NSMutableDictionary* notificationBlocks;
 
-- (BOOL)shouldUpdateDataWithRequestParams:(NSDictionary*)request;
+- (BOOL)shouldUpdateDataWithRequest:(MITMobileWebAPI*)web;
 - (NSDate*)remoteDate;
 
 - (void)updateCategoryData;
@@ -171,7 +171,7 @@ static FacilitiesLocationData *_sharedData = nil;
     return ([results count] > 0) ? [results objectAtIndex:0] : nil;
 }
 
-- (FacilitiesRepairType*)allRepairTypes {
+- (NSArray*)allRepairTypes {
     [self updateRepairTypeData];
     return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesRepairType"
                                              matchingPredicate:[NSPredicate predicateWithValue:YES]];
@@ -181,10 +181,6 @@ static FacilitiesLocationData *_sharedData = nil;
 - (void)addObserver:(id)observer withBlock:(FacilitiesDidLoadBlock)block {
     [self.notificationBlocks setObject:[[block copy] autorelease]
                                 forKey:[observer description]];
-    
-    if ([self isQueueEmpty]) {
-        dispatch_async(dispatch_get_main_queue(), ^{ block(nil,NO,nil); });
-    }
 }
 
 - (void)removeObserver:(id)observer {
@@ -205,7 +201,8 @@ static FacilitiesLocationData *_sharedData = nil;
     return [NSString stringWithString:string];
 }
 
-- (BOOL)shouldUpdateDataWithRequestParams:(NSDictionary*)request {
+- (BOOL)shouldUpdateDataWithRequest:(MITMobileWebAPI*)web {
+    NSDictionary *request = web.params;
     NSString *command = [request objectForKey:@"command"];
     
     if ([ConnectionDetector isConnected] == NO) {
@@ -220,6 +217,8 @@ static FacilitiesLocationData *_sharedData = nil;
     } else {
         NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey];
         if (dict == nil) {
+            [[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionary]
+                                                      forKey:FacilitiesFetchDatesKey];
             return YES;
         }
         
@@ -281,7 +280,7 @@ static FacilitiesLocationData *_sharedData = nil;
 
     NSString *description = [[web requestURL] absoluteString];
     if ([self hasActiveRequestWithName:description] == NO) {
-        if ([self shouldUpdateDataWithRequestParams:web.params]) {
+        if ([self shouldUpdateDataWithRequest:web]) {
             [self addRequest:web
                     withName:description];
             [web start];
@@ -517,6 +516,8 @@ static FacilitiesLocationData *_sharedData = nil;
         [self updateCategoriesWithArray:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesLocationsKey]) {
         [self updateLocationsWithArray:(NSArray*)JSONObject];
+    } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
+        [self updateRepairTypesWithData:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesRoomsKey]) {
         NSDictionary *roomData = (NSDictionary*)JSONObject;
         NSString *requestedId = [request.params objectForKey:@"building"];
