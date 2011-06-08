@@ -1,4 +1,3 @@
-
 #import <Foundation/Foundation.h>
 #import "ConnectionWrapper.h"
 
@@ -6,24 +5,21 @@
 
 @protocol JSONLoadedDelegate <NSObject>
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject;
-
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error;
 
 @optional 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request;
-
 - (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error;
-
 - (id<UIAlertViewDelegate>)request:(MITMobileWebAPI *)request alertViewDelegateForError:(NSError *)error;
 @end
 
 
 @interface MITMobileWebAPI : NSObject <ConnectionWrapperDelegate> {
-	id<JSONLoadedDelegate> jsonDelegate;
-    ConnectionWrapper *connectionWrapper;
-	NSDictionary *params;
-	id userData;
-    NSURL *_requestURL;
+	id<JSONLoadedDelegate> _jsonDelegate;
+    ConnectionWrapper *_connectionWrapper;
+	NSDictionary *_params;
+    NSString *_pathExtension;
+	id _userData;
 }
 
 - (id) initWithJSONLoadedDelegate: (id<JSONLoadedDelegate>)delegate;
@@ -39,9 +35,15 @@
 + (void)showErrorWithHeader:(NSString *)header;
 + (void)showError:(NSError *)error header:(NSString *)header alertViewDelegate:(id<UIAlertViewDelegate>)alertViewDelegate;
 
-@property (nonatomic, assign) id<JSONLoadedDelegate> jsonDelegate;
-@property (nonatomic, retain) ConnectionWrapper *connectionWrapper;
-@property (nonatomic, retain) NSDictionary *params; // make it easy for creator to identify requests
+- (id)initWithModule:(NSString *)module command:(NSString*)command parameters:(NSDictionary*)params;
+- (BOOL)start;
+- (void)cancel;
+- (NSURL*)requestURL;
+
+@property (nonatomic, retain) id<JSONLoadedDelegate> jsonDelegate;
+@property (nonatomic, readonly, retain) ConnectionWrapper *connectionWrapper;
+@property (nonatomic, readonly, retain) NSDictionary *params; // make it easy for creator to identify requests
+@property (nonatomic, readonly, copy) NSString *pathExtension;
 @property (nonatomic, retain) id userData; // allow creator to add additional information to request
 
 @end
