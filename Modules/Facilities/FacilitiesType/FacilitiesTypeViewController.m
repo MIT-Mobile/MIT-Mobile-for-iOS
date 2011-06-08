@@ -1,12 +1,14 @@
 #import "FacilitiesTypeViewController.h"
 #import "FacilitiesSummaryViewController.h"
 #import "FacilitiesConstants.h"
+#import "FacilitiesLocationData.h"
 #import "UIKit+MITAdditions.h"
 #import <QuartzCore/QuartzCore.h>
 
 @implementation FacilitiesTypeViewController
 @synthesize userData = _userData;
 @synthesize tableView = _tableView;
+@synthesize loadingView = _loadingView;
 
 - (id)init {
     self = [super init];
@@ -29,77 +31,72 @@
 
 - (void)didReceiveMemoryWarning
 {
-    // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
 }
 
 - (NSArray*)repairTypes {
-    static NSArray *types = nil;
-    
-    if (types == nil) {
-        types = [[NSArray alloc] initWithObjects:@"Clock", @"Door",
-                 @"Floor",@"Light",
-                 @"Parking Garage/Lot",@"Restroom",
-                 @"Sign",@"Trash/Recycling",
-                 @"Window",@"Other",nil];
-    }
-    
-    return [NSArray arrayWithArray:types];
+    return [[FacilitiesLocationData sharedData] allRepairTypes];
 }
 
 #pragma mark - View lifecycle
 - (void)loadView {
-    UIView *mainView = nil;
-    CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
-    CGRect toolbarRect = self.navigationController.navigationBar.frame;
-    screenRect.origin.y += toolbarRect.size.height;
-    screenRect.size.height -= toolbarRect.size.height;
-    
+    CGRect screenFrame = [[UIScreen mainScreen] applicationFrame];
+
+    UIView *mainView = [[[UIView alloc] initWithFrame:screenFrame] autorelease];
+    mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleWidth);
+    mainView.autoresizesSubviews = YES;
+    mainView.backgroundColor = [UIColor clearColor];
+
     {
-        mainView = [[[UIView alloc] initWithFrame:screenRect] autorelease];
-        mainView.backgroundColor = [UIColor clearColor];
-        mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                     UIViewAutoresizingFlexibleWidth);
-        mainView.autoresizesSubviews = YES;
-        [self setView:mainView];
+        CGRect tableRect = screenFrame;
+        UITableView *tableView = [[[UITableView alloc] initWithFrame: tableRect
+                                                               style: UITableViewStyleGrouped] autorelease];
+        [tableView applyStandardColors];
+
+        tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                           UIViewAutoresizingFlexibleWidth);
+        tableView.delegate = self;
+        tableView.dataSource = self;
+        tableView.hidden = YES;
+        tableView.scrollEnabled = YES;
+        tableView.autoresizesSubviews = YES;
+
+        self.tableView = tableView;
+        [mainView addSubview:tableView];
     }
-    
+
     {
-        CGRect tableRect = mainView.bounds;
-        tableRect.origin = CGPointMake(0, 0);
-        
-        UITableView *table = [[[UITableView alloc] initWithFrame:tableRect
-                                                           style:UITableViewStyleGrouped] autorelease];
-        mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                     UIViewAutoresizingFlexibleWidth);
-        [table applyStandardColors];
-        
-        table.delegate = self;
-        table.dataSource = self;
-        table.showsVerticalScrollIndicator = YES;
-        table.scrollEnabled = YES;
-        table.layer.borderColor = [[UIColor blackColor] CGColor];
-        table.layer.borderWidth = 1.0;
-        
-        self.tableView = table;
-        [mainView addSubview:table];
+        CGRect loadingFrame = screenFrame;
+        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                             UIViewAutoresizingFlexibleWidth);
+        loadingView.backgroundColor = [UIColor redColor];
+
+        self.loadingView = loadingView;
+        [mainView insertSubview:loadingView
+                   aboveSubview:self.tableView];
     }
-    
+
+    self.view = mainView;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.tableView reloadData];
-    // Do any additional setup after loading the view from its nib.
+    [[FacilitiesLocationData sharedData] addObserver:self
+                                           withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
+                                               if ([name isEqualToString:FacilitiesRepairTypesKey] && dataUpdated) {
+                                                   [self.loadingView removeFromSuperview];
+                                                   self.loadingView = nil;
+                                                   [self.tableView reloadData];
+                                               }
+                                           }];
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
     self.tableView = nil;
 }
 
@@ -109,8 +106,7 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-#pragma mark -
-#pragma mark UITableViewDataSource
+#pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [[self repairTypes] count];
 }
@@ -131,8 +127,7 @@
     return cell;
 }
 
-#pragma mark -
-#pragma mark UITableViewDelegate
+#pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:self.userData];
     [dict setObject:[[self repairTypes] objectAtIndex:indexPath.row]
@@ -146,5 +141,4 @@
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];
 }
-
 @end
