@@ -406,4 +406,17 @@
     [self.searchDisplayController setActive:NO
                                    animated:YES];
 }
+
+// Make sure tapping the status bar always scrolls to the top of the active table
+- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView {
+    self.tableView.scrollsToTop = NO;
+    tableView.scrollsToTop = YES;
+}
+
+- (void)searchDisplayController:(UISearchDisplayController *)controller willUnloadSearchResultsTableView:(UITableView *)tableView {
+    // using willUnload because willHide strangely doesn't get called when the "Cancel" button is clicked
+    tableView.scrollsToTop = NO;
+    self.tableView.scrollsToTop = YES;
+}
+
 @end
