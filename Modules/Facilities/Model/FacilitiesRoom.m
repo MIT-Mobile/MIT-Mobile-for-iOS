@@ -1,11 +1,3 @@
-//
-//  FacilitiesRoom.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 5/11/11.
-//  Copyright (c) 2011 MIT. All rights reserved.
-//
-
 #import "FacilitiesRoom.h"
 #import "FacilitiesLocation.h"
 
