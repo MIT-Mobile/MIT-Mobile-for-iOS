@@ -83,7 +83,7 @@
                                             labelFont.pointSize,
                                             NULL);
 
-    CTLineBreakMode breakMode = kCTLineBreakByTruncatingTail;
+    CTLineBreakMode breakMode = (CTLineBreakMode)(self.lineBreakMode);
     CTParagraphStyleSetting paragraphStyle = 
         {
             .spec = kCTParagraphStyleSpecifierLineBreakMode,

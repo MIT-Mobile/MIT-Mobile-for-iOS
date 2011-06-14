@@ -1,11 +1,3 @@
-//
-//  FacilitiesRoom.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 5/11/11.
-//  Copyright (c) 2011 MIT. All rights reserved.
-//
-
 #import "FacilitiesRoom.h"
 #import "FacilitiesLocation.h"
 
@@ -15,11 +7,11 @@
 @dynamic building;
 
 - (NSString*)displayString {
-    return [NSString stringWithFormat:@"%@%03@",self.floor,self.number];
+    return [NSString stringWithFormat:@"%@",self.number];
 }
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"%@-%@",self.building,[self displayString]];
+    return [self displayString];
 }
 
 @end

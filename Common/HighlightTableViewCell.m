@@ -1,11 +1,3 @@
-//
-//  HighlightTableViewCell.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 5/12/11.
-//  Copyright 2011 MIT. All rights reserved.
-//
-
 #import "HighlightTableViewCell.h"
 
 
@@ -37,8 +29,16 @@
     [super layoutSubviews];
     
     CGRect frame = self.bounds;
+    
     frame.origin.x += 10;
     frame.size.width -= 20;
+    
+    if (self.accessoryView) {
+        CGRect accFrame = self.accessoryView.frame;
+        frame.size.width -= accFrame.size.width;
+    } else if (self.accessoryType != UITableViewCellAccessoryNone) {
+        frame.size.width -= 15;
+    }
     
     self.highlightLabel.frame = frame;
     self.highlightLabel.autoresizingMask = (UIViewAutoresizingFlexibleHeight|
