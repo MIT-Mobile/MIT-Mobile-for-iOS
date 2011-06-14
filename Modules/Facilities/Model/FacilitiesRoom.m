@@ -7,11 +7,11 @@
 @dynamic building;
 
 - (NSString*)displayString {
-    return [NSString stringWithFormat:@"%@%03@",self.floor,self.number];
+    return [NSString stringWithFormat:@"%@",self.number];
 }
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"%@-%@",self.building,[self displayString]];
+    return [self displayString];
 }
 
 @end
