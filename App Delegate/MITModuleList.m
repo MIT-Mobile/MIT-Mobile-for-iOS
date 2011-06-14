@@ -10,7 +10,6 @@
 #import "AboutModule.h"
 #import "CalendarModule.h"
 #import "ToursModule.h"
-#import "AnniversaryModule.h"
 #import "MITTabBarController.h"
 #import "MITMobileServerConfiguration.h"
 #import "QRReaderModule.h"
@@ -39,9 +38,7 @@
 	[result addObject:[[[StellarModule alloc] init] autorelease]];
 	[result addObject:[[[PeopleModule alloc] init] autorelease]];
     [result addObject:[[[ToursModule alloc] init] autorelease]];
-    [result addObject:[[[AnniversaryModule alloc] init] autorelease]];
     [result addObject:[[[EmergencyModule alloc] init] autorelease]];
-    // QR reader should go here, and should have the same hiding behavior as AnniversaryModule
     [result addObject:[[[FacilitiesModule alloc] init] autorelease]];
     [result addObject:[[[QRReaderModule alloc] init] autorelease]];
     [result addObject:[[[MobileWebModule alloc] init] autorelease]];
