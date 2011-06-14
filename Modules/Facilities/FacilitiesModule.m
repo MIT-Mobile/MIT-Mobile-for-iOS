@@ -8,8 +8,8 @@
     self = [super init];
     if (self != nil) {
         self.tag = FacilitiesTag;
-        self.shortName = @"Facilities";
-        self.longName = @"Facilities";
+        self.shortName = @"Bldg Services";
+        self.longName = @"Building Services";
         self.iconName = @"facilities";
         self.isMovableTab = FALSE;
         _viewController = nil;
