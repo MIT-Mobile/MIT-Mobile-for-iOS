@@ -178,8 +178,23 @@
     data = [data sortedArrayUsingComparator: ^(id obj1, id obj2) {
         FacilitiesLocation *l1 = (FacilitiesLocation*)obj1;
         FacilitiesLocation *l2 = (FacilitiesLocation*)obj2;
-        
-        return [l1.name compare:l2.name];
+        NSString *k1 = nil;
+        NSString *k2 = nil;
+
+        if ([l1.number length] == 0) {
+            k1 = l1.name;
+        } else {
+            k1 = l1.number;
+        }
+
+        if ([l2.number length] == 0) {
+            k2 = l2.name;
+        } else {
+            k2 = l2.number;
+        }
+
+        return [k1 compare:k2
+                   options:(NSCaseInsensitiveSearch | NSNumericSearch)];
     }];
     
     return data;
@@ -229,7 +244,8 @@
 - (void)configureMainTableCell:(UITableViewCell*)cell
                   forIndexPath:(NSIndexPath*)indexPath {
     if ([self.cachedData count] >= indexPath.row) {
-        cell.textLabel.text = [[self.cachedData objectAtIndex:indexPath.row] valueForKey:@"name"];
+        FacilitiesLocation *location = [self.cachedData objectAtIndex:indexPath.row];
+        cell.textLabel.text = [location displayString];
     }
 }
 
@@ -238,8 +254,10 @@
                forIndexPath:(NSIndexPath*)indexPath {
     cell.highlightLabel.searchString = self.searchString;
     
-    if ([self.cachedData count] >= indexPath.row) {
-        cell.highlightLabel.text = [[self.filteredData objectAtIndex:indexPath.row] valueForKey:@"name"];
+    if ([self.filteredData count] >= indexPath.row) {
+        FacilitiesLocation *location = [self.filteredData objectAtIndex:indexPath.row];
+        cell.highlightLabel.text = [location displayString];
+        NSLog(@"%@",[location displayString]);
     }
 }
 

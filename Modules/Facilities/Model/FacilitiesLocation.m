@@ -47,4 +47,16 @@
     [self didChangeValueForKey:@"categories" withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];
 }
 
+- (NSString*)displayString {
+    NSString *string = nil;
+
+    if (([self.number length] > 0) && ([self.number isEqualToString:self.name] == NO)) {
+        string = [NSString stringWithFormat:@"%@ - %@", self.number, self.name];
+    } else {
+        string = [NSString stringWithString:self.name];
+    }
+
+    return string;
+}
+
 @end

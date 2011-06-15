@@ -22,4 +22,6 @@
 @property (nonatomic, retain) NSDate * roomsUpdated;
 @property (nonatomic, retain) NSSet* categories;
 
+
+- (NSString*)displayString;
 @end
