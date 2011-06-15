@@ -2,6 +2,7 @@
 
 #import "FacilitiesCategoryViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "SecondaryGroupedTableViewCell.h"
 
 #pragma mark - Private Interface
 @interface FacilitiesRootViewController ()
@@ -71,7 +72,8 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *reuseCellIdentifier = @"FacilitiesCell";
+    static NSString *reportCellIdentifier = @"FacilitiesCell";
+    static NSString *contactCellIdentifier = @"ContactCell";
     
     // Strings for each of the cells used in the table view.
     // These could be inlined but it's a bit easier to find them if they are all
@@ -79,41 +81,57 @@
     static NSString *emailCellText = @"Email Facilities";
     static NSString *callCellText = @"Call Facilities";
     static NSString *reportCellText = @"Report a Problem";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseCellIdentifier];
-    
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                      reuseIdentifier:reuseCellIdentifier] autorelease];
+
+    UITableViewCell *cell = nil;
+
+    if (indexPath.section == 0) {
+        cell = [tableView dequeueReusableCellWithIdentifier:reportCellIdentifier];
+        if (cell == nil) {
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                            reuseIdentifier:reportCellIdentifier] autorelease];
+        }
+    } else {
+        cell = [tableView dequeueReusableCellWithIdentifier:contactCellIdentifier];
+        if (cell == nil) {
+            cell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                          reuseIdentifier:contactCellIdentifier] autorelease];
+        }
     }
-    
+
     switch (indexPath.section) {
         case 0:
+        {
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             cell.accessoryView = nil;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             cell.textLabel.text = reportCellText;
             break;
+        }
         
         case 1:
-            cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            cell.textLabel.backgroundColor = [UIColor clearColor];
-            cell.detailTextLabel.backgroundColor = [UIColor clearColor];
+        {
+            SecondaryGroupedTableViewCell *customCell = (SecondaryGroupedTableViewCell *)cell;
+            customCell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
+            customCell.accessoryType = UITableViewCellAccessoryNone;
+            customCell.textLabel.backgroundColor = [UIColor clearColor];
+            customCell.detailTextLabel.backgroundColor = [UIColor clearColor];
             
             switch (indexPath.row) {
                 case 0:
-                    cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
-                    cell.textLabel.text = emailCellText;
+                    customCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
+                    customCell.textLabel.text = emailCellText;
+                    customCell.secondaryTextLabel.text = @"facilities@mit.edu";
                     break;
                 case 1:
-                    cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-                    cell.textLabel.text = callCellText;
+                    customCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+                    customCell.textLabel.text = callCellText;
+                    customCell.secondaryTextLabel.text = @"000-000-0000";
                     break;
                 default:
                     break;
             }
-            
+        }
+
         default:
             break;
     }
