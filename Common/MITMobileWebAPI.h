@@ -39,6 +39,7 @@
 - (BOOL)start;
 - (void)cancel;
 - (NSURL*)requestURL;
+- (BOOL)isActive;
 
 @property (nonatomic, retain) id<JSONLoadedDelegate> jsonDelegate;
 @property (nonatomic, readonly, retain) ConnectionWrapper *connectionWrapper;

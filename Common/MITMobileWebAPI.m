@@ -238,4 +238,8 @@
     return reqURL;
 }
 
+- (BOOL)isActive {
+    return (self.connectionWrapper != nil);
+}
+
 @end
