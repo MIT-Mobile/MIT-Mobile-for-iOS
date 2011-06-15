@@ -257,7 +257,6 @@
     if ([self.filteredData count] >= indexPath.row) {
         FacilitiesLocation *location = [self.filteredData objectAtIndex:indexPath.row];
         cell.highlightLabel.text = [location displayString];
-        NSLog(@"%@",[location displayString]);
     }
 }
 
