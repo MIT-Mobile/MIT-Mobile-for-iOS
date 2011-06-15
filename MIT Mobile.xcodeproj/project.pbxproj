@@ -61,6 +61,7 @@
 		2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6CD137C4C2C0005F1FC /* FacilitiesCategoryViewController.m */; };
 		2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */; };
 		2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */; };
+		2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09824B13A8F21D00778B53 /* ModuleVersions.m */; };
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
 		2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */; };
 		2C17C7CD137B12E3006888EB /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7CC137B12E3006888EB /* FacilitiesLocation.m */; };
@@ -455,6 +456,8 @@
 		2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationViewController.m; sourceTree = "<group>"; };
 		2C03C6D2137C66100005F1FC /* HighlightTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightTableViewCell.h; sourceTree = "<group>"; };
 		2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightTableViewCell.m; sourceTree = "<group>"; };
+		2C09824A13A8F21D00778B53 /* ModuleVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModuleVersions.h; sourceTree = "<group>"; };
+		2C09824B13A8F21D00778B53 /* ModuleVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModuleVersions.m; sourceTree = "<group>"; };
 		2C0A33691355CEF300786493 /* QRReaderImageTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderImageTransformer.h; sourceTree = "<group>"; };
 		2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderImageTransformer.m; sourceTree = "<group>"; };
 		2C17C7C8137AECF2006888EB /* FacilitiesRoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRoom.h; sourceTree = "<group>"; };
@@ -990,6 +993,8 @@
 				2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */,
 				2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */,
 				DE0A62AA10CDAEA90058B2C2 /* MITBuildInfo.h */,
+				2C09824A13A8F21D00778B53 /* ModuleVersions.h */,
+				2C09824B13A8F21D00778B53 /* ModuleVersions.m */,
 				DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */,
 				DEA3B6F610CB126200BDA774 /* MITConstants.h */,
 				DEA3B6F710CB126200BDA774 /* MITConstants.m */,
@@ -2415,6 +2420,7 @@
 				2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */,
 				2CFBF916138EC2610080883D /* FacilitiesSubmitViewController.m in Sources */,
 				2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */,
+				2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
