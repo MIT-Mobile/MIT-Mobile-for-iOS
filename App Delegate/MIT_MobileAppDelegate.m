@@ -6,6 +6,7 @@
 #import "AudioToolbox/AudioToolbox.h"
 #import "MITSpringboard.h"
 #import "DummyRotatingViewController.h"
+#import "ModuleVersions.h"
 
 @interface MIT_MobileAppDelegate ()
 
@@ -264,6 +265,8 @@
 	[apiRequest requestObjectFromModule:@"general" 
 								command:nil
 							 parameters:nil];
+
+    [[ModuleVersions sharedVersions] updateVersionInformation];
 }
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
