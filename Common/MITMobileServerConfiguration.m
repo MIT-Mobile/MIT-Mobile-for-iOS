@@ -44,6 +44,7 @@ BOOL MITMobileWebSetCurrentServerURL(NSURL* serverURL) {
         return NO;
     else {
         [[NSUserDefaults standardUserDefaults] setURL:serverURL forKey:@"api_server"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
         return YES;
     }
 }
@@ -55,9 +56,7 @@ NSURL* MITMobileWebGetCurrentServerURL( void ) {
     NSArray* serverList = MITMobileWebGetAPIServerList();
     
     if ((server == nil) || (![serverList containsObject:server] )) {
-        server = MITMobileWebGetDefaultServerURL();
-        [defaults setURL:server
-                  forKey:@"api_server"];
+        MITMobileWebSetCurrentServerURL(MITMobileWebGetDefaultServerURL());
     }
     
     return server;
