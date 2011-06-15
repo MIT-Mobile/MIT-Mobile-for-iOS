@@ -20,7 +20,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.title = @"Facilities";
+        self.title = @"Building Services";
     }
     return self;
 }
@@ -143,7 +143,6 @@
     return 2;
 }
 
-
 #pragma mark - UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if ((indexPath.section == 0) && (indexPath.row == 0)) {
@@ -154,28 +153,6 @@
     
     [tableView deselectRowAtIndexPath:indexPath
                              animated:NO];
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    switch (section) {
-        case 0:
-            return 2;
-        case 1:
-            return 2;
-        default:
-            return 0;
-    }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    switch (section) {
-        case 0:
-            return 2;
-        case 1:
-            return 2;
-        default:
-            return 0;
-    }
 }
 
 @end

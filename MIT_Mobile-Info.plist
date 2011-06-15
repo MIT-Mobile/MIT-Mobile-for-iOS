@@ -42,11 +42,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MITAboutAppText</key>
-	<string>MIT Mobile for iPhone has been collaboratively designed and developed by MIT students and staff to extend the Institute’s mobile framework to the iPhone/iPod Touch platform. If you have ideas for improvements or new functionality, we’d love to hear them.</string>
+	<string>MIT Mobile for iPhone has been collaboratively designed and developed by MIT students and staff to extend the Institute’s mobile framework to the iOS platform. If you have ideas for improvements or new functionality, we’d love to hear them.</string>
 	<key>MITAboutMITText</key>
 	<string>The Massachusetts Institute of Technology, a co-educational privately endowed research university, is dedicated to advancing knowledge and educating students in science, technology, and other areas of scholarship to serve the nation and world. The Institute has more than 900 faculty and 10,000 undergraduate and graduate students.
 
-MIT's commitment to innovation has led to a host of scientific breakthroughs and technological advances. Achievements include the first chemical synthesis of penicillin and vitamin A, the development of inertial guidance systems, modern technologies for artificial limbs, and the magnetic core memory that led to the development of digital computers. Sixty-three alumni, faculty, researchers and staff have won the Nobel Prizes.</string>
+MIT&apos;s commitment to innovation has led to a host of scientific breakthroughs and technological advances. Achievements include the first chemical synthesis of penicillin and vitamin A, the development of inertial guidance systems, modern technologies for artificial limbs, and the magnetic core memory that led to the development of digital computers. Sixty-three alumni, faculty, researchers and staff have won the Nobel Prizes.</string>
 	<key>MITBuildDescription</key>
 	<string></string>
 	<key>MITBuildRevision</key>

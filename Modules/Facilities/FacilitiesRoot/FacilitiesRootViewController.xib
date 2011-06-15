@@ -100,7 +100,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAACAgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<object class="IBUITextView" id="385803243">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrameSize">{320, 200}</string>
+						<string key="NSFrame">{{10, 0}, {300, 200}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="807265239"/>
@@ -111,7 +111,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAACAgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<bool key="IBUIMultipleTouchEnabled">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<double key="IBUIContentInset.top">15</double>
+						<double key="IBUIContentInset.top">10</double>
 						<double key="IBUIContentInset.bottom">0.0</double>
 						<double key="IBUIContentInset.left">0.0</double>
 						<double key="IBUIContentInset.right">0.0</double>
@@ -119,10 +119,13 @@ AAMAAAABAAEAAAFTAAMAAAAEAAACAgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<bool key="IBUIShowsHorizontalScrollIndicator">NO</bool>
 						<bool key="IBUIShowsVerticalScrollIndicator">NO</bool>
 						<bool key="IBUIEditable">NO</bool>
-						<string key="IBUIText">Use this app to report problems on the MIT campus. You must be on the MIT campus or surrounding area to use this app, otherwise, please contact facilities.</string>
+						<string type="base64-UTF8" key="IBUIText">VXNlIHRoaXMgdG9vbCB0byByZXBvcnQgb24tY2FtcHVzIG1haW50ZW5hbmNlIGlzc3VlcyBzdWNoIGFz
+IGxlYWtzLCBsaWdodGluZywgYW5kIGxvY2tzLiBNYXJrIHlvdXIgbG9jYXRpb24gYW5kIG9wdGlvbmFs
+bHkgaW5jbHVkZSBhIHBob3RvIG9mIHRoZSBpc3N1ZS4KCkZvciB1cmdlbnQgaXNzdWVzLCBwbGVhc2Ug
+Y2FsbCBvciBlbWFpbCBGYWNpbGl0aWVzLg</string>
 						<object class="NSFont" key="IBUIFont">
 							<string key="NSName">Helvetica</string>
-							<double key="NSSize">18</double>
+							<double key="NSSize">17</double>
 							<int key="NSfFlags">16</int>
 						</object>
 						<object class="IBUITextInputTraits" key="IBUITextInputTraits">
