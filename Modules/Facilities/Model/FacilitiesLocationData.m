@@ -4,10 +4,10 @@
 #import "FacilitiesCategory.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
-#import "MITMobileWebAPI.h"
 #import "MITMobileServerConfiguration.h"
 #import "ConnectionDetector.h"
 #import "FacilitiesRepairType.h"
+#import "ModuleVersions.h"
 
 NSString* const FacilitiesDidLoadDataNotification = @"MITFacilitiesDidLoadData";
 
@@ -209,11 +209,10 @@ static FacilitiesLocationData *_sharedData = nil;
         return NO;
     }
     
-    NSDate *date = nil;
-    
+    NSDate *lastCheckDate = nil;
     if ([command isEqualToString:FacilitiesRoomsKey] && [request objectForKey:@"building"]) {
         FacilitiesLocation *location = [self locationWithNumber:[request objectForKey:@"building"]];
-        date = location.roomsUpdated;
+        lastCheckDate = location.roomsUpdated;
     } else {
         NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey];
         if (dict == nil) {
@@ -226,16 +225,35 @@ static FacilitiesLocationData *_sharedData = nil;
         NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
         [df setDateFormat:@"yyyy-MM-dd"];
         
-        date = [df dateFromString:dateString];
+        lastCheckDate = [df dateFromString:dateString];
     }
-    
-    if (date == nil) {
-        return YES;  
-    } else if ([[NSDate date] timeIntervalSinceDate:date] < 86400) {
-        return NO;
+
+    NSDate *updateDate = nil;
+    NSDictionary *serverDates = nil;
+
+    if ([command isEqualToString:FacilitiesCategoriesKey]) {
+        serverDates = [[ModuleVersions sharedVersions] lastUpdateDatesForModule:@"map"];
+        updateDate = [serverDates objectForKey:@"category_list"];
+    } else if ([command isEqualToString:FacilitiesLocationsKey]) {
+        serverDates = [[ModuleVersions sharedVersions] lastUpdateDatesForModule:@"map"];
+        updateDate = [serverDates objectForKey:@"location"];
+    } else if ([command isEqualToString:FacilitiesRoomsKey]) {
+        serverDates = [[ModuleVersions sharedVersions] lastUpdateDatesForModule:@"facilities"];
+        updateDate = [serverDates objectForKey:@"room"];
+    } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
+        serverDates = [[ModuleVersions sharedVersions] lastUpdateDatesForModule:@"facilities"];
+        updateDate = [serverDates objectForKey:@"problem_type"];
     } else {
+        updateDate = [NSDate distantFuture];
+    }
+
+    if (lastCheckDate == nil) {
+        return YES;
+    } else if ([updateDate compare:lastCheckDate] == NSOrderedDescending) {
         return YES;
     }
+
+    return NO;
 }
 
 - (NSDate*)remoteDate {
@@ -272,7 +290,6 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
-    //MITMobileWebAPI *web = [[[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self] autorelease];
     MITMobileWebAPI *web = [[[MITMobileWebAPI alloc] initWithModule:@"facilities"
                                                             command:command
                                                          parameters:params] autorelease];
