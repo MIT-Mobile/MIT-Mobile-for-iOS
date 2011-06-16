@@ -249,7 +249,7 @@ static FacilitiesLocationData *_sharedData = nil;
 
     if (lastCheckDate == nil) {
         return YES;
-    } else if ([updateDate compare:lastCheckDate] == NSOrderedDescending) {
+    } else if ([lastCheckDate timeIntervalSinceDate:updateDate] < 0) {
         return YES;
     }
 
@@ -557,6 +557,7 @@ static FacilitiesLocationData *_sharedData = nil;
                 forKey:command];
         [[NSUserDefaults standardUserDefaults] setObject:dict
                                                   forKey:FacilitiesFetchDatesKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
     }
 
     [self removeRequestWithName:[[request requestURL] absoluteString]];
