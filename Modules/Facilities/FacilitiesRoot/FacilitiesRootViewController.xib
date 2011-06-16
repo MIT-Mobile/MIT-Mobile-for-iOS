@@ -49,7 +49,6 @@
 						<string key="NSFrame">{{0, 208}, {320, 208}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">10</int>
 							<object class="NSImage" key="NSImage">
@@ -120,9 +119,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAACAgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<bool key="IBUIShowsVerticalScrollIndicator">NO</bool>
 						<bool key="IBUIEditable">NO</bool>
 						<string type="base64-UTF8" key="IBUIText">VXNlIHRoaXMgdG9vbCB0byByZXBvcnQgb24tY2FtcHVzIG1haW50ZW5hbmNlIGlzc3VlcyBzdWNoIGFz
-IGxlYWtzLCBsaWdodGluZywgYW5kIGxvY2tzLiBNYXJrIHlvdXIgbG9jYXRpb24gYW5kIG9wdGlvbmFs
-bHkgaW5jbHVkZSBhIHBob3RvIG9mIHRoZSBpc3N1ZS4KCkZvciB1cmdlbnQgaXNzdWVzLCBwbGVhc2Ug
-Y2FsbCBvciBlbWFpbCBGYWNpbGl0aWVzLg</string>
+IGxlYWtzLCBsaWdodGluZywgYW5kIGxvY2tzLiBZb3UgY2FuIG1hcmsgeW91ciBsb2NhdGlvbiBhbmQg
+b3B0aW9uYWxseSBpbmNsdWRlIGEgcGhvdG8gb2YgdGhlIGlzc3VlLgoKRm9yIHVyZ2VudCBpc3N1ZXMs
+IHBsZWFzZSBjYWxsIG9yIGVtYWlsIHRoZSBEZXBhcnRtZW50IG9mIEZhY2lsaXRpZXMgZGlyZWN0bHku
+A</string>
 						<object class="NSFont" key="IBUIFont">
 							<string key="NSName">Helvetica</string>
 							<double key="NSSize">17</double>
