@@ -165,7 +165,7 @@ static const NSUInteger kMaxResultCount = 10;
     }
     
     FacilitiesLocation *location = [self.filteredData objectAtIndex:indexPath.row];
-    cell.textLabel.text = location.name;
+    cell.textLabel.text = [location displayString];
     
     return cell;
 }

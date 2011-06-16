@@ -254,7 +254,7 @@
     FacilitiesLocation *loc = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
         
     cell.highlightLabel.searchString = self.searchString;
-    cell.highlightLabel.text = loc.name;
+    cell.highlightLabel.text = [loc displayString];
 }
 
 
