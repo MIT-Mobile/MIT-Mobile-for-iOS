@@ -182,6 +182,7 @@
     if ((self.cachedData == nil) || ([self.cachedData count] == 0)) {
         return NO;
     } else {
+        BOOL result = [CLLocationManager locationServicesEnabled];
         return [CLLocationManager locationServicesEnabled];
     }
 }
@@ -240,7 +241,7 @@
 - (void)configureMainTableCell:(UITableViewCell *)cell
                   forIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0) {
+    if ((indexPath.section == 0) && ([self shouldShowLocationSection])) {
         cell.textLabel.text = @"Use my location";
     } else {
         FacilitiesCategory *cat = (FacilitiesCategory*)[self.cachedData objectAtIndex:indexPath.row];
