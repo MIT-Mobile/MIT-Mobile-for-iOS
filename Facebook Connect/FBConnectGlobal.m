@@ -20,6 +20,8 @@ const NSString* kFB_SDK_VersionNumber = @"iphone/1.2.2";
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // private
+const void* RetainNoOp(CFAllocatorRef, const void *);
+void ReleaseNoOp(CFAllocatorRef, const void *);
 
 const void* RetainNoOp(CFAllocatorRef allocator, const void *value) { return value; }
 void ReleaseNoOp(CFAllocatorRef allocator, const void *value) { }

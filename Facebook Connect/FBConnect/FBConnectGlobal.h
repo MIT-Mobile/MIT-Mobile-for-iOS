@@ -213,5 +213,5 @@ typedef unsigned long long FBID;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-NSMutableArray* FBCreateNonRetainingArray();
+NSMutableArray* FBCreateNonRetainingArray(void);
 
