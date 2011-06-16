@@ -8,7 +8,7 @@
 @dynamic locations;
 @dynamic parent;
 
-- (void)addSubcategoriesObject:(NSManagedObject *)value {    
+- (void)addSubcategoriesObject:(FacilitiesCategory *)value {    
     NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
     [self willChangeValueForKey:@"subcategories" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
     [[self primitiveValueForKey:@"subcategories"] addObject:value];
@@ -16,7 +16,7 @@
     [changedObjects release];
 }
 
-- (void)removeSubcategoriesObject:(NSManagedObject *)value {
+- (void)removeSubcategoriesObject:(FacilitiesCategory *)value {
     NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
     [self willChangeValueForKey:@"subcategories" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
     [[self primitiveValueForKey:@"subcategories"] removeObject:value];
@@ -37,7 +37,7 @@
 }
 
 
-- (void)addLocationsObject:(NSManagedObject *)value {    
+- (void)addLocationsObject:(FacilitiesLocation *)value {    
     NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
     [self willChangeValueForKey:@"locations" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
     [[self primitiveValueForKey:@"locations"] addObject:value];
@@ -45,7 +45,7 @@
     [changedObjects release];
 }
 
-- (void)removeLocationsObject:(NSManagedObject *)value {
+- (void)removeLocationsObject:(FacilitiesLocation *)value {
     NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
     [self willChangeValueForKey:@"locations" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
     [[self primitiveValueForKey:@"locations"] removeObject:value];
