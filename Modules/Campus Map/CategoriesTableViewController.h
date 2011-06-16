@@ -21,6 +21,8 @@
 @property BOOL topLevel;
 @property BOOL leafLevel;
 
+-(id) initWithMapSelectionController:(MapSelectionController*)mapSelectionController;
+-(id) initWithMapSelectionController:(MapSelectionController *)mapSelectionController andStyle:(UITableViewStyle)style;
 -(void) executeServerCategoryRequestWithQuery:(NSString *)query;
 
 @end
