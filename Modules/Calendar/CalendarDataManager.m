@@ -34,7 +34,7 @@ static CalendarDataManager *s_sharedManager = nil;
 - (id)init {
 	self = [super init];
 	if (self) {
-		_eventLists = [[NSSet alloc] init];
+		_eventLists = [[NSArray alloc] init];
 		[self requestEventLists];
 	}
 	return self;
