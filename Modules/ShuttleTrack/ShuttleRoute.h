@@ -21,6 +21,7 @@
 	NSArray* _vehicleLocations;
 }
 
+- (id)initWithDictionary:(NSDictionary *)dict;
 - (id)initWithCache:(ShuttleRouteCache *)cachedRoute;
 - (void)updateInfo:(NSDictionary *)routeInfo;
 - (NSString *)trackingStatus;
