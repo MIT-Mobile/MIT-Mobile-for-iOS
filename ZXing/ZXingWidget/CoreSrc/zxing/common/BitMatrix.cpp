@@ -27,6 +27,7 @@
 namespace zxing {
 using namespace std;
 
+unsigned int logDigits(unsigned);
 unsigned int logDigits(unsigned digits) {
   unsigned log = 0;
   unsigned val = 1;
