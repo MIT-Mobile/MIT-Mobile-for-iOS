@@ -74,27 +74,25 @@ static const NSUInteger kMaxResultCount = 10;
      
     {
         NSString *labelText = @"We've narrowed down your location, please choose the closest location below";
-        UILabel *labelView = [[[UILabel alloc] init] autorelease];
-        CGRect headerRect = CGRectMake(15, 0, screenFrame.size.width - 15, 60);
+        CGRect labelRect = CGRectMake(15, 10, screenFrame.size.width - 30, 200);
+        UILabel *labelView = [[[UILabel alloc] initWithFrame:labelRect] autorelease];
         CGSize strSize = [labelText sizeWithFont:labelView.font
-                               constrainedToSize:headerRect.size
+                               constrainedToSize:labelRect.size
                                    lineBreakMode:labelView.lineBreakMode];
-        
-        headerRect.size.height = strSize.height;
-        
-        
-        UIView *view = [[[UIView alloc] initWithFrame:headerRect] autorelease];
-        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                 UIViewAutoresizingFlexibleWidth);
-        view.autoresizesSubviews = YES;
-        
-        labelView.frame = headerRect;
+        labelRect.size.height = strSize.height;
+        labelView.frame = labelRect;
         labelView.backgroundColor = [UIColor clearColor];
         labelView.lineBreakMode = UILineBreakModeWordWrap;
         labelView.text = labelText;
         labelView.textAlignment = UITextAlignmentLeft;
         labelView.numberOfLines = 3;
-
+        
+        CGRect headerRect = CGRectMake(0, 0, screenFrame.size.width, strSize.height + 10);
+        UIView *view = [[[UIView alloc] initWithFrame:headerRect] autorelease];
+        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleWidth);
+        view.autoresizesSubviews = YES;
+        
         [view addSubview:labelView];
         self.tableView.tableHeaderView = view;
     }
@@ -198,31 +196,22 @@ static const NSUInteger kMaxResultCount = 10;
     
     switch([error code])
     {
-        case kCLErrorNetwork:
-        {
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                             message:@"Please check your network connection or that you are not in airplane mode"
-                                                            delegate:self
-                                                   cancelButtonTitle:@"Ok"
-                                                   otherButtonTitles:nil] autorelease];
-            [alert show];
-        }
-            break;
         case kCLErrorDenied:{
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                             message:@"Turn on location services to allow \"MIT Mobile\" to determine your location"
+            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Location Services"
+                                                             message:@"Please turn on location services to allow MIT Mobile to determine your location."
                                                             delegate:self
-                                                   cancelButtonTitle:@"Ok"
+                                                   cancelButtonTitle:@"OK"
                                                    otherButtonTitles:nil] autorelease];
             [alert show];
         }
             break;
+        case kCLErrorNetwork:
         default:
         {
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Error"
-                                                             message:@"Unknown network error"
+            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Location Services"
+                                                             message:@"Please check your network connection and that you are not in airplane mode."
                                                             delegate:self
-                                                   cancelButtonTitle:@"Ok"
+                                                   cancelButtonTitle:@"OK"
                                                    otherButtonTitles:nil] autorelease];
             [alert show];
         }
