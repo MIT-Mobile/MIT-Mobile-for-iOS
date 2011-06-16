@@ -223,6 +223,12 @@ static const NSUInteger kMaxResultCount = 10;
     didUpdateToLocation:(CLLocation *)newLocation
            fromLocation:(CLLocation *)oldLocation
 {
+    if ([newLocation horizontalAccuracy] > kCLLocationAccuracyHundredMeters) {
+        return;
+    } else {
+        [manager stopUpdatingLocation];
+    }
+
     if (self.loadingView) {
         [self.loadingView removeFromSuperview];
         self.loadingView = nil;
