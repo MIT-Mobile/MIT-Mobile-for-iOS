@@ -191,7 +191,7 @@ static const NSUInteger kMaxResultCount = 10;
 
 #pragma mark - CLLocationManagerDelegate
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    [self.locationManager startUpdatingLocation];
+    [self.locationManager stopUpdatingLocation];
     self.locationManager = nil;
     
     switch([error code])
