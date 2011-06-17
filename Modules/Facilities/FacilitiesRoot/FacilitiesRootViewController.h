@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
+#import <MessageUI/MFMailComposeViewController.h>
 
-
-@interface FacilitiesRootViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {
+@interface FacilitiesRootViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,MFMailComposeViewControllerDelegate> {
     UITextView *_textView;
     UITableView *_tableView;
 }

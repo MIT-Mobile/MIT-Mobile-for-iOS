@@ -4,6 +4,9 @@
 #import "UIKit+MITAdditions.h"
 #import "SecondaryGroupedTableViewCell.h"
 
+static NSString* const kFacilitiesEmailAddress = @"facilities@mit.edu";
+static NSString* const kFacilitiesPhoneNumber = @"999-999-9999";
+
 #pragma mark - Private Interface
 @interface FacilitiesRootViewController ()
 @property (nonatomic,retain) UITextView *textView;
@@ -120,12 +123,12 @@
                 case 0:
                     customCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
                     customCell.textLabel.text = emailCellText;
-                    customCell.secondaryTextLabel.text = @"facilities@mit.edu";
+                    customCell.secondaryTextLabel.text = kFacilitiesEmailAddress;
                     break;
                 case 1:
                     customCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
                     customCell.textLabel.text = callCellText;
-                    customCell.secondaryTextLabel.text = @"000-000-0000";
+                    customCell.secondaryTextLabel.text = kFacilitiesPhoneNumber;
                     break;
                 default:
                     break;
@@ -149,10 +152,43 @@
         FacilitiesCategoryViewController *vc = [[[FacilitiesCategoryViewController alloc] init] autorelease];
         [self.navigationController pushViewController:vc
                                              animated:YES];
+    } else if (indexPath.section == 1) {
+        switch (indexPath.row) {
+            case 0:
+            {
+                if ([MFMailComposeViewController canSendMail]) {
+                    MFMailComposeViewController *mailView = [[MFMailComposeViewController alloc] init];
+                    [mailView setMailComposeDelegate:self];
+                    [mailView setSubject:@"Request from Building Services"];
+                    [mailView setToRecipients:[NSArray arrayWithObject:kFacilitiesEmailAddress]];
+                    [self presentModalViewController:mailView
+                                            animated:YES]; 
+                }
+                break;
+            }
+                
+            case 1:
+            {
+                NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"tel://1%@",kFacilitiesPhoneNumber]];
+                if ([[UIApplication sharedApplication] canOpenURL:url]) {
+                    [[UIApplication sharedApplication] openURL:url];
+                }
+                break;
+            }
+            
+            default:
+                /* Do Nothing */
+                break;
+        }
     }
     
     [tableView deselectRowAtIndexPath:indexPath
                              animated:NO];
 }
 
+#pragma mark - MFMailComposeViewController delegation
+- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error 
+{
+	[self dismissModalViewControllerAnimated:YES];
+}
 @end
