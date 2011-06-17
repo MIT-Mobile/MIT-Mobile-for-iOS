@@ -182,7 +182,6 @@
     if ((self.cachedData == nil) || ([self.cachedData count] == 0)) {
         return NO;
     } else {
-        BOOL result = [CLLocationManager locationServicesEnabled];
         return [CLLocationManager locationServicesEnabled];
     }
 }
