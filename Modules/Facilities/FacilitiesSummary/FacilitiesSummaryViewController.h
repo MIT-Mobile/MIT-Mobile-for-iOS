@@ -5,6 +5,7 @@
 {
     UIScrollView *_scrollView;
     UIImageView *_imageView;
+    UIButton *_imageButton;
     UILabel *_problemLabel;
     UITextView  *_descriptionView;
     UITextField *_emailField;
@@ -15,6 +16,7 @@
 
 @property (nonatomic,retain) IBOutlet UIScrollView* scrollView;
 @property (nonatomic,retain) IBOutlet UIImageView* imageView;
+@property (nonatomic,retain) IBOutlet UIButton* imageButton;
 @property (nonatomic,retain) IBOutlet UILabel* problemLabel;
 @property (nonatomic,retain) IBOutlet UITextView* descriptionView;
 @property (nonatomic,retain) IBOutlet UITextField* emailField;

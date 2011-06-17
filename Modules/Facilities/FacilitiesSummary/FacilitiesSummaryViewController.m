@@ -20,6 +20,7 @@ enum {
 @implementation FacilitiesSummaryViewController
 @synthesize scrollView = _scrollView;
 @synthesize imageView = _imageView;
+@synthesize imageButton = _imageButton;
 @synthesize problemLabel = _problemLabel;
 @synthesize descriptionView = _descriptionView;
 @synthesize emailField = _emailField;
@@ -43,6 +44,7 @@ enum {
     self.emailField = nil;
     self.reportData = nil;
     self.scrollView = nil;
+    self.imageButton = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dealloc];
@@ -61,7 +63,11 @@ enum {
     self.scrollView.scrollsToTop = NO;
     self.scrollView.contentSize = self.scrollView.bounds.size;
     
-    self.imageView.image = [UIImage imageNamed:@"tours/button_photoopp"];
+    self.imageView.layer.cornerRadius = 5.0;
+    self.imageView.backgroundColor = [UIColor whiteColor];
+    self.imageButton.layer.cornerRadius = 5.0;
+    self.imageButton.backgroundColor = [UIColor colorWithWhite:1
+                                                         alpha:0.25];
     
     self.descriptionView.layer.cornerRadius = 5.0f;
     self.descriptionView.layer.borderWidth = 2.0f;
@@ -239,6 +245,10 @@ static NSUInteger kMaxCharacters = 150;
     if (image) {
         self.imageView.image = image;
         self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        self.imageButton.hidden = YES;
+    } else {
+        self.imageView.image = nil;
+        self.imageButton.hidden = NO;
     }
     
     [self dismissModalViewControllerAnimated:YES];
