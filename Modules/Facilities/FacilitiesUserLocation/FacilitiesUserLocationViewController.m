@@ -4,11 +4,15 @@
 #import "FacilitiesLocationData.h"
 #import "FacilitiesRoomViewController.h"
 #import "MITLoadingActivityView.h"
+#import "MITLogging.h"
 
 static const NSUInteger kMaxResultCount = 10;
 
 @interface FacilitiesUserLocationViewController ()
 @property (nonatomic,retain) NSArray* filteredData;
+- (void)displayTableForLocation:(CLLocation*)location;
+- (void)startUpdatingLocation;
+- (void)stopUpdatingLocation;
 @end
 
 @implementation FacilitiesUserLocationViewController
@@ -21,6 +25,7 @@ static const NSUInteger kMaxResultCount = 10;
     self = [super init];
     if (self) {
         self.title = @"Where is it?";
+        _isLocationUpdating = NO;
     }
     return self;
 }
@@ -119,33 +124,67 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.locationManager = [[[CLLocationManager alloc] init] autorelease];
-    self.locationManager.delegate = self;
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-    [self.locationManager startUpdatingLocation];
     
     self.view.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.hidden = YES;
+    
+    [self startUpdatingLocation];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [self.locationManager stopUpdatingLocation];
-    self.locationManager.delegate = nil;
+    [self stopUpdatingLocation];
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    [self.locationManager stopUpdatingLocation];
-    self.locationManager.delegate = nil;
-    self.locationManager = nil;
+    [self stopUpdatingLocation];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+#pragma mark - Private Methods
+- (void)displayTableForLocation:(CLLocation*)location {
+    if (self.loadingView) {
+        [self.loadingView removeFromSuperview];
+        self.loadingView = nil;
+        self.tableView.hidden = NO;
+        [self.view setNeedsDisplay];
+    }
+    
+    self.filteredData = [[FacilitiesLocationData sharedData] locationsWithinRadius:CGFLOAT_MAX
+                                                                        ofLocation:location
+                                                                      withCategory:nil];
+    NSUInteger filterLimit = MIN([self.filteredData count],kMaxResultCount);
+    self.filteredData = [self.filteredData objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, filterLimit)]];
+    [self.tableView reloadData];
+}
+
+- (void)startUpdatingLocation {
+    if (self.locationManager == nil) {
+        self.locationManager = [[[CLLocationManager alloc] init] autorelease];
+        self.locationManager.delegate = self;
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+        _isLocationUpdating = NO;
+    }
+    
+    if (_isLocationUpdating == NO) {
+        [self.locationManager startUpdatingLocation];
+        _isLocationUpdating = YES;
+    }
+}
+
+- (void)stopUpdatingLocation {
+    if (self.locationManager) {
+        [self.locationManager stopUpdatingLocation];
+        self.locationManager = nil;
+        _isLocationUpdating = NO;
+    }
 }
 
 #pragma mark - UITableViewDataSource
@@ -191,8 +230,9 @@ static const NSUInteger kMaxResultCount = 10;
 
 #pragma mark - CLLocationManagerDelegate
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    [self.locationManager stopUpdatingLocation];
-    self.locationManager = nil;
+    [self stopUpdatingLocation];
+    
+    NSLog(@"%@",[error localizedDescription]);
     
     switch([error code])
     {
@@ -223,25 +263,21 @@ static const NSUInteger kMaxResultCount = 10;
     didUpdateToLocation:(CLLocation *)newLocation
            fromLocation:(CLLocation *)oldLocation
 {
-    if ([newLocation horizontalAccuracy] > kCLLocationAccuracyHundredMeters) {
+    CLLocationAccuracy horizontalAccuracy = [newLocation horizontalAccuracy];
+    if (horizontalAccuracy < 0) {
+        return;
+    } else if (([newLocation horizontalAccuracy] > kCLLocationAccuracyHundredMeters) && _isLocationUpdating) {
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            DLog(@"Timeout triggered at accuracy of %f meters", horizontalAccuracy);
+            [self displayTableForLocation:newLocation];
+        });
         return;
     } else {
-        [manager stopUpdatingLocation];
-    }
-
-    if (self.loadingView) {
-        [self.loadingView removeFromSuperview];
-        self.loadingView = nil;
-        self.tableView.hidden = NO;
-        [self.view setNeedsDisplay];
+        [self stopUpdatingLocation];
     }
     
-    self.filteredData = [[FacilitiesLocationData sharedData] locationsWithinRadius:CGFLOAT_MAX
-                                                                        ofLocation:newLocation
-                                                                      withCategory:nil];
-    NSUInteger filterLimit = MIN([self.filteredData count],kMaxResultCount);
-    self.filteredData = [self.filteredData objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, filterLimit)]];
-    [self.tableView reloadData];
+    [self displayTableForLocation:newLocation];
 }
 
 #pragma mark -

@@ -12,6 +12,7 @@
     MITLoadingActivityView *_loadingView;
     
     CLLocationManager *_locationManager;
+    BOOL _isLocationUpdating;
     NSArray *_filteredData;
 }
 
