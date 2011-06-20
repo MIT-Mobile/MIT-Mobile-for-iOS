@@ -161,6 +161,11 @@
                                      self.cachedData = nil;
                                      [self.tableView reloadData];
                                  }
+                                 
+                                 if ((self.filteredData == nil) || updated) {
+                                     self.filteredData = nil;
+                                     [self.searchDisplayController.searchResultsTableView reloadData];
+                                 }
                              }
                          }];
 }
@@ -202,7 +207,14 @@
 }
 
 - (NSArray*)resultsForSearchString:(NSString *)searchText {
-    NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"name CONTAINS [c] %@",searchText];
+    NSPredicate *searchPredicate = nil;
+    
+    if (searchText && ([searchText length] > 0)) {
+        searchPredicate = [NSPredicate predicateWithFormat:@"name CONTAINS [c] %@",searchText];
+    } else {
+        searchPredicate = [NSPredicate predicateWithValue:YES];
+    }
+    
     NSArray *results = [self.locationData locationsMatchingPredicate:searchPredicate];
     
     results = [results sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
