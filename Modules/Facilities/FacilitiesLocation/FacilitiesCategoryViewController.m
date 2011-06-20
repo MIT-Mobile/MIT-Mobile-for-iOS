@@ -162,7 +162,7 @@
                                      [self.tableView reloadData];
                                  }
                                  
-                                 if ((self.filteredData == nil) || updated) {
+                                 if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
                                      self.filteredData = nil;
                                      [self.searchDisplayController.searchResultsTableView reloadData];
                                  }
