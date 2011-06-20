@@ -73,6 +73,18 @@
     return [newRequest autorelease];
 }
 
+- (void)connection:(NSURLConnection *)connection
+   didSendBodyData:(NSInteger)bytesWritten
+ totalBytesWritten:(NSInteger)totalBytesWritten
+totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
+{
+    if ([self.delegate respondsToSelector:@selector(connectionWrapper:totalBytesWritten:totalBytesExpectedToWrite:)]) {
+        [self.delegate connectionWrapper:self
+                       totalBytesWritten:totalBytesWritten
+               totalBytesExpectedToWrite:totalBytesExpectedToWrite];
+    }
+}
+
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     // Handle the case where the class may receive multiple connection:didReciveResponse:
     // messages. Apple's docs state that should multiple messages be received,

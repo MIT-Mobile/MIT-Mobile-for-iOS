@@ -16,6 +16,7 @@
 - (void)connectionWrapper:(ConnectionWrapper *)wrapper didReceiveResponse:(NSURLResponse*)response;
 - (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error;
 - (void)connection:(ConnectionWrapper *)wrapper madeProgress:(CGFloat)progress;
+- (void)connectionWrapper:(ConnectionWrapper *)wrapper totalBytesWritten:(NSInteger)bytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpected;
 
 @end
 
