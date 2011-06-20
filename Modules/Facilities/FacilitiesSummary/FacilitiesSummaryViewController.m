@@ -194,14 +194,9 @@ enum {
 
 
 #pragma mark - UITextViewDelegate
-static NSUInteger kMaxCharacters = 150;
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
     if ([text isEqualToString:@"\n"]) {
         [textView resignFirstResponder];
-        return NO;
-    } else if ((range.length == 1) && ([text length] == 0)) {
-        return YES;
-    } else if ((range.location + [text length]) >= kMaxCharacters) {
         return NO;
     }
     
