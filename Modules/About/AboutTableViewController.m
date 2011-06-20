@@ -184,9 +184,7 @@
     }
 }
 
-#pragma mark -
-#pragma mark MFMailComposeViewController delegation
-
+#pragma mark - MFMailComposeViewController delegation
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error 
 {
 	[self dismissModalViewControllerAnimated:YES];
