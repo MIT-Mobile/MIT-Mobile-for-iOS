@@ -16,6 +16,7 @@
 @implementation MITMobileWebAPI
 
 @synthesize jsonDelegate = _jsonDelegate;
+@synthesize usePOSTMethod = _usePOSTMethod;
 @synthesize connectionWrapper = _connectionWrapper;
 @synthesize params = _params;
 @synthesize pathExtension = _pathExtension;
@@ -143,7 +144,22 @@
 	}
 }
 
-- (BOOL) requestObjectFromModule:(NSString *)moduleName command:(NSString *)command parameters:(NSDictionary *)parameters {
+
+- (BOOL)requestObjectFromModule:(NSString *)moduleName
+                        command:(NSString *)command
+                     parameters:(NSDictionary *)parameters
+{
+    return [self requestObjectFromModule:moduleName
+                                 command:command
+                              parameters:parameters
+                               usingPOST:NO];
+}
+
+- (BOOL)requestObjectFromModule:(NSString *)moduleName
+                        command:(NSString *)command
+                     parameters:(NSDictionary *)parameters
+                      usingPOST:(BOOL)post
+{
 	
 	NSMutableDictionary *allParameters;
 	if(parameters != nil) {
@@ -158,6 +174,8 @@
     if (command) {
         [allParameters setObject:command forKey:@"command"];
     }
+    
+    self.usePOSTMethod = post;
 	
 	return [self requestObject:allParameters];
 }
@@ -175,7 +193,38 @@
 	
     // TODO: see if this needs and autorelease
 	self.connectionWrapper = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-	BOOL requestSuccessfullyBegun = [self.connectionWrapper requestDataFromURL:[self requestURL]];
+    
+    BOOL requestSuccessfullyBegun = NO;
+    if (self.usePOSTMethod) {
+        NSMutableDictionary *urlParams = [NSMutableDictionary dictionary];
+        [urlParams setObject:[parameters objectForKey:@"module"]
+                      forKey:@"module"];
+        [urlParams setObject:[parameters objectForKey:@"command"]
+                      forKey:@"command"];
+        
+        NSMutableDictionary *bodyParams = [NSMutableDictionary dictionaryWithDictionary:parameters];
+        [bodyParams removeObjectsForKeys:[NSArray arrayWithObjects:@"module",@"command",nil]];
+        
+        NSString *urlString = [MITMobileWebGetCurrentServerURL() absoluteString];
+        if ([urlString hasSuffix:@"/"] == NO) {
+            urlString = [urlString stringByAppendingString:@"/"];
+        }
+        
+        if (self.pathExtension) {
+            urlString = [urlString stringByAppendingFormat:@"%@/",self.pathExtension];
+        }
+        
+        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@",urlString,[MITMobileWebAPI buildQuery:urlParams]]];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                               cachePolicy:NSURLRequestReloadIgnoringCacheData
+                                                           timeoutInterval:15.0];
+        [request setHTTPBody:[[MITMobileWebAPI buildQuery:bodyParams] dataUsingEncoding:NSUTF8StringEncoding]];
+        [request setHTTPMethod:@"POST"];
+        
+        requestSuccessfullyBegun = [self.connectionWrapper requestDataWithRequest:request];
+    } else {
+        requestSuccessfullyBegun = [self.connectionWrapper requestDataFromURL:[self requestURL]];
+    }
 	
 	[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) showNetworkActivityIndicator];
 	
@@ -185,9 +234,10 @@
 	return requestSuccessfullyBegun;
 }
 
-+ (NSString *)buildQuery:(NSDictionary *)dict {
++ (NSString *)buildQuery:(NSDictionary*)dict {
 	NSArray *keys = [dict allKeys];
 	NSMutableArray *components = [NSMutableArray arrayWithCapacity:[keys count]];
+    
 	for (NSString *key in keys) {
 		NSString *value = [[dict objectForKey:key] stringByReplacingOccurrencesOfString:@" " withString:@"+"];
 		[components addObject:[NSString stringWithFormat:@"%@=%@", key, [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];

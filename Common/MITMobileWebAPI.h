@@ -17,6 +17,7 @@
 @interface MITMobileWebAPI : NSObject <ConnectionWrapperDelegate> {
 	id<JSONLoadedDelegate> _jsonDelegate;
     ConnectionWrapper *_connectionWrapper;
+    BOOL _usePOSTMethod;
 	NSDictionary *_params;
     NSString *_pathExtension;
 	id _userData;
@@ -27,7 +28,13 @@
 + (MITMobileWebAPI *) jsonLoadedDelegate: (id<JSONLoadedDelegate>)delegate;
 
 - (void)abortRequest;
-- (BOOL)requestObjectFromModule:(NSString *)moduleName command:(NSString *)command parameters:(NSDictionary *)parameters;
+- (BOOL)requestObjectFromModule:(NSString *)moduleName
+                        command:(NSString *)command
+                     parameters:(NSDictionary *)parameters
+                      usingPOST:(BOOL)post;
+- (BOOL)requestObjectFromModule:(NSString *)moduleName
+                        command:(NSString *)command
+                     parameters:(NSDictionary *)parameters;
 - (BOOL)requestObject:(NSDictionary *)parameters;
 - (BOOL)requestObject:(NSDictionary *)parameters pathExtension: (NSString *)extendedPath;
 + (NSURL *) buildURL:(NSDictionary *)dict queryBase:(NSString *)base;
@@ -42,6 +49,7 @@
 - (BOOL)isActive;
 
 @property (nonatomic, retain) id<JSONLoadedDelegate> jsonDelegate;
+@property (nonatomic) BOOL usePOSTMethod;
 @property (nonatomic, readonly, retain) ConnectionWrapper *connectionWrapper;
 @property (nonatomic, readonly, retain) NSDictionary *params; // make it easy for creator to identify requests
 @property (nonatomic, readonly, copy) NSString *pathExtension;
