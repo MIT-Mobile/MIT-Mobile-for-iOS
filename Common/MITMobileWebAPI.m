@@ -9,16 +9,16 @@
 
 @interface MITMobileWebAPI ()
 @property (nonatomic, retain) ConnectionWrapper *connectionWrapper;
-@property (nonatomic, retain) NSDictionary *params; // make it easy for creator to identify requests
+@property (nonatomic, copy) NSDictionary *params; // make it easy for creator to identify requests
 @property (nonatomic, copy) NSString *pathExtension;
 @end
 
 @implementation MITMobileWebAPI
 
+@dynamic params;
 @synthesize jsonDelegate = _jsonDelegate;
 @synthesize usePOSTMethod = _usePOSTMethod;
 @synthesize connectionWrapper = _connectionWrapper;
-@synthesize params = _params;
 @synthesize pathExtension = _pathExtension;
 @synthesize userData = _userData;
 
@@ -50,10 +50,6 @@
 	return self;
 }
 
-+ (MITMobileWebAPI *)jsonLoadedDelegate: (id<JSONLoadedDelegate>)delegate {
-	return [[[self alloc] initWithJSONLoadedDelegate:delegate] autorelease];
-}
-
 - (void)dealloc
 {
 	self.connectionWrapper.delegate = nil;
@@ -65,49 +61,24 @@
 	[super dealloc];
 }
 
--(void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-	id result = [MITJSON objectWithJSONData:data];
-	if(result) {
-		[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
-		[self.jsonDelegate request:self jsonLoaded:result];
-        self.connectionWrapper = nil;
-		[self release];	
-	} else {
-		NSError *error = [NSError errorWithDomain:@"MITMobileWebAPI" code:JSON_ERROR_CODE 
-										 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"failed to handle JSON data", @"message", data, @"data", nil]];
-		[self connection:wrapper handleConnectionFailureWithError:error];
-	}
+#pragma mark - Dynamic Accessors/Mutators
+- (void)setParams:(NSDictionary *)params {
+    if (params == nil) {
+        [_params release];
+        _params = nil;
+    } else {
+        _params = [[NSMutableDictionary alloc] initWithDictionary:params
+                                                        copyItems:YES];
+    }
 }
 
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError: (NSError *)error {
-    id<JSONLoadedDelegate> delegate = self.jsonDelegate;
-    
-	[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
-	
-	VLog(@"connection failed in %@, userinfo: %@, url: %@", [error domain], [error userInfo], wrapper.theURL);
-    
-	if([delegate respondsToSelector:@selector(handleConnectionFailureForRequest:)]) {
-		[delegate handleConnectionFailureForRequest:self];
-	}
-	
-	if([delegate request:self shouldDisplayStandardAlertForError:error]) {
-		NSString *header;
-		if ([delegate respondsToSelector:@selector(request:displayHeaderForError:)]) {
-			header = [delegate request:self displayHeaderForError:error];
-		} else {
-			header = @"Network Error";
-		}
-		
-		id<UIAlertViewDelegate> alertViewDelegate = nil;
-		if ([delegate respondsToSelector:@selector(request:alertViewDelegateForError:)]) {
-			alertViewDelegate = [delegate request:self alertViewDelegateForError:error];
-		} 
-		
-		[MITMobileWebAPI showError:error header:header alertViewDelegate:alertViewDelegate];
-	}
-    
-    self.connectionWrapper = nil;
-	[self release];
+- (NSDictionary*)params {
+    return [NSDictionary dictionaryWithDictionary:_params];
+}
+
+#pragma mark - Class Methods
++ (MITMobileWebAPI *)jsonLoadedDelegate: (id<JSONLoadedDelegate>)delegate {
+	return [[[self alloc] initWithJSONLoadedDelegate:delegate] autorelease];
 }
 
 + (void)showErrorWithHeader:(NSString *)header {
@@ -137,14 +108,27 @@
 	[alertView release];
 }
 
-- (void)abortRequest {
-	if (self.connectionWrapper) {
-		[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
-		[self.connectionWrapper cancel];
+
++ (NSString *)buildQuery:(NSDictionary*)dict {
+	NSArray *keys = [dict allKeys];
+	NSMutableArray *components = [NSMutableArray arrayWithCapacity:[keys count]];
+    
+	for (NSString *key in keys) {
+		NSString *value = [[dict objectForKey:key] stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+		[components addObject:[NSString stringWithFormat:@"%@=%@", key, [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
 	}
+	return [components componentsJoinedByString:@"&"];
 }
 
 
++ (NSURL *)buildURL:(NSDictionary *)dict queryBase:(NSString *)base {
+	NSString *urlString = [NSString stringWithFormat:@"%@?%@", base, [MITMobileWebAPI buildQuery:dict]];
+	NSURL *url = [NSURL URLWithString:urlString];
+	return url;
+}
+
+
+#pragma mark - Public Methods
 - (BOOL)requestObjectFromModule:(NSString *)moduleName
                         command:(NSString *)command
                      parameters:(NSDictionary *)parameters
@@ -234,38 +218,18 @@
 	return requestSuccessfullyBegun;
 }
 
-+ (NSString *)buildQuery:(NSDictionary*)dict {
-	NSArray *keys = [dict allKeys];
-	NSMutableArray *components = [NSMutableArray arrayWithCapacity:[keys count]];
-    
-	for (NSString *key in keys) {
-		NSString *value = [[dict objectForKey:key] stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-		[components addObject:[NSString stringWithFormat:@"%@=%@", key, [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
-	}
-	return [components componentsJoinedByString:@"&"];
-}
-
-// internal method used to construct URL
-+(NSURL *)buildURL:(NSDictionary *)dict queryBase:(NSString *)base {
-	NSString *urlString = [NSString stringWithFormat:@"%@?%@", base, [MITMobileWebAPI buildQuery:dict]];
-	NSURL *url = [NSURL URLWithString:urlString];
-	return url;
-}
-
-- (NSString*)description {
-    return [[self requestURL] absoluteString];
-}
-
-- (NSUInteger)hash {
-    return [[self description] hash];
-}
-
-
 - (BOOL)start {
     return [self requestObject:self.params pathExtension:nil];
 }
 
-// Wrapper method for -abortRequest
+- (void)abortRequest {
+	if (self.connectionWrapper) {
+		[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
+		[self.connectionWrapper cancel];
+	}
+}
+
+// Alias for -abortRequest
 - (void)cancel {
     if (self.connectionWrapper) {
         [self abortRequest];
@@ -290,6 +254,85 @@
 
 - (BOOL)isActive {
     return (self.connectionWrapper != nil);
+}
+
+- (BOOL)setValue:(NSString*)value
+     forParameter:(NSString*)param
+{
+    if ([self isActive]) {
+        return NO;
+    } else {
+        if ((value == nil) || [[NSNull null] isEqual:value]) {
+            [_params removeObjectForKey:param];
+        } else {
+            [_params setObject:value
+                        forKey:param];
+        }
+        return YES;
+    }
+}
+
+#pragma mark - Overridden Methods
+- (NSString*)description {
+    return [[self requestURL] absoluteString];
+}
+
+- (NSUInteger)hash {
+    return [[self description] hash];
+}
+
+#pragma mark - ConnectionWrapper Delegate Methods
+-(void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
+	id result = [MITJSON objectWithJSONData:data];
+	if(result) {
+		[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
+		[self.jsonDelegate request:self jsonLoaded:result];
+        self.connectionWrapper = nil;
+		[self release];	
+	} else {
+		NSError *error = [NSError errorWithDomain:@"MITMobileWebAPI" code:JSON_ERROR_CODE 
+										 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"failed to handle JSON data", @"message", data, @"data", nil]];
+		[self connection:wrapper handleConnectionFailureWithError:error];
+	}
+}
+
+- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError: (NSError *)error {
+    id<JSONLoadedDelegate> delegate = self.jsonDelegate;
+    
+	[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
+	
+	VLog(@"connection failed in %@, userinfo: %@, url: %@", [error domain], [error userInfo], wrapper.theURL);
+    
+	if([delegate respondsToSelector:@selector(handleConnectionFailureForRequest:)]) {
+		[delegate handleConnectionFailureForRequest:self];
+	}
+	
+	if([delegate request:self shouldDisplayStandardAlertForError:error]) {
+		NSString *header;
+		if ([delegate respondsToSelector:@selector(request:displayHeaderForError:)]) {
+			header = [delegate request:self displayHeaderForError:error];
+		} else {
+			header = @"Network Error";
+		}
+		
+		id<UIAlertViewDelegate> alertViewDelegate = nil;
+		if ([delegate respondsToSelector:@selector(request:alertViewDelegateForError:)]) {
+			alertViewDelegate = [delegate request:self alertViewDelegateForError:error];
+		} 
+		
+		[MITMobileWebAPI showError:error header:header alertViewDelegate:alertViewDelegate];
+	}
+    
+    self.connectionWrapper = nil;
+	[self release];
+}
+
+- (void)connectionWrapper:(ConnectionWrapper *)wrapper totalBytesWritten:(NSInteger)bytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpected {
+    if ([self.jsonDelegate respondsToSelector:@selector(request:totalBytesWritten:totalBytesExpected:)]) {
+        [self.jsonDelegate request:self
+                 totalBytesWritten:bytesWritten
+                totalBytesExpected:totalBytesExpected];
+    }
 }
 
 @end
