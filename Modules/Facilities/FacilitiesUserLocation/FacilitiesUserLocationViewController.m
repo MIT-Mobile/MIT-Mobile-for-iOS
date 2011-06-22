@@ -271,7 +271,7 @@ static const NSUInteger kMaxResultCount = 10;
     } else if (([newLocation horizontalAccuracy] > kCLLocationAccuracyHundredMeters) && _isLocationUpdating) {
         if (self.bestLocation == nil) {
             self.bestLocation = newLocation;
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC);
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC);
             dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                 CLLocation *mostAccurateLocation = self.bestLocation;
                 DLog(@"Timeout triggered at accuracy of %f meters", [mostAccurateLocation horizontalAccuracy]);
