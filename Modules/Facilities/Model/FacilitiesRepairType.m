@@ -3,5 +3,6 @@
 
 @implementation FacilitiesRepairType
 @dynamic name;
+@dynamic order;
 
 @end

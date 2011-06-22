@@ -1,7 +1,14 @@
 #import "FacilitiesSubmitViewController.h"
 #import "FacilitiesRootViewController.h"
+#import "FacilitiesConstants.h"
+
+#import "FacilitiesLocation.h"
+#import "FacilitiesRoom.h"
+#import "FacilitiesRepairType.h"
+#import "NSData+MGTwitterBase64.h"
 
 @interface FacilitiesSubmitViewController ()
+@property (retain) MITMobileWebAPI *request;
 @property BOOL abortRequest;
 @end
 
@@ -10,12 +17,27 @@
 @synthesize progressView = _progressView;
 @synthesize completeButton = _completeButton;
 @synthesize abortRequest = _abortRequest;
+@synthesize reportDictionary = _reportDictionary;
+@synthesize request = _request;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (id)init
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    self = [self initWithNibName:nil
+                          bundle:nil];
     if (self) {
         self.title = @"Submit Report";
+        self.reportDictionary = nil;
+    }
+    return self;
+}
+
+- (id)initWithReportData:(NSDictionary*)reportData
+{
+    self = [self initWithNibName:nil
+                           bundle:nil];
+    if (self) {
+        self.title = @"Submit Report";
+        self.reportDictionary = reportData;
     }
     return self;
 }
@@ -25,6 +47,7 @@
     self.statusLabel = nil;
     self.progressView = nil;
     self.completeButton = nil;
+    self.reportDictionary = nil;
     [super dealloc];
 }
 
@@ -94,44 +117,55 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    dispatch_queue_t demoQueue = dispatch_queue_create("edu.mit.mobile.ProgressDemo", 0);
-    NSUInteger imageSize = 768000; // Bytes
-    NSUInteger uploadSpeed = 50000; // Bps
+    self.request = [[[MITMobileWebAPI alloc] initWithModule:@"facilities"
+                                                    command:@"upload"
+                                                 parameters:nil] autorelease];
+    self.request.jsonDelegate = self;
+    self.request.usePOSTMethod = YES;
+    [self.request setValue:@""
+              forParameter:@"name"];
+    [self.request setValue:[self.reportDictionary objectForKey:FacilitiesRequestUserEmailKey]
+              forParameter:@"email"];
     
-    [self.progressView setProgress:0.0];
-    self.progressView.hidden = NO;
-    self.completeButton.hidden = YES;
-    [self.statusLabel setText:@"Uploading report to the server"];
+    NSMutableString *message = [NSMutableString string];
+    FacilitiesLocation *location = [self.reportDictionary objectForKey:FacilitiesRequestLocationBuildingKey];
+    FacilitiesRoom *room = [self.reportDictionary objectForKey:FacilitiesRequestLocationRoomKey];
+    FacilitiesRepairType *type = [self.reportDictionary objectForKey:FacilitiesRequestRepairTypeKey];
+    NSString *customLocation = [self.reportDictionary objectForKey:FacilitiesRequestLocationUserBuildingKey];
+    NSString *customRoom = [self.reportDictionary objectForKey:FacilitiesRequestLocationUserRoomKey];
     
-    int blkCount = 0;
-    for (NSUInteger chunk = 0; chunk < imageSize; chunk += uploadSpeed) {
-        dispatch_async(demoQueue, ^{
-            if (self.abortRequest == NO) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    NSMutableString *string = [NSMutableString string];
-                    for (int i = 0; i < ((blkCount % 3) + 1); i++) {
-                        [string appendString:@"."];
-                    }
-                    
-                    [self.statusLabel setText:[NSString stringWithFormat:@"Uploading picture%@",string]];
-                    [self.progressView setProgress:((float)chunk / (float)imageSize)];
-                });
-                
-                [NSThread sleepForTimeInterval:1.0f];
-            }
-        });
-        blkCount++;
+    if (location) {
+        [message appendFormat:@"Building Name: %@\n",location.name];
+        [message appendFormat:@"Building Number: %@\n",location.number];
+    } else {
+        [message appendFormat:@"User Location: %@\n",customLocation];
     }
     
-    dispatch_async(demoQueue, ^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.statusLabel setText:@"Successfully submitted your report"];
-            self.progressView.hidden = YES;
-            self.completeButton.hidden = NO;
-        });
-    });
+    if (room) {
+        [message appendFormat:@"Room Number: %@\n",room.number];
+    } else {
+        [message appendFormat:@"User Room: %@\n",customRoom];
+    }
     
-    dispatch_release(demoQueue);
+    [message appendFormat:@"Problem Type: %@\n",type.name];
+    
+    [self.request setValue:message
+              forParameter:@"message"];
+    
+    UIImage *picture = [self.reportDictionary objectForKey:FacilitiesRequestImageKey];
+    if (picture) {
+        NSData *pictureData = UIImagePNGRepresentation(picture);
+        [self.request setValue:[pictureData base64EncodingWithLineLength:64]
+                  forParameter:@"image"];
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        [self.progressView setProgress:0.0];
+        self.progressView.hidden = NO;
+        self.completeButton.hidden = YES;
+        [self.statusLabel setText:@"Uploading report to the server"];
+        [self.request start];
+    });
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -159,6 +193,28 @@
             break;
         }
     }
+}
+
+#pragma mark - JSONDelegate Methods
+- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject
+{
+    self.progressView.hidden = YES;
+    self.completeButton.hidden = NO;
+    self.statusLabel.text = @"Report successfully submitted";
+    self.request = nil;
+    return;
+}
+
+- (void)request:(MITMobileWebAPI *)request totalBytesWritten:(NSInteger)bytesWritten totalBytesExpected:(NSInteger)bytesExpected
+{
+    NSLog(@"%d/%d",bytesWritten,bytesExpected);
+    [self.progressView setProgress:(double)bytesWritten/(double)bytesExpected];
+}
+
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error
+{
+    self.request = nil;
+    return NO;
 }
 
 @end

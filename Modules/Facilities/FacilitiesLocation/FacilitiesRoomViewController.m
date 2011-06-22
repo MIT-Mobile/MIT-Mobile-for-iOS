@@ -143,6 +143,11 @@
                                      self.cachedData = nil;
                                      [self.tableView reloadData];
                                  }
+                                 
+                                 if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
+                                     self.filteredData = nil;
+                                     [self.searchDisplayController.searchResultsTableView reloadData];
+                                 }
                              }
                          }];
 }
@@ -303,7 +308,7 @@
                  forKey: FacilitiesRequestLocationRoomKey];
     } else {
         [dict setObject: altName
-                 forKey: FacilitiesRequestLocationCustomKey];
+                 forKey: FacilitiesRequestLocationUserRoomKey];
     }
     
     [dict setObject: self.location

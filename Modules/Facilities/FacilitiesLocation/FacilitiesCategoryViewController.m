@@ -161,6 +161,11 @@
                                      self.cachedData = nil;
                                      [self.tableView reloadData];
                                  }
+                                 
+                                 if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
+                                     self.filteredData = nil;
+                                     [self.searchDisplayController.searchResultsTableView reloadData];
+                                 }
                              }
                          }];
 }
@@ -202,7 +207,14 @@
 }
 
 - (NSArray*)resultsForSearchString:(NSString *)searchText {
-    NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"name CONTAINS [c] %@",searchText];
+    NSPredicate *searchPredicate = nil;
+    
+    if (searchText && ([searchText length] > 0)) {
+        searchPredicate = [NSPredicate predicateWithFormat:@"name CONTAINS [c] %@",searchText];
+    } else {
+        searchPredicate = [NSPredicate predicateWithValue:YES];
+    }
+    
     NSArray *results = [self.locationData locationsMatchingPredicate:searchPredicate];
     
     results = [results sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
@@ -316,7 +328,7 @@
         if (indexPath.row == 0) {
             FacilitiesTypeViewController *vc = [[[FacilitiesTypeViewController alloc] init] autorelease];
             vc.userData = [NSDictionary dictionaryWithObject: self.searchString
-                                                      forKey: FacilitiesRequestLocationCustomKey];
+                                                      forKey: FacilitiesRequestLocationUserBuildingKey];
             nextViewController = vc;
         } else {
             FacilitiesLocation *location = (FacilitiesLocation*)[self.filteredData objectAtIndex:(indexPath.row-1)];
