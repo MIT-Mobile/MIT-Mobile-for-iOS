@@ -7,6 +7,7 @@
 #import "FacilitiesRepairType.h"
 #import "FacilitiesConstants.h"
 #import "FacilitiesSubmitViewController.h"
+#import "UIImage+Resize.h"
 
 enum {
     FacilitiesFocusDescription = 1,
@@ -89,7 +90,8 @@ enum {
     FacilitiesLocation *location = [self.reportData objectForKey:FacilitiesRequestLocationBuildingKey];
     FacilitiesRoom *room = [self.reportData objectForKey:FacilitiesRequestLocationRoomKey];
     FacilitiesRepairType *type = [self.reportData objectForKey:FacilitiesRequestRepairTypeKey];
-    NSString *customLocation = [self.reportData objectForKey:FacilitiesRequestLocationCustomKey];
+    NSString *customLocation = [self.reportData objectForKey:FacilitiesRequestLocationUserBuildingKey];
+    NSString *customRoom = [self.reportData objectForKey:FacilitiesRequestLocationUserRoomKey];
     NSString *typeString = [type.name lowercaseString];
 
     NSString *text = nil;
@@ -97,10 +99,10 @@ enum {
     if (location && room) {
         text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ at %@ near room %@.",typeString,location.name,[room displayString]];
     } else if (location) {
-        if ([customLocation hasSuffix:@"side"]) {
-            text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ %@ %@.",typeString,[customLocation lowercaseString],location.name];
+        if ([customRoom hasSuffix:@"side"]) {
+            text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ %@ %@.",typeString,[customRoom lowercaseString],location.name];
         } else {
-            text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ at %@ near %@.",typeString,location.name,[customLocation lowercaseString]];
+            text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ at %@ near %@.",typeString,location.name,[customRoom lowercaseString]];
         }
     } else {
         text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ in %@",typeString,customLocation];
@@ -178,7 +180,13 @@ enum {
         return;
     }
     
-    [self.navigationController pushViewController:[[[FacilitiesSubmitViewController alloc] init] autorelease]
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
+    [dictionary setObject:self.emailField.text
+                   forKey:FacilitiesRequestUserEmailKey];
+    [dictionary setObject:self.descriptionView.text
+                   forKey:FacilitiesRequestUserDescriptionKey];
+    self.reportData = dictionary;
+    [self.navigationController pushViewController:[[[FacilitiesSubmitViewController alloc] initWithReportData:dictionary] autorelease]
                                                                            animated:YES];
 }
 
@@ -238,6 +246,13 @@ enum {
     }
     
     if (image) {
+        NSLog(@"Image size is %@", NSStringFromCGSize(image.size));
+        UIImage *resizedImage = [image resizedImage:image.size
+                               interpolationQuality:kCGInterpolationDefault];
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
+        [dictionary setObject:resizedImage
+                       forKey:FacilitiesRequestImageKey];
+        self.reportData = dictionary;
         self.imageView.image = image;
         self.imageView.contentMode = UIViewContentModeScaleAspectFit;
         self.imageButton.hidden = YES;

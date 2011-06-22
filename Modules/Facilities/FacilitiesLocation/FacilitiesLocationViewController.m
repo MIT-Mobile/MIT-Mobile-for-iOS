@@ -317,7 +317,7 @@
         if (indexPath.row == 0) {
             FacilitiesTypeViewController *vc = [[[FacilitiesTypeViewController alloc] init] autorelease];
             vc.userData = [NSDictionary dictionaryWithObject: self.searchString
-                                                      forKey: FacilitiesRequestLocationCustomKey];
+                                                      forKey: FacilitiesRequestLocationUserBuildingKey];
             [self.navigationController pushViewController:vc
                                                  animated:YES];
             [tableView deselectRowAtIndexPath:indexPath

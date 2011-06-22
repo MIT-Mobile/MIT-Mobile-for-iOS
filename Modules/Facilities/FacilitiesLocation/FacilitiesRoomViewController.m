@@ -308,7 +308,7 @@
                  forKey: FacilitiesRequestLocationRoomKey];
     } else {
         [dict setObject: altName
-                 forKey: FacilitiesRequestLocationCustomKey];
+                 forKey: FacilitiesRequestLocationUserRoomKey];
     }
     
     [dict setObject: self.location

@@ -328,7 +328,7 @@
         if (indexPath.row == 0) {
             FacilitiesTypeViewController *vc = [[[FacilitiesTypeViewController alloc] init] autorelease];
             vc.userData = [NSDictionary dictionaryWithObject: self.searchString
-                                                      forKey: FacilitiesRequestLocationCustomKey];
+                                                      forKey: FacilitiesRequestLocationUserBuildingKey];
             nextViewController = vc;
         } else {
             FacilitiesLocation *location = (FacilitiesLocation*)[self.filteredData objectAtIndex:(indexPath.row-1)];
