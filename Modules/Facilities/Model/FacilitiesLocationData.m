@@ -173,8 +173,11 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (NSArray*)allRepairTypes {
     [self updateRepairTypeData];
-    return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesRepairType"
-                                             matchingPredicate:[NSPredicate predicateWithValue:YES]];
+    NSArray *types = [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesRepairType"
+                                                       matchingPredicate:[NSPredicate predicateWithValue:YES]];
+    return [types sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        return [[obj1 valueForKey:@"order"] compare:[obj2 valueForKey:@"order"]];
+    }];
 }
 
 
@@ -481,9 +484,12 @@ static FacilitiesLocationData *_sharedData = nil;
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     [cdm deleteObjectsForEntity:@"FacilitiesRepairType"];
     
+    NSInteger index = 0;
     for (NSString *type in typeData) {
         FacilitiesRepairType *repairType = [cdm insertNewObjectForEntityForName:@"FacilitiesRepairType"];
         repairType.name = type;
+        repairType.order = [NSNumber numberWithInteger:index];
+        ++index;
     }
     
     [cdm saveData];
@@ -552,7 +558,7 @@ static FacilitiesLocationData *_sharedData = nil;
     if (shouldUpdateDate) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
         NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
-        [df setDateFormat:@"yyyy-MM-dd HH:mm:ssy"];
+        [df setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         [dict setValue:[df stringFromDate:[NSDate date]]
                 forKey:command];
         [[NSUserDefaults standardUserDefaults] setObject:dict
