@@ -306,7 +306,6 @@
 		EBF114FD12A700510002D751 /* TourIntroViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF114FB12A700510002D751 /* TourIntroViewController.m */; };
 		EBF8A52E12AEB7AA00D39AE6 /* Anniversary.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EBF8A52D12AEB7AA00D39AE6 /* Anniversary.xcdatamodeld */; };
 		EBF8A53412AEB8BC00D39AE6 /* FeatureLink.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8A53212AEB8BC00D39AE6 /* FeatureLink.m */; };
-		EBF8A76312AF07B100D39AE6 /* mit150 in Resources */ = {isa = PBXBuildFile; fileRef = EBF8A76012AF07B100D39AE6 /* mit150 */; };
 		EBF8A77B12AF09CD00D39AE6 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */; };
 		EBF8AB1312B197FC00D39AE6 /* TourComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8AB1112B197FC00D39AE6 /* TourComponent.m */; };
 		EBF8B37412B581AC00D39AE6 /* MITMailComposeController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8B37212B581AC00D39AE6 /* MITMailComposeController.m */; };
@@ -919,7 +918,6 @@
 		EBF8A52912AEB71C00D39AE6 /* Anniversary.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = Anniversary.xcdatamodel; sourceTree = "<group>"; };
 		EBF8A53112AEB8BC00D39AE6 /* FeatureLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeatureLink.h; sourceTree = "<group>"; };
 		EBF8A53212AEB8BC00D39AE6 /* FeatureLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeatureLink.m; sourceTree = "<group>"; };
-		EBF8A76012AF07B100D39AE6 /* mit150 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mit150; path = Resources/mit150; sourceTree = "<group>"; };
 		EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = iphoneos4.0/System/Library/Frameworks/MediaPlayer.framework; sourceTree = "<group>"; };
 		EBF8AB1012B197FC00D39AE6 /* TourComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourComponent.h; sourceTree = "<group>"; };
 		EBF8AB1112B197FC00D39AE6 /* TourComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourComponent.m; sourceTree = "<group>"; };
@@ -1082,7 +1080,6 @@
 				2CD12D4E1360584F00A73ACA /* facilities */,
 				2CDF301E134DF504007C6813 /* qrreader */,
 				EB07B06912B8971D005D6A4C /* calendar */,
-				EBF8A76012AF07B100D39AE6 /* mit150 */,
 				EB4C34F81281FCBD00058748 /* tours */,
 				EB5C621F1201D93A00805EBE /* news */,
 				EB5C622A1201D93A00805EBE /* people */,
@@ -2103,7 +2100,6 @@
 				EB54947310DFF7E200B708B3 /* global in Resources */,
 				EB54943810DFF03600B708B3 /* icons in Resources */,
 				EB5C621E1201D92E00805EBE /* map in Resources */,
-				EBF8A76312AF07B100D39AE6 /* mit150 in Resources */,
 				EB5C625A1201D93A00805EBE /* news in Resources */,
 				EB5C625B1201D93A00805EBE /* people in Resources */,
 				2CDF301F134DF504007C6813 /* qrreader in Resources */,
