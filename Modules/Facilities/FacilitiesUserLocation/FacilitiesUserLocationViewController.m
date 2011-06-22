@@ -10,6 +10,7 @@ static const NSUInteger kMaxResultCount = 10;
 
 @interface FacilitiesUserLocationViewController ()
 @property (nonatomic,retain) NSArray* filteredData;
+@property (retain) CLLocation *bestLocation;
 - (void)displayTableForLocation:(CLLocation*)location;
 - (void)startUpdatingLocation;
 - (void)stopUpdatingLocation;
@@ -20,6 +21,7 @@ static const NSUInteger kMaxResultCount = 10;
 @synthesize loadingView = _loadingView;
 @synthesize locationManager = _locationManager;
 @synthesize filteredData = _filteredData;
+@synthesize bestLocation = _bestLocation;
 
 - (id)init {
     self = [super init];
@@ -267,11 +269,18 @@ static const NSUInteger kMaxResultCount = 10;
     if (horizontalAccuracy < 0) {
         return;
     } else if (([newLocation horizontalAccuracy] > kCLLocationAccuracyHundredMeters) && _isLocationUpdating) {
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC);
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            DLog(@"Timeout triggered at accuracy of %f meters", horizontalAccuracy);
-            [self displayTableForLocation:newLocation];
-        });
+        if (self.bestLocation == nil) {
+            self.bestLocation = newLocation;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC);
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                CLLocation *mostAccurateLocation = self.bestLocation;
+                DLog(@"Timeout triggered at accuracy of %f meters", [mostAccurateLocation horizontalAccuracy]);
+                [self displayTableForLocation:mostAccurateLocation];
+                self.bestLocation = nil;
+            });
+        } else if ([self.bestLocation horizontalAccuracy] > horizontalAccuracy) {
+            self.bestLocation = newLocation;
+        }
         return;
     } else {
         [self stopUpdatingLocation];

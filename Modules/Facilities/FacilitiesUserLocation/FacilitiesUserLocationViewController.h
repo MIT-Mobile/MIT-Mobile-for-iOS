@@ -14,6 +14,12 @@
     CLLocationManager *_locationManager;
     BOOL _isLocationUpdating;
     NSArray *_filteredData;
+    
+    // Used in the CLLocationManager Delegate methods to keep
+    // track of the most accurate location we received that is
+    // greater than our desired accuracy before the location
+    // timeout is reached.
+    CLLocation *_bestLocation;
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;
