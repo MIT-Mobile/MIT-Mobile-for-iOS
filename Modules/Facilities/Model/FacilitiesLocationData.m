@@ -223,7 +223,7 @@ static FacilitiesLocationData *_sharedData = nil;
         
         NSString *dateString = [dict objectForKey:command];
         NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
-        [df setDateFormat:@"yyyy-MM-dd"];
+        [df setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         
         lastCheckDate = [df dateFromString:dateString];
     }
@@ -552,7 +552,7 @@ static FacilitiesLocationData *_sharedData = nil;
     if (shouldUpdateDate) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
         NSDateFormatter *df = [[[NSDateFormatter alloc] init] autorelease];
-        [df setDateFormat:@"yyyy-MM-dd"];
+        [df setDateFormat:@"yyyy-MM-dd HH:mm:ssy"];
         [dict setValue:[df stringFromDate:[NSDate date]]
                 forKey:command];
         [[NSUserDefaults standardUserDefaults] setObject:dict
