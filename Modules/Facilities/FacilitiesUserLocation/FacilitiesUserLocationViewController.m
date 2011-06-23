@@ -10,8 +10,8 @@ static const NSUInteger kMaxResultCount = 10;
 
 @interface FacilitiesUserLocationViewController ()
 @property (nonatomic,retain) NSArray* filteredData;
-@property (retain) CLLocation *bestLocation;
-- (void)displayTableForLocation:(CLLocation*)location;
+@property (retain) CLLocation *currentLocation;
+- (void)displayTableForCurrentLocation;
 - (void)startUpdatingLocation;
 - (void)stopUpdatingLocation;
 @end
@@ -21,7 +21,7 @@ static const NSUInteger kMaxResultCount = 10;
 @synthesize loadingView = _loadingView;
 @synthesize locationManager = _locationManager;
 @synthesize filteredData = _filteredData;
-@synthesize bestLocation = _bestLocation;
+@synthesize currentLocation = _currentLocation;
 
 - (id)init {
     self = [super init];
@@ -131,11 +131,20 @@ static const NSUInteger kMaxResultCount = 10;
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.hidden = YES;
     
+    [[FacilitiesLocationData sharedData] addObserver:self
+                                           withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
+                                               if ([userData isEqualToString:FacilitiesLocationsKey] && dataUpdated) {
+                                                   self.filteredData = nil;
+                                                   [self displayTableForCurrentLocation];
+                                               }
+                                           }];
+    
     [self startUpdatingLocation];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [self stopUpdatingLocation];
+    [[FacilitiesLocationData sharedData] removeObserver:self];
 }
 
 - (void)viewDidUnload
@@ -151,20 +160,31 @@ static const NSUInteger kMaxResultCount = 10;
 }
 
 #pragma mark - Private Methods
-- (void)displayTableForLocation:(CLLocation*)location {
-    if (self.loadingView) {
-        [self.loadingView removeFromSuperview];
-        self.loadingView = nil;
-        self.tableView.hidden = NO;
-        [self.view setNeedsDisplay];
+- (void)displayTableForCurrentLocation {
+    if (self.currentLocation == nil) {
+        return;
     }
     
     self.filteredData = [[FacilitiesLocationData sharedData] locationsWithinRadius:CGFLOAT_MAX
-                                                                        ofLocation:location
+                                                                        ofLocation:self.currentLocation
                                                                       withCategory:nil];
-    NSUInteger filterLimit = MIN([self.filteredData count],kMaxResultCount);
-    self.filteredData = [self.filteredData objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, filterLimit)]];
-    [self.tableView reloadData];
+    
+    if ([self.filteredData count] == 0) {
+        return;
+    } else {
+        
+        NSUInteger filterLimit = MIN([self.filteredData count],kMaxResultCount);
+        self.filteredData = [self.filteredData objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, filterLimit)]];
+        
+        if (self.loadingView) {
+            [self.loadingView removeFromSuperview];
+            self.loadingView = nil;
+            self.tableView.hidden = NO;
+            [self.view setNeedsDisplay];
+        }
+        
+        [self.tableView reloadData];
+    }
 }
 
 - (void)startUpdatingLocation {
@@ -269,24 +289,25 @@ static const NSUInteger kMaxResultCount = 10;
     if (horizontalAccuracy < 0) {
         return;
     } else if (([newLocation horizontalAccuracy] > kCLLocationAccuracyHundredMeters) && _isLocationUpdating) {
-        if (self.bestLocation == nil) {
-            self.bestLocation = newLocation;
+        if (self.currentLocation == nil) {
+            self.currentLocation = newLocation;
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC);
             dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                CLLocation *mostAccurateLocation = self.bestLocation;
+                CLLocation *mostAccurateLocation = self.currentLocation;
                 DLog(@"Timeout triggered at accuracy of %f meters", [mostAccurateLocation horizontalAccuracy]);
-                [self displayTableForLocation:mostAccurateLocation];
-                self.bestLocation = nil;
+                [self displayTableForCurrentLocation];
+                [self stopUpdatingLocation];
             });
-        } else if ([self.bestLocation horizontalAccuracy] > horizontalAccuracy) {
-            self.bestLocation = newLocation;
+        } else if ([self.currentLocation horizontalAccuracy] > horizontalAccuracy) {
+            self.currentLocation = newLocation;
         }
         return;
     } else {
+        self.currentLocation = newLocation;
         [self stopUpdatingLocation];
     }
     
-    [self displayTableForLocation:newLocation];
+    [self displayTableForCurrentLocation];
 }
 
 #pragma mark -

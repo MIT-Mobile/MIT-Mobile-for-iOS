@@ -19,7 +19,7 @@
     // track of the most accurate location we received that is
     // greater than our desired accuracy before the location
     // timeout is reached.
-    CLLocation *_bestLocation;
+    CLLocation *_currentLocation;
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;
