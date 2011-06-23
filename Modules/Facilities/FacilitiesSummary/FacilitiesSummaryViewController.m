@@ -246,8 +246,7 @@ enum {
     }
     
     if (image) {
-        NSLog(@"Image size is %@", NSStringFromCGSize(image.size));
-        UIImage *resizedImage = [image resizedImage:image.size
+        UIImage *resizedImage = [image resizedImage:CGSizeMake(640, 480)
                                interpolationQuality:kCGInterpolationDefault];
         NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
         [dictionary setObject:resizedImage
