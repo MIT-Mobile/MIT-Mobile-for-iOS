@@ -171,7 +171,6 @@ static const NSUInteger kMaxResultCount = 10;
 
 #pragma mark - Private Methods
 - (void)displayTableForCurrentLocation {
-    NSLog(@"%@",NSStringFromSelector(_cmd));
     if (self.currentLocation == nil) {
         return;
     }
@@ -252,7 +251,6 @@ static const NSUInteger kMaxResultCount = 10;
 
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"%@",NSStringFromSelector(_cmd));
     FacilitiesLocation *location = nil;
     
     if (tableView == self.tableView) {
@@ -305,7 +303,6 @@ static const NSUInteger kMaxResultCount = 10;
     didUpdateToLocation:(CLLocation *)newLocation
            fromLocation:(CLLocation *)oldLocation
 {
-    NSLog(@"%@",NSStringFromSelector(_cmd));
     CLLocationAccuracy horizontalAccuracy = [newLocation horizontalAccuracy];
     if (horizontalAccuracy < 0) {
         return;
