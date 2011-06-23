@@ -246,10 +246,8 @@ enum {
     }
     
     if (image) {
-        UIImage *resizedImage = [image resizedImage:CGSizeMake(640, 480)
-                               interpolationQuality:kCGInterpolationDefault];
         NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
-        [dictionary setObject:resizedImage
+        [dictionary setObject:image
                        forKey:FacilitiesRequestImageKey];
         self.reportData = dictionary;
         self.imageView.image = image;
