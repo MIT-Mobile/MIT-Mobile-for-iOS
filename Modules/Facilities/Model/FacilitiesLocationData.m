@@ -4,6 +4,7 @@
 #import "FacilitiesCategory.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
+#import "FacilitiesContent.h"
 #import "MITMobileServerConfiguration.h"
 #import "ConnectionDetector.h"
 #import "FacilitiesRepairType.h"
@@ -33,6 +34,7 @@ static FacilitiesLocationData *_sharedData = nil;
 - (void)updateRoomDataForBuilding:(NSString*)bldgnum;
 - (void)updateRepairTypeData;
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params;
+- (void)updateContentsForLocation:(FacilitiesLocation*)location withData:(NSArray*)contents;
 
 - (FacilitiesCategory*)categoryForId:(NSString*)categoryId;
 - (FacilitiesLocation*)locationForId:(NSString*)locationId;
@@ -145,6 +147,12 @@ static FacilitiesLocationData *_sharedData = nil;
         }
     }];
     return sortedArray;
+}
+
+- (NSArray*)contentsForBuilding:(NSString*)bldgnum {
+    [self updateLocationData];
+    return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesContent"
+                                             matchingPredicate:[NSPredicate predicateWithFormat:@"building == %@",bldgnum]];
 }
 
 - (NSArray*)roomsForBuilding:(NSString*)bldgnum {
@@ -432,6 +440,8 @@ static FacilitiesLocationData *_sharedData = nil;
         location.categories = set;
         
         [addedIds addObject:location.uid];
+        
+        [self updateContentsForLocation:location withData:[loc objectForKey:@"contents"]];
     }
     
     NSArray *allLocations = [cdm objectsForEntity:@"FacilitiesLocation"
@@ -440,6 +450,40 @@ static FacilitiesLocationData *_sharedData = nil;
     for (FacilitiesLocation *location in allLocations) {
         if ([addedIds containsObject:location.uid] == NO) {
             [cdm deleteObject:location];
+        }
+    }
+    
+    [cdm saveData];
+}
+
+- (void)updateContentsForLocation:(FacilitiesLocation*)location withData:(NSArray*)contents {
+    if ((contents == nil) || [[NSNull null] isEqual:contents]) {
+        return;
+    }
+    
+    CoreDataManager *cdm = [CoreDataManager coreDataManager];
+    
+    [cdm deleteObjects:[location.contents allObjects]];
+    
+    for (NSDictionary *contentData in contents) {
+        FacilitiesContent *content = [cdm insertNewObjectForEntityForName:@"FacilitiesContent"];
+        content.location = location;
+        content.name = [contentData objectForKey:@"name"];
+        
+        if ([contentData objectForKey:@"url"]) {
+            content.url = [NSURL URLWithString:[contentData objectForKey:@"url"]];
+        }
+        
+        if ([contentData objectForKey:@"altname"]) {
+            content.altname = [contentData objectForKey:@"altname"];
+        }
+        
+        if ([contentData objectForKey:@"category"]) {
+            NSArray *contentCategories = [contentData objectForKey:@"category"];
+            for (NSString *catName in contentCategories) {
+                FacilitiesCategory *category = [self categoryForId:catName];
+                [content addCategoriesObject:category];
+            }
         }
     }
     
