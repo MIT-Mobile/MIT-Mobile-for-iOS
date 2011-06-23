@@ -201,7 +201,7 @@ static const NSUInteger kMaxResultCount = 10;
     if (self.locationManager == nil) {
         self.locationManager = [[[CLLocationManager alloc] init] autorelease];
         self.locationManager.delegate = self;
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         _isLocationUpdating = NO;
     }
     
@@ -306,7 +306,7 @@ static const NSUInteger kMaxResultCount = 10;
     CLLocationAccuracy horizontalAccuracy = [newLocation horizontalAccuracy];
     if (horizontalAccuracy < 0) {
         return;
-    } else if (([newLocation horizontalAccuracy] > kCLLocationAccuracyKilometer) && _isLocationUpdating) {
+    } else if (([newLocation horizontalAccuracy] > kCLLocationAccuracyHundredMeters) && _isLocationUpdating) {
         if (self.locationTimeout == nil) {
             self.currentLocation = newLocation;
             self.locationTimeout = [NSTimer scheduledTimerWithTimeInterval:5.0
