@@ -10,10 +10,12 @@ static const NSUInteger kMaxResultCount = 10;
 
 @interface FacilitiesUserLocationViewController ()
 @property (nonatomic,retain) NSArray* filteredData;
-@property (retain) CLLocation *currentLocation;
+@property (nonatomic,retain) CLLocation *currentLocation;
+@property (nonatomic,retain) NSTimer *locationTimeout;
 - (void)displayTableForCurrentLocation;
 - (void)startUpdatingLocation;
 - (void)stopUpdatingLocation;
+- (void)locationUpdateTimedOut;
 @end
 
 @implementation FacilitiesUserLocationViewController
@@ -22,6 +24,7 @@ static const NSUInteger kMaxResultCount = 10;
 @synthesize locationManager = _locationManager;
 @synthesize filteredData = _filteredData;
 @synthesize currentLocation = _currentLocation;
+@synthesize locationTimeout = _locationTimeout;
 
 - (id)init {
     self = [super init];
@@ -34,6 +37,7 @@ static const NSUInteger kMaxResultCount = 10;
 
 - (void)dealloc
 {
+    [self stopUpdatingLocation];
     self.tableView = nil;
     self.loadingView = nil;
     self.locationManager = nil;
@@ -130,6 +134,10 @@ static const NSUInteger kMaxResultCount = 10;
     self.view.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.hidden = YES;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     
     [[FacilitiesLocationData sharedData] addObserver:self
                                            withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
@@ -143,8 +151,10 @@ static const NSUInteger kMaxResultCount = 10;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [self stopUpdatingLocation];
+    [super viewWillDisappear:animated];
+    
     [[FacilitiesLocationData sharedData] removeObserver:self];
+    [self stopUpdatingLocation];
 }
 
 - (void)viewDidUnload
@@ -206,7 +216,16 @@ static const NSUInteger kMaxResultCount = 10;
         [self.locationManager stopUpdatingLocation];
         self.locationManager = nil;
         _isLocationUpdating = NO;
+        
+        [self.locationTimeout invalidate];
+        self.locationTimeout = nil;
     }
+}
+
+- (void)locationUpdateTimedOut {
+    DLog(@"Timeout triggered at accuracy of %f meters", [self.currentLocation horizontalAccuracy]);
+    [self displayTableForCurrentLocation];
+    [self stopUpdatingLocation];
 }
 
 #pragma mark - UITableViewDataSource
@@ -289,15 +308,13 @@ static const NSUInteger kMaxResultCount = 10;
     if (horizontalAccuracy < 0) {
         return;
     } else if (([newLocation horizontalAccuracy] > kCLLocationAccuracyHundredMeters) && _isLocationUpdating) {
-        if (self.currentLocation == nil) {
+        if (self.locationTimeout == nil) {
             self.currentLocation = newLocation;
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC);
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                CLLocation *mostAccurateLocation = self.currentLocation;
-                DLog(@"Timeout triggered at accuracy of %f meters", [mostAccurateLocation horizontalAccuracy]);
-                [self displayTableForCurrentLocation];
-                [self stopUpdatingLocation];
-            });
+            self.locationTimeout = [NSTimer scheduledTimerWithTimeInterval:5.0
+                                                                    target:self
+                                                                  selector:@selector(locationUpdateTimedOut)
+                                                                  userInfo:nil
+                                                                   repeats:NO];
         } else if ([self.currentLocation horizontalAccuracy] > horizontalAccuracy) {
             self.currentLocation = newLocation;
         }

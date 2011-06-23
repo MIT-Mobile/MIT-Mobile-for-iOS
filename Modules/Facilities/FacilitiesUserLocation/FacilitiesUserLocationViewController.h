@@ -20,6 +20,7 @@
     // greater than our desired accuracy before the location
     // timeout is reached.
     CLLocation *_currentLocation;
+    NSTimer *_locationTimeout;
 }
 
 @property (nonatomic,retain) IBOutlet UITableView* tableView;
