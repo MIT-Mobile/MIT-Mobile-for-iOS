@@ -171,6 +171,7 @@ static const NSUInteger kMaxResultCount = 10;
 
 #pragma mark - Private Methods
 - (void)displayTableForCurrentLocation {
+    NSLog(@"%@",NSStringFromSelector(_cmd));
     if (self.currentLocation == nil) {
         return;
     }
@@ -201,7 +202,7 @@ static const NSUInteger kMaxResultCount = 10;
     if (self.locationManager == nil) {
         self.locationManager = [[[CLLocationManager alloc] init] autorelease];
         self.locationManager.delegate = self;
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
         _isLocationUpdating = NO;
     }
     
@@ -214,7 +215,6 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)stopUpdatingLocation {
     if (self.locationManager) {
         [self.locationManager stopUpdatingLocation];
-        self.locationManager = nil;
         _isLocationUpdating = NO;
         
         [self.locationTimeout invalidate];
@@ -230,7 +230,7 @@ static const NSUInteger kMaxResultCount = 10;
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.filteredData count];
+    return (self.filteredData == nil) ? 0 : [self.filteredData count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -252,6 +252,7 @@ static const NSUInteger kMaxResultCount = 10;
 
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"%@",NSStringFromSelector(_cmd));
     FacilitiesLocation *location = nil;
     
     if (tableView == self.tableView) {
@@ -304,10 +305,11 @@ static const NSUInteger kMaxResultCount = 10;
     didUpdateToLocation:(CLLocation *)newLocation
            fromLocation:(CLLocation *)oldLocation
 {
+    NSLog(@"%@",NSStringFromSelector(_cmd));
     CLLocationAccuracy horizontalAccuracy = [newLocation horizontalAccuracy];
     if (horizontalAccuracy < 0) {
         return;
-    } else if (([newLocation horizontalAccuracy] > kCLLocationAccuracyHundredMeters) && _isLocationUpdating) {
+    } else if (([newLocation horizontalAccuracy] > kCLLocationAccuracyKilometer) && _isLocationUpdating) {
         if (self.locationTimeout == nil) {
             self.currentLocation = newLocation;
             self.locationTimeout = [NSTimer scheduledTimerWithTimeInterval:5.0
