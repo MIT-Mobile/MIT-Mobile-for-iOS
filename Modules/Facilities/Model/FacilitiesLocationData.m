@@ -288,6 +288,9 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (void)updateRoomDataForBuilding:(NSString*)bldgnum {
     if ((bldgnum == 0) || ([bldgnum length] == 0)) {
+        [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
+                             withUserData:FacilitiesRoomsKey
+                         newDataAvailable:NO];
         return;
     } else {
         [self updateDataForCommand:FacilitiesRoomsKey
