@@ -3,6 +3,7 @@
 #import "MITMobileServerConfiguration.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITJSON.h"
+#import "NSString+URLEncoding.h"
 
 #define TIMED_OUT_CODE -1001
 #define JSON_ERROR_CODE -2
@@ -114,8 +115,9 @@
 	NSMutableArray *components = [NSMutableArray arrayWithCapacity:[keys count]];
     
 	for (NSString *key in keys) {
-		NSString *value = [[dict objectForKey:key] stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-		[components addObject:[NSString stringWithFormat:@"%@=%@", key, [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+		[components addObject:[NSString stringWithFormat:@"%@=%@",
+                               [key urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
+                               [[dict objectForKey:key] urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]]];
 	}
 	return [components componentsJoinedByString:@"&"];
 }
