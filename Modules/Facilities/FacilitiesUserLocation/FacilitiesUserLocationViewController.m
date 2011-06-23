@@ -29,7 +29,7 @@ static const NSUInteger kMaxResultCount = 10;
 - (id)init {
     self = [super init];
     if (self) {
-        self.title = @"Where is it?";
+        self.title = @"Nearby Locations";
         _isLocationUpdating = NO;
     }
     return self;
@@ -82,32 +82,6 @@ static const NSUInteger kMaxResultCount = 10;
         [mainView addSubview:tableView];
         
     }
-     
-    {
-        NSString *labelText = @"We've narrowed down your location, please choose the closest location below";
-        CGRect labelRect = CGRectMake(15, 10, screenFrame.size.width - 30, 200);
-        UILabel *labelView = [[[UILabel alloc] initWithFrame:labelRect] autorelease];
-        CGSize strSize = [labelText sizeWithFont:labelView.font
-                               constrainedToSize:labelRect.size
-                                   lineBreakMode:labelView.lineBreakMode];
-        labelRect.size.height = strSize.height;
-        labelView.frame = labelRect;
-        labelView.backgroundColor = [UIColor clearColor];
-        labelView.lineBreakMode = UILineBreakModeWordWrap;
-        labelView.text = labelText;
-        labelView.textAlignment = UITextAlignmentLeft;
-        labelView.numberOfLines = 3;
-        
-        CGRect headerRect = CGRectMake(0, 0, screenFrame.size.width, strSize.height + 10);
-        UIView *view = [[[UIView alloc] initWithFrame:headerRect] autorelease];
-        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                 UIViewAutoresizingFlexibleWidth);
-        view.autoresizesSubviews = YES;
-        
-        [view addSubview:labelView];
-        self.tableView.tableHeaderView = view;
-    }
-    
     
     {
         CGRect loadingFrame = mainView.frame;
