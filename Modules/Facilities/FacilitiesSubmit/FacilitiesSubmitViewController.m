@@ -127,7 +127,6 @@
     [self.request setValue:[self.reportDictionary objectForKey:FacilitiesRequestUserEmailKey]
               forParameter:@"email"];
     
-    NSMutableString *message = [NSMutableString string];
     FacilitiesLocation *location = [self.reportDictionary objectForKey:FacilitiesRequestLocationBuildingKey];
     FacilitiesRoom *room = [self.reportDictionary objectForKey:FacilitiesRequestLocationRoomKey];
     FacilitiesRepairType *type = [self.reportDictionary objectForKey:FacilitiesRequestRepairTypeKey];
@@ -135,26 +134,35 @@
     NSString *customRoom = [self.reportDictionary objectForKey:FacilitiesRequestLocationUserRoomKey];
     
     if (location) {
-        [message appendFormat:@"Building Name: %@\n",location.name];
-        [message appendFormat:@"Building Number: %@\n",location.number];
+        [self.request setValue:location.name
+                  forParameter:@"locationName"];
+        [self.request setValue:location.number
+                  forParameter:@"locationNumber"];
+        [self.request setValue:location.number
+                  forParameter:@"location"];
     } else {
-        [message appendFormat:@"User Location: %@\n",customLocation];
+        [self.request setValue:customLocation
+                  forParameter:@"locationName"];
     }
     
     if (room) {
-        [message appendFormat:@"Room Number: %@\n",room.number];
+        [self.request setValue:room.number
+                  forParameter:@"roomName"];
     } else {
-        [message appendFormat:@"User Room: %@\n",customRoom];
+        [self.request setValue:customRoom
+                  forParameter:@"roomName"];
     }
     
-    [message appendFormat:@"Problem Type: %@\n",type.name];
+    NSMutableString *message = [NSMutableString string];
+    [message appendFormat:@"Problem Type: %@\n----\n",type.name];
+    [message appendFormat:@"Description:%@",[self.reportDictionary objectForKey:FacilitiesRequestUserDescriptionKey]];
     
     [self.request setValue:message
               forParameter:@"message"];
     
     UIImage *picture = [self.reportDictionary objectForKey:FacilitiesRequestImageKey];
     if (picture) {
-        NSData *pictureData = UIImagePNGRepresentation(picture);
+        NSData *pictureData = UIImageJPEGRepresentation(picture,0.75);
         [self.request setValue:[pictureData base64EncodingWithLineLength:64]
                   forParameter:@"image"];
     }
