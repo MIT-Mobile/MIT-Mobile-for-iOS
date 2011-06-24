@@ -11,9 +11,9 @@
         self.searchString = nil;
         
         self.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-        self.highlightedTextColor = [UIColor colorWithRed:0.1
-                                                    green:0.55
-                                                     blue:0.1
+        self.highlightedTextColor = [UIColor colorWithRed:0.643
+                                                    green:0.000
+                                                     blue:0.114
                                                     alpha:1.0];
         self.highlightsAllMatches = YES;
         
@@ -72,6 +72,7 @@
     
     UIFont *labelFont = self.font;
     NSString *labelString = self.text;
+    NSString *searchString = self.searchString;
     
     if (labelString == nil) {
         return [[[NSAttributedString alloc] init] autorelease];
@@ -99,11 +100,9 @@
     [fullString setAttributes:attrs range:NSMakeRange(0, [fullString length])];
 
     
-    NSString *searchString = self.searchString;
-    
     if (searchString && ([searchString length] > 0)) {
         NSError *error = NULL;
-        NSString *pattern = [NSRegularExpression escapedPatternForString:self.searchString];
+        NSString *pattern = [NSRegularExpression escapedPatternForString:searchString];
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
                                                                                options:NSRegularExpressionCaseInsensitive
                                                                                  error:&error];
@@ -136,7 +135,8 @@
     CGContextTranslateCTM(context, 0, rect.size.height);
     CGContextScaleCTM(context, 1.0f, -1.0f);
     
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)[self highlightedString]);
+    NSAttributedString *attrString = [[[NSAttributedString alloc] initWithAttributedString:[self highlightedString]] autorelease];
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attrString);
     
     CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, 
                                                                    CFRangeMake(0, 0),
