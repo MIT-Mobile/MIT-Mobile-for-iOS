@@ -1,6 +1,7 @@
 #import "FacilitiesCategoryViewController.h"
 
 #import "FacilitiesCategory.h"
+#import "FacilitiesContent.h"
 #import "FacilitiesConstants.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesLocationData.h"
@@ -246,7 +247,7 @@
                 forIndexPath:(NSIndexPath *)indexPath
 {
     NSDictionary *loc = [self.filteredData objectAtIndex:indexPath.row];
-        
+    
     cell.highlightLabel.searchString = self.searchString;
     cell.highlightLabel.text = [loc objectForKey:FacilitiesSearchResultDisplayStringKey];
 }
