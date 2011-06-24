@@ -3,7 +3,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface PlaceHolderTextView : UITextView {
+@interface PlaceholderTextView : UITextView {
     NSString *placeholder;
     UIColor *placeholderColor;
     

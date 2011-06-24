@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@class PlaceHolderTextView;
+@class PlaceholderTextView;
 
 @interface FacilitiesSummaryViewController : UIViewController <UITextViewDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 {
@@ -16,7 +16,7 @@
 @property (nonatomic,retain) IBOutlet UIView* shiftingContainingView;
 @property (nonatomic,retain) IBOutlet UIView* descriptionContainingView;
 @property (nonatomic,retain) IBOutlet UIImageView* imageView;
-@property (nonatomic,retain) IBOutlet PlaceHolderTextView* descriptionTextView;
+@property (nonatomic,retain) IBOutlet PlaceholderTextView* descriptionTextView;
 @property (nonatomic,retain) IBOutlet UIButton* imageButton;
 @property (nonatomic,retain) IBOutlet UITextField* emailField;
 @property (nonatomic,copy) NSDictionary* reportData;

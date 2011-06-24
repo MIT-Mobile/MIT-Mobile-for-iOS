@@ -8,7 +8,7 @@
 #import "FacilitiesConstants.h"
 #import "FacilitiesSubmitViewController.h"
 #import "UIImage+Resize.h"
-#import "PlaceHolderTextView.h"
+#import "PlaceholderTextView.h"
 #import "MITUIConstants.h"
 
 enum {

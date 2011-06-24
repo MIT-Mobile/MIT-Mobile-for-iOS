@@ -1,7 +1,7 @@
 #import "PlaceholderTextView.h"
 
 
-@implementation PlaceHolderTextView
+@implementation PlaceholderTextView
 
 @synthesize placeHolderLabel;
 @synthesize placeholder;
