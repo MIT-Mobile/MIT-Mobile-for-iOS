@@ -1,24 +1,23 @@
 #import <UIKit/UIKit.h>
 
+@class PlaceHolderTextView;
 
 @interface FacilitiesSummaryViewController : UIViewController <UITextViewDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 {
-    UIScrollView *_scrollView;
-    UIImageView *_imageView;
-    UIButton *_imageButton;
-    UILabel *_problemLabel;
-    UITextView  *_descriptionView;
-    UITextField *_emailField;
+    UIBarButtonItem *_submitButton;
     NSDictionary *_reportData;
 
 	BOOL _keyboardIsVisible;
 }
 
 @property (nonatomic,retain) IBOutlet UIScrollView* scrollView;
-@property (nonatomic,retain) IBOutlet UIImageView* imageView;
-@property (nonatomic,retain) IBOutlet UIButton* imageButton;
+@property (nonatomic,retain) UIBarButtonItem* submitButton;
 @property (nonatomic,retain) IBOutlet UILabel* problemLabel;
-@property (nonatomic,retain) IBOutlet UITextView* descriptionView;
+@property (nonatomic,retain) IBOutlet UIView* shiftingContainingView;
+@property (nonatomic,retain) IBOutlet UIView* descriptionContainingView;
+@property (nonatomic,retain) IBOutlet UIImageView* imageView;
+@property (nonatomic,retain) IBOutlet PlaceHolderTextView* descriptionTextView;
+@property (nonatomic,retain) IBOutlet UIButton* imageButton;
 @property (nonatomic,retain) IBOutlet UITextField* emailField;
 @property (nonatomic,copy) NSDictionary* reportData;
 

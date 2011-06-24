@@ -8,6 +8,8 @@
 #import "FacilitiesConstants.h"
 #import "FacilitiesSubmitViewController.h"
 #import "UIImage+Resize.h"
+#import "PlaceHolderTextView.h"
+#import "MITUIConstants.h"
 
 enum {
     FacilitiesFocusDescription = 1,
@@ -20,10 +22,13 @@ enum {
 
 @implementation FacilitiesSummaryViewController
 @synthesize scrollView = _scrollView;
+@synthesize submitButton = _submitButton;
+@synthesize problemLabel = _problemLabel;
+@synthesize shiftingContainingView = _shiftingContainingView;
+@synthesize descriptionContainingView = _descriptionContainingView;
+@synthesize descriptionTextView = _descriptionTextView;
 @synthesize imageView = _imageView;
 @synthesize imageButton = _imageButton;
-@synthesize problemLabel = _problemLabel;
-@synthesize descriptionView = _descriptionView;
 @synthesize emailField = _emailField;
 @synthesize reportData = _reportData;
 
@@ -41,7 +46,7 @@ enum {
 {
     self.imageView = nil;
     self.problemLabel = nil;
-    self.descriptionView = nil;
+    self.descriptionTextView = nil;
     self.emailField = nil;
     self.reportData = nil;
     self.scrollView = nil;
@@ -61,27 +66,30 @@ enum {
 {
     [super viewDidLoad];
     
-    self.scrollView.scrollsToTop = NO;
-    self.scrollView.contentSize = self.scrollView.bounds.size;
+    self.submitButton = [[[UIBarButtonItem alloc] initWithTitle:@"Submit"
+                                                          style:UIBarButtonItemStyleDone
+                                                         target:self
+                                                         action:@selector(submitReport:)] autorelease];
+    self.submitButton.enabled = NO;
+    self.navigationItem.rightBarButtonItem = self.submitButton;
+
+    {
+        self.descriptionTextView.placeholder = @"Problem Description (required)";
+        self.descriptionTextView.delegate = self;
+        self.descriptionTextView.layer.borderWidth = 1.0;
+        self.descriptionTextView.layer.borderColor = [TABLE_SEPARATOR_COLOR CGColor];
+    }
+
+    {
+        self.imageView.backgroundColor = [UIColor whiteColor];
+        self.imageButton.backgroundColor = [UIColor colorWithWhite:1 alpha:0.25];
+    }
     
-    self.imageView.layer.cornerRadius = 5.0;
-    self.imageView.backgroundColor = [UIColor whiteColor];
-    self.imageButton.layer.cornerRadius = 5.0;
-    self.imageButton.backgroundColor = [UIColor colorWithWhite:1
-                                                         alpha:0.25];
-    
-    self.descriptionView.layer.cornerRadius = 5.0f;
-    self.descriptionView.layer.borderWidth = 2.0f;
-    self.descriptionView.layer.borderColor = [[UIColor grayColor] CGColor];
-    self.descriptionView.delegate = self;
-    
-    UIBarButtonItem *item = [[[UIBarButtonItem alloc] initWithTitle:@"Submit"
-                                                              style:UIBarButtonItemStyleDone
-                                                             target:self
-                                                             action:@selector(submitReport:)] autorelease];
-    item.title = @"Submit";
-    self.navigationItem.rightBarButtonItem = item;
-    self.navigationItem.backBarButtonItem.title = @"Cancel";
+    {
+        self.descriptionContainingView.layer.cornerRadius = 10.0;
+        self.descriptionContainingView.layer.borderWidth = 1.0;
+        self.descriptionContainingView.layer.borderColor = [TABLE_SEPARATOR_COLOR CGColor];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -94,21 +102,38 @@ enum {
     NSString *customRoom = [self.reportData objectForKey:FacilitiesRequestLocationUserRoomKey];
     NSString *typeString = [type.name lowercaseString];
 
-    NSString *text = nil;
+    NSString *text = @"I am reporting a problem";
+    
+    if ([typeString compare:@"Other" options:NSCaseInsensitiveSearch] != NSOrderedSame) {
+        text = [text stringByAppendingFormat:@" with a %@", typeString];
+    }
     
     if (location && room) {
-        text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ at %@ near room %@.",typeString,location.name,[room displayString]];
+        
+        text = [text stringByAppendingFormat:@" at %@ near room %@.",location.name,[room displayString]];
     } else if (location) {
         if ([customRoom hasSuffix:@"side"]) {
-            text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ %@ %@.",typeString,[customRoom lowercaseString],location.name];
+            text = [text stringByAppendingFormat:@" %@ %@.",[customRoom lowercaseString],location.name];
         } else {
-            text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ at %@ near %@.",typeString,location.name,[customRoom lowercaseString]];
+            text = [text stringByAppendingFormat:@" at %@ near %@.",location.name,[customRoom lowercaseString]];
         }
     } else {
-        text = [NSString stringWithFormat:@"I'm reporting a problem with a %@ in %@",typeString,customLocation];
+        text = [text stringByAppendingFormat:@" in %@",customLocation];
     }
     
     self.problemLabel.text = text;
+    
+    CGRect frame = self.problemLabel.frame;
+    CGSize fittedSize = [self.problemLabel sizeThatFits:CGSizeMake(frame.size.width, 2000.0)];
+    CGFloat heightDelta = fittedSize.height - frame.size.height;
+    frame.size = fittedSize;
+    self.problemLabel.frame = frame;
+    
+    frame = self.shiftingContainingView.frame;
+    frame.origin.y += heightDelta;
+    self.shiftingContainingView.frame = frame;
+    
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width, CGRectGetMaxY(self.shiftingContainingView.frame));
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
@@ -132,7 +157,7 @@ enum {
     
     self.imageView = nil;
     self.problemLabel = nil;
-    self.descriptionView = nil;
+    self.descriptionTextView = nil;
     self.emailField = nil;
 }
 
@@ -146,44 +171,34 @@ enum {
     if (_keyboardIsVisible) {
         return;
     }
-    
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:nil
-                                                            delegate:self
-                                                   cancelButtonTitle:@"Cancel"
-                                              destructiveButtonTitle:nil
-                otherButtonTitles:@"Take Photo",@"Choose Existing", nil] autorelease];
-        sheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
-        [sheet showInView:self.view];
-    } else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        UIImagePickerController *controller = [[[UIImagePickerController alloc] init] autorelease];
-        controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        controller.delegate = self;
-        [self presentModalViewController:controller
-                                animated:YES];
+
+    // show an "unattach photo" button if one is already set
+    NSString *destructiveButtonTitle = nil;
+    if ([self.reportData objectForKey:FacilitiesRequestImageKey]) {
+        destructiveButtonTitle = @"Unattach Photo";
     }
+
+    UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:nil
+                                                        delegate:self
+                                               cancelButtonTitle:@"Cancel"
+                                          destructiveButtonTitle:destructiveButtonTitle
+                                               otherButtonTitles:nil] autorelease];
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        [sheet addButtonWithTitle:@"Take Photo"];
+    }
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+        [sheet addButtonWithTitle:@"Choose Photo"];
+    }
+
+    sheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+    [sheet showInView:self.view];
 }
 
 - (IBAction)submitReport:(id)sender {
-    if (_keyboardIsVisible) {
-        return;
-    }
-    
-    if ([self.descriptionView.text length] == 0) {
-        UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Information Missing"
-                                                         message:@"Please enter a description before continuing"
-                                                        delegate:self
-                                               cancelButtonTitle:@"Ok"
-                                               otherButtonTitles:nil] autorelease];
-        alert.tag = FacilitiesFocusDescription;
-        [alert show];
-        return;
-    }
-    
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
     [dictionary setObject:self.emailField.text
                    forKey:FacilitiesRequestUserEmailKey];
-    [dictionary setObject:self.descriptionView.text
+    [dictionary setObject:self.descriptionTextView.text
                    forKey:FacilitiesRequestUserDescriptionKey];
     self.reportData = dictionary;
     [self.navigationController pushViewController:[[[FacilitiesSubmitViewController alloc] initWithReportData:dictionary] autorelease]
@@ -202,6 +217,11 @@ enum {
 
 
 #pragma mark - UITextViewDelegate
+
+- (void)textViewDidChange:(UITextView *)textView {
+    self.submitButton.enabled = ([[textView text] length] > 0) ? YES : NO;
+}
+
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
     if ([text isEqualToString:@"\n"]) {
         [textView resignFirstResponder];
@@ -222,19 +242,38 @@ enum {
 
 #pragma mark - UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    UIImagePickerController *controller = [[[UIImagePickerController alloc] init] autorelease];
-    if (buttonIndex == 0) {
-        controller.sourceType = UIImagePickerControllerSourceTypeCamera;
-        controller.showsCameraControls = YES;
-    } else if (buttonIndex == 1) {
-        controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    } else if (buttonIndex == 2) {
-        return;
-    }
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
     
-    controller.delegate = self;
-    [self presentModalViewController:controller
-                            animated:YES];
+    if ([buttonTitle isEqualToString:@"Cancel"]) {
+        return;
+    } else if ([buttonTitle isEqualToString:@"Unattach Photo"]) {
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
+        [dictionary removeObjectForKey:FacilitiesRequestImageKey];
+        self.reportData = dictionary;
+        
+        if (self.imageView.hidden == NO) {
+            // resize description field to fill area previously taken by attached photo
+            CGRect textFrame = self.descriptionTextView.frame;
+            CGRect imageFrame = self.imageView.frame;
+            textFrame.size.width += imageFrame.size.width;
+            self.descriptionTextView.frame = textFrame;
+        }
+        
+        self.imageView.image = nil;
+        self.imageView.hidden = YES;
+        
+        [self.imageButton setTitle:@"Attach Photo" forState:UIControlStateNormal];
+    } else {
+        UIImagePickerController *controller = [[[UIImagePickerController alloc] init] autorelease];
+        if ([buttonTitle isEqualToString:@"Take Photo"]) {
+            controller.sourceType = UIImagePickerControllerSourceTypeCamera;
+            controller.showsCameraControls = YES;
+        } else if ([buttonTitle isEqualToString:@"Choose Photo"]) {
+            controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        }
+        controller.delegate = self;
+        [self presentModalViewController:controller animated:YES];
+    }    
 }
 
 #pragma mark - UIImagePickerDelegate
@@ -250,12 +289,30 @@ enum {
         [dictionary setObject:image
                        forKey:FacilitiesRequestImageKey];
         self.reportData = dictionary;
+
+        if (self.imageView.hidden == YES) {
+            // resize description field to make room for the attached photo
+            CGRect textFrame = self.descriptionTextView.frame;
+            CGRect imageFrame = self.imageView.frame;
+            textFrame.size.width -= imageFrame.size.width;
+            self.descriptionTextView.frame = textFrame;
+            
+            [self.imageButton setTitle:@"Change Photo" forState:UIControlStateNormal];
+        }
+        
         self.imageView.image = image;
-        self.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        self.imageButton.hidden = YES;
+        self.imageView.hidden = NO;
     } else {
+        if (self.imageView.hidden == NO) {
+            // resize description field to fill area previously taken by attached photo
+            CGRect textFrame = self.descriptionTextView.frame;
+            CGRect imageFrame = self.imageView.frame;
+            textFrame.size.width += imageFrame.size.width;
+            self.descriptionTextView.frame = textFrame;
+        }
+        
         self.imageView.image = nil;
-        self.imageButton.hidden = NO;
+        self.imageView.hidden = YES;
     }
     
     [self dismissModalViewControllerAnimated:YES];
@@ -296,7 +353,7 @@ enum {
     UIView *responder = [self firstResponderInView:self.view];
     CGRect responderRect = CGRectZero;
     if (responder) {
-        responderRect = responder.frame;
+        responderRect = [self.scrollView convertRect:responder.frame fromView:responder];
         CGFloat minFrame = responderRect.origin.y + responderRect.size.height;
         if (minFrame > keyboardSize.height) {
     	    responderRect.origin.y += 10;
