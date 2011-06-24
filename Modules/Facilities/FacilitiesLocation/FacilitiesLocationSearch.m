@@ -27,8 +27,21 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
 
 @implementation FacilitiesLocationSearch
 @synthesize cachedResults = _cachedResults;
+@synthesize searchesCategories = _searchesCategories;
 @dynamic category;
 @dynamic searchString;
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        self.cachedResults = nil;
+        self.searchesCategories = NO;
+        self.category = nil;
+        self.searchString = nil;
+    }
+    
+    return self;
+}
 
 #pragma mark - Dynamic Accessor/Mutator
 - (void)setCategory:(FacilitiesCategory *)category {
@@ -46,7 +59,9 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
     self.cachedResults = nil;
     
     [_searchString release];
-    _searchString = [[NSString alloc] initWithString:searchString];
+    if (searchString) {
+        _searchString = [[NSString alloc] initWithString:searchString];
+    }
 }
 
 - (NSString*)searchString {
@@ -93,15 +108,16 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
             continue;
         }
         
-        // Check for any matching categories
-        matchResult = [self searchCategoriesForLocation:location
-                                  WithRegularExpression:regex];
-        if (matchResult) {
-            [searchResults addObject:matchResult];
-            [matchedLocations addObject:[matchResult objectForKey:FacilitiesSearchResultLocationKey]];
-            continue;
+        if (self.searchesCategories) {
+            // Check for any matching categories
+            matchResult = [self searchCategoriesForLocation:location
+                                      WithRegularExpression:regex];
+            if (matchResult) {
+                [searchResults addObject:matchResult];
+                [matchedLocations addObject:[matchResult objectForKey:FacilitiesSearchResultLocationKey]];
+                continue;
+            }
         }
-        
         
         // Still nothing, check the contents
         matchResult = [self searchContentForLocation:location
@@ -192,24 +208,26 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
         }
         
         
-        for (FacilitiesCategory *category in content.categories) {
-            NSString *catName = category.name;
-            NSUInteger matchCount = [regex numberOfMatchesInString:catName
-                                                           options:0
-                                                             range:NSMakeRange(0, [catName length])];
-            
-            if (matchCount > 0) {
-                NSMutableDictionary *matchData = [NSMutableDictionary dictionary];
-                [matchData setObject:location
-                              forKey:FacilitiesSearchResultLocationKey];
+        if (self.searchesCategories) {
+            for (FacilitiesCategory *category in content.categories) {
+                NSString *catName = category.name;
+                NSUInteger matchCount = [regex numberOfMatchesInString:catName
+                                                               options:0
+                                                                 range:NSMakeRange(0, [catName length])];
                 
-                [matchData setObject:[location displayString]
-                              forKey:FacilitiesSearchResultDisplayStringKey];
-                [matchData setObject:FacilitiesMatchTypeContentCategory
-                              forKey:FacilitiesSearchResultMatchTypeKey];
-                [matchData setObject:category
-                              forKey:FacilitiesSearchResultMatchObjectKey];
-                return [NSDictionary dictionaryWithDictionary:matchData];
+                if (matchCount > 0) {
+                    NSMutableDictionary *matchData = [NSMutableDictionary dictionary];
+                    [matchData setObject:location
+                                  forKey:FacilitiesSearchResultLocationKey];
+                    
+                    [matchData setObject:[location displayString]
+                                  forKey:FacilitiesSearchResultDisplayStringKey];
+                    [matchData setObject:FacilitiesMatchTypeContentCategory
+                                  forKey:FacilitiesSearchResultMatchTypeKey];
+                    [matchData setObject:category
+                                  forKey:FacilitiesSearchResultMatchObjectKey];
+                    return [NSDictionary dictionaryWithDictionary:matchData];
+                }
             }
         }
     }
