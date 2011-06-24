@@ -5,12 +5,14 @@
 @class MITLoadingActivityView;
 @class FacilitiesLocationData;
 @class HighlightTableViewCell;
+@class FacilitiesLocationSearch;
 
 @interface FacilitiesCategoryViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate,UISearchBarDelegate> {
     UITableView *_tableView;
     MITLoadingActivityView *_loadingView;
     
     FacilitiesLocationData *_locationData;
+    FacilitiesLocationSearch *_searchHelper;
     NSArray *_cachedData;
     NSArray *_filteredData;
     NSPredicate *_filterPredicate;

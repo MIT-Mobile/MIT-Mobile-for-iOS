@@ -11,9 +11,11 @@
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
+#import "FacilitiesLocationSearch.h"
 
 
 @interface FacilitiesCategoryViewController ()
+@property (nonatomic,retain) FacilitiesLocationSearch *searchHelper;
 - (BOOL)shouldShowLocationSection;
 - (NSArray*)dataForMainTableView;
 - (void)configureMainTableCell:(UITableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
@@ -26,6 +28,7 @@
 @synthesize loadingView = _loadingView;
 @synthesize locationData = _locationData;
 @synthesize searchString = _searchString;
+@synthesize searchHelper = _searchHelper;
 
 @dynamic cachedData;
 @dynamic filteredData;
@@ -207,43 +210,22 @@
 }
 
 - (NSArray*)resultsForSearchString:(NSString *)searchText {
-    NSPredicate *searchPredicate = nil;
-    
-    if (searchText && ([searchText length] > 0)) {
-        searchPredicate = [NSPredicate predicateWithFormat:@"name CONTAINS [c] %@",searchText];
-    } else {
-        searchPredicate = [NSPredicate predicateWithValue:YES];
+    if (self.searchHelper == nil) {
+        self.searchHelper = [[[FacilitiesLocationSearch alloc] init] autorelease];
     }
     
-    NSArray *results = [self.locationData locationsMatchingPredicate:searchPredicate];
+    self.searchHelper.category = nil;
+    self.searchHelper.searchString = searchText;
+    NSArray *results = [self.searchHelper searchResults];
     
     results = [results sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSString *key1 = [obj1 valueForKey:@"name"];
-        NSString *key2 = [obj2 valueForKey:@"name"];
+        NSString *key1 = [obj1 valueForKey:FacilitiesSearchResultDisplayStringKey];
+        NSString *key2 = [obj2 valueForKey:FacilitiesSearchResultDisplayStringKey];
 
-        NSRange matchRange1 = [key1 rangeOfString:searchText
-                                          options:NSCaseInsensitiveSearch];
-        NSRange matchRange2 = [key2 rangeOfString:searchText
-                                          options:NSCaseInsensitiveSearch];
-        
-        if (matchRange1.location > matchRange2.location) {
-            return NSOrderedDescending;
-        } else if (matchRange1.location < matchRange2.location) {
-            return NSOrderedAscending;
-        }
-        
-        
-        matchRange1 = [key1 rangeOfString:searchText
-                                  options:NSCaseInsensitiveSearch];
-        matchRange2 = [key2 rangeOfString:searchText
-                                  options:NSCaseInsensitiveSearch];
-        if (matchRange1.location > matchRange2.location) {
-            return NSOrderedDescending;
-        } else if (matchRange1.location < matchRange2.location) {
-            return NSOrderedAscending;
-        }
-        
-        return [key1 caseInsensitiveCompare:key2];
+        return [key1 compare:key2
+              options:(NSCaseInsensitiveSearch |
+                       NSNumericSearch |
+                       NSForcedOrderingSearch)];
     }];
     
     return results;
@@ -263,10 +245,10 @@
 - (void)configureSearchCell:(HighlightTableViewCell *)cell
                 forIndexPath:(NSIndexPath *)indexPath
 {
-    FacilitiesLocation *loc = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
+    NSDictionary *loc = [self.filteredData objectAtIndex:indexPath.row];
         
     cell.highlightLabel.searchString = self.searchString;
-    cell.highlightLabel.text = [loc displayString];
+    cell.highlightLabel.text = [loc objectForKey:FacilitiesSearchResultDisplayStringKey];
 }
 
 
@@ -331,7 +313,8 @@
                                                       forKey: FacilitiesRequestLocationUserBuildingKey];
             nextViewController = vc;
         } else {
-            FacilitiesLocation *location = (FacilitiesLocation*)[self.filteredData objectAtIndex:(indexPath.row-1)];
+            NSDictionary *dict = [self.filteredData objectAtIndex:indexPath.row-1];
+            FacilitiesLocation *location = (FacilitiesLocation*)[dict objectForKey:FacilitiesSearchResultLocationKey];
             FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
             controller.location = location;
             nextViewController = controller;
