@@ -4,11 +4,16 @@
 #import "FacilitiesConstants.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesLocationData.h"
+#import "FacilitiesLocationSearch.h"
 #import "FacilitiesRoomViewController.h"
 #import "FacilitiesTypeViewController.h"
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
+
+@interface FacilitiesLocationViewController ()
+@property (nonatomic,retain) FacilitiesLocationSearch *searchHelper;
+@end
 
 @implementation FacilitiesLocationViewController
 @synthesize tableView = _tableView;
@@ -16,6 +21,7 @@
 @synthesize locationData = _locationData;
 @synthesize searchString = _searchString;
 @synthesize category = _category;
+@synthesize searchHelper = _searchHelper;
 
 @dynamic filteredData;
 @dynamic cachedData;
@@ -43,11 +49,13 @@
     self.filterPredicate = nil;
     self.filteredData = nil;
     self.cachedData = nil;
+    self.searchHelper = nil;
     [super dealloc];
 }
 
 - (void)didReceiveMemoryWarning
 {
+    self.searchHelper = nil;
     [super didReceiveMemoryWarning];
 }
 
@@ -206,41 +214,22 @@
 }
 
 - (NSArray*)resultsForSearchString:(NSString *)searchText {
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:[NSString stringWithFormat:@"\\b[\\S]*%@[\\S]*\\b",searchText]
-                                                                           options:NSRegularExpressionCaseInsensitive
-                                                                             error:NULL];
-    NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"name CONTAINS [c] %@",searchText];
-    NSArray *results = [self.cachedData filteredArrayUsingPredicate:searchPredicate];
+    if (self.searchHelper == nil) {
+        self.searchHelper = [[[FacilitiesLocationSearch alloc] init] autorelease];
+    }
+    
+    self.searchHelper.category = self.category;
+    self.searchHelper.searchString = searchText;
+    NSArray *results = [self.searchHelper searchResults];
     
     results = [results sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSString *key1 = [obj1 valueForKey:@"name"];
-        NSString *key2 = [obj2 valueForKey:@"name"];
+        NSString *key1 = [obj1 valueForKey:FacilitiesSearchResultDisplayStringKey];
+        NSString *key2 = [obj2 valueForKey:FacilitiesSearchResultDisplayStringKey];
         
-        NSRange matchRange1 = [regex rangeOfFirstMatchInString:key1
-                                                       options:0
-                                                         range:NSMakeRange(0, [key1 length])];
-        NSRange matchRange2 = [regex rangeOfFirstMatchInString:key2
-                                                       options:0
-                                                         range:NSMakeRange(0, [key2 length])];
-        
-        if (matchRange1.location > matchRange2.location) {
-            return NSOrderedDescending;
-        } else if (matchRange1.location < matchRange2.location) {
-            return NSOrderedAscending;
-        }
-        
-        
-        matchRange1 = [key1 rangeOfString:searchText
-                                  options:NSCaseInsensitiveSearch];
-        matchRange2 = [key2 rangeOfString:searchText
-                                  options:NSCaseInsensitiveSearch];
-        if (matchRange1.location > matchRange2.location) {
-            return NSOrderedDescending;
-        } else if (matchRange1.location < matchRange2.location) {
-            return NSOrderedAscending;
-        }
-        
-        return [key1 caseInsensitiveCompare:key2];
+        return [key1 compare:key2
+                     options:(NSCaseInsensitiveSearch |
+                              NSNumericSearch |
+                              NSForcedOrderingSearch)];
     }];
     
     return results;
@@ -254,15 +243,13 @@
     }
 }
 
-
-- (void)configureSearchCell:(HighlightTableViewCell*)cell
-               forIndexPath:(NSIndexPath*)indexPath {
-    cell.highlightLabel.searchString = self.searchString;
+- (void)configureSearchCell:(HighlightTableViewCell *)cell
+               forIndexPath:(NSIndexPath *)indexPath
+{
+    NSDictionary *loc = [self.filteredData objectAtIndex:indexPath.row];
     
-    if ([self.filteredData count] >= indexPath.row) {
-        FacilitiesLocation *location = [self.filteredData objectAtIndex:indexPath.row];
-        cell.highlightLabel.text = [location displayString];
-    }
+    cell.highlightLabel.searchString = self.searchString;
+    cell.highlightLabel.text = [loc objectForKey:FacilitiesSearchResultDisplayStringKey];
 }
 
 
@@ -324,7 +311,8 @@
                                      animated:YES];
             return;
         } else {
-            location = (FacilitiesLocation*)[self.filteredData objectAtIndex:(indexPath.row-1)];
+            NSDictionary *dict = [self.filteredData objectAtIndex:(indexPath.row-1)];
+            location = (FacilitiesLocation*)[dict objectForKey:FacilitiesSearchResultLocationKey];
         }
     }
     
