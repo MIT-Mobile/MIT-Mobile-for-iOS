@@ -177,9 +177,9 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
                
                 NSString *displayString = nil;
                 if (location.number && ([location.number length] > 0)) {
-                    displayString = [NSString stringWithFormat:@"%@ (%@)",location.number,content.name];
+                    displayString = [NSString stringWithFormat:@"%@ (%@)",location.number,name];
                 } else {
-                    displayString = [NSString stringWithFormat:@"%@ (%@)",location.name,content.name];
+                    displayString = [NSString stringWithFormat:@"%@ (%@)",location.name,name];
                 }
                 [matchData setObject:displayString
                               forKey:FacilitiesSearchResultDisplayStringKey];
@@ -203,8 +203,7 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
                 [matchData setObject:location
                               forKey:FacilitiesSearchResultLocationKey];
                 
-                NSString *displayString = [NSString stringWithFormat:@"%@ (%@)",location.number,content.name];
-                [matchData setObject:displayString
+                [matchData setObject:[location displayString]
                               forKey:FacilitiesSearchResultDisplayStringKey];
                 [matchData setObject:FacilitiesMatchTypeContentCategory
                               forKey:FacilitiesSearchResultMatchTypeKey];
