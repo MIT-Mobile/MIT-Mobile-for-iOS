@@ -218,7 +218,6 @@
 
 - (void)request:(MITMobileWebAPI *)request totalBytesWritten:(NSInteger)bytesWritten totalBytesExpected:(NSInteger)bytesExpected
 {
-    NSLog(@"%d/%d",bytesWritten,bytesExpected);
     [self.progressView setProgress:(double)bytesWritten/(double)bytesExpected];
 }
 
