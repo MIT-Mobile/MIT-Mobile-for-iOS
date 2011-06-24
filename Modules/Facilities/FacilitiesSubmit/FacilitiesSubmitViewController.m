@@ -117,6 +117,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     self.request = [[[MITMobileWebAPI alloc] initWithModule:@"facilities"
                                                     command:@"upload"
                                                  parameters:nil] autorelease];
@@ -142,7 +143,7 @@
                   forParameter:@"location"];
     } else {
         [self.request setValue:customLocation
-                  forParameter:@"locationName"];
+                  forParameter:@"locationNameByUser"];
     }
     
     if (room) {
@@ -150,14 +151,13 @@
                   forParameter:@"roomName"];
     } else {
         [self.request setValue:customRoom
-                  forParameter:@"roomName"];
+                  forParameter:@"roomNameByUser"];
     }
     
-    NSMutableString *message = [NSMutableString string];
-    [message appendFormat:@"Problem Type: %@\n----\n",type.name];
-    [message appendFormat:@"Description:%@",[self.reportDictionary objectForKey:FacilitiesRequestUserDescriptionKey]];
+    [self.request setValue:type.name
+              forParameter:@"problemType"];
     
-    [self.request setValue:message
+    [self.request setValue:[self.reportDictionary objectForKey:FacilitiesRequestUserDescriptionKey]
               forParameter:@"message"];
     
     UIImage *picture = [self.reportDictionary objectForKey:FacilitiesRequestImageKey];
@@ -165,6 +165,8 @@
         NSData *pictureData = UIImageJPEGRepresentation(picture,0.75);
         [self.request setValue:[pictureData base64EncodingWithLineLength:64]
                   forParameter:@"image"];
+        [self.request setValue:@"image/jpeg"
+                  forParameter:@"imageFormat"];
     }
     
     dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -177,7 +179,8 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    self.abortRequest = YES;
+    [super viewWillDisappear:animated];
+    [self.request cancel];
 }
 
 - (void)viewDidUnload
