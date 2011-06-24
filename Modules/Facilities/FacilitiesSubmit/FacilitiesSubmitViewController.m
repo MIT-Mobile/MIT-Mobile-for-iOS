@@ -118,6 +118,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    self.statusLabel.text = @"Preparing report";
+    
     self.request = [[[MITMobileWebAPI alloc] initWithModule:@"facilities"
                                                     command:@"upload"
                                                  parameters:nil] autorelease];
