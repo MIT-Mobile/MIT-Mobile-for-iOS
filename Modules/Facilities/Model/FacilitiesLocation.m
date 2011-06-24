@@ -1,4 +1,5 @@
 #import "FacilitiesLocation.h"
+#import "FacilitiesCategory.h"
 #import "FacilitiesContent.h"
 
 
@@ -12,7 +13,7 @@
 @dynamic categories;
 @dynamic contents;
 
-- (void)addCategoriesObject:(NSManagedObject *)value {    
+- (void)addCategoriesObject:(FacilitiesCategory *)value {    
     NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
     [self willChangeValueForKey:@"categories" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
     [[self primitiveValueForKey:@"categories"] addObject:value];
@@ -20,7 +21,7 @@
     [changedObjects release];
 }
 
-- (void)removeCategoriesObject:(NSManagedObject *)value {
+- (void)removeCategoriesObject:(FacilitiesCategory *)value {
     NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
     [self willChangeValueForKey:@"categories" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
     [[self primitiveValueForKey:@"categories"] removeObject:value];

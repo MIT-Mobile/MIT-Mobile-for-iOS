@@ -375,26 +375,13 @@ static FacilitiesLocationData *_sharedData = nil;
     });
 }
 
-- (void)updateCategoriesWithArray:(NSArray*)categories {
+- (void)loadCategoriesWithArray:(id)categories {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     [cdm deleteObjectsForEntity:@"FacilitiesCategory"];
-    
-    if ([[categories objectAtIndex:0] isKindOfClass:[NSString class]]) {
-        for (NSString *catId in categories) {
-            NSString *catName = [catId stringByReplacingOccurrencesOfString:@"_" withString:@" "];
-            catName = [catName capitalizedString];
-            
-            FacilitiesCategory *category = [cdm insertNewObjectForEntityForName:@"FacilitiesCategory"];
-            
-            category.uid = catId;
-            category.name = catName;
-            
-            NSArray *locations = [cdm objectsForEntity:@"FacilitiesLocation"
-                                     matchingPredicate:[NSPredicate predicateWithFormat:@"ANY categories.uid == %@", category.uid]];
-            category.locations = [NSSet setWithArray:locations];
-        }
-    } else {
-        for (NSDictionary *catData in categories) {
+
+    if ([categories isKindOfClass:[NSArray class]]) {
+        NSArray *catArray = (NSArray*)categories;
+        for (NSDictionary *catData in catArray) {
             FacilitiesCategory *category = [self categoryForId:[catData objectForKey:@"id"]];
                                             
             if (category == nil) {
@@ -408,12 +395,41 @@ static FacilitiesLocationData *_sharedData = nil;
                                      matchingPredicate:[NSPredicate predicateWithFormat:@"ANY categories.uid == %@", category.uid]];
             category.locations = [NSSet setWithArray:locations];
         }
+    } else {
+        NSDictionary *catDict = (NSDictionary*)categories;
+        for (NSString *categoryId in catDict) {
+            FacilitiesCategory *category = [self categoryForId:categoryId];
+            
+            if (category == nil) {
+                category = [cdm insertNewObjectForEntityForName:@"FacilitiesCategory"];
+            }
+            
+            NSDictionary *categoryData = [catDict valueForKey:categoryId];
+            category.uid = categoryId;
+            category.name = [categoryData valueForKey:@"name"];
+            category.locationIds = [NSSet setWithArray:[categoryData valueForKey:@"locations"]];
+            
+            for (NSString *locationId in category.locationIds) {
+                FacilitiesLocation *location = [self locationForId:locationId];
+                [location addCategoriesObject:category];
+            }
+        }
+        
+        NSArray *allLocations = [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
+                                                                  matchingPredicate:[NSPredicate predicateWithValue:YES]];
+        for (FacilitiesLocation *location in allLocations) {
+            for (FacilitiesCategory *category in [location.categories allObjects]) {
+                if ([category.locationIds containsObject:location.uid] == NO) {
+                    [category removeLocationsObject:location];
+                }
+            }
+        }
     }
     
     [cdm saveData];
 }
 
-- (void)updateLocationsWithArray:(NSArray*)locations {
+- (void)loadLocationsWithArray:(NSArray*)locations {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     NSMutableSet *addedIds = [NSMutableSet set];
     
@@ -431,7 +447,16 @@ static FacilitiesLocationData *_sharedData = nil;
         location.longitude = [NSNumber numberWithDouble:[[loc objectForKey:@"long_wgs84"] doubleValue]];
         location.latitude = [NSNumber numberWithDouble:[[loc objectForKey:@"lat_wgs84"] doubleValue]];
         
+        NSMutableSet *allCategories = [NSMutableSet setWithArray:[self allCategories]];
+        for (FacilitiesCategory *category in [allCategories allObjects]) {
+            if ([category.locationIds containsObject:location.uid] == NO) {
+                [allCategories removeObject:category];
+            }
+        }
         
+        [location setCategories:allCategories];
+                
+        /*
         NSArray *categories = (NSArray*)([loc objectForKey:@"category"]);
         NSMutableSet *set = nil;
         for (NSString *categoryId in categories) {
@@ -441,6 +466,7 @@ static FacilitiesLocationData *_sharedData = nil;
         }
         
         location.categories = set;
+        */
         
         [addedIds addObject:location.uid];
         
@@ -485,7 +511,9 @@ static FacilitiesLocationData *_sharedData = nil;
             NSArray *contentCategories = [contentData objectForKey:@"category"];
             for (NSString *catName in contentCategories) {
                 FacilitiesCategory *category = [self categoryForId:catName];
-                [content addCategoriesObject:category];
+                if (category) {
+                    [content addCategoriesObject:category];
+                }
             }
         }
     }
@@ -583,9 +611,9 @@ static FacilitiesLocationData *_sharedData = nil;
     NSString *command = [request.params objectForKey:@"command"];
     
     if ([command isEqualToString:FacilitiesCategoriesKey]) {
-        [self updateCategoriesWithArray:(NSArray*)JSONObject];
+        [self loadCategoriesWithArray:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesLocationsKey]) {
-        [self updateLocationsWithArray:(NSArray*)JSONObject];
+        [self loadLocationsWithArray:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
         [self updateRepairTypesWithData:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesRoomsKey]) {
