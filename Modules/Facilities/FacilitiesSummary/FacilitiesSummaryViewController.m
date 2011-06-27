@@ -148,6 +148,16 @@ enum {
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(validateFields:)
+                                                 name:UITextFieldTextDidEndEditingNotification
+                                               object:self.emailField];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(validateFields:)
+                                                 name:UITextViewTextDidEndEditingNotification
+                                               object:self.descriptionTextView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -221,14 +231,20 @@ enum {
 
 
 #pragma mark - UITextViewDelegate
-
-- (void)textViewDidChange:(UITextView *)textView {
-    self.submitButton.enabled = ([[textView text] length] > 0) ? YES : NO;
-}
-
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
     if ([text isEqualToString:@"\n"]) {
         [textView resignFirstResponder];
+        NSString *trimmedText = [textView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        
+        if ([trimmedText length] == 0) {
+            textView.text = nil;
+        } else {
+            textView.text = trimmedText;
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UITextViewTextDidChangeNotification
+                                                                                              object:textView]];
+        [self textViewDidChange:textView];
         return NO;
     }
     
@@ -239,10 +255,21 @@ enum {
     return YES;
 }
 
+
+#pragma mark - UITextField Delegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    NSString *trimmedText = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    if ([trimmedText length] == 0) {
+        textField.text = nil;
+    } else {
+        textField.text = trimmedText;
+    }
+    
     [textField resignFirstResponder];
     return NO;
 }
+
 
 #pragma mark - UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -323,6 +350,22 @@ enum {
 }
 
 #pragma mark - Notification Methods
+- (void)validateFields:(NSNotification*)notification {
+    BOOL enableSubmit = NO;
+    
+    NSString *checkString = [self.descriptionTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if ([checkString length] > 0) {
+        enableSubmit = YES;
+    }
+    
+    checkString = [self.emailField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if ([checkString length] == 0) {
+        enableSubmit = NO;
+    }
+    
+    self.submitButton.enabled = enableSubmit;
+}
+
 - (UIView*)firstResponderInView:(UIView*)view {
     if ([view isFirstResponder]) {
         return view;
