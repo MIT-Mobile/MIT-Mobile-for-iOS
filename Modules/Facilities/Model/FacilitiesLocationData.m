@@ -34,7 +34,7 @@ static FacilitiesLocationData *_sharedData = nil;
 - (void)updateRoomDataForBuilding:(NSString*)bldgnum;
 - (void)updateRepairTypeData;
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params;
-- (void)updateContentsForLocation:(FacilitiesLocation*)location withData:(NSArray*)contents;
+- (void)loadContentsForLocation:(FacilitiesLocation*)location withData:(NSArray*)contents;
 
 - (FacilitiesCategory*)categoryForId:(NSString*)categoryId;
 - (FacilitiesLocation*)locationForId:(NSString*)locationId;
@@ -411,7 +411,9 @@ static FacilitiesLocationData *_sharedData = nil;
             
             for (NSString *locationId in category.locationIds) {
                 FacilitiesLocation *location = [self locationForId:locationId];
-                [location addCategoriesObject:category];
+                if (location) {
+                    [location addCategoriesObject:category];
+                }
             }
         }
         
@@ -455,22 +457,10 @@ static FacilitiesLocationData *_sharedData = nil;
         }
         
         [location setCategories:allCategories];
-                
-        /*
-        NSArray *categories = (NSArray*)([loc objectForKey:@"category"]);
-        NSMutableSet *set = nil;
-        for (NSString *categoryId in categories) {
-            FacilitiesCategory *category = [self categoryForId:categoryId];
-            set = [NSMutableSet setWithSet:location.categories];
-            [set addObject:category];
-        }
-        
-        location.categories = set;
-        */
         
         [addedIds addObject:location.uid];
         
-        [self updateContentsForLocation:location withData:[loc objectForKey:@"contents"]];
+        [self loadContentsForLocation:location withData:[loc objectForKey:@"contents"]];
     }
     
     NSArray *allLocations = [cdm objectsForEntity:@"FacilitiesLocation"
@@ -485,7 +475,7 @@ static FacilitiesLocationData *_sharedData = nil;
     [cdm saveData];
 }
 
-- (void)updateContentsForLocation:(FacilitiesLocation*)location withData:(NSArray*)contents {
+- (void)loadContentsForLocation:(FacilitiesLocation*)location withData:(NSArray*)contents {
     if ((contents == nil) || [[NSNull null] isEqual:contents]) {
         return;
     }
@@ -522,7 +512,7 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 
-- (void)updateRoomsWithData:(NSDictionary*)roomData {
+- (void)loadRoomsWithData:(NSDictionary*)roomData {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     
     for (NSString *building in [roomData allKeys]) {
@@ -555,7 +545,7 @@ static FacilitiesLocationData *_sharedData = nil;
     [cdm saveData];
 }
 
-- (void)updateRepairTypesWithData:(NSArray*)typeData {
+- (void)loadRepairTypesWithData:(NSArray*)typeData {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     [cdm deleteObjectsForEntity:@"FacilitiesRepairType"];
     
@@ -615,7 +605,7 @@ static FacilitiesLocationData *_sharedData = nil;
     } else if ([command isEqualToString:FacilitiesLocationsKey]) {
         [self loadLocationsWithArray:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
-        [self updateRepairTypesWithData:(NSArray*)JSONObject];
+        [self loadRepairTypesWithData:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesRoomsKey]) {
         NSDictionary *roomData = (NSDictionary*)JSONObject;
         NSString *requestedId = [request.params objectForKey:@"building"];
@@ -625,7 +615,7 @@ static FacilitiesLocationData *_sharedData = nil;
                                                    forKey:requestedId];
         }
         
-        [self updateRoomsWithData:roomData];
+        [self loadRoomsWithData:roomData];
     }
     
     BOOL shouldUpdateDate = !([command isEqualToString:FacilitiesRoomsKey] && [request.params objectForKey:@"building"]);
