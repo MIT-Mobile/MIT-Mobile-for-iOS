@@ -4,7 +4,7 @@
 #import "UIKit+MITAdditions.h"
 #import "SecondaryGroupedTableViewCell.h"
 
-static NSString* const kFacilitiesEmailAddress = @"dof-csc@mit.edu";
+static NSString* const kFacilitiesEmailAddress = @"txtdof@mit.edu";
 static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
 
 #pragma mark - Private Interface
