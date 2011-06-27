@@ -81,8 +81,12 @@ enum {
     }
 
     {
-        self.imageView.backgroundColor = [UIColor whiteColor];
-        self.imageButton.backgroundColor = [UIColor colorWithWhite:1 alpha:0.25];
+//        self.imageButton.backgroundColor = [UIColor whiteColor];
+//        self.imageButton.layer.cornerRadius = 10.0;
+//        self.imageButton.layer.borderWidth = 1.0;
+//        self.imageButton.layer.borderColor = [TABLE_SEPARATOR_COLOR CGColor];
+        self.imageButton.titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+        self.imageButton.titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
     }
     
     {

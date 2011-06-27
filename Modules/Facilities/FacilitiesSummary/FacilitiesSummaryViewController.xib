@@ -174,9 +174,9 @@
 											<int key="NSColorSpace">3</int>
 											<bytes key="NSWhite">MQA</bytes>
 										</object>
-										<object class="NSColor" key="IBUINormalTitleColor">
-											<int key="NSColorSpace">3</int>
-											<bytes key="NSWhite">MAA</bytes>
+										<object class="NSColor" key="IBUINormalTitleColor" id="426850070">
+											<int key="NSColorSpace">1</int>
+											<bytes key="NSRGB">MCAwIDAAA</bytes>
 										</object>
 										<object class="NSColor" key="IBUINormalTitleShadowColor">
 											<int key="NSColorSpace">3</int>
@@ -197,10 +197,7 @@
 										<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 										<string key="IBUIText">Contact:</string>
 										<reference key="IBUIFont" ref="1068567760"/>
-										<object class="NSColor" key="IBUITextColor" id="426850070">
-											<int key="NSColorSpace">1</int>
-											<bytes key="NSRGB">MCAwIDAAA</bytes>
-										</object>
+										<reference key="IBUITextColor" ref="426850070"/>
 										<nil key="IBUIHighlightedColor"/>
 										<int key="IBUIBaselineAdjustment">1</int>
 										<float key="IBUIMinimumFontSize">10</float>
@@ -471,6 +468,7 @@
 					<string>37.CustomClassName</string>
 					<string>37.IBPluginDependency</string>
 					<string>48.IBPluginDependency</string>
+					<string>48.IBUIButtonInspectorSelectedStateConfigurationMetadataKey</string>
 					<string>50.IBPluginDependency</string>
 					<string>55.IBPluginDependency</string>
 					<string>6.IBPluginDependency</string>
@@ -490,6 +488,7 @@
 					<string>UIControl</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<real value="0.0"/>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
