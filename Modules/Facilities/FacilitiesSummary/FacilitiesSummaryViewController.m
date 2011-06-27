@@ -122,7 +122,7 @@ enum {
             text = [text stringByAppendingFormat:@" at %@ near %@.",location.name,[customRoom lowercaseString]];
         }
     } else {
-        text = [text stringByAppendingFormat:@" in %@",customLocation];
+        text = [text stringByAppendingFormat:@" in %@.",customLocation];
     }
     
     self.problemLabel.text = text;
