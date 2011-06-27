@@ -411,7 +411,9 @@ static FacilitiesLocationData *_sharedData = nil;
             
             for (NSString *locationId in category.locationIds) {
                 FacilitiesLocation *location = [self locationForId:locationId];
-                [location addCategoriesObject:category];
+                if (location) {
+                    [location addCategoriesObject:category];
+                }
             }
         }
         
@@ -455,18 +457,6 @@ static FacilitiesLocationData *_sharedData = nil;
         }
         
         [location setCategories:allCategories];
-                
-        /*
-        NSArray *categories = (NSArray*)([loc objectForKey:@"category"]);
-        NSMutableSet *set = nil;
-        for (NSString *categoryId in categories) {
-            FacilitiesCategory *category = [self categoryForId:categoryId];
-            set = [NSMutableSet setWithSet:location.categories];
-            [set addObject:category];
-        }
-        
-        location.categories = set;
-        */
         
         [addedIds addObject:location.uid];
         
