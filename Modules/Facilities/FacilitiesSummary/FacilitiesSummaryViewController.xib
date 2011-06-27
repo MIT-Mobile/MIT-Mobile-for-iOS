@@ -132,7 +132,7 @@
 										<int key="IBUIContentVerticalAlignment">0</int>
 										<string key="IBUIText"/>
 										<int key="IBUIBorderStyle">3</int>
-										<string key="IBUIPlaceholder">email (optional)</string>
+										<string key="IBUIPlaceholder">email (required)</string>
 										<object class="NSColor" key="IBUITextColor">
 											<int key="NSColorSpace">3</int>
 											<bytes key="NSWhite">MAA</bytes>
@@ -216,7 +216,6 @@
 								<string key="NSFrame">{{20, 20}, {280, 42}}</string>
 								<reference key="NSSuperview" ref="201283487"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<int key="IBUIContentMode">7</int>
@@ -406,9 +405,9 @@
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="927622623"/>
-							<reference ref="845263828"/>
 							<reference ref="311745908"/>
 							<reference ref="626275391"/>
+							<reference ref="845263828"/>
 						</object>
 						<reference key="parent" ref="201283487"/>
 						<string key="objectName">Everything but the label</string>
