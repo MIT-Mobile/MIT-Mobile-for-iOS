@@ -151,12 +151,12 @@ enum {
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(validateFields:)
-                                                 name:UITextFieldTextDidEndEditingNotification
+                                                 name:UITextFieldTextDidChangeNotification
                                                object:self.emailField];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(validateFields:)
-                                                 name:UITextViewTextDidEndEditingNotification
+                                                 name:UITextViewTextDidChangeNotification
                                                object:self.descriptionTextView];
 }
 
@@ -243,18 +243,12 @@ enum {
         }
         
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UITextViewTextDidChangeNotification
-                                                                                              object:textView]];
-        [self textViewDidChange:textView];
+                                                                                             object:textView]];
         return NO;
     }
     
     return YES;
 }
-
-- (BOOL)textViewShouldEndEditing:(UITextView *)textView {
-    return YES;
-}
-
 
 #pragma mark - UITextField Delegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
