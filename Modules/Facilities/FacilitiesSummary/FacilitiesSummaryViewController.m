@@ -357,7 +357,7 @@ enum {
     UIView *responder = [self firstResponderInView:self.view];
     CGRect responderRect = CGRectZero;
     if (responder) {
-        responderRect = [self.scrollView convertRect:responder.frame fromView:responder];
+        responderRect = [self.scrollView convertRect:responder.frame fromView:responder.superview];
         CGFloat minFrame = responderRect.origin.y + responderRect.size.height;
         if (minFrame > keyboardSize.height) {
     	    responderRect.origin.y += 10;
