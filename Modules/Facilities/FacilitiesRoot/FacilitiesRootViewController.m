@@ -5,7 +5,7 @@
 #import "SecondaryGroupedTableViewCell.h"
 
 static NSString* const kFacilitiesEmailAddress = @"facilities@mit.edu";
-static NSString* const kFacilitiesPhoneNumber = @"999-999-9999";
+static NSString* const kFacilitiesPhoneNumber = @"999.999.9999";
 
 #pragma mark - Private Interface
 @interface FacilitiesRootViewController ()
@@ -123,12 +123,12 @@ static NSString* const kFacilitiesPhoneNumber = @"999-999-9999";
                 case 0:
                     customCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
                     customCell.textLabel.text = emailCellText;
-                    customCell.secondaryTextLabel.text = kFacilitiesEmailAddress;
+                    customCell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",kFacilitiesEmailAddress];
                     break;
                 case 1:
                     customCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
                     customCell.textLabel.text = callCellText;
-                    customCell.secondaryTextLabel.text = kFacilitiesPhoneNumber;
+                    customCell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",kFacilitiesPhoneNumber];
                     break;
                 default:
                     break;
