@@ -297,7 +297,8 @@ enum {
             controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         }
         controller.delegate = self;
-        [self presentModalViewController:controller animated:YES];
+        [self.navigationController presentModalViewController:controller
+                                                     animated:YES];
     }    
 }
 
@@ -340,7 +341,7 @@ enum {
         self.imageView.hidden = YES;
     }
     
-    [self dismissModalViewControllerAnimated:YES];
+    [self.navigationController dismissModalViewControllerAnimated:YES];
 }
 
 #pragma mark - Notification Methods
