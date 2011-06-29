@@ -64,8 +64,9 @@
 
 #pragma mark - Dynamic Accessors/Mutators
 - (void)setParams:(NSDictionary *)params {
+    [_params release];
+    
     if (params == nil) {
-        [_params release];
         _params = nil;
     } else {
         _params = [[NSMutableDictionary alloc] initWithDictionary:params
