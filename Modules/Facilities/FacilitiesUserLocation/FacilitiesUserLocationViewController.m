@@ -42,15 +42,14 @@ static const NSUInteger kMaxResultCount = 10;
     self.loadingView = nil;
     self.locationManager = nil;
     self.filteredData = nil;
+    self.currentLocation = nil;
+    self.locationTimeout = nil;
     [super dealloc];
 }
 
 - (void)didReceiveMemoryWarning
 {
-    // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
 }
 
 #pragma mark - View lifecycle
