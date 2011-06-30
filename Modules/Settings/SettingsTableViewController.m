@@ -56,7 +56,7 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
     self.title = @"Settings";
     
     _requestQueue = dispatch_queue_create("SettingsAPIQueue", NULL);
-    self.apiRequests = [[NSMutableDictionary alloc] init];
+    self.apiRequests = [NSMutableDictionary dictionary];
     
     [self.tableView applyStandardColors];
 
