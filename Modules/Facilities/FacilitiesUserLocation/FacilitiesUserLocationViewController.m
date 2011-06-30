@@ -114,7 +114,8 @@ static const NSUInteger kMaxResultCount = 10;
     
     [[FacilitiesLocationData sharedData] addObserver:self
                                            withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
-                                               if ([userData isEqualToString:FacilitiesLocationsKey] && dataUpdated) {
+                                               BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey] || [userData isEqualToString:FacilitiesLocationPropertiesKey]);
+                                               if (commandMatch && dataUpdated) {
                                                    self.filteredData = nil;
                                                    [self displayTableForCurrentLocation];
                                                }
@@ -148,9 +149,11 @@ static const NSUInteger kMaxResultCount = 10;
         return;
     }
     
-    self.filteredData = [[FacilitiesLocationData sharedData] locationsWithinRadius:CGFLOAT_MAX
-                                                                        ofLocation:self.currentLocation
-                                                                      withCategory:nil];
+    NSMutableArray *locArray = [NSMutableArray arrayWithArray:[[FacilitiesLocationData sharedData] locationsWithinRadius:CGFLOAT_MAX
+                                                                                                              ofLocation:self.currentLocation
+                                                                                                            withCategory:nil]];
+    [locArray removeObjectsInArray:[[FacilitiesLocationData sharedData] hiddenBuildings]];
+    self.filteredData = locArray;
     
     if ([self.filteredData count] == 0) {
         return;
