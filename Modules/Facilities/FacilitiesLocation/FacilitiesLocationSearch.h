@@ -18,9 +18,11 @@ extern NSString * const FacilitiesMatchTypeContentCategory;
     FacilitiesCategory *_category;
     NSArray *_cachedResults;
     BOOL _searchesCategories;
+    BOOL _showHiddenBuildings;
 }
 
 @property (nonatomic) BOOL searchesCategories;
+@property (nonatomic) BOOL showHiddenBuildings;
 @property (nonatomic,copy) NSString *searchString;
 @property (nonatomic,retain) FacilitiesCategory *category;
 

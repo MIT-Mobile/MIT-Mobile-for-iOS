@@ -152,7 +152,8 @@
     
     [self.locationData addObserver:self
                          withBlock:^(NSString *notification, BOOL updated, id userData) {
-                             if ((notification == nil) || [userData isEqualToString:FacilitiesLocationsKey]) {
+                             BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey] || [userData isEqualToString:FacilitiesLocationPropertiesKey]);
+                             if (commandMatch) {
                                  [self.loadingView removeFromSuperview];
                                  self.loadingView = nil;
                                  self.tableView.hidden = NO;
@@ -185,10 +186,10 @@
 
 #pragma mark - Public Methods
 - (NSArray*)dataForMainTableView {
-    NSArray *data = nil;
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY categories.uid == %@",self.category.uid];
-    data = [self.locationData locationsMatchingPredicate:predicate];
-    data = [data sortedArrayUsingComparator: ^(id obj1, id obj2) {
+    NSMutableArray *data = nil;
+    data = [NSMutableArray arrayWithArray:[self.locationData locationsInCategory:self.category.uid]];
+    [data removeObjectsInArray:[self.locationData hiddenBuildings]];
+    [data sortUsingComparator: ^(id obj1, id obj2) {
         FacilitiesLocation *l1 = (FacilitiesLocation*)obj1;
         FacilitiesLocation *l2 = (FacilitiesLocation*)obj2;
         NSString *k1 = nil;
@@ -210,7 +211,7 @@
                    options:(NSCaseInsensitiveSearch | NSNumericSearch)];
     }];
     
-    return data;
+    return [NSArray arrayWithArray:data];
 }
 
 - (NSArray*)resultsForSearchString:(NSString *)searchText {

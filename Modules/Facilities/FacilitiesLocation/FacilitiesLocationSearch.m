@@ -28,6 +28,7 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
 @implementation FacilitiesLocationSearch
 @synthesize cachedResults = _cachedResults;
 @synthesize searchesCategories = _searchesCategories;
+@synthesize showHiddenBuildings = _showHiddenBuildings;
 @dynamic category;
 @dynamic searchString;
 
@@ -36,6 +37,7 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
     if (self) {
         self.cachedResults = nil;
         self.searchesCategories = NO;
+        self.showHiddenBuildings = NO;
         self.category = nil;
         self.searchString = nil;
     }
@@ -80,14 +82,18 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
 #pragma mark - Private Methods
 - (void)rebuildSearchResults {
     FacilitiesLocationData *fld = [FacilitiesLocationData sharedData];
-    NSArray *locations = nil;
+    NSMutableArray *locations = nil;
     NSMutableSet *matchedLocations = [NSMutableSet set];
     NSMutableSet *searchResults = [NSMutableSet set];
     
     if (self.category) {
-        locations = [fld locationsInCategory:self.category.uid];
+        locations = [NSMutableArray arrayWithArray:[fld locationsInCategory:self.category.uid]];
     } else {
-        locations = [fld allLocations];
+        locations = [NSMutableArray arrayWithArray:[fld allLocations]];
+    }
+    
+    if (self.showHiddenBuildings == NO) {
+        [locations removeObjectsInArray:[fld hiddenBuildings]];
     }
     
     NSString *pattern = [NSString stringWithFormat:@".*%@.*",[NSRegularExpression escapedPatternForString:self.searchString]];
