@@ -8,6 +8,7 @@ extern NSString* const FacilitiesCategoriesKey;
 extern NSString* const FacilitiesLocationsKey;
 extern NSString* const FacilitiesRoomsKey;
 extern NSString* const FacilitiesRepairTypesKey;
+extern NSString* const FacilitiesLocationPropertiesKey;
 
 typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id userData);
 
@@ -25,18 +26,18 @@ typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id user
 - (void)dealloc;
 
 - (NSArray*)allCategories;
-- (NSArray*)categoriesMatchingPredicate:(NSPredicate*)predicate;
 
 - (NSArray*)allLocations;
-- (NSArray*)locationsMatchingPredicate:(NSPredicate*)predicate;
 - (NSArray*)locationsInCategory:(NSString*)categoryId;
 - (NSArray*)locationsWithinRadius:(CLLocationDistance)radiusInMeters
                        ofLocation:(CLLocation*)location
                      withCategory:(NSString*)categoryId;
 
-- (NSArray*)contentsForBuilding:(NSString*)bldgnum;
 - (NSArray*)roomsForBuilding:(NSString*)bldgnum;
 - (NSArray*)roomsMatchingPredicate:(NSPredicate*)predicate;
+
+- (NSArray*)hiddenBuildings;
+- (NSArray*)leasedBuildings;
 
 - (NSArray*)allRepairTypes;
 
