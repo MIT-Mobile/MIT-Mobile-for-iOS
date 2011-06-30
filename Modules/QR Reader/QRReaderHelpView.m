@@ -22,7 +22,7 @@
         NSString *path = [[NSBundle mainBundle] pathForResource:fileName
                                                          ofType:@"html"
                                                     inDirectory:@"qrreader"];
-        self.helpView = [[UIWebView alloc] initWithFrame:self.bounds];
+        self.helpView = [[[UIWebView alloc] initWithFrame:self.bounds] autorelease];
         [self.helpView loadHTMLString:[[[NSString alloc] initWithContentsOfFile:path
                                                                        encoding:NSUTF8StringEncoding
                                                                           error:NULL] autorelease]
