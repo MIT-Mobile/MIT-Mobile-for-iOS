@@ -4,6 +4,7 @@
 #import "FacilitiesCategory.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
+#import "FacilitiesProperty.h"
 #import "FacilitiesContent.h"
 #import "MITMobileServerConfiguration.h"
 #import "ConnectionDetector.h"
@@ -16,6 +17,7 @@ NSString * const FacilitiesCategoriesKey = @"categorylist";
 NSString * const FacilitiesLocationsKey = @"location";
 NSString * const FacilitiesRoomsKey = @"room";
 NSString * const FacilitiesRepairTypesKey = @"problemtype";
+NSString * const FacilitiesLocationPropertiesKey = @"location_properties";
 
 static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
@@ -24,9 +26,7 @@ static FacilitiesLocationData *_sharedData = nil;
 @interface FacilitiesLocationData ()
 @property (nonatomic,retain) NSMutableDictionary* requestsInFlight;
 @property (nonatomic,retain) NSMutableDictionary* notificationBlocks;
-
 - (BOOL)shouldUpdateDataWithRequest:(MITMobileWebAPI*)web;
-- (NSDate*)remoteDate;
 
 - (void)updateCategoryData;
 - (void)updateLocationData;
@@ -34,7 +34,13 @@ static FacilitiesLocationData *_sharedData = nil;
 - (void)updateRoomDataForBuilding:(NSString*)bldgnum;
 - (void)updateRepairTypeData;
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params;
+
+- (void)loadCategoriesWithArray:(id)categories;
+- (void)loadLocationsWithArray:(NSArray*)locations;
 - (void)loadContentsForLocation:(FacilitiesLocation*)location withData:(NSArray*)contents;
+- (void)loadRoomsWithData:(NSDictionary*)roomData;
+- (void)loadRepairTypesWithArray:(NSArray*)typeData;
+- (void)loadLocationPropertiesWithDictionary:(NSDictionary*)propertyData;
 
 - (FacilitiesCategory*)categoryForId:(NSString*)categoryId;
 - (FacilitiesLocation*)locationForId:(NSString*)locationId;
@@ -43,7 +49,6 @@ static FacilitiesLocationData *_sharedData = nil;
                        withUserData:(id)userData
                    newDataAvailable:(BOOL)updated;
 
-- (BOOL)isQueueEmpty;
 - (void)addRequest:(MITMobileWebAPI*)request withName:(NSString*)name;
 - (void)removeRequestWithName:(NSString*)name;
 - (BOOL)hasActiveRequestWithName:(NSString*)name;
@@ -82,28 +87,16 @@ static FacilitiesLocationData *_sharedData = nil;
                                              matchingPredicate:[NSPredicate predicateWithValue:YES]];
 }
 
-- (NSArray*)categoriesMatchingPredicate:(NSPredicate*)predicate {
-    [self updateCategoryData];
-    return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesCategory"
-                                             matchingPredicate:predicate];
-}
-
 - (NSArray*)allLocations {
     [self updateLocationData];
     return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
                                              matchingPredicate:[NSPredicate predicateWithValue:YES]];
 }
 
-- (NSArray*)locationsMatchingPredicate:(NSPredicate*)predicate {
-    [self updateLocationData];
-    return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
-                                             matchingPredicate:predicate];
-}
-
 - (NSArray*)locationsInCategory:(NSString*)categoryId {
     [self updateLocationData];
     return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
-                                             matchingPredicate:[NSPredicate predicateWithFormat:@"ANY categories.uid == %@", categoryId]];
+                                             matchingPredicate:[NSPredicate predicateWithFormat:@"(ANY categories.uid == %@)", categoryId]];
 }
 
 - (NSArray*)locationsWithinRadius:(CLLocationDistance)radiusInMeters
@@ -149,12 +142,6 @@ static FacilitiesLocationData *_sharedData = nil;
     return sortedArray;
 }
 
-- (NSArray*)contentsForBuilding:(NSString*)bldgnum {
-    [self updateLocationData];
-    return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesContent"
-                                             matchingPredicate:[NSPredicate predicateWithFormat:@"building == %@",bldgnum]];
-}
-
 - (NSArray*)roomsForBuilding:(NSString*)bldgnum {
     [self updateRoomDataForBuilding:bldgnum];
     return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesRoom"
@@ -186,6 +173,16 @@ static FacilitiesLocationData *_sharedData = nil;
     return [types sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         return [[obj1 valueForKey:@"order"] compare:[obj2 valueForKey:@"order"]];
     }];
+}
+
+- (NSArray*)hiddenBuildings {
+    return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
+                                             matchingPredicate:[NSPredicate predicateWithFormat:@"(property != nil) && (property.hidden == YES)"]];
+}
+
+- (NSArray*)leasedBuildings {
+    return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
+                                             matchingPredicate:[NSPredicate predicateWithFormat:@"(property != nil) && (property.leased == YES)"]];
 }
 
 
@@ -267,10 +264,6 @@ static FacilitiesLocationData *_sharedData = nil;
     return NO;
 }
 
-- (NSDate*)remoteDate {
-    return [NSDate distantPast];
-}
-
 - (void)updateCategoryData {
     [self updateDataForCommand:FacilitiesCategoriesKey
                         params:nil];
@@ -303,6 +296,11 @@ static FacilitiesLocationData *_sharedData = nil;
                         params:nil];
 }
 
+- (void)updateLocationPropertyData {
+    [self updateDataForCommand:FacilitiesLocationPropertiesKey
+                        params:nil];
+}
+
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
     MITMobileWebAPI *web = [[[MITMobileWebAPI alloc] initWithModule:@"facilities"
                                                             command:command
@@ -324,6 +322,7 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 
+#pragma mark - Internal ID accessors
 - (FacilitiesCategory*)categoryForId:(NSString*)categoryId {
     NSPredicate *predicate = nil;
     if (categoryId) {
@@ -363,6 +362,17 @@ static FacilitiesLocationData *_sharedData = nil;
     }
 }
 
+- (FacilitiesProperty*)propertiesForLocationWithId:(NSString*)locationId {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"location.uid == %@",locationId];
+    NSArray *fetchedData = [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesProperty"
+                                                             matchingPredicate:predicate];
+    if (fetchedData && ([fetchedData count] > 0)) {
+        return [fetchedData objectAtIndex:0];
+    } else {
+        return nil;
+    }
+}
+
 - (void)sendNotificationToObservers:(NSString*)notificationName
                        withUserData:(id)userData
                    newDataAvailable:(BOOL)updated
@@ -375,6 +385,8 @@ static FacilitiesLocationData *_sharedData = nil;
     });
 }
 
+
+#pragma mark - JSON Loading/Updating methods
 - (void)loadCategoriesWithArray:(id)categories {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     [cdm deleteObjectsForEntity:@"FacilitiesCategory"];
@@ -545,7 +557,7 @@ static FacilitiesLocationData *_sharedData = nil;
     [cdm saveData];
 }
 
-- (void)loadRepairTypesWithData:(NSArray*)typeData {
+- (void)loadRepairTypesWithArray:(NSArray*)typeData {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     [cdm deleteObjectsForEntity:@"FacilitiesRepairType"];
     
@@ -560,8 +572,58 @@ static FacilitiesLocationData *_sharedData = nil;
     [cdm saveData];
 }
 
+- (void)loadLocationPropertiesWithDictionary:(NSDictionary*)propertyData {
+    CoreDataManager *cdm = [CoreDataManager coreDataManager];
+    
+    for (NSString *locationId in propertyData) {
+        NSDictionary *locationInfo = [propertyData valueForKey:locationId];
+        FacilitiesLocation *location = [self locationForId:locationId];
+        FacilitiesProperty *property = [self propertiesForLocationWithId:locationId];
+        
+        if (location) {
+            if (property == nil) {
+                property = [cdm insertNewObjectForEntityForName:@"FacilitiesProperty"];
+            }
+            
+            property.location = location;
+            
+            NSString *hidden = [locationInfo objectForKey:@"hidden"];
+            [property setValue:[NSNumber numberWithBool:([hidden caseInsensitiveCompare:@"YES"] == NSOrderedSame)]
+                        forKey:@"hidden"];
+            
+            NSString *leased = [locationInfo objectForKey:@"leased"];
+            [property setValue:[NSNumber numberWithBool:([leased caseInsensitiveCompare:@"YES"] == NSOrderedSame)]
+                        forKey:@"leased"];
+            
+            NSMutableDictionary *contactInfo = [NSMutableDictionary dictionary];
+            
+            NSString *contactName = [locationInfo objectForKey:@"contact-name"];
+            if (contactName) {
+                [contactInfo setObject:contactName
+                                forKey:FacilitiesLocationContactNameKey];
+            }
+                 
+            NSString *contactEmail = [locationInfo objectForKey:@"contact-email"];
+            if (contactEmail) {
+                [contactInfo setObject:contactEmail
+                                forKey:FacilitiesLocationContactEmailKey];
+            }
+            
+            NSString *contactPhone = [locationInfo objectForKey:@"contact-phone"];
+            if (contactPhone) {
+                [contactInfo setObject:contactPhone
+                                forKey:FacilitiesLocationContactPhoneKey];
+            }
+            
+            property.contactInfo = [NSDictionary dictionaryWithDictionary:contactInfo];
+        }
+    }
+    
+    [cdm saveData];
+}
 
 
+#pragma mark - MITMobileWebAPI request management
 - (void)addRequest:(MITMobileWebAPI*)request withName:(NSString*)name {
     dispatch_async(_requestUpdateQueue, ^{
         [self.requestsInFlight setObject:request
@@ -585,16 +647,6 @@ static FacilitiesLocationData *_sharedData = nil;
     return result;
 }
 
-- (BOOL)isQueueEmpty {
-    BOOL result = NO;
-    
-    dispatch_suspend(_requestUpdateQueue);
-    result = ([self.requestsInFlight count] == 0);
-    dispatch_resume(_requestUpdateQueue);
-    
-    return result;
-}
-
 
 #pragma mark - JSONDataLoaded Delegate
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
@@ -604,8 +656,11 @@ static FacilitiesLocationData *_sharedData = nil;
         [self loadCategoriesWithArray:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesLocationsKey]) {
         [self loadLocationsWithArray:(NSArray*)JSONObject];
+    [self updateLocationPropertyData];
     } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
-        [self loadRepairTypesWithData:(NSArray*)JSONObject];
+        [self loadRepairTypesWithArray:(NSArray*)JSONObject];
+    } else if ([command isEqualToString:FacilitiesLocationPropertiesKey]) {
+        [self loadLocationPropertiesWithDictionary:(NSDictionary*)JSONObject];
     } else if ([command isEqualToString:FacilitiesRoomsKey]) {
         NSDictionary *roomData = (NSDictionary*)JSONObject;
         NSString *requestedId = [request.params objectForKey:@"building"];

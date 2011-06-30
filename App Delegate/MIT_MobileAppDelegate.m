@@ -216,8 +216,8 @@
 
 - (void)dealloc {
 	[moduleStack release];
-    [self.deviceToken release];
-    [self.modules release];
+    self.deviceToken = nil;
+    self.modules = nil;
 	[window release];
 	[super dealloc];
 }

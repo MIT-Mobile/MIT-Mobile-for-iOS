@@ -22,12 +22,12 @@ scrollView = _scrollView, navScrollerDelegate, currentXOffset = _currentXOffset;
     self = [super initWithFrame:frame];
     if (self) {
         self.buttons = [NSMutableArray array];
-        self.scrollView = [[UIScrollView alloc] initWithFrame:frame];
+        self.scrollView = [[[UIScrollView alloc] initWithFrame:frame] autorelease];
         self.scrollView.delegate = self;
         self.scrollView.scrollsToTop = NO; // otherwise this competes with the story list for status bar taps
         self.scrollView.showsHorizontalScrollIndicator = NO;
         self.scrollView.tag = SCROLL_VIEW_TAG;
-        self.contentView = [[UIView alloc] initWithFrame:frame];
+        self.contentView = [[[UIView alloc] initWithFrame:frame] autorelease];
         self.contentView.tag = CONTENT_VIEW_TAG;
         self.currentXOffset = 0.0;
         _pressedButton = nil;

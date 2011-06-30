@@ -156,10 +156,12 @@
     
     [self.locationData addObserver:self
                          withBlock:^(NSString *notification, BOOL updated, id userData) {
-                             if ((notification == nil) || [userData isEqualToString:FacilitiesCategoriesKey]) {
-                                 [self.loadingView removeFromSuperview];
-                                 self.loadingView = nil;
-                                 self.tableView.hidden = NO;
+                             if ([userData isEqualToString:FacilitiesCategoriesKey]) {
+                                 if ([self.loadingView superview]) {
+                                     [self.loadingView removeFromSuperview];
+                                     self.loadingView = nil;
+                                     self.tableView.hidden = NO;
+                                 }
                                  
                                  if ((self.cachedData == nil) || updated) {
                                      self.cachedData = nil;
@@ -198,8 +200,7 @@
 
 #pragma mark - Public Methods
 - (NSArray*)dataForMainTableView {
-    NSPredicate *searchPred = [NSPredicate predicateWithValue:YES];
-    NSArray *data = [self.locationData categoriesMatchingPredicate:searchPred];
+    NSArray *data = [self.locationData allCategories];
     data = [data sortedArrayUsingComparator: ^(id obj1, id obj2) {
         FacilitiesCategory *c1 = (FacilitiesCategory*)obj1;
         FacilitiesCategory *c2 = (FacilitiesCategory*)obj2;

@@ -1,6 +1,6 @@
 #import "FacilitiesLocation.h"
-#import "FacilitiesCategory.h"
 #import "FacilitiesContent.h"
+#import "FacilitiesProperty.h"
 
 
 @implementation FacilitiesLocation
@@ -12,63 +12,7 @@
 @dynamic name;
 @dynamic categories;
 @dynamic contents;
-
-- (void)addCategoriesObject:(FacilitiesCategory *)value {    
-    NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
-    [self willChangeValueForKey:@"categories" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
-    [[self primitiveValueForKey:@"categories"] addObject:value];
-    [self didChangeValueForKey:@"categories" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
-    [changedObjects release];
-}
-
-- (void)removeCategoriesObject:(FacilitiesCategory *)value {
-    NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
-    [self willChangeValueForKey:@"categories" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
-    [[self primitiveValueForKey:@"categories"] removeObject:value];
-    [self didChangeValueForKey:@"categories" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
-    [changedObjects release];
-}
-
-- (void)addCategories:(NSSet *)value {    
-    [self willChangeValueForKey:@"categories" withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];
-    [[self primitiveValueForKey:@"categories"] unionSet:value];
-    [self didChangeValueForKey:@"categories" withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];
-}
-
-- (void)removeCategories:(NSSet *)value {
-    [self willChangeValueForKey:@"categories" withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];
-    [[self primitiveValueForKey:@"categories"] minusSet:value];
-    [self didChangeValueForKey:@"categories" withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];
-}
-
-
-- (void)addContentsObject:(FacilitiesContents *)value {    
-    NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
-    [self willChangeValueForKey:@"contents" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
-    [[self primitiveValueForKey:@"contents"] addObject:value];
-    [self didChangeValueForKey:@"contents" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
-    [changedObjects release];
-}
-
-- (void)removeContentsObject:(FacilitiesContents *)value {
-    NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
-    [self willChangeValueForKey:@"contents" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
-    [[self primitiveValueForKey:@"contents"] removeObject:value];
-    [self didChangeValueForKey:@"contents" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
-    [changedObjects release];
-}
-
-- (void)addContents:(NSSet *)value {    
-    [self willChangeValueForKey:@"contents" withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];
-    [[self primitiveValueForKey:@"contents"] unionSet:value];
-    [self didChangeValueForKey:@"contents" withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];
-}
-
-- (void)removeContents:(NSSet *)value {
-    [self willChangeValueForKey:@"contents" withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];
-    [[self primitiveValueForKey:@"contents"] minusSet:value];
-    [self didChangeValueForKey:@"contents" withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];
-}
+@dynamic property;
 
 - (NSString*)displayString {
     NSString *string = nil;

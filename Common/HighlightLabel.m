@@ -92,11 +92,11 @@
             .value = &breakMode
         };
     
-    NSDictionary *attrs = [[NSDictionary alloc] initWithObjectsAndKeys:
+    NSDictionary *attrs = [[[NSDictionary alloc] initWithObjectsAndKeys:
                                     (id)ctFont, kCTFontAttributeName, 
                                     [self.textColor CGColor], kCTForegroundColorAttributeName,
                                     CTParagraphStyleCreate(&paragraphStyle, 1), kCTParagraphStyleAttributeName,
-                                    nil];
+                                    nil] autorelease];
     [fullString setAttributes:attrs range:NSMakeRange(0, [fullString length])];
 
     
