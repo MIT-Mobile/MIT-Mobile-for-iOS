@@ -34,9 +34,9 @@ static ModuleVersions *_sharedVersions = nil;
 
 - (void)updateVersionInformation {
     if (self.apiRequest == nil) {
-        self.apiRequest = [[MITMobileWebAPI alloc] initWithModule:@"version"
-                                                          command:@"list"
-                                                       parameters:nil];
+        self.apiRequest = [[[MITMobileWebAPI alloc] initWithModule:@"version"
+                                                           command:@"list"
+                                                        parameters:nil] autorelease];
         self.apiRequest.jsonDelegate = self;
     }
 
@@ -67,7 +67,7 @@ static ModuleVersions *_sharedVersions = nil;
         for (NSString *key in moduleDates) {
             NSString *epochString = [moduleDates objectForKey:key];
             NSTimeInterval epochTime = [epochString integerValue];
-            NSDate *date = [[NSDate alloc] initWithTimeIntervalSince1970:epochTime];
+            NSDate *date = [[[NSDate alloc] initWithTimeIntervalSince1970:epochTime] autorelease];
 
             [dateDict setObject:date
                          forKey:key];
