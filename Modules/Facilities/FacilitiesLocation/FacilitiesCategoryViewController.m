@@ -287,7 +287,7 @@
 }
 
 - (NSArray*)filteredData {
-    if (_filteredData == nil) {
+    if (_filteredData == nil && [self.searchString length] > 0) {
         [self setFilteredData:[self resultsForSearchString:self.searchString]];
     }
     
@@ -343,7 +343,8 @@
     if (tableView == self.tableView) {
         return ((section == 0) && [self shouldShowLocationSection]) ? 1 : [self.cachedData count];
     } else {
-        return [self.filteredData count] + 1;
+        NSUInteger resultCount = [self.filteredData count];
+        return (resultCount > 0) ? resultCount + 1 : 0;
     }
 }
 
@@ -395,8 +396,11 @@
 
 #pragma mark - UISearchBarDelegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    self.searchString = searchText;
-    self.filteredData = nil;
+    NSString *trimmedText = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (![self.searchString isEqualToString:trimmedText]) {
+        self.searchString = ([trimmedText length] > 0) ? trimmedText : nil;
+        self.filteredData = nil;
+    }
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {

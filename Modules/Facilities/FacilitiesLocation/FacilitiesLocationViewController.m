@@ -287,7 +287,7 @@
 }
 
 - (NSArray*)filteredData {
-    if (_filteredData == nil) {
+    if (_filteredData == nil && [self.searchString length] > 0) {
         [self setFilteredData:[self resultsForSearchString:self.searchString]];
     }
     
@@ -337,7 +337,8 @@
     if (tableView == self.tableView) {
         return [self.cachedData count];
     } else {
-        return [self.filteredData count] + 1;
+        NSUInteger resultCount = [self.filteredData count];
+        return (resultCount > 0) ? resultCount + 1 : 0;
     }
 }
 
@@ -389,13 +390,28 @@
 
 #pragma mark - UISearchBarDelegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    self.searchString = searchText;
-    self.filteredData = nil;
+    NSString *trimmedText = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (![self.searchString isEqualToString:trimmedText]) {
+        self.searchString = ([trimmedText length] > 0) ? trimmedText : nil;
+        self.filteredData = nil;
+    }
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     [self.searchDisplayController setActive:NO
                                    animated:YES];
+}
+
+// Make sure tapping the status bar always scrolls to the top of the active table
+- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView {
+    self.tableView.scrollsToTop = NO;
+    tableView.scrollsToTop = YES;
+}
+
+- (void)searchDisplayController:(UISearchDisplayController *)controller willUnloadSearchResultsTableView:(UITableView *)tableView {
+    // using willUnload because willHide strangely doesn't get called when the "Cancel" button is clicked
+    tableView.scrollsToTop = NO;
+    self.tableView.scrollsToTop = YES;
 }
 
 @end
