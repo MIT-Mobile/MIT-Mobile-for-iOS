@@ -96,6 +96,8 @@
 		2CDF301F134DF504007C6813 /* qrreader in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF301E134DF504007C6813 /* qrreader */; };
 		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; };
 		2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */; };
+		2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6513BDFB2C0043CFBE /* FacilitiesPropertyOwner.m */; };
+		2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */; };
 		2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */; };
 		2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */; };
 		2CED98FB13537DEC0034F6F1 /* QRReaderOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98FA13537DEC0034F6F1 /* QRReaderOverlayView.m */; };
@@ -218,7 +220,6 @@
 		DEA57EBD12B5A767003211AC /* FeatureSection.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA57EBB12B5A767003211AC /* FeatureSection.m */; };
 		DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */; };
 		DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */; };
-		DEB74EA313BD998700F57A25 /* FacilitiesPropertyOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB74EA213BD998700F57A25 /* FacilitiesPropertyOwner.m */; };
 		DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFF07C110001E300F0573E /* StoryImageView.m */; };
 		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; };
 		DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6A110F8F71D009FAE35 /* NewsImage.m */; };
@@ -523,6 +524,10 @@
 		2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderHistoryData.m; sourceTree = "<group>"; };
 		2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MFMailComposeViewController+RFC2368.h"; sourceTree = "<group>"; };
 		2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MFMailComposeViewController+RFC2368.m"; sourceTree = "<group>"; };
+		2CE6AC6413BDFB2C0043CFBE /* FacilitiesPropertyOwner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesPropertyOwner.h; sourceTree = "<group>"; };
+		2CE6AC6513BDFB2C0043CFBE /* FacilitiesPropertyOwner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesPropertyOwner.m; sourceTree = "<group>"; };
+		2CE6AC6713BE007C0043CFBE /* FacilitiesLeasedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLeasedViewController.h; sourceTree = "<group>"; };
+		2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLeasedViewController.m; sourceTree = "<group>"; };
 		2CED98F113534B5C0034F6F1 /* QRReaderDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderDetailViewController.h; sourceTree = "<group>"; };
 		2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderDetailViewController.m; sourceTree = "<group>"; };
 		2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QRReaderDetailViewController.xib; sourceTree = "<group>"; };
@@ -775,8 +780,6 @@
 		DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryGalleryViewController.m; sourceTree = "<group>"; };
 		DEAFF07B110001E300F0573E /* StoryImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryImageView.h; sourceTree = "<group>"; };
 		DEAFF07C110001E300F0573E /* StoryImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryImageView.m; sourceTree = "<group>"; };
-		DEB74EA113BD998600F57A25 /* FacilitiesPropertyOwner.h */ = {isa = PBXFileReference; fileEncoding = 4; path = FacilitiesPropertyOwner.h; sourceTree = "<group>"; };
-		DEB74EA213BD998700F57A25 /* FacilitiesPropertyOwner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesPropertyOwner.m; sourceTree = "<group>"; };
 		DEC02F9B110578240054BE32 /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
 		DEC02F9C110578240054BE32 /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
 		DEC8FFC91359152D0059D32F /* Anniversary 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Anniversary 2.xcdatamodel"; sourceTree = "<group>"; };
@@ -1271,6 +1274,7 @@
 				2CCB85F61361D9790024E474 /* Model */,
 				2C203328135F5EB70033E80A /* FacilitiesAbout */,
 				2C40A0F01367362600C83847 /* FacilitiesLocation */,
+				2CF0F53D13BB820700304E35 /* FacilitiesLeased */,
 				2C20332B135F64920033E80A /* FacilitiesRoot */,
 				2CFBF913138EC1620080883D /* FacilitiesSubmit */,
 				2C95A1D4137DB03E0025B28D /* FacilitiesSummary */,
@@ -1387,6 +1391,8 @@
 		2CCB85F61361D9790024E474 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				2CE6AC6413BDFB2C0043CFBE /* FacilitiesPropertyOwner.h */,
+				2CE6AC6513BDFB2C0043CFBE /* FacilitiesPropertyOwner.m */,
 				2CCB85F71361F44E0024E474 /* FacilitiesLocationData.h */,
 				2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */,
 				2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */,
@@ -1400,8 +1406,6 @@
 				2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */,
 				2C17C7C8137AECF2006888EB /* FacilitiesRoom.h */,
 				2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */,
-				DEB74EA113BD998600F57A25 /* FacilitiesPropertyOwner.h */,
-				DEB74EA213BD998700F57A25 /* FacilitiesPropertyOwner.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1426,6 +1430,15 @@
 				2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */,
 			);
 			name = QRReaderDetailView;
+			sourceTree = "<group>";
+		};
+		2CF0F53D13BB820700304E35 /* FacilitiesLeased */ = {
+			isa = PBXGroup;
+			children = (
+				2CE6AC6713BE007C0043CFBE /* FacilitiesLeasedViewController.h */,
+				2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */,
+			);
+			path = FacilitiesLeased;
 			sourceTree = "<group>";
 		};
 		2CFBF913138EC1620080883D /* FacilitiesSubmit */ = {
@@ -2446,7 +2459,8 @@
 				2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */,
 				DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */,
 				2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */,
-				DEB74EA313BD998700F57A25 /* FacilitiesPropertyOwner.m in Sources */,
+				2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */,
+				2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
