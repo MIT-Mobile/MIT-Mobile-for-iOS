@@ -446,8 +446,6 @@ static FacilitiesLocationData *_sharedData = nil;
             location.isHiddenInBldgServices = [NSNumber numberWithBool:YES];
         }
         if ([[loc objectForKey:@"leased_bldg_services"] boolValue] == YES) {
-            location.isLeased = [NSNumber numberWithBool:YES];
-            
             NSString *name = [loc objectForKey:@"contact-name_bldg_services"];
             if (!name) {
                 WLog(@"Leased location \"%@\" missing contact name.", location.uid);
@@ -458,8 +456,9 @@ static FacilitiesLocationData *_sharedData = nil;
                     propertyOwner.name = name;
                     propertyOwner.phone = [loc objectForKey:@"contact-phone_bldg_services"];
                     propertyOwner.email = [loc objectForKey:@"contact-email_bldg_services"];
-                    [propertyOwner addLocationsObject:location];
                 }
+                location.propertyOwner = propertyOwner;
+                location.isLeased = [NSNumber numberWithBool:YES];
             }
         }
         
