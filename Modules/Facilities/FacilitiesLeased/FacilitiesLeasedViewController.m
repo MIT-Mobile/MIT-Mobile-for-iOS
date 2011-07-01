@@ -61,7 +61,7 @@ enum {
         textView.editable = NO;
         textView.userInteractionEnabled = NO;
         textView.scrollEnabled = NO;
-        textView.text = [NSString stringWithFormat:@"MIT Facilities does not maintain this building. Please contact %@ to report a problem.",self.location.propertyOwner.name];
+        textView.text = [NSString stringWithFormat:@"The Department of Facilities is not responsible for the maintenance of %@. Please contact %@ to report any issues.", [self.location displayString], self.location.propertyOwner.name];
         textView.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
         [mainView addSubview:textView];
         self.messageView = textView;
@@ -78,28 +78,11 @@ enum {
         tableView.dataSource = self;
 
         [mainView addSubview:tableView];
-        self.contactsTable = [tableView autorelease];
+        self.contactsTable = tableView;
     }
     
     [self setView:mainView];
 }
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-
 
 #pragma mark - UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
