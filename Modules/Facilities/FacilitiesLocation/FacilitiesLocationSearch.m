@@ -66,8 +66,8 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
     }
 }
 
-- (NSString*)searchString {
-    return [NSString stringWithString:_searchString];
+- (NSString *)searchString {
+    return [[_searchString copy] autorelease];
 }
 
 #pragma mark - Public Methods
