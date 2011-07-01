@@ -56,7 +56,8 @@ NSURL* MITMobileWebGetCurrentServerURL( void ) {
     NSArray* serverList = MITMobileWebGetAPIServerList();
     
     if ((server == nil) || (![serverList containsObject:server] )) {
-        MITMobileWebSetCurrentServerURL(MITMobileWebGetDefaultServerURL());
+        server = MITMobileWebGetDefaultServerURL();
+        MITMobileWebSetCurrentServerURL(server);
     }
     
     return server;
