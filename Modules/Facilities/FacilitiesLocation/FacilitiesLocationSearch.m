@@ -18,11 +18,11 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
 @property (nonatomic,retain) NSArray *cachedResults;
 - (void)rebuildSearchResults;
 - (NSDictionary*)searchNameAndNumberForLocation:(FacilitiesLocation*)location
-                          withRegularExpression:(NSRegularExpression*)regex;
+                                   forSubstring:(NSString*)substring;
 - (NSDictionary*)searchCategoriesForLocation:(FacilitiesLocation*)location
                        WithRegularExpression:(NSRegularExpression*)regex;
 - (NSDictionary*)searchContentForLocation:(FacilitiesLocation*)location
-                    withRegularExpression:(NSRegularExpression*)regex;
+                             forSubstring:(NSString*)substring;
 @end
 
 @implementation FacilitiesLocationSearch
@@ -82,6 +82,7 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
 #pragma mark - Private Methods
 - (void)rebuildSearchResults {
     FacilitiesLocationData *fld = [FacilitiesLocationData sharedData];
+    NSString *searchString = [NSString stringWithString:self.searchString];
     NSMutableArray *locations = nil;
     NSMutableSet *matchedLocations = [NSMutableSet set];
     NSMutableSet *searchResults = [NSMutableSet set];
@@ -96,7 +97,7 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
         [locations removeObjectsInArray:[fld hiddenBuildings]];
     }
     
-    NSString *pattern = [NSString stringWithFormat:@".*%@.*",[NSRegularExpression escapedPatternForString:self.searchString]];
+    NSString *pattern = [NSString stringWithFormat:@".*%@.*",[NSRegularExpression escapedPatternForString:searchString]];
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:NULL];
@@ -107,7 +108,7 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
         }
         
         NSDictionary *matchResult = [self searchNameAndNumberForLocation:location
-                                                   withRegularExpression:regex];
+                                                            forSubstring:searchString];
         if (matchResult) {
             [searchResults addObject:matchResult];
             [matchedLocations addObject:[matchResult objectForKey:FacilitiesSearchResultLocationKey]];
@@ -127,7 +128,7 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
         
         // Still nothing, check the contents
         matchResult = [self searchContentForLocation:location
-                               withRegularExpression:regex];
+                                        forSubstring:searchString];
         if (matchResult) {
             [searchResults addObject:matchResult];
             [matchedLocations addObject:[matchResult objectForKey:FacilitiesSearchResultLocationKey]];
@@ -137,13 +138,10 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
     self.cachedResults = [searchResults allObjects];
 }
 
-- (NSDictionary*)searchNameAndNumberForLocation:(FacilitiesLocation*)location withRegularExpression:(NSRegularExpression*)regex {
-    NSString *matchString = [location displayString];
-    NSUInteger matchCount = [regex numberOfMatchesInString:matchString
-                                                   options:0
-                                                     range:NSMakeRange(0,[matchString length])];
-    
-    if (matchCount > 0) {
+- (NSDictionary*)searchNameAndNumberForLocation:(FacilitiesLocation*)location forSubstring:(NSString*)substring {
+    NSRange substringRange = [[location displayString] rangeOfString:substring
+                                                             options:NSCaseInsensitiveSearch];
+    if (substringRange.location != NSNotFound) {
         NSMutableDictionary *matchData = [NSMutableDictionary dictionary];
         [matchData setObject:location
                       forKey:FacilitiesSearchResultLocationKey];
@@ -182,17 +180,16 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
     return nil;
 }
 
-- (NSDictionary*)searchContentForLocation:(FacilitiesLocation*)location withRegularExpression:(NSRegularExpression*)regex {
+- (NSDictionary*)searchContentForLocation:(FacilitiesLocation*)location forSubstring:(NSString*)substring {
     for (FacilitiesContent *content in location.contents) {
         NSMutableSet *names = [NSMutableSet setWithObject:content.name];
         [names addObjectsFromArray:content.altname];
         
         for (NSString *name in names) {
-            NSUInteger matchCount = [regex numberOfMatchesInString:name
-                                                           options:0
-                                                             range:NSMakeRange(0, [name length])];
+            NSRange substrRange = [name rangeOfString:substring
+                                              options:NSCaseInsensitiveSearch];
             
-            if (matchCount > 0) {
+            if (substrRange.location != NSNotFound) {
                 NSMutableDictionary *matchData = [NSMutableDictionary dictionary];
                 [matchData setObject:location
                               forKey:FacilitiesSearchResultLocationKey];
@@ -216,12 +213,10 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
         
         if (self.searchesCategories && ([content.categories count] > 0)) {
             for (FacilitiesCategory *category in content.categories) {
-                NSString *catName = category.name;
-                NSUInteger matchCount = [regex numberOfMatchesInString:catName
-                                                               options:0
-                                                                 range:NSMakeRange(0, [catName length])];
+                NSRange substrRange = [category.name rangeOfString:substring
+                                                           options:NSCaseInsensitiveSearch];
                 
-                if (matchCount > 0) {
+                if (substrRange.location != NSNotFound) {
                     NSMutableDictionary *matchData = [NSMutableDictionary dictionary];
                     [matchData setObject:location
                                   forKey:FacilitiesSearchResultLocationKey];
