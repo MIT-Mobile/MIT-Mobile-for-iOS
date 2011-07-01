@@ -4,7 +4,7 @@
 #import "FacilitiesCategory.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
-#import "FacilitiesProperty.h"
+#import "FacilitiesPropertyOwner.h"
 #import "FacilitiesContent.h"
 #import "MITMobileServerConfiguration.h"
 #import "ConnectionDetector.h"
@@ -17,7 +17,6 @@ NSString * const FacilitiesCategoriesKey = @"categorylist";
 NSString * const FacilitiesLocationsKey = @"location";
 NSString * const FacilitiesRoomsKey = @"room";
 NSString * const FacilitiesRepairTypesKey = @"problemtype";
-NSString * const FacilitiesLocationPropertiesKey = @"location_properties";
 
 static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
@@ -40,7 +39,6 @@ static FacilitiesLocationData *_sharedData = nil;
 - (void)loadContentsForLocation:(FacilitiesLocation*)location withData:(NSArray*)contents;
 - (void)loadRoomsWithData:(NSDictionary*)roomData;
 - (void)loadRepairTypesWithArray:(NSArray*)typeData;
-- (void)loadLocationPropertiesWithDictionary:(NSDictionary*)propertyData;
 
 - (FacilitiesCategory*)categoryForId:(NSString*)categoryId;
 - (FacilitiesLocation*)locationForId:(NSString*)locationId;
@@ -177,12 +175,12 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (NSArray*)hiddenBuildings {
     return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
-                                             matchingPredicate:[NSPredicate predicateWithFormat:@"(property != nil) && (property.hidden == YES)"]];
+                                             matchingPredicate:[NSPredicate predicateWithFormat:@"isHiddenInBldgServices == YES"]];
 }
 
 - (NSArray*)leasedBuildings {
     return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
-                                             matchingPredicate:[NSPredicate predicateWithFormat:@"(property != nil) && (property.leased == YES)"]];
+                                             matchingPredicate:[NSPredicate predicateWithFormat:@"isLeased == YES"]];
 }
 
 
@@ -296,11 +294,6 @@ static FacilitiesLocationData *_sharedData = nil;
                         params:nil];
 }
 
-- (void)updateLocationPropertyData {
-    [self updateDataForCommand:FacilitiesLocationPropertiesKey
-                        params:nil];
-}
-
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
     MITMobileWebAPI *web = [[[MITMobileWebAPI alloc] initWithModule:@"facilities"
                                                             command:command
@@ -354,17 +347,6 @@ static FacilitiesLocationData *_sharedData = nil;
 - (FacilitiesLocation*)locationWithNumber:(NSString*)bldgNumber {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"number == %@",bldgNumber];
     NSArray *fetchedData = [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesLocation"
-                                                             matchingPredicate:predicate];
-    if (fetchedData && ([fetchedData count] > 0)) {
-        return [fetchedData objectAtIndex:0];
-    } else {
-        return nil;
-    }
-}
-
-- (FacilitiesProperty*)propertiesForLocationWithId:(NSString*)locationId {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"location.uid == %@",locationId];
-    NSArray *fetchedData = [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesProperty"
                                                              matchingPredicate:predicate];
     if (fetchedData && ([fetchedData count] > 0)) {
         return [fetchedData objectAtIndex:0];
@@ -460,6 +442,26 @@ static FacilitiesLocationData *_sharedData = nil;
         
         location.longitude = [NSNumber numberWithDouble:[[loc objectForKey:@"long_wgs84"] doubleValue]];
         location.latitude = [NSNumber numberWithDouble:[[loc objectForKey:@"lat_wgs84"] doubleValue]];
+        if ([[loc objectForKey:@"hidden_bldg_services"] boolValue] == YES) {
+            location.isHiddenInBldgServices = [NSNumber numberWithBool:YES];
+        }
+        if ([[loc objectForKey:@"leased_bldg_services"] boolValue] == YES) {
+            location.isLeased = [NSNumber numberWithBool:YES];
+            
+            NSString *name = [loc objectForKey:@"contact-name_bldg_services"];
+            if (!name) {
+                WLog(@"Leased location \"%@\" missing contact name.", location.uid);
+            } else {
+                FacilitiesPropertyOwner *propertyOwner = [cdm getObjectForEntity:@"FacilitiesPropertyOwner" attribute:@"name" value:name];
+                if (!propertyOwner) {
+                    propertyOwner = [cdm insertNewObjectForEntityForName:@"FacilitiesPropertyOwner"];
+                    propertyOwner.name = name;
+                    propertyOwner.phone = [loc objectForKey:@"contact-phone_bldg_services"];
+                    propertyOwner.email = [loc objectForKey:@"contact-email_bldg_services"];
+                    [propertyOwner addLocationsObject:location];
+                }
+            }
+        }
         
         NSMutableSet *allCategories = [NSMutableSet setWithArray:[self allCategories]];
         for (FacilitiesCategory *category in [allCategories allObjects]) {
@@ -572,57 +574,6 @@ static FacilitiesLocationData *_sharedData = nil;
     [cdm saveData];
 }
 
-- (void)loadLocationPropertiesWithDictionary:(NSDictionary*)propertyData {
-    CoreDataManager *cdm = [CoreDataManager coreDataManager];
-    
-    for (NSString *locationId in propertyData) {
-        NSDictionary *locationInfo = [propertyData valueForKey:locationId];
-        FacilitiesLocation *location = [self locationForId:locationId];
-        FacilitiesProperty *property = [self propertiesForLocationWithId:locationId];
-        
-        if (location) {
-            if (property == nil) {
-                property = [cdm insertNewObjectForEntityForName:@"FacilitiesProperty"];
-            }
-            
-            property.location = location;
-            
-            NSString *hidden = [locationInfo objectForKey:@"hidden"];
-            [property setValue:[NSNumber numberWithBool:([hidden caseInsensitiveCompare:@"YES"] == NSOrderedSame)]
-                        forKey:@"hidden"];
-            
-            NSString *leased = [locationInfo objectForKey:@"leased"];
-            [property setValue:[NSNumber numberWithBool:([leased caseInsensitiveCompare:@"YES"] == NSOrderedSame)]
-                        forKey:@"leased"];
-            
-            NSMutableDictionary *contactInfo = [NSMutableDictionary dictionary];
-            
-            NSString *contactName = [locationInfo objectForKey:@"contact-name"];
-            if (contactName) {
-                [contactInfo setObject:contactName
-                                forKey:FacilitiesLocationContactNameKey];
-            }
-                 
-            NSString *contactEmail = [locationInfo objectForKey:@"contact-email"];
-            if (contactEmail) {
-                [contactInfo setObject:contactEmail
-                                forKey:FacilitiesLocationContactEmailKey];
-            }
-            
-            NSString *contactPhone = [locationInfo objectForKey:@"contact-phone"];
-            if (contactPhone) {
-                [contactInfo setObject:contactPhone
-                                forKey:FacilitiesLocationContactPhoneKey];
-            }
-            
-            property.contactInfo = [NSDictionary dictionaryWithDictionary:contactInfo];
-        }
-    }
-    
-    [cdm saveData];
-}
-
-
 #pragma mark - MITMobileWebAPI request management
 - (void)addRequest:(MITMobileWebAPI*)request withName:(NSString*)name {
     dispatch_async(_requestUpdateQueue, ^{
@@ -656,11 +607,8 @@ static FacilitiesLocationData *_sharedData = nil;
         [self loadCategoriesWithArray:(NSArray*)JSONObject];
     } else if ([command isEqualToString:FacilitiesLocationsKey]) {
         [self loadLocationsWithArray:(NSArray*)JSONObject];
-    [self updateLocationPropertyData];
     } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
         [self loadRepairTypesWithArray:(NSArray*)JSONObject];
-    } else if ([command isEqualToString:FacilitiesLocationPropertiesKey]) {
-        [self loadLocationPropertiesWithDictionary:(NSDictionary*)JSONObject];
     } else if ([command isEqualToString:FacilitiesRoomsKey]) {
         NSDictionary *roomData = (NSDictionary*)JSONObject;
         NSString *requestedId = [request.params objectForKey:@"building"];

@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class FacilitiesContent, FacilitiesProperty;
+@class FacilitiesContent, FacilitiesPropertyOwner;
 
 @interface FacilitiesLocation : NSManagedObject {
 @private
@@ -12,9 +12,11 @@
 @property (nonatomic, retain) NSNumber * latitude;
 @property (nonatomic, retain) NSDate * roomsUpdated;
 @property (nonatomic, retain) NSString * name;
+@property (nonatomic, retain) NSNumber * isHiddenInBldgServices;
+@property (nonatomic, retain) NSNumber * isLeased;
 @property (nonatomic, retain) NSSet *categories;
 @property (nonatomic, retain) NSSet *contents;
-@property (nonatomic, retain) FacilitiesProperty *property;
+@property (nonatomic, retain) FacilitiesPropertyOwner *propertyOwner;
 
 - (NSString*)displayString;
 @end

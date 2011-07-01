@@ -8,7 +8,6 @@ extern NSString* const FacilitiesCategoriesKey;
 extern NSString* const FacilitiesLocationsKey;
 extern NSString* const FacilitiesRoomsKey;
 extern NSString* const FacilitiesRepairTypesKey;
-extern NSString* const FacilitiesLocationPropertiesKey;
 
 typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id userData);
 

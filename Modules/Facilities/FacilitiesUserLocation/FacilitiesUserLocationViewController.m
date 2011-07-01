@@ -114,7 +114,7 @@ static const NSUInteger kMaxResultCount = 10;
     
     [[FacilitiesLocationData sharedData] addObserver:self
                                            withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
-                                               BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey] || [userData isEqualToString:FacilitiesLocationPropertiesKey]);
+                                               BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey]);
                                                if (commandMatch && dataUpdated) {
                                                    self.filteredData = nil;
                                                    [self displayTableForCurrentLocation];

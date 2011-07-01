@@ -78,7 +78,6 @@
 		2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6FE84813B2717700AFD8B8 /* FacilitiesContent.m */; };
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
 		2C77F0321355EE2500CD11D6 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C77F0311355EE2500CD11D6 /* QRReaderResult.m */; };
-		2C82DDA413BCC9F80055D96D /* FacilitiesProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA313BCC9F80055D96D /* FacilitiesProperty.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
 		2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D2137D677A0025B28D /* FacilitiesRoomViewController.m */; };
 		2C95A1D8137DB24D0025B28D /* FacilitiesSummaryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */; };
@@ -219,6 +218,7 @@
 		DEA57EBD12B5A767003211AC /* FeatureSection.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA57EBB12B5A767003211AC /* FeatureSection.m */; };
 		DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */; };
 		DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */; };
+		DEB74EA313BD998700F57A25 /* FacilitiesPropertyOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = DEB74EA213BD998700F57A25 /* FacilitiesPropertyOwner.m */; };
 		DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFF07C110001E300F0573E /* StoryImageView.m */; };
 		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; };
 		DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6A110F8F71D009FAE35 /* NewsImage.m */; };
@@ -491,8 +491,6 @@
 		2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesCategory.m; sourceTree = "<group>"; };
 		2C77F0301355EE2500CD11D6 /* QRReaderResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderResult.h; sourceTree = "<group>"; };
 		2C77F0311355EE2500CD11D6 /* QRReaderResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResult.m; sourceTree = "<group>"; };
-		2C82DDA213BCC9F80055D96D /* FacilitiesProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesProperty.h; sourceTree = "<group>"; };
-		2C82DDA313BCC9F80055D96D /* FacilitiesProperty.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesProperty.m; sourceTree = "<group>"; };
 		2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocation.h; sourceTree = "<group>"; };
 		2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocation.m; sourceTree = "<group>"; };
 		2C95A1D1137D677A0025B28D /* FacilitiesRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRoomViewController.h; sourceTree = "<group>"; };
@@ -777,6 +775,8 @@
 		DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryGalleryViewController.m; sourceTree = "<group>"; };
 		DEAFF07B110001E300F0573E /* StoryImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryImageView.h; sourceTree = "<group>"; };
 		DEAFF07C110001E300F0573E /* StoryImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryImageView.m; sourceTree = "<group>"; };
+		DEB74EA113BD998600F57A25 /* FacilitiesPropertyOwner.h */ = {isa = PBXFileReference; fileEncoding = 4; path = FacilitiesPropertyOwner.h; sourceTree = "<group>"; };
+		DEB74EA213BD998700F57A25 /* FacilitiesPropertyOwner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesPropertyOwner.m; sourceTree = "<group>"; };
 		DEC02F9B110578240054BE32 /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
 		DEC02F9C110578240054BE32 /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
 		DEC8FFC91359152D0059D32F /* Anniversary 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Anniversary 2.xcdatamodel"; sourceTree = "<group>"; };
@@ -1271,7 +1271,6 @@
 				2CCB85F61361D9790024E474 /* Model */,
 				2C203328135F5EB70033E80A /* FacilitiesAbout */,
 				2C40A0F01367362600C83847 /* FacilitiesLocation */,
-				2CF0F53D13BB820700304E35 /* FacilitiesNonserviced */,
 				2C20332B135F64920033E80A /* FacilitiesRoot */,
 				2CFBF913138EC1620080883D /* FacilitiesSubmit */,
 				2C95A1D4137DB03E0025B28D /* FacilitiesSummary */,
@@ -1393,8 +1392,6 @@
 				2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */,
 				2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */,
 				2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */,
-				2C82DDA213BCC9F80055D96D /* FacilitiesProperty.h */,
-				2C82DDA313BCC9F80055D96D /* FacilitiesProperty.m */,
 				2C6FE84713B2717700AFD8B8 /* FacilitiesContent.h */,
 				2C6FE84813B2717700AFD8B8 /* FacilitiesContent.m */,
 				2C603010139EA21700D34F1B /* FacilitiesRepairType.h */,
@@ -1403,6 +1400,8 @@
 				2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */,
 				2C17C7C8137AECF2006888EB /* FacilitiesRoom.h */,
 				2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */,
+				DEB74EA113BD998600F57A25 /* FacilitiesPropertyOwner.h */,
+				DEB74EA213BD998700F57A25 /* FacilitiesPropertyOwner.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -2446,8 +2445,8 @@
 				2CC63C2613B3693B00F0EAB5 /* NSString+URLEncoding.m in Sources */,
 				2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */,
 				DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */,
-				2C82DDA413BCC9F80055D96D /* FacilitiesProperty.m in Sources */,
 				2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */,
+				DEB74EA313BD998700F57A25 /* FacilitiesPropertyOwner.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

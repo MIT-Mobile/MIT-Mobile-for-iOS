@@ -152,7 +152,7 @@
     
     [self.locationData addObserver:self
                          withBlock:^(NSString *notification, BOOL updated, id userData) {
-                             BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey] || [userData isEqualToString:FacilitiesLocationPropertiesKey]);
+                             BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey]);
                              if (commandMatch) {
                                  [self.loadingView removeFromSuperview];
                                  self.loadingView = nil;

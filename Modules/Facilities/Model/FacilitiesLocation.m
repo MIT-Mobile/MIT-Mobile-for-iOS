@@ -1,6 +1,6 @@
 #import "FacilitiesLocation.h"
 #import "FacilitiesContent.h"
-#import "FacilitiesProperty.h"
+#import "FacilitiesPropertyOwner.h"
 
 
 @implementation FacilitiesLocation
@@ -10,9 +10,11 @@
 @dynamic latitude;
 @dynamic roomsUpdated;
 @dynamic name;
+@dynamic isHiddenInBldgServices;
+@dynamic isLeased;
 @dynamic categories;
 @dynamic contents;
-@dynamic property;
+@dynamic propertyOwner;
 
 - (NSString*)displayString {
     NSString *string = nil;
