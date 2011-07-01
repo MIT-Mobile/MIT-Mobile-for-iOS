@@ -12,6 +12,8 @@
 
 @interface FacilitiesSummaryViewController ()
 - (UIView*)firstResponderInView:(UIView*)view;
+- (void)setAttachedImage:(UIImage *)image;
+- (void)validateFields:(NSNotification*)notification;
 @end
 
 @implementation FacilitiesSummaryViewController
@@ -75,10 +77,6 @@
     }
 
     {
-//        self.imageButton.backgroundColor = [UIColor whiteColor];
-//        self.imageButton.layer.cornerRadius = 10.0;
-//        self.imageButton.layer.borderWidth = 1.0;
-//        self.imageButton.layer.borderColor = [TABLE_SEPARATOR_COLOR CGColor];
         self.imageButton.titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
         self.imageButton.titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
     }
@@ -87,6 +85,22 @@
         self.descriptionContainingView.layer.cornerRadius = 10.0;
         self.descriptionContainingView.layer.borderWidth = 1.0;
         self.descriptionContainingView.layer.borderColor = [TABLE_SEPARATOR_COLOR CGColor];
+    }
+    
+    // restore old values (handle memory warning)
+    {
+        NSString *descriptionText = [self.reportData objectForKey:FacilitiesRequestUserDescriptionKey];
+        if (descriptionText) {
+            self.descriptionTextView.text = descriptionText;
+        }
+        NSString *emailText = [self.reportData objectForKey:FacilitiesRequestUserEmailKey];
+        if (emailText) {
+            self.emailField.text = emailText;
+        }
+        UIImage *image = [self.reportData objectForKey:FacilitiesRequestImageKey];
+        [self setAttachedImage:image];
+        
+        [self validateFields:nil];
     }
 }
 
@@ -174,6 +188,39 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+- (void)setAttachedImage:(UIImage *)image {
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
+    if (image) {
+        [dictionary setObject:image forKey:FacilitiesRequestImageKey];
+    } else {
+        [dictionary removeObjectForKey:FacilitiesRequestImageKey];
+    }
+    self.reportData = dictionary;
+
+    if (image) {
+        // resize description field to make room for the attached photo
+        CGRect textFrame = self.descriptionTextView.frame;
+        textFrame.size = self.descriptionContainingView.frame.size;
+        CGRect imageFrame = self.imageView.frame;
+        textFrame.size.width -= imageFrame.size.width;
+        self.descriptionTextView.frame = textFrame;
+        
+        [self.imageButton setTitle:@"Change Photo" forState:UIControlStateNormal];
+
+        self.imageView.image = image;
+        self.imageView.hidden = NO;
+    } else {
+        CGRect textFrame = self.descriptionTextView.frame;
+        textFrame.size = self.descriptionContainingView.frame.size;
+        self.descriptionTextView.frame = textFrame;
+        
+        [self.imageButton setTitle:@"Attach Photo" forState:UIControlStateNormal];
+        
+        self.imageView.image = nil;
+        self.imageView.hidden = YES;
+    }
+}
+
 #pragma mark - IBAction Methods
 - (IBAction)selectPicture:(id)sender {
     if (_keyboardIsVisible) {
@@ -203,14 +250,8 @@
 }
 
 - (IBAction)submitReport:(id)sender {
-    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
-    [dictionary setObject:self.emailField.text
-                   forKey:FacilitiesRequestUserEmailKey];
-    [dictionary setObject:self.descriptionTextView.text
-                   forKey:FacilitiesRequestUserDescriptionKey];
-    self.reportData = dictionary;
-    [self.navigationController pushViewController:[[[FacilitiesSubmitViewController alloc] initWithReportData:dictionary] autorelease]
-                                                                           animated:YES];
+    [self.navigationController pushViewController:[[[FacilitiesSubmitViewController alloc] initWithReportData:self.reportData] autorelease]
+                                         animated:YES];
 }
 
 - (IBAction)dismissKeyboard:(id)sender {
@@ -244,6 +285,13 @@
     return YES;
 }
 
+- (void)textViewDidEndEditing:(UITextView *)textView {
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
+    [dictionary setObject:self.descriptionTextView.text
+                   forKey:FacilitiesRequestUserDescriptionKey];
+    self.reportData = dictionary;
+}
+
 #pragma mark - UITextField Delegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     NSString *trimmedText = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -258,6 +306,13 @@
     return NO;
 }
 
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
+    [dictionary setObject:self.emailField.text
+                   forKey:FacilitiesRequestUserEmailKey];
+    self.reportData = dictionary;
+}
+
 
 #pragma mark - UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -266,22 +321,9 @@
     if ([buttonTitle isEqualToString:@"Cancel"]) {
         return;
     } else if ([buttonTitle isEqualToString:@"Unattach Photo"]) {
-        NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
-        [dictionary removeObjectForKey:FacilitiesRequestImageKey];
-        self.reportData = dictionary;
         
-        if (self.imageView.hidden == NO) {
-            // resize description field to fill area previously taken by attached photo
-            CGRect textFrame = self.descriptionTextView.frame;
-            CGRect imageFrame = self.imageView.frame;
-            textFrame.size.width += imageFrame.size.width;
-            self.descriptionTextView.frame = textFrame;
-        }
+        [self setAttachedImage:nil];
         
-        self.imageView.image = nil;
-        self.imageView.hidden = YES;
-        
-        [self.imageButton setTitle:@"Attach Photo" forState:UIControlStateNormal];
     } else {
         UIImagePickerController *controller = [[[UIImagePickerController alloc] init] autorelease];
         if ([buttonTitle isEqualToString:@"Take Photo"]) {
@@ -293,7 +335,7 @@
         controller.delegate = self;
         [self.navigationController presentModalViewController:controller
                                                      animated:YES];
-    }    
+    }
 }
 
 #pragma mark - UIImagePickerDelegate
@@ -304,36 +346,7 @@
         image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
     
-    if (image) {
-        NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
-        [dictionary setObject:image
-                       forKey:FacilitiesRequestImageKey];
-        self.reportData = dictionary;
-
-        if (self.imageView.hidden == YES) {
-            // resize description field to make room for the attached photo
-            CGRect textFrame = self.descriptionTextView.frame;
-            CGRect imageFrame = self.imageView.frame;
-            textFrame.size.width -= imageFrame.size.width;
-            self.descriptionTextView.frame = textFrame;
-            
-            [self.imageButton setTitle:@"Change Photo" forState:UIControlStateNormal];
-        }
-        
-        self.imageView.image = image;
-        self.imageView.hidden = NO;
-    } else {
-        if (self.imageView.hidden == NO) {
-            // resize description field to fill area previously taken by attached photo
-            CGRect textFrame = self.descriptionTextView.frame;
-            CGRect imageFrame = self.imageView.frame;
-            textFrame.size.width += imageFrame.size.width;
-            self.descriptionTextView.frame = textFrame;
-        }
-        
-        self.imageView.image = nil;
-        self.imageView.hidden = YES;
-    }
+    [self setAttachedImage:image];
     
     [self.navigationController dismissModalViewControllerAnimated:YES];
 }

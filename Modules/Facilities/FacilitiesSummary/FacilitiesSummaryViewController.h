@@ -2,7 +2,7 @@
 
 @class PlaceholderTextView;
 
-@interface FacilitiesSummaryViewController : UIViewController <UITextViewDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
+@interface FacilitiesSummaryViewController : UIViewController <UITextViewDelegate,UITextFieldDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 {
     UIBarButtonItem *_submitButton;
     NSDictionary *_reportData;
