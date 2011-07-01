@@ -51,26 +51,30 @@ enum {
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
     mainView.backgroundColor = [UIColor clearColor];
-    
+
     {
-        CGRect  labelFrame = viewFrame;
-        labelFrame.origin = CGPointZero;
-        labelFrame.size.height = viewFrame.size.height * 0.33;
-        UITextView *textView = [[[UITextView alloc] initWithFrame:labelFrame] autorelease];
-        textView.backgroundColor = [UIColor clearColor];
-        textView.editable = NO;
-        textView.userInteractionEnabled = NO;
-        textView.scrollEnabled = NO;
-        textView.text = [NSString stringWithFormat:@"The Department of Facilities is not responsible for the maintenance of %@. Please contact %@ to report any issues.", [self.location displayString], self.location.propertyOwner.name];
-        textView.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-        [mainView addSubview:textView];
-        self.messageView = textView;
+        CGFloat margin = 20.0;
+        CGRect labelFrame = CGRectZero;
+        UILabel *labelView = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
+        labelView.backgroundColor = [UIColor clearColor];
+        labelView.userInteractionEnabled = NO;
+        labelView.lineBreakMode = UILineBreakModeWordWrap;
+        labelView.numberOfLines = 0;
+        labelView.text = [NSString stringWithFormat:@"The Department of Facilities is not responsible for the maintenance of %@. Please contact %@ to report any issues.", [self.location displayString], self.location.propertyOwner.name];
+        
+        CGSize fittedSize = [labelView sizeThatFits:CGSizeMake(viewFrame.size.width - (2.0 * margin), 2000.0)];
+        labelFrame.origin = CGPointMake(margin, margin);
+        labelFrame.size = fittedSize;
+        labelView.frame = labelFrame;
+
+        [mainView addSubview:labelView];
+        self.messageView = labelView;
     }
 
     {
-        CGRect  tableFrame = viewFrame;
-        tableFrame.origin = CGPointMake(0, viewFrame.size.height * 0.33 );
-        tableFrame.size.height = viewFrame.size.height * 0.66;
+        CGRect tableFrame = CGRectZero;
+        tableFrame.origin = CGPointMake(0, floor(CGRectGetMaxY(self.messageView.frame) + 10.0));
+        tableFrame.size = CGSizeMake(viewFrame.size.width, viewFrame.size.height - tableFrame.origin.y);
         UITableView *tableView = [[[UITableView alloc] initWithFrame:tableFrame
                                                                style:UITableViewStyleGrouped] autorelease];
         [tableView applyStandardColors];
@@ -82,6 +86,8 @@ enum {
     }
     
     [self setView:mainView];
+    
+    self.title = @"Where is it?";
 }
 
 #pragma mark - UITableViewDelegate Methods

@@ -6,12 +6,12 @@
 @interface FacilitiesLeasedViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,MFMailComposeViewControllerDelegate> {
     FacilitiesLocation *_location;
     UITableView *_contactsTable;
-    UITextView *_messageView;
+    UILabel *_messageView;
 }
 
-@property (nonatomic, retain) UITableView* contactsTable;
-@property (nonatomic, retain) UITextView* messageView;
-@property (nonatomic, readonly, retain) FacilitiesLocation* location;
+@property (nonatomic, retain) UITableView *contactsTable;
+@property (nonatomic, retain) UILabel *messageView;
+@property (nonatomic, readonly, retain) FacilitiesLocation *location;
 
 - (id)initWithLocation:(FacilitiesLocation*)location;
 @end
