@@ -7,14 +7,8 @@
 #import "FacilitiesRepairType.h"
 #import "FacilitiesConstants.h"
 #import "FacilitiesSubmitViewController.h"
-#import "UIImage+Resize.h"
 #import "PlaceholderTextView.h"
 #import "MITUIConstants.h"
-
-enum {
-    FacilitiesFocusDescription = 1,
-    FacilitiesFocusEmail
-};
 
 @interface FacilitiesSummaryViewController ()
 - (UIView*)firstResponderInView:(UIView*)view;

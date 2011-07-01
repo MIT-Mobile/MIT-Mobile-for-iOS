@@ -2,6 +2,7 @@
 
 #import "FacilitiesLocation.h"
 #import "FacilitiesLocationData.h"
+#import "FacilitiesLeasedViewController.h"
 #import "FacilitiesRoomViewController.h"
 #import "MITLoadingActivityView.h"
 #import "MITLogging.h"
@@ -233,11 +234,18 @@ static const NSUInteger kMaxResultCount = 10;
         location = (FacilitiesLocation*)[self.filteredData objectAtIndex:indexPath.row];
     }
     
-    FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
-    controller.location = location;
-    
-    [self.navigationController pushViewController:controller
-                                         animated:YES];
+    if ([location.isLeased boolValue]) {
+        FacilitiesLeasedViewController *controller = [[[FacilitiesLeasedViewController alloc] initWithLocation:location] autorelease];
+        
+        [self.navigationController pushViewController:controller
+                                             animated:YES];
+    } else {    
+        FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
+        controller.location = location;
+        
+        [self.navigationController pushViewController:controller
+                                             animated:YES];
+    }
     
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];

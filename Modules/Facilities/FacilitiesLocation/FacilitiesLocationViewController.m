@@ -3,6 +3,7 @@
 #import "FacilitiesCategory.h"
 #import "FacilitiesConstants.h"
 #import "FacilitiesLocation.h"
+#import "FacilitiesLeasedViewController.h"
 #import "FacilitiesLocationData.h"
 #import "FacilitiesLocationSearch.h"
 #import "FacilitiesRoomViewController.h"
@@ -317,11 +318,18 @@
         }
     }
     
-    FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
-    controller.location = location;
-    
-    [self.navigationController pushViewController:controller
-                                         animated:YES];
+    if ([location.isLeased boolValue]) {
+        FacilitiesLeasedViewController *controller = [[[FacilitiesLeasedViewController alloc] initWithLocation:location] autorelease];
+        
+        [self.navigationController pushViewController:controller
+                                             animated:YES];
+    } else {
+        FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
+        controller.location = location;
+        
+        [self.navigationController pushViewController:controller
+                                             animated:YES];
+    }
     
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];

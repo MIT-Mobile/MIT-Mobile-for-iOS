@@ -1,11 +1,11 @@
 #import "FacilitiesCategoryViewController.h"
 
 #import "FacilitiesCategory.h"
-#import "FacilitiesContent.h"
 #import "FacilitiesConstants.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesLocationData.h"
 #import "FacilitiesLocationViewController.h"
+#import "FacilitiesLeasedViewController.h"
 #import "FacilitiesRoomViewController.h"
 #import "FacilitiesTypeViewController.h"
 #import "FacilitiesUserLocationViewController.h"
@@ -315,11 +315,19 @@
                                                       forKey: FacilitiesRequestLocationUserBuildingKey];
             nextViewController = vc;
         } else {
+            
             NSDictionary *dict = [self.filteredData objectAtIndex:indexPath.row-1];
             FacilitiesLocation *location = (FacilitiesLocation*)[dict objectForKey:FacilitiesSearchResultLocationKey];
-            FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
-            controller.location = location;
-            nextViewController = controller;
+            
+            if ([location.isLeased boolValue]) {
+                FacilitiesLeasedViewController *controller = [[[FacilitiesLeasedViewController alloc] initWithLocation:location] autorelease];
+                
+                nextViewController = controller;
+            } else {
+                FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
+                controller.location = location;
+                nextViewController = controller;
+            }
         }
     }
     
