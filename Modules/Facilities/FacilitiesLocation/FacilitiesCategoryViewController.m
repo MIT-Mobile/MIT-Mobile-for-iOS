@@ -167,7 +167,7 @@
                                      self.cachedData = nil;
                                      [self.tableView reloadData];
                                  }
-                                 
+                             } else if ([userData isEqualToString:FacilitiesLocationsKey]) {
                                  if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
                                      self.filteredData = nil;
                                      [self.searchDisplayController.searchResultsTableView reloadData];
