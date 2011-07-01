@@ -77,6 +77,8 @@
     }
 
     {
+        self.imageView.adjustsImageWhenHighlighted = NO;
+        self.imageView.imageView.contentMode = UIViewContentModeScaleAspectFill;
         self.imageButton.titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
         self.imageButton.titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
     }
@@ -177,6 +179,7 @@
 {
     [super viewDidUnload];
     
+    self.imageButton = nil;
     self.imageView = nil;
     self.problemLabel = nil;
     self.descriptionTextView = nil;
@@ -207,7 +210,7 @@
         
         [self.imageButton setTitle:@"Change Photo" forState:UIControlStateNormal];
 
-        self.imageView.image = image;
+        [self.imageView setImage:image forState:UIControlStateNormal];
         self.imageView.hidden = NO;
     } else {
         CGRect textFrame = self.descriptionTextView.frame;
@@ -216,7 +219,7 @@
         
         [self.imageButton setTitle:@"Attach Photo" forState:UIControlStateNormal];
         
-        self.imageView.image = nil;
+        [self.imageView setImage:nil forState:UIControlStateNormal];
         self.imageView.hidden = YES;
     }
 }

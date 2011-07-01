@@ -15,7 +15,7 @@
 @property (nonatomic,retain) IBOutlet UILabel* problemLabel;
 @property (nonatomic,retain) IBOutlet UIView* shiftingContainingView;
 @property (nonatomic,retain) IBOutlet UIView* descriptionContainingView;
-@property (nonatomic,retain) IBOutlet UIImageView* imageView;
+@property (nonatomic,retain) IBOutlet UIButton* imageView;
 @property (nonatomic,retain) IBOutlet PlaceholderTextView* descriptionTextView;
 @property (nonatomic,retain) IBOutlet UIButton* imageButton;
 @property (nonatomic,retain) IBOutlet UITextField* emailField;
