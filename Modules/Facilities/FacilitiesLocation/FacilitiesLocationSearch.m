@@ -214,7 +214,7 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
         }
         
         
-        if (self.searchesCategories) {
+        if (self.searchesCategories && ([content.categories count] > 0)) {
             for (FacilitiesCategory *category in content.categories) {
                 NSString *catName = category.name;
                 NSUInteger matchCount = [regex numberOfMatchesInString:catName
