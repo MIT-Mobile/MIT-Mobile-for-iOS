@@ -427,14 +427,11 @@ static FacilitiesLocationData *_sharedData = nil;
 
 - (void)loadLocationsWithArray:(NSArray*)locations {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
-    NSMutableSet *addedIds = [NSMutableSet set];
+    
+    [cdm deleteObjectsForEntity:@"FacilitiesLocation"];
     
     for (NSDictionary *loc in locations) {
-        FacilitiesLocation *location = [self locationForId:[loc objectForKey:@"id"]];
-        
-        if (location == nil) {
-            location = [cdm insertNewObjectForEntityForName:@"FacilitiesLocation"];
-        }
+        FacilitiesLocation *location = [cdm insertNewObjectForEntityForName:@"FacilitiesLocation"];
         
         location.uid = [loc objectForKey:@"id"];
         location.name = [loc objectForKey:@"name"];
@@ -462,28 +459,20 @@ static FacilitiesLocationData *_sharedData = nil;
             }
         }
         
-        NSMutableSet *allCategories = [NSMutableSet setWithArray:[self allCategories]];
-        for (FacilitiesCategory *category in [allCategories allObjects]) {
-            if ([category.locationIds containsObject:location.uid] == NO) {
-                [allCategories removeObject:category];
-            }
-        }
-        
-        [location setCategories:allCategories];
-        
-        [addedIds addObject:location.uid];
-        
         [self loadContentsForLocation:location withData:[loc objectForKey:@"contents"]];
     }
     
-    NSArray *allLocations = [cdm objectsForEntity:@"FacilitiesLocation"
-                                matchingPredicate:[NSPredicate predicateWithValue:YES]];
+    NSArray *allCategories = [cdm objectsForEntity:@"FacilitiesCategory" matchingPredicate:[NSPredicate predicateWithValue:YES]];
     
-    for (FacilitiesLocation *location in allLocations) {
-        if ([addedIds containsObject:location.uid] == NO) {
-            [cdm deleteObject:location];
-        }
-    }
+    NSPredicate *template = [NSPredicate predicateWithFormat:@"uid in $uids"];
+    
+    [allCategories enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        FacilitiesCategory *category = obj;
+        NSSet *locationIds = category.locationIds;
+        NSPredicate *predicate = [template predicateWithSubstitutionVariables:[NSDictionary dictionaryWithObject:locationIds forKey:@"uids"]];
+        NSArray *categoryLocations = [cdm objectsForEntity:@"FacilitiesLocation" matchingPredicate:predicate];
+        category.locations = [NSSet setWithArray:categoryLocations];
+    }];
     
     [cdm saveData];
 }
