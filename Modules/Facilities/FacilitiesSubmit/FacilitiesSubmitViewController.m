@@ -120,8 +120,8 @@
         [self.request setValue:location.name
                   forParameter:@"locationName"];
         [self.request setValue:location.number
-                  forParameter:@"locationNumber"];
-        [self.request setValue:location.number
+                  forParameter:@"buildingNumber"];
+        [self.request setValue:location.uid
                   forParameter:@"location"];
     } else {
         [self.request setValue:customLocation
