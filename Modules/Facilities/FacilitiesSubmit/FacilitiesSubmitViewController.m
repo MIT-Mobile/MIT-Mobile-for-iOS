@@ -212,7 +212,7 @@
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
     self.request = nil;
     if ([JSONObject respondsToSelector:@selector(objectForKey:)] &&
-        [[(NSDictionary *)JSONObject objectForKey:@"success"] boolValue] == YES) {
+        [[JSONObject objectForKey:@"success"] boolValue] == YES) {
         [self showSuccess];
     } else {
         [self showFailure];
