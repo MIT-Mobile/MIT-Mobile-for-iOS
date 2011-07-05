@@ -261,7 +261,7 @@ static const NSUInteger kMaxResultCount = 10;
     switch([error code])
     {
         case kCLErrorDenied:{
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Location Services"
+            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Unable to Determine Location"
                                                              message:@"Please turn on location services to allow MIT Mobile to determine your location."
                                                             delegate:self
                                                    cancelButtonTitle:@"OK"
@@ -272,7 +272,7 @@ static const NSUInteger kMaxResultCount = 10;
         case kCLErrorNetwork:
         default:
         {
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Location Services"
+            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Unable to Determine Location"
                                                              message:@"Please check your network connection and that you are not in airplane mode."
                                                             delegate:self
                                                    cancelButtonTitle:@"OK"
