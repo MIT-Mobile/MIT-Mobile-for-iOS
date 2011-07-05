@@ -129,10 +129,10 @@
         if ([customRoom hasSuffix:@"side"]) {
             text = [text stringByAppendingFormat:@" %@ %@.",[customRoom lowercaseString],location.name];
         } else {
-            text = [text stringByAppendingFormat:@" at %@ near %@.",location.name,[customRoom lowercaseString]];
+            text = [text stringByAppendingFormat:@" at %@ near \"%@\".",location.name,[customRoom lowercaseString]];
         }
     } else {
-        text = [text stringByAppendingFormat:@" in %@.",customLocation];
+        text = [text stringByAppendingFormat:@" at \"%@\".",customLocation];
     }
     
     self.problemLabel.text = text;
