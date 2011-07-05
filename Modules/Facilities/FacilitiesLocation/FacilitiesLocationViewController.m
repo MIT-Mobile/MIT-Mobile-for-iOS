@@ -21,6 +21,7 @@
 @synthesize loadingView = _loadingView;
 @synthesize locationData = _locationData;
 @synthesize searchString = _searchString;
+@synthesize trimmedString = _trimmedString;
 @synthesize category = _category;
 @synthesize searchHelper = _searchHelper;
 
@@ -345,9 +346,7 @@
     if (tableView == self.tableView) {
         return [self.cachedData count];
     } else {
-        NSUInteger resultCount = [self.filteredData count];
-        return (resultCount > 0) ? resultCount + 1 : 0;
-    }
+        return ([self.trimmedString length] > 0) ? [self.filteredData count] + 1 : 0;    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -398,9 +397,9 @@
 
 #pragma mark - UISearchBarDelegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    NSString *trimmedText = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if (![self.searchString isEqualToString:trimmedText]) {
-        self.searchString = ([trimmedText length] > 0) ? trimmedText : nil;
+    self.trimmedString = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (![self.searchString isEqualToString:self.trimmedString]) {
+        self.searchString = ([self.trimmedString length] > 0) ? self.trimmedString : nil;
         self.filteredData = nil;
     }
 }

@@ -17,6 +17,7 @@
     NSArray *_filteredData;
     NSPredicate *_filterPredicate;
     NSString *_searchString;
+    NSString *_trimmedString;
 }
 
 @property (nonatomic,retain) UITableView* tableView;
@@ -27,6 +28,7 @@
 @property (nonatomic,retain) NSArray* cachedData;
 @property (nonatomic,retain) NSArray* filteredData;
 @property (nonatomic,retain) NSString* searchString;
+@property (nonatomic,retain) NSString *trimmedString;
 
 - (NSArray*)dataForMainTableView;
 - (NSArray*)resultsForSearchString:(NSString*)searchText;

@@ -15,6 +15,7 @@
     NSArray *_filteredData;
     NSPredicate *_filterPredicate;
     NSString *_searchString;
+    NSString *_trimmedString;
 	FacilitiesLocation *_location;
 }
 
@@ -26,6 +27,7 @@
 @property (nonatomic,retain) NSArray* cachedData;
 @property (nonatomic,retain) NSArray* filteredData;
 @property (nonatomic,retain) NSString* searchString;
+@property (nonatomic,retain) NSString *trimmedString;
 
 @property (nonatomic,retain) FacilitiesLocation* location;
 

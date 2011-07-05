@@ -17,6 +17,7 @@
 @synthesize locationData = _locationData;
 @synthesize filteredData = _filteredData;
 @synthesize searchString = _searchString;
+@synthesize trimmedString = _trimmedString;
 
 @synthesize location = _location;
 
@@ -340,8 +341,7 @@
             return (section == 0) ? 1 : [self.cachedData count];
         } 
     } else {
-        NSUInteger resultCount = [self.filteredData count];
-        return (resultCount > 0) ? resultCount + 1 : 0;
+        return ([self.trimmedString length] > 0) ? [self.filteredData count] + 1 : 0;
     }
 }
 
@@ -394,9 +394,9 @@
 
 #pragma mark - UISearchBarDelegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    NSString *trimmedText = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if (![self.searchString isEqualToString:trimmedText]) {
-        self.searchString = ([trimmedText length] > 0) ? trimmedText : nil;
+    self.trimmedString = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (![self.searchString isEqualToString:self.trimmedString]) {
+        self.searchString = ([self.trimmedString length] > 0) ? self.trimmedString : nil;
         self.filteredData = nil;
     }
 }
