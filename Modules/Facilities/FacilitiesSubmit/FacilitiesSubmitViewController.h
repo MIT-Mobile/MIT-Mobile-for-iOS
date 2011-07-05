@@ -15,6 +15,4 @@
 @property (nonatomic,retain) IBOutlet UIButton* completeButton;
 @property (nonatomic,retain) NSDictionary *reportDictionary;
 
-- (id)init;
-- (id)initWithReportData:(NSDictionary*)reportDict;
 @end

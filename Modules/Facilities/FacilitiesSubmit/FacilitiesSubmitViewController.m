@@ -6,10 +6,16 @@
 #import "FacilitiesRoom.h"
 #import "FacilitiesRepairType.h"
 #import "NSData+MGTwitterBase64.h"
+#import "MITUIConstants.h"
 
 @interface FacilitiesSubmitViewController ()
 @property (retain) MITMobileWebAPI *request;
 @property BOOL abortRequest;
+
+- (void)setStatusText:(NSString *)string;
+- (void)showSuccess;
+- (void)showFailure;
+
 @end
 
 @implementation FacilitiesSubmitViewController
@@ -20,30 +26,7 @@
 @synthesize reportDictionary = _reportDictionary;
 @synthesize request = _request;
 
-- (id)init
-{
-    self = [self initWithNibName:nil
-                          bundle:nil];
-    if (self) {
-        self.title = @"Submit Report";
-        self.reportDictionary = nil;
-    }
-    return self;
-}
-
-- (id)initWithReportData:(NSDictionary*)reportData
-{
-    self = [self initWithNibName:nil
-                           bundle:nil];
-    if (self) {
-        self.title = @"Submit Report";
-        self.reportDictionary = reportData;
-    }
-    return self;
-}
-
-- (void)dealloc
-{
+- (void)dealloc {
     self.statusLabel = nil;
     self.progressView = nil;
     self.completeButton = nil;
@@ -51,74 +34,71 @@
     [super dealloc];
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     
 }
 
 #pragma mark - View lifecycle
-- (void)loadView {
-    CGRect frame = [[UIScreen mainScreen] applicationFrame];
-    
-    if (self.navigationController.navigationBarHidden == NO) {
-        frame.size.height -= self.navigationController.navigationBar.frame.size.height;
-    }
-    
-    UIView *mainView = [[[UIView alloc] initWithFrame:frame] autorelease];
+- (void)viewDidLoad {
+    self.title = @"Submit Report";
+
+    CGRect frame = self.view.frame;
+    CGFloat margin = 20.0;
     
     {
         self.progressView = [[[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault] autorelease];
-        CGRect progressFrame = CGRectMake(15,
-                                          (frame.size.height - self.progressView.frame.size.height) / 2.0,
-                                          frame.size.width - 30,
+        CGRect progressFrame = CGRectMake(margin,
+                                          floor((frame.size.height - self.progressView.frame.size.height) / (1 / (1 - (1 / 1.62)))),
+                                          frame.size.width - (2.0 * margin),
                                           self.progressView.frame.size.height);
-        
         self.progressView.frame = progressFrame;
-        [mainView addSubview:self.progressView];
-    }
-    
-    {
-        CGFloat height = 32;
-        CGRect labelFrame = CGRectMake(15,
-                                       self.progressView.frame.origin.y - height,
-                                       frame.size.width - 30,
-                                       height);
-        
-        self.statusLabel = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
-        self.statusLabel.textAlignment = UITextAlignmentCenter;
-        self.statusLabel.backgroundColor = [UIColor clearColor];
-        [mainView addSubview:self.statusLabel];
+        [self.view addSubview:self.progressView];
     }
     
     {
         CGRect buttonFrame = CGRectZero;
-        buttonFrame.size = CGSizeMake(128, 32);
+        buttonFrame.size = CGSizeMake(180.0, 45.0);
         buttonFrame.origin = CGPointMake((frame.size.width - buttonFrame.size.width) / 2.0,
                                          self.progressView.frame.origin.y);
         self.completeButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         self.completeButton.frame = buttonFrame;
         self.completeButton.hidden = YES;
-        [self.completeButton setTitle:@"Return to start"
+        self.completeButton.titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+        [self.completeButton setTitleColor:CELL_STANDARD_FONT_COLOR forState:UIControlStateNormal];
+
+        [self.completeButton setTitle:@"Return to Start"
                              forState:UIControlStateNormal];
         [self.completeButton addTarget:self
                                 action:@selector(reportCompleted:)
                       forControlEvents:UIControlEventTouchUpInside];
-        [mainView addSubview:self.completeButton];
+        [self.view addSubview:self.completeButton];
     }
     
-    
-    [self setView:mainView];
+    {
+        // note: labelFrame is mostly overridden by -setStatusText:
+        CGRect labelFrame = CGRectMake(margin,
+                                       self.progressView.frame.origin.y - 250.0,
+                                       frame.size.width - (2.0 * margin),
+                                       250.0);
+        
+        self.statusLabel = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
+        self.statusLabel.textAlignment = UITextAlignmentCenter;
+        self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+        self.statusLabel.numberOfLines = 0;
+        self.statusLabel.backgroundColor = [UIColor clearColor];
+        [self.view addSubview:self.statusLabel];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     self.navigationItem.hidesBackButton = NO;
     self.navigationItem.backBarButtonItem.title = @"Cancel";
+    [self setStatusText:@"Preparing report..."];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    self.statusLabel.text = @"Preparing report";
     
     self.request = [[[MITMobileWebAPI alloc] initWithModule:@"facilities"
                                                     command:@"upload"
@@ -175,7 +155,7 @@
         [self.progressView setProgress:0.0];
         self.progressView.hidden = NO;
         self.completeButton.hidden = YES;
-        [self.statusLabel setText:@"Uploading report to the server"];
+        [self setStatusText:@"Uploading report..."];
         [self.request start];
     });
 }
@@ -185,16 +165,14 @@
     [self.request cancel];
 }
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
     self.statusLabel = nil;
     self.progressView = nil;
     self.completeButton = nil;
     [super viewDidUnload];    
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
@@ -208,24 +186,46 @@
     }
 }
 
-#pragma mark - JSONDelegate Methods
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject
-{
-    self.progressView.hidden = YES;
-    self.completeButton.hidden = NO;
-    self.statusLabel.text = @"Report successfully submitted";
-    self.request = nil;
-    return;
+- (void)setStatusText:(NSString *)string {
+    self.statusLabel.text = string;
+    CGFloat margin = 20.0;
+    CGRect labelFrame = self.statusLabel.frame;
+    CGSize fittedSize = [string sizeWithFont:self.statusLabel.font constrainedToSize:CGSizeMake(labelFrame.size.width, 2000.0) lineBreakMode:self.statusLabel.lineBreakMode];
+    labelFrame.size.height = fittedSize.height;
+    labelFrame.origin.y = CGRectGetMinY(self.progressView.frame) - labelFrame.size.height - margin;
+    self.statusLabel.frame = labelFrame;
 }
 
-- (void)request:(MITMobileWebAPI *)request totalBytesWritten:(NSInteger)bytesWritten totalBytesExpected:(NSInteger)bytesExpected
-{
+- (void)showSuccess {
+    self.progressView.hidden = YES;
+    self.completeButton.hidden = NO;
+    [self setStatusText:@"Report submitted successfully."];
+}
+
+- (void)showFailure {
+    self.progressView.hidden = YES;
+    self.completeButton.hidden = NO;
+    [self setStatusText:@"Unable to submit report. Please try again later."];
+}
+
+#pragma mark - JSONDelegate Methods
+- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
+    self.request = nil;
+    if ([JSONObject respondsToSelector:@selector(objectForKey:)] &&
+        [[(NSDictionary *)JSONObject objectForKey:@"success"] boolValue] == YES) {
+        [self showSuccess];
+    } else {
+        [self showFailure];
+    }
+}
+
+- (void)request:(MITMobileWebAPI *)request totalBytesWritten:(NSInteger)bytesWritten totalBytesExpected:(NSInteger)bytesExpected {
     [self.progressView setProgress:(double)bytesWritten/(double)bytesExpected];
 }
 
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error
-{
+- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
     self.request = nil;
+    [self showFailure];
     return NO;
 }
 

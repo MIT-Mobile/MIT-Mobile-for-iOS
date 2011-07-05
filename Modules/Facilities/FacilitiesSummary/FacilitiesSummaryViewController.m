@@ -253,8 +253,11 @@
 }
 
 - (IBAction)submitReport:(id)sender {
-    [self.navigationController pushViewController:[[[FacilitiesSubmitViewController alloc] initWithReportData:self.reportData] autorelease]
+    FacilitiesSubmitViewController *vc = [[FacilitiesSubmitViewController alloc] initWithNibName:nil bundle:nil];
+    vc.reportDictionary = self.reportData;
+    [self.navigationController pushViewController:vc
                                          animated:YES];
+    [vc release];
 }
 
 - (IBAction)dismissKeyboard:(id)sender {
