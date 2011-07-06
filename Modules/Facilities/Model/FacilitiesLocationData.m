@@ -428,20 +428,35 @@ static FacilitiesLocationData *_sharedData = nil;
 - (void)loadLocationsWithArray:(NSArray*)locations {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     
-    [cdm deleteObjectsForEntity:@"FacilitiesLocation"];
+    NSMutableSet *allObjects = [NSSet setWithArray:[cdm objectsForEntity:@"FacilitiesLocation"
+                                                       matchingPredicate:[NSPredicate predicateWithValue:YES]]];
+    NSMutableSet *modifiedObjects = [NSMutableSet set];
     
     for (NSDictionary *loc in locations) {
-        FacilitiesLocation *location = [cdm insertNewObjectForEntityForName:@"FacilitiesLocation"];
+        FacilitiesLocation *location = [[allObjects objectsPassingTest:^BOOL(id obj, BOOL *stop) {
+            if ([[obj valueForKey:@"id"] isEqualToString:[loc objectForKey:@"id"]]) {
+                *stop = YES;
+                return YES;
+            }
+            
+            return NO;
+        }] anyObject];
         
-        location.uid = [loc objectForKey:@"id"];
+        if (location == nil) {
+            location = [cdm insertNewObjectForEntityForName:@"FacilitiesLocation"];
+            location.uid = [loc objectForKey:@"id"];
+        }
+        
         location.name = [loc objectForKey:@"name"];
         location.number = [loc objectForKey:@"bldgnum"];
         
         location.longitude = [NSNumber numberWithDouble:[[loc objectForKey:@"long_wgs84"] doubleValue]];
         location.latitude = [NSNumber numberWithDouble:[[loc objectForKey:@"lat_wgs84"] doubleValue]];
+        
         if ([[loc objectForKey:@"hidden_bldg_services"] boolValue] == YES) {
             location.isHiddenInBldgServices = [NSNumber numberWithBool:YES];
         }
+        
         if ([[loc objectForKey:@"leased_bldg_services"] boolValue] == YES) {
             NSString *name = [loc objectForKey:@"contact-name_bldg_services"];
             if (!name) {
@@ -460,7 +475,12 @@ static FacilitiesLocationData *_sharedData = nil;
         }
         
         [self loadContentsForLocation:location withData:[loc objectForKey:@"contents"]];
+        [modifiedObjects addObject:location];
     }
+    
+    NSMutableSet *deletedObjects = [NSMutableSet setWithSet:allObjects];
+    [deletedObjects minusSet:modifiedObjects];
+    [cdm deleteObjects:[deletedObjects allObjects]];
     
     NSArray *allCategories = [cdm objectsForEntity:@"FacilitiesCategory" matchingPredicate:[NSPredicate predicateWithValue:YES]];
     
@@ -470,8 +490,7 @@ static FacilitiesLocationData *_sharedData = nil;
         FacilitiesCategory *category = obj;
         NSSet *locationIds = category.locationIds;
         NSPredicate *predicate = [template predicateWithSubstitutionVariables:[NSDictionary dictionaryWithObject:locationIds forKey:@"uids"]];
-        NSArray *categoryLocations = [cdm objectsForEntity:@"FacilitiesLocation" matchingPredicate:predicate];
-        category.locations = [NSSet setWithArray:categoryLocations];
+        category.locations = [modifiedObjects filteredSetUsingPredicate:predicate];
     }];
     
     [cdm saveData];
@@ -482,14 +501,27 @@ static FacilitiesLocationData *_sharedData = nil;
         return;
     }
     
+    NSMutableSet *allContents = [NSMutableSet setWithSet:location.contents];
+    NSMutableSet *modifiedContents = [NSMutableSet set];
+    
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     
-    [cdm deleteObjects:[location.contents allObjects]];
-    
     for (NSDictionary *contentData in contents) {
-        FacilitiesContent *content = [cdm insertNewObjectForEntityForName:@"FacilitiesContent"];
-        content.location = location;
-        content.name = [contentData objectForKey:@"name"];
+        NSString *name = [contentData objectForKey:@"name"];
+        FacilitiesContent *content = [[allContents objectsPassingTest:^BOOL(id obj, BOOL *stop) {
+            if ([[obj valueForKey:@"name"] isEqualToString:name]) {
+                *stop = YES;
+                return YES;
+            }
+            
+            return NO;
+        }] anyObject];
+        
+        if (content == nil) {
+            content = [cdm insertNewObjectForEntityForName:@"FacilitiesContent"];
+            content.location = location;
+            content.name = name;
+        }
         
         if ([contentData objectForKey:@"url"]) {
             content.url = [NSURL URLWithString:[contentData objectForKey:@"url"]];
@@ -499,6 +531,12 @@ static FacilitiesLocationData *_sharedData = nil;
             content.altname = [contentData objectForKey:@"altname"];
         }
         
+        [modifiedContents addObject:content];
+        
+        // bskinner - 07/06/2011
+        // Commented out, categories are not being used
+        //  at the moment.
+        /*
         if ([contentData objectForKey:@"category"]) {
             NSArray *contentCategories = [contentData objectForKey:@"category"];
             for (NSString *catName in contentCategories) {
@@ -508,9 +546,15 @@ static FacilitiesLocationData *_sharedData = nil;
                 }
             }
         }
+        */
     }
     
-    [cdm saveData];
+    [allContents minusSet:modifiedContents];
+    [location removeContents:allContents];
+    
+    if ([allContents count] > 0) {
+        [cdm deleteObjects:[allContents allObjects]];
+    }
 }
 
 
@@ -590,40 +634,57 @@ static FacilitiesLocationData *_sharedData = nil;
 #pragma mark - JSONDataLoaded Delegate
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
     NSString *command = [request.params objectForKey:@"command"];
+    NSString *queueName = [NSString stringWithFormat:@"edu.mit.mobile.fld.%@",command];
+    dispatch_queue_t handlerQueue = dispatch_queue_create([queueName UTF8String], 0);
     
     if ([command isEqualToString:FacilitiesCategoriesKey]) {
-        [self loadCategoriesWithArray:(NSArray*)JSONObject];
+        dispatch_async(handlerQueue, ^(void) {
+            [self loadCategoriesWithArray:(NSArray*)JSONObject];
+        });
     } else if ([command isEqualToString:FacilitiesLocationsKey]) {
-        [self loadLocationsWithArray:(NSArray*)JSONObject];
+        dispatch_async(handlerQueue, ^(void) {
+            [self loadLocationsWithArray:(NSArray*)JSONObject];
+        });
     } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
-        [self loadRepairTypesWithArray:(NSArray*)JSONObject];
+        dispatch_async(handlerQueue, ^(void) {
+            [self loadRepairTypesWithArray:(NSArray*)JSONObject];
+        });
     } else if ([command isEqualToString:FacilitiesRoomsKey]) {
-        NSDictionary *roomData = (NSDictionary*)JSONObject;
-        NSString *requestedId = [request.params objectForKey:@"building"];
+        dispatch_async(handlerQueue, ^(void) {
+            NSDictionary *roomData = (NSDictionary*)JSONObject;
+            NSString *requestedId = [request.params objectForKey:@"building"];
+            
+            if (requestedId) {
+                roomData = [NSDictionary dictionaryWithObject:[roomData objectForKey:requestedId]
+                                                       forKey:requestedId];
+            }
+            
+            [self loadRoomsWithData:roomData];
+        });
+    }
+    
+    dispatch_async(handlerQueue, ^(void) {
+        BOOL shouldUpdateDate = !([command isEqualToString:FacilitiesRoomsKey] && [request.params objectForKey:@"building"]);
         
-        if (requestedId) {
-            roomData = [NSDictionary dictionaryWithObject:[roomData objectForKey:requestedId]
-                                                   forKey:requestedId];
+        if (shouldUpdateDate) {
+            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
+            [dict setObject:[NSDate date]
+                     forKey:command];
+            [[NSUserDefaults standardUserDefaults] setObject:dict
+                                                      forKey:FacilitiesFetchDatesKey];
+            [[NSUserDefaults standardUserDefaults] synchronize];
         }
-        
-        [self loadRoomsWithData:roomData];
-    }
-    
-    BOOL shouldUpdateDate = !([command isEqualToString:FacilitiesRoomsKey] && [request.params objectForKey:@"building"]);
-    
-    if (shouldUpdateDate) {
-        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
-        [dict setObject:[NSDate date]
-                 forKey:command];
-        [[NSUserDefaults standardUserDefaults] setObject:dict
-                                                  forKey:FacilitiesFetchDatesKey];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
 
-    [self removeRequestWithName:[[request requestURL] absoluteString]];
-    [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
-                         withUserData:command
-                     newDataAvailable:YES];
+    });
+    
+    dispatch_async(handlerQueue, ^(void) {
+        [self removeRequestWithName:[[request requestURL] absoluteString]];
+        [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
+                             withUserData:command
+                         newDataAvailable:YES];
+    });
+    
+    dispatch_release(handlerQueue);
 }
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
