@@ -71,10 +71,10 @@
     CGFloat yOrigin = self.verticalMargin;
     
     NSInteger i = 0;
+    
     for (UIView *aView in self.icons) {
         CGRect iconFrame = aView.frame;
-        iconFrame.origin.x = floor(xOrigin);
-        iconFrame.origin.y = floor(yOrigin);
+        iconFrame.origin = CGPointMake(floor(xOrigin), floor(yOrigin));
         aView.frame = iconFrame;
         [self addSubview:aView];
         
@@ -96,6 +96,7 @@
         if (maxHeight < anIcon.frame.size.height)
             maxHeight = anIcon.frame.size.height;
     }
+    
     if (self.frame.size.height < maxHeight + yOrigin + self.verticalMargin) {
         CGRect frame = self.frame;
         frame.size.height = maxHeight + yOrigin + self.verticalMargin;
