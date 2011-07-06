@@ -66,7 +66,6 @@
 		2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */; };
 		2C18073C1382C32D000CCB6F /* FacilitiesTypeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C18073B1382C32D000CCB6F /* FacilitiesTypeViewController.m */; };
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
-		2C20332A135F60C90033E80A /* FacilitiesAbout.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C203329135F60C90033E80A /* FacilitiesAbout.xib */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
 		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
@@ -471,7 +470,6 @@
 		2C18073B1382C32D000CCB6F /* FacilitiesTypeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesTypeViewController.m; sourceTree = "<group>"; };
 		2C1A45E7135DD146006A2EE4 /* FacilitiesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesModule.h; sourceTree = "<group>"; };
 		2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesModule.m; sourceTree = "<group>"; };
-		2C203329135F60C90033E80A /* FacilitiesAbout.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesAbout.xib; sourceTree = "<group>"; };
 		2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRootViewController.h; sourceTree = "<group>"; };
 		2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRootViewController.m; sourceTree = "<group>"; };
 		2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesRootViewController.xib; sourceTree = "<group>"; };
@@ -1272,7 +1270,6 @@
 			isa = PBXGroup;
 			children = (
 				2CCB85F61361D9790024E474 /* Model */,
-				2C203328135F5EB70033E80A /* FacilitiesAbout */,
 				2C40A0F01367362600C83847 /* FacilitiesLocation */,
 				2CF0F53D13BB820700304E35 /* FacilitiesLeased */,
 				2C20332B135F64920033E80A /* FacilitiesRoot */,
@@ -1288,14 +1285,6 @@
 			name = Facilities;
 			path = Modules/Facilities;
 			sourceTree = SOURCE_ROOT;
-		};
-		2C203328135F5EB70033E80A /* FacilitiesAbout */ = {
-			isa = PBXGroup;
-			children = (
-				2C203329135F60C90033E80A /* FacilitiesAbout.xib */,
-			);
-			path = FacilitiesAbout;
-			sourceTree = "<group>";
 		};
 		2C20332B135F64920033E80A /* FacilitiesRoot */ = {
 			isa = PBXGroup;
@@ -2147,7 +2136,6 @@
 				DED3CCE910418F5F003D3B74 /* Default.png in Resources */,
 				DEE6B1CD111774300037F03C /* Entitlements.plist in Resources */,
 				DE6F046311139CA40046684B /* FBConnect.bundle in Resources */,
-				2C20332A135F60C90033E80A /* FacilitiesAbout.xib in Resources */,
 				2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */,
 				2C95A1D9137DB24D0025B28D /* FacilitiesSummaryViewController.xib in Resources */,
 				EF3B3B15103F072400E8AA05 /* MIT-Mobile-Icon.png in Resources */,
