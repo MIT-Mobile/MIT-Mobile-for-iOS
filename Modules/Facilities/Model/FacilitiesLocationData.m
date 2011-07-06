@@ -434,7 +434,7 @@ static FacilitiesLocationData *_sharedData = nil;
     
     for (NSDictionary *loc in locations) {
         FacilitiesLocation *location = [[allObjects objectsPassingTest:^BOOL(id obj, BOOL *stop) {
-            if ([[obj valueForKey:@"id"] isEqualToString:[loc objectForKey:@"id"]]) {
+            if ([[obj valueForKey:@"uid"] isEqualToString:[loc objectForKey:@"id"]]) {
                 *stop = YES;
                 return YES;
             }
