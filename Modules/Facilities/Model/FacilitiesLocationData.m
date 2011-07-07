@@ -677,10 +677,7 @@ static FacilitiesLocationData *_sharedData = nil;
                                                       forKey:FacilitiesFetchDatesKey];
             [[NSUserDefaults standardUserDefaults] synchronize];
         }
-
-    });
-    
-    dispatch_async(handlerQueue, ^(void) {
+        
         [self removeRequestWithName:[[request requestURL] absoluteString]];
         [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
                              withUserData:command
