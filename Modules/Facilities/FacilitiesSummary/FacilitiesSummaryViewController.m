@@ -1,4 +1,8 @@
 #import <QuartzCore/QuartzCore.h>
+#import <CoreMedia/CoreMedia.h>
+#import <ImageIO/ImageIO.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <CoreLocation/CoreLocation.h>
 
 #import "FacilitiesSummaryViewController.h"
 #import "FacilitiesCategory.h"
@@ -11,6 +15,8 @@
 #import "MITUIConstants.h"
 
 @interface FacilitiesSummaryViewController ()
+@property (nonatomic,retain) NSData *imageData;
+
 - (UIView*)firstResponderInView:(UIView*)view;
 - (void)setAttachedImage:(UIImage *)image;
 - (void)validateFields:(NSNotification*)notification;
@@ -27,6 +33,7 @@
 @synthesize imageButton = _imageButton;
 @synthesize emailField = _emailField;
 @synthesize reportData = _reportData;
+@synthesize imageData = _imageData;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -99,7 +106,8 @@
         if (emailText) {
             self.emailField.text = emailText;
         }
-        UIImage *image = [self.reportData objectForKey:FacilitiesRequestImageKey];
+        
+        UIImage *image = [UIImage imageWithData:[self.reportData objectForKey:FacilitiesRequestImageDataKey]];
         [self setAttachedImage:image];
         
         [self validateFields:nil];
@@ -193,10 +201,11 @@
 
 - (void)setAttachedImage:(UIImage *)image {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
-    if (image) {
-        [dictionary setObject:image forKey:FacilitiesRequestImageKey];
+    if (image && self.imageData) {
+        [dictionary setObject:self.imageData
+                       forKey:FacilitiesRequestImageDataKey];
     } else {
-        [dictionary removeObjectForKey:FacilitiesRequestImageKey];
+        [dictionary removeObjectForKey:FacilitiesRequestImageDataKey];
     }
     self.reportData = dictionary;
 
@@ -232,7 +241,7 @@
 
     // show an "unattach photo" button if one is already set
     NSString *destructiveButtonTitle = nil;
-    if ([self.reportData objectForKey:FacilitiesRequestImageKey]) {
+    if ([self.reportData objectForKey:FacilitiesRequestImageDataKey]) {
         destructiveButtonTitle = @"Unattach Photo";
     }
 
@@ -354,6 +363,67 @@
         image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
     
+    NSMutableDictionary *imageProperties = [NSMutableDictionary dictionary];
+    NSMutableData *data = [NSMutableData data];
+    CGImageDestinationRef imageDest = CGImageDestinationCreateWithData((CFMutableDataRef)data,
+                                                                       kUTTypeJPEG,
+                                                                       1,
+                                                                       NULL);
+    
+    [imageProperties setObject:[NSNumber numberWithInteger:[image imageOrientation]]
+                        forKey:(NSString*)kCGImagePropertyOrientation];
+    [imageProperties setObject:[NSNumber numberWithFloat:0.75]
+                        forKey:(NSString*)kCGImageDestinationLossyCompressionQuality];
+    
+    if ([picker sourceType] == UIImagePickerControllerSourceTypeCamera) {
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 4.1) {
+            if ([info objectForKey:UIImagePickerControllerMediaMetadata]) {
+                NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
+                if ([metadata objectForKey:(NSString*)kCGImagePropertyExifDictionary]) {
+                    [imageProperties setObject:[metadata objectForKey:(id)kCGImagePropertyExifDictionary]
+                                        forKey:(NSString*)kCGImagePropertyExifDictionary];
+                }
+                
+                if ([metadata objectForKey:(NSString*)kCGImagePropertyExifAuxDictionary]) {
+                    [imageProperties setObject:[metadata objectForKey:(id)kCGImagePropertyExifAuxDictionary]
+                                        forKey:(NSString*)kCGImagePropertyExifAuxDictionary];
+                }
+                
+                if ([metadata objectForKey:(NSString*)kCGImagePropertyTIFFDictionary]) {
+                    [imageProperties setObject:[metadata objectForKey:(id)kCGImagePropertyTIFFDictionary]
+                                        forKey:(NSString*)kCGImagePropertyTIFFDictionary];
+                }
+            }
+        }
+        
+        NSMutableDictionary *gpsDict = [NSMutableDictionary dictionaryWithCapacity:5];
+        CLLocationManager *locationManager = [[[CLLocationManager alloc] init] autorelease];
+        CLLocation *location = [locationManager location];
+        
+        [gpsDict setObject:[NSNumber numberWithDouble:location.coordinate.latitude]
+                    forKey:(NSString*)kCGImagePropertyGPSLatitude];
+        [gpsDict setObject:((location.coordinate.latitude >= 0) ? @"N" : @"S")
+                    forKey:(NSString*)kCGImagePropertyGPSLatitudeRef];
+        [gpsDict setObject:[NSNumber numberWithDouble:location.coordinate.longitude]
+                    forKey:(NSString*)kCGImagePropertyGPSLongitude];
+        [gpsDict setObject:((location.coordinate.longitude >= 0) ? @"E" : @"W")
+                    forKey:(NSString*)kCGImagePropertyGPSLongitudeRef];
+        [gpsDict setObject:[location.timestamp descriptionWithLocale:nil]
+                    forKey:(NSString*)kCGImagePropertyGPSTimeStamp];
+        
+        [imageProperties setObject:gpsDict
+                            forKey:(NSString*)kCGImagePropertyGPSDictionary];
+    } else if ([picker sourceType] == UIImagePickerControllerSourceTypePhotoLibrary) {
+        
+    }
+    
+    CGImageDestinationAddImage(imageDest,
+                               [image CGImage],
+                               (CFDictionaryRef)imageProperties);
+    CGImageDestinationFinalize(imageDest);
+    CFRelease(imageDest);
+    
+    self.imageData = data;
     [self setAttachedImage:image];
     
     [self.navigationController dismissModalViewControllerAnimated:YES];

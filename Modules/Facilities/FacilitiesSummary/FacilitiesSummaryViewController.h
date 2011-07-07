@@ -6,6 +6,7 @@
 {
     UIBarButtonItem *_submitButton;
     NSDictionary *_reportData;
+    NSData *_imageData;
 
 	BOOL _keyboardIsVisible;
 }
