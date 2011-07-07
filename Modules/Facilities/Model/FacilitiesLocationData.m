@@ -218,6 +218,7 @@ static FacilitiesLocationData *_sharedData = nil;
     NSDate *lastCheckDate = nil;
     if ([command isEqualToString:FacilitiesRoomsKey] && [request objectForKey:@"building"]) {
         FacilitiesLocation *location = [self locationWithNumber:[request objectForKey:@"building"]];
+        [[[CoreDataManager coreDataManager] managedObjectContext] refreshObject:location mergeChanges:NO];
         lastCheckDate = location.roomsUpdated;
     } else {
         NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey];
