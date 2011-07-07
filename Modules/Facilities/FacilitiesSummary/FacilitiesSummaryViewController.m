@@ -253,6 +253,8 @@
 }
 
 - (IBAction)submitReport:(id)sender {
+    [self dismissKeyboard:nil];
+    
     FacilitiesSubmitViewController *vc = [[FacilitiesSubmitViewController alloc] initWithNibName:nil bundle:nil];
     vc.reportDictionary = self.reportData;
     [self.navigationController pushViewController:vc
