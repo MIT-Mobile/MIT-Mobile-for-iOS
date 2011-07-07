@@ -490,8 +490,10 @@ static FacilitiesLocationData *_sharedData = nil;
     [allCategories enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         FacilitiesCategory *category = obj;
         NSSet *locationIds = category.locationIds;
-        NSPredicate *predicate = [template predicateWithSubstitutionVariables:[NSDictionary dictionaryWithObject:locationIds forKey:@"uids"]];
-        category.locations = [modifiedObjects filteredSetUsingPredicate:predicate];
+        if (locationIds) {
+            NSPredicate *predicate = [template predicateWithSubstitutionVariables:[NSDictionary dictionaryWithObject:locationIds forKey:@"uids"]];
+            category.locations = [modifiedObjects filteredSetUsingPredicate:predicate];
+        }
     }];
     
     [cdm saveData];
