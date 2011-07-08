@@ -3,6 +3,7 @@
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <CoreLocation/CoreLocation.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 
 #import "FacilitiesSummaryViewController.h"
 #import "FacilitiesCategory.h"
@@ -15,7 +16,8 @@
 #import "MITUIConstants.h"
 
 @interface FacilitiesSummaryViewController ()
-@property (nonatomic,retain) NSData *imageData;
+@property (nonatomic,retain) UIActivityIndicatorView *imageActivityView;
+@property (retain) NSData *imageData;
 
 - (UIView*)firstResponderInView:(UIView*)view;
 - (void)setAttachedImage:(UIImage *)image;
@@ -34,6 +36,7 @@
 @synthesize emailField = _emailField;
 @synthesize reportData = _reportData;
 @synthesize imageData = _imageData;
+@synthesize imageActivityView = _imageActivityView;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -54,6 +57,7 @@
     self.reportData = nil;
     self.scrollView = nil;
     self.imageButton = nil;
+    self.imageActivityView = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dealloc];
@@ -94,6 +98,18 @@
         self.descriptionContainingView.layer.cornerRadius = 10.0;
         self.descriptionContainingView.layer.borderWidth = 1.0;
         self.descriptionContainingView.layer.borderColor = [TABLE_SEPARATOR_COLOR CGColor];
+    }
+    
+    {
+        UIActivityIndicatorView *aiView = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge] autorelease];
+        aiView.hidesWhenStopped = YES;
+        
+        CGRect frame = aiView.frame;
+        frame.origin = CGPointMake((self.imageView.frame.size.width - frame.size.width) / 2.0,
+                                   (self.imageView.frame.size.height - frame.size.height) / 2.0);
+        aiView.frame = frame;
+        [self.imageView addSubview:aiView];
+        self.imageActivityView = aiView;
     }
     
     // restore old values (handle memory warning)
@@ -201,12 +217,13 @@
 
 - (void)setAttachedImage:(UIImage *)image {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:self.reportData];
-    if (image && self.imageData) {
+    if (self.imageData) {
         [dictionary setObject:self.imageData
                        forKey:FacilitiesRequestImageDataKey];
-    } else {
+    } else if (self.imageData == nil) {
         [dictionary removeObjectForKey:FacilitiesRequestImageDataKey];
     }
+    
     self.reportData = dictionary;
 
     if (image) {
@@ -363,68 +380,123 @@
         image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
     
-    NSMutableDictionary *imageProperties = [NSMutableDictionary dictionary];
-    NSMutableData *data = [NSMutableData data];
-    CGImageDestinationRef imageDest = CGImageDestinationCreateWithData((CFMutableDataRef)data,
-                                                                       kUTTypeJPEG,
-                                                                       1,
-                                                                       NULL);
+    self.imageData = nil;
     
-    [imageProperties setObject:[NSNumber numberWithInteger:[image imageOrientation]]
-                        forKey:(NSString*)kCGImagePropertyOrientation];
-    [imageProperties setObject:[NSNumber numberWithFloat:0.75]
-                        forKey:(NSString*)kCGImageDestinationLossyCompressionQuality];
+    CGRect rect = self.imageView.frame;
+    rect.origin = CGPointZero;
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
     
-    if ([picker sourceType] == UIImagePickerControllerSourceTypeCamera) {
-        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 4.1) {
-            if ([info objectForKey:UIImagePickerControllerMediaMetadata]) {
-                NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
-                if ([metadata objectForKey:(NSString*)kCGImagePropertyExifDictionary]) {
-                    [imageProperties setObject:[metadata objectForKey:(id)kCGImagePropertyExifDictionary]
-                                        forKey:(NSString*)kCGImagePropertyExifDictionary];
-                }
+    CGContextSetFillColorWithColor(context, [[UIColor grayColor] CGColor]);
+    CGContextFillRect(context, rect);
+    
+    UIImage *placeholderImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    [self setAttachedImage:placeholderImage];
+    [self.imageActivityView startAnimating];
+    
+    BOOL submitState = self.submitButton.enabled;
+    if (submitState == YES) {
+        self.submitButton.enabled = NO;
+    }
+    
+    void(^updateBlock)(UIImage*, NSDictionary*) = ^(UIImage *image, NSDictionary *metadata) {
+        NSMutableDictionary *imgProperties = nil;
+        
+        if (metadata) {
+            imgProperties = [NSMutableDictionary dictionaryWithDictionary:metadata];
+        } else {
+            imgProperties = [NSMutableDictionary dictionary];
+        }
+        
+        NSMutableData *imageData = [NSMutableData data];
+        CGImageDestinationRef imageDestination = CGImageDestinationCreateWithData((CFMutableDataRef)imageData,
+                                                                                  kUTTypeJPEG,
+                                                                                  1,
+                                                                                  NULL);
+        
+        [imgProperties setObject:[NSNumber numberWithFloat:0.75]
+                            forKey:(NSString*)kCGImageDestinationLossyCompressionQuality];
+        
+        if ([imgProperties objectForKey:(NSString*)kCGImagePropertyOrientation] == nil) {
+            [imgProperties setObject:[NSNumber numberWithInteger:[image imageOrientation]]
+                              forKey:(NSString*)kCGImagePropertyOrientation];
+        }
+        
+        if ([imgProperties objectForKey:(NSString*)kCGImagePropertyGPSDictionary] == nil) {
+            NSMutableDictionary *gpsDict = [NSMutableDictionary dictionaryWithCapacity:5];
+            CLLocationManager *locationManager = [[[CLLocationManager alloc] init] autorelease];
+            CLLocation *location = [locationManager location];
+            
+            if (location) {
+                [gpsDict setObject:[NSNumber numberWithDouble:fabs(location.coordinate.latitude)]
+                            forKey:(NSString*)kCGImagePropertyGPSLatitude];
+                [gpsDict setObject:((location.coordinate.latitude >= 0) ? @"N" : @"S")
+                            forKey:(NSString*)kCGImagePropertyGPSLatitudeRef];
+                [gpsDict setObject:[NSNumber numberWithDouble:fabs(location.coordinate.longitude)]
+                            forKey:(NSString*)kCGImagePropertyGPSLongitude];
+                [gpsDict setObject:((location.coordinate.longitude >= 0) ? @"E" : @"W")
+                            forKey:(NSString*)kCGImagePropertyGPSLongitudeRef];
+                [gpsDict setObject:[location.timestamp descriptionWithLocale:nil]
+                            forKey:(NSString*)kCGImagePropertyGPSTimeStamp];
                 
-                if ([metadata objectForKey:(NSString*)kCGImagePropertyExifAuxDictionary]) {
-                    [imageProperties setObject:[metadata objectForKey:(id)kCGImagePropertyExifAuxDictionary]
-                                        forKey:(NSString*)kCGImagePropertyExifAuxDictionary];
-                }
-                
-                if ([metadata objectForKey:(NSString*)kCGImagePropertyTIFFDictionary]) {
-                    [imageProperties setObject:[metadata objectForKey:(id)kCGImagePropertyTIFFDictionary]
-                                        forKey:(NSString*)kCGImagePropertyTIFFDictionary];
-                }
+                [imgProperties setObject:gpsDict
+                                    forKey:(NSString*)kCGImagePropertyGPSDictionary];
             }
         }
         
-        NSMutableDictionary *gpsDict = [NSMutableDictionary dictionaryWithCapacity:5];
-        CLLocationManager *locationManager = [[[CLLocationManager alloc] init] autorelease];
-        CLLocation *location = [locationManager location];
+        CGImageDestinationAddImage(imageDestination,
+                                   [image CGImage],
+                                   (CFDictionaryRef)imgProperties);
+        CGImageDestinationFinalize(imageDestination);
+        CFRelease(imageDestination);
         
-        [gpsDict setObject:[NSNumber numberWithDouble:location.coordinate.latitude]
-                    forKey:(NSString*)kCGImagePropertyGPSLatitude];
-        [gpsDict setObject:((location.coordinate.latitude >= 0) ? @"N" : @"S")
-                    forKey:(NSString*)kCGImagePropertyGPSLatitudeRef];
-        [gpsDict setObject:[NSNumber numberWithDouble:location.coordinate.longitude]
-                    forKey:(NSString*)kCGImagePropertyGPSLongitude];
-        [gpsDict setObject:((location.coordinate.longitude >= 0) ? @"E" : @"W")
-                    forKey:(NSString*)kCGImagePropertyGPSLongitudeRef];
-        [gpsDict setObject:[location.timestamp descriptionWithLocale:nil]
-                    forKey:(NSString*)kCGImagePropertyGPSTimeStamp];
+        self.imageData = imageData;
         
-        [imageProperties setObject:gpsDict
-                            forKey:(NSString*)kCGImagePropertyGPSDictionary];
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            self.submitButton.enabled = submitState;
+            [self.imageActivityView stopAnimating];
+            [self setAttachedImage:image];
+        }); 
+    };
+    
+    
+    NSMutableDictionary *imageProperties = [NSMutableDictionary dictionary];
+    
+    if ([picker sourceType] == UIImagePickerControllerSourceTypeCamera) {
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 4.1) {
+            NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
+            if (metadata) {
+                [imageProperties addEntriesFromDictionary:metadata];
+            }
+        }
+        
+        dispatch_queue_t tempQueue = dispatch_queue_create("edu.mit.mobile.UIImagePickerControllerDelegate", 0);
+        dispatch_async(tempQueue, ^(void) {
+            updateBlock(image, imageProperties);
+        });
+        dispatch_release(tempQueue);
     } else if ([picker sourceType] == UIImagePickerControllerSourceTypePhotoLibrary) {
-        
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 4.1) {
+            NSURL *assetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+            if (assetURL) {
+                ALAssetsLibrary *assetLibrary = [[[ALAssetsLibrary alloc] init] autorelease];
+                [assetLibrary assetForURL:assetURL
+                              resultBlock:^(ALAsset *asset) {
+                                  updateBlock(image,asset.defaultRepresentation.metadata);
+                              }
+                             failureBlock:^(NSError *error) {
+                                 WLog(@"Failed to load image metadata: %@", [error localizedDescription]);
+                             }];
+            }
+        } else {
+            dispatch_queue_t tempQueue = dispatch_queue_create("edu.mit.mobile.UIImagePickerControllerDelegate", 0);
+            dispatch_async(tempQueue, ^(void) {
+                updateBlock(image, nil);
+            });
+            dispatch_release(tempQueue);
+        }
     }
-    
-    CGImageDestinationAddImage(imageDest,
-                               [image CGImage],
-                               (CFDictionaryRef)imageProperties);
-    CGImageDestinationFinalize(imageDest);
-    CFRelease(imageDest);
-    
-    self.imageData = data;
-    [self setAttachedImage:image];
     
     [self.navigationController dismissModalViewControllerAnimated:YES];
 }
