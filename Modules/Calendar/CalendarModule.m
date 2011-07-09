@@ -5,14 +5,11 @@
 #import "MITModuleURL.h"
 #import "MITMobileWebAPI.h"
 #import "CalendarEventMapAnnotation.h"
-#import <MapKit/MapKit.h>
 #import "MITEventList.h"
-#import "OpenHouseTableView.h"
 
 @interface CalendarModule (Private)
 
 - (BOOL)localPathHelper:(NSString *)path queryDict:(NSDictionary *)queryDict;
-- (void)setupMapView:(UIViewController *)theVC queryDict:(NSDictionary *)queryDict;
 
 @end
 
