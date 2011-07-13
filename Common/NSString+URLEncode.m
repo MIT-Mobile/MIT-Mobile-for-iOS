@@ -1,4 +1,4 @@
-#import "NSString+URLEncoding.h"
+#import "NSString+URLEncode.h"
 
 // RFC 3986 reserved characters
 static NSString *rfc6986_Reserved = @":/?#[]@!$&'()*+,;=";
@@ -6,11 +6,7 @@ static NSString *rfc6986_Reserved = @":/?#[]@!$&'()*+,;=";
 // RFC 1738 unsafe characters
 static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
 
-@implementation NSString (URLEncoding)
-- (NSString*)urlEncodeUsingEncoding:(NSStringEncoding)encoding {
-    return [self urlEncodeUsingEncoding:encoding useFormURLEncoded:NO];
-}
-
+@implementation NSString (MITURLEncoding)
 - (NSString*)urlEncodeUsingEncoding:(NSStringEncoding)encoding useFormURLEncoded:(BOOL)formUrlEncoded {
     NSString *forceEscapedCharacters = [rfc6986_Reserved stringByAppendingString:rfc1738_Unsafe];
     NSString *stringToEncode = self;
@@ -38,6 +34,10 @@ static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
     }
                                    
     return encodedString;
+}
+
+- (NSString*)urlEncodeUsingEncoding:(NSStringEncoding)encoding {
+    return [self urlEncodeUsingEncoding:encoding useFormURLEncoded:NO];
 }
 
 - (NSString*)urlDecodeUsingEncoding:(NSStringEncoding)encoding {

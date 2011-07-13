@@ -3,7 +3,7 @@
 #import "MITMobileServerConfiguration.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITJSON.h"
-#import "NSString+URLEncoding.h"
+#import "NSString+URLEncode.h"
 
 #define TIMED_OUT_CODE -1001
 #define JSON_ERROR_CODE -2
