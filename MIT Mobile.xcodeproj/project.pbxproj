@@ -89,7 +89,6 @@
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB645EC134CC63800E85E64 /* QRReaderHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */; };
 		2CB64608134CF13500E85E64 /* QRReaderScanViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */; };
-		2CBCFF3413E1919200E3B610 /* NSString+URLEncode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBCFF3313E1919200E3B610 /* NSString+URLEncode.m */; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; };
 		2CCB85F91361F44E0024E474 /* FacilitiesLocationData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */; };
@@ -513,8 +512,6 @@
 		2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderHistoryViewController.m; sourceTree = "<group>"; };
 		2CB64605134CF13500E85E64 /* QRReaderScanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderScanViewController.h; sourceTree = "<group>"; };
 		2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = QRReaderScanViewController.mm; sourceTree = "<group>"; };
-		2CBCFF3213E1919200E3B610 /* NSString+URLEncode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+URLEncode.h"; sourceTree = "<group>"; };
-		2CBCFF3313E1919200E3B610 /* NSString+URLEncode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+URLEncode.m"; sourceTree = "<group>"; };
 		2CC487CD13B3854600E58350 /* FacilitiesLocationSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocationSearch.h; sourceTree = "<group>"; };
 		2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationSearch.m; sourceTree = "<group>"; };
 		2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileServerConfiguration.h; sourceTree = "<group>"; };
@@ -1062,8 +1059,6 @@
 				DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */,
 				29974B6F1160F1DA009D03B9 /* URLShortener.h */,
 				29974B701160F1DA009D03B9 /* URLShortener.m */,
-				2CBCFF3213E1919200E3B610 /* NSString+URLEncode.h */,
-				2CBCFF3313E1919200E3B610 /* NSString+URLEncode.m */,
 				DEAF6EEE13B3C7B40078AB8F /* PlaceholderTextView.h */,
 				DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */,
 			);
@@ -2460,7 +2455,6 @@
 				2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */,
 				2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */,
 				2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */,
-				2CBCFF3413E1919200E3B610 /* NSString+URLEncode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
