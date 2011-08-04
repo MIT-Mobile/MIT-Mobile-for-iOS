@@ -7,8 +7,10 @@ NSDictionary* MobileKeychainFindItem(NSString *itemIdentifier, BOOL returnData) 
                          forKey:(id)kSecClass];
     [searchDictionary setObject:(id)[itemIdentifier dataUsingEncoding:NSUTF8StringEncoding]
                          forKey:(id)kSecAttrGeneric];
-    //[searchDictionary setObject:(id)kCFBooleanTrue
-    //                     forKey:(id)kSecReturnAttributes];
+    [searchDictionary setObject:(id)itemIdentifier
+                         forKey:(id)kSecAttrService];
+    [searchDictionary setObject:(id)kCFBooleanTrue
+                         forKey:(id)kSecReturnAttributes];
 
     NSLog(@"'%@'", itemIdentifier);
     NSDictionary *itemAttrs = nil;
@@ -29,7 +31,7 @@ NSDictionary* MobileKeychainFindItem(NSString *itemIdentifier, BOOL returnData) 
             NSString *pwString = [[NSString alloc] initWithData:passwordData
                                                        encoding:NSUTF8StringEncoding];
             [dict setObject:pwString
-                          forKey:(id)kSecValueData];
+                     forKey:(id)kSecValueData];
             
             [pwString release];
             [itemAttrs release];
@@ -45,8 +47,10 @@ NSDictionary* MobileKeychainAttributesForItem(NSString *itemIdentifier) {
     
     [searchDictionary setObject:(id)kSecClassGenericPassword
                          forKey:(id)kSecClass];
-    [searchDictionary setObject:(id)kSecAttrGeneric
-                         forKey:(id)[itemIdentifier dataUsingEncoding:NSUTF8StringEncoding]];
+    [searchDictionary setObject:(id)itemIdentifier
+                         forKey:(id)kSecAttrService];
+    [searchDictionary setObject:(id)[itemIdentifier dataUsingEncoding:NSUTF8StringEncoding]
+                         forKey:(id)kSecAttrGeneric];
     [searchDictionary setObject:(id)kSecReturnAttributes
                          forKey:(id)kCFBooleanTrue];
     
@@ -75,22 +79,28 @@ BOOL MobileKeychainSetItem(NSString *itemIdentifier, NSString *username, NSStrin
         NSMutableDictionary *searchDictionary = [NSMutableDictionary dictionary];
         [searchDictionary setObject:(id)kSecClassGenericPassword
                              forKey:(id)kSecClass];
-        [searchDictionary setObject:(id)kSecAttrGeneric
-                             forKey:(id)[itemIdentifier dataUsingEncoding:NSUTF8StringEncoding]];
+        [searchDictionary setObject:(id)itemIdentifier
+                             forKey:(id)kSecAttrService];
+        [searchDictionary setObject:(id)[itemIdentifier dataUsingEncoding:NSUTF8StringEncoding]
+                             forKey:(id)kSecAttrGeneric];
         
         NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
         if ([username length] > 0) {
-            [attributes setObject:(id)[username dataUsingEncoding:NSUTF8StringEncoding]
+            [attributes setObject:(id)username
                            forKey:(id)kSecAttrAccount];
         }
         
         error = SecItemUpdate((CFDictionaryRef)searchDictionary, (CFDictionaryRef)attributes);
     } else {
         if ([username length] > 0) {
-            [attributes setObject:(id)[username dataUsingEncoding:NSUTF8StringEncoding]
-                           forKey:(id)kSecAttrAccount];
             [attributes setObject:(id)kSecClassGenericPassword
                            forKey:(id)kSecClass];
+            [attributes setObject:(id)itemIdentifier
+                           forKey:(id)kSecAttrService];
+            [attributes setObject:(id)[itemIdentifier dataUsingEncoding:NSUTF8StringEncoding]
+                           forKey:(id)kSecAttrGeneric];
+            [attributes setObject:(id)username
+                           forKey:(id)kSecAttrAccount];
             //[attributes setObject:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]
             //               forKey:(id)kSecAttrAccessGroup];
             error = SecItemAdd((CFDictionaryRef)attributes, NULL);
@@ -112,8 +122,8 @@ BOOL MobileKeychainDeleteItem(NSString *itemIdentifier) {
     NSMutableDictionary *searchDictionary = [NSMutableDictionary dictionary];
     [searchDictionary setObject:(id)kSecClassGenericPassword
                          forKey:(id)kSecClass];
-    [searchDictionary setObject:(id)kSecAttrGeneric
-                         forKey:(id)[itemIdentifier dataUsingEncoding:NSUTF8StringEncoding]];
+    [searchDictionary setObject:(id)itemIdentifier
+                         forKey:(id)kSecAttrService];
     
     error = SecItemDelete((CFDictionaryRef)searchDictionary);
     
