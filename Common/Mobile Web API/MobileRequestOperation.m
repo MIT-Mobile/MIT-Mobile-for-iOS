@@ -174,7 +174,7 @@ typedef enum {
 
 #pragma mark - Private Methods
 - (BOOL)authenticationRequired {
-    NSDictionary *authItem = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
+    NSDictionary *authItem = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
     
     if (authItem) {
         self.touchstoneUser = [authItem objectForKey:(id)kSecAttrAccount];
