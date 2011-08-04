@@ -33,16 +33,16 @@ enum {
 - (id)initWithIdentifier:(NSString*)identifier {
     NSDictionary *keychainItem = MobileKeychainFindItem(identifier, YES);
     
-    return [self initWithUsername:[keychainItem objectForKey:(id)kSecAttrAccount]
-                         password:[keychainItem objectForKey:(id)kSecValueData]];
+    return [self initWithUsername:[keychainItem objectForKey:kSecAttrAccount]
+                         password:[keychainItem objectForKey:kSecValueData]];
 }
 
 - (id)initWithUsername:(NSString*)aUsername password:(NSString*)aPassword;
 {
     self = [super init];
     if (self) {
-        self.password = aUsername;
-        self.username = aPassword;
+        self.username = aUsername;
+        self.password = aPassword;
     }
     
     return self;
@@ -208,9 +208,7 @@ enum {
 
 #pragma mark - UITextField Delegate
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    if (textField == self.usernameField) {
-        self.loginButton.enabled = ([textField.text length] > 0);
-    }
+    self.loginButton.enabled = ([self.usernameField.text length] > 0) && ([self.passwordField.text length] > 0);
     
     if ([string isEqualToString:@"\n"]) {
         [textField resignFirstResponder];
