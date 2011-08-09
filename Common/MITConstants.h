@@ -134,3 +134,16 @@ typedef enum {
 // Info.plist additions
 extern NSString * const MITBuildRevisionKey;
 extern NSString * const MITBuildDescriptionKey;
+
+
+/* Touchstone/Shibboleth-related errors */
+extern NSString * const MobileWebErrorDomain;
+extern NSString * const MobileWebTouchstoneErrorDomain;
+
+enum {
+    MobileWebUnknownError = 0,
+    MobileWebTouchstoneError,
+    MobileWebInvalidLoginError,
+    MobileWebSAMLError,
+    MobileWebUserCanceled
+};

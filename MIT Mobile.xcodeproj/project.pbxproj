@@ -79,7 +79,6 @@
 		2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */; };
 		2C5DECD613E9BABB00F9C089 /* MobileRequestLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCC13E9BABB00F9C089 /* MobileRequestLoginViewController.m */; };
 		2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */; };
-		2C5DECD813E9BABB00F9C089 /* MobileWebConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECD013E9BABB00F9C089 /* MobileWebConstants.m */; };
 		2C5DECD913E9BABB00F9C089 /* SAMLResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECD213E9BABB00F9C089 /* SAMLResponse.m */; };
 		2C5DECDA13E9BABB00F9C089 /* TouchstoneAuthResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECD413E9BABB00F9C089 /* TouchstoneAuthResponse.m */; };
 		2C5DECDC13E9BEF400F9C089 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5DECDB13E9BEF400F9C089 /* libz.dylib */; };
@@ -503,8 +502,6 @@
 		2C5DECCC13E9BABB00F9C089 /* MobileRequestLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileRequestLoginViewController.m; sourceTree = "<group>"; };
 		2C5DECCD13E9BABB00F9C089 /* MobileRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestOperation.h; sourceTree = "<group>"; };
 		2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileRequestOperation.m; sourceTree = "<group>"; };
-		2C5DECCF13E9BABB00F9C089 /* MobileWebConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileWebConstants.h; sourceTree = "<group>"; };
-		2C5DECD013E9BABB00F9C089 /* MobileWebConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileWebConstants.m; sourceTree = "<group>"; };
 		2C5DECD113E9BABB00F9C089 /* SAMLResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAMLResponse.h; sourceTree = "<group>"; };
 		2C5DECD213E9BABB00F9C089 /* SAMLResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAMLResponse.m; sourceTree = "<group>"; };
 		2C5DECD313E9BABB00F9C089 /* TouchstoneAuthResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchstoneAuthResponse.h; sourceTree = "<group>"; };
@@ -1377,8 +1374,6 @@
 				2C5DECCC13E9BABB00F9C089 /* MobileRequestLoginViewController.m */,
 				2C5DECCD13E9BABB00F9C089 /* MobileRequestOperation.h */,
 				2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */,
-				2C5DECCF13E9BABB00F9C089 /* MobileWebConstants.h */,
-				2C5DECD013E9BABB00F9C089 /* MobileWebConstants.m */,
 				2C5DECD113E9BABB00F9C089 /* SAMLResponse.h */,
 				2C5DECD213E9BABB00F9C089 /* SAMLResponse.m */,
 				2C5DECD313E9BABB00F9C089 /* TouchstoneAuthResponse.h */,
@@ -2520,7 +2515,6 @@
 				2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */,
 				2C5DECD613E9BABB00F9C089 /* MobileRequestLoginViewController.m in Sources */,
 				2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */,
-				2C5DECD813E9BABB00F9C089 /* MobileWebConstants.m in Sources */,
 				2C5DECD913E9BABB00F9C089 /* SAMLResponse.m in Sources */,
 				2C5DECDA13E9BABB00F9C089 /* TouchstoneAuthResponse.m in Sources */,
 			);
