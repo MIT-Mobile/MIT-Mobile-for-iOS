@@ -1,34 +1,33 @@
+#import <QuartzCore/QuartzCore.h>
+
 #import "MobileRequestLoginViewController.h"
 #import "MobileKeychainServices.h"
-
-NSString* const MobileLoginKeychainIdentifier = @"edu.mit.mobile.MobileWebLogin";
-
-enum {
-    OKButtonTag = 0,
-    CancelButtonTag
-};
 
 @interface MobileRequestLoginViewController ()
 @property (nonatomic,retain) UIButton *loginButton;
 @property (nonatomic,retain) UITextField *usernameField;
 @property (nonatomic,retain) UITextField *passwordField;
+@property (nonatomic,retain) UILabel *errorLabel;
 @property (nonatomic,assign) BOOL shouldSaveLogin;
 @property (nonatomic,copy) NSString *username;
 @property (nonatomic,copy) NSString *password;
+@property (nonatomic,retain) UIView *activityView;
 
-- (IBAction)buttonPressed:(id)sender;
+- (IBAction)cancelButtonPressed:(id)sender;
+- (IBAction)loginButtonPressed:(id)sender;
 - (IBAction)toggleLoginSave:(id)sender;
 @end
 
 @implementation MobileRequestLoginViewController
-@synthesize username,
-            password,
-            delegate,
-            shouldSaveLogin,
-            loginButton;
-
-@synthesize usernameField = _usernameField;
-@synthesize passwordField = _passwordField;
+@synthesize activityView = _activityView,
+            delegate = _delegate,
+            errorLabel = _errorLabel,
+            loginButton = _loginButton,
+            passwordField = _passwordField,
+            shouldSaveLogin = _shouldSaveLogin,
+            usernameField = _usernameField,
+            username = _username,
+            password = _password;
 
 - (id)initWithIdentifier:(NSString*)identifier {
     NSDictionary *keychainItem = MobileKeychainFindItem(identifier, YES);
@@ -65,19 +64,21 @@ enum {
                                                green:0.776
                                                 blue:0.839
                                                alpha:1.0];
-    
     {
-        UILabel *titleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(50, 20, 220, 41)] autorelease];
-        titleLabel.text = @"Touchstone Login";
-        titleLabel.textColor = [UIColor blackColor];
-        titleLabel.font = [UIFont systemFontOfSize:24.0];
-        titleLabel.textAlignment = UITextAlignmentCenter;
-        titleLabel.backgroundColor = [UIColor clearColor];
-        [mainView addSubview:titleLabel];
+        CGRect navBarFrame = CGRectMake(0, 0, 320, 44);
+        UINavigationBar *navBar = [[[UINavigationBar alloc] initWithFrame:navBarFrame] autorelease];
+        UINavigationItem *navItem = [[[UINavigationItem alloc] initWithTitle:@"Login"] autorelease];
+        UIBarButtonItem *cancelItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                     target:self
+                                                                                     action:@selector(cancelButtonPressed:)] autorelease];
+        [navItem setLeftBarButtonItem:cancelItem];
+        [navBar setItems:[NSArray arrayWithObject:navItem]];
+        
+        [mainView addSubview:navBar];
     }
     
     {
-        UILabel *infoLabel = [[[UILabel alloc] initWithFrame:CGRectMake(20, 70, 280, 50)] autorelease];
+        UILabel *infoLabel = [[[UILabel alloc] initWithFrame:CGRectMake(20, 44, 280, 50)] autorelease];
         infoLabel.text = @"Please enter your Touchstone username and password below";
         infoLabel.textColor = [UIColor blackColor];
         infoLabel.textAlignment = UITextAlignmentLeft;
@@ -89,7 +90,20 @@ enum {
     }
     
     {
-        CGRect userFrame = CGRectMake(50, 175, 220, 31);
+        UILabel *errorLabel = [[[UILabel alloc] initWithFrame:CGRectMake(50, 102, 220, 40)] autorelease];
+        errorLabel.hidden = NO;
+        errorLabel.numberOfLines = 2;
+        errorLabel.lineBreakMode = UILineBreakModeWordWrap;
+        errorLabel.textAlignment = UITextAlignmentCenter;
+        errorLabel.textColor = [UIColor redColor];
+        errorLabel.backgroundColor = [UIColor clearColor];
+        
+        self.errorLabel = errorLabel;
+        [mainView addSubview:self.errorLabel];
+    }
+    
+    {
+        CGRect userFrame = CGRectMake(50, 150, 220, 31);
         UITextField *userField = [[[UITextField alloc] initWithFrame:userFrame] autorelease];
         userField.placeholder = @"Username";
         userField.borderStyle = UITextBorderStyleRoundedRect;
@@ -109,7 +123,7 @@ enum {
     }
     
     {
-        CGRect passFrame = CGRectMake(50, 215, 220, 31);
+        CGRect passFrame = CGRectMake(50, 189, 220, 31);
         
         UITextField *passField = [[[UITextField alloc] initWithFrame:passFrame] autorelease];
         passField.placeholder = @"Password";
@@ -130,7 +144,7 @@ enum {
     }
     
     {
-        CGRect saveFrame = CGRectMake(85, 292, 150, 21);
+        CGRect saveFrame = CGRectMake(85, 228, 150, 21);
         UILabel *saveLabel = [[[UILabel alloc] initWithFrame:saveFrame] autorelease];
         saveLabel.textAlignment = UITextAlignmentCenter;
         saveLabel.text = @"Save your login?";
@@ -139,7 +153,7 @@ enum {
     }
     
     {
-        CGRect switchFrame = CGRectMake(121, 321, 79, 27);
+        CGRect switchFrame = CGRectMake(121, 257, 79, 27);
         UISwitch *checkButton = [[[UISwitch alloc] initWithFrame:switchFrame] autorelease];
         
         [checkButton addTarget:self
@@ -150,30 +164,14 @@ enum {
     }
     
     {
-        CGRect cancelFrame = CGRectMake(20, 403, 98, 37);
-        UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        cancelButton.frame = cancelFrame;
-        cancelButton.tag = CancelButtonTag;
-        
-        [cancelButton setTitle:@"Cancel"
-                      forState:UIControlStateNormal];
-        [cancelButton addTarget:self
-                         action:@selector(buttonPressed:)
-               forControlEvents:UIControlEventTouchUpInside];
-        
-        [mainView addSubview:cancelButton];
-    }
-    
-    {
-        CGRect okFrame = CGRectMake(202, 403, 98, 37);
+        CGRect okFrame = CGRectMake(85,382,150,37);
         UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         submitButton.frame = okFrame;
-        submitButton.tag = OKButtonTag;
         
-        [submitButton setTitle:@"OK"
+        [submitButton setTitle:@"Submit"
                       forState:UIControlStateNormal];
         [submitButton addTarget:self
-                         action:@selector(buttonPressed:)
+                         action:@selector(loginButtonPressed:)
                forControlEvents:UIControlEventTouchUpInside];
         submitButton.enabled = NO;
         
@@ -181,29 +179,75 @@ enum {
         [mainView addSubview:submitButton];
     }
     
+    {
+        UIView *promptView = [[[UIView alloc] initWithFrame:CGRectMake(64, 164, 190, 132)] autorelease];
+        promptView.backgroundColor = [UIColor colorWithWhite:0.0
+                                                       alpha:0.85];
+        promptView.layer.borderColor = [[UIColor whiteColor] CGColor];
+        promptView.layer.borderWidth = 2.0;
+        promptView.layer.cornerRadius = 5.0;
+        
+        {
+            UILabel *infoLabel = [[[UILabel alloc] initWithFrame:CGRectMake(20, 20, 150, 47)] autorelease];
+            infoLabel.text = @"Logging into Touchstone";
+            infoLabel.numberOfLines = 2;
+            infoLabel.lineBreakMode = UILineBreakModeWordWrap;
+            infoLabel.backgroundColor = [UIColor clearColor];
+            infoLabel.textAlignment = UITextAlignmentCenter;
+            infoLabel.textColor = [UIColor whiteColor];
+            [promptView addSubview:infoLabel];
+        }
+        
+        {
+            UIActivityIndicatorView *activityView = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge] autorelease];
+            activityView.frame = CGRectMake(77, 75, 37, 37);
+            activityView.hidesWhenStopped = NO;
+            [activityView startAnimating];
+            [promptView addSubview:activityView];
+        }
+        
+        self.activityView = promptView;
+    }
+    
     [self setView:[mainView autorelease]];
 }
 
-- (IBAction)buttonPressed:(id)sender {
+- (IBAction)cancelButtonPressed:(id)sender {
+    [self showError:nil];
     if (self.delegate) {
-        switch ([sender tag]) {
-            case OKButtonTag:
-                [self.delegate loginRequest:self
-                         didEndWithUsername:self.usernameField.text
-                                   password:self.passwordField.text
-                            shouldSaveLogin:self.shouldSaveLogin];
-                break;
-                
-            case CancelButtonTag:
-            default:
-                [self.delegate cancelWasPressesForLoginRequest:self];
-                break;
-        }
+        [self.delegate cancelWasPressedForLoginRequest:self];
+    }
+}
+
+- (IBAction)loginButtonPressed:(id)sender {
+    [self showError:nil];
+    
+    if (self.delegate) {
+        [self.delegate loginRequest:self
+                 didEndWithUsername:self.usernameField.text
+                           password:self.passwordField.text
+                    shouldSaveLogin:self.shouldSaveLogin];
     }
 }
 
 - (IBAction)toggleLoginSave:(id)sender {
     self.shouldSaveLogin = !self.shouldSaveLogin;
+}
+
+- (void)showError:(NSString*)error {
+    if (error == nil) {
+        self.errorLabel.text = @"";
+    } else {
+        self.errorLabel.text = error;
+    }
+}
+
+- (void)showActivityView {
+    [self.view addSubview:self.activityView];
+}
+
+- (void)hideActivityView {
+    [self.activityView removeFromSuperview];
 }
 
 #pragma mark - UITextField Delegate
@@ -226,10 +270,7 @@ enum {
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
     if (textField == self.usernameField) {
-        if ([self.passwordField.text length] == 0) {
-            [self.usernameField resignFirstResponder];
             [self.passwordField becomeFirstResponder];
-        }
     } else {
         [textField resignFirstResponder];
     }

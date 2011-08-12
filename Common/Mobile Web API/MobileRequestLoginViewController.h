@@ -1,7 +1,5 @@
 #import <UIKit/UIKit.h>
 
-extern NSString* const MobileLoginKeychainIdentifier;
-
 @class MobileRequestLoginViewController;
 
 @protocol MobileRequestLoginViewDelegate 
@@ -10,14 +8,11 @@ extern NSString* const MobileLoginKeychainIdentifier;
   didEndWithUsername:(NSString*)username
             password:(NSString*)password
      shouldSaveLogin:(BOOL)saveLogin;
-- (void)cancelWasPressesForLoginRequest:(MobileRequestLoginViewController*)view;
+- (void)cancelWasPressedForLoginRequest:(MobileRequestLoginViewController*)view;
 @end
 
 @interface MobileRequestLoginViewController : UIViewController <UITextFieldDelegate> {
-    UITextField *_usernameField;
-    UITextField *_passwordField;
-    UISwitch *_saveLoginButton;
-    UIButton *_submitButton;
+
 }
 
 @property (nonatomic,assign) id<MobileRequestLoginViewDelegate> delegate;
@@ -25,4 +20,7 @@ extern NSString* const MobileLoginKeychainIdentifier;
 - (id)initWithIdentifier:(NSString*)identifier;
 - (id)initWithUsername:(NSString*)user password:(NSString*)password;
 
+- (void)showError:(NSString*)error;
+- (void)showActivityView;
+- (void)hideActivityView;
 @end
