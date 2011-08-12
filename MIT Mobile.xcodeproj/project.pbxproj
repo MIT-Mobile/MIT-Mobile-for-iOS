@@ -63,6 +63,7 @@
 		2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */; };
 		2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09824B13A8F21D00778B53 /* ModuleVersions.m */; };
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
+		2C14C61B13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */; };
 		2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */; };
 		2C18073C1382C32D000CCB6F /* FacilitiesTypeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C18073B1382C32D000CCB6F /* FacilitiesTypeViewController.m */; };
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
@@ -475,6 +476,8 @@
 		2C09824B13A8F21D00778B53 /* ModuleVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModuleVersions.m; sourceTree = "<group>"; };
 		2C0A33691355CEF300786493 /* QRReaderImageTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderImageTransformer.h; sourceTree = "<group>"; };
 		2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderImageTransformer.m; sourceTree = "<group>"; };
+		2C14C61913F5B91700B7AD95 /* MobileRequestAuthenticationTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestAuthenticationTracker.h; sourceTree = "<group>"; };
+		2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileRequestAuthenticationTracker.m; sourceTree = "<group>"; };
 		2C17C7C8137AECF2006888EB /* FacilitiesRoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRoom.h; sourceTree = "<group>"; };
 		2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRoom.m; sourceTree = "<group>"; };
 		2C18073A1382C32D000CCB6F /* FacilitiesTypeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesTypeViewController.h; sourceTree = "<group>"; };
@@ -1371,6 +1374,8 @@
 		2C5DECC813E9BABB00F9C089 /* Mobile Web API */ = {
 			isa = PBXGroup;
 			children = (
+				2C14C61913F5B91700B7AD95 /* MobileRequestAuthenticationTracker.h */,
+				2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */,
 				2CAFCBE013F1C3F0007983D8 /* TBXML+MIT.h */,
 				2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */,
 				2C5DECC913E9BABB00F9C089 /* MobileKeychainServices.h */,
@@ -2523,6 +2528,7 @@
 				2C5DECD913E9BABB00F9C089 /* SAMLResponse.m in Sources */,
 				2C5DECDA13E9BABB00F9C089 /* TouchstoneAuthResponse.m in Sources */,
 				2CAFCBE213F1C3F0007983D8 /* TBXML+MIT.m in Sources */,
+				2C14C61B13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
