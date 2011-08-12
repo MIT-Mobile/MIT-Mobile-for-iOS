@@ -12,11 +12,10 @@ NSDictionary* MobileKeychainFindItem(NSString *itemIdentifier, BOOL returnData) 
     [searchDictionary setObject:(id)kCFBooleanTrue
                          forKey:(id)kSecReturnAttributes];
 
-    NSLog(@"'%@'", itemIdentifier);
     NSDictionary *itemAttrs = nil;
     OSStatus error = SecItemCopyMatching((CFDictionaryRef)searchDictionary, (CFTypeRef*)&itemAttrs);
     
-    if (error != noErr) {
+    if ((error != noErr) && (error != errSecItemNotFound)) {
         NSLog(@"SecItemCopyMatching failed with error %ld", error);
     } else if (returnData) {
         [searchDictionary setObject:(id)kCFBooleanTrue
