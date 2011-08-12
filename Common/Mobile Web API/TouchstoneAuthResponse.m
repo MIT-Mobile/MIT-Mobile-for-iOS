@@ -1,14 +1,18 @@
 #import "TouchstoneAuthResponse.h"
-#import "MobileWebConstants.h"
+#import "MITConstants.h"
 #import "TBXML.h"
+#import "TBXML+MIT.h"
 
 @interface TouchstoneAuthResponse ()
 @property (nonatomic,retain) NSString* postURLPath;
 @property (nonatomic,retain) NSError* error;
+
+- (NSError*)findErrorInDocument:(TBXMLElement*)rootElement;
 @end
 
 @implementation TouchstoneAuthResponse
-@synthesize postURLPath, error;
+@synthesize postURLPath = _postURLPath;
+@synthesize error = _error;
 
 - (id)initWithResponseData:(NSData*)response
 {
@@ -16,7 +20,9 @@
     if (self) {
         TBXML *doc = [[TBXML alloc] initWithXMLData:response];
         
-        if (doc.rootXMLElement) {
+        self.error = [self findErrorInDocument:doc.rootXMLElement];
+        
+        if (self.error == nil) {
             TBXMLElement *element = [TBXML childElementWithId:@"loginform"
                                                 parentElement:doc.rootXMLElement
                                               recursiveSearch:YES];
@@ -30,47 +36,60 @@
                                                  userInfo:nil];
                 }
             } else {
-                TBXMLElement *loginboxDiv = [TBXML childElementWithId:@"loginbox"
-                                                        parentElement:doc.rootXMLElement
-                                                      recursiveSearch:YES];
-                TBXMLElement *errorDiv = NULL;
-                NSArray *array = [TBXML elementsWithPath:[@"div/p" componentsSeparatedByString:@"/"]
-                                           parentElement:loginboxDiv];
                 
-                for (NSValue *value in array) {
-                    TBXMLElement *element = (TBXMLElement*)[value pointerValue];
-                    NSString *class = [TBXML valueOfAttributeNamed:@"class" forElement:element];
-                    
-                    if ([class caseInsensitiveCompare:@"class"] == NSOrderedSame) {
-                        errorDiv = element;
-                        break;
-                    }
-                }
-                
-                if (errorDiv) {
-                    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-                    [userInfo setObject:[TBXML textForElement:errorDiv]
-                                                       forKey:NSLocalizedDescriptionKey];
-                    self.error = [NSError errorWithDomain:MobileWebTouchstoneErrorDomain
-                                                     code:MobileWebTouchstoneError 
-                                                 userInfo:userInfo];
-                    
-                } else {
-                    self.error = [NSError errorWithDomain:MobileWebTouchstoneErrorDomain
-                                                     code:MobileWebTouchstoneError
-                                                 userInfo:nil];
-                }
             }
-        } else {
-            self.error = [NSError errorWithDomain:MobileWebErrorDomain
-                                             code:MobileWebUnknownError
-                                         userInfo:nil];
         }
         
         [doc release];
     }
     
     return self;
+}
+
+- (NSError*)findErrorInDocument:(TBXMLElement*)element {
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    NSError *error = nil;
+    
+    if (element) {
+        TBXMLElement *loginboxDiv = [TBXML childElementWithId:@"loginbox"
+                                                parentElement:element
+                                              recursiveSearch:YES];
+        NSArray *array = [TBXML elementsWithPath:[@"div/p" componentsSeparatedByString:@"/"]
+                                   parentElement:loginboxDiv];
+        
+        if ([array count] > 0) {
+            NSValue *value = [array objectAtIndex:0];
+            TBXMLElement *errorDiv = (TBXMLElement*)[value pointerValue];
+            
+            if (errorDiv) {
+                NSString *elementText = [[TBXML textForElement:errorDiv] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                [userInfo setObject:elementText
+                             forKey:NSLocalizedDescriptionKey];
+                
+                NSRange mitIdpRange = [elementText rangeOfString:@"Please enter a valid username and password"
+                                                         options:NSCaseInsensitiveSearch];
+                NSRange camsRange = [elementText rangeOfString:@"Enter your email address and password"
+                                                       options:NSCaseInsensitiveSearch];
+                if ((mitIdpRange.location != NSNotFound) || (camsRange.location != NSNotFound)) {
+                    error = [NSError errorWithDomain:MobileWebTouchstoneErrorDomain
+                                                code:MobileWebInvalidLoginError
+                                            userInfo:userInfo];
+                } else {
+                    error = [NSError errorWithDomain:MobileWebTouchstoneErrorDomain
+                                                code:MobileWebTouchstoneError 
+                                            userInfo:userInfo];
+                }
+            }
+        }
+    } else {
+        [userInfo setObject:@"Malformed XML response"
+                     forKey:NSLocalizedDescriptionKey];
+        error = [NSError errorWithDomain:MobileWebTouchstoneErrorDomain
+                                    code:MobileWebUnknownError 
+                                userInfo:userInfo];
+    }
+    
+    return error;
 }
 
 - (void)dealloc {
