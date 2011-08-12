@@ -136,14 +136,14 @@ extern NSString * const MITBuildRevisionKey;
 extern NSString * const MITBuildDescriptionKey;
 
 
-/* Touchstone/Shibboleth-related errors */
+// Touchstone* Identifier for keychain password
 extern NSString * const MobileWebErrorDomain;
 extern NSString * const MobileWebTouchstoneErrorDomain;
 
 enum {
     MobileWebUnknownError = 0,
     MobileWebTouchstoneError,
-    MobileWebInvalidLoginError,
-    MobileWebSAMLError,
-    MobileWebUserCanceled
+    MobileWebInvalidLoginError
 };
+
+extern NSString * const MobileLoginKeychainIdentifier;

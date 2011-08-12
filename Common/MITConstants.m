@@ -117,3 +117,5 @@ NSString * const MITBuildDescriptionKey = @"MITBuildDescription";
 /* Touchstone/Shibboleth-related errors */
 NSString * const MobileWebErrorDomain = @"MobileWebError";
 NSString * const MobileWebTouchstoneErrorDomain = @"MobileWebTouchstoneError";
+
+NSString* const MobileLoginKeychainIdentifier = @"edu.mit.mobile.MobileWebLogin";
