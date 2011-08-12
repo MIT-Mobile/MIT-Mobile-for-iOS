@@ -127,12 +127,4 @@ typedef struct _TBXMLAttributeBuffer {
 + (TBXMLElement*) nextSiblingNamed:(NSString*)aName searchFromElement:(TBXMLElement*)aXMLElement;
 + (TBXMLElement*) childElementNamed:(NSString*)aName parentElement:(TBXMLElement*)aParentXMLElement;
 
-
-/* Added by Blake Skinner - 07/26/2011 */
-+ (TBXMLElement*) childElementWithId:(NSString*)aId
-                       parentElement:(TBXMLElement*)aParentXMLElement
-                     recursiveSearch:(BOOL)isRecursiveSearch;
-
-+ (NSArray*) elementsWithPath:(NSArray*)aPath parentElement:(TBXMLElement*)aParentXMLElement;
-
 @end

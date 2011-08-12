@@ -193,7 +193,7 @@
 	return value;
 }
 
-+ (TBXMLElement*) childElementNamed:(NSString*)aName parentElement:(TBXMLElement*)aParentXMLElement {
++ (TBXMLElement*) childElementNamed:(NSString*)aName parentElement:(TBXMLElement*)aParentXMLElement{
 	TBXMLElement * xmlElement = aParentXMLElement->firstChild;
 	const char * name = [aName cStringUsingEncoding:NSUTF8StringEncoding];
 	while (xmlElement) {
@@ -215,59 +215,6 @@
 		xmlElement = xmlElement->nextSibling;
 	}
 	return nil;
-}
-
-+ (TBXMLElement*) childElementWithId:(NSString*)aId
-                       parentElement:(TBXMLElement*)aParentXMLElement
-                     recursiveSearch:(BOOL)isRecursiveSearch 
-{
-    if (([aId length] == 0) || (aParentXMLElement == NULL)) {
-        return NULL;
-    }
-    
-	TBXMLElement * xmlElement = aParentXMLElement;
-    while (xmlElement) {
-        NSString *attribute = [TBXML valueOfAttributeNamed:@"id"
-                                                forElement:xmlElement];
-
-        if (attribute && [aId isEqualToString:attribute]) {
-            return xmlElement;
-        }
-        
-        if (isRecursiveSearch) {
-            TBXMLElement *matchElement = [TBXML childElementWithId:aId
-                                                     parentElement:xmlElement->firstChild
-                                                   recursiveSearch:isRecursiveSearch];
-            if (matchElement) {
-                return matchElement;
-            }
-        }
-        
-        xmlElement = xmlElement->nextSibling;
-    }
-    
-    return NULL;
-}
-
-+ (NSArray*) elementsWithPath:(NSArray*)aPath parentElement:(TBXMLElement*)aParentXMLElement {
-    NSMutableArray *elements = [NSMutableArray array];
-    TBXMLElement *xmlElement = aParentXMLElement;
-    const char *path = [[aPath objectAtIndex:0] UTF8String];
-    
-    while(xmlElement) {
-        if (strcmp(path, xmlElement->name) == 0) {
-            if ([aPath count] == 1) {
-                [elements addObject:[NSValue valueWithPointer:xmlElement]];
-            } else {
-                [elements addObjectsFromArray:[TBXML elementsWithPath:[aPath subarrayWithRange:NSMakeRange(1, [aPath count] - 1)]
-                                                        parentElement:xmlElement->firstChild]];
-            }
-        }
-        
-        xmlElement = xmlElement->nextSibling;
-    }
-    
-    return (([elements count] > 0) ? elements : nil);
 }
 
 @end
