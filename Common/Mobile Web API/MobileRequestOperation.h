@@ -7,23 +7,14 @@ typedef void (^MobileRequestProgressBlock)(NSInteger bytesWritten, NSInteger tot
 typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id jsonResult, NSError *error);
 
 @interface MobileRequestOperation : NSOperation <MobileRequestLoginViewDelegate> {
-    NSString *_module;
-    NSString *_command;
-    NSString *_pathExtension;
-    NSDictionary *_parameters;
-    
-    NSURLRequest *_activeRequest;
-    NSURLConnection *_connection;
-    NSMutableData *_requestData;
-    
     BOOL _isExecuting;
-    BOOL _usePOST;
+    BOOL _isFinished;
 }
 
 @property (nonatomic,readonly,copy) NSString *module;
 @property (nonatomic,readonly,copy) NSString *command;
-@property (nonatomic,readonly,copy) NSString *pathExtension;
 @property (nonatomic,readonly,copy) NSDictionary *parameters;
+@property (nonatomic,copy) NSString *pathExtension;
 @property (nonatomic) BOOL usePOST;
 
 @property (nonatomic,copy) MobileRequestCompleteBlock completeBlock;

@@ -6,18 +6,19 @@
 #import "SAMLResponse.h"
 #import "MobileKeychainServices.h"
 #import "MobileRequestLoginViewController.h"
-#import "MobileWebConstants.h"
+#import "MITConstants.h"
 #import "Foundation+MITAdditions.h"
 #import "MITMobileServerConfiguration.h"
+#import "MobileRequestAuthenticationTracker.h"
 
-static dispatch_queue_t gAuthenticationQueue = NULL;
+static  MobileRequestAuthenticationTracker* gSecureStateTracker = nil;
 
 typedef enum {
     MobileRequestStateOK = 0,
     MobileRequestStateWAYF,
     MobileRequestStateIDP,
     MobileRequestStateAuth,
-    MobileRequestStateAuthGET,
+    MobileRequestStateAuthOK,
     MobileRequestStateCanceled,
     MobileRequestStateAuthError
 } MobileRequestState;
@@ -25,28 +26,38 @@ typedef enum {
 @interface MobileRequestOperation ()
 @property (nonatomic,copy) NSString *command;
 @property (nonatomic,copy) NSString *module;
-@property (nonatomic,copy) NSString *pathExtension;
 @property (nonatomic,copy) NSDictionary *parameters;
 @property (nonatomic,copy) NSURLRequest *initialRequest;
-@property (nonatomic,retain) NSMutableData *requestData;
-@property (nonatomic) MobileRequestState requestState;
-@property (nonatomic,retain) NSError *webError;
+@property BOOL isExecuting;
+@property BOOL isFinished;
 
-@property (copy) NSURLRequest *activeRequest;
+@property (nonatomic,copy) NSURLRequest *activeRequest;
 @property (retain) NSURLConnection *connection;
+@property (nonatomic,retain) MobileRequestLoginViewController *loginViewController;
+@property (nonatomic,retain) NSMutableData *requestData;
+@property (nonatomic,retain) NSError *requestError;
+@property (nonatomic) MobileRequestState requestState;
 @property (copy) NSString *touchstoneUser;
 @property (copy) NSString *touchstonePassword;
 
-@property BOOL isExecuting;
 
-- (void)dispatchAuthenticationBlock:(void (^)(void))authBlock;
+@property (retain) NSRunLoop *operationRunLoop;
 
-- (void)dispatchCompleteBlockWithResult:(id)jsonResult error:(NSError*)error;
-- (NSURLRequest*)buildURLRequest;
-- (void)handleJSONResult:(NSData*)jsonData;
+// Used to prevent the run loop from prematurely exiting
+// if there are no active connections and the class
+// is waiting for the user to authenticate
+@property (retain) NSTimer *runLoopTimer;
+
 
 - (BOOL)authenticationRequired;
+- (NSURLRequest*)buildURLRequest;
+- (void)dispatchCompleteBlockWithResult:(id)jsonResult
+                                  error:(NSError*)error;
 - (void)displayLoginPrompt;
+- (void)finish;
+- (void)transitionToState:(MobileRequestState)state
+          willSendRequest:(NSURLRequest*)request;
+
 @end
 
 @implementation MobileRequestOperation
@@ -54,60 +65,40 @@ typedef enum {
             command = _command,
             pathExtension = _pathExtension,
             parameters = _parameters,
-            connection = _connection,
             usePOST = _usePOST,
-            activeRequest = _activeRequest,
-            requestData = _requestData,
-            initialRequest,
-            requestState,
-            webError,
-            progressBlock,
-            completeBlock,
-            touchstoneUser,
-            touchstonePassword;
+            completeBlock = _completeBlock,
+            progressBlock = _progressBlock;
 
-@dynamic isExecuting;
+@synthesize activeRequest = _activeRequest,
+            connection = _connection,
+            loginViewController = _loginViewController,
+            initialRequest = _initialRequest,
+            operationRunLoop = _operationRunLoop,
+            runLoopTimer = _runLoopTimer,
+            requestData = _requestData,
+            requestState = _requestState,
+            requestError = _requestError,
+            touchstoneUser = _touchstoneUser,
+            touchstonePassword = _touchstonePassword;
+
+@dynamic isFinished, isExecuting;
 
 #pragma mark - Class Methods
 + (void)initialize {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        if (gAuthenticationQueue == NULL) {
-            gAuthenticationQueue = dispatch_queue_create("edu.mit.mobile.Authentication", 0);
-        }
-    });
+    gSecureStateTracker = [[MobileRequestAuthenticationTracker alloc] init];
 }
 
-- (void)dispatchAuthenticationBlock:(void (^)(void))authBlock {
-    dispatch_async(gAuthenticationQueue, ^(void) {
-        dispatch_suspend(gAuthenticationQueue);
         
-        if ([self authenticationRequired]) {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                [self displayLoginPrompt];
-            });
-        } else {
-            dispatch_resume(gAuthenticationQueue);
-        }
-    });
-    
-    dispatch_async(gAuthenticationQueue, ^(void) {
-        if (self.requestState == MobileRequestStateWAYF) {
-            dispatch_async(dispatch_get_main_queue(), authBlock);
-        }
-    });
-}
-
-
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params
 {
     self = [super init];
     if (self) {
         self.module = aModule;
         self.command = theCommand;
-        self.parameters = ((params == nil) ? [NSDictionary dictionary] : params);
-        self.pathExtension = nil;
         self.usePOST = NO;
+        
+        self.isExecuting = NO;
+        self.isFinished = NO;
     }
     
     return self;
@@ -120,46 +111,163 @@ typedef enum {
     self.pathExtension = nil;
     self.progressBlock = nil;
     self.completeBlock = nil;
-    self.requestData = nil;
+    
     self.activeRequest = nil;
+    self.connection = nil;
     self.initialRequest = nil;
+    self.operationRunLoop = nil;
+    self.requestData = nil;
+    self.requestError = nil;
+    self.touchstoneUser = nil;
+    self.touchstonePassword = nil;
     [super dealloc];
 }
 
-#pragma mark - Overriden Methods
-- (void)start {
-    NSURLRequest *request = [self urlRequest];
-    
-    if ([NSURLConnection canHandleRequest:request]) {
-        self.activeRequest = request;
-        self.initialRequest = request;
-        self.isExecuting = YES;
-        self.requestData = nil;
-        self.requestState = MobileRequestStateOK;
-        self.touchstonePassword = nil;
-        self.touchstoneUser = nil;
-        self.webError = nil;
-        
-        [self retain];
-        self.connection = [[[NSURLConnection alloc] initWithRequest:request
-                                                           delegate:self
-                                                   startImmediately:NO] autorelease];
-        [self.connection scheduleInRunLoop:[NSRunLoop mainRunLoop]
-                                   forMode:NSDefaultRunLoopMode];
-        [self.connection start];
-    }
-}
 
+#pragma mark - Lifecycle Methods
 - (BOOL)isConcurrent {
     return YES;
 }
 
+- (void)start {
+    NSURLRequest *request = [self urlRequest];
+    
+    if ([NSURLConnection canHandleRequest:request]) {
+        self.initialRequest = request;
+        self.requestData = nil;
+        self.requestError = nil;
+        self.touchstoneUser = nil;
+        self.touchstonePassword = nil;
+        
+        self.isExecuting = YES;
+        self.isFinished = NO;
+        
+        [self retain];
+        [self main];
+    }
+}
+
+- (void)main {
+    if ([NSThread isMainThread]) {
+        [NSThread detachNewThreadSelector:@selector(main)
+                                 toTarget:self
+                               withObject:nil];
+        return;
+    }
+    
+    self.operationRunLoop = [NSRunLoop currentRunLoop];
+    self.runLoopTimer = [[[NSTimer alloc] initWithFireDate:[NSDate distantFuture]
+                                                 interval:0.0
+                                                   target:self
+                                                 selector:nil
+                                                 userInfo:nil
+                                                  repeats:NO] autorelease];
+    [self.operationRunLoop addTimer:self.runLoopTimer
+                            forMode:NSDefaultRunLoopMode];
+    [self transitionToState:MobileRequestStateOK
+            willSendRequest:self.initialRequest];
+    
+    // Without this (unless we are on the main run loop) the
+    // NSURLConnections will never be processed
+    [self.operationRunLoop run];
+}
+
+- (void)finish {
+    UIViewController *rootViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    MobileRequestLoginViewController *loginViewController = self.loginViewController;
+    self.loginViewController = nil;
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        if (loginViewController) {
+            [loginViewController hideActivityView];
+            [rootViewController dismissModalViewControllerAnimated:YES];
+        }
+    });
+    
+    
+    // Wait for the animation to complete and clear the modalViewController
+    // property otherwise the backed up blocks might stumble over it
+    while ([rootViewController modalViewController] != nil) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
+    }
+
+    self.activeRequest = nil;
+    self.connection = nil;
+    self.initialRequest = nil;
+    self.operationRunLoop = nil;
+    self.requestState = MobileRequestStateOK;
+    self.touchstoneUser = nil;
+    self.touchstonePassword = nil;
+    
+    [self.runLoopTimer invalidate];
+    self.runLoopTimer = nil;
+    
+    gSecureStateTracker.authenticationBlock = nil;
+    [gSecureStateTracker resumeQueue];
+    
+    NSData *jsonData = [[self.requestData copy] autorelease];
+    NSError *error = [[self.requestError copy] autorelease];
+    self.requestData = nil;
+    self.requestError = nil;
+    dispatch_queue_t parseQueue = dispatch_queue_create("edu.mit.mobile.json-parse", 0);
+    dispatch_async(parseQueue, ^(void) {
+        id jsonResult = nil;
+        NSError *jsonError = error;
+        
+        if (jsonError == nil) {
+            jsonResult = [MITJSON objectWithJSONData:jsonData
+                                               error:&jsonError];
+        }
+        
+        [self dispatchCompleteBlockWithResult:((jsonError == nil) ? jsonResult : jsonData)
+                                        error:jsonError];
+        
+        self.isExecuting = NO;
+        self.isFinished = YES;
+    });
+    dispatch_release(parseQueue);
+    [self release];
+}
+
+- (void)cancel {
+    [super cancel];
+
+    self.requestState = MobileRequestStateCanceled;
+    
+    if (self.connection) {
+        [self.connection cancel];
+    } else {
+        self.requestData = nil;
+        self.requestError = [NSError errorWithDomain:NSURLErrorDomain
+                                                code:NSUserCancelledError
+                                            userInfo:nil];
+        [self finish];
+    }
+}
+
+
+#pragma mark - Dynamic setters/getters
 - (BOOL)isExecuting {
     return _isExecuting;
 }
 
+- (void)setIsExecuting:(BOOL)isExecuting {
+    if (isExecuting != _isExecuting) {
+        [self willChangeValueForKey:@"isExecuting"];
+        _isExecuting = isExecuting;
+        [self didChangeValueForKey:@"isExecuting"];
+    }
+}
+
 - (BOOL)isFinished {
-    return (self.isExecuting == NO);
+    return _isFinished;
+}
+
+- (void)setIsFinished:(BOOL)isFinished {
+    if (isFinished != _isFinished) {
+        [self willChangeValueForKey:@"isFinished"];
+        _isFinished = isFinished;
+        [self didChangeValueForKey:@"isFinished"];
+    }
 }
 
 
@@ -171,6 +279,7 @@ typedef enum {
         return [self buildURLRequest];
     }
 }
+
 
 #pragma mark - Private Methods
 - (BOOL)authenticationRequired {
@@ -188,58 +297,23 @@ typedef enum {
     return promptForAuth;
 }
 
-- (void)displayLoginPrompt {
-    MobileRequestLoginViewController *loginView = [[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
-                                                                                                    password:self.touchstonePassword];
-    loginView.delegate = self;
-    
-    UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
-    [[mainWindow rootViewController] presentModalViewController:loginView
-                                                       animated:YES];
-    [loginView release];
-}
-
-- (void)setIsExecuting:(BOOL)isExecuting {
-    @synchronized(self) {
-        if (_isExecuting != isExecuting) {
-            [self willChangeValueForKey:@"isExecuting"];
-            _isExecuting = isExecuting;
-            [self didChangeValueForKey:@"isExecuting"];
-        }
-    }
-}
-
-- (void)handleJSONResult:(NSData*)jsonData {
-    NSError *jsonError = nil;
-    
-    id jsonResult = [MITJSON objectWithJSONData:jsonData];
-    
-    [self dispatchCompleteBlockWithResult:((jsonError == nil) ? jsonResult : jsonData)
-                                    error:jsonError];
-}
-
-- (void)dispatchCompleteBlockWithResult:(id)jsonResult error:(NSError*)error {
-    if (self.completeBlock) {
-        dispatch_async(dispatch_get_main_queue(), ^(void) {
-            self.completeBlock(self,jsonResult,error);
-        });
-    }
-}
 
 - (NSURLRequest*)buildURLRequest {
     NSMutableString *urlString = [NSMutableString stringWithString:[MITMobileWebGetCurrentServerURL() absoluteString]];
     
-   if ([urlString hasSuffix:@"/"] == NO) {
-        [urlString appendString:@"/"];
+    if ([urlString hasSuffix:@"page=expert"] == NO) {
+        if ([urlString hasSuffix:@"/"] == NO) {
+            [urlString appendString:@"/"];
+        }
+        
+        if (self.pathExtension) {
+            [urlString appendFormat:@"/%@",self.pathExtension];
+        }
+        
+        [urlString appendFormat:@"?module=%@&command=%@",
+            [self.module urlEncodeUsingEncoding:NSUTF8StringEncoding],
+            [self.command urlEncodeUsingEncoding:NSUTF8StringEncoding]];
     }
-    
-    if (self.pathExtension) {
-        [urlString appendFormat:@"/%@",self.pathExtension];
-    }
-    
-    [urlString appendFormat:@"?module=%@&command=%@",
-    [self.module urlEncodeUsingEncoding:NSUTF8StringEncoding],
-    [self.command urlEncodeUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableArray *params = [NSMutableArray arrayWithCapacity:[self.parameters count]];
     
@@ -262,13 +336,9 @@ typedef enum {
                                           cachePolicy:NSURLRequestReloadIgnoringCacheData
                                       timeoutInterval:5.0];
         [request setHTTPMethod:@"POST"];
-        
         [request setHTTPBody:[paramString dataUsingEncoding:NSUTF8StringEncoding]];
-        
         [request setValue:@"application/x-www-form-urlencoded"
        forHTTPHeaderField:@"Content-Type"];
-        [request setValue:[NSString stringWithFormat:@"%u",[[request HTTPBody] length]]
-       forHTTPHeaderField:@"Content-Length"];
     } else {
         if ([paramString length] > 0) {
             [urlString appendFormat:@"&%@",paramString];
@@ -280,67 +350,87 @@ typedef enum {
         [request setHTTPMethod:@"GET"];
     }
     
-    
-    [request setHTTPShouldUsePipelining:YES];
     return request; 
+}
+
+- (void)dispatchCompleteBlockWithResult:(id)jsonResult error:(NSError*)error {
+    if (self.completeBlock) {
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            self.completeBlock(self,jsonResult,error);
+        });
+    }
+}
+
+- (void)displayLoginPrompt {
+    if (self.loginViewController == nil) {
+        dispatch_async(dispatch_get_main_queue(), ^() {
+            UIWindow *mainWindow = [[UIApplication sharedApplication] keyWindow];
+            MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
+                                                                                                             password:self.touchstonePassword] autorelease];
+            loginView.delegate = self;
+            
+            [[mainWindow rootViewController] presentModalViewController:loginView
+                                                               animated:YES];
+            self.loginViewController = loginView;
+        });
+    }
+}
+
+- (void)transitionToState:(MobileRequestState)state
+          willSendRequest:(NSURLRequest*)request
+{
+    self.activeRequest = request;
+    self.requestData = nil;
+    self.requestState = state;
+    self.connection = [[[NSURLConnection alloc] initWithRequest:request
+                                                       delegate:self
+                                               startImmediately:NO] autorelease];
+    [self.connection scheduleInRunLoop:self.operationRunLoop
+                               forMode:NSDefaultRunLoopMode];
+    [self.connection start];
 }
 
 
 #pragma mark - NSURLConnectionDelegate
 #pragma mark -- Authentication/Trust Verification
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
-    if (self.isCancelled) {
-        self.requestState = MobileRequestStateCanceled;
-        [connection cancel];
-        return NO;
-    }
-    
     return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+    OSStatus error = noErr;
     NSString *mitCAPath = [NSBundle pathForResource:@"mit_ca"
                                              ofType:@"der"
                                         inDirectory:[[NSBundle mainBundle] resourcePath]];
-    if (self.isCancelled) {
-        self.requestState = MobileRequestStateCanceled;
-        [connection cancel];
-        return;
-    }
-    
     if (mitCAPath == nil) {
         NSLog(@"Error: Unable to load MIT CA");
         [challenge.sender cancelAuthenticationChallenge:challenge];
         return;
     }
     
+    
     NSData *mitCAData = [NSData dataWithContentsOfFile:mitCAPath];
     SecCertificateRef mitCA = SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)mitCAData);
-    
     if (mitCA == NULL) {
         NSLog(@"Error: Failed to create SecCertificateRef for the MIT CA");
         [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
         return;
     }
     
-    OSStatus error = noErr;
-    SecTrustRef challengeTrust = [[challenge protectionSpace] serverTrust];
-    SecTrustRef serverTrust = NULL;
     
     NSMutableArray *array = [NSMutableArray array];
-    
+    SecTrustRef challengeTrust = [[challenge protectionSpace] serverTrust];
+    SecTrustRef serverTrust = NULL;
     for (int i = 0; i < SecTrustGetCertificateCount(challengeTrust); ++i) {
         [array addObject:(id)(SecTrustGetCertificateAtIndex(challengeTrust, i))];
     }
     
-    NSLog(@"Creating trust for host %@", [[challenge protectionSpace] host]);
     
     SecPolicyRef sslPolicy = SecPolicyCreateSSL(TRUE, (CFStringRef)[[challenge protectionSpace] host]);
     error = SecTrustCreateWithCertificates((CFArrayRef)array,
                                            sslPolicy,
                                            &serverTrust);
     CFRelease(sslPolicy);
-    
     if (error != noErr) {
         NSLog(@"Error (%ld): Unable to create SecTrust object",error);
         
@@ -351,35 +441,34 @@ typedef enum {
     error = SecTrustSetAnchorCertificates(serverTrust, (CFArrayRef)anchorArray);
     if (error != noErr) {
         NSLog(@"Error (%ld): Failed to anchor MIT CA",error);
-        CFRelease(mitCA);
-        CFRelease(serverTrust);
-        [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
-        return;
+        goto sec_error;
     }
     
     
     error = SecTrustSetAnchorCertificatesOnly(serverTrust, FALSE);
     if (error != noErr) {
         NSLog(@"Error (%ld): Failed to anchor MIT CA",error);
-        CFRelease(mitCA);
-        CFRelease(serverTrust);
-        [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
-        return;
+        goto sec_error;
     }
     
     
     SecTrustResultType trustResult = kSecTrustResultInvalid;
     SecTrustEvaluate(serverTrust, &trustResult);
-    
     if ((trustResult == kSecTrustResultProceed) || (trustResult == kSecTrustResultUnspecified)) {
         [challenge.sender useCredential:[NSURLCredential credentialForTrust:serverTrust]
              forAuthenticationChallenge:challenge];
     } else {
         [challenge.sender cancelAuthenticationChallenge:challenge];
     }
-    
+
+
+sec_error:
     CFRelease(mitCA);
     CFRelease(serverTrust);
+    
+    if (error != noErr) {
+        [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
+    }
 }
 
 
@@ -388,66 +477,27 @@ typedef enum {
              willSendRequest:(NSURLRequest *)request
             redirectResponse:(NSURLResponse *)redirectResponse
 {
-    if (self.isCancelled) {
-        self.requestState = MobileRequestStateCanceled;
-        [connection cancel];
-        return nil;
-    }
-    
     if (redirectResponse) {
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)redirectResponse;
-        NSLog(@"Redirecting to %@:%@", [request HTTPMethod], [request URL]);
+        BOOL wayfRedirect = [[[request.URL host] lowercaseString] isEqualToString:@"wayf.mit.edu"];
         
-        switch (self.requestState) {
-            case MobileRequestStateAuth:
-            {
-                break;
+        if (wayfRedirect) {
+            if (self.requestState == MobileRequestStateOK) {
+                self.requestState = MobileRequestStateWAYF;
+            } else if (self.requestState == MobileRequestStateAuthOK) {
+                // Authentication failed, abort the request
+                self.requestState = MobileRequestStateAuthError;
+                return nil;
             }
-
-            case MobileRequestStateAuthGET:
-            {
-                NSString *locationURL = [request.URL absoluteString];
-                
-                if ([[locationURL lowercaseString] hasPrefix:@"https://wayf.mit.edu"]) {
-                    self.requestState = MobileRequestStateAuthError;
-                    return nil;
-                }
-                break;
-            }
-                
-            case MobileRequestStateOK:
-            {
-                NSString *locationURL = [[httpResponse allHeaderFields] objectForKey:@"Location"];
-                    
-                if ([[locationURL lowercaseString] hasPrefix:@"https://wayf.mit.edu"]) {
-                    self.requestState = MobileRequestStateWAYF;
-                }
-                break;
-            }
-                
-            default:
-                break;
         }
-    
-        NSMutableURLRequest *newRequest = [[request mutableCopy] autorelease];
-        [newRequest setHTTPMethod:@"GET"];
-        //[newRequest setURL:[NSURL URLWithString:[[httpResponse allHeaderFields] objectForKey:@"Location"]]];
-        //[newRequest setURL:[request URL]];
-            
-        self.activeRequest = newRequest;
-        return newRequest;
-    } else {
-        return request;
     }
     
+    self.activeRequest = request;
+    return request;
 }
 
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    if (self.isCancelled) {
-        self.requestState = MobileRequestStateCanceled;
-        [connection cancel];
-    } else if (self.requestData) {
+    if (self.requestData) {
         [self.requestData setLength:0];
     } else {
         self.requestData = [NSMutableData data];
@@ -455,10 +505,7 @@ typedef enum {
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    if (self.isCancelled) {
-        self.requestState = MobileRequestStateCanceled;
-        [connection cancel];
-    } else if (self.requestData) {
+    if (self.requestData) {
         [self.requestData appendData:data];
     } else {
         self.requestData = [NSMutableData data];
@@ -471,10 +518,7 @@ typedef enum {
  totalBytesWritten:(NSInteger)totalBytesWritten
 totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 {
-    if (self.isCancelled) {
-        self.requestState = MobileRequestStateCanceled;
-        [connection cancel];
-    } else if (self.progressBlock) {
+    if (self.progressBlock) {
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             self.progressBlock(bytesWritten,totalBytesWritten,totalBytesExpectedToWrite);
         });
@@ -484,77 +528,79 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 
 #pragma mark -- State Dependent methods
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    if (self.isCancelled) {
-        self.requestState = MobileRequestStateCanceled;
-        [connection cancel];
-        return;
-    }
+    self.connection = nil;
     
     switch (self.requestState) {
-        case MobileRequestStateAuthGET:
-        case MobileRequestStateOK:
-        {
-            if (self.requestData) {
-                NSData *blockData = [NSData dataWithData:self.requestData];
-                
-                dispatch_queue_t parseQueue = dispatch_queue_create("edu.mit.mobile.json-parse", 0);
-                dispatch_async(parseQueue, ^(void) {
-                    [self handleJSONResult:blockData];
-                    self.isExecuting = NO;
-                    [self release];
-                });
-                dispatch_release(parseQueue);
-            } else {
-                [self dispatchCompleteBlockWithResult:nil
-                                                error:nil];
-                self.isExecuting = NO;
-                [self release];
-            }
-            
-            self.activeRequest = nil;
-            self.connection = nil;
-            self.requestData = nil;
-            break;
-        }
-            
         case MobileRequestStateWAYF:
         {
-            [self dispatchAuthenticationBlock:^(void) {
-                
-                NSLog(@"Logging in as %@", [self touchstoneUser]);
-                NSString *idp = nil;
-                
-                NSRange range = [self.touchstoneUser rangeOfString:@"@"];
-                BOOL useMitIdp = [self.touchstoneUser hasSuffix:@"@mit.edu"];
-                useMitIdp = useMitIdp || (range.location == NSNotFound);
-                
-                if (useMitIdp) {
-                    idp = @"https://idp.mit.edu/shibboleth";
+            if (self.loginViewController == nil) {
+                [gSecureStateTracker suspendQueue];
+                if (gSecureStateTracker.authenticationBlock == nil) {
+                    [gSecureStateTracker addBlockToQueue:^(BOOL canceled) {
+                        if (canceled) {
+                            // Authentication is required but the user canceled
+                            // the last authentication attempt and the timeout has
+                            // not been triggered yet. Abort the request.
+                            [self cancel];
+                            return;
+                        } else {
+                            // Authentication is required and this is the first request
+                            // to attempt to authenticate. Pop up the login view and
+                            // get ready to (attempt) to continue the request once the
+                            // queue is resumed
+                            [gSecureStateTracker suspendQueue];
+                            gSecureStateTracker.authenticationBlock = ^{
+                                NSString *idp = nil;
+                                NSRange range = [self.touchstoneUser rangeOfString:@"@"];
+                                BOOL useMitIdp = [self.touchstoneUser hasSuffix:@"@mit.edu"];
+                                useMitIdp = useMitIdp || (range.location == NSNotFound);
+                                
+                                if (useMitIdp) {
+                                    idp = @"https://idp.mit.edu/shibboleth";
+                                } else {
+                                    idp = @"https://idp.touchstonenetwork.net/shibboleth-idp";
+                                }
+                                
+                                NSString *body = [NSString stringWithFormat:@"user_idp=%@",[idp urlEncodeUsingEncoding:NSUTF8StringEncoding
+                                                                                                     useFormURLEncoded:YES]];
+                                
+                                NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:[self.activeRequest URL]];
+                                [wayfRequest setHTTPMethod:@"POST"];
+                                [wayfRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
+                                [self transitionToState:MobileRequestStateIDP
+                                        willSendRequest:wayfRequest];
+                            };
+                            [self displayLoginPrompt];
+                        }
+                    }];
                 } else {
-                    idp = @"https://idp.touchstonenetwork.net/shibboleth-idp";
+                    [gSecureStateTracker addBlockToQueue:^(BOOL canceled) {
+                        if (canceled) {
+                            // Authentication is required but the user canceled
+                            // the last authentication attempt and the timeout has
+                            // not been triggered yet. Abort the request.
+                            [self cancel];
+                            return;
+                        } else {
+                            // Authentication is required but there is already a login
+                            // request ahead of this request. Since access to the credentials
+                            // isn't global and they may not be saved (they are discarded
+                            // immediately after a authentication attempt) we will need to
+                            // re-issue the initial request and hope the cookie works.
+                            [self transitionToState:MobileRequestStateOK
+                                    willSendRequest:self.initialRequest];
+                        }
+                    }];
                 }
-                
-                NSString *body = [NSString stringWithFormat:@"user_idp=%@",[idp urlEncodeUsingEncoding:NSUTF8StringEncoding
-                                                                                     useFormURLEncoded:YES]];
-                
-                NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:[self.activeRequest URL]];
-                [wayfRequest setHTTPMethod:@"POST"];
-                [wayfRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
-                
-                self.requestState = MobileRequestStateIDP;
-                self.requestData = nil;
-                self.activeRequest = wayfRequest;
-                self.connection = [[[NSURLConnection alloc] initWithRequest:wayfRequest
-                                                                   delegate:self
-                                                           startImmediately:YES] autorelease];
-            }];
+                [gSecureStateTracker resumeQueue];
+            }
             break;
         }
         
+            
         case MobileRequestStateIDP:
         {
             TouchstoneAuthResponse *tsResponse = [[[TouchstoneAuthResponse alloc] initWithResponseData:self.requestData] autorelease];
-            
             if (tsResponse.error) {
                 [self connection:connection
                 didFailWithError:tsResponse.error];
@@ -572,93 +618,109 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 [wayfRequest setValue:@"application/x-www-form-urlencoded"
                    forHTTPHeaderField:@"Content-Type"];
                 
-                self.requestState = MobileRequestStateAuth;
-                self.requestData = nil;
-                self.activeRequest = wayfRequest;
-                self.connection = [[[NSURLConnection alloc] initWithRequest:wayfRequest
-                                                                   delegate:self
-                                                           startImmediately:YES] autorelease];
+                [self transitionToState:MobileRequestStateAuth
+                        willSendRequest:wayfRequest];
             }
             break;
         }
+        
             
         case MobileRequestStateAuth:
         {
             SAMLResponse *samlResponse = [[[SAMLResponse alloc] initWithResponseData:self.requestData] autorelease];
-            
             if (samlResponse.error) {
-                [self connection:connection
-                didFailWithError:samlResponse.error];
+                if (samlResponse.error.code == MobileWebInvalidLoginError) {
+                    dispatch_async(dispatch_get_main_queue(), ^(void) {
+                        if (self.loginViewController == nil) {
+                            [self displayLoginPrompt];
+                        } else {
+                            [self.loginViewController hideActivityView];
+                            [self.loginViewController showError:@"Please enter a valid username and password"];
+                        }
+                    });
+                    
+                    self.touchstonePassword = nil;
+                } else {
+                    [self connection:connection
+                    didFailWithError:samlResponse.error];
+                }
             } else {
-                NSString *body = [NSString stringWithFormat:@"%@=%@&%@=%@",
-                                  [@"SAMLResponse" urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                                  [samlResponse.samlResponse urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
-                                  [@"RelayState" urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                                  [samlResponse.relayState urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                self.touchstoneUser = nil;
+                self.touchstonePassword = nil;
+                NSMutableString *body = [NSMutableString stringWithFormat:@"%@=%@",
+                                         [@"SAMLResponse" urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                                         [samlResponse.samlResponse urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                
+                if (samlResponse.relayState) {
+                    [body appendFormat:@"&%@=%@",
+                     [@"RelayState" urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                     [samlResponse.relayState urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                } else {
+                    [body appendFormat:@"&%@=%@",
+                     [@"TARGET" urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                     [samlResponse.target urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                }
                 
                 
                 NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:samlResponse.postURL];
                 [wayfRequest setHTTPMethod:@"POST"];
                 [wayfRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
+                [wayfRequest setValue:@"application/x-www-form-urlencoded"
+                   forHTTPHeaderField:@"Content-Type"];
                 
-                self.requestState = MobileRequestStateAuthGET;
-                self.requestData = nil;
-                self.activeRequest = wayfRequest;
-                self.connection = [[[NSURLConnection alloc] initWithRequest:wayfRequest
-                                                                   delegate:self
-                                                           startImmediately:YES] autorelease];
+                [self transitionToState:MobileRequestStateAuthOK
+                        willSendRequest:wayfRequest];
             }
             break;
         }
-        
+           
+            
+        case MobileRequestStateOK:
+        case MobileRequestStateAuthOK:
         case MobileRequestStateCanceled:
         case MobileRequestStateAuthError:
         {
-            [self dispatchCompleteBlockWithResult:nil
-                                            error:self.webError];
-            self.activeRequest = nil;
-            self.connection = nil;
-            self.requestData = nil;
+            [self finish];
             break;
         }
     }
 }
          
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    NSLog(@"Connection failed: %@", error);
-    [self dispatchCompleteBlockWithResult:nil
-                                    error:error];
-    
-    self.activeRequest = nil;
     self.requestData = nil;
-    self.connection = nil;
-    self.isExecuting = NO;
-    [self release];
+    if (self.requestError == nil) {
+        self.requestError = error;
+    }
+    
+    [self finish];
 }
 
 
 #pragma mark - MobileRequestLoginView Delegate Methods
 -(void)loginRequest:(MobileRequestLoginViewController *)view didEndWithUsername:(NSString *)username password:(NSString *)password shouldSaveLogin:(BOOL)saveLogin {
+    NSString *strippedUsername = [username stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    self.touchstoneUser = [strippedUsername stringByReplacingOccurrencesOfString:@"@mit.edu"
+                                                                      withString:@""
+                                                                         options:NSCaseInsensitiveSearch
+                                                                           range:NSMakeRange(0, [username length])];
+    self.touchstonePassword = password;
+    
     if (saveLogin) {
         MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, password);
     } else {
         MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
     }
     
-    self.touchstoneUser = username;
-    self.touchstonePassword = password;
+    [view showActivityView];
     
-    
-    dispatch_resume(gAuthenticationQueue);
-    [view dismissModalViewControllerAnimated:YES];
+    dispatch_queue_t authQueue = dispatch_queue_create(NULL, 0);
+    dispatch_async(authQueue,gSecureStateTracker.authenticationBlock);
+    dispatch_release(authQueue);
 }
 
-- (void)cancelWasPressesForLoginRequest:(MobileRequestLoginViewController *)view {
-    self.requestState = MobileRequestStateCanceled;
-    self.webError = [NSError errorWithDomain:MobileWebErrorDomain
-                                        code:MobileWebUserCanceled
-                                    userInfo:nil];
-    dispatch_resume(gAuthenticationQueue);
-    [view dismissModalViewControllerAnimated:YES];
+- (void)cancelWasPressedForLoginRequest:(MobileRequestLoginViewController *)view {
+    [gSecureStateTracker userCanceledAuthentication];
+    [self cancel];
 }
 @end
