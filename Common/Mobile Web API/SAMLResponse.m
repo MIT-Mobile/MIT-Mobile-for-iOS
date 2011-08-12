@@ -1,29 +1,34 @@
 #import "SAMLResponse.h"
-#import "MobileWebConstants.h"
+#import "MITConstants.h"
 #import "TBXML.h"
+#import "TBXML+MIT.h"
 
 static NSString * const kShibbolethSAMLKey = @"SAMLResponse";
 static NSString * const kShibbolethRelayStateKey = @"RelayState";
+static NSString * const kShibbolethTargetKey = @"TARGET";
 
 @interface SAMLResponse ()
 @property (nonatomic,retain) NSURL* postURL;
 @property (nonatomic,copy) NSString* samlResponse;
 @property (nonatomic,copy) NSString* relayState;
+@property (nonatomic,copy) NSString* target;
 @property (nonatomic,retain) NSError* error;
 
 - (NSError*)findErrorInDocument:(TBXMLElement*)element;
 - (NSString*)findSAMLResponseInDocument:(TBXMLElement*)element;
 - (NSString*)findRelayStateInDocument:(TBXMLElement*)element;
+- (NSString*)findTargetInDocument:(TBXMLElement*)element;
 - (NSURL*)findPostURLInDocument:(TBXMLElement*)element;
 - (TBXMLElement*)elementWithNameAttribute:(NSString*)aName inPath:(NSString*)aPath parentElement:(TBXMLElement*)parentElement;
 @end
 
 
 @implementation SAMLResponse
-@synthesize postURL,
-samlResponse,
-relayState,
-error;
+@synthesize postURL = _postURL,
+    samlResponse = _samlResponse,
+    relayState = _relayState,
+    target = _target,
+    error = _error;
 
 - (id)initWithResponseData:(NSData*)response
 {
@@ -37,6 +42,16 @@ error;
             if (self.error == nil) {
                 self.samlResponse = [self findSAMLResponseInDocument:doc.rootXMLElement];
                 self.relayState = [self findRelayStateInDocument:doc.rootXMLElement];
+                if (self.relayState == nil) {
+                    self.target = [self findTargetInDocument:doc.rootXMLElement];
+                }
+                
+                if ((self.relayState == nil) && (self.target == nil)) {
+                    self.error = [NSError errorWithDomain:MobileWebTouchstoneErrorDomain
+                                                     code:MobileWebUnknownError
+                                                 userInfo:nil];
+                }
+                
                 self.postURL = [self findPostURLInDocument:doc.rootXMLElement];
             }
         }
@@ -51,31 +66,39 @@ error;
     TBXMLElement *loginboxDiv = [TBXML childElementWithId:@"loginbox"
                                             parentElement:element
                                           recursiveSearch:YES];
-    TBXMLElement *errorDiv = NULL;
     NSArray *array = [TBXML elementsWithPath:[@"div/p" componentsSeparatedByString:@"/"]
                                parentElement:loginboxDiv];
     
-    for (NSValue *value in array) {
-        TBXMLElement *element = (TBXMLElement*)[value pointerValue];
-        NSString *class = [TBXML valueOfAttributeNamed:@"class" forElement:element];
+    if ([array count] == 0) {
+        return nil;
+    }
+    
+    NSValue *value = [array objectAtIndex:0];
+    TBXMLElement *errorDiv = (TBXMLElement*)[value pointerValue];
+    
+    NSError *error = nil;
+    if (errorDiv) {
+        NSString *elementText = [[TBXML textForElement:errorDiv] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+        [userInfo setObject:elementText
+                     forKey:NSLocalizedDescriptionKey];
         
-        if ([class caseInsensitiveCompare:@"class"] == NSOrderedSame) {
-            errorDiv = element;
-            break;
+        NSRange mitIdpRange = [elementText rangeOfString:@"Please enter a valid username and password"
+                                                 options:NSCaseInsensitiveSearch];
+        NSRange camsRange = [elementText rangeOfString:@"Enter your email address and password"
+                                               options:NSCaseInsensitiveSearch];
+        if ((mitIdpRange.location != NSNotFound) || (camsRange.location != NSNotFound)) {
+            error = [NSError errorWithDomain:MobileWebTouchstoneErrorDomain
+                                             code:MobileWebInvalidLoginError
+                                         userInfo:userInfo];
+        } else {
+            error = [NSError errorWithDomain:MobileWebTouchstoneErrorDomain
+                                        code:MobileWebTouchstoneError 
+                                    userInfo:userInfo];
         }
     }
     
-    if (errorDiv) {
-        NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-        [userInfo setObject:[TBXML textForElement:errorDiv]
-                     forKey:NSLocalizedDescriptionKey];
-        return [NSError errorWithDomain:MobileWebTouchstoneErrorDomain
-                                   code:MobileWebTouchstoneError 
-                               userInfo:userInfo];
-        
-    }
-    
-    return nil;
+    return error;
 }
 
 - (NSString*)findSAMLResponseInDocument:(TBXMLElement*)element {
@@ -84,7 +107,7 @@ error;
     }
     
     TBXMLElement *formElement = [self elementWithNameAttribute:kShibbolethSAMLKey
-                                                        inPath:@"html/body/form/div/input"
+                                                        inPath:@"body/form/div/input"
                                                  parentElement:element];
     
     if (formElement) {
@@ -104,16 +127,30 @@ error;
     }
     
     TBXMLElement *formElement = [self elementWithNameAttribute:kShibbolethRelayStateKey
-                                                        inPath:@"html/body/form/div/input"
+                                                        inPath:@"body/form/div/input"
                                                  parentElement:element];
     
     if (formElement) {
         return [TBXML valueOfAttributeNamed:@"value"
                                  forElement:formElement];
     } else {
-        self.error = [NSError errorWithDomain:MobileWebTouchstoneErrorDomain
-                                         code:MobileWebUnknownError
-                                     userInfo:nil];
+        return nil;
+    }
+}
+
+- (NSString*)findTargetInDocument:(TBXMLElement*)element {
+    if (self.error) {
+        return nil;
+    }
+    
+    TBXMLElement *formElement = [self elementWithNameAttribute:kShibbolethTargetKey
+                                                        inPath:@"body/form/div/input"
+                                                 parentElement:element];
+    
+    if (formElement) {
+        return [TBXML valueOfAttributeNamed:@"value"
+                                 forElement:formElement];
+    } else {
         return nil;
     }
 }
@@ -123,7 +160,7 @@ error;
         return nil;
     }
     
-    NSArray *elements = [TBXML elementsWithPath:[@"html/body/form" componentsSeparatedByString:@"/"]
+    NSArray *elements = [TBXML elementsWithPath:[@"body/form" componentsSeparatedByString:@"/"]
                                   parentElement:element];
     
     if (elements) {
