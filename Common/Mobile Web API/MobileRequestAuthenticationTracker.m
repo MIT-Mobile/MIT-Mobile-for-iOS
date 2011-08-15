@@ -32,11 +32,11 @@
 
 - (void)addBlockToQueue:(void (^)(BOOL isCanceled))block {
     NSBlockOperation *operation = [[[NSBlockOperation alloc] init] autorelease];
-    [operation addExecutionBlock:^() {
+    [operation addExecutionBlock:^ {
             block((self.authenticationCanceled || [operation isCancelled]));
     }];
     
-    [operation setCompletionBlock:^() {
+    [operation setCompletionBlock:^ {
         if ([operation isCancelled]) {
             block(YES);
         }

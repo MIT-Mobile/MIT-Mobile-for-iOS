@@ -32,8 +32,8 @@
 - (id)initWithIdentifier:(NSString*)identifier {
     NSDictionary *keychainItem = MobileKeychainFindItem(identifier, YES);
     
-    return [self initWithUsername:[keychainItem objectForKey:kSecAttrAccount]
-                         password:[keychainItem objectForKey:kSecValueData]];
+    return [self initWithUsername:[keychainItem objectForKey:(id)kSecAttrAccount]
+                         password:[keychainItem objectForKey:(id)kSecValueData]];
 }
 
 - (id)initWithUsername:(NSString*)aUsername password:(NSString*)aPassword;

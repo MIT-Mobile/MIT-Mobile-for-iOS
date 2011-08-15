@@ -363,7 +363,7 @@ typedef enum {
 
 - (void)displayLoginPrompt {
     if (self.loginViewController == nil) {
-        dispatch_async(dispatch_get_main_queue(), ^() {
+        dispatch_async(dispatch_get_main_queue(), ^ {
             UIWindow *mainWindow = [[UIApplication sharedApplication] keyWindow];
             MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
                                                                                                              password:self.touchstonePassword] autorelease];
