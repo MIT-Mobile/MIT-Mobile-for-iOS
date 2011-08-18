@@ -236,6 +236,12 @@ typedef enum {
     gSecureStateTracker.authenticationBlock = nil;
     [gSecureStateTracker resumeQueue];
     
+    
+    // This may not be completely necessary since the operation
+    // should be running on it's own thread but there may be
+    // cases where the -(void)finish method is called on the main
+    // thread (instead of the operation's thread) and it shouldn't
+    // block.
     NSData *jsonData = [[self.requestData copy] autorelease];
     NSError *error = [[self.requestError copy] autorelease];
     self.requestData = nil;
