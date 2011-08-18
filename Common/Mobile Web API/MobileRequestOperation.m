@@ -95,6 +95,7 @@ typedef enum {
     if (self) {
         self.module = aModule;
         self.command = theCommand;
+        self.parameters = params;
         self.usePOST = NO;
         
         self.isExecuting = NO;
