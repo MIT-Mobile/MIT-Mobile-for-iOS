@@ -387,7 +387,7 @@ typedef enum {
 
 - (void)dispatchCompleteBlockWithResult:(id)jsonResult error:(NSError*)error {
     if (self.completeBlock) {
-        dispatch_async(dispatch_get_main_queue(), ^(void) {
+        dispatch_sync(dispatch_get_main_queue(), ^(void) {
             self.completeBlock(self,jsonResult,error);
         });
     }
