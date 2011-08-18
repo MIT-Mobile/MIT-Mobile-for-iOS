@@ -85,19 +85,22 @@
                                             NULL);
 
     CTLineBreakMode breakMode = (CTLineBreakMode)(self.lineBreakMode);
-    CTParagraphStyleSetting paragraphStyle = 
+    CTParagraphStyleSetting styleSettings = 
         {
             .spec = kCTParagraphStyleSpecifierLineBreakMode,
             .valueSize = sizeof(CTLineBreakMode),
             .value = &breakMode
         };
     
+    CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(&styleSettings, 1);
     NSDictionary *attrs = [[[NSDictionary alloc] initWithObjectsAndKeys:
                                     (id)ctFont, kCTFontAttributeName, 
                                     [self.textColor CGColor], kCTForegroundColorAttributeName,
-                                    CTParagraphStyleCreate(&paragraphStyle, 1), kCTParagraphStyleAttributeName,
+                                    (id)paragraphStyle,kCTParagraphStyleAttributeName,
                                     nil] autorelease];
-    [fullString setAttributes:attrs range:NSMakeRange(0, [fullString length])];
+    CFRelease(paragraphStyle);
+    [fullString setAttributes:attrs
+                        range:NSMakeRange(0, [fullString length])];
 
     
     if (searchString && ([searchString length] > 0)) {
