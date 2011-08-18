@@ -125,6 +125,37 @@ typedef enum {
 }
 
 
+#pragma mark - Equality
+- (BOOL)isEqual:(NSObject*)object
+{
+    if ([object isKindOfClass:[self class]]) {
+        return [self isEqualToOperation:(MobileRequestOperation*)object];
+    } else {
+        return [super isEqual:object];
+    }
+}
+
+- (BOOL)isEqualToOperation:(MobileRequestOperation*)operation
+{
+    return ([self.module isEqualToString:operation.module] &&
+            [self.command isEqualToString:operation.command] &&
+            [self.parameters isEqualToDictionary:operation.parameters]);
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger hash = [self.module hash];
+    hash ^= [self.command hash];
+    hash ^= [self.parameters hash];
+    
+    for (NSString *key in self.parameters) {
+        hash ^= [key hash];
+        hash ^= [[self.parameters objectForKey:key] hash];
+    }
+    
+    return hash;
+}
+
 #pragma mark - Lifecycle Methods
 - (BOOL)isConcurrent {
     return YES;
