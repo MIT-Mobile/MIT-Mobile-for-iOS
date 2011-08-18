@@ -431,20 +431,20 @@ typedef enum {
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     OSStatus error = noErr;
-    NSString *mitCAPath = [NSBundle pathForResource:@"mit_ca"
+    NSString *serverCAPath = [NSBundle pathForResource:@"server_ca"
                                              ofType:@"der"
                                         inDirectory:[[NSBundle mainBundle] resourcePath]];
-    if (mitCAPath == nil) {
-        NSLog(@"Error: Unable to load MIT CA");
-        [challenge.sender cancelAuthenticationChallenge:challenge];
+    if (serverCAPath == nil) {
+        NSLog(@"Error: Unable to load server CA");
+        [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
         return;
     }
     
     
-    NSData *mitCAData = [NSData dataWithContentsOfFile:mitCAPath];
-    SecCertificateRef mitCA = SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)mitCAData);
-    if (mitCA == NULL) {
-        NSLog(@"Error: Failed to create SecCertificateRef for the MIT CA");
+    NSData *serverCAData = [NSData dataWithContentsOfFile:serverCAPath];
+    SecCertificateRef serverCA = SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)serverCAData);
+    if (serverCA == NULL) {
+        NSLog(@"Error: Failed to create SecCertificateRef for the server CA");
         [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
         return;
     }
@@ -469,17 +469,17 @@ typedef enum {
     }
     
     
-    NSArray *anchorArray = [NSArray arrayWithObject:(id)mitCA];
+    NSArray *anchorArray = [NSArray arrayWithObject:(id)serverCA];
     error = SecTrustSetAnchorCertificates(serverTrust, (CFArrayRef)anchorArray);
     if (error != noErr) {
-        NSLog(@"Error (%ld): Failed to anchor MIT CA",error);
+        NSLog(@"Error (%ld): Failed to anchor server CA",error);
         goto sec_error;
     }
     
     
     error = SecTrustSetAnchorCertificatesOnly(serverTrust, FALSE);
     if (error != noErr) {
-        NSLog(@"Error (%ld): Failed to anchor MIT CA",error);
+        NSLog(@"Error (%ld): Failed to anchor server CA",error);
         goto sec_error;
     }
     
@@ -495,7 +495,7 @@ typedef enum {
 
 
 sec_error:
-    CFRelease(mitCA);
+    CFRelease(serverCA);
     CFRelease(serverTrust);
     
     if (error != noErr) {
