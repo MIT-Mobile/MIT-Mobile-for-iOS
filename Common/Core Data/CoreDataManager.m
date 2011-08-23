@@ -275,7 +275,9 @@
                           @"Emergency", @"ShuttleTrack",
                           @"Calendar", @"CampusMap",
                           @"Tours", @"Anniversary",
-                          @"QRReaderResult",@"FacilitiesLocations", nil];
+                          @"QRReaderResult", @"FacilitiesLocations", 
+                          @"LibrariesLocationsHours",
+                          nil];
 	for (NSString *modelName in allModels) {
 		NSString *path = [[NSBundle mainBundle] pathForResource:modelName ofType:@"momd"];
         NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path]];

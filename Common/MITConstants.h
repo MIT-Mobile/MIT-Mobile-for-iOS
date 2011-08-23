@@ -48,6 +48,7 @@ extern NSString * const SettingsTag;
 extern NSString * const AboutTag;
 extern NSString * const QRReaderTag;
 extern NSString * const FacilitiesTag;
+extern NSString * const LibrariesTag;
 
 // notification names
 extern NSString * const EmergencyInfoDidLoadNotification;

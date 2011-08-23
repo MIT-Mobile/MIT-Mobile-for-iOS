@@ -146,6 +146,12 @@
 		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; };
 		4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */; };
 		4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */; };
+		4B667063140330A000714C6A /* LibrariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667061140330A000714C6A /* LibrariesViewController.m */; };
+		4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4B667062140330A000714C6A /* LibrariesViewController.xib */; };
+		4B667067140330CD00714C6A /* LibrariesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667066140330CD00714C6A /* LibrariesModule.m */; };
+		4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */; };
+		4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4B66706F1404020200714C6A /* LibrariesLocationsHours.xcdatamodeld */; };
+		4B6670741404033E00714C6A /* LibrariesLocationsHours.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6670731404033E00714C6A /* LibrariesLocationsHours.m */; };
 		4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9A4EA31355E24800E37876 /* MorseCodePattern.m */; };
 		4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */; };
 		4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */; };
@@ -616,6 +622,16 @@
 		4B53F2AB1354F6460081EA38 /* TourMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourMapAnnotation.h; sourceTree = "<group>"; };
 		4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourMapAnnotation.m; sourceTree = "<group>"; };
 		4B53F2AE1355062D0081EA38 /* TourGeoLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourGeoLocation.h; sourceTree = "<group>"; };
+		4B667060140330A000714C6A /* LibrariesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesViewController.h; sourceTree = "<group>"; };
+		4B667061140330A000714C6A /* LibrariesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesViewController.m; sourceTree = "<group>"; };
+		4B667062140330A000714C6A /* LibrariesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LibrariesViewController.xib; sourceTree = "<group>"; };
+		4B667065140330CD00714C6A /* LibrariesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesModule.h; sourceTree = "<group>"; };
+		4B667066140330CD00714C6A /* LibrariesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesModule.m; sourceTree = "<group>"; };
+		4B66706C1404019300714C6A /* LibrariesLocationsHoursViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursViewController.h; path = LocationsHours/LibrariesLocationsHoursViewController.h; sourceTree = "<group>"; };
+		4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursViewController.m; path = LocationsHours/LibrariesLocationsHoursViewController.m; sourceTree = "<group>"; };
+		4B6670701404020200714C6A /* LibrariesLocationsHours.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LibrariesLocationsHours.xcdatamodel; sourceTree = "<group>"; };
+		4B6670721404033E00714C6A /* LibrariesLocationsHours.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHours.h; path = LocationsHours/LibrariesLocationsHours.h; sourceTree = "<group>"; };
+		4B6670731404033E00714C6A /* LibrariesLocationsHours.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHours.m; path = LocationsHours/LibrariesLocationsHours.m; sourceTree = "<group>"; };
 		4B9A4EA21355E24800E37876 /* MorseCodePattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MorseCodePattern.h; sourceTree = "<group>"; };
 		4B9A4EA31355E24800E37876 /* MorseCodePattern.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MorseCodePattern.m; sourceTree = "<group>"; };
 		4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Calendar 3.xcdatamodel"; sourceTree = "<group>"; };
@@ -1488,6 +1504,31 @@
 			name = Selection;
 			sourceTree = "<group>";
 		};
+		4B66705F1403304300714C6A /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				4B66706B1403FE7700714C6A /* LocationsHours */,
+				4B667060140330A000714C6A /* LibrariesViewController.h */,
+				4B667061140330A000714C6A /* LibrariesViewController.m */,
+				4B667062140330A000714C6A /* LibrariesViewController.xib */,
+				4B667065140330CD00714C6A /* LibrariesModule.h */,
+				4B667066140330CD00714C6A /* LibrariesModule.m */,
+			);
+			path = Libraries;
+			sourceTree = "<group>";
+		};
+		4B66706B1403FE7700714C6A /* LocationsHours */ = {
+			isa = PBXGroup;
+			children = (
+				4B66706C1404019300714C6A /* LibrariesLocationsHoursViewController.h */,
+				4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */,
+				4B66706F1404020200714C6A /* LibrariesLocationsHours.xcdatamodeld */,
+				4B6670721404033E00714C6A /* LibrariesLocationsHours.h */,
+				4B6670731404033E00714C6A /* LibrariesLocationsHours.m */,
+			);
+			name = LocationsHours;
+			sourceTree = "<group>";
+		};
 		56D7D29B1282B2ED00E9E5C9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1590,6 +1631,7 @@
 		DE715445102FE468005E6111 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				4B66705F1403304300714C6A /* Libraries */,
 				DE81CF5E10C6BC390085573D /* About */,
 				EB4C225D1278AD3E00058748 /* Anniversary */,
 				EB86CA6C115D273800C8F3D1 /* Calendar */,
@@ -2153,6 +2195,7 @@
 				DE5E99D31124B57C00498760 /* emergency_template.html in Resources */,
 				29C4546D118B55E100A321B0 /* jQueryInject.txt in Resources */,
 				29C4546E118B55E100A321B0 /* jQueryInjectLandscape.txt in Resources */,
+				4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2449,6 +2492,11 @@
 				2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */,
 				2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */,
 				2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */,
+				4B667063140330A000714C6A /* LibrariesViewController.m in Sources */,
+				4B667067140330CD00714C6A /* LibrariesModule.m in Sources */,
+				4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */,
+				4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */,
+				4B6670741404033E00714C6A /* LibrariesLocationsHours.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2723,6 +2771,17 @@
 			);
 			currentVersion = 44C1A26E11A2EA04000FD653 /* CampusMap.xcdatamodel */;
 			path = CampusMap.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		4B66706F1404020200714C6A /* LibrariesLocationsHours.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				4B6670701404020200714C6A /* LibrariesLocationsHours.xcdatamodel */,
+			);
+			currentVersion = 4B6670701404020200714C6A /* LibrariesLocationsHours.xcdatamodel */;
+			name = LibrariesLocationsHours.xcdatamodeld;
+			path = LocationsHours/LibrariesLocationsHours.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

@@ -35,6 +35,7 @@ NSString * const SettingsTag   = @"settings";
 NSString * const AboutTag      = @"about";
 NSString * const QRReaderTag    = @"qrreader";
 NSString * const FacilitiesTag    = @"facilities";
+NSString * const LibrariesTag   = @"libraries";
 
 // notification names
 NSString * const EmergencyInfoDidLoadNotification = @"MITEmergencyInfoDidLoadNotification";
