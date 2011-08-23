@@ -135,3 +135,16 @@ typedef enum {
 // Info.plist additions
 extern NSString * const MITBuildRevisionKey;
 extern NSString * const MITBuildDescriptionKey;
+
+
+// Touchstone* Identifier for keychain password
+extern NSString * const MobileWebErrorDomain;
+extern NSString * const MobileWebTouchstoneErrorDomain;
+
+enum {
+    MobileWebUnknownError = 0,
+    MobileWebTouchstoneError,
+    MobileWebInvalidLoginError
+};
+
+extern NSString * const MobileLoginKeychainIdentifier;

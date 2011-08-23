@@ -5,6 +5,6 @@ NSString * const FacilitiesRequestLocationBuildingKey = @"FacilitiesRequestLocat
 NSString * const FacilitiesRequestLocationUserBuildingKey = @"FacilitiesRequestLocationUserBuilding";
 NSString * const FacilitiesRequestLocationRoomKey = @"FacilitiesRequestLocationRoom";
 NSString * const FacilitiesRequestLocationUserRoomKey = @"FacilitiesRequestLocationUserRoom";
-NSString * const FacilitiesRequestImageKey = @"FacilitiesRequestImage";
+NSString * const FacilitiesRequestImageDataKey = @"FacilitiesRequestImageData";
 NSString * const FacilitiesRequestUserEmailKey = @"FacilitiesRequestUserEmail";
 NSString * const FacilitiesRequestUserDescriptionKey = @"FacilitiesRequestUserDescription";

@@ -18,10 +18,8 @@
     
     UIButton *_cancelButton;
     
-#if !defined(TARGET_IPHONE_SIMULATOR)
     AVCaptureSession *_captureSession;
     AVCaptureVideoPreviewLayer *_previewLayer;
-#endif
 }
 
 @property (nonatomic,retain) id<QRReaderScanDelegate> scanDelegate;
@@ -42,8 +40,6 @@
 @end
 
 
-#if !defined(TARGET_IPHONE_SIMULATOR)
 @interface QRReaderScanViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @end
-#endif

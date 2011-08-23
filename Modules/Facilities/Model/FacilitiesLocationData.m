@@ -10,6 +10,7 @@
 #import "ConnectionDetector.h"
 #import "FacilitiesRepairType.h"
 #import "ModuleVersions.h"
+#import "MobileRequestOperation.h"
 
 NSString* const FacilitiesDidLoadDataNotification = @"MITFacilitiesDidLoadData";
 
@@ -23,9 +24,10 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 static FacilitiesLocationData *_sharedData = nil;
 
 @interface FacilitiesLocationData ()
-@property (nonatomic,retain) NSMutableDictionary* requestsInFlight;
+@property (nonatomic,retain) NSOperationQueue* requestQueue;
 @property (nonatomic,retain) NSMutableDictionary* notificationBlocks;
-- (BOOL)shouldUpdateDataWithRequest:(MITMobileWebAPI*)web;
+
+- (BOOL)shouldUpdateDataWithRequest:(MobileRequestOperation*)request;
 
 - (void)updateCategoryData;
 - (void)updateLocationData;
@@ -47,32 +49,29 @@ static FacilitiesLocationData *_sharedData = nil;
                        withUserData:(id)userData
                    newDataAvailable:(BOOL)updated;
 
-- (void)addRequest:(MITMobileWebAPI*)request withName:(NSString*)name;
-- (void)removeRequestWithName:(NSString*)name;
-- (BOOL)hasActiveRequestWithName:(NSString*)name;
+- (BOOL)hasActiveRequest:(MobileRequestOperation*)request;
 @end
 
 @implementation FacilitiesLocationData
-@synthesize requestsInFlight = _requestsInFlight;
+@synthesize requestQueue = _requestQueue;
 @synthesize notificationBlocks = _notificationBlocks;
 
 - (id)init {
     self = [super init]; 
     
     if (self) {
-        self.requestsInFlight = [NSMutableDictionary dictionary];
+        self.requestQueue = [[[NSOperationQueue alloc] init] autorelease];
+        self.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
+        
         self.notificationBlocks = [NSMutableDictionary dictionary];
-        _requestUpdateQueue = dispatch_queue_create("edu.mit.mobile.facilities.requestQueue", NULL);
     }
     
     return self;
 }
 
 - (void)dealloc {
-    self.requestsInFlight = nil;
+    self.requestQueue = nil;
     self.notificationBlocks = nil;
-    
-    dispatch_release(_requestUpdateQueue);
     [super dealloc];
 }
 
@@ -207,17 +206,17 @@ static FacilitiesLocationData *_sharedData = nil;
     return [NSString stringWithString:string];
 }
 
-- (BOOL)shouldUpdateDataWithRequest:(MITMobileWebAPI*)web {
-    NSDictionary *request = web.params;
-    NSString *command = [request objectForKey:@"command"];
+- (BOOL)shouldUpdateDataWithRequest:(MobileRequestOperation*)request {
+    NSDictionary *parameters = request.parameters;
+    NSString *command = request.command;
     
     if ([ConnectionDetector isConnected] == NO) {
         return NO;
     }
     
     NSDate *lastCheckDate = nil;
-    if ([command isEqualToString:FacilitiesRoomsKey] && [request objectForKey:@"building"]) {
-        FacilitiesLocation *location = [self locationWithNumber:[request objectForKey:@"building"]];
+    if ([command isEqualToString:FacilitiesRoomsKey] && [parameters objectForKey:@"building"]) {
+        FacilitiesLocation *location = [self locationWithNumber:[parameters objectForKey:@"building"]];
         [[[CoreDataManager coreDataManager] managedObjectContext] refreshObject:location mergeChanges:NO];
         lastCheckDate = location.roomsUpdated;
     } else {
@@ -296,17 +295,60 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
-    MITMobileWebAPI *web = [[[MITMobileWebAPI alloc] initWithModule:@"facilities"
-                                                            command:command
-                                                         parameters:params] autorelease];
-    web.jsonDelegate = self;
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"facilities"
+                                                                              command:command
+                                                                           parameters:params] autorelease];
+    
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        NSString *command = operation.command;
+        NSDictionary *parameters = operation.parameters;
+        dispatch_queue_t handlerQueue = dispatch_queue_create(NULL, 0);
+        
+        if (error) {
+            NSLog(@"Request failed with error: %@",[error localizedDescription]);
+        } else {
+            dispatch_async(handlerQueue, ^(void) {
+                if ([command isEqualToString:FacilitiesCategoriesKey]) {
+                    [self loadCategoriesWithArray:(NSArray*)jsonResult];
+                } else if ([command isEqualToString:FacilitiesLocationsKey]) {
+                    [self loadLocationsWithArray:(NSArray*)jsonResult];
+                } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
+                    [self loadRepairTypesWithArray:(NSArray*)jsonResult];
+                } else if ([command isEqualToString:FacilitiesRoomsKey]) {
+                    NSDictionary *roomData = (NSDictionary*)jsonResult;
+                    NSString *requestedId = [parameters objectForKey:@"building"];
+                    
+                    if (requestedId) {
+                        roomData = [NSDictionary dictionaryWithObject:[roomData objectForKey:requestedId]
+                                                               forKey:requestedId];
+                    }
+                    
+                    [self loadRoomsWithData:roomData];
+                }
+            
+                BOOL shouldUpdateDate = !([command isEqualToString:FacilitiesRoomsKey] && [parameters objectForKey:@"building"]);
+                
+                if (shouldUpdateDate) {
+                    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
+                    [dict setObject:[NSDate date]
+                             forKey:command];
+                    [[NSUserDefaults standardUserDefaults] setObject:dict
+                                                              forKey:FacilitiesFetchDatesKey];
+                    [[NSUserDefaults standardUserDefaults] synchronize];
+                }
+                
+                [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
+                                     withUserData:command
+                                 newDataAvailable:YES];
+            });
+            
+            dispatch_release(handlerQueue);
+        }
+    };
 
-    NSString *description = [[web requestURL] absoluteString];
-    if ([self hasActiveRequestWithName:description] == NO) {
-        if ([self shouldUpdateDataWithRequest:web]) {
-            [self addRequest:web
-                    withName:description];
-            [web start];
+    if ([self hasActiveRequest:request] == NO) {
+        if ([self shouldUpdateDataWithRequest:request]) {
+            [self.requestQueue addOperation:request];
         } else {
             [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
                                  withUserData:command
@@ -610,95 +652,8 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 #pragma mark - MITMobileWebAPI request management
-- (void)addRequest:(MITMobileWebAPI*)request withName:(NSString*)name {
-    dispatch_async(_requestUpdateQueue, ^{
-        [self.requestsInFlight setObject:request
-                                  forKey:name];
-    });
-}
-
-- (void)removeRequestWithName:(NSString*)name {
-    dispatch_async(_requestUpdateQueue, ^{
-        [self.requestsInFlight removeObjectForKey:name];
-    });
-}
-
-- (BOOL)hasActiveRequestWithName:(NSString*)name {
-    BOOL result = NO;
-    
-    dispatch_suspend(_requestUpdateQueue);
-    result = ([self.requestsInFlight objectForKey:name] != nil);
-    dispatch_resume(_requestUpdateQueue);
-    
-    return result;
-}
-
-
-#pragma mark - JSONDataLoaded Delegate
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
-    NSString *command = [request.params objectForKey:@"command"];
-    NSString *queueName = [NSString stringWithFormat:@"edu.mit.mobile.fld.%@",command];
-    dispatch_queue_t handlerQueue = dispatch_queue_create([queueName UTF8String], 0);
-    
-    if ([command isEqualToString:FacilitiesCategoriesKey]) {
-        dispatch_async(handlerQueue, ^(void) {
-            [self loadCategoriesWithArray:(NSArray*)JSONObject];
-        });
-    } else if ([command isEqualToString:FacilitiesLocationsKey]) {
-        dispatch_async(handlerQueue, ^(void) {
-            [self loadLocationsWithArray:(NSArray*)JSONObject];
-        });
-    } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
-        dispatch_async(handlerQueue, ^(void) {
-            [self loadRepairTypesWithArray:(NSArray*)JSONObject];
-        });
-    } else if ([command isEqualToString:FacilitiesRoomsKey]) {
-        dispatch_async(handlerQueue, ^(void) {
-            NSDictionary *roomData = (NSDictionary*)JSONObject;
-            NSString *requestedId = [request.params objectForKey:@"building"];
-            
-            if (requestedId) {
-                roomData = [NSDictionary dictionaryWithObject:[roomData objectForKey:requestedId]
-                                                       forKey:requestedId];
-            }
-            
-            [self loadRoomsWithData:roomData];
-        });
-    }
-    
-    dispatch_async(handlerQueue, ^(void) {
-        BOOL shouldUpdateDate = !([command isEqualToString:FacilitiesRoomsKey] && [request.params objectForKey:@"building"]);
-        
-        if (shouldUpdateDate) {
-            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
-            [dict setObject:[NSDate date]
-                     forKey:command];
-            [[NSUserDefaults standardUserDefaults] setObject:dict
-                                                      forKey:FacilitiesFetchDatesKey];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-        }
-
-    });
-    
-    dispatch_async(handlerQueue, ^(void) {
-        [self removeRequestWithName:[[request requestURL] absoluteString]];
-        [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
-                             withUserData:command
-                         newDataAvailable:YES];
-    });
-    
-    dispatch_release(handlerQueue);
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
-    dispatch_sync(_requestUpdateQueue, ^{
-        for (MITMobileWebAPI *lrequest in [self.requestsInFlight allValues]) {
-            [lrequest abortRequest];
-        }
-        
-        [self.requestsInFlight removeAllObjects];
-    });
-    return YES;
+- (BOOL)hasActiveRequest:(MobileRequestOperation*)request {
+    return [[self.requestQueue operations] containsObject:request];
 }
 
 

@@ -13,11 +13,7 @@ typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id user
 
 @class FacilitiesLocation;
 
-@interface FacilitiesLocationData : NSObject <JSONLoadedDelegate> {
-    NSMutableDictionary *_requestsInFlight;
-    NSMutableDictionary *_notificationBlocks;
-    dispatch_queue_t _requestUpdateQueue;
-}
+@interface FacilitiesLocationData : NSObject
 
 + (FacilitiesLocationData*)sharedData;
 
@@ -42,5 +38,4 @@ typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id user
 
 - (void)addObserver:(id)observer withBlock:(FacilitiesDidLoadBlock)block;
 - (void)removeObserver:(id)observer;
-
 @end

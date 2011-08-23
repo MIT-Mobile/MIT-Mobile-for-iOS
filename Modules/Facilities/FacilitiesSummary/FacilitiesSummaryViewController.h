@@ -4,8 +4,10 @@
 
 @interface FacilitiesSummaryViewController : UIViewController <UITextViewDelegate,UITextFieldDelegate,UIActionSheetDelegate,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 {
+    UIActivityIndicatorView *_imageActivityView;
     UIBarButtonItem *_submitButton;
     NSDictionary *_reportData;
+    NSData *_imageData;
 
 	BOOL _keyboardIsVisible;
 }
