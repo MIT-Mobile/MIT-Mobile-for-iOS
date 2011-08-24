@@ -89,3 +89,90 @@ static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
     return [decodedString autorelease];
 }
 @end
+
+
+@implementation NSString (MITAdditions_HTMLEntity)
+- (NSString *)stringByDecodingXMLEntities {
+    NSUInteger strLength = [self length];
+    NSUInteger ampIndex = [self rangeOfString:@"&"
+                                      options:NSLiteralSearch].location;
+    
+    if (ampIndex == NSNotFound) {
+        return self;
+    }
+    
+    NSMutableString *result = [NSMutableString stringWithCapacity:strLength];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:self];
+    while (![scanner isAtEnd]) {
+        NSString *nonEntityString = nil;
+        
+        if ([scanner scanUpToString:@"&" intoString:&nonEntityString]) {
+            [result appendString:nonEntityString];
+        }
+        
+        if ([scanner scanString:@"&amp;" intoString:NULL])
+        {
+            [result appendString:@"&"];
+        }
+        else if ([scanner scanString:@"&apos;" intoString:NULL])
+        {
+            [result appendString:@"'"];
+        }
+        else if ([scanner scanString:@"&quot;" intoString:NULL])
+        {
+            [result appendString:@"\""];
+        }
+        else if ([scanner scanString:@"&lt;" intoString:NULL])
+        {
+            [result appendString:@"<"];
+        }
+        else if ([scanner scanString:@"&gt;" intoString:NULL])
+        {
+            [result appendString:@">"];
+        }
+        else if ([scanner scanString:@"&#" intoString:NULL])
+        {
+            BOOL readNumber;
+            unsigned charCode;
+            NSString *hexIdentifier = @"";
+            
+            if ([scanner scanString:@"x" intoString:&hexIdentifier]) {
+                readNumber = [scanner scanHexInt:&charCode];
+            }
+            else {
+                readNumber = [scanner scanInt:(int*)&charCode];
+            }
+            
+            if (readNumber)
+            {
+                [result appendFormat:@"%C", charCode];
+            }
+            else
+            {
+                NSString *unknownEntity = @"";
+                
+                [scanner scanUpToString:@";" intoString:&unknownEntity];
+                [result appendFormat:@"&#%@%@;", hexIdentifier, unknownEntity];
+                
+                NSLog(@"Expected numeric character entity but got &#%@%@;", hexIdentifier, unknownEntity);
+            }
+            
+            [scanner scanString:@";" intoString:NULL];
+        }
+        else
+        {
+            NSString *unknownEntity = @"";
+            NSString *semicolon = @"";
+            
+            [scanner scanUpToString:@";" intoString:&unknownEntity];
+            [scanner scanString:@";" intoString:&semicolon];
+            
+            [result appendFormat:@"%@%@", unknownEntity, semicolon];
+            NSLog(@"Unsupported XML character entity %@%@", unknownEntity, semicolon);
+        }
+    }
+
+    return result;
+}
+@end

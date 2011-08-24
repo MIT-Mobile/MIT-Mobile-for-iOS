@@ -2,6 +2,7 @@
 #import "MITConstants.h"
 #import "TBXML.h"
 #import "TBXML+MIT.h"
+#import "Foundation+MITAdditions.h"
 
 static NSString * const kShibbolethSAMLKey = @"SAMLResponse";
 static NSString * const kShibbolethRelayStateKey = @"RelayState";
@@ -34,7 +35,9 @@ static NSString * const kShibbolethTargetKey = @"TARGET";
 {
     self = [super init];
     if (self) {
-        TBXML *doc = [[TBXML alloc] initWithXMLData:response];
+        NSString *xmlDoc = [[[NSString alloc] initWithData:response
+                                                  encoding:NSUTF8StringEncoding] autorelease];
+        TBXML *doc = [[TBXML alloc] initWithXMLString:[xmlDoc stringByDecodingXMLEntities]];
         
         if (doc.rootXMLElement) {
             self.error = [self findErrorInDocument:doc.rootXMLElement];

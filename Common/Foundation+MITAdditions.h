@@ -24,3 +24,7 @@
 - (NSString*)urlEncodeUsingEncoding:(NSStringEncoding)encoding useFormURLEncoded:(BOOL)formUrlEncoded;
 - (NSString*)urlDecodeUsingEncoding:(NSStringEncoding)encoding;
 @end
+
+@interface NSString (MITAdditions_HTMLEntity)
+- (NSString *)stringByDecodingXMLEntities;
+@end
