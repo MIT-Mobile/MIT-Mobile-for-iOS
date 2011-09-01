@@ -30,6 +30,8 @@ extern NSString * const MITUnreadNotificationsKey;
 extern NSString * const PushNotificationSettingsKey;
 extern NSString * const MITModulesSavedStateKey;
 extern NSString * const CachedMapSearchQueryKey;
+extern NSString * const LibrariesLinksUpdatedKey;
+extern NSString * const LibrariesLinksKey;
 
 extern NSString * const MITInternalURLScheme;
 

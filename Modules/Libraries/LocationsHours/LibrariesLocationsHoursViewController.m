@@ -196,6 +196,6 @@
 }
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    return NO;
+    return YES;
 }
 @end
