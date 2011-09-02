@@ -164,10 +164,14 @@
 		4B667067140330CD00714C6A /* LibrariesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667066140330CD00714C6A /* LibrariesModule.m */; };
 		4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */; };
 		4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4B66706F1404020200714C6A /* LibrariesLocationsHours.xcdatamodeld */; };
-		4B6670741404033E00714C6A /* LibrariesLocationsHours.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B6670731404033E00714C6A /* LibrariesLocationsHours.m */; };
 		4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9A4EA31355E24800E37876 /* MorseCodePattern.m */; };
 		4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */; };
 		4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */; };
+		4BE4D2F414115B9600E723F0 /* LibrariesLocationsHoursTermHours.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F314115B9600E723F0 /* LibrariesLocationsHoursTermHours.m */; };
+		4BE4D2F714115C7600E723F0 /* LibrariesLocationsHoursTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F614115C7600E723F0 /* LibrariesLocationsHoursTerm.m */; };
+		4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F914115CF900E723F0 /* LibrariesLocationsHours.m */; };
+		4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */; };
+		4BE4D2FF14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4BE4D2FD14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib */; };
 		569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3381282ADAB00BA0794 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33C1282ADBC00BA0794 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33B1282ADBC00BA0794 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33F1282ADC000BA0794 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33E1282ADC000BA0794 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -664,8 +668,6 @@
 		4B66706C1404019300714C6A /* LibrariesLocationsHoursViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursViewController.h; path = LocationsHours/LibrariesLocationsHoursViewController.h; sourceTree = "<group>"; };
 		4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursViewController.m; path = LocationsHours/LibrariesLocationsHoursViewController.m; sourceTree = "<group>"; };
 		4B6670701404020200714C6A /* LibrariesLocationsHours.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LibrariesLocationsHours.xcdatamodel; sourceTree = "<group>"; };
-		4B6670721404033E00714C6A /* LibrariesLocationsHours.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHours.h; path = LocationsHours/LibrariesLocationsHours.h; sourceTree = "<group>"; };
-		4B6670731404033E00714C6A /* LibrariesLocationsHours.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHours.m; path = LocationsHours/LibrariesLocationsHours.m; sourceTree = "<group>"; };
 		4B9A4EA21355E24800E37876 /* MorseCodePattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MorseCodePattern.h; sourceTree = "<group>"; };
 		4B9A4EA31355E24800E37876 /* MorseCodePattern.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MorseCodePattern.m; sourceTree = "<group>"; };
 		4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Calendar 3.xcdatamodel"; sourceTree = "<group>"; };
@@ -673,6 +675,15 @@
 		4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarCategoriesViewController.m; sourceTree = "<group>"; };
 		4BB9C551134BA78200B7F135 /* OpenHouseTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenHouseTableView.h; sourceTree = "<group>"; };
 		4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenHouseTableView.m; sourceTree = "<group>"; };
+		4BE4D2F214115B9600E723F0 /* LibrariesLocationsHoursTermHours.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursTermHours.h; path = LocationsHours/LibrariesLocationsHoursTermHours.h; sourceTree = "<group>"; };
+		4BE4D2F314115B9600E723F0 /* LibrariesLocationsHoursTermHours.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursTermHours.m; path = LocationsHours/LibrariesLocationsHoursTermHours.m; sourceTree = "<group>"; };
+		4BE4D2F514115C7600E723F0 /* LibrariesLocationsHoursTerm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursTerm.h; path = LocationsHours/LibrariesLocationsHoursTerm.h; sourceTree = "<group>"; };
+		4BE4D2F614115C7600E723F0 /* LibrariesLocationsHoursTerm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursTerm.m; path = LocationsHours/LibrariesLocationsHoursTerm.m; sourceTree = "<group>"; };
+		4BE4D2F814115CF900E723F0 /* LibrariesLocationsHours.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHours.h; path = LocationsHours/LibrariesLocationsHours.h; sourceTree = "<group>"; };
+		4BE4D2F914115CF900E723F0 /* LibrariesLocationsHours.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHours.m; path = LocationsHours/LibrariesLocationsHours.m; sourceTree = "<group>"; };
+		4BE4D2FB14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursDetailViewController.h; path = LocationsHours/LibrariesLocationsHoursDetailViewController.h; sourceTree = "<group>"; };
+		4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursDetailViewController.m; path = LocationsHours/LibrariesLocationsHoursDetailViewController.m; sourceTree = "<group>"; };
+		4BE4D2FD14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = LibrariesLocationsHoursDetailViewController.xib; path = LocationsHours/LibrariesLocationsHoursDetailViewController.xib; sourceTree = "<group>"; };
 		569DC3381282ADAB00BA0794 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = iphoneos4.0/System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		569DC33B1282ADBC00BA0794 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = iphoneos4.0/System/Library/Frameworks/CoreMedia.framework; sourceTree = "<group>"; };
 		569DC33E1282ADC000BA0794 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = iphoneos4.0/System/Library/Frameworks/CoreVideo.framework; sourceTree = "<group>"; };
@@ -1598,8 +1609,15 @@
 				4B66706C1404019300714C6A /* LibrariesLocationsHoursViewController.h */,
 				4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */,
 				4B66706F1404020200714C6A /* LibrariesLocationsHours.xcdatamodeld */,
-				4B6670721404033E00714C6A /* LibrariesLocationsHours.h */,
-				4B6670731404033E00714C6A /* LibrariesLocationsHours.m */,
+				4BE4D2F814115CF900E723F0 /* LibrariesLocationsHours.h */,
+				4BE4D2F914115CF900E723F0 /* LibrariesLocationsHours.m */,
+				4BE4D2F514115C7600E723F0 /* LibrariesLocationsHoursTerm.h */,
+				4BE4D2F614115C7600E723F0 /* LibrariesLocationsHoursTerm.m */,
+				4BE4D2F214115B9600E723F0 /* LibrariesLocationsHoursTermHours.h */,
+				4BE4D2F314115B9600E723F0 /* LibrariesLocationsHoursTermHours.m */,
+				4BE4D2FB14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.h */,
+				4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */,
+				4BE4D2FD14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib */,
 			);
 			name = LocationsHours;
 			sourceTree = "<group>";
@@ -2272,6 +2290,7 @@
 				29C4546E118B55E100A321B0 /* jQueryInjectLandscape.txt in Resources */,
 				4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */,
 				2C2912F513FD968500E41BE6 /* mit_ca.der in Resources */,
+				4BE4D2FF14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2571,7 +2590,6 @@
 				4B667067140330CD00714C6A /* LibrariesModule.m in Sources */,
 				4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */,
 				4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */,
-				4B6670741404033E00714C6A /* LibrariesLocationsHours.m in Sources */,
 				2C5DECC613E9BA9200F9C089 /* NSData+GZIP.m in Sources */,
 				2C5DECC713E9BA9200F9C089 /* TBXML.m in Sources */,
 				2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */,
@@ -2581,6 +2599,10 @@
 				2C5DECDA13E9BABB00F9C089 /* TouchstoneAuthResponse.m in Sources */,
 				2CAFCBE213F1C3F0007983D8 /* TBXML+MIT.m in Sources */,
 				2C14C61B13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m in Sources */,
+				4BE4D2F414115B9600E723F0 /* LibrariesLocationsHoursTermHours.m in Sources */,
+				4BE4D2F714115C7600E723F0 /* LibrariesLocationsHoursTerm.m in Sources */,
+				4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */,
+				4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
