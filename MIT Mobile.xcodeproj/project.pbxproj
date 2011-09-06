@@ -113,6 +113,9 @@
 		2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */; };
 		2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */; };
 		2CED98FB13537DEC0034F6F1 /* QRReaderOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98FA13537DEC0034F6F1 /* QRReaderOverlayView.m */; };
+		2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */; };
+		2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D41416B1AC0014E141 /* MITTabBar.m */; };
+		2CFB87D91416B1AC0014E141 /* MITTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D61416B1AC0014E141 /* MITTabView.m */; };
 		2CFBF916138EC2610080883D /* FacilitiesSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFBF915138EC2610080883D /* FacilitiesSubmitViewController.m */; };
 		2CFCABA3135DE705006464AF /* QRReaderResultTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCABA2135DE705006464AF /* QRReaderResultTransform.m */; };
 		3A827081103DAA0500BB4109 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A827080103DAA0500BB4109 /* Reachability.m */; };
@@ -576,6 +579,12 @@
 		2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QRReaderDetailViewController.xib; sourceTree = "<group>"; };
 		2CED98F913537DEC0034F6F1 /* QRReaderOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderOverlayView.h; sourceTree = "<group>"; };
 		2CED98FA13537DEC0034F6F1 /* QRReaderOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderOverlayView.m; sourceTree = "<group>"; };
+		2CFB87D11416B1AC0014E141 /* MITSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITSegmentControl.h; sourceTree = "<group>"; };
+		2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITSegmentControl.m; sourceTree = "<group>"; };
+		2CFB87D31416B1AC0014E141 /* MITTabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabBar.h; sourceTree = "<group>"; };
+		2CFB87D41416B1AC0014E141 /* MITTabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabBar.m; sourceTree = "<group>"; };
+		2CFB87D51416B1AC0014E141 /* MITTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabView.h; sourceTree = "<group>"; };
+		2CFB87D61416B1AC0014E141 /* MITTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabView.m; sourceTree = "<group>"; };
 		2CFBF914138EC2610080883D /* FacilitiesSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesSubmitViewController.h; sourceTree = "<group>"; };
 		2CFBF915138EC2610080883D /* FacilitiesSubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesSubmitViewController.m; sourceTree = "<group>"; };
 		2CFCABA2135DE705006464AF /* QRReaderResultTransform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResultTransform.m; sourceTree = "<group>"; };
@@ -1054,6 +1063,7 @@
 		080E96DDFE201D6D7F000001 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2CFB87CF1416AFB10014E141 /* UI Classes */,
 				3AA21C481039DDBA00DB7637 /* Connection */,
 				3AA21C491039DDBD00DB7637 /* Core Data */,
 				EB4C40951288974C00058748 /* FlowCover */,
@@ -1533,6 +1543,28 @@
 				2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */,
 			);
 			path = FacilitiesLeased;
+			sourceTree = "<group>";
+		};
+		2CFB87CF1416AFB10014E141 /* UI Classes */ = {
+			isa = PBXGroup;
+			children = (
+				2CFB87D01416B0400014E141 /* MIT Tabbed View */,
+			);
+			path = "UI Classes";
+			sourceTree = "<group>";
+		};
+		2CFB87D01416B0400014E141 /* MIT Tabbed View */ = {
+			isa = PBXGroup;
+			children = (
+				2CFB87D11416B1AC0014E141 /* MITSegmentControl.h */,
+				2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */,
+				2CFB87D31416B1AC0014E141 /* MITTabBar.h */,
+				2CFB87D41416B1AC0014E141 /* MITTabBar.m */,
+				2CFB87D51416B1AC0014E141 /* MITTabView.h */,
+				2CFB87D61416B1AC0014E141 /* MITTabView.m */,
+			);
+			name = "MIT Tabbed View";
+			path = "MIT Tab View";
 			sourceTree = "<group>";
 		};
 		2CFBF913138EC1620080883D /* FacilitiesSubmit */ = {
@@ -2607,6 +2639,9 @@
 				4BE4D2F714115C7600E723F0 /* LibrariesLocationsHoursTerm.m in Sources */,
 				4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */,
 				4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */,
+				2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */,
+				2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */,
+				2CFB87D91416B1AC0014E141 /* MITTabView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
