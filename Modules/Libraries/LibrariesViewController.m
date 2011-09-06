@@ -133,7 +133,7 @@
                 UITableViewCell *loadingStatusCell = [tableView dequeueReusableCellWithIdentifier:@"LinksStatus"];
                 if (!loadingStatusCell) {
                     loadingStatusCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LinksStatus"] autorelease];
-                    loadingStatusCell.selectionStyle = UITableViewCellEditingStyleNone;
+                    loadingStatusCell.selectionStyle = UITableViewCellSelectionStyleNone;
                 }
                 
                 if (self.linksStatus == LinksStatusLoading) {
