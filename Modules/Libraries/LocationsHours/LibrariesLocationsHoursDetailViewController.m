@@ -1,8 +1,12 @@
 #import "LibrariesLocationsHoursDetailViewController.h"
 #import "CoreDataManager.h"
+#import "UIKit+MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 
 #define TITLE_ROW 0
 #define LOADING_STATUS_ROW 1
+#define PHONE_ROW 1
+#define LOCATION_ROW 2
 
 @implementation LibrariesLocationsHoursDetailViewController
 @synthesize library;
@@ -29,6 +33,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.tableView applyStandardColors];
+    
     self.title = @"Detail";
 
     if (![self.library hasDetails]) {
@@ -86,98 +92,70 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (self.librariesDetailStatus == LibrariesDetailStatusLoaded) {
-        return 1;
+        return 3; // title, phone, location
     } else {
-        return 2;
+        return 2; // title, loading indicator
     }
+}
+
+- (UITableViewCell *)defaultRowWithTable:(UITableView *)tableView {
+    NSString *cellIdentifier = @"defaultRow";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (cell == nil) {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier]autorelease];
+        [cell applyStandardFonts];
+    }  
+    return cell;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *cellIdentifier = nil;
-    UITableViewCell *cell;
-    switch (indexPath.row) {
-        case TITLE_ROW:
-            cellIdentifier = @"title";
-            cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-            if (cell == nil) {
-                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier]autorelease];
-                cell.selectionStyle = UITableViewCellEditingStyleNone;
-            }
-            cell.textLabel.text = self.library.title;
-            break;
-            
-        case LOADING_STATUS_ROW:
-            cellIdentifier = @"loadingStatus";
-            cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-            if (cell == nil) {
-                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier]autorelease];
-                cell.selectionStyle = UITableViewCellEditingStyleNone;
-            }
-            
+    UITableViewCell *cell = nil;
+    if (indexPath.row == TITLE_ROW) {
+        cell = [self defaultRowWithTable:tableView];
+        cell.textLabel.text = self.library.title;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    } else {
+        if (self.librariesDetailStatus != LibrariesDetailStatusLoaded) {
+            cell = [self defaultRowWithTable:tableView];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;            
             if (self.librariesDetailStatus == LibrariesDetailStatusLoading) {
                 cell.textLabel.text = @"Loading...";
             } else if (self.librariesDetailStatus == LibrariesDetailStatusLoadingFailed) {
                 cell.textLabel.text = @"Failed loading details";
             }
-            
-        default:
-            break;
+        } else {
+            if (indexPath.row == PHONE_ROW) {
+                cell = [self defaultRowWithTable:tableView];
+                cell.textLabel.text = self.library.telephone;
+                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+                cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            } else if (indexPath.row == LOCATION_ROW) {
+                cell = [self defaultRowWithTable:tableView];
+                cell.textLabel.text = [NSString stringWithFormat:@"Room %@", self.library.location];
+                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+                cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            }
+        }
     }
     return cell;
 }
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     [detailViewController release];
-     */
+    if (self.librariesDetailStatus == LibrariesDetailStatusLoaded) {
+        if (indexPath.row == PHONE_ROW) {
+            NSString *phoneNumber = [self.library.telephone stringByReplacingOccurrencesOfString:@"." withString:@""];
+            NSURL *externURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phoneNumber]];
+            if ([[UIApplication sharedApplication] canOpenURL:externURL])
+                [[UIApplication sharedApplication] openURL:externURL];
+        } else if (indexPath.row == LOCATION_ROW) {
+            [[UIApplication sharedApplication] openURL:[NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:self.library.location]];
+        }
+    }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - JSONLoaded delegate methods
