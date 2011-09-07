@@ -2,6 +2,7 @@
 #import "LibrariesLocationsHoursViewController.h"
 #import "LibrariesViewController.h"
 #import "MITConstants.h"
+#import "LibrariesAccountViewController.h"
 
 
 // links expiration time 10 days
@@ -175,6 +176,8 @@
             switch (indexPath.row) {
                 case 0:
                     // Your Account
+                    vc = [[[LibrariesAccountViewController alloc] init] autorelease];
+                    [self.navigationController pushViewController:vc animated:YES];
                     break;
                 case 1:
                     // Locations and Hours
