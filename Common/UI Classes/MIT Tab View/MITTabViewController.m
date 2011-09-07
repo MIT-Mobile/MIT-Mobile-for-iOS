@@ -1,7 +1,7 @@
-#import "MITTabView.h"
+#import "MITTabViewController.h"
 #import "MITTabBar.h"
 
-@interface MITTabView ()
+@interface MITTabViewController ()
 @property (nonatomic,retain) MITTabBar *tabControl;
 @property (nonatomic,retain) UIView *contentView;
 @property (nonatomic,retain) NSMutableArray *tabViewControllers;
@@ -12,17 +12,16 @@
 - (void)selectTabAtIndex:(NSInteger)index;
 @end
 
-@implementation MITTabView
+@implementation MITTabViewController
 @synthesize activeController = _activeController,
 			contentView = _contentView,
 			tabControl = _tabControl,
 			tabViewControllers = _tabViewControllers;
 @dynamic viewControllers;
 
-- (id)initWithCoder:(NSCoder *)aDecoder
+- (id)init
 {
-    self = [super initWithCoder:aDecoder];
-    
+    self = [super init];
     if (self) {
         [self privateInit];
     }
@@ -30,9 +29,10 @@
     return self;
 }
 
-- (id)initWithFrame:(CGRect)frame
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithNibName:nil
+                           bundle:nil];
     if (self) {
         [self privateInit];
     }
@@ -43,12 +43,7 @@
 - (void)privateInit
 {
     self.tabViewControllers = [NSMutableArray array];
-    self.tabControl = [[[MITTabBar alloc] init] autorelease];
-    self.contentView = [[[UIView alloc] init] autorelease];
     self.activeController = nil;
-    [self layoutSubviews];
-    [self selectTabAtIndex:UISegmentedControlNoSegment];
-    self.backgroundColor = [UIColor groupTableViewBackgroundColor];
 }
 
 - (void)dealloc
@@ -59,46 +54,48 @@
     [super dealloc];
 }
 
-- (void)layoutSubviews
-{ 
-    CGRect viewFrame = self.frame;
-    viewFrame.origin = CGPointZero;
+- (void)loadView
+{
+    CGRect viewRect = [[UIScreen mainScreen] applicationFrame];
+    UIView *mainView = [[[UIView alloc] initWithFrame:viewRect] autorelease];
+    
+    mainView.autoresizesSubviews = YES;
+    mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleWidth);
     
     {
-        self.tabControl.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        if ([[self.tabControl actionsForTarget:self forControlEvent:UIControlEventValueChanged] count] == 0) {
-            [self.tabControl addTarget:self
-                                action:@selector(controlWasTouched:)
-                      forControlEvents:UIControlEventAllEvents];
-            NSLog(@"%@",[self.tabControl allTargets]);
-        }
+        CGRect barFrame = CGRectZero;
+        barFrame.size = CGSizeMake(CGRectGetWidth(viewRect), 28);
         
-        CGRect frame = self.tabControl.frame;
-        frame.origin = CGPointZero;
-        frame.size.width = CGRectGetWidth(viewFrame);
-        frame.size.height = [self.tabControl sizeThatFits:viewFrame.size].height;
-        self.tabControl.frame = frame;
+        MITTabBar *bar = [[[MITTabBar alloc] initWithFrame:barFrame] autorelease];
+        [bar addTarget:self
+                action:@selector(controlWasTouched:)
+      forControlEvents:UIControlEventValueChanged];
         
-        if ([self.tabControl superview] == nil) {
-            [self addSubview:self.tabControl];
-        }
+        self.tabControl = bar;
+        [mainView addSubview:bar];
     }
     
     {
-        CGFloat height = self.tabControl.frame.size.height;
-        CGRect contentFrame = viewFrame;
-        contentFrame.origin = CGPointMake(0, height);
-        contentFrame.size.height -= height;
+        CGRect subviewFrame = viewRect;
+        subviewFrame.origin.y = self.tabControl.frame.size.height;
+        subviewFrame.size.height -= self.tabControl.frame.size.height;
+        
+        UIView *view = [[[UIView alloc] initWithFrame:subviewFrame] autorelease];
+        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleWidth);
+        view.autoresizesSubviews = YES;
+        view.backgroundColor = [UIColor clearColor];
+        self.contentView = view;
+        [mainView addSubview:view];
+    }
+    
+    [self setView:mainView];
+}
 
-        self.contentView.frame = contentFrame;
-        self.contentView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                             UIViewAutoresizingFlexibleWidth);
-        self.contentView.autoresizesSubviews = YES;
-        
-        if ([self.contentView superview] == nil) {
-            [self addSubview:self.contentView];
-        }
-    }
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self selectTabAtIndex:0];
 }
 
 - (NSArray*)viewControllers

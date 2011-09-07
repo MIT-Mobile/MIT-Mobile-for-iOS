@@ -1,9 +1,10 @@
 #import <UIKit/UIKit.h>
 
-@interface MITTabView : UIView
+@interface MITTabViewController : UIViewController
 @property (nonatomic,readonly) NSArray *viewControllers;
-- (id)initWithCoder:(NSCoder *)aDecoder;
-- (id)initWithFrame:(CGRect)frame;
+
+- (id)init;
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
 
 - (BOOL)addViewController:(UIViewController*)controller animate:(BOOL)animate;
 - (BOOL)insertViewController:(UIViewController*)controller atIndex:(NSUInteger)index animate:(BOOL)animate;

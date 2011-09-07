@@ -73,6 +73,8 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
         self.textLabel.textAlignment = UITextAlignmentCenter;
         self.textLabel.lineBreakMode = UILineBreakModeMiddleTruncation;
         self.textLabel.numberOfLines = 1;
+        self.textLabel.adjustsFontSizeToFitWidth = YES;
+        self.textLabel.minimumFontSize = 12.0;
         
         self.shadowColor = [UIColor blackColor];
         self.shadowOffset = CGSizeMake(0, -1.0);
