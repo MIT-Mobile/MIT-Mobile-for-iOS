@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "MITMobileWebAPI.h"
 
-@interface LibrariesLocationsHoursViewController : UITableViewController <JSONLoadedDelegate> {
+@interface LibrariesLocationsHoursViewController : UITableViewController <JSONLoadedDelegate, UIAlertViewDelegate> {
     
 }
 

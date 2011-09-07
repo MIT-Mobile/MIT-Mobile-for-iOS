@@ -151,4 +151,16 @@
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
     return YES;
 }
+
+- (id<UIAlertViewDelegate>)request:(MITMobileWebAPI *)request alertViewDelegateForError:(NSError *)error {
+    return self;
+}
+
+#pragma mark - UIAlertView delegate methods
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (self.navigationController.visibleViewController == self) {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+}
 @end
