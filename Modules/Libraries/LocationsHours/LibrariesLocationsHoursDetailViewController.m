@@ -1,4 +1,6 @@
 #import "LibrariesLocationsHoursDetailViewController.h"
+#import "LibrariesLocationsHoursTerm.h"
+#import "LibrariesLocationsHoursTermHours.h"
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
@@ -7,16 +9,33 @@
 #define LOADING_STATUS_ROW 1
 #define PHONE_ROW 1
 #define LOCATION_ROW 2
+#define CONTENT_ROW 3
+
+@interface LibrariesLocationsHoursDetailViewController (Private)
+- (NSString *)contentHtml;
+@end
 
 @implementation LibrariesLocationsHoursDetailViewController
 @synthesize library;
 @synthesize librariesDetailStatus;
 @synthesize request;
+@synthesize contentRowHeight;
+@synthesize contentWebView;
+
+- (id)initWithStyle:(UITableViewStyle)style {
+    self = [super initWithStyle:style];
+    if (self) {
+        self.contentRowHeight = 0;
+    }
+    return self;
+}
 
 - (void)dealloc
 {
     self.request = nil;
     self.library = nil;
+    self.contentWebView.delegate = nil;
+    self.contentWebView = nil;
     [super dealloc];
 }
 
@@ -51,6 +70,8 @@
 
 - (void)viewDidUnload
 {
+    self.contentWebView.delegate = nil;
+    self.contentWebView = nil;
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -92,7 +113,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (self.librariesDetailStatus == LibrariesDetailStatusLoaded) {
-        return 3; // title, phone, location
+        return 4; // title, phone, location, content
     } else {
         return 2; // title, loading indicator
     }
@@ -135,6 +156,25 @@
                 cell.textLabel.text = [NSString stringWithFormat:@"Room %@", self.library.location];
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
                 cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            } else if (indexPath.row == CONTENT_ROW) {
+                NSString *cellIdentifier = @"contentRow";
+                cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+                
+                CGFloat padding;
+                if (self.tableView.style == UITableViewStyleGrouped) {
+                    padding = 20;
+                } else if (self.tableView.style == UITableViewStylePlain) {
+                    padding = 0;
+                }
+                
+                if (cell == nil) {
+                    cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier]autorelease];
+                    self.contentWebView = [[[UIWebView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width-padding, 100)] autorelease];
+                    self.contentWebView.delegate = self;                    
+                    
+                    [self.contentWebView loadHTMLString:[self contentHtml] baseURL:nil];
+                    [cell.contentView addSubview:self.contentWebView];
+                }
             }
         }
     }
@@ -158,6 +198,14 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row == CONTENT_ROW) {
+        return self.contentRowHeight;
+    } else {
+        return tableView.rowHeight;
+    }
+}
+
 #pragma mark - JSONLoaded delegate methods
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
@@ -176,6 +224,50 @@
     [self.tableView reloadData];
 }
 
+#pragma mark - UIWebView delegate 
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    CGFloat webViewHeight = [webView sizeThatFits:CGSizeZero].height;
+    self.contentRowHeight = webViewHeight + 10;
+    CGRect contentWebViewFrame = self.contentWebView.frame;
+    contentWebViewFrame.size.height = webViewHeight;
+    self.contentWebView.frame = contentWebViewFrame;
+    [self.tableView reloadData];
+}
 
 
+- (NSString *)contentHtml {
+    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
+    NSURL *fileURL = [NSURL URLWithString:@"libraries/libraries.html" relativeToURL:baseURL];
+    NSError *error;
+    NSMutableString *target = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
+    if (!target) {
+        ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
+    }
+    
+    [NSPredicate predicateWithFormat:@"termSortOrder = %d", 0];
+    LibrariesLocationsHoursTerm *term = [[self.library.terms filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder = %d", 0]] anyObject];
+    NSString *hoursString = @"";
+    NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
+    NSArray *hourElements = [term.hours sortedArrayUsingDescriptors:[NSArray arrayWithObject:descriptor]];
+    for (LibrariesLocationsHoursTermHours *hoursElement in hourElements) {
+        hoursString = [hoursString stringByAppendingFormat:@"%@<br/>", hoursElement.hoursDescription];
+    }
+    
+    NSDateFormatter *startDateFormat = [[[NSDateFormatter alloc] init] autorelease];
+    [startDateFormat setDateFormat:@"MMMM d"];
+    
+    NSDateFormatter *endDateFormat = [[[NSDateFormatter alloc] init] autorelease];
+    [endDateFormat setDateFormat:@"MMMM d, YYYY"];
+    
+    NSString *name = term.name;
+    if (name == nil) {
+        name = @"";
+    }
+    NSString *hoursTitle = [NSString stringWithFormat:@"%@ Hours (%@-%@)", name, [startDateFormat stringFromDate:term.startDate], [endDateFormat stringFromDate:term.endDate]];
+    
+    [target replaceOccurrencesOfStrings:[NSArray arrayWithObjects:@"__TODAYS_HOURS__", @"__HOURS_TITLE__", @"__HOURS__", nil]
+                            withStrings:[NSArray arrayWithObjects:self.library.hoursToday, hoursTitle, hoursString, nil] options:NSLiteralSearch];
+    return target;        
+}
 @end

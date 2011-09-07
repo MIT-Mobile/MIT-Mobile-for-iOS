@@ -81,9 +81,10 @@
 
 - (void)addTermWithDict:(NSDictionary *)dict sortOrder:(NSInteger)sortOrder {
     LibrariesLocationsHoursTerm *term = [CoreDataManager insertNewObjectForEntityForName:LibrariesLocationsHoursTermEntity];
-    NSNumber *startNumber = [dict objectForKey:@"start"];
+    NSDictionary *rangeDict = [dict objectForKey:@"range"];
+    NSNumber *startNumber = [rangeDict objectForKey:@"start"];
     term.startDate = [NSDate dateWithTimeIntervalSince1970:[startNumber longValue]];
-    NSNumber *endNumber = [dict objectForKey:@"end"];
+    NSNumber *endNumber = [rangeDict objectForKey:@"end"];
     term.endDate = [NSDate dateWithTimeIntervalSince1970:[endNumber longValue]];
     term.termSortOrder = [NSNumber numberWithInteger:sortOrder];
     

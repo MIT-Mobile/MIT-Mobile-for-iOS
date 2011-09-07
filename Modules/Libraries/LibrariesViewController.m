@@ -168,9 +168,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    UIViewController *vc;
-    NSString *urlString = nil;
-    
+    UIViewController *vc;    
     
     switch (indexPath.section) {
         case TOP_SECTION:
