@@ -75,24 +75,21 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
         self.textLabel.numberOfLines = 1;
         self.textLabel.adjustsFontSizeToFitWidth = YES;
         self.textLabel.minimumFontSize = 12.0;
-        
-        self.shadowColor = [UIColor blackColor];
-        self.shadowOffset = CGSizeMake(0, -1.0);
-        self.titleFont = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
+        self.titleFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
     }
     
     self.titleInset = CGSizeMake(5.0, 5.0);
     
     self.stateDictionary = [NSMutableDictionary dictionary];
+    
     [self setTitleColor:[UIColor whiteColor]
                forState:UIControlStateNormal];
+    [self setTitleColor:[UIColor blackColor]
+               forState:UIControlStateSelected];
+    
     [self setBackgroundColor:[UIColor grayColor]
                     forState:UIControlStateNormal];
-    
-    [self setBackgroundColor:[UIColor colorWithRed:0.6
-                                             green:0.2
-                                              blue:0.2
-                                             alpha:1.0]
+    [self setBackgroundColor:[UIColor whiteColor]
                     forState:UIControlStateSelected];
     
     [self setTitleColor:[UIColor lightTextColor]
@@ -103,6 +100,7 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
 
 - (void)drawRect:(CGRect)rect
 {
+    BOOL shadeBackground = [[self backgroundColorForState:UIControlStateNormal] isEqual:[self backgroundColorForState:UIControlStateSelected]];
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
     
@@ -119,7 +117,7 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
         0.40, 1
     };
     
-    if(self.isSelected) {
+    if(self.isSelected && shadeBackground) {
         strokeComponents[0]-=0.1;
         strokeComponents[2]-=0.1;
     }
@@ -140,7 +138,7 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
         0.35, 1
     };
     
-    if(self.isSelected) {
+    if(self.isSelected && shadeBackground) {
         fillComponents[0]-=0.1;
         fillComponents[2]-=0.1;
     }
