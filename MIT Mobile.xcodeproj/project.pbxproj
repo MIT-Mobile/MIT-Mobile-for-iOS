@@ -166,6 +166,8 @@
 		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; };
 		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; };
+		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; };
+		4B33EA16141AC9D900B30312 /* LibrariesAppointmentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA15141AC9D900B30312 /* LibrariesAppointmentViewController.m */; };
 		4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */; };
 		4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */; };
 		4B667063140330A000714C6A /* LibrariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667061140330A000714C6A /* LibrariesViewController.m */; };
@@ -683,6 +685,10 @@
 		4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryEmailFormViewController.h; sourceTree = "<group>"; };
 		4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibraryEmailFormViewController.m; sourceTree = "<group>"; };
 		4B1DC9EF1354E90F00FCD046 /* Tours 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Tours 2.xcdatamodel"; sourceTree = "<group>"; };
+		4B33EA11141AC65300B30312 /* LibrariesAskUsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAskUsTableViewController.h; sourceTree = "<group>"; };
+		4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAskUsTableViewController.m; sourceTree = "<group>"; };
+		4B33EA14141AC9D900B30312 /* LibrariesAppointmentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAppointmentViewController.h; sourceTree = "<group>"; };
+		4B33EA15141AC9D900B30312 /* LibrariesAppointmentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAppointmentViewController.m; sourceTree = "<group>"; };
 		4B53F2A81354F6180081EA38 /* TourSideTripMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourSideTripMapAnnotation.h; sourceTree = "<group>"; };
 		4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourSideTripMapAnnotation.m; sourceTree = "<group>"; };
 		4B53F2AB1354F6460081EA38 /* TourMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourMapAnnotation.h; sourceTree = "<group>"; };
@@ -1689,6 +1695,10 @@
 				4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */,
 				4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */,
 				4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */,
+				4B33EA11141AC65300B30312 /* LibrariesAskUsTableViewController.h */,
+				4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */,
+				4B33EA14141AC9D900B30312 /* LibrariesAppointmentViewController.h */,
+				4B33EA15141AC9D900B30312 /* LibrariesAppointmentViewController.m */,
 			);
 			path = EmailForms;
 			sourceTree = "<group>";
@@ -2718,6 +2728,8 @@
 				2CFB87FB1416B73A0014E141 /* LibrariesLoansViewController.m in Sources */,
 				4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */,
 				4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */,
+				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,
+				4B33EA16141AC9D900B30312 /* LibrariesAppointmentViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

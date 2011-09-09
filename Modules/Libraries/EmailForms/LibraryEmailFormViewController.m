@@ -396,4 +396,28 @@
     self.loadingView.frame = self.view.bounds;
     [self.view addSubview:self.loadingView];
 }
+
+- (LibraryFormElement *)statusMenuFormElement {
+    return             
+        [[[MenuLibraryFormElement alloc] initWithKey:@"status" 
+                                        displayLabel:@"Your status" 
+                                            required:YES
+                                              values:[NSArray arrayWithObjects:
+                                                      @"UG",
+                                                      @"GRAD",
+                                                      @"FAC",
+                                                      @"RS",
+                                                      @"STAFF",
+                                                      @"VS",
+                                                      nil] 
+                                       displayValues:[NSArray arrayWithObjects:
+                                                      @"MIT Undergrad Student",
+                                                      @"MIT Grad Student",
+                                                      @"MIT Faculty",
+                                                      @"MIT Research Staff",
+                                                      @"MIT Staff",
+                                                      @"MIT Visitor",
+                                                      nil] 
+                                         placeHolder:@"Your Status"] autorelease];
+}
 @end

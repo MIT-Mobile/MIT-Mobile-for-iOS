@@ -57,30 +57,9 @@
                                                                              
             
          [LibraryFormElementGroup groupForName:@"PersonalInfo" elements:[NSArray arrayWithObjects:
-            [[[MenuLibraryFormElement alloc] initWithKey:@"status" 
-                                            displayLabel:@"Your status" 
-                                                required:YES
-                                                  values:[NSArray arrayWithObjects:
-                                                          @"UG",
-                                                          @"GRAD",
-                                                          @"FAC",
-                                                          @"RS",
-                                                          @"STAFF",
-                                                          @"VS",
-                                                          nil] 
-                                           displayValues:[NSArray arrayWithObjects:
-                                                          @"MIT Undergrad Student",
-                                                          @"MIT Grad Student",
-                                                          @"MIT Faculty",
-                                                          @"MIT Research Staff",
-                                                          @"MIT Staff",
-                                                          @"MIT Visitor",
-                                                          nil] 
-                                             placeHolder:@"Your Status"] autorelease],
-            
-            
+            [self statusMenuFormElement],            
             [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Your department" required:YES] autorelease],
-            [[[TextLibraryFormElement alloc] initWithKey:@"phone" displayLabel:@"Phone Number" required:YES] autorelease],
+            [[[TextLibraryFormElement alloc] initWithKey:@"phone" displayLabel:@"Phone Number" required:NO] autorelease],
             
             nil]],
         nil];

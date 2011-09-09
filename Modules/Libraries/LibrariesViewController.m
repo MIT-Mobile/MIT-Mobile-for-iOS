@@ -3,7 +3,7 @@
 #import "LibrariesViewController.h"
 #import "MITConstants.h"
 #import "LibrariesAccountViewController.h"
-#import "LibrariesAskUsViewController.h"
+#import "LibrariesAskUsTableViewController.h"
 
 
 // links expiration time 10 days
@@ -185,7 +185,7 @@
                     break;
                 case 2:
                     // Ask Us
-                    vc = [[[LibrariesAskUsViewController alloc] init] autorelease];
+                    vc = [[[LibrariesAskUsTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
                     break;
                 case 3:
                     // Tell Us
