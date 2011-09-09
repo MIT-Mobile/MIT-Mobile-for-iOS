@@ -10,7 +10,7 @@
         self.tag = LibrariesTag;
         self.shortName = @"Libraries";
         self.longName = @"Libraries";
-        self.iconName = @"about";
+        self.iconName = @"libraries";
         self.isMovableTab = TRUE;
         
     }
