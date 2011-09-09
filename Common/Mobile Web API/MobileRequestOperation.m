@@ -518,6 +518,10 @@ sec_error:
                 self.requestState = MobileRequestStateAuthError;
                 return nil;
             }
+        } else if (self.requestState == MobileRequestStateAuthOK) {
+            NSMutableURLRequest *newRequest = [self.initialRequest mutableCopy];
+            newRequest.URL = [request URL];
+            request = newRequest;
         }
     }
     
