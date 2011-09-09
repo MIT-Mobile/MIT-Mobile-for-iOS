@@ -94,9 +94,11 @@
     
     // Set up window
     if (navParadigm == MITNavigationParadigmTabBar) {
+        [self.window setRootViewController:theTabBarController];
         [self.window addSubview:theTabBarController.view];
     }
     else {
+        [self.window setRootViewController:theNormalNavController];
         [self.window addSubview:theNormalNavController.view];
     }
     
