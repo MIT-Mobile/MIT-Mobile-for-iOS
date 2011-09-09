@@ -338,7 +338,6 @@ typedef enum {
 - (NSURLRequest*)buildURLRequest {
     NSMutableString *urlString = [NSMutableString stringWithString:[MITMobileWebGetCurrentServerURL() absoluteString]];
     
-    
     if ([urlString hasSuffix:@"/"] == NO) {
         [urlString appendString:@"/"];
     }
@@ -352,7 +351,7 @@ typedef enum {
     for (NSString *key in self.parameters) {
         NSString *value = [self.parameters objectForKey:key];
         
-        if (!([[NSNull null] isEqual:value] || ([value length] > 0))) {
+        if (!([[NSNull null] isEqual:value] || ([value length] == 0))) {
             NSString *param = [NSString stringWithFormat:@"%@=%@",
                                [key urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
                                [value urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
