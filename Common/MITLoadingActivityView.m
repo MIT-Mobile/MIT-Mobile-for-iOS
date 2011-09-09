@@ -1,56 +1,75 @@
 
 #import "MITLoadingActivityView.h"
 
+@interface MITLoadingActivityView ()
+@property (nonatomic,retain) UIImageView *backgroundImage;
+@property (nonatomic,retain) UIView *activityView;
+@end
 
 @implementation MITLoadingActivityView
+
+@synthesize backgroundImage = _backgroundImage,
+            activityView = _activityView;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-		self.opaque = YES;
+        [self layoutSubviews];
     }
     return self;
 }
 
 - (void)layoutSubviews {
     {
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageNameBackground]];
-        CGRect frame = self.frame;
-        frame.origin = CGPointZero;
-        
-        imageView.frame = frame;
-        _backgroundView = imageView;
-        [self addSubview:imageView];
+        if (self.backgroundImage == nil) {
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageNameBackground]];
+            [self addSubview:imageView];
+            self.backgroundImage = imageView;
+        }
+
+        self.backgroundImage.frame = self.bounds;
     }
     
     {
-        CGFloat labelLeftMargin = 5.0;
-        CGRect frame = self.frame;
-        UIActivityIndicatorView *spinny = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease];
-		[spinny startAnimating];
-		
-		UILabel *loadingLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-		NSString *loadingText = @"Loading...";
-		loadingLabel.backgroundColor = [UIColor clearColor];
-		loadingLabel.text = loadingText;
-		CGSize labelSize = [loadingText sizeWithFont:loadingLabel.font];
-		loadingLabel.frame = CGRectMake(spinny.frame.size.width + labelLeftMargin, 0.0, labelSize.width, labelSize.height);
-		
-        CGRect viewFrame = CGRectMake(0.0,
-                                      0.0,
-                                      labelSize.width + spinny.frame.size.width + labelLeftMargin,
-                                      labelSize.height);
-		UIView *centeredView = [[[UIView alloc] initWithFrame:viewFrame] autorelease];
-		[centeredView addSubview:spinny];
-		[centeredView addSubview:loadingLabel];
-		
-		centeredView.center = CGPointMake(frame.size.width / 2, frame.size.height / 2);
-		[self addSubview:centeredView];
+        if (self.activityView == nil) {
+            UIView *activityView = [[[UIView alloc] init] autorelease];
+            UILabel *loadingLabel = [[[UILabel alloc] init] autorelease];
+            UIActivityIndicatorView *spinner = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease];
+            
+            NSString *loadingText = @"Loading...";
+            
+            CGSize labelSize = [loadingText sizeWithFont:loadingLabel.font];
+            CGFloat labelLeftMargin = 5.0;
+            loadingLabel.frame = CGRectMake(spinner.frame.size.width + labelLeftMargin,
+                                            0.0,
+                                            labelSize.width,
+                                            labelSize.height);
+            loadingLabel.backgroundColor = [UIColor clearColor];
+            loadingLabel.text = loadingText;
+            
+            CGRect viewFrame = CGRectMake(0.0,
+                                          0.0,
+                                          labelSize.width + spinner.frame.size.width + labelLeftMargin,
+                                          labelSize.height);
+            activityView.frame = viewFrame;
+            
+            [activityView addSubview:spinner];
+            [activityView addSubview:loadingLabel];
+            
+            [spinner startAnimating];
+            [self addSubview:activityView];
+            self.activityView = activityView;
+        }
+        
+        self.activityView.autoresizingMask = UIViewAutoresizingNone;
+		self.activityView.center = CGPointMake(CGRectGetWidth(self.bounds) / 2.0,
+                                               CGRectGetHeight(self.bounds) / 2.0);
     }
 }
 
 - (void)dealloc {
-    [_backgroundView release], _backgroundView = nil;
+    self.backgroundImage = nil;
+    self.activityView = nil;
     
     [super dealloc];
 }
