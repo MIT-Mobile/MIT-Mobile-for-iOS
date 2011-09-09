@@ -3,6 +3,7 @@
 
 
 @implementation LibrariesModule
+@synthesize requestQueue;
 
 - (id) init {
     self = [super init];
@@ -12,9 +13,15 @@
         self.longName = @"Libraries";
         self.iconName = @"about";
         self.isMovableTab = TRUE;
+        self.requestQueue = [[[NSOperationQueue alloc] init] autorelease];
         
     }
     return self;
+}
+
+- (void) dealloc {
+    self.requestQueue = nil;
+    [super dealloc];
 }
 
 - (UIViewController *)moduleHomeController {

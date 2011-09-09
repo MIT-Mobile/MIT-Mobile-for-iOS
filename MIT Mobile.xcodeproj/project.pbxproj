@@ -164,6 +164,8 @@
 		44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */; };
 		44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A3CD11A33905000FD653 /* MapSelectionController.m */; };
 		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; };
+		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; };
+		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; };
 		4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */; };
 		4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */; };
 		4B667063140330A000714C6A /* LibrariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667061140330A000714C6A /* LibrariesViewController.m */; };
@@ -676,6 +678,10 @@
 		44C1A3CD11A33905000FD653 /* MapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSelectionController.m; sourceTree = "<group>"; };
 		44C1A4C211A412E2000FD653 /* MapSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapSearch.h; sourceTree = "<group>"; };
 		44C1A4C311A412E2000FD653 /* MapSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSearch.m; sourceTree = "<group>"; };
+		4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAskUsViewController.h; sourceTree = "<group>"; };
+		4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAskUsViewController.m; sourceTree = "<group>"; };
+		4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryEmailFormViewController.h; sourceTree = "<group>"; };
+		4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibraryEmailFormViewController.m; sourceTree = "<group>"; };
 		4B1DC9EF1354E90F00FCD046 /* Tours 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Tours 2.xcdatamodel"; sourceTree = "<group>"; };
 		4B53F2A81354F6180081EA38 /* TourSideTripMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourSideTripMapAnnotation.h; sourceTree = "<group>"; };
 		4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourSideTripMapAnnotation.m; sourceTree = "<group>"; };
@@ -1676,9 +1682,21 @@
 			name = Selection;
 			sourceTree = "<group>";
 		};
+		4B1B7E3D1417CA0E0090039F /* EmailForms */ = {
+			isa = PBXGroup;
+			children = (
+				4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */,
+				4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */,
+				4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */,
+				4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */,
+			);
+			path = EmailForms;
+			sourceTree = "<group>";
+		};
 		4B66705F1403304300714C6A /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				4B1B7E3D1417CA0E0090039F /* EmailForms */,
 				2CFB87EC1416B5120014E141 /* My Account */,
 				4B66706B1403FE7700714C6A /* LocationsHours */,
 				4B667060140330A000714C6A /* LibrariesViewController.h */,
@@ -2698,6 +2716,8 @@
 				2CFB87F51416B7180014E141 /* LibrariesFinesViewController.m in Sources */,
 				2CFB87F81416B7290014E141 /* LibrariesHoldsViewController.m in Sources */,
 				2CFB87FB1416B73A0014E141 /* LibrariesLoansViewController.m in Sources */,
+				4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */,
+				4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

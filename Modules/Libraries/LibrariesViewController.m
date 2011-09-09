@@ -3,6 +3,7 @@
 #import "LibrariesViewController.h"
 #import "MITConstants.h"
 #import "LibrariesAccountViewController.h"
+#import "LibrariesAskUsViewController.h"
 
 
 // links expiration time 10 days
@@ -177,15 +178,14 @@
                 case 0:
                     // Your Account
                     vc = [[[LibrariesAccountViewController alloc] init] autorelease];
-                    [self.navigationController pushViewController:vc animated:YES];
                     break;
                 case 1:
                     // Locations and Hours
                     vc = [[[LibrariesLocationsHoursViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
-                    [self.navigationController pushViewController:vc animated:YES];
                     break;
                 case 2:
                     // Ask Us
+                    vc = [[[LibrariesAskUsViewController alloc] init] autorelease];
                     break;
                 case 3:
                     // Tell Us
@@ -194,6 +194,7 @@
                 default:
                     break;
             }
+            [self.navigationController pushViewController:vc animated:YES];
             break;
             
         case EXTERNAL_URLS_SECTION:

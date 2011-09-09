@@ -6,4 +6,6 @@
     
 }
 
+@property (nonatomic, retain) NSOperationQueue *requestQueue;
+
 @end
