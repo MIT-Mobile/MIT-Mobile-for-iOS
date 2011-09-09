@@ -1,15 +1,16 @@
 #import <Security/Security.h>
 
-#import "MITJSON.h"
-#import "MobileRequestOperation.h"
-#import "TouchstoneAuthResponse.h"
-#import "SAMLResponse.h"
-#import "MobileKeychainServices.h"
-#import "MobileRequestLoginViewController.h"
-#import "MITConstants.h"
 #import "Foundation+MITAdditions.h"
+#import "MITConstants.h"
+#import "MITJSON.h"
+#import "MITLogging.h"
 #import "MITMobileServerConfiguration.h"
+#import "MobileKeychainServices.h"
 #import "MobileRequestAuthenticationTracker.h"
+#import "MobileRequestLoginViewController.h"
+#import "MobileRequestOperation.h"
+#import "SAMLResponse.h"
+#import "TouchstoneAuthResponse.h"
 
 static  MobileRequestAuthenticationTracker* gSecureStateTracker = nil;
 
@@ -63,7 +64,6 @@ typedef enum {
 @implementation MobileRequestOperation
 @synthesize module = _module,
             command = _command,
-            pathExtension = _pathExtension,
             parameters = _parameters,
             usePOST = _usePOST,
             completeBlock = _completeBlock,
@@ -109,7 +109,6 @@ typedef enum {
     self.module = nil;
     self.command = nil;
     self.parameters = nil;
-    self.pathExtension = nil;
     self.progressBlock = nil;
     self.completeBlock = nil;
     
@@ -339,19 +338,14 @@ typedef enum {
 - (NSURLRequest*)buildURLRequest {
     NSMutableString *urlString = [NSMutableString stringWithString:[MITMobileWebGetCurrentServerURL() absoluteString]];
     
-    if ([urlString hasSuffix:@"page=expert"] == NO) {
-        if ([urlString hasSuffix:@"/"] == NO) {
-            [urlString appendString:@"/"];
-        }
-        
-        if (self.pathExtension) {
-            [urlString appendFormat:@"/%@",self.pathExtension];
-        }
-        
-        [urlString appendFormat:@"?module=%@&command=%@",
-            [self.module urlEncodeUsingEncoding:NSUTF8StringEncoding],
-            [self.command urlEncodeUsingEncoding:NSUTF8StringEncoding]];
+    
+    if ([urlString hasSuffix:@"/"] == NO) {
+        [urlString appendString:@"/"];
     }
+        
+    [urlString appendFormat:@"?module=%@&command=%@",
+                            [self.module urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                            [self.command urlEncodeUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableArray *params = [NSMutableArray arrayWithCapacity:[self.parameters count]];
     
@@ -441,7 +435,7 @@ typedef enum {
                                              ofType:@"der"
                                         inDirectory:[[NSBundle mainBundle] resourcePath]];
     if (serverCAPath == nil) {
-        NSLog(@"Error: Unable to load server CA");
+        WLog(@"Unable to load server CA");
         [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
         return;
     }
@@ -450,7 +444,7 @@ typedef enum {
     NSData *serverCAData = [NSData dataWithContentsOfFile:serverCAPath];
     SecCertificateRef serverCA = SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)serverCAData);
     if (serverCA == NULL) {
-        NSLog(@"Error: Failed to create SecCertificateRef for the server CA");
+        ELog(@"Failed to create SecCertificateRef for the server CA");
         [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
         return;
     }
@@ -470,22 +464,21 @@ typedef enum {
                                            &serverTrust);
     CFRelease(sslPolicy);
     if (error != noErr) {
-        NSLog(@"Error (%ld): Unable to create SecTrust object",error);
-        
+        ELog(@"Error (%ld): Unable to create SecTrust object",error);
     }
     
     
     NSArray *anchorArray = [NSArray arrayWithObject:(id)serverCA];
     error = SecTrustSetAnchorCertificates(serverTrust, (CFArrayRef)anchorArray);
     if (error != noErr) {
-        NSLog(@"Error (%ld): Failed to anchor server CA",error);
+        ELog(@"Error (%ld): Failed to anchor server CA",error);
         goto sec_error;
     }
     
     
     error = SecTrustSetAnchorCertificatesOnly(serverTrust, FALSE);
     if (error != noErr) {
-        NSLog(@"Error (%ld): Failed to anchor server CA",error);
+        ELog(@"Error (%ld): Failed to anchor server CA",error);
         goto sec_error;
     }
     

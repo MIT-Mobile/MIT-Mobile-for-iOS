@@ -14,7 +14,6 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 @property (nonatomic,readonly,copy) NSString *module;
 @property (nonatomic,readonly,copy) NSString *command;
 @property (nonatomic,readonly,copy) NSDictionary *parameters;
-@property (nonatomic,copy) NSString *pathExtension;
 @property (nonatomic) BOOL usePOST;
 
 /* 
