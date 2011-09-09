@@ -8,10 +8,12 @@
 
 @property (nonatomic, retain) NSString *key;
 @property (nonatomic, retain) NSString *displayLabel;
+@property (nonatomic, retain) NSString *displayLabelSubtitle;
 @property (nonatomic) BOOL required;
 @property (nonatomic, retain) NSString *onChangeJavaScript;
 
 - (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel required:(BOOL)required;
+- (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel displayLabelSubtitle:(NSString *)displayLabelSubtitle required:(BOOL)required;
 - (NSString *)formHtml;
 - (NSString *)labelHtml;
 
@@ -44,8 +46,12 @@
 
 @interface TextLibraryFormElement : LibraryFormElement {
 @private
-    UIView *_view;
-    UITextView *_textView;
+}
+
+@end
+
+@interface TextAreaLibraryFormElement : LibraryFormElement {
+@private
 }
 
 @end

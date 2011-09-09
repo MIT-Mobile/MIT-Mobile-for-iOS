@@ -34,7 +34,7 @@
                                             displayLabel:@"Subject line:" 
                                                 required:YES] autorelease],
             
-            [[[TextLibraryFormElement alloc] initWithKey:@"question" 
+            [[[TextAreaLibraryFormElement alloc] initWithKey:@"question" 
                                             displayLabel:@"Detailed question:" 
                                                 required:YES] autorelease],
                                     

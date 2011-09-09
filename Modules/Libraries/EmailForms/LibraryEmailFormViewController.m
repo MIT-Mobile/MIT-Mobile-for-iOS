@@ -6,18 +6,23 @@
 @implementation LibraryFormElement
 @synthesize key;
 @synthesize displayLabel;
+@synthesize displayLabelSubtitle;
 @synthesize required;
 @synthesize onChangeJavaScript;
 
-- (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel required:(BOOL)isRequired {
+- (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel displayLabelSubtitle:(NSString *)aDisplayLabelSubtitle required:(BOOL)isRequired {
     self = [super init];
     if (self) {
         self.key = aKey;
         self.displayLabel = aDisplayLabel;
+        self.displayLabelSubtitle = aDisplayLabelSubtitle;
         self.required = isRequired;
         self.onChangeJavaScript = nil;
     }
     return self;
+}
+- (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel required:(BOOL)isRequired {
+    return [self initWithKey:aKey displayLabel:aDisplayLabel displayLabelSubtitle:nil required:isRequired];
 }
 
 - (void)dealloc {
@@ -28,15 +33,19 @@
 }
 
 - (NSString *)labelHtml {
-    NSString *requiredStar;
-    if(self.required) {
+    NSString *requiredStar = @"";
+    if (self.required) {
         requiredStar = @"<span class=\"required\">*</span>";
-    } else {
-        requiredStar = @"";
+    } 
+    
+    NSString *labelSubtitleString = @"";
+    if (self.displayLabelSubtitle) {
+        labelSubtitleString = [NSString stringWithFormat:@"<br /><span class=\"smallprint\">%@</span>", self.displayLabelSubtitle];
     }
+    
     return [NSString stringWithFormat:
-            @"<h3><label for=\"%@\">%@ %@</label></h3><p id=\"warning-%@\" class=\"default\">MISSING!</p>", 
-            self.key, self.displayLabel, requiredStar, self.key];
+            @"<h3><label for=\"%@\">%@ %@%@</label></h3><p id=\"warning-%@\" class=\"default\">MISSING!</p>", 
+            self.key, self.displayLabel, requiredStar, labelSubtitleString,  self.key];
 }
 
 - (NSString *)formHtml {
@@ -139,6 +148,14 @@
 
 - (NSString *)formHtml {
     return [NSString stringWithFormat:@"<p><input type=\"text\" name=\"%@\" id=\"%@\" style=\"width:94%\"></p>", self.key, self.key];
+}
+
+@end
+
+@implementation TextAreaLibraryFormElement
+
+- (NSString *)formHtml {
+    return [NSString stringWithFormat:@"<textarea rows=\"8\" name=\"%@\" id=\"%@\" style=\"width:97%\"></textarea>", self.key, self.key];
 }
 
 @end
