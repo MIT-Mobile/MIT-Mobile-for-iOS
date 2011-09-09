@@ -2,6 +2,8 @@
 #import "MITConstants.h"
 #import "CoreDataManager.h"
 #import "MITEventList.h"
+#import "MIT_MobileAppDelegate.h"
+#import "MITModuleList.h"
 
 NSString * const CalendarStateEventList = @"events";
 NSString * const CalendarStateCategoryList = @"categories";
@@ -116,9 +118,13 @@ static CalendarDataManager *s_sharedManager = nil;
 }
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return YES;
+	return ([[MITAppDelegate() activeModuleTag] isEqualToString:CalendarTag]);
 }
 
+- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
+    return @"Events";
+}
+                                                         
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
 	NSMutableArray *newLists = [NSMutableArray arrayWithArray:[CalendarDataManager staticEventTypes]];
 	if (JSONObject && [JSONObject isKindOfClass:[NSArray class]]) {
