@@ -414,11 +414,11 @@
     [self.view addSubview:self.loadingView];
 }
 
-- (LibraryFormElement *)statusMenuFormElement {
+- (LibraryFormElement *)statusMenuFormElementWithRequired:(BOOL)required {
     return             
         [[[MenuLibraryFormElement alloc] initWithKey:@"status" 
                                         displayLabel:@"Your status" 
-                                            required:YES
+                                            required:required
                                               values:[NSArray arrayWithObjects:
                                                       @"UG",
                                                       @"GRAD",

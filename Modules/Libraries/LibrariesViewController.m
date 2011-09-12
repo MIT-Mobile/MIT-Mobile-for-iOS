@@ -4,6 +4,7 @@
 #import "MITConstants.h"
 #import "LibrariesAccountViewController.h"
 #import "LibrariesAskUsTableViewController.h"
+#import "LibrariesTellUsViewController.h"
 
 
 // links expiration time 10 days
@@ -189,6 +190,7 @@
                     break;
                 case 3:
                     // Tell Us
+                    vc = [[[LibrariesTellUsViewController alloc] init] autorelease];
                     break;
                     
                 default:

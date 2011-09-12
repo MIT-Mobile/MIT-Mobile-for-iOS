@@ -175,6 +175,7 @@
 		4B667067140330CD00714C6A /* LibrariesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667066140330CD00714C6A /* LibrariesModule.m */; };
 		4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */; };
 		4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4B66706F1404020200714C6A /* LibrariesLocationsHours.xcdatamodeld */; };
+		4B779FDF141E42050082DEF9 /* LibrariesTellUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B779FDE141E42050082DEF9 /* LibrariesTellUsViewController.m */; };
 		4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9A4EA31355E24800E37876 /* MorseCodePattern.m */; };
 		4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */; };
 		4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */; };
@@ -702,6 +703,8 @@
 		4B66706C1404019300714C6A /* LibrariesLocationsHoursViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursViewController.h; path = LocationsHours/LibrariesLocationsHoursViewController.h; sourceTree = "<group>"; };
 		4B66706D1404019300714C6A /* LibrariesLocationsHoursViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursViewController.m; path = LocationsHours/LibrariesLocationsHoursViewController.m; sourceTree = "<group>"; };
 		4B6670701404020200714C6A /* LibrariesLocationsHours.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LibrariesLocationsHours.xcdatamodel; sourceTree = "<group>"; };
+		4B779FDD141E42050082DEF9 /* LibrariesTellUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesTellUsViewController.h; sourceTree = "<group>"; };
+		4B779FDE141E42050082DEF9 /* LibrariesTellUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesTellUsViewController.m; sourceTree = "<group>"; };
 		4B9A4EA21355E24800E37876 /* MorseCodePattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MorseCodePattern.h; sourceTree = "<group>"; };
 		4B9A4EA31355E24800E37876 /* MorseCodePattern.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MorseCodePattern.m; sourceTree = "<group>"; };
 		4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Calendar 3.xcdatamodel"; sourceTree = "<group>"; };
@@ -1699,6 +1702,8 @@
 				4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */,
 				4B33EA14141AC9D900B30312 /* LibrariesAppointmentViewController.h */,
 				4B33EA15141AC9D900B30312 /* LibrariesAppointmentViewController.m */,
+				4B779FDD141E42050082DEF9 /* LibrariesTellUsViewController.h */,
+				4B779FDE141E42050082DEF9 /* LibrariesTellUsViewController.m */,
 			);
 			path = EmailForms;
 			sourceTree = "<group>";
@@ -2730,6 +2735,7 @@
 				4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */,
 				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,
 				4B33EA16141AC9D900B30312 /* LibrariesAppointmentViewController.m in Sources */,
+				4B779FDF141E42050082DEF9 /* LibrariesTellUsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

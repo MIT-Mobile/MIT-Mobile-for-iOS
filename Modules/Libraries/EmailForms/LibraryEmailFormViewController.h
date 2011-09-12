@@ -98,6 +98,6 @@
 - (void)markValueAsMissingForKey:(NSString *)key;
 - (BOOL)populateFormValues:(NSMutableDictionary *)formValues;
 
-- (LibraryFormElement *)statusMenuFormElement;
+- (LibraryFormElement *)statusMenuFormElementWithRequired:(BOOL)required;
 
 @end
