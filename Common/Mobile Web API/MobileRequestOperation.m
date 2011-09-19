@@ -88,6 +88,13 @@ typedef enum {
     gSecureStateTracker = [[MobileRequestAuthenticationTracker alloc] init];
 }
 
++ (id)operationWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params
+{
+    MobileRequestOperation *operation = [[self alloc] initWithModule:aModule
+                                                             command:theCommand
+                                                          parameters:params];
+    return [operation autorelease];
+}
         
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params
 {

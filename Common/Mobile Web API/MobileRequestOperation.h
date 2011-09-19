@@ -27,6 +27,7 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 @property (nonatomic,copy) void (^completeBlock)(MobileRequestOperation *operation, id jsonResult, NSError *error);
 @property (nonatomic,copy) void (^progressBlock)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger expectedBytesWritten);
 
++ (id)operationWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params;
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params;
 - (NSURLRequest*)urlRequest;
 
