@@ -92,8 +92,65 @@ static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
 
 
 @implementation NSString (MITAdditions_HTMLEntity)
+typedef struct HTML4ENTITIES {
+    char *entityName;
+    char *entityCode;
+} htmlEntity_t;
+
+- (NSString*)convertHTML4CharacterReferences:(NSString*)string
+{
+    static htmlEntity_t html4Entities[] = {
+        {"&Dagger;","&#8225;"},
+        {"&OElig;","&#338;"},
+        {"&Scaron;","&#352;"},
+        {"&Yuml;","&#376;"},
+        {"&bdquo;","&#8222;"},
+        {"&circ;","&#710;"},
+        {"&dagger;","&#8224;"},
+        {"&emsp;","&#8195;"},
+        {"&ensp;","&#8194;"},
+        {"&euro;","&#8364;"},
+        {"&ldquo;","&#8220;"},
+        {"&lrm;","&#8206;"},
+        {"&lsaquo;","&#8249;"},
+        {"&lsquo;","&#8216;"},
+        {"&mdash;","&#8212;"},
+        {"&ndash;","&#8211;"},
+        {"&oelig;","&#339;"},
+        {"&permil;","&#8240;"},
+        {"&rdquo;","&#8221;"},
+        {"&rlm;","&#8207;"},
+        {"&rsaquo;","&#8250;"},
+        {"&rsquo;","&#8217;"},
+        {"&sbquo;","&#8218;"},
+        {"&scaron;","&#353;"},
+        {"&thinsp;","&#8201;"},
+        {"&tilde;","&#732;"},
+        {"&zwj;","&#8205;"},
+        {"&zwnj;","&#8204;"},
+        {NULL,NULL}};
+    
+    NSMutableString *replString = [NSMutableString stringWithCapacity:([self length] * 1.25)];
+    [replString setString:self];
+    
+    htmlEntity_t *entity = html4Entities;
+    while (entity->entityName != NULL) {
+        NSUInteger entities = [replString replaceOccurrencesOfString:[NSString stringWithUTF8String:entity->entityName]
+                                                          withString:[NSString stringWithUTF8String:entity->entityCode]
+                                                             options:0
+                                                               range:NSMakeRange(0, [replString length])];
+        
+        if (entities > 0) {
+            DLog(@"Replaced %lu of &%s; -> &%s;", (unsigned long)entities, entity->entityName, entity->entityCode);
+        }
+        
+        ++entity;
+    }
+    
+    return replString;
+}
+
 - (NSString *)stringByDecodingXMLEntities {
-    NSUInteger strLength = [self length];
     NSUInteger ampIndex = [self rangeOfString:@"&"
                                       options:NSLiteralSearch].location;
     
@@ -101,9 +158,12 @@ static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
         return self;
     }
     
-    NSMutableString *result = [NSMutableString stringWithCapacity:strLength];
+    NSString *searchString = [self convertHTML4CharacterReferences:self];
+    NSUInteger strLength = [searchString length];
     
-    NSScanner *scanner = [NSScanner scannerWithString:self];
+    NSMutableString *result = [NSMutableString stringWithCapacity:strLength];
+    NSScanner *scanner = [NSScanner scannerWithString:searchString];
+    
     while (![scanner isAtEnd]) {
         NSString *nonEntityString = nil;
         
