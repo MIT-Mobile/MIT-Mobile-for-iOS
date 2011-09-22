@@ -74,6 +74,7 @@
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
 		2C3676B513C5F6B1003CB7A4 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */; };
 		2C3676B813C5F854003CB7A4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */; };
+		2C36C1D814290352002C7424 /* LibrariesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1D714290352002C7424 /* LibrariesTableViewCell.m */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; };
 		2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */; };
 		2C5DECC613E9BA9200F9C089 /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECC313E9BA9100F9C089 /* NSData+GZIP.m */; };
@@ -517,6 +518,8 @@
 		2C32BD24136F27D40015ACF6 /* FacilitiesLocations.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacilitiesLocations.xcdatamodel; sourceTree = "<group>"; };
 		2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		2C36C1D614290351002C7424 /* LibrariesTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesTableViewCell.h; sourceTree = "<group>"; };
+		2C36C1D714290352002C7424 /* LibrariesTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesTableViewCell.m; sourceTree = "<group>"; };
 		2C544B9B1358A24400685545 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
 		2C544B9C1358A24400685545 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		2C5B30461371D54500870E6D /* FacilitiesUserLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesUserLocationViewController.h; sourceTree = "<group>"; };
@@ -1602,6 +1605,8 @@
 				2CFB87EF1416B6880014E141 /* Loans */,
 				2CFB87F01416B69D0014E141 /* LibrariesAccountViewController.h */,
 				2CFB87F11416B69D0014E141 /* LibrariesAccountViewController.m */,
+				2C36C1D614290351002C7424 /* LibrariesTableViewCell.h */,
+				2C36C1D714290352002C7424 /* LibrariesTableViewCell.m */,
 			);
 			path = "My Account";
 			sourceTree = "<group>";
@@ -2731,6 +2736,7 @@
 				2CFB87F51416B7180014E141 /* LibrariesFinesViewController.m in Sources */,
 				2CFB87F81416B7290014E141 /* LibrariesHoldsViewController.m in Sources */,
 				2CFB87FB1416B73A0014E141 /* LibrariesLoansViewController.m in Sources */,
+				2C36C1D814290352002C7424 /* LibrariesTableViewCell.m in Sources */,
 				4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */,
 				4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */,
 				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,
