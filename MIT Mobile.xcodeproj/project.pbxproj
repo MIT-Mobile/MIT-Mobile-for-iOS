@@ -104,6 +104,9 @@
 		2C99DCE01370782200114A9A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C99DCDF1370782200114A9A /* CoreText.framework */; };
 		2CA454F213C7468F00891428 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA454F113C7468F00891428 /* AssetsLibrary.framework */; };
 		2CAFCBE213F1C3F0007983D8 /* TBXML+MIT.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */; };
+		2CB2D2FF141E39F300FFC716 /* LibrariesLoanSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */; };
+		2CB2D302141E72A900FFC716 /* LibrariesLoanTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D301141E72A900FFC716 /* LibrariesLoanTableController.m */; };
+		2CB2D305141FB44700FFC716 /* LibrariesLoanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D304141FB44700FFC716 /* LibrariesLoanTableViewCell.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB645EC134CC63800E85E64 /* QRReaderHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */; };
 		2CB64608134CF13500E85E64 /* QRReaderScanViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */; };
@@ -581,6 +584,12 @@
 		2CA454F113C7468F00891428 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		2CAFCBE013F1C3F0007983D8 /* TBXML+MIT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TBXML+MIT.h"; sourceTree = "<group>"; };
 		2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TBXML+MIT.m"; sourceTree = "<group>"; };
+		2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanSummaryView.h; sourceTree = "<group>"; };
+		2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanSummaryView.m; sourceTree = "<group>"; };
+		2CB2D300141E72A900FFC716 /* LibrariesLoanTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanTableController.h; sourceTree = "<group>"; };
+		2CB2D301141E72A900FFC716 /* LibrariesLoanTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanTableController.m; sourceTree = "<group>"; };
+		2CB2D303141FB44700FFC716 /* LibrariesLoanTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanTableViewCell.h; sourceTree = "<group>"; };
+		2CB2D304141FB44700FFC716 /* LibrariesLoanTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanTableViewCell.m; sourceTree = "<group>"; };
 		2CB6459D134CAF1A00E85E64 /* QRReaderModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderModule.h; sourceTree = "<group>"; };
 		2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderModule.m; sourceTree = "<group>"; };
 		2CB645E9134CC63800E85E64 /* QRReaderHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderHistoryViewController.h; sourceTree = "<group>"; };
@@ -1664,6 +1673,12 @@
 			children = (
 				2CFB87F91416B73A0014E141 /* LibrariesLoansViewController.h */,
 				2CFB87FA1416B73A0014E141 /* LibrariesLoansViewController.m */,
+				2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */,
+				2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */,
+				2CB2D300141E72A900FFC716 /* LibrariesLoanTableController.h */,
+				2CB2D301141E72A900FFC716 /* LibrariesLoanTableController.m */,
+				2CB2D303141FB44700FFC716 /* LibrariesLoanTableViewCell.h */,
+				2CB2D304141FB44700FFC716 /* LibrariesLoanTableViewCell.m */,
 			);
 			path = Loans;
 			sourceTree = "<group>";
@@ -2766,6 +2781,9 @@
 				2CFB87F51416B7180014E141 /* LibrariesFinesViewController.m in Sources */,
 				2CFB87F81416B7290014E141 /* LibrariesHoldsViewController.m in Sources */,
 				2CFB87FB1416B73A0014E141 /* LibrariesLoansViewController.m in Sources */,
+				2CB2D2FF141E39F300FFC716 /* LibrariesLoanSummaryView.m in Sources */,
+				2CB2D302141E72A900FFC716 /* LibrariesLoanTableController.m in Sources */,
+				2CB2D305141FB44700FFC716 /* LibrariesLoanTableViewCell.m in Sources */,
 				2C36C1CA1428D090002C7424 /* LibrariesHoldsSummaryView.m in Sources */,
 				2C36C1CB1428D090002C7424 /* LibrariesHoldsTableController.m in Sources */,
 				2C36C1CC1428D090002C7424 /* LibrariesHoldsTableViewCell.m in Sources */,
