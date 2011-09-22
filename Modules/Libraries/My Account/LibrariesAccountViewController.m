@@ -1,18 +1,19 @@
 #import "LibrariesAccountViewController.h"
-#import "MITTabViewController.h"
-#import "LibrariesFinesViewController.h"
-#import "LibrariesHoldsViewController.h"
-#import "LibrariesLoansViewController.h"
+#import "MITTabView.h"
+#import "LibrariesFinesTableController.h"
+#import "LibrariesHoldsTableController.h"
+#import "LibrariesLoanTableController.h"
+#import "UIKit+MITAdditions.h"
 
 @interface LibrariesAccountViewController ()
-@property (nonatomic,retain) MITTabViewController *tabViewController;
-@property (nonatomic,retain) LibrariesFinesViewController *finesController;
-@property (nonatomic,retain) LibrariesHoldsViewController *holdsController;
-@property (nonatomic,retain) LibrariesLoansViewController *loansController;
+@property (nonatomic,retain) MITTabView *tabView;
+@property (nonatomic,retain) id finesController;
+@property (nonatomic,retain) LibrariesHoldsTableController *holdsController;
+@property (nonatomic,retain) LibrariesLoanTableController *loansController;
 @end
 
 @implementation LibrariesAccountViewController
-@synthesize tabViewController = _tabViewController,
+@synthesize tabView = _tabView,
             finesController = _finesController,
             holdsController = _holdsController,
             loansController = _loansController;
@@ -44,34 +45,49 @@
         CGRect tabFrame = screenRect;
         tabFrame.origin = CGPointZero;
         
-        MITTabViewController *tabView = [[[MITTabViewController alloc] init] autorelease];
-        tabView.view.frame = tabFrame;
-        self.tabViewController = tabView;
-        [mainView addSubview:tabView.view];
+        MITTabView *tabView = [[[MITTabView alloc] init] autorelease];
+        tabView.frame = tabFrame;
+        self.tabView = tabView;
+        [mainView addSubview:tabView];
     }
     
     {
-        LibrariesLoansViewController *controller = [[[LibrariesLoansViewController alloc] init] autorelease];
-        controller.title = @"Loans";
-        self.loansController = controller;
-        [self.tabViewController addViewController:controller
-                                          animate:NO]; 
+        UITableView *view = [[[UITableView alloc] initWithFrame:self.tabView.contentView.bounds
+                                                          style:UITableViewStylePlain] autorelease];
+        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleWidth);
+        view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        
+        self.loansController = [[LibrariesLoanTableController alloc] initWithTableView:view];
+        [self.tabView addView:view
+                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
+                      animate:NO];
     }
     
     {
-        LibrariesFinesViewController *controller = [[[LibrariesFinesViewController alloc] init] autorelease];
-        controller.title = @"Fines";
-        self.finesController = controller;
-        [self.tabViewController addViewController:controller
-                                          animate:NO]; 
+        UITableView *view = [[[UITableView alloc] initWithFrame:self.tabView.contentView.bounds
+                                                          style:UITableViewStylePlain] autorelease];
+        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleWidth);
+        view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        
+        self.finesController = [[LibrariesFinesTableController alloc] initWithTableView:view];
+        [self.tabView addView:view
+                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Fines" image:nil tag:1] autorelease]
+                      animate:NO];
     }
     
     {
-        LibrariesHoldsViewController *controller = [[[LibrariesHoldsViewController alloc] init] autorelease];
-        controller.title = @"Holds";
-        self.holdsController = controller;
-        [self.tabViewController addViewController:controller
-                                          animate:NO]; 
+        UITableView *view = [[[UITableView alloc] initWithFrame:self.tabView.contentView.bounds
+                                                          style:UITableViewStylePlain] autorelease];
+        view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleWidth);
+        view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        
+        self.holdsController = [[LibrariesHoldsTableController alloc] initWithTableView:view];
+        [self.tabView addView:view
+                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Holds" image:nil tag:2] autorelease]
+                      animate:NO];
     }
     
     [self setView:mainView];
@@ -90,13 +106,11 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [self.tabViewController viewWillAppear:animated];
     [super viewWillAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [self.tabViewController viewWillDisappear:animated];
     [super viewWillDisappear:animated];
 }
 
