@@ -402,14 +402,20 @@ typedef enum {
 - (void)displayLoginPrompt {
     if (self.loginViewController == nil) {
         dispatch_async(dispatch_get_main_queue(), ^ {
-            UIWindow *mainWindow = [[UIApplication sharedApplication] keyWindow];
-            MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
-                                                                                                             password:self.touchstonePassword] autorelease];
-            loginView.delegate = self;
-            
-            [[mainWindow rootViewController] presentModalViewController:loginView
-                                                               animated:YES];
-            self.loginViewController = loginView;
+            if ([self authenticationRequired]) {
+                UIWindow *mainWindow = [[UIApplication sharedApplication] keyWindow];
+                MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
+                                                                                                                 password:self.touchstonePassword] autorelease];
+                loginView.delegate = self;
+                
+                [[mainWindow rootViewController] presentModalViewController:loginView
+                                                                   animated:YES];
+                self.loginViewController = loginView;
+            } else {
+                dispatch_queue_t authQueue = dispatch_queue_create(NULL, 0);
+                dispatch_async(authQueue,gSecureStateTracker.authenticationBlock);
+                dispatch_release(authQueue);
+            }
         });
     }
 }
