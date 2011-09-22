@@ -1,4 +1,5 @@
 #import "MobileKeychainServices.h"
+#import "MITLogging.h"
 
 NSDictionary* MobileKeychainFindItem(NSString *itemIdentifier, BOOL returnData) {
     NSMutableDictionary *searchDictionary = [NSMutableDictionary dictionaryWithCapacity:3];
@@ -38,6 +39,10 @@ NSDictionary* MobileKeychainFindItem(NSString *itemIdentifier, BOOL returnData) 
         }
     }
     
+    if ((error != noErr) && (error != errSecItemNotFound)) {
+        ELog(@"SecItemCopyMatching failed with error %ld", error);
+    }
+    
     return [itemAttrs autorelease];
 }
 
@@ -57,7 +62,7 @@ NSDictionary* MobileKeychainAttributesForItem(NSString *itemIdentifier) {
     OSStatus error = SecItemCopyMatching((CFDictionaryRef)searchDictionary, (CFTypeRef*)&result);
     
     if (error != noErr) {
-        NSLog(@"SecItemCopyMatching failed with error %ld", error);
+        ELog(@"SecItemCopyMatching failed with error %ld", error);
         return nil;
     } else {
         return [result autorelease];
@@ -109,7 +114,7 @@ BOOL MobileKeychainSetItem(NSString *itemIdentifier, NSString *username, NSStrin
     }
     
     if (error != noErr) {
-        NSLog(@"Item add failed with error %ld", error);
+        ELog(@"Item add failed with error %ld", error);
     }
     
     return (error == noErr);
