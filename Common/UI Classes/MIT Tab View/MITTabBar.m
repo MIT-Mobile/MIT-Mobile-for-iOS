@@ -170,11 +170,14 @@
     }
 }
 
-- (void)insertSegmentWithTitle:(NSString*)title atIndex:(NSUInteger)index animated:(BOOL)animated
+- (void)insertSegmentWithItem:(UITabBarItem*)item atIndex:(NSUInteger)index animated:(BOOL)animated
 {
-    UITabBarItem *item = [[[UITabBarItem alloc] initWithTitle:title
-                                                        image:nil
-                                                          tag:0] autorelease];
+    NSInteger signedIndex = index;
+    
+    if (self.selectedSegmentIndex > signedIndex) {
+        self->_selectedSegmentIndex++;
+    }
+    
     NSMutableArray *array = [NSMutableArray arrayWithArray:self.items];
     [array insertObject:item
                 atIndex:index];
@@ -187,4 +190,5 @@
     size.height = 28;
     return size;
 }
+
 @end

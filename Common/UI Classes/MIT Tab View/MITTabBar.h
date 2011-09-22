@@ -8,5 +8,5 @@
 @property (nonatomic,retain) UIColor *selectedTintColor;
 @property (nonatomic) NSInteger selectedSegmentIndex;
 
-- (void)insertSegmentWithTitle:(NSString*)title atIndex:(NSUInteger)index animated:(BOOL)animated;
+- (void)insertSegmentWithItem:(UITabBarItem*)item atIndex:(NSUInteger)index animated:(BOOL)animated;
 @end
