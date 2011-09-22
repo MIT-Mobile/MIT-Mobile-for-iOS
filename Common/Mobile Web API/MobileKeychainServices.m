@@ -105,8 +105,10 @@ BOOL MobileKeychainSetItem(NSString *itemIdentifier, NSString *username, NSStrin
                            forKey:(id)kSecAttrGeneric];
             [attributes setObject:(id)username
                            forKey:(id)kSecAttrAccount];
-            //[attributes setObject:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]
-            //               forKey:(id)kSecAttrAccessGroup];
+#if !defined (TARGET_IPHONE_SIMULATOR)
+            [attributes setObject:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]
+                           forKey:(id)kSecAttrAccessGroup];
+#endif
             error = SecItemAdd((CFDictionaryRef)attributes, NULL);
         } else {
             return NO;
