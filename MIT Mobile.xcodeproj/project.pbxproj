@@ -74,6 +74,9 @@
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
 		2C3676B513C5F6B1003CB7A4 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */; };
 		2C3676B813C5F854003CB7A4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */; };
+		2C36C1CA1428D090002C7424 /* LibrariesHoldsSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1C51428D090002C7424 /* LibrariesHoldsSummaryView.m */; };
+		2C36C1CB1428D090002C7424 /* LibrariesHoldsTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1C71428D090002C7424 /* LibrariesHoldsTableController.m */; };
+		2C36C1CC1428D090002C7424 /* LibrariesHoldsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1C91428D090002C7424 /* LibrariesHoldsTableViewCell.m */; };
 		2C36C1D31428FF13002C7424 /* LibrariesFinesSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1CE1428FF13002C7424 /* LibrariesFinesSummaryView.m */; };
 		2C36C1D41428FF13002C7424 /* LibrariesFinesTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1D01428FF13002C7424 /* LibrariesFinesTableController.m */; };
 		2C36C1D51428FF13002C7424 /* LibrariesFinesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1D21428FF13002C7424 /* LibrariesFinesTableViewCell.m */; };
@@ -521,6 +524,12 @@
 		2C32BD24136F27D40015ACF6 /* FacilitiesLocations.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacilitiesLocations.xcdatamodel; sourceTree = "<group>"; };
 		2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		2C36C1C41428D090002C7424 /* LibrariesHoldsSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesHoldsSummaryView.h; sourceTree = "<group>"; };
+		2C36C1C51428D090002C7424 /* LibrariesHoldsSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesHoldsSummaryView.m; sourceTree = "<group>"; };
+		2C36C1C61428D090002C7424 /* LibrariesHoldsTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesHoldsTableController.h; sourceTree = "<group>"; };
+		2C36C1C71428D090002C7424 /* LibrariesHoldsTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesHoldsTableController.m; sourceTree = "<group>"; };
+		2C36C1C81428D090002C7424 /* LibrariesHoldsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesHoldsTableViewCell.h; sourceTree = "<group>"; };
+		2C36C1C91428D090002C7424 /* LibrariesHoldsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesHoldsTableViewCell.m; sourceTree = "<group>"; };
 		2C36C1CD1428FF13002C7424 /* LibrariesFinesSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesFinesSummaryView.h; sourceTree = "<group>"; };
 		2C36C1CE1428FF13002C7424 /* LibrariesFinesSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesFinesSummaryView.m; sourceTree = "<group>"; };
 		2C36C1CF1428FF13002C7424 /* LibrariesFinesTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesFinesTableController.h; sourceTree = "<group>"; };
@@ -1640,6 +1649,12 @@
 			children = (
 				2CFB87F61416B7290014E141 /* LibrariesHoldsViewController.h */,
 				2CFB87F71416B7290014E141 /* LibrariesHoldsViewController.m */,
+				2C36C1C41428D090002C7424 /* LibrariesHoldsSummaryView.h */,
+				2C36C1C51428D090002C7424 /* LibrariesHoldsSummaryView.m */,
+				2C36C1C61428D090002C7424 /* LibrariesHoldsTableController.h */,
+				2C36C1C71428D090002C7424 /* LibrariesHoldsTableController.m */,
+				2C36C1C81428D090002C7424 /* LibrariesHoldsTableViewCell.h */,
+				2C36C1C91428D090002C7424 /* LibrariesHoldsTableViewCell.m */,
 			);
 			path = Holds;
 			sourceTree = "<group>";
@@ -2751,6 +2766,9 @@
 				2CFB87F51416B7180014E141 /* LibrariesFinesViewController.m in Sources */,
 				2CFB87F81416B7290014E141 /* LibrariesHoldsViewController.m in Sources */,
 				2CFB87FB1416B73A0014E141 /* LibrariesLoansViewController.m in Sources */,
+				2C36C1CA1428D090002C7424 /* LibrariesHoldsSummaryView.m in Sources */,
+				2C36C1CB1428D090002C7424 /* LibrariesHoldsTableController.m in Sources */,
+				2C36C1CC1428D090002C7424 /* LibrariesHoldsTableViewCell.m in Sources */,
 				2C36C1D31428FF13002C7424 /* LibrariesFinesSummaryView.m in Sources */,
 				2C36C1D41428FF13002C7424 /* LibrariesFinesTableController.m in Sources */,
 				2C36C1D51428FF13002C7424 /* LibrariesFinesTableViewCell.m in Sources */,
