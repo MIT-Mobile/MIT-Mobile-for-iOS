@@ -182,7 +182,7 @@
     {
         UIView *promptView = [[[UIView alloc] initWithFrame:CGRectMake(64, 164, 190, 132)] autorelease];
         promptView.backgroundColor = [UIColor colorWithWhite:0.0
-                                                       alpha:0.85];
+                                                       alpha:1.0];
         promptView.layer.borderColor = [[UIColor whiteColor] CGColor];
         promptView.layer.borderWidth = 2.0;
         promptView.layer.cornerRadius = 5.0;
