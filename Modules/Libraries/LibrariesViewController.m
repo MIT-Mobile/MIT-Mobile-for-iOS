@@ -23,6 +23,7 @@
 @end
 
 @implementation LibrariesViewController
+@synthesize tableView;
 @synthesize searchBar;
 @synthesize linksRequest;
 @synthesize links;
@@ -41,6 +42,7 @@
 {
     self.linksRequest = nil;
     self.links = nil;
+    self.tableView = nil;
     [super dealloc];
 }
 
@@ -59,6 +61,8 @@
     [super viewDidLoad];
     self.searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
     self.title = @"Libraries";
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
     [self.tableView applyStandardColors];
     
     NSDate *linksUpdated = [[NSUserDefaults standardUserDefaults] objectForKey:LibrariesLinksUpdatedKey];
@@ -74,6 +78,9 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
+    self.tableView.delegate = nil;
+    self.tableView.dataSource = nil;
+    self.tableView = nil;
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
