@@ -10,7 +10,7 @@ extern NSString* const MITTabViewDidBecomeInactiveNotification;
 @property (nonatomic,readonly,retain) UIView *contentView;
 
 - (id)init;
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
+- (id)initWithFrame:(CGRect)frame;
 
 - (BOOL)addView:(UIView*)view withItem:(UITabBarItem*)item animate:(BOOL)animate;
 - (BOOL)insertView:(UIView*)view withItem:(UITabBarItem*)item atIndex:(NSUInteger)index animate:(BOOL)animate;
