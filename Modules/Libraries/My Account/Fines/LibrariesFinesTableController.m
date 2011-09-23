@@ -8,6 +8,7 @@
 @property (nonatomic,retain) LibrariesFinesSummaryView *headerView;
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
 @property (nonatomic,retain) NSDictionary *loanData;
+@property (nonatomic,retain) MobileRequestOperation *operation;
 
 - (void)setupTableView;
 - (void)updateLoanData;
@@ -19,7 +20,8 @@
 
 @synthesize headerView = _headerView,
             loadingView = _loadingView,
-            loanData = _loanData;
+            loanData = _loanData,
+            operation = _operation;
 
 - (id)initWithTableView:(UITableView *)tableView
 {
@@ -108,25 +110,31 @@
         [self.tableView addSubview:self.loadingView];
         self.tableView.scrollEnabled = NO;
     }
-    
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                            command:@"fines"
-                                                                         parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
-                                                                                                                forKey:@"limit"]];
-    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-        if (error) {
-            NSLog(@"%@", [error localizedDescription]);
-        } else {
-            if (self.loadingView.superview != nil) {
-                [self.loadingView removeFromSuperview];
-                self.tableView.scrollEnabled = YES;
+    else if (self.operation == nil)
+    {
+        MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
+                                                                                command:@"fines"
+                                                                             parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
+                                                                                                                    forKey:@"limit"]];
+        operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+            if (error) {
+                NSLog(@"%@", [error localizedDescription]);
+            } else {
+                if (self.loadingView.superview != nil) {
+                    [self.loadingView removeFromSuperview];
+                    self.tableView.scrollEnabled = YES;
+                }
+                
+                self.loanData = (NSDictionary*)jsonResult;
+                [self.tableView reloadData];
             }
             
-            self.loanData = (NSDictionary*)jsonResult;
-            [self.tableView reloadData];
-        }
-    };
-    [operation start];
+            self.operation = nil;
+        };
+        
+        self.operation = operation;
+        [operation start];
+    }
 }
 
 @end

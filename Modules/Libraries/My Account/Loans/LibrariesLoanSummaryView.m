@@ -1,6 +1,7 @@
 #import "LibrariesLoanSummaryView.h"
 
 @implementation LibrariesLoanSummaryView
+@synthesize renewButton = _renewButton;
 
 - (id)initWithFrame:(CGRect)frame
 {
