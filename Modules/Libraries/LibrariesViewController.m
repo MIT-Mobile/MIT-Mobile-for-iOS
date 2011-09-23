@@ -28,6 +28,7 @@
 @synthesize linksRequest;
 @synthesize links;
 @synthesize linksStatus;
+@synthesize searchController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -43,6 +44,7 @@
     self.linksRequest = nil;
     self.links = nil;
     self.tableView = nil;
+    self.searchController = nil;
     [super dealloc];
 }
 
@@ -55,11 +57,12 @@
 }
 
 #pragma mark - View lifecycle
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
+    self.searchBar.delegate = self;
+    self.searchDisplayController.delegate = self;
     self.title = @"Libraries";
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -73,11 +76,16 @@
     }
     
     self.linksRequest = [[[MITMobileWebAPI alloc] initWithModule:@"libraries" command:@"links" parameters:nil] autorelease];
+    self.searchController = [[[WorldCatSearchController alloc] init] autorelease];
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
+    self.searchBar.delegate = nil;
+    self.searchDisplayController.delegate = nil;
+    self.searchBar = nil;
+    self.searchController = nil;
     self.tableView.delegate = nil;
     self.tableView.dataSource = nil;
     self.tableView = nil;
@@ -93,11 +101,19 @@
 
 #pragma mark - dataSource methods
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)aTableView {
+    if (aTableView != self.tableView) {
+        // must be for search results
+        return [self.searchController numberOfSectionsInTableView:aTableView];
+    }
     return NUMBER_OF_SECTIONS;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)aTableView numberOfRowsInSection:(NSInteger)section {
+    if (self.searchDisplayController.searchResultsTableView == aTableView) {
+        return [self.searchController tableView:aTableView numberOfRowsInSection:section];
+    }
+    
     switch (section) {
         case TOP_SECTION:
             return 4;
@@ -115,7 +131,11 @@
     return 0;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.searchDisplayController.searchResultsTableView == aTableView) {
+        return [self.searchController tableView:aTableView cellForRowAtIndexPath:indexPath];
+    }
+    
     NSString *title;
     switch (indexPath.section) {
         case TOP_SECTION:
@@ -140,7 +160,7 @@
             
         case EXTERNAL_URLS_SECTION:
             if (self.linksStatus != LinksStatusLoaded) {
-                UITableViewCell *loadingStatusCell = [tableView dequeueReusableCellWithIdentifier:@"LinksStatus"];
+                UITableViewCell *loadingStatusCell = [aTableView dequeueReusableCellWithIdentifier:@"LinksStatus"];
                 if (!loadingStatusCell) {
                     loadingStatusCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LinksStatus"] autorelease];
                     loadingStatusCell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -153,7 +173,7 @@
                 }
                 return loadingStatusCell;
             } else {
-                UITableViewCell *linkCell = [tableView dequeueReusableCellWithIdentifier:@"LinkCell"];
+                UITableViewCell *linkCell = [aTableView dequeueReusableCellWithIdentifier:@"LinkCell"];
                 if (!linkCell) {
                     linkCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LinkCell"] autorelease];
                 }
@@ -167,7 +187,7 @@
             break;
     }
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Libraries"];
+    UITableViewCell *cell = [aTableView dequeueReusableCellWithIdentifier:@"Libraries"];
     if (!cell) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Libraries"] autorelease];
     }
@@ -176,7 +196,11 @@
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.searchDisplayController.searchResultsTableView == aTableView) {
+        [self.searchController tableView:aTableView didSelectRowAtIndexPath:indexPath];
+        return;
+    }
     
     UIViewController *vc;    
     
@@ -277,4 +301,16 @@
     }
 }
 
+- (void)searchBarSearchButtonClicked:(UISearchBar *)aSearchBar {
+    [self.searchController doSearch:aSearchBar.text];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    [self.searchController clearSearch];
+}
+
+#pragma mark - UISearchDisplayController delegate
+- (void)searchDisplayController:(UISearchDisplayController *)controller willHideSearchResultsTableView:(UITableView *)tableView {
+    [self.searchController clearSearch];
+}
 @end
