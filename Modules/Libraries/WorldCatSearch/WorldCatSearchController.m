@@ -5,6 +5,12 @@
 #import "MITMobileWebAPI.h"
 #import "UIKit+MITAdditions.h"
 
+@interface WorldCatSearchController (Private)
+
+- (void)doSearch;
+
+@end
+
 @implementation WorldCatSearchController
 @synthesize nextIndex;
 @synthesize searchTerms;
@@ -23,10 +29,18 @@
     self.searchResults = [NSMutableArray array];
     self.nextIndex = nil;
     self.searchTerms = theSearchTerms;
+    [self doSearch];
+}
+
+- (void) doSearch {
     
     LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
     
-    NSDictionary *parameters = [NSDictionary dictionaryWithObject:searchTerms forKey:@"q"];
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithObject:searchTerms forKey:@"q"];
+    if (self.nextIndex) {
+        [parameters setObject:[NSString stringWithFormat:@"%d", [self.nextIndex intValue]] forKey:@"startIndex"];
+    }
+    
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"search" parameters:parameters] autorelease];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
@@ -43,6 +57,8 @@
                     [MITMobileWebAPI showErrorWithHeader:@"WorldCat Search"];
                     return;
                 }
+            } else {
+                self.nextIndex = nil;
             }
             
             id items = [jsonResult objectForKey:@"items"];
@@ -70,9 +86,41 @@
     
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if (self.searchResults) {
+        if (self.nextIndex) {
+            return [NSString stringWithFormat:@"Showing the first %@ results", self.nextIndex];
+        } else {
+            return [NSString stringWithFormat:@"%d results found", self.searchResults.count];
+        }
+    }
+    return nil;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     self.searchResultsTableView = tableView;
+    
+    if (!self.searchResults) {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EmptyCell"];
+        if (!cell) {
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"EmptyCell"] autorelease];
+        }
+        return cell;
+    }
+    
+    if (indexPath.row == self.searchResults.count) {
+        // this is load more row
+        NSString *loadMore = @"LoadMore";
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:loadMore];
+        if (!cell) {
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:loadMore] autorelease];
+            cell.textLabel.text = @"Loading more...";
+            [cell applyStandardFonts];
+        }
+        return cell;
+    }
+    
     NSString *cellIdentifier = @"book";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
@@ -85,13 +133,23 @@
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row == self.searchResults.count) {
+        [self doSearch];
+    }
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (self.searchResults) {
-        return self.searchResults.count;
+        if (self.nextIndex) {
+            return self.searchResults.count + 1;
+        } else {
+            return self.searchResults.count;
+        }
     }
     return 1;  // returning 1 prevents "No results"
 }

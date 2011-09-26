@@ -4,7 +4,7 @@
     
 }
 
-- (void)doSearch:(NSString *)searchTerms;
+- (void) doSearch:(NSString *)theSearchTerms;
 - (void)clearSearch;
 
 @property (nonatomic, retain) NSString *searchTerms;
