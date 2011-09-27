@@ -243,6 +243,7 @@
     
 }
 
+
 - (void)loadLinksFromUserDefaults {
     self.links = [[NSUserDefaults standardUserDefaults] objectForKey:LibrariesLinksKey];
     self.linksStatus = LinksStatusLoaded;
@@ -312,5 +313,12 @@
 #pragma mark - UISearchDisplayController delegate
 - (void)searchDisplayController:(UISearchDisplayController *)controller willHideSearchResultsTableView:(UITableView *)tableView {
     [self.searchController clearSearch];
+}
+
+#pragma mark - UIScrollView delegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (self.searchDisplayController.searchResultsTableView == scrollView) {
+        [self.searchController scrollViewDidScroll:scrollView];
+    }
 }
 @end

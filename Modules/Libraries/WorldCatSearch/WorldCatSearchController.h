@@ -1,6 +1,14 @@
 #import <Foundation/Foundation.h>
 
+typedef enum {
+    BooksSearchingStatusNotLoaded,
+    BooksSearchingStatusLoading,
+    BooksSearchingStatusLoaded,
+    BooksSearchingStatusFailed
+} BooksSearchingStatus;
+
 @interface WorldCatSearchController : NSObject  <UITableViewDataSource, UITableViewDelegate> {
+    BooksSearchingStatus _searchingStatus;
     
 }
 
@@ -11,6 +19,10 @@
 @property (nonatomic, retain) NSMutableArray *searchResults;
 @property (nonatomic, retain) NSNumber *nextIndex;
 @property (nonatomic, retain) UITableView *searchResultsTableView;
+@property (nonatomic, retain) UIView *loadMoreView;
+@property (nonatomic) BooksSearchingStatus searchingStatus;
+@property (nonatomic) NSTimeInterval lastSearchAttempt;
+
 
 
 @end
