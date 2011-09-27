@@ -12,3 +12,5 @@ project.xcworkspace/
 Common/Secret.m
 
 Resources/mit150/*.mp4
+
+.idea/

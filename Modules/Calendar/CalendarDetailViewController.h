@@ -30,10 +30,10 @@ UIWebViewDelegate, EKEventEditViewDelegate> {
     UISegmentedControl *eventPager;
 	
     CGFloat descriptionHeight;
-	NSMutableString *descriptionString;
+	NSString *descriptionString;
 	
     CGFloat categoriesHeight;
-	NSMutableString *categoriesString;
+	NSString *categoriesString;
 
 	// list of events to scroll through for previous/next buttons
 	NSArray *events;

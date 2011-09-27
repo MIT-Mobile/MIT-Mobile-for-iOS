@@ -2,7 +2,6 @@
 
 #import "QRReaderDetailViewController.h"
 #import "QRReaderResult.h"
-#import "QRReaderResultTransform.h"
 
 @interface QRReaderDetailViewController ()
 @property (nonatomic,retain) QRReaderResult *scanResult;
@@ -68,30 +67,16 @@
     CGFloat inset = 0.0;
     CGFloat margin = 12.0;
     
-    if ([[QRReaderResultTransform sharedTransform] scanHasTitle:self.scanResult.text]) {
-        [self.textView setText:[[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text]];
-        [self.actionButton setTitle:@"View Events"
-                           forState:UIControlStateNormal];
-        [self.actionButton setImage:[UIImage imageNamed:@"global/action-calendar"]
-                          forState:UIControlStateNormal];
-        [self.actionButton setImage:[UIImage imageNamed:@"global/action-calendar-highlighted"]
-                          forState:UIControlStateHighlighted];
-        
-        inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-calendar"].size.width + margin);
-        [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
-    } else {
-        [self.textView setText:self.scanResult.text];
-        [self.actionButton setTitle:@"Open URL"
-                           forState:UIControlStateNormal];
-        [self.actionButton setImage:[UIImage imageNamed:@"global/action-external"]
-                          forState:UIControlStateNormal];
-        [self.actionButton setImage:[UIImage imageNamed:@"global/action-external-highlighted"]
-                          forState:UIControlStateHighlighted];
-        
-        inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-external"].size.width + margin);
-        [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
-    }
+    [self.textView setText:self.scanResult.text];
+    [self.actionButton setTitle:@"Open URL"
+                       forState:UIControlStateNormal];
+    [self.actionButton setImage:[UIImage imageNamed:@"global/action-external"]
+                      forState:UIControlStateNormal];
+    [self.actionButton setImage:[UIImage imageNamed:@"global/action-external-highlighted"]
+                      forState:UIControlStateHighlighted];
     
+    inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-external"].size.width + margin);
+    [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
     
     [self.shareButton setTitle:@"Share this link"
                       forState:UIControlStateNormal];
@@ -135,7 +120,7 @@
 }
 
 - (IBAction)pressedActionButton:(id)sender {
-    NSString *altURL = [[QRReaderResultTransform sharedTransform] alternateTextForScan:self.scanResult.text];
+    NSString *altURL = self.scanResult.text;
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:altURL]];
     
@@ -154,7 +139,7 @@
 }
 
 - (NSString *)emailSubject {
-	return [NSString stringWithFormat:@"%@", [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text]];
+	return [NSString stringWithFormat:@"%@", self.scanResult.text];
 }
 
 - (NSString *)emailBody {
@@ -171,7 +156,7 @@
 			"\"href\":\"%@\","
 			"\"description\":\"%@\""
 			"}",
-			[[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text],
+			self.scanResult.text,
             self.scanResult.text,
             @"MIT QR Code"];
 }
@@ -181,6 +166,6 @@
 }
 
 - (NSString *)twitterTitle {
-	return [[QRReaderResultTransform sharedTransform] titleForScan:self.scanResult.text];
+	return self.scanResult.text;
 }
 @end

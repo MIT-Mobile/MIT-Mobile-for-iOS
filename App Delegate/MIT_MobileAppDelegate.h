@@ -6,7 +6,7 @@
 @class MITModule;
 @class DummyRotatingViewController;
 
-@interface MIT_MobileAppDelegate : NSObject <UIApplicationDelegate, MITTabBarControllerDelegate, MITSpringboardDelegate, JSONLoadedDelegate> {
+@interface MIT_MobileAppDelegate : NSObject <UIApplicationDelegate, MITTabBarControllerDelegate, MITSpringboardDelegate> {
     
     UIWindow *window;
     // have references to both springbard and tabbar, set only one.

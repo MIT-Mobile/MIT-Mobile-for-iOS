@@ -28,6 +28,8 @@
 	UIImage *_shuttleLoadingImage;
 
 	NSArray* _contactInfo;
+
+	NSArray* _extraLinks;
 }
 
 @property (nonatomic, retain) NSArray* shuttleRoutes;

@@ -47,7 +47,6 @@
 	
 	self.tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
 	
-//	self.hidesBottomBarWhenPushed = YES;
 	[self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
     self.title = @"Browse";
 	self.navigationItem.leftBarButtonItem.title = @"Back";
@@ -130,7 +129,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return _itemsInTable.count;
+    return self.itemsInTable.count;
 }
 
 
@@ -146,12 +145,12 @@
 		cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
     }
     
-	if ([[_itemsInTable objectAtIndex:indexPath.row] objectForKey:@"categoryName"]) {
-		cell.textLabel.text = [[_itemsInTable objectAtIndex:indexPath.row] objectForKey:@"categoryName"];
+	if ([[self.itemsInTable objectAtIndex:indexPath.row] objectForKey:@"categoryName"]) {
+		cell.textLabel.text = [[self.itemsInTable objectAtIndex:indexPath.row] objectForKey:@"categoryName"];
 	} 
 	else
 	{
-		NSString* displayName = [[_itemsInTable objectAtIndex:indexPath.row] objectForKey:@"displayName"];
+		NSString* displayName = [[self.itemsInTable objectAtIndex:indexPath.row] objectForKey:@"displayName"];
 		if ([displayName isKindOfClass:[NSString class]]) {
 			cell.textLabel.text = displayName;
 		}
@@ -178,7 +177,7 @@
 {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	
-	NSDictionary* thisItem = [_itemsInTable objectAtIndex:indexPath.row];
+	NSDictionary* thisItem = [self.itemsInTable objectAtIndex:indexPath.row];
 	
 	if (_leafLevel) {
 		
@@ -271,7 +270,7 @@
 	
 	NSMutableArray* searchResultsArray = [NSMutableArray array];
 	
-	for (NSDictionary* thisItem in _itemsInTable) {
+	for (NSDictionary* thisItem in self.itemsInTable) {
 		MITMapSearchResultAnnotation* annotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:thisItem] autorelease];
 		[searchResultsArray addObject:annotation];
 	}
@@ -303,7 +302,7 @@
 {
 	NSArray *categoryResults = JSONObject;
 	
-	_itemsInTable = [categoryResults retain];
+	self.itemsInTable = [NSMutableArray arrayWithArray:categoryResults];
 	
 	if (_loadingView) {
 		self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
@@ -347,7 +346,7 @@
 
 
 - (void)dealloc {
-	[_itemsInTable release];
+	self.itemsInTable = nil;
 	[_headerText release];
     [super dealloc];
 }

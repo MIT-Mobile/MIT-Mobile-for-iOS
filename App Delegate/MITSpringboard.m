@@ -232,7 +232,7 @@
         aButton.moduleTag = aModule.tag;
         aModule.springboardButton = aButton;
         
-        CGFloat titleHPadding = 10;
+        CGFloat titleHPadding = 15;
         CGFloat titleVPadding = 1;
         CGFloat titleHeight = 18;
         aButton.frame = CGRectMake(0, 0,

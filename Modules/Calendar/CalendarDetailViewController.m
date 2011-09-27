@@ -397,7 +397,7 @@
 							withStrings:[NSArray arrayWithObject:source] 
 								options:NSLiteralSearch];
 
-	return target;
+	return [NSString stringWithString:target];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

@@ -6,6 +6,7 @@
 #import "AudioToolbox/AudioToolbox.h"
 #import "MITSpringboard.h"
 #import "DummyRotatingViewController.h"
+#import "ModuleVersions.h"
 
 @interface MIT_MobileAppDelegate ()
 
@@ -122,7 +123,7 @@
     // Register for push notifications
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
     // get deviceToken if it exists
-    self.deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"MITDeviceToken"];
+    self.deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
 	
 	[MITUnreadNotifications updateUI];
 	[MITUnreadNotifications synchronizeWithMIT];
@@ -215,8 +216,8 @@
 
 - (void)dealloc {
 	[moduleStack release];
-    [self.deviceToken release];
-    [self.modules release];
+    self.deviceToken = nil;
+    self.modules = nil;
 	[window release];
 	[super dealloc];
 }
@@ -259,46 +260,8 @@
 }
 
 - (void)updateBasicServerInfo {
-	MITMobileWebAPI *apiRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-	
-	[apiRequest requestObjectFromModule:@"general" 
-								command:nil
-							 parameters:nil];
+    [[ModuleVersions sharedVersions] updateVersionInformation];
 }
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
-	if (result && [result isKindOfClass:[NSDictionary class]]) {
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        NSNumber *number = nil;
-        if ((number = [result objectForKey:@"should_show_mit150"])) {
-            DLog(@"Will %@ Open House content.", (([number boolValue]) ? @"show" : @"hide"));
-            [defaults setBool:![number boolValue] forKey:@"ShouldHideOpenHouse"];
-        }
-
-// These aren't necessary yet. Just focusing on hide / show of Open House content for now.
-        
-//        if ((number = [result objectForKey:@"map_tiles_last_updated"])) {
-//            [defaults setBool:[number doubleValue] forKey:];
-//        }
-//        if ((number = [result objectForKey:@"emergency_contacts_last_updated"])) {
-//            [defaults setBool:[number doubleValue] forKey:];
-//        }
-//        if ((number = [result objectForKey:@"home_banner_last_updated"])) {
-//            [defaults setBool:[number doubleValue] forKey:];
-//        }
-        [defaults synchronize];
-	}
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
-{
-	DLog(@"failed to get basic server info");
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    return NO;
-}
-
 
 #pragma mark -
 #pragma mark Tab bar delegation

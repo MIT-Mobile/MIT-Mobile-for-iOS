@@ -7,18 +7,21 @@
 @class QRReaderOverlayView;
 @class FormatReader;
 
-@interface QRReaderScanViewController : UIViewController <AVCaptureVideoDataOutputSampleBufferDelegate,DecoderDelegate> {
+@interface QRReaderScanViewController : UIViewController <DecoderDelegate> {
     id<QRReaderScanDelegate> _scanDelegate;
     QRReaderOverlayView *_overlayView;
     UILabel *adviceLabel;
     BOOL _isCaptureActive;
     BOOL _decodedResult;
     
-    AVCaptureSession *_captureSession;
-    AVCaptureVideoPreviewLayer *_previewLayer;
     FormatReader *_reader;
     
     UIButton *_cancelButton;
+    
+#if !defined(TARGET_IPHONE_SIMULATOR)
+    AVCaptureSession *_captureSession;
+    AVCaptureVideoPreviewLayer *_previewLayer;
+#endif
 }
 
 @property (nonatomic,retain) id<QRReaderScanDelegate> scanDelegate;
@@ -38,3 +41,9 @@
 - (void)scanViewDidCancel:(QRReaderScanViewController*)scanView;
 @end
 
+
+#if !defined(TARGET_IPHONE_SIMULATOR)
+@interface QRReaderScanViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
+
+@end
+#endif

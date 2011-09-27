@@ -8,7 +8,6 @@
 #import "QRReaderResult.h"
 #import "QRReaderScanViewController.h"
 #import "NSDateFormatter+RelativeString.h"
-#import "QRReaderResultTransform.h"
 
 
 @interface QRReaderHistoryViewController ()
@@ -265,7 +264,7 @@
     
     QRReaderResult *result = [_history.results objectAtIndex:indexPath.row];
     
-    cell.textLabel.text = [[QRReaderResultTransform sharedTransform] titleForScan:result.text];
+    cell.textLabel.text = result.text;
     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
     cell.textLabel.numberOfLines = 3;
     cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date

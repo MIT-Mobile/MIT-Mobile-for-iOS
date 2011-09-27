@@ -57,6 +57,18 @@
 																@"16172532997", @"phoneNumber",
 					  @"(617.253.2997)", @"formattedPhoneNumber", nil, nil], nil] retain];
 	
+    _extraLinks = [[NSArray arrayWithObjects:
+                    [NSDictionary dictionaryWithObjectsAndKeys:
+                     @"Real-time Bus Arrivals", @"description",
+                     @"http://www.nextbus.com/webkit", @"url", nil],
+                    [NSDictionary dictionaryWithObjectsAndKeys:
+                     @"Real-time Train Arrivals", @"description",
+                     @"http://www.mbtainfo.com/", @"url", nil],
+                    [NSDictionary dictionaryWithObjectsAndKeys:
+                     @"Google Transit", @"description",
+                     @"http://www.google.com/transit", @"url", nil],
+                    nil] retain];
+    
 	_shuttleRunningImage = [[UIImage imageNamed:@"shuttle/shuttle.png"] retain];
 	_shuttleNotRunningImage = [[UIImage imageNamed:@"shuttle/shuttle-off.png"] retain];
 	_shuttleLoadingImage = [[UIImage imageNamed:@"shuttle/shuttle-blank.png"] retain];
@@ -129,7 +141,12 @@
 	if (nil != phoneNumbers) {
 		return phoneNumbers.count;
 	}
-
+    
+	NSArray* urls = [[self.sections objectAtIndex:section] objectForKey:@"urls"];
+	if (nil != urls) {
+		return urls.count;
+	}
+    
 	// one row for "no data found"
 	return 1;
 	
@@ -149,6 +166,7 @@
 	
 	NSArray* routes = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"routes"];
 	NSArray* phoneNumbers = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"phoneNumbers"];
+	NSArray* urls = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"urls"];
 
 
 	NSString* cellID = @"Cell";
@@ -205,6 +223,21 @@
 		formattedCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
 		
 	}
+	else if(nil != urls)
+	{
+		NSDictionary* urlInfo = [urls objectAtIndex:indexPath.row];
+		
+		
+		cellID = @"URLCell";
+		cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellID];
+		if (cell == nil) {
+			cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
+		}
+		
+		cell.textLabel.text = [urlInfo objectForKey:@"description"];
+		cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+		
+	}
 	else
 	{
 		cellID = @"Cell";
@@ -231,6 +264,8 @@
 	
 	NSArray* routes = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"routes"];
 	NSArray* phoneNumbers = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"phoneNumbers"];
+	NSArray* urls = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"urls"];
+
 	if (nil != routes) 
 	{
 		ShuttleRoute* route = [routes objectAtIndex:indexPath.row];
@@ -238,12 +273,6 @@
 		
 		ShuttleRouteViewController *routeVC = [[[ShuttleRouteViewController alloc] initWithNibName:@"ShuttleRouteViewController" bundle:nil ] autorelease];
 		routeVC.route = route;
-		
-		
-		/*
-		RouteMapViewController* routeVC = [[[RouteMapViewController alloc] initWithNibName:@"RouteMapViewController" bundle:nil] autorelease];
-		routeVC.route = route;
-		*/
 		
 		[self.navigationController pushViewController:routeVC animated:YES];
 		
@@ -257,49 +286,18 @@
 		if ([[UIApplication sharedApplication] canOpenURL:externURL])
 			[[UIApplication sharedApplication] openURL:externURL];
 	}
+
+	else if(nil != urls)
+	{
+		NSString* url = [[urls objectAtIndex:indexPath.row] objectForKey:@"url"];
+        
+		NSURL *externURL = [NSURL URLWithString:url];
+		if ([[UIApplication sharedApplication] canOpenURL:externURL])
+			[[UIApplication sharedApplication] openURL:externURL];
+	}
 }
 
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
--(void) setShuttleRoutes:(NSArray *) shuttleRoutes
+- (void)setShuttleRoutes:(NSArray *) shuttleRoutes
 {
 	[_shuttleRoutes release];
 	_shuttleRoutes = [shuttleRoutes retain];
@@ -337,7 +335,9 @@
 	}
 
 	[sections addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Contact Information", @"title", _contactInfo, @"phoneNumbers", nil, nil]];
-		 
+
+    [sections addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"MBTA Information", @"title", _extraLinks, @"urls", nil, nil]];
+
 	self.sections = sections;
 	
 	

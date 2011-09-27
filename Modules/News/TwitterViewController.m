@@ -188,7 +188,7 @@ MIT_MobileAppDelegate *appDelegate();
 			contentFrame.size.width - 2 * MESSAGE_MARGIN,
 			MESSAGE_HEIGHT - 2 * MESSAGE_MARGIN);
 		
-		messageField = [[UITextView alloc] initWithFrame:CGRectInset(messageFrame, MESSAGE_MARGIN, MESSAGE_MARGIN)];
+		messageField = [[UITextField alloc] initWithFrame:CGRectInset(messageFrame, MESSAGE_MARGIN, MESSAGE_MARGIN)];
 		messageField.text = [NSString stringWithFormat:@"%@:\n%@", message, longUrl];
 		messageField.delegate = [[MessageFieldDelegate alloc] initWithMessage:messageField.text counter:counterLabel];
 		messageField.backgroundColor = [UIColor clearColor];

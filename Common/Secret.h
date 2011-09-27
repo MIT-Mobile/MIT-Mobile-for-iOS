@@ -23,4 +23,8 @@ extern NSString * const MobileAPIServers[];
     Setting the index to a value that is out of the array's bounds will result in undefined
     behavior.
 */
+#ifdef DEBUG
+#define MobileAPI_DefaultServerIndex 1
+#else
 #define MobileAPI_DefaultServerIndex 0
+#endif

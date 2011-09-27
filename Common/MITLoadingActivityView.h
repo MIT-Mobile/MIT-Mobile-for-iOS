@@ -3,7 +3,7 @@
 
 
 @interface MITLoadingActivityView : UIView {
-
+    UIImageView *_backgroundView;
 }
 
 @end

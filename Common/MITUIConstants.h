@@ -18,29 +18,29 @@
 #define PRIMARY_GROUP_BACKGROUND_COLOR [UIColor whiteColor]
 #define SECONDARY_GROUP_BACKGROUND_COLOR [UIColor colorWithWhite:1.0 alpha:0.65]
 
-#define CELL_STANDARD_FONT_COLOR [UIColor colorWithHexString:@"#171717"];
+#define CELL_STANDARD_FONT_COLOR [UIColor colorWithHexString:@"#171717"]
 #define CELL_STANDARD_FONT_SIZE 17.0
 
-#define CELL_DETAIL_FONT_COLOR [UIColor colorWithHexString:@"#4C4C4C"];
+#define CELL_DETAIL_FONT_COLOR [UIColor colorWithHexString:@"#4C4C4C"]
 #define CELL_DETAIL_FONT_SIZE 13.0
 
 #define CELL_VERTICAL_PADDING 10.0
 #define CELL_TWO_LINE_HEIGHT 56.0 /* the height needed for a standard cell to have 10 pixel padding */
 
 #define UNGROUPED_SECTION_HEADER_HEIGHT 22.0
-#define UNGROUPED_SECTION_FONT_COLOR [UIColor colorWithHexString:@"#CCCCCC"];
-#define UNGROUPED_SECTION_BACKGROUND_COLOR [UIColor colorWithHexString:@"#333333"];
+#define UNGROUPED_SECTION_FONT_COLOR [UIColor colorWithHexString:@"#CCCCCC"]
+#define UNGROUPED_SECTION_BACKGROUND_COLOR [UIColor colorWithHexString:@"#333333"]
 
 #define GROUPED_SECTION_HEADER_HEIGHT 37.0
-#define GROUPED_SECTION_FONT_COLOR [UIColor colorWithHexString:@"#333333"];
+#define GROUPED_SECTION_FONT_COLOR [UIColor colorWithHexString:@"#333333"]
 
-#define CELL_SELECTION_BLUE [UIColor colorWithHexString:@"#0257EE"];
+#define CELL_SELECTION_BLUE [UIColor colorWithHexString:@"#0257EE"]
 
 /*** textviews in table views ***/
 
 #define STANDARD_CONTENT_FONT_SIZE 17.0
-#define STANDARD_CONTENT_FONT_COLOR [UIColor colorWithHexString:@"#202020"];
-#define EMBEDDED_LINK_FONT_COLOR [UIColor colorWithHexString:@"#993333"];
+#define STANDARD_CONTENT_FONT_COLOR [UIColor colorWithHexString:@"#202020"]
+#define EMBEDDED_LINK_FONT_COLOR [UIColor colorWithHexString:@"#993333"]
 
 /*** Layout constants ***/
 #define NAVIGATION_BAR_HEIGHT 44.0f
