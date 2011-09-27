@@ -3,7 +3,7 @@
 
 
 @interface LibrariesModule : MITModule {
-    
+    NSOperationQueue *_requestQueue;
 }
 
 @property (nonatomic, retain) NSOperationQueue *requestQueue;

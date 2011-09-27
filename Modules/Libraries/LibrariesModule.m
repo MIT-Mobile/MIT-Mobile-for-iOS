@@ -3,7 +3,7 @@
 
 
 @implementation LibrariesModule
-@synthesize requestQueue;
+@synthesize requestQueue = _requestQueue;
 
 - (id) init {
     self = [super init];
