@@ -1,6 +1,7 @@
 #import "WorldCatSearchController.h"
 #import "WorldCatBook.h"
 #import "LibrariesModule.h"
+#import "LibrariesBookDetailViewController.h"
 #import "MobileRequestOperation.h"
 #import "MITMobileWebAPI.h"
 #import "MITUIConstants.h"
@@ -167,10 +168,11 @@
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == self.searchResults.count) {
-        [self doSearch];
-    }
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath navigationController:(UINavigationController *)navigationController {
+    WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
+    LibrariesBookDetailViewController *vc = [[[LibrariesBookDetailViewController alloc] initWithStyle:UITableViewStylePlain] autorelease];
+    vc.book = book;
+    [navigationController pushViewController:vc animated:YES];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

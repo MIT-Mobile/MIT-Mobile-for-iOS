@@ -1,5 +1,15 @@
 #import <Foundation/Foundation.h>
 
+@interface WorldCatHolding : NSObject {
+@private
+}
+
+@property (nonatomic, retain) NSString *address;
+@property (nonatomic, retain) NSString *library;
+@property (nonatomic, retain) NSString *url;
+
+@end
+
 
 @interface WorldCatBook : NSObject {
     
@@ -14,8 +24,18 @@
 @property (nonatomic, retain) NSArray *publishers;
 @property (nonatomic, retain) NSArray *years;
 @property (nonatomic, retain) NSArray *isbns;
+
+// detail fields
+@property (nonatomic, retain) NSArray *addresses;
+@property (nonatomic, retain) NSArray *extents;
+@property (nonatomic, retain) NSArray *holdings;
+@property (nonatomic, retain) NSArray *lang;
+@property (nonatomic, retain) NSArray *subjects;
+
 @property (nonatomic) BOOL parseFailure;
 
-
+- (void)updateDetailsWithDictionary:(NSDictionary *)dict;
+- (NSString *)authorYear;
+- (NSString *)isbn;
 
 @end

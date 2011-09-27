@@ -8,6 +8,20 @@
 
 @end
 
+@implementation WorldCatHolding
+@synthesize address;
+@synthesize url;
+@synthesize library;
+
+- (void)dealloc {
+    self.address = nil;
+    self.url = nil;
+    self.library = nil;
+    [super dealloc];
+}
+
+@end
+
 @implementation WorldCatBook
 @synthesize identifier;
 @synthesize title;
@@ -16,6 +30,13 @@
 @synthesize publishers;
 @synthesize years;
 @synthesize authors;
+
+@synthesize addresses;
+@synthesize extents;
+@synthesize holdings;
+@synthesize lang;
+@synthesize subjects;
+
 @synthesize parseFailure;
 
 - (id)initWithDictionary:(NSDictionary *)dict {
@@ -30,6 +51,41 @@
         self.authors = [self arrayOfStringsFromDict:dict key:@"author"];
     }
     return self;
+}
+
+- (void)dealloc {
+    self.identifier = nil;
+    self.title = nil;
+    self.imageURL = nil;
+    self.authors = nil;
+    self.publishers = nil;
+    self.years = nil;
+    self.isbns = nil;
+    
+    // detail fields
+    self.addresses = nil;
+    self.extents = nil;
+    self.holdings = nil;
+    self.lang = nil;
+    self.subjects = nil;
+    [super dealloc];
+}
+
+- (void)updateDetailsWithDictionary:(NSDictionary *)dict {
+    self.addresses = [self arrayOfStringsFromDict:dict key:@"address"];
+    self.extents = [self arrayOfStringsFromDict:dict key:@"extent"];
+    self.lang = [self arrayOfStringsFromDict:dict key:@"lang"];
+    self.subjects = [self arrayOfStringsFromDict:dict key:@"subject"];
+    
+    NSMutableArray *holdingsArray = [NSMutableArray array];
+    for (NSDictionary *holdingDict in [dict objectForKey:@"holdings"]) {
+        WorldCatHolding *holding = [[[WorldCatHolding alloc] init] autorelease];
+        holding.address = [self stringFromDict:holdingDict key:@"address"];
+        holding.library = [self stringFromDict:holdingDict key:@"library"];
+        holding.url = [self stringFromDict:holdingDict key:@"url"];
+        [holdingsArray addObject:holding];
+    }
+    self.holdings = holdingsArray;
 }
 
 - (NSArray *)arrayOfStringsFromDict:(NSDictionary *)dict key:(NSString *)key {
@@ -59,4 +115,20 @@
     return object;
 }
 
+- (NSString *)authorYear {
+    NSString *authorYear = @"";
+    if (self.years.count > 0) {
+        authorYear = [NSString stringWithFormat:@"%@; ", [self.years objectAtIndex:0]];
+    }
+    
+    NSString *authorsString = [self.authors componentsJoinedByString:@" "];
+    return [authorYear stringByAppendingString:authorsString];
+}
+
+- (NSString *)isbn {
+    if (self.isbns.count >= 2) {
+        return [self.isbns objectAtIndex:1];
+    }
+    return nil;
+}
 @end

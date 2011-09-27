@@ -186,6 +186,7 @@
 		4B7B66F5142D01BD00366615 /* WorldCatSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7B66F4142D01BD00366615 /* WorldCatSearchController.m */; };
 		4B7B66F8142D01FE00366615 /* WorldCatBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7B66F7142D01FE00366615 /* WorldCatBook.m */; };
 		4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9A4EA31355E24800E37876 /* MorseCodePattern.m */; };
+		4B9EF9B714321E360071F8E3 /* LibrariesBookDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */; };
 		4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */; };
 		4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */; };
 		4BE4D2F414115B9600E723F0 /* LibrariesLocationsHoursTermHours.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F314115B9600E723F0 /* LibrariesLocationsHoursTermHours.m */; };
@@ -734,6 +735,8 @@
 		4B7B66F7142D01FE00366615 /* WorldCatBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WorldCatBook.m; path = WorldCatSearch/WorldCatBook.m; sourceTree = "<group>"; };
 		4B9A4EA21355E24800E37876 /* MorseCodePattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MorseCodePattern.h; sourceTree = "<group>"; };
 		4B9A4EA31355E24800E37876 /* MorseCodePattern.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MorseCodePattern.m; sourceTree = "<group>"; };
+		4B9EF9B514321E360071F8E3 /* LibrariesBookDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesBookDetailViewController.h; path = WorldCatSearch/LibrariesBookDetailViewController.h; sourceTree = "<group>"; };
+		4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesBookDetailViewController.m; path = WorldCatSearch/LibrariesBookDetailViewController.m; sourceTree = "<group>"; };
 		4BB9C54E134BA0AA00B7F135 /* Calendar 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Calendar 3.xcdatamodel"; sourceTree = "<group>"; };
 		4BB9C54F134BA78200B7F135 /* CalendarCategoriesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarCategoriesViewController.h; sourceTree = "<group>"; };
 		4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarCategoriesViewController.m; sourceTree = "<group>"; };
@@ -1739,6 +1742,8 @@
 				4B7B66F4142D01BD00366615 /* WorldCatSearchController.m */,
 				4B7B66F6142D01FE00366615 /* WorldCatBook.h */,
 				4B7B66F7142D01FE00366615 /* WorldCatBook.m */,
+				4B9EF9B514321E360071F8E3 /* LibrariesBookDetailViewController.h */,
+				4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */,
 			);
 			name = WorldCatSerch;
 			sourceTree = "<group>";
@@ -2798,6 +2803,7 @@
 				4B779FDF141E42050082DEF9 /* LibrariesTellUsViewController.m in Sources */,
 				4B7B66F5142D01BD00366615 /* WorldCatSearchController.m in Sources */,
 				4B7B66F8142D01FE00366615 /* WorldCatBook.m in Sources */,
+				4B9EF9B714321E360071F8E3 /* LibrariesBookDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

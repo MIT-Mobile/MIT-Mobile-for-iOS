@@ -198,7 +198,7 @@
 
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (self.searchDisplayController.searchResultsTableView == aTableView) {
-        [self.searchController tableView:aTableView didSelectRowAtIndexPath:indexPath];
+        [self.searchController tableView:aTableView didSelectRowAtIndexPath:indexPath navigationController:self.navigationController];
         return;
     }
     
