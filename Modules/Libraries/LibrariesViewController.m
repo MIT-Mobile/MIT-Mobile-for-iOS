@@ -349,13 +349,17 @@
 }
 
 #pragma mark - UISearchDisplayController delegate
-- (void)searchDisplayController:(UISearchDisplayController *)controller willHideSearchResultsTableView:(UITableView *)tableView {
+- (void)searchDisplayController:(UISearchDisplayController *)controller willHideSearchResultsTableView:(UITableView *)aTableView {
     [self.searchController clearSearch];
+    aTableView.scrollsToTop = NO;
+    self.tableView.scrollsToTop = YES;
 }
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)aTableView {
     aTableView.delegate = self.searchController;
     aTableView.dataSource = self.searchController;
+    aTableView.scrollsToTop = YES;
+    self.tableView.scrollsToTop = NO;
 }
 
 @end
