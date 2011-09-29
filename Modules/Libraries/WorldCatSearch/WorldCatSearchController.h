@@ -14,7 +14,6 @@ typedef enum {
 
 - (void)doSearch:(NSString *)searchTerms;
 - (void)clearSearch;
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath navigationController:(UINavigationController *)navigationController;
 
 @property (nonatomic, retain) NSString *searchTerms;
 @property (nonatomic, retain) NSMutableArray *searchResults;
@@ -23,6 +22,7 @@ typedef enum {
 @property (nonatomic, retain) UIView *loadMoreView;
 @property (nonatomic) BooksSearchingStatus searchingStatus;
 @property (nonatomic) NSTimeInterval lastSearchAttempt;
+@property (nonatomic, assign) UINavigationController *navigationController;
 
 
 

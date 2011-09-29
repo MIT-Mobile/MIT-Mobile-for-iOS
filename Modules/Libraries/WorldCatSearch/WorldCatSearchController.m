@@ -38,6 +38,7 @@
 @synthesize searchResultsTableView;
 @synthesize loadMoreView;
 @synthesize lastSearchAttempt;
+@synthesize navigationController;
 
 - (id) init {
     self = [super init];
@@ -206,11 +207,11 @@
 }
 
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath navigationController:(UINavigationController *)navigationController {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
     LibrariesBookDetailViewController *vc = [[[LibrariesBookDetailViewController alloc] initWithStyle:UITableViewStylePlain] autorelease];
     vc.book = book;
-    [navigationController pushViewController:vc animated:YES];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

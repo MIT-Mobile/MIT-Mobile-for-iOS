@@ -48,6 +48,7 @@
     self.linksRequest = nil;
     self.links = nil;
     self.tableView = nil;
+    self.searchController.navigationController = nil;
     self.searchController = nil;
     [super dealloc];
 }
@@ -81,6 +82,7 @@
     
     self.linksRequest = [[[MITMobileWebAPI alloc] initWithModule:@"libraries" command:@"links" parameters:nil] autorelease];
     self.searchController = [[[WorldCatSearchController alloc] init] autorelease];
+    self.searchController.navigationController = self.navigationController;
 }
 
 - (void)viewDidUnload
@@ -119,9 +121,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)aTableView numberOfRowsInSection:(NSInteger)section {
-    if (self.searchDisplayController.searchResultsTableView == aTableView) {
-        return [self.searchController tableView:aTableView numberOfRowsInSection:section];
-    }
     
     switch (section) {
         case TOP_SECTION:
@@ -141,9 +140,6 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.searchDisplayController.searchResultsTableView == aTableView) {
-        return [self.searchController tableView:aTableView cellForRowAtIndexPath:indexPath];
-    }
     
     NSString *title;
     UIView *accessoryView = nil;
@@ -221,11 +217,6 @@
 }
 
 - (CGFloat)tableView:(UITableView *)aTableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (aTableView == self.searchDisplayController.searchResultsTableView) {
-        // if the search table view has performance issues we need to restructure the code
-        // such that search table view does not share a delegate with the main table view
-        return aTableView.rowHeight;
-    }
     
     switch (indexPath.section) {
         case TOP_SECTION:
@@ -244,26 +235,8 @@
     }
     return 0;
 }
-- (CGFloat)tableView:(UITableView *)aTableView heightForHeaderInSection:(NSInteger)section {
-    if (aTableView == self.searchDisplayController.searchResultsTableView) {
-        return [self.searchController tableView:aTableView heightForHeaderInSection:section];
-    } else {
-        return 0;
-    }
-}
-
-- (UIView *)tableView:(UITableView *)aTableView viewForHeaderInSection:(NSInteger)section {
-    if (aTableView == self.searchDisplayController.searchResultsTableView) {
-        return [self.searchController tableView:aTableView viewForHeaderInSection:section];
-    }
-    return nil;
-}
 
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.searchDisplayController.searchResultsTableView == aTableView) {
-        [self.searchController tableView:aTableView didSelectRowAtIndexPath:indexPath navigationController:self.navigationController];
-        return;
-    }
     
     [aTableView deselectRowAtIndexPath:indexPath animated:YES];
     
@@ -380,10 +353,9 @@
     [self.searchController clearSearch];
 }
 
-#pragma mark - UIScrollView delegate
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if (self.searchDisplayController.searchResultsTableView == scrollView) {
-        [self.searchController scrollViewDidScroll:scrollView];
-    }
+- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)aTableView {
+    aTableView.delegate = self.searchController;
+    aTableView.dataSource = self.searchController;
 }
+
 @end
