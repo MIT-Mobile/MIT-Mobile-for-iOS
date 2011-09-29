@@ -9,8 +9,6 @@
 #define APPOINTMENT_ROW 1
 #define FORM_ROWS 2
 
-#define TEXT_TAG 1
-
 #define PADDING 10
 
 #define TEXT_WIDTH 260
@@ -101,24 +99,15 @@
         if (cell == nil) {
             cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
-            UILabel *label = [[[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, TEXT_WIDTH, 200)] autorelease];
-            label.textColor = CELL_STANDARD_FONT_COLOR;
-            label.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
-            label.tag = TEXT_TAG;
-            label.numberOfLines = 0;
-            label.backgroundColor = [UIColor clearColor];
-            [cell.contentView addSubview:label];
+            [cell applyStandardFonts];
+            cell.textLabel.numberOfLines = 0;
         }
     
-        UILabel *titleLabel = (UILabel *)[cell viewWithTag:TEXT_TAG];
         if (indexPath.row == ASK_US_ROW) {
-            titleLabel.text = ASK_US_TEXT;
+            cell.textLabel.text = ASK_US_TEXT;
         } else if (indexPath.row == APPOINTMENT_ROW) {
-            titleLabel.text = APPOINTMENT_TEXT;
+            cell.textLabel.text = APPOINTMENT_TEXT;
         }
-        CGRect titleLabelFrame = titleLabel.frame;
-        titleLabelFrame.size.height = [self heightForText:titleLabel.text];
-        titleLabel.frame = titleLabelFrame;
         return cell;
     } else if (indexPath.section == HELP_SECTION) {
         SecondaryGroupedTableViewCell *helpCell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"Help"];
@@ -135,11 +124,13 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == FORM_SECTION) {
+        NSString *text;
         if (indexPath.row == ASK_US_ROW) {
-            return [self heightForText:ASK_US_TEXT] + 2 * PADDING;
+            text = ASK_US_TEXT;
         } else if (indexPath.row == APPOINTMENT_ROW) {
-            return [self heightForText:APPOINTMENT_TEXT] + 2 * PADDING;
+            text = APPOINTMENT_TEXT;
         }
+        return MAX([self heightForText:text] + 2 * PADDING, tableView.rowHeight);
     }
     return tableView.rowHeight;
 }
