@@ -7,8 +7,7 @@
 
 #define ASK_US_ROW 0
 #define APPOINTMENT_ROW 1
-#define HELP_ROW 2
-#define TOTAL_ROWS 3
+#define FORM_ROWS 2
 
 #define TEXT_TAG 1
 
@@ -17,6 +16,11 @@
 #define TEXT_WIDTH 260
 #define ASK_US_TEXT @"Ask Us!"
 #define APPOINTMENT_TEXT @"Make a research consultation appointment"
+
+#define FORM_SECTION 0
+#define HELP_SECTION 1
+#define SECTIONS 2
+
 
 @implementation LibrariesAskUsTableViewController
 
@@ -76,17 +80,22 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    return SECTIONS;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return TOTAL_ROWS;
+    if (section == FORM_SECTION) {
+        return FORM_ROWS;
+    } else if (section == HELP_SECTION) {
+        return 1;
+    }
+    return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ((indexPath.row == ASK_US_ROW) ||(indexPath.row == APPOINTMENT_ROW)) {
+    if (indexPath.section == FORM_SECTION) {
         static NSString *CellIdentifier = @"LockedCell";
     
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -98,6 +107,7 @@
             label.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
             label.tag = TEXT_TAG;
             label.numberOfLines = 0;
+            label.backgroundColor = [UIColor clearColor];
             [cell.contentView addSubview:label];
         }
     
@@ -111,10 +121,10 @@
         titleLabelFrame.size.height = [self heightForText:titleLabel.text];
         titleLabel.frame = titleLabelFrame;
         return cell;
-    } else if (indexPath.row == HELP_ROW) {
-        PhoneTableViewCell *helpCell = (PhoneTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"Help"];
+    } else if (indexPath.section == HELP_SECTION) {
+        SecondaryGroupedTableViewCell *helpCell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"Help"];
         if (!helpCell) {
-            helpCell = [[[PhoneTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Help"] autorelease];
+            helpCell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Help"] autorelease];
             helpCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
             helpCell.textLabel.text = @"General help";
             helpCell.secondaryTextLabel.text = @"(617-324-2275)";
@@ -125,7 +135,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ((indexPath.row == ASK_US_ROW) ||(indexPath.row == APPOINTMENT_ROW)) {
+    if (indexPath.section == FORM_SECTION) {
         if (indexPath.row == ASK_US_ROW) {
             return [self heightForText:ASK_US_TEXT] + 2 * PADDING;
         } else if (indexPath.row == APPOINTMENT_ROW) {
@@ -140,30 +150,21 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Navigation logic may go here. Create and push another view controller.
-    UIViewController *vc = nil;
-    if (indexPath.row == ASK_US_ROW) {
-        vc = [[[LibrariesAskUsViewController alloc] init] autorelease];
-    } else if (indexPath.row == APPOINTMENT_ROW) {
-        vc = [[[LibrariesAppointmentViewController alloc] init] autorelease];
-    } else if (indexPath.row == HELP_ROW) {
+    if (indexPath.section == FORM_SECTION) {
+        UIViewController *vc = nil;
+        if (indexPath.row == ASK_US_ROW) {
+            vc = [[[LibrariesAskUsViewController alloc] init] autorelease];
+        } else if (indexPath.row == APPOINTMENT_ROW) {
+            vc = [[[LibrariesAppointmentViewController alloc] init] autorelease];
+        } 
+        [self.navigationController pushViewController:vc animated:YES];
+    } else if (indexPath.section == HELP_SECTION) {
         NSURL *url = [NSURL URLWithString:@"tel://16173242275"];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url];
         }
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        return;
     }
-    
-    [self.navigationController pushViewController:vc animated:YES];
-}
-
-@end
-
-@implementation PhoneTableViewCell 
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    self.backgroundColor = [UIColor whiteColor];
 }
 
 @end
