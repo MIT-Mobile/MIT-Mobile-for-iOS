@@ -235,7 +235,29 @@
     [self.tableView reloadData];
 }
 
-
+- (NSString *)termScheduleHtml:(LibrariesLocationsHoursTerm *)term defaultTitle:(NSString *)defaultTitle{
+    NSDateFormatter *startDateFormat = [[[NSDateFormatter alloc] init] autorelease];
+    [startDateFormat setDateFormat:@"MMMM d"];
+    
+    NSDateFormatter *endDateFormat = [[[NSDateFormatter alloc] init] autorelease];
+    [endDateFormat setDateFormat:@"MMMM d, YYYY"];
+    
+    NSString *name = term.name;
+    if (name == nil) {
+        name = defaultTitle;
+    }
+    NSString *hoursTitle = [NSString stringWithFormat:@"%@ Hours (%@-%@)", name, [startDateFormat stringFromDate:term.startDate], [endDateFormat stringFromDate:term.endDate]];
+    
+    NSString *hoursString = @"";
+    NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
+    NSArray *hourElements = [term.hours sortedArrayUsingDescriptors:[NSArray arrayWithObject:descriptor]];
+    for (LibrariesLocationsHoursTermHours *hoursElement in hourElements) {
+        hoursString = [hoursString stringByAppendingFormat:@"%@<br/>", hoursElement.hoursDescription];
+    }
+    
+    return [NSString stringWithFormat:@"<span class=\"title\">%@:</span><br /> %@", hoursTitle, hoursString];
+    
+}
 - (NSString *)contentHtml {
     NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     NSURL *fileURL = [NSURL URLWithString:@"libraries/libraries.html" relativeToURL:baseURL];
@@ -245,29 +267,26 @@
         ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
     }
     
-    [NSPredicate predicateWithFormat:@"termSortOrder = %d", 0];
     LibrariesLocationsHoursTerm *term = [[self.library.terms filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder = %d", 0]] anyObject];
-    NSString *hoursString = @"";
-    NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
-    NSArray *hourElements = [term.hours sortedArrayUsingDescriptors:[NSArray arrayWithObject:descriptor]];
-    for (LibrariesLocationsHoursTermHours *hoursElement in hourElements) {
-        hoursString = [hoursString stringByAppendingFormat:@"%@<br/>", hoursElement.hoursDescription];
+    
+    NSArray *previousTerms = [[self.library.terms filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder < %d", 0]] 
+                              sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"termSortOrder" ascending:NO]]];
+    
+    NSArray *nextTerms = [[self.library.terms filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder > %d", 0]] 
+                          sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"termSortOrder" ascending:YES]]];
+    
+    
+    
+    NSString *scheduleHtml = [self termScheduleHtml:term defaultTitle:@""];
+    for (LibrariesLocationsHoursTerm *aTerm in previousTerms) {
+        scheduleHtml = [scheduleHtml stringByAppendingFormat:@"<br />%@", [self termScheduleHtml:aTerm defaultTitle:@"Previous Term"]];
+    }
+    for (LibrariesLocationsHoursTerm *aTerm in nextTerms) {
+        scheduleHtml = [scheduleHtml stringByAppendingFormat:@"<br />%@", [self termScheduleHtml:aTerm defaultTitle:@"Next Term"]];
     }
     
-    NSDateFormatter *startDateFormat = [[[NSDateFormatter alloc] init] autorelease];
-    [startDateFormat setDateFormat:@"MMMM d"];
-    
-    NSDateFormatter *endDateFormat = [[[NSDateFormatter alloc] init] autorelease];
-    [endDateFormat setDateFormat:@"MMMM d, YYYY"];
-    
-    NSString *name = term.name;
-    if (name == nil) {
-        name = @"";
-    }
-    NSString *hoursTitle = [NSString stringWithFormat:@"%@ Hours (%@-%@)", name, [startDateFormat stringFromDate:term.startDate], [endDateFormat stringFromDate:term.endDate]];
-    
-    [target replaceOccurrencesOfStrings:[NSArray arrayWithObjects:@"__TODAYS_HOURS__", @"__HOURS_TITLE__", @"__HOURS__", nil]
-                            withStrings:[NSArray arrayWithObjects:self.library.hoursToday, hoursTitle, hoursString, nil] options:NSLiteralSearch];
+    [target replaceOccurrencesOfStrings:[NSArray arrayWithObjects:@"__TODAYS_HOURS__", @"__SCHEDULE_HTML__", nil]
+                            withStrings:[NSArray arrayWithObjects:self.library.hoursToday, scheduleHtml, nil] options:NSLiteralSearch];
     return target;        
 }
 @end
