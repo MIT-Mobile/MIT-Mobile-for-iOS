@@ -189,20 +189,12 @@
                 if (!linkCell) {
                     linkCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LinkCell"] autorelease];
                     linkCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
-                    UILabel *titleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, LINK_TITLE_WIDTH, 100)] autorelease]; 
-                    titleLabel.tag = LINK_TITLE_TAG;
-                    titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
-                    titleLabel.adjustsFontSizeToFitWidth = NO;
-                    titleLabel.numberOfLines = 0;
-                    [linkCell.contentView addSubview:titleLabel];
+                    linkCell.textLabel.numberOfLines = 0;
+                    [linkCell applyStandardFonts];
                 }
                 
-                UILabel *titleLabel = (UILabel *)[linkCell viewWithTag:LINK_TITLE_TAG];
                 NSString *title = [(NSDictionary *)[self.links objectAtIndex:indexPath.row] objectForKey:@"title"];
-                CGRect titleLabelFrame = titleLabel.frame;
-                titleLabelFrame.size.height = [self heightForLinkTitle:title];
-                titleLabel.frame = titleLabelFrame;
-                titleLabel.text = title;
+                linkCell.textLabel.text = title;
                 return linkCell;
             }
             break;
