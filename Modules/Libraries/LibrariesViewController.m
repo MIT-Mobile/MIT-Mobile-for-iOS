@@ -237,7 +237,7 @@
                 return aTableView.rowHeight;
             } else {
                 NSString *title = [(NSDictionary *)[self.links objectAtIndex:indexPath.row] objectForKey:@"title"];
-                return [self heightForLinkTitle:title] + 2 * PADDING;
+                return MAX([self heightForLinkTitle:title] + 2 * PADDING, aTableView.rowHeight);
             }
         default:
             break;
