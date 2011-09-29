@@ -114,6 +114,7 @@
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
         [cell applyStandardFonts];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
     LibrariesLocationsHours *library = [self.libraries objectAtIndex:indexPath.row];
