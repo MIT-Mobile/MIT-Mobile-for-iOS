@@ -252,6 +252,20 @@
     }
     return 0;
 }
+- (CGFloat)tableView:(UITableView *)aTableView heightForHeaderInSection:(NSInteger)section {
+    if (aTableView == self.searchDisplayController.searchResultsTableView) {
+        return [self.searchController tableView:aTableView heightForHeaderInSection:section];
+    } else {
+        return 0;
+    }
+}
+
+- (UIView *)tableView:(UITableView *)aTableView viewForHeaderInSection:(NSInteger)section {
+    if (aTableView == self.searchDisplayController.searchResultsTableView) {
+        return [self.searchController tableView:aTableView viewForHeaderInSection:section];
+    }
+    return nil;
+}
 
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (self.searchDisplayController.searchResultsTableView == aTableView) {

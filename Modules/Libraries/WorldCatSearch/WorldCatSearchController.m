@@ -183,6 +183,29 @@
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if (self.searchResults) {
+        return UNGROUPED_SECTION_HEADER_HEIGHT;
+    } else {
+        return 0;
+    }
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (self.searchResults) {
+        NSString *title;
+        if (!self.nextIndex) {
+            title = [NSString stringWithFormat:@"%d books found", self.searchResults.count];
+        } else {
+            title = [NSString stringWithFormat:@"Many found, showing %d books", self.searchResults.count];
+        }
+        return [UITableView ungroupedSectionHeaderWithTitle:title];    
+    } else {
+        return nil;
+    }
+}
+
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath navigationController:(UINavigationController *)navigationController {
     WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
     LibrariesBookDetailViewController *vc = [[[LibrariesBookDetailViewController alloc] initWithStyle:UITableViewStylePlain] autorelease];
