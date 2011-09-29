@@ -3,6 +3,7 @@
 #import "LibrariesModule.h"
 #import "LibrariesBookDetailViewController.h"
 #import "MobileRequestOperation.h"
+#import "MITLoadingActivityView.h"
 #import "MITMobileWebAPI.h"
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
@@ -10,11 +11,15 @@
 #define ACTIVITY_ORIGIN_X 20
 #define ACTIVITY_ORIGIN_Y 20
 #define ACTIVITY_SIZE 30
-#define ACTIVITY_TAG 1
 #define LABEL_ORIGIN_X 70
 #define LABEL_ORIGIN_Y 20
-#define LABEL_TAG 2
+
 #define LOADER_HEIGHT 70
+
+#define ACTIVITY_TAG 1
+#define LABEL_TAG 2
+#define LOADING_ACTIVITY_TAG 3
+
 
 @interface WorldCatSearchController (Private)
 
@@ -70,6 +75,9 @@
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"search" parameters:parameters] autorelease];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        UIView *loadingView = [self.searchResultsTableView viewWithTag:LOADING_ACTIVITY_TAG];
+        [loadingView removeFromSuperview];
+        
         self.lastSearchAttempt = [[NSDate date] timeIntervalSince1970];
         if (error) {
             NSLog(@"Request failed with error: %@",[error localizedDescription]);
@@ -119,6 +127,13 @@
             }            
         }
     };
+    
+    // show loading indicator for initial search
+    if (!self.nextIndex) {
+        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.searchResultsTableView.bounds] autorelease];
+        loadingView.tag = LOADING_ACTIVITY_TAG;
+        [self.searchResultsTableView addSubview:loadingView];
+    }
     
     librariesModule.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
     [librariesModule.requestQueue addOperation:request];
