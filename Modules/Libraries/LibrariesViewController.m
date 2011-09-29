@@ -14,6 +14,10 @@
 #define TOP_SECTION 0
 #define EXTERNAL_URLS_SECTION 1
 
+#define LINK_TITLE_WIDTH 260
+#define LINK_TITLE_TAG 1
+#define PADDING 10
+
 @interface LibrariesViewController (Private)
 
 - (void)loadLinksFromUserDefaults;
@@ -99,6 +103,11 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+- (CGFloat)heightForLinkTitle:(NSString *)aTitle {
+    CGSize titleSize = [aTitle sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(LINK_TITLE_WIDTH, 100)];
+    return titleSize.height;
+}
+
 #pragma mark - dataSource methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)aTableView {
@@ -137,10 +146,12 @@
     }
     
     NSString *title;
+    UIView *accessoryView = nil;
     switch (indexPath.section) {
         case TOP_SECTION:
             switch (indexPath.row) {
                 case 0:
+                    accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
                     title = @"Your Account";
                     break;
                 case 1:
@@ -150,6 +161,7 @@
                     title = @"Ask Us!";
                     break;
                 case 3:
+                    accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
                     title = @"Tell Us!";
                     break;
                     
@@ -176,9 +188,21 @@
                 UITableViewCell *linkCell = [aTableView dequeueReusableCellWithIdentifier:@"LinkCell"];
                 if (!linkCell) {
                     linkCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LinkCell"] autorelease];
+                    linkCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+                    UILabel *titleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, LINK_TITLE_WIDTH, 100)] autorelease]; 
+                    titleLabel.tag = LINK_TITLE_TAG;
+                    titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+                    titleLabel.adjustsFontSizeToFitWidth = NO;
+                    titleLabel.numberOfLines = 0;
+                    [linkCell.contentView addSubview:titleLabel];
                 }
                 
-                linkCell.textLabel.text = [(NSDictionary *)[self.links objectAtIndex:indexPath.row] objectForKey:@"title"];
+                UILabel *titleLabel = (UILabel *)[linkCell viewWithTag:LINK_TITLE_TAG];
+                NSString *title = [(NSDictionary *)[self.links objectAtIndex:indexPath.row] objectForKey:@"title"];
+                CGRect titleLabelFrame = titleLabel.frame;
+                titleLabelFrame.size.height = [self heightForLinkTitle:title];
+                titleLabel.frame = titleLabelFrame;
+                titleLabel.text = title;
                 return linkCell;
             }
             break;
@@ -193,7 +217,40 @@
     }
     
     cell.textLabel.text = title;
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    if (indexPath.section == TOP_SECTION) {
+        if (accessoryView) {
+            cell.accessoryView = accessoryView;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }
+    }
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)aTableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (aTableView == self.searchDisplayController.searchResultsTableView) {
+        // if the search table view has performance issues we need to restructure the code
+        // such that search table view does not share a delegate with the main table view
+        return aTableView.rowHeight;
+    }
+    
+    switch (indexPath.section) {
+        case TOP_SECTION:
+            return aTableView.rowHeight;
+            break;
+            
+        case EXTERNAL_URLS_SECTION:
+            if (self.linksStatus != LinksStatusLoaded) {
+                return aTableView.rowHeight;
+            } else {
+                NSString *title = [(NSDictionary *)[self.links objectAtIndex:indexPath.row] objectForKey:@"title"];
+                return [self heightForLinkTitle:title] + 2 * PADDING;
+            }
+        default:
+            break;
+    }
+    return 0;
 }
 
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -201,6 +258,8 @@
         [self.searchController tableView:aTableView didSelectRowAtIndexPath:indexPath navigationController:self.navigationController];
         return;
     }
+    
+    [aTableView deselectRowAtIndexPath:indexPath animated:YES];
     
     UIViewController *vc;    
     
