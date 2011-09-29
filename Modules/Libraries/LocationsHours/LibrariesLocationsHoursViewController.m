@@ -42,6 +42,7 @@
     [super viewDidLoad];
     [self.tableView applyStandardColors];
     [self.tableView applyStandardCellHeight];
+    self.title = @"Locations & Hours";
     
     if (!self.libraries) {
         self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
