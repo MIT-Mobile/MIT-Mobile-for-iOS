@@ -53,7 +53,6 @@
     [super viewDidLoad];
 
     [self.tableView applyStandardColors];
-    [self.tableView applyStandardCellHeight];
     
     self.title = @"Ask Us!";
 }
