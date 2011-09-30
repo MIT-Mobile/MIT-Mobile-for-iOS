@@ -222,16 +222,10 @@
 @end
 
 @implementation UIActionSheet (MITUIAdditions)
-
 - (void)showFromAppDelegate {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[UIApplication sharedApplication].delegate;
-    if ([appDelegate usesTabBar]) {
-        [self showFromTabBar:appDelegate.tabBarController.tabBar];
-    } else {
-        [self showInView:appDelegate.rootNavigationController.view];
-    }
+    MIT_MobileAppDelegate *appDelegate = MITAppDelegate();
+    [self showInView:appDelegate.rootNavigationController.view];
 }
-
 @end
 
 
