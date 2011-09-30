@@ -13,10 +13,6 @@
         self.shortName = @"Tours";
         self.longName = @"Campus Tour";
         self.iconName = @"tours";
-        self.isMovableTab = TRUE;
-        
-        //self.homeController = [[[CampusTourHomeController alloc] init] autorelease];
-        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:self.homeController]];
     }
     return self;
 }

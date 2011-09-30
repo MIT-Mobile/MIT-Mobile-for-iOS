@@ -10,8 +10,6 @@
         self.shortName = @"Mobile Web";
         self.longName = @"MIT Mobile Web";
         self.iconName = @"webmitedu";
-        self.isMovableTab = FALSE;
-        self.canBecomeDefault = FALSE;
     }
     return self;
 }

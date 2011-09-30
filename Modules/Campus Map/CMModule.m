@@ -1,6 +1,5 @@
 #import "CMModule.h"
 #import "CampusMapViewController.h"
-//#import "MITMapViewController.h"
 #import "MITMapDetailViewController.h"
 #import "MITMapSearchResultAnnotation.h"
 
@@ -16,12 +15,6 @@
         self.iconName = @"map";
         
         self.campusMapVC.title = self.longName;
-       
-		//self.campusMapVC = [[[CampusMapViewController alloc] init] autorelease];
-		//self.campusMapVC.title = @"Campus Map";
-		//self.campusMapVC.campusMapModule = self;
-		
-        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:self.campusMapVC]];
     }
     return self;
 }
@@ -42,13 +35,15 @@
 }
 
 - (void)applicationDidEnterBackground {
-    if (self.tabNavController.visibleViewController == self.campusMapVC) {
+    UINavigationController *controller = [MITAppDelegate() rootNavigationController];
+    if (controller.visibleViewController == self.campusMapVC) {
         [self.campusMapVC viewWillDisappear:NO];
     }
 }
 
 - (void)applicationWillEnterForeground {
-    if (self.tabNavController.visibleViewController == self.campusMapVC) {
+    UINavigationController *controller = [MITAppDelegate() rootNavigationController];
+    if (controller.visibleViewController == self.campusMapVC) {
         [self.campusMapVC viewWillAppear:NO];
     }
 }
@@ -89,11 +84,6 @@
 	
 	// force the map view to load
 	(void)self.campusMapVC.view;
-    
-    if ([(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] usesTabBar]) {
-        // make sure the campus map is the root view controller
-        [self popToRootViewController];
-    }
 	
 	if (localPath.length==0) {
 		if (regionDictionary != nil) {
@@ -179,9 +169,6 @@
 			if (components.count > 2)
 				detailsVC.startingTab = [[components objectAtIndex:2] intValue];
 			
-//			if (self.campusMapVC.selectedCategory) {
-//				detailsVC.queryText = currentAnnotation.name;
-//			} else 
 			if(self.campusMapVC.lastSearchText != nil && self.campusMapVC.lastSearchText.length > 0) {
 				detailsVC.queryText = self.campusMapVC.lastSearchText;
 			}

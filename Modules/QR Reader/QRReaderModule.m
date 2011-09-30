@@ -12,7 +12,6 @@
         self.shortName = @"QR Reader";
         self.longName = @"QR Reader";
         self.iconName = @"qrreader";
-        self.isMovableTab = FALSE;
         _viewController = nil;
     }
     return self;

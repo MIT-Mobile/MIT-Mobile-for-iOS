@@ -63,12 +63,6 @@ static NSString * const PeopleStateDetail = @"detail";
 }
 
 
-/*
-- (void)applicationDidFinishLaunching
-{
-}
-*/
-
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
     BOOL didHandle = NO;
 	

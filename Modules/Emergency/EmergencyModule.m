@@ -58,35 +58,28 @@
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
     BOOL didHandle = NO;
     if ([localPath isEqualToString:@"contacts"]) {
-        // show emergency contacts
-        if (![self.tabNavController.visibleViewController isKindOfClass:[EmergencyContactsViewController class]]) {
+        UINavigationController *controller = [MITAppDelegate() rootNavigationController];
+        
+        if (![controller.visibleViewController isKindOfClass:[EmergencyContactsViewController class]]) {
             
             // show More Emergency Contact drilldown
             // init its view controller
-            EmergencyContactsViewController *contactsVC = [[EmergencyContactsViewController alloc] initWithNibName:nil bundle:nil];
+            EmergencyContactsViewController *contactsVC = [[[EmergencyContactsViewController alloc] initWithNibName:nil bundle:nil] autorelease];
             // push it onto the navigation stack
-            [self.tabNavController pushViewController:contactsVC animated:NO];
-            [contactsVC release];
+            [controller pushViewController:contactsVC
+                                  animated:YES];
         }
         [self becomeActiveTab];
         didHandle = YES;
     }
     return didHandle;
 }
-/*
-- (void)didReceiveNewEmergencyInfo:(NSNotification *)aNotification {    
-    // uncomment to show a popup dialog of the current emergency
-//    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"MIT Emergency Update" message:info delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-//    [alertView show];
-//    [alertView release];
-}
-*/
+
 - (BOOL)handleNotification:(MITNotification *)notification shouldOpen: (BOOL)shouldOpen {
 	if(shouldOpen) {
 		[self popToRootViewController];
 		[mainViewController refreshInfo:nil];
 		self.currentPath = @"";
-		hasLaunchedBegun = YES;
 		[self becomeActiveTab];
 	}
 	return YES;
@@ -96,10 +89,6 @@
 	emergencyMessageLoaded = YES;
 	[self syncUnreadNotifications];
 }
-
-//- (void) didAppear {
-//	[self syncUnreadNotifications];
-//}
 
 - (void) syncUnreadNotifications {
 	// if emergency module on the screen

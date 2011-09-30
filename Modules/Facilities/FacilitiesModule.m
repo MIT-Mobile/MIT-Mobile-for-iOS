@@ -2,7 +2,6 @@
 #import "MITConstants.h"
 #import "FacilitiesRootViewController.h"
 
-
 @implementation FacilitiesModule
 - (id) init {
     self = [super init];
@@ -11,7 +10,6 @@
         self.shortName = @"Bldg Services";
         self.longName = @"Building Services";
         self.iconName = @"facilities";
-        self.isMovableTab = FALSE;
         _viewController = nil;
     }
     return self;

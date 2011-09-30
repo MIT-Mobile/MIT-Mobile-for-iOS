@@ -45,7 +45,7 @@
 	if(shouldOpen) {		
 		// mark Launch as begun so we dont handle the path twice.
 		hasLaunchedBegun = YES;
-		[(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showModuleForTag:self.tag];	
+		[MITAppDelegate() showModuleForTag:self.tag];	
 		
 		[self handleLocalPath:[NSString stringWithFormat:@"class/%@/News", notification.noticeId] query:nil];
 

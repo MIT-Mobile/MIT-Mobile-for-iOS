@@ -13,7 +13,6 @@
         self.shortName = @"MIT150";
         self.longName = @"MIT150";
         self.iconName = @"mit150";
-        self.isMovableTab = TRUE;
     }
     return self;
 }

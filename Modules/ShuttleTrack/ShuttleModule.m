@@ -49,7 +49,7 @@
 	
 	if(shouldOpen) {
 		NSString *routeID = [[notification.noticeId componentsSeparatedByString:@":"] objectAtIndex:0];
-		[(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showModuleForTag:self.tag];
+		[MITAppDelegate() showModuleForTag:self.tag];
 		[self handleLocalPath:[NSString stringWithFormat:@"route-list/%@", routeID] query:nil];
 	}
 	
