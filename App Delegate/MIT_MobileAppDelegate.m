@@ -1,4 +1,5 @@
 #import "MIT_MobileAppDelegate.h"
+#import "MIT_MobileAppDelegate+Private.h"
 #import "MITModuleList.h"
 #import "MITModule.h"
 #import "MITDeviceRegistration.h"
@@ -8,20 +9,18 @@
 #import "DummyRotatingViewController.h"
 #import "ModuleVersions.h"
 
-@interface MIT_MobileAppDelegate ()
-
-- (void)updateBasicServerInfo;
-
-@end
-
 @implementation MIT_MobileAppDelegate
 
 @synthesize window, 
             tabBarController = theTabBarController, 
-            normalNavController = theNormalNavController,
+            rootNavigationController = _rootNavigationController,
             modules,
             appModalHolder;
+
 @synthesize deviceToken = devicePushToken;
+
+@synthesize springboard = _springboard,
+            moduleStack = _moduleStack;
 
 #pragma mark -
 #pragma mark Application lifecycle
@@ -63,16 +62,16 @@
     }
     else {
         MITSpringboard *springboard = [[[MITSpringboard alloc] initWithNibName:nil bundle:nil] autorelease];
-        NSMutableArray *primaryModules = [NSMutableArray array];
-        for (MITModule *aModule in self.modules) {
-			[primaryModules addObject:aModule];
-        }
-        springboard.primaryModules = [NSArray arrayWithArray:primaryModules];
-        theNormalNavController = [[UINavigationController alloc] initWithRootViewController:springboard];
-		theNormalNavController.delegate = springboard;
-        theNormalNavController.navigationBar.barStyle = UIBarStyleBlack;
+        springboard.primaryModules = [NSArray arrayWithArray:self.modules];
 		springboard.delegate = self;
-		moduleStack = [[NSMutableArray alloc] init];
+        
+        UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:springboard];
+		rootController.delegate = springboard;
+        rootController.navigationBar.barStyle = UIBarStyleBlack;
+        
+        self.springboard = springboard;
+        self.rootNavigationController = rootController;
+		self.moduleStack = [[NSMutableArray alloc] init];
     }
     
     // TODO: don't store state like this when we're using a springboard.
@@ -97,7 +96,7 @@
         [self.window addSubview:theTabBarController.view];
     }
     else {
-        [self.window addSubview:theNormalNavController.view];
+        [self.window addSubview:rootNavigationController.view];
     }
     
     appModalHolder = [[DummyRotatingViewController alloc] initWithNibName:nil bundle:nil];
@@ -215,7 +214,8 @@
 #pragma mark Memory management
 
 - (void)dealloc {
-	[moduleStack release];
+    self.moduleStack = nil;
+    self.springboard = nil;
     self.deviceToken = nil;
     self.modules = nil;
 	[window release];
@@ -300,12 +300,12 @@
 #pragma mark Springboard delegation
 
 - (void)springboard:(MITSpringboard *)springboard didPushModuleForTag:(NSString *)moduleTag {
-	[moduleStack addObject:moduleTag];
+	[self.moduleStack addObject:moduleTag];
 }
 
 - (void)springboardDidPopModule:(MITSpringboard *)springboard {
-	if (moduleStack.count) {
-		[moduleStack removeLastObject];
+	if (self.moduleStack.count) {
+		[self.moduleStack removeLastObject];
 	}
 }
 
@@ -320,7 +320,7 @@
     if (navParadigm == MITNavigationParadigmTabBar) {
         [theTabBarController.view addSubview:appModalHolder.view];
     } else {
-        [theNormalNavController.view addSubview:appModalHolder.view];
+        [rootNavigationController.view addSubview:appModalHolder.view];
     }
     
     [appModalHolder presentModalViewController:viewController animated:animated];

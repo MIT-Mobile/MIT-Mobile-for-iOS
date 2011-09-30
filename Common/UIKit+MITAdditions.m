@@ -228,7 +228,7 @@
     if ([appDelegate usesTabBar]) {
         [self showFromTabBar:appDelegate.tabBarController.tabBar];
     } else {
-        [self showInView:appDelegate.normalNavController.view];
+        [self showInView:appDelegate.rootNavigationController.view];
     }
 }
 

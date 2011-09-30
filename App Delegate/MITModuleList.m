@@ -1,4 +1,5 @@
 #import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+Private.h"
 #import "NewsModule.h"
 #import "ShuttleModule.h"
 #import "StellarModule.h"
@@ -91,13 +92,13 @@
         [self.tabBarController showItem:module.tabNavController.tabBarItem];
     }
     else {
-        if ([self.normalNavController.visibleViewController isKindOfClass:[MITSpringboard class]]) {
+        if ([self.rootNavigationController.visibleViewController isKindOfClass:[MITSpringboard class]]) {
 			[module.tabNavController popToRootViewControllerAnimated:NO];
-            NSArray *viewControllers = [self.normalNavController.viewControllers arrayByAddingObjectsFromArray:module.tabNavController.viewControllers];
-            [self.normalNavController setViewControllers:viewControllers animated:YES];
+            NSArray *viewControllers = [self.rootNavigationController.viewControllers arrayByAddingObjectsFromArray:module.tabNavController.viewControllers];
+            [self.rootNavigationController setViewControllers:viewControllers animated:YES];
         }
         else {
-            [self.normalNavController pushViewController:module.tabNavController.visibleViewController animated:YES];
+            [self.rootNavigationController pushViewController:module.tabNavController.visibleViewController animated:YES];
         }
         module.hasLaunchedBegun = YES;
         [module didAppear];
@@ -195,7 +196,7 @@
     if (navParadigm == MITNavigationParadigmTabBar) {
         return [[self moduleForTabBarItem:self.tabBarController.activeItem] tag];
     } else {
-		return [moduleStack lastObject];
+		return [self.moduleStack lastObject];
     }
 }
 
