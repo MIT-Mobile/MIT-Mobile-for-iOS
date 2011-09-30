@@ -28,10 +28,12 @@
 
 - (void)initLoadMoreViewToTableView:(UITableView *)tableView;
 - (void)updateLoaderView;
+- (NSNumber *)getNumberFromDict:(NSDictionary *)dict forKey:(NSString *)key required:(BOOL)required;
 
 @end
 
 @implementation WorldCatSearchController
+@synthesize totalResultsCount;
 @synthesize nextIndex;
 @synthesize searchTerms;
 @synthesize searchResults;
@@ -39,6 +41,7 @@
 @synthesize loadMoreView;
 @synthesize lastSearchAttempt;
 @synthesize navigationController;
+@synthesize parseError;
 
 - (id) init {
     self = [super init];
@@ -52,6 +55,7 @@
     self.searchTerms = nil;
     self.searchResults = nil;
     self.nextIndex = nil;
+    self.totalResultsCount = nil;
     self.searchResultsTableView = nil;
     self.loadMoreView = nil;
     [super dealloc];
@@ -86,19 +90,14 @@
             self.searchingStatus = BooksSearchingStatusFailed;
             [self.searchResultsTableView reloadData];
         } else {
-            id aNextIndex = [jsonResult objectForKey:@"nextIndex"];
-            if (aNextIndex) {
-                if([aNextIndex isKindOfClass:[NSNumber class]]) {
-                    self.nextIndex = aNextIndex;
-                } else {
-                    NSLog(@"World cat next index field invaild");
-                    self.searchingStatus = BooksSearchingStatusFailed;
-                    [self.searchResultsTableView reloadData];
-                    [self showSearchError];
-                    return;
-                }
-            } else {
-                self.nextIndex = nil;
+            self.nextIndex = [self getNumberFromDict:jsonResult forKey:@"nextIndex" required:NO];
+            self.totalResultsCount = [self getNumberFromDict:jsonResult forKey:@"totalResultsCount" required:YES];
+            if (self.parseError) {
+                NSLog(@"World cat parse error parsing nextIndex or totalResultsCount");
+                self.searchingStatus = BooksSearchingStatusFailed;
+                [self.searchResultsTableView reloadData];
+                [self showSearchError];
+                return;
             }
             
             id items = [jsonResult objectForKey:@"items"];
@@ -148,17 +147,6 @@
     }
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if (self.searchResults) {
-        if (self.nextIndex) {
-            return [NSString stringWithFormat:@"Showing the first %@ results", self.nextIndex];
-        } else {
-            return [NSString stringWithFormat:@"%d results found", self.searchResults.count];
-        }
-    }
-    return nil;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     [self initLoadMoreViewToTableView:tableView];
@@ -198,7 +186,7 @@
         if (!self.nextIndex) {
             title = [NSString stringWithFormat:@"%d books found", self.searchResults.count];
         } else {
-            title = [NSString stringWithFormat:@"Many found, showing %d books", self.searchResults.count];
+            title = [NSString stringWithFormat:@"%d found, showing %d books", [self.totalResultsCount intValue], self.searchResults.count];
         }
         return [UITableView ungroupedSectionHeaderWithTitle:title];    
     } else {
@@ -310,7 +298,24 @@
     self.searchResults = nil;
     self.searchResultsTableView = nil;
     self.nextIndex = nil;
+    self.parseError = NO;
+    self.totalResultsCount = nil;
     self.searchingStatus = BooksSearchingStatusNotLoaded;
 }
 
+- (NSNumber *)getNumberFromDict:(NSDictionary *)dict forKey:(NSString *)key required:(BOOL)required {
+    NSNumber *number = (NSNumber *)[dict objectForKey:key];
+    if (!number) {
+        if (required) {
+            self.parseError = YES;
+        }
+    } else {
+        if (![number isKindOfClass:[NSNumber class]]) {
+            self.parseError = YES;
+            return nil;
+        }
+    }
+    return number;
+}
+              
 @end
