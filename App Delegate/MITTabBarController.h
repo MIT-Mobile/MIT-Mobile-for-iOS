@@ -4,6 +4,7 @@
 
 @class MITMoreListController;
 
+DEPRECATED_ATTRIBUTE
 @interface MITTabBarController : UIViewController <UITabBarDelegate, UINavigationControllerDelegate, UINavigationBarDelegate> {
     id<MITTabBarControllerDelegate> delegate;
     UITabBar *theTabBar;
@@ -47,6 +48,7 @@
 
 @end
 
+DEPRECATED_ATTRIBUTE
 @protocol MITTabBarControllerDelegate <NSObject>
 
 @optional

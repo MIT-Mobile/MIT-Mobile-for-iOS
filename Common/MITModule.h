@@ -23,10 +23,10 @@
     // tabBarItem.badgeValue, because they are actually affecting the 
     // moreNavigationController. There will be more changes to MITModule later 
     // to simplify tab badging and navigation stack management.
-    UINavigationController *tabNavController;
+    UINavigationController *tabNavController DEPRECATED_ATTRIBUTE;
     
-    BOOL isMovableTab; // TRUE if this module's tab can be rearranged during UITabBar customization. FALSE otherwise.
-    BOOL canBecomeDefault; // TRUE if this module can become the default tab at startup
+    BOOL isMovableTab DEPRECATED_ATTRIBUTE; // TRUE if this module's tab can be rearranged during UITabBar customization. FALSE otherwise.
+    BOOL canBecomeDefault DEPRECATED_ATTRIBUTE; // TRUE if this module can become the default tab at startup
     BOOL pushNotificationSupported;
     BOOL pushNotificationEnabled; // toggled by user in SettingsModule
 	
@@ -74,7 +74,7 @@
 
 #pragma mark Don't override
 
-- (void)loadTabNavController;
+- (void)loadTabNavController DEPRECATED_ATTRIBUTE;
 
 #pragma mark tabNavController methods
 
@@ -93,15 +93,15 @@
 @property (nonatomic, copy) NSString *shortName;
 @property (nonatomic, copy) NSString *longName;
 @property (nonatomic, copy) NSString *iconName;
-@property (nonatomic, readonly) UINavigationController *tabNavController;
-@property (nonatomic, assign) BOOL isMovableTab;
-@property (nonatomic, assign) BOOL canBecomeDefault;
+@property (nonatomic, readonly) UINavigationController *tabNavController DEPRECATED_ATTRIBUTE;
+@property (nonatomic, assign) BOOL isMovableTab DEPRECATED_ATTRIBUTE;
+@property (nonatomic, assign) BOOL canBecomeDefault DEPRECATED_ATTRIBUTE;
 @property (nonatomic, assign) BOOL pushNotificationSupported;
 @property (nonatomic, assign) BOOL pushNotificationEnabled;
 
 @property (nonatomic, retain) NSString *badgeValue;          // What appears in the red bubble in the module's tab. Set to nil to make it disappear. Will eventually show in the More tab's table as well.
-@property (nonatomic, readonly) UIImage *icon;       // The icon used for the More tab's table (color)
-@property (nonatomic, readonly) UIImage *tabBarIcon; // The icon used for the UITabBar (black and white)
+@property (nonatomic, readonly) UIImage *icon DEPRECATED_ATTRIBUTE;       // The icon used for the More tab's table (color)
+@property (nonatomic, readonly) UIImage *tabBarIcon DEPRECATED_ATTRIBUTE; // The icon used for the UITabBar (black and white)
 @property (nonatomic, readonly) UIImage *springboardIcon;
 @property (nonatomic, retain) SpringboardIcon *springboardButton;
 

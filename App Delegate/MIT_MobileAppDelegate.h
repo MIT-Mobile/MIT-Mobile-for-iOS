@@ -7,11 +7,10 @@
 @class DummyRotatingViewController;
 
 @interface MIT_MobileAppDelegate : NSObject <UIApplicationDelegate, MITTabBarControllerDelegate, MITSpringboardDelegate> {
-    
     UIWindow *window;
     // have references to both springbard and tabbar, set only one.
-    MITNavigationParadigm navParadigm;
-    MITTabBarController *theTabBarController;
+    MITNavigationParadigm navParadigm DEPRECATED_ATTRIBUTE;
+    MITTabBarController *theTabBarController DEPRECATED_ATTRIBUTE;
     UINavigationController *rootNavigationController;
     DummyRotatingViewController *appModalHolder;
     
@@ -23,7 +22,7 @@
 
 - (BOOL)shouldShowOpenHouseContent;
 
-- (BOOL)usesTabBar;
+- (BOOL)usesTabBar DEPRECATED_ATTRIBUTE;
 
 - (void)showNetworkActivityIndicator;
 - (void)hideNetworkActivityIndicator;
@@ -34,7 +33,7 @@
 
 @property (nonatomic, retain) DummyRotatingViewController *appModalHolder;
 @property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) MITTabBarController *tabBarController;
+@property (nonatomic, retain) MITTabBarController *tabBarController DEPRECATED_ATTRIBUTE;
 @property (nonatomic, retain) UINavigationController *rootNavigationController;
 @property (nonatomic, retain) NSArray *modules;
 @property (nonatomic, retain) NSData *deviceToken;
