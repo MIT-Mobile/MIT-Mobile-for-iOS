@@ -59,12 +59,7 @@
 	
 	[self.tableView applyStandardCellHeight];
 	
-    CGRect loadingFrame = self.view.frame;
-    CGFloat navbarHeight = self.navigationController.navigationBar.frame.size.height;
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    loadingFrame.origin.y += navbarHeight;
-    loadingFrame.size.height -= (navbarHeight + appDelegate.tabBarController.tabBar.frame.size.height);
-    
+    CGRect loadingFrame = [MITAppDelegate() rootNavigationController].view.bounds;
 	self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
 	
 	[self showLoadingView];

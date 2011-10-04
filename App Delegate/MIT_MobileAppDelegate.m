@@ -30,16 +30,6 @@
     networkActivityRefCount = 0;
     
     [self updateBasicServerInfo];
-
-    NSString *navParadigmClass = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITNavigationParadigm"];
-    if ([navParadigmClass isEqualToString:@"MITTabBarController"]) {
-        navParadigm = MITNavigationParadigmTabBar;
-    } else if ([navParadigmClass isEqualToString:@"MITSpringboard"]) {
-        navParadigm = MITNavigationParadigmSpringboard;
-    } else {
-        WLog(@"No such paradigm %@; using springboard", navParadigmClass);
-        navParadigm = MITNavigationParadigmSpringboard;
-    }
     
     // Initialize all modules
     self.modules = [self createModules]; // -createModules defined in ModuleListAdditions category
@@ -47,32 +37,18 @@
     [self registerDefaultModuleOrder];
     [self loadSavedModuleOrder];
 
-    // Add modules to tab bar or springboard
-    if (navParadigm == MITNavigationParadigmTabBar) {
-        NSMutableArray *tabbedViewControllers = [[NSMutableArray alloc] initWithCapacity:[self.modules count]];
-        for (MITModule *aModule in self.modules) {
-            [aModule loadTabNavController];
-            [tabbedViewControllers addObject:aModule.tabNavController];
-        }
-        theTabBarController = [[MITTabBarController alloc] initWithNibName:nil bundle:nil];
-        theTabBarController.delegate = self;
-        theTabBarController.viewControllers = tabbedViewControllers;
-        [tabbedViewControllers release];
-        [self.tabBarController updateCustomizableViewControllers:self.modules];
-    }
-    else {
-        MITSpringboard *springboard = [[[MITSpringboard alloc] initWithNibName:nil bundle:nil] autorelease];
-        springboard.primaryModules = [NSArray arrayWithArray:self.modules];
-		springboard.delegate = self;
-        
-        UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:springboard];
-		rootController.delegate = springboard;
-        rootController.navigationBar.barStyle = UIBarStyleBlack;
-        
-        self.springboard = springboard;
-        self.rootNavigationController = rootController;
-		self.moduleStack = [[NSMutableArray alloc] init];
-    }
+
+    MITSpringboard *springboard = [[[MITSpringboard alloc] initWithNibName:nil bundle:nil] autorelease];
+    springboard.primaryModules = [NSArray arrayWithArray:self.modules];
+    springboard.delegate = self;
+    
+    UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:springboard];
+    rootController.delegate = springboard;
+    rootController.navigationBar.barStyle = UIBarStyleBlack;
+    
+    self.springboard = springboard;
+    self.rootNavigationController = rootController;
+    self.moduleStack = [[NSMutableArray alloc] init];
     
     // TODO: don't store state like this when we're using a springboard.
 	// set modules state
@@ -82,22 +58,9 @@
 		aModule.currentPath = [pathAndQuery objectForKey:@"path"];
 		aModule.currentQuery = [pathAndQuery objectForKey:@"query"];
 	}
-	
-	//APNS dictionary generated from the json of a push notificaton
-	NSDictionary *apnsDict = [launchOptions objectForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
-	if (!apnsDict) {
-		// application was not opened in response to a notification
-		// so do the regular load process
-		[self loadActiveModule];
-	}
+
     
-    // Set up window
-    if (navParadigm == MITNavigationParadigmTabBar) {
-        [self.window addSubview:theTabBarController.view];
-    }
-    else {
-        [self.window addSubview:rootNavigationController.view];
-    }
+    [self.window setRootViewController:rootNavigationController];
     
     appModalHolder = [[DummyRotatingViewController alloc] initWithNibName:nil bundle:nil];
     appModalHolder.canRotate = NO;
@@ -106,12 +69,7 @@
     appModalHolder.view.hidden = YES;
     //[self.window addSubview:appModalHolder.view];
 
-    if (navParadigm == MITNavigationParadigmSpringboard) {
-        // TODO: see whether this affects horizontal flip transitions
-        self.window.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
-    } else {
-        self.window.backgroundColor = [UIColor blackColor]; // necessary for horizontal flip transitions -- background shows through
-    }
+    self.window.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     [self.window makeKeyAndVisible];
 
     // Override point for customization after view hierarchy is set
@@ -127,6 +85,9 @@
 	[MITUnreadNotifications updateUI];
 	[MITUnreadNotifications synchronizeWithMIT];
 	
+	//APNS dictionary generated from the json of a push notificaton
+	NSDictionary *apnsDict = [launchOptions objectForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
+    
 	// check if application was opened in response to a notofication
 	if(apnsDict) {
 		MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
@@ -169,9 +130,9 @@
         NSString *query = [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         
         if (!module.hasLaunchedBegun) {
-            [module loadTabNavController];
             module.hasLaunchedBegun = YES;
         }
+        
         DLog(@"handling internal url: %@", url);
         canHandle = [module handleLocalPath:path query:query];
     } else {
@@ -188,7 +149,7 @@
     }
     
 	[self saveModulesState];
-    [self saveModuleOrder];
+    
     // Save preferences
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -263,40 +224,6 @@
     [[ModuleVersions sharedVersions] updateVersionInformation];
 }
 
-#pragma mark -
-#pragma mark Tab bar delegation
-
-- (void)tabBarController:(MITTabBarController *)tabBarController didShowItem:(UITabBarItem *)item {
-    if ([tabBarController isEqual:self.tabBarController]) {
-        MITModule *theModule = [self moduleForTabBarItem:item];
-		// recover saved state on first appearanace
-		VLog(@"recovering saved state for: %@  HasLaunched? %d.  Path: %@; Query: %@", theModule, theModule.hasLaunchedBegun, theModule.currentPath, theModule.currentQuery);
-		if (!theModule.hasLaunchedBegun && theModule.currentPath && theModule.currentQuery) {
-			[theModule handleLocalPath:theModule.currentPath query:theModule.currentQuery];
-			// due to a work around implemented for the MITMoreController
-			// force the view to load immediately so the chain of viewControllers is
-			// the expected viewControllers
-			(void)theModule.tabNavController.topViewController.view;
-		}
-		theModule.hasLaunchedBegun = YES;
-        [theModule didAppear];
-    }
-}
-
-- (void)tabBarController:(MITTabBarController *)tabBarController didEndCustomizingViewControllers:(NSArray *)viewControllers changed:(BOOL)changed {
-    if (changed && [tabBarController isEqual:self.tabBarController]) {
-        [self saveModuleOrder];
-        [self.tabBarController updateCustomizableViewControllers:self.modules];
-    }
-}
-
-// TODO: is this used anywhere?
-/*
-- (void)beginCustomizingTabs {
-    [self.tabBarController.tabBar beginCustomizingItems:[self.tabBarController customizableViewControllers]];
-}
-*/
-
 #pragma mark Springboard delegation
 
 - (void)springboard:(MITSpringboard *)springboard didPushModuleForTag:(NSString *)moduleTag {
@@ -316,13 +243,7 @@
 // Also, presenting a transparent modal view controller (e.g. DatePickerViewController) the traditional way causes the screen behind to go black.
 - (void)presentAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated {
     appModalHolder.view.hidden = NO;
-    
-    if (navParadigm == MITNavigationParadigmTabBar) {
-        [theTabBarController.view addSubview:appModalHolder.view];
-    } else {
-        [rootNavigationController.view addSubview:appModalHolder.view];
-    }
-    
+    [rootNavigationController.view addSubview:appModalHolder.view];
     [appModalHolder presentModalViewController:viewController animated:animated];
 }
 

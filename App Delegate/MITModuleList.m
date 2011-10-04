@@ -49,24 +49,6 @@
     return result;
 }
 
-- (MITModule *)moduleForTabBarItem:(UITabBarItem *)item {
-    for (MITModule *aModule in self.modules) {
-        if ([aModule.tabNavController.tabBarItem isEqual:item]) {
-            return aModule;
-        }
-    }
-    return nil;
-}
-/*
-- (MITModule *)moduleForViewController:(UIViewController *)aViewController {
-    for (MITModule *aModule in self.modules) {
-        if ([aModule.tabNavController isEqual:aViewController]) {
-            return aModule;
-        }
-    }
-    return nil;
-}
-*/
 - (MITModule *)moduleForTag:(NSString *)aTag {
     for (MITModule *aModule in self.modules) {
         if ([aModule.tag isEqual:aTag]) {
@@ -86,23 +68,10 @@
     }
     
     MITModule *module = [self moduleForTag:tag];
-    [module loadTabNavController];
-    if (navParadigm == MITNavigationParadigmTabBar) {
-        // tabbar will set hasLaunchedBegun in -didShowItem:
-        [self.tabBarController showItem:module.tabNavController.tabBarItem];
-    }
-    else {
-        if ([self.rootNavigationController.visibleViewController isKindOfClass:[MITSpringboard class]]) {
-			[module.tabNavController popToRootViewControllerAnimated:NO];
-            NSArray *viewControllers = [self.rootNavigationController.viewControllers arrayByAddingObjectsFromArray:module.tabNavController.viewControllers];
-            [self.rootNavigationController setViewControllers:viewControllers animated:YES];
-        }
-        else {
-            [self.rootNavigationController pushViewController:module.tabNavController.visibleViewController animated:YES];
-        }
-        module.hasLaunchedBegun = YES;
-        [module didAppear];
-    }
+    [self.rootNavigationController pushViewController:module.rootViewController
+                                             animated:YES];
+    module.hasLaunchedBegun = YES;
+    [module didAppear];
 }
 
 #pragma mark Preferences
@@ -145,43 +114,6 @@
     self.modules = [[newModules copy] autorelease]; // immutable copy
 }
 
-- (void)loadActiveModule {
-    // Show the module which was visible the last time we quit
-    // If that module isn't allowed to be visible at start, ignore it -- the first tab is selected by default.
-    NSString *activeModuleTag = [[NSUserDefaults standardUserDefaults] objectForKey:MITActiveModuleKey];
-    MITModule *activeModule = [self moduleForTag:activeModuleTag];
-    if (activeModule && activeModule.canBecomeDefault) {
-        if (navParadigm == MITNavigationParadigmTabBar) {
-            self.tabBarController.activeItem = activeModule.tabNavController.tabBarItem;
-        } else {
-            // TODO: this doesn't make sense in one-dimensional navigation.
-            // we should be restoring the entire nav stack.
-        }
-    }
-}
-
-- (void)saveModuleOrder {
-    // we don't allow reordering of modules on home screen yet
-    if (navParadigm == MITNavigationParadigmTabBar) {
-        NSMutableArray *newModules = [NSMutableArray arrayWithCapacity:[self.modules count]];
-        NSMutableArray *moduleNames = [NSMutableArray arrayWithCapacity:[self.modules count]]; 
-        MITModule *aModule = nil;
-        
-        for (UITabBarItem *item in self.tabBarController.allItems) {
-            aModule = [self moduleForTabBarItem:item];
-            if (aModule && ![moduleNames containsObject:aModule.tag]) {
-                [newModules addObject:aModule];
-                [moduleNames addObject:aModule.tag];
-            }
-        }
-        self.modules = [[newModules copy] autorelease]; // immutable copy
-        
-        // Save updated order: module list into an array of strings, then save that array to disk
-        [[NSUserDefaults standardUserDefaults] setObject:moduleNames forKey:MITModuleTabOrderKey];
-        [[NSUserDefaults standardUserDefaults] setObject:[self activeModuleTag] forKey:MITActiveModuleKey];
-    }
-}
-
 - (void)saveModulesState {
 	NSMutableDictionary *modulesSavedState = [NSMutableDictionary dictionary];
     for (MITModule *aModule in self.modules) {
@@ -193,11 +125,7 @@
 }
 		
 - (NSString *) activeModuleTag {
-    if (navParadigm == MITNavigationParadigmTabBar) {
-        return [[self moduleForTabBarItem:self.tabBarController.activeItem] tag];
-    } else {
-		return [self.moduleStack lastObject];
-    }
+    return [self.moduleStack lastObject];
 }
 
 @end

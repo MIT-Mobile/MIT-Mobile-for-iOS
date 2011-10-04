@@ -6,7 +6,7 @@
 @class MITModule;
 @class DummyRotatingViewController;
 
-@interface MIT_MobileAppDelegate : NSObject <UIApplicationDelegate, MITTabBarControllerDelegate, MITSpringboardDelegate> {
+@interface MIT_MobileAppDelegate : NSObject <UIApplicationDelegate, MITSpringboardDelegate> {
     UIWindow *window;
     // have references to both springbard and tabbar, set only one.
     MITNavigationParadigm navParadigm DEPRECATED_ATTRIBUTE;
