@@ -1,7 +1,10 @@
 #import "LibraryEmailFormViewController.h"
 #import "LibrariesModule.h"
 #import "MobileRequestOperation.h"
+#import "MITUIConstants.h"
+#import "LibraryMenuElementViewController.h"
 
+#define PADDING 10
 
 @implementation LibraryFormElement
 @synthesize key;
@@ -9,6 +12,7 @@
 @synthesize displayLabelSubtitle;
 @synthesize required;
 @synthesize onChangeJavaScript;
+@synthesize formViewController;
 
 - (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel displayLabelSubtitle:(NSString *)aDisplayLabelSubtitle required:(BOOL)isRequired {
     self = [super init];
@@ -17,7 +21,7 @@
         self.displayLabel = aDisplayLabel;
         self.displayLabelSubtitle = aDisplayLabelSubtitle;
         self.required = isRequired;
-        self.onChangeJavaScript = nil;
+        self.formViewController = nil;
     }
     return self;
 }
@@ -28,103 +32,54 @@
 - (void)dealloc {
     self.key = nil;
     self.displayLabel = nil;
-    self.onChangeJavaScript = nil;
+    self.formViewController = nil;
     [super dealloc];
 }
 
-- (NSString *)labelHtml {
-    NSString *requiredStar = @"";
-    if (self.required) {
-        requiredStar = @"<span class=\"required\">*</span>";
-    } 
-    
-    NSString *labelSubtitleString = @"";
-    if (self.displayLabelSubtitle) {
-        labelSubtitleString = [NSString stringWithFormat:@"<br /><span class=\"smallprint\">%@</span>", self.displayLabelSubtitle];
-    }
-    
-    return [NSString stringWithFormat:
-            @"<h3><label for=\"%@\">%@ %@%@</label></h3><p id=\"warning-%@\" class=\"default\">MISSING!</p>", 
-            self.key, self.displayLabel, requiredStar, labelSubtitleString,  self.key];
+- (UITableViewCell *)tableViewCell {
+    NSAssert(NO, @"Need to override method tableViewCell");
+    return nil;
 }
 
-- (NSString *)formHtml {
-    NSAssert(NO, @"Need to override method formElement");
+- (void)updateCell:(UITableViewCell *)tableViewCell {
+    NSAssert(NO, @"Need to override method updatetCell:");
+}
+
+- (CGFloat)heightForTableViewCell {
+    NSAssert(NO, @"Need to override method heightForTableViewCell"); 
+    return 0;
+}
+
+- (UIView *)textInputView {
+    NSAssert(NO, @"Need to override method textInputView");
+    return nil;
+}
+
+- (NSString *)value {
+    NSAssert(NO, @"Need to overrdi method value");
     return nil;
 }
 
 @end
 
 @implementation MenuLibraryFormElement
-@synthesize placeHolder;
+@synthesize currentOptionIndex;
 @synthesize options;
 @synthesize displayOptions;
 
-- (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel required:(BOOL)isRequired values:(NSArray *)theValues {
+- (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel required:(BOOL)isRequired values:(NSArray *)theValues displayValues:(NSArray *)theDisplayValues {
     self = [super initWithKey:aKey displayLabel:aDisplayLabel required:isRequired];
     if (self) {
         self.options = theValues;
-        self.displayOptions = theValues;
-    }
-    return self;
-}
-
-- (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel required:(BOOL)isRequired values:(NSArray *)theValues placeHolder:(NSString *)aPlaceHolder; {
-    self = [self initWithKey:aKey displayLabel:aDisplayLabel required:isRequired values:theValues];
-    if (self) {
-        self.placeHolder = aPlaceHolder;
-    }
-    return self;
-}
-
-- (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel required:(BOOL)isRequired values:(NSArray *)theValues displayValues:(NSArray *)theDisplayValues placeHolder:(NSString *)aPlaceHolder {
-    
-    self = [self initWithKey:aKey displayLabel:aDisplayLabel required:isRequired values:theValues placeHolder:aPlaceHolder];
-    if (self) {
-        NSAssert((theValues.count == theDisplayValues.count), @"values count does not match displayValues count");
         self.displayOptions = theDisplayValues;
+        self.currentOptionIndex = 0;
     }
     return self;
 }
 
-- (void)dealloc {
-    self.options = nil;
-    [super dealloc];
-}
 
-- (NSString *)formHtml {
-    NSString *defaultDisplayValue = @"";
-    if (self.placeHolder) {
-        defaultDisplayValue = self.placeHolder;
-    }
-    NSString *optionsHtml = [NSString stringWithFormat:@"<option value=\"\">%@</option>", defaultDisplayValue];
-    for (NSInteger index=0; index < self.options.count; index++) {
-        optionsHtml = [optionsHtml stringByAppendingFormat:@"<option value=\"%@\">%@</option>", [self.options objectAtIndex:index], [self.displayOptions objectAtIndex:index]];
-    }
-    
-    NSString *onChangeJavaScriptString = @"";
-    if (self.onChangeJavaScript) {
-        onChangeJavaScriptString = [NSString stringWithFormat:@"onchange=\"%@\"", self.onChangeJavaScript];
-    }
-    return [NSString stringWithFormat:@"<p><select id=\"%@\" name=\"%@\" %@ >%@</select></p>", self.key, self.key, onChangeJavaScriptString, optionsHtml];
-}
- 
-@end
-
-@implementation RadioLibraryFormElement
-@synthesize options;
-@synthesize displayOptions;
-
-
-- (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel required:(BOOL)isRequired values:(NSArray *)theValues displayValues:(NSArray *)theDisplayValues {
-    
-    self = [self initWithKey:aKey displayLabel:aDisplayLabel required:isRequired];
-    if (self) {
-        NSAssert((theValues.count == theDisplayValues.count), @"values count does not match displayValues count");
-        self.options = theValues;
-        self.displayOptions = theDisplayValues;
-    }
-    return self;
+- (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel required:(BOOL)isRequired values:(NSArray *)theValues {
+    return [self initWithKey:aKey displayLabel:aDisplayLabel required:isRequired values:theValues displayValues:theValues];
 }
 
 - (void)dealloc {
@@ -133,29 +88,126 @@
     [super dealloc];
 }
 
-- (NSString *)formHtml {
-    NSString *optionsHtml = @"";
-    for (NSInteger index=0; index < self.options.count; index++) {
-        optionsHtml = [optionsHtml stringByAppendingFormat:@"<input type=\"radio\" name=\"%@\" value=\"%@\" />%@",
-                       self.key, [self.options objectAtIndex:index], [self.displayOptions objectAtIndex:index]];
-    }
-    return [NSString stringWithFormat:@"<p>%@</p>", optionsHtml];
+
+- (void)updateCell:(UITableViewCell *)tableViewCell {
+    tableViewCell.detailTextLabel.text = [self.displayOptions objectAtIndex:self.currentOptionIndex];
+}
+
+- (UITableViewCell *)tableViewCell {
+    UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:self.key] autorelease];
+    cell.textLabel.text = self.displayLabel;
+    cell.detailTextLabel.text = [self.displayOptions objectAtIndex:self.currentOptionIndex];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    return cell;
+}
+
+- (CGFloat)heightForTableViewCell {
+    return 50;
+}
+
+- (UIView *)textInputView {
+    return nil;
+}
+
+- (NSString *)value {
+    return [self.options objectAtIndex:self.currentOptionIndex];
 }
 
 @end
 
-@implementation TextLibraryFormElement
 
-- (NSString *)formHtml {
-    return [NSString stringWithFormat:@"<p><input type=\"text\" name=\"%@\" id=\"%@\" style=\"width:94%\"></p>", self.key, self.key];
+UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding, NSString *key) {
+    UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:key] autorelease];
+    CGSize contentSize = cell.contentView.frame.size;
+    CGRect textFieldFrame = CGRectMake(padding, padding, contentSize.width - 2*padding, contentSize.height - 2*padding);
+    textInputView.frame = textFieldFrame;
+    textInputView.autoresizingMask =  UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    textInputView.backgroundColor = [UIColor clearColor];
+    cell.selectionStyle = UITableViewCellEditingStyleNone;
+    [cell.contentView addSubview:textInputView];
+    return cell;    
+}
+
+NSString* placeholderText(NSString *displayLabel, BOOL required) {
+    NSString *placeHolder = displayLabel;
+    if (!required) {
+        placeHolder = [placeHolder stringByAppendingString:@" (Optional)"];
+    }
+    return placeHolder;
+}
+
+@implementation TextLibraryFormElement
+@synthesize textField;
+
+- (void)dealloc {
+    self.textField.delegate = nil;
+    self.textField = nil;
+    [super dealloc];
+}
+
+- (void)updateCell:(UITableViewCell *)tableViewCell { }
+
+- (UITableViewCell *)tableViewCell {
+    self.textField = (UITextField *)[self textInputView];
+    self.textField.font = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
+    self.textField.placeholder = placeholderText(self.displayLabel, self.required);
+    self.textField.inputAccessoryView = self.formViewController.formInputAccessoryView;
+    return createTextInputTableCell(self.textField, 10, self.key);
+}
+
+- (CGFloat)heightForTableViewCell {
+    return 46;
+}
+
+- (UIView *)textInputView {
+    if (!self.textField) {
+        self.textField = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
+        self.textField.delegate = self;
+    }
+    return self.textField;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)aTextField {
+    return [self.formViewController textFieldShouldReturn:aTextField];
+}
+
+- (NSString *)value {
+    return self.textField.text;
 }
 
 @end
 
 @implementation TextAreaLibraryFormElement
+@synthesize textView;
 
-- (NSString *)formHtml {
-    return [NSString stringWithFormat:@"<textarea rows=\"8\" name=\"%@\" id=\"%@\" style=\"width:97%\"></textarea>", self.key, self.key];
+- (void)dealloc {
+    self.textView = nil;
+    [super dealloc];
+}
+
+- (void)updateCell:(UITableViewCell *)tableViewCell { }
+
+- (UITableViewCell *)tableViewCell {
+    self.textView = (PlaceholderTextView *)[self textInputView];
+    self.textView.placeholder = placeholderText(self.displayLabel, self.required);
+    self.textView.inputAccessoryView = self.formViewController.formInputAccessoryView;
+    self.textView.font = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
+    return createTextInputTableCell(self.textView, 4, self.key);
+}
+
+- (CGFloat)heightForTableViewCell {
+    return 140;
+}
+
+- (UIView *)textInputView {
+    if (!self.textView) {
+        self.textView = [[[PlaceholderTextView alloc] initWithFrame:CGRectZero] autorelease];
+    }
+    return self.textView;
+}
+
+- (NSString *)value {
+    return self.textView.text;
 }
 
 @end
@@ -183,23 +235,20 @@
     return self;
 }
 
+- (NSArray *)textInputViews {
+    NSMutableArray *textInputViews = [NSMutableArray array];
+    for (LibraryFormElement *formElement in formElements) {
+         if ([formElement textInputView]) {
+             [textInputViews addObject:[formElement textInputView]];
+        }
+    }
+    return textInputViews;
+}
+
 - (void)dealloc {
     [formElements release];
     self.name = nil;
     [super dealloc];
-}
-    
-- (NSString *)formHtml {
-    NSString *elementsHtml = @"";
-    for(LibraryFormElement *formElement in formElements) {
-        elementsHtml = [elementsHtml stringByAppendingString:[formElement labelHtml]];
-        elementsHtml = [elementsHtml stringByAppendingString:[formElement formHtml]];
-    }
-    NSString *hiddenString = @"";
-    if (self.hidden) {
-        hiddenString = @"style=\"display:none;\"";
-    }
-    return [NSString stringWithFormat:@"<fieldset id=\"%@\" %@>%@</fieldset>", self.name, hiddenString, elementsHtml];
 }
     
 - (BOOL)valueRequiredForKey:(NSString *)key {
@@ -213,6 +262,20 @@
     return NO;
 }
 
+- (NSString *)getFormValueForKey:(NSString *)key {
+    for(LibraryFormElement *formElement in formElements) {
+        if ([key isEqualToString:formElement.key]) {
+            return [[formElement value] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            
+        }
+    }
+    
+    [NSException raise:@"key not found in form" format:@"%@ not found in group", key];
+    return nil;
+
+}
+
+
 - (NSArray *)keys {
     NSMutableArray *keys = [NSMutableArray array];
     for(LibraryFormElement *formElement in formElements) {
@@ -221,25 +284,59 @@
     return keys;
 }
 
+- (NSArray *)elements {
+    return formElements;
+}
+
+- (NSString *)keyForRow:(NSInteger)row {
+    return [[self keys] objectAtIndex:row];
+}
+
+- (LibraryFormElement *)formElementForKey:(NSString *)key {
+    for(LibraryFormElement *formElement in formElements) {
+        if ([key isEqualToString:formElement.key]) {
+            return formElement;
+        }
+    }
+    return nil;
+}
+
+
+- (NSInteger)numberOfRows {
+    return formElements.count;
+}
+
+- (void)setFormViewController:(LibraryEmailFormViewController *)aFormViewController {
+    if (aFormViewController) {
+        for(LibraryFormElement *element in formElements) {
+            element.formViewController = aFormViewController;
+        }
+    }
+    _formViewController = aFormViewController;
+}
+
+- (LibraryEmailFormViewController *)formViewController {
+    return _formViewController;
+}
+
 @end
 
 @interface LibraryEmailFormViewController (Private)
 - (void)submitForm:(NSDictionary *)parameters;
+- (void)submitForm;
+- (BOOL)formValid;
 @end
 
 @implementation LibraryEmailFormViewController
-@synthesize webView;
 @synthesize loadingView;
+@synthesize prevNextSegmentedControl;
+@synthesize doneButton;
+@synthesize formInputAccessoryView;
+@synthesize currentTextView;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
+- (id)init {
+    return [super initWithStyle:UITableViewStyleGrouped];
 }
-
 
 - (void)didReceiveMemoryWarning
 {
@@ -251,47 +348,177 @@
 
 #pragma mark - View lifecycle
 
-
+- (void)setFormGroups:(NSArray *)formGroups {
+    if (_formGroups) {
+        for (LibraryFormElementGroup *formGroup in _formGroups) {
+            formGroup.formViewController = nil;
+        }
+    }
+    [_formGroups release];
+    _formGroups = [formGroups retain];
+}
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.tableView.backgroundColor = [UIColor clearColor];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Submit" style:UIBarButtonItemStyleBordered target:self action:@selector(submitForm)];
+    self.navigationItem.rightBarButtonItem.enabled = NO;
     
-    NSString *formHtml = @"";
-    for (LibraryFormElementGroup *formGroup in [self formGroups]) {
-        formHtml = [formHtml stringByAppendingString:[formGroup formHtml]];
+    [self setFormGroups:[self formGroups]];
+    
+    self.prevNextSegmentedControl = [[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"Prev", @"Next", nil]] autorelease];
+    self.prevNextSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
+    self.prevNextSegmentedControl.momentary = YES;
+    [self.prevNextSegmentedControl addTarget:self action:@selector(updateFocusedTextView:) forControlEvents:UIControlEventValueChanged];
+    
+    self.doneButton = [[[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(hideKeyboard)] autorelease];
+    
+    UIToolbar *inputAccessoryToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    inputAccessoryToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    inputAccessoryToolbar.items = [NSArray arrayWithObjects:
+                                   [[[UIBarButtonItem alloc] initWithCustomView:self.prevNextSegmentedControl] autorelease],
+                                   [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease],
+                                   self.doneButton,
+                                   nil];
+    
+    [formInputAccessoryView release];
+    formInputAccessoryView = inputAccessoryToolbar;
+    
+    for (LibraryFormElementGroup *formGroup in _formGroups) {
+        formGroup.formViewController = self;
     }
     
-    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-    NSURL *fileURL = [NSURL URLWithString:@"libraries/libraries_form.html" relativeToURL:baseURL];
-    NSError *error;
-    NSMutableString *html = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
-    if (!html) {
-        ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
-    }
-    [html replaceOccurrencesOfString:@"__FORM_ELEMENTS__" withString:formHtml options:NSLiteralSearch range:NSMakeRange(0, [html length])];
-    
-    self.webView = [[[UIWebView alloc] initWithFrame:self.view.bounds] autorelease];
-    self.webView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    self.webView.delegate = self;
-    [self.webView loadHTMLString:html baseURL:nil];
-    [self.view addSubview:self.webView];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTextInputView:) name:UITextFieldTextDidBeginEditingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTextInputView:) name:UITextViewTextDidBeginEditingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSubmitButton) name:UITextFieldTextDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSubmitButton) name:UITextViewTextDidChangeNotification object:nil];
 }
+
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:YES];
+    [self.tableView reloadData];
+}
+
+
+- (NSArray *)textInputs {
+    NSMutableArray *textInputs = [NSMutableArray array];
+    for (LibraryFormElementGroup *formGroup in _formGroups) {
+        [textInputs addObjectsFromArray:[formGroup textInputViews]];
+    }
+    return textInputs;
+}
+
+- (NSIndexPath *)indexPathForTextInput:(UIView *)textInput {
+    for (int section=0; section < _formGroups.count; section++) {
+        LibraryFormElementGroup *group = [_formGroups objectAtIndex:section];
+        NSArray *elements = [group elements];
+        for (int row=0; row < [elements count]; row++) {
+            LibraryFormElement *element = [elements objectAtIndex:row];
+            if ([element textInputView] == textInput) {
+                return [NSIndexPath indexPathForRow:row inSection:section]; 
+            }
+        }
+    }
+    return nil;
+}
+  
+- (void)updateSubmitButton {
+    BOOL formValid = [self formValid];
+    self.navigationItem.rightBarButtonItem.enabled = [self formValid];
+    UIView *lastTextInput = [[self textInputs] lastObject];
+    if ([lastTextInput isKindOfClass:[UITextField class]]) {
+        UITextField *textField = (UITextField *)lastTextInput;
+        if (formValid) {
+            textField.returnKeyType = UIReturnKeySend;
+        } else {
+            textField.returnKeyType = UIReturnKeyDone;
+        }
+    }
+}
+
+- (void)hideKeyboard {
+    [self.currentTextView resignFirstResponder];
+}
+
+- (void)updateFocusedTextView:(id)sender {
+    NSArray *textInputs = [self textInputs];
+    NSInteger textInputIndex = [textInputs indexOfObject:self.currentTextView];
+    
+    UIView *nextTextInput = nil;
+    UISegmentedControl *segmentedControl = sender;
+    if (segmentedControl.selectedSegmentIndex == 0 && textInputIndex > 0) { // previous button
+        nextTextInput = [textInputs objectAtIndex:textInputIndex-1];
+    } else if (segmentedControl.selectedSegmentIndex == 1 && textInputIndex < textInputs.count) {
+        nextTextInput = [textInputs objectAtIndex:textInputIndex+1];
+    }
+
+    [nextTextInput becomeFirstResponder];
+    [self.tableView scrollToRowAtIndexPath:[self indexPathForTextInput:nextTextInput] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if (textField.returnKeyType == UIReturnKeyNext) {
+        NSArray *textInputs = [self textInputs];
+        NSInteger textInputIndex = [textInputs indexOfObject:self.currentTextView];
+        UIView *nextTextInput = [textInputs objectAtIndex:textInputIndex+1];
+        [nextTextInput becomeFirstResponder];
+    } else {
+        if ([self formValid] && textField.returnKeyType == UIReturnKeySend) {
+            [self submitForm];
+        } else {
+            [textField resignFirstResponder];
+        }
+    }
+    return NO;
+}
+
+- (void)updateTextInputView:(NSNotification *)notification {
+    self.currentTextView = [notification object];
+    
+    NSArray *textInputs = [self textInputs];
+    NSInteger textInputIndex = [textInputs indexOfObject:self.currentTextView];
+    BOOL previousEnabled = (textInputIndex != 0);
+    BOOL nextEnabled = (textInputIndex !=  (textInputs.count - 1));
+    [self.prevNextSegmentedControl setEnabled:previousEnabled forSegmentAtIndex:0];
+    [self.prevNextSegmentedControl setEnabled:nextEnabled forSegmentAtIndex:1];
+    
+    if ([self.currentTextView isKindOfClass:[UITextField class]]) {
+        UITextField *textField = (UITextField *)self.currentTextView;
+        if (nextEnabled) {
+            textField.returnKeyType = UIReturnKeyNext;
+        } else {
+            if ([self formValid]) {
+                textField.returnKeyType = UIReturnKeySend;
+            } else {
+                textField.returnKeyType = UIReturnKeyDone;
+            }
+        }
+    }
+}
+
+
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
     self.loadingView = nil;
-    self.webView.delegate = nil;
-    self.webView = nil;
+    [formInputAccessoryView release];
+    formInputAccessoryView = nil;
+    [self setFormGroups:nil];
+    self.currentTextView = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)dealloc {
     self.loadingView = nil;
-    self.webView.delegate = nil;
-    self.webView = nil;
+    [self setFormGroups:nil];
+    [formInputAccessoryView release];
+    formInputAccessoryView = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.currentTextView = nil;
     [super dealloc];
 }
 
@@ -316,51 +543,77 @@
     return nil;   
 }
 
-- (NSString *)getFormValueForKey:(NSString *)key {
-    NSString *value = [self.webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"formValue(\"%@\")", key]];
-    return [value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+#pragma mark - UITableView data source
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    LibraryFormElementGroup *formGroup = [_formGroups objectAtIndex:indexPath.section];
+    NSString *key = [formGroup keyForRow:indexPath.row];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:key];
+    LibraryFormElement *formElement = [formGroup formElementForKey:key];
+    if (!cell) {
+        cell = [formElement tableViewCell];
+    }
+    [formElement updateCell:cell];
+    return cell;
 }
 
-- (void)markValueAsPresentForKey:(NSString *)key {
-    [self.webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat: @"formValuePresent(\"%@\")", key]];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    LibraryFormElementGroup *formGroup = [_formGroups objectAtIndex:indexPath.section];
+    NSString *key = [formGroup keyForRow:indexPath.row];
+    LibraryFormElement *formElement = [formGroup formElementForKey:key];
+    return [formElement heightForTableViewCell];
 }
 
-- (void)markValueAsMissingForKey:(NSString *)key {
-    [self.webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat: @"formValueMissing(\"%@\")", key]];
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return _formGroups.count;
 }
 
-- (BOOL)populateFormValues:(NSMutableDictionary *)formValues {
-    BOOL allRequiredFieldsPresent = YES;
-    for (LibraryFormElementGroup *formGroup in [self formGroups]) {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    LibraryFormElementGroup *formGroup = [_formGroups objectAtIndex:section];
+    return [formGroup numberOfRows];
+}
+
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    LibraryFormElementGroup *formGroup = [_formGroups objectAtIndex:indexPath.section];
+    LibraryFormElement *element = [[formGroup elements] objectAtIndex:indexPath.row];
+    if ([element isKindOfClass:[MenuLibraryFormElement class]]) {
+        LibraryMenuElementViewController *vc = [[[LibraryMenuElementViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+        vc.menuElement = (MenuLibraryFormElement *)element;
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+}
+
+- (BOOL)formValid {
+    for (LibraryFormElementGroup *formGroup in _formGroups) {
         for (NSString *key in [formGroup keys]) {
-            NSString *value = [self getFormValueForKey:key];
+            NSString *value = [formGroup getFormValueForKey:key];
             
             if ([formGroup valueRequiredForKey:key]) {
-                if ([value length]) {
-                    [self markValueAsPresentForKey:key];
-                } else {
-                    [self markValueAsMissingForKey:key];
-                    allRequiredFieldsPresent = NO;
+                if (![value length]) {
+                    return NO;
                 }
             }
-            [formValues setObject:value forKey:key];
-            
         }
-    }
-    return allRequiredFieldsPresent;
-}
-
-#pragma mark - UIWebView delegate
-
-- (BOOL)webView:(UIWebView *)aWebView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    if (navigationType == UIWebViewNavigationTypeFormSubmitted) {
-        NSMutableDictionary *params = [NSMutableDictionary dictionary];
-        if ([self populateFormValues:params]) {
-            [self submitForm:params];
-        }
-        return NO;
     }
     return YES;
+}
+
+- (NSDictionary *)formValues {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    for (LibraryFormElementGroup *formGroup in _formGroups) {
+        for (NSString *key in [formGroup keys]) {
+            NSString *value = [formGroup getFormValueForKey:key];
+            if (value) {
+                [params setObject:value forKey:key];
+            }
+        }
+    }
+    return params;
+}
+
+- (void)submitForm {
+    [self.currentTextView resignFirstResponder];
+    [self submitForm:[self formValues]];
 }
 
 - (void)showErrorSubmittingForm {
@@ -393,7 +646,8 @@
                 UITextView *textView = [[UITextView alloc] initWithFrame:self.view.bounds];
                 textView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
                 textView.text = text;
-                [self.view addSubview:textView];
+                self.view = textView;
+                self.navigationItem.rightBarButtonItem = nil;
                 [textView release];
             } else {
                 [self showErrorSubmittingForm];
@@ -434,7 +688,6 @@
                                                       @"MIT Research Staff",
                                                       @"MIT Staff",
                                                       @"MIT Visitor",
-                                                      nil] 
-                                         placeHolder:@"Your Status"] autorelease];
+                                                      nil]] autorelease];
 }
 @end
