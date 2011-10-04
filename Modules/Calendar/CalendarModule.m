@@ -73,8 +73,6 @@
             if ([params objectForKey:@"catID"]) {
                     
                 [self popToRootViewController];
-
-                (void)self.moduleHomeController.view;
                 
                 NSNumber *catID = [params objectForKey:@"catID"];
                 NSString *listID = [params objectForKey:@"listID"];
@@ -104,7 +102,6 @@
         if ([queryParts count] == 2) {
             if ([[queryParts objectAtIndex:0] isEqualToString:@"source"]) {
                 NSString *buttonTitle = [queryParts objectAtIndex:1];
-                (void)self.moduleHomeController.view;
                 [(CalendarEventsViewController *)self.moduleHomeController selectScrollerButton:buttonTitle];
                 [self becomeActiveTab];
                 didHandle = YES;
