@@ -1,4 +1,3 @@
-#import "MITTabBarController.h"
 #import "MITSpringboard.h"
 
 #define MITAppDelegate() ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate])
@@ -8,9 +7,7 @@
 
 @interface MIT_MobileAppDelegate : NSObject <UIApplicationDelegate, MITSpringboardDelegate> {
     UIWindow *window;
-    // have references to both springbard and tabbar, set only one.
-    MITNavigationParadigm navParadigm DEPRECATED_ATTRIBUTE;
-    MITTabBarController *theTabBarController DEPRECATED_ATTRIBUTE;
+    
     UINavigationController *rootNavigationController;
     DummyRotatingViewController *appModalHolder;
     
@@ -22,8 +19,6 @@
 
 - (BOOL)shouldShowOpenHouseContent;
 
-- (BOOL)usesTabBar DEPRECATED_ATTRIBUTE;
-
 - (void)showNetworkActivityIndicator;
 - (void)hideNetworkActivityIndicator;
 
@@ -33,7 +28,6 @@
 
 @property (nonatomic, retain) DummyRotatingViewController *appModalHolder;
 @property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) MITTabBarController *tabBarController DEPRECATED_ATTRIBUTE;
 @property (nonatomic, retain) UINavigationController *rootNavigationController;
 @property (nonatomic, retain) NSArray *modules;
 @property (nonatomic, retain) NSData *deviceToken;

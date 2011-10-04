@@ -10,9 +10,7 @@
 #import "ModuleVersions.h"
 
 @implementation MIT_MobileAppDelegate
-
-@synthesize window, 
-            tabBarController = theTabBarController, 
+@synthesize window,
             rootNavigationController = _rootNavigationController,
             modules,
             appModalHolder;
@@ -24,7 +22,6 @@
 
 #pragma mark -
 #pragma mark Application lifecycle
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     networkActivityRefCount = 0;
@@ -60,7 +57,6 @@
 	}
 
     
-    [self.window setRootViewController:rootNavigationController];
     
     appModalHolder = [[DummyRotatingViewController alloc] initWithNibName:nil bundle:nil];
     appModalHolder.canRotate = NO;
@@ -68,7 +64,8 @@
     appModalHolder.view.userInteractionEnabled = NO;
     appModalHolder.view.hidden = YES;
     //[self.window addSubview:appModalHolder.view];
-
+    
+    [self.window setRootViewController:self.rootNavigationController];
     self.window.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     [self.window makeKeyAndVisible];
 
@@ -265,10 +262,6 @@
     } else {
         [self performSelector:@selector(checkIfOkToHideAppModalViewController) withObject:nil afterDelay:0.100];
     }
-}
-
-- (BOOL)usesTabBar {
-    return navParadigm == MITNavigationParadigmTabBar;
 }
 
 #pragma mark -

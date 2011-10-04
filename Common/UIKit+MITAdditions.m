@@ -1,7 +1,6 @@
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
-#import "MITTabBarController.h"
 
 @implementation NSString (MITUIAdditions)
 

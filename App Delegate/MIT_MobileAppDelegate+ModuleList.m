@@ -11,7 +11,6 @@
 #import "AboutModule.h"
 #import "CalendarModule.h"
 #import "ToursModule.h"
-#import "MITTabBarController.h"
 #import "MITMobileServerConfiguration.h"
 #import "QRReaderModule.h"
 #import "FacilitiesModule.h"

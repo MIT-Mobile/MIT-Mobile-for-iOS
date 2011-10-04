@@ -2,7 +2,6 @@
 #import "MITUnreadNotifications.h"
 #import "MITDeviceRegistration.h"
 #import "MIT_MobileAppDelegate.h"
-#import "MITTabBarController.h"
 #import "MITModule.h"
 #import "SBJSON.h"
 
