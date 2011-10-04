@@ -1,6 +1,6 @@
 #import "StellarModule.h"
 #import "StellarMainTableController.h"
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "StellarModel.h"
 #import "StellarAnnouncementViewController.h"
 #import "StellarDetailViewController.h"

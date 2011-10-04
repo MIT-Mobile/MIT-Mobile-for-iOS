@@ -1,4 +1,4 @@
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MIT_MobileAppDelegate+Private.h"
 #import "NewsModule.h"
 #import "ShuttleModule.h"

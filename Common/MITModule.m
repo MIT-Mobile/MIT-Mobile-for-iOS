@@ -1,5 +1,5 @@
 #import "MITModule.h"
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "Foundation+MITAdditions.h"
 #import "MITTabBarItem.h"
 #import "MITMoreListController.h"

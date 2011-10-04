@@ -1,6 +1,6 @@
 #import "MIT_MobileAppDelegate.h"
 #import "MIT_MobileAppDelegate+Private.h"
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MITModule.h"
 #import "MITDeviceRegistration.h"
 #import "MITUnreadNotifications.h"
@@ -205,8 +205,6 @@
 
 #pragma mark -
 #pragma mark This should probably go in another place
-
-
 /*
  * The MIT150 module and all things related to it should suddenly 
  * disappear about two weeks after the Open House on April 30th.

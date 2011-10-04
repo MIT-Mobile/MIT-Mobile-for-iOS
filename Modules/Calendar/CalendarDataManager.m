@@ -3,7 +3,7 @@
 #import "CoreDataManager.h"
 #import "MITEventList.h"
 #import "MIT_MobileAppDelegate.h"
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 
 NSString * const CalendarStateEventList = @"events";
 NSString * const CalendarStateCategoryList = @"categories";
