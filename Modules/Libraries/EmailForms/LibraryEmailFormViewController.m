@@ -11,7 +11,7 @@
 @synthesize displayLabel;
 @synthesize displayLabelSubtitle;
 @synthesize required;
-@synthesize onChangeJavaScript;
+@synthesize delegate;
 @synthesize formViewController;
 
 - (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel displayLabelSubtitle:(NSString *)aDisplayLabelSubtitle required:(BOOL)isRequired {
@@ -63,7 +63,6 @@
 @end
 
 @implementation MenuLibraryFormElement
-@synthesize currentOptionIndex;
 @synthesize options;
 @synthesize displayOptions;
 
@@ -107,6 +106,17 @@
 
 - (UIView *)textInputView {
     return nil;
+}
+
+- (void)setCurrentOptionIndex:(NSInteger)currentOptionIndex {
+    if (currentOptionIndex != _currentOptionIndex) {
+        _currentOptionIndex = currentOptionIndex;
+        [self.delegate valueChangedForElement:self];
+    }
+}
+
+- (NSInteger)currentOptionIndex {
+    return _currentOptionIndex;
 }
 
 - (NSString *)value {
@@ -322,6 +332,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 @end
 
 @interface LibraryEmailFormViewController (Private)
+- (NSArray *)nonHiddenFormGroups;
 - (void)submitForm:(NSDictionary *)parameters;
 - (void)submitForm;
 - (BOOL)formValid;
@@ -396,6 +407,15 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSubmitButton) name:UITextViewTextDidChangeNotification object:nil];
 }
 
+- (NSArray *)nonHiddenFormGroups {
+    NSMutableArray *nonHiddenFormGroups = [NSMutableArray array];
+    for (LibraryFormElementGroup *formGroup in _formGroups) {
+        if (!formGroup.hidden) {
+            [nonHiddenFormGroups addObject:formGroup];
+        }
+    }
+    return nonHiddenFormGroups;
+}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:YES];
@@ -405,15 +425,15 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 
 - (NSArray *)textInputs {
     NSMutableArray *textInputs = [NSMutableArray array];
-    for (LibraryFormElementGroup *formGroup in _formGroups) {
+    for (LibraryFormElementGroup *formGroup in [self nonHiddenFormGroups]) {
         [textInputs addObjectsFromArray:[formGroup textInputViews]];
     }
     return textInputs;
 }
 
 - (NSIndexPath *)indexPathForTextInput:(UIView *)textInput {
-    for (int section=0; section < _formGroups.count; section++) {
-        LibraryFormElementGroup *group = [_formGroups objectAtIndex:section];
+    for (int section=0; section < [self nonHiddenFormGroups].count; section++) {
+        LibraryFormElementGroup *group = [[self nonHiddenFormGroups] objectAtIndex:section];
         NSArray *elements = [group elements];
         for (int row=0; row < [elements count]; row++) {
             LibraryFormElement *element = [elements objectAtIndex:row];
@@ -545,7 +565,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 
 #pragma mark - UITableView data source
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LibraryFormElementGroup *formGroup = [_formGroups objectAtIndex:indexPath.section];
+    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:indexPath.section];
     NSString *key = [formGroup keyForRow:indexPath.row];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:key];
     LibraryFormElement *formElement = [formGroup formElementForKey:key];
@@ -557,24 +577,24 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LibraryFormElementGroup *formGroup = [_formGroups objectAtIndex:indexPath.section];
+    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:indexPath.section];
     NSString *key = [formGroup keyForRow:indexPath.row];
     LibraryFormElement *formElement = [formGroup formElementForKey:key];
     return [formElement heightForTableViewCell];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return _formGroups.count;
+    return [self nonHiddenFormGroups].count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    LibraryFormElementGroup *formGroup = [_formGroups objectAtIndex:section];
+    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
     return [formGroup numberOfRows];
 }
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    LibraryFormElementGroup *formGroup = [_formGroups objectAtIndex:indexPath.section];
+    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:indexPath.section];
     LibraryFormElement *element = [[formGroup elements] objectAtIndex:indexPath.row];
     if ([element isKindOfClass:[MenuLibraryFormElement class]]) {
         LibraryMenuElementViewController *vc = [[[LibraryMenuElementViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
@@ -584,7 +604,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 }
 
 - (BOOL)formValid {
-    for (LibraryFormElementGroup *formGroup in _formGroups) {
+    for (LibraryFormElementGroup *formGroup in [self nonHiddenFormGroups]) {
         for (NSString *key in [formGroup keys]) {
             NSString *value = [formGroup getFormValueForKey:key];
             
@@ -600,7 +620,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 
 - (NSDictionary *)formValues {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    for (LibraryFormElementGroup *formGroup in _formGroups) {
+    for (LibraryFormElementGroup *formGroup in [self nonHiddenFormGroups]) {
         for (NSString *key in [formGroup keys]) {
             NSString *value = [formGroup getFormValueForKey:key];
             if (value) {
@@ -666,6 +686,15 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     [self.loadingView removeFromSuperview];
     self.loadingView.frame = self.view.bounds;
     [self.view addSubview:self.loadingView];
+}
+
+- (LibraryFormElementGroup *)groupForName:(NSString *)name {
+    for (LibraryFormElementGroup *formGroup in _formGroups) {
+        if ([formGroup.name isEqualToString:name]) {
+            return formGroup;
+        }
+    }
+    return nil;
 }
 
 - (LibraryFormElement *)statusMenuFormElementWithRequired:(BOOL)required {

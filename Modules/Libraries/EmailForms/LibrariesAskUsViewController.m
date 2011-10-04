@@ -3,10 +3,10 @@
 
 @implementation TopicsMenuLibraryFormElement
 
-+ (TopicsMenuLibraryFormElement *)formElement {
++ (TopicsMenuLibraryFormElement *)formElementWithDelegate:(id<LibraryFormElementDelegate>) delegate {
     TopicsMenuLibraryFormElement *element = [[[TopicsMenuLibraryFormElement alloc] initWithKey:@"topic"
                                                  displayLabel:@"Topic Area:"
-                                                     required:YES 
+                                                     required:YES
                                                        values:[NSArray arrayWithObjects:
                                                                @"Art, Architecture & Planning", 
                                                                @"Engineering & Computer Science",
@@ -17,7 +17,7 @@
                                                                @"Circulation",
                                                                @"Technical Help",
                                                                nil]] autorelease];
-    element.onChangeJavaScript = @"document.getElementById('TechHelp').style.display = (this.value == 'Technical Help') ? '' : 'none'";
+    element.delegate = delegate;
     return element;
 }
 
@@ -27,7 +27,7 @@
 - (NSArray *)formGroups {
     return [NSArray arrayWithObjects:
         [LibraryFormElementGroup groupForName:@"Question" elements:[NSArray arrayWithObjects:
-            [TopicsMenuLibraryFormElement formElement],
+            [TopicsMenuLibraryFormElement formElementWithDelegate:self],
             
             [[[TextLibraryFormElement alloc] initWithKey:@"subject" 
                                             displayLabel:@"Subject line:" 
@@ -64,6 +64,24 @@
         nil];
 }
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    techHelpSectionHidden = YES;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    LibraryFormElementGroup *techFormGroup = [self groupForName:@"TechHelp"];
+    if (techHelpSectionHidden != techFormGroup.hidden) {
+        NSIndexSet *techHelpSection = [NSIndexSet indexSetWithIndex:1];
+        techFormGroup.hidden = techHelpSectionHidden;
+        if (techFormGroup.hidden) {
+            [self.tableView deleteSections:techHelpSection withRowAnimation:UITableViewRowAnimationTop];
+        } else {
+            [self.tableView insertSections:techHelpSection withRowAnimation:UITableViewRowAnimationTop];
+        }
+    }
+}
 
 - (NSString *)command {
     return @"sendAskUsEmail"; 
@@ -73,6 +91,15 @@
     NSMutableDictionary *values = [NSMutableDictionary dictionaryWithDictionary:[super formValues]];
     [values setObject:@"form" forKey:@"ask_type"];
     return values;
+}
+
+- (void)valueChangedForElement:(LibraryFormElement *)element {
+    MenuLibraryFormElement *menuElement = (MenuLibraryFormElement *)element;
+    if ([[menuElement value] isEqualToString:@"Technical Help"]) {
+        techHelpSectionHidden = NO;    
+    } else {
+        techHelpSectionHidden = YES;
+    }
 }
 
 @end

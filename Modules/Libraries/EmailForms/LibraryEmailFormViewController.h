@@ -5,6 +5,13 @@
 
 @class LibraryEmailFormViewController;
 
+@class LibraryFormElement;
+@protocol LibraryFormElementDelegate
+
+- (void)valueChangedForElement:(LibraryFormElement *)element;
+
+@end
+
 @interface LibraryFormElement : NSObject {
 @private
 }
@@ -13,8 +20,8 @@
 @property (nonatomic, retain) NSString *displayLabel;
 @property (nonatomic, retain) NSString *displayLabelSubtitle;
 @property (nonatomic) BOOL required;
-@property (nonatomic, retain) NSString *onChangeJavaScript;
 @property (nonatomic, assign) LibraryEmailFormViewController *formViewController;
+@property (nonatomic, assign) id<LibraryFormElementDelegate> delegate;
 
 - (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel required:(BOOL)required;
 - (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel displayLabelSubtitle:(NSString *)displayLabelSubtitle required:(BOOL)required;
@@ -28,14 +35,17 @@
 
 @interface MenuLibraryFormElement : LibraryFormElement {
 @private
+    NSInteger _currentOptionIndex;
 }
 
-@property (nonatomic) NSInteger currentOptionIndex;
+@property (nonatomic, assign) NSInteger currentOptionIndex;
 @property (nonatomic, retain) NSArray *options;
 @property (nonatomic, retain) NSArray *displayOptions;
 
 - (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel required:(BOOL)required values:(NSArray *)values;
 - (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel required:(BOOL)required values:(NSArray *)values displayValues:(NSArray *)displayValues;
+
+- (NSString *)value;
 
 @end
 
@@ -101,6 +111,7 @@
 
 - (NSDictionary *)formValues;
 
+- (LibraryFormElementGroup *)groupForName:(NSString *)name;
 - (LibraryFormElement *)statusMenuFormElementWithRequired:(BOOL)required;
 
 @end
