@@ -46,8 +46,7 @@
                                                           @"Management & Business",
                                                           @"Science",
                                                           @"Social Sciences",
-                                                          @"Urban Planning", nil]
-                                             placeHolder:@"Select a subject"] autorelease],
+                                                          @"Urban Planning", nil]] autorelease],
                                                                 
             nil]],
         
