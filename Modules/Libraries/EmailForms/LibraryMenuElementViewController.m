@@ -4,6 +4,11 @@
 @implementation LibraryMenuElementViewController
 @synthesize menuElement;
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.view.backgroundColor = [UIColor clearColor];
+}
+
 - (void)dealloc
 {
     self.menuElement = nil;
