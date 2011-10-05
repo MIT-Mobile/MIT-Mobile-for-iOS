@@ -3,6 +3,8 @@
 #import "MITMapDetailViewController.h"
 #import "MITMapSearchResultAnnotation.h"
 
+#import "MITModule+Protected.h"
+
 @implementation CMModule
 @synthesize campusMapVC = _campusMapVC;
 
@@ -19,12 +21,13 @@
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!self.campusMapVC) {
-        self.campusMapVC = [[[CampusMapViewController alloc] init] autorelease];
-        self.campusMapVC.campusMapModule = self;
-    }
-    return self.campusMapVC;
+- (void)loadModuleHomeController
+{
+    CampusMapViewController *controller = [[[CampusMapViewController alloc] init] autorelease];
+    controller.campusMapModule = self;
+    
+    self.campusMapVC = controller;
+    self.moduleHomeController = controller;
 }
 
 -(void) dealloc
@@ -81,9 +84,6 @@
 		span.longitudeDelta = [[regionDictionary objectForKey:@"spanLong"] doubleValue];
 		region.span = span;
 	}
-	
-	// force the map view to load
-	(void)self.campusMapVC.view;
 	
 	if (localPath.length==0) {
 		if (regionDictionary != nil) {

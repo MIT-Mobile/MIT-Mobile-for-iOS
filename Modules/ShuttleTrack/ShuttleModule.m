@@ -4,6 +4,8 @@
 #import "ShuttleSubscriptionManager.h"
 #import "ShuttleStopMapAnnotation.h"
 
+#import "MITModule+Protected.h"
+
 @implementation ShuttleModule
 
 - (id) init {
@@ -14,18 +16,13 @@
         self.longName = @"ShuttleTrack";
         self.iconName = @"shuttle";
         self.pushNotificationSupported = YES;
-
-        //ShuttleRoutes *theVC = [[[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
-        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:theVC]];
     }
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!moduleHomeController) {
-        moduleHomeController = [[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped];
-    }
-    return moduleHomeController;
+- (void)loadModuleHomeController
+{
+    [self setModuleHomeController:[[[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped] autorelease]];
 }
 
 - (void) didAppear {

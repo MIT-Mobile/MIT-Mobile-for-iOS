@@ -1,4 +1,7 @@
 #import "SettingsModule.h"
+
+#import "MITModule.h"
+#import "MITModule+Protected.h"
 #import "SettingsTableViewController.h"
 
 @implementation SettingsModule
@@ -14,11 +17,9 @@
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!moduleHomeController) {
-        moduleHomeController = [[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    }
-    return moduleHomeController;
+- (void)loadModuleHomeController
+{
+    self.moduleHomeController = [[[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
 }
 
 @end

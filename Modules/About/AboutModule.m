@@ -1,6 +1,7 @@
 #import "AboutModule.h"
-#import "MITModule.h"
 #import "AboutTableViewController.h"
+
+#import "MITModule+Protected.h"
 
 @implementation AboutModule
 
@@ -15,11 +16,9 @@
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!moduleHomeController) {
-        moduleHomeController = [[AboutTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    }
-    return moduleHomeController;
+- (void)loadModuleHomeController
+{
+    self.moduleHomeController = [[[AboutTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
 }
 
 @end

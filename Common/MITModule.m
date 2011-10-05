@@ -1,12 +1,24 @@
 #import "MITModule.h"
+#import "MITModule+Protected.h"
 #import "MIT_MobileAppDelegate+ModuleList.h"
 #import "Foundation+MITAdditions.h"
 
 @implementation MITModule
+@synthesize tag,
+            shortName, 
+            longName,
+            iconName,
+            pushNotificationSupported,
+            pushNotificationEnabled,
+            springboardButton;
 
-@synthesize tag, shortName, longName, iconName, tabNavController, isMovableTab, canBecomeDefault, pushNotificationSupported, pushNotificationEnabled, springboardButton;
-@synthesize hasLaunchedBegun, currentPath, currentQuery;
-@dynamic badgeValue, icon, tabBarIcon;
+@synthesize hasLaunchedBegun,
+            currentPath,
+            currentQuery;
+
+@dynamic badgeValue,
+            isLoaded,
+            moduleHomeController;
 
 #pragma mark -
 #pragma mark Required
@@ -36,24 +48,30 @@
     return self;
 }
 
-- (void)loadTabNavController {
-    if (!tabNavController) {
-        // Give it a throwaway view controller because it cannot start with nothing.
-        UIViewController *dummyVC = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
-        dummyVC.navigationItem.title = @"Placeholder";
-        tabNavController = [[UINavigationController alloc] initWithRootViewController:dummyVC];
-        
-        UIViewController *homeController = [self moduleHomeController];
-        if (homeController) {
-            [tabNavController setViewControllers:[NSArray arrayWithObject:[self moduleHomeController]]];
-        }
-    }
+- (void)loadModuleHomeController
+{
+    DLog(@"home controller not defined for module %@", self.tag);
+}
+
+
+#pragma mark - Dynamic Properties
+- (BOOL)isLoaded
+{
+    return (_moduleHomeController != nil);
+}
+
+- (void)setModuleHomeController:(UIViewController *)moduleHomeController
+{
+    [_moduleHomeController release];
+    _moduleHomeController = [moduleHomeController retain];
 }
 
 - (UIViewController *)moduleHomeController {
-    // return view controller that serves as module's home screen
-    DLog(@"home controller not defined for module %@", self.tag);
-    return nil;
+    if ([self isLoaded] == NO) {
+        [self loadModuleHomeController];
+    }
+    
+    return _moduleHomeController;
 }
 
 #pragma mark -

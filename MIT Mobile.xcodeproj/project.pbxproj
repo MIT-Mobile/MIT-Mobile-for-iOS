@@ -496,6 +496,7 @@
 		2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesSummaryViewController.m; sourceTree = "<group>"; };
 		2C95A1D7137DB24D0025B28D /* FacilitiesSummaryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesSummaryViewController.xib; sourceTree = "<group>"; };
 		2C96776113575E8900F52BDB /* QRReaderResultTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderResultTransform.h; sourceTree = "<group>"; };
+		2C96FD93143CA3C500A2E798 /* MITModule+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; path = "MITModule+Protected.h"; sourceTree = "<group>"; };
 		2C99DCAD1370508D00114A9A /* HighlightLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightLabel.h; sourceTree = "<group>"; };
 		2C99DCAE1370508D00114A9A /* HighlightLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightLabel.m; sourceTree = "<group>"; };
 		2C99DCDF1370782200114A9A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
@@ -1015,6 +1016,7 @@
 				296F086410CDDF07004B02E4 /* MITMobileWebAPI.h */,
 				296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */,
 				DE715347102FC897005E6111 /* MITModule.h */,
+				2C96FD93143CA3C500A2E798 /* MITModule+Protected.h */,
 				DE715348102FC897005E6111 /* MITModule.m */,
 				29E308841176018C005211A7 /* MITModuleURL.h */,
 				29E308851176018C005211A7 /* MITModuleURL.m */,

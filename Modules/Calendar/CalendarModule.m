@@ -7,6 +7,8 @@
 #import "CalendarEventMapAnnotation.h"
 #import "MITEventList.h"
 
+#import "MITModule+Protected.h"
+
 @interface CalendarModule (Private)
 
 - (BOOL)localPathHelper:(NSString *)path queryDict:(NSDictionary *)queryDict;
@@ -31,13 +33,14 @@
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!calendarVC) {
-        calendarVC = [[CalendarEventsViewController alloc] init];
-        calendarVC.showList = YES;
-        calendarVC.showScroller = YES;
-    }
-    return calendarVC;
+- (void)loadModuleHomeController
+{
+    CalendarEventsViewController *controller = [[[CalendarEventsViewController alloc] init] autorelease];
+    controller.showList = YES;
+    controller.showScroller = YES;
+    
+    self.calendarVC = controller;
+    self.moduleHomeController = controller;
 }
 
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query

@@ -1,6 +1,7 @@
 #import "ToursModule.h"
 #import "MITModule.h"
 #import "CampusTourHomeController.h"
+#import "MITModule+Protected.h"
 
 @implementation ToursModule
 
@@ -17,14 +18,12 @@
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!self.homeController) {
-        self.homeController = [[[CampusTourHomeController alloc] init] autorelease];
-    }
-    return self.homeController;
-}
-
-- (void)applicationWillEnterBackground {
+- (void)loadModuleHomeController
+{
+    CampusTourHomeController *controller = [[[CampusTourHomeController alloc] init] autorelease];
+    
+    self.homeController = controller;
+    self.moduleHomeController = controller;
 }
 
 @end

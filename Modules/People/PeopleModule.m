@@ -5,6 +5,8 @@
 #import "PeopleRecentsData.h"
 #import "PersonDetails.h"
 
+#import "MITModule+Protected.h"
+
 static NSString * const PeopleStateSearchBegin = @"search-begin";
 static NSString * const PeopleStateSearchComplete = @"search-complete";
 static NSString * const PeopleStateSearchExternal = @"search";
@@ -20,22 +22,14 @@ static NSString * const PeopleStateDetail = @"detail";
         self.shortName = @"Directory";
         self.longName = @"People Directory";
         self.iconName = @"people";
-        
-        //moduleHomeController.title = self.longName;
-
-		//viewController = [[[PeopleSearchViewController alloc] init] autorelease];
-		//viewController.navigationItem.title = self.longName;
-        
-        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:viewController]];
     }
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!viewController) {
-        viewController = [[PeopleSearchViewController alloc] init];
-    }
-    return viewController;
+- (void)loadModuleHomeController
+{
+    PeopleSearchViewController *controller = [[[PeopleSearchViewController alloc] init] autorelease];
+    self.moduleHomeController = controller;
 }
 
 - (void)applicationWillTerminate

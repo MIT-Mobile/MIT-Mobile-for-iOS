@@ -8,6 +8,8 @@
 #import "StellarCoursesTableController.h"
 #import "MITConstants.h"
 
+#import "MITModule+Protected.h"
+
 @implementation StellarModule
 
 @synthesize navigationController;
@@ -21,21 +23,13 @@
         self.longName = @"MIT Stellar";
         self.iconName = @"stellar";
         self.pushNotificationSupported = YES;
-        
-        //moduleHomeController.title = self.longName;
-		
-		//StellarMainTableController *stellarMainTableController = [[[StellarMainTableController alloc] init] autorelease];
-		//stellarMainTableController.navigationItem.title = @"MIT Stellar";
-        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:stellarMainTableController]];
     }
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!moduleHomeController) {
-        moduleHomeController = [[StellarMainTableController alloc] init];
-    }
-    return moduleHomeController;
+- (void)loadModuleHomeController
+{
+    [self setModuleHomeController:[[[StellarMainTableController alloc] init] autorelease]];
 }
 
 

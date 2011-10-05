@@ -1,9 +1,9 @@
 #import "AnniversaryModule.h"
 #import "MIT150ViewController.h"
 #import "CoreDataManager.h"
+#import "MITModule+Protected.h"
 
 @implementation AnniversaryModule
-
 @synthesize homeController;
 
 - (id) init {
@@ -34,11 +34,11 @@
     return NO;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!self.homeController) {
-        self.homeController = [[[MIT150ViewController alloc] initWithStyle:UITableViewStylePlain] autorelease];
-    }
-    return self.homeController;
+- (void)loadModuleHomeController
+{
+    MIT150ViewController *controller = [[[MIT150ViewController alloc] initWithStyle:UITableViewStylePlain] autorelease];
+    self.homeController = controller;
+    self.moduleHomeController = controller;
 }
 
 @end

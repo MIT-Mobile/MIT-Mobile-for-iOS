@@ -3,9 +3,12 @@
 #import "EmergencyViewController.h"
 #import "EmergencyContactsViewController.h"
 
+#import "MITModule+Protected.h"
+
 @implementation EmergencyModule
 
-@synthesize mainViewController, didReadMessage;
+@synthesize mainViewController = _mainViewController,
+            didReadMessage = _didReadMessage;
 
 - (id) init {
     self = [super init];
@@ -17,12 +20,6 @@
         self.iconName = @"emergency";
         self.pushNotificationSupported = YES;
         
-        // Initial view at app launch
-        //self.mainViewController = [[[EmergencyViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
-        //self.mainViewController.delegate = self; // to receive -didReadNewestEmergencyInfo
-        
-        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:mainViewController]];
-        
         // preserve unread state
         if ([[NSUserDefaults standardUserDefaults] integerForKey:EmergencyUnreadCountKey] > 0) {
             // TODO: EmergencyUnreadCountKey doesn't seem to be used anywhere else
@@ -32,8 +29,8 @@
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNewEmergencyInfo:) name:EmergencyInfoDidChangeNotification object:nil];
         
-		emergencyMessageLoaded = NO;
-        didReadMessage = NO; // will be reset if any emergency data (old or new) is received
+		_emergencyMessageLoaded = NO;
+        self.didReadMessage = NO; // will be reset if any emergency data (old or new) is received
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidLoad:) name:EmergencyInfoDidLoadNotification object:nil];
 		
         // check for new emergency info on app launch
@@ -43,16 +40,17 @@
 }
 
 - (void)applicationWillEnterForeground {
-    emergencyMessageLoaded = NO;
+    _emergencyMessageLoaded = NO;
     [[EmergencyData sharedData] checkForEmergencies];
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!self.mainViewController) {
-        self.mainViewController = [[[EmergencyViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
-        self.mainViewController.delegate = self; // to receive -didReadNewestEmergencyInfo
-    }
-    return self.mainViewController;
+- (void)loadModuleHomeController
+{
+    EmergencyViewController *controller = [[[EmergencyViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+    controller.delegate = self;
+    
+    self.mainViewController = controller;
+    self.moduleHomeController = controller;
 }
 
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
@@ -78,7 +76,7 @@
 - (BOOL)handleNotification:(MITNotification *)notification shouldOpen: (BOOL)shouldOpen {
 	if(shouldOpen) {
 		[self popToRootViewController];
-		[mainViewController refreshInfo:nil];
+		[self.mainViewController refreshInfo:nil];
 		self.currentPath = @"";
 		[self becomeActiveTab];
 	}
@@ -86,7 +84,7 @@
 }
 
 - (void)infoDidLoad: (id)object {
-	emergencyMessageLoaded = YES;
+	_emergencyMessageLoaded = YES;
 	[self syncUnreadNotifications];
 }
 
@@ -95,7 +93,7 @@
 	// and the emergency module has received data from the server (does not have to be new data)
 	// since the last time it was on screen, we tell the server to clear the emergency badge
 	
-	if(emergencyMessageLoaded && [[EmergencyData sharedData] didReadMessage]) {
+	if(_emergencyMessageLoaded && [[EmergencyData sharedData] didReadMessage]) {
 		[MITUnreadNotifications removeNotificationsForModuleTag:self.tag];
 	}
 }
