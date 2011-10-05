@@ -15,7 +15,7 @@
 
 @synthesize deviceToken = devicePushToken;
 
-@synthesize springboard = _springboard,
+@synthesize springboardController = _springboardController,
             moduleStack = _moduleStack;
 
 #pragma mark -
@@ -41,9 +41,8 @@
     rootController.delegate = springboard;
     rootController.navigationBar.barStyle = UIBarStyleBlack;
     
-    self.springboard = springboard;
+    self.springboardController = springboard;
     self.rootNavigationController = rootController;
-    self.moduleStack = [[NSMutableArray alloc] init];
     
     // TODO: don't store state like this when we're using a springboard.
 	// set modules state
@@ -161,8 +160,7 @@
 #pragma mark Memory management
 
 - (void)dealloc {
-    self.moduleStack = nil;
-    self.springboard = nil;
+    self.springboardController = nil;
     self.deviceToken = nil;
     self.modules = nil;
 	[window release];
@@ -206,18 +204,6 @@
 
 - (void)updateBasicServerInfo {
     [[ModuleVersions sharedVersions] updateVersionInformation];
-}
-
-#pragma mark Springboard delegation
-
-- (void)springboard:(MITSpringboard *)springboard didPushModuleForTag:(NSString *)moduleTag {
-	[self.moduleStack addObject:moduleTag];
-}
-
-- (void)springboardDidPopModule:(MITSpringboard *)springboard {
-	if (self.moduleStack.count) {
-		[self.moduleStack removeLastObject];
-	}
 }
 
 #pragma mark -

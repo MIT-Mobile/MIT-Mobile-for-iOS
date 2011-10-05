@@ -496,7 +496,7 @@
 		2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesSummaryViewController.m; sourceTree = "<group>"; };
 		2C95A1D7137DB24D0025B28D /* FacilitiesSummaryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesSummaryViewController.xib; sourceTree = "<group>"; };
 		2C96776113575E8900F52BDB /* QRReaderResultTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderResultTransform.h; sourceTree = "<group>"; };
-		2C96FD93143CA3C500A2E798 /* MITModule+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; path = "MITModule+Protected.h"; sourceTree = "<group>"; };
+		2C96FD93143CA3C500A2E798 /* MITModule+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MITModule+Protected.h"; sourceTree = "<group>"; };
 		2C99DCAD1370508D00114A9A /* HighlightLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightLabel.h; sourceTree = "<group>"; };
 		2C99DCAE1370508D00114A9A /* HighlightLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightLabel.m; sourceTree = "<group>"; };
 		2C99DCDF1370782200114A9A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
@@ -2215,6 +2215,7 @@
 				EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */,
 				DE2E59A412B86C3B009857A1 /* CorridorDetailViewController.m in Sources */,
 				DE2E588212B81029009857A1 /* CorridorListViewController.m in Sources */,
+				1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */,
 				DE2E58E012B81529009857A1 /* CorridorStory.m in Sources */,
 				EB4C409B1288974C00058748 /* DataCache.m in Sources */,
 				EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */,
@@ -2300,7 +2301,6 @@
 				EB4C3A8C1283812A00058748 /* MITSpringboard.m in Sources */,
 				EB4C2525127A0E8F00058748 /* MITThumbnailView.m in Sources */,
 				2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */,
-				1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */,
 				44ACF76E1187884300F1F4B2 /* MapBookmarkManager.m in Sources */,
 				4463CC9210D6F4A50048CA83 /* MapLevel.m in Sources */,
 				44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */,

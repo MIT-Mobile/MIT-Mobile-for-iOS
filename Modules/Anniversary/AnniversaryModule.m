@@ -19,12 +19,11 @@
 
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
 	if ([localPath isEqualToString:@""]) {
-		[self becomeActiveTab];
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
 		return YES;
 	}
     else if ([localPath isEqualToString:@"about"]) {
         [self.homeController showWelcome];
-		[self becomeActiveTab];
         return YES;
     }
     if ([localPath isEqualToString:@"corridor"]) {

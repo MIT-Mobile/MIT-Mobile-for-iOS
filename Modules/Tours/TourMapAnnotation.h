@@ -15,9 +15,9 @@
 }
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
-@property (readonly) NSString *title;
+@property (nonatomic, readonly, copy) NSString *title;
 @property (nonatomic, retain) TourComponent *component;
-@property (nonatomic, retain) NSString *subtitle;
+@property (nonatomic, copy) NSString *subtitle;
 @property (nonatomic) BOOL hasTransform;
 @property (nonatomic) CGAffineTransform transform;
 @property (nonatomic, retain) id<TourGeoLocation> tourGeoLocation;

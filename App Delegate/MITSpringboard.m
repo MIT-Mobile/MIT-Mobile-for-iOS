@@ -4,9 +4,13 @@
 #import "MITModule.h"
 #import "DummyRotatingViewController.h"
 #import "ScrollFadeImageView.h"
+#import "MITMobileServerConfiguration.h"
 
-@interface MITSpringboard (Private)
+@interface MITSpringboard ()
+@property (nonatomic,retain) NSMutableArray *moduleStack;
+@property (nonatomic) NSUInteger navigationStackDepth;
 
+- (void)internalInit;
 - (void)showModuleForIcon:(id)sender;
 - (void)showModuleForBanner;
 - (void)checkForFeaturedModule;
@@ -17,8 +21,36 @@
 #define BANNER_CONTROL_TAG 9966
 
 @implementation MITSpringboard
-
 @synthesize grid, primaryModules, delegate, connection;
+
+@synthesize moduleStack = _moduleStack,
+            navigationStackDepth = _navigationStackDepth;
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        [self internalInit];
+    }
+    
+    return self;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil
+                           bundle:nibBundleOrNil];
+    if (self) {
+        [self internalInit];
+    }
+    
+    return self;
+}
+
+- (void)internalInit
+{
+    self.moduleStack = [NSMutableArray array];
+}
 
 - (void)showModuleForIcon:(id)sender {
     SpringboardIcon *icon = (SpringboardIcon *)sender;
@@ -75,6 +107,80 @@
         newGridFrame.size.height = self.view.frame.size.height - control.frame.size.height;
         grid.frame = newGridFrame;
 	}
+}
+
+- (void)pushModuleWithTag:(NSString *)tag
+{
+    MITModule *topModule = ([self.moduleStack count] == 0) ? nil : [self.moduleStack lastObject];
+
+    for (MITModule *module in self.primaryModules) {
+        if ([[module tag] isEqualToString:tag]) {
+            
+            if (topModule != module) {
+                if ([tag isEqualToString:MobileWebTag]) {
+                    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/", MITMobileWebGetCurrentServerDomain()]];
+                    if ([[UIApplication sharedApplication] canOpenURL:url]) {
+                        [[UIApplication sharedApplication] openURL:url];
+                    }
+                } else {
+                    if ([self.delegate respondsToSelector:@selector(springboard:willPushModule:)]) {
+                        [self.delegate springboard:self
+                                    willPushModule:module];
+                    }
+                    
+                    [self.moduleStack addObject:module];
+                    [self.navigationController pushViewController:module.moduleHomeController
+                                                         animated:YES];
+                    if ([self.delegate respondsToSelector:@selector(springboard:didPushModule:)]) {
+                        [self.delegate springboard:self
+                                     didPushModule:module];
+                    }
+                    
+                    module.hasLaunchedBegun = YES;
+                    [module didAppear];
+                }
+                
+                return;
+            }
+        }
+    }
+}
+
+- (void)popModule
+{
+    MITModule *currentModule = [self.moduleStack lastObject];
+    if (currentModule == nil) {
+        DLog(@"Attempting to pop a module with nothing on the stack");
+        return;
+    }
+    
+    NSUInteger vcIndex = [self.navigationController.viewControllers indexOfObject:currentModule.moduleHomeController];
+    
+    if (vcIndex == NSNotFound) {
+        ELog(@"An error occurred while popping module '%@': Navigation stack and module stack out of sync",currentModule.tag);
+        return;
+    } else if (vcIndex == 0) {
+        ELog(@"An error occurred while popping module '%@': Navigation stack missing root view",currentModule.tag);
+        return;
+    } else {
+        if ([self.delegate respondsToSelector:@selector(springboard:willPopModule:)]) {
+            [self.delegate springboard:self
+                         willPopModule:currentModule];
+        }
+        
+        UIViewController *controller = [self.navigationController.viewControllers objectAtIndex:(vcIndex - 1)];
+        [self.navigationController popToViewController:controller
+                                              animated:YES];
+        if ([self.delegate respondsToSelector:@selector(springboard:didPopModule:)]) {
+            [self.delegate springboard:self
+                          didPopModule:currentModule];
+        }
+    }
+}
+
+- (MITModule*)activeModule
+{
+    return [self.moduleStack lastObject];
 }
 
 #pragma mark JSONLoadedDelegate
@@ -176,14 +282,22 @@
 
 #pragma mark UINavigationControllerDelegate
 
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if (viewController == self) {
+- (void)navigationController:(UINavigationController *)navigationController
+      willShowViewController:(UIViewController *)viewController
+                    animated:(BOOL)animated
+{
+    if (viewController == self)
+    {
         [navigationController setToolbarHidden:YES
                                       animated:YES];
     }
 }
 
-- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+- (void)navigationController:(UINavigationController *)navigationController
+       didShowViewController:(UIViewController *)viewController
+                    animated:(BOOL)animated
+{
+    /*
 	NSInteger newStackDepth = navigationController.viewControllers.count;
 	if (newStackDepth < navStackDepth) {
 		if ([self.delegate respondsToSelector:@selector(springboardDidPopModule:)]) {
@@ -192,10 +306,10 @@
 	} else {
 		NSString *tag = nil;
 		for (MITModule *aModule in self.primaryModules) {
-			if ([navigationController.viewControllers containsObject:aModule.tabNavController.visibleViewController]) {
-				tag = aModule.tag;
-				break;
-			}
+			//if ([navigationController.viewControllers containsObject:aModule.tabNavController.visibleViewController]) {
+			//	tag = aModule.tag;
+			//	break;
+			//}
 		}
 		if (tag) {
 			if ([self.delegate respondsToSelector:@selector(springboard:didPushModuleForTag:)]) {
@@ -204,6 +318,7 @@
 		}
 	}
 	navStackDepth = newStackDepth;
+     */
 }
 
 #pragma mark -

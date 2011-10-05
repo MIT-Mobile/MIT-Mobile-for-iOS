@@ -201,7 +201,6 @@
 }
 
 #pragma mark tabNavController methods
-
 // these methods make sure to pop and push from the current UINavigationController
 // which may not be the same as self.tabNavController
 - (void) popToRootViewController {

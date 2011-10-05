@@ -58,6 +58,7 @@
 }
 
 - (void)showModuleForTag:(NSString *)tag {
+    /*
     if ([tag isEqualToString:MobileWebTag]) {
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/", MITMobileWebGetCurrentServerDomain()]];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
@@ -71,6 +72,9 @@
                                              animated:YES];
     module.hasLaunchedBegun = YES;
     [module didAppear];
+     */
+    
+    [self.springboardController pushModuleWithTag:tag];
 }
 
 #pragma mark Preferences
@@ -124,7 +128,7 @@
 }
 		
 - (NSString *) activeModuleTag {
-    return [self.moduleStack lastObject];
+    return [[self.springboardController activeModule] tag];
 }
 
 @end

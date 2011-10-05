@@ -25,6 +25,7 @@
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) UINavigationController *rootNavigationController;
+@property (nonatomic, retain) MITSpringboard *springboardController;
 @property (nonatomic, retain) NSArray *modules;
 @property (nonatomic, retain) NSData *deviceToken;
 

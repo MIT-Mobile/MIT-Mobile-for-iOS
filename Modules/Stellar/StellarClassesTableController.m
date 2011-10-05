@@ -66,7 +66,8 @@
 	
 	[StellarModel loadClassesForCourse:course delegate:self.currentClassLoader];
 	
-	[url setPathWithViewController:self extension:course.number];
+	[url setPathWithViewController:self
+                         extension:course.number];
 }
 
 - (void) viewDidAppear: (BOOL)animated {

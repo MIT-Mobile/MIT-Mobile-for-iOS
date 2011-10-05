@@ -9,6 +9,7 @@
 #import "MIT150Button.h"
 #import "MultiControlCell.h"
 #import "BorderedTableViewCell.h"
+#import "MIT_MobileAppDelegate.h"
 
 
 #define DEFAULT_BUTTON_HEIGHT 100
@@ -113,13 +114,15 @@ static NSString * const kMIT150LastUpdated = @"MIT150LastUpdated";
 
 - (void)showWelcome {
 	WelcomeViewController *welcomeVC = [[WelcomeViewController alloc] initWithNibName:nil bundle:nil];
-	[self.navigationController pushViewController:welcomeVC animated:YES];
+	[[MITAppDelegate() rootNavigationController] pushViewController:welcomeVC
+                                                           animated:YES];
 	[welcomeVC release];
 }
 
 - (void)showCorridor {
 	CorridorListViewController *corridorVC = [[CorridorListViewController alloc] initWithNibName:nil bundle:nil];
-	[self.navigationController pushViewController:corridorVC animated:YES];
+	[[MITAppDelegate() rootNavigationController] pushViewController:corridorVC
+                                                           animated:YES];
 	[corridorVC release];
 }
 

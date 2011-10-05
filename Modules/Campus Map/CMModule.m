@@ -97,7 +97,6 @@
 	NSString *pathRoot = [components objectAtIndex:0];
 	
 	if ([pathRoot isEqualToString:@"search"] || [pathRoot isEqualToString:@"list"] || [pathRoot isEqualToString:@"detail"]) {
-		
 		// populate search bar
 		self.campusMapVC.searchBar.text = query;
 		self.campusMapVC.lastSearchText = query;
@@ -125,7 +124,7 @@
 		} else {
 			// perform the search from the network
 			[self.campusMapVC search:query];
-            [self becomeActiveTab];
+            [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
 			return YES;
 		}
 
@@ -151,6 +150,7 @@
 		}
 		
 		
+        MITMapDetailViewController *detailsVC = nil;
 		if ([pathRoot isEqualToString:@"list"]) {
 			[self.campusMapVC showListView:YES];
 			
@@ -158,9 +158,10 @@
 				[components removeObjectAtIndex:0];
 			}
 		}
-		else if ([pathRoot isEqualToString:@"detail"]) {	
+		else if ([pathRoot isEqualToString:@"detail"])
+        {	
 			// push the details page onto the stack for the item selected. 
-			MITMapDetailViewController* detailsVC = [[[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
+			detailsVC = [[[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
 																								  bundle:nil] autorelease];
 			
 			detailsVC.annotation = currentAnnotation;
@@ -171,9 +172,7 @@
 			
 			if(self.campusMapVC.lastSearchText != nil && self.campusMapVC.lastSearchText.length > 0) {
 				detailsVC.queryText = self.campusMapVC.lastSearchText;
-			}
-						
-			[self.campusMapVC.navigationController pushViewController:detailsVC animated:YES];				
+			}				
 		}
 		
 		if ([[components lastObject] isEqualToString:@"userLoc"]) {
@@ -189,7 +188,12 @@
 		[self.campusMapVC.url setAsModulePath];
         
         // make sure the map is the active bar
-        [self becomeActiveTab];
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+        
+        if (detailsVC) {
+            [[MITAppDelegate() rootNavigationController] pushViewController:detailsVC
+                                                                   animated:YES];
+        }
 		
 		return YES;
 	}

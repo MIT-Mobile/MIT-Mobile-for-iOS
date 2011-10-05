@@ -46,7 +46,10 @@
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query
 {
 	BOOL didHandle = NO;
-	
+	// Disabled by Blake Skinner on 10/5/2011
+    // Needs to be redesigned to handle the flat
+    // navigation style used for the app
+    /*
 	NSArray *pathComponents = [localPath componentsSeparatedByString:@"/"];
 	NSArray *queryComponents = [query componentsSeparatedByString:@"&"];
     
@@ -74,11 +77,11 @@
             }
             
             if ([params objectForKey:@"catID"]) {
-                    
                 [self popToRootViewController];
                 
                 NSNumber *catID = [params objectForKey:@"catID"];
                 NSString *listID = [params objectForKey:@"listID"];
+                
                 CalendarEventsViewController *childVC = [[[CalendarEventsViewController alloc] init] autorelease];
                 EventCategory *category = [CalendarDataManager categoryWithID:[catID intValue] forListID:listID];
                 childVC.category = category;
@@ -87,16 +90,17 @@
                 
                 if(!listID) {
                     MITEventList *eventList = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
-                    childVC.events = [CalendarDataManager eventsWithStartDate:calendarVC.startDate listType:eventList category:catID];
+                    childVC.events = [CalendarDataManager eventsWithStartDate:calendarVC.startDate listType:eventList
+                                                                     category:catID];
                 } else if([listID isEqualToString:@"OpenHouse"]) {
                     childVC.events = [category.events allObjects];
                     childVC.startDate = [NSDate dateWithTimeIntervalSince1970:OPEN_HOUSE_START_DATE];
                 }
                 
-                [(CalendarEventsViewController *)self.moduleHomeController setChildViewController:childVC];
+                [self.calendarVC setChildViewController:childVC];
             }
             
-            [self becomeActiveTab];
+            [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
         }
     }
     
@@ -111,7 +115,8 @@
             }
         }
     }
-	
+	*/
+    
 	return didHandle;
 }
 

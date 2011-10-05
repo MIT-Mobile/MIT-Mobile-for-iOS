@@ -67,19 +67,21 @@
             [controller pushViewController:contactsVC
                                   animated:YES];
         }
-        [self becomeActiveTab];
+        
         didHandle = YES;
     }
     return didHandle;
 }
 
-- (BOOL)handleNotification:(MITNotification *)notification shouldOpen: (BOOL)shouldOpen {
+- (BOOL)handleNotification:(MITNotification *)notification
+                shouldOpen:(BOOL)shouldOpen {
 	if(shouldOpen) {
 		[self popToRootViewController];
 		[self.mainViewController refreshInfo:nil];
 		self.currentPath = @"";
 		[self becomeActiveTab];
 	}
+    
 	return YES;
 }
 
