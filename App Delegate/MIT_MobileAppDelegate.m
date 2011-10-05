@@ -6,14 +6,12 @@
 #import "MITUnreadNotifications.h"
 #import "AudioToolbox/AudioToolbox.h"
 #import "MITSpringboard.h"
-#import "DummyRotatingViewController.h"
 #import "ModuleVersions.h"
 
 @implementation MIT_MobileAppDelegate
 @synthesize window,
             rootNavigationController = _rootNavigationController,
-            modules,
-            appModalHolder;
+            modules;
 
 @synthesize deviceToken = devicePushToken;
 
@@ -56,15 +54,6 @@
 		aModule.currentQuery = [pathAndQuery objectForKey:@"query"];
 	}
 
-    
-    
-    appModalHolder = [[DummyRotatingViewController alloc] initWithNibName:nil bundle:nil];
-    appModalHolder.canRotate = NO;
-    appModalHolder.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    appModalHolder.view.userInteractionEnabled = NO;
-    appModalHolder.view.hidden = YES;
-    //[self.window addSubview:appModalHolder.view];
-    
     [self.window setRootViewController:self.rootNavigationController];
     self.window.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     [self.window makeKeyAndVisible];
@@ -237,31 +226,11 @@
 // Call these instead of [appDelegate.tabbar presentModal...], because dismissing that crashes the app
 // Also, presenting a transparent modal view controller (e.g. DatePickerViewController) the traditional way causes the screen behind to go black.
 - (void)presentAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    appModalHolder.view.hidden = NO;
-    [rootNavigationController.view addSubview:appModalHolder.view];
-    [appModalHolder presentModalViewController:viewController animated:animated];
-}
-
-- (void)presentRotatingAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    appModalHolder.canRotate = YES;
-    [self presentAppModalViewController:viewController animated:animated];
+    [self.window.rootViewController presentModalViewController:viewController animated:animated];
 }
 
 - (void)dismissAppModalViewControllerAnimated:(BOOL)animated {
-    [appModalHolder dismissModalViewControllerAnimated:animated];
-    [self performSelector:@selector(checkIfOkToHideAppModalViewController) withObject:nil afterDelay:0.100];
-}
-
-// This is a sad hack for telling when the dismissAppModalViewController animation has completed. It depends on appModalHolder.modalViewController being defined as long as the modal vc is still animating. If Apple ever changes this behavior, the slide-away transition will become a jarring pop.
-- (void)checkIfOkToHideAppModalViewController {
-    if (!appModalHolder.modalViewController) {
-        // allow taps to reach subviews of the tabbar again
-        appModalHolder.view.hidden = YES;
-        appModalHolder.canRotate = NO;
-        [appModalHolder.view removeFromSuperview];
-    } else {
-        [self performSelector:@selector(checkIfOkToHideAppModalViewController) withObject:nil afterDelay:0.100];
-    }
+    [self.window.rootViewController dismissModalViewControllerAnimated:animated];
 }
 
 #pragma mark -

@@ -3,13 +3,11 @@
 #define MITAppDelegate() ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate])
 
 @class MITModule;
-@class DummyRotatingViewController;
 
 @interface MIT_MobileAppDelegate : NSObject <UIApplicationDelegate, MITSpringboardDelegate> {
     UIWindow *window;
     
     UINavigationController *rootNavigationController;
-    DummyRotatingViewController *appModalHolder;
     
     NSArray *modules; // all registered modules as defined in MITModuleList.m
     NSData *devicePushToken; // deviceToken returned by Apple's push servers when we register. Will be nil if not available.
@@ -23,10 +21,8 @@
 - (void)hideNetworkActivityIndicator;
 
 - (void)presentAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated;
-- (void)presentRotatingAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated;
 - (void)dismissAppModalViewControllerAnimated:(BOOL)animated;
 
-@property (nonatomic, retain) DummyRotatingViewController *appModalHolder;
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) UINavigationController *rootNavigationController;
 @property (nonatomic, retain) NSArray *modules;
