@@ -76,10 +76,13 @@
 - (BOOL)handleNotification:(MITNotification *)notification
                 shouldOpen:(BOOL)shouldOpen {
 	if(shouldOpen) {
-		[self popToRootViewController];
 		[self.mainViewController refreshInfo:nil];
 		self.currentPath = @"";
-		[self becomeActiveTab];
+        UIViewController *visibleController = nil;
+        visibleController = [[MITAppDelegate() rootNavigationController].viewControllers lastObject];
+        if (visibleController != [self moduleHomeController]) {
+            [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+        }
 	}
     
 	return YES;
