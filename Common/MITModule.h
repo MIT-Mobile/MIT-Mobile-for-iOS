@@ -58,7 +58,10 @@
 - (BOOL)handleNotification:(MITNotification *)notification shouldOpen:(BOOL)shouldOpen; // Called when a push notification arrives
 - (void)handleUnreadNotificationsSync: (NSArray *)unreadNotifications; // called to let the module know the unreads may have changed
 
-- (void)becomeActiveTab;
+// This will push the moduleHomeController onto the
+// navigation stack of it isn't already the top-most
+// view controller.
+- (void)becomeActiveModule;
 
 #pragma mark tabNavController methods
 

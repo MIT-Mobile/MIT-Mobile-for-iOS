@@ -167,11 +167,13 @@
     return result;
 }
 
-- (void)becomeActiveTab {
-	//if(![self isActiveTab]) {
-		//MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-		//[appDelegate showModuleForTag:self.tag];
-    //}
+- (void)becomeActiveModule {
+	UIViewController *visibleController = [[MITAppDelegate() rootNavigationController] visibleViewController];
+    
+    if (visibleController != self.moduleHomeController)
+    {
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+    }
 }
 
 // all notifications are enabled by default
