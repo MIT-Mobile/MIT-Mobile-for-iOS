@@ -78,10 +78,8 @@
 	if(shouldOpen) {
 		[self.mainViewController refreshInfo:nil];
 		self.currentPath = @"";
-        UIViewController *visibleController = [[MITAppDelegate() rootNavigationController] visibleViewController];
-        if (visibleController != [self moduleHomeController]) {
-            [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
-        }
+        [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
 	}
     
 	return YES;
