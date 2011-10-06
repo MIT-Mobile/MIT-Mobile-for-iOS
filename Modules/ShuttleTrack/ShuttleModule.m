@@ -40,13 +40,12 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:ShuttleAlertRemoved object:notification];
 }
 	
-- (BOOL) handleNotification:(MITNotification *)notification shouldOpen: (BOOL)shouldOpen {
+- (BOOL)handleNotification:(MITNotification *)notification shouldOpen: (BOOL)shouldOpen {
 	// for now just open the module in response to a notification
 	[self removeSubscriptionByNotification:notification];
 	
 	if(shouldOpen) {
 		NSString *routeID = [[notification.noticeId componentsSeparatedByString:@":"] objectAtIndex:0];
-		[MITAppDelegate() showModuleForTag:self.tag];
 		[self handleLocalPath:[NSString stringWithFormat:@"route-list/%@", routeID] query:nil];
 	}
 	
@@ -64,14 +63,18 @@
 }
 
 - (BOOL) handleLocalPath:(NSString *)localPath query:(NSString *)query {
-	if (localPath.length==0) {
+    // Since there are no failure conditions when
+    // handling local requests to the Shuttle module,
+    // just ensure we are the active module
+    [self becomeActiveModule];
+    
+    if (localPath.length == 0) {
 		return YES;
 	}
 	
 	NSArray *components = [localPath componentsSeparatedByString:@"/"];
 	NSString *pathRoot = [components objectAtIndex:0];
-	[self popToRootViewController];
-	UIViewController *rootViewController = [self rootViewController];
+	UINavigationController *navigationController = [self rootViewController].navigationController;
 	 
 	if ([pathRoot isEqualToString:@"route-list"] || [pathRoot isEqualToString:@"route-map"]) {
 		NSString *routeID = [components objectAtIndex:1];
@@ -79,7 +82,8 @@
 		if(route) {
 			ShuttleRouteViewController *routeViewController = [[[ShuttleRouteViewController alloc] initWithNibName:@"ShuttleRouteViewController" bundle:nil] autorelease];
 			routeViewController.route = route;
-			[rootViewController.navigationController pushViewController:routeViewController animated:NO];
+			[navigationController pushViewController:routeViewController
+                                            animated:NO];
 			
 			ShuttleStop *stop = nil;
 			ShuttleStopMapAnnotation *annotation = nil;
@@ -99,21 +103,27 @@
 			
 			if ([pathRoot isEqualToString:@"route-list"]) {
 				if (stop) {
-					[routeViewController pushStopViewControllerWithStop:stop annotation:annotation animated:NO];
+					[routeViewController pushStopViewControllerWithStop:stop
+                                                             annotation:annotation
+                                                               animated:NO];
 				}
 			}
 			
 			// for route map case
 			if([pathRoot isEqualToString:@"route-map"]) {
-				[routeViewController setMapViewMode:YES animated:NO];
+				[routeViewController setMapViewMode:YES
+                                           animated:NO];
 				if (stop) {
 					// show a specific stop
-					[routeViewController showStop:annotation animated:NO];
+					[routeViewController showStop:annotation
+                                         animated:NO];
 				}
 				
 				if (components.count > 3 && 
 					[@"stops" isEqualToString:[components objectAtIndex:3]]) {
-						[routeViewController pushStopViewControllerWithStop:stop annotation:annotation animated:NO];
+						[routeViewController pushStopViewControllerWithStop:stop
+                                                                 annotation:annotation
+                                                                   animated:NO];
 				}
 			}
 		}

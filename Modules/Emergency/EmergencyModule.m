@@ -78,8 +78,7 @@
 	if(shouldOpen) {
 		[self.mainViewController refreshInfo:nil];
 		self.currentPath = @"";
-        UIViewController *visibleController = nil;
-        visibleController = [[MITAppDelegate() rootNavigationController].viewControllers lastObject];
+        UIViewController *visibleController = [[MITAppDelegate() rootNavigationController] visibleViewController];
         if (visibleController != [self moduleHomeController]) {
             [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
         }
