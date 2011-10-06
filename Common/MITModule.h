@@ -59,7 +59,6 @@
 - (void)handleUnreadNotificationsSync: (NSArray *)unreadNotifications; // called to let the module know the unreads may have changed
 
 - (void)becomeActiveTab;
-- (BOOL)isActiveTab;
 
 #pragma mark tabNavController methods
 

@@ -168,15 +168,10 @@
 }
 
 - (void)becomeActiveTab {
-	if(![self isActiveTab]) {
-		MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-		[appDelegate showModuleForTag:self.tag];
-	}
-}
-
-- (BOOL)isActiveTab {
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	return [self.tag isEqualToString:[appDelegate activeModuleTag]];
+	//if(![self isActiveTab]) {
+		//MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+		//[appDelegate showModuleForTag:self.tag];
+    //}
 }
 
 // all notifications are enabled by default
