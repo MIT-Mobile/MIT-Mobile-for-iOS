@@ -11,8 +11,6 @@
 
 - (void)showModuleForTag:(NSString *)tag;
 
-- (NSString *)activeModuleTag;
-
 #pragma mark Preferences
 - (NSArray *)defaultModuleOrder;
 - (void)registerDefaultModuleOrder;

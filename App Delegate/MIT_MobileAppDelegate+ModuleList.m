@@ -126,9 +126,4 @@
 	}
 	[[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
 }
-		
-- (NSString *) activeModuleTag {
-    return [[self.springboardController activeModule] tag];
-}
-
 @end

@@ -36,8 +36,6 @@
 @property (nonatomic, retain) ConnectionWrapper *connection;
 
 - (void)pushModuleWithTag:(NSString*)tag;
-- (void)popModule;
-- (MITModule*)activeModule;
 @end
 
 @interface SpringboardIcon : UIButton {
