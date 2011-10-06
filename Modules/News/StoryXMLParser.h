@@ -41,7 +41,7 @@
 	BOOL loadingMore;
 	NSInteger totalAvailableResults;
     
-    NSMutableArray *newStories;
+    NSMutableArray *addedStories;
     
 	NSAutoreleasePool *downloadAndParsePool;
 }
@@ -57,7 +57,7 @@
 @property (nonatomic, retain) NSMutableArray *currentStack;
 @property (nonatomic, retain) NSMutableDictionary *currentContents;
 @property (nonatomic, retain) NSMutableDictionary *currentImage;
-@property (nonatomic, retain) NSMutableArray *newStories;
+@property (nonatomic, retain) NSMutableArray *addedStories;
 @property (nonatomic, assign) NSAutoreleasePool *downloadAndParsePool;
 
 // called by main thread
