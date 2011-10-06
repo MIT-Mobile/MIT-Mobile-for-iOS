@@ -23,7 +23,7 @@
 	xmlTextReaderPtr _reader;
 }
 
-+ (id)parserWithXML:(NSData *)theXML delegate:(NSObject *)theDelegate 
++ (id)parserWithXML:(NSData *)theXML delegate:(NSObject<MGTwitterParserDelegate> *)theDelegate 
 connectionIdentifier:(NSString *)identifier requestType:(MGTwitterRequestType)reqType 
 	   responseType:(MGTwitterResponseType)respType URL:(NSURL *)URL;
 - (id)initWithXML:(NSData *)theXML delegate:(NSObject *)theDelegate 
