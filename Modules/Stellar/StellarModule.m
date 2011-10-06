@@ -12,8 +12,6 @@
 
 @implementation StellarModule
 
-@synthesize navigationController;
-
 - (id)init
 {
 	self = [super init];
@@ -39,8 +37,6 @@
 	if(shouldOpen) {		
 		// mark Launch as begun so we dont handle the path twice.
 		hasLaunchedBegun = YES;
-		[MITAppDelegate() showModuleForTag:self.tag];	
-		
 		[self handleLocalPath:[NSString stringWithFormat:@"class/%@/News", notification.noticeId] query:nil];
 
 	}
@@ -72,15 +68,20 @@
 }
 
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
-	NSArray *pathComponents = [localPath componentsSeparatedByString:@"/"];
-	NSString *pathRoot = [pathComponents objectAtIndex:0];	
-	[self popToRootViewController];
-	StellarMainTableController *rootController = (StellarMainTableController *)[self rootViewController];
-	
+//	NSArray *pathComponents = [localPath componentsSeparatedByString:@"/"];
+//	NSString *pathRoot = [pathComponents objectAtIndex:0];
+    
+    if ([[[MITAppDelegate() rootNavigationController] viewControllers] containsObject:self.moduleHomeController]) {
+        [[MITAppDelegate() rootNavigationController] popToViewController:self.moduleHomeController animated:NO];
+    } else {
+        [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+    }
+/*    
 	if ([pathRoot isEqualToString:@"class"]) {
 		StellarClass *stellarClass = [StellarModel classWithMasterId:[pathComponents objectAtIndex:1]];
 		if(stellarClass) {
-			StellarDetailViewController *detailViewController = [StellarDetailViewController launchClass:stellarClass viewController:rootController];
+			StellarDetailViewController *detailViewController = [StellarDetailViewController launchClass:stellarClass viewController:self.moduleHomeController];
 			if ([pathComponents count] > 2) {
 				[detailViewController setCurrentTab:[pathComponents objectAtIndex:2]];
 			}
@@ -105,7 +106,7 @@
 		
 		if(courseGroup) {
 			StellarCoursesTableController *coursesTableController = [[StellarCoursesTableController alloc] initWithCourseGroup:courseGroup];
-			[rootController.navigationController pushViewController:coursesTableController animated:NO]; 			 
+			[self.moduleHomeController.navigationController pushViewController:coursesTableController animated:NO]; 			 
 			
 			if ([pathComponents count] > 2) {
 				NSString *courseId = [pathComponents objectAtIndex:2];
@@ -123,10 +124,10 @@
 		
 	} else if ([pathRoot isEqualToString:@"search-begin"] || [pathRoot isEqualToString:@"search-complete"]) {
 		// need to force the view to load before activating the doSearch method
-		(void)rootController.view;
-		[rootController doSearch:query execute:[pathRoot isEqualToString:@"search-complete"]];
+		(void)self.moduleHomeController.view;
+		[(StellarMainTableController *)self.moduleHomeController doSearch:query execute:[pathRoot isEqualToString:@"search-complete"]];
 	}
-
+*/
 	return YES;
 }
 
