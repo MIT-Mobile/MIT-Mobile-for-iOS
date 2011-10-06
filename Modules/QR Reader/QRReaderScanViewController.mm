@@ -18,10 +18,8 @@
 
 @interface QRReaderScanViewController ()
 
-#if !defined(TARGET_IPHONE_SIMULATOR)
 @property (nonatomic,retain) AVCaptureSession *captureSession;
 @property (nonatomic,retain) AVCaptureVideoPreviewLayer *previewLayer;
-#endif
 @property (nonatomic,retain) QRReaderOverlayView *overlayView;
 @property (nonatomic,retain) UILabel *adviceLabel;
 @property (nonatomic) BOOL isCaptureActive;
@@ -33,10 +31,8 @@
 
 @implementation QRReaderScanViewController
 
-#if !defined(TARGET_IPHONE_SIMULATOR)
 @synthesize captureSession = _captureSession;
 @synthesize previewLayer = _previewLayer;
-#endif
 
 @synthesize overlayView = _overlayView;
 @synthesize adviceLabel;
@@ -81,10 +77,8 @@
     self.cancelButton = nil;
     self.overlayView = nil;
     
-#if !defined(TARGET_IPHONE_SIMULATOR)
     self.captureSession = nil;
     self.previewLayer = nil;
-#endif
     [super dealloc];
 }
 
@@ -114,9 +108,7 @@
     [self stopCapture];
     self.overlayView = nil;
     
-#if !defined(TARGET_IPHONE_SIMULATOR)
     self.previewLayer = nil;
-#endif
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -129,10 +121,6 @@
 #pragma mark -
 #pragma mark Private Methods
 - (BOOL)startCapture {
-#if defined(TARGET_IPHONE_SIMULATOR)
-    self.isCaptureActive = NO;
-    return NO;
-#else
     NSError *error = nil;
     AVCaptureDeviceInput *inputDevice = [AVCaptureDeviceInput deviceInputWithDevice:[AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo]        
                                                                               error:&error];
@@ -188,7 +176,6 @@
     [self.view insertSubview:self.adviceLabel aboveSubview:self.overlayView];
     
     return (self.captureSession != nil);
-#endif
 }
 
 - (void)stopCapture {
@@ -196,10 +183,8 @@
         return;
     }
     
-#if !defined(TARGET_IPHONE_SIMULATOR)
     [self.captureSession stopRunning];
     self.captureSession = nil;
-#endif
     
     self.isCaptureActive = NO;
 }
@@ -233,7 +218,6 @@
 }
 
 
-#if !defined(TARGET_IPHONE_SIMULATOR)
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate
 - (void)captureOutput:(AVCaptureOutput*)captureOutput
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
@@ -330,7 +314,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [pool drain];
 }
-#endif
 
 #pragma mark -
 #pragma mark DecoderDelegate (ZXing)
