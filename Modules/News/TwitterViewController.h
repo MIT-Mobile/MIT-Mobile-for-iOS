@@ -40,7 +40,7 @@
 	UITextField *usernameField;
 	UITextField *passwordField;
 	
-	UITextField *messageField;
+	UITextView *messageField;
 	
 	XAuthTwitterEngine *twitterEngine;
 	BOOL authenticationRequestInProcess;
