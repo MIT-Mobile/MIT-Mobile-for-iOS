@@ -212,11 +212,18 @@
 // Call these instead of [appDelegate.tabbar presentModal...], because dismissing that crashes the app
 // Also, presenting a transparent modal view controller (e.g. DatePickerViewController) the traditional way causes the screen behind to go black.
 - (void)presentAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    [self.window.rootViewController presentModalViewController:viewController animated:animated];
+    if (self.rootNavigationController.modalViewController == nil) 
+    {
+        [self.rootNavigationController presentModalViewController:viewController
+                                                         animated:animated];
+    }
 }
 
 - (void)dismissAppModalViewControllerAnimated:(BOOL)animated {
-    [self.window.rootViewController dismissModalViewControllerAnimated:animated];
+    if (self.rootNavigationController.modalViewController) 
+    {
+        [self.rootNavigationController dismissModalViewControllerAnimated:animated];
+    }
 }
 
 #pragma mark -
