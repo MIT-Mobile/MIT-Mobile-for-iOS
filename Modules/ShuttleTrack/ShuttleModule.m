@@ -63,10 +63,12 @@
 }
 
 - (BOOL) handleLocalPath:(NSString *)localPath query:(NSString *)query {
-    // Since there are no failure conditions when
-    // handling local requests to the Shuttle module,
-    // just ensure we are the active module
-    [self becomeActiveModule];
+    if ([[[MITAppDelegate() rootNavigationController] viewControllers] containsObject:self.moduleHomeController]) {
+        [[MITAppDelegate() rootNavigationController] popToViewController:self.moduleHomeController animated:NO];
+    } else {
+        [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+    }
     
     if (localPath.length == 0) {
 		return YES;
