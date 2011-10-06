@@ -1209,7 +1209,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
-				WARNING_CFLAGS = "-Werror";
+				WARNING_CFLAGS = "";
 			};
 			name = Debug;
 		};
@@ -1225,7 +1225,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
-				WARNING_CFLAGS = "-Werror";
+				WARNING_CFLAGS = "";
 			};
 			name = Release;
 		};
