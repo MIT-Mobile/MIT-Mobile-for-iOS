@@ -85,7 +85,7 @@
 		region.span = span;
 	}
 	
-	if (localPath.length==0) {
+	if (localPath.length == 0) {
 		if (regionDictionary != nil) {
 			// if the only user preset is the map's region, set it.	
 			self.campusMapVC.mapView.region = region;

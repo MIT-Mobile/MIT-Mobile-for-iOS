@@ -58,7 +58,7 @@
 		[self removeSubscriptionByNotification:aNotification];
 	}
 	
-	if([self isActiveTab]) {
+	if([[MITAppDelegate() rootNavigationController] visibleViewController] == self.moduleHomeController) {
 		[MITUnreadNotifications removeNotificationsForModuleTag:self.tag];
 	}
 }

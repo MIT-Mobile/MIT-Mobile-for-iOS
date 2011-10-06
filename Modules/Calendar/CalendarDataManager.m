@@ -118,7 +118,7 @@ static CalendarDataManager *s_sharedManager = nil;
 }
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return ([[MITAppDelegate() activeModuleTag] isEqualToString:CalendarTag]);
+	return YES;
 }
 
 - (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
