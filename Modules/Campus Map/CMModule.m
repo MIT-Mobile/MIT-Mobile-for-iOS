@@ -6,7 +6,7 @@
 #import "MITModule+Protected.h"
 
 @implementation CMModule
-@synthesize campusMapVC = _campusMapVC;
+@dynamic campusMapVC;
 
 - (id) init {
     self = [super init];
@@ -26,14 +26,16 @@
     CampusMapViewController *controller = [[[CampusMapViewController alloc] init] autorelease];
     controller.campusMapModule = self;
     
-    self.campusMapVC = controller;
     self.moduleHomeController = controller;
+}
+
+- (CampusMapViewController*)campusMapVC
+{
+    return ((CampusMapViewController*)self.moduleHomeController);
 }
 
 -(void) dealloc
 {
-	self.campusMapVC = nil;
-	
 	[super dealloc];
 }
 
@@ -84,118 +86,124 @@
 		span.longitudeDelta = [[regionDictionary objectForKey:@"spanLong"] doubleValue];
 		region.span = span;
 	}
+    
+    // 
 	
 	if (localPath.length == 0) {
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+        
 		if (regionDictionary != nil) {
 			// if the only user preset is the map's region, set it.	
 			self.campusMapVC.mapView.region = region;
 		}
 		return YES;
 	}
-	
-	NSMutableArray *components = [NSMutableArray arrayWithArray:[localPath componentsSeparatedByString:@"/"]];
-	NSString *pathRoot = [components objectAtIndex:0];
-	
-	if ([pathRoot isEqualToString:@"search"] || [pathRoot isEqualToString:@"list"] || [pathRoot isEqualToString:@"detail"]) {
-		// populate search bar
-		self.campusMapVC.searchBar.text = query;
-		self.campusMapVC.lastSearchText = query;
-		self.campusMapVC.hasSearchResults = YES;
-		
-		// grab our search results
-		NSString* docsFolder = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-		NSString* searchResultsFilename = [docsFolder stringByAppendingPathComponent:@"searchResults.plist"];
-		NSArray* searchResultsArray = [NSArray array];
-		if ([[[NSUserDefaults standardUserDefaults] objectForKey:CachedMapSearchQueryKey] isEqualToString:query]) {
-			if ([[NSFileManager defaultManager] fileExistsAtPath:searchResultsFilename]) {
-				searchResultsArray = [NSArray arrayWithContentsOfFile:searchResultsFilename];
-			}
-	
-		
-			NSMutableArray* searchResultsArr = [NSMutableArray arrayWithCapacity:searchResultsArray.count];
-		
-			for (NSDictionary* info in searchResultsArray)
-			{
-				MITMapSearchResultAnnotation* annotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:info] autorelease];
-				[searchResultsArr addObject:annotation];
-			}
-			// this will remove old annotations and add the new ones. 
-			[self.campusMapVC setSearchResultsWithoutRecentering:searchResultsArr];
-		} else {
-			// perform the search from the network
-			[self.campusMapVC search:query];
+    else
+    {
+        
+        NSMutableArray *components = [NSMutableArray arrayWithArray:[localPath componentsSeparatedByString:@"/"]];
+        NSString *pathRoot = [components objectAtIndex:0];
+        
+        if ([pathRoot isEqualToString:@"search"] || [pathRoot isEqualToString:@"list"] || [pathRoot isEqualToString:@"detail"]) {
+            // make sure the map is the active bar
             [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
-			return YES;
-		}
-
-		MITMapSearchResultAnnotation* currentAnnotation = nil;
-
-		if (components.count > 1) {
-			// if there is a building number, show callout
-			NSString* annotationUniqueID = nil;
-			if ([pathRoot isEqualToString:@"list"] && components.count > 2) {
-				annotationUniqueID = [components objectAtIndex:2];
-			} else {
-				annotationUniqueID = [components objectAtIndex:1];
-			}
-
-			
-			// look for the selected annotation among the array of annotations
-			for (MITMapSearchResultAnnotation* annotation in self.campusMapVC.mapView.annotations) {
-				if([[(MITMapSearchResultAnnotation*)annotation uniqueID] isEqualToString:annotationUniqueID]) {
-					[self.campusMapVC.mapView selectAnnotation:annotation animated:NO withRecenter:NO];
-					currentAnnotation = (MITMapSearchResultAnnotation*)annotation;
-				}
-			}
-		}
-		
-		
-        MITMapDetailViewController *detailsVC = nil;
-		if ([pathRoot isEqualToString:@"list"]) {
-			[self.campusMapVC showListView:YES];
-			
-			if (components.count > 1) {
-				[components removeObjectAtIndex:0];
-			}
-		}
-		else if ([pathRoot isEqualToString:@"detail"])
-        {	
-			// push the details page onto the stack for the item selected. 
-			detailsVC = [[[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
-																								  bundle:nil] autorelease];
-			
-			detailsVC.annotation = currentAnnotation;
-			detailsVC.title = @"Info";
-			detailsVC.campusMapVC = self.campusMapVC;
-			if (components.count > 2)
-				detailsVC.startingTab = [[components objectAtIndex:2] intValue];
-			
-			if(self.campusMapVC.lastSearchText != nil && self.campusMapVC.lastSearchText.length > 0) {
-				detailsVC.queryText = self.campusMapVC.lastSearchText;
-			}				
-		}
-		
-		if ([[components lastObject] isEqualToString:@"userLoc"]) {
-			self.campusMapVC.mapView.stayCenteredOnUserLocation = YES;
-			self.campusMapVC.geoButton.style = UIBarButtonItemStyleDone;
-		} else {
-			if (regionDictionary != nil) {
-				self.campusMapVC.mapView.region = region;
-			}
-		}
-		// set the url's path and query to these
-		[self.campusMapVC.url setPath:localPath query:query];
-		[self.campusMapVC.url setAsModulePath];
+            
+            // populate search bar
+            self.campusMapVC.searchBar.text = query;
+            self.campusMapVC.lastSearchText = query;
+            self.campusMapVC.hasSearchResults = YES;
+            
+            // grab our search results
+            NSString* docsFolder = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+            NSString* searchResultsFilename = [docsFolder stringByAppendingPathComponent:@"searchResults.plist"];
+            NSArray* searchResultsArray = [NSArray array];
+            if ([[[NSUserDefaults standardUserDefaults] objectForKey:CachedMapSearchQueryKey] isEqualToString:query]) {
+                if ([[NSFileManager defaultManager] fileExistsAtPath:searchResultsFilename]) {
+                    searchResultsArray = [NSArray arrayWithContentsOfFile:searchResultsFilename];
+                }
         
-        // make sure the map is the active bar
-        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
-        
-        if (detailsVC) {
-            [[MITAppDelegate() rootNavigationController] pushViewController:detailsVC
-                                                                   animated:YES];
+            
+                NSMutableArray* searchResultsArr = [NSMutableArray arrayWithCapacity:searchResultsArray.count];
+            
+                for (NSDictionary* info in searchResultsArray)
+                {
+                    MITMapSearchResultAnnotation* annotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:info] autorelease];
+                    [searchResultsArr addObject:annotation];
+                }
+                // this will remove old annotations and add the new ones. 
+                [self.campusMapVC setSearchResultsWithoutRecentering:searchResultsArr];
+            } else {
+                // perform the search from the network
+                [self.campusMapVC search:query];
+                return YES;
+            }
+
+            MITMapSearchResultAnnotation* currentAnnotation = nil;
+
+            if (components.count > 1) {
+                // if there is a building number, show callout
+                NSString* annotationUniqueID = nil;
+                if ([pathRoot isEqualToString:@"list"] && components.count > 2) {
+                    annotationUniqueID = [components objectAtIndex:2];
+                } else {
+                    annotationUniqueID = [components objectAtIndex:1];
+                }
+
+                
+                // look for the selected annotation among the array of annotations
+                for (MITMapSearchResultAnnotation* annotation in self.campusMapVC.mapView.annotations) {
+                    if([[(MITMapSearchResultAnnotation*)annotation uniqueID] isEqualToString:annotationUniqueID]) {
+                        [self.campusMapVC.mapView selectAnnotation:annotation animated:NO withRecenter:NO];
+                        currentAnnotation = (MITMapSearchResultAnnotation*)annotation;
+                    }
+                }
+            }
+            
+            
+            MITMapDetailViewController *detailsVC = nil;
+            if ([pathRoot isEqualToString:@"list"]) {
+                [self.campusMapVC showListView:YES];
+                
+                if (components.count > 1) {
+                    [components removeObjectAtIndex:0];
+                }
+            }
+            else if ([pathRoot isEqualToString:@"detail"])
+            {	
+                // push the details page onto the stack for the item selected. 
+                detailsVC = [[[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
+                                                                          bundle:nil] autorelease];
+                
+                detailsVC.annotation = currentAnnotation;
+                detailsVC.title = @"Info";
+                detailsVC.campusMapVC = self.campusMapVC;
+                if (components.count > 2)
+                    detailsVC.startingTab = [[components objectAtIndex:2] intValue];
+                
+                if(self.campusMapVC.lastSearchText != nil && self.campusMapVC.lastSearchText.length > 0) {
+                    detailsVC.queryText = self.campusMapVC.lastSearchText;
+                }				
+            }
+            
+            if ([[components lastObject] isEqualToString:@"userLoc"]) {
+                self.campusMapVC.mapView.stayCenteredOnUserLocation = YES;
+                self.campusMapVC.geoButton.style = UIBarButtonItemStyleDone;
+            } else {
+                if (regionDictionary != nil) {
+                    self.campusMapVC.mapView.region = region;
+                }
+            }
+            // set the url's path and query to these
+            [self.campusMapVC.url setPath:localPath query:query];
+            [self.campusMapVC.url setAsModulePath];
+            
+            if (detailsVC) {
+                [[MITAppDelegate() rootNavigationController] pushViewController:detailsVC
+                                                                       animated:YES];
+            }
+            
+            return YES;
         }
-		
-		return YES;
 	}
 	
 	return NO;
