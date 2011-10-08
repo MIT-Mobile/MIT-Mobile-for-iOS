@@ -7,6 +7,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor clearColor];
+    self.title = self.menuElement.displayLabel;
 }
 
 - (void)dealloc
@@ -61,7 +62,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     self.menuElement.currentOptionIndex = indexPath.row;
-    [self.navigationController popViewControllerAnimated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [tableView reloadData];
 }
 
 @end

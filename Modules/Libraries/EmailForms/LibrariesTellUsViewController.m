@@ -4,6 +4,11 @@
 
 @implementation LibrariesTellUsViewController
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.title = @"Tell Us!";
+}
+
 - (NSString *)command {
     return @"sendTellUsEmail";
 }

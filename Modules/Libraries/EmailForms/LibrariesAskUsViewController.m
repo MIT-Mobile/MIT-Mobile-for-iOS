@@ -67,6 +67,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     techHelpSectionHidden = YES;
+    self.title = @"Ask Us!";
 }
 
 - (void)viewDidAppear:(BOOL)animated {

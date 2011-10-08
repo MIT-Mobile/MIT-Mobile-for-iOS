@@ -52,7 +52,7 @@
 
     [self.tableView applyStandardColors];
     
-    self.title = @"Ask Us!";
+    self.title = @"Ask";
 }
 
 - (void)viewDidUnload

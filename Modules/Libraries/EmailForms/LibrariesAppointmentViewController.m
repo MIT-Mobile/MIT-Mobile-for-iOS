@@ -4,6 +4,10 @@
 
 @implementation LibrariesAppointmentViewController
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.title = @"Appointment";
+}
 
 - (NSString *)command {
     return @"sendAskUsEmail"; 
