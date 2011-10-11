@@ -372,7 +372,10 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+    [super viewDidLoad];    
+    
+    
+    // setup the form and event listeners required
     self.tableView.backgroundColor = [UIColor clearColor];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Submit" style:UIBarButtonItemStyleBordered target:self action:@selector(submitForm)];
     self.navigationItem.rightBarButtonItem.enabled = NO;
@@ -405,6 +408,40 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTextInputView:) name:UITextViewTextDidBeginEditingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSubmitButton) name:UITextFieldTextDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSubmitButton) name:UITextViewTextDidChangeNotification object:nil];
+    
+    // force the user to login
+    MITLoadingActivityView *loginLoadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
+    [self.view addSubview:loginLoadingView];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag
+                                                                              command:@"getUserIdentity"
+                                                                           parameters:[NSDictionary dictionary]] autorelease];
+    
+    
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        [self.loadingView removeFromSuperview];
+        
+        if (error) {
+            NSLog(@"Request failed with error: %@",[error localizedDescription]);
+            [MITMobileWebAPI showError:nil header:@"Login" alertViewDelegate:nil];
+            [self.navigationController popViewControllerAnimated:YES];
+        } if (!jsonResult) {
+            [self.navigationController popViewControllerAnimated:YES];    
+        } else {
+            NSNumber *isMITIdentity = [(NSDictionary *)jsonResult objectForKey:@"is_mit_identity"];
+            if ([isMITIdentity boolValue]) {
+                [loginLoadingView removeFromSuperview];
+            } else {
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Not Authorized" message:@"Must login with an MIT account" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
+                [alertView show];
+                [alertView release];
+                [self.navigationController popViewControllerAnimated:YES];
+            }
+        }
+    };
+    
+    LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
+    librariesModule.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
+    [librariesModule.requestQueue addOperation:request];
 }
 
 - (NSArray *)nonHiddenFormGroups {
@@ -675,7 +712,6 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         }
     };
 
-    librariesModule.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
     [librariesModule.requestQueue addOperation:request];
     
     // show a loading indicator
