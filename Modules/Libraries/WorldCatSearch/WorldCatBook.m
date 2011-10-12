@@ -36,6 +36,7 @@
 @synthesize holdings;
 @synthesize lang;
 @synthesize subjects;
+@synthesize summarys;
 
 @synthesize parseFailure;
 
@@ -68,6 +69,7 @@
     self.holdings = nil;
     self.lang = nil;
     self.subjects = nil;
+    self.summarys = nil;
     [super dealloc];
 }
 
@@ -76,6 +78,7 @@
     self.extents = [self arrayOfStringsFromDict:dict key:@"extent"];
     self.lang = [self arrayOfStringsFromDict:dict key:@"lang"];
     self.subjects = [self arrayOfStringsFromDict:dict key:@"subject"];
+    self.summarys = [self arrayOfStringsFromDict:dict key:@"summary"];
     
     NSMutableArray *holdingsArray = [NSMutableArray array];
     for (NSDictionary *holdingDict in [dict objectForKey:@"holdings"]) {

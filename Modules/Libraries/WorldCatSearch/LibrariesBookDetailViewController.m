@@ -59,6 +59,7 @@
 {
     [super viewDidLoad];
     self.activityView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
+    self.activityView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:self.activityView];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self loadBookDetails];
