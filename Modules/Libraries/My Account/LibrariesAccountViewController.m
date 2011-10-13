@@ -1,13 +1,13 @@
 #import "LibrariesAccountViewController.h"
-#import "MITTabView.h"
 #import "LibrariesFinesTableController.h"
 #import "LibrariesHoldsTableController.h"
 #import "LibrariesLoanTableController.h"
 #import "UIKit+MITAdditions.h"
+#import "MITTabViewItem.h"
 
 @interface LibrariesAccountViewController ()
 @property (nonatomic,retain) MITTabView *tabView;
-@property (nonatomic,retain) id finesController;
+@property (nonatomic,retain) LibrariesFinesTableController *finesController;
 @property (nonatomic,retain) LibrariesHoldsTableController *holdsController;
 @property (nonatomic,retain) LibrariesLoanTableController *loansController;
 @end
@@ -47,6 +47,7 @@
         
         MITTabView *tabView = [[[MITTabView alloc] init] autorelease];
         tabView.frame = tabFrame;
+        tabView.delegate = self;
         self.tabView = tabView;
         [mainView addSubview:tabView];
     }
@@ -60,7 +61,7 @@
         
         self.loansController = [[LibrariesLoanTableController alloc] initWithTableView:view];
         [self.tabView addView:view
-                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
+                     withItem:[[[MITTabViewItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
                       animate:NO];
     }
     
@@ -73,7 +74,7 @@
         
         self.finesController = [[LibrariesFinesTableController alloc] initWithTableView:view];
         [self.tabView addView:view
-                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Fines" image:nil tag:1] autorelease]
+                     withItem:[[[MITTabViewItem alloc] initWithTitle:@"Fines" image:nil tag:1] autorelease]
                       animate:NO];
     }
     
@@ -86,7 +87,7 @@
         
         self.holdsController = [[LibrariesHoldsTableController alloc] initWithTableView:view];
         [self.tabView addView:view
-                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Holds" image:nil tag:2] autorelease]
+                     withItem:[[[MITTabViewItem alloc] initWithTitle:@"Holds" image:nil tag:2] autorelease]
                       animate:NO];
     }
     
@@ -118,6 +119,71 @@
 {
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+#pragma mark - MITTabViewDelegate Methods
+- (void)tabView:(MITTabView*)tabView viewWillBecomeActive:(UIView*)view
+{
+    if (view == self.finesController.tableView)
+    {
+        [self.finesController tabWillBecomeActive];
+    }
+    else if (view == self.holdsController.tableView)
+    {
+        [self.holdsController tabWillBecomeActive];
+    }
+    else if (view == self.loansController.tableView)
+    {
+        [self.loansController tabWillBecomeActive];
+    }
+}
+
+- (void)tabView:(MITTabView*)tabView viewDidBecomeActive:(UIView*)view
+{
+    if (view == self.finesController.tableView)
+    {
+        [self.finesController tabDidBecomeActive];
+    }
+    else if (view == self.holdsController.tableView)
+    {
+        [self.holdsController tabDidBecomeActive];
+    }
+    else if (view == self.loansController.tableView)
+    {
+        [self.loansController tabDidBecomeActive];
+    }
+}
+
+- (void)tabView:(MITTabView*)tabView viewWillBecomeInactive:(UIView*)view
+{
+    if (view == self.finesController.tableView)
+    {
+        [self.finesController tabDidBecomeInactive];
+    }
+    else if (view == self.holdsController.tableView)
+    {
+        [self.holdsController tabDidBecomeInactive];
+    }
+    else if (view == self.loansController.tableView)
+    {
+        [self.loansController tabDidBecomeInactive];
+    }
+}
+
+- (void)tabView:(MITTabView*)tabView viewDidBecomeInactive:(UIView*)view
+{
+    if (view == self.finesController.tableView)
+    {
+        [self.finesController tabWillBecomeInactive];
+    }
+    else if (view == self.holdsController.tableView)
+    {
+        [self.holdsController tabWillBecomeInactive];
+    }
+    else if (view == self.loansController.tableView)
+    {
+        [self.loansController tabWillBecomeInactive];
+    }
 }
 
 @end
