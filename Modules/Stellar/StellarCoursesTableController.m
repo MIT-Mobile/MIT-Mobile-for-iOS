@@ -1,7 +1,7 @@
 #import "StellarCoursesTableController.h"
 #import "StellarCourse.h"
 #import "StellarClassesTableController.h"
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MITModule.h"
 #import "UIKit+MITAdditions.h"
 #import "MultiLineTableViewCell.h"

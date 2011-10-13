@@ -2,11 +2,6 @@
 
 @class CampusMapViewController;
 
-@interface CMModule : MITModule {
-
-	CampusMapViewController* _campusMapVC;
-}
-
-@property (nonatomic, retain) CampusMapViewController* campusMapVC;
-
+@interface CMModule : MITModule
+@property (nonatomic, readonly) CampusMapViewController* campusMapVC;
 @end

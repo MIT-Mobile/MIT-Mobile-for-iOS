@@ -2,6 +2,7 @@
 #import "MITConstants.h"
 #import "FacilitiesRootViewController.h"
 
+#import "MITModule+Protected.h"
 
 @implementation FacilitiesModule
 - (id) init {
@@ -11,24 +12,19 @@
         self.shortName = @"Bldg Services";
         self.longName = @"Building Services";
         self.iconName = @"facilities";
-        self.isMovableTab = FALSE;
-        _viewController = nil;
     }
     return self;
 }
 
 - (void)dealloc {
-    [_viewController release];
     [super dealloc];
 }
 
-- (UIViewController *)moduleHomeController {
-    if (_viewController == nil) {
-        _viewController = [[FacilitiesRootViewController alloc] initWithNibName:@"FacilitiesRootViewController"
-                                                                         bundle:nil];
-    }
-    
-    return _viewController;
+- (void)loadModuleHomeController
+{
+    FacilitiesRootViewController *controller = [[FacilitiesRootViewController alloc] initWithNibName:@"FacilitiesRootViewController"
+                                                                                              bundle:nil];
+    self.moduleHomeController = [controller autorelease];
 }
 
 @end

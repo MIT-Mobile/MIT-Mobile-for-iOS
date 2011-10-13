@@ -1,8 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "MITModule.h"
 
-@interface FacilitiesModule : MITModule {
-    UIViewController *_viewController;
-}
+@interface FacilitiesModule : MITModule
 
 @end

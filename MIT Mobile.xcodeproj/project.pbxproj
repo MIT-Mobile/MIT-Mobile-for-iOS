@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -173,14 +173,12 @@
 		DE2E588212B81029009857A1 /* CorridorListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2E588012B81029009857A1 /* CorridorListViewController.m */; };
 		DE2E58E012B81529009857A1 /* CorridorStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2E58DE12B81529009857A1 /* CorridorStory.m */; };
 		DE2E59A412B86C3B009857A1 /* CorridorDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2E59A212B86C3B009857A1 /* CorridorDetailViewController.m */; };
-		DE47589710D0BEE700139BC1 /* MITTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE47589510D0BEE700139BC1 /* MITTabBarController.m */; };
 		DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4AB0B310ED5148007476D9 /* NewsStory.m */; };
 		DE5E99D31124B57C00498760 /* emergency_template.html in Resources */ = {isa = PBXBuildFile; fileRef = DE5E99D21124B57C00498760 /* emergency_template.html */; };
 		DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */; };
 		DE6D32F610346D02008A5823 /* ShuttleModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D32F510346D02008A5823 /* ShuttleModule.m */; };
 		DE6D332B10346F6D008A5823 /* ShuttleRoutes.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D332A10346F6D008A5823 /* ShuttleRoutes.m */; };
 		DE6D570610F05C59006431A8 /* TabScrollerBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D570510F05C59006431A8 /* TabScrollerBackgroundView.m */; };
-		DE6D907111095B2D00DAF213 /* MITMoreListController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D907011095B2D00DAF213 /* MITMoreListController.m */; };
 		DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */; };
 		DE6F045A11139CA40046684B /* FBConnectGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6F044811139CA40046684B /* FBConnectGlobal.m */; };
 		DE6F045B11139CA40046684B /* FBSession.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6F044A11139CA40046684B /* FBSession.m */; };
@@ -197,7 +195,7 @@
 		DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705498103FB79D003B5F41 /* EmergencyModule.m */; };
 		DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE70549A103FB79D003B5F41 /* EmergencyViewController.m */; };
 		DE715349102FC897005E6111 /* MITModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE715348102FC897005E6111 /* MITModule.m */; };
-		DE71537C102FD66A005E6111 /* MITModuleList.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71537B102FD66A005E6111 /* MITModuleList.m */; };
+		DE71537C102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71537B102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m */; };
 		DE71F6E3104234F900661DED /* ShuttleRouteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */; };
 		DE71F7D510424E3400661DED /* ShuttleStop.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F7D410424E3400661DED /* ShuttleStop.m */; };
 		DE7287591350A1F60088450A /* MultiControlCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE7287581350A1F60088450A /* MultiControlCell.m */; };
@@ -211,7 +209,6 @@
 		DE81CF6210C6BC390085573D /* NewsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE81CF6110C6BC390085573D /* NewsModule.m */; };
 		DE81CF6610C6BC630085573D /* MobileWebModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE81CF6510C6BC630085573D /* MobileWebModule.m */; };
 		DE821E8110EAB4F500B4C4C8 /* UIKit+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */; };
-		DE8ECED810F27F9C00D4C5CE /* MITTabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = DE8ECED710F27F9C00D4C5CE /* MITTabBarItem.m */; };
 		DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */; };
 		DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B48C10C9BB7300BDA774 /* AboutModule.m */; };
 		DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B6F710CB126200BDA774 /* MITConstants.m */; };
@@ -460,6 +457,7 @@
 		2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationViewController.m; sourceTree = "<group>"; };
 		2C03C6D2137C66100005F1FC /* HighlightTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightTableViewCell.h; sourceTree = "<group>"; };
 		2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightTableViewCell.m; sourceTree = "<group>"; };
+		2C0865A41435FCB900A092D2 /* MIT_MobileAppDelegate+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MIT_MobileAppDelegate+Private.h"; path = "App Delegate/MIT_MobileAppDelegate+Private.h"; sourceTree = "<group>"; };
 		2C09824A13A8F21D00778B53 /* ModuleVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModuleVersions.h; sourceTree = "<group>"; };
 		2C09824B13A8F21D00778B53 /* ModuleVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModuleVersions.m; sourceTree = "<group>"; };
 		2C0A33691355CEF300786493 /* QRReaderImageTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderImageTransformer.h; sourceTree = "<group>"; };
@@ -498,6 +496,7 @@
 		2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesSummaryViewController.m; sourceTree = "<group>"; };
 		2C95A1D7137DB24D0025B28D /* FacilitiesSummaryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesSummaryViewController.xib; sourceTree = "<group>"; };
 		2C96776113575E8900F52BDB /* QRReaderResultTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderResultTransform.h; sourceTree = "<group>"; };
+		2C96FD93143CA3C500A2E798 /* MITModule+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MITModule+Protected.h"; sourceTree = "<group>"; };
 		2C99DCAD1370508D00114A9A /* HighlightLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightLabel.h; sourceTree = "<group>"; };
 		2C99DCAE1370508D00114A9A /* HighlightLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightLabel.m; sourceTree = "<group>"; };
 		2C99DCDF1370782200114A9A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
@@ -687,8 +686,6 @@
 		DE2E58DE12B81529009857A1 /* CorridorStory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CorridorStory.m; sourceTree = "<group>"; };
 		DE2E59A112B86C3B009857A1 /* CorridorDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CorridorDetailViewController.h; sourceTree = "<group>"; };
 		DE2E59A212B86C3B009857A1 /* CorridorDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CorridorDetailViewController.m; sourceTree = "<group>"; };
-		DE47589410D0BEE700139BC1 /* MITTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITTabBarController.h; path = "App Delegate/MITTabBarController.h"; sourceTree = "<group>"; };
-		DE47589510D0BEE700139BC1 /* MITTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITTabBarController.m; path = "App Delegate/MITTabBarController.m"; sourceTree = "<group>"; };
 		DE4AB0B210ED5148007476D9 /* NewsStory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsStory.h; sourceTree = "<group>"; };
 		DE4AB0B310ED5148007476D9 /* NewsStory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsStory.m; sourceTree = "<group>"; };
 		DE5E99D21124B57C00498760 /* emergency_template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = emergency_template.html; path = Resources/emergency_template.html; sourceTree = "<group>"; };
@@ -700,8 +697,6 @@
 		DE6D332A10346F6D008A5823 /* ShuttleRoutes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleRoutes.m; sourceTree = "<group>"; };
 		DE6D570410F05C59006431A8 /* TabScrollerBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabScrollerBackgroundView.h; sourceTree = "<group>"; };
 		DE6D570510F05C59006431A8 /* TabScrollerBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabScrollerBackgroundView.m; sourceTree = "<group>"; };
-		DE6D906F11095B2D00DAF213 /* MITMoreListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMoreListController.h; path = "App Delegate/MITMoreListController.h"; sourceTree = "<group>"; };
-		DE6D907011095B2D00DAF213 /* MITMoreListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMoreListController.m; path = "App Delegate/MITMoreListController.m"; sourceTree = "<group>"; };
 		DE6D9318110A8EFA00DAF213 /* SettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsTableViewController.h; path = Settings/SettingsTableViewController.h; sourceTree = "<group>"; };
 		DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingsTableViewController.m; path = Settings/SettingsTableViewController.m; sourceTree = "<group>"; };
 		DE6F044611139CA40046684B /* FBConnect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FBConnect.h; path = "Facebook Connect/FBConnect/FBConnect.h"; sourceTree = "<group>"; };
@@ -734,8 +729,8 @@
 		DE70549A103FB79D003B5F41 /* EmergencyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmergencyViewController.m; sourceTree = "<group>"; };
 		DE715347102FC897005E6111 /* MITModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITModule.h; sourceTree = "<group>"; };
 		DE715348102FC897005E6111 /* MITModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITModule.m; sourceTree = "<group>"; };
-		DE71537A102FD66A005E6111 /* MITModuleList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITModuleList.h; path = "App Delegate/MITModuleList.h"; sourceTree = "<group>"; };
-		DE71537B102FD66A005E6111 /* MITModuleList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITModuleList.m; path = "App Delegate/MITModuleList.m"; sourceTree = "<group>"; };
+		DE71537A102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MIT_MobileAppDelegate+ModuleList.h"; path = "App Delegate/MIT_MobileAppDelegate+ModuleList.h"; sourceTree = "<group>"; };
+		DE71537B102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MIT_MobileAppDelegate+ModuleList.m"; path = "App Delegate/MIT_MobileAppDelegate+ModuleList.m"; sourceTree = "<group>"; };
 		DE71F6E1104234F900661DED /* ShuttleRouteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleRouteViewController.h; sourceTree = "<group>"; };
 		DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleRouteViewController.m; sourceTree = "<group>"; };
 		DE71F7D310424E3400661DED /* ShuttleStop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleStop.h; sourceTree = "<group>"; };
@@ -760,8 +755,6 @@
 		DE81CF6510C6BC630085573D /* MobileWebModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileWebModule.m; sourceTree = "<group>"; };
 		DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIKit+MITAdditions.h"; sourceTree = "<group>"; };
 		DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIKit+MITAdditions.m"; sourceTree = "<group>"; };
-		DE8ECED610F27F9C00D4C5CE /* MITTabBarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITTabBarItem.h; path = "App Delegate/MITTabBarItem.h"; sourceTree = "<group>"; };
-		DE8ECED710F27F9C00D4C5CE /* MITTabBarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITTabBarItem.m; path = "App Delegate/MITTabBarItem.m"; sourceTree = "<group>"; };
 		DE9EFBD010FE7D8900F5F07E /* SettingsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsModule.h; path = Settings/SettingsModule.h; sourceTree = "<group>"; };
 		DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingsModule.m; path = Settings/SettingsModule.m; sourceTree = "<group>"; };
 		DEA3B48B10C9BB7300BDA774 /* AboutModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutModule.h; sourceTree = "<group>"; };
@@ -1023,6 +1016,7 @@
 				296F086410CDDF07004B02E4 /* MITMobileWebAPI.h */,
 				296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */,
 				DE715347102FC897005E6111 /* MITModule.h */,
+				2C96FD93143CA3C500A2E798 /* MITModule+Protected.h */,
 				DE715348102FC897005E6111 /* MITModule.m */,
 				29E308841176018C005211A7 /* MITModuleURL.h */,
 				29E308851176018C005211A7 /* MITModuleURL.m */,
@@ -1742,16 +1736,11 @@
 				2978864210F03656002670CC /* MITDeviceRegistration.m */,
 				2978864310F03656002670CC /* MITUnreadNotifications.h */,
 				2978864410F03656002670CC /* MITUnreadNotifications.m */,
+				2C0865A41435FCB900A092D2 /* MIT_MobileAppDelegate+Private.h */,
 				1D3623240D0F684500981E51 /* MIT_MobileAppDelegate.h */,
 				1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */,
-				DE71537A102FD66A005E6111 /* MITModuleList.h */,
-				DE71537B102FD66A005E6111 /* MITModuleList.m */,
-				DE47589410D0BEE700139BC1 /* MITTabBarController.h */,
-				DE47589510D0BEE700139BC1 /* MITTabBarController.m */,
-				DE8ECED610F27F9C00D4C5CE /* MITTabBarItem.h */,
-				DE8ECED710F27F9C00D4C5CE /* MITTabBarItem.m */,
-				DE6D906F11095B2D00DAF213 /* MITMoreListController.h */,
-				DE6D907011095B2D00DAF213 /* MITMoreListController.m */,
+				DE71537A102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.h */,
+				DE71537B102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m */,
 			);
 			name = "App Delegate";
 			sourceTree = "<group>";
@@ -2080,8 +2069,11 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MIT Mobile" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -2226,6 +2218,7 @@
 				EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */,
 				DE2E59A412B86C3B009857A1 /* CorridorDetailViewController.m in Sources */,
 				DE2E588212B81029009857A1 /* CorridorListViewController.m in Sources */,
+				1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */,
 				DE2E58E012B81529009857A1 /* CorridorStory.m in Sources */,
 				EB4C409B1288974C00058748 /* DataCache.m in Sources */,
 				EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */,
@@ -2304,17 +2297,13 @@
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
 				296F086610CDDF07004B02E4 /* MITMobileWebAPI.m in Sources */,
 				DE715349102FC897005E6111 /* MITModule.m in Sources */,
-				DE71537C102FD66A005E6111 /* MITModuleList.m in Sources */,
+				DE71537C102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m in Sources */,
 				29E308871176018C005211A7 /* MITModuleURL.m in Sources */,
-				DE6D907111095B2D00DAF213 /* MITMoreListController.m in Sources */,
 				4463CC9910D6F4A50048CA83 /* MITProjection.m in Sources */,
 				EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */,
 				EB4C3A8C1283812A00058748 /* MITSpringboard.m in Sources */,
-				DE47589710D0BEE700139BC1 /* MITTabBarController.m in Sources */,
-				DE8ECED810F27F9C00D4C5CE /* MITTabBarItem.m in Sources */,
 				EB4C2525127A0E8F00058748 /* MITThumbnailView.m in Sources */,
 				2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */,
-				1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */,
 				44ACF76E1187884300F1F4B2 /* MapBookmarkManager.m in Sources */,
 				4463CC9210D6F4A50048CA83 /* MapLevel.m in Sources */,
 				44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */,
@@ -2520,7 +2509,10 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2535,7 +2527,6 @@
 					"-all_load",
 					"-ObjC",
 				);
-				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 			};
@@ -2544,7 +2535,10 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2558,7 +2552,6 @@
 					"-all_load",
 					"-ObjC",
 				);
-				PREBINDING = NO;
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -2566,7 +2559,10 @@
 		DE30C9EE112205BA00598A1A /* Distribution - App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Massachusetts Institute of Technology";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2581,7 +2577,6 @@
 					"-all_load",
 					"-ObjC",
 				);
-				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -2618,7 +2613,10 @@
 		DEF93C661110C9C4009DF154 /* Distribution - Ad Hoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Massachusetts Institute of Technology";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -2634,7 +2632,6 @@
 					"-all_load",
 					"-ObjC",
 				);
-				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

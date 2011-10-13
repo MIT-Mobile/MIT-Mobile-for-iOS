@@ -1,7 +1,5 @@
 #import "MITModule.h"
 
-@interface QRReaderModule : MITModule {
-    UIViewController *_viewController;
-}
+@interface QRReaderModule : MITModule
 
 @end

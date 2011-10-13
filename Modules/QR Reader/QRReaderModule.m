@@ -1,6 +1,6 @@
 #import "QRReaderModule.h"
-
 #import "QRReaderHistoryViewController.h"
+#import "MITModule+Protected.h"
 
 
 @implementation QRReaderModule
@@ -12,23 +12,18 @@
         self.shortName = @"QR Reader";
         self.longName = @"QR Reader";
         self.iconName = @"qrreader";
-        self.isMovableTab = FALSE;
-        _viewController = nil;
     }
+    
     return self;
 }
 
 - (void)dealloc {
-    [_viewController release];
     [super dealloc];
 }
 
-- (UIViewController *)moduleHomeController {
-    if (_viewController == nil) {
-        _viewController = [[QRReaderHistoryViewController alloc] init];
-    }
-    
-    return _viewController;
+- (void)loadModuleHomeController
+{
+    self.moduleHomeController = [[[QRReaderHistoryViewController alloc] init] autorelease];
 }
 
 @end

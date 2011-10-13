@@ -126,7 +126,7 @@ static QRReaderResultTransform *_sharedResultTransform = nil;
     return NSUIntegerMax;
 }
 
-- (void)release {
+- (oneway void)release {
     return;
 }
 

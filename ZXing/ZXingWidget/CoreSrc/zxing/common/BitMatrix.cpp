@@ -92,9 +92,6 @@ void BitMatrix::clear() {
 }
 
 void BitMatrix::setRegion(size_t left, size_t top, size_t width, size_t height) {
-  if (top < 0 || left < 0) {
-    throw IllegalArgumentException("topI and leftJ must be nonnegative");
-  }
   if (height < 1 || width < 1) {
     throw IllegalArgumentException("height and width must be at least 1");
   }

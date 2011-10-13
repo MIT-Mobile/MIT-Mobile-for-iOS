@@ -91,9 +91,8 @@
     }
     vc.sideTrip = self.sideTrip;
     
-	UINavigationController *dummyNavC = [[[UINavigationController alloc] initWithRootViewController:vc] autorelease];
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate presentAppModalViewController:dummyNavC animated:YES];
+    [MITAppDelegate() presentAppModalViewController:vc
+                                           animated:YES];
 }
 
 #pragma mark Audio

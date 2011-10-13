@@ -1,5 +1,5 @@
 #import "MIT_MobileAppDelegate.h"
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MITModule.h"
 #import "MITUnreadNotifications.h"
 #import "StellarDetailViewController.h"

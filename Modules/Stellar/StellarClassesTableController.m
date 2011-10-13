@@ -2,7 +2,7 @@
 #import "StellarCoursesTableController.h"
 #import "StellarDetailViewController.h"
 #import "StellarClassTableCell.h"
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MITModule.h"
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
@@ -59,19 +59,15 @@
 	
 	[self.tableView applyStandardCellHeight];
 	
-    CGRect loadingFrame = self.view.frame;
-    CGFloat navbarHeight = self.navigationController.navigationBar.frame.size.height;
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    loadingFrame.origin.y += navbarHeight;
-    loadingFrame.size.height -= (navbarHeight + appDelegate.tabBarController.tabBar.frame.size.height);
-    
+    CGRect loadingFrame = [MITAppDelegate() rootNavigationController].view.bounds;
 	self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
 	
 	[self showLoadingView];
 	
 	[StellarModel loadClassesForCourse:course delegate:self.currentClassLoader];
 	
-	[url setPathWithViewController:self extension:course.number];
+	[url setPathWithViewController:self
+                         extension:course.number];
 }
 
 - (void) viewDidAppear: (BOOL)animated {

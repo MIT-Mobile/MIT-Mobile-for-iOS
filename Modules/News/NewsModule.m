@@ -1,6 +1,8 @@
 #import "NewsModule.h"
 #import "StoryListViewController.h"
 
+#import "MITModule+Protected.h"
+
 @implementation NewsModule
 
 @synthesize storyListChannelController;
@@ -12,18 +14,15 @@
         self.shortName = @"News";
         self.longName = @"News Office";
         self.iconName = @"news";
-        
-        //storyListChannelController = [[StoryListViewController alloc] init];
-        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:storyListChannelController]];
     }
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!storyListChannelController) {
-        storyListChannelController = [[StoryListViewController alloc] init];
-    }
-    return storyListChannelController;
+- (void)loadModuleHomeController
+{
+    StoryListViewController *controller = [[[StoryListViewController alloc] init] autorelease];
+    
+    self.moduleHomeController = controller;
 }
 
 - (void)dealloc {

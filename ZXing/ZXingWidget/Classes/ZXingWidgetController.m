@@ -20,6 +20,7 @@
 #import "ResultParser.h"
 #import "ParsedResult.h"
 #import "ResultAction.h"
+#import "TwoDDecoderResult.h"
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
@@ -251,7 +252,9 @@
 
 - (void)decoder:(Decoder *)decoder didDecodeImage:(UIImage *)image usingSubset:(UIImage *)subset withResult:(TwoDDecoderResult *)twoDResult {
   [self presentResultForString:[twoDResult text]];
-  [self presentResultPoints:[twoDResult points] forImage:image usingSubset:subset];
+  [self presentResultPoints:[NSMutableArray arrayWithArray:[twoDResult points]]
+                   forImage:image
+                usingSubset:subset];
   // now, in a selector, call the delegate to give this overlay time to show the points
   [self performSelector:@selector(alertDelegate:) withObject:[[twoDResult text] copy] afterDelay:0.0];
   decoder.delegate = nil;

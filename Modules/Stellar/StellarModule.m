@@ -1,6 +1,6 @@
 #import "StellarModule.h"
 #import "StellarMainTableController.h"
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "StellarModel.h"
 #import "StellarAnnouncementViewController.h"
 #import "StellarDetailViewController.h"
@@ -8,9 +8,9 @@
 #import "StellarCoursesTableController.h"
 #import "MITConstants.h"
 
-@implementation StellarModule
+#import "MITModule+Protected.h"
 
-@synthesize navigationController;
+@implementation StellarModule
 
 - (id)init
 {
@@ -21,21 +21,13 @@
         self.longName = @"MIT Stellar";
         self.iconName = @"stellar";
         self.pushNotificationSupported = YES;
-        
-        //moduleHomeController.title = self.longName;
-		
-		//StellarMainTableController *stellarMainTableController = [[[StellarMainTableController alloc] init] autorelease];
-		//stellarMainTableController.navigationItem.title = @"MIT Stellar";
-        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:stellarMainTableController]];
     }
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!moduleHomeController) {
-        moduleHomeController = [[StellarMainTableController alloc] init];
-    }
-    return moduleHomeController;
+- (void)loadModuleHomeController
+{
+    [self setModuleHomeController:[[[StellarMainTableController alloc] init] autorelease]];
 }
 
 
@@ -45,8 +37,6 @@
 	if(shouldOpen) {		
 		// mark Launch as begun so we dont handle the path twice.
 		hasLaunchedBegun = YES;
-		[(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showModuleForTag:self.tag];	
-		
 		[self handleLocalPath:[NSString stringWithFormat:@"class/%@/News", notification.noticeId] query:nil];
 
 	}
@@ -78,15 +68,20 @@
 }
 
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
-	NSArray *pathComponents = [localPath componentsSeparatedByString:@"/"];
-	NSString *pathRoot = [pathComponents objectAtIndex:0];	
-	[self popToRootViewController];
-	StellarMainTableController *rootController = (StellarMainTableController *)[self rootViewController];
-	
+//	NSArray *pathComponents = [localPath componentsSeparatedByString:@"/"];
+//	NSString *pathRoot = [pathComponents objectAtIndex:0];
+    
+    if ([[[MITAppDelegate() rootNavigationController] viewControllers] containsObject:self.moduleHomeController]) {
+        [[MITAppDelegate() rootNavigationController] popToViewController:self.moduleHomeController animated:NO];
+    } else {
+        [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+    }
+/*    
 	if ([pathRoot isEqualToString:@"class"]) {
 		StellarClass *stellarClass = [StellarModel classWithMasterId:[pathComponents objectAtIndex:1]];
 		if(stellarClass) {
-			StellarDetailViewController *detailViewController = [StellarDetailViewController launchClass:stellarClass viewController:rootController];
+			StellarDetailViewController *detailViewController = [StellarDetailViewController launchClass:stellarClass viewController:self.moduleHomeController];
 			if ([pathComponents count] > 2) {
 				[detailViewController setCurrentTab:[pathComponents objectAtIndex:2]];
 			}
@@ -111,7 +106,7 @@
 		
 		if(courseGroup) {
 			StellarCoursesTableController *coursesTableController = [[StellarCoursesTableController alloc] initWithCourseGroup:courseGroup];
-			[rootController.navigationController pushViewController:coursesTableController animated:NO]; 			 
+			[self.moduleHomeController.navigationController pushViewController:coursesTableController animated:NO]; 			 
 			
 			if ([pathComponents count] > 2) {
 				NSString *courseId = [pathComponents objectAtIndex:2];
@@ -129,10 +124,10 @@
 		
 	} else if ([pathRoot isEqualToString:@"search-begin"] || [pathRoot isEqualToString:@"search-complete"]) {
 		// need to force the view to load before activating the doSearch method
-		(void)rootController.view;
-		[rootController doSearch:query execute:[pathRoot isEqualToString:@"search-complete"]];
+		(void)self.moduleHomeController.view;
+		[(StellarMainTableController *)self.moduleHomeController doSearch:query execute:[pathRoot isEqualToString:@"search-complete"]];
 	}
-
+*/
 	return YES;
 }
 

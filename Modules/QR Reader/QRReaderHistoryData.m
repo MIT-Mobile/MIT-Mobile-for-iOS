@@ -97,7 +97,7 @@ static QRReaderHistoryData *sharedHistoryData = nil;
     return NSUIntegerMax;
 }
 
-- (void)release {
+- (oneway void)release {
     return;
 }
 

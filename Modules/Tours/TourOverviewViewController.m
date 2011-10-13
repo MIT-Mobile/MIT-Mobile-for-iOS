@@ -113,18 +113,11 @@ enum {
 }
 
 - (void)dismiss:(id)sender {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate dismissAppModalViewControllerAnimated:YES];
+    [MITAppDelegate() dismissAppModalViewControllerAnimated:YES];
 }
 
 - (void)selectionDidComplete {
-    
-    if (callingViewController.navigationController.visibleViewController != callingViewController) {
-        [callingViewController.navigationController popViewControllerAnimated:NO];
-    }
-    
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate dismissAppModalViewControllerAnimated:YES];
+    [MITAppDelegate() dismissAppModalViewControllerAnimated:YES];
 }
 
 - (void)orientationChanged:(NSNotification *)notification {
