@@ -153,8 +153,19 @@
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-    return [self sizeThatFits:size
-               withEdgeInsets:self.contentViewInsets];
+    CGSize newSize = [super sizeThatFits:size];
+    
+    CGFloat contentWidth = newSize.width;
+    
+    if (self.accessoryView) {
+        contentWidth -= self.accessoryView.frame.size.width;
+    } else if (self.accessoryType != UITableViewCellAccessoryNone) {
+        contentWidth -= 25;
+    }
+    
+    CGSize contentSize = [self sizeThatFits:CGSizeMake(contentWidth, newSize.height)
+                             withEdgeInsets:self.contentViewInsets];
+    return CGSizeMake(newSize.width, MAX(newSize.height,contentSize.height));
 }
 
 - (void)setItemDetails:(NSDictionary *)itemDetails
