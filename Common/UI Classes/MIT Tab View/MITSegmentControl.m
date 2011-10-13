@@ -24,7 +24,7 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
 
 @synthesize stateDictionary = _stateDictionary;
 
-- (id)initWithTabBarItem:(UITabBarItem *)item
+- (id)initWithTabBarItem:(UITabBarItem*)item
 {
     self = [super init];
     if (self) {

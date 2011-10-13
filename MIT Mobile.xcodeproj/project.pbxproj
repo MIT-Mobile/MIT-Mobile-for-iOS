@@ -124,6 +124,7 @@
 		2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */; };
 		2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */; };
 		2CED98FB13537DEC0034F6F1 /* QRReaderOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98FA13537DEC0034F6F1 /* QRReaderOverlayView.m */; };
+		2CF342A71445EB0B00F5A864 /* MITTabViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CF342A61445EB0B00F5A864 /* MITTabViewItem.m */; };
 		2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */; };
 		2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D41416B1AC0014E141 /* MITTabBar.m */; };
 		2CFB87D91416B1AC0014E141 /* MITTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D61416B1AC0014E141 /* MITTabView.m */; };
@@ -623,6 +624,8 @@
 		2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QRReaderDetailViewController.xib; sourceTree = "<group>"; };
 		2CED98F913537DEC0034F6F1 /* QRReaderOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderOverlayView.h; sourceTree = "<group>"; };
 		2CED98FA13537DEC0034F6F1 /* QRReaderOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderOverlayView.m; sourceTree = "<group>"; };
+		2CF342A51445EB0B00F5A864 /* MITTabViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabViewItem.h; sourceTree = "<group>"; };
+		2CF342A61445EB0B00F5A864 /* MITTabViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabViewItem.m; sourceTree = "<group>"; };
 		2CFB87D11416B1AC0014E141 /* MITSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITSegmentControl.h; sourceTree = "<group>"; };
 		2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITSegmentControl.m; sourceTree = "<group>"; };
 		2CFB87D31416B1AC0014E141 /* MITTabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabBar.h; sourceTree = "<group>"; };
@@ -1639,6 +1642,8 @@
 				2CFB87D41416B1AC0014E141 /* MITTabBar.m */,
 				2CFB87D51416B1AC0014E141 /* MITTabView.h */,
 				2CFB87D61416B1AC0014E141 /* MITTabView.m */,
+				2CF342A51445EB0B00F5A864 /* MITTabViewItem.h */,
+				2CF342A61445EB0B00F5A864 /* MITTabViewItem.m */,
 			);
 			name = "MIT Tabbed View";
 			path = "MIT Tab View";
@@ -2839,6 +2844,7 @@
 				4BAA30AD143A8DF1004C47C1 /* LibraryMenuElementViewController.m in Sources */,
 				2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */,
 				EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */,
+				2CF342A71445EB0B00F5A864 /* MITTabViewItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

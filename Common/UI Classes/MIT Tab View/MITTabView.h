@@ -1,23 +1,30 @@
 #import <UIKit/UIKit.h>
 
+@class MITTabViewItem;
+
 extern NSString* const MITTabViewWillBecomeActiveNotification;
 extern NSString* const MITTabViewDidBecomeActiveNotification;
 extern NSString* const MITTabViewWillBecomeInactiveNotification;
 extern NSString* const MITTabViewDidBecomeInactiveNotification;
 
+@class MITTabView;
+
+@protocol MITTabViewDelegate <NSObject>
+@optional
+- (void)tabView:(MITTabView*)tabView viewWillBecomeActive:(UIView*)view;
+- (void)tabView:(MITTabView*)tabView viewDidBecomeActive:(UIView*)view;
+- (void)tabView:(MITTabView*)tabView viewWillBecomeInactive:(UIView*)view;
+- (void)tabView:(MITTabView*)tabView viewDidBecomeInactive:(UIView*)view;
+@end
+
 @interface MITTabView : UIView
+@property (nonatomic,assign) id<MITTabViewDelegate> delegate;
 @property (nonatomic,readonly) NSArray *views;
 @property (nonatomic,readonly,retain) UIView *contentView;
 
 - (id)init;
 - (id)initWithFrame:(CGRect)frame;
 
-- (BOOL)addView:(UIView*)view withItem:(UITabBarItem*)item animate:(BOOL)animate;
-- (BOOL)insertView:(UIView*)view withItem:(UITabBarItem*)item atIndex:(NSUInteger)index animate:(BOOL)animate;
-
-- (void)tabViewWillBecomeActive:(UIView*)view;
-- (void)tabViewDidBecomeActive:(UIView*)view;
-- (void)tabViewWillBecomeInactive:(UIView*)view;
-- (void)tabViewDidBecomeInactive:(UIView*)view;
-
+- (BOOL)addView:(UIView*)view withItem:(MITTabViewItem*)item animate:(BOOL)animate;
+- (BOOL)insertView:(UIView*)view withItem:(MITTabViewItem*)item atIndex:(NSInteger)index animate:(BOOL)animate;
 @end

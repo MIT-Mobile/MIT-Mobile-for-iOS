@@ -1,5 +1,6 @@
 #import "MITTabView.h"
 #import "MITTabBar.h"
+#import "MITTabViewItem.h"
 
 NSString* const MITTabViewWillBecomeActiveNotification = @"MITTabViewWillBecomeActive";
 NSString* const MITTabViewDidBecomeActiveNotification = @"MITTabViewDidBecomeActive";
@@ -11,17 +12,26 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
 @property (nonatomic,retain) UIView *contentView;
 @property (nonatomic,retain) NSMutableArray *tabViews;
 @property (nonatomic,assign) UIView *activeView;
+@property (nonatomic,retain) UIView *headerView;
 
 - (void)privateInit;
 - (void)controlWasTouched:(id)sender;
 - (void)selectTabAtIndex:(NSInteger)index;
+
+- (void)tabViewWillBecomeActive:(UIView*)view;
+- (void)tabViewDidBecomeActive:(UIView*)view;
+
+- (void)tabViewWillBecomeInactive:(UIView*)view;
+- (void)tabViewDidBecomeInactive:(UIView*)view;
 @end
 
 @implementation MITTabView
-@synthesize activeView = activeView,
+@synthesize activeView = _activeView,
 			contentView = _contentView,
+            delegate = _delegate,
 			tabControl = _tabControl,
-			tabViews = _tabViews;
+			tabViews = _tabViews,
+            headerView = _headerView;
 @dynamic views;
 
 - (id)init
@@ -64,14 +74,14 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
-    if (newSuperview && self.activeView) {
+    if (newSuperview) {
         [self tabViewWillBecomeActive:self.activeView];
     }
 }
 
 - (void)didMoveToSuperview:(UIView *)newSuperview
 {
-    if (newSuperview && self.activeView) {
+    if (newSuperview) {
         [self tabViewDidBecomeActive:self.activeView];
     }
 }
@@ -95,6 +105,17 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
         } else {
             self.tabControl.frame = barFrame;
         }
+    }
+    
+    {
+        CGRect headerFrame = viewRect;
+        headerFrame.origin.y += self.tabControl.frame.size.height;
+        headerFrame.size.height = 5.0;
+        
+        UIView *header = [[[UIView alloc] initWithFrame:headerFrame] autorelease];
+        header.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                   UIViewAutoresizingFlexibleHeight);
+        header.autoresizesSubviews = YES;
     }
     
     {
@@ -129,34 +150,33 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
 
 - (void)selectTabAtIndex:(NSInteger)index
 {
-    if (index >= [self.views count]) {
-        return;
-    } else if (self.activeView == [self.views objectAtIndex:index]) {
-        return;
-    } else {
-        if (self.activeView) { 
+    if (index >= 0) {
+        UIView *activeView = [self.views objectAtIndex:index];
+        if (activeView == self.activeView) {
+            return;
+        }
+        else if (self.activeView)
+        { 
             [self tabViewWillBecomeInactive:self.activeView];
             [self.activeView removeFromSuperview];
             [self tabViewDidBecomeInactive:self.activeView];
             self.activeView = nil;
         }
         
-        if (index >= 0) {
-            self.activeView = [self.views objectAtIndex:index];
-            self.activeView.frame = self.contentView.bounds;
-            
-            [self tabViewWillBecomeActive:self.activeView];
-            [self.contentView addSubview:self.activeView];
-            [self tabViewDidBecomeActive:self.activeView];
-            
-            self.tabControl.selectedSegmentIndex = index;
-        } else {
-            self.tabControl.selectedSegmentIndex = UISegmentedControlNoSegment;
-        }
+        activeView.frame = self.contentView.bounds;
+        
+        [self tabViewWillBecomeActive:activeView];
+        [self.contentView addSubview:activeView];
+        [self tabViewDidBecomeActive:activeView];
+        
+        self.tabControl.selectedSegmentIndex = index;
+        self.activeView = activeView;
+    } else {
+        self.tabControl.selectedSegmentIndex = UISegmentedControlNoSegment;
     }
 }
 
-- (BOOL)addView:(UIView*)view withItem:(UITabBarItem*)item animate:(BOOL)animate
+- (BOOL)addView:(UIView*)view withItem:(MITTabViewItem*)item animate:(BOOL)animate
 {
     return [self insertView:view
                    withItem:item
@@ -164,7 +184,7 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
                     animate:animate];
 }
 
-- (BOOL)insertView:(UIView*)controller withItem:(UITabBarItem*)item atIndex:(NSUInteger)index animate:(BOOL)animate
+- (BOOL)insertView:(UIView*)controller withItem:(MITTabViewItem*)item atIndex:(NSInteger)index animate:(BOOL)animate
 {
     if ([self.tabViews containsObject:controller]) {
         return NO;
@@ -177,7 +197,6 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
                                     atIndex:index
                                    animated:animate];
     
-    NSLog(@"%d",self.tabControl.selectedSegmentIndex);
     if (self.tabControl.selectedSegmentIndex == UISegmentedControlNoSegment) {
         [self selectTabAtIndex:0];
     }
@@ -186,26 +205,53 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
 
 - (void)tabViewWillBecomeActive:(UIView*)view
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:MITTabViewWillBecomeActiveNotification
-                                                        object:self];
+    if (view) {
+        if ([self.delegate respondsToSelector:@selector(tabView:viewWillBecomeActive:)]) {
+            [self.delegate tabView:self
+               viewWillBecomeActive:view];
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITTabViewWillBecomeActiveNotification
+                                                            object:self];
+    }
 }
 
 - (void)tabViewDidBecomeActive:(UIView*)view
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:MITTabViewDidBecomeActiveNotification
-                                                        object:self];
-    
+    if (view) {
+        if ([self.delegate respondsToSelector:@selector(tabView:viewDidBecomeActive:)]) {
+            [self.delegate tabView:self
+               viewDidBecomeActive:view];
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITTabViewDidBecomeActiveNotification
+                                                            object:self];
+    }
 }
 
 - (void)tabViewWillBecomeInactive:(UIView*)view
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:MITTabViewWillBecomeInactiveNotification
-                                                        object:self];
+    if (view) {
+        if ([self.delegate respondsToSelector:@selector(tabView:viewWillBecomeInactive:)]) {
+            [self.delegate tabView:self
+               viewWillBecomeInactive:view];
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITTabViewWillBecomeInactiveNotification
+                                                            object:self];
+    }
 }
 
 - (void)tabViewDidBecomeInactive:(UIView*)view
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:MITTabViewDidBecomeInactiveNotification
-                                                        object:self];
+    if (view) {
+        if ([self.delegate respondsToSelector:@selector(tabView:viewDidBecomeInactive:)]) {
+            [self.delegate tabView:self
+               viewDidBecomeInactive:view];
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:MITTabViewDidBecomeInactiveNotification
+                                                            object:self];
+    }
 }
 @end
