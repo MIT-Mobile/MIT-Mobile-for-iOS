@@ -420,11 +420,10 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
         [self.loadingView removeFromSuperview];
         
-        if (error) {
-            NSLog(@"Request failed with error: %@",[error localizedDescription]);
-            [MITMobileWebAPI showError:nil header:@"Login" alertViewDelegate:nil];
-            [self.navigationController popViewControllerAnimated:YES];
-        } if (!jsonResult) {
+        if (error && (error.code != NSUserCancelledError)) {
+            NSLog(@"Request failed with error: %@",[error localizedDescription]); 
+            [MITMobileWebAPI showError:nil header:@"Login" alertViewDelegate:self];
+        } else if (!jsonResult) {
             [self.navigationController popViewControllerAnimated:YES];    
         } else {
             NSNumber *isMITIdentity = [(NSDictionary *)jsonResult objectForKey:@"is_mit_identity"];
@@ -754,5 +753,10 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
                                                       @"MIT Staff",
                                                       @"MIT Visitor",
                                                       nil]] autorelease];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    // network error message being dismmised
+    [self.navigationController popViewControllerAnimated:YES];
 }
 @end

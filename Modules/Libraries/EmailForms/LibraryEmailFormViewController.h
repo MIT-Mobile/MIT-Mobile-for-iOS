@@ -93,7 +93,7 @@
 @end
 
 
-@interface LibraryEmailFormViewController : UITableViewController <UITextFieldDelegate> {
+@interface LibraryEmailFormViewController : UITableViewController <UITextFieldDelegate, UIAlertViewDelegate> {
 @private    
     NSArray *_formGroups;
 }
