@@ -193,6 +193,7 @@ typedef enum {
         return;
     }
     
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     self.operationRunLoop = [NSRunLoop currentRunLoop];
     self.runLoopTimer = [[[NSTimer alloc] initWithFireDate:[NSDate distantFuture]
                                                  interval:0.0
@@ -208,6 +209,7 @@ typedef enum {
     // Without this (unless we are on the main run loop) the
     // NSURLConnections will never be processed
     [self.operationRunLoop run];
+    [pool drain];
 }
 
 - (void)finish {
@@ -281,7 +283,7 @@ typedef enum {
         [self.connection cancel];
     } else {
         self.requestData = nil;
-        self.requestError = [NSError errorWithDomain:NSURLErrorDomain
+        self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
                                                 code:NSUserCancelledError
                                             userInfo:nil];
         [self finish];
