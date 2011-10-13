@@ -6,4 +6,9 @@
 
 - (id)initWithTableView:(UITableView*)tableView;
 
+- (void)tabWillBecomeActive;
+- (void)tabDidBecomeActive;
+- (void)tabWillBecomeInactive;
+- (void)tabDidBecomeInactive;
+
 @end

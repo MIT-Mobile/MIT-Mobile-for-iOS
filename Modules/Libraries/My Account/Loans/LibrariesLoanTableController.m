@@ -83,6 +83,7 @@
     if (cell == nil) {
         cell = [[[LibrariesLoanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                   reuseIdentifier:LoanCellIdentifier] autorelease];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
@@ -95,6 +96,8 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     LibrariesLoanTableViewCell *cell = [[[LibrariesLoanTableViewCell alloc] init] autorelease];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    
     NSArray *loans = [self.loanData objectForKey:@"items"];
     [cell setItemDetails:[loans objectAtIndex:indexPath.row]];
     CGSize size = [cell sizeThatFits:CGSizeMake(tableView.bounds.size.width, 0)];
@@ -106,11 +109,11 @@
 {
     if (self.loanData == nil)
     {
-        self.loadingView.frame = self.tableView.bounds;
-        [self.tableView addSubview:self.loadingView];
-        self.tableView.scrollEnabled = NO;
+        self.loadingView.frame = self.tableView.frame;
+        [self.tableView.superview addSubview:self.loadingView];
     }
-    else if (self.operation != nil)
+    
+    if (self.operation == nil)
     {
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                                 command:@"loans"
@@ -122,7 +125,6 @@
             } else {
                 if (self.loadingView.superview != nil) {
                     [self.loadingView removeFromSuperview];
-                    self.tableView.scrollEnabled = YES;
                 }
                 
                 self.loanData = (NSDictionary*)jsonResult;
@@ -136,5 +138,27 @@
         [operation start];
     }
 }
+
+#pragma mark - Tab Activity Notifications
+- (void)tabWillBecomeActive
+{
+    [self updateLoanData];
+}
+
+- (void)tabDidBecomeActive
+{
+    
+}
+
+- (void)tabWillBecomeInactive
+{
+    
+}
+
+- (void)tabDidBecomeInactive
+{
+    
+}
+
 
 @end
