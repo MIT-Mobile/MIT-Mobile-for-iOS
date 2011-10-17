@@ -384,12 +384,14 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     
     self.prevNextSegmentedControl = [[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"Prev", @"Next", nil]] autorelease];
     self.prevNextSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
+    self.prevNextSegmentedControl.tintColor = [UIColor blackColor];
     self.prevNextSegmentedControl.momentary = YES;
     [self.prevNextSegmentedControl addTarget:self action:@selector(updateFocusedTextView:) forControlEvents:UIControlEventValueChanged];
     
     self.doneButton = [[[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(hideKeyboard)] autorelease];
     
     UIToolbar *inputAccessoryToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    inputAccessoryToolbar.tintColor = [UIColor blackColor];
     inputAccessoryToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     inputAccessoryToolbar.items = [NSArray arrayWithObjects:
                                    [[[UIBarButtonItem alloc] initWithCustomView:self.prevNextSegmentedControl] autorelease],
