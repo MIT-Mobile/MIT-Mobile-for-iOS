@@ -1760,7 +1760,7 @@
 			name = Selection;
 			sourceTree = "<group>";
 		};
-		4B0D8A55142CF8430083AC66 /* WorldCatSerch */ = {
+		4B0D8A55142CF8430083AC66 /* WorldCatSearch */ = {
 			isa = PBXGroup;
 			children = (
 				4B7B66F3142D01BD00366615 /* WorldCatSearchController.h */,
@@ -1770,7 +1770,7 @@
 				4B9EF9B514321E360071F8E3 /* LibrariesBookDetailViewController.h */,
 				4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */,
 			);
-			name = WorldCatSerch;
+			name = WorldCatSearch;
 			sourceTree = "<group>";
 		};
 		4B1B7E3D1417CA0E0090039F /* EmailForms */ = {
@@ -1795,7 +1795,7 @@
 		4B66705F1403304300714C6A /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				4B0D8A55142CF8430083AC66 /* WorldCatSerch */,
+				4B0D8A55142CF8430083AC66 /* WorldCatSearch */,
 				4B1B7E3D1417CA0E0090039F /* EmailForms */,
 				2CFB87EC1416B5120014E141 /* My Account */,
 				4B66706B1403FE7700714C6A /* LocationsHours */,
