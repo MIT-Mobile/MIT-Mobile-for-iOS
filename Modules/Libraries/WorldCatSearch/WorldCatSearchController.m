@@ -16,10 +16,20 @@
 
 #define LOADER_HEIGHT 70
 
-#define ACTIVITY_TAG 1
-#define LABEL_TAG 2
-#define LOADING_ACTIVITY_TAG 3
+typedef enum 
+{
+    ACTIVITY_TAG = 1,
+    LABEL_TAG,
+    LOADING_ACTIVITY_TAG,
+    CELL_CUSTOM_LABEL_TAG, 
+    CELL_CUSTOM_DETAIL_LABEL_TAG 
+}
+WorldCatSearchViewTags;
 
+static const CGFloat kSearchCellLabelInitialHeight = 44.0f;
+static const CGFloat kSearchCellDetailLabelHeight = 24.0f;
+static const CGFloat kSearchCellLabelMargin = 8.0f;
+static const CGFloat kDisclosureIndicatorClearanceWidth = 32.0f;
 
 @interface WorldCatSearchController (Private)
 
@@ -155,8 +165,8 @@
     if (!self.searchResults) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EmptyCell"];
         if (!cell) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"EmptyCell"] autorelease];
-        }
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"EmptyCell"] autorelease];            
+        }        
         return cell;
     }
     
@@ -164,11 +174,76 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier] autorelease];
+        
+        // Set up custom two-line label.
+        UILabel *label = 
+        [[UILabel alloc] initWithFrame:
+         CGRectMake(kSearchCellLabelMargin, kSearchCellLabelMargin, 
+                    // Include double the margin space on the right to make 
+                    // space for a disclosure indicator.
+                    cell.frame.size.width - 2 * kSearchCellLabelMargin 
+                    - kDisclosureIndicatorClearanceWidth, 
+                    kSearchCellLabelInitialHeight)];
+        label.tag = CELL_CUSTOM_LABEL_TAG;
+        label.numberOfLines = 0;
+        
+        // Set up custom detail label.
+        // Set detail frame later, after main label's content has been set.
+        UILabel *detailLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        detailLabel.tag = CELL_CUSTOM_DETAIL_LABEL_TAG;
+        
         [cell applyStandardFonts];
+        
+        label.font = cell.textLabel.font;
+        label.textColor = cell.textLabel.textColor;
+        [cell.contentView addSubview:label];
+        [label release];
+
+        detailLabel.font = cell.detailTextLabel.font;
+        detailLabel.textColor = cell.detailTextLabel.textColor;
+        [cell.contentView addSubview:detailLabel];
+        [detailLabel release];        
+
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
-    cell.textLabel.text = book.title;
-    cell.detailTextLabel.text = [book.authors componentsJoinedByString:@" "];
+    UILabel *customLabel = 
+    (UILabel *)[cell.contentView viewWithTag:CELL_CUSTOM_LABEL_TAG];
+    customLabel.text = book.title;
+    
+    // Size it appropriately. If it's less than two lines, it shouldn't have
+    // a lot of extra height. However, it shouldn't be taller than is right for 
+    // two lines, no matter how long it is.
+    CGFloat maxLabelWidth = cell.frame.size.width - 3 * kSearchCellLabelMargin;
+    CGSize sizeThatFits = 
+    [customLabel sizeThatFits:
+     CGSizeMake(maxLabelWidth, kSearchCellLabelInitialHeight)];
+    CGFloat labelHeight = sizeThatFits.height;
+    if (labelHeight > kSearchCellLabelInitialHeight)
+    {
+        labelHeight = kSearchCellLabelInitialHeight;
+    }
+    customLabel.frame = 
+    CGRectMake(customLabel.frame.origin.x, customLabel.frame.origin.y, 
+               maxLabelWidth, labelHeight);
+    
+    // Set up detail label.
+    UILabel *customDetailLabel = 
+    (UILabel *)[cell.contentView viewWithTag:CELL_CUSTOM_DETAIL_LABEL_TAG];
+    customDetailLabel.text = 
+    [NSString stringWithFormat:@"%@; %@", 
+     [book.years componentsJoinedByString:@", "],
+     [book.authors componentsJoinedByString:@" "]];
+    // Move detail label to within 1/2 margin of main label.
+    customDetailLabel.frame = 
+    CGRectMake(kSearchCellLabelMargin, 
+               1.5f * kSearchCellLabelMargin + customLabel.frame.size.height,
+               // Include double the margin space on the right to make 
+               // space for a disclosure indicator.
+               cell.frame.size.width - 2 * kSearchCellLabelMargin
+               - kDisclosureIndicatorClearanceWidth, 
+               kSearchCellDetailLabelHeight);    
+    
     return cell;
 }
 
@@ -317,5 +392,19 @@
     }
     return number;
 }
-              
+
+#pragma mark UITableViewDelegate
+- (CGFloat)tableView:(UITableView *)tableView 
+heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = 
+    [self tableView:tableView cellForRowAtIndexPath:indexPath];
+    UIView *customLabel = 
+    [cell.contentView viewWithTag:CELL_CUSTOM_LABEL_TAG];
+    
+    return 
+    customLabel.frame.size.height + kSearchCellDetailLabelHeight + 
+    2.5f * kSearchCellLabelMargin;    
+}
+
 @end
