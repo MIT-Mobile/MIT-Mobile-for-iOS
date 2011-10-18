@@ -2853,8 +2853,12 @@
 				4BAA30AD143A8DF1004C47C1 /* LibraryMenuElementViewController.m in Sources */,
 				2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */,
 				EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */,
+<<<<<<< HEAD
+				2CF342A71445EB0B00F5A864 /* MITTabViewItem.m in Sources */,
 				A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */,
+=======
 				2CC2E9CC144DC9B000151C71 /* MITGradientView.m in Sources */,
+>>>>>>> *Remove the MITTabBarItem subclass and replace it
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
