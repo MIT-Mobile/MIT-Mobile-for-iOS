@@ -9,6 +9,7 @@
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
 @property (nonatomic,retain) NSDictionary *loanData;
 @property (nonatomic,retain) MobileRequestOperation *operation;
+@property (nonatomic,retain) NSDate *lastUpdate;
 
 - (void)setupTableView;
 - (void)updateLoanData;
@@ -21,7 +22,8 @@
 @synthesize headerView = _headerView,
             loadingView = _loadingView,
             loanData = _loanData,
-            operation = _operation;
+            operation = _operation,
+            lastUpdate = _lastUpdate;
 
 - (id)initWithTableView:(UITableView *)tableView
 {
@@ -110,10 +112,13 @@
     if (self.loanData == nil)
     {
         self.loadingView.frame = self.tableView.frame;
-        [self.tableView.superview addSubview:self.loadingView];
+        [self.tableView.superview insertSubview:self.loadingView
+                                   aboveSubview:self.tableView];
     }
     
-    if (self.operation == nil)
+    BOOL shouldUpdate = (self.lastUpdate == nil) || ([self.lastUpdate timeIntervalSinceNow] > 15.0);
+    
+    if ((self.operation == nil) && shouldUpdate)
     {
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                                 command:@"loans"
@@ -121,12 +126,13 @@
                                                                                                                     forKey:@"limit"]];
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
             if (error) {
-                NSLog(@"%@", [error localizedDescription]);
+                ELog(@"Loan: %@", [error localizedDescription]);
             } else {
                 if (self.loadingView.superview != nil) {
                     [self.loadingView removeFromSuperview];
                 }
                 
+                self.lastUpdate = [NSDate date];
                 self.loanData = (NSDictionary*)jsonResult;
                 [self.tableView reloadData];
             }
@@ -142,12 +148,11 @@
 #pragma mark - Tab Activity Notifications
 - (void)tabWillBecomeActive
 {
-    [self updateLoanData];
 }
 
 - (void)tabDidBecomeActive
 {
-    
+    [self updateLoanData];
 }
 
 - (void)tabWillBecomeInactive
