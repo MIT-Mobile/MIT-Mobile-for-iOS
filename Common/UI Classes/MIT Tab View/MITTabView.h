@@ -1,7 +1,5 @@
 #import <UIKit/UIKit.h>
 
-@class MITTabViewItem;
-
 extern NSString* const MITTabViewWillBecomeActiveNotification;
 extern NSString* const MITTabViewDidBecomeActiveNotification;
 extern NSString* const MITTabViewWillBecomeInactiveNotification;
@@ -15,6 +13,9 @@ extern NSString* const MITTabViewDidBecomeInactiveNotification;
 - (void)tabView:(MITTabView*)tabView viewDidBecomeActive:(UIView*)view;
 - (void)tabView:(MITTabView*)tabView viewWillBecomeInactive:(UIView*)view;
 - (void)tabView:(MITTabView*)tabView viewDidBecomeInactive:(UIView*)view;
+
+- (CGFloat)tabView:(MITTabView*)tabView heightOfHeaderForView:(UIView*)view;
+- (UIView*)tabView:(MITTabView*)tabView headerForView:(UIView*)view;
 @end
 
 @interface MITTabView : UIView
@@ -25,6 +26,6 @@ extern NSString* const MITTabViewDidBecomeInactiveNotification;
 - (id)init;
 - (id)initWithFrame:(CGRect)frame;
 
-- (BOOL)addView:(UIView*)view withItem:(MITTabViewItem*)item animate:(BOOL)animate;
-- (BOOL)insertView:(UIView*)view withItem:(MITTabViewItem*)item atIndex:(NSInteger)index animate:(BOOL)animate;
+- (BOOL)addView:(UIView*)view withItem:(UITabBarItem*)item animate:(BOOL)animate;
+- (BOOL)insertView:(UIView*)view withItem:(UITabBarItem*)item atIndex:(NSInteger)index animate:(BOOL)animate;
 @end

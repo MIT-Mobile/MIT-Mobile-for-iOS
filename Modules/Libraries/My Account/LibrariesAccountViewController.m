@@ -3,7 +3,6 @@
 #import "LibrariesHoldsTableController.h"
 #import "LibrariesLoanTableController.h"
 #import "UIKit+MITAdditions.h"
-#import "MITTabViewItem.h"
 
 @interface LibrariesAccountViewController ()
 @property (nonatomic,retain) MITTabView *tabView;
@@ -61,7 +60,7 @@
         
         self.loansController = [[LibrariesLoanTableController alloc] initWithTableView:view];
         [self.tabView addView:view
-                     withItem:[[[MITTabViewItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
+                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
                       animate:NO];
     }
     
@@ -73,8 +72,12 @@
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
         self.finesController = [[LibrariesFinesTableController alloc] initWithTableView:view];
+        
+        UITabBarItem *item = [[[UITabBarItem alloc] initWithTitle:@"Fines"
+                                                               image:nil
+                                                                 tag:1] autorelease];
         [self.tabView addView:view
-                     withItem:[[[MITTabViewItem alloc] initWithTitle:@"Fines" image:nil tag:1] autorelease]
+                     withItem:item
                       animate:NO];
     }
     
@@ -87,7 +90,7 @@
         
         self.holdsController = [[LibrariesHoldsTableController alloc] initWithTableView:view];
         [self.tabView addView:view
-                     withItem:[[[MITTabViewItem alloc] initWithTitle:@"Holds" image:nil tag:2] autorelease]
+                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Holds" image:nil tag:2] autorelease]
                       animate:NO];
     }
     

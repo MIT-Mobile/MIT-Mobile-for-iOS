@@ -1,22 +1,27 @@
+#import <QuartzCore/QuartzCore.h>
 #import "MITTabView.h"
 #import "MITTabBar.h"
-#import "MITTabViewItem.h"
+#import "MITGradientView.h"
 
 NSString* const MITTabViewWillBecomeActiveNotification = @"MITTabViewWillBecomeActive";
 NSString* const MITTabViewDidBecomeActiveNotification = @"MITTabViewDidBecomeActive";
 NSString* const MITTabViewWillBecomeInactiveNotification = @"MITTabViewWillBecomeInactive";
 NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeInactive";
 
+static NSUInteger kHeaderDefaultHeight = 5.0;
+
 @interface MITTabView ()
 @property (nonatomic,retain) MITTabBar *tabControl;
 @property (nonatomic,retain) UIView *contentView;
 @property (nonatomic,retain) NSMutableArray *tabViews;
 @property (nonatomic,assign) UIView *activeView;
+@property (nonatomic,retain) UIView *activeHeaderView;
 @property (nonatomic,retain) UIView *headerView;
 
 - (void)privateInit;
 - (void)controlWasTouched:(id)sender;
 - (void)selectTabAtIndex:(NSInteger)index;
+- (void)makeViewActive:(UIView*)newView;
 
 - (void)tabViewWillBecomeActive:(UIView*)view;
 - (void)tabViewDidBecomeActive:(UIView*)view;
@@ -26,12 +31,15 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
 @end
 
 @implementation MITTabView
+@synthesize delegate = _delegate,
+            contentView = _contentView;
+
 @synthesize activeView = _activeView,
-			contentView = _contentView,
-            delegate = _delegate,
 			tabControl = _tabControl,
 			tabViews = _tabViews,
-            headerView = _headerView;
+            headerView = _headerView,
+            activeHeaderView = _activeHeaderView;
+
 @dynamic views;
 
 - (id)init
@@ -59,9 +67,38 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
     self.tabViews = [NSMutableArray array];
     self.activeView = nil;
     self.autoresizesSubviews = YES;
-    self.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                 UIViewAutoresizingFlexibleWidth);
-    [self layoutSubviews];
+    
+    {
+        MITTabBar *bar = [[[MITTabBar alloc] init] autorelease];
+        [bar addTarget:self
+                action:@selector(controlWasTouched:)
+      forControlEvents:UIControlEventValueChanged];
+        
+        self.tabControl = bar;
+        [self addSubview:bar];
+    }
+    
+    {
+        UIView *header = [[[MITGradientView alloc] initWithFrame:CGRectZero] autorelease];
+        header.backgroundColor = [UIColor whiteColor];
+        header.layer.masksToBounds = YES;
+        header.autoresizingMask = UIViewAutoresizingNone;
+        
+        self.headerView = header;
+        [self addSubview:header];
+    }
+    
+    {
+        UIView *contentView = [[[UIView alloc] init] autorelease];
+        contentView.autoresizesSubviews = YES;
+        contentView.backgroundColor = [UIColor clearColor];
+        contentView.layer.borderColor = [[UIColor redColor] CGColor];
+        contentView.layer.borderWidth = 2.0;
+        contentView.layer.masksToBounds = YES;
+        
+        self.contentView = contentView;
+        [self addSubview:contentView];
+    }
 }
 
 - (void)dealloc
@@ -89,52 +126,50 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
 - (void)layoutSubviews
 {
     CGRect viewRect = self.bounds;
+    CGPoint frameOrigin = viewRect.origin;
     
     {
         CGRect barFrame = CGRectZero;
+        barFrame.origin = frameOrigin;
         barFrame.size = CGSizeMake(CGRectGetWidth(viewRect), 28);
+        self.tabControl.frame = barFrame;
         
-        if (self.tabControl == nil) {
-            MITTabBar *bar = [[[MITTabBar alloc] initWithFrame:barFrame] autorelease];
-            [bar addTarget:self
-                    action:@selector(controlWasTouched:)
-          forControlEvents:UIControlEventValueChanged];
-        
-            self.tabControl = bar;
-            [self addSubview:bar];
-        } else {
-            self.tabControl.frame = barFrame;
-        }
+        frameOrigin.y += CGRectGetHeight(barFrame);
     }
     
     {
+        UIView *header = self.headerView;
         CGRect headerFrame = viewRect;
-        headerFrame.origin.y += self.tabControl.frame.size.height;
-        headerFrame.size.height = 5.0;
+        headerFrame.origin = frameOrigin;
+        headerFrame.size.height = kHeaderDefaultHeight;
         
-        UIView *header = [[[UIView alloc] initWithFrame:headerFrame] autorelease];
-        header.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
-                                   UIViewAutoresizingFlexibleHeight);
-        header.autoresizesSubviews = YES;
+        if (self.activeHeaderView)
+        {
+            CGFloat delegateHeight = kHeaderDefaultHeight;
+            if ([self.delegate respondsToSelector:@selector(tabView:heightOfHeaderForView:)]) {
+                delegateHeight = [self.delegate tabView:self
+                                  heightOfHeaderForView:self.activeView];
+            }
+            
+            headerFrame.size.height = MAX(kHeaderDefaultHeight,delegateHeight);
+        }
+
+        header.frame = CGRectStandardize(headerFrame);
+        self.activeHeaderView.frame = header.bounds;
+        
+        frameOrigin.y += CGRectGetHeight(headerFrame);
     }
     
     {
         CGRect subviewFrame = viewRect;
-        subviewFrame.origin.y = self.tabControl.frame.size.height;
-        subviewFrame.size.height -= self.tabControl.frame.size.height;
+        subviewFrame.origin = frameOrigin;
+        subviewFrame.size.height -= frameOrigin.y;
+
+        self.contentView.frame = CGRectStandardize(subviewFrame);
         
-        if (self.contentView == nil) {
-            UIView *view = [[[UIView alloc] initWithFrame:subviewFrame] autorelease];
-            self.contentView = view;
-            [self addSubview:view];
-        } else {
-            self.contentView.frame = subviewFrame;
+        if (self.activeView) {
+            self.activeView.frame = self.contentView.bounds;
         }
-        
-        self.contentView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                             UIViewAutoresizingFlexibleWidth);
-        self.contentView.autoresizesSubviews = YES;
-        self.contentView.backgroundColor = [UIColor clearColor];
     }
 }
 
@@ -151,32 +186,71 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
 - (void)selectTabAtIndex:(NSInteger)index
 {
     if (index >= 0) {
-        UIView *activeView = [self.views objectAtIndex:index];
-        if (activeView == self.activeView) {
+        UIView *selectedView = [self.views objectAtIndex:index];
+        if (selectedView == self.activeView) {
             return;
         }
-        else if (self.activeView)
-        { 
-            [self tabViewWillBecomeInactive:self.activeView];
-            [self.activeView removeFromSuperview];
-            [self tabViewDidBecomeInactive:self.activeView];
-            self.activeView = nil;
+        else
+        {
+            [self makeViewActive:selectedView];
+            self.tabControl.selectedSegmentIndex = index;
         }
-        
-        activeView.frame = self.contentView.bounds;
-        
-        [self tabViewWillBecomeActive:activeView];
-        [self.contentView addSubview:activeView];
-        [self tabViewDidBecomeActive:activeView];
-        
-        self.tabControl.selectedSegmentIndex = index;
-        self.activeView = activeView;
     } else {
         self.tabControl.selectedSegmentIndex = UISegmentedControlNoSegment;
     }
 }
 
-- (BOOL)addView:(UIView*)view withItem:(MITTabViewItem*)item animate:(BOOL)animate
+- (void)makeViewActive:(UIView*)newView
+{
+    UIView *oldView = self.activeView;
+    
+    [self tabViewWillBecomeInactive:oldView];
+    [self tabViewWillBecomeActive:newView];
+    
+    // Setup the view header, if present
+    {
+        UIView *activeHeaderView = nil;
+        
+        if ([self.delegate respondsToSelector:@selector(tabView:headerForView:)])
+        {
+            activeHeaderView = [self.delegate tabView:self
+                                  headerForView:newView];
+        }
+        else
+        {
+            activeHeaderView = nil;
+        }
+        
+        if (self.activeHeaderView) {
+            [self.activeHeaderView removeFromSuperview];
+        }
+        
+        if (activeHeaderView) {
+            [self.headerView addSubview:activeHeaderView];
+        }
+        
+        self.activeHeaderView = activeHeaderView;
+    }
+    
+    // Now setup the active view
+    {
+        if (oldView) {
+            [oldView removeFromSuperview];
+        }
+        
+        if (newView) {
+            [self.contentView addSubview:newView];
+        }
+        
+        self.activeView = newView;
+    }
+
+    [self setNeedsLayout];
+    [self tabViewDidBecomeActive:newView];
+    [self tabViewDidBecomeInactive:oldView];
+}
+
+- (BOOL)addView:(UIView*)view withItem:(UITabBarItem*)item animate:(BOOL)animate
 {
     return [self insertView:view
                    withItem:item
@@ -184,7 +258,7 @@ NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeI
                     animate:animate];
 }
 
-- (BOOL)insertView:(UIView*)controller withItem:(MITTabViewItem*)item atIndex:(NSInteger)index animate:(BOOL)animate
+- (BOOL)insertView:(UIView*)controller withItem:(UITabBarItem*)item atIndex:(NSInteger)index animate:(BOOL)animate
 {
     if ([self.tabViews containsObject:controller]) {
         return NO;
