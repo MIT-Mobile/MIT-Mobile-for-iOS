@@ -92,8 +92,6 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
         UIView *contentView = [[[UIView alloc] init] autorelease];
         contentView.autoresizesSubviews = YES;
         contentView.backgroundColor = [UIColor clearColor];
-        contentView.layer.borderColor = [[UIColor redColor] CGColor];
-        contentView.layer.borderWidth = 2.0;
         contentView.layer.masksToBounds = YES;
         
         self.contentView = contentView;
