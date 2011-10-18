@@ -3,7 +3,6 @@
 #import "LibrariesHoldsTableController.h"
 #import "LibrariesLoanTableController.h"
 #import "UIKit+MITAdditions.h"
-#import "MITTabViewItem.h"
 
 @interface LibrariesAccountViewController ()
 @property (nonatomic,retain) MITTabView *tabView;
@@ -39,21 +38,21 @@
 - (void)loadView
 {
     CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
+    screenRect.origin.y += CGRectGetHeight(self.navigationController.navigationBar.frame);
+    screenRect.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
+    
     UIView *mainView = [[[UIView alloc] initWithFrame:screenRect] autorelease];
     
     {
-        CGRect tabFrame = screenRect;
-        tabFrame.origin = CGPointZero;
-        
         MITTabView *tabView = [[[MITTabView alloc] init] autorelease];
-        tabView.frame = tabFrame;
+        tabView.frame = mainView.bounds;
         tabView.delegate = self;
         self.tabView = tabView;
         [mainView addSubview:tabView];
     }
     
     {
-        UITableView *view = [[[UITableView alloc] initWithFrame:self.tabView.contentView.bounds
+        UITableView *view = [[[UITableView alloc] initWithFrame:CGRectZero
                                                           style:UITableViewStylePlain] autorelease];
         view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
@@ -61,25 +60,29 @@
         
         self.loansController = [[LibrariesLoanTableController alloc] initWithTableView:view];
         [self.tabView addView:view
-                     withItem:[[[MITTabViewItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
+                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
                       animate:NO];
     }
     
     {
-        UITableView *view = [[[UITableView alloc] initWithFrame:self.tabView.contentView.bounds
+        UITableView *view = [[[UITableView alloc] initWithFrame:CGRectZero
                                                           style:UITableViewStylePlain] autorelease];
         view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
         self.finesController = [[LibrariesFinesTableController alloc] initWithTableView:view];
+        
+        UITabBarItem *item = [[[UITabBarItem alloc] initWithTitle:@"Fines"
+                                                               image:nil
+                                                                 tag:1] autorelease];
         [self.tabView addView:view
-                     withItem:[[[MITTabViewItem alloc] initWithTitle:@"Fines" image:nil tag:1] autorelease]
+                     withItem:item
                       animate:NO];
     }
     
     {
-        UITableView *view = [[[UITableView alloc] initWithFrame:self.tabView.contentView.bounds
+        UITableView *view = [[[UITableView alloc] initWithFrame:CGRectZero
                                                           style:UITableViewStylePlain] autorelease];
         view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
@@ -87,7 +90,7 @@
         
         self.holdsController = [[LibrariesHoldsTableController alloc] initWithTableView:view];
         [self.tabView addView:view
-                     withItem:[[[MITTabViewItem alloc] initWithTitle:@"Holds" image:nil tag:2] autorelease]
+                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Holds" image:nil tag:2] autorelease]
                       animate:NO];
     }
     
@@ -185,5 +188,43 @@
         [self.loansController tabWillBecomeInactive];
     }
 }
+
+
+- (CGFloat)tabView:(MITTabView*)tabView heightOfHeaderForView:(UIView*)view
+{
+    if (view == self.finesController.tableView)
+    {
+        UIView *header = self.finesController.headerView;
+        CGSize size = [header sizeThatFits:tabView.bounds.size];
+        return size.height;
+    }
+    else if (view == self.holdsController.tableView)
+    {
+        UIView *header = self.holdsController.headerView;
+        CGSize size = [header sizeThatFits:tabView.bounds.size];
+        return size.height;
+    }
+    else
+    {
+        return 0.0;
+    }
+}
+
+- (UIView*)tabView:(MITTabView*)tabView headerForView:(UIView*)view
+{
+    if (view == self.finesController.tableView)
+    {
+        return self.finesController.headerView;
+    }
+    else if (view == self.holdsController.tableView)
+    {
+        return self.holdsController.headerView;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
 
 @end

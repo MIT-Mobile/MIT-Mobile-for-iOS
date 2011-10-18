@@ -1,6 +1,5 @@
 #import <UIKit/UIKit.h>
 
-@class MITTabViewItem;
 @class MITSegmentControl;
 
 @interface MITTabBar : UIControl
@@ -14,7 +13,7 @@
 
 @property (nonatomic) NSInteger selectedSegmentIndex;
 
-- (void)insertSegmentWithItem:(MITTabViewItem*)item atIndex:(NSInteger)index animated:(BOOL)animated;
-- (void)removeSegmentWithItem:(MITTabViewItem*)item animated:(BOOL)animated;
+- (void)insertSegmentWithItem:(UITabBarItem*)item atIndex:(NSInteger)index animated:(BOOL)animated;
+- (void)removeSegmentWithItem:(UITabBarItem*)item animated:(BOOL)animated;
 - (void)removeSegmentAtIndex:(NSInteger)index animated:(BOOL)animated;
 @end

@@ -1,14 +1,13 @@
 #import "LibrariesFinesTableController.h"
-#import "LibrariesFinesSummaryView.h"
 #import "MITLoadingActivityView.h"
 #import "MobileRequestOperation.h"
 #import "LibrariesFinesTableViewCell.h"
 
 @interface LibrariesFinesTableController ()
-@property (nonatomic,retain) LibrariesFinesSummaryView *headerView;
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
 @property (nonatomic,retain) NSDictionary *loanData;
 @property (nonatomic,retain) MobileRequestOperation *operation;
+@property (nonatomic,retain) NSDate *lastUpdate;
 
 - (void)setupTableView;
 - (void)updateLoanData;
@@ -18,10 +17,11 @@
 @synthesize parentController = _parentController,
             tableView = _tableView;
 
-@synthesize headerView = _headerView,
-            loadingView = _loadingView,
+@synthesize loadingView = _loadingView,
             loanData = _loanData,
-            operation = _operation;
+            operation = _operation,
+            lastUpdate = _lastUpdate,
+            headerView = _headerView;
 
 - (id)initWithTableView:(UITableView *)tableView
 {
@@ -50,8 +50,7 @@
     }
     
     {
-        CGRect headerFrame = CGRectZero;
-        LibrariesFinesSummaryView *headerView = [[[LibrariesFinesSummaryView alloc] initWithFrame:headerFrame] autorelease];
+        LibrariesFinesSummaryView *headerView = [[[LibrariesFinesSummaryView alloc] initWithFrame:CGRectZero] autorelease];
         headerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                        UIViewAutoresizingFlexibleWidth);
         self.headerView = headerView;
@@ -110,10 +109,13 @@
     if (self.loanData == nil)
     {
         self.loadingView.frame = self.tableView.frame;
-        [self.tableView.superview addSubview:self.loadingView];
+        [self.tableView.superview insertSubview:self.loadingView
+                                   aboveSubview:self.tableView];
     }
     
-    if (self.operation == nil)
+    BOOL shouldUpdate = (self.lastUpdate == nil) || ([self.lastUpdate timeIntervalSinceNow] > 15.0);
+    
+    if ((self.operation == nil) && shouldUpdate)
     {
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                                 command:@"fines"
@@ -121,13 +123,14 @@
                                                                                                                     forKey:@"limit"]];
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
             if (error) {
-                NSLog(@"%@", [error localizedDescription]);
+                ELog(@"%@", [error localizedDescription]);
             } else {
                 if (self.loadingView.superview != nil) {
                     [self.loadingView removeFromSuperview];
                 }
                 
                 self.loanData = (NSDictionary*)jsonResult;
+                self.headerView.accountDetails = (NSDictionary*)jsonResult;
                 [self.tableView reloadData];
             }
             

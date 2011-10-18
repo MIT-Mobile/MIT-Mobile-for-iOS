@@ -425,10 +425,13 @@ typedef enum {
 - (void)transitionToState:(MobileRequestState)state
           willSendRequest:(NSURLRequest*)request
 {
-    self.activeRequest = request;
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+    mutableRequest.timeoutInterval = 10.0;
+    
+    self.activeRequest = mutableRequest;
     self.requestData = nil;
     self.requestState = state;
-    self.connection = [[[NSURLConnection alloc] initWithRequest:request
+    self.connection = [[[NSURLConnection alloc] initWithRequest:mutableRequest
                                                        delegate:self
                                                startImmediately:NO] autorelease];
     [self.connection scheduleInRunLoop:self.operationRunLoop

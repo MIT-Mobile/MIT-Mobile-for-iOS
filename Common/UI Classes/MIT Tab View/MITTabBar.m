@@ -5,6 +5,7 @@
 @interface MITTabBar ()
 @property (nonatomic,retain) NSArray *tabViews;
 @property (nonatomic,retain) MITSegmentControl *selectedControl;
+
 - (void)internalInit;
 - (void)updateTabs;
 - (void)tabBarWasTouched:(id)sender withEvent:(UIEvent*)event;
@@ -20,6 +21,17 @@
 			
 @synthesize tabViews = _tabViews,
             selectedControl = _selectedControl;
+
+- (id)init
+{
+    self = [super init];
+    if (self)
+    {
+        [self internalInit];
+    }
+    
+    return self;
+}
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -48,7 +60,8 @@
     self.selectedSegmentIndex = UISegmentedControlNoSegment;
     self.autoresizesSubviews = YES;
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.backgroundColor = [UIColor blackColor];
+    self.backgroundColor = [UIColor clearColor
+                            ];
     self.userInteractionEnabled = YES;
     
     [self addTarget:self
@@ -75,12 +88,11 @@
             self.tabViews = ([array count] > 0) ? array : nil;
         }
     
-        CGFloat width = self.bounds.size.width / [self.items count];
-        width -= 1;
+        CGFloat width = (self.bounds.size.width - ([self.items count] - 1)) / [self.items count];
         
         CGRect rect = CGRectZero;
-        rect.origin = CGPointMake(self.bounds.origin.x + 1, self.bounds.origin.y + 1);
-        rect.size = CGSizeMake(width, self.bounds.size.height - 2);
+        rect.origin = CGPointMake(self.bounds.origin.x, self.bounds.origin.y);
+        rect.size = CGSizeMake(width, self.bounds.size.height);
         
         for (MITSegmentControl *control in self.tabViews)
         {
@@ -179,7 +191,7 @@
     }
 }
 
-- (void)insertSegmentWithItem:(MITTabViewItem*)item atIndex:(NSInteger)index animated:(BOOL)animated
+- (void)insertSegmentWithItem:(UITabBarItem*)item atIndex:(NSInteger)index animated:(BOOL)animated
 {
     id selectedItem = nil;
     NSInteger selectedIndex = self.selectedSegmentIndex;
@@ -201,7 +213,7 @@
 }
 
 
-- (void)removeSegmentWithItem:(MITTabViewItem*)item animated:(BOOL)animated
+- (void)removeSegmentWithItem:(UITabBarItem*)item animated:(BOOL)animated
 {
     
 }
