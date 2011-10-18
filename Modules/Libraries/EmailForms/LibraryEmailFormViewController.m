@@ -708,9 +708,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
                  [resultsDict objectForKey:@"email"]];
                 
                 ThankYouViewController *thanksController = 
-                [[ThankYouViewController alloc] 
-                 initWithNibName:@"ThankYouViewController"
-                 bundle:[NSBundle mainBundle]];
+                [[ThankYouViewController alloc] init];
                 
                 thanksController.thankYouText = text;
                 thanksController.doneBlock = 

@@ -8,12 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-
-@interface ThankYouViewController : UIViewController {
+@interface ThankYouViewController : UITableViewController {
     
 }
 
-@property (nonatomic, retain) IBOutlet UILabel *thankYouLabel;
 @property (nonatomic, retain) NSString *thankYouText;
 @property (nonatomic, retain) dispatch_block_t doneBlock;
 
