@@ -189,4 +189,42 @@
     }
 }
 
+
+- (CGFloat)tabView:(MITTabView*)tabView heightOfHeaderForView:(UIView*)view
+{
+    if (view == self.finesController.tableView)
+    {
+        UIView *header = self.finesController.headerView;
+        CGSize size = [header sizeThatFits:tabView.bounds.size];
+        return size.height;
+    }
+    else if (view == self.holdsController.tableView)
+    {
+        UIView *header = self.holdsController.headerView;
+        CGSize size = [header sizeThatFits:tabView.bounds.size];
+        return size.height;
+    }
+    else
+    {
+        return 0.0;
+    }
+}
+
+- (UIView*)tabView:(MITTabView*)tabView headerForView:(UIView*)view
+{
+    if (view == self.finesController.tableView)
+    {
+        return self.finesController.headerView;
+    }
+    else if (view == self.holdsController.tableView)
+    {
+        return self.holdsController.headerView;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
+
 @end
