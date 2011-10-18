@@ -305,7 +305,7 @@ static FacilitiesLocationData *_sharedData = nil;
         dispatch_queue_t handlerQueue = dispatch_queue_create(NULL, 0);
         
         if (error) {
-            NSLog(@"Request failed with error: %@",[error localizedDescription]);
+            ELog(@"Request failed with error: %@",[error localizedDescription]);
         } else {
             dispatch_async(handlerQueue, ^(void) {
                 if ([command isEqualToString:FacilitiesCategoriesKey]) {
