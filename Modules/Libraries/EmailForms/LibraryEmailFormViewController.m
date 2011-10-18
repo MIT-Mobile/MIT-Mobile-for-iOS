@@ -3,6 +3,7 @@
 #import "MobileRequestOperation.h"
 #import "MITUIConstants.h"
 #import "LibraryMenuElementViewController.h"
+#import "ThankYouViewController.h"
 
 #define PADDING 10
 
@@ -391,7 +392,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     self.doneButton = [[[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(hideKeyboard)] autorelease];
     
     UIToolbar *inputAccessoryToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
-    inputAccessoryToolbar.tintColor = [UIColor blackColor];
+    inputAccessoryToolbar.barStyle = UIBarStyleBlack;
     inputAccessoryToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     inputAccessoryToolbar.items = [NSArray arrayWithObjects:
                                    [[[UIBarButtonItem alloc] initWithCustomView:self.prevNextSegmentedControl] autorelease],
@@ -700,13 +701,38 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
             if (success) {
             
                 NSDictionary *resultsDict = [jsonDict objectForKey:@"results"];
-                NSString *text = [NSString stringWithFormat:@"%@\n\n%@", [resultsDict objectForKey:@"thank_you_text"], [resultsDict objectForKey:@"contents"]];
-                UITextView *textView = [[UITextView alloc] initWithFrame:self.view.bounds];
-                textView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-                textView.text = text;
-                self.view = textView;
-                self.navigationItem.rightBarButtonItem = nil;
-                [textView release];
+                NSString *text = 
+                [NSString 
+                 stringWithFormat:@"%@\n\nYou will be contacted at %@.", 
+                 [resultsDict objectForKey:@"thank_you_text"], 
+                 [resultsDict objectForKey:@"email"]];
+                
+                ThankYouViewController *thanksController = 
+                [[ThankYouViewController alloc] 
+                 initWithNibName:@"ThankYouViewController"
+                 bundle:[NSBundle mainBundle]];
+                
+                thanksController.thankYouText = text;
+                thanksController.doneBlock = 
+                [[^()
+                  {
+                      LibrariesModule *librariesModule = (LibrariesModule *)
+                      [MIT_MobileAppDelegate moduleForTag:LibrariesTag];
+                      
+                      [self.navigationController 
+                       popToViewController:librariesModule.moduleHomeController 
+                       animated:YES];
+                  }
+                  copy] autorelease];
+                
+                UINavigationController *navController = 
+                [[UINavigationController alloc] 
+                 initWithRootViewController:thanksController];
+                [thanksController release];
+                navController.navigationBar.barStyle = UIBarStyleBlack;
+                
+                [self presentModalViewController:navController animated:NO];
+                [navController release];
             } else {
                 [self showErrorSubmittingForm];
             }
