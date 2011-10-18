@@ -17,18 +17,21 @@
         self.titleLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
+        self.titleLabel.highlightedTextColor = [UIColor whiteColor];
         [self.contentView addSubview:self.titleLabel];
         
         self.infoLabel = [[[UILabel alloc] init] autorelease];
         self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.infoLabel.numberOfLines = 0;
         self.infoLabel.font = [UIFont systemFontOfSize:14.0];
+        self.infoLabel.highlightedTextColor = [UIColor whiteColor];
         [self.contentView addSubview:self.infoLabel];
         
         self.statusLabel = [[[UILabel alloc] init] autorelease];
         self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.statusLabel.numberOfLines = 0;
         self.statusLabel.font = [UIFont systemFontOfSize:14.0];
+        self.statusLabel.highlightedTextColor = [UIColor whiteColor];
         [self.contentView addSubview:self.statusLabel];
         
         self.statusIcon = [[[UIImageView alloc] init] autorelease];
