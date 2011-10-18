@@ -38,21 +38,21 @@
 - (void)loadView
 {
     CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
+    screenRect.origin.y += CGRectGetHeight(self.navigationController.navigationBar.frame);
+    screenRect.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
+    
     UIView *mainView = [[[UIView alloc] initWithFrame:screenRect] autorelease];
     
     {
-        CGRect tabFrame = screenRect;
-        tabFrame.origin = CGPointZero;
-        
         MITTabView *tabView = [[[MITTabView alloc] init] autorelease];
-        tabView.frame = tabFrame;
+        tabView.frame = mainView.bounds;
         tabView.delegate = self;
         self.tabView = tabView;
         [mainView addSubview:tabView];
     }
     
     {
-        UITableView *view = [[[UITableView alloc] initWithFrame:self.tabView.contentView.bounds
+        UITableView *view = [[[UITableView alloc] initWithFrame:CGRectZero
                                                           style:UITableViewStylePlain] autorelease];
         view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
@@ -65,7 +65,7 @@
     }
     
     {
-        UITableView *view = [[[UITableView alloc] initWithFrame:self.tabView.contentView.bounds
+        UITableView *view = [[[UITableView alloc] initWithFrame:CGRectZero
                                                           style:UITableViewStylePlain] autorelease];
         view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
@@ -82,7 +82,7 @@
     }
     
     {
-        UITableView *view = [[[UITableView alloc] initWithFrame:self.tabView.contentView.bounds
+        UITableView *view = [[[UITableView alloc] initWithFrame:CGRectZero
                                                           style:UITableViewStylePlain] autorelease];
         view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
