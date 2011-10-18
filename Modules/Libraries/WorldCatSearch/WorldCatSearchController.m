@@ -29,7 +29,7 @@ WorldCatSearchViewTags;
 static const CGFloat kSearchCellLabelInitialHeight = 44.0f;
 static const CGFloat kSearchCellDetailLabelHeight = 24.0f;
 static const CGFloat kSearchCellLabelMargin = 8.0f;
-static const CGFloat kDisclosureIndicatorClearanceWidth = 32.0f;
+static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
 
 @interface WorldCatSearchController (Private)
 
@@ -39,6 +39,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 32.0f;
 - (void)initLoadMoreViewToTableView:(UITableView *)tableView;
 - (void)updateLoaderView;
 - (NSNumber *)getNumberFromDict:(NSDictionary *)dict forKey:(NSString *)key required:(BOOL)required;
++ (CGFloat)maxLabelWidthForCell:(UITableViewCell *)cell;
 
 @end
 
@@ -169,20 +170,21 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 32.0f;
         }        
         return cell;
     }
-    
+        
     NSString *cellIdentifier = @"book";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (!cell) {
+    if (!cell) 
+    {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier] autorelease];
         
-        // Set up custom two-line label.
+        // Include space on the right to make for a disclosure 
+        // indicator.
+        
+        // Set up custom multiline label.
         UILabel *label = 
         [[UILabel alloc] initWithFrame:
          CGRectMake(kSearchCellLabelMargin, kSearchCellLabelMargin, 
-                    // Include double the margin space on the right to make 
-                    // space for a disclosure indicator.
-                    cell.frame.size.width - 2 * kSearchCellLabelMargin 
-                    - kDisclosureIndicatorClearanceWidth, 
+                    [[self class] maxLabelWidthForCell:cell], 
                     kSearchCellLabelInitialHeight)];
         label.tag = CELL_CUSTOM_LABEL_TAG;
         label.numberOfLines = 0;
@@ -211,18 +213,13 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 32.0f;
     (UILabel *)[cell.contentView viewWithTag:CELL_CUSTOM_LABEL_TAG];
     customLabel.text = book.title;
     
-    // Size it appropriately. If it's less than two lines, it shouldn't have
-    // a lot of extra height. However, it shouldn't be taller than is right for 
-    // two lines, no matter how long it is.
-    CGFloat maxLabelWidth = cell.frame.size.width - 3 * kSearchCellLabelMargin;
+    CGFloat maxLabelWidth = [[self class] maxLabelWidthForCell:cell];
+    // Book title label must fit to maxLabelWidth but can be whatever height 
+    // is needed.
     CGSize sizeThatFits = 
     [customLabel sizeThatFits:
      CGSizeMake(maxLabelWidth, kSearchCellLabelInitialHeight)];
     CGFloat labelHeight = sizeThatFits.height;
-    if (labelHeight > kSearchCellLabelInitialHeight)
-    {
-        labelHeight = kSearchCellLabelInitialHeight;
-    }
     customLabel.frame = 
     CGRectMake(customLabel.frame.origin.x, customLabel.frame.origin.y, 
                maxLabelWidth, labelHeight);
@@ -230,10 +227,14 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 32.0f;
     // Set up detail label.
     UILabel *customDetailLabel = 
     (UILabel *)[cell.contentView viewWithTag:CELL_CUSTOM_DETAIL_LABEL_TAG];
+    NSString *yearText = @"";
+    if (book.years.count > 0)
+    {
+        yearText = [book.years objectAtIndex:0];
+    }
     customDetailLabel.text = 
     [NSString stringWithFormat:@"%@; %@", 
-     [book.years componentsJoinedByString:@", "],
-     [book.authors componentsJoinedByString:@" "]];
+     yearText, [book.authors componentsJoinedByString:@" "]];
     // Move detail label to within 1/2 margin of main label.
     customDetailLabel.frame = 
     CGRectMake(kSearchCellLabelMargin, 
@@ -391,6 +392,12 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 32.0f;
         }
     }
     return number;
+}
+
++ (CGFloat)maxLabelWidthForCell:(UITableViewCell *)cell
+{
+    return cell.frame.size.width -
+    2 * kSearchCellLabelMargin - kDisclosureIndicatorClearanceWidth;
 }
 
 #pragma mark UITableViewDelegate
