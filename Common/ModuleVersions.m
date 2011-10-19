@@ -111,7 +111,7 @@ static ModuleVersions *_sharedVersions = nil;
     return NSUIntegerMax;
 }
 
-- (void)release {
+- (oneway void)release {
     return;
 }
 

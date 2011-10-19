@@ -5,12 +5,19 @@
 #import "PeopleRecentsData.h"
 #import "PersonDetails.h"
 
+#import "MITModule+Protected.h"
+
 static NSString * const PeopleStateSearchBegin = @"search-begin";
 static NSString * const PeopleStateSearchComplete = @"search-complete";
 static NSString * const PeopleStateSearchExternal = @"search";
 static NSString * const PeopleStateDetail = @"detail";
 
+@interface PeopleModule ()
+@property (nonatomic,readonly) PeopleSearchViewController *peopleController;
+@end
+
 @implementation PeopleModule
+@dynamic peopleController;
 
 - (id)init
 {
@@ -20,29 +27,26 @@ static NSString * const PeopleStateDetail = @"detail";
         self.shortName = @"Directory";
         self.longName = @"People Directory";
         self.iconName = @"people";
-        
-        //moduleHomeController.title = self.longName;
-
-		//viewController = [[[PeopleSearchViewController alloc] init] autorelease];
-		//viewController.navigationItem.title = self.longName;
-        
-        //[self.tabNavController setViewControllers:[NSArray arrayWithObject:viewController]];
     }
     return self;
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!viewController) {
-        viewController = [[PeopleSearchViewController alloc] init];
-    }
-    return viewController;
+- (void)loadModuleHomeController
+{
+    PeopleSearchViewController *controller = [[[PeopleSearchViewController alloc] init] autorelease];
+    self.moduleHomeController = controller;
+}
+
+- (PeopleSearchViewController*)peopleController
+{
+    return ((PeopleSearchViewController*)self.moduleHomeController);
 }
 
 - (void)applicationWillTerminate
 {
 	MITModuleURL *url = [[MITModuleURL alloc] initWithTag:DirectoryTag];
 	
-	UIViewController *visibleVC = viewController.navigationController.visibleViewController;
+	UIViewController *visibleVC = self.peopleController.navigationController.visibleViewController;
 	if ([visibleVC isMemberOfClass:[PeopleSearchViewController class]]) {
 		PeopleSearchViewController *searchVC = (PeopleSearchViewController *)visibleVC;
 		if (searchVC.searchController.active) {
@@ -63,67 +67,56 @@ static NSString * const PeopleStateDetail = @"detail";
 }
 
 
-/*
-- (void)applicationDidFinishLaunching
-{
-}
-*/
-
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
     BOOL didHandle = NO;
-	
-	UIViewController *visibleVC = viewController.navigationController.visibleViewController;
-
-	if (visibleVC != viewController) {
-		// start from root view of directory.  the only time this is really
-		// needed is when we're called from another module, not on startup
-		[viewController.navigationController popViewControllerAnimated:NO];
-	}
+    BOOL pushHomeController = YES;
+    
+    if (self.peopleController.view == nil) {
+        ELog(@"Failed to load view controller for tag %@ in '%@'", self.tag, NSStringFromSelector(_cmd));
+    }
  
 	if (localPath == nil) {
 		didHandle = YES;
 	} 
-	
-	// search
-	else if ([localPath isEqualToString:PeopleStateSearchBegin]) {
-		(void)viewController.view;
+	else if ([localPath isEqualToString:PeopleStateSearchBegin])
+    {
 		if (query != nil) {
-			viewController.searchBar.text = query;
+			self.peopleController.searchBar.text = query;
 		}
-        [viewController.searchController setActive:YES animated:NO];
+        [self.peopleController.searchController setActive:YES animated:NO];
         didHandle = YES;
-		
 	} else if (!query || [query length] == 0) {
 		// from this point forward we don't want to handle anything
 		// without proper query terms
 		didHandle = NO;
-		
 	} else if ([localPath isEqualToString:PeopleStateSearchComplete]) {
-		(void)viewController.view;
-        [viewController beginExternalSearch:query];
+        [self.peopleController beginExternalSearch:query];
 		didHandle = YES;
 		
 	} else if ([localPath isEqualToString:PeopleStateSearchExternal]) {
 		// this path is reserved for calling from other modules
 		// do not save state with this path       
-		(void)viewController.view;
-        [viewController beginExternalSearch:query];
-        [self becomeActiveTab];
+        [self.peopleController beginExternalSearch:query];
         didHandle = YES;
-    
 	}
-
-	// detail
-	else if ([localPath isEqualToString:PeopleStateDetail]) {
+	else if ([localPath isEqualToString:PeopleStateDetail])
+    {
 		PersonDetails *person = [PeopleRecentsData personWithUID:query];
 		if (person != nil) {
 			PeopleDetailsViewController *detailVC = [[PeopleDetailsViewController alloc] initWithStyle:UITableViewStyleGrouped];
 			detailVC.personDetails = person;
-			[viewController.navigationController pushViewController:detailVC animated:NO];
+			[[MITAppDelegate() rootNavigationController] pushViewController:detailVC
+                                                                   animated:NO];
 			[detailVC release];
 			didHandle = YES;
+            pushHomeController = NO;
 		}
 	}
+    
+    if (didHandle && pushHomeController) 
+    {
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+    }
 	
     return didHandle;
 }

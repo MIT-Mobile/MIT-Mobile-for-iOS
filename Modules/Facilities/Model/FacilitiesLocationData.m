@@ -684,7 +684,7 @@ static FacilitiesLocationData *_sharedData = nil;
     return NSUIntegerMax;
 }
 
-- (void)release {
+- (oneway void)release {
     return;
 }
 

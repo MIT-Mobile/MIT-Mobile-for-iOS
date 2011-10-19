@@ -1,14 +1,24 @@
 #import "MITModule.h"
-#import "MITModuleList.h"
+#import "MITModule+Protected.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "Foundation+MITAdditions.h"
-#import "MITTabBarItem.h"
-#import "MITMoreListController.h"
 
 @implementation MITModule
+@synthesize tag,
+            shortName, 
+            longName,
+            iconName,
+            pushNotificationSupported,
+            pushNotificationEnabled,
+            springboardButton;
 
-@synthesize tag, shortName, longName, iconName, tabNavController, isMovableTab, canBecomeDefault, pushNotificationSupported, pushNotificationEnabled, springboardButton;
-@synthesize hasLaunchedBegun, currentPath, currentQuery;
-@dynamic badgeValue, icon, tabBarIcon;
+@synthesize hasLaunchedBegun,
+            currentPath,
+            currentQuery;
+
+@dynamic badgeValue,
+            isLoaded,
+            moduleHomeController;
 
 #pragma mark -
 #pragma mark Required
@@ -17,7 +27,6 @@
 {
     self = [super init];
     if (self != nil) {
-
         // Lazily load and prepare modules. that means:
         // Things that can wait until a module is made visible should go into a viewcontroller's -viewDidLoad or -viewWillAppear/-viewDidAppear.
         // Things that must happen at launch time go in -init -> basic properties like name and root view controller. Any loading and processing should be spawned off as an asynchronous action, in order to keep the app responsive.
@@ -28,8 +37,6 @@
         self.shortName = @"foo";
         self.longName = @"Override -init!";
         self.iconName = nil;
-        self.isMovableTab = TRUE;
-        self.canBecomeDefault = TRUE;
 		
 		// state related properties
 		self.hasLaunchedBegun = NO;
@@ -37,76 +44,34 @@
 		self.currentQuery = nil;
 		
         self.pushNotificationSupported = NO;
-        // self.pushNotificationEnabled is set in applicationDidFinishLaunching, because that's when the tag is set
-        
-        tabNavController = nil;
-        /*
-        MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-        if ([appDelegate usesTabBar]) {
-            
-            // Give it a throwaway view controller because it cannot start with nothing.
-            UIViewController *dummyVC = [[UIViewController alloc] initWithNibName:nil bundle:nil];
-            dummyVC.navigationItem.title = @"Placeholder";
-            tabNavController = [[UINavigationController alloc] initWithRootViewController:dummyVC];
-            
-            // Custom tab bar item supports having a different icon in the tab bar and the More list
-            MITTabBarItem *item = [[MITTabBarItem alloc] initWithTitle:self.shortName image:self.tabBarIcon tag:0];
-            tabNavController.tabBarItem = item;
-            [item release];
-            
-            tabNavController.navigationBar.opaque = NO;
-            tabNavController.navigationBar.barStyle = UIBarStyleBlack;
-            
-            // set overall background
-            tabNavController.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];	
-            tabNavController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-            [dummyVC release];
-            
-            UIViewController *homeController = [self moduleHomeController];
-            if (homeController) {
-                [tabNavController setViewControllers:[NSArray arrayWithObject:[self moduleHomeController]]];
-            }
-            
-        }
-        */
     }
     return self;
 }
 
-- (void)loadTabNavController {
-    if (!tabNavController) {
-		MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-        
-        // Give it a throwaway view controller because it cannot start with nothing.
-        UIViewController *dummyVC = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
-        dummyVC.navigationItem.title = @"Placeholder";
-        tabNavController = [[UINavigationController alloc] initWithRootViewController:dummyVC];
-        
-        if ([appDelegate usesTabBar]) {
-            // Custom tab bar item supports having a different icon in the tab bar and the More list
-            MITTabBarItem *item = [[MITTabBarItem alloc] initWithTitle:self.shortName image:self.tabBarIcon tag:0];
-            tabNavController.tabBarItem = item;
-            [item release];
-            
-            tabNavController.navigationBar.opaque = NO;
-            tabNavController.navigationBar.barStyle = UIBarStyleBlack;
-            
-            // set overall background
-            tabNavController.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];	
-            tabNavController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        }
-        
-        UIViewController *homeController = [self moduleHomeController];
-        if (homeController) {
-            [tabNavController setViewControllers:[NSArray arrayWithObject:[self moduleHomeController]]];
-        }
-    }
+- (void)loadModuleHomeController
+{
+    DLog(@"home controller not defined for module %@", self.tag);
+}
+
+
+#pragma mark - Dynamic Properties
+- (BOOL)isLoaded
+{
+    return (_moduleHomeController != nil);
+}
+
+- (void)setModuleHomeController:(UIViewController *)moduleHomeController
+{
+    [_moduleHomeController release];
+    _moduleHomeController = [moduleHomeController retain];
 }
 
 - (UIViewController *)moduleHomeController {
-    // return view controller that serves as module's home screen
-    DLog(@"home controller not defined for module %@", self.tag);
-    return nil;
+    if ([self isLoaded] == NO) {
+        [self loadModuleHomeController];
+    }
+    
+    return _moduleHomeController;
 }
 
 #pragma mark -
@@ -125,12 +90,6 @@
     // load from disk on app start
     NSDictionary *pushDisabledSettings = [[NSUserDefaults standardUserDefaults] objectForKey:PushNotificationSettingsKey];
     self.pushNotificationEnabled = ([pushDisabledSettings objectForKey:self.tag] == nil) ? YES : NO; // enabled by default
-
-    self.tabNavController.navigationItem.title = self.longName;
-    MITTabBarItem *item = (MITTabBarItem *)self.tabNavController.tabBarItem;
-    item.title = self.shortName;
-    item.image = self.tabBarIcon;
-    item.tableImage = self.icon;
 }
 
 - (void)applicationWillTerminate {
@@ -174,19 +133,11 @@
 #pragma mark Use, but don't override
 
 - (NSString *)badgeValue {
-    if ([(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] usesTabBar]) {
-        return self.tabNavController.tabBarItem.badgeValue;
-    } else {
-        return self.springboardButton.badgeValue;
-    }
+    return self.springboardButton.badgeValue;
 }
 
 - (void)setBadgeValue:(NSString *)newBadgeValue {
-    if ([(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] usesTabBar]) {
-        self.tabNavController.tabBarItem.badgeValue = newBadgeValue;
-    } else {
-        self.springboardButton.badgeValue = newBadgeValue;
-    }
+    self.springboardButton.badgeValue = newBadgeValue;
 }
 
 - (UIImage *)icon {
@@ -216,16 +167,13 @@
     return result;
 }
 
-- (void)becomeActiveTab {
-	if(![self isActiveTab]) {
-		MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-		[appDelegate showModuleForTag:self.tag];
-	}
-}
-
-- (BOOL)isActiveTab {
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	return [self.tag isEqualToString:[appDelegate activeModuleTag]];
+- (void)becomeActiveModule {
+	UIViewController *visibleController = [[MITAppDelegate() rootNavigationController] visibleViewController];
+    
+    if (visibleController != self.moduleHomeController)
+    {
+        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
+    }
 }
 
 // all notifications are enabled by default
@@ -250,7 +198,6 @@
 }
 
 #pragma mark tabNavController methods
-
 // these methods make sure to pop and push from the current UINavigationController
 // which may not be the same as self.tabNavController
 - (void) popToRootViewController {
@@ -258,17 +205,7 @@
 }
 
 - (UIViewController *) rootViewController {
-	if(tabNavController.viewControllers.count > 0) {
-		UIViewController *firstViewController = [tabNavController.viewControllers objectAtIndex:0];
-		if(![firstViewController isKindOfClass:[MITMoreListController class]]) {
-			// we only want to return a ViewController that belongs to the module
-			// not More List view controller, which can be the root, for modules in the more list
-			return firstViewController;
-		} else if (tabNavController.viewControllers.count > 1) {
-			return [tabNavController.viewControllers objectAtIndex:1];
-		}
-	}
-	return nil;
+	return self.moduleHomeController;
 }
 		 
 - (void) pushViewController: (UIViewController *)viewController {
@@ -277,19 +214,11 @@
 
 - (UIViewController *) parentForViewController:(UIViewController *)viewController {
 	UIViewController *previousViewController = nil;
-	NSArray *viewControllers;
-	if(tabNavController.viewControllers.count > viewController.navigationController.viewControllers.count) {
-		viewControllers = tabNavController.viewControllers;
-	} else {
-		viewControllers = viewController.navigationController.viewControllers;
-	}
+	NSArray *viewControllers = viewController.navigationController.viewControllers;
 
 	for (UIViewController *currentViewController in viewControllers) {
 		if (currentViewController == viewController) {
 			return previousViewController;
-		}
-		if (![currentViewController isKindOfClass:[MITMoreListController class]]) {
-			previousViewController = currentViewController;
 		}
 	}
 	return nil;

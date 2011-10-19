@@ -1200,8 +1200,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
+					armv7,
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1212,6 +1212,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				WARNING_CFLAGS = "";
 			};
 			name = Debug;
 		};
@@ -1219,8 +1220,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					"$(ARCHS_STANDARD_32_BIT)",
 					armv6,
+					armv7,
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = "";

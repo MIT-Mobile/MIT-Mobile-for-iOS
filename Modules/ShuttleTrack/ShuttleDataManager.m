@@ -344,18 +344,6 @@ NSString * const shuttlePathExtension = @"shuttles/";
 		
 		[self sendRoutesToDelegates:_shuttleRoutes];
 	}
-	else if ([[request.params valueForKey:@"command"] isEqualToString:@"stops"] && [result isKindOfClass:[NSArray class]]) {
-
-		NSMutableArray* array = [[NSMutableArray alloc] initWithCapacity:[result count]];
-		
-		for (NSDictionary* dictionary in result) {
-			ShuttleStop* shuttleStop = [[[ShuttleStop alloc] initWithDictionary:dictionary] autorelease];
-			[array addObject:shuttleStop];
-		}
-		
-		[self sendStopsToDelegates:array];
-		
-	}
 	else if ([[request.params valueForKey:@"command"] isEqualToString:@"stopInfo"] && [result isKindOfClass:[NSDictionary class]]) {
 
 		NSArray* routesAtStop = [result objectForKey:@"stops"]; // the api should've called this "routes", this is confusing

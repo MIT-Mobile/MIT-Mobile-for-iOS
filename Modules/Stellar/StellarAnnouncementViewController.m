@@ -32,7 +32,8 @@
 	self.tableView.allowsSelection = NO;
 	self.title = @"News";
 	[self.tableView applyStandardColors];
-	[url setPathWithViewController:self extension:[NSString stringWithFormat:@"%i", rowIndex]];
+	[url setPathWithViewController:self
+                         extension:[NSString stringWithFormat:@"%i", rowIndex]];
 }
 
 - (void) viewDidAppear:(BOOL)animated {

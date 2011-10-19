@@ -19,6 +19,10 @@
     return 0;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return (isSearchResults) ? UNGROUPED_SECTION_HEADER_HEIGHT : 0;
+}
+
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIView *titleView = nil;
     NSString *titleString = nil;

@@ -2,7 +2,6 @@
 #import "MITUnreadNotifications.h"
 #import "MITDeviceRegistration.h"
 #import "MIT_MobileAppDelegate.h"
-#import "MITTabBarController.h"
 #import "MITModule.h"
 #import "SBJSON.h"
 
@@ -73,34 +72,6 @@
 	[UIApplication sharedApplication].applicationIconBadgeNumber = [notifications count];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:UnreadBadgeValuesChangeNotification object:nil];
-	
-	// update the total shown under more tab
-	NSInteger tabIndex;
-	NSInteger moreTabTotal = 0;
-	NSArray *tabBarItems = appDelegate.tabBarController.allItems;
-	for(tabIndex = TAB_COUNT; tabIndex < tabBarItems.count; tabIndex++) {
-		UITabBarItem *tabBarItem = [tabBarItems objectAtIndex:tabIndex];
-		MITModule *module = [appDelegate moduleForTabBarItem:tabBarItem];
-		NSString *badgeValue = [module badgeValue];
-		if([badgeValue length]) {
-			NSInteger badgeInteger = [badgeValue integerValue];
-			if(badgeInteger) {
-				moreTabTotal = moreTabTotal + badgeInteger;
-			} else {
-				// badge value is not empty string, thats not a decimal expression
-				// so it counts as one message
-				moreTabTotal++;
-			}
-		}
-	}
-
-	UITabBarItem *moreTabBarItem = [appDelegate.tabBarController.tabBar.items objectAtIndex:TAB_COUNT];
-	if(moreTabTotal) {
-		moreTabBarItem.badgeValue = [NSString stringWithFormat:@"%i", moreTabTotal];
-	} else {
-		moreTabBarItem.badgeValue = nil;
-	}
-
 }
 		
 

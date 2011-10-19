@@ -23,7 +23,7 @@
 #define MESSAGE_HEIGHT 157.0
 #define MESSAGE_MARGIN 7.0
 
-#define BOTTOM_SECTION_TOP 3.0
+#define BOTTOM_SECTION_TOP 5.0
 #define BOTTOM_SECTION_HEIGHT 30.0
 
 #define USERNAME_MAX_WIDTH 150.0
@@ -183,24 +183,15 @@ MIT_MobileAppDelegate *appDelegate();
 		usernameLabel.textColor = [UIColor blackColor];
 	
 		CGRect messageFrame = CGRectMake(
-			MESSAGE_MARGIN,
-			MESSAGE_MARGIN, 
-			contentFrame.size.width - 2 * MESSAGE_MARGIN,
-			MESSAGE_HEIGHT - 2 * MESSAGE_MARGIN);
+			0,
+			0, 
+			contentFrame.size.width,
+			MESSAGE_HEIGHT - 2);
 		
-		messageField = [[UITextField alloc] initWithFrame:CGRectInset(messageFrame, MESSAGE_MARGIN, MESSAGE_MARGIN)];
+		messageField = [[UITextView alloc] initWithFrame:messageFrame];
 		messageField.text = [NSString stringWithFormat:@"%@:\n%@", message, longUrl];
 		messageField.delegate = [[MessageFieldDelegate alloc] initWithMessage:messageField.text counter:counterLabel];
-		messageField.backgroundColor = [UIColor clearColor];
 		messageField.font = [UIFont systemFontOfSize:17.0];
-		
-		// we use a UITextField to give the the UITextView
-		// the same appearance as a UITextField, but
-		// we keep it behind the the UITextView, because we
-		// want the multiple line functionality of a UITextView
-		UITextField *fakeMessageField = [[[UITextField alloc] initWithFrame:messageFrame] autorelease];
-		fakeMessageField.borderStyle = UITextBorderStyleRoundedRect;
-		fakeMessageField.enabled = NO;
 		
 		signOutButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
 		UIImage *signOutImage = [UIImage imageNamed:@"global/twitter_signout.png"];
@@ -212,7 +203,6 @@ MIT_MobileAppDelegate *appDelegate();
 		
 		[messageInputView addSubview:signOutButton];
 		[messageInputView addSubview:usernameLabel];
-		[messageInputView addSubview:fakeMessageField];
 		[messageInputView addSubview:messageField];
 		[messageInputView addSubview:counterLabel];
 	}

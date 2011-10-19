@@ -10,7 +10,6 @@
     NSString *tag; // Internal module name. Never displayed to user.
     NSString *shortName; // The name to be displayed in the UITabBar's first 4 tabBarItems
     NSString *longName; // The name to be displayed in the rows of the More table of the UITabBar
-    
     NSString *iconName; // Filename of module artwork. The foo in "Resources/Modules/foo.png".
     
     // The root UIViewController for a module's tab is always a 
@@ -23,10 +22,10 @@
     // tabBarItem.badgeValue, because they are actually affecting the 
     // moreNavigationController. There will be more changes to MITModule later 
     // to simplify tab badging and navigation stack management.
-    UINavigationController *tabNavController;
+    UINavigationController *tabNavController DEPRECATED_ATTRIBUTE;
     
-    BOOL isMovableTab; // TRUE if this module's tab can be rearranged during UITabBar customization. FALSE otherwise.
-    BOOL canBecomeDefault; // TRUE if this module can become the default tab at startup
+    BOOL isMovableTab DEPRECATED_ATTRIBUTE; // TRUE if this module's tab can be rearranged during UITabBar customization. FALSE otherwise.
+    BOOL canBecomeDefault DEPRECATED_ATTRIBUTE; // TRUE if this module can become the default tab at startup
     BOOL pushNotificationSupported;
     BOOL pushNotificationEnabled; // toggled by user in SettingsModule
 	
@@ -36,72 +35,56 @@
 	NSString *currentPath; // the path of the URL representing current module state
 	NSString *currentQuery; // query of the URL representing current module state
     
-    UIViewController *moduleHomeController;
+    UIViewController* _moduleHomeController;
     SpringboardIcon *springboardButton;
 }
 
 #pragma mark Required methods (must override in subclass)
 
 - (id)init; // Basic settings: name, icon, root view controller. Keep this minimal. Anything time-consuming needs to be asynchronous.
-
-@property (readonly) UIViewController *moduleHomeController;
+- (NSString *)description;
 
 #pragma mark Optional methods
 
 - (void)applicationDidFinishLaunching; // Called after all modules are initialized and have added their tabNavController to the tab bar
-
 - (void)applicationWillTerminate; // Called before app quits. Last chance to save state.
-
 - (void)applicationDidEnterBackground;
-
 - (void)applicationWillEnterForeground;
 
-- (NSString *)description; // what NSLog(@"%@", aModule); prints
-
 - (void)didAppear;
-
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query;
-
 - (void)resetURL; // reset the URL, (i.e. path and query to empty strings)
 
-- (BOOL)handleNotification: (MITNotification *)notification shouldOpen: (BOOL)shouldOpen; // Called when a push notification arrives
-
+- (BOOL)handleNotification:(MITNotification *)notification shouldOpen:(BOOL)shouldOpen; // Called when a push notification arrives
 - (void)handleUnreadNotificationsSync: (NSArray *)unreadNotifications; // called to let the module know the unreads may have changed
 
-- (void)becomeActiveTab;
-
-- (BOOL)isActiveTab;
-
-#pragma mark Don't override
-
-- (void)loadTabNavController;
+// This will push the moduleHomeController onto the
+// navigation stack of it isn't already the top-most
+// view controller.
+- (void)becomeActiveModule;
 
 #pragma mark tabNavController methods
 
 - (void) popToRootViewController;
-
 - (UIViewController *) rootViewController;
 
 - (void) pushViewController: (UIViewController *)viewController;
-
 - (UIViewController *) parentForViewController:(UIViewController *)viewController;
 
 
 
 
+@property (nonatomic,readonly) BOOL isLoaded;
+
+@property (nonatomic, readonly, retain) UIViewController *moduleHomeController;
 @property (nonatomic, copy) NSString *tag;
 @property (nonatomic, copy) NSString *shortName;
 @property (nonatomic, copy) NSString *longName;
 @property (nonatomic, copy) NSString *iconName;
-@property (nonatomic, readonly) UINavigationController *tabNavController;
-@property (nonatomic, assign) BOOL isMovableTab;
-@property (nonatomic, assign) BOOL canBecomeDefault;
 @property (nonatomic, assign) BOOL pushNotificationSupported;
 @property (nonatomic, assign) BOOL pushNotificationEnabled;
 
 @property (nonatomic, retain) NSString *badgeValue;          // What appears in the red bubble in the module's tab. Set to nil to make it disappear. Will eventually show in the More tab's table as well.
-@property (nonatomic, readonly) UIImage *icon;       // The icon used for the More tab's table (color)
-@property (nonatomic, readonly) UIImage *tabBarIcon; // The icon used for the UITabBar (black and white)
 @property (nonatomic, readonly) UIImage *springboardIcon;
 @property (nonatomic, retain) SpringboardIcon *springboardButton;
 

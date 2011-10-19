@@ -47,7 +47,6 @@
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
-	
 	// create our own view
 	self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 364)] retain];
 	
@@ -123,8 +122,6 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	self.title = @"Campus Map";
-	
-    
     
 	// turn on the location dot
 	_mapView.showsUserLocation = YES;

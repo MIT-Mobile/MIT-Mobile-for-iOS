@@ -874,7 +874,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 			if (length == 0) { // fresh load of category, set its updated date
 				[aCategory setValue:[NSDate date] forKey:@"lastUpdated"];
 			}
-			length += [self.xmlParser.newStories count];
+			length += [self.xmlParser.addedStories count];
 			[aCategory setValue:[NSNumber numberWithInteger:length] forKey:@"expectedCount"];
 			if (!parser.loadingMore && [self.stories count] > 0) {
 				[storyTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];

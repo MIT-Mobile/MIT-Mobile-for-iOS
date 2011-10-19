@@ -4,7 +4,7 @@
 #import "SecondaryGroupedTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 
 @implementation ShuttleRoutes
 

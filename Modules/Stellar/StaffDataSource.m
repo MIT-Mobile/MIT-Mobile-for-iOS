@@ -1,7 +1,7 @@
 
 #import "StaffDataSource.h"
 #import "MultiLineTableViewCell.h"
-#import "MITModuleList.h"
+#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "PeopleModule.h"
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
