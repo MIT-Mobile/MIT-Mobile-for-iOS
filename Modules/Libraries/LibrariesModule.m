@@ -1,6 +1,6 @@
 #import "LibrariesModule.h"
 #import "LibrariesViewController.h"
-
+#import "MITModule+Protected.h"
 
 @implementation LibrariesModule
 @synthesize requestQueue = _requestQueue;
@@ -12,7 +12,6 @@
         self.shortName = @"Libraries";
         self.longName = @"Libraries";
         self.iconName = @"libraries";
-        self.isMovableTab = TRUE;
         self.requestQueue = [[[NSOperationQueue alloc] init] autorelease];
         
     }
@@ -24,10 +23,9 @@
     [super dealloc];
 }
 
-- (UIViewController *)moduleHomeController {
-    if (!moduleHomeController) {
-        moduleHomeController = [[LibrariesViewController alloc] initWithNibName:@"LibrariesViewController" bundle:nil];
-    }
-    return moduleHomeController;
+- (void)loadModuleHomeController
+{
+    self.moduleHomeController = [[[LibrariesViewController alloc] initWithNibName:@"LibrariesViewController" bundle:nil] autorelease];
 }
+
 @end
