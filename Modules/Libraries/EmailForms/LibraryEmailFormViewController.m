@@ -688,45 +688,32 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
                                                                               command:[self command]
                                                                            parameters:parameters] autorelease];
     
+    ThankYouViewController *thanksController = [[ThankYouViewController alloc] initWithMessage:nil];
+    thanksController.title = @"Submitting";
+    [self.navigationController pushViewController:thanksController animated:NO];
+    [thanksController release];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-        [self.loadingView removeFromSuperview];
-        
-        if (error) {
+        NSDictionary *jsonDict = jsonResult;
+        BOOL success = [(NSNumber *)[jsonDict objectForKey:@"success"] boolValue];
+        if (error || !success) {
             NSLog(@"Request failed with error: %@",[error localizedDescription]);
+            [self.navigationController popViewControllerAnimated:NO];
             [self showErrorSubmittingForm];
         } else {
-            NSDictionary *jsonDict = jsonResult;
-            BOOL success = [(NSNumber *)[jsonDict objectForKey:@"success"] boolValue];
-            if (success) {
+            NSDictionary *resultsDict = [jsonDict objectForKey:@"results"];
+            NSString *text = 
+            [NSString 
+             stringWithFormat:@"%@\n\nYou should receive a reply at %@.", 
+             [resultsDict objectForKey:@"thank_you_text"], 
+             [resultsDict objectForKey:@"email"]];
             
-                NSDictionary *resultsDict = [jsonDict objectForKey:@"results"];
-                NSString *text = 
-                [NSString 
-                 stringWithFormat:@"%@\n\nYou will be contacted at %@.", 
-                 [resultsDict objectForKey:@"thank_you_text"], 
-                 [resultsDict objectForKey:@"email"]];
-                
-                ThankYouViewController *thanksController = 
-                [[ThankYouViewController alloc] initWithMessage:text];
-                
-                [self.navigationController pushViewController:thanksController animated:YES];
-            } else {
-                [self showErrorSubmittingForm];
-            }
+            thanksController.title = @"Thank You";
+            thanksController.message = text;
         }
     };
 
     [librariesModule.requestQueue addOperation:request];
-    
-    // show a loading indicator
-    if (!self.loadingView) {
-        self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
-        self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    }
-    [self.loadingView removeFromSuperview];
-    self.loadingView.frame = self.view.bounds;
-    [self.view addSubview:self.loadingView];
 }
 
 - (LibraryFormElementGroup *)groupForName:(NSString *)name {
