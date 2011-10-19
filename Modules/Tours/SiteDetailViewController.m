@@ -379,7 +379,7 @@
     // table footer
 	NSString *buttonTitle = @"Return to MIT Home Screen";
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage *buttonBackground = [UIImage imageNamed:@"tours/return_button.png"];
+    UIImage *buttonBackground = [UIImage imageNamed:@"global/return_button.png"];
     button.frame = CGRectMake(10, 0, buttonBackground.size.width, buttonBackground.size.height);
     [button setBackgroundImage:buttonBackground forState:UIControlStateNormal];
 	button.titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
