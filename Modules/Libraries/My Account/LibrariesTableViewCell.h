@@ -9,6 +9,7 @@
 @property (nonatomic,assign) UIEdgeInsets contentViewInsets;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier;
-- (void)layoutSubviewsWithEdgeInsets:(UIEdgeInsets)insets;
-- (CGSize)sizeThatFits:(CGSize)size withEdgeInsets:(UIEdgeInsets)edgeInsets;
+
+- (void)layoutContentUsingBounds:(CGRect)bounds;
+- (CGSize)contentSizeThatFits:(CGSize)size;
 @end

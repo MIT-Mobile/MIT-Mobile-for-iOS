@@ -23,10 +23,10 @@
     return self;
 }
 
-- (void)layoutSubviewsWithEdgeInsets:(UIEdgeInsets)insets
+- (void)layoutContentUsingBounds:(CGRect)bounds
 {
-    CGRect viewFrame = UIEdgeInsetsInsetRect(self.contentView.bounds, insets);
-    UIEdgeInsets modifiedInsets = insets;
+    CGRect viewFrame = bounds;
+    [super layoutContentUsingBounds:bounds];
     
     {
         CGRect fineFrame = CGRectZero;
@@ -35,51 +35,32 @@
                                        CGRectGetMaxY(viewFrame) - fineFrame.size.height);
         self.fineLabel.frame = fineFrame;
     }
-    
-    modifiedInsets.right += self.fineLabel.frame.size.width + 4;
-    
-    [super layoutSubviewsWithEdgeInsets:modifiedInsets];
 }
 
-- (CGSize)sizeThatFits:(CGSize)size withEdgeInsets:(UIEdgeInsets)edgeInsets
+- (CGSize)contentSizeThatFits:(CGSize)size
 {
+    CGSize superSize = [super contentSizeThatFits:size];
     CGSize fineSize = [[self.fineLabel text] sizeWithFont:self.fineLabel.font];
     
-    edgeInsets.right += fineSize.width;
-    
-    return [super sizeThatFits:size
-                withEdgeInsets:edgeInsets];
+    superSize.height += fineSize.height;
+    return superSize;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
+- (void)setItemDetails:(NSDictionary *)itemDetails
 {
-    if ([keyPath isEqualToString:@"itemDetails"]) {
-        NSDictionary *item = self.itemDetails;
-        if (item == nil) {
-            self.fineLabel.text = nil;
-        } else {
-            
-            NSMutableString *status = [NSMutableString string];
-            NSTimeInterval fineInterval = [[item objectForKey:@"fine-date"] doubleValue];
-            NSDate *fineDate = [NSDate dateWithTimeIntervalSince1970:fineInterval];
-            [status appendFormat:@"Fined %@", [NSDateFormatter localizedStringFromDate:fineDate
-                                                                             dateStyle:NSDateFormatterShortStyle
-                                                                             timeStyle:NSDateFormatterNoStyle]];
-            self.statusIcon.hidden = YES;
-            self.statusLabel.textColor = [UIColor blackColor];            
-            self.statusLabel.text = [[status stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
-            
-            self.fineLabel.text = [item objectForKey:@"display-amount"];
-        }
-    }
+    [super setItemDetails:itemDetails];
     
-    [super observeValueForKeyPath:keyPath
-                         ofObject:object
-                           change:change
-                          context:context];
+    NSMutableString *status = [NSMutableString string];
+    NSTimeInterval fineInterval = [[itemDetails objectForKey:@"fine-date"] doubleValue];
+    NSDate *fineDate = [NSDate dateWithTimeIntervalSince1970:fineInterval];
+    [status appendFormat:@"Fined %@", [NSDateFormatter localizedStringFromDate:fineDate
+                                                                     dateStyle:NSDateFormatterShortStyle
+                                                                     timeStyle:NSDateFormatterNoStyle]];
+    self.statusIcon.hidden = YES;
+    self.statusLabel.textColor = [UIColor blackColor];            
+    self.statusLabel.text = [[status stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
+    
+    self.fineLabel.text = [itemDetails objectForKey:@"display-amount"];
 }
 
 @end

@@ -1,5 +1,6 @@
 #import "LibrariesTableViewCell.h"
 #import "Foundation+MITAdditions.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation LibrariesTableViewCell
 @synthesize contentViewInsets = _contentViewInsets,
@@ -40,20 +41,14 @@
         
         self.contentViewInsets = UIEdgeInsetsMake(5, 5, 5, 25);
         
-        [self addObserver:self
-               forKeyPath:@"itemDetails"
-                  options:(NSKeyValueObservingOptionInitial |
-                           NSKeyValueObservingOptionNew |
-                           NSKeyValueObservingOptionOld)
-                  context:NULL];
+        self.contentView.layer.borderColor = [[UIColor redColor] CGColor];
+        self.contentView.layer.borderWidth = 2.0;
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [self removeObserver:self
-              forKeyPath:@"itemDetails"];
     self.itemDetails = nil;
     self.infoLabel = nil;
     self.statusLabel = nil;
@@ -63,13 +58,43 @@
     [super dealloc];
 }
 
-- (void)layoutSubviewsWithEdgeInsets:(UIEdgeInsets)insets
+- (void)layoutSubviews
 {
-    CGRect viewFrame = UIEdgeInsetsInsetRect(self.contentView.bounds, insets);
-    CGFloat viewWidth = viewFrame.size.width;
+    [super layoutSubviews];
+    
+    CGRect contentBounds = self.contentView.frame;
+    contentBounds.origin = CGPointZero;
+    self.contentView.bounds = CGRectMake(0,0,
+                                         CGRectGetWidth(self.contentView.frame),
+                                         CGRectGetHeight(self.contentView.frame));
+    
+    [self layoutContentUsingBounds:self.contentView.bounds];
+}
+
+- (CGSize)sizeThatFits:(CGSize)size
+{
+    CGSize newSize = [super sizeThatFits:size];
+    
+    CGSize contentSize = newSize;
+    // Subtract off the content view insets so we get the proper wrapping behavior
+    contentSize.width -= (self.contentViewInsets.left + self.contentViewInsets.right);
+    contentSize.height -= (self.contentViewInsets.top + self.contentViewInsets.bottom);
+    
+    contentSize = [self contentSizeThatFits:contentSize];
+    
+    // Add the contentView insets back in so we get the proper sizing for the cell
+    contentSize.width += (self.contentViewInsets.left + self.contentViewInsets.right);
+    contentSize.height += (self.contentViewInsets.top + self.contentViewInsets.bottom);
+    return CGSizeMake(newSize.width, MAX(newSize.height,contentSize.height));
+}
+
+
+- (void)layoutContentUsingBounds:(CGRect)viewBounds
+{
+    CGFloat viewWidth = CGRectGetWidth(viewBounds);
     
     {
-        CGRect titleFrame = viewFrame;
+        CGRect titleFrame = viewBounds;
         titleFrame.size = [[self.titleLabel text] sizeWithFont:self.titleLabel.font
                                              constrainedToSize:CGSizeMake(viewWidth, CGFLOAT_MAX)
                                                  lineBreakMode:self.titleLabel.lineBreakMode];
@@ -78,7 +103,7 @@
     
     {
         CGRect infoFrame = CGRectZero;
-        infoFrame.origin = CGPointMake(CGRectGetMinX(viewFrame),
+        infoFrame.origin = CGPointMake(CGRectGetMinX(viewBounds),
                                        CGRectGetMaxY(self.titleLabel.frame) + 3);
         
         infoFrame.size = [[self.infoLabel text] sizeWithFont:self.infoLabel.font
@@ -94,7 +119,7 @@
         }
         
         CGRect statusFrame = CGRectZero;
-        statusFrame.origin = CGPointMake(CGRectGetMinX(viewFrame) + statusInset,
+        statusFrame.origin = CGPointMake(CGRectGetMinX(viewBounds) + statusInset,
                                          CGRectGetMaxY(self.infoLabel.frame));
         statusFrame.size = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
                                                constrainedToSize:CGSizeMake(viewWidth - statusInset, CGFLOAT_MAX)
@@ -105,25 +130,17 @@
     if (self.statusIcon.hidden == NO) {
         CGRect imageFrame = CGRectZero;
         imageFrame.size = self.statusIcon.image.size;
-        imageFrame.origin = CGPointMake(CGRectGetMinX(viewFrame),
+        imageFrame.origin = CGPointMake(CGRectGetMinX(viewBounds),
                                         self.statusLabel.frame.origin.y);
         self.statusIcon.frame = imageFrame;
     }
+
 }
 
-- (void)layoutSubviews
+- (CGSize)contentSizeThatFits:(CGSize)size
 {
-    [super layoutSubviews];
-    [self layoutSubviewsWithEdgeInsets:self.contentViewInsets];
-}
-
-- (CGSize)sizeThatFits:(CGSize)size withEdgeInsets:(UIEdgeInsets)edgeInsets
-{
-    CGRect insetFrame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, size.width, size.height),
-                                              edgeInsets);
-    
-    CGFloat width = CGRectGetWidth(insetFrame);
-    CGFloat height = fabsf(size.height - CGRectGetHeight(insetFrame));
+    CGFloat width = size.width;
+    CGFloat height = size.height;
     
     {
         CGSize titleSize = [[self.titleLabel text] sizeWithFont:self.titleLabel.font
@@ -141,7 +158,7 @@
     
     {
         CGFloat statusInset = 0.0;
-        if (self.statusIcon.image) {
+        if (self.statusIcon.hidden == NO) {
             statusInset = 3 + self.statusIcon.image.size.width;
         }
         
@@ -154,42 +171,13 @@
     return CGSizeMake(size.width, height);
 }
 
-- (CGSize)sizeThatFits:(CGSize)size
-{
-    CGSize newSize = [super sizeThatFits:size];
-    
-    CGFloat contentWidth = newSize.width;
-    
-    if (self.accessoryView) {
-        contentWidth -= self.accessoryView.frame.size.width;
-    } else if (self.accessoryType != UITableViewCellAccessoryNone) {
-        contentWidth -= 25;
-    }
-    
-    CGSize contentSize = [self sizeThatFits:CGSizeMake(contentWidth, newSize.height)
-                             withEdgeInsets:self.contentViewInsets];
-    return CGSizeMake(newSize.width, MAX(newSize.height,contentSize.height));
-}
-
 - (void)setItemDetails:(NSDictionary *)itemDetails
 {
     if ([self.itemDetails isEqualToDictionary:itemDetails] == NO) {
-        [self willChangeValueForKey:@"itemDetails"];
+        [_itemDetails release];
+        _itemDetails = [itemDetails copy];
         
-        [self->_itemDetails release];
-        self->_itemDetails = [itemDetails copy];
-        
-        [self didChangeValueForKey:@"itemDetails"];
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-    if ([keyPath isEqualToString:@"itemDetails"]) {
-        if (self.itemDetails == nil) {
+        if (itemDetails == nil) {
             self.titleLabel.text = nil;
             self.infoLabel.text = nil;
             self.statusLabel.text = nil;
@@ -203,7 +191,7 @@
             self.infoLabel.text = [[NSString stringWithFormat:@"%@; %@",year,author] stringByDecodingXMLEntities];
         }
         
-        [self layoutSubviews];
+        [self setNeedsLayout];
     }
 }
 @end
