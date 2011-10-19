@@ -2,7 +2,6 @@
 #import "MobileRequestOperation.h"
 #import "MITMobileWebAPI.h"
 #import "MITUIConstants.h"
-#import "MITModuleList.h"
 #import "LibrariesModule.h"
 
 #define TITLE_ROW 0
