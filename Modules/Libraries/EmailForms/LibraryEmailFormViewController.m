@@ -134,7 +134,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     textInputView.frame = textFieldFrame;
     textInputView.autoresizingMask =  UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     textInputView.backgroundColor = [UIColor clearColor];
-    cell.selectionStyle = UITableViewCellEditingStyleNone;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     [cell.contentView addSubview:textInputView];
     return cell;    
 }
@@ -708,29 +708,9 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
                  [resultsDict objectForKey:@"email"]];
                 
                 ThankYouViewController *thanksController = 
-                [[ThankYouViewController alloc] init];
+                [[ThankYouViewController alloc] initWithMessage:text];
                 
-                thanksController.thankYouText = text;
-                thanksController.doneBlock = 
-                [[^()
-                  {
-                      LibrariesModule *librariesModule = (LibrariesModule *)
-                      [MIT_MobileAppDelegate moduleForTag:LibrariesTag];
-                      
-                      [self.navigationController 
-                       popToViewController:librariesModule.moduleHomeController 
-                       animated:YES];
-                  }
-                  copy] autorelease];
-                
-                UINavigationController *navController = 
-                [[UINavigationController alloc] 
-                 initWithRootViewController:thanksController];
-                [thanksController release];
-                navController.navigationBar.barStyle = UIBarStyleBlack;
-                
-                [self presentModalViewController:navController animated:NO];
-                [navController release];
+                [self.navigationController pushViewController:thanksController animated:YES];
             } else {
                 [self showErrorSubmittingForm];
             }

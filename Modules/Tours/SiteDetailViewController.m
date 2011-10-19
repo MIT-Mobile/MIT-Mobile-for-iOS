@@ -383,9 +383,7 @@
     button.frame = CGRectMake(10, 0, buttonBackground.size.width, buttonBackground.size.height);
     [button setBackgroundImage:buttonBackground forState:UIControlStateNormal];
 	button.titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
-	button.titleLabel.textAlignment = UITextAlignmentLeft;
-	// position label so that left alignment actually means something
-	button.titleEdgeInsets = UIEdgeInsetsMake(-1.0, -27.0, 1.0, 27.0);
+	button.titleLabel.textAlignment = UITextAlignmentCenter;
     [button setTitle:buttonTitle forState:UIControlStateNormal];
     [button addTarget:self action:@selector(returnToHomeScreen:) forControlEvents:UIControlEventTouchUpInside];
 
