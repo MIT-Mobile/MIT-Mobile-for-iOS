@@ -1,20 +1,14 @@
-//
-//  ThankYouViewController.h
-//  MIT Mobile
-//
-//  Created by Jim Kang on 10/17/11.
-//  Copyright 2011 Modo Labs. All rights reserved.
-//
-
 #import <UIKit/UIKit.h>
 
+@class MITLoadingActivityView;
+
 @interface ThankYouViewController : UITableViewController {
-    
+    NSString *_message;
+    MITLoadingActivityView *_loadingView;
 }
 
-@property (nonatomic, retain) NSString *thankYouText;
-@property (nonatomic, retain) dispatch_block_t doneBlock;
+- (id)initWithMessage:(NSString *)message;
 
-- (IBAction)returnToHomeButtonTapped:(id)sender;
+@property (nonatomic, retain) NSString *message;
 
 @end
