@@ -1,5 +1,4 @@
 #import "MITTabBar.h"
-#import "MITTabBarItem.h"
 #import "MITSegmentControl.h"
 
 @interface MITTabBar ()
