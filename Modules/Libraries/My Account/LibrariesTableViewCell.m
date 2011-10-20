@@ -14,11 +14,14 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
+        self.contentView.autoresizesSubviews = NO;
+        
         self.titleLabel = [[[UILabel alloc] init] autorelease];
         self.titleLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
         self.titleLabel.highlightedTextColor = [UIColor whiteColor];
+        self.titleLabel.autoresizingMask = UIViewAutoresizingNone;
         [self.contentView addSubview:self.titleLabel];
         
         self.infoLabel = [[[UILabel alloc] init] autorelease];
@@ -26,6 +29,8 @@
         self.infoLabel.numberOfLines = 0;
         self.infoLabel.font = [UIFont systemFontOfSize:14.0];
         self.infoLabel.highlightedTextColor = [UIColor whiteColor];
+        self.infoLabel.autoresizingMask = UIViewAutoresizingNone;
+        
         [self.contentView addSubview:self.infoLabel];
         
         self.statusLabel = [[[UILabel alloc] init] autorelease];
@@ -33,16 +38,14 @@
         self.statusLabel.numberOfLines = 0;
         self.statusLabel.font = [UIFont systemFontOfSize:14.0];
         self.statusLabel.highlightedTextColor = [UIColor whiteColor];
+        self.statusLabel.autoresizingMask = UIViewAutoresizingNone;
         [self.contentView addSubview:self.statusLabel];
         
         self.statusIcon = [[[UIImageView alloc] init] autorelease];
         self.statusIcon.hidden = YES;
         [self.contentView addSubview:self.statusIcon];
         
-        self.contentViewInsets = UIEdgeInsetsMake(5, 5, 5, 25);
-        
-        self.contentView.layer.borderColor = [[UIColor redColor] CGColor];
-        self.contentView.layer.borderWidth = 2.0;
+        self.contentViewInsets = UIEdgeInsetsMake(5, 5, 5, 10);
     }
     return self;
 }
@@ -64,28 +67,33 @@
     
     CGRect contentBounds = self.contentView.frame;
     contentBounds.origin = CGPointZero;
-    self.contentView.bounds = CGRectMake(0,0,
-                                         CGRectGetWidth(self.contentView.frame),
-                                         CGRectGetHeight(self.contentView.frame));
+    contentBounds = UIEdgeInsetsInsetRect(contentBounds, self.contentViewInsets);
+    self.contentView.bounds = contentBounds;
     
-    [self layoutContentUsingBounds:self.contentView.bounds];
+    [self layoutContentUsingBounds:contentBounds];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
     CGSize newSize = [super sizeThatFits:size];
+    CGFloat width = size.width;
     
-    CGSize contentSize = newSize;
-    // Subtract off the content view insets so we get the proper wrapping behavior
-    contentSize.width -= (self.contentViewInsets.left + self.contentViewInsets.right);
-    contentSize.height -= (self.contentViewInsets.top + self.contentViewInsets.bottom);
+    if (self.accessoryView)
+    {
+        width -= CGRectGetWidth(self.accessoryView.frame);
+    }
+    else if (self.accessoryType != UITableViewCellAccessoryNone)
+    {
+        width -= 22;
+    }
     
-    contentSize = [self contentSizeThatFits:contentSize];
+    CGRect contentBounds = UIEdgeInsetsInsetRect(CGRectMake(0,0,width,44), self.contentViewInsets);
+    CGSize contentSize = [self contentSizeThatFits:contentBounds.size];
     
     // Add the contentView insets back in so we get the proper sizing for the cell
-    contentSize.width += (self.contentViewInsets.left + self.contentViewInsets.right);
     contentSize.height += (self.contentViewInsets.top + self.contentViewInsets.bottom);
-    return CGSizeMake(newSize.width, MAX(newSize.height,contentSize.height));
+    
+    return CGSizeMake(newSize.width, contentSize.height);
 }
 
 
@@ -94,7 +102,8 @@
     CGFloat viewWidth = CGRectGetWidth(viewBounds);
     
     {
-        CGRect titleFrame = viewBounds;
+        CGRect titleFrame = CGRectZero;
+        titleFrame.origin = viewBounds.origin;
         titleFrame.size = [[self.titleLabel text] sizeWithFont:self.titleLabel.font
                                              constrainedToSize:CGSizeMake(viewWidth, CGFLOAT_MAX)
                                                  lineBreakMode:self.titleLabel.lineBreakMode];
@@ -140,7 +149,7 @@
 - (CGSize)contentSizeThatFits:(CGSize)size
 {
     CGFloat width = size.width;
-    CGFloat height = size.height;
+    CGFloat height = 0;
     
     {
         CGSize titleSize = [[self.titleLabel text] sizeWithFont:self.titleLabel.font
@@ -165,10 +174,16 @@
         CGSize noticeSize = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
                                                 constrainedToSize:CGSizeMake(width - statusInset, CGFLOAT_MAX)
                                                     lineBreakMode:self.statusLabel.lineBreakMode];
-        height += MAX(noticeSize.height,self.statusIcon.image.size.height);
+        
+        if (self.statusIcon.hidden == NO) {
+            CGFloat maxHeight = MAX(noticeSize.height,self.statusIcon.image.size.height);
+            height += maxHeight;
+        } else {
+            height += noticeSize.height;
+        }
     }
     
-    return CGSizeMake(size.width, height);
+    return CGSizeMake(width, height);
 }
 
 - (void)setItemDetails:(NSDictionary *)itemDetails

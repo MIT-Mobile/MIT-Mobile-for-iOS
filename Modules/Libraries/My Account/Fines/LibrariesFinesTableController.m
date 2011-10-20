@@ -96,10 +96,11 @@
 {
     LibrariesFinesTableViewCell *cell = [[[LibrariesFinesTableViewCell alloc] init] autorelease];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.frame = CGRectMake(0,0,320,44);
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
     [cell setItemDetails:[loans objectAtIndex:indexPath.row]];
-    CGSize size = [cell sizeThatFits:CGSizeMake(tableView.bounds.size.width, 0)];
+    CGSize size = [cell sizeThatFits:cell.bounds.size];
     
     return size.height;
 }
