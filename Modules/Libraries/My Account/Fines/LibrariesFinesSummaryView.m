@@ -1,3 +1,4 @@
+#import <Foundation/Foundation.h>
 #import "LibrariesFinesSummaryView.h"
 
 @interface LibrariesFinesSummaryView ()
@@ -7,7 +8,9 @@
 
 @implementation LibrariesFinesSummaryView
 @synthesize accountDetails = _accountDetails,
-            balanceLabel = _balanceLabel,
+            edgeInsets = _edgeInsets;
+
+@synthesize balanceLabel = _balanceLabel,
             infoLabel = _infoLabel;
 
 - (id)initWithFrame:(CGRect)frame
@@ -36,14 +39,24 @@
         [string appendString:@"TechCASH accepted only at Hayden Library."];
         self.infoLabel.text = string;
         [self addSubview:self.infoLabel];
+
+        self.edgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
     }
     
     return self;
 }
 
+- (void)dealloc
+{
+    self.accountDetails = nil;
+    self.balanceLabel = nil;
+    self.infoLabel = nil;
+    [super dealloc];
+}
+
 - (void)layoutSubviews
 {
-    CGRect bounds = self.bounds;
+    CGRect bounds = UIEdgeInsetsInsetRect(self.bounds, self.edgeInsets);
     
     {
         CGRect balanceRect = bounds;
@@ -65,21 +78,22 @@
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-    CGSize finalSize = CGSizeZero;
-    finalSize.width = size.width;
+    CGFloat width = size.width - (self.edgeInsets.left + self.edgeInsets.right);
+    CGFloat viewHeight = 0;
     
     CGSize textSize = [self.balanceLabel.text sizeWithFont:self.balanceLabel.font
-                                         constrainedToSize:size
+                                         constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
                                              lineBreakMode:self.balanceLabel.lineBreakMode];
-    finalSize.height = textSize.height;
+    viewHeight = textSize.height;
     
     
     textSize = [self.infoLabel.text sizeWithFont:self.infoLabel.font
-                               constrainedToSize:size
+                               constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
                                    lineBreakMode:self.infoLabel.lineBreakMode];
-    finalSize.height += textSize.height;
-    finalSize.height += 5;
-    return finalSize;
+    viewHeight += textSize.height;
+    viewHeight += (self.edgeInsets.top + self.edgeInsets.bottom);
+    
+    return CGSizeMake(size.width, viewHeight);
 }
 
 - (void)setAccountDetails:(NSDictionary *)accountDetails

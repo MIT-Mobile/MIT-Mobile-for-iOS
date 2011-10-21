@@ -9,7 +9,9 @@ static NSString* kLibrariesHoldsPickupText = @"%@ are ready for pickup.";
 
 @implementation LibrariesHoldsSummaryView
 @synthesize accountDetails = _accountDetails,
-infoLabel = _infoLabel;
+            edgeInsets = _edgeInsets;
+
+@synthesize infoLabel = _infoLabel;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -22,6 +24,8 @@ infoLabel = _infoLabel;
         self.infoLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
         self.infoLabel.text = [NSString stringWithFormat:kLibrariesHoldsStatusText, @"0"];
         [self addSubview:self.infoLabel];
+        
+        self.edgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
     }
     
     return self;
@@ -29,7 +33,7 @@ infoLabel = _infoLabel;
 
 - (void)layoutSubviews
 {
-    CGRect bounds = self.bounds;
+    CGRect bounds = UIEdgeInsetsInsetRect(self.bounds,self.edgeInsets);
     
     {
         CGRect infoRect = bounds;
@@ -42,14 +46,14 @@ infoLabel = _infoLabel;
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-    CGSize finalSize = CGSizeZero;
-    finalSize.width = size.width;
+    CGFloat width = size.width - (self.edgeInsets.left + self.edgeInsets.right);
     
     CGSize textSize = [self.infoLabel.text sizeWithFont:self.infoLabel.font
-                               constrainedToSize:size
+                               constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
                                    lineBreakMode:self.infoLabel.lineBreakMode];
-    finalSize.height = textSize.height;
-    return finalSize;
+    
+    textSize.height += (self.edgeInsets.top + self.edgeInsets.bottom);
+    return textSize;
 }
 
 - (void)setAccountDetails:(NSDictionary *)accountDetails
