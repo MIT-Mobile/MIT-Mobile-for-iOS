@@ -28,6 +28,7 @@
 
 @interface UITableViewCell (MITUIAdditions)
 
+- (CGFloat)widthForContentViewThatFits:(CGFloat)width;
 - (void)applyStandardFonts;
 - (void)addAccessoryImage:(UIImage *)image;
 
