@@ -1,6 +1,6 @@
 #import "LibrariesTableViewCell.h"
 #import "Foundation+MITAdditions.h"
-#import <QuartzCore/QuartzCore.h>
+#import "UIKit+MITAdditions.h"
 
 @implementation LibrariesTableViewCell
 @synthesize contentViewInsets = _contentViewInsets,
@@ -74,16 +74,7 @@
 - (CGSize)sizeThatFits:(CGSize)size
 {
     CGSize newSize = [super sizeThatFits:size];
-    CGFloat width = size.width;
-    
-    if (self.accessoryView)
-    {
-        width -= CGRectGetWidth(self.accessoryView.frame);
-    }
-    else if (self.accessoryType != UITableViewCellAccessoryNone)
-    {
-        width -= 22;
-    }
+    CGFloat width = [self widthForContentViewThatFits:size.width];
     
     CGRect contentBounds = UIEdgeInsetsInsetRect(CGRectMake(0,0,width,44), self.contentViewInsets);
     CGSize contentSize = [self contentSizeThatFits:contentBounds.size];
