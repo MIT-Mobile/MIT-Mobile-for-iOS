@@ -64,13 +64,11 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+
+    CGRect contentBounds = UIEdgeInsetsInsetRect(self.contentView.frame, self.contentViewInsets);
+    self.contentView.frame = contentBounds;
     
-    CGRect contentBounds = self.contentView.frame;
-    contentBounds.origin = CGPointZero;
-    contentBounds = UIEdgeInsetsInsetRect(contentBounds, self.contentViewInsets);
-    self.contentView.bounds = contentBounds;
-    
-    [self layoutContentUsingBounds:contentBounds];
+    [self layoutContentUsingBounds:self.contentView.bounds];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
