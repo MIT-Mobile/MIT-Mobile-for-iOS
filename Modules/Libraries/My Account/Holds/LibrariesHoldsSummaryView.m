@@ -31,6 +31,13 @@ static NSString* kLibrariesHoldsPickupText = @"%@ are ready for pickup.";
     return self;
 }
 
+- (void)dealloc
+{
+    self.accountDetails = nil;
+    self.infoLabel = nil;
+    [super dealloc];
+}
+
 - (void)layoutSubviews
 {
     CGRect bounds = UIEdgeInsetsInsetRect(self.bounds,self.edgeInsets);
