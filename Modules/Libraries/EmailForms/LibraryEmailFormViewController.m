@@ -4,6 +4,7 @@
 #import "MITUIConstants.h"
 #import "LibraryMenuElementViewController.h"
 #import "ThankYouViewController.h"
+#import "LibraryTextElementViewController.h"
 
 #define PADDING 10
 
@@ -122,6 +123,62 @@
 
 - (NSString *)value {
     return [self.options objectAtIndex:self.currentOptionIndex];
+}
+
+@end
+
+@implementation DedicatedViewTextLibraryFormElement
+
+static const CGFloat kDedicatedViewElementPlaceholderHeight = 44.0f;
+
+- (void)dealloc 
+{
+    [textValue_ release];
+    [super dealloc];
+}
+
+- (void)updateCell:(UITableViewCell *)tableViewCell 
+{
+    tableViewCell.detailTextLabel.text = [self textValue];
+}
+
+// This is for the cell in a form table not a LibraryTextElementViewController 
+// cell.
+- (UITableViewCell *)tableViewCell 
+{
+    UITableViewCell *cell = 
+    [[[UITableViewCell alloc] 
+      initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:self.key] 
+     autorelease];
+    
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.textLabel.text = 
+    placeholderText(self.displayLabel, self.required);
+    
+    return cell;
+}
+
+- (CGFloat)heightForTableViewCell {
+    return kDedicatedViewElementPlaceholderHeight;
+}
+
+- (UIView *)textInputView {
+    return nil;
+}
+
+- (NSString *)value {
+    return self.textValue;
+}
+
+- (void)setTextValue:(NSString *)textValue
+{   
+    [textValue_ release];
+    textValue_ = [textValue retain];
+}
+
+- (NSString *)textValue
+{
+    return textValue_;
 }
 
 @end
@@ -638,6 +695,12 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     if ([element isKindOfClass:[MenuLibraryFormElement class]]) {
         LibraryMenuElementViewController *vc = [[[LibraryMenuElementViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
         vc.menuElement = (MenuLibraryFormElement *)element;
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+    else if ([element isKindOfClass:[DedicatedViewTextLibraryFormElement class]]) {
+        LibraryTextElementViewController *vc = 
+        [[[LibraryTextElementViewController alloc] init] autorelease];
+        vc.textElement = (DedicatedViewTextLibraryFormElement *)element;
         [self.navigationController pushViewController:vc animated:YES];
     }
 }

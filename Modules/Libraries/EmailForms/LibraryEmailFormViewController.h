@@ -49,6 +49,7 @@
 
 @end
 
+NSString* placeholderText(NSString *displayLabel, BOOL required);
 
 @interface TextLibraryFormElement : LibraryFormElement <UITextFieldDelegate> {
 @private
@@ -64,6 +65,17 @@
 
 @property (nonatomic, retain) PlaceholderTextView *textView;
 @end
+
+
+@interface DedicatedViewTextLibraryFormElement : LibraryFormElement {
+@private
+    NSString *textValue_;
+}
+
+@property (nonatomic, retain) NSString *textValue;
+
+@end
+
 
 @interface LibraryFormElementGroup : NSObject {
 @private
