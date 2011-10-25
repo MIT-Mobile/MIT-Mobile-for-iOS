@@ -25,7 +25,7 @@
                                             displayLabel:@"Timeframe for your research:" 
                                                 required:YES] autorelease],
                                                                     
-            [[[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"description" 
+            [[[TextAreaLibraryFormElement alloc] initWithKey:@"description" 
                                             displayLabel:@"How can we help you?" 
                                         displayLabelSubtitle:@"Describe the information you're looking for and the research you've already done."
                                                 required:YES] autorelease],
