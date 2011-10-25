@@ -50,8 +50,25 @@ static const CGFloat kTextViewMargin = 5.0f;
     [[UIBarButtonItem alloc]
      initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self 
      action:@selector(doneTapped:)];
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    
+    // Add custom title label so that text fits to size.
+    UILabel *label = 
+    [[UILabel alloc] initWithFrame:
+     CGRectMake(0, 2, 200, NAVIGATION_BAR_HEIGHT - 4)];
+    label.backgroundColor = [UIColor clearColor];
+    label.font = [UIFont boldSystemFontOfSize:20];
+    label.textColor = [UIColor whiteColor];
+    label.adjustsFontSizeToFitWidth = YES;
+    label.textAlignment = UITextAlignmentCenter;
+    label.textColor = [UIColor whiteColor];
+    label.shadowColor = [UIColor darkGrayColor];
+    label.shadowOffset = CGSizeMake(0, -1);
+    label.text = placeholderText(self.textElement.displayLabel, 
+                                 self.textElement.required);
+    self.navigationItem.titleView = label;    
+    [label release];
+    // Uncomment the following line to display an Edit button in the navigation 
+    // bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self.tableView applyStandardColors];
 }
@@ -101,7 +118,7 @@ static const CGFloat kTextViewMargin = 5.0f;
  numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 2;
+    return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
@@ -118,7 +135,7 @@ static const CGFloat kTextViewMargin = 5.0f;
           initWithStyle:UITableViewCellStyleDefault 
           reuseIdentifier:CellIdentifier] autorelease];        
         
-        if (indexPath.row == 1)
+        if (indexPath.row == 0)
         {
             UITextView *textView = 
             [[UITextView alloc] initWithFrame:
@@ -127,20 +144,13 @@ static const CGFloat kTextViewMargin = 5.0f;
             textView.text = [self.textElement value];
             textView.font = 
             [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
+            textView.backgroundColor = [UIColor clearColor];
             textView.tag = kTextViewTag;
             textView.delegate = self;
             [textView release];
         }
     }
-    
-    // Configure the cell...
-    if (indexPath.row == 0)
-    {
-        cell.textLabel.text = 
-        placeholderText(self.textElement.displayLabel, 
-                        self.textElement.required);
-    }   
-    
+        
     return cell;
 }
 
@@ -186,7 +196,7 @@ static const CGFloat kTextViewMargin = 5.0f;
 - (CGFloat)tableView:(UITableView *)tableView 
 heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.row == 1)
+    if (indexPath.row == 0)
     {
         return 2 * kTextViewMargin + kTextViewHeight;
     }
@@ -201,7 +211,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView 
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ((indexPath.row == 1) && (indexPath.section == 0))
+    if ((indexPath.row == 0) && (indexPath.section == 0))
     {
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
         [[cell.contentView viewWithTag:kTextViewTag] becomeFirstResponder];
