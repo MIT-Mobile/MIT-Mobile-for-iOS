@@ -16,11 +16,12 @@
 - (NSArray *)formGroups {
     return [NSArray arrayWithObjects:
         [LibraryFormElementGroup groupForName:@"Question" elements:[NSArray arrayWithObjects:
-            [[[TextLibraryFormElement alloc] initWithKey:@"subject" 
+                                                                    // Temporary.
+            [[[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"subject" 
                                             displayLabel:@"Topic of your research" 
                                                 required:YES] autorelease],
             
-            [[[TextLibraryFormElement alloc] initWithKey:@"timeframe" 
+            [[[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"timeframe" 
                                             displayLabel:@"Timeframe for your research:" 
                                                 required:YES] autorelease],
                                                                     
@@ -34,7 +35,7 @@
                                                 required:NO 
                                                   values:[NSArray arrayWithObjects:@"Course", @"Thesis", @"Research", nil]] autorelease],
                                                                     
-            [[[TextLibraryFormElement alloc] initWithKey:@"course" 
+            [[[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"course" 
                                             displayLabel:@"Which course?" 
                                                 required:NO] autorelease],
                                                                     
