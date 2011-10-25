@@ -262,7 +262,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
         if (!self.nextIndex) {
             title = [NSString stringWithFormat:@"%d books found", self.searchResults.count];
         } else {
-            title = [NSString stringWithFormat:@"%d found, showing %d books", [self.totalResultsCount intValue], self.searchResults.count];
+            title = [NSString stringWithFormat:@"%d results", [self.totalResultsCount intValue]];
         }
         return [UITableView ungroupedSectionHeaderWithTitle:title];    
     } else {
