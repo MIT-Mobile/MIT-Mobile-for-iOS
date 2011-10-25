@@ -5,11 +5,17 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 
-#define TITLE_ROW 0
-#define LOADING_STATUS_ROW 1
-#define PHONE_ROW 1
-#define LOCATION_ROW 2
-#define CONTENT_ROW 3
+typedef enum 
+{
+    TITLE_ROW = 0,
+    LOADING_STATUS_ROW = 1,
+    // PHONE_ROW replaces LOADING_STATUS_ROW after the load is done.
+    PHONE_ROW = 1, 
+    LOCATION_ROW,
+    TODAYS_HOURS_ROW,
+    CONTENT_ROW
+}
+LocationsHoursTableRows;
 
 @interface LibrariesLocationsHoursDetailViewController (Private)
 - (NSString *)contentHtml;
@@ -113,7 +119,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (self.librariesDetailStatus == LibrariesDetailStatusLoaded) {
-        return 4; // title, phone, location, content
+        return 5; // title, phone, location, today's hours, content
     } else {
         return 2; // title, loading indicator
     }
@@ -156,6 +162,12 @@
                 cell.textLabel.text = [NSString stringWithFormat:@"Room %@", self.library.location];
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
                 cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            } else if (indexPath.row == TODAYS_HOURS_ROW) {
+                cell = [self defaultRowWithTable:tableView];
+                cell.textLabel.text = 
+                [NSString stringWithFormat:@"Today's Hours: %@", 
+                 self.library.hoursToday];
+                cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             } else if (indexPath.row == CONTENT_ROW) {
                 NSString *cellIdentifier = @"contentRow";
                 cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
@@ -170,7 +182,10 @@
                 if (cell == nil) {
                     cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier]autorelease];
                     self.contentWebView = [[[UIWebView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width-padding, 100)] autorelease];
-                    self.contentWebView.delegate = self;                    
+                    self.contentWebView.delegate = self;      
+                    // Make web view background transparent.
+                    self.contentWebView.backgroundColor = [UIColor clearColor];
+                    self.contentWebView.opaque = NO;
                     
                     [self.contentWebView loadHTMLString:[self contentHtml] baseURL:nil];
                     [cell.contentView addSubview:self.contentWebView];
@@ -237,10 +252,10 @@
 
 - (NSString *)termScheduleHtml:(LibrariesLocationsHoursTerm *)term defaultTitle:(NSString *)defaultTitle{
     NSDateFormatter *startDateFormat = [[[NSDateFormatter alloc] init] autorelease];
-    [startDateFormat setDateFormat:@"MMMM d"];
+    [startDateFormat setDateFormat:@"MMM d, YYYY"];
     
     NSDateFormatter *endDateFormat = [[[NSDateFormatter alloc] init] autorelease];
-    [endDateFormat setDateFormat:@"MMMM d, YYYY"];
+    [endDateFormat setDateFormat:@"MMM d, YYYY"];
     
     NSString *name = term.name;
     if (name == nil) {
@@ -252,10 +267,12 @@
     NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
     NSArray *hourElements = [term.hours sortedArrayUsingDescriptors:[NSArray arrayWithObject:descriptor]];
     for (LibrariesLocationsHoursTermHours *hoursElement in hourElements) {
-        hoursString = [hoursString stringByAppendingFormat:@"%@<br/>", hoursElement.hoursDescription];
+        hoursString = 
+        [hoursString stringByAppendingFormat:@"%@ %@<br/>", 
+         hoursElement.title, hoursElement.hoursDescription];
     }
     
-    return [NSString stringWithFormat:@"<span class=\"title\">%@:</span><br /> %@", hoursTitle, hoursString];
+    return [NSString stringWithFormat:@"<span class=\"title\">%@</span><br /> %@", hoursTitle, hoursString];
     
 }
 - (NSString *)contentHtml {
@@ -285,8 +302,8 @@
         scheduleHtml = [scheduleHtml stringByAppendingFormat:@"<br />%@", [self termScheduleHtml:aTerm defaultTitle:@"Next Term"]];
     }
     
-    [target replaceOccurrencesOfStrings:[NSArray arrayWithObjects:@"__TODAYS_HOURS__", @"__SCHEDULE_HTML__", nil]
-                            withStrings:[NSArray arrayWithObjects:self.library.hoursToday, scheduleHtml, nil] options:NSLiteralSearch];
+    [target replaceOccurrencesOfStrings:[NSArray arrayWithObjects:@"__SCHEDULE_HTML__", nil]
+                            withStrings:[NSArray arrayWithObjects:scheduleHtml, nil] options:NSLiteralSearch];
     return target;        
 }
 @end

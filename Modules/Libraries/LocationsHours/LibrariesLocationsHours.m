@@ -87,6 +87,7 @@
     NSNumber *endNumber = [rangeDict objectForKey:@"end"];
     term.endDate = [NSDate dateWithTimeIntervalSince1970:[endNumber longValue]];
     term.termSortOrder = [NSNumber numberWithInteger:sortOrder];
+    term.name = [dict objectForKey:@"name"];
     
     NSArray *hoursArray = [dict objectForKey:@"hours"];
     NSMutableSet *hoursSet = [NSMutableSet set];
