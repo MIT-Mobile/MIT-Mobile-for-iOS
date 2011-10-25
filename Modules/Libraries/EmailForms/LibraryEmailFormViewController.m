@@ -385,7 +385,6 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     
     self.prevNextSegmentedControl = [[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"Prev", @"Next", nil]] autorelease];
     self.prevNextSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
-    self.prevNextSegmentedControl.tintColor = [UIColor blackColor];
     self.prevNextSegmentedControl.momentary = YES;
     [self.prevNextSegmentedControl addTarget:self action:@selector(updateFocusedTextView:) forControlEvents:UIControlEventValueChanged];
     
