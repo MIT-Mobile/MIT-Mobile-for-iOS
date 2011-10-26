@@ -1,4 +1,3 @@
-#import <UIKit/UIKit.h>
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
@@ -148,39 +147,6 @@
 @end
 
 @implementation UITableViewCell (MITUIAdditions)
-
-- (CGFloat)widthForContentViewThatFits:(CGFloat)width
-{
-    static CGFloat kDefaultAccessoryWidth = 22.0;
-
-    if (self.editing)
-    {
-        if (self.editingAccessoryView && (self.editingAccessoryView.hidden == NO))
-        {
-            width -= CGRectGetWidth(self.editingAccessoryView.frame);
-        }
-        else if (self.editingAccessoryType != UITableViewCellAccessoryNone)
-        {
-            width -= kDefaultAccessoryWidth;
-        }
-    } else {
-        if (self.accessoryView && (self.accessoryView.hidden == NO))
-        {
-            width -= CGRectGetWidth(self.accessoryView.frame);
-        }
-        else if (self.accessoryType != UITableViewCellAccessoryNone)
-        {
-            width -= kDefaultAccessoryWidth;
-        }
-    }
-
-    BOOL includeIndentation = (self.editing == NO) || ((self.editing == YES) && (self.shouldIndentWhileEditing == YES));
-    if (includeIndentation) {
-        width -= (self.indentationLevel * self.indentationWidth);
-    }
-
-    return width;
-}
 
 - (void)applyStandardFonts {
 	self.textLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
