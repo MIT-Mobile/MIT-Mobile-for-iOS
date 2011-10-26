@@ -10,7 +10,6 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
             infoLabel = _infoLabel,
             itemDetails = _itemDetails,
             statusLabel = _statusLabel,
-            statusIcon = _statusIcon,
             titleLabel = _titleLabel;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -46,10 +45,6 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
         self.statusLabel.autoresizingMask = UIViewAutoresizingNone;
         [self.contentView addSubview:self.statusLabel];
         
-        self.statusIcon = [[[UIImageView alloc] init] autorelease];
-        self.statusIcon.hidden = YES;
-        [self.contentView addSubview:self.statusIcon];
-        
         self.contentViewInsets = UIEdgeInsetsMake(5, 5, 5, 10);
     }
     return self;
@@ -60,7 +55,6 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
     self.itemDetails = nil;
     self.infoLabel = nil;
     self.statusLabel = nil;
-    self.statusIcon = nil;
     self.titleLabel = nil;
     
     [super dealloc];
@@ -150,7 +144,6 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
             self.titleLabel.text = nil;
             self.infoLabel.text = nil;
             self.statusLabel.text = nil;
-            self.statusIcon.hidden = YES;
         } else {
             NSDictionary *item = self.itemDetails;
             self.titleLabel.text = [item objectForKey:@"title"];
@@ -159,8 +152,6 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
             NSString *year = [item objectForKey:@"year"];
             self.infoLabel.text = [[NSString stringWithFormat:@"%@; %@",year,author] stringByDecodingXMLEntities];
         }
-        
-        [self setNeedsLayout];
     }
 }
 @end

@@ -16,8 +16,6 @@
         self.fineLabel.font = [UIFont boldSystemFontOfSize:17.0];
         self.fineLabel.textColor = [UIColor redColor];
         [self.contentView addSubview:self.fineLabel];
-        
-        self.statusIcon.image = nil;
     }
     
     return self;
@@ -37,13 +35,13 @@
     }
 }
 
-- (CGSize)contentSizeThatFits:(CGSize)size
+- (CGFloat)heightForContentWithWidth:(CGFloat)width
 {
-    CGSize superSize = [super contentSizeThatFits:size];
+    CGFloat height = [super heightForContentWithWidth:width];
     CGSize fineSize = [[self.fineLabel text] sizeWithFont:self.fineLabel.font];
     
-    superSize.height += fineSize.height;
-    return superSize;
+    height += fineSize.height;
+    return height;
 }
 
 - (void)setItemDetails:(NSDictionary *)itemDetails
@@ -56,7 +54,7 @@
     [status appendFormat:@"Fined %@", [NSDateFormatter localizedStringFromDate:fineDate
                                                                      dateStyle:NSDateFormatterShortStyle
                                                                      timeStyle:NSDateFormatterNoStyle]];
-    self.statusIcon.hidden = YES;
+    
     self.statusLabel.textColor = [UIColor blackColor];            
     self.statusLabel.text = [[status stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
     

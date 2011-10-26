@@ -4,16 +4,6 @@
 
 @implementation LibrariesLoanTableViewCell
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        self.statusIcon.image = [UIImage imageNamed:@"libraries/status-alert"];
-    }
-    
-    return self;
-}
-
 - (void)setItemDetails:(NSDictionary *)itemDetails
 {
     [super setItemDetails:itemDetails];
@@ -24,10 +14,8 @@
     }
     
     if ([[itemDetails objectForKey:@"overdue"] boolValue]) {
-        self.statusIcon.hidden = NO;
         self.statusLabel.textColor = [UIColor redColor];
     } else {
-        self.statusIcon.hidden = YES;
         self.statusLabel.textColor = [UIColor blackColor];
     }
     
