@@ -1,15 +1,14 @@
 #import "LibrariesLoanTableController.h"
-#import "LibrariesLoanSummaryView.h"
 #import "MITLoadingActivityView.h"
 #import "MobileRequestOperation.h"
 #import "LibrariesLoanTableViewCell.h"
 
 @interface LibrariesLoanTableController ()
-@property (nonatomic,retain) LibrariesLoanSummaryView *headerView;
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
 @property (nonatomic,retain) NSDictionary *loanData;
 @property (nonatomic,retain) MobileRequestOperation *operation;
 @property (nonatomic,retain) NSDate *lastUpdate;
+@property (nonatomic,retain) UIBarButtonItem *editButton;
 
 - (void)setupTableView;
 - (void)updateLoanData;
@@ -23,7 +22,8 @@
             loadingView = _loadingView,
             loanData = _loanData,
             operation = _operation,
-            lastUpdate = _lastUpdate;
+            lastUpdate = _lastUpdate,
+            editButton = _editButton;
 
 - (id)initWithTableView:(UITableView *)tableView
 {
@@ -59,13 +59,24 @@
         self.headerView = headerView;
     }
     
+    self.tableView.allowsSelectionDuringEditing = YES;
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
 }
 
 #pragma mark - UITableViewDelegate
+- (BOOL)tableView:(UITableView *)tableView shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return NO;
+}
 
 #pragma mark - UITableViewDataSource
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return UITableViewCellEditingStyleNone;
+}
+
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSArray *items = [self.loanData objectForKey:@"items"];
@@ -80,32 +91,32 @@
 {
     static NSString* LoanCellIdentifier = @"LibariesLoanTableViewCell";
     
-    LibrariesLoanTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
+    LibrariesLoanTableViewCell *cell = (LibrariesLoanTableViewCell *)[tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
     
     if (cell == nil) {
         cell = [[[LibrariesLoanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                   reuseIdentifier:LoanCellIdentifier] autorelease];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
-    NSDictionary *loanDetails = [loans objectAtIndex:indexPath.row];
-    [cell setItemDetails:loanDetails];
+    cell.itemDetails = [loans objectAtIndex:indexPath.row];
     
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    LibrariesLoanTableViewCell *cell = [[[LibrariesLoanTableViewCell alloc] init] autorelease];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    cell.frame = CGRectMake(0,0,320,44);
+    static LibrariesLoanTableViewCell *cell = nil;
+    if (cell == nil) {
+        cell = [[LibrariesLoanTableViewCell alloc] init];
+    }
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
-    [cell setItemDetails:[loans objectAtIndex:indexPath.row]];
-    CGSize size = [cell sizeThatFits:cell.bounds.size];
+    cell.itemDetails = [loans objectAtIndex:indexPath.row];
     
-    return size.height;
+    CGFloat width = (tableView.isEditing ? kLibrariesTableCellEditingWidth : kLibrariesTableCellDefaultWidth);
+
+    return [cell heightForContentWithWidth:width];
 }
 
 - (void)updateLoanData
@@ -146,6 +157,31 @@
     }
 }
 
+- (void)edit:(id)sender
+{
+    
+    UIBarButtonItem *cancelButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                   target:self
+                                                                                   action:@selector(cancel:)] autorelease];
+    [self.parentController.navigationItem setRightBarButtonItem:cancelButton
+                                                       animated:YES];
+    [self.tableView beginUpdates];
+    [self.tableView setEditing:YES];
+    [self.tableView endUpdates];
+}
+
+- (void)cancel:(id)sender
+{
+    UIBarButtonItem *editButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit
+                                                                                 target:self
+                                                                                 action:@selector(edit:)] autorelease];
+    [self.parentController.navigationItem setRightBarButtonItem:editButton
+                                                       animated:YES];
+    [self.tableView beginUpdates];
+    [self.tableView setEditing:NO];
+    [self.tableView endUpdates];
+}
+
 #pragma mark - Tab Activity Notifications
 - (void)tabWillBecomeActive
 {
@@ -154,11 +190,21 @@
 - (void)tabDidBecomeActive
 {
     [self updateLoanData];
+    
+    if (self.parentController.navigationItem) 
+    {
+        if (self.tableView.isEditing) {
+            [self edit:nil];
+        } else {
+            [self cancel:nil];
+        }
+    }
 }
 
 - (void)tabWillBecomeInactive
 {
-    
+    [self.parentController.navigationItem setRightBarButtonItem:nil
+                                                       animated:YES];
 }
 
 - (void)tabDidBecomeInactive

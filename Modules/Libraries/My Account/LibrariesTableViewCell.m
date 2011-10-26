@@ -2,6 +2,9 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
+const CGFloat kLibrariesTableCellDefaultWidth = 300;
+const CGFloat kLibrariesTableCellEditingWidth = 296;
+
 @implementation LibrariesTableViewCell
 @synthesize contentViewInsets = _contentViewInsets,
             infoLabel = _infoLabel,
@@ -14,7 +17,9 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.contentView.autoresizesSubviews = NO;
+        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        self.editingAccessoryType = UITableViewCellAccessoryCheckmark;
+        self.shouldIndentWhileEditing = NO;
         
         self.titleLabel = [[[UILabel alloc] init] autorelease];
         self.titleLabel.lineBreakMode = UILineBreakModeWordWrap;
@@ -67,24 +72,8 @@
 
     CGRect contentBounds = UIEdgeInsetsInsetRect(self.contentView.frame, self.contentViewInsets);
     self.contentView.frame = contentBounds;
-    
     [self layoutContentUsingBounds:self.contentView.bounds];
 }
-
-- (CGSize)sizeThatFits:(CGSize)size
-{
-    CGSize newSize = [super sizeThatFits:size];
-    CGFloat width = [self widthForContentViewThatFits:size.width];
-    
-    CGRect contentBounds = UIEdgeInsetsInsetRect(CGRectMake(0,0,width,44), self.contentViewInsets);
-    CGSize contentSize = [self contentSizeThatFits:contentBounds.size];
-    
-    // Add the contentView insets back in so we get the proper sizing for the cell
-    contentSize.height += (self.contentViewInsets.top + self.contentViewInsets.bottom);
-    
-    return CGSizeMake(newSize.width, contentSize.height);
-}
-
 
 - (void)layoutContentUsingBounds:(CGRect)viewBounds
 {
@@ -111,34 +100,20 @@
     }
     
     {
-        CGFloat statusInset = 0.0;
-        if (self.statusIcon.hidden == NO) {
-            statusInset = 3 + self.statusIcon.image.size.width;
-        }
-        
         CGRect statusFrame = CGRectZero;
-        statusFrame.origin = CGPointMake(CGRectGetMinX(viewBounds) + statusInset,
+        statusFrame.origin = CGPointMake(CGRectGetMinX(viewBounds),
                                          CGRectGetMaxY(self.infoLabel.frame));
         statusFrame.size = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
-                                               constrainedToSize:CGSizeMake(viewWidth - statusInset, CGFLOAT_MAX)
+                                               constrainedToSize:CGSizeMake(viewWidth, CGFLOAT_MAX)
                                                    lineBreakMode:self.statusLabel.lineBreakMode];
         self.statusLabel.frame = statusFrame;
     }
-    
-    if (self.statusIcon.hidden == NO) {
-        CGRect imageFrame = CGRectZero;
-        imageFrame.size = self.statusIcon.image.size;
-        imageFrame.origin = CGPointMake(CGRectGetMinX(viewBounds),
-                                        self.statusLabel.frame.origin.y);
-        self.statusIcon.frame = imageFrame;
-    }
-
 }
 
-- (CGSize)contentSizeThatFits:(CGSize)size
+- (CGFloat)heightForContentWithWidth:(CGFloat)width
 {
-    CGFloat width = size.width;
     CGFloat height = 0;
+    width -= (self.contentViewInsets.left + self.contentViewInsets.right);
     
     {
         CGSize titleSize = [[self.titleLabel text] sizeWithFont:self.titleLabel.font
@@ -155,24 +130,14 @@
     }
     
     {
-        CGFloat statusInset = 0.0;
-        if (self.statusIcon.hidden == NO) {
-            statusInset = 3 + self.statusIcon.image.size.width;
-        }
-        
         CGSize noticeSize = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
-                                                constrainedToSize:CGSizeMake(width - statusInset, CGFLOAT_MAX)
+                                                constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
                                                     lineBreakMode:self.statusLabel.lineBreakMode];
-        
-        if (self.statusIcon.hidden == NO) {
-            CGFloat maxHeight = MAX(noticeSize.height,self.statusIcon.image.size.height);
-            height += maxHeight;
-        } else {
-            height += noticeSize.height;
-        }
+
+        height += noticeSize.height;
     }
     
-    return CGSizeMake(width, height);
+    return (height + self.contentViewInsets.top + self.contentViewInsets.bottom);
 }
 
 - (void)setItemDetails:(NSDictionary *)itemDetails

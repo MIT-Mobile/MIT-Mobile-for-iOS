@@ -82,27 +82,27 @@
     if (cell == nil) {
         cell = [[[LibrariesHoldsTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                    reuseIdentifier:LoanCellIdentifier] autorelease];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
-    NSDictionary *loanDetails = [loans objectAtIndex:indexPath.row];
-    [cell setItemDetails:loanDetails];
+    cell.itemDetails = [loans objectAtIndex:indexPath.row];
     
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    LibrariesHoldsTableViewCell *cell = [[[LibrariesHoldsTableViewCell alloc] init] autorelease];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    cell.frame = CGRectMake(0,0,320,44);
+    static LibrariesHoldsTableViewCell *cell = nil;
+    if (cell == nil) {
+        cell = [[LibrariesHoldsTableViewCell alloc] init];
+    }
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
-    [cell setItemDetails:[loans objectAtIndex:indexPath.row]];
-    CGSize size = [cell sizeThatFits:cell.bounds.size];
+    cell.itemDetails = [loans objectAtIndex:indexPath.row];
     
-    return size.height;
+    CGFloat width = (tableView.isEditing ? kLibrariesTableCellEditingWidth : kLibrariesTableCellDefaultWidth);
+    
+    return [cell heightForContentWithWidth:width];
 }
 
 - (void)updateLoanData
