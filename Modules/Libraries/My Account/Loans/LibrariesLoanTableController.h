@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
+#import "LibrariesLoanSummaryView.h"
 
 @interface LibrariesLoanTableController : NSObject <UITableViewDelegate, UITableViewDataSource>
+@property (nonatomic,retain) LibrariesLoanSummaryView *headerView;
 @property (nonatomic,retain) UIViewController *parentController;
 @property (nonatomic,retain) UITableView *tableView;
 
