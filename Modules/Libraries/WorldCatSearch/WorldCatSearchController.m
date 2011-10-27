@@ -273,7 +273,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
-    LibrariesBookDetailViewController *vc = [[[LibrariesBookDetailViewController alloc] initWithStyle:UITableViewStylePlain] autorelease];
+    LibrariesBookDetailViewController *vc = [[LibrariesBookDetailViewController new] autorelease];
     vc.book = book;
     [self.navigationController pushViewController:vc animated:YES];
 }

@@ -2,9 +2,10 @@
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 
-static const NSInteger kTextViewTag = 0x70;
-static const CGFloat kTextViewHeight = 100.0f;
-static const CGFloat kTextViewMargin = 5.0f;
+static const NSInteger kEditViewTag = 0x70;
+static const CGFloat kEditViewHeight = 24.0f;
+static const CGFloat kEditViewMargin = 10.0f;
+static const CGFloat kEditViewWidth = 300.0f;
 
 @implementation LibraryTextElementViewController
 
@@ -12,7 +13,7 @@ static const CGFloat kTextViewMargin = 5.0f;
 
 - (id)init
 {
-    self = [super initWithStyle:UITableViewStyleGrouped];
+    self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
         // Custom initialization
     }
@@ -50,14 +51,13 @@ static const CGFloat kTextViewMargin = 5.0f;
     [[UIBarButtonItem alloc]
      initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self 
      action:@selector(doneTapped:)];
-    
+        
     // Add custom title label so that text fits to size.
     UILabel *label = 
     [[UILabel alloc] initWithFrame:
      CGRectMake(0, 2, 200, NAVIGATION_BAR_HEIGHT - 4)];
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont boldSystemFontOfSize:20];
-    label.textColor = [UIColor whiteColor];
     label.adjustsFontSizeToFitWidth = YES;
     label.textAlignment = UITextAlignmentCenter;
     label.textColor = [UIColor whiteColor];
@@ -88,6 +88,8 @@ static const CGFloat kTextViewMargin = 5.0f;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    // The user is here to type. Show keyboard. 
+    [[self.tableView viewWithTag:kEditViewTag] becomeFirstResponder];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -133,21 +135,31 @@ static const CGFloat kTextViewMargin = 5.0f;
         cell = 
         [[[UITableViewCell alloc] 
           initWithStyle:UITableViewCellStyleDefault 
-          reuseIdentifier:CellIdentifier] autorelease];        
+          reuseIdentifier:CellIdentifier] autorelease];
+        
+        // Set up cell background view.
+        UIView *backgroundView = 
+        [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 320)];
+        backgroundView.backgroundColor = [UIColor whiteColor];
+        cell.backgroundView = backgroundView;
+        [backgroundView release];
         
         if (indexPath.row == 0)
         {
-            UITextView *textView = 
-            [[UITextView alloc] initWithFrame:
-             CGRectMake(kTextViewMargin, kTextViewMargin, 280, kTextViewHeight)];
-            [cell.contentView addSubview:textView];
-            textView.text = [self.textElement value];
-            textView.font = 
+            UITextField *editView = 
+            [[UITextField alloc] initWithFrame:
+             CGRectMake(kEditViewMargin, kEditViewMargin, kEditViewWidth, 
+                        kEditViewHeight)];
+            editView.font = 
             [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
-            textView.backgroundColor = [UIColor clearColor];
-            textView.tag = kTextViewTag;
-            textView.delegate = self;
-            [textView release];
+            editView.backgroundColor = [UIColor clearColor];
+            editView.tag = kEditViewTag;
+            editView.delegate = self;
+            editView.keyboardAppearance = UIKeyboardAppearanceDefault;
+            editView.returnKeyType = UIReturnKeyDone;            
+            editView.text = [self.textElement value];
+            [cell.contentView addSubview:editView];
+            [editView release];
         }
     }
         
@@ -198,7 +210,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0)
     {
-        return 2 * kTextViewMargin + kTextViewHeight;
+        return 2 * kEditViewMargin + kEditViewHeight;
     }
     else
     {
@@ -214,14 +226,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if ((indexPath.row == 0) && (indexPath.section == 0))
     {
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-        [[cell.contentView viewWithTag:kTextViewTag] becomeFirstResponder];
+        [[cell.contentView viewWithTag:kEditViewTag] becomeFirstResponder];
     }
 }
 
-#pragma mark - UITextViewDelegate
-//- (void)textViewDidChange:(UITextView *)textView
-//{
-//}
+#pragma mark - UITextFieldDelegate
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField 
+{
+    [self doneTapped:nil];
+    return YES;
+}
 
 #pragma mark UI actions
 - (IBAction)cancelTapped:(id)sender
@@ -231,9 +246,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (IBAction)doneTapped:(id)sender
 {
-    UITextView *textView = 
-    (UITextView *)[self.tableView viewWithTag:kTextViewTag];
-    self.textElement.textValue = textView.text;
+    UITextField *editView = 
+    (UITextField *)[self.tableView viewWithTag:kEditViewTag];
+    self.textElement.textValue = editView.text;
     [self.navigationController popViewControllerAnimated:YES];
 }
 

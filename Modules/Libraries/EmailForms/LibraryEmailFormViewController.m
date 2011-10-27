@@ -8,6 +8,9 @@
 
 #define PADDING 10
 
+static const NSInteger kLibraryEmailFormTextField = 0x381;
+static const NSInteger kLibraryEmailFormTextView = 0x382;
+
 @implementation LibraryFormElement
 @synthesize key;
 @synthesize displayLabel;
@@ -230,17 +233,20 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 - (UIView *)textInputView {
     if (!self.textField) {
         self.textField = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
+        self.textField.tag = kLibraryEmailFormTextField;
         self.textField.delegate = self;
     }
     return self.textField;
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)aTextField {
-    return [self.formViewController textFieldShouldReturn:aTextField];
-}
-
 - (NSString *)value {
     return self.textField.text;
+}
+
+#pragma mark UITextFieldDelegate
+
+- (BOOL)textFieldShouldReturn:(UITextField *)aTextField {
+    return [self.formViewController textFieldShouldReturn:aTextField];
 }
 
 @end
@@ -270,6 +276,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 - (UIView *)textInputView {
     if (!self.textView) {
         self.textView = [[[PlaceholderTextView alloc] initWithFrame:CGRectZero] autorelease];
+        self.textView.tag = kLibraryEmailFormTextView;
     }
     return self.textView;
 }
@@ -394,6 +401,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 - (void)submitForm:(NSDictionary *)parameters;
 - (void)submitForm;
 - (BOOL)formValid;
+
 @end
 
 @implementation LibraryEmailFormViewController
@@ -465,8 +473,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTextInputView:) name:UITextFieldTextDidBeginEditingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTextInputView:) name:UITextViewTextDidBeginEditingNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSubmitButton) name:UITextFieldTextDidChangeNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSubmitButton) name:UITextViewTextDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSubmitButton:) name:UITextFieldTextDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSubmitButton:) name:UITextViewTextDidChangeNotification object:nil];
     
     // force the user to login
     MITLoadingActivityView *loginLoadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
@@ -540,16 +548,28 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     return nil;
 }
   
-- (void)updateSubmitButton {
-    BOOL formValid = [self formValid];
-    self.navigationItem.rightBarButtonItem.enabled = [self formValid];
-    UIView *lastTextInput = [[self textInputs] lastObject];
-    if ([lastTextInput isKindOfClass:[UITextField class]]) {
-        UITextField *textField = (UITextField *)lastTextInput;
-        if (formValid) {
-            textField.returnKeyType = UIReturnKeySend;
-        } else {
-            textField.returnKeyType = UIReturnKeyDone;
+- (void)updateSubmitButton:(NSNotification *)note {
+    if ([note.object respondsToSelector:@selector(tag)])
+    {
+        UIView *changedView = (UIView *)note.object;
+
+        // Only do this if the changed view belongs to this controller.
+        // It's possible that another view pushed on top of this is sending 
+        // this notification, so it's important to check.
+        if (([changedView tag] == kLibraryEmailFormTextField) ||
+            ([changedView tag] == kLibraryEmailFormTextView))
+        {
+            BOOL formValid = [self formValid];
+            self.navigationItem.rightBarButtonItem.enabled = [self formValid];
+            UIView *lastTextInput = [[self textInputs] lastObject];
+            if ([lastTextInput isKindOfClass:[UITextField class]]) {
+                UITextField *textField = (UITextField *)lastTextInput;
+                if (formValid) {
+                    textField.returnKeyType = UIReturnKeySend;
+                } else {
+                    textField.returnKeyType = UIReturnKeyDone;
+                }
+            }
         }
     }
 }
@@ -591,24 +611,36 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 }
 
 - (void)updateTextInputView:(NSNotification *)notification {
-    self.currentTextView = [notification object];
-    
-    NSArray *textInputs = [self textInputs];
-    NSInteger textInputIndex = [textInputs indexOfObject:self.currentTextView];
-    BOOL previousEnabled = (textInputIndex != 0);
-    BOOL nextEnabled = (textInputIndex !=  (textInputs.count - 1));
-    [self.prevNextSegmentedControl setEnabled:previousEnabled forSegmentAtIndex:0];
-    [self.prevNextSegmentedControl setEnabled:nextEnabled forSegmentAtIndex:1];
-    
-    if ([self.currentTextView isKindOfClass:[UITextField class]]) {
-        UITextField *textField = (UITextField *)self.currentTextView;
-        if (nextEnabled) {
-            textField.returnKeyType = UIReturnKeyNext;
-        } else {
-            if ([self formValid]) {
-                textField.returnKeyType = UIReturnKeySend;
-            } else {
-                textField.returnKeyType = UIReturnKeyDone;
+    if ([notification.object respondsToSelector:@selector(tag)])
+    {
+        UIView *changedView = (UIView *)notification.object;
+        
+        // Only do this if the changed view belongs to this controller.
+        // It's possible that another view pushed on top of this is sending 
+        // this notification, so it's important to check.
+        if (([changedView tag] == kLibraryEmailFormTextField) ||
+            ([changedView tag] == kLibraryEmailFormTextView))
+        {
+            self.currentTextView = [notification object];
+            
+            NSArray *textInputs = [self textInputs];
+            NSInteger textInputIndex = [textInputs indexOfObject:self.currentTextView];
+            BOOL previousEnabled = (textInputIndex != 0);
+            BOOL nextEnabled = (textInputIndex !=  (textInputs.count - 1));
+            [self.prevNextSegmentedControl setEnabled:previousEnabled forSegmentAtIndex:0];
+            [self.prevNextSegmentedControl setEnabled:nextEnabled forSegmentAtIndex:1];
+            
+            if ([self.currentTextView isKindOfClass:[UITextField class]]) {
+                UITextField *textField = (UITextField *)self.currentTextView;
+                if (nextEnabled) {
+                    textField.returnKeyType = UIReturnKeyNext;
+                } else {
+                    if ([self formValid]) {
+                        textField.returnKeyType = UIReturnKeySend;
+                    } else {
+                        textField.returnKeyType = UIReturnKeyDone;
+                    }
+                }
             }
         }
     }

@@ -8,7 +8,7 @@
 
 
 @interface LibraryTextElementViewController : UITableViewController 
-<UITextViewDelegate>
+<UITextFieldDelegate>
 {
     
 }
