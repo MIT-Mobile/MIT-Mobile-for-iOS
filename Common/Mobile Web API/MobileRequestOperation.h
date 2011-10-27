@@ -31,6 +31,13 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params;
 - (NSURLRequest*)urlRequest;
 
+// Override the saved username/password (if there is one) when attempting
+//  to authenticate to a Touchstone protected resource. Note that if the
+//  username or password is incorrect (or authentication fails for any other
+//  reason), the user will not be prompted to reenter their username and
+//  password and the connection will return with an error.
+- (void)authenticateUsingUsername:(NSString*)username password:(NSString*)password;
+
 - (BOOL)isEqual:(NSObject*)object;
 - (BOOL)isEqualToOperation:(MobileRequestOperation*)operation;
 - (NSUInteger)hash;

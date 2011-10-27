@@ -29,6 +29,8 @@ typedef enum {
 @property (nonatomic,copy) NSString *module;
 @property (nonatomic,copy) NSDictionary *parameters;
 @property (nonatomic,copy) NSURLRequest *initialRequest;
+
+@property (nonatomic) BOOL presetCredentials;
 @property BOOL isExecuting;
 @property BOOL isFinished;
 
@@ -49,6 +51,7 @@ typedef enum {
 // is waiting for the user to authenticate
 @property (retain) NSTimer *runLoopTimer;
 
++ (NSString*)descriptionForState:(MobileRequestState)state;
 
 - (BOOL)authenticationRequired;
 - (NSURLRequest*)buildURLRequest;
@@ -66,6 +69,7 @@ typedef enum {
             command = _command,
             parameters = _parameters,
             usePOST = _usePOST,
+            presetCredentials = _presetCredentials,
             completeBlock = _completeBlock,
             progressBlock = _progressBlock;
 
@@ -95,7 +99,39 @@ typedef enum {
                                                           parameters:params];
     return [operation autorelease];
 }
-        
+
++ (NSString*)descriptionForState:(MobileRequestState)state
+{
+    switch(state)
+    {
+        case MobileRequestStateOK:
+            return @"MobileRequestStateOK";
+            
+        case MobileRequestStateWAYF:
+            return @"MobileRequestStateWAYF";
+            
+        case MobileRequestStateIDP:
+            return @"MobileRequestStateIDP";
+            
+        case MobileRequestStateAuth:
+            return @"MobileRequestStateAuth";
+            
+        case MobileRequestStateAuthOK:
+            return @"MobileRequestStateAuthOK";
+            
+        case MobileRequestStateCanceled:
+            return @"MobileRequestStateCanceled";
+            
+        case MobileRequestStateAuthError:
+            return @"MobileRequestStateAuthError";
+
+        default:
+            return @"MobileRequestStateUnknown";
+    }
+}
+
+
+#pragma mark - Instance Methods        
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params
 {
     self = [super init];
@@ -107,6 +143,7 @@ typedef enum {
         
         self.isExecuting = NO;
         self.isFinished = NO;
+        self.presetCredentials = NO;
     }
     
     return self;
@@ -327,20 +364,38 @@ typedef enum {
 }
 
 
+- (void)authenticateUsingUsername:(NSString*)username password:(NSString*)password
+{
+    self.presetCredentials = YES;
+    self.touchstoneUser = username;
+    self.touchstonePassword = password;
+}
+
+
 #pragma mark - Private Methods
 - (BOOL)authenticationRequired {
-    NSDictionary *authItem = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
-    
-    if (authItem) {
-        self.touchstoneUser = [authItem objectForKey:(id)kSecAttrAccount];
-        self.touchstonePassword = [authItem objectForKey:(id)kSecValueData];
+    NSDictionary *authItem = nil;
+    if (self.presetCredentials == NO) {
+        authItem = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
+        
+        if (authItem) {
+            self.touchstoneUser = [authItem objectForKey:(id)kSecAttrAccount];
+            self.touchstonePassword = [authItem objectForKey:(id)kSecValueData];
+        }
     }
     
     BOOL promptForAuth = (authItem == nil);
     promptForAuth = promptForAuth || ([self.touchstoneUser length] == 0);
     promptForAuth = promptForAuth || ([self.touchstonePassword length] == 0);
     
-    return promptForAuth;
+    if ((promptForAuth == YES) && self.presetCredentials)
+    {
+        return NO;
+    }
+    else
+    {
+        return promptForAuth;
+    }
 }
 
 
@@ -425,18 +480,39 @@ typedef enum {
 - (void)transitionToState:(MobileRequestState)state
           willSendRequest:(NSURLRequest*)request
 {
-    NSMutableURLRequest *mutableRequest = [request mutableCopy];
-    mutableRequest.timeoutInterval = 10.0;
     
-    self.activeRequest = mutableRequest;
-    self.requestData = nil;
+    MobileRequestState prevState = self.requestState;
     self.requestState = state;
-    self.connection = [[[NSURLConnection alloc] initWithRequest:mutableRequest
-                                                       delegate:self
-                                               startImmediately:NO] autorelease];
-    [self.connection scheduleInRunLoop:self.operationRunLoop
-                               forMode:NSDefaultRunLoopMode];
-    [self.connection start];
+    
+    if (request)
+    {
+        if (request.URL == nil)
+        {
+            NSMutableString *errorString = [NSMutableString string];
+            [errorString appendString:@"Unable to send request: nil URL requested"];
+            [errorString appendFormat:@"\n\tTransition: [%@]->[%@]",
+             [MobileRequestOperation descriptionForState:prevState],
+             [MobileRequestOperation descriptionForState:state]];
+            [errorString appendFormat:@"\n\tURL: %@", self.activeRequest.URL];
+            ELog(@"%@",errorString);
+        }
+        
+        NSMutableURLRequest *mutableRequest = [request mutableCopy];
+        mutableRequest.timeoutInterval = 10.0;
+        self.activeRequest = mutableRequest;
+        self.requestData = nil;
+        self.connection = [[[NSURLConnection alloc] initWithRequest:mutableRequest
+                                                           delegate:self
+                                                   startImmediately:NO] autorelease];
+        [self.connection scheduleInRunLoop:self.operationRunLoop
+                                   forMode:NSDefaultRunLoopMode];
+        [self.connection start];
+    }
+    else
+    {
+        self.connection = nil;
+        self.activeRequest = nil;
+    }
 }
 
 
@@ -526,6 +602,8 @@ sec_error:
             redirectResponse:(NSURLResponse *)redirectResponse
 {
     if (redirectResponse) {
+        DLog(@"Redirecting to '%@'", request.URL);
+        
         BOOL wayfRedirect = [[[request.URL host] lowercaseString] isEqualToString:@"wayf.mit.edu"];
         
         if (wayfRedirect) {
@@ -622,6 +700,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                                 [self transitionToState:MobileRequestStateIDP
                                         willSendRequest:wayfRequest];
                             };
+                            
                             [self displayLoginPrompt];
                         }
                     }];
@@ -663,6 +742,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                                   [@"j_password" urlEncodeUsingEncoding:NSUTF8StringEncoding],
                                   [self.touchstonePassword urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
                                   
+                DLog(@"Got POST URL fragment: %@", tsResponse.postURLPath);
                 NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:tsResponse.postURLPath
                                                                                               relativeToURL:[self.activeRequest URL]]];
                 [wayfRequest setHTTPMethod:@"POST"];
