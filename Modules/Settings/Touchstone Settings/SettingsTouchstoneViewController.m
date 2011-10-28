@@ -87,34 +87,36 @@ static UIEdgeInsets textCellInsets = {.top = 5,
     }
     
     {
-        BOOL shibCookieExists = NO;
-        NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        UIButton *clearButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        clearButton.enabled = NO;
+        [clearButton setTitleColor:[UIColor lightGrayColor]
+                          forState:UIControlStateDisabled];
         
+        [clearButton setTitle:@"Log out of Touchstone"
+                     forState:UIControlStateNormal];
+        
+        [clearButton addTarget:self
+                        action:@selector(clearTouchstoneLogin:)
+              forControlEvents:UIControlEventTouchUpInside];
+        
+        CGRect buttonFrame = CGRectMake(viewBounds.origin.x,
+                                        viewBounds.origin.y,
+                                        CGRectGetWidth(viewBounds),
+                                        44);
+        clearButton.frame = UIEdgeInsetsInsetRect(buttonFrame, UIEdgeInsetsMake(0, 20, 0, 20));
+        
+        NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
         for (NSHTTPCookie *cookie in [cookieStore cookies]) {
             NSLog(@"Found cookie named: '%@'", [cookie name]);
             if ([self isShibbolethCookie:cookie]) {
-                shibCookieExists = YES;
+                clearButton.enabled = YES;
                 break;
             }
         }
         
-        if (shibCookieExists)
-        {
-            UIButton *clearButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-            [clearButton setTitle:@"Log out of Touchstone"
-                         forState:UIControlStateNormal];
-            [clearButton addTarget:self
-                            action:@selector(clearTouchstoneLogin:)
-                  forControlEvents:UIControlEventTouchUpInside];
-            
-            CGRect buttonFrame = CGRectMake(viewBounds.origin.x,
-                                            viewBounds.origin.y,
-                                            CGRectGetWidth(viewBounds),
-                                            44);
-            clearButton.frame = UIEdgeInsetsInsetRect(buttonFrame, UIEdgeInsetsMake(0, 20, 0, 20));
-            self.logoutButton = clearButton;
-            [mainView addSubview:clearButton];
-        }
+        
+        self.logoutButton = clearButton;
+        [mainView addSubview:clearButton];
     }
     
     [self setView:mainView];
@@ -318,7 +320,7 @@ static UIEdgeInsets textCellInsets = {.top = 5,
         }
     }
     
-    [self.logoutButton removeFromSuperview];
+    self.logoutButton.enabled = NO;
 }
 
 #pragma mark - UITextField Delegate Methods
