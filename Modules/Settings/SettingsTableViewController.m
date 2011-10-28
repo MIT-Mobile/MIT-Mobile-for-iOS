@@ -102,6 +102,13 @@ enum {
     _advancedOptionsVisible = NO;
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:kSettingsTouchstoneSection]
+                  withRowAnimation:UITableViewRowAnimationFade];
+}
+
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
@@ -349,14 +356,28 @@ enum {
                         cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
                         cell.selectionStyle = UITableViewCellSelectionStyleNone;
                         
-                        cell.textLabel.text = @"User ID";
                         cell.textLabel.backgroundColor = [UIColor clearColor];
                         
-                        NSString *touchstoneUsername = [SettingsTouchstoneViewController touchstoneUsername];
-                        cell.detailTextLabel.text = ([touchstoneUsername length]) ? touchstoneUsername : @"";
                         cell.detailTextLabel.backgroundColor = [UIColor clearColor];
                         cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
                         cell.detailTextLabel.minimumFontSize = 10.0;
+                    }
+                    
+                    cell.textLabel.text = @"User";
+                    
+                    NSString *touchstoneUsername = [SettingsTouchstoneViewController touchstoneUsername];
+                    if ([touchstoneUsername length])
+                    {
+                        cell.detailTextLabel.textColor = [UIColor colorWithRed:0.22
+                                                                         green:0.33
+                                                                          blue:0.53
+                                                                         alpha:1.0];
+                        cell.detailTextLabel.text = touchstoneUsername;
+                    }
+                    else
+                    {
+                        cell.detailTextLabel.text = @"username or email";
+                        cell.detailTextLabel.textColor = [UIColor grayColor];
                     }
                     break;
                 }
