@@ -59,6 +59,7 @@
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
         self.loansController = [[LibrariesLoanTableController alloc] initWithTableView:view];
+        self.loansController.parentController = self;
         [self.tabView addView:view
                      withItem:[[[UITabBarItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
                       animate:NO];
@@ -72,12 +73,10 @@
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
         self.finesController = [[LibrariesFinesTableController alloc] initWithTableView:view];
+        self.finesController.parentController = self;
         
-        UITabBarItem *item = [[[UITabBarItem alloc] initWithTitle:@"Fines"
-                                                               image:nil
-                                                                 tag:1] autorelease];
         [self.tabView addView:view
-                     withItem:item
+                     withItem:[[[UITabBarItem alloc] initWithTitle:@"Fines" image:nil tag:1] autorelease]
                       animate:NO];
     }
     
@@ -89,6 +88,7 @@
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
         self.holdsController = [[LibrariesHoldsTableController alloc] initWithTableView:view];
+        self.holdsController.parentController = self;
         [self.tabView addView:view
                      withItem:[[[UITabBarItem alloc] initWithTitle:@"Holds" image:nil tag:2] autorelease]
                       animate:NO];
@@ -204,10 +204,14 @@
         CGSize size = [header sizeThatFits:tabView.bounds.size];
         return size.height;
     }
-    else
+    else if (view == self.loansController.tableView)
     {
-        return 0.0;
+        UIView *header = self.loansController.headerView;
+        CGSize size = [header sizeThatFits:tabView.bounds.size];
+        return size.height;
     }
+    
+    return 0.0;
 }
 
 - (UIView*)tabView:(MITTabView*)tabView headerForView:(UIView*)view
@@ -220,10 +224,12 @@
     {
         return self.holdsController.headerView;
     }
-    else
+    else if (view == self.loansController.tableView)
     {
-        return nil;
+        return self.loansController.headerView;
     }
+    
+    return nil;
 }
 
 

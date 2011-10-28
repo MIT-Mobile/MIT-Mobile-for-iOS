@@ -139,6 +139,7 @@
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
             if (error) {
                 ELog(@"Loan: %@", [error localizedDescription]);
+                [self.parentController.navigationController popViewControllerAnimated:YES];
             } else {
                 if (self.loadingView.superview != nil) {
                     [self.loadingView removeFromSuperview];
@@ -146,6 +147,7 @@
                 
                 self.lastUpdate = [NSDate date];
                 self.loanData = (NSDictionary*)jsonResult;
+                self.headerView.accountDetails = (NSDictionary*)jsonResult;
                 [self.tableView reloadData];
             }
             

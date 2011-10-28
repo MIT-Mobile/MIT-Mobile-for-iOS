@@ -29,6 +29,8 @@ typedef enum {
 @property (nonatomic,copy) NSString *module;
 @property (nonatomic,copy) NSDictionary *parameters;
 @property (nonatomic,copy) NSURLRequest *initialRequest;
+
+@property (nonatomic) BOOL presetCredentials;
 @property BOOL isExecuting;
 @property BOOL isFinished;
 
@@ -49,6 +51,7 @@ typedef enum {
 // is waiting for the user to authenticate
 @property (retain) NSTimer *runLoopTimer;
 
++ (NSString*)descriptionForState:(MobileRequestState)state;
 
 - (BOOL)authenticationRequired;
 - (NSURLRequest*)buildURLRequest;
@@ -66,6 +69,7 @@ typedef enum {
             command = _command,
             parameters = _parameters,
             usePOST = _usePOST,
+            presetCredentials = _presetCredentials,
             completeBlock = _completeBlock,
             progressBlock = _progressBlock;
 
@@ -95,7 +99,63 @@ typedef enum {
                                                           parameters:params];
     return [operation autorelease];
 }
-        
+
++ (NSString*)descriptionForState:(MobileRequestState)state
+{
+    switch(state)
+    {
+        case MobileRequestStateOK:
+            return @"MobileRequestStateOK";
+            
+        case MobileRequestStateWAYF:
+            return @"MobileRequestStateWAYF";
+            
+        case MobileRequestStateIDP:
+            return @"MobileRequestStateIDP";
+            
+        case MobileRequestStateAuth:
+            return @"MobileRequestStateAuth";
+            
+        case MobileRequestStateAuthOK:
+            return @"MobileRequestStateAuthOK";
+            
+        case MobileRequestStateCanceled:
+            return @"MobileRequestStateCanceled";
+            
+        case MobileRequestStateAuthError:
+            return @"MobileRequestStateAuthError";
+
+        default:
+            return @"MobileRequestStateUnknown";
+    }
+}
+
++ (BOOL)isAuthenticationCookie:(NSHTTPCookie*)cookie
+{
+    NSString *name = [cookie name];
+    NSRange range = [name rangeOfString:@"_shib"
+                                options:NSCaseInsensitiveSearch];
+    return (range.location != NSNotFound);
+}
+
++ (void)clearAuthenticatedSession
+{
+    NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie *cookie in [cookieStore cookies]) {
+        NSRange range = [[cookie name] rangeOfString:@"_saml"
+                                             options:NSCaseInsensitiveSearch];
+        if ((range.location != NSNotFound) || [self isAuthenticationCookie:cookie]) {
+            DLog(@"Expiring cookie: %@[%@]",[cookie name], [cookie domain]);
+            NSMutableDictionary *properties = [[cookie properties] mutableCopy];
+            [properties setObject:[NSDate distantPast]
+                           forKey:NSHTTPCookieExpires];
+            [cookieStore setCookie:[NSHTTPCookie cookieWithProperties:properties]];
+        }
+    }
+}
+
+
+#pragma mark - Instance Methods        
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params
 {
     self = [super init];
@@ -107,6 +167,7 @@ typedef enum {
         
         self.isExecuting = NO;
         self.isFinished = NO;
+        self.presetCredentials = NO;
     }
     
     return self;
@@ -174,8 +235,6 @@ typedef enum {
         self.initialRequest = request;
         self.requestData = nil;
         self.requestError = nil;
-        self.touchstoneUser = nil;
-        self.touchstonePassword = nil;
         
         self.isExecuting = YES;
         self.isFinished = NO;
@@ -241,7 +300,6 @@ typedef enum {
     [self.runLoopTimer invalidate];
     self.runLoopTimer = nil;
     
-    gSecureStateTracker.authenticationBlock = nil;
     [gSecureStateTracker resumeQueue];
     
     
@@ -327,20 +385,47 @@ typedef enum {
 }
 
 
+- (void)authenticateUsingUsername:(NSString*)username password:(NSString*)password
+{
+    if ([username length] && [password length])
+    {
+        self.presetCredentials = YES;
+        self.touchstoneUser = username;
+        self.touchstonePassword = password;
+    }
+    else
+    {
+        self.presetCredentials = NO;
+        self.touchstoneUser = nil;
+        self.touchstonePassword = nil;
+    }
+}
+
+
 #pragma mark - Private Methods
 - (BOOL)authenticationRequired {
-    NSDictionary *authItem = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
-    
-    if (authItem) {
-        self.touchstoneUser = [authItem objectForKey:(id)kSecAttrAccount];
-        self.touchstonePassword = [authItem objectForKey:(id)kSecValueData];
+    NSDictionary *authItem = nil;
+    if (self.presetCredentials == NO) {
+        authItem = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
+        
+        if (authItem) {
+            self.touchstoneUser = [authItem objectForKey:(id)kSecAttrAccount];
+            self.touchstonePassword = [authItem objectForKey:(id)kSecValueData];
+        }
     }
     
     BOOL promptForAuth = (authItem == nil);
     promptForAuth = promptForAuth || ([self.touchstoneUser length] == 0);
     promptForAuth = promptForAuth || ([self.touchstonePassword length] == 0);
     
-    return promptForAuth;
+    if (self.presetCredentials)
+    {
+        return NO;
+    }
+    else
+    {
+        return promptForAuth;
+    }
 }
 
 
@@ -409,14 +494,13 @@ typedef enum {
                 MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
                                                                                                                  password:self.touchstonePassword] autorelease];
                 loginView.delegate = self;
+                [MobileRequestOperation clearAuthenticatedSession];
                 
                 [[mainWindow rootViewController] presentModalViewController:loginView
                                                                    animated:YES];
                 self.loginViewController = loginView;
             } else {
-                dispatch_queue_t authQueue = dispatch_queue_create(NULL, 0);
-                dispatch_async(authQueue,gSecureStateTracker.authenticationBlock);
-                dispatch_release(authQueue);
+                [gSecureStateTracker dispatchAuthenticationBlock];
             }
         });
     }
@@ -425,107 +509,46 @@ typedef enum {
 - (void)transitionToState:(MobileRequestState)state
           willSendRequest:(NSURLRequest*)request
 {
-    NSMutableURLRequest *mutableRequest = [request mutableCopy];
-    mutableRequest.timeoutInterval = 10.0;
     
-    self.activeRequest = mutableRequest;
-    self.requestData = nil;
+    MobileRequestState prevState = self.requestState;
     self.requestState = state;
-    self.connection = [[[NSURLConnection alloc] initWithRequest:mutableRequest
-                                                       delegate:self
-                                               startImmediately:NO] autorelease];
-    [self.connection scheduleInRunLoop:self.operationRunLoop
-                               forMode:NSDefaultRunLoopMode];
-    [self.connection start];
+    
+    if (request)
+    {
+        if (request.URL == nil)
+        {
+            NSMutableString *errorString = [NSMutableString string];
+            [errorString appendString:@"Unable to send request: nil URL requested"];
+            [errorString appendFormat:@"\n\tTransition: [%@]->[%@]",
+             [MobileRequestOperation descriptionForState:prevState],
+             [MobileRequestOperation descriptionForState:state]];
+            [errorString appendFormat:@"\n\tURL: %@", self.activeRequest.URL];
+            ELog(@"%@",errorString);
+        }
+        
+        NSMutableURLRequest *mutableRequest = [request mutableCopy];
+        mutableRequest.timeoutInterval = 10.0;
+        self.activeRequest = mutableRequest;
+        self.requestData = nil;
+        self.connection = [[[NSURLConnection alloc] initWithRequest:mutableRequest
+                                                           delegate:self
+                                                   startImmediately:NO] autorelease];
+        [self.connection scheduleInRunLoop:self.operationRunLoop
+                                   forMode:NSDefaultRunLoopMode];
+        [self.connection start];
+    }
 }
 
 
 #pragma mark - NSURLConnectionDelegate
-#pragma mark -- Authentication/Trust Verification
-- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
-    return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-    OSStatus error = noErr;
-    NSString *serverCAPath = [NSBundle pathForResource:@"server_ca"
-                                             ofType:@"der"
-                                        inDirectory:[[NSBundle mainBundle] resourcePath]];
-    if (serverCAPath == nil) {
-        WLog(@"Unable to load server CA");
-        [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
-        return;
-    }
-    
-    
-    NSData *serverCAData = [NSData dataWithContentsOfFile:serverCAPath];
-    SecCertificateRef serverCA = SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)serverCAData);
-    if (serverCA == NULL) {
-        ELog(@"Failed to create SecCertificateRef for the server CA");
-        [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
-        return;
-    }
-    
-    
-    NSMutableArray *array = [NSMutableArray array];
-    SecTrustRef challengeTrust = [[challenge protectionSpace] serverTrust];
-    SecTrustRef serverTrust = NULL;
-    for (int i = 0; i < SecTrustGetCertificateCount(challengeTrust); ++i) {
-        [array addObject:(id)(SecTrustGetCertificateAtIndex(challengeTrust, i))];
-    }
-    
-    
-    SecPolicyRef sslPolicy = SecPolicyCreateSSL(TRUE, (CFStringRef)[[challenge protectionSpace] host]);
-    error = SecTrustCreateWithCertificates((CFArrayRef)array,
-                                           sslPolicy,
-                                           &serverTrust);
-    CFRelease(sslPolicy);
-    if (error != noErr) {
-        ELog(@"Error (%ld): Unable to create SecTrust object",error);
-    }
-    
-    
-    NSArray *anchorArray = [NSArray arrayWithObject:(id)serverCA];
-    error = SecTrustSetAnchorCertificates(serverTrust, (CFArrayRef)anchorArray);
-    if (error != noErr) {
-        ELog(@"Error (%ld): Failed to anchor server CA",error);
-        goto sec_error;
-    }
-    
-    
-    error = SecTrustSetAnchorCertificatesOnly(serverTrust, FALSE);
-    if (error != noErr) {
-        ELog(@"Error (%ld): Failed to anchor server CA",error);
-        goto sec_error;
-    }
-    
-    
-    SecTrustResultType trustResult = kSecTrustResultInvalid;
-    SecTrustEvaluate(serverTrust, &trustResult);
-    if ((trustResult == kSecTrustResultProceed) || (trustResult == kSecTrustResultUnspecified)) {
-        [challenge.sender useCredential:[NSURLCredential credentialForTrust:serverTrust]
-             forAuthenticationChallenge:challenge];
-    } else {
-        [challenge.sender cancelAuthenticationChallenge:challenge];
-    }
-
-
-sec_error:
-    CFRelease(serverCA);
-    CFRelease(serverTrust);
-    
-    if (error != noErr) {
-        [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
-    }
-}
-
-
 #pragma mark -- Response Handling
 - (NSURLRequest *)connection:(NSURLConnection *)connection
              willSendRequest:(NSURLRequest *)request
             redirectResponse:(NSURLResponse *)redirectResponse
 {
     if (redirectResponse) {
+        DLog(@"Redirecting to '%@'", request.URL);
+        
         BOOL wayfRedirect = [[[request.URL host] lowercaseString] isEqualToString:@"wayf.mit.edu"];
         
         if (wayfRedirect) {
@@ -622,6 +645,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                                 [self transitionToState:MobileRequestStateIDP
                                         willSendRequest:wayfRequest];
                             };
+                            
                             [self displayLoginPrompt];
                         }
                     }];
@@ -657,12 +681,18 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 [self connection:connection
                 didFailWithError:tsResponse.error];
             } else {
+                NSString *tsUsername = [self.touchstoneUser stringByReplacingOccurrencesOfString:@"@mit.edu"
+                                                                                      withString:@""
+                                                                                         options:NSCaseInsensitiveSearch
+                                                                                           range:NSMakeRange(0, [self.touchstoneUser length])];
+
                 NSString *body = [NSString stringWithFormat:@"%@=%@&%@=%@",
                                   [@"j_username" urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                                  [self.touchstoneUser urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
+                                  [tsUsername urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
                                   [@"j_password" urlEncodeUsingEncoding:NSUTF8StringEncoding],
                                   [self.touchstonePassword urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
                                   
+                DLog(@"Got POST URL fragment: %@", tsResponse.postURLPath);
                 NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:tsResponse.postURLPath
                                                                                               relativeToURL:[self.activeRequest URL]]];
                 [wayfRequest setHTTPMethod:@"POST"];
@@ -682,16 +712,28 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
             SAMLResponse *samlResponse = [[[SAMLResponse alloc] initWithResponseData:self.requestData] autorelease];
             if (samlResponse.error) {
                 if (samlResponse.error.code == MobileWebInvalidLoginError) {
-                    dispatch_async(dispatch_get_main_queue(), ^(void) {
-                        if (self.loginViewController == nil) {
-                            [self displayLoginPrompt];
-                        } else {
-                            [self.loginViewController hideActivityView];
-                            [self.loginViewController showError:@"Please enter a valid username and password"];
-                        }
-                    });
-                    
-                    self.touchstonePassword = nil;
+                    if (self.presetCredentials)
+                    {
+                    	NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                             code:NSURLErrorUserAuthenticationRequired
+                                                         userInfo:nil];
+                        [self connection:connection
+                        didFailWithError:error];
+                    }
+                    else
+                    {
+                        dispatch_async(dispatch_get_main_queue(), ^(void) {
+                            if (self.loginViewController == nil)
+                            {
+                                [self displayLoginPrompt];
+                            } else {
+                                [self.loginViewController hideActivityView];
+                                [self.loginViewController showError:@"Please enter a valid username and password"];
+                            }
+                        });
+                        
+                        self.touchstonePassword = nil;
+                    }
                 } else {
                     [self connection:connection
                     didFailWithError:samlResponse.error];
@@ -750,12 +792,9 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 
 #pragma mark - MobileRequestLoginView Delegate Methods
 -(void)loginRequest:(MobileRequestLoginViewController *)view didEndWithUsername:(NSString *)username password:(NSString *)password shouldSaveLogin:(BOOL)saveLogin {
-    NSString *strippedUsername = [username stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *chompedUser = [username stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
-    self.touchstoneUser = [strippedUsername stringByReplacingOccurrencesOfString:@"@mit.edu"
-                                                                      withString:@""
-                                                                         options:NSCaseInsensitiveSearch
-                                                                           range:NSMakeRange(0, [username length])];
+    self.touchstoneUser = chompedUser;
     self.touchstonePassword = password;
     
     if (saveLogin) {
@@ -766,9 +805,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     
     [view showActivityView];
     
-    dispatch_queue_t authQueue = dispatch_queue_create(NULL, 0);
-    dispatch_async(authQueue,gSecureStateTracker.authenticationBlock);
-    dispatch_release(authQueue);
+    [gSecureStateTracker dispatchAuthenticationBlock];
 }
 
 - (void)cancelWasPressedForLoginRequest:(MobileRequestLoginViewController *)view {

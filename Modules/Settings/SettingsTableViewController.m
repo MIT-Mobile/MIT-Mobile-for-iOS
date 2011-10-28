@@ -8,6 +8,7 @@
 #import "MITLogging.h"
 #import "MobileKeychainServices.h"
 #import "MITConstants.h"
+#import "SettingsTouchstoneViewController.h"
 
 NSString * const SettingsTitleString = @"Notifications";
 NSString * const SettingsSubtitleString = @"Turn off Notifications to disable alerts for that module.";
@@ -74,7 +75,7 @@ enum {
     [super viewDidLoad];
     self.title = @"Settings";
     
-    _requestQueue = dispatch_queue_create("SettingsAPIQueue", NULL);
+    _requestQueue = dispatch_queue_create(NULL, NULL);
     self.apiRequests = [NSMutableDictionary dictionary];
     
     [self.tableView applyStandardColors];
@@ -99,6 +100,13 @@ enum {
     
     _selectedRow = NSUIntegerMax;
     _advancedOptionsVisible = NO;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:kSettingsTouchstoneSection]
+                  withRowAnimation:UITableViewRowAnimationFade];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -154,7 +162,7 @@ enum {
             break;
         
         case kSettingsTouchstoneSection:
-            rows = 2;
+            rows = 1;
             break;
             
         case kSettingsServerSection:
@@ -168,7 +176,8 @@ enum {
     return rows;
 }
 
-- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
 	UIView *result = [[[UIView alloc] init] autorelease];
     NSString *titleText = nil;
     NSString *subtitleText = nil;
@@ -209,6 +218,8 @@ enum {
         CGFloat height = PADDING;
         CGSize titleSize = CGSizeZero;
         CGSize subtitleSize = CGSizeZero;
+        CGSize constraintSize = CGSizeMake(PADDED_WIDTH(CGRectGetWidth(tableView.bounds)),
+                                           CGFLOAT_MAX);
         
         {
             UILabel *titleView = titleView = [[[UILabel alloc] init] autorelease];
@@ -219,10 +230,14 @@ enum {
             titleView.text = titleText;
             
             titleSize = [titleView.text sizeWithFont:titleView.font
-                                           forWidth:tableView.frame.size.width
-                                      lineBreakMode:titleView.lineBreakMode];
+                                   constrainedToSize:constraintSize
+                                       lineBreakMode:titleView.lineBreakMode];
             height += titleSize.height;
-            titleView.frame = CGRectMake(0,0,titleSize.width,titleSize.height);
+            
+            titleView.frame = CGRectMake(PADDING,
+                                         0,
+                                         titleSize.width,
+                                         titleSize.height);
             [result addSubview:titleView];
         }
         
@@ -235,16 +250,17 @@ enum {
             subtitleView.text = subtitleText;
             
             subtitleSize = [subtitleView.text sizeWithFont:subtitleView.font
-                                              forWidth:PADDED_WIDTH(tableView.frame.size.width)
-                                         lineBreakMode:subtitleView.lineBreakMode];
+                                         constrainedToSize:constraintSize
+                                             lineBreakMode:subtitleView.lineBreakMode];
             height += subtitleSize.height;
-            subtitleView.frame = CGRectMake(0,titleSize.height + 2.0,subtitleSize.width,subtitleSize.height);
-            
-            result.frame = CGRectMake(0,0,tableView.frame.size.width,height);
+            subtitleView.frame = CGRectMake(PADDING,
+                                            titleSize.height + 2.0,
+                                            subtitleSize.width,
+                                            subtitleSize.height);
             [result addSubview:subtitleView];
         }
         
-        result.frame = CGRectMake(0, 0, tableView.bounds.size.width, height);
+        result.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), height);
     }
     
 	return result;
@@ -253,34 +269,36 @@ enum {
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     CGSize titleSize = CGSizeZero;
     CGSize subtitleSize = CGSizeZero;
+    CGFloat frameWidth = PADDED_WIDTH(CGRectGetWidth(tableView.bounds));
+    CGSize constraintSize = CGSizeMake(frameWidth, CGFLOAT_MAX);
     
     switch (section) {
         case kSettingsNotificationSection:
         {
             titleSize = [SettingsTitleString sizeWithFont:[UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE]
-                                                   forWidth:tableView.bounds.size.width
+                                                   forWidth:constraintSize.width
                                               lineBreakMode:UILineBreakModeTailTruncation];
             subtitleSize = [SettingsSubtitleString sizeWithFont:[UIFont systemFontOfSize:[UIFont systemFontSize]]
-                                                         forWidth:PADDED_WIDTH(tableView.bounds.size.width)
-                                                    lineBreakMode:UILineBreakModeWordWrap];
+                                              constrainedToSize:constraintSize
+                                                  lineBreakMode:UILineBreakModeWordWrap];
             break;
         }
         
         case kSettingsTouchstoneSection:
         {
             titleSize = [TouchstoneTitleString sizeWithFont:[UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE]
-                                                     forWidth:tableView.bounds.size.width
+                                                   forWidth:constraintSize.width
                                                 lineBreakMode:UILineBreakModeTailTruncation];
             subtitleSize = [TouchstoneSubtitleString sizeWithFont:[UIFont systemFontOfSize:[UIFont systemFontSize]]
-                                                           forWidth:PADDED_WIDTH(tableView.bounds.size.width)
-                                                      lineBreakMode:UILineBreakModeWordWrap];
+                                                constrainedToSize:constraintSize
+                                                    lineBreakMode:UILineBreakModeWordWrap];
             break;
         }
         
         case kSettingsServerSection:
         {
             titleSize = [ServersTitleString sizeWithFont:[UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE]
-                                                  forWidth:tableView.bounds.size.width
+                                                  forWidth:constraintSize.width
                                              lineBreakMode:UILineBreakModeTailTruncation];
             break;
         }
@@ -295,7 +313,6 @@ enum {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
     static NSString *AdvancedCellIdentifier = @"AdvancedCell";
-    static NSString *TouchstonePasswordCellIdentifier = @"TouchstonePasswordCell";
     static NSString *TouchstoneUsernameCellIdentifier = @"TouchstoneUsernameCell";
     
     UITableViewCell *cell = nil;
@@ -327,36 +344,40 @@ enum {
             
         case kSettingsTouchstoneSection:
         {
-            switch (indexPath.row) {
+            switch (indexPath.row)
+            {
                 case 0:
                 {
                     cell = [tableView dequeueReusableCellWithIdentifier:TouchstoneUsernameCellIdentifier];
-                    if (cell == nil) {
+                    if (cell == nil)
+                    {
                         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
-                        cell.accessoryType = UITableViewCellAccessoryNone;
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                         cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
                         cell.selectionStyle = UITableViewCellSelectionStyleNone;
                         
-                        UITextField *field = [[[UITextField alloc] init] autorelease];
-                        field.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-                        field.borderStyle = UITextBorderStyleRoundedRect;
-                        field.placeholder = @"Username";
+                        cell.textLabel.backgroundColor = [UIColor clearColor];
                         
+                        cell.detailTextLabel.backgroundColor = [UIColor clearColor];
+                        cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
+                        cell.detailTextLabel.minimumFontSize = 10.0;
                     }
-                    break;
-                }
                     
-                case 1:
-                {
-                    cell = [tableView dequeueReusableCellWithIdentifier:TouchstonePasswordCellIdentifier];
-                    if (cell == nil) {
-                        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
-                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                        cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
-                        
-                        UITextField *field = [[[UITextField alloc] initWithFrame:cell.contentView.bounds] autorelease];
-                        field.placeholder = @"Password";
-                        [cell.contentView addSubview:field];
+                    cell.textLabel.text = @"User";
+                    
+                    NSString *touchstoneUsername = [SettingsTouchstoneViewController touchstoneUsername];
+                    if ([touchstoneUsername length])
+                    {
+                        cell.detailTextLabel.textColor = [UIColor colorWithRed:0.22
+                                                                         green:0.33
+                                                                          blue:0.53
+                                                                         alpha:1.0];
+                        cell.detailTextLabel.text = touchstoneUsername;
+                    }
+                    else
+                    {
+                        cell.detailTextLabel.text = @"username or email";
+                        cell.detailTextLabel.textColor = [UIColor grayColor];
                     }
                     break;
                 }
@@ -398,8 +419,10 @@ enum {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == kSettingsServerSection) {
-        if (indexPath.row != _selectedRow) {
+    if (indexPath.section == kSettingsServerSection)
+    {
+        if (indexPath.row != _selectedRow)
+        {
             NSUInteger oldRow = _selectedRow;
             _selectedRow = indexPath.row;
             [tableView reloadSections:[NSIndexSet indexSetWithIndex:kSettingsServerSection]
@@ -407,6 +430,13 @@ enum {
             [self serverSelectionDidChangeFrom:oldRow
                                             to:_selectedRow];
         }
+    }
+    else if (indexPath.section == kSettingsTouchstoneSection)
+    {
+        SettingsTouchstoneViewController *vc = [[[SettingsTouchstoneViewController alloc] init] autorelease];
+        [self.navigationController pushViewController:vc
+                                                     animated:YES];
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
 

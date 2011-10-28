@@ -16,6 +16,9 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 @property (nonatomic,readonly,copy) NSDictionary *parameters;
 @property (nonatomic) BOOL usePOST;
 
++ (BOOL)isAuthenticationCookie:(NSHTTPCookie*)cookie;
++ (void)clearAuthenticatedSession;
+
 /* 
  * Since these blocks may be used for UI operations
  *  they are guaranteed to be dispatched on the main
@@ -31,12 +34,17 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params;
 - (NSURLRequest*)urlRequest;
 
+// Override the saved username/password (if there is one) when attempting
+//  to authenticate to a Touchstone protected resource. Note that if the
+//  username or password is incorrect (or authentication fails for any other
+//  reason), the user will not be prompted to reenter their username and
+//  password and the connection will return with an error.
+- (void)authenticateUsingUsername:(NSString*)username password:(NSString*)password;
+
 - (BOOL)isEqual:(NSObject*)object;
 - (BOOL)isEqualToOperation:(MobileRequestOperation*)operation;
 - (NSUInteger)hash;
 
-- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace;
-- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge;
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse;
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response;
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
