@@ -342,6 +342,7 @@
 		EB86CAC6115D4ED500C8F3D1 /* CalendarEventsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB86CAC5115D4ED500C8F3D1 /* CalendarEventsViewController.m */; };
 		EB976D18116CF6630036A18E /* EventListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB976D16116CF6630036A18E /* EventListTableView.m */; };
 		EB976D1C116CF6A10036A18E /* EventCategoriesTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB976D1A116CF6A10036A18E /* EventCategoriesTableView.m */; };
+		EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9FF4A5145A1D7500028A18 /* BookDetailTableViewCell.m */; };
 		EBA0A46710D405F5005B0D96 /* Stellar.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EBA0A46610D405F5005B0D96 /* Stellar.xcdatamodeld */; };
 		EBA2865610E07E140003BA01 /* PeopleSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */; };
 		EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2867810E082010003BA01 /* MITLoadingActivityView.m */; };
@@ -1041,6 +1042,8 @@
 		EB976D16116CF6630036A18E /* EventListTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventListTableView.m; sourceTree = "<group>"; };
 		EB976D19116CF6A10036A18E /* EventCategoriesTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventCategoriesTableView.h; sourceTree = "<group>"; };
 		EB976D1A116CF6A10036A18E /* EventCategoriesTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventCategoriesTableView.m; sourceTree = "<group>"; };
+		EB9FF4A4145A1D7500028A18 /* BookDetailTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BookDetailTableViewCell.h; path = WorldCatSearch/BookDetailTableViewCell.h; sourceTree = "<group>"; };
+		EB9FF4A5145A1D7500028A18 /* BookDetailTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BookDetailTableViewCell.m; path = WorldCatSearch/BookDetailTableViewCell.m; sourceTree = "<group>"; };
 		EBA0A46810D405F5005B0D96 /* Stellar 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Stellar 2.xcdatamodel"; sourceTree = "<group>"; };
 		EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleSearchViewController.m; sourceTree = "<group>"; };
 		EBA2867710E082010003BA01 /* MITLoadingActivityView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLoadingActivityView.h; sourceTree = "<group>"; };
@@ -1772,6 +1775,8 @@
 				4B7B66F7142D01FE00366615 /* WorldCatBook.m */,
 				4B9EF9B514321E360071F8E3 /* LibrariesBookDetailViewController.h */,
 				4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */,
+				EB9FF4A4145A1D7500028A18 /* BookDetailTableViewCell.h */,
+				EB9FF4A5145A1D7500028A18 /* BookDetailTableViewCell.m */,
 			);
 			name = WorldCatSearch;
 			sourceTree = "<group>";
@@ -2850,6 +2855,7 @@
 				A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */,
 				2CC2E9CC144DC9B000151C71 /* MITGradientView.m in Sources */,
 				A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */,
+				EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
