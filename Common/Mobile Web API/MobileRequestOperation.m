@@ -469,9 +469,7 @@ typedef enum {
                                                                    animated:YES];
                 self.loginViewController = loginView;
             } else {
-                dispatch_queue_t authQueue = dispatch_queue_create(NULL, 0);
-                dispatch_async(authQueue,gSecureStateTracker.authenticationBlock);
-                dispatch_release(authQueue);
+                [gSecureStateTracker dispatchAuthenticationBlock];
             }
         });
     }
@@ -767,9 +765,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     
     [view showActivityView];
     
-    dispatch_queue_t authQueue = dispatch_queue_create(NULL, 0);
-    dispatch_async(authQueue,gSecureStateTracker.authenticationBlock);
-    dispatch_release(authQueue);
+    [gSecureStateTracker dispatchAuthenticationBlock];
 }
 
 - (void)cancelWasPressedForLoginRequest:(MobileRequestLoginViewController *)view {
