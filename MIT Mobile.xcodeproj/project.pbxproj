@@ -206,7 +206,6 @@
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
 		A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */; };
-		A6E5B0AF1458CAAD003C61F2 /* book_detail.html in Resources */ = {isa = PBXBuildFile; fileRef = A6E5B0AE1458CAAD003C61F2 /* book_detail.html */; };
 		B64B47081288502E002E2F1D /* DummyRotatingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B64B47061288502E002E2F1D /* DummyRotatingViewController.m */; };
 		BD1E9309103B5D60004429AA /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92F6103B5D60004429AA /* NSObject+SBJSON.m */; };
 		BD1E930A103B5D60004429AA /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92F8103B5D60004429AA /* NSString+SBJSON.m */; };
@@ -776,7 +775,6 @@
 		A69826E41354A488004A8258 /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
 		A6A82E36145624F20075EB28 /* LibraryTextElementViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryTextElementViewController.h; sourceTree = "<group>"; };
 		A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibraryTextElementViewController.m; sourceTree = "<group>"; };
-		A6E5B0AE1458CAAD003C61F2 /* book_detail.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = book_detail.html; path = Resources/libraries/book_detail.html; sourceTree = "<group>"; };
 		B64B47051288502E002E2F1D /* DummyRotatingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummyRotatingViewController.h; sourceTree = "<group>"; };
 		B64B47061288502E002E2F1D /* DummyRotatingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DummyRotatingViewController.m; sourceTree = "<group>"; };
 		BD1E92F4103B5D60004429AA /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
@@ -1218,7 +1216,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				A6E5B0AE1458CAAD003C61F2 /* book_detail.html */,
 				DE715445102FE468005E6111 /* Modules */,
 				080E96DDFE201D6D7F000001 /* Common */,
 				DE783C9810C8651300931EC5 /* App Delegate */,
@@ -2508,7 +2505,6 @@
 				4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */,
 				4BE4D2FF14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib in Resources */,
 				4BE4D3011416EB4D00E723F0 /* libraries in Resources */,
-				A6E5B0AF1458CAAD003C61F2 /* book_detail.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
