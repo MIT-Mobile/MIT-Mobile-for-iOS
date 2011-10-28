@@ -67,6 +67,17 @@
     return [self.operationQueue isSuspended];
 }
 
+- (void)dispatchAuthenticationBlock
+{
+    if (self.authenticationBlock)
+    {
+        dispatch_queue_t authQueue = dispatch_queue_create(NULL, 0);
+        dispatch_async(authQueue,self.authenticationBlock);
+        dispatch_release(authQueue);
+        self.authenticationBlock = nil;
+    }
+}
+
 - (void)userCanceledAuthentication {
     static dispatch_queue_t localQueue;
     static dispatch_once_t onceToken;
@@ -87,6 +98,8 @@
             [self.operationQueue cancelAllOperations];
         }
     });
+    
+    self.authenticationBlock = nil;
 }
 
 @end

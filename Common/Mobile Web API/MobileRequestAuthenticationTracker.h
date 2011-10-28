@@ -10,5 +10,7 @@
 - (void)addBlockToQueue:(void(^)(BOOL canceled))block;
 - (void)suspendQueue;
 - (void)resumeQueue;
+
+- (void)dispatchAuthenticationBlock;
 - (void)userCanceledAuthentication;
 @end
