@@ -655,9 +655,14 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 [self connection:connection
                 didFailWithError:tsResponse.error];
             } else {
+                NSString *tsUsername = [self.touchstoneUser stringByReplacingOccurrencesOfString:@"@mit.edu"
+                                                                                      withString:@""
+                                                                                         options:NSCaseInsensitiveSearch
+                                                                                           range:NSMakeRange(0, [self.touchstoneUser length])];
+
                 NSString *body = [NSString stringWithFormat:@"%@=%@&%@=%@",
                                   [@"j_username" urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                                  [self.touchstoneUser urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
+                                  [tsUsername urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
                                   [@"j_password" urlEncodeUsingEncoding:NSUTF8StringEncoding],
                                   [self.touchstonePassword urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
                                   
@@ -749,12 +754,9 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 
 #pragma mark - MobileRequestLoginView Delegate Methods
 -(void)loginRequest:(MobileRequestLoginViewController *)view didEndWithUsername:(NSString *)username password:(NSString *)password shouldSaveLogin:(BOOL)saveLogin {
-    NSString *strippedUsername = [username stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *chompedUser = [username stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
-    self.touchstoneUser = [strippedUsername stringByReplacingOccurrencesOfString:@"@mit.edu"
-                                                                      withString:@""
-                                                                         options:NSCaseInsensitiveSearch
-                                                                           range:NSMakeRange(0, [username length])];
+    self.touchstoneUser = chompedUser;
     self.touchstonePassword = password;
     
     if (saveLogin) {
