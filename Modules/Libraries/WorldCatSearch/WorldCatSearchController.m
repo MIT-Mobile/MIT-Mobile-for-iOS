@@ -212,6 +212,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
     UILabel *customLabel = 
     (UILabel *)[cell.contentView viewWithTag:CELL_CUSTOM_LABEL_TAG];
     customLabel.text = book.title;
+    customLabel.highlightedTextColor = [UIColor whiteColor];
     
     CGFloat maxLabelWidth = [[self class] maxLabelWidthForCell:cell];
     // Book title label must fit to maxLabelWidth but can be whatever height 
@@ -244,6 +245,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
                cell.frame.size.width - 2 * kSearchCellLabelMargin
                - kDisclosureIndicatorClearanceWidth, 
                kSearchCellDetailLabelHeight);    
+    customDetailLabel.highlightedTextColor = [UIColor whiteColor];
     
     return cell;
 }

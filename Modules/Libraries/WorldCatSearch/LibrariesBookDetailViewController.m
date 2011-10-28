@@ -4,6 +4,7 @@
 #import "MITUIConstants.h"
 #import "LibrariesModule.h"
 #import "Foundation+MITAdditions.h"
+#import "BookDetailTableViewCell.h"
 
 
 #define TITLE_ROW 0
@@ -14,8 +15,8 @@ static const CGFloat kWebViewHeight = 300.0f;
 
 typedef enum 
 {
-//    kInfoSection = 0,
-    kEmailAndCiteSection = 0
+    kInfoSection = 0,
+    kEmailAndCiteSection = 1,
 }
 BookDetailSections;
 
@@ -34,7 +35,7 @@ BookDetailViewTags;
 - (void)updateUI;
 - (void)configureCell:(UITableViewCell *)cell 
     forRowAtIndexPath:(NSIndexPath *)indexPath;
-- (NSString *)infoHeaderHtml;
+//- (NSString *)infoHeaderHtml;
 
 @end
 
@@ -42,6 +43,7 @@ BookDetailViewTags;
 @synthesize book;
 @synthesize activityView;
 @synthesize loadingStatus;
+@synthesize bookInfo;
 
 - (id)init
 {
@@ -81,6 +83,7 @@ BookDetailViewTags;
 {
     [super viewDidLoad];
     self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.separatorColor = [UIColor clearColor];
     self.activityView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
     self.activityView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:self.activityView];
@@ -112,6 +115,62 @@ BookDetailViewTags;
 
         } else {
             [self.book updateDetailsWithDictionary:jsonResult];
+            
+            NSMutableArray *bookAttribs = [NSMutableArray array];
+            
+            NSString *bookTitle = self.book.title ? self.book.title : @"";
+
+            NSMutableArray *subtitleParts = [NSMutableArray array];
+            if (self.book.authors.count) {
+                [subtitleParts addObject:[self.book.authors componentsJoinedByString:@", "]];
+            }
+            // TODO: figure out where this should come from
+            [subtitleParts addObject:@"Format: Book"];
+            NSString *bookSubtitle = [subtitleParts componentsJoinedByString:@"\n"];
+            
+            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                    bookTitle, @"title",
+                                    bookSubtitle, @"subtitle",
+                                    @"\n", @"separator", nil]];
+            
+            if (self.book.summarys.count) {
+                [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                        @"Summary", @"title",
+                                        [self.book.summarys componentsJoinedByString:@"; "], @"subtitle", nil]];
+            }
+            if (self.book.publishers.count) {
+                [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                        @"Publisher", @"title",
+                                        [self.book.publishers componentsJoinedByString:@"; "], @"subtitle", nil]];
+            }
+            
+            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                    @"Date", @"title",
+                                    @"Date", @"subtitle", nil]];
+            
+            if (self.book.years.count) {
+                [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                        @"Edition", @"title",
+                                        [self.book.years componentsJoinedByString:@", "], @"subtitle", nil]];
+            }
+            
+            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                    @"Description", @"title",
+                                    @"A really, really, really really, really really really,"
+                                    "really really really really, really really really really really,"
+                                    "really really really really really really, really really really"
+                                    "really really really really, really really really really really"
+                                    "really really really, really really really really really really"
+                                    "really really, really really long placeholder string", @"subtitle", nil]];
+            
+            NSString *isbn = [self.book isbn];
+            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+                                    @"ISBN", @"title",
+                                    (isbn ? isbn : @""), @"subtitle", nil]];
+            
+            
+            self.bookInfo = [NSArray arrayWithArray:bookAttribs];
+
             self.loadingStatus = BookLoadingStatusCompleted;
             [self.tableView reloadData];
         }
@@ -138,7 +197,7 @@ BookDetailViewTags;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSInteger sections = 2;
+    NSInteger sections = 3;
     // TODO: When available libraries are included in the book object, use a 
     // section for each of them.
     sections++;
@@ -147,20 +206,23 @@ BookDetailViewTags;
 
 - (NSInteger)tableView:(UITableView *)tableView 
  numberOfRowsInSection:(NSInteger)section {
-    if (self.loadingStatus == BookLoadingStatusCompleted) {        
+    if (self.loadingStatus == BookLoadingStatusCompleted) {
         NSInteger rows = 0;
-        if (kEmailAndCiteSection == section)
-        {
-            rows = 1;
-        }
-        else
-        {
-            // This will be one of the libraries sections.
-            // TODO: When libraries info is available, in the book object, 
-            // check to see if the library corresponding to the section is 
-            // MIT. If so, there should be two rows: one for Request Item, 
-            // and one for number of copies.
-            rows = 1;
+        switch (section) {
+            case kInfoSection:
+                rows = self.bookInfo.count;
+                break;
+            case kEmailAndCiteSection:
+                rows = 1;
+                break;
+            default:
+                // This will be one of the libraries sections.
+                // TODO: When libraries info is available, in the book object, 
+                // check to see if the library corresponding to the section is 
+                // MIT. If so, there should be two rows: one for Request Item, 
+                // and one for number of copies.
+                rows = 1;
+                break;
         }
         return rows;
     }
@@ -185,24 +247,55 @@ BookDetailViewTags;
     }
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == kInfoSection) {
+        // TODO
+        return 77;
+    }
+    return tableView.rowHeight;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView 
          cellForRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    UITableViewCell *cell = 
-    [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+    NSString *identifier = [NSString stringWithFormat:@"%d", indexPath.section];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     
-    if (!cell)
-    {
-        cell = 
-        [[[UITableViewCell alloc] 
-          initWithStyle:UITableViewCellStyleDefault 
-          reuseIdentifier:@"Cell"] autorelease];
+    if (!cell) {
+        if (indexPath.section == kInfoSection) {
+            cell = [[[BookDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                   reuseIdentifier:identifier] autorelease];
+        } else {        
+            cell = [[[LibrariesBorderedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault 
+                                                          reuseIdentifier:identifier] autorelease];
+        }
     }
-    [self configureCell:cell forRowAtIndexPath:indexPath];
+
+    if (indexPath.section == kInfoSection) {
+        NSDictionary *currentBookInfo = [self.bookInfo objectAtIndex:indexPath.row];
+        BookDetailTableViewCell *bookCell = (BookDetailTableViewCell *)cell;
+        bookCell.title = [currentBookInfo objectForKey:@"title"];
+        bookCell.subtitle = [currentBookInfo objectForKey:@"subtitle"];
+        NSString *sep = [currentBookInfo objectForKey:@"separator"];
+        if (sep) {
+            bookCell.separator = sep;
+        }
+    } else {
+        LibrariesBorderedTableViewCell *borderCell = (LibrariesBorderedTableViewCell *)cell;
+        if (indexPath.row == 0) {
+            borderCell.cellPosition = borderCell.cellPosition | TableViewCellPositionFirst;
+        }
+        if (indexPath.row == [tableView numberOfRowsInSection:indexPath.section] - 1) {
+            borderCell.cellPosition = borderCell.cellPosition | TableViewCellPositionLast;
+        }
+        
+        [self configureCell:cell forRowAtIndexPath:indexPath];
+    }
         
     return cell;
 }
-
+/*
 - (UIView *)tableView:(UITableView *)tableView 
 viewForHeaderInSection:(NSInteger)section
 {
@@ -236,22 +329,24 @@ viewForHeaderInSection:(NSInteger)section
     }
     return nil;
 }
-
+*/
 - (NSString *)tableView:(UITableView *)tableView 
 titleForHeaderInSection:(NSInteger)section
 {
-    if (kEmailAndCiteSection == section)
-    {
-        return nil;
+    NSString *title = nil;
+    switch (section) {
+        case kEmailAndCiteSection:
+        case kInfoSection:
+            break;
+        default:
+            // This will be one of the libraries sections.
+            // TODO: Return name of library corresponding to section.
+            title = @"MIT Libraries";
+            break;
     }
-    else
-    {
-        // This will be one of the libraries sections.
-        // TODO: Return name of library corresponding to section.
-        return @"MIT Libraries";
-    }
+    return title;
 }
-
+/*
 - (CGFloat)tableView:(UITableView *)tableView 
 heightForHeaderInSection:(NSInteger)section
 {    
@@ -265,7 +360,8 @@ heightForHeaderInSection:(NSInteger)section
         return 44.0f;
     }
 }
-
+*/
+/*
 #pragma mark Web view stuff
 
 + (NSString *)nonEmptyString:(NSString *)string
@@ -319,6 +415,6 @@ heightForHeaderInSection:(NSInteger)section
     
     return target;
 }
-
+*/
 
 @end
