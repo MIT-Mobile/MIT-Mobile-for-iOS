@@ -16,6 +16,9 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 @property (nonatomic,readonly,copy) NSDictionary *parameters;
 @property (nonatomic) BOOL usePOST;
 
++ (BOOL)isAuthenticationCookie:(NSHTTPCookie*)cookie;
++ (void)clearAuthenticatedSession;
+
 /* 
  * Since these blocks may be used for UI operations
  *  they are guaranteed to be dispatched on the main

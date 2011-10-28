@@ -130,6 +130,30 @@ typedef enum {
     }
 }
 
++ (BOOL)isAuthenticationCookie:(NSHTTPCookie*)cookie
+{
+    NSString *name = [cookie name];
+    NSRange range = [name rangeOfString:@"_shib"
+                                options:NSCaseInsensitiveSearch];
+    return (range.location != NSNotFound);
+}
+
++ (void)clearAuthenticatedSession
+{
+    NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie *cookie in [cookieStore cookies]) {
+        NSRange range = [[cookie name] rangeOfString:@"_saml"
+                                             options:NSCaseInsensitiveSearch];
+        if ((range.location != NSNotFound) || [self isAuthenticationCookie:cookie]) {
+            DLog(@"Expiring cookie: %@[%@]",[cookie name], [cookie domain]);
+            NSMutableDictionary *properties = [[cookie properties] mutableCopy];
+            [properties setObject:[NSDate distantPast]
+                           forKey:NSHTTPCookieExpires];
+            [cookieStore setCookie:[NSHTTPCookie cookieWithProperties:properties]];
+        }
+    }
+}
+
 
 #pragma mark - Instance Methods        
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params
@@ -211,8 +235,6 @@ typedef enum {
         self.initialRequest = request;
         self.requestData = nil;
         self.requestError = nil;
-        self.touchstoneUser = nil;
-        self.touchstonePassword = nil;
         
         self.isExecuting = YES;
         self.isFinished = NO;
@@ -278,7 +300,6 @@ typedef enum {
     [self.runLoopTimer invalidate];
     self.runLoopTimer = nil;
     
-    gSecureStateTracker.authenticationBlock = nil;
     [gSecureStateTracker resumeQueue];
     
     
@@ -366,9 +387,18 @@ typedef enum {
 
 - (void)authenticateUsingUsername:(NSString*)username password:(NSString*)password
 {
-    self.presetCredentials = YES;
-    self.touchstoneUser = username;
-    self.touchstonePassword = password;
+    if ([username length] && [password length])
+    {
+        self.presetCredentials = YES;
+        self.touchstoneUser = username;
+        self.touchstonePassword = password;
+    }
+    else
+    {
+        self.presetCredentials = NO;
+        self.touchstoneUser = nil;
+        self.touchstonePassword = nil;
+    }
 }
 
 
@@ -388,7 +418,7 @@ typedef enum {
     promptForAuth = promptForAuth || ([self.touchstoneUser length] == 0);
     promptForAuth = promptForAuth || ([self.touchstonePassword length] == 0);
     
-    if ((promptForAuth == YES) && self.presetCredentials)
+    if (self.presetCredentials)
     {
         return NO;
     }
@@ -464,6 +494,7 @@ typedef enum {
                 MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
                                                                                                                  password:self.touchstonePassword] autorelease];
                 loginView.delegate = self;
+                [MobileRequestOperation clearAuthenticatedSession];
                 
                 [[mainWindow rootViewController] presentModalViewController:loginView
                                                                    animated:YES];
@@ -505,11 +536,6 @@ typedef enum {
         [self.connection scheduleInRunLoop:self.operationRunLoop
                                    forMode:NSDefaultRunLoopMode];
         [self.connection start];
-    }
-    else
-    {
-        self.connection = nil;
-        self.activeRequest = nil;
     }
 }
 
@@ -686,16 +712,28 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
             SAMLResponse *samlResponse = [[[SAMLResponse alloc] initWithResponseData:self.requestData] autorelease];
             if (samlResponse.error) {
                 if (samlResponse.error.code == MobileWebInvalidLoginError) {
-                    dispatch_async(dispatch_get_main_queue(), ^(void) {
-                        if (self.loginViewController == nil) {
-                            [self displayLoginPrompt];
-                        } else {
-                            [self.loginViewController hideActivityView];
-                            [self.loginViewController showError:@"Please enter a valid username and password"];
-                        }
-                    });
-                    
-                    self.touchstonePassword = nil;
+                    if (self.presetCredentials)
+                    {
+                    	NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                             code:NSURLErrorUserAuthenticationRequired
+                                                         userInfo:nil];
+                        [self connection:connection
+                        didFailWithError:error];
+                    }
+                    else
+                    {
+                        dispatch_async(dispatch_get_main_queue(), ^(void) {
+                            if (self.loginViewController == nil)
+                            {
+                                [self displayLoginPrompt];
+                            } else {
+                                [self.loginViewController hideActivityView];
+                                [self.loginViewController showError:@"Please enter a valid username and password"];
+                            }
+                        });
+                        
+                        self.touchstonePassword = nil;
+                    }
                 } else {
                     [self connection:connection
                     didFailWithError:samlResponse.error];
