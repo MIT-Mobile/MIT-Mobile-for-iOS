@@ -42,8 +42,6 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 - (BOOL)isEqualToOperation:(MobileRequestOperation*)operation;
 - (NSUInteger)hash;
 
-- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace;
-- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge;
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse;
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response;
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;

@@ -69,7 +69,6 @@
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
 		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
-		2C2912F513FD968500E41BE6 /* server_ca.der in Resources */ = {isa = PBXBuildFile; fileRef = 2C2912F413FD968500E41BE6 /* server_ca.der */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
 		2C3676B513C5F6B1003CB7A4 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */; };
@@ -526,7 +525,6 @@
 		2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRootViewController.h; sourceTree = "<group>"; };
 		2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRootViewController.m; sourceTree = "<group>"; };
 		2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesRootViewController.xib; sourceTree = "<group>"; };
-		2C2912F413FD968500E41BE6 /* server_ca.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = server_ca.der; sourceTree = "<group>"; };
 		2C2E95401382F00200FA5557 /* FacilitiesConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesConstants.m; sourceTree = "<group>"; };
 		2C2E95411382F00200FA5557 /* FacilitiesConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesConstants.h; sourceTree = "<group>"; };
 		2C32BD24136F27D40015ACF6 /* FacilitiesLocations.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacilitiesLocations.xcdatamodel; sourceTree = "<group>"; };
@@ -1257,7 +1255,6 @@
 				EB5C61FC1201D92E00805EBE /* map */,
 				EB5C61981201D6CA00805EBE /* MIT-Mobile-Icon@2x.png */,
 				EF3B3B14103F072400E8AA05 /* MIT-Mobile-Icon.png */,
-				2C2912F413FD968500E41BE6 /* server_ca.der */,
 				4BE4D3001416EB4D00E723F0 /* libraries */,
 				DE1348F810FFC2CC006FFF33 /* debug_tiles */,
 				EB54947210DFF7E200B708B3 /* global */,
@@ -2509,7 +2506,6 @@
 				29C4546D118B55E100A321B0 /* jQueryInject.txt in Resources */,
 				29C4546E118B55E100A321B0 /* jQueryInjectLandscape.txt in Resources */,
 				4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */,
-				2C2912F513FD968500E41BE6 /* server_ca.der in Resources */,
 				4BE4D2FF14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib in Resources */,
 				4BE4D3011416EB4D00E723F0 /* libraries in Resources */,
 				A6E5B0AF1458CAAD003C61F2 /* book_detail.html in Resources */,
