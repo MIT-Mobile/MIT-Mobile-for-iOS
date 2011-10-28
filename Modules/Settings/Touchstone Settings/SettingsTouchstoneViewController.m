@@ -15,6 +15,7 @@ static UIEdgeInsets textCellInsets = {.top = 5,
     .right = 10};
 
 @interface SettingsTouchstoneViewController ()
+@property (nonatomic) BOOL authenticationFailed;
 @property (nonatomic,retain) MobileRequestOperation *authOperation;
 @property (nonatomic,retain) NSArray *tableCells;
 @property (nonatomic,assign) UITextField *usernameField;
@@ -23,6 +24,10 @@ static UIEdgeInsets textCellInsets = {.top = 5,
 - (void)setupTableCells;
 - (IBAction)clearTouchstoneLogin:(id)sender;
 - (BOOL)isShibbolethCookie:(NSHTTPCookie*)cookie;
+
+- (void)save:(id)sender;
+- (void)cancel:(id)sender;
+- (void)saveWithUsername:(NSString*)username password:(NSString*)password;
 @end
 
 @implementation SettingsTouchstoneViewController
@@ -31,6 +36,7 @@ static UIEdgeInsets textCellInsets = {.top = 5,
 @synthesize usernameField = _usernameField;
 @synthesize passwordField = _passwordField;
 @synthesize logoutButton = _logoutButton;
+@synthesize authenticationFailed = _authenticationFailed;
 
 + (NSString*)touchstoneUsername
 {
@@ -107,13 +113,12 @@ static UIEdgeInsets textCellInsets = {.top = 5,
         
         NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
         for (NSHTTPCookie *cookie in [cookieStore cookies]) {
-            NSLog(@"Found cookie named: '%@'", [cookie name]);
-            if ([self isShibbolethCookie:cookie]) {
+            if ([MobileRequestOperation isAuthenticationCookie:cookie]) {
+                NSLog(@"Found cookie named: '%@'", [cookie name]);
                 clearButton.enabled = YES;
                 break;
             }
         }
-        
         
         self.logoutButton = clearButton;
         [mainView addSubview:clearButton];
@@ -190,7 +195,7 @@ static UIEdgeInsets textCellInsets = {.top = 5,
         userField.keyboardType = UIKeyboardTypeEmailAddress;
         userField.minimumFontSize = 10.0;
         userField.placeholder = @"Username or Email";
-        userField.returnKeyType = UIReturnKeyDone;
+        userField.returnKeyType = UIReturnKeyNext;
         userField.textAlignment = UITextAlignmentLeft;
         
         NSString *username = (NSString*)[credentials objectForKey:(id)kSecAttrAccount];
@@ -242,43 +247,90 @@ static UIEdgeInsets textCellInsets = {.top = 5,
 
 - (void)save:(id)sender
 {
+    NSString *username = self.usernameField.text;
+    NSString *password = self.passwordField.text;
+    
+    [self.usernameField resignFirstResponder];
+    [self.passwordField resignFirstResponder];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
-    if ([self.usernameField.text length] == 0) {
-        self.passwordField.text = @"";
-    }
-    
-    if ([self.passwordField.text length] == 0) {
-        DLog(@"Saved Touchstone password has been cleared");
-        [self.navigationController popViewControllerAnimated:YES];
-    }
-    else 
+    if ([username length] && [password length])
     {
-        self.authOperation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                 command:@"getUserIdentity"
-                                                              parameters:nil];
-        
-        [self.authOperation authenticateUsingUsername:self.usernameField.text
-                                             password:self.passwordField.text];
-        self.authOperation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error)
+        if (self.authenticationFailed)
         {
-            if (error)
+            UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:@"You may not be able to login to Touchstone using the provided credentials. Are you sure you want to continue?"
+                                                                delegate:self
+                                                       cancelButtonTitle:@"Edit"
+                                                  destructiveButtonTitle:nil
+                                                       otherButtonTitles:@"Save",nil] autorelease];
+            [sheet showInView:self.view];
+            self.navigationItem.rightBarButtonItem.enabled = YES;
+        }
+        else if (self.authOperation == nil)
+        {
+            [self clearTouchstoneLogin:nil];
+            self.authOperation = [MobileRequestOperation operationWithModule:@"libraries"
+                                                                     command:@"getUserIdentity"
+                                                                  parameters:nil];
+            
+            [self.authOperation authenticateUsingUsername:username
+                                                 password:password];
+            self.authOperation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error)
             {
-                NSLog(@"Error!");
-            }
-            else
-            {
-                MobileKeychainSetItem(MobileLoginKeychainIdentifier,
-                                      self.usernameField.text,
-                                      self.passwordField.text);
-                [self.navigationController popViewControllerAnimated:YES];
-            }
-        };
+                self.authOperation = nil;
+                if (error)
+                {
+                    self.navigationItem.rightBarButtonItem.enabled = YES;
+                    self.authenticationFailed = YES;
+                    
+                    UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Touchstone Account"
+                                                                    message:@"Unable to verify Touchstone credentials."
+                                                                   delegate:nil
+                                                          cancelButtonTitle:nil
+                                                          otherButtonTitles:@"OK", nil] autorelease];
+                    
+                    [alert show];
+                }
+                else
+                {
+                    [self saveWithUsername:username
+                                  password:password];
+                }
+            };
+            
+            [self.authOperation start];
+        }
+    }
+    else
+    {
+        DLog(@"Saved Touchstone password has been cleared");
+        [self saveWithUsername:nil
+                      password:nil];
     }
 }
 
 - (void)cancel:(id)sender
 {
+    if (self.authOperation)
+    {
+        [self.authOperation cancel];
+    }
+    
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)saveWithUsername:(NSString*)username password:(NSString*)password
+{
+    if ([username length] && [password length])
+    {
+        MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, password);
+    }
+    else
+    {
+        [MobileRequestOperation clearAuthenticatedSession];
+        MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
+    }
+    
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -301,35 +353,54 @@ static UIEdgeInsets textCellInsets = {.top = 5,
 #pragma mark - Notification Handlers
 - (void)keyboardDidShow:(NSNotification*)notification
 {
-    self.logoutButton.enabled = NO;
+    
 }
 
 - (void)keyboardDidHide:(NSNotification*)notification
 {
-    self.logoutButton.enabled = YES;
+    
 }
 
 - (IBAction)clearTouchstoneLogin:(id)sender
 {
-    NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    for (NSHTTPCookie *cookie in [cookieStore cookies])
-    {
-        if ([self isShibbolethCookie:cookie])
-        {
-            [cookieStore deleteCookie:cookie];
-        }
-    }
-    
+    [MobileRequestOperation clearAuthenticatedSession];
     self.logoutButton.enabled = NO;
 }
 
 #pragma mark - UITextField Delegate Methods
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    self.authenticationFailed = NO;
+    return YES;
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    [textField resignFirstResponder];
+    
+    if ([textField isEqual:self.usernameField])
+    {
+        [self.passwordField becomeFirstResponder];
+    }
+    else
+    {
+        [textField resignFirstResponder];
+    }
     return NO;
 }
 
+#pragma mark - UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+    
+    if ([buttonTitle caseInsensitiveCompare:@"Save"] == NSOrderedSame)
+    {
+        [self saveWithUsername:self.usernameField.text
+                      password:self.passwordField.text];
+    }
+}
+
+#pragma mark - Touch Handlers
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [self.usernameField resignFirstResponder];

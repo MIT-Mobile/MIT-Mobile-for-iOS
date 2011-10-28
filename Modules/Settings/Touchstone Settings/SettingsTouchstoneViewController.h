@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface SettingsTouchstoneViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate>
+@interface SettingsTouchstoneViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIActionSheetDelegate>
 + (NSString*)touchstoneUsername;
 
 
