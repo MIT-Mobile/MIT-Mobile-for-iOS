@@ -34,6 +34,7 @@
 @synthesize years;
 @synthesize authors;
 
+@synthesize formats;
 @synthesize addresses;
 @synthesize extents;
 @synthesize holdings;
@@ -68,6 +69,7 @@
     self.isbns = nil;
     
     // detail fields
+    self.formats = nil;
     self.addresses = nil;
     self.extents = nil;
     self.holdings = nil;
@@ -78,6 +80,7 @@
 }
 
 - (void)updateDetailsWithDictionary:(NSDictionary *)dict {
+    self.formats = [self arrayOfStringsFromDict:dict key:@"format"];
     self.addresses = [self arrayOfStringsFromDict:dict key:@"address"];
     self.extents = [self arrayOfStringsFromDict:dict key:@"extent"];
     self.lang = [self arrayOfStringsFromDict:dict key:@"lang"];

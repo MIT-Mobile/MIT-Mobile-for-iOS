@@ -28,6 +28,7 @@
 @property (nonatomic, retain) NSArray *isbns;
 
 // detail fields
+@property (nonatomic, retain) NSArray *formats;
 @property (nonatomic, retain) NSArray *addresses;
 @property (nonatomic, retain) NSArray *extents;
 @property (nonatomic, retain) NSDictionary *holdings; // sort these by library title

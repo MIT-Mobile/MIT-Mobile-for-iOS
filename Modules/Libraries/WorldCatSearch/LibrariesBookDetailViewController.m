@@ -102,6 +102,24 @@ BookDetailViewTags;
     // e.g. self.myOutlet = nil;
 }
 
+- (NSString *)subtitleDisplayStringHTML:(BOOL)isHTML
+{
+    NSString *result = nil;
+    if (self.book) {
+        NSMutableArray *subtitleParts = [NSMutableArray array];
+        if (self.book.authors.count) {
+            [subtitleParts addObject:[self.book.authors componentsJoinedByString:@", "]];
+        }
+        if (self.book.formats.count) {
+            [subtitleParts addObject:[NSString stringWithFormat:@"Format: %@", [self.book.formats componentsJoinedByString:@"\n"]]];
+        }
+        
+        NSString *separator = isHTML ? @"<br/>" : @"\n";
+        result = [subtitleParts componentsJoinedByString:separator];
+    }
+    return result;
+}
+
 - (void)loadBookDetails {
     NSDictionary *parameters = [NSDictionary dictionaryWithObject:self.book.identifier forKey:@"id"];
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"detail" parameters:parameters] autorelease];
@@ -122,14 +140,7 @@ BookDetailViewTags;
             
             // title, author, format
             NSString *bookTitle = self.book.title ? self.book.title : @"";
-
-            NSMutableArray *subtitleParts = [NSMutableArray array];
-            if (self.book.authors.count) {
-                [subtitleParts addObject:[self.book.authors componentsJoinedByString:@", "]];
-            }
-            // TODO: figure out where this should come from
-            [subtitleParts addObject:@"Format: Book"];
-            NSString *bookSubtitle = [subtitleParts componentsJoinedByString:@"\n"];
+            NSString *bookSubtitle = [self subtitleDisplayStringHTML:NO];
             
             [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:bookTitle
                                                                           subtitle:bookSubtitle
@@ -171,10 +182,11 @@ BookDetailViewTags;
             }
 
             // isbn
-            NSString *isbn = [self.book isbn];
-            [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"ISBN"
-                                                                          subtitle:(isbn ? isbn : @"")
-                                                                         separator:@": "]];
+            if (self.book.isbns.count) {
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"ISBN"
+                                                                              subtitle:[self.book.isbns componentsJoinedByString:@" : "]
+                                                                             separator:@": "]];
+            }
             
             self.bookInfo = [NSArray arrayWithArray:bookAttribs];
 
@@ -260,6 +272,39 @@ BookDetailViewTags;
     }
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch (indexPath.section) {
+        case kEmailAndCiteSection:
+            if ([MFMailComposeViewController canSendMail]) {
+                NSString *bodyString = [NSString stringWithFormat:
+                                        @"<strong>%@</strong><br/>%@",
+                                        self.book.title,
+                                        [self subtitleDisplayStringHTML:YES]];
+                
+                MFMailComposeViewController *mailView = [[[MFMailComposeViewController alloc] init] autorelease];
+                [mailView setMailComposeDelegate:self];
+                [mailView setSubject:self.book.title];
+                [mailView setMessageBody:bodyString isHTML:YES];
+                [self presentModalViewController:mailView animated:YES]; 
+            }
+            break;
+        case kMITHoldingSection:
+        {
+            WorldCatHolding *holding = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+            NSURL *url = [NSURL URLWithString:holding.url];
+            if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
+                [[UIApplication sharedApplication] openURL:url];
+            }
+            break;
+        }
+        case kBLCHoldingSection:
+            break;
+        default:
+            break;
+    }
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == kInfoSection) {
@@ -325,6 +370,13 @@ titleForHeaderInSection:(NSInteger)section
             break;
     }
     return title;
+}
+
+- (void)mailComposeController:(MFMailComposeViewController*)controller
+          didFinishWithResult:(MFMailComposeResult)result
+                        error:(NSError*)error 
+{
+	[self dismissModalViewControllerAnimated:YES];
 }
 
 @end
