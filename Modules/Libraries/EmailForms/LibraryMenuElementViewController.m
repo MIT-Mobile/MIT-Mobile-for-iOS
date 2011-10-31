@@ -8,6 +8,16 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor clearColor];
     self.title = self.menuElement.displayLabel;
+    
+    self.navigationItem.leftBarButtonItem = 
+    [[UIBarButtonItem alloc] 
+     initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self 
+     action:@selector(cancelTapped:)];
+    
+    self.navigationItem.rightBarButtonItem = 
+    [[UIBarButtonItem alloc]
+     initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self 
+     action:@selector(doneTapped:)];    
 }
 
 - (void)dealloc
@@ -64,6 +74,17 @@
     self.menuElement.currentOptionIndex = indexPath.row;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [tableView reloadData];
+}
+
+#pragma mark UI actions
+- (IBAction)cancelTapped:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (IBAction)doneTapped:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
