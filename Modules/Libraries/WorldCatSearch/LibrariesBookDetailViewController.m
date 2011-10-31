@@ -118,6 +118,7 @@ BookDetailViewTags;
             
             NSMutableArray *bookAttribs = [NSMutableArray array];
             
+            // title, author, format
             NSString *bookTitle = self.book.title ? self.book.title : @"";
 
             NSMutableArray *subtitleParts = [NSMutableArray array];
@@ -128,46 +129,50 @@ BookDetailViewTags;
             [subtitleParts addObject:@"Format: Book"];
             NSString *bookSubtitle = [subtitleParts componentsJoinedByString:@"\n"];
             
-            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                    bookTitle, @"title",
-                                    bookSubtitle, @"subtitle",
-                                    @"\n", @"separator", nil]];
-            
+            [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:bookTitle
+                                                                          subtitle:bookSubtitle
+                                                                         separator:@"\n"]];
+
+            // summary
             if (self.book.summarys.count) {
-                [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                        @"Summary", @"title",
-                                        [self.book.summarys componentsJoinedByString:@"; "], @"subtitle", nil]];
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Summary"
+                                                                              subtitle:[self.book.summarys componentsJoinedByString:@"; "]
+                                                                             separator:@": "]];
             }
+
+            // publisher
             if (self.book.publishers.count) {
-                [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                        @"Publisher", @"title",
-                                        [self.book.publishers componentsJoinedByString:@"; "], @"subtitle", nil]];
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Publisher"
+                                                                              subtitle:[self.book.publishers componentsJoinedByString:@"; "]
+                                                                             separator:@": "]];
             }
-            
-            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"Date", @"title",
-                                    @"Date", @"subtitle", nil]];
-            
+
+            // date
             if (self.book.years.count) {
-                [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                        @"Edition", @"title",
-                                        [self.book.years componentsJoinedByString:@", "], @"subtitle", nil]];
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Date"
+                                                                              subtitle:[self.book.years componentsJoinedByString:@", "]
+                                                                             separator:@": "]];
             }
             
-            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"Description", @"title",
-                                    @"A really, really, really really, really really really,"
-                                    "really really really really, really really really really really,"
-                                    "really really really really really really, really really really"
-                                    "really really really really, really really really really really"
-                                    "really really really, really really really really really really"
-                                    "really really, really really long placeholder string", @"subtitle", nil]];
-            
+            // edition
+            if (self.book.editions.count) {
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Edition"
+                                                                              subtitle:[self.book.editions componentsJoinedByString:@", "]
+                                                                             separator:@": "]];
+            }
+
+            // description
+            if (self.book.extents.count) {
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Description"
+                                                                              subtitle:[self.book.extents componentsJoinedByString:@", "]
+                                                                             separator:@": "]];
+            }
+
+            // isbn
             NSString *isbn = [self.book isbn];
-            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"ISBN", @"title",
-                                    (isbn ? isbn : @""), @"subtitle", nil]];
-            
+            [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"ISBN"
+                                                                          subtitle:(isbn ? isbn : @"")
+                                                                         separator:@": "]];
             
             self.bookInfo = [NSArray arrayWithArray:bookAttribs];
 
@@ -250,8 +255,8 @@ BookDetailViewTags;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == kInfoSection) {
-        // TODO
-        return 77;
+        NSAttributedString *displayString = [self.bookInfo objectAtIndex:indexPath.row];
+        return [BookDetailTableViewCell sizeForDisplayString:displayString tableView:tableView].height + 8;
     }
     return tableView.rowHeight;
 }
@@ -273,14 +278,9 @@ BookDetailViewTags;
     }
 
     if (indexPath.section == kInfoSection) {
-        NSDictionary *currentBookInfo = [self.bookInfo objectAtIndex:indexPath.row];
+        NSAttributedString *displayString = [self.bookInfo objectAtIndex:indexPath.row];
         BookDetailTableViewCell *bookCell = (BookDetailTableViewCell *)cell;
-        bookCell.title = [currentBookInfo objectForKey:@"title"];
-        bookCell.subtitle = [currentBookInfo objectForKey:@"subtitle"];
-        NSString *sep = [currentBookInfo objectForKey:@"separator"];
-        if (sep) {
-            bookCell.separator = sep;
-        }
+        bookCell.displayString = displayString;
     } else {
         LibrariesBorderedTableViewCell *borderCell = (LibrariesBorderedTableViewCell *)cell;
         if (indexPath.row == 0) {

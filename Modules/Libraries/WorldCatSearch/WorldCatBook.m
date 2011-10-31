@@ -37,6 +37,7 @@
 @synthesize lang;
 @synthesize subjects;
 @synthesize summarys;
+@synthesize editions;
 
 @synthesize parseFailure;
 
@@ -79,6 +80,7 @@
     self.lang = [self arrayOfStringsFromDict:dict key:@"lang"];
     self.subjects = [self arrayOfStringsFromDict:dict key:@"subject"];
     self.summarys = [self arrayOfStringsFromDict:dict key:@"summary"];
+    self.editions = [self arrayOfStringsFromDict:dict key:@"edition"];
     
     NSMutableArray *holdingsArray = [NSMutableArray array];
     for (NSDictionary *holdingDict in [dict objectForKey:@"holdings"]) {
