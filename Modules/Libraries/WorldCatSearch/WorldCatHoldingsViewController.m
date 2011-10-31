@@ -29,6 +29,9 @@
 {
     [super viewDidLoad];
     
+    self.title = @"Boston Library Consortium";
+    self.tableView.backgroundColor = [UIColor clearColor];
+    
     if (self.book && !self.holdings) {
         NSPredicate *pred = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
             NSString *code = [(WorldCatHolding *)evaluatedObject code];
@@ -41,6 +44,23 @@
             return [code1 compare:code2];
         }];
     }
+    
+    NSString *introString = [NSString stringWithFormat:@"Availability for \"%@\"", self.book.title];
+    UIFont *font = [UIFont boldSystemFontOfSize:15];
+    CGSize labelSize = CGSizeMake(CGRectGetWidth(self.view.bounds) - 20, 2000);
+    labelSize = [introString sizeWithFont:font constrainedToSize:labelSize lineBreakMode:UILineBreakModeWordWrap];
+    CGRect frame = CGRectMake(0, 0, labelSize.width + 20, labelSize.height + 20);
+    UIView *headerView = [[[UIView alloc] initWithFrame:frame] autorelease];
+    headerView.backgroundColor = [UIColor clearColor];
+    frame = CGRectMake(10, 10, labelSize.width, labelSize.height);
+    UILabel *label = [[[UILabel alloc] initWithFrame:frame] autorelease];
+    label.backgroundColor = [UIColor clearColor];
+    label.font = font;
+    label.text = introString;
+    label.lineBreakMode = UILineBreakModeWordWrap;
+    label.numberOfLines = 0;
+    [headerView addSubview:label];
+    self.tableView.tableHeaderView = headerView;
 }
 
 - (void)viewDidUnload
