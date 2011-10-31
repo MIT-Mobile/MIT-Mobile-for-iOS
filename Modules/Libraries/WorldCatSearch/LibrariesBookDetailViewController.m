@@ -6,6 +6,7 @@
 #import "Foundation+MITAdditions.h"
 #import "BookDetailTableViewCell.h"
 
+NSString * const MITLibrariesOCLCCode = @"MYG";
 
 #define TITLE_ROW 0
 #define YEAR_AUTHOR_ROW 1
@@ -17,6 +18,8 @@ typedef enum
 {
     kInfoSection = 0,
     kEmailAndCiteSection = 1,
+    kMITHoldingSection = 2,
+    kBLCHoldingSection = 3
 }
 BookDetailSections;
 
@@ -202,10 +205,17 @@ BookDetailViewTags;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSInteger sections = 3;
-    // TODO: When available libraries are included in the book object, use a 
-    // section for each of them.
-    sections++;
+    NSInteger sections = 2; // one for book info, one for email & cite
+    if (self.loadingStatus == BookLoadingStatusCompleted) {
+        NSInteger numHoldings = self.book.holdings.count;
+        if ([self.book.holdings objectForKey:MITLibrariesOCLCCode]) {
+            sections++; // one section for MIT holdings
+            numHoldings--;
+        }
+        if (numHoldings > 0) {
+            sections++; // one section for all other holdings
+        }
+    }
     return sections;
 }
 
@@ -220,12 +230,7 @@ BookDetailViewTags;
             case kEmailAndCiteSection:
                 rows = 1;
                 break;
-            default:
-                // This will be one of the libraries sections.
-                // TODO: When libraries info is available, in the book object, 
-                // check to see if the library corresponding to the section is 
-                // MIT. If so, there should be two rows: one for Request Item, 
-                // and one for number of copies.
+            default: // one of the holdings sections
                 rows = 1;
                 break;
         }
@@ -238,17 +243,21 @@ BookDetailViewTags;
 - (void)configureCell:(UITableViewCell *)cell 
     forRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    if (kEmailAndCiteSection == indexPath.section) 
-    {
-        // TODO: Mail accessory view.
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.textLabel.text = @"Email & Cite Item";
-    }
-    else
-    {
-        // This will be one of the libraries sections.
-        cell.textLabel.text = @"View Holdings";
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    switch (indexPath.section) {
+        case kEmailAndCiteSection:
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
+            cell.textLabel.text = @"Email & Cite Item";
+            break;
+        case kMITHoldingSection:
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+            cell.textLabel.text = @"Request Item";
+            break;
+        case kBLCHoldingSection:
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.textLabel.text = @"View Holdings";
+            break;
+        default:
+            break;
     }
 }
 
@@ -335,13 +344,19 @@ titleForHeaderInSection:(NSInteger)section
 {
     NSString *title = nil;
     switch (section) {
+        case kMITHoldingSection:
+            if (self.loadingStatus == BookLoadingStatusCompleted) {
+                return @"MIT Libraries";
+            }
+            break;
+        case kBLCHoldingSection:
+            if (self.loadingStatus == BookLoadingStatusCompleted) {
+                return @"Boston Library Consortium";
+            }
+            break;
         case kEmailAndCiteSection:
         case kInfoSection:
-            break;
         default:
-            // This will be one of the libraries sections.
-            // TODO: Return name of library corresponding to section.
-            title = @"MIT Libraries";
             break;
     }
     return title;

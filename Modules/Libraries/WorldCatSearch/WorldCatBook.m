@@ -12,11 +12,14 @@
 @synthesize address;
 @synthesize url;
 @synthesize library;
+@synthesize code;
+@synthesize count;
 
 - (void)dealloc {
     self.address = nil;
     self.url = nil;
     self.library = nil;
+    self.code = nil;
     [super dealloc];
 }
 
@@ -82,15 +85,20 @@
     self.summarys = [self arrayOfStringsFromDict:dict key:@"summary"];
     self.editions = [self arrayOfStringsFromDict:dict key:@"edition"];
     
-    NSMutableArray *holdingsArray = [NSMutableArray array];
+    NSMutableDictionary *tempHoldings = [NSMutableDictionary dictionary];
     for (NSDictionary *holdingDict in [dict objectForKey:@"holdings"]) {
         WorldCatHolding *holding = [[[WorldCatHolding alloc] init] autorelease];
         holding.address = [self stringFromDict:holdingDict key:@"address"];
         holding.library = [self stringFromDict:holdingDict key:@"library"];
         holding.url = [self stringFromDict:holdingDict key:@"url"];
-        [holdingsArray addObject:holding];
+        holding.code = [self stringFromDict:holdingDict key:@"code"];
+        id countObj = [holdingDict objectForKey:@"count"];
+        if ([countObj isKindOfClass:[NSNumber class]]) {
+            holding.count = [countObj unsignedIntegerValue];
+        }
+        [tempHoldings setObject:holding forKey:holding.code];
     }
-    self.holdings = holdingsArray;
+    self.holdings = tempHoldings;
 }
 
 - (NSArray *)arrayOfStringsFromDict:(NSDictionary *)dict key:(NSString *)key {
