@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+extern NSString * const MITLibrariesOCLCCode;
+
 @interface WorldCatHolding : NSObject {
 @private
 }

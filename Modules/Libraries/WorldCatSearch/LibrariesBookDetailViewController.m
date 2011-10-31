@@ -5,8 +5,7 @@
 #import "LibrariesModule.h"
 #import "Foundation+MITAdditions.h"
 #import "BookDetailTableViewCell.h"
-
-NSString * const MITLibrariesOCLCCode = @"MYG";
+#import "WorldCatHoldingsViewController.h"
 
 #define TITLE_ROW 0
 #define YEAR_AUTHOR_ROW 1
@@ -296,10 +295,16 @@ BookDetailViewTags;
             if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
                 [[UIApplication sharedApplication] openURL:url];
             }
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
             break;
         }
         case kBLCHoldingSection:
+        {
+            WorldCatHoldingsViewController *vc = [[[WorldCatHoldingsViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+            vc.book = self.book;
+            [self.navigationController pushViewController:vc animated:YES];
             break;
+        }
         default:
             break;
     }

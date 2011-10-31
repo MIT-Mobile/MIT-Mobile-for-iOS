@@ -1,5 +1,7 @@
 #import "WorldCatBook.h"
 
+NSString * const MITLibrariesOCLCCode = @"MYG";
+
 
 @interface WorldCatBook (Private)
 

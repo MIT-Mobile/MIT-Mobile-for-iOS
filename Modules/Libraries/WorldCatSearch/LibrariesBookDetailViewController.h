@@ -3,7 +3,6 @@
 #import "MITLoadingActivityView.h"
 #import <MessageUI/MessageUI.h>
 
-
 typedef enum {
     BookLoadingStatusPartial,
     BookLoadingStatusFailed,
