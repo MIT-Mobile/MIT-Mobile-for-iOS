@@ -209,6 +209,17 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 
 @implementation TextLibraryFormElement
 @synthesize textField;
+@synthesize keyboardType;
+
+- (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel 
+         required:(BOOL)required {
+    self = [super initWithKey:key displayLabel:displayLabel required:required];
+    if (self)
+    {
+        self.keyboardType = UIKeyboardTypeDefault;
+    }
+    return self;
+}
 
 - (void)dealloc {
     self.textField.delegate = nil;
@@ -223,6 +234,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     self.textField.font = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
     self.textField.placeholder = placeholderText(self.displayLabel, self.required);
     self.textField.inputAccessoryView = self.formViewController.formInputAccessoryView;
+    self.textField.keyboardType = self.keyboardType;
     return createTextInputTableCell(self.textField, 10, self.key);
 }
 

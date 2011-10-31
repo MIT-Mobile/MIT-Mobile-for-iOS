@@ -56,6 +56,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required);
 }
 
 @property (nonatomic, retain) UITextField *textField;
+@property (assign) UIKeyboardType keyboardType;
 
 @end
 
