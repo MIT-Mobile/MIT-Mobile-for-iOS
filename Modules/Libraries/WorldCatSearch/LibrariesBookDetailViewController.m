@@ -38,7 +38,6 @@ BookDetailViewTags;
 - (void)updateUI;
 - (void)configureCell:(UITableViewCell *)cell 
     forRowAtIndexPath:(NSIndexPath *)indexPath;
-//- (NSString *)infoHeaderHtml;
 
 @end
 
@@ -304,41 +303,7 @@ BookDetailViewTags;
         
     return cell;
 }
-/*
-- (UIView *)tableView:(UITableView *)tableView 
-viewForHeaderInSection:(NSInteger)section
-{
-    if (section == kEmailAndCiteSection)
-    {
-        UIWebView *webView = 
-        [[[UIWebView alloc] initWithFrame:
-          CGRectMake(HORIZONTAL_PADDING, VERTICAL_PADDING, 
-                     tableView.frame.size.width - 2 * HORIZONTAL_PADDING, 
-                     kWebViewHeight)] autorelease];
-        //                webView.delegate = self;      
-        // Make web view background transparent.
-        webView.backgroundColor = [UIColor clearColor];
-        webView.opaque = NO;
-        webView.tag = kWebViewTag;
-        
-        [webView 
-         loadHTMLString:[self infoHeaderHtml] baseURL:nil];
-        
-        // The web view is not wrapped in another view, it won't be 
-        // transparent.
-        UIView *wrapperView = 
-        [[[UIView alloc] initWithFrame:
-          CGRectMake(0, 0, tableView.frame.size.width, kWebViewHeight)] 
-         autorelease];
-        wrapperView.opaque = NO;
-        wrapperView.backgroundColor = [UIColor clearColor];
-        [wrapperView addSubview:webView];
-        
-        return wrapperView;        
-    }
-    return nil;
-}
-*/
+
 - (NSString *)tableView:(UITableView *)tableView 
 titleForHeaderInSection:(NSInteger)section
 {
@@ -361,75 +326,5 @@ titleForHeaderInSection:(NSInteger)section
     }
     return title;
 }
-/*
-- (CGFloat)tableView:(UITableView *)tableView 
-heightForHeaderInSection:(NSInteger)section
-{    
-    if (kEmailAndCiteSection == section)
-    {
-        return kWebViewHeight;
-    }
-    else
-    {
-        // This will be one of the libraries sections.
-        return 44.0f;
-    }
-}
-*/
-/*
-#pragma mark Web view stuff
-
-+ (NSString *)nonEmptyString:(NSString *)string
-{
-    if (!string)
-    {
-        return @"";
-    }
-    return string;
-}
-
-- (NSString *)infoHeaderHtml
-{
-    NSURL *baseURL = 
-    [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-    NSURL *fileURL = 
-    [NSURL URLWithString:@"libraries/book_detail.html" relativeToURL:baseURL];
-    NSError *error;
-    NSMutableString *target = 
-    [NSMutableString 
-     stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
-    if (!target) 
-    {
-        ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
-    }
-     
-    
-    [target 
-     replaceOccurrencesOfStrings:
-     [NSArray arrayWithObjects:
-      @"__TITLE__", @"__AUTHORS__", @"__FORMAT__", @"__SUMMARY__",
-      @"__PUBLISHER__", @"__DATE__", @"__EDITION__", @"__DESCRIPTION__", 
-      @"__ISBN__", nil]
-     withStrings:
-     [NSArray arrayWithObjects:
-      [[self class] nonEmptyString:self.book.title], 
-      [[self class] nonEmptyString:
-       [self.book.authors componentsJoinedByString:@", "]],
-      @"Book", 
-      [[self class] nonEmptyString:
-       [self.book.summarys componentsJoinedByString:@"; "]],
-      [[self class] nonEmptyString:
-       [self.book.publishers componentsJoinedByString:@", "]], 
-      @"Date",
-      [[self class] nonEmptyString:
-       [self.book.years componentsJoinedByString:@", "]], 
-      @"Description",
-      [[self class] nonEmptyString:[self.book isbn]], 
-      nil] 
-     options:NSLiteralSearch];
-    
-    return target;
-}
-*/
 
 @end
