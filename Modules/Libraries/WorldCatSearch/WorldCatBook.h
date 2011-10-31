@@ -32,6 +32,7 @@
 @property (nonatomic, retain) NSArray *lang;
 @property (nonatomic, retain) NSArray *subjects;
 @property (nonatomic, retain) NSArray *summarys;
+@property (nonatomic, retain) NSArray *editions;
 
 @property (nonatomic) BOOL parseFailure;
 
