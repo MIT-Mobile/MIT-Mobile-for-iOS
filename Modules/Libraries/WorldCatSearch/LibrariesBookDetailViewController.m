@@ -51,6 +51,7 @@ BookDetailViewTags;
     self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
         // Custom initialization
+        self.title = @"Book Detail";
     }
     return self;
 }
