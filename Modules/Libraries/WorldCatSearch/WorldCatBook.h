@@ -1,12 +1,16 @@
 #import <Foundation/Foundation.h>
 
+extern NSString * const MITLibrariesOCLCCode;
+
 @interface WorldCatHolding : NSObject {
 @private
 }
 
+@property (nonatomic, retain) NSString *code;
 @property (nonatomic, retain) NSString *address;
 @property (nonatomic, retain) NSString *library;
 @property (nonatomic, retain) NSString *url;
+@property (nonatomic) NSUInteger count;
 
 @end
 
@@ -26,9 +30,10 @@
 @property (nonatomic, retain) NSArray *isbns;
 
 // detail fields
+@property (nonatomic, retain) NSArray *formats;
 @property (nonatomic, retain) NSArray *addresses;
 @property (nonatomic, retain) NSArray *extents;
-@property (nonatomic, retain) NSArray *holdings;
+@property (nonatomic, retain) NSDictionary *holdings; // sort these by library title
 @property (nonatomic, retain) NSArray *lang;
 @property (nonatomic, retain) NSArray *subjects;
 @property (nonatomic, retain) NSArray *summarys;
