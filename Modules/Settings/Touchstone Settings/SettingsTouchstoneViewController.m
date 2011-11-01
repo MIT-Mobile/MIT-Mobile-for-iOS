@@ -23,7 +23,6 @@ static UIEdgeInsets textCellInsets = {.top = 5,
 @property (nonatomic,assign) UIButton *logoutButton;
 - (void)setupTableCells;
 - (IBAction)clearTouchstoneLogin:(id)sender;
-- (BOOL)isShibbolethCookie:(NSHTTPCookie*)cookie;
 
 - (void)save:(id)sender;
 - (void)cancel:(id)sender;
@@ -50,6 +49,7 @@ static UIEdgeInsets textCellInsets = {.top = 5,
     self = [super initWithNibName:nil
                            bundle:nil];
     if (self) {
+        
     }
     return self;
 }
@@ -131,9 +131,11 @@ static UIEdgeInsets textCellInsets = {.top = 5,
 {
     [super viewDidLoad];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+    self.title = @"Touchstone";
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                            target:self
                                                                                            action:@selector(save:)];
+    self.navigationItem.rightBarButtonItem.tag = NSIntegerMax;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                           target:self
                                                                                           action:@selector(cancel:)];
@@ -239,12 +241,6 @@ static UIEdgeInsets textCellInsets = {.top = 5,
     self.tableCells = cells;
 }
 
-- (BOOL)isShibbolethCookie:(NSHTTPCookie*)cookie
-{
-    NSString *name = [cookie name];
-    return ([name hasPrefix:@"_saml"] || [name hasPrefix:@"_shib"]);
-}
-
 - (void)save:(id)sender
 {
     NSString *username = self.usernameField.text;
@@ -254,7 +250,7 @@ static UIEdgeInsets textCellInsets = {.top = 5,
     [self.passwordField resignFirstResponder];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
-    if ([username length] && [password length])
+    if ([username length])
     {
         if (self.authenticationFailed)
         {
@@ -265,6 +261,11 @@ static UIEdgeInsets textCellInsets = {.top = 5,
                                                        otherButtonTitles:@"Save",nil] autorelease];
             [sheet showInView:self.view];
             self.navigationItem.rightBarButtonItem.enabled = YES;
+        }
+        else if ([password length] == 0)
+        {
+            [self saveWithUsername:username
+                          password:password];
         }
         else if (self.authOperation == nil)
         {
@@ -321,16 +322,16 @@ static UIEdgeInsets textCellInsets = {.top = 5,
 
 - (void)saveWithUsername:(NSString*)username password:(NSString*)password
 {
-    if ([username length] && [password length])
+    if ([username length])
     {
         MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, password);
     }
     else
     {
-        [MobileRequestOperation clearAuthenticatedSession];
         MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
     }
     
+    [MobileRequestOperation clearAuthenticatedSession];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -371,6 +372,16 @@ static UIEdgeInsets textCellInsets = {.top = 5,
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     self.authenticationFailed = NO;
+    
+    if (self.navigationItem.rightBarButtonItem.tag == NSIntegerMax)
+    {
+        UIBarButtonItem *item = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+                                                                               target:self
+                                                                               action:@selector(save:)] autorelease];
+        item.tag = 0;
+        [self.navigationItem setRightBarButtonItem:item
+                                          animated:YES];
+    }
     return YES;
 }
 
