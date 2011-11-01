@@ -2,11 +2,13 @@
 
 @interface BookDetailTableViewCell : UITableViewCell
 
-@property (nonatomic, retain) NSString *title;
-@property (nonatomic, retain) NSString *subtitle;
-@property (nonatomic, retain) NSString *separator;
-
 @property (nonatomic, retain) NSAttributedString *displayString;
+
++ (NSAttributedString *)displayStringWithTitle:(NSString *)title
+                                      subtitle:(NSString *)subtitle
+                                     separator:(NSString *)separator;
+
++ (CGSize)sizeForDisplayString:(NSAttributedString *)displayString tableView:(UITableView *)tableView;
 
 @end
 

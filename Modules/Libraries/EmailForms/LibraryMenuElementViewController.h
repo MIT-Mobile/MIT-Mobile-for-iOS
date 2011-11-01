@@ -8,4 +8,8 @@
 
 @property (nonatomic, retain)  MenuLibraryFormElement *menuElement;
 
+#pragma mark UI actions
+- (IBAction)cancelTapped:(id)sender;
+- (IBAction)doneTapped:(id)sender;
+
 @end

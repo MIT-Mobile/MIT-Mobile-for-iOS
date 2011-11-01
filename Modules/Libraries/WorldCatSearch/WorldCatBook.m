@@ -1,5 +1,7 @@
 #import "WorldCatBook.h"
 
+NSString * const MITLibrariesOCLCCode = @"MYG";
+
 
 @interface WorldCatBook (Private)
 
@@ -12,11 +14,14 @@
 @synthesize address;
 @synthesize url;
 @synthesize library;
+@synthesize code;
+@synthesize count;
 
 - (void)dealloc {
     self.address = nil;
     self.url = nil;
     self.library = nil;
+    self.code = nil;
     [super dealloc];
 }
 
@@ -31,12 +36,14 @@
 @synthesize years;
 @synthesize authors;
 
+@synthesize formats;
 @synthesize addresses;
 @synthesize extents;
 @synthesize holdings;
 @synthesize lang;
 @synthesize subjects;
 @synthesize summarys;
+@synthesize editions;
 
 @synthesize parseFailure;
 
@@ -64,6 +71,7 @@
     self.isbns = nil;
     
     // detail fields
+    self.formats = nil;
     self.addresses = nil;
     self.extents = nil;
     self.holdings = nil;
@@ -74,21 +82,28 @@
 }
 
 - (void)updateDetailsWithDictionary:(NSDictionary *)dict {
+    self.formats = [self arrayOfStringsFromDict:dict key:@"format"];
     self.addresses = [self arrayOfStringsFromDict:dict key:@"address"];
     self.extents = [self arrayOfStringsFromDict:dict key:@"extent"];
     self.lang = [self arrayOfStringsFromDict:dict key:@"lang"];
     self.subjects = [self arrayOfStringsFromDict:dict key:@"subject"];
     self.summarys = [self arrayOfStringsFromDict:dict key:@"summary"];
+    self.editions = [self arrayOfStringsFromDict:dict key:@"edition"];
     
-    NSMutableArray *holdingsArray = [NSMutableArray array];
+    NSMutableDictionary *tempHoldings = [NSMutableDictionary dictionary];
     for (NSDictionary *holdingDict in [dict objectForKey:@"holdings"]) {
         WorldCatHolding *holding = [[[WorldCatHolding alloc] init] autorelease];
         holding.address = [self stringFromDict:holdingDict key:@"address"];
         holding.library = [self stringFromDict:holdingDict key:@"library"];
         holding.url = [self stringFromDict:holdingDict key:@"url"];
-        [holdingsArray addObject:holding];
+        holding.code = [self stringFromDict:holdingDict key:@"code"];
+        id countObj = [holdingDict objectForKey:@"count"];
+        if ([countObj isKindOfClass:[NSNumber class]]) {
+            holding.count = [countObj unsignedIntegerValue];
+        }
+        [tempHoldings setObject:holding forKey:holding.code];
     }
-    self.holdings = holdingsArray;
+    self.holdings = tempHoldings;
 }
 
 - (NSArray *)arrayOfStringsFromDict:(NSDictionary *)dict key:(NSString *)key {

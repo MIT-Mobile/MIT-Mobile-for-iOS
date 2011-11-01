@@ -1,9 +1,11 @@
 #import "BookDetailTableViewCell.h"
 #import <CoreText/CoreText.h>
 
+#define BOOK_DETAIL_CELL_MARGIN 10
+
 @implementation BookDetailTableViewCell
 
-@synthesize title, separator, subtitle, displayString;
+@synthesize displayString;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -11,7 +13,6 @@
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
-        self.separator = @": ";
     }
     return self;
 }
@@ -23,34 +24,56 @@
     // Configure the view for the selected state
 }
 
-- (void)drawRect:(CGRect)rect
++ (CGSize)sizeForDisplayString:(NSAttributedString *)displayString tableView:(UITableView *)tableView
 {
-    if (!self.displayString) {
-        NSString *rawString = [NSString stringWithFormat:@"%@%@%@", self.title, self.separator, self.subtitle];
-        NSUInteger titleLength = 0;
-        if (self.title) {
-            titleLength += self.title.length;
-        }
-        if (self.separator) {
-            titleLength += self.separator.length;
-        }
-        
-        UIFont *font = [UIFont systemFontOfSize:15];
-        CTFontRef ctFont = CTFontCreateWithName((CFStringRef)font.fontName, font.pointSize, NULL);
-        
-        UIFont *boldFont = [UIFont boldSystemFontOfSize:15];
-        CTFontRef ctBoldFont = CTFontCreateWithName((CFStringRef)boldFont.fontName, boldFont.pointSize, NULL);
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)displayString);
+    
+    CGSize limitSize = CGSizeMake(CGRectGetWidth(tableView.bounds) - BOOK_DETAIL_CELL_MARGIN * 2, 2009);
+    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, 
+                                                                  CFRangeMake(0, 0),
+                                                                  NULL,
+                                                                  limitSize, 
+                                                                  NULL);
+    CFRelease(framesetter);
 
-        NSMutableAttributedString *mutableString = [[[NSMutableAttributedString alloc] initWithString:rawString] autorelease];
-        [mutableString addAttribute:(NSString *)kCTFontAttributeName value:(id)ctBoldFont range:NSMakeRange(0, titleLength)];
-        [mutableString addAttribute:(NSString *)kCTFontAttributeName value:(id)ctFont range:NSMakeRange(titleLength, rawString.length - titleLength)];
+    return fitSize;
+}
 
-        CFRelease(ctFont);
-        CFRelease(ctBoldFont);
-        
-        self.displayString = [[[NSAttributedString alloc] initWithAttributedString:mutableString] autorelease];
++ (NSAttributedString *)displayStringWithTitle:(NSString *)title
+                                      subtitle:(NSString *)subtitle
+                                     separator:(NSString *)separator
+{
+    if (!separator) {
+        separator = @"";
+    }
+    if (!title) {
+        title = @"";
+    }
+    if (!subtitle) {
+        subtitle = @"";
     }
     
+    NSString *rawString = [NSString stringWithFormat:@"%@%@%@", title, separator, subtitle];
+    NSUInteger titleLength = title.length + separator.length;
+    
+    UIFont *font = [UIFont systemFontOfSize:15];
+    CTFontRef ctFont = CTFontCreateWithName((CFStringRef)font.fontName, font.pointSize, NULL);
+    
+    UIFont *boldFont = [UIFont boldSystemFontOfSize:15];
+    CTFontRef ctBoldFont = CTFontCreateWithName((CFStringRef)boldFont.fontName, boldFont.pointSize, NULL);
+    
+    NSMutableAttributedString *mutableString = [[[NSMutableAttributedString alloc] initWithString:rawString] autorelease];
+    [mutableString addAttribute:(NSString *)kCTFontAttributeName value:(id)ctBoldFont range:NSMakeRange(0, titleLength)];
+    [mutableString addAttribute:(NSString *)kCTFontAttributeName value:(id)ctFont range:NSMakeRange(titleLength, rawString.length - titleLength)];
+    
+    CFRelease(ctFont);
+    CFRelease(ctBoldFont);
+    
+    return [[[NSAttributedString alloc] initWithAttributedString:mutableString] autorelease];
+}
+
+- (void)drawRect:(CGRect)rect
+{
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGContextSetTextMatrix(context, CGAffineTransformIdentity);
@@ -60,7 +83,9 @@
     CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.displayString);
     
     // add margins to the outside rect
-    CGRect innerRect = CGRectMake(10, 0, CGRectGetWidth(rect) - 20, CGRectGetHeight(rect));
+    CGRect innerRect = CGRectMake(BOOK_DETAIL_CELL_MARGIN, 0,
+                                  CGRectGetWidth(rect) - BOOK_DETAIL_CELL_MARGIN * 2,
+                                  CGRectGetHeight(rect));
     
     CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, 
                                                                   CFRangeMake(0, 0),
@@ -90,9 +115,6 @@
 
 - (void)dealloc
 {
-    self.title = nil;
-    self.subtitle = nil;
-    self.separator = nil;
     self.displayString = nil;
     [super dealloc];
 }

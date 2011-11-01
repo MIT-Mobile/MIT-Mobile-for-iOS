@@ -12,7 +12,6 @@ typedef enum
     // PHONE_ROW replaces LOADING_STATUS_ROW after the load is done.
     PHONE_ROW = 1, 
     LOCATION_ROW,
-    TODAYS_HOURS_ROW,
     CONTENT_ROW
 }
 LocationsHoursTableRows;
@@ -119,7 +118,7 @@ LocationsHoursTableRows;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (self.librariesDetailStatus == LibrariesDetailStatusLoaded) {
-        return 5; // title, phone, location, today's hours, content
+        return 4; // title, phone, location, content
     } else {
         return 2; // title, loading indicator
     }
@@ -161,13 +160,7 @@ LocationsHoursTableRows;
                 cell = [self defaultRowWithTable:tableView];
                 cell.textLabel.text = [NSString stringWithFormat:@"Room %@", self.library.location];
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
-                cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-            } else if (indexPath.row == TODAYS_HOURS_ROW) {
-                cell = [self defaultRowWithTable:tableView];
-                cell.textLabel.text = 
-                [NSString stringWithFormat:@"Today's Hours: %@", 
-                 self.library.hoursToday];
-                cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+                cell.selectionStyle = UITableViewCellSelectionStyleBlue;                
             } else if (indexPath.row == CONTENT_ROW) {
                 NSString *cellIdentifier = @"contentRow";
                 cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
@@ -292,8 +285,6 @@ LocationsHoursTableRows;
     NSArray *nextTerms = [[self.library.terms filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder > %d", 0]] 
                           sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"termSortOrder" ascending:YES]]];
     
-    
-    
     NSString *scheduleHtml = [self termScheduleHtml:term defaultTitle:@""];
     for (LibrariesLocationsHoursTerm *aTerm in previousTerms) {
         scheduleHtml = [scheduleHtml stringByAppendingFormat:@"<br />%@", [self termScheduleHtml:aTerm defaultTitle:@"Previous Term"]];
@@ -302,8 +293,12 @@ LocationsHoursTableRows;
         scheduleHtml = [scheduleHtml stringByAppendingFormat:@"<br />%@", [self termScheduleHtml:aTerm defaultTitle:@"Next Term"]];
     }
     
-    [target replaceOccurrencesOfStrings:[NSArray arrayWithObjects:@"__SCHEDULE_HTML__", nil]
-                            withStrings:[NSArray arrayWithObjects:scheduleHtml, nil] options:NSLiteralSearch];
+    [target 
+     replaceOccurrencesOfStrings:
+     [NSArray arrayWithObjects:@"__HOURS_HTML__", @"__SCHEDULE_HTML__", nil]
+     withStrings:
+     [NSArray arrayWithObjects:self.library.hoursToday, scheduleHtml, nil] 
+     options:NSLiteralSearch];
     return target;        
 }
 @end

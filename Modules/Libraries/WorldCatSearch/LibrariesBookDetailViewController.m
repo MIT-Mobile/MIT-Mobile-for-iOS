@@ -5,7 +5,7 @@
 #import "LibrariesModule.h"
 #import "Foundation+MITAdditions.h"
 #import "BookDetailTableViewCell.h"
-
+#import "WorldCatHoldingsViewController.h"
 
 #define TITLE_ROW 0
 #define YEAR_AUTHOR_ROW 1
@@ -17,6 +17,8 @@ typedef enum
 {
     kInfoSection = 0,
     kEmailAndCiteSection = 1,
+    kMITHoldingSection = 2,
+    kBLCHoldingSection = 3
 }
 BookDetailSections;
 
@@ -35,7 +37,6 @@ BookDetailViewTags;
 - (void)updateUI;
 - (void)configureCell:(UITableViewCell *)cell 
     forRowAtIndexPath:(NSIndexPath *)indexPath;
-//- (NSString *)infoHeaderHtml;
 
 @end
 
@@ -100,6 +101,24 @@ BookDetailViewTags;
     // e.g. self.myOutlet = nil;
 }
 
+- (NSString *)subtitleDisplayStringHTML:(BOOL)isHTML
+{
+    NSString *result = nil;
+    if (self.book) {
+        NSMutableArray *subtitleParts = [NSMutableArray array];
+        if (self.book.authors.count) {
+            [subtitleParts addObject:[self.book.authors componentsJoinedByString:@", "]];
+        }
+        if (self.book.formats.count) {
+            [subtitleParts addObject:[NSString stringWithFormat:@"Format: %@", [self.book.formats componentsJoinedByString:@"\n"]]];
+        }
+        
+        NSString *separator = isHTML ? @"<br/>" : @"\n";
+        result = [subtitleParts componentsJoinedByString:separator];
+    }
+    return result;
+}
+
 - (void)loadBookDetails {
     NSDictionary *parameters = [NSDictionary dictionaryWithObject:self.book.identifier forKey:@"id"];
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"detail" parameters:parameters] autorelease];
@@ -118,56 +137,55 @@ BookDetailViewTags;
             
             NSMutableArray *bookAttribs = [NSMutableArray array];
             
+            // title, author, format
             NSString *bookTitle = self.book.title ? self.book.title : @"";
+            NSString *bookSubtitle = [self subtitleDisplayStringHTML:NO];
+            
+            [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:bookTitle
+                                                                          subtitle:bookSubtitle
+                                                                         separator:@"\n"]];
 
-            NSMutableArray *subtitleParts = [NSMutableArray array];
-            if (self.book.authors.count) {
-                [subtitleParts addObject:[self.book.authors componentsJoinedByString:@", "]];
-            }
-            // TODO: figure out where this should come from
-            [subtitleParts addObject:@"Format: Book"];
-            NSString *bookSubtitle = [subtitleParts componentsJoinedByString:@"\n"];
-            
-            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                    bookTitle, @"title",
-                                    bookSubtitle, @"subtitle",
-                                    @"\n", @"separator", nil]];
-            
+            // summary
             if (self.book.summarys.count) {
-                [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                        @"Summary", @"title",
-                                        [self.book.summarys componentsJoinedByString:@"; "], @"subtitle", nil]];
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Summary"
+                                                                              subtitle:[self.book.summarys componentsJoinedByString:@"; "]
+                                                                             separator:@": "]];
             }
+
+            // publisher
             if (self.book.publishers.count) {
-                [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                        @"Publisher", @"title",
-                                        [self.book.publishers componentsJoinedByString:@"; "], @"subtitle", nil]];
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Publisher"
+                                                                              subtitle:[self.book.publishers componentsJoinedByString:@"; "]
+                                                                             separator:@": "]];
             }
-            
-            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"Date", @"title",
-                                    @"Date", @"subtitle", nil]];
-            
+
+            // date
             if (self.book.years.count) {
-                [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                        @"Edition", @"title",
-                                        [self.book.years componentsJoinedByString:@", "], @"subtitle", nil]];
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Date"
+                                                                              subtitle:[self.book.years componentsJoinedByString:@", "]
+                                                                             separator:@": "]];
             }
             
-            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"Description", @"title",
-                                    @"A really, really, really really, really really really,"
-                                    "really really really really, really really really really really,"
-                                    "really really really really really really, really really really"
-                                    "really really really really, really really really really really"
-                                    "really really really, really really really really really really"
-                                    "really really, really really long placeholder string", @"subtitle", nil]];
-            
-            NSString *isbn = [self.book isbn];
-            [bookAttribs addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"ISBN", @"title",
-                                    (isbn ? isbn : @""), @"subtitle", nil]];
-            
+            // edition
+            if (self.book.editions.count) {
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Edition"
+                                                                              subtitle:[self.book.editions componentsJoinedByString:@", "]
+                                                                             separator:@": "]];
+            }
+
+            // description
+            if (self.book.extents.count) {
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Description"
+                                                                              subtitle:[self.book.extents componentsJoinedByString:@", "]
+                                                                             separator:@": "]];
+            }
+
+            // isbn
+            if (self.book.isbns.count) {
+                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"ISBN"
+                                                                              subtitle:[self.book.isbns componentsJoinedByString:@" : "]
+                                                                             separator:@": "]];
+            }
             
             self.bookInfo = [NSArray arrayWithArray:bookAttribs];
 
@@ -197,10 +215,17 @@ BookDetailViewTags;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSInteger sections = 3;
-    // TODO: When available libraries are included in the book object, use a 
-    // section for each of them.
-    sections++;
+    NSInteger sections = 2; // one for book info, one for email & cite
+    if (self.loadingStatus == BookLoadingStatusCompleted) {
+        NSInteger numHoldings = self.book.holdings.count;
+        if ([self.book.holdings objectForKey:MITLibrariesOCLCCode]) {
+            sections++; // one section for MIT holdings
+            numHoldings--;
+        }
+        if (numHoldings > 0) {
+            sections++; // one section for all other holdings
+        }
+    }
     return sections;
 }
 
@@ -215,12 +240,7 @@ BookDetailViewTags;
             case kEmailAndCiteSection:
                 rows = 1;
                 break;
-            default:
-                // This will be one of the libraries sections.
-                // TODO: When libraries info is available, in the book object, 
-                // check to see if the library corresponding to the section is 
-                // MIT. If so, there should be two rows: one for Request Item, 
-                // and one for number of copies.
+            default: // one of the holdings sections
                 rows = 1;
                 break;
         }
@@ -233,25 +253,68 @@ BookDetailViewTags;
 - (void)configureCell:(UITableViewCell *)cell 
     forRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    if (kEmailAndCiteSection == indexPath.section) 
-    {
-        // TODO: Mail accessory view.
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.textLabel.text = @"Email & Cite Item";
+    switch (indexPath.section) {
+        case kEmailAndCiteSection:
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
+            cell.textLabel.text = @"Email & Cite Item";
+            break;
+        case kMITHoldingSection:
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+            cell.textLabel.text = @"Request Item";
+            break;
+        case kBLCHoldingSection:
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.textLabel.text = @"View Holdings";
+            break;
+        default:
+            break;
     }
-    else
-    {
-        // This will be one of the libraries sections.
-        cell.textLabel.text = @"View Holdings";
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch (indexPath.section) {
+        case kEmailAndCiteSection:
+            if ([MFMailComposeViewController canSendMail]) {
+                NSString *bodyString = [NSString stringWithFormat:
+                                        @"<strong>%@</strong><br/>%@",
+                                        self.book.title,
+                                        [self subtitleDisplayStringHTML:YES]];
+                
+                MFMailComposeViewController *mailView = [[[MFMailComposeViewController alloc] init] autorelease];
+                [mailView setMailComposeDelegate:self];
+                [mailView setSubject:self.book.title];
+                [mailView setMessageBody:bodyString isHTML:YES];
+                [self presentModalViewController:mailView animated:YES]; 
+            }
+            break;
+        case kMITHoldingSection:
+        {
+            WorldCatHolding *holding = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+            NSURL *url = [NSURL URLWithString:holding.url];
+            if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
+                [[UIApplication sharedApplication] openURL:url];
+            }
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            break;
+        }
+        case kBLCHoldingSection:
+        {
+            WorldCatHoldingsViewController *vc = [[[WorldCatHoldingsViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+            vc.book = self.book;
+            [self.navigationController pushViewController:vc animated:YES];
+            break;
+        }
+        default:
+            break;
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == kInfoSection) {
-        // TODO
-        return 77;
+        NSAttributedString *displayString = [self.bookInfo objectAtIndex:indexPath.row];
+        return [BookDetailTableViewCell sizeForDisplayString:displayString tableView:tableView].height + 8;
     }
     return tableView.rowHeight;
 }
@@ -273,14 +336,9 @@ BookDetailViewTags;
     }
 
     if (indexPath.section == kInfoSection) {
-        NSDictionary *currentBookInfo = [self.bookInfo objectAtIndex:indexPath.row];
+        NSAttributedString *displayString = [self.bookInfo objectAtIndex:indexPath.row];
         BookDetailTableViewCell *bookCell = (BookDetailTableViewCell *)cell;
-        bookCell.title = [currentBookInfo objectForKey:@"title"];
-        bookCell.subtitle = [currentBookInfo objectForKey:@"subtitle"];
-        NSString *sep = [currentBookInfo objectForKey:@"separator"];
-        if (sep) {
-            bookCell.separator = sep;
-        }
+        bookCell.displayString = displayString;
     } else {
         LibrariesBorderedTableViewCell *borderCell = (LibrariesBorderedTableViewCell *)cell;
         if (indexPath.row == 0) {
@@ -295,126 +353,35 @@ BookDetailViewTags;
         
     return cell;
 }
-/*
-- (UIView *)tableView:(UITableView *)tableView 
-viewForHeaderInSection:(NSInteger)section
-{
-    if (section == kEmailAndCiteSection)
-    {
-        UIWebView *webView = 
-        [[[UIWebView alloc] initWithFrame:
-          CGRectMake(HORIZONTAL_PADDING, VERTICAL_PADDING, 
-                     tableView.frame.size.width - 2 * HORIZONTAL_PADDING, 
-                     kWebViewHeight)] autorelease];
-        //                webView.delegate = self;      
-        // Make web view background transparent.
-        webView.backgroundColor = [UIColor clearColor];
-        webView.opaque = NO;
-        webView.tag = kWebViewTag;
-        
-        [webView 
-         loadHTMLString:[self infoHeaderHtml] baseURL:nil];
-        
-        // The web view is not wrapped in another view, it won't be 
-        // transparent.
-        UIView *wrapperView = 
-        [[[UIView alloc] initWithFrame:
-          CGRectMake(0, 0, tableView.frame.size.width, kWebViewHeight)] 
-         autorelease];
-        wrapperView.opaque = NO;
-        wrapperView.backgroundColor = [UIColor clearColor];
-        [wrapperView addSubview:webView];
-        
-        return wrapperView;        
-    }
-    return nil;
-}
-*/
+
 - (NSString *)tableView:(UITableView *)tableView 
 titleForHeaderInSection:(NSInteger)section
 {
     NSString *title = nil;
     switch (section) {
+        case kMITHoldingSection:
+            if (self.loadingStatus == BookLoadingStatusCompleted) {
+                return @"MIT Libraries";
+            }
+            break;
+        case kBLCHoldingSection:
+            if (self.loadingStatus == BookLoadingStatusCompleted) {
+                return @"Boston Library Consortium";
+            }
+            break;
         case kEmailAndCiteSection:
         case kInfoSection:
-            break;
         default:
-            // This will be one of the libraries sections.
-            // TODO: Return name of library corresponding to section.
-            title = @"MIT Libraries";
             break;
     }
     return title;
 }
-/*
-- (CGFloat)tableView:(UITableView *)tableView 
-heightForHeaderInSection:(NSInteger)section
-{    
-    if (kEmailAndCiteSection == section)
-    {
-        return kWebViewHeight;
-    }
-    else
-    {
-        // This will be one of the libraries sections.
-        return 44.0f;
-    }
-}
-*/
-/*
-#pragma mark Web view stuff
 
-+ (NSString *)nonEmptyString:(NSString *)string
+- (void)mailComposeController:(MFMailComposeViewController*)controller
+          didFinishWithResult:(MFMailComposeResult)result
+                        error:(NSError*)error 
 {
-    if (!string)
-    {
-        return @"";
-    }
-    return string;
+	[self dismissModalViewControllerAnimated:YES];
 }
-
-- (NSString *)infoHeaderHtml
-{
-    NSURL *baseURL = 
-    [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-    NSURL *fileURL = 
-    [NSURL URLWithString:@"libraries/book_detail.html" relativeToURL:baseURL];
-    NSError *error;
-    NSMutableString *target = 
-    [NSMutableString 
-     stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
-    if (!target) 
-    {
-        ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
-    }
-     
-    
-    [target 
-     replaceOccurrencesOfStrings:
-     [NSArray arrayWithObjects:
-      @"__TITLE__", @"__AUTHORS__", @"__FORMAT__", @"__SUMMARY__",
-      @"__PUBLISHER__", @"__DATE__", @"__EDITION__", @"__DESCRIPTION__", 
-      @"__ISBN__", nil]
-     withStrings:
-     [NSArray arrayWithObjects:
-      [[self class] nonEmptyString:self.book.title], 
-      [[self class] nonEmptyString:
-       [self.book.authors componentsJoinedByString:@", "]],
-      @"Book", 
-      [[self class] nonEmptyString:
-       [self.book.summarys componentsJoinedByString:@"; "]],
-      [[self class] nonEmptyString:
-       [self.book.publishers componentsJoinedByString:@", "]], 
-      @"Date",
-      [[self class] nonEmptyString:
-       [self.book.years componentsJoinedByString:@", "]], 
-      @"Description",
-      [[self class] nonEmptyString:[self.book isbn]], 
-      nil] 
-     options:NSLiteralSearch];
-    
-    return target;
-}
-*/
 
 @end

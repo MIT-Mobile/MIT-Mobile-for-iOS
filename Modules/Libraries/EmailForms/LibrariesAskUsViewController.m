@@ -25,6 +25,13 @@
 @implementation LibrariesAskUsViewController
 
 - (NSArray *)formGroups {
+    
+    TextLibraryFormElement *phoneElement = 
+    [[[TextLibraryFormElement alloc] 
+      initWithKey:@"phone" displayLabel:@"Phone Number" required:NO] 
+     autorelease];
+    phoneElement.keyboardType = UIKeyboardTypePhonePad;
+    
     return [NSArray arrayWithObjects:
         [LibraryFormElementGroup groupForName:@"Question" elements:[NSArray arrayWithObjects:
             [TopicsMenuLibraryFormElement formElementWithDelegate:self],
@@ -58,8 +65,7 @@
          [LibraryFormElementGroup groupForName:@"PersonalInfo" elements:[NSArray arrayWithObjects:
             [self statusMenuFormElementWithRequired:YES],            
             [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Your department" required:YES] autorelease],
-            [[[TextLibraryFormElement alloc] initWithKey:@"phone" displayLabel:@"Phone Number" required:NO] autorelease],
-            
+            phoneElement,
             nil]],
         nil];
 }
