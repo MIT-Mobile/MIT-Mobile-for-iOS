@@ -351,34 +351,16 @@ enum {
                     cell = [tableView dequeueReusableCellWithIdentifier:TouchstoneUsernameCellIdentifier];
                     if (cell == nil)
                     {
-                        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
+                        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                       reuseIdentifier:CellIdentifier] autorelease];
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                         cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
                         cell.selectionStyle = UITableViewCellSelectionStyleNone;
                         
                         cell.textLabel.backgroundColor = [UIColor clearColor];
-                        
-                        cell.detailTextLabel.backgroundColor = [UIColor clearColor];
-                        cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
-                        cell.detailTextLabel.minimumFontSize = 10.0;
                     }
                     
-                    cell.textLabel.text = @"User";
-                    
-                    NSString *touchstoneUsername = [SettingsTouchstoneViewController touchstoneUsername];
-                    if ([touchstoneUsername length])
-                    {
-                        cell.detailTextLabel.textColor = [UIColor colorWithRed:0.22
-                                                                         green:0.33
-                                                                          blue:0.53
-                                                                         alpha:1.0];
-                        cell.detailTextLabel.text = touchstoneUsername;
-                    }
-                    else
-                    {
-                        cell.detailTextLabel.text = @"username or email";
-                        cell.detailTextLabel.textColor = [UIColor grayColor];
-                    }
+                    cell.textLabel.text = @"Touchstone Settings";
                     break;
                 }
             }
