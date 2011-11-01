@@ -810,7 +810,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
             NSDictionary *resultsDict = [jsonDict objectForKey:@"results"];
             NSString *text = 
             [NSString 
-             stringWithFormat:@"%@\n\nYou should receive a reply at %@.", 
+             stringWithFormat:@"%@\n\nYou will be contacted at %@.", 
              [resultsDict objectForKey:@"thank_you_text"], 
              [resultsDict objectForKey:@"email"]];
             
