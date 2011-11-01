@@ -18,7 +18,6 @@ typedef enum {
     MobileRequestStateOK = 0,
     MobileRequestStateWAYF,
     MobileRequestStateIDP,
-    MobileRequestStateAuth,
     MobileRequestStateAuthOK,
     MobileRequestStateCanceled,
     MobileRequestStateAuthError
@@ -112,9 +111,6 @@ typedef enum {
             
         case MobileRequestStateIDP:
             return @"MobileRequestStateIDP";
-            
-        case MobileRequestStateAuth:
-            return @"MobileRequestStateAuth";
             
         case MobileRequestStateAuthOK:
             return @"MobileRequestStateAuthOK";
@@ -526,6 +522,10 @@ typedef enum {
             ELog(@"%@",errorString);
         }
         
+        DLog(@"Transition: '%@' -> '%@'",
+             [MobileRequestOperation descriptionForState:prevState],
+             [MobileRequestOperation descriptionForState:state]);
+        
         NSMutableURLRequest *mutableRequest = [request mutableCopy];
         mutableRequest.timeoutInterval = 10.0;
         self.activeRequest = mutableRequest;
@@ -676,94 +676,98 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
             
         case MobileRequestStateIDP:
         {
-            TouchstoneAuthResponse *tsResponse = [[[TouchstoneAuthResponse alloc] initWithResponseData:self.requestData] autorelease];
-            if (tsResponse.error) {
-                [self connection:connection
-                didFailWithError:tsResponse.error];
-            } else {
-                NSString *tsUsername = [self.touchstoneUser stringByReplacingOccurrencesOfString:@"@mit.edu"
-                                                                                      withString:@""
-                                                                                         options:NSCaseInsensitiveSearch
-                                                                                           range:NSMakeRange(0, [self.touchstoneUser length])];
-
-                NSString *body = [NSString stringWithFormat:@"%@=%@&%@=%@",
-                                  [@"j_username" urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                                  [tsUsername urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
-                                  [@"j_password" urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                                  [self.touchstonePassword urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
-                                  
-                DLog(@"Got POST URL fragment: %@", tsResponse.postURLPath);
-                NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:tsResponse.postURLPath
-                                                                                              relativeToURL:[self.activeRequest URL]]];
-                [wayfRequest setHTTPMethod:@"POST"];
-                [wayfRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
-                [wayfRequest setValue:@"application/x-www-form-urlencoded"
-                   forHTTPHeaderField:@"Content-Type"];
-                
-                [self transitionToState:MobileRequestStateAuth
-                        willSendRequest:wayfRequest];
-            }
-            break;
-        }
-        
+            NSString *method = [[[[self.activeRequest URL] pathComponents] lastObject] lowercaseString];
             
-        case MobileRequestStateAuth:
-        {
-            SAMLResponse *samlResponse = [[[SAMLResponse alloc] initWithResponseData:self.requestData] autorelease];
-            if (samlResponse.error) {
-                if (samlResponse.error.code == MobileWebInvalidLoginError) {
-                    if (self.presetCredentials)
-                    {
-                    	NSError *error = [NSError errorWithDomain:NSURLErrorDomain
-                                                             code:NSURLErrorUserAuthenticationRequired
-                                                         userInfo:nil];
-                        [self connection:connection
-                        didFailWithError:error];
-                    }
-                    else
-                    {
-                        dispatch_async(dispatch_get_main_queue(), ^(void) {
-                            if (self.loginViewController == nil)
-                            {
-                                [self displayLoginPrompt];
-                            } else {
-                                [self.loginViewController hideActivityView];
-                                [self.loginViewController showError:@"Please enter a valid username and password"];
-                            }
-                        });
-                        
-                        self.touchstonePassword = nil;
-                    }
-                } else {
+            if ([method isEqualToString:@"userpassword"] || [method isEqualToString:@"mit"])
+            {
+                TouchstoneAuthResponse *tsResponse = [[[TouchstoneAuthResponse alloc] initWithResponseData:self.requestData] autorelease];
+                if (tsResponse.error) {
                     [self connection:connection
-                    didFailWithError:samlResponse.error];
+                    didFailWithError:tsResponse.error];
                 }
-            } else {
-                self.touchstoneUser = nil;
-                self.touchstonePassword = nil;
-                NSMutableString *body = [NSMutableString stringWithFormat:@"%@=%@",
-                                         [@"SAMLResponse" urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                                         [samlResponse.samlResponse urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
-                
-                if (samlResponse.relayState) {
-                    [body appendFormat:@"&%@=%@",
-                     [@"RelayState" urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                     [samlResponse.relayState urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                else
+                {
+                    NSString *tsUsername = [self.touchstoneUser stringByReplacingOccurrencesOfString:@"@mit.edu"
+                                                                                          withString:@""
+                                                                                             options:NSCaseInsensitiveSearch
+                                                                                               range:NSMakeRange(0, [self.touchstoneUser length])];
+
+                    NSString *body = [NSString stringWithFormat:@"%@=%@&%@=%@",
+                                      [@"j_username" urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                                      [tsUsername urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
+                                      [@"j_password" urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                                      [self.touchstonePassword urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                                      
+                    DLog(@"Got POST URL fragment: %@", tsResponse.postURLPath);
+                    NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:tsResponse.postURLPath
+                                                                                                  relativeToURL:[self.activeRequest URL]]];
+                    [wayfRequest setHTTPMethod:@"POST"];
+                    [wayfRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+                    [wayfRequest setValue:@"application/x-www-form-urlencoded"
+                       forHTTPHeaderField:@"Content-Type"];
+                    
+                    [self transitionToState:MobileRequestStateIDP
+                            willSendRequest:wayfRequest];
+                }
+            }
+            else if ([method isEqualToString:@"sso"])
+            {
+                SAMLResponse *samlResponse = [[[SAMLResponse alloc] initWithResponseData:self.requestData] autorelease];
+                if (samlResponse.error) {
+                    if (samlResponse.error.code == MobileWebInvalidLoginError) {
+                        if (self.presetCredentials)
+                        {
+                            NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                                 code:NSURLErrorUserAuthenticationRequired
+                                                             userInfo:nil];
+                            [self connection:connection
+                            didFailWithError:error];
+                        }
+                        else
+                        {
+                            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                if (self.loginViewController == nil)
+                                {
+                                    [self displayLoginPrompt];
+                                } else {
+                                    [self.loginViewController hideActivityView];
+                                    [self.loginViewController showError:@"Please enter a valid username and password"];
+                                }
+                            });
+                            
+                            self.touchstonePassword = nil;
+                        }
+                    } else {
+                        [self connection:connection
+                        didFailWithError:samlResponse.error];
+                    }
                 } else {
-                    [body appendFormat:@"&%@=%@",
-                     [@"TARGET" urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                     [samlResponse.target urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                    self.touchstoneUser = nil;
+                    self.touchstonePassword = nil;
+                    NSMutableString *body = [NSMutableString stringWithFormat:@"%@=%@",
+                                             [@"SAMLResponse" urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                                             [samlResponse.samlResponse urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                    
+                    if (samlResponse.relayState) {
+                        [body appendFormat:@"&%@=%@",
+                         [@"RelayState" urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                         [samlResponse.relayState urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                    } else {
+                        [body appendFormat:@"&%@=%@",
+                         [@"TARGET" urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                         [samlResponse.target urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                    }
+                    
+                    
+                    NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:samlResponse.postURL];
+                    [wayfRequest setHTTPMethod:@"POST"];
+                    [wayfRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
+                    [wayfRequest setValue:@"application/x-www-form-urlencoded"
+                       forHTTPHeaderField:@"Content-Type"];
+                    
+                    [self transitionToState:MobileRequestStateAuthOK
+                            willSendRequest:wayfRequest];
                 }
-                
-                
-                NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:samlResponse.postURL];
-                [wayfRequest setHTTPMethod:@"POST"];
-                [wayfRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
-                [wayfRequest setValue:@"application/x-www-form-urlencoded"
-                   forHTTPHeaderField:@"Content-Type"];
-                
-                [self transitionToState:MobileRequestStateAuthOK
-                        willSendRequest:wayfRequest];
             }
             break;
         }
