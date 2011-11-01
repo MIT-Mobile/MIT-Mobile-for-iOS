@@ -88,7 +88,6 @@ BOOL MobileKeychainSetItem(NSString *itemIdentifier, NSString *username, NSStrin
         [searchDictionary setObject:(id)[itemIdentifier dataUsingEncoding:NSUTF8StringEncoding]
                              forKey:(id)kSecAttrGeneric];
         
-        NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
         if ([username length] > 0) {
             [attributes setObject:(id)username
                            forKey:(id)kSecAttrAccount];
