@@ -744,6 +744,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 } else {
                     self.touchstoneUser = nil;
                     self.touchstonePassword = nil;
+                    gSecureStateTracker.authenticationBlock = nil;
                     NSMutableString *body = [NSMutableString stringWithFormat:@"%@=%@",
                                              [@"SAMLResponse" urlEncodeUsingEncoding:NSUTF8StringEncoding],
                                              [samlResponse.samlResponse urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
@@ -789,6 +790,8 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     if (self.requestError == nil) {
         self.requestError = error;
     }
+    
+    gSecureStateTracker.authenticationBlock = nil;
     
     [self finish];
 }
