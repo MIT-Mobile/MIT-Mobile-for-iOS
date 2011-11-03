@@ -11,7 +11,7 @@
 - (void)cancelWasPressedForLoginRequest:(MobileRequestLoginViewController*)view;
 @end
 
-@interface MobileRequestLoginViewController : UIViewController <UITextFieldDelegate> {
+@interface MobileRequestLoginViewController : UIViewController <UITextFieldDelegate, UITableViewDataSource> {
 
 }
 
@@ -20,7 +20,7 @@
 - (id)initWithIdentifier:(NSString*)identifier;
 - (id)initWithUsername:(NSString*)user password:(NSString*)password;
 
-- (void)showError:(NSString*)error;
-- (void)showActivityView;
-- (void)hideActivityView;
+- (void)authenticationDidFailWithError:(NSString*)error
+                             willRetry:(BOOL)retry;
+- (void)authenticationDidSucceed;
 @end

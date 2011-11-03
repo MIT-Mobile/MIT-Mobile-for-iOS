@@ -268,9 +268,7 @@ typedef enum {
 }
 
 - (void)finish {
-    UIViewController *rootViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-    MobileRequestLoginViewController *loginViewController = self.loginViewController;
-    self.loginViewController = nil;
+/*    MobileRequestLoginViewController *loginViewController = self.loginViewController;
     dispatch_async(dispatch_get_main_queue(), ^(void) {
         if (loginViewController) {
             [loginViewController hideActivityView];
@@ -283,8 +281,9 @@ typedef enum {
     // property otherwise the backed up blocks might stumble over it
     while ([rootViewController modalViewController] != nil) {
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
-    }
-
+    }*/
+    
+    self.loginViewController = nil;
     self.activeRequest = nil;
     self.connection = nil;
     self.initialRequest = nil;
@@ -316,6 +315,12 @@ typedef enum {
         if (jsonError == nil) {
             jsonResult = [MITJSON objectWithJSONData:jsonData
                                                error:&jsonError];
+            if (jsonError)
+            {
+                NSString *data = [[[NSString alloc] initWithData:jsonData
+                                                        encoding:NSUTF8StringEncoding] autorelease];
+                DLog(@"JSON failed on data:\n-----\n%@\n-----",data);
+            }
         }
         
         [self dispatchCompleteBlockWithResult:((jsonError == nil) ? jsonResult : jsonData)
@@ -490,7 +495,7 @@ typedef enum {
                 MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
                                                                                                                  password:self.touchstonePassword] autorelease];
                 loginView.delegate = self;
-                [MobileRequestOperation clearAuthenticatedSession];
+                //[MobileRequestOperation clearAuthenticatedSession];
                 
                 [[mainWindow rootViewController] presentModalViewController:loginView
                                                                    animated:YES];
@@ -522,9 +527,10 @@ typedef enum {
             ELog(@"%@",errorString);
         }
         
-        DLog(@"Transition: '%@' -> '%@'",
+        DLog(@"Transition:\n\t'%@' -> '%@'",
              [MobileRequestOperation descriptionForState:prevState],
              [MobileRequestOperation descriptionForState:state]);
+        DLog(@"\tFor URL:\n\t\t:%@", request.URL);
         
         NSMutableURLRequest *mutableRequest = [request mutableCopy];
         mutableRequest.timeoutInterval = 10.0;
@@ -538,7 +544,6 @@ typedef enum {
         [self.connection start];
     }
 }
-
 
 #pragma mark - NSURLConnectionDelegate
 #pragma mark -- Response Handling
@@ -682,8 +687,33 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
             {
                 TouchstoneAuthResponse *tsResponse = [[[TouchstoneAuthResponse alloc] initWithResponseData:self.requestData] autorelease];
                 if (tsResponse.error) {
-                    [self connection:connection
-                    didFailWithError:tsResponse.error];
+                    if (tsResponse.error.code == MobileWebInvalidLoginError) {
+                        if (self.presetCredentials)
+                        {
+                            NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                                 code:NSURLErrorUserAuthenticationRequired
+                                                             userInfo:nil];
+                            [self connection:connection
+                            didFailWithError:error];
+                        }
+                        else
+                        {
+                            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                if (self.loginViewController == nil)
+                                {
+                                    [self displayLoginPrompt];
+                                } else {
+                                    [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password"
+                                                                                   willRetry:YES];
+                                }
+                            });
+                            
+                            self.touchstonePassword = nil;
+                        }
+                    } else {
+                        [self connection:connection
+                        didFailWithError:tsResponse.error];
+                    }
                 }
                 else
                 {
@@ -730,8 +760,8 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                                 {
                                     [self displayLoginPrompt];
                                 } else {
-                                    [self.loginViewController hideActivityView];
-                                    [self.loginViewController showError:@"Please enter a valid username and password"];
+                                    [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password"
+                                                                                   willRetry:YES];
                                 }
                             });
                             
@@ -745,6 +775,9 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                     self.touchstoneUser = nil;
                     self.touchstonePassword = nil;
                     gSecureStateTracker.authenticationBlock = nil;
+                    
+                    [self.loginViewController authenticationDidSucceed];
+                    
                     NSMutableString *body = [NSMutableString stringWithFormat:@"%@=%@",
                                              [@"SAMLResponse" urlEncodeUsingEncoding:NSUTF8StringEncoding],
                                              [samlResponse.samlResponse urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
@@ -809,8 +842,6 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     } else {
         MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
     }
-    
-    [view showActivityView];
     
     [gSecureStateTracker dispatchAuthenticationBlock];
 }

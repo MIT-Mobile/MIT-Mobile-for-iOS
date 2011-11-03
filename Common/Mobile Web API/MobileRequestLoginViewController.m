@@ -3,31 +3,46 @@
 #import "MobileRequestLoginViewController.h"
 #import "MobileKeychainServices.h"
 
+enum {
+    LoginViewUserCellTag = 0,
+    LoginViewPasswordCellTag,
+    LoginViewSaveCellTag
+};
+
 @interface MobileRequestLoginViewController ()
+@property (nonatomic,retain) NSArray *tableCells;
+@property (nonatomic,assign) UITextField *usernameField;
+@property (nonatomic,assign) UITextField *passwordField;
+
 @property (nonatomic,retain) UIButton *loginButton;
-@property (nonatomic,retain) UITextField *usernameField;
-@property (nonatomic,retain) UITextField *passwordField;
-@property (nonatomic,retain) UILabel *errorLabel;
-@property (nonatomic,assign) BOOL shouldSaveLogin;
+
 @property (nonatomic,copy) NSString *username;
 @property (nonatomic,copy) NSString *password;
 @property (nonatomic,retain) UIView *activityView;
 
+@property (nonatomic) BOOL dismissAfterAlert;
+
+@property (nonatomic,readonly) BOOL shouldSaveLogin;
+@property (nonatomic) BOOL showActivityView;
+
+- (void)setupTableCells;
+
 - (IBAction)cancelButtonPressed:(id)sender;
 - (IBAction)loginButtonPressed:(id)sender;
-- (IBAction)toggleLoginSave:(id)sender;
 @end
 
 @implementation MobileRequestLoginViewController
 @synthesize activityView = _activityView,
             delegate = _delegate,
-            errorLabel = _errorLabel,
             loginButton = _loginButton,
             passwordField = _passwordField,
-            shouldSaveLogin = _shouldSaveLogin,
             usernameField = _usernameField,
             username = _username,
-            password = _password;
+            password = _password,
+            dismissAfterAlert = _dismissAfterAlert,
+            tableCells = _tableCells;
+
+@dynamic shouldSaveLogin, showActivityView;
 
 - (id)initWithIdentifier:(NSString*)identifier {
     NSDictionary *keychainItem = MobileKeychainFindItem(identifier, YES);
@@ -42,6 +57,7 @@
     if (self) {
         self.username = aUsername;
         self.password = aPassword;
+        self.wantsFullScreenLayout = YES;
     }
     
     return self;
@@ -56,127 +72,146 @@
     [super dealloc];
 }
 
+#pragma mark - View Setup
+- (void)setupTableCells
+{
+    NSMutableArray *cells = [NSMutableArray array];
+    UIEdgeInsets textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
+    
+    {
+        UITableViewCell *usernameCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
+        usernameCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        UITextField *userField = [[[UITextField alloc] init] autorelease];
+        userField.adjustsFontSizeToFitWidth = YES;
+        userField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        userField.autocorrectionType = UITextAutocorrectionTypeNo;
+        userField.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                      UIViewAutoresizingFlexibleHeight);
+        userField.clearButtonMode = UITextFieldViewModeUnlessEditing;
+        userField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        userField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        userField.delegate = self;
+        userField.keyboardType = UIKeyboardTypeEmailAddress;
+        userField.minimumFontSize = 10.0;
+        userField.placeholder = @"Username or Email";
+        userField.returnKeyType = UIReturnKeyNext;
+        userField.textAlignment = UITextAlignmentLeft;
+        
+        if ([self.username length]) {
+            userField.text = self.username;
+        }
+        
+        userField.frame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 40), textCellInsets);
+        
+        self.usernameField = userField;
+        [usernameCell.contentView addSubview:userField];
+        [cells addObject:usernameCell];
+    }
+    
+    {
+        UITextField *passField = [[[UITextField alloc] init] autorelease];
+        passField.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                      UIViewAutoresizingFlexibleWidth);
+        passField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+        passField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        passField.delegate = self;
+        passField.placeholder = @"Password";
+        passField.returnKeyType = UIReturnKeyDone;
+        passField.secureTextEntry = YES;
+        
+        if ([self.password length]) {
+            passField.text = self.password;
+        }
+        
+        passField.frame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 40), textCellInsets);
+        
+        self.passwordField = passField;
+        
+        UITableViewCell *passwordCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
+        passwordCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [passwordCell.contentView addSubview:passField];
+        
+        [cells addObject:passwordCell];
+    }
+    
+    {
+        UISwitch *saveToggle = [[[UISwitch alloc] init] autorelease];
+        saveToggle.on = ([self.username length] > 0);
+        saveToggle.tag = LoginViewSaveCellTag;
+
+        
+        UITableViewCell *saveCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
+        saveCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        saveCell.accessoryView = saveToggle;
+        
+        saveCell.textLabel.text = @"Remember Login?";
+        
+        [cells addObject:saveCell];
+    }
+    
+    self.tableCells = cells;
+}
+
 - (void)loadView {
     CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
     UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
+    CGPoint origin = mainFrame.origin;
     
     mainView.backgroundColor = [UIColor colorWithRed:0.725
                                                green:0.776
                                                 blue:0.839
                                                alpha:1.0];
+    [self setupTableCells];
     {
-        CGRect navBarFrame = CGRectMake(0, 0, 320, 44);
+        CGRect navBarFrame = CGRectMake(origin.x, origin.y, 320, 44);
         UINavigationBar *navBar = [[[UINavigationBar alloc] initWithFrame:navBarFrame] autorelease];
-        UINavigationItem *navItem = [[[UINavigationItem alloc] initWithTitle:@"Login"] autorelease];
+        UINavigationItem *navItem = [[[UINavigationItem alloc] initWithTitle:@"Touchstone"] autorelease];
         UIBarButtonItem *cancelItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                      target:self
                                                                                      action:@selector(cancelButtonPressed:)] autorelease];
         [navItem setLeftBarButtonItem:cancelItem];
         [navBar setItems:[NSArray arrayWithObject:navItem]];
         
+        origin.y = CGRectGetMaxY(navBarFrame);
+        
         [mainView addSubview:navBar];
     }
     
     {
-        UILabel *infoLabel = [[[UILabel alloc] initWithFrame:CGRectMake(20, 44, 280, 50)] autorelease];
-        infoLabel.text = @"Please enter your Touchstone username and password below";
-        infoLabel.textColor = [UIColor blackColor];
-        infoLabel.textAlignment = UITextAlignmentLeft;
-        infoLabel.font = [UIFont systemFontOfSize:14.0];
-        infoLabel.lineBreakMode = UILineBreakModeWordWrap;
-        infoLabel.numberOfLines = 2;
-        infoLabel.backgroundColor = [UIColor clearColor];
-        [mainView addSubview:infoLabel];
+        UITableView *tableView = [[[UITableView alloc] initWithFrame:CGRectZero
+                                                               style:UITableViewStyleGrouped] autorelease];
+        tableView.backgroundColor = [UIColor clearColor];
+        tableView.dataSource = self;
+        
+        CGRect tableViewRect = CGRectZero;
+        tableViewRect.origin = origin;
+        tableViewRect.size.width = CGRectGetWidth(mainFrame);
+        tableViewRect.size.height = floor(CGRectGetHeight(mainFrame) * 0.40);
+        tableView.frame = tableViewRect;
+        
+        origin.y = CGRectGetMaxY(tableViewRect);
+        [mainView addSubview:tableView];
     }
     
     {
-        UILabel *errorLabel = [[[UILabel alloc] initWithFrame:CGRectMake(50, 102, 220, 40)] autorelease];
-        errorLabel.hidden = NO;
-        errorLabel.numberOfLines = 2;
-        errorLabel.lineBreakMode = UILineBreakModeWordWrap;
-        errorLabel.textAlignment = UITextAlignmentCenter;
-        errorLabel.textColor = [UIColor redColor];
-        errorLabel.backgroundColor = [UIColor clearColor];
+        UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 40, 0, 40);
+        CGRect loginFrame = CGRectMake(origin.x,origin.y,320,37);
+        loginFrame = UIEdgeInsetsInsetRect(loginFrame, buttonInsets);
         
-        self.errorLabel = errorLabel;
-        [mainView addSubview:self.errorLabel];
-    }
-    
-    {
-        CGRect userFrame = CGRectMake(50, 150, 220, 31);
-        UITextField *userField = [[[UITextField alloc] initWithFrame:userFrame] autorelease];
-        userField.placeholder = @"Username";
-        userField.borderStyle = UITextBorderStyleRoundedRect;
-        userField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-        userField.autocorrectionType = UITextAutocorrectionTypeNo;
-        userField.keyboardAppearance = UIKeyboardAppearanceDefault;
-        userField.keyboardType = UIKeyboardTypeEmailAddress;
-        userField.returnKeyType = UIReturnKeyNext;
-        userField.delegate = self;
+        UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        loginButton.frame = loginFrame;
         
-        if (self.username) {
-            userField.text = self.username;
-        }
+        [loginButton setTitle:@"Log In"
+                     forState:UIControlStateNormal];
+        [loginButton addTarget:self
+                        action:@selector(loginButtonPressed:)
+              forControlEvents:UIControlEventTouchUpInside];
         
-        self.usernameField = userField;
-        [mainView addSubview:userField];
-    }
-    
-    {
-        CGRect passFrame = CGRectMake(50, 189, 220, 31);
+        loginButton.enabled = NO;
         
-        UITextField *passField = [[[UITextField alloc] initWithFrame:passFrame] autorelease];
-        passField.placeholder = @"Password";
-        passField.secureTextEntry = YES;
-        passField.borderStyle = UITextBorderStyleRoundedRect;
-        passField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-        passField.autocorrectionType = UITextAutocorrectionTypeNo;
-        passField.keyboardAppearance = UIKeyboardAppearanceDefault;
-        passField.returnKeyType = UIReturnKeyDone;
-        passField.delegate = self;
-        
-        if (self.password) {
-            passField.text = self.password;
-        }
-        
-        self.passwordField = passField;
-        [mainView addSubview:passField];
-    }
-    
-    {
-        CGRect saveFrame = CGRectMake(85, 228, 150, 21);
-        UILabel *saveLabel = [[[UILabel alloc] initWithFrame:saveFrame] autorelease];
-        saveLabel.textAlignment = UITextAlignmentCenter;
-        saveLabel.text = @"Save your login?";
-        saveLabel.backgroundColor = [UIColor clearColor];
-        [mainView addSubview:saveLabel];
-    }
-    
-    {
-        CGRect switchFrame = CGRectMake(121, 257, 79, 27);
-        UISwitch *checkButton = [[[UISwitch alloc] initWithFrame:switchFrame] autorelease];
-        
-        [checkButton addTarget:self
-                        action:@selector(toggleLoginSave:)
-              forControlEvents:UIControlEventValueChanged];
-        
-        [mainView addSubview:checkButton];
-    }
-    
-    {
-        CGRect okFrame = CGRectMake(85,382,150,37);
-        UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        submitButton.frame = okFrame;
-        
-        [submitButton setTitle:@"Submit"
-                      forState:UIControlStateNormal];
-        [submitButton addTarget:self
-                         action:@selector(loginButtonPressed:)
-               forControlEvents:UIControlEventTouchUpInside];
-        submitButton.enabled = NO;
-        
-        self.loginButton = submitButton;
-        [mainView addSubview:submitButton];
+        self.loginButton = loginButton;
+        [mainView addSubview:loginButton];
     }
     
     {
@@ -212,43 +247,104 @@
     [self setView:[mainView autorelease]];
 }
 
+#pragma mark - Action Handlers
 - (IBAction)cancelButtonPressed:(id)sender {
-    [self showError:nil];
     if (self.delegate) {
         [self.delegate cancelWasPressedForLoginRequest:self];
     }
+    
+    [self.usernameField resignFirstResponder];
+    [self.passwordField resignFirstResponder];
+    [self dismissModalViewControllerAnimated:YES];
 }
 
 - (IBAction)loginButtonPressed:(id)sender {
-    [self showError:nil];
-    
     if (self.delegate) {
         [self.delegate loginRequest:self
                  didEndWithUsername:self.usernameField.text
                            password:self.passwordField.text
                     shouldSaveLogin:self.shouldSaveLogin];
     }
+    
+    self.showActivityView = YES;
+    [self.usernameField resignFirstResponder];
+    [self.passwordField resignFirstResponder];
 }
 
-- (IBAction)toggleLoginSave:(id)sender {
-    self.shouldSaveLogin = !self.shouldSaveLogin;
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self.usernameField resignFirstResponder];
+    [self.passwordField resignFirstResponder];
+    [super touchesBegan:touches withEvent:event];
 }
 
-- (void)showError:(NSString*)error {
-    if (error == nil) {
-        self.errorLabel.text = @"";
-    } else {
-        self.errorLabel.text = error;
+
+#pragma mark - Dynamic Property Methods
+- (void)setShowActivityView:(BOOL)showView
+{
+    if (showView)
+    {
+        if (self.activityView.superview == nil)
+        {
+            self.navigationItem.leftBarButtonItem.enabled = NO;
+            [self.usernameField resignFirstResponder];
+            [self.passwordField resignFirstResponder];
+            [self.view addSubview:self.activityView];
+        }
+    }
+    else
+    {
+        if (self.activityView.superview)
+        {
+            self.navigationItem.leftBarButtonItem.enabled = YES;
+            [self.usernameField resignFirstResponder];
+            [self.passwordField resignFirstResponder];
+            [self.activityView removeFromSuperview];
+        }
     }
 }
 
-- (void)showActivityView {
-    [self.view addSubview:self.activityView];
+- (BOOL)showActivityView
+{
+    return (self.activityView.superview != nil);
 }
 
-- (void)hideActivityView {
-    [self.activityView removeFromSuperview];
+- (BOOL)shouldSaveLogin
+{
+    if ([self.tableCells count])
+    {
+        UITableViewCell *saveCell = [self.tableCells objectAtIndex:LoginViewSaveCellTag];
+        UISwitch *switchView = (UISwitch*)[saveCell accessoryView];
+        
+        return switchView.on;
+    }
+    
+    return NO;
 }
+
+
+#pragma mark - Public Methods
+- (void)authenticationDidFailWithError:(NSString*)error
+                             willRetry:(BOOL)retry
+{
+    self.showActivityView = NO;
+    self.dismissAfterAlert = !retry;
+    
+    UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Touchstone"
+                                                     message:error
+                                                    delegate:self
+                                           cancelButtonTitle:nil
+                                           otherButtonTitles:@"OK",nil] autorelease];
+    alert.delegate = self;
+    [alert show];
+}
+
+- (void)authenticationDidSucceed
+{
+    self.showActivityView = NO;
+    [self dismissModalViewControllerAnimated:YES];
+}
+
 
 #pragma mark - UITextField Delegate
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
@@ -264,15 +360,64 @@
     return YES;
 }
 
-- (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
-    return YES;
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    if ([textField isEqual:self.usernameField])
+    {
+        [self.passwordField becomeFirstResponder];
+    }
+    else
+    {
+        [textField resignFirstResponder];
+    }
+    
+    return NO;
 }
 
-- (void)textFieldDidEndEditing:(UITextField *)textField {
-    if (textField == self.usernameField) {
-            [self.passwordField becomeFirstResponder];
-    } else {
-        [textField resignFirstResponder];
+#pragma mark - UIAlertView Delegate
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (self.dismissAfterAlert)
+    {
+        [self dismissModalViewControllerAnimated:YES];
+    }
+}
+
+#pragma mark - UITableView Data Source
+- (UITableViewCell*)tableView:(UITableView *)tableView
+        cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch(indexPath.section)
+    {
+        case 0:
+        {
+            return [self.tableCells objectAtIndex:indexPath.row];
+        }
+        case 1:
+        {
+            return [self.tableCells objectAtIndex:LoginViewSaveCellTag];
+        }
+            
+        default:
+            return nil;
+    }
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 2;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    switch(section)
+    {
+        case 0:
+            return 2;
+        case 1:
+            return 1;
+        default:
+            return 0;
     }
 }
 
