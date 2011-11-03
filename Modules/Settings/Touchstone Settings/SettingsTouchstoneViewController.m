@@ -5,8 +5,7 @@
 
 enum {
     TouchstoneUserCell = 0,
-    TouchstonePasswordCell,
-    TouchstoneLogoutCell
+    TouchstonePasswordCell
 };
 
 static UIEdgeInsets textCellInsets = {.top = 5,
@@ -396,6 +395,7 @@ static UIEdgeInsets textCellInsets = {.top = 5,
     {
         [textField resignFirstResponder];
     }
+    
     return NO;
 }
 
