@@ -2,6 +2,7 @@
 #import "MITLoadingActivityView.h"
 #import "MobileRequestOperation.h"
 #import "LibrariesLoanTableViewCell.h"
+#import "LibrariesRenewViewController.h"
 
 @interface LibrariesLoanTableController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
@@ -155,14 +156,9 @@
 
 - (void)performRenew:(id)sender
 {
-    UIBarButtonItem *editButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit
-                                                                                 target:self
-                                                                                 action:@selector(edit:)] autorelease];
-    [self.parentController.navigationItem setRightBarButtonItem:editButton
-                                                       animated:YES];
-    [self.tableView beginUpdates];
-    [self.tableView setEditing:NO];
-    [self.tableView endUpdates];
+    LibrariesRenewViewController *vc = [[[LibrariesRenewViewController alloc] initWithItems:[self.loanData objectForKey:@"items"]] autorelease];
+    [self.parentController.navigationController pushViewController:vc
+                                                          animated:YES];
 }
 
 #pragma mark - Tab Activity Notifications

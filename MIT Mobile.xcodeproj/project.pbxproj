@@ -103,6 +103,7 @@
 		2C99DCAF1370508D00114A9A /* HighlightLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C99DCAE1370508D00114A9A /* HighlightLabel.m */; };
 		2C99DCE01370782200114A9A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C99DCDF1370782200114A9A /* CoreText.framework */; };
 		2CA454F213C7468F00891428 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA454F113C7468F00891428 /* AssetsLibrary.framework */; };
+		2CAC06F71461C876003EA4BD /* LibrariesRenewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAC06F61461C876003EA4BD /* LibrariesRenewViewController.m */; };
 		2CAFCBE213F1C3F0007983D8 /* TBXML+MIT.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */; };
 		2CB2D2FF141E39F300FFC716 /* LibrariesLoanSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */; };
 		2CB2D302141E72A900FFC716 /* LibrariesLoanTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D301141E72A900FFC716 /* LibrariesLoanTableController.m */; };
@@ -113,6 +114,7 @@
 		2CC2E9CC144DC9B000151C71 /* MITGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITGradientView.m */; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; };
+		2CCAD0231462D6D1008FFA9A /* LibrariesRenewTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCAD0221462D6D1008FFA9A /* LibrariesRenewTableViewCell.m */; };
 		2CCB85F91361F44E0024E474 /* FacilitiesLocationData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */; };
 		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
@@ -589,6 +591,8 @@
 		2C99DCAE1370508D00114A9A /* HighlightLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightLabel.m; sourceTree = "<group>"; };
 		2C99DCDF1370782200114A9A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		2CA454F113C7468F00891428 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		2CAC06F51461C876003EA4BD /* LibrariesRenewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesRenewViewController.h; sourceTree = "<group>"; };
+		2CAC06F61461C876003EA4BD /* LibrariesRenewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesRenewViewController.m; sourceTree = "<group>"; };
 		2CAFCBE013F1C3F0007983D8 /* TBXML+MIT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TBXML+MIT.h"; sourceTree = "<group>"; };
 		2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TBXML+MIT.m"; sourceTree = "<group>"; };
 		2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanSummaryView.h; sourceTree = "<group>"; };
@@ -609,6 +613,8 @@
 		2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationSearch.m; sourceTree = "<group>"; };
 		2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileServerConfiguration.h; sourceTree = "<group>"; };
 		2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileServerConfiguration.m; sourceTree = "<group>"; };
+		2CCAD0211462D6D1008FFA9A /* LibrariesRenewTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesRenewTableViewCell.h; sourceTree = "<group>"; };
+		2CCAD0221462D6D1008FFA9A /* LibrariesRenewTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesRenewTableViewCell.m; sourceTree = "<group>"; };
 		2CCB85F71361F44E0024E474 /* FacilitiesLocationData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocationData.h; sourceTree = "<group>"; };
 		2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationData.m; sourceTree = "<group>"; };
 		2CD12D4E1360584F00A73ACA /* facilities */ = {isa = PBXFileReference; lastKnownFileType = folder; name = facilities; path = Resources/facilities; sourceTree = "<group>"; };
@@ -1536,6 +1542,17 @@
 			path = FacilitiesSummary;
 			sourceTree = "<group>";
 		};
+		2CAC06F31461C848003EA4BD /* Renew View Controller */ = {
+			isa = PBXGroup;
+			children = (
+				2CAC06F51461C876003EA4BD /* LibrariesRenewViewController.h */,
+				2CAC06F61461C876003EA4BD /* LibrariesRenewViewController.m */,
+				2CCAD0211462D6D1008FFA9A /* LibrariesRenewTableViewCell.h */,
+				2CCAD0221462D6D1008FFA9A /* LibrariesRenewTableViewCell.m */,
+			);
+			path = "Renew View Controller";
+			sourceTree = "<group>";
+		};
 		2CB6459C134CAF1A00E85E64 /* QR Reader */ = {
 			isa = PBXGroup;
 			children = (
@@ -1606,6 +1623,13 @@
 				2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		2CDF73CC14642055009FA920 /* Renew Results View Controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Renew Results View Controller";
 			sourceTree = "<group>";
 		};
 		2CED98F013534B2C0034F6F1 /* QRReaderDetailView */ = {
@@ -1695,6 +1719,8 @@
 		2CFB87EF1416B6880014E141 /* Loans */ = {
 			isa = PBXGroup;
 			children = (
+				2CDF73CC14642055009FA920 /* Renew Results View Controller */,
+				2CAC06F31461C848003EA4BD /* Renew View Controller */,
 				2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */,
 				2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */,
 				2CB2D300141E72A900FFC716 /* LibrariesLoanTableController.h */,
@@ -2854,6 +2880,8 @@
 				A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */,
 				EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */,
 				EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */,
+				2CAC06F71461C876003EA4BD /* LibrariesRenewViewController.m in Sources */,
+				2CCAD0231462D6D1008FFA9A /* LibrariesRenewTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
