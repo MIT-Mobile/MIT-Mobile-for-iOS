@@ -14,6 +14,7 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu are overdue.";
 @synthesize accountDetails = _accountDetails,
             edgeInsets = _edgeInsets;
 @synthesize infoLabel = _infoLabel;
+@synthesize renewButton = _renewButton;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -25,6 +26,11 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu are overdue.";
         self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.infoLabel.numberOfLines = 2;
         [self addSubview:self.infoLabel];
+        
+        self.renewButton = [[[UIBarButtonItem alloc] initWithTitle:@"Renew"
+                                                             style:UIBarButtonItemStyleBordered
+                                                            target:nil
+                                                            action:nil] autorelease];
         
         self.edgeInsets = UIEdgeInsetsMake(5, 5, 5, 10);
     }

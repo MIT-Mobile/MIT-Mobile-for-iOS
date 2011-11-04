@@ -10,7 +10,7 @@ extern const CGFloat kLibrariesTableCellEditingWidth;
 @property (nonatomic,retain) UILabel *statusLabel;
 @property (nonatomic,assign) UIEdgeInsets contentViewInsets;
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier;
+- (id)initWithReuseIdentifier:(NSString *)reuseIdentifier;
 
 - (void)layoutContentUsingBounds:(CGRect)bounds;
 - (CGFloat)heightForContentWithWidth:(CGFloat)width;

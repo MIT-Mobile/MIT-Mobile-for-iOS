@@ -8,7 +8,6 @@
 @property (nonatomic,retain) NSDictionary *loanData;
 @property (nonatomic,retain) MobileRequestOperation *operation;
 @property (nonatomic,retain) NSDate *lastUpdate;
-@property (nonatomic,retain) UIBarButtonItem *editButton;
 
 - (void)setupTableView;
 - (void)updateLoanData;
@@ -22,8 +21,7 @@
             loadingView = _loadingView,
             loanData = _loanData,
             operation = _operation,
-            lastUpdate = _lastUpdate,
-            editButton = _editButton;
+            lastUpdate = _lastUpdate;
 
 - (id)initWithTableView:(UITableView *)tableView
 {
@@ -59,7 +57,6 @@
         self.headerView = headerView;
     }
     
-    self.tableView.allowsSelectionDuringEditing = YES;
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
 }
@@ -80,11 +77,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSArray *items = [self.loanData objectForKey:@"items"];
-    if (items) {
-        return [items count];
-    } else {
-        return 0;
-    }
+    return [items count];
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -94,10 +87,10 @@
     LibrariesLoanTableViewCell *cell = (LibrariesLoanTableViewCell *)[tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
     
     if (cell == nil) {
-        cell = [[[LibrariesLoanTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                  reuseIdentifier:LoanCellIdentifier] autorelease];
+        
+        cell = [[[LibrariesLoanTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier] autorelease];
     }
-    
+
     NSArray *loans = [self.loanData objectForKey:@"items"];
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
     
@@ -113,10 +106,8 @@
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
-    
-    CGFloat width = (tableView.isEditing ? kLibrariesTableCellEditingWidth : kLibrariesTableCellDefaultWidth);
 
-    return [cell heightForContentWithWidth:width];
+    return [cell heightForContentWithWidth:kLibrariesTableCellDefaultWidth];
 }
 
 - (void)updateLoanData
@@ -128,17 +119,19 @@
                                    aboveSubview:self.tableView];
     }
     
-    BOOL shouldUpdate = (self.lastUpdate == nil) || ([self.lastUpdate timeIntervalSinceNow] > 15.0);
+    BOOL shouldUpdate = (self.lastUpdate == nil) || ([self.lastUpdate timeIntervalSinceNow] < -15.0);
     
     if ((self.operation == nil) && shouldUpdate)
     {
+        NSDictionary *requestLimit = [NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
+                                                                 forKey:@"limit"];
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                                 command:@"loans"
-                                                                             parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
-                                                                                                                    forKey:@"limit"]];
+                                                                             parameters:requestLimit];
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
             if (error) {
                 ELog(@"Loan: %@", [error localizedDescription]);
+                DLog(@"Data:\n-----\n%@\n-----", jsonResult);
                 [self.parentController.navigationController popViewControllerAnimated:YES];
             } else {
                 if (self.loadingView.superview != nil) {
@@ -148,6 +141,7 @@
                 self.lastUpdate = [NSDate date];
                 self.loanData = (NSDictionary*)jsonResult;
                 self.headerView.accountDetails = (NSDictionary*)jsonResult;
+                self.headerView.renewButton.enabled = ([[jsonResult objectForKey:@"items"] count] > 0);
                 [self.tableView reloadData];
             }
             
@@ -159,20 +153,7 @@
     }
 }
 
-- (void)edit:(id)sender
-{
-    
-    UIBarButtonItem *cancelButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                   target:self
-                                                                                   action:@selector(cancel:)] autorelease];
-    [self.parentController.navigationItem setRightBarButtonItem:cancelButton
-                                                       animated:YES];
-    [self.tableView beginUpdates];
-    [self.tableView setEditing:YES];
-    [self.tableView endUpdates];
-}
-
-- (void)cancel:(id)sender
+- (void)performRenew:(id)sender
 {
     UIBarButtonItem *editButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit
                                                                                  target:self
@@ -195,11 +176,11 @@
     
     if (self.parentController.navigationItem) 
     {
-        if (self.tableView.isEditing) {
-            [self edit:nil];
-        } else {
-            [self cancel:nil];
-        }
+        self.headerView.renewButton.enabled = (self.loanData != nil);
+        [self.headerView.renewButton setTarget:self];
+        [self.headerView.renewButton setAction:@selector(performRenew:)];
+        [self.parentController.navigationItem setRightBarButtonItem:self.headerView.renewButton
+                                                           animated:YES];
     }
 }
 

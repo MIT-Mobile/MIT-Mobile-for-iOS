@@ -80,8 +80,7 @@
     LibrariesHoldsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
     
     if (cell == nil) {
-        cell = [[[LibrariesHoldsTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                   reuseIdentifier:LoanCellIdentifier] autorelease];
+        cell = [[[LibrariesHoldsTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier] autorelease];
     }
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
@@ -125,6 +124,7 @@
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
             if (error) {
                 ELog(@"%@", [error localizedDescription]);
+                DLog(@"Data:\n-----\n%@\n-----", jsonResult);
                 [self.parentController.navigationController popViewControllerAnimated:YES];
             } else {
                 if (self.loadingView.superview != nil) {

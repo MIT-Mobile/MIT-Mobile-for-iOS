@@ -5,10 +5,9 @@
 @implementation LibrariesFinesTableViewCell
 @synthesize fineLabel = _fineLabel;
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+- (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
 {
-    self = [super initWithStyle:style
-                reuseIdentifier:reuseIdentifier];
+    self = [super initWithReuseIdentifier:reuseIdentifier];
     if (self) {
         self.fineLabel = [[[UILabel alloc] init] autorelease];
         self.fineLabel.lineBreakMode = UILineBreakModeWordWrap;

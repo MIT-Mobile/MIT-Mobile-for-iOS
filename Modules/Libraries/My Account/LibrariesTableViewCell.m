@@ -5,6 +5,10 @@
 const CGFloat kLibrariesTableCellDefaultWidth = 300;
 const CGFloat kLibrariesTableCellEditingWidth = 296;
 
+@interface LibrariesTableViewCell ()
+- (void)privateInit;
+@end
+
 @implementation LibrariesTableViewCell
 @synthesize contentViewInsets = _contentViewInsets,
             infoLabel = _infoLabel,
@@ -12,42 +16,54 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
             statusLabel = _statusLabel,
             titleLabel = _titleLabel;
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+- (id)init
 {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    return [self initWithReuseIdentifier:nil];
+}
+
+- (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:UITableViewCellStyleDefault
+                reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        self.editingAccessoryType = UITableViewCellAccessoryCheckmark;
-        self.shouldIndentWhileEditing = NO;
-        
-        self.titleLabel = [[[UILabel alloc] init] autorelease];
-        self.titleLabel.lineBreakMode = UILineBreakModeWordWrap;
-        self.titleLabel.numberOfLines = 0;
-        self.titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
-        self.titleLabel.highlightedTextColor = [UIColor whiteColor];
-        self.titleLabel.autoresizingMask = UIViewAutoresizingNone;
-        [self.contentView addSubview:self.titleLabel];
-        
-        self.infoLabel = [[[UILabel alloc] init] autorelease];
-        self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
-        self.infoLabel.numberOfLines = 0;
-        self.infoLabel.font = [UIFont systemFontOfSize:14.0];
-        self.infoLabel.highlightedTextColor = [UIColor whiteColor];
-        self.infoLabel.autoresizingMask = UIViewAutoresizingNone;
-        
-        [self.contentView addSubview:self.infoLabel];
-        
-        self.statusLabel = [[[UILabel alloc] init] autorelease];
-        self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
-        self.statusLabel.numberOfLines = 0;
-        self.statusLabel.font = [UIFont systemFontOfSize:14.0];
-        self.statusLabel.highlightedTextColor = [UIColor whiteColor];
-        self.statusLabel.autoresizingMask = UIViewAutoresizingNone;
-        [self.contentView addSubview:self.statusLabel];
-        
-        self.contentViewInsets = UIEdgeInsetsMake(5, 5, 5, 10);
+        [self privateInit];
     }
+
     return self;
+}
+
+- (void)privateInit
+{
+    self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    self.editingAccessoryType = UITableViewCellAccessoryNone;
+    self.shouldIndentWhileEditing = NO;
+    
+    self.titleLabel = [[[UILabel alloc] init] autorelease];
+    self.titleLabel.lineBreakMode = UILineBreakModeWordWrap;
+    self.titleLabel.numberOfLines = 0;
+    self.titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
+    self.titleLabel.highlightedTextColor = [UIColor whiteColor];
+    self.titleLabel.autoresizingMask = UIViewAutoresizingNone;
+    [self.contentView addSubview:self.titleLabel];
+    
+    self.infoLabel = [[[UILabel alloc] init] autorelease];
+    self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
+    self.infoLabel.numberOfLines = 0;
+    self.infoLabel.font = [UIFont systemFontOfSize:14.0];
+    self.infoLabel.highlightedTextColor = [UIColor whiteColor];
+    self.infoLabel.autoresizingMask = UIViewAutoresizingNone;
+    
+    [self.contentView addSubview:self.infoLabel];
+    
+    self.statusLabel = [[[UILabel alloc] init] autorelease];
+    self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+    self.statusLabel.numberOfLines = 0;
+    self.statusLabel.font = [UIFont systemFontOfSize:14.0];
+    self.statusLabel.highlightedTextColor = [UIColor whiteColor];
+    self.statusLabel.autoresizingMask = UIViewAutoresizingNone;
+    [self.contentView addSubview:self.statusLabel];
+    
+    self.contentViewInsets = UIEdgeInsetsMake(5, 5, 5, 10);
 }
 
 - (void)dealloc
@@ -152,6 +168,8 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
             NSString *year = [item objectForKey:@"year"];
             self.infoLabel.text = [[NSString stringWithFormat:@"%@; %@",year,author] stringByDecodingXMLEntities];
         }
+        
+        [self setNeedsLayout];
     }
 }
 @end
