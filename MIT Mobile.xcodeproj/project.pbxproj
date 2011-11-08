@@ -74,10 +74,10 @@
 		2C3676B513C5F6B1003CB7A4 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */; };
 		2C3676B813C5F854003CB7A4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */; };
 		2C36C1CA1428D090002C7424 /* LibrariesHoldsSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1C51428D090002C7424 /* LibrariesHoldsSummaryView.m */; };
-		2C36C1CB1428D090002C7424 /* LibrariesHoldsTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1C71428D090002C7424 /* LibrariesHoldsTableController.m */; };
+		2C36C1CB1428D090002C7424 /* LibrariesHoldsTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1C71428D090002C7424 /* LibrariesHoldsTabController.m */; };
 		2C36C1CC1428D090002C7424 /* LibrariesHoldsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1C91428D090002C7424 /* LibrariesHoldsTableViewCell.m */; };
 		2C36C1D31428FF13002C7424 /* LibrariesFinesSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1CE1428FF13002C7424 /* LibrariesFinesSummaryView.m */; };
-		2C36C1D41428FF13002C7424 /* LibrariesFinesTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1D01428FF13002C7424 /* LibrariesFinesTableController.m */; };
+		2C36C1D41428FF13002C7424 /* LibrariesFinesTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1D01428FF13002C7424 /* LibrariesFinesTabController.m */; };
 		2C36C1D51428FF13002C7424 /* LibrariesFinesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1D21428FF13002C7424 /* LibrariesFinesTableViewCell.m */; };
 		2C36C1D814290352002C7424 /* LibrariesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C36C1D714290352002C7424 /* LibrariesTableViewCell.m */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; };
@@ -106,7 +106,7 @@
 		2CAC06F71461C876003EA4BD /* LibrariesRenewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAC06F61461C876003EA4BD /* LibrariesRenewViewController.m */; };
 		2CAFCBE213F1C3F0007983D8 /* TBXML+MIT.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */; };
 		2CB2D2FF141E39F300FFC716 /* LibrariesLoanSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */; };
-		2CB2D302141E72A900FFC716 /* LibrariesLoanTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D301141E72A900FFC716 /* LibrariesLoanTableController.m */; };
+		2CB2D302141E72A900FFC716 /* LibrariesLoanTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D301141E72A900FFC716 /* LibrariesLoanTabController.m */; };
 		2CB2D305141FB44700FFC716 /* LibrariesLoanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D304141FB44700FFC716 /* LibrariesLoanTableViewCell.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB645EC134CC63800E85E64 /* QRReaderHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */; };
@@ -535,14 +535,14 @@
 		2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		2C36C1C41428D090002C7424 /* LibrariesHoldsSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesHoldsSummaryView.h; sourceTree = "<group>"; };
 		2C36C1C51428D090002C7424 /* LibrariesHoldsSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesHoldsSummaryView.m; sourceTree = "<group>"; };
-		2C36C1C61428D090002C7424 /* LibrariesHoldsTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesHoldsTableController.h; sourceTree = "<group>"; };
-		2C36C1C71428D090002C7424 /* LibrariesHoldsTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesHoldsTableController.m; sourceTree = "<group>"; };
+		2C36C1C61428D090002C7424 /* LibrariesHoldsTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesHoldsTabController.h; sourceTree = "<group>"; };
+		2C36C1C71428D090002C7424 /* LibrariesHoldsTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesHoldsTabController.m; sourceTree = "<group>"; };
 		2C36C1C81428D090002C7424 /* LibrariesHoldsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesHoldsTableViewCell.h; sourceTree = "<group>"; };
 		2C36C1C91428D090002C7424 /* LibrariesHoldsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesHoldsTableViewCell.m; sourceTree = "<group>"; };
 		2C36C1CD1428FF13002C7424 /* LibrariesFinesSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesFinesSummaryView.h; sourceTree = "<group>"; };
 		2C36C1CE1428FF13002C7424 /* LibrariesFinesSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesFinesSummaryView.m; sourceTree = "<group>"; };
-		2C36C1CF1428FF13002C7424 /* LibrariesFinesTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesFinesTableController.h; sourceTree = "<group>"; };
-		2C36C1D01428FF13002C7424 /* LibrariesFinesTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesFinesTableController.m; sourceTree = "<group>"; };
+		2C36C1CF1428FF13002C7424 /* LibrariesFinesTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesFinesTabController.h; sourceTree = "<group>"; };
+		2C36C1D01428FF13002C7424 /* LibrariesFinesTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesFinesTabController.m; sourceTree = "<group>"; };
 		2C36C1D11428FF13002C7424 /* LibrariesFinesTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesFinesTableViewCell.h; sourceTree = "<group>"; };
 		2C36C1D21428FF13002C7424 /* LibrariesFinesTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesFinesTableViewCell.m; sourceTree = "<group>"; };
 		2C36C1D614290351002C7424 /* LibrariesTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesTableViewCell.h; sourceTree = "<group>"; };
@@ -597,8 +597,8 @@
 		2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TBXML+MIT.m"; sourceTree = "<group>"; };
 		2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanSummaryView.h; sourceTree = "<group>"; };
 		2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanSummaryView.m; sourceTree = "<group>"; };
-		2CB2D300141E72A900FFC716 /* LibrariesLoanTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanTableController.h; sourceTree = "<group>"; };
-		2CB2D301141E72A900FFC716 /* LibrariesLoanTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanTableController.m; sourceTree = "<group>"; };
+		2CB2D300141E72A900FFC716 /* LibrariesLoanTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanTabController.h; sourceTree = "<group>"; };
+		2CB2D301141E72A900FFC716 /* LibrariesLoanTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanTabController.m; sourceTree = "<group>"; };
 		2CB2D303141FB44700FFC716 /* LibrariesLoanTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanTableViewCell.h; sourceTree = "<group>"; };
 		2CB2D304141FB44700FFC716 /* LibrariesLoanTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanTableViewCell.m; sourceTree = "<group>"; };
 		2CB6459D134CAF1A00E85E64 /* QRReaderModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderModule.h; sourceTree = "<group>"; };
@@ -1695,8 +1695,8 @@
 			children = (
 				2C36C1CD1428FF13002C7424 /* LibrariesFinesSummaryView.h */,
 				2C36C1CE1428FF13002C7424 /* LibrariesFinesSummaryView.m */,
-				2C36C1CF1428FF13002C7424 /* LibrariesFinesTableController.h */,
-				2C36C1D01428FF13002C7424 /* LibrariesFinesTableController.m */,
+				2C36C1CF1428FF13002C7424 /* LibrariesFinesTabController.h */,
+				2C36C1D01428FF13002C7424 /* LibrariesFinesTabController.m */,
 				2C36C1D11428FF13002C7424 /* LibrariesFinesTableViewCell.h */,
 				2C36C1D21428FF13002C7424 /* LibrariesFinesTableViewCell.m */,
 			);
@@ -1708,8 +1708,8 @@
 			children = (
 				2C36C1C41428D090002C7424 /* LibrariesHoldsSummaryView.h */,
 				2C36C1C51428D090002C7424 /* LibrariesHoldsSummaryView.m */,
-				2C36C1C61428D090002C7424 /* LibrariesHoldsTableController.h */,
-				2C36C1C71428D090002C7424 /* LibrariesHoldsTableController.m */,
+				2C36C1C61428D090002C7424 /* LibrariesHoldsTabController.h */,
+				2C36C1C71428D090002C7424 /* LibrariesHoldsTabController.m */,
 				2C36C1C81428D090002C7424 /* LibrariesHoldsTableViewCell.h */,
 				2C36C1C91428D090002C7424 /* LibrariesHoldsTableViewCell.m */,
 			);
@@ -1723,8 +1723,8 @@
 				2CAC06F31461C848003EA4BD /* Renew View Controller */,
 				2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */,
 				2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */,
-				2CB2D300141E72A900FFC716 /* LibrariesLoanTableController.h */,
-				2CB2D301141E72A900FFC716 /* LibrariesLoanTableController.m */,
+				2CB2D300141E72A900FFC716 /* LibrariesLoanTabController.h */,
+				2CB2D301141E72A900FFC716 /* LibrariesLoanTabController.m */,
 				2CB2D303141FB44700FFC716 /* LibrariesLoanTableViewCell.h */,
 				2CB2D304141FB44700FFC716 /* LibrariesLoanTableViewCell.m */,
 			);
@@ -2855,13 +2855,13 @@
 				2CFB87D91416B1AC0014E141 /* MITTabView.m in Sources */,
 				2CFB87F21416B69D0014E141 /* LibrariesAccountViewController.m in Sources */,
 				2CB2D2FF141E39F300FFC716 /* LibrariesLoanSummaryView.m in Sources */,
-				2CB2D302141E72A900FFC716 /* LibrariesLoanTableController.m in Sources */,
+				2CB2D302141E72A900FFC716 /* LibrariesLoanTabController.m in Sources */,
 				2CB2D305141FB44700FFC716 /* LibrariesLoanTableViewCell.m in Sources */,
 				2C36C1CA1428D090002C7424 /* LibrariesHoldsSummaryView.m in Sources */,
-				2C36C1CB1428D090002C7424 /* LibrariesHoldsTableController.m in Sources */,
+				2C36C1CB1428D090002C7424 /* LibrariesHoldsTabController.m in Sources */,
 				2C36C1CC1428D090002C7424 /* LibrariesHoldsTableViewCell.m in Sources */,
 				2C36C1D31428FF13002C7424 /* LibrariesFinesSummaryView.m in Sources */,
-				2C36C1D41428FF13002C7424 /* LibrariesFinesTableController.m in Sources */,
+				2C36C1D41428FF13002C7424 /* LibrariesFinesTabController.m in Sources */,
 				2C36C1D51428FF13002C7424 /* LibrariesFinesTableViewCell.m in Sources */,
 				2C36C1D814290352002C7424 /* LibrariesTableViewCell.m in Sources */,
 				4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */,

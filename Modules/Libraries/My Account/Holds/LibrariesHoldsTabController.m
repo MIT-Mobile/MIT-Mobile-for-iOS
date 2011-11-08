@@ -1,10 +1,9 @@
-#import "LibrariesLoanTableController.h"
+#import "LibrariesHoldsTabController.h"
 #import "MITLoadingActivityView.h"
 #import "MobileRequestOperation.h"
-#import "LibrariesLoanTableViewCell.h"
-#import "LibrariesRenewViewController.h"
+#import "LibrariesHoldsTableViewCell.h"
 
-@interface LibrariesLoanTableController ()
+@interface LibrariesHoldsTabController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
 @property (nonatomic,retain) NSDictionary *loanData;
 @property (nonatomic,retain) MobileRequestOperation *operation;
@@ -14,7 +13,7 @@
 - (void)updateLoanData;
 @end
 
-@implementation LibrariesLoanTableController
+@implementation LibrariesHoldsTabController
 @synthesize parentController = _parentController,
             tableView = _tableView;
 
@@ -51,8 +50,7 @@
     }
     
     {
-        CGRect headerFrame = CGRectZero;
-        LibrariesLoanSummaryView *headerView = [[[LibrariesLoanSummaryView alloc] initWithFrame:headerFrame] autorelease];
+        LibrariesHoldsSummaryView *headerView = [[[LibrariesHoldsSummaryView alloc] initWithFrame:CGRectZero] autorelease];
         headerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                        UIViewAutoresizingFlexibleWidth);
         self.headerView = headerView;
@@ -63,35 +61,28 @@
 }
 
 #pragma mark - UITableViewDelegate
-- (BOOL)tableView:(UITableView *)tableView shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return NO;
-}
 
 #pragma mark - UITableViewDataSource
-- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return UITableViewCellEditingStyleNone;
-}
-
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSArray *items = [self.loanData objectForKey:@"items"];
-    return [items count];
+    if (items) {
+        return [items count];
+    } else {
+        return 0;
+    }
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString* LoanCellIdentifier = @"LibariesLoanTableViewCell";
+    static NSString* LoanCellIdentifier = @"LibariesHoldsTableViewCell";
     
-    LibrariesLoanTableViewCell *cell = (LibrariesLoanTableViewCell *)[tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
+    LibrariesHoldsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
     
     if (cell == nil) {
-        
-        cell = [[[LibrariesLoanTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier] autorelease];
+        cell = [[[LibrariesHoldsTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier] autorelease];
     }
-
+    
     NSArray *loans = [self.loanData objectForKey:@"items"];
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
     
@@ -100,15 +91,17 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static LibrariesLoanTableViewCell *cell = nil;
+    static LibrariesHoldsTableViewCell *cell = nil;
     if (cell == nil) {
-        cell = [[LibrariesLoanTableViewCell alloc] init];
+        cell = [[LibrariesHoldsTableViewCell alloc] init];
     }
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
-
-    return [cell heightForContentWithWidth:kLibrariesTableCellDefaultWidth];
+    
+    CGFloat width = (tableView.isEditing ? kLibrariesTableCellEditingWidth : kLibrariesTableCellDefaultWidth);
+    
+    return [cell heightForContentWithWidth:width];
 }
 
 - (void)updateLoanData
@@ -120,18 +113,17 @@
                                    aboveSubview:self.tableView];
     }
     
-    BOOL shouldUpdate = (self.lastUpdate == nil) || ([self.lastUpdate timeIntervalSinceNow] < -15.0);
+    BOOL shouldUpdate = (self.lastUpdate == nil) || ([self.lastUpdate timeIntervalSinceNow] > 15.0);
     
     if ((self.operation == nil) && shouldUpdate)
     {
-        NSDictionary *requestLimit = [NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
-                                                                 forKey:@"limit"];
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                                command:@"loans"
-                                                                             parameters:requestLimit];
+                                                                                command:@"holds"
+                                                                             parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
+                                                                                                                    forKey:@"limit"]];
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
             if (error) {
-                ELog(@"Loan: %@", [error localizedDescription]);
+                ELog(@"%@", [error localizedDescription]);
                 DLog(@"Data:\n-----\n%@\n-----", jsonResult);
                 [self.parentController.navigationController popViewControllerAnimated:YES];
             } else {
@@ -139,57 +131,38 @@
                     [self.loadingView removeFromSuperview];
                 }
                 
-                self.lastUpdate = [NSDate date];
                 self.loanData = (NSDictionary*)jsonResult;
                 self.headerView.accountDetails = (NSDictionary*)jsonResult;
-                self.headerView.renewButton.enabled = ([[jsonResult objectForKey:@"items"] count] > 0);
                 [self.tableView reloadData];
             }
             
             self.operation = nil;
         };
-    
+        
         self.operation = operation;
         [operation start];
     }
 }
 
-- (void)performRenew:(id)sender
-{
-    LibrariesRenewViewController *vc = [[[LibrariesRenewViewController alloc] initWithItems:[self.loanData objectForKey:@"items"]] autorelease];
-    [self.parentController.navigationController pushViewController:vc
-                                                          animated:YES];
-}
-
 #pragma mark - Tab Activity Notifications
 - (void)tabWillBecomeActive
 {
+    [self updateLoanData];
 }
 
 - (void)tabDidBecomeActive
 {
-    [self updateLoanData];
     
-    if (self.parentController.navigationItem) 
-    {
-        self.headerView.renewButton.enabled = (self.loanData != nil);
-        [self.headerView.renewButton setTarget:self];
-        [self.headerView.renewButton setAction:@selector(performRenew:)];
-        [self.parentController.navigationItem setRightBarButtonItem:self.headerView.renewButton
-                                                           animated:YES];
-    }
 }
 
 - (void)tabWillBecomeInactive
 {
-    [self.parentController.navigationItem setRightBarButtonItem:nil
-                                                       animated:YES];
+    
 }
 
 - (void)tabDidBecomeInactive
 {
     
 }
-
 
 @end
