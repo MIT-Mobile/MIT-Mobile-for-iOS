@@ -14,7 +14,7 @@ NSString * const SettingsTitleString = @"Notifications";
 NSString * const SettingsSubtitleString = @"Turn off Notifications to disable alerts for that module.";
 
 NSString * const TouchstoneTitleString = @"Touchstone";
-NSString * const TouchstoneSubtitleString = @"Change or remove your login information for Touchstone.";
+NSString * const TouchstoneSubtitleString = nil;
 
 NSString * const ServersTitleString = @"API Server";
 
@@ -355,7 +355,7 @@ enum {
                                                        reuseIdentifier:CellIdentifier] autorelease];
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                         cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
-                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
                         
                         cell.textLabel.backgroundColor = [UIColor clearColor];
                     }
