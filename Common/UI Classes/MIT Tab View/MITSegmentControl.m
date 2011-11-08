@@ -4,10 +4,14 @@
 static NSString* const kMITSegmentTitleKey = @"MITSegmentTitle";
 static NSString* const kMITSegmentTitleColorKey = @"MITSegmentTitleColor";
 static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundColor";
+static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
 
 @interface MITSegmentControl ()
 @property (nonatomic,retain) NSMutableDictionary *stateDictionary;
 @property (nonatomic,retain) UILabel *textLabel;
+@property (nonatomic,retain) UIBezierPath *segmentPath;
+@property (nonatomic) CGSize cornerRadius;
+
 - (void)internalInit;
 
 - (void)setObject:(id)object forState:(UIControlState)state ofType:(NSString*)typeKey;
@@ -23,6 +27,8 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
 @dynamic shadowColor, shadowOffset, titleFont;
 
 @synthesize stateDictionary = _stateDictionary;
+@synthesize segmentPath = _segmentPath;
+@synthesize cornerRadius = _cornerRadius;
 
 - (id)initWithTabBarItem:(UITabBarItem*)item
 {
@@ -67,6 +73,9 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
 - (void)internalInit
 {
     self.backgroundColor = [UIColor clearColor];
+    self.cornerRadius = CGSizeMake(5.0,5.0);
+    
+    self.layer.masksToBounds = YES;
     
     {
         self.textLabel = [[[UILabel alloc] init] autorelease];
@@ -82,10 +91,14 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
     
     self.stateDictionary = [NSMutableDictionary dictionary];
     
-    [self setTitleColor:[UIColor whiteColor]
+    [self setTitleColor:[UIColor lightTextColor]
                forState:UIControlStateNormal];
-    [self setTitleColor:[UIColor blackColor]
+    [self setTitleColor:[UIColor lightTextColor]
+               forState:UIControlStateHighlighted];
+    [self setTitleColor:[UIColor darkTextColor]
                forState:UIControlStateSelected];
+    [self setTitleColor:[UIColor darkTextColor]
+               forState:(UIControlStateSelected | UIControlStateHighlighted)];
     
     [self setBackgroundColor:[UIColor grayColor]
                     forState:UIControlStateNormal];
@@ -96,55 +109,96 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
                forState:UIControlStateDisabled];
     [self setBackgroundColor:[UIColor darkGrayColor]
                     forState:UIControlStateDisabled];
+    
+
 }
+
 
 - (void)drawRect:(CGRect)rect
 {
-    BOOL shadeBackground = [[self backgroundColorForState:UIControlStateNormal] isEqual:[self backgroundColorForState:UIControlStateSelected]];
+    UIEdgeInsets insets = UIEdgeInsetsMake(4, 2, 0, 2);
+    rect = UIEdgeInsetsInsetRect(rect, insets);
+    
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
     
-
+    UIRectCorner corners = (UIRectCornerTopLeft | UIRectCornerTopRight);
     CGPathRef strokeRect = [[UIBezierPath bezierPathWithRoundedRect:rect
-                                                      cornerRadius:2] CGPath];
+                                                  byRoundingCorners:corners
+                                                        cornerRadii:self.cornerRadius] CGPath];
+    
     CGContextAddPath(context, strokeRect);
     CGContextClip(context);
     
     CGContextSaveGState(context);
     
-    CGFloat strokeComponents[4] = {    
-        0.55, 1,
-        0.40, 1
-    };
-    
-    if(self.isSelected && shadeBackground) {
-        strokeComponents[0]-=0.1;
-        strokeComponents[2]-=0.1;
+    CGFloat strokeComponents[4] = {0};
+    if (self.isSelected)
+    {
+        strokeComponents[0] = 1.0;
+        strokeComponents[1] = 1.0;
+        strokeComponents[2] = 1.0;
+        strokeComponents[3] = 1.0;
+    }
+    else if (self.isHighlighted)
+    {
+        strokeComponents[0] = 0.40;
+        strokeComponents[1] = 1.0;
+        strokeComponents[2] = 0.55;
+        strokeComponents[3] = 1.0;
+    }
+    else
+    {
+        strokeComponents[0] = 0.55;
+        strokeComponents[1] = 1.0;
+        strokeComponents[2] = 0.40;
+        strokeComponents[3] = 1.0;
     }
     
     CGGradientRef strokeGradient = CGGradientCreateWithColorComponents(colorSpace, strokeComponents, NULL, 2);	
-    CGContextDrawLinearGradient(context, strokeGradient, CGPointMake(0,0), CGPointMake(0,CGRectGetHeight(rect)), 0);
+    CGContextDrawLinearGradient(context, strokeGradient,
+                                CGPointMake(CGRectGetMinX(rect),CGRectGetMinY(rect)),
+                                CGPointMake(CGRectGetMinX(rect),CGRectGetMaxY(rect)), 0);
     CGGradientRelease(strokeGradient);
     
     
     // FILL GRADIENT
     
-    CGPathRef fillRect = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(rect, 1, 1) cornerRadius:1].CGPath;
+    CGPathRef fillRect = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(rect, 1, 1)
+                                                byRoundingCorners:corners
+                                                      cornerRadii:self.cornerRadius] CGPath];
     CGContextAddPath(context, fillRect);
     CGContextClip(context);
     
-    CGFloat fillComponents[4] = {    
-        0.5, 1,
-        0.35, 1
-    };
+    CGFloat fillComponents[4] = {0};
     
-    if(self.isSelected && shadeBackground) {
-        fillComponents[0]-=0.1;
-        fillComponents[2]-=0.1;
+    if (self.isSelected)
+    {
+        strokeComponents[0] = 1.0;
+        strokeComponents[1] = 1.0;
+        strokeComponents[2] = 1.0;
+        strokeComponents[3] = 1.0;
+    }
+    else if (self.isHighlighted)
+    {
+        strokeComponents[0] = 0.35;
+        strokeComponents[1] = 1.0;
+        strokeComponents[2] = 0.50;
+        strokeComponents[3] = 1.0;
+    }
+    else
+    {
+        strokeComponents[0] = 0.50;
+        strokeComponents[1] = 1.0;
+        strokeComponents[2] = 0.35;
+        strokeComponents[3] = 1.0;
     }
     
     CGGradientRef fillGradient = CGGradientCreateWithColorComponents(colorSpace, fillComponents, NULL, 2);	
-    CGContextDrawLinearGradient(context, fillGradient, CGPointMake(0,0), CGPointMake(0,CGRectGetHeight(rect)), 0);
+    CGContextDrawLinearGradient(context,
+                                fillGradient,
+                                CGPointMake(CGRectGetMinX(rect),CGRectGetMinY(rect)),
+                                CGPointMake(CGRectGetMinX(rect),CGRectGetMaxY(rect)), 0);
     CGGradientRelease(fillGradient);
     
     CGColorSpaceRelease(colorSpace);
@@ -157,7 +211,7 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
     if ([title length] > 0) {
         self.textLabel.text = title;
         self.textLabel.textColor = [self titleColorForState:self.state];
-        [self.textLabel drawTextInRect:CGRectInset(self.bounds, self.titleInset.width, self.titleInset.height)];
+        [self.textLabel drawTextInRect:CGRectInset(rect, self.titleInset.width, self.titleInset.height)];
     }
 }
 
@@ -190,6 +244,12 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
 - (UIFont*)titleFont
 {
     return self.textLabel.font;
+}
+
+- (void)setHighlighted:(BOOL)highlighted
+{
+    [super setHighlighted:highlighted];
+    [self setNeedsDisplay];
 }
 
 
@@ -265,6 +325,30 @@ static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundCol
 {
     return (UIColor*)[self objectForState:state
                                    ofType:kMITSegmentBackgroundColorKey];
+}
+
+- (void)setTabImage:(UIImage*)image
+      selectedImage:(UIImage*)selectedImage
+     highlightImage:(UIImage*)highlightImage
+{
+    [self setObject:image
+           forState:UIControlStateNormal
+             ofType:kMITSegmentImageKey];
+    
+    [self setObject:image
+           forState:UIControlStateSelected
+             ofType:kMITSegmentImageKey];
+    
+    [self setObject:image
+           forState:UIControlStateNormal
+             ofType:kMITSegmentImageKey];
+    
+}
+
+- (UIImage*)imageForState:(UIControlState)state
+{
+    return (UIImage*)[self objectForState:state
+                                   ofType:kMITSegmentImageKey];
 }
 
 @end
