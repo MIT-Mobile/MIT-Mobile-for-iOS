@@ -136,7 +136,6 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
     }
     
     {
-        UIView *header = self.headerView;
         CGRect headerFrame = viewRect;
         headerFrame.origin = frameOrigin;
         headerFrame.size.height = kHeaderDefaultHeight;
@@ -149,13 +148,11 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
                                   heightOfHeaderForView:self.activeView];
             }
             
-            headerFrame.size.height = MAX(kHeaderDefaultHeight,delegateHeight);
+            headerFrame.size.height = delegateHeight;
+            self.activeHeaderView.frame = CGRectStandardize(headerFrame);
+            frameOrigin.y += CGRectGetHeight(headerFrame);
         }
-
-        header.frame = CGRectStandardize(headerFrame);
-        self.activeHeaderView.frame = header.bounds;
         
-        frameOrigin.y += CGRectGetHeight(headerFrame);
     }
     
     {
@@ -219,15 +216,21 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
             activeHeaderView = nil;
         }
         
-        if (self.activeHeaderView) {
-            [self.activeHeaderView removeFromSuperview];
+        if (self.activeHeaderView != activeHeaderView)
+        {
+            if (self.activeHeaderView)
+            {
+                [self.activeHeaderView removeFromSuperview];
+            }
+            
+            if (activeHeaderView)
+            {
+                [self addSubview:activeHeaderView];
+            }
+            
+            self.activeHeaderView = activeHeaderView;
         }
         
-        if (activeHeaderView) {
-            [self.headerView addSubview:activeHeaderView];
-        }
-        
-        self.activeHeaderView = activeHeaderView;
     }
     
     // Now setup the active view

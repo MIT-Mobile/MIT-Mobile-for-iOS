@@ -142,6 +142,7 @@
                 self.lastUpdate = [NSDate date];
                 self.loanData = (NSDictionary*)jsonResult;
                 self.headerView.accountDetails = (NSDictionary*)jsonResult;
+                [self.headerView sizeToFit];
                 self.headerView.renewButton.enabled = ([[jsonResult objectForKey:@"items"] count] > 0);
                 [self.tableView reloadData];
             }

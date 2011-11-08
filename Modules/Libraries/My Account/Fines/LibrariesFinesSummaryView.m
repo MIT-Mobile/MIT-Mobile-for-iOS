@@ -25,7 +25,7 @@
         NSString *dateString = [NSDateFormatter localizedStringFromDate:[NSDate date]
                                                               dateStyle:NSDateFormatterShortStyle
                                                               timeStyle:NSDateFormatterNoStyle];
-        self.balanceLabel.text = [NSString stringWithFormat:@"Balance as of %@: N/A", dateString];
+        self.balanceLabel.text = @"";
         [self addSubview:self.balanceLabel];
         
         self.infoLabel = [[[UILabel alloc] init] autorelease];
@@ -34,10 +34,7 @@
         self.infoLabel.backgroundColor = [UIColor clearColor];
         self.infoLabel.font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
         
-        NSMutableString *string = [NSMutableString string];
-        [string appendString:@"Payable at any MIT library service desk.\n"];
-        [string appendString:@"TechCASH accepted only at Hayden Library."];
-        self.infoLabel.text = string;
+        self.infoLabel.text = @"";
         [self addSubview:self.infoLabel];
 
         self.edgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
@@ -105,10 +102,18 @@
                                                           dateStyle:NSDateFormatterShortStyle
                                                           timeStyle:NSDateFormatterNoStyle];
     NSString *totalFines = [accountDetails objectForKey:@"balance"];
-    if (totalFines) {
+    if (totalFines)
+    {
         self.balanceLabel.text = [NSString stringWithFormat:@"Balance as of %@: %@", dateString, totalFines];
-    } else {
-        self.balanceLabel.text = [NSString stringWithFormat:@"Balance as of %@:", dateString];
+        
+        NSMutableString *string = [NSMutableString string];
+        [string appendString:@"Payable at any MIT library service desk.\n"];
+        [string appendString:@"TechCASH accepted only at Hayden Library."];
+        self.infoLabel.text = string;
+    }
+    else
+    {
+        self.balanceLabel.text = @"";
     }
     
     [self setNeedsLayout];

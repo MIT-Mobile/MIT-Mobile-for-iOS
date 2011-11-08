@@ -133,6 +133,7 @@
                 
                 self.loanData = (NSDictionary*)jsonResult;
                 self.headerView.accountDetails = (NSDictionary*)jsonResult;
+                [self.headerView sizeToFit];
                 [self.tableView reloadData];
             }
             

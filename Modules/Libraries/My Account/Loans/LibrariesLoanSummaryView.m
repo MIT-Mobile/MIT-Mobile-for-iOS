@@ -2,9 +2,8 @@
 #import <UIKit/UIKit.h>
 #import "LibrariesLoanSummaryView.h"
 
-static NSString* kLibrariesLoanDefaultString = @"You have no items on loan.\n ";
-static NSString* kLibrariesLoanFormatString = @"You have %lu items on loan.\n";
-static NSString* kLibrariesLoanOverdueFormatString = @"%lu are overdue.";
+static NSString* kLibrariesLoanFormatString = @"You have %lu items on loan.";
+static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
 
 @interface LibrariesLoanSummaryView ()
 @property (nonatomic, retain) UILabel* infoLabel;
@@ -22,7 +21,7 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu are overdue.";
     if (self) {
         self.infoLabel = [[[UILabel alloc] init] autorelease];
         self.infoLabel.backgroundColor = [UIColor clearColor];
-        self.infoLabel.text = kLibrariesLoanDefaultString;
+        self.infoLabel.text = @"";
         self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.infoLabel.numberOfLines = 2;
         [self addSubview:self.infoLabel];
@@ -80,12 +79,16 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu are overdue.";
     NSUInteger loanCount = [[accountDetails objectForKey:@"total"] unsignedIntegerValue];
     NSUInteger overdueCount = [[accountDetails objectForKey:@"overdue"] unsignedIntegerValue];
     
-    if (loanCount == 0) {
-        self.infoLabel.text = kLibrariesLoanDefaultString;
-    } else {
+    if (loanCount == 0)
+    {
+        self.infoLabel.text = @"";
+    }
+    else
+    {
         NSMutableString *infoText = [NSMutableString stringWithFormat:kLibrariesLoanFormatString, loanCount];
         
-        if (overdueCount > 0) {
+        if (overdueCount > 0)
+        {
             [infoText appendFormat:kLibrariesLoanOverdueFormatString, overdueCount];
         }
         
