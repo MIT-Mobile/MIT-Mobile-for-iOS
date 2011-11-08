@@ -834,7 +834,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 - (LibraryFormElement *)statusMenuFormElementWithRequired:(BOOL)required {
     return             
         [[[MenuLibraryFormElement alloc] initWithKey:@"status" 
-                                        displayLabel:@"Your status" 
+                                        displayLabel:@"Status" 
                                             required:required
                                               values:[NSArray arrayWithObjects:
                                                       @"UG",
