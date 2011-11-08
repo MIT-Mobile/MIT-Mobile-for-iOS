@@ -6,7 +6,8 @@
 
 + (NSAttributedString *)displayStringWithTitle:(NSString *)title
                                       subtitle:(NSString *)subtitle
-                                     separator:(NSString *)separator;
+                                     separator:(NSString *)separator
+                                      fontSize:(CGFloat)fontSize;
 
 + (CGSize)sizeForDisplayString:(NSAttributedString *)displayString tableView:(UITableView *)tableView;
 

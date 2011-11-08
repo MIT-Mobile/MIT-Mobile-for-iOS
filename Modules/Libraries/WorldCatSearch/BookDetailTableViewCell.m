@@ -42,6 +42,7 @@
 + (NSAttributedString *)displayStringWithTitle:(NSString *)title
                                       subtitle:(NSString *)subtitle
                                      separator:(NSString *)separator
+                                      fontSize:(CGFloat)fontSize
 {
     if (!separator) {
         separator = @"";
@@ -55,11 +56,10 @@
     
     NSString *rawString = [NSString stringWithFormat:@"%@%@%@", title, separator, subtitle];
     NSUInteger titleLength = title.length + separator.length;
-    
-    UIFont *font = [UIFont systemFontOfSize:15];
+    UIFont *font = [UIFont systemFontOfSize:fontSize];
     CTFontRef ctFont = CTFontCreateWithName((CFStringRef)font.fontName, font.pointSize, NULL);
     
-    UIFont *boldFont = [UIFont boldSystemFontOfSize:15];
+    UIFont *boldFont = [UIFont boldSystemFontOfSize:fontSize];
     CTFontRef ctBoldFont = CTFontCreateWithName((CFStringRef)boldFont.fontName, boldFont.pointSize, NULL);
     
     NSMutableAttributedString *mutableString = [[[NSMutableAttributedString alloc] initWithString:rawString] autorelease];

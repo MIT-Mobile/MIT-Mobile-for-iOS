@@ -106,16 +106,13 @@ BookDetailViewTags;
 {
     NSString *result = nil;
     if (self.book) {
-        NSMutableArray *subtitleParts = [NSMutableArray array];
         if (self.book.authors.count) {
-            [subtitleParts addObject:[self.book.authors componentsJoinedByString:@", "]];
-        }
-        if (self.book.formats.count) {
-            [subtitleParts addObject:[NSString stringWithFormat:@"Format: %@", [self.book.formats componentsJoinedByString:@"\n"]]];
+            result = [self.book.authors componentsJoinedByString:@", "];
         }
         
-        NSString *separator = isHTML ? @"<br/>" : @"\n";
-        result = [subtitleParts componentsJoinedByString:separator];
+        if ([self.book.years count] > 0) {
+            result = [NSString stringWithFormat:@"%@; %@", [self.book.years objectAtIndex:0], result]; 
+        }
     }
     return result;
 }
@@ -142,50 +139,70 @@ BookDetailViewTags;
             NSString *bookTitle = self.book.title ? self.book.title : @"";
             NSString *bookSubtitle = [self subtitleDisplayStringHTML:NO];
             
-            [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:bookTitle
-                                                                          subtitle:bookSubtitle
-                                                                         separator:@"\n"]];
+            [bookAttribs addObject:[BookDetailTableViewCell 
+                                    displayStringWithTitle:bookTitle
+                                    subtitle:nil
+                                    separator:nil
+                                    fontSize:18.0]];
+
+            [bookAttribs addObject:[BookDetailTableViewCell
+                                    displayStringWithTitle:nil
+                                    subtitle:bookSubtitle
+                                    separator:nil
+                                    fontSize:15.0]];
+            
+            // format
+            if (self.book.formats.count) {
+                [bookAttribs addObject:[BookDetailTableViewCell 
+                                        displayStringWithTitle:@"Format" 
+                                        subtitle:[self.book.formats componentsJoinedByString:@","] 
+                                        separator:@": "
+                                        fontSize:15.0]];
+            }
 
             // summary
             if (self.book.summarys.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Summary"
-                                                                              subtitle:[self.book.summarys componentsJoinedByString:@"; "]
-                                                                             separator:@": "]];
+                [bookAttribs addObject:[BookDetailTableViewCell 
+                                        displayStringWithTitle:@"Summary"
+                                        subtitle:[self.book.summarys componentsJoinedByString:@"; "]
+                                        separator:@": "
+                                        fontSize:15.0]];
             }
 
             // publisher
             if (self.book.publishers.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Publisher"
-                                                                              subtitle:[self.book.publishers componentsJoinedByString:@"; "]
-                                                                             separator:@": "]];
+                [bookAttribs addObject:[BookDetailTableViewCell 
+                                        displayStringWithTitle:@"Publisher"
+                                        subtitle:[self.book.publishers componentsJoinedByString:@"; "]
+                                        separator:@": "
+                                        fontSize:15.0]];
             }
 
-            // date
-            if (self.book.years.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Date"
-                                                                              subtitle:[self.book.years componentsJoinedByString:@", "]
-                                                                             separator:@": "]];
-            }
-            
             // edition
             if (self.book.editions.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Edition"
-                                                                              subtitle:[self.book.editions componentsJoinedByString:@", "]
-                                                                             separator:@": "]];
+                [bookAttribs addObject:[BookDetailTableViewCell 
+                                        displayStringWithTitle:@"Edition"
+                                        subtitle:[self.book.editions componentsJoinedByString:@", "]
+                                        separator:@": "
+                                        fontSize:15.0]];
             }
 
             // description
             if (self.book.extents.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"Description"
-                                                                              subtitle:[self.book.extents componentsJoinedByString:@", "]
-                                                                             separator:@": "]];
+                [bookAttribs addObject:[BookDetailTableViewCell 
+                                        displayStringWithTitle:@"Description"
+                                        subtitle:[self.book.extents componentsJoinedByString:@", "]
+                                        separator:@": "
+                                        fontSize:15.0]];
             }
 
             // isbn
             if (self.book.isbns.count) {
-                [bookAttribs addObject:[BookDetailTableViewCell displayStringWithTitle:@"ISBN"
-                                                                              subtitle:[self.book.isbns componentsJoinedByString:@" : "]
-                                                                             separator:@": "]];
+                [bookAttribs addObject:[BookDetailTableViewCell 
+                                        displayStringWithTitle:@"ISBN"
+                                        subtitle:[self.book.isbns componentsJoinedByString:@" : "]
+                                        separator:@": "
+                                        fontSize:15.0]];
             }
             
             self.bookInfo = [NSArray arrayWithArray:bookAttribs];
