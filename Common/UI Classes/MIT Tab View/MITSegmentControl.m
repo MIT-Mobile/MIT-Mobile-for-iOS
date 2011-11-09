@@ -112,7 +112,7 @@ static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
     
 
 }
-
+ 
 
 - (void)drawRect:(CGRect)rect
 {
@@ -327,22 +327,11 @@ static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
                                    ofType:kMITSegmentBackgroundColorKey];
 }
 
-- (void)setTabImage:(UIImage*)image
-      selectedImage:(UIImage*)selectedImage
-     highlightImage:(UIImage*)highlightImage
+- (void)setTabImage:(UIImage*)image forState:(UIControlState)state
 {
     [self setObject:image
-           forState:UIControlStateNormal
+           forState:state
              ofType:kMITSegmentImageKey];
-    
-    [self setObject:image
-           forState:UIControlStateSelected
-             ofType:kMITSegmentImageKey];
-    
-    [self setObject:image
-           forState:UIControlStateNormal
-             ofType:kMITSegmentImageKey];
-    
 }
 
 - (UIImage*)imageForState:(UIControlState)state
