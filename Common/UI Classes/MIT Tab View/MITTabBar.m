@@ -7,7 +7,7 @@
 
 - (void)internalInit;
 - (void)updateTabs;
-- (void)tabBarWasTouched:(id)sender withEvent:(UIEvent*)event;
+- (void)controlWasTouched:(id)sender withEvent:(UIEvent*)event;
 @end
 
 @implementation MITTabBar
@@ -59,13 +59,7 @@
     self.selectedSegmentIndex = UISegmentedControlNoSegment;
     self.autoresizesSubviews = YES;
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.backgroundColor = [UIColor clearColor
-                            ];
-    self.userInteractionEnabled = YES;
-    
-    [self addTarget:self
-             action:@selector(tabBarWasTouched:withEvent:)
-   forControlEvents:UIControlEventTouchUpInside];
+    self.backgroundColor = [UIColor clearColor];
 }
 
 - (void)layoutSubviews
@@ -75,13 +69,31 @@
         if (self.tabViews == nil)
         {
             NSMutableArray *array = [NSMutableArray array];
+            NSInteger tag = 0;
+            
             for (UITabBarItem *item in self.items)
             {
                 MITSegmentControl *control = [[[MITSegmentControl alloc] initWithTabBarItem:item] autorelease];
                 control.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-                control.userInteractionEnabled = NO;
+                control.tag = tag;
+                
+                [control setTabImage:[UIImage imageNamed:@"global/tab2-unselected"]
+                            forState:UIControlStateNormal];
+                [control setTabImage:[UIImage imageNamed:@"global/tab2-unselected-pressed"]
+                            forState:UIControlStateHighlighted];
+                [control setTabImage:[UIImage imageNamed:@"global/tab2-selected"]
+                            forState:UIControlStateSelected];
+                [control setTabImage:[UIImage imageNamed:@"global/tab2-selected"]
+                            forState:(UIControlStateSelected | UIControlStateHighlighted)];
+                
+                
+                [control addTarget:self
+                            action:@selector(controlWasTouched:withEvent:)
+                  forControlEvents:UIControlEventTouchUpInside];
+                
                 [array addObject:control];
                 [self addSubview:control];
+                ++tag;
             }
             
             self.tabViews = ([array count] > 0) ? array : nil;
@@ -166,19 +178,9 @@
 
 #pragma mark - Touch Event Handling
 
-- (void)tabBarWasTouched:(id)sender withEvent:(UIEvent*)event
+- (void)controlWasTouched:(id)sender withEvent:(UIEvent*)event
 {
-    UITouch *touch = [[event touchesForView:self] anyObject];
-    CGPoint point = [touch locationInView:self];
-    
-    NSInteger index = 0;
-    for (MITSegmentControl *segment in self.tabViews) {
-        if (CGRectContainsPoint(segment.frame, point)) {
-            break;
-        } else {
-            ++index;
-        }
-    }
+    NSInteger index = [(UIControl*)sender tag];
     
     if (index == self.selectedSegmentIndex) {
         return;

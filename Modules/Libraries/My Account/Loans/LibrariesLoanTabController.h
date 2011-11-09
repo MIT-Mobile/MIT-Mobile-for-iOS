@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
-#import "LibrariesHoldsSummaryView.h"
+#import "LibrariesLoanSummaryView.h"
 
-@interface LibrariesHoldsTableController : NSObject <UITableViewDelegate, UITableViewDataSource>
+@interface LibrariesLoanTabController : NSObject <UITableViewDelegate, UITableViewDataSource>
+@property (nonatomic,retain) LibrariesLoanSummaryView *headerView;
 @property (nonatomic,retain) UIViewController *parentController;
 @property (nonatomic,retain) UITableView *tableView;
-@property (nonatomic,retain) LibrariesHoldsSummaryView* headerView;
 
 - (id)initWithTableView:(UITableView*)tableView;
 
@@ -12,4 +12,5 @@
 - (void)tabDidBecomeActive;
 - (void)tabWillBecomeInactive;
 - (void)tabDidBecomeInactive;
+
 @end

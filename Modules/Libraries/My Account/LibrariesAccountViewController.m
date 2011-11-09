@@ -1,14 +1,14 @@
 #import "LibrariesAccountViewController.h"
-#import "LibrariesFinesTableController.h"
-#import "LibrariesHoldsTableController.h"
-#import "LibrariesLoanTableController.h"
+#import "LibrariesFinesTabController.h"
+#import "LibrariesHoldsTabController.h"
+#import "LibrariesLoanTabController.h"
 #import "UIKit+MITAdditions.h"
 
 @interface LibrariesAccountViewController ()
 @property (nonatomic,retain) MITTabView *tabView;
-@property (nonatomic,retain) LibrariesFinesTableController *finesController;
-@property (nonatomic,retain) LibrariesHoldsTableController *holdsController;
-@property (nonatomic,retain) LibrariesLoanTableController *loansController;
+@property (nonatomic,retain) LibrariesFinesTabController *finesController;
+@property (nonatomic,retain) LibrariesHoldsTabController *holdsController;
+@property (nonatomic,retain) LibrariesLoanTabController *loansController;
 @end
 
 @implementation LibrariesAccountViewController
@@ -58,7 +58,7 @@
                                  UIViewAutoresizingFlexibleWidth);
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
-        self.loansController = [[LibrariesLoanTableController alloc] initWithTableView:view];
+        self.loansController = [[LibrariesLoanTabController alloc] initWithTableView:view];
         self.loansController.parentController = self;
         [self.tabView addView:view
                      withItem:[[[UITabBarItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
@@ -72,7 +72,7 @@
                                  UIViewAutoresizingFlexibleWidth);
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
-        self.finesController = [[LibrariesFinesTableController alloc] initWithTableView:view];
+        self.finesController = [[LibrariesFinesTabController alloc] initWithTableView:view];
         self.finesController.parentController = self;
         
         [self.tabView addView:view
@@ -87,7 +87,7 @@
                                  UIViewAutoresizingFlexibleWidth);
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
-        self.holdsController = [[LibrariesHoldsTableController alloc] initWithTableView:view];
+        self.holdsController = [[LibrariesHoldsTabController alloc] initWithTableView:view];
         self.holdsController.parentController = self;
         [self.tabView addView:view
                      withItem:[[[UITabBarItem alloc] initWithTitle:@"Holds" image:nil tag:2] autorelease]

@@ -42,6 +42,19 @@
     return self;
 }
 
+- (void)dealloc
+{
+    self.selectedCells = nil;
+    self.renewItems = nil;
+    self.renewAllItem = nil;
+    self.renewSelectedItem = nil;
+    
+    [self.renewOperation cancel];
+    self.renewOperation = nil;
+    
+    [super dealloc];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -192,6 +205,11 @@
 }
 
 #pragma mark - Event Handlers
+- (IBAction)done:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 - (IBAction)cancelRenew:(id)sender
 {
     [self.navigationController popViewControllerAnimated:YES];
@@ -327,6 +345,16 @@
     }
     
     self.renewItems = renewedItems;
+    
+    self.navigationItem.hidesBackButton = YES;
+    [self.navigationItem setLeftBarButtonItem:nil
+                                     animated:YES];
+    
+    UIBarButtonItem *doneButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                 target:self
+                                                                                 action:@selector(done:)] autorelease];
+    [self.navigationItem setRightBarButtonItem:doneButton
+                                      animated:YES];
 
     [self.tableView beginUpdates];
     {

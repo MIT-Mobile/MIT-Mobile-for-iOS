@@ -1,9 +1,9 @@
-#import "LibrariesFinesTableController.h"
+#import "LibrariesFinesTabController.h"
 #import "MITLoadingActivityView.h"
 #import "MobileRequestOperation.h"
 #import "LibrariesFinesTableViewCell.h"
 
-@interface LibrariesFinesTableController ()
+@interface LibrariesFinesTabController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
 @property (nonatomic,retain) NSDictionary *loanData;
 @property (nonatomic,retain) MobileRequestOperation *operation;
@@ -13,7 +13,7 @@
 - (void)updateLoanData;
 @end
 
-@implementation LibrariesFinesTableController
+@implementation LibrariesFinesTabController
 @synthesize parentController = _parentController,
             tableView = _tableView;
 
@@ -133,6 +133,7 @@
                 
                 self.loanData = (NSDictionary*)jsonResult;
                 self.headerView.accountDetails = (NSDictionary*)jsonResult;
+                [self.headerView sizeToFit];
                 [self.tableView reloadData];
             }
             

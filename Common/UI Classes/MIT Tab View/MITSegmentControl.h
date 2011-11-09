@@ -17,4 +17,8 @@
 - (UIColor*)titleColorForState:(UIControlState)state;
 - (UIColor*)backgroundColorForState:(UIControlState)state;
 
+
+- (void)setTabImage:(UIImage*)image forState:(UIControlState)state;
+- (UIImage*)imageForState:(UIControlState)state;
+
 @end

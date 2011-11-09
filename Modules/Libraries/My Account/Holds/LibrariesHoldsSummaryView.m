@@ -22,7 +22,7 @@ static NSString* kLibrariesHoldsPickupText = @"%@ are ready for pickup.";
         self.infoLabel.numberOfLines = 1;
         self.infoLabel.backgroundColor = [UIColor clearColor];
         self.infoLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-        self.infoLabel.text = [NSString stringWithFormat:kLibrariesHoldsStatusText, @"0"];
+        self.infoLabel.text = @"";
         [self addSubview:self.infoLabel];
         
         self.edgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
@@ -69,9 +69,12 @@ static NSString* kLibrariesHoldsPickupText = @"%@ are ready for pickup.";
     _accountDetails = [accountDetails retain];
     
     NSString *totalHolds = [accountDetails objectForKey:@"total"];
-    if (totalHolds) {
+    if (totalHolds)
+    {
         self.infoLabel.text = [NSString stringWithFormat:kLibrariesHoldsStatusText, totalHolds];
-    } else {
+    }
+    else
+    {
         self.infoLabel.text = @"";
     }
     
