@@ -77,6 +77,16 @@
                 control.autoresizingMask = UIViewAutoresizingFlexibleWidth;
                 control.tag = tag;
                 
+                [control setTabImage:[UIImage imageNamed:@"global/tab2-unselected"]
+                            forState:UIControlStateNormal];
+                [control setTabImage:[UIImage imageNamed:@"global/tab2-unselected-pressed"]
+                            forState:UIControlStateHighlighted];
+                [control setTabImage:[UIImage imageNamed:@"global/tab2-selected"]
+                            forState:UIControlStateSelected];
+                [control setTabImage:[UIImage imageNamed:@"global/tab2-selected"]
+                            forState:(UIControlStateSelected | UIControlStateHighlighted)];
+                
+                
                 [control addTarget:self
                             action:@selector(controlWasTouched:withEvent:)
                   forControlEvents:UIControlEventTouchUpInside];
