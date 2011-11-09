@@ -122,90 +122,99 @@ static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
     
-    UIRectCorner corners = (UIRectCornerTopLeft | UIRectCornerTopRight);
-    CGPathRef strokeRect = [[UIBezierPath bezierPathWithRoundedRect:rect
-                                                  byRoundingCorners:corners
-                                                        cornerRadii:self.cornerRadius] CGPath];
+    UIImage *tabImage = [self imageForState:self.state];
     
-    CGContextAddPath(context, strokeRect);
-    CGContextClip(context);
-    
-    CGContextSaveGState(context);
-    
-    CGFloat strokeComponents[4] = {0};
-    if (self.isSelected)
+    if (tabImage)
     {
-        strokeComponents[0] = 1.0;
-        strokeComponents[1] = 1.0;
-        strokeComponents[2] = 1.0;
-        strokeComponents[3] = 1.0;
-    }
-    else if (self.isHighlighted)
-    {
-        strokeComponents[0] = 0.40;
-        strokeComponents[1] = 1.0;
-        strokeComponents[2] = 0.55;
-        strokeComponents[3] = 1.0;
+        [tabImage drawInRect:rect];
     }
     else
-    {
-        strokeComponents[0] = 0.55;
-        strokeComponents[1] = 1.0;
-        strokeComponents[2] = 0.40;
-        strokeComponents[3] = 1.0;
+    {    
+        UIRectCorner corners = (UIRectCornerTopLeft | UIRectCornerTopRight);
+        CGPathRef strokeRect = [[UIBezierPath bezierPathWithRoundedRect:rect
+                                                      byRoundingCorners:corners
+                                                            cornerRadii:self.cornerRadius] CGPath];
+        
+        CGContextAddPath(context, strokeRect);
+        CGContextClip(context);
+        
+        CGContextSaveGState(context);
+        
+        CGFloat strokeComponents[4] = {0};
+        if (self.isSelected)
+        {
+            strokeComponents[0] = 1.0;
+            strokeComponents[1] = 1.0;
+            strokeComponents[2] = 1.0;
+            strokeComponents[3] = 1.0;
+        }
+        else if (self.isHighlighted)
+        {
+            strokeComponents[0] = 0.40;
+            strokeComponents[1] = 1.0;
+            strokeComponents[2] = 0.55;
+            strokeComponents[3] = 1.0;
+        }
+        else
+        {
+            strokeComponents[0] = 0.55;
+            strokeComponents[1] = 1.0;
+            strokeComponents[2] = 0.40;
+            strokeComponents[3] = 1.0;
+        }
+        
+        CGGradientRef strokeGradient = CGGradientCreateWithColorComponents(colorSpace, strokeComponents, NULL, 2);	
+        CGContextDrawLinearGradient(context, strokeGradient,
+                                    CGPointMake(CGRectGetMinX(rect),CGRectGetMinY(rect)),
+                                    CGPointMake(CGRectGetMinX(rect),CGRectGetMaxY(rect)), 0);
+        CGGradientRelease(strokeGradient);
+        
+        
+        // FILL GRADIENT
+        
+        CGPathRef fillRect = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(rect, 1, 1)
+                                                    byRoundingCorners:corners
+                                                          cornerRadii:self.cornerRadius] CGPath];
+        CGContextAddPath(context, fillRect);
+        CGContextClip(context);
+        
+        CGFloat fillComponents[4] = {0};
+        
+        if (self.isSelected)
+        {
+            strokeComponents[0] = 1.0;
+            strokeComponents[1] = 1.0;
+            strokeComponents[2] = 1.0;
+            strokeComponents[3] = 1.0;
+        }
+        else if (self.isHighlighted)
+        {
+            strokeComponents[0] = 0.35;
+            strokeComponents[1] = 1.0;
+            strokeComponents[2] = 0.50;
+            strokeComponents[3] = 1.0;
+        }
+        else
+        {
+            strokeComponents[0] = 0.50;
+            strokeComponents[1] = 1.0;
+            strokeComponents[2] = 0.35;
+            strokeComponents[3] = 1.0;
+        }
+        
+        CGGradientRef fillGradient = CGGradientCreateWithColorComponents(colorSpace, fillComponents, NULL, 2);	
+        CGContextDrawLinearGradient(context,
+                                    fillGradient,
+                                    CGPointMake(CGRectGetMinX(rect),CGRectGetMinY(rect)),
+                                    CGPointMake(CGRectGetMinX(rect),CGRectGetMaxY(rect)), 0);
+        CGGradientRelease(fillGradient);
+        
+        CGColorSpaceRelease(colorSpace);
+        
+        CGContextRestoreGState(context);
+        [[self backgroundColorForState:self.state] set];
+        UIRectFillUsingBlendMode(rect, kCGBlendModeOverlay);
     }
-    
-    CGGradientRef strokeGradient = CGGradientCreateWithColorComponents(colorSpace, strokeComponents, NULL, 2);	
-    CGContextDrawLinearGradient(context, strokeGradient,
-                                CGPointMake(CGRectGetMinX(rect),CGRectGetMinY(rect)),
-                                CGPointMake(CGRectGetMinX(rect),CGRectGetMaxY(rect)), 0);
-    CGGradientRelease(strokeGradient);
-    
-    
-    // FILL GRADIENT
-    
-    CGPathRef fillRect = [[UIBezierPath bezierPathWithRoundedRect:CGRectInset(rect, 1, 1)
-                                                byRoundingCorners:corners
-                                                      cornerRadii:self.cornerRadius] CGPath];
-    CGContextAddPath(context, fillRect);
-    CGContextClip(context);
-    
-    CGFloat fillComponents[4] = {0};
-    
-    if (self.isSelected)
-    {
-        strokeComponents[0] = 1.0;
-        strokeComponents[1] = 1.0;
-        strokeComponents[2] = 1.0;
-        strokeComponents[3] = 1.0;
-    }
-    else if (self.isHighlighted)
-    {
-        strokeComponents[0] = 0.35;
-        strokeComponents[1] = 1.0;
-        strokeComponents[2] = 0.50;
-        strokeComponents[3] = 1.0;
-    }
-    else
-    {
-        strokeComponents[0] = 0.50;
-        strokeComponents[1] = 1.0;
-        strokeComponents[2] = 0.35;
-        strokeComponents[3] = 1.0;
-    }
-    
-    CGGradientRef fillGradient = CGGradientCreateWithColorComponents(colorSpace, fillComponents, NULL, 2);	
-    CGContextDrawLinearGradient(context,
-                                fillGradient,
-                                CGPointMake(CGRectGetMinX(rect),CGRectGetMinY(rect)),
-                                CGPointMake(CGRectGetMinX(rect),CGRectGetMaxY(rect)), 0);
-    CGGradientRelease(fillGradient);
-    
-    CGColorSpaceRelease(colorSpace);
-    
-    CGContextRestoreGState(context);
-    [[self backgroundColorForState:self.state] set];
-    UIRectFillUsingBlendMode(rect, kCGBlendModeOverlay);
     
     NSString *title = [self titleForState:self.state];
     if ([title length] > 0) {
