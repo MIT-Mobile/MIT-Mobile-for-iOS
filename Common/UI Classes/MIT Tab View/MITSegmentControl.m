@@ -120,7 +120,6 @@ static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
     rect = UIEdgeInsetsInsetRect(rect, insets);
     
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
     
     UIImage *tabImage = [self imageForState:self.state];
     
@@ -130,6 +129,7 @@ static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
     }
     else
     {    
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
         UIRectCorner corners = (UIRectCornerTopLeft | UIRectCornerTopRight);
         CGPathRef strokeRect = [[UIBezierPath bezierPathWithRoundedRect:rect
                                                       byRoundingCorners:corners
@@ -207,10 +207,10 @@ static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
                                     fillGradient,
                                     CGPointMake(CGRectGetMinX(rect),CGRectGetMinY(rect)),
                                     CGPointMake(CGRectGetMinX(rect),CGRectGetMaxY(rect)), 0);
+        
         CGGradientRelease(fillGradient);
-        
         CGColorSpaceRelease(colorSpace);
-        
+
         CGContextRestoreGState(context);
         [[self backgroundColorForState:self.state] set];
         UIRectFillUsingBlendMode(rect, kCGBlendModeOverlay);
