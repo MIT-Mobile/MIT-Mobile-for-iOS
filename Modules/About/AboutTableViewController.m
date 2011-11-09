@@ -167,7 +167,7 @@
             }
             case 2: {
                 NSString *email = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"];
-                NSString *subject = [NSString stringWithFormat:@"Feedback for MIT Mobile %@ (%@)", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], [MITBuildInfo description]];
+                NSString *subject = [NSString stringWithFormat:@"Feedback for MIT Mobile %@ (%@) on %@ %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], [MITBuildInfo description], [[UIDevice currentDevice] systemName], [[UIDevice currentDevice] systemVersion]];
                 
                 if ([MFMailComposeViewController canSendMail]) {
                     MFMailComposeViewController *mailView = [[MFMailComposeViewController alloc] init];
