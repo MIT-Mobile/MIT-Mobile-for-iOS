@@ -53,6 +53,8 @@
 
 - (void)layoutSubviews
 {
+    [super layoutSubviews];
+    
     CGRect bounds = UIEdgeInsetsInsetRect(self.bounds, self.edgeInsets);
     
     {
