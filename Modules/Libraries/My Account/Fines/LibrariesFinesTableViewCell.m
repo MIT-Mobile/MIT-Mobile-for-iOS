@@ -22,25 +22,23 @@
 
 - (void)layoutContentUsingBounds:(CGRect)bounds
 {
-    CGRect viewFrame = bounds;
-    [super layoutContentUsingBounds:bounds];
-    
     {
         CGRect fineFrame = CGRectZero;
         fineFrame.size = [[self.fineLabel text] sizeWithFont:self.fineLabel.font];
-        fineFrame.origin = CGPointMake(CGRectGetMaxX(viewFrame) - fineFrame.size.width,
-                                       CGRectGetMaxY(viewFrame) - fineFrame.size.height);
+        fineFrame.origin = CGPointMake(CGRectGetMaxX(bounds) - fineFrame.size.width,
+                                       CGRectGetMinY(bounds));
         self.fineLabel.frame = fineFrame;
+        bounds.size.width -= (CGRectGetWidth(fineFrame) + 5.0);
     }
+    
+    [super layoutContentUsingBounds:bounds];
 }
 
 - (CGFloat)heightForContentWithWidth:(CGFloat)width
 {
-    CGFloat height = [super heightForContentWithWidth:width];
     CGSize fineSize = [[self.fineLabel text] sizeWithFont:self.fineLabel.font];
-    
-    height += fineSize.height;
-    return height;
+
+    return [super heightForContentWithWidth:(width - (fineSize.width + 5.0))];
 }
 
 - (void)setItemDetails:(NSDictionary *)itemDetails
