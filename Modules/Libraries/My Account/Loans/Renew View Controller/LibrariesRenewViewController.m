@@ -1,6 +1,7 @@
 #import "LibrariesRenewViewController.h"
 #import "LibrariesRenewTableViewCell.h"
 #import "MobileRequestOperation.h"
+#import "MITTabHeaderView.h"
 
 @interface LibrariesRenewViewController ()
 @property (nonatomic,retain) NSMutableIndexSet *selectedCells;
@@ -361,8 +362,7 @@
         self.tableView.editing = NO;
         
         {
-            UIView *updateHeader = [[[UIView alloc] init] autorelease];
-            updateHeader.backgroundColor = [UIColor lightGrayColor];
+            MITTabHeaderView *updateHeader = [[[MITTabHeaderView alloc] init] autorelease];
             
             NSUInteger successCount = [results count] - failureCount;
             NSMutableString *resultString = [NSMutableString string];
@@ -379,7 +379,6 @@
             
             UILabel *statusLabel = [[[UILabel alloc] init] autorelease];
             statusLabel.backgroundColor = [UIColor clearColor];
-            statusLabel.textColor = [UIColor lightTextColor];
             statusLabel.text = resultString;
             
             CGFloat width = CGRectGetWidth(self.tableView.bounds);
