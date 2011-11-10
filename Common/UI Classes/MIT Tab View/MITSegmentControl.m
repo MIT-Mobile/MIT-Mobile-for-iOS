@@ -6,6 +6,9 @@ static NSString* const kMITSegmentTitleColorKey = @"MITSegmentTitleColor";
 static NSString* const kMITSegmentBackgroundColorKey = @"MITSegmentBackgroundColor";
 static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
 
+static CGFloat const kMITSegmentMinimumFontSize = 8.0;
+static CGFloat const kMITSegmentMinimumHeight = 28.0;
+
 @interface MITSegmentControl ()
 @property (nonatomic,retain) NSMutableDictionary *stateDictionary;
 @property (nonatomic,retain) UILabel *textLabel;
@@ -22,7 +25,7 @@ static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
 @implementation MITSegmentControl
 @synthesize textLabel = _textLabel,
             selected = _selected,
-            titleInset = _titleInset;
+            titleInsets = _titleInsets;
 
 @dynamic shadowColor, shadowOffset, titleFont;
 
@@ -83,11 +86,11 @@ static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
         self.textLabel.lineBreakMode = UILineBreakModeMiddleTruncation;
         self.textLabel.numberOfLines = 1;
         self.textLabel.adjustsFontSizeToFitWidth = YES;
-        self.textLabel.minimumFontSize = 12.0;
+        self.textLabel.minimumFontSize = kMITSegmentMinimumFontSize;
         self.titleFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
     }
     
-    self.titleInset = CGSizeMake(5.0, 5.0);
+    self.titleInsets = UIEdgeInsetsMake(5.0, 5.0, 5.0, 5.0);
     
     self.stateDictionary = [NSMutableDictionary dictionary];
     
@@ -112,7 +115,34 @@ static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
     
 
 }
- 
+
+
+- (CGSize)sizeThatFits:(CGSize)size
+{
+    CGSize textSize = CGSizeZero;
+    CGSize viewSize = CGSizeZero;
+    
+    textSize = [[self titleForState:self.state] sizeWithFont:self.textLabel.font
+                                                 minFontSize:self.textLabel.minimumFontSize
+                                              actualFontSize:NULL
+                                                    forWidth:size.width
+                                               lineBreakMode:self.textLabel.lineBreakMode];
+    
+    UIEdgeInsets insets = self.titleInsets;
+    viewSize = CGSizeMake(MIN(size.width,textSize.width + (insets.left + insets.right)),
+                          MIN(size.height,textSize.height + (insets.top + insets.bottom)));
+    
+    UIImage *image = [self imageForState:self.state];
+    if (image)
+    {
+        viewSize.height = MAX(image.size.height,viewSize.height);
+        viewSize.width = MAX(image.size.width,viewSize.width);
+    }
+    
+    viewSize.height = MAX(viewSize.height, kMITSegmentMinimumHeight);
+    
+    return viewSize;
+}
 
 - (void)drawRect:(CGRect)rect
 {
@@ -220,7 +250,7 @@ static NSString* const kMITSegmentImageKey = @"MITSegmentImage";
     if ([title length] > 0) {
         self.textLabel.text = title;
         self.textLabel.textColor = [self titleColorForState:self.state];
-        [self.textLabel drawTextInRect:CGRectInset(rect, self.titleInset.width, self.titleInset.height)];
+        [self.textLabel drawTextInRect:UIEdgeInsetsInsetRect(rect, self.titleInsets)];
     }
 }
 

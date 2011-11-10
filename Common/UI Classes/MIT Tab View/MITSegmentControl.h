@@ -3,7 +3,7 @@
 @interface MITSegmentControl : UIControl
 @property (nonatomic, retain) UIColor *shadowColor;
 @property (nonatomic) CGSize shadowOffset;
-@property (nonatomic) CGSize titleInset;
+@property (nonatomic) UIEdgeInsets titleInsets;
 @property (nonatomic,retain) UIFont* titleFont;
 @property (nonatomic,getter = isSelected) BOOL selected;
 

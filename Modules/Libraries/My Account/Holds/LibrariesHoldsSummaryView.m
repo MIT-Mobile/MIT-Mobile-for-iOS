@@ -40,6 +40,8 @@ static NSString* kLibrariesHoldsPickupText = @"%@ are ready for pickup.";
 
 - (void)layoutSubviews
 {
+    [super layoutSubviews];
+    
     CGRect bounds = UIEdgeInsetsInsetRect(self.bounds,self.edgeInsets);
     
     {

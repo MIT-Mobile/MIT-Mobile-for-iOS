@@ -1,7 +1,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "MITTabView.h"
 #import "MITTabBar.h"
-#import "MITGradientView.h"
+#import "MITTabHeaderView.h"
 
 NSString* const MITTabViewWillBecomeActiveNotification = @"MITTabViewWillBecomeActive";
 NSString* const MITTabViewDidBecomeActiveNotification = @"MITTabViewDidBecomeActive";
@@ -79,7 +79,7 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
     }
     
     {
-        UIView *header = [[[MITGradientView alloc] initWithFrame:CGRectZero] autorelease];
+        UIView *header = [[[MITTabHeaderView alloc] initWithFrame:CGRectZero] autorelease];
         header.backgroundColor = [UIColor whiteColor];
         header.layer.masksToBounds = YES;
         header.autoresizingMask = UIViewAutoresizingNone;
@@ -129,7 +129,9 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
     {
         CGRect barFrame = CGRectZero;
         barFrame.origin = frameOrigin;
-        barFrame.size = CGSizeMake(CGRectGetWidth(viewRect), 28);
+        
+        CGSize barSize = [self.tabControl sizeThatFits:viewRect.size];
+        barFrame.size = CGSizeMake(CGRectGetWidth(viewRect), barSize.height);
         self.tabControl.frame = barFrame;
         
         frameOrigin.y += CGRectGetHeight(barFrame);

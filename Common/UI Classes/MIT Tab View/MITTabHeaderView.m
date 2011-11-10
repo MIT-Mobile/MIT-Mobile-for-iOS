@@ -1,12 +1,23 @@
-#import "MITGradientView.h"
+#import "MITTabHeaderView.h"
 #import <QuartzCore/QuartzCore.h>
 
-@implementation MITGradientView
+@interface MITTabHeaderView ()
+@property (nonatomic,retain) UIImageView *imageView;
+@end
+
+@implementation MITTabHeaderView
+@synthesize imageView = _imageView;
 @dynamic gradientLayer;
+@dynamic backgroundImage;
 
 + (Class)layerClass
 {
     return [CAGradientLayer class];
+}
+
+- (id)init
+{
+    return [self initWithFrame:CGRectZero];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -24,13 +35,41 @@
                                         [NSNumber numberWithFloat:0.0],
                                         [NSNumber numberWithFloat:1.0],
                                         nil];
+        
+        self.imageView = [[UIImageView alloc] init];
+        [self addSubview:self.imageView];
+        
+        self.backgroundImage = [UIImage imageNamed:@"global/tab2-header"];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    self.imageView = nil;
+    [super dealloc];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    self.imageView.frame = self.bounds;
 }
 
 - (CAGradientLayer*)gradientLayer
 {
     return (CAGradientLayer*)[self layer];
+}
+
+- (void)setBackgroundImage:(UIImage*)image
+{
+    self.imageView.image = image;
+}
+
+- (UIImage*)backgroundImage
+{
+    return self.imageView.image;
 }
 
 @end
