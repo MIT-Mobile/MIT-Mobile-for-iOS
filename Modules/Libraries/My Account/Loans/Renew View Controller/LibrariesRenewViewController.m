@@ -8,8 +8,7 @@
 @property (nonatomic,retain) NSArray *renewItems;
 
 @property (nonatomic,assign) UIBarButtonItem *cancelItem;
-@property (nonatomic,retain) UIBarButtonItem *renewAllItem;
-@property (nonatomic,retain) UIBarButtonItem *renewSelectedItem;
+@property (nonatomic,assign) UIBarButtonItem *renewItem;
 
 @property (nonatomic,retain) MobileRequestOperation *renewOperation;
 @property (nonatomic,assign) UITableView *tableView;
@@ -20,8 +19,7 @@
 @implementation LibrariesRenewViewController
 @synthesize selectedCells = _selectedCells;
 @synthesize renewItems = _renewItems;
-@synthesize renewAllItem = _renewAllItem;
-@synthesize renewSelectedItem = _renewSelectedItem;
+@synthesize renewItem = _renewItem;
 @synthesize renewOperation = _renewOperation;
 @synthesize tableView = _tableView;
 @synthesize cancelItem = _cancelItem;
@@ -47,8 +45,6 @@
 {
     self.selectedCells = nil;
     self.renewItems = nil;
-    self.renewAllItem = nil;
-    self.renewSelectedItem = nil;
     
     [self.renewOperation cancel];
     self.renewOperation = nil;
@@ -97,18 +93,14 @@
                                                                                  target:self
                                                                                  action:@selector(cancelRenew:)] autorelease];
     
-    self.renewAllItem = [[[UIBarButtonItem alloc] initWithTitle:@"Renew All"
-                                                          style:UIBarButtonItemStyleDone
-                                                         target:self
-                                                         action:@selector(renewAll:)] autorelease];
-    
-    self.renewSelectedItem = [[[UIBarButtonItem alloc] initWithTitle:@"Renew"
+    self.renewItem = [[[UIBarButtonItem alloc] initWithTitle:@"Renew"
                                                                style:UIBarButtonItemStyleDone
                                                               target:self
-                                                              action:@selector(renewSelected:)] autorelease];
+                                                              action:@selector(renew:)] autorelease];
+    self.renewItem.enabled = NO;
     
     self.navigationItem.leftBarButtonItem = self.cancelItem;
-    self.navigationItem.rightBarButtonItem = self.renewAllItem;
+    self.navigationItem.rightBarButtonItem = self.renewItem;
 }
 
 
@@ -153,16 +145,7 @@
         }
     }
     
-    if (([self.selectedCells count] == 0) && ([self.navigationItem.rightBarButtonItem isEqual:self.renewSelectedItem]))
-    {
-        [self.navigationItem setRightBarButtonItem:self.renewAllItem
-                                          animated:YES];
-    }
-    else if ([self.navigationItem.rightBarButtonItem isEqual:self.renewAllItem])
-    {
-        [self.navigationItem setRightBarButtonItem:self.renewSelectedItem
-                                          animated:YES];
-    }
+    self.renewItem.enabled = ([self.selectedCells count] > 0);
     
     return nil;
 }
@@ -216,53 +199,7 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (IBAction)renewAll:(id)sender
-{
-    NSMutableArray *barcodes = [NSMutableArray array];
-    for (NSDictionary *book in self.renewItems)
-    {
-        NSString *barcode = [book objectForKey:@"barcode"];
-        if (barcode)
-        {
-            [barcodes addObject:barcode];
-        }
-    }
-    
-    self.renewAllItem.enabled = NO;
-    self.cancelItem.enabled = NO;
-    
-    
-    NSDictionary *params = [NSDictionary dictionaryWithObject:[barcodes componentsJoinedByString:@" "]
-                                                       forKey:@"barcodes"];
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                            command:@"renewBooks"
-                                                                         parameters:params];
-    [operation setCompleteBlock:^(MobileRequestOperation *operation, id jsonData, NSError *error) {
-        if (error) 
-        {
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Renew"
-                                                             message:[error localizedDescription]
-                                                            delegate:nil
-                                                   cancelButtonTitle:nil
-                                                   otherButtonTitles:@"OK", nil] autorelease];
-            [alert show];
-        }
-        else
-        {
-            NSLog(@"Renew All Result:\n-----\n%@\n-----", jsonData);
-            [self showRenewResults:(NSArray*)jsonData];
-        }
-        
-        self.renewAllItem.enabled = YES;
-        self.cancelItem.enabled = YES;
-        self.renewOperation = nil;
-    }];
-    
-    self.renewOperation = operation;
-    [operation start];
-}
-
-- (IBAction)renewSelected:(id)sender
+- (IBAction)renew:(id)sender
 {
     NSMutableArray *barcodes = [NSMutableArray array];
     
@@ -277,7 +214,7 @@
     }];
     
     self.cancelItem.enabled = NO;
-    self.renewSelectedItem.enabled = NO;
+    self.renewItem.enabled = NO;
     
     NSDictionary *params = [NSDictionary dictionaryWithObject:[barcodes componentsJoinedByString:@" "]
                                                        forKey:@"barcodes"];
@@ -293,6 +230,8 @@
                                                    cancelButtonTitle:nil
                                                    otherButtonTitles:@"OK", nil] autorelease];
             [alert show];
+            self.renewItem.enabled = YES;
+            self.cancelItem.enabled = YES;
         }
         else
         {
@@ -300,8 +239,6 @@
             [self showRenewResults:(NSArray*)jsonData];
         }
         
-        self.renewSelectedItem.enabled = YES;
-        self.cancelItem.enabled = YES;
         self.renewOperation = nil;
     }];
     
