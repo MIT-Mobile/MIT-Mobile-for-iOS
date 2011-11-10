@@ -607,7 +607,7 @@
 		2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderHistoryViewController.m; sourceTree = "<group>"; };
 		2CB64605134CF13500E85E64 /* QRReaderScanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderScanViewController.h; sourceTree = "<group>"; };
 		2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = QRReaderScanViewController.mm; sourceTree = "<group>"; };
-		2CC2E9CA144DC9B000151C71 /* MITTabHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; path = MITTabHeaderView.h; sourceTree = "<group>"; };
+		2CC2E9CA144DC9B000151C71 /* MITTabHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabHeaderView.h; sourceTree = "<group>"; };
 		2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabHeaderView.m; sourceTree = "<group>"; };
 		2CC487CD13B3854600E58350 /* FacilitiesLocationSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocationSearch.h; sourceTree = "<group>"; };
 		2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationSearch.m; sourceTree = "<group>"; };
@@ -1625,13 +1625,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		2CDF73CC14642055009FA920 /* Renew Results View Controller */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Renew Results View Controller";
-			sourceTree = "<group>";
-		};
 		2CED98F013534B2C0034F6F1 /* QRReaderDetailView */ = {
 			isa = PBXGroup;
 			children = (
@@ -1719,7 +1712,6 @@
 		2CFB87EF1416B6880014E141 /* Loans */ = {
 			isa = PBXGroup;
 			children = (
-				2CDF73CC14642055009FA920 /* Renew Results View Controller */,
 				2CAC06F31461C848003EA4BD /* Renew View Controller */,
 				2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */,
 				2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */,
