@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
-#import "MITGradientView.h"
+#import "MITTabHeaderView.h"
 
-@interface LibrariesFinesSummaryView : MITGradientView
+@interface LibrariesFinesSummaryView : MITTabHeaderView
 @property (nonatomic) UIEdgeInsets edgeInsets;
 @property (nonatomic,retain) NSDictionary* accountDetails;
 @end
