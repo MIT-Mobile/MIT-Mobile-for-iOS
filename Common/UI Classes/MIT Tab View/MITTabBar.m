@@ -227,8 +227,20 @@
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-    size.height = MAX(size.height,28);
-    return size;
+    CGSize viewSize = CGSizeZero;
+    
+    if ([self.tabViews count]) 
+    {
+        CGSize tabSize = [[self.tabViews objectAtIndex:0] sizeThatFits:size];
+        
+        viewSize.height = tabSize.height;
+    }
+    else
+    {
+        viewSize.height = MAX(viewSize.height,28.0);
+    }
+    
+    return viewSize;
 }
 
 @end

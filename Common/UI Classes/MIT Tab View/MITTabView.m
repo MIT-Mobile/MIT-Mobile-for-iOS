@@ -129,7 +129,9 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
     {
         CGRect barFrame = CGRectZero;
         barFrame.origin = frameOrigin;
-        barFrame.size = CGSizeMake(CGRectGetWidth(viewRect), 28);
+        
+        CGSize barSize = [self.tabControl sizeThatFits:viewRect.size];
+        barFrame.size = CGSizeMake(CGRectGetWidth(viewRect), barSize.height);
         self.tabControl.frame = barFrame;
         
         frameOrigin.y += CGRectGetHeight(barFrame);
