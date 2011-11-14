@@ -8,6 +8,7 @@ extern const CGFloat kLibrariesTableCellEditingWidth;
 @property (nonatomic,retain) UILabel *titleLabel;
 @property (nonatomic,retain) UILabel *infoLabel;
 @property (nonatomic,retain) UILabel *statusLabel;
+@property (nonatomic,retain) UIImageView *statusIcon;
 @property (nonatomic,assign) UIEdgeInsets contentViewInsets;
 
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier;

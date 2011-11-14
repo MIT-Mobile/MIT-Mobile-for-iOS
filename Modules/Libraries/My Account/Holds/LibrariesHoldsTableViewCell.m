@@ -3,6 +3,18 @@
 #import "Foundation+MITAdditions.h"
 
 @implementation LibrariesHoldsTableViewCell
+- (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithReuseIdentifier:reuseIdentifier];
+    
+    if (self)
+    {
+        self.statusIcon.image = [UIImage imageNamed:@"libraries/status-ok"];
+        self.statusIcon.hidden = YES;
+    }
+    
+    return self;
+}
 
 - (void)setItemDetails:(NSDictionary *)itemDetails
 {
@@ -17,8 +29,10 @@
                                                           blue:0
                                                          alpha:1.0];
             [status appendFormat:@"\nPick up at %@", [itemDetails objectForKey:@"pickup-location"]];
+            self.statusIcon.hidden = NO;
         } else {
             self.statusLabel.textColor = [UIColor blackColor];
+            self.statusIcon.hidden = YES;
         }
         
         self.statusLabel.text = [[status stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
