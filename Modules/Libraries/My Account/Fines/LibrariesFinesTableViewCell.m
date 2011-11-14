@@ -14,6 +14,7 @@
         self.fineLabel.numberOfLines = 1;
         self.fineLabel.font = [UIFont boldSystemFontOfSize:17.0];
         self.fineLabel.textColor = [UIColor redColor];
+        self.fineLabel.highlightedTextColor = [UIColor whiteColor];
         [self.contentView addSubview:self.fineLabel];
     }
     
