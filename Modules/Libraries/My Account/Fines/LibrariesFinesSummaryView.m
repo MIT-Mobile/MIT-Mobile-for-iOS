@@ -21,10 +21,6 @@
         self.balanceLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
         self.balanceLabel.backgroundColor = [UIColor clearColor];
         self.balanceLabel.lineBreakMode = UILineBreakModeTailTruncation;
-        
-        NSString *dateString = [NSDateFormatter localizedStringFromDate:[NSDate date]
-                                                              dateStyle:NSDateFormatterShortStyle
-                                                              timeStyle:NSDateFormatterNoStyle];
         self.balanceLabel.text = @"";
         [self addSubview:self.balanceLabel];
         
