@@ -3,18 +3,14 @@
 #import "MobileRequestLoginViewController.h"
 #import "MobileKeychainServices.h"
 
-enum {
-    LoginViewUserCellTag = 0,
-    LoginViewPasswordCellTag,
-    LoginViewSaveCellTag
-};
-
 @interface MobileRequestLoginViewController ()
-@property (nonatomic,retain) NSArray *tableCells;
+@property (nonatomic,retain) NSDictionary *tableCells;
+
+@property (nonatomic,assign) UITableView *tableView;
 @property (nonatomic,assign) UITextField *usernameField;
 @property (nonatomic,assign) UITextField *passwordField;
-
-@property (nonatomic,retain) UIButton *loginButton;
+@property (nonatomic,assign) UISwitch *saveCredentials;
+@property (nonatomic,assign) UIButton *loginButton;
 
 @property (nonatomic,copy) NSString *username;
 @property (nonatomic,copy) NSString *password;
@@ -32,17 +28,23 @@ enum {
 @end
 
 @implementation MobileRequestLoginViewController
-@synthesize activityView = _activityView,
-            delegate = _delegate,
-            loginButton = _loginButton,
-            passwordField = _passwordField,
-            usernameField = _usernameField,
-            username = _username,
-            password = _password,
-            dismissAfterAlert = _dismissAfterAlert,
-            tableCells = _tableCells;
+#pragma mark -
+@synthesize delegate = _delegate;
 
-@dynamic shouldSaveLogin, showActivityView;
+@synthesize activityView = _activityView;
+@synthesize dismissAfterAlert = _dismissAfterAlert;
+@synthesize loginButton = _loginButton;
+@synthesize password = _password;
+@synthesize passwordField = _passwordField;
+@synthesize saveCredentials = _saveCredentials;
+@synthesize tableCells = _tableCells;
+@synthesize tableView = _tableView;
+@synthesize username = _username;
+@synthesize usernameField = _usernameField;
+
+@dynamic shouldSaveLogin;
+@dynamic showActivityView;
+#pragma mark -
 
 - (id)initWithIdentifier:(NSString*)identifier {
     NSDictionary *keychainItem = MobileKeychainFindItem(identifier, YES);
@@ -64,18 +66,17 @@ enum {
 }
 
 - (void)dealloc {
-    self.usernameField = nil;
-    self.passwordField = nil;
     self.username = nil;
     self.password = nil;
-    self.loginButton = nil;
+    self.tableCells = nil;
+    self.activityView = nil;
     [super dealloc];
 }
 
 #pragma mark - View Setup
 - (void)setupTableCells
 {
-    NSMutableArray *cells = [NSMutableArray array];
+    NSMutableDictionary *cells = [NSMutableDictionary dictionary];
     UIEdgeInsets textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
     
     {
@@ -106,7 +107,8 @@ enum {
         
         self.usernameField = userField;
         [usernameCell.contentView addSubview:userField];
-        [cells addObject:usernameCell];
+        [cells setObject:usernameCell
+                  forKey:[NSIndexPath indexPathForRow:0 inSection:0]];
     }
     
     {
@@ -132,24 +134,63 @@ enum {
         passwordCell.selectionStyle = UITableViewCellSelectionStyleNone;
         [passwordCell.contentView addSubview:passField];
         
-        [cells addObject:passwordCell];
+        [cells setObject:passwordCell
+                  forKey:[NSIndexPath indexPathForRow:1 inSection:0]];
+    }
+    
+    {
+        UITableViewCell *buttonCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
+        buttonCell.accessoryType = UITableViewCellAccessoryNone;
+        buttonCell.editingAccessoryType = UITableViewCellAccessoryNone;
+        buttonCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        buttonCell.backgroundColor = [UIColor clearColor];
+        buttonCell.layer.borderWidth = 0;
+        buttonCell.userInteractionEnabled = YES;
+        [buttonCell layoutIfNeeded];
+        
+        UIView *transparentView = [[[UIView alloc] initWithFrame:CGRectMake(0,0,320,44)] autorelease];
+        transparentView.backgroundColor = [UIColor clearColor];
+        [buttonCell setBackgroundView:transparentView];
+        
+        UIEdgeInsets buttonInsets = UIEdgeInsetsMake(2, 40, 2, 40);
+        CGRect loginFrame = CGRectMake(0,0,320,40);
+        loginFrame = UIEdgeInsetsInsetRect(loginFrame, buttonInsets);
+        
+        UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        loginButton.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        loginButton.frame = loginFrame;
+        loginButton.enabled = NO;
+        
+        [loginButton setTitle:@"Log In"
+                     forState:UIControlStateNormal];
+        [loginButton setTitleColor:[UIColor grayColor]
+                     forState:UIControlStateDisabled];
+        [loginButton addTarget:self
+                        action:@selector(loginButtonPressed:)
+              forControlEvents:UIControlEventTouchUpInside];
+        
+        self.loginButton = loginButton;
+        [buttonCell.contentView addSubview:loginButton];
+        
+        [cells setObject:buttonCell
+                  forKey:[NSIndexPath indexPathForRow:0 inSection:1]];
     }
     
     {
         UISwitch *saveToggle = [[[UISwitch alloc] init] autorelease];
         saveToggle.on = ([self.username length] > 0);
-        saveToggle.tag = LoginViewSaveCellTag;
 
-        
         UITableViewCell *saveCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
         saveCell.selectionStyle = UITableViewCellSelectionStyleNone;
         saveCell.accessoryView = saveToggle;
         
         saveCell.textLabel.text = @"Remember Login?";
         
-        [cells addObject:saveCell];
+        [cells setObject:saveCell
+                  forKey:[NSIndexPath indexPathForRow:0 inSection:2]];
     }
     
+    NSLog(@"Created %d cells", [cells count]);
     self.tableCells = cells;
 }
 
@@ -163,6 +204,7 @@ enum {
                                                 blue:0.839
                                                alpha:1.0];
     [self setupTableCells];
+    
     {
         CGRect navBarFrame = CGRectMake(origin.x, origin.y, 320, 44);
         UINavigationBar *navBar = [[[UINavigationBar alloc] initWithFrame:navBarFrame] autorelease];
@@ -186,32 +228,12 @@ enum {
         
         CGRect tableViewRect = CGRectZero;
         tableViewRect.origin = origin;
-        tableViewRect.size.width = CGRectGetWidth(mainFrame);
-        tableViewRect.size.height = floor(CGRectGetHeight(mainFrame) * 0.40);
+        tableViewRect.size = mainFrame.size;
         tableView.frame = tableViewRect;
         
         origin.y = CGRectGetMaxY(tableViewRect);
+        self.tableView = tableView;
         [mainView addSubview:tableView];
-    }
-    
-    {
-        UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 40, 0, 40);
-        CGRect loginFrame = CGRectMake(origin.x,origin.y,320,37);
-        loginFrame = UIEdgeInsetsInsetRect(loginFrame, buttonInsets);
-        
-        UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        loginButton.frame = loginFrame;
-        
-        [loginButton setTitle:@"Log In"
-                     forState:UIControlStateNormal];
-        [loginButton addTarget:self
-                        action:@selector(loginButtonPressed:)
-              forControlEvents:UIControlEventTouchUpInside];
-        
-        loginButton.enabled = NO;
-        
-        self.loginButton = loginButton;
-        [mainView addSubview:loginButton];
     }
     
     {
@@ -247,7 +269,27 @@ enum {
     [self setView:[mainView autorelease]];
 }
 
-#pragma mark - Action Handlers
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidShow:)
+                                                 name:UIKeyboardDidShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
+#pragma mark - Event Handlers
 - (IBAction)cancelButtonPressed:(id)sender {
     if (self.delegate) {
         [self.delegate cancelWasPressedForLoginRequest:self];
@@ -278,6 +320,31 @@ enum {
     [super touchesBegan:touches withEvent:event];
 }
 
+- (void)keyboardDidShow:(NSNotification*)notification
+{
+    CGRect tableFrame = self.tableView.frame;
+    CGRect keyboardFrame = [[notification.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    
+    keyboardFrame = [self.view convertRect:keyboardFrame
+                                  fromView:nil];
+    
+    tableFrame.size.height -= keyboardFrame.origin.y;
+    self.tableView.frame = tableFrame;
+    [self.view setNeedsLayout];
+}
+
+- (void)keyboardWillHide:(NSNotification*)notification
+{
+    CGRect tableFrame = self.tableView.frame;
+    CGRect keyboardFrame = [[notification.userInfo objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    
+    keyboardFrame = [self.view convertRect:keyboardFrame
+                                  fromView:nil];
+    
+    tableFrame.size.height += keyboardFrame.origin.y;
+    self.tableView.frame = tableFrame;
+}
+
 
 #pragma mark - Dynamic Property Methods
 - (void)setShowActivityView:(BOOL)showView
@@ -306,20 +373,12 @@ enum {
 
 - (BOOL)showActivityView
 {
-    return (self.activityView.superview != nil);
+    return ([self.activityView isDescendantOfView:self.view] == NO);
 }
 
 - (BOOL)shouldSaveLogin
 {
-    if ([self.tableCells count])
-    {
-        UITableViewCell *saveCell = [self.tableCells objectAtIndex:LoginViewSaveCellTag];
-        UISwitch *switchView = (UISwitch*)[saveCell accessoryView];
-        
-        return switchView.on;
-    }
-    
-    return NO;
+    return self.saveCredentials.isOn;
 }
 
 
@@ -387,38 +446,37 @@ enum {
 - (UITableViewCell*)tableView:(UITableView *)tableView
         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    switch(indexPath.section)
-    {
-        case 0:
-        {
-            return [self.tableCells objectAtIndex:indexPath.row];
-        }
-        case 1:
-        {
-            return [self.tableCells objectAtIndex:LoginViewSaveCellTag];
-        }
-            
-        default:
-            return nil;
-    }
+    return [self.tableCells objectForKey:indexPath];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    NSInteger maxSection = 0;
+    
+    for (NSIndexPath *indexPath in self.tableCells)
+    {
+        if (indexPath.section > maxSection)
+        {
+            maxSection = indexPath.section;
+        }
+    }
+    
+    return (maxSection + 1);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    switch(section)
+    NSInteger rowCount = 0;
+    
+    for (NSIndexPath *indexPath in self.tableCells)
     {
-        case 0:
-            return 2;
-        case 1:
-            return 1;
-        default:
-            return 0;
+        if (indexPath.section == section)
+        {
+            ++rowCount;
+        }
     }
+    
+    return rowCount;
 }
 
 @end
