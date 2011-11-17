@@ -62,8 +62,8 @@
         }
         
         self.activityView.autoresizingMask = UIViewAutoresizingNone;
-		self.activityView.center = CGPointMake(CGRectGetWidth(self.bounds) / 2.0,
-                                               CGRectGetHeight(self.bounds) / 2.0);
+		self.activityView.center = CGPointMake(floor(CGRectGetWidth(self.bounds) / 2.0),
+                                               floor(CGRectGetHeight(self.bounds) / 2.0));
     }
 }
 
