@@ -89,7 +89,6 @@
         userField.autocorrectionType = UITextAutocorrectionTypeNo;
         userField.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                                       UIViewAutoresizingFlexibleHeight);
-        userField.clearButtonMode = UITextFieldViewModeUnlessEditing;
         userField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
         userField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         userField.delegate = self;
