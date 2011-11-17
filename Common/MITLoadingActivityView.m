@@ -8,12 +8,14 @@
 
 @implementation MITLoadingActivityView
 
-@synthesize backgroundImage = _backgroundImage,
-            activityView = _activityView;
+@synthesize backgroundImage = _backgroundImage;
+@synthesize activityView = _activityView;
+@dynamic usesBackgroundImage;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        self.backgroundColor = [UIColor clearColor];
         [self layoutSubviews];
     }
     return self;
@@ -62,8 +64,8 @@
         }
         
         self.activityView.autoresizingMask = UIViewAutoresizingNone;
-		self.activityView.center = CGPointMake(CGRectGetWidth(self.bounds) / 2.0,
-                                               CGRectGetHeight(self.bounds) / 2.0);
+		self.activityView.center = CGPointMake(floor(CGRectGetWidth(self.bounds) / 2.0),
+                                               floor(CGRectGetHeight(self.bounds) / 2.0));
     }
 }
 
@@ -72,6 +74,23 @@
     self.activityView = nil;
     
     [super dealloc];
+}
+
+- (void)setUsesBackgroundImage:(BOOL)usesBackgroundImage
+{
+    BOOL current = !(self.backgroundImage.hidden);
+    
+    if (usesBackgroundImage != current)
+    {
+        [self setNeedsDisplay];
+    }
+    
+    self.backgroundImage.hidden = !(usesBackgroundImage);
+}
+
+- (BOOL)usesBackgroundImage
+{
+    return (self.backgroundImage.hidden == NO);
 }
 
 

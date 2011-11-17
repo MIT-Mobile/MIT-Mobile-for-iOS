@@ -47,6 +47,7 @@
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                         UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor whiteColor];
+        loadingView.usesBackgroundImage = NO;
         self.loadingView = loadingView;
     }
     

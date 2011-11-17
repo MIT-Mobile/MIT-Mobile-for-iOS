@@ -92,6 +92,9 @@
                 [control setTabImage:selectedImage
                             forState:(UIControlStateSelected | UIControlStateHighlighted)];
                 
+                [control setTitleColor:[UIColor whiteColor]
+                              forState:UIControlStateNormal];
+                
                 
                 [control addTarget:self
                             action:@selector(controlWasTouched:withEvent:)

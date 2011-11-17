@@ -89,7 +89,6 @@
         userField.autocorrectionType = UITextAutocorrectionTypeNo;
         userField.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                                       UIViewAutoresizingFlexibleHeight);
-        userField.clearButtonMode = UITextFieldViewModeUnlessEditing;
         userField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
         userField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         userField.delegate = self;
@@ -170,7 +169,7 @@
               forControlEvents:UIControlEventTouchUpInside];
         
         self.loginButton = loginButton;
-        [buttonCell.contentView addSubview:loginButton];
+        [buttonCell addSubview:loginButton];
         
         [cells setObject:buttonCell
                   forKey:[NSIndexPath indexPathForRow:0 inSection:1]];
