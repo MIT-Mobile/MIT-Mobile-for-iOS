@@ -152,8 +152,8 @@
         transparentView.backgroundColor = [UIColor clearColor];
         [buttonCell setBackgroundView:transparentView];
         
-        UIEdgeInsets buttonInsets = UIEdgeInsetsMake(2, 40, 2, 40);
-        CGRect loginFrame = CGRectMake(0,0,320,40);
+        UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 10, 0, 10);
+        CGRect loginFrame = CGRectMake(0,0,320,44);
         loginFrame = UIEdgeInsetsInsetRect(loginFrame, buttonInsets);
         
         UIButton *loginButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
