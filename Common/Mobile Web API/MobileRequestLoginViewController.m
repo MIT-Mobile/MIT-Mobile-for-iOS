@@ -170,7 +170,7 @@
               forControlEvents:UIControlEventTouchUpInside];
         
         self.loginButton = loginButton;
-        [buttonCell.contentView addSubview:loginButton];
+        [buttonCell addSubview:loginButton];
         
         [cells setObject:buttonCell
                   forKey:[NSIndexPath indexPathForRow:0 inSection:1]];
