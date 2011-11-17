@@ -14,7 +14,10 @@
         self.fineLabel.numberOfLines = 1;
         self.fineLabel.font = [UIFont boldSystemFontOfSize:17.0];
         self.fineLabel.textColor = [UIColor redColor];
+        self.fineLabel.highlightedTextColor = [UIColor whiteColor];
         [self.contentView addSubview:self.fineLabel];
+        
+        self.statusIcon.hidden = YES;
     }
     
     return self;
@@ -55,7 +58,7 @@
     self.statusLabel.textColor = [UIColor blackColor];            
     self.statusLabel.text = [[status stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
     
-    self.fineLabel.text = [itemDetails objectForKey:@"display-amount"];
+    self.fineLabel.text= [itemDetails objectForKey:@"display-amount"];
 }
 
 @end

@@ -8,11 +8,6 @@ enum {
     TouchstonePasswordCell
 };
 
-static UIEdgeInsets textCellInsets = {.top = 5,
-    .bottom = 5,
-    .left = 10,
-    .right = 10};
-
 @interface SettingsTouchstoneViewController ()
 @property (nonatomic) BOOL authenticationFailed;
 @property (nonatomic,retain) MobileRequestOperation *authOperation;
@@ -56,6 +51,12 @@ static UIEdgeInsets textCellInsets = {.top = 5,
 - (void)dealloc
 {
     self.tableCells = nil;
+    
+    if (self.authOperation)
+    {
+        [self.authOperation cancel];
+        self.authOperation = nil;
+    }
     [super dealloc];
 }
 
@@ -175,6 +176,7 @@ static UIEdgeInsets textCellInsets = {.top = 5,
 #pragma mark - Private Methods
 - (void)setupTableCells
 {
+    UIEdgeInsets textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
     NSMutableArray *cells = [NSMutableArray array];
     
     NSDictionary *credentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);

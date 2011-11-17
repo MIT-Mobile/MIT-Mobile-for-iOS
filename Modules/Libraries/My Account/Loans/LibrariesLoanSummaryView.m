@@ -26,10 +26,13 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
         self.infoLabel.numberOfLines = 2;
         [self addSubview:self.infoLabel];
         
-        self.renewButton = [[[UIBarButtonItem alloc] initWithTitle:@"Renew"
-                                                             style:UIBarButtonItemStyleBordered
-                                                            target:nil
-                                                            action:nil] autorelease];
+        
+        self.renewButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [self.renewButton setTitle:@"Renew"
+                          forState:UIControlStateNormal];
+        [self.renewButton setTitleColor:[UIColor grayColor]
+                               forState:UIControlStateDisabled];
+        [self addSubview:self.renewButton];
         
         self.edgeInsets = UIEdgeInsetsMake(5, 5, 5, 10);
     }
@@ -51,6 +54,17 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
     CGRect bounds = UIEdgeInsetsInsetRect(self.bounds, self.edgeInsets);
     
     {
+        CGFloat buttonWidth = 50.0;
+        CGRect buttonFrame = CGRectMake(CGRectGetMinX(bounds),
+                                        CGRectGetMaxY(bounds) - buttonWidth,
+                                        buttonWidth,
+                                        22);
+        
+        self.renewButton.frame = buttonFrame;
+        bounds.size.width -= buttonWidth;
+    }
+    
+    {
         CGRect titleFrame = bounds;
         titleFrame.size = [self.infoLabel.text sizeWithFont:self.infoLabel.font
                                           constrainedToSize:bounds.size
@@ -67,6 +81,7 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
                                  constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
                                        lineBreakMode:self.infoLabel.lineBreakMode];
 
+    contentSize.height = MAX(contentSize.height, 22);
     contentSize.height += (self.edgeInsets.top + self.edgeInsets.bottom);
     return contentSize;
 }

@@ -55,6 +55,11 @@
         LibrariesLoanSummaryView *headerView = [[[LibrariesLoanSummaryView alloc] initWithFrame:headerFrame] autorelease];
         headerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                        UIViewAutoresizingFlexibleWidth);
+        [headerView.renewButton addTarget:self
+                                   action:@selector(performRenew:)
+                         forControlEvents:UIControlEventTouchUpInside];
+        headerView.renewButton.enabled = NO;
+        
         self.headerView = headerView;
     }
     
@@ -170,15 +175,6 @@
 - (void)tabDidBecomeActive
 {
     [self updateLoanData];
-    
-    if (self.parentController.navigationItem) 
-    {
-        self.headerView.renewButton.enabled = (self.loanData != nil);
-        [self.headerView.renewButton setTarget:self];
-        [self.headerView.renewButton setAction:@selector(performRenew:)];
-        [self.parentController.navigationItem setRightBarButtonItem:self.headerView.renewButton
-                                                           animated:YES];
-    }
 }
 
 - (void)tabWillBecomeInactive

@@ -14,6 +14,7 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
             infoLabel = _infoLabel,
             itemDetails = _itemDetails,
             statusLabel = _statusLabel,
+            statusIcon = _statusIcon,
             titleLabel = _titleLabel;
 
 - (id)init
@@ -63,6 +64,10 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
     self.statusLabel.autoresizingMask = UIViewAutoresizingNone;
     [self.contentView addSubview:self.statusLabel];
     
+    self.statusIcon = [[[UIImageView alloc] init] autorelease];
+    self.statusIcon.hidden = YES;
+    [self.contentView addSubview:self.statusIcon];
+    
     self.contentViewInsets = UIEdgeInsetsMake(5, 5, 5, 10);
 }
 
@@ -110,11 +115,24 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
     }
     
     {
+        CGRect iconFrame = CGRectZero;
+        
+        if (self.statusIcon.hidden == NO)
+        {
+            iconFrame.size = self.statusIcon.image.size;
+            iconFrame.origin.x = CGRectGetMinX(viewBounds);
+            iconFrame.origin.y = CGRectGetMaxY(self.infoLabel.frame);
+            self.statusIcon.frame = iconFrame;
+            
+            // Add in some padding between the icon and the text that will follow
+            iconFrame.size.width += 3;
+        }
+        
         CGRect statusFrame = CGRectZero;
-        statusFrame.origin = CGPointMake(CGRectGetMinX(viewBounds),
+        statusFrame.origin = CGPointMake(CGRectGetMinX(viewBounds) + iconFrame.size.width,
                                          CGRectGetMaxY(self.infoLabel.frame));
         statusFrame.size = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
-                                               constrainedToSize:CGSizeMake(viewWidth, CGFLOAT_MAX)
+                                               constrainedToSize:CGSizeMake(viewWidth - iconFrame.size.width, CGFLOAT_MAX)
                                                    lineBreakMode:self.statusLabel.lineBreakMode];
         self.statusLabel.frame = statusFrame;
     }
@@ -140,11 +158,19 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
     }
     
     {
+        CGSize iconSize = CGSizeZero;
+        
+        if (self.statusIcon.image && (self.statusIcon.hidden == NO))
+        {
+            iconSize = self.statusIcon.image.size;
+            iconSize.width += 3;
+        }
+        
         CGSize noticeSize = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
-                                                constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
+                                                constrainedToSize:CGSizeMake(width - iconSize.width, CGFLOAT_MAX)
                                                     lineBreakMode:self.statusLabel.lineBreakMode];
 
-        height += noticeSize.height;
+        height += MAX(noticeSize.height,iconSize.height);
     }
     
     return (height + self.contentViewInsets.top + self.contentViewInsets.bottom);

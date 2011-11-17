@@ -97,6 +97,8 @@
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
 		2C77F0321355EE2500CD11D6 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C77F0311355EE2500CD11D6 /* QRReaderResult.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
+		2C943D9C1471A0E600205F32 /* LibrariesDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C943D991471A0E600205F32 /* LibrariesDetailTableViewCell.m */; };
+		2C943D9D1471A0E600205F32 /* LibrariesDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C943D9B1471A0E600205F32 /* LibrariesDetailViewController.m */; };
 		2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D2137D677A0025B28D /* FacilitiesRoomViewController.m */; };
 		2C95A1D8137DB24D0025B28D /* FacilitiesSummaryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */; };
 		2C95A1D9137DB24D0025B28D /* FacilitiesSummaryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C95A1D7137DB24D0025B28D /* FacilitiesSummaryViewController.xib */; };
@@ -580,6 +582,10 @@
 		2C77F0311355EE2500CD11D6 /* QRReaderResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResult.m; sourceTree = "<group>"; };
 		2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocation.h; sourceTree = "<group>"; };
 		2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocation.m; sourceTree = "<group>"; };
+		2C943D981471A0E600205F32 /* LibrariesDetailTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesDetailTableViewCell.h; sourceTree = "<group>"; };
+		2C943D991471A0E600205F32 /* LibrariesDetailTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesDetailTableViewCell.m; sourceTree = "<group>"; };
+		2C943D9A1471A0E600205F32 /* LibrariesDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesDetailViewController.h; sourceTree = "<group>"; };
+		2C943D9B1471A0E600205F32 /* LibrariesDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesDetailViewController.m; sourceTree = "<group>"; };
 		2C95A1D1137D677A0025B28D /* FacilitiesRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRoomViewController.h; sourceTree = "<group>"; };
 		2C95A1D2137D677A0025B28D /* FacilitiesRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRoomViewController.m; sourceTree = "<group>"; };
 		2C95A1D5137DB24D0025B28D /* FacilitiesSummaryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesSummaryViewController.h; sourceTree = "<group>"; };
@@ -607,7 +613,7 @@
 		2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderHistoryViewController.m; sourceTree = "<group>"; };
 		2CB64605134CF13500E85E64 /* QRReaderScanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderScanViewController.h; sourceTree = "<group>"; };
 		2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = QRReaderScanViewController.mm; sourceTree = "<group>"; };
-		2CC2E9CA144DC9B000151C71 /* MITTabHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; path = MITTabHeaderView.h; sourceTree = "<group>"; };
+		2CC2E9CA144DC9B000151C71 /* MITTabHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabHeaderView.h; sourceTree = "<group>"; };
 		2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabHeaderView.m; sourceTree = "<group>"; };
 		2CC487CD13B3854600E58350 /* FacilitiesLocationSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocationSearch.h; sourceTree = "<group>"; };
 		2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationSearch.m; sourceTree = "<group>"; };
@@ -1532,6 +1538,18 @@
 			name = QRReaderHelpView;
 			sourceTree = "<group>";
 		};
+		2C943D971471A0A600205F32 /* Book Detail View */ = {
+			isa = PBXGroup;
+			children = (
+				2C943D981471A0E600205F32 /* LibrariesDetailTableViewCell.h */,
+				2C943D991471A0E600205F32 /* LibrariesDetailTableViewCell.m */,
+				2C943D9A1471A0E600205F32 /* LibrariesDetailViewController.h */,
+				2C943D9B1471A0E600205F32 /* LibrariesDetailViewController.m */,
+			);
+			name = "Book Detail View";
+			path = "Detail View";
+			sourceTree = "<group>";
+		};
 		2C95A1D4137DB03E0025B28D /* FacilitiesSummary */ = {
 			isa = PBXGroup;
 			children = (
@@ -1625,13 +1643,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		2CDF73CC14642055009FA920 /* Renew Results View Controller */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Renew Results View Controller";
-			sourceTree = "<group>";
-		};
 		2CED98F013534B2C0034F6F1 /* QRReaderDetailView */ = {
 			isa = PBXGroup;
 			children = (
@@ -1679,6 +1690,7 @@
 		2CFB87EC1416B5120014E141 /* My Account */ = {
 			isa = PBXGroup;
 			children = (
+				2C943D971471A0A600205F32 /* Book Detail View */,
 				2CFB87ED1416B6880014E141 /* Fines */,
 				2CFB87EE1416B6880014E141 /* Holds */,
 				2CFB87EF1416B6880014E141 /* Loans */,
@@ -1719,7 +1731,6 @@
 		2CFB87EF1416B6880014E141 /* Loans */ = {
 			isa = PBXGroup;
 			children = (
-				2CDF73CC14642055009FA920 /* Renew Results View Controller */,
 				2CAC06F31461C848003EA4BD /* Renew View Controller */,
 				2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */,
 				2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */,
@@ -2882,6 +2893,8 @@
 				EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */,
 				2CAC06F71461C876003EA4BD /* LibrariesRenewViewController.m in Sources */,
 				2CCAD0231462D6D1008FFA9A /* LibrariesRenewTableViewCell.m in Sources */,
+				2C943D9C1471A0E600205F32 /* LibrariesDetailTableViewCell.m in Sources */,
+				2C943D9D1471A0E600205F32 /* LibrariesDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
