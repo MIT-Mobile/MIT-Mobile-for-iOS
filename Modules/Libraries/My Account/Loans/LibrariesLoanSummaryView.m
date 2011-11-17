@@ -30,7 +30,7 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
         self.renewButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         [self.renewButton setTitle:@"Renew"
                           forState:UIControlStateNormal];
-        [self.renewButton setTitleColor:[UIColor grayColor]
+        [self.renewButton setTitleColor:[UIColor lightGrayColor]
                                forState:UIControlStateDisabled];
         [self addSubview:self.renewButton];
         
@@ -54,11 +54,11 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
     CGRect bounds = UIEdgeInsetsInsetRect(self.bounds, self.edgeInsets);
     
     {
-        CGFloat buttonWidth = 50.0;
-        CGRect buttonFrame = CGRectMake(CGRectGetMinX(bounds),
-                                        CGRectGetMaxY(bounds) - buttonWidth,
+        CGFloat buttonWidth = 75.0;
+        CGRect buttonFrame = CGRectMake(CGRectGetMaxX(bounds) - buttonWidth,
+                                        CGRectGetMinY(bounds),
                                         buttonWidth,
-                                        22);
+                                        31);
         
         self.renewButton.frame = buttonFrame;
         bounds.size.width -= buttonWidth;
@@ -81,7 +81,7 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
                                  constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
                                        lineBreakMode:self.infoLabel.lineBreakMode];
 
-    contentSize.height = MAX(contentSize.height, 22);
+    contentSize.height = MAX(contentSize.height, 31);
     contentSize.height += (self.edgeInsets.top + self.edgeInsets.bottom);
     return contentSize;
 }
