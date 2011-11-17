@@ -11,7 +11,7 @@ enum {
 @interface SettingsTouchstoneViewController ()
 @property (nonatomic) BOOL authenticationFailed;
 @property (nonatomic,retain) MobileRequestOperation *authOperation;
-@property (nonatomic,retain) NSArray *tableCells;
+@property (nonatomic,retain) NSDictionary *tableCells;
 @property (nonatomic,assign) UITextField *usernameField;
 @property (nonatomic,assign) UITextField *passwordField;
 @property (nonatomic,assign) UIButton *logoutButton;
@@ -79,49 +79,17 @@ enum {
         [self setupTableCells];
         
         CGRect tableFrame = viewBounds;
-        tableFrame.size.height = 128.0;
         UITableView *tableView = [[UITableView alloc] initWithFrame:tableFrame
                                                               style:UITableViewStyleGrouped];
         tableView.delegate = self;
         tableView.dataSource = self;
         tableView.rowHeight = 44.0;
         tableView.allowsSelection = NO;
+        tableView.scrollEnabled = NO;
         tableView.backgroundColor = [UIColor clearColor];
         
         viewBounds.origin.y += tableFrame.size.height;
         [mainView addSubview:tableView];
-    }
-    
-    {
-        UIButton *clearButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        clearButton.enabled = NO;
-        [clearButton setTitleColor:[UIColor lightGrayColor]
-                          forState:UIControlStateDisabled];
-        
-        [clearButton setTitle:@"Log out of Touchstone"
-                     forState:UIControlStateNormal];
-        
-        [clearButton addTarget:self
-                        action:@selector(clearTouchstoneLogin:)
-              forControlEvents:UIControlEventTouchUpInside];
-        
-        CGRect buttonFrame = CGRectMake(viewBounds.origin.x,
-                                        viewBounds.origin.y,
-                                        CGRectGetWidth(viewBounds),
-                                        44);
-        clearButton.frame = UIEdgeInsetsInsetRect(buttonFrame, UIEdgeInsetsMake(0, 20, 0, 20));
-        
-        NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-        for (NSHTTPCookie *cookie in [cookieStore cookies]) {
-            if ([MobileRequestOperation isAuthenticationCookie:cookie]) {
-                NSLog(@"Found cookie named: '%@'", [cookie name]);
-                clearButton.enabled = YES;
-                break;
-            }
-        }
-        
-        self.logoutButton = clearButton;
-        [mainView addSubview:clearButton];
     }
     
     [self setView:mainView];
@@ -177,7 +145,7 @@ enum {
 - (void)setupTableCells
 {
     UIEdgeInsets textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
-    NSMutableArray *cells = [NSMutableArray array];
+    NSMutableDictionary *cells = [NSMutableDictionary dictionary];
     
     NSDictionary *credentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
     
@@ -191,7 +159,6 @@ enum {
         userField.autocorrectionType = UITextAutocorrectionTypeNo;
         userField.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                                       UIViewAutoresizingFlexibleHeight);
-        userField.clearButtonMode = UITextFieldViewModeUnlessEditing;
         userField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
         userField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         userField.delegate = self;
@@ -210,7 +177,8 @@ enum {
         self.usernameField = userField;
         [usernameCell.contentView addSubview:userField];
         
-        [cells addObject:usernameCell];
+        [cells setObject:usernameCell
+                  forKey:[NSIndexPath indexPathForRow:0 inSection:0]];
     }
     
     {
@@ -236,7 +204,54 @@ enum {
         
         self.passwordField = passField;
         [passwordCell.contentView addSubview:passField];
-        [cells addObject:passwordCell];
+        
+        [cells setObject:passwordCell
+                  forKey:[NSIndexPath indexPathForRow:1 inSection:0]];
+    }
+    
+    {
+        UITableViewCell *buttonCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
+        buttonCell.accessoryType = UITableViewCellAccessoryNone;
+        buttonCell.editingAccessoryType = UITableViewCellAccessoryNone;
+        buttonCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        buttonCell.backgroundColor = [UIColor clearColor];
+        
+        UIView *transparentView = [[[UIView alloc] initWithFrame:CGRectMake(0,0,320,44)] autorelease];
+        transparentView.backgroundColor = [UIColor clearColor];
+        [buttonCell setBackgroundView:transparentView];
+        
+        UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 10, 0, 10);
+        CGRect buttonFrame = CGRectMake(0,0,320,44);
+        buttonFrame = UIEdgeInsetsInsetRect(buttonFrame, buttonInsets);
+        
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        button.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        button.enabled = NO;
+        button.frame = buttonFrame;
+        
+        NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (NSHTTPCookie *cookie in [cookieStore cookies]) {
+            if ([MobileRequestOperation isAuthenticationCookie:cookie]) {
+                NSLog(@"Found cookie named: '%@'", [cookie name]);
+                button.enabled = YES;
+                break;
+            }
+        }
+        
+        
+        [button setTitle:@"Log out of Touchstone"
+                forState:UIControlStateNormal];
+        [button setTitleColor:[UIColor lightGrayColor]
+                          forState:UIControlStateDisabled];
+        [button addTarget:self
+                   action:@selector(clearTouchstoneLogin:)
+              forControlEvents:UIControlEventTouchUpInside];
+        
+        [buttonCell addSubview:button];
+        self.logoutButton = button;
+        
+        [cells setObject:buttonCell
+                  forKey:[NSIndexPath indexPathForRow:0 inSection:1]];
     }
 
     self.tableCells = cells;
@@ -332,24 +347,44 @@ enum {
         MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
     }
     
-    [MobileRequestOperation clearAuthenticatedSession];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark - UITableViewDelegate Methods
-
-#pragma mark - UITableViewDataSource Methods
+#pragma mark - UITableView Data Source
 - (UITableViewCell*)tableView:(UITableView *)tableView
         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSUInteger absoluteIndex = indexPath.section + indexPath.row;
+    return [self.tableCells objectForKey:indexPath];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    NSInteger maxSection = 0;
     
-    return [self.tableCells objectAtIndex:absoluteIndex];
+    for (NSIndexPath *indexPath in self.tableCells)
+    {
+        if (indexPath.section > maxSection)
+        {
+            maxSection = indexPath.section;
+        }
+    }
+    
+    return (maxSection + 1);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 2;
+    NSInteger rowCount = 0;
+    
+    for (NSIndexPath *indexPath in self.tableCells)
+    {
+        if (indexPath.section == section)
+        {
+            ++rowCount;
+        }
+    }
+    
+    return rowCount;
 }
 
 #pragma mark - Notification Handlers
