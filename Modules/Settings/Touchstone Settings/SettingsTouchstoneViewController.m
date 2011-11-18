@@ -10,6 +10,8 @@ enum {
 
 @interface SettingsTouchstoneViewController ()
 @property (nonatomic) BOOL authenticationFailed;
+@property (nonatomic) BOOL credentialsModified;
+
 @property (nonatomic,retain) MobileRequestOperation *authOperation;
 @property (nonatomic,retain) NSDictionary *tableCells;
 @property (nonatomic,assign) UITextField *usernameField;
@@ -30,6 +32,7 @@ enum {
 @synthesize passwordField = _passwordField;
 @synthesize logoutButton = _logoutButton;
 @synthesize authenticationFailed = _authenticationFailed;
+@synthesize credentialsModified = _credentialsModified;
 
 + (NSString*)touchstoneUsername
 {
@@ -43,7 +46,8 @@ enum {
     self = [super initWithNibName:nil
                            bundle:nil];
     if (self) {
-        
+        self.credentialsModified = NO;
+        self.authenticationFailed = NO;
     }
     return self;
 }
@@ -266,7 +270,11 @@ enum {
     [self.passwordField resignFirstResponder];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
-    if ([username length])
+    if (self.credentialsModified == NO)
+    {
+        [self cancel:nil];
+    }
+    else if ([username length])
     {
         if (self.authenticationFailed)
         {
@@ -408,6 +416,7 @@ enum {
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     self.authenticationFailed = NO;
+    self.credentialsModified = YES;
     
     if (self.navigationItem.rightBarButtonItem.tag == NSIntegerMax)
     {
