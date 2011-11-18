@@ -233,7 +233,6 @@ enum {
         NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
         for (NSHTTPCookie *cookie in [cookieStore cookies]) {
             if ([MobileRequestOperation isAuthenticationCookie:cookie]) {
-                NSLog(@"Found cookie named: '%@'", [cookie name]);
                 button.enabled = YES;
                 break;
             }
