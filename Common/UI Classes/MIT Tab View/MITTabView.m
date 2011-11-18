@@ -8,7 +8,7 @@ NSString* const MITTabViewDidBecomeActiveNotification = @"MITTabViewDidBecomeAct
 NSString* const MITTabViewWillBecomeInactiveNotification = @"MITTabViewWillBecomeInactive";
 NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeInactive";
 
-static NSUInteger kHeaderDefaultHeight = 5.0;
+static CGFloat kHeaderDefaultHeight = 5.0;
 
 @interface MITTabView ()
 @property (nonatomic,retain) MITTabBar *tabControl;
