@@ -60,6 +60,7 @@
         
         self.loansController = [[[LibrariesLoanTabController alloc] initWithTableView:view] autorelease];
         self.loansController.parentController = self;
+        self.loansController.tabView = self.tabView;
         [self.tabView addView:view
                      withItem:[[[UITabBarItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
                       animate:NO];
