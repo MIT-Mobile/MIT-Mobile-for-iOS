@@ -55,10 +55,11 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
     
     {
         CGFloat buttonWidth = 75.0;
+        CGFloat buttonHeight = 31.0;
         CGRect buttonFrame = CGRectMake(CGRectGetMaxX(bounds) - buttonWidth,
-                                        CGRectGetMinY(bounds),
+                                        CGRectGetMinY(bounds) + floor((CGRectGetHeight(bounds) - buttonHeight) / 2.0),
                                         buttonWidth,
-                                        31);
+                                        buttonHeight);
         
         self.renewButton.frame = buttonFrame;
         bounds.size.width -= buttonWidth;
