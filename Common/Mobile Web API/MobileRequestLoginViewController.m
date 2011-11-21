@@ -184,7 +184,7 @@
         saveCell.selectionStyle = UITableViewCellSelectionStyleNone;
         saveCell.accessoryView = saveToggle;
         
-        saveCell.textLabel.text = @"Remember Login?";
+        saveCell.textLabel.text = @"Remember Login";
         
         [cells setObject:saveCell
                   forKey:[NSIndexPath indexPathForRow:0 inSection:2]];
