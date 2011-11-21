@@ -22,10 +22,12 @@ extern NSString* const MITTabViewDidBecomeInactiveNotification;
 @property (nonatomic,assign) id<MITTabViewDelegate> delegate;
 @property (nonatomic,readonly) NSArray *views;
 @property (nonatomic,readonly,retain) UIView *contentView;
+@property (nonatomic) BOOL tabBarHidden;
 
 - (id)init;
 - (id)initWithFrame:(CGRect)frame;
 
 - (BOOL)addView:(UIView*)view withItem:(UITabBarItem*)item animate:(BOOL)animate;
 - (BOOL)insertView:(UIView*)view withItem:(UITabBarItem*)item atIndex:(NSInteger)index animate:(BOOL)animate;
+- (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated;
 @end

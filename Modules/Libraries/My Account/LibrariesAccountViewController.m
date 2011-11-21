@@ -58,8 +58,9 @@
                                  UIViewAutoresizingFlexibleWidth);
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
-        self.loansController = [[LibrariesLoanTabController alloc] initWithTableView:view];
+        self.loansController = [[[LibrariesLoanTabController alloc] initWithTableView:view] autorelease];
         self.loansController.parentController = self;
+        self.loansController.tabView = self.tabView;
         [self.tabView addView:view
                      withItem:[[[UITabBarItem alloc] initWithTitle:@"Loans" image:nil tag:0] autorelease]
                       animate:NO];
@@ -72,7 +73,7 @@
                                  UIViewAutoresizingFlexibleWidth);
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
-        self.finesController = [[LibrariesFinesTabController alloc] initWithTableView:view];
+        self.finesController = [[[LibrariesFinesTabController alloc] initWithTableView:view] autorelease];
         self.finesController.parentController = self;
         
         [self.tabView addView:view
@@ -87,7 +88,7 @@
                                  UIViewAutoresizingFlexibleWidth);
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
-        self.holdsController = [[LibrariesHoldsTabController alloc] initWithTableView:view];
+        self.holdsController = [[[LibrariesHoldsTabController alloc] initWithTableView:view] autorelease];
         self.holdsController.parentController = self;
         [self.tabView addView:view
                      withItem:[[[UITabBarItem alloc] initWithTitle:@"Holds" image:nil tag:2] autorelease]

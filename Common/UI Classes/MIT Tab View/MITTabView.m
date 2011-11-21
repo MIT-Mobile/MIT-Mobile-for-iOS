@@ -8,7 +8,7 @@ NSString* const MITTabViewDidBecomeActiveNotification = @"MITTabViewDidBecomeAct
 NSString* const MITTabViewWillBecomeInactiveNotification = @"MITTabViewWillBecomeInactive";
 NSString* const MITTabViewDidBecomeInactiveNotification = @"MITTabViewDidBecomeInactive";
 
-static NSUInteger kHeaderDefaultHeight = 5.0;
+static CGFloat kHeaderDefaultHeight = 5.0;
 
 @interface MITTabView ()
 @property (nonatomic,retain) MITTabBar *tabControl;
@@ -31,14 +31,16 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
 @end
 
 @implementation MITTabView
-@synthesize delegate = _delegate,
-            contentView = _contentView;
+@synthesize delegate = _delegate;
+@synthesize contentView = _contentView;
+@synthesize tabBarHidden = _tabBarHidden;
 
-@synthesize activeView = _activeView,
-			tabControl = _tabControl,
-			tabViews = _tabViews,
-            headerView = _headerView,
-            activeHeaderView = _activeHeaderView;
+
+@synthesize activeView = _activeView;
+@synthesize tabControl = _tabControl;
+@synthesize tabViews = _tabViews;
+@synthesize headerView = _headerView;
+@synthesize activeHeaderView = _activeHeaderView;
 
 @dynamic views;
 
@@ -104,6 +106,8 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
     self.tabControl = nil;
     self.tabViews = nil;
     self.contentView = nil;
+    self.headerView = nil;
+    self.activeHeaderView = nil;
     [super dealloc];
 }
 
@@ -126,19 +130,24 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
     CGRect viewRect = self.bounds;
     CGPoint frameOrigin = viewRect.origin;
     
+    CGRect barFrame = CGRectZero;
+    CGRect headerFrame = CGRectZero;
+    CGRect contentFrame = CGRectZero;
+    
+    if (self.tabBarHidden == NO)
     {
-        CGRect barFrame = CGRectZero;
+        barFrame = CGRectZero;
         barFrame.origin = frameOrigin;
         
         CGSize barSize = [self.tabControl sizeThatFits:viewRect.size];
         barFrame.size = CGSizeMake(CGRectGetWidth(viewRect), barSize.height);
-        self.tabControl.frame = barFrame;
         
         frameOrigin.y += CGRectGetHeight(barFrame);
     }
     
+    if (self.tabBarHidden == NO)
     {
-        CGRect headerFrame = viewRect;
+        headerFrame = viewRect;
         headerFrame.origin = frameOrigin;
         headerFrame.size.height = kHeaderDefaultHeight;
         
@@ -151,22 +160,37 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
             }
             
             headerFrame.size.height = delegateHeight;
-            self.activeHeaderView.frame = CGRectStandardize(headerFrame);
             frameOrigin.y += CGRectGetHeight(headerFrame);
         }
-        
     }
     
     {
-        CGRect subviewFrame = viewRect;
-        subviewFrame.origin = frameOrigin;
-        subviewFrame.size.height -= frameOrigin.y;
+        contentFrame = viewRect;
+        contentFrame.origin = frameOrigin;
+        contentFrame.size.height -= frameOrigin.y;
+    }
 
-        self.contentView.frame = CGRectStandardize(subviewFrame);
-        
-        if (self.activeView) {
+
+    if (self.tabBarHidden)
+    {
+        self.activeHeaderView.frame = CGRectStandardize(headerFrame);
+        self.tabControl.frame = barFrame;
+        self.contentView.frame = CGRectStandardize(contentFrame);
+        if (self.activeView)
+        {
             self.activeView.frame = self.contentView.bounds;
         }
+    }
+    else
+    {
+        self.contentView.frame = CGRectStandardize(contentFrame);
+        if (self.activeView)
+        {
+            self.activeView.frame = self.contentView.bounds;
+        }
+        
+        self.activeHeaderView.frame = CGRectStandardize(headerFrame);
+        self.tabControl.frame = barFrame;
     }
 }
 
@@ -321,14 +345,43 @@ static NSUInteger kHeaderDefaultHeight = 5.0;
 
 - (void)tabViewDidBecomeInactive:(UIView*)view
 {
-    if (view) {
-        if ([self.delegate respondsToSelector:@selector(tabView:viewDidBecomeInactive:)]) {
+    if (view)
+    {
+        if ([self.delegate respondsToSelector:@selector(tabView:viewDidBecomeInactive:)])
+        {
             [self.delegate tabView:self
                viewDidBecomeInactive:view];
         }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:MITTabViewDidBecomeInactiveNotification
                                                             object:self];
+    }
+}
+
+#pragma mark - Dynamic Properties
+- (void)setTabBarHidden:(BOOL)tabBarHidden
+{
+    [self setTabBarHidden:tabBarHidden
+                 animated:NO];
+}
+
+- (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated
+{
+    if (tabBarHidden != _tabBarHidden)
+    {
+        _tabBarHidden = tabBarHidden;
+        {
+            [UIView animateWithDuration:(animated ? 0.25 : 0.0)
+                                  delay:0.0
+                                options:(UIViewAnimationOptionAllowAnimatedContent |
+                                         UIViewAnimationOptionCurveLinear)
+                             animations:^ {
+                                 [self layoutSubviews];
+                                 self.activeHeaderView.hidden = tabBarHidden;
+                                 self.tabControl.hidden = tabBarHidden;
+                             }
+                             completion:nil];
+        }
     }
 }
 @end

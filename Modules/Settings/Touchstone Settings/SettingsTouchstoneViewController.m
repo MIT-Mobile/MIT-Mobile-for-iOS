@@ -12,7 +12,6 @@ enum {
 
 @interface SettingsTouchstoneViewController ()
 @property (nonatomic) BOOL authenticationFailed;
-@property (nonatomic) BOOL credentialsModified;
 
 @property (nonatomic,retain) MobileRequestOperation *authOperation;
 @property (nonatomic,retain) NSDictionary *tableCells;
@@ -34,7 +33,6 @@ enum {
 @synthesize passwordField = _passwordField;
 @synthesize logoutButton = _logoutButton;
 @synthesize authenticationFailed = _authenticationFailed;
-@synthesize credentialsModified = _credentialsModified;
 
 + (NSString*)touchstoneUsername
 {
@@ -48,7 +46,6 @@ enum {
     self = [super initWithNibName:nil
                            bundle:nil];
     if (self) {
-        self.credentialsModified = NO;
         self.authenticationFailed = NO;
     }
     return self;
@@ -108,7 +105,7 @@ enum {
     self.title = @"Touchstone";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                            target:self
-                                                                                           action:@selector(save:)];
+                                                                                           action:@selector(cancel:)];
     self.navigationItem.rightBarButtonItem.tag = NSIntegerMax;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                           target:self
@@ -238,7 +235,6 @@ enum {
         NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
         for (NSHTTPCookie *cookie in [cookieStore cookies]) {
             if ([MobileRequestOperation isAuthenticationCookie:cookie]) {
-                NSLog(@"Found cookie named: '%@'", [cookie name]);
                 button.enabled = YES;
                 break;
             }
@@ -272,11 +268,7 @@ enum {
     [self.passwordField resignFirstResponder];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
-    if (self.credentialsModified == NO)
-    {
-        [self cancel:nil];
-    }
-    else if ([username length])
+    if ([username length])
     {
         if (self.authenticationFailed)
         {
@@ -453,7 +445,6 @@ enum {
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     self.authenticationFailed = NO;
-    self.credentialsModified = YES;
     
     if (self.navigationItem.rightBarButtonItem.tag == NSIntegerMax)
     {
