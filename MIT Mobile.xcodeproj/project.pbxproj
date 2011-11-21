@@ -105,7 +105,7 @@
 		2C99DCAF1370508D00114A9A /* HighlightLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C99DCAE1370508D00114A9A /* HighlightLabel.m */; };
 		2C99DCE01370782200114A9A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C99DCDF1370782200114A9A /* CoreText.framework */; };
 		2CA454F213C7468F00891428 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA454F113C7468F00891428 /* AssetsLibrary.framework */; };
-		2CAC06F71461C876003EA4BD /* LibrariesRenewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAC06F61461C876003EA4BD /* LibrariesRenewViewController.m */; };
+		2CAC06F71461C876003EA4BD /* LibrariesRenewResultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAC06F61461C876003EA4BD /* LibrariesRenewResultViewController.m */; };
 		2CAFCBE213F1C3F0007983D8 /* TBXML+MIT.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */; };
 		2CB2D2FF141E39F300FFC716 /* LibrariesLoanSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */; };
 		2CB2D302141E72A900FFC716 /* LibrariesLoanTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D301141E72A900FFC716 /* LibrariesLoanTabController.m */; };
@@ -116,7 +116,6 @@
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; };
-		2CCAD0231462D6D1008FFA9A /* LibrariesRenewTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCAD0221462D6D1008FFA9A /* LibrariesRenewTableViewCell.m */; };
 		2CCB85F91361F44E0024E474 /* FacilitiesLocationData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */; };
 		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
@@ -598,8 +597,8 @@
 		2C99DCAE1370508D00114A9A /* HighlightLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightLabel.m; sourceTree = "<group>"; };
 		2C99DCDF1370782200114A9A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		2CA454F113C7468F00891428 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
-		2CAC06F51461C876003EA4BD /* LibrariesRenewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesRenewViewController.h; sourceTree = "<group>"; };
-		2CAC06F61461C876003EA4BD /* LibrariesRenewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesRenewViewController.m; sourceTree = "<group>"; };
+		2CAC06F51461C876003EA4BD /* LibrariesRenewResultViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesRenewResultViewController.h; sourceTree = "<group>"; };
+		2CAC06F61461C876003EA4BD /* LibrariesRenewResultViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesRenewResultViewController.m; sourceTree = "<group>"; };
 		2CAFCBE013F1C3F0007983D8 /* TBXML+MIT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TBXML+MIT.h"; sourceTree = "<group>"; };
 		2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TBXML+MIT.m"; sourceTree = "<group>"; };
 		2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanSummaryView.h; sourceTree = "<group>"; };
@@ -620,8 +619,6 @@
 		2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationSearch.m; sourceTree = "<group>"; };
 		2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileServerConfiguration.h; sourceTree = "<group>"; };
 		2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileServerConfiguration.m; sourceTree = "<group>"; };
-		2CCAD0211462D6D1008FFA9A /* LibrariesRenewTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesRenewTableViewCell.h; sourceTree = "<group>"; };
-		2CCAD0221462D6D1008FFA9A /* LibrariesRenewTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesRenewTableViewCell.m; sourceTree = "<group>"; };
 		2CCB85F71361F44E0024E474 /* FacilitiesLocationData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocationData.h; sourceTree = "<group>"; };
 		2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationData.m; sourceTree = "<group>"; };
 		2CD12D4E1360584F00A73ACA /* facilities */ = {isa = PBXFileReference; lastKnownFileType = folder; name = facilities; path = Resources/facilities; sourceTree = "<group>"; };
@@ -846,7 +843,7 @@
 		DE2E59A212B86C3B009857A1 /* CorridorDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CorridorDetailViewController.m; sourceTree = "<group>"; };
 		DE4AB0B210ED5148007476D9 /* NewsStory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsStory.h; sourceTree = "<group>"; };
 		DE4AB0B310ED5148007476D9 /* NewsStory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsStory.m; sourceTree = "<group>"; };
-		DE516254147889D1002415DE /* ExplanatorySectionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; path = ExplanatorySectionLabel.h; sourceTree = "<group>"; };
+		DE516254147889D1002415DE /* ExplanatorySectionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExplanatorySectionLabel.h; sourceTree = "<group>"; };
 		DE516255147889D1002415DE /* ExplanatorySectionLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExplanatorySectionLabel.m; sourceTree = "<group>"; };
 		DE5E99D21124B57C00498760 /* emergency_template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = emergency_template.html; path = Resources/emergency_template.html; sourceTree = "<group>"; };
 		DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Foundation+MITAdditions.h"; sourceTree = "<group>"; };
@@ -1563,14 +1560,13 @@
 			path = FacilitiesSummary;
 			sourceTree = "<group>";
 		};
-		2CAC06F31461C848003EA4BD /* Renew View Controller */ = {
+		2CAC06F31461C848003EA4BD /* Renew Results View Controller */ = {
 			isa = PBXGroup;
 			children = (
-				2CAC06F51461C876003EA4BD /* LibrariesRenewViewController.h */,
-				2CAC06F61461C876003EA4BD /* LibrariesRenewViewController.m */,
-				2CCAD0211462D6D1008FFA9A /* LibrariesRenewTableViewCell.h */,
-				2CCAD0221462D6D1008FFA9A /* LibrariesRenewTableViewCell.m */,
+				2CAC06F51461C876003EA4BD /* LibrariesRenewResultViewController.h */,
+				2CAC06F61461C876003EA4BD /* LibrariesRenewResultViewController.m */,
 			);
+			name = "Renew Results View Controller";
 			path = "Renew View Controller";
 			sourceTree = "<group>";
 		};
@@ -1735,7 +1731,7 @@
 		2CFB87EF1416B6880014E141 /* Loans */ = {
 			isa = PBXGroup;
 			children = (
-				2CAC06F31461C848003EA4BD /* Renew View Controller */,
+				2CAC06F31461C848003EA4BD /* Renew Results View Controller */,
 				2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */,
 				2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */,
 				2CB2D300141E72A900FFC716 /* LibrariesLoanTabController.h */,
@@ -2904,8 +2900,7 @@
 				A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */,
 				EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */,
 				EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */,
-				2CAC06F71461C876003EA4BD /* LibrariesRenewViewController.m in Sources */,
-				2CCAD0231462D6D1008FFA9A /* LibrariesRenewTableViewCell.m in Sources */,
+				2CAC06F71461C876003EA4BD /* LibrariesRenewResultViewController.m in Sources */,
 				2C943D9C1471A0E600205F32 /* LibrariesDetailTableViewCell.m in Sources */,
 				2C943D9D1471A0E600205F32 /* LibrariesDetailViewController.m in Sources */,
 				DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */,

@@ -1,6 +1,6 @@
 #import "LibrariesDetailViewController.h"
 #import "LibrariesDetailTableViewCell.h"
-#import "LibrariesRenewViewController.h"
+#import "LibrariesRenewResultViewController.h"
 #import "MITUIConstants.h"
 
 #define PADDING 10.0
@@ -140,7 +140,7 @@
 
 - (IBAction)renewBook:(id)sender
 {
-    LibrariesRenewViewController *vc = [[[LibrariesRenewViewController alloc] initWithItems:[NSArray arrayWithObject:self.details]] autorelease];
+    LibrariesRenewResultViewController *vc = [[[LibrariesRenewViewController alloc] initWithItems:[NSArray arrayWithObject:self.details]] autorelease];
     [self.navigationController pushViewController:vc
                                          animated:YES];
 }
