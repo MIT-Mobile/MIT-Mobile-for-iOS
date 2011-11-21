@@ -1,9 +1,9 @@
-#import "LibrariesRenewViewController.h"
+#import "LibrariesRenewResultViewController.h"
 #import "LibrariesRenewTableViewCell.h"
 #import "MobileRequestOperation.h"
 #import "MITTabHeaderView.h"
 
-@interface LibrariesRenewViewController ()
+@interface LibrariesRenewResultViewController ()
 @property (nonatomic,retain) NSMutableIndexSet *selectedCells;
 @property (nonatomic,retain) NSArray *renewItems;
 
@@ -16,7 +16,7 @@
 - (void)showRenewResults:(NSArray*)results;
 @end
 
-@implementation LibrariesRenewViewController
+@implementation LibrariesRenewResultViewController
 @synthesize selectedCells = _selectedCells;
 @synthesize renewItems = _renewItems;
 @synthesize renewItem = _renewItem;

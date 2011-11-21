@@ -105,7 +105,7 @@
 		2C99DCAF1370508D00114A9A /* HighlightLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C99DCAE1370508D00114A9A /* HighlightLabel.m */; };
 		2C99DCE01370782200114A9A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C99DCDF1370782200114A9A /* CoreText.framework */; };
 		2CA454F213C7468F00891428 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA454F113C7468F00891428 /* AssetsLibrary.framework */; };
-		2CAC06F71461C876003EA4BD /* LibrariesRenewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAC06F61461C876003EA4BD /* LibrariesRenewViewController.m */; };
+		2CAC06F71461C876003EA4BD /* LibrariesRenewResultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAC06F61461C876003EA4BD /* LibrariesRenewResultViewController.m */; };
 		2CAFCBE213F1C3F0007983D8 /* TBXML+MIT.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */; };
 		2CB2D2FF141E39F300FFC716 /* LibrariesLoanSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */; };
 		2CB2D302141E72A900FFC716 /* LibrariesLoanTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D301141E72A900FFC716 /* LibrariesLoanTabController.m */; };
@@ -598,8 +598,8 @@
 		2C99DCAE1370508D00114A9A /* HighlightLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightLabel.m; sourceTree = "<group>"; };
 		2C99DCDF1370782200114A9A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		2CA454F113C7468F00891428 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
-		2CAC06F51461C876003EA4BD /* LibrariesRenewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesRenewViewController.h; sourceTree = "<group>"; };
-		2CAC06F61461C876003EA4BD /* LibrariesRenewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesRenewViewController.m; sourceTree = "<group>"; };
+		2CAC06F51461C876003EA4BD /* LibrariesRenewResultViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; path = LibrariesRenewResultViewController.h; sourceTree = "<group>"; };
+		2CAC06F61461C876003EA4BD /* LibrariesRenewResultViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesRenewResultViewController.m; sourceTree = "<group>"; };
 		2CAFCBE013F1C3F0007983D8 /* TBXML+MIT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TBXML+MIT.h"; sourceTree = "<group>"; };
 		2CAFCBE113F1C3F0007983D8 /* TBXML+MIT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TBXML+MIT.m"; sourceTree = "<group>"; };
 		2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanSummaryView.h; sourceTree = "<group>"; };
@@ -1563,14 +1563,15 @@
 			path = FacilitiesSummary;
 			sourceTree = "<group>";
 		};
-		2CAC06F31461C848003EA4BD /* Renew View Controller */ = {
+		2CAC06F31461C848003EA4BD /* Renew Results View Controller */ = {
 			isa = PBXGroup;
 			children = (
-				2CAC06F51461C876003EA4BD /* LibrariesRenewViewController.h */,
-				2CAC06F61461C876003EA4BD /* LibrariesRenewViewController.m */,
+				2CAC06F51461C876003EA4BD /* LibrariesRenewResultViewController.h */,
+				2CAC06F61461C876003EA4BD /* LibrariesRenewResultViewController.m */,
 				2CCAD0211462D6D1008FFA9A /* LibrariesRenewTableViewCell.h */,
 				2CCAD0221462D6D1008FFA9A /* LibrariesRenewTableViewCell.m */,
 			);
+			name = "Renew Results View Controller";
 			path = "Renew View Controller";
 			sourceTree = "<group>";
 		};
@@ -1735,7 +1736,7 @@
 		2CFB87EF1416B6880014E141 /* Loans */ = {
 			isa = PBXGroup;
 			children = (
-				2CAC06F31461C848003EA4BD /* Renew View Controller */,
+				2CAC06F31461C848003EA4BD /* Renew Results View Controller */,
 				2CB2D2FD141E39F300FFC716 /* LibrariesLoanSummaryView.h */,
 				2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */,
 				2CB2D300141E72A900FFC716 /* LibrariesLoanTabController.h */,
@@ -2904,7 +2905,7 @@
 				A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */,
 				EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */,
 				EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */,
-				2CAC06F71461C876003EA4BD /* LibrariesRenewViewController.m in Sources */,
+				2CAC06F71461C876003EA4BD /* LibrariesRenewResultViewController.m in Sources */,
 				2CCAD0231462D6D1008FFA9A /* LibrariesRenewTableViewCell.m in Sources */,
 				2C943D9C1471A0E600205F32 /* LibrariesDetailTableViewCell.m in Sources */,
 				2C943D9D1471A0E600205F32 /* LibrariesDetailViewController.m in Sources */,
