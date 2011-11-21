@@ -2,6 +2,7 @@
 #import "MITLoadingActivityView.h"
 #import "MobileRequestOperation.h"
 #import "LibrariesLoanTableViewCell.h"
+#import "LibrariesRenewResultViewController.h"
 
 @interface LibrariesLoanTabController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
@@ -172,8 +173,9 @@
 
     NSArray *loans = [self.loanData objectForKey:@"items"];
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
+    cell.editing = tableView.isEditing;
 
-    return [cell heightForContentWithWidth:kLibrariesTableCellDefaultWidth];
+    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.bounds)];
 }
 
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -256,9 +258,7 @@
                                                              target:self
                                                              action:@selector(renewItems:)] autorelease];
     }
-
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
+    
     
     [UIView animateWithDuration:0.25
                      animations:^ {
@@ -268,25 +268,31 @@
                                                                            animated:YES];
                          [self.parentController.navigationItem setTitle:@"Renew"];
                          [self.tabView setTabBarHidden:YES animated:YES];
+                         
                          [self.tableView setEditing:YES animated:YES];
+                         [self.tableView beginUpdates];
+                         [self.tableView endUpdates];
                      }];
 }
 
 - (IBAction)restoreTabView:(id)sender
 {
     self.renewItems = nil;
+    self.cancelBarItem.enabled = YES;
     [UIView animateWithDuration:0.25
                      animations:^{
                          [self.parentController.navigationItem setRightBarButtonItem:nil animated:YES];
                          [self.parentController.navigationItem setLeftBarButtonItem:nil animated:YES];
                          [self.parentController.navigationItem setTitle:self.parentController.title];
                          [self.tabView setTabBarHidden:NO animated:YES];
+                         [self.tableView setEditing:NO animated:YES];
                      }
                      completion:^(BOOL finished) {
                          if (finished)
                          {
                              [self updateLoanData];
-                             [self.tableView setEditing:NO animated:YES];
+                             [self.tableView beginUpdates];
+                             [self.tableView endUpdates];
                          }
                      }];
 }
@@ -328,8 +334,9 @@
         }
         else
         {
-            NSLog(@"Renew Selected Result:\n-----\n%@\n-----", jsonData);
-            //[self showRenewResults:(NSArray *) jsonData];
+            LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:(NSArray*)jsonData] autorelease];
+            [self.parentController.navigationController pushViewController:vc
+                                                                  animated:YES];
             [self restoreTabView:sender];
         }
 
