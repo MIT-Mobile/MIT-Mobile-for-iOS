@@ -5,14 +5,16 @@
 
 @interface LibrariesRenewResultViewController ()
 @property (nonatomic,retain) NSArray *renewItems;
-
+@property (nonatomic,retain) UIView *headerView;
 @property (nonatomic,assign) UITableView *tableView;
 
+- (UIView*)tableHeaderViewForWidth:(CGFloat)width;
 @end
 
 @implementation LibrariesRenewResultViewController
 @synthesize renewItems = _renewItems;
 @synthesize tableView = _tableView;
+@synthesize headerView = _headerView;
 
 - (id)init
 {
@@ -23,8 +25,14 @@
 {
     self = [super initWithNibName:nil bundle:nil];
     
-    if (self) {
+    if (self)
+    {
         self.renewItems = renewItems;
+        self.title = @"Renew";
+        self.navigationItem.hidesBackButton = YES;
+        self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                                target:self
+                                                                                                action:@selector(done:)] autorelease];
     }
     
     return self;
@@ -58,13 +66,100 @@
                                                           style:UITableViewStylePlain] autorelease];
         view.delegate = self;
         view.dataSource = self;
-        view.allowsSelectionDuringEditing = YES;
-        view.allowsSelection = YES;
-        view.editing = YES;
+        
+        UIView *header = [self tableHeaderViewForWidth:CGRectGetWidth(mainFrame)];
+        view.tableHeaderView = header;
         
         self.tableView = view;
         [self setView:view];
     }
+}
+
+- (UIView*)tableHeaderViewForWidth:(CGFloat)width
+{
+    NSUInteger failureCount = 0;
+    NSUInteger successCount = 0;
+    
+    for (NSDictionary *result in self.renewItems)
+    {
+        if ([result objectForKey:@"error"])
+        {
+            ++failureCount;
+        }
+        else
+        {
+            ++successCount;
+        }
+    }
+    
+    
+    UIView *tableHeader = [[MITTabHeaderView alloc] init];
+    CGRect headerFrame = CGRectMake(0, 0, width, 10);
+    UIEdgeInsets headerInsets = UIEdgeInsetsMake(5, 10, 5, 10);
+    headerFrame = UIEdgeInsetsInsetRect(headerFrame, headerInsets);
+    
+    CGPoint origin = headerFrame.origin;
+    
+    if (successCount)
+    {
+        UIImageView *successIcon = nil;
+        UILabel *successLabel = nil;
+        successIcon = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/status-ok"]] autorelease];
+        successLabel = [[[UILabel alloc] init] autorelease];
+        successLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        successLabel.text = [NSString stringWithFormat:@"%lu renewed successfully!", successCount];
+        
+        CGSize successSize = [successLabel.text sizeWithFont:successLabel.font
+                                           constrainedToSize:CGSizeMake(CGRectGetWidth(headerFrame), CGFLOAT_MAX)
+                                               lineBreakMode:successLabel.lineBreakMode];
+        
+        CGRect iconRect = CGRectMake(origin.x, origin.y, successIcon.image.size.width, successIcon.image.size.height);
+        successIcon.frame = iconRect;
+        
+        CGRect labelRect = CGRectMake(origin.x + CGRectGetWidth(iconRect), origin.y, successSize.width, successSize.height);
+        successLabel.frame = labelRect;
+        
+        [tableHeader addSubview:successIcon];
+        [tableHeader addSubview:successLabel];
+        
+        CGFloat height = MAX(CGRectGetHeight(iconRect), CGRectGetHeight(labelRect));
+        headerFrame.size.height += height;
+        origin.y += height;
+    }
+    
+    if (failureCount)
+    {
+        UIImageView *errorIcon = nil;
+        UILabel *errorLabel = nil;
+        errorIcon = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/status-error"]] autorelease];
+        errorIcon.contentMode = UIViewContentModeCenter;
+        errorIcon.backgroundColor = [UIColor clearColor];
+        
+        errorLabel = [[[UILabel alloc] init] autorelease];
+        errorLabel.backgroundColor = [UIColor clearColor];
+        errorLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        errorLabel.text = [NSString stringWithFormat:@"%lu could not be renewed.", failureCount];
+        
+        CGSize failureSize = [errorLabel.text sizeWithFont:errorLabel.font
+                                         constrainedToSize:CGSizeMake(CGRectGetWidth(headerFrame), CGFLOAT_MAX)
+                                             lineBreakMode:errorLabel.lineBreakMode];
+        
+        CGRect iconRect = CGRectMake(origin.x, origin.y, errorIcon.image.size.width, errorIcon.image.size.height);
+        errorIcon.frame = iconRect;
+        
+        CGRect labelRect = CGRectMake(origin.x + CGRectGetWidth(iconRect), origin.y, failureSize.width, failureSize.height);
+        errorLabel.frame = labelRect;
+        
+        [tableHeader addSubview:errorIcon];
+        [tableHeader addSubview:errorLabel];
+        headerFrame.size.height += failureSize.height;
+    }
+    
+    headerFrame.size.height += (headerInsets.top + headerInsets.bottom);
+    
+    tableHeader.frame = headerFrame;
+    
+    return [tableHeader autorelease];
 }
 
 
@@ -115,7 +210,8 @@
         cell = [[[LibrariesLoanTableViewCell alloc] initWithReuseIdentifier:CellIdentifier] autorelease];
     }
     
-    cell.itemDetails = [self.renewItems objectAtIndex:indexPath.row];
+    NSDictionary *bookDetails = [self.renewItems objectAtIndex:indexPath.row];
+    cell.itemDetails = [bookDetails objectForKey:@"details"];
     
     return cell;
 }
@@ -127,7 +223,8 @@
         cell = [[LibrariesLoanTableViewCell alloc] init];
     }
     
-    cell.itemDetails = [self.renewItems objectAtIndex:indexPath.row];
+    NSDictionary *bookDetails = [self.renewItems objectAtIndex:indexPath.row];
+    cell.itemDetails = [bookDetails objectForKey:@"details"];
     
     return [cell heightForContentWithWidth:kLibrariesTableCellDefaultWidth];
 }
