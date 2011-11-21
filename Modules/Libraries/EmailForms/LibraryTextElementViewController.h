@@ -1,8 +1,3 @@
-//
-//  LibraryTextElementViewController.h
-//  MIT Mobile
-//
-
 #import <UIKit/UIKit.h>
 #import "LibraryEmailFormViewController.h"
 

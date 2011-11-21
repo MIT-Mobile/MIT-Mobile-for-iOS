@@ -1,6 +1,3 @@
-//
-//  MorseCodePattern.m
-//  MIT Mobile
 #import "MorseCodePattern.h"
 #define PAUSE 4
 

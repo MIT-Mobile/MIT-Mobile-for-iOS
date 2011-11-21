@@ -1,8 +1,3 @@
-//
-//  MITMapAnnotationCalloutView.h
-//  MIT Mobile
-
-
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 
