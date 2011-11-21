@@ -2,6 +2,7 @@
 
 #import "MobileRequestLoginViewController.h"
 #import "MobileKeychainServices.h"
+#import "ExplanatorySectionLabel.h"
 
 @interface MobileRequestLoginViewController ()
 @property (nonatomic,retain) NSDictionary *tableCells;
@@ -198,10 +199,8 @@
     UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
     CGPoint origin = mainFrame.origin;
     
-    mainView.backgroundColor = [UIColor colorWithRed:0.725
-                                               green:0.776
-                                                blue:0.839
-                                               alpha:1.0];
+    mainView.backgroundColor = [UIColor blackColor];
+    
     [self setupTableCells];
     
     {
@@ -213,7 +212,7 @@
                                                                                      action:@selector(cancelButtonPressed:)] autorelease];
         [navItem setLeftBarButtonItem:cancelItem];
         [navBar setItems:[NSArray arrayWithObject:navItem]];
-        
+        navBar.barStyle = UIBarStyleBlack;
         origin.y = CGRectGetMaxY(navBarFrame);
         
         [mainView addSubview:navBar];
@@ -222,8 +221,9 @@
     {
         UITableView *tableView = [[[UITableView alloc] initWithFrame:CGRectZero
                                                                style:UITableViewStyleGrouped] autorelease];
-        tableView.backgroundColor = [UIColor clearColor];
+        tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
         tableView.dataSource = self;
+        tableView.delegate = self;
         
         CGRect tableViewRect = CGRectZero;
         tableViewRect.origin = origin;
@@ -476,6 +476,36 @@
     }
     
     return rowCount;
+}
+
+#pragma mark - UITableView Delegate
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    // section 1 == log in button
+    if (section == 1) {
+        // TODO: move these user-visible strings out of code
+        NSString *labelText = @"Log in with your MIT Kerberos username or Touchstone Collaboration Account to continue.";
+        CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:labelText 
+                                                                  accessoryView:nil 
+                                                                          width:self.view.frame.size.width];
+        
+        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
+        footerLabel.text = labelText;
+        return footerLabel;
+    }
+    return nil;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    // section 1 == log in button
+    if (section == 1) {
+        NSString *labelText = @"Log in with your MIT Kerberos username or Touchstone Collaboration Account to continue.";
+        CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
+                                                            accessoryView:nil 
+                                                                    width:self.view.frame.size.width];
+        return height;
+    }
+    return 0;
 }
 
 @end

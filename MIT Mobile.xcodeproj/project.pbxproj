@@ -228,6 +228,7 @@
 		DE2E58E012B81529009857A1 /* CorridorStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2E58DE12B81529009857A1 /* CorridorStory.m */; };
 		DE2E59A412B86C3B009857A1 /* CorridorDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2E59A212B86C3B009857A1 /* CorridorDetailViewController.m */; };
 		DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4AB0B310ED5148007476D9 /* NewsStory.m */; };
+		DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DE516255147889D1002415DE /* ExplanatorySectionLabel.m */; };
 		DE5E99D31124B57C00498760 /* emergency_template.html in Resources */ = {isa = PBXBuildFile; fileRef = DE5E99D21124B57C00498760 /* emergency_template.html */; };
 		DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */; };
 		DE6D32F610346D02008A5823 /* ShuttleModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D32F510346D02008A5823 /* ShuttleModule.m */; };
@@ -845,6 +846,8 @@
 		DE2E59A212B86C3B009857A1 /* CorridorDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CorridorDetailViewController.m; sourceTree = "<group>"; };
 		DE4AB0B210ED5148007476D9 /* NewsStory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsStory.h; sourceTree = "<group>"; };
 		DE4AB0B310ED5148007476D9 /* NewsStory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsStory.m; sourceTree = "<group>"; };
+		DE516254147889D1002415DE /* ExplanatorySectionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; path = ExplanatorySectionLabel.h; sourceTree = "<group>"; };
+		DE516255147889D1002415DE /* ExplanatorySectionLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExplanatorySectionLabel.m; sourceTree = "<group>"; };
 		DE5E99D21124B57C00498760 /* emergency_template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = emergency_template.html; path = Resources/emergency_template.html; sourceTree = "<group>"; };
 		DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Foundation+MITAdditions.h"; sourceTree = "<group>"; };
 		DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Foundation+MITAdditions.m"; sourceTree = "<group>"; };
@@ -1667,6 +1670,7 @@
 			children = (
 				2CFB87D01416B0400014E141 /* MIT Tabbed View */,
 				EF3B3B15103F072400E8AA06 /* Text Entry Cell */,
+				DE51625314788970002415DE /* Table Section Explanatory Label */,
 			);
 			path = "UI Classes";
 			sourceTree = "<group>";
@@ -1945,6 +1949,15 @@
 				DE18F9ED10F19105009A69B9 /* News.xcdatamodeld */,
 			);
 			name = Model;
+			sourceTree = "<group>";
+		};
+		DE51625314788970002415DE /* Table Section Explanatory Label */ = {
+			isa = PBXGroup;
+			children = (
+				DE516254147889D1002415DE /* ExplanatorySectionLabel.h */,
+				DE516255147889D1002415DE /* ExplanatorySectionLabel.m */,
+			);
+			path = "Table Section Explanatory Label";
 			sourceTree = "<group>";
 		};
 		DE6F044511139CA40046684B /* FBConnect */ = {
@@ -2895,6 +2908,7 @@
 				2CCAD0231462D6D1008FFA9A /* LibrariesRenewTableViewCell.m in Sources */,
 				2C943D9C1471A0E600205F32 /* LibrariesDetailTableViewCell.m in Sources */,
 				2C943D9D1471A0E600205F32 /* LibrariesDetailViewController.m in Sources */,
+				DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

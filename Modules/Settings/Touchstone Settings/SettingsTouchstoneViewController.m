@@ -2,6 +2,8 @@
 #import "MobileKeychainServices.h"
 #import "MobileRequestOperation.h"
 #import "MITConstants.h"
+#import "UIKit+MITAdditions.h"
+#import "ExplanatorySectionLabel.h"
 
 enum {
     TouchstoneUserCell = 0,
@@ -393,6 +395,41 @@ enum {
     }
     
     return rowCount;
+}
+
+#pragma mark - UITableView Delegate
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    
+    if (section == 0) {
+        UIImageView *secureIcon = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
+
+        // TODO: move these user-visible strings out of code
+        NSString *labelText = @"A lock icon appears next to services requiring authentication. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
+        // Touchstone is MIT's single sign-on authentication service.
+
+        CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:labelText 
+                                                                  accessoryView:secureIcon 
+                                                                          width:self.view.frame.size.width];
+
+        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
+        footerLabel.text = labelText;
+        footerLabel.accessoryView = secureIcon;
+        return footerLabel;
+    }
+    return nil;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    if (section == 0) {
+        NSString *labelText = @"Features requiring authentication are marked with a lock icon. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
+        UIImageView *secureIcon = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
+        CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
+                                                  accessoryView:secureIcon 
+                                                          width:self.view.frame.size.width];
+        return height;
+    }
+    return 0;
 }
 
 #pragma mark - Notification Handlers
