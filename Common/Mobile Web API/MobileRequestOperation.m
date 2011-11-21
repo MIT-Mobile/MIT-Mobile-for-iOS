@@ -495,9 +495,13 @@ typedef enum {
                 MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
                                                                                                                  password:self.touchstonePassword] autorelease];
                 loginView.delegate = self;
+
+                UINavigationController *loginNavController = [[[UINavigationController alloc] initWithRootViewController:loginView] autorelease];
+                loginNavController.navigationBar.barStyle = UIBarStyleBlack;
+                
                 //[MobileRequestOperation clearAuthenticatedSession];
                 
-                [[mainWindow rootViewController] presentModalViewController:loginView
+                [[mainWindow rootViewController] presentModalViewController:loginNavController
                                                                    animated:YES];
                 self.loginViewController = loginView;
             } else {
