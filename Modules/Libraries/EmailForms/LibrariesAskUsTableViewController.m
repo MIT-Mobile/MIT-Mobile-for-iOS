@@ -124,7 +124,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == FORM_SECTION) {
-        NSString *text;
+        NSString *text = nil;
         if (indexPath.row == ASK_US_ROW) {
             text = ASK_US_TEXT;
         } else if (indexPath.row == APPOINTMENT_ROW) {

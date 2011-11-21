@@ -43,14 +43,14 @@ static const CGFloat kEditViewWidth = 300.0f;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     self.navigationItem.leftBarButtonItem = 
-    [[UIBarButtonItem alloc] 
+    [[[UIBarButtonItem alloc] 
      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self 
-     action:@selector(cancelTapped:)];
+     action:@selector(cancelTapped:)] autorelease];
     
     self.navigationItem.rightBarButtonItem = 
-    [[UIBarButtonItem alloc]
+    [[[UIBarButtonItem alloc]
      initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self 
-     action:@selector(doneTapped:)];
+     action:@selector(doneTapped:)] autorelease];
         
     // Add custom title label so that text fits to size.
     UILabel *label = 

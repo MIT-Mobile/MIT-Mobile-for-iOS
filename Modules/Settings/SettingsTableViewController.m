@@ -14,7 +14,7 @@ NSString * const SettingsTitleString = @"Notifications";
 NSString * const SettingsSubtitleString = @"Turn off Notifications to disable alerts for that module.";
 
 NSString * const TouchstoneTitleString = @"Touchstone";
-NSString * const TouchstoneSubtitleString = nil;
+NSString * const TouchstoneSubtitleString = @"";
 
 NSString * const ServersTitleString = @"API Server";
 

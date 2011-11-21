@@ -24,7 +24,7 @@
 - (void)layoutSubviews {
     {
         if (self.backgroundImage == nil) {
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageNameBackground]];
+            UIImageView *imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageNameBackground]] autorelease];
             [self addSubview:imageView];
             self.backgroundImage = imageView;
         }

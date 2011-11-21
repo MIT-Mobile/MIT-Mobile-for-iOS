@@ -10,14 +10,14 @@
     self.title = self.menuElement.displayLabel;
     
     self.navigationItem.leftBarButtonItem = 
-    [[UIBarButtonItem alloc] 
+    [[[UIBarButtonItem alloc] 
      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self 
-     action:@selector(cancelTapped:)];
+     action:@selector(cancelTapped:)] autorelease];
     
     self.navigationItem.rightBarButtonItem = 
-    [[UIBarButtonItem alloc]
+    [[[UIBarButtonItem alloc]
      initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self 
-     action:@selector(doneTapped:)];    
+     action:@selector(doneTapped:)] autorelease];
 }
 
 - (void)dealloc
