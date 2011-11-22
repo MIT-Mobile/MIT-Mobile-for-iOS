@@ -3,7 +3,7 @@
 
 
 @interface LibraryMenuElementViewController : UITableViewController {
-    
+    NSInteger currentSelectedValue;
 }
 
 @property (nonatomic, retain)  MenuLibraryFormElement *menuElement;

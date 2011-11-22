@@ -6,6 +6,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    currentSelectedValue = self.menuElement.currentOptionIndex;
+    
     self.view.backgroundColor = [UIColor clearColor];
     self.title = self.menuElement.displayLabel;
     
@@ -58,7 +60,7 @@
     }
     
     cell.textLabel.text = [self.menuElement.displayOptions objectAtIndex:indexPath.row];
-    if (self.menuElement.currentOptionIndex == indexPath.row) {
+    if (currentSelectedValue == indexPath.row) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -71,7 +73,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    self.menuElement.currentOptionIndex = indexPath.row;
+    currentSelectedValue = indexPath.row;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [tableView reloadData];
 }
@@ -85,6 +87,7 @@
 - (IBAction)doneTapped:(id)sender
 {
     [self.navigationController popViewControllerAnimated:YES];
+    self.menuElement.currentOptionIndex = currentSelectedValue;
 }
 
 @end
