@@ -177,6 +177,7 @@
     {
         UISwitch *saveToggle = [[[UISwitch alloc] init] autorelease];
         saveToggle.on = ([self.username length] > 0);
+        self.saveCredentials = saveToggle;
 
         UITableViewCell *saveCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
         saveCell.selectionStyle = UITableViewCellSelectionStyleNone;
