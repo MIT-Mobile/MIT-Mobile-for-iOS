@@ -17,7 +17,6 @@
     {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.editingAccessoryType = UITableViewCellAccessoryNone;
-        self.accessoryType = UITableViewCellAccessoryNone;
 
         self.selectionView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/cell-unselected"]] autorelease];
         [self.contentView addSubview:self.selectionView];
