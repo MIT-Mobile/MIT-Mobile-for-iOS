@@ -24,7 +24,7 @@
 - (void)layoutSubviews {
     {
         if (self.backgroundImage == nil) {
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageNameBackground]];
+            UIImageView *imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageNameBackground]] autorelease];
             [self addSubview:imageView];
             self.backgroundImage = imageView;
         }
@@ -53,8 +53,13 @@
                                           0.0,
                                           labelSize.width + spinner.frame.size.width + labelLeftMargin,
                                           labelSize.height);
-            activityView.frame = viewFrame;
             
+            viewFrame.origin.x = (self.bounds.size.width - viewFrame.size.width) / 2.0;
+            viewFrame.origin.y = (self.bounds.size.height - viewFrame.size.height) / 2.0;
+            
+            activityView.frame = CGRectIntegral(viewFrame);
+            self.activityView.autoresizingMask = UIViewAutoresizingNone;
+
             [activityView addSubview:spinner];
             [activityView addSubview:loadingLabel];
             
@@ -63,9 +68,6 @@
             self.activityView = activityView;
         }
         
-        self.activityView.autoresizingMask = UIViewAutoresizingNone;
-		self.activityView.center = CGPointMake(floor(CGRectGetWidth(self.bounds) / 2.0),
-                                               floor(CGRectGetHeight(self.bounds) / 2.0));
     }
 }
 

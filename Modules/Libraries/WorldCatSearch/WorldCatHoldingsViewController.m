@@ -119,24 +119,13 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, 280, 0)];
-        label.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
-        label.textColor = CELL_STANDARD_FONT_COLOR;
-        label.tag = CELL_LABEL_TAG;
-        label.numberOfLines = 0;
+        cell.textLabel.numberOfLines = 0;
+        cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        [cell.contentView addSubview:label];
     }
     
-    UILabel *label = (UILabel *)[cell viewWithTag:CELL_LABEL_TAG];
     WorldCatHolding *holding = [self.holdings objectAtIndex:indexPath.row];
-    NSString *labelText = holding.library;
-    CGSize textSize = [labelText sizeWithFont:label.font constrainedToSize:CGSizeMake(280, 500)];
-    CGRect labelFrame = label.frame;
-    labelFrame.size.height = textSize.height;
-    label.frame = labelFrame;
-    label.text = labelText;
-
+    cell.textLabel.text = holding.library;
     
     return cell;
 }
@@ -144,13 +133,17 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     WorldCatHolding *holding = [self.holdings objectAtIndex:indexPath.row];
     NSString *labelText = holding.library;
-    CGSize textSize = [labelText sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(280, 500)];
+    CGSize textSize = [labelText sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]] constrainedToSize:CGSizeMake(280, 500)];
     return textSize.height + 2 * PADDING;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    return @"Boston Library Consortium";
+- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	NSString *headerTitle = @"Boston Library Consortium";
+	return [UITableView groupedSectionHeaderWithTitle:headerTitle];
+}
+
+- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return GROUPED_SECTION_HEADER_HEIGHT;
 }
 
 #pragma mark - Table view delegate

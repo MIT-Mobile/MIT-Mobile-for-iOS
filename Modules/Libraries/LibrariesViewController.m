@@ -141,7 +141,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    NSString *title;
+    NSString *title = nil;
     UIView *accessoryView = nil;
     switch (indexPath.section) {
         case TOP_SECTION:
@@ -240,7 +240,7 @@
     
     [aTableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    UIViewController *vc;    
+    UIViewController *vc = nil;    
     
     switch (indexPath.section) {
         case TOP_SECTION:

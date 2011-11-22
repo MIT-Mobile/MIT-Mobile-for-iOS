@@ -11,7 +11,7 @@
 - (void)cancelWasPressedForLoginRequest:(MobileRequestLoginViewController*)view;
 @end
 
-@interface MobileRequestLoginViewController : UIViewController <UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate> {
+@interface MobileRequestLoginViewController : UITableViewController <UITextFieldDelegate> {
 
 }
 

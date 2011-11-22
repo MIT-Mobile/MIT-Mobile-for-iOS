@@ -85,16 +85,20 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     // There's two sections and one row per section.
-    if (indexPath.section == 0) {
-        CGSize messageSize = 
-        [self.message 
-         sizeWithFont:[UIFont systemFontOfSize:15.0f] 
-         constrainedToSize:CGSizeMake(280, 1000) 
-         lineBreakMode:UILineBreakModeWordWrap];
-        return messageSize.height + 20;
-    }
-    else {
-        return 45.0f;
+    switch (indexPath.section) {
+        case 0: {
+            CGSize messageSize = 
+            [self.message 
+             sizeWithFont:[UIFont systemFontOfSize:15.0f] 
+             constrainedToSize:CGSizeMake(280, 1000) 
+             lineBreakMode:UILineBreakModeWordWrap];
+            return messageSize.height + 20;
+            break;
+        }
+        case 1:
+        default:
+            return 45.0 - 2.0; // height of the image minus imaginary border space 
+            break;
     }
 }
 

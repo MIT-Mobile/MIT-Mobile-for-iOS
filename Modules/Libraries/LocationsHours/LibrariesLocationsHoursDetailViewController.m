@@ -166,15 +166,20 @@ LocationsHoursTableRows;
                 cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
                 
                 CGFloat padding;
-                if (self.tableView.style == UITableViewStyleGrouped) {
-                    padding = 20;
-                } else if (self.tableView.style == UITableViewStylePlain) {
-                    padding = 0;
+                switch (self.tableView.style) {
+                    case UITableViewStyleGrouped:
+                        padding = 20.0;
+                        break;
+                        
+                    case UITableViewStylePlain:
+                    default:
+                        padding = 0.0;
+                        break;
                 }
                 
                 if (cell == nil) {
                     cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier]autorelease];
-                    self.contentWebView = [[[UIWebView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width-padding, 100)] autorelease];
+                    self.contentWebView = [[[UIWebView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width - padding, 100)] autorelease];
                     self.contentWebView.delegate = self;      
                     // Make web view background transparent.
                     self.contentWebView.backgroundColor = [UIColor clearColor];

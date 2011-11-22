@@ -7,7 +7,6 @@
 @interface MobileRequestLoginViewController ()
 @property (nonatomic,retain) NSDictionary *tableCells;
 
-@property (nonatomic,assign) UITableView *tableView;
 @property (nonatomic,assign) UITextField *usernameField;
 @property (nonatomic,assign) UITextField *passwordField;
 @property (nonatomic,assign) UISwitch *saveCredentials;
@@ -39,7 +38,6 @@
 @synthesize passwordField = _passwordField;
 @synthesize saveCredentials = _saveCredentials;
 @synthesize tableCells = _tableCells;
-@synthesize tableView = _tableView;
 @synthesize username = _username;
 @synthesize usernameField = _usernameField;
 
@@ -56,7 +54,7 @@
 
 - (id)initWithUsername:(NSString*)aUsername password:(NSString*)aPassword;
 {
-    self = [super init];
+    self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
         self.username = aUsername;
         self.password = aPassword;
@@ -189,51 +187,23 @@
         [cells setObject:saveCell
                   forKey:[NSIndexPath indexPathForRow:0 inSection:2]];
     }
-    
-    NSLog(@"Created %d cells", [cells count]);
+
     self.tableCells = cells;
 }
 
-- (void)loadView {
-    CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
-    UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
-    CGPoint origin = mainFrame.origin;
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     
-    mainView.backgroundColor = [UIColor blackColor];
-    
+    self.title = @"Touchstone";
+    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                           target:self
+                                                                                           action:@selector(cancelButtonPressed:)] autorelease];
     [self setupTableCells];
-    
-    {
-        CGRect navBarFrame = CGRectMake(origin.x, origin.y, 320, 44);
-        UINavigationBar *navBar = [[[UINavigationBar alloc] initWithFrame:navBarFrame] autorelease];
-        UINavigationItem *navItem = [[[UINavigationItem alloc] initWithTitle:@"Touchstone"] autorelease];
-        UIBarButtonItem *cancelItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                     target:self
-                                                                                     action:@selector(cancelButtonPressed:)] autorelease];
-        [navItem setLeftBarButtonItem:cancelItem];
-        [navBar setItems:[NSArray arrayWithObject:navItem]];
-        navBar.barStyle = UIBarStyleBlack;
-        origin.y = CGRectGetMaxY(navBarFrame);
-        
-        [mainView addSubview:navBar];
-    }
-    
-    {
-        UITableView *tableView = [[[UITableView alloc] initWithFrame:CGRectZero
-                                                               style:UITableViewStyleGrouped] autorelease];
-        tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
-        tableView.dataSource = self;
-        tableView.delegate = self;
-        
-        CGRect tableViewRect = CGRectZero;
-        tableViewRect.origin = origin;
-        tableViewRect.size = mainFrame.size;
-        tableView.frame = tableViewRect;
-        
-        origin.y = CGRectGetMaxY(tableViewRect);
-        self.tableView = tableView;
-        [mainView addSubview:tableView];
-    }
+
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     {
         UIView *promptView = [[[UIView alloc] initWithFrame:CGRectMake(64, 164, 190, 132)] autorelease];
@@ -264,29 +234,7 @@
         
         self.activityView = promptView;
     }
-    
-    [self setView:[mainView autorelease]];
 }
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidShow:)
-                                                 name:UIKeyboardDidShowNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 
 #pragma mark - Event Handlers
 - (IBAction)cancelButtonPressed:(id)sender {
@@ -318,32 +266,6 @@
     [self.passwordField resignFirstResponder];
     [super touchesBegan:touches withEvent:event];
 }
-
-- (void)keyboardDidShow:(NSNotification*)notification
-{
-    CGRect tableFrame = self.tableView.frame;
-    CGRect keyboardFrame = [[notification.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    
-    keyboardFrame = [self.view convertRect:keyboardFrame
-                                  fromView:nil];
-    
-    tableFrame.size.height -= keyboardFrame.origin.y;
-    self.tableView.frame = tableFrame;
-    [self.view setNeedsLayout];
-}
-
-- (void)keyboardWillHide:(NSNotification*)notification
-{
-    CGRect tableFrame = self.tableView.frame;
-    CGRect keyboardFrame = [[notification.userInfo objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    
-    keyboardFrame = [self.view convertRect:keyboardFrame
-                                  fromView:nil];
-    
-    tableFrame.size.height += keyboardFrame.origin.y;
-    self.tableView.frame = tableFrame;
-}
-
 
 #pragma mark - Dynamic Property Methods
 - (void)setShowActivityView:(BOOL)showView

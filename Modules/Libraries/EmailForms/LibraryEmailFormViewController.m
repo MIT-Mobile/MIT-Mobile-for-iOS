@@ -455,7 +455,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     
     // setup the form and event listeners required
     self.tableView.backgroundColor = [UIColor clearColor];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Submit" style:UIBarButtonItemStyleBordered target:self action:@selector(submitForm)];
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Submit" style:UIBarButtonItemStyleBordered target:self action:@selector(submitForm)] autorelease];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
     [self setFormGroups:[self formGroups]];

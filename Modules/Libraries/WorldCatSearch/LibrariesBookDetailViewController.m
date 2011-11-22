@@ -372,19 +372,17 @@ BookDetailViewTags;
     return cell;
 }
 
-- (NSString *)tableView:(UITableView *)tableView 
-titleForHeaderInSection:(NSInteger)section
-{
+- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     NSString *title = nil;
     switch (section) {
         case kMITHoldingSection:
             if (self.loadingStatus == BookLoadingStatusCompleted) {
-                return @"MIT Libraries";
+                title = @"MIT Libraries";
             }
             break;
         case kBLCHoldingSection:
             if (self.loadingStatus == BookLoadingStatusCompleted) {
-                return @"Boston Library Consortium";
+                title = @"Boston Library Consortium";
             }
             break;
         case kEmailAndCiteSection:
@@ -392,7 +390,19 @@ titleForHeaderInSection:(NSInteger)section
         default:
             break;
     }
-    return title;
+	return [UITableView groupedSectionHeaderWithTitle:title];
+}
+
+- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    switch (section) {
+        case kMITHoldingSection:
+        case kBLCHoldingSection:
+            return GROUPED_SECTION_HEADER_HEIGHT;
+        case kEmailAndCiteSection:
+        case kInfoSection:
+        default:
+            return 0;
+    }
 }
 
 - (void)mailComposeController:(MFMailComposeViewController*)controller
