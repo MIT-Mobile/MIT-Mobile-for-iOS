@@ -504,7 +504,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     
     // force the user to login
     MITLoadingActivityView *loginLoadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
-    [self.view addSubview:loginLoadingView];
+    [self.tableView addSubview:loginLoadingView];
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag
                                                                               command:@"getUserIdentity"
                                                                            parameters:[NSDictionary dictionary]] autorelease];
@@ -522,6 +522,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
             NSNumber *isMITIdentity = [(NSDictionary *)jsonResult objectForKey:@"is_mit_identity"];
             if ([isMITIdentity boolValue]) {
                 [loginLoadingView removeFromSuperview];
+                identityVerified = YES;
+                [self.tableView reloadData];
             } else {
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Not Authorized" message:@"Must login with an MIT account" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
                 [alertView show];
@@ -776,6 +778,9 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (!identityVerified) {
+        return nil;
+    }
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
     if (formGroup.name) {
         return [UITableView groupedSectionHeaderWithTitle:formGroup.name];

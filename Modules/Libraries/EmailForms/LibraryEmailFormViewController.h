@@ -109,6 +109,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required);
 @interface LibraryEmailFormViewController : UITableViewController <UITextFieldDelegate, UIAlertViewDelegate> {
 @private    
     NSArray *_formGroups;
+    BOOL identityVerified;
 }
 
 - (NSArray *)formGroups;
