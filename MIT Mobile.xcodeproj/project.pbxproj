@@ -97,7 +97,7 @@
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
 		2C77F0321355EE2500CD11D6 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C77F0311355EE2500CD11D6 /* QRReaderResult.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
-		2C943D9C1471A0E600205F32 /* LibrariesDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C943D991471A0E600205F32 /* LibrariesDetailTableViewCell.m */; };
+		2C943D9C1471A0E600205F32 /* LibrariesDetailLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C943D991471A0E600205F32 /* LibrariesDetailLabel.m */; };
 		2C943D9D1471A0E600205F32 /* LibrariesDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C943D9B1471A0E600205F32 /* LibrariesDetailViewController.m */; };
 		2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D2137D677A0025B28D /* FacilitiesRoomViewController.m */; };
 		2C95A1D8137DB24D0025B28D /* FacilitiesSummaryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */; };
@@ -582,8 +582,8 @@
 		2C77F0311355EE2500CD11D6 /* QRReaderResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResult.m; sourceTree = "<group>"; };
 		2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocation.h; sourceTree = "<group>"; };
 		2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocation.m; sourceTree = "<group>"; };
-		2C943D981471A0E600205F32 /* LibrariesDetailTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesDetailTableViewCell.h; sourceTree = "<group>"; };
-		2C943D991471A0E600205F32 /* LibrariesDetailTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesDetailTableViewCell.m; sourceTree = "<group>"; };
+		2C943D981471A0E600205F32 /* LibrariesDetailLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; path = LibrariesDetailLabel.h; sourceTree = "<group>"; };
+		2C943D991471A0E600205F32 /* LibrariesDetailLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesDetailLabel.m; sourceTree = "<group>"; };
 		2C943D9A1471A0E600205F32 /* LibrariesDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesDetailViewController.h; sourceTree = "<group>"; };
 		2C943D9B1471A0E600205F32 /* LibrariesDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesDetailViewController.m; sourceTree = "<group>"; };
 		2C95A1D1137D677A0025B28D /* FacilitiesRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRoomViewController.h; sourceTree = "<group>"; };
@@ -1541,8 +1541,8 @@
 		2C943D971471A0A600205F32 /* Book Detail View */ = {
 			isa = PBXGroup;
 			children = (
-				2C943D981471A0E600205F32 /* LibrariesDetailTableViewCell.h */,
-				2C943D991471A0E600205F32 /* LibrariesDetailTableViewCell.m */,
+				2C943D981471A0E600205F32 /* LibrariesDetailLabel.h */,
+				2C943D991471A0E600205F32 /* LibrariesDetailLabel.m */,
 				2C943D9A1471A0E600205F32 /* LibrariesDetailViewController.h */,
 				2C943D9B1471A0E600205F32 /* LibrariesDetailViewController.m */,
 			);
@@ -2901,7 +2901,7 @@
 				EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */,
 				EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */,
 				2CAC06F71461C876003EA4BD /* LibrariesRenewResultViewController.m in Sources */,
-				2C943D9C1471A0E600205F32 /* LibrariesDetailTableViewCell.m in Sources */,
+				2C943D9C1471A0E600205F32 /* LibrariesDetailLabel.m in Sources */,
 				2C943D9D1471A0E600205F32 /* LibrariesDetailViewController.m in Sources */,
 				DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */,
 			);

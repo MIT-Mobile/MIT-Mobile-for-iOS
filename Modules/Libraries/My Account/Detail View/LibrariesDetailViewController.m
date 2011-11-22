@@ -1,5 +1,5 @@
 #import "LibrariesDetailViewController.h"
-#import "LibrariesDetailTableViewCell.h"
+#import "LibrariesDetailLabel.h"
 #import "LibrariesRenewResultViewController.h"
 #import "MITUIConstants.h"
 
@@ -42,8 +42,26 @@
     NSMutableDictionary *cells = [NSMutableDictionary dictionary];
     
     {
-        LibrariesDetailTableViewCell *cell = [[[LibrariesDetailTableViewCell alloc] initWithReuseIdentifier:nil] autorelease];
-        cell.bookDetails = self.details;
+        UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                        reuseIdentifier:nil] autorelease];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.editingAccessoryType = UITableViewCellAccessoryNone;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        LibrariesDetailLabel *label = [[[LibrariesDetailLabel alloc] initWithBook:self.details] autorelease];
+        label.backgroundColor = [UIColor clearColor];
+        label.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+        
+        CGRect contentFrame = cell.contentView.frame;
+        contentFrame.size = [label sizeThatFits:contentFrame.size];
+        
+        [cell.contentView addSubview:label];
+        
+        cell.contentView.frame = contentFrame;
+        contentFrame.origin = cell.contentView.bounds.origin;
+        label.frame = contentFrame;
+        
+        
         [cells setObject:cell
                   forKey:[NSIndexPath indexPathForRow:0
                                             inSection:0]];

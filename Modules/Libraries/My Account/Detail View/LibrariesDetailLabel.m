@@ -1,4 +1,4 @@
-#import "LibrariesDetailTableViewCell.h"
+#import "LibrariesDetailLabel.h"
 
 #pragma mark - Constants
 static NSString const * LibrariesDetailTitleKey = @"title";
@@ -7,52 +7,50 @@ static NSString const * LibrariesDetailYearKey = @"year";
 static NSString const * LibrariesDetailCallNumberKey = @"call-no";
 static NSString const * LibrariesDetailLibraryKey = @"sub-library";
 static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
+static UIEdgeInsets kLabelInsets = {.top = 10, .bottom = 10, .left = 5, .right = 5};
 #pragma mark -
 
-@interface LibrariesDetailTableViewCell ()
+@interface LibrariesDetailLabel ()
 @property (nonatomic,retain) NSAttributedString *textString;
 @property (nonatomic,assign) CTFramesetterRef framesetter;
+@property (nonatomic,retain) NSDictionary *bookDetails;
 
 - (NSAttributedString*)attributedStringWithHeader:(NSString*)header
                                       displayText:(NSString*)text;
 @end
 
-@implementation LibrariesDetailTableViewCell
+@implementation LibrariesDetailLabel
 @synthesize bookDetails = _bookDetails;
 @synthesize textString = _textString;
 @dynamic framesetter;
 
-- (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
+- (id)initWithBook:(NSDictionary*)details
 {
-    self = [super initWithStyle:UITableViewCellStyleDefault
-                reuseIdentifier:reuseIdentifier];
+    self = [super init];
     if (self) {
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
-        self.backgroundColor = [UIColor whiteColor];
+        self.bookDetails = details;
     }
     return self;
 }
 
-- (void)prepareForReuse
-{
-    self.bookDetails = nil;
-    self.textString = nil;
-    self.framesetter = nil;
-}
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter,
                                                                    CFRangeMake(0, 0),
                                                                    NULL,
-                                                                   CGSizeMake(size.width,CGFLOAT_MAX),
+                                                                   CGSizeMake(size.width - (kLabelInsets.left + kLabelInsets.right),CGFLOAT_MAX),
                                                                    NULL);
-    return textSize;
+    
+    size.height = ceil(textSize.height) + kLabelInsets.top + kLabelInsets.bottom + 1;
+    return size;
 }
 
-- (void)drawRect:(CGRect)rect
+- (void)drawTextInRect:(CGRect)rect
 {
-    UIBezierPath *path = [UIBezierPath bezierPathWithRect:self.bounds];
+    CGRect frame = UIEdgeInsetsInsetRect(self.bounds, kLabelInsets);
+    
+    UIBezierPath *path = [UIBezierPath bezierPathWithRect:frame];
     CTFrameRef textFrame = CTFramesetterCreateFrame(self.framesetter,
                                                     CFRangeMake(0,0),
                                                     [path CGPath],
@@ -100,7 +98,11 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
 
 - (NSAttributedString*)textString
 {
-    if (_textString == nil)
+    if (self.bookDetails == nil)
+    {
+        self.textString = [[[NSAttributedString alloc] init] autorelease];
+    }
+    else if (_textString == nil)
     {
         NSMutableAttributedString *detailText = [[NSMutableAttributedString alloc] init];
 
@@ -125,7 +127,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
         {
             NSString *author = [self.bookDetails objectForKey:LibrariesDetailAuthorKey];
             NSString *year = [self.bookDetails objectForKey:LibrariesDetailYearKey];
-            NSString *displayString = [NSString stringWithFormat:@"%@; %@", year, author];
+            NSString *displayString = [NSString stringWithFormat:@"\n%@; %@", year, author];
             
             [detailText appendAttributedString:[self attributedStringWithHeader:nil
                                                                     displayText:displayString]];
@@ -146,14 +148,14 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
                                                                     displayText:[NSString stringWithFormat:@"%@",library]]];
         }
 
-        NSArray *isbNumbers = [self.bookDetails objectForKey:LibrariesDetailISBNKey];
+        NSDictionary *isbNumbers = [self.bookDetails objectForKey:LibrariesDetailISBNKey];
         if ([isbNumbers count])
         {
-            NSString *isbnString = [isbNumbers componentsJoinedByString:@", "];
+            NSString *isbnString = [isbNumbers objectForKey:@"display"];
             [detailText appendAttributedString:[self attributedStringWithHeader:@"\nISBN: "
                                                                     displayText:isbnString]];
         }
-        _textString = detailText;
+        self.textString = detailText;
     }
     return _textString;
 }
@@ -199,7 +201,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
     
     if ([resultString length])
     {
-        CGFloat lineSpacing = 0.0;
+        CGFloat lineSpacing = 0.5;
         CTParagraphStyleSetting paragraphSetting = 
         {
             .spec = kCTParagraphStyleSpecifierLineSpacing,
