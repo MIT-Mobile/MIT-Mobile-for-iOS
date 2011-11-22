@@ -140,7 +140,7 @@
 
 - (IBAction)renewBook:(id)sender
 {
-    LibrariesRenewResultViewController *vc = [[[LibrariesRenewViewController alloc] initWithItems:[NSArray arrayWithObject:self.details]] autorelease];
+    LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:[NSArray arrayWithObject:self.details]] autorelease];
     [self.navigationController pushViewController:vc
                                          animated:YES];
 }
