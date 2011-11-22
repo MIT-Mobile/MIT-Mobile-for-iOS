@@ -5,6 +5,11 @@
 #import "MITLoadingActivityView.h"
 #import "MITUIConstants.h"
 
+#define PADDING 10
+#define CELL_TITLE_TAG 1
+#define CELL_SUBTITLE_TAG 2
+#define CELL_LABEL_WIDTH 250
+
 @implementation LibrariesLocationsHoursViewController
 @synthesize loadingView;
 @synthesize libraries;
@@ -41,7 +46,6 @@
 {
     [super viewDidLoad];
     [self.tableView applyStandardColors];
-    [self.tableView applyStandardCellHeight];
     self.title = @"Locations & Hours";
     
     if (!self.libraries) {
@@ -113,13 +117,44 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
-        [cell applyStandardFonts];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
+        UILabel *titleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, CELL_LABEL_WIDTH, 0)] autorelease];
+        titleLabel.tag = CELL_TITLE_TAG;
+        titleLabel.backgroundColor = [UIColor clearColor];
+        titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+        titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
+        titleLabel.highlightedTextColor = [UIColor whiteColor];
+        titleLabel.tag = CELL_TITLE_TAG;
+        titleLabel.numberOfLines = 0;
+        
+        UIFont *subtitleFont = [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE];
+        UILabel *subtitleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, CELL_LABEL_WIDTH, subtitleFont.lineHeight)] autorelease];
+        subtitleLabel.backgroundColor = [UIColor clearColor];
+        subtitleLabel.font = subtitleFont;
+        subtitleLabel.textColor = CELL_DETAIL_FONT_COLOR;
+        subtitleLabel.highlightedTextColor = [UIColor whiteColor];
+        subtitleLabel.tag = CELL_SUBTITLE_TAG;
+        
+        [cell.contentView addSubview:titleLabel];
+        [cell.contentView addSubview:subtitleLabel];
     }
     
+    UILabel *titleLabel = (UILabel *)[cell.contentView viewWithTag:CELL_TITLE_TAG];
+    UILabel *subtitleLabel = (UILabel *)[cell.contentView viewWithTag:CELL_SUBTITLE_TAG];    
+    
     LibrariesLocationsHours *library = [self.libraries objectAtIndex:indexPath.row];
-    cell.textLabel.text = library.title;
-    cell.detailTextLabel.text = library.status;
+    titleLabel.text = library.title;
+    subtitleLabel.text = library.status;
+    
+    CGRect titleFrame = titleLabel.frame;
+    titleFrame.size.height = [library.title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE]
+                                       constrainedToSize:CGSizeMake(CELL_LABEL_WIDTH, 500)].height;
+    titleLabel.frame = titleFrame;
+    CGRect subtitleFrame = subtitleLabel.frame;
+    subtitleFrame.origin.y = titleFrame.origin.y + titleFrame.size.height;
+    subtitleLabel.frame = subtitleFrame;
+    
     return cell;
 }
 
@@ -131,6 +166,14 @@
     detailController.library = [self.libraries objectAtIndex:indexPath.row];
     [self.navigationController pushViewController:detailController animated:YES];
     [detailController release];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath 
+{
+    LibrariesLocationsHours *library = [self.libraries objectAtIndex:indexPath.row];
+    CGSize titleSize = [library.title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] 
+                                 constrainedToSize:CGSizeMake(CELL_LABEL_WIDTH, 500)];
+    return titleSize.height + 2 * PADDING + [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE].lineHeight;
 }
 
 #pragma mark - JSONLoaded delegate methods
