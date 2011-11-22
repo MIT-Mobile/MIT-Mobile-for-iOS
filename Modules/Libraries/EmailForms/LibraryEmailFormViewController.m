@@ -504,6 +504,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     
     // force the user to login
     MITLoadingActivityView *loginLoadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
+    loginLoadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.tableView addSubview:loginLoadingView];
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag
                                                                               command:@"getUserIdentity"
