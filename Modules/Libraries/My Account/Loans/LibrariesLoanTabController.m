@@ -3,6 +3,7 @@
 #import "MobileRequestOperation.h"
 #import "LibrariesLoanTableViewCell.h"
 #import "LibrariesRenewResultViewController.h"
+#import "LibrariesDetailViewController.h"
 
 @interface LibrariesLoanTabController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
@@ -134,6 +135,19 @@
     return selectedIndex;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView.isEditing == NO)
+    {
+        NSArray *book = [self.loanData objectForKey:@"items"];
+        LibrariesDetailViewController *viewControler = [[[LibrariesDetailViewController alloc] initWithBookDetails:[book objectAtIndex:indexPath.row]
+                                                                                                        detailType:LibrariesDetailLoanType] autorelease];
+        [self.parentController.navigationController pushViewController:viewControler
+                                                              animated:YES];
+        [tableView deselectRowAtIndexPath:indexPath
+                                 animated:YES];
+    }
+}
 
 #pragma mark - UITableViewDataSource
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -175,7 +189,7 @@
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
     cell.editing = tableView.isEditing;
 
-    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.bounds)];
+    return [cell heightForContentWithWidth:kLibrariesTableCellDefaultWidth];
 }
 
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -259,42 +273,45 @@
                                                              action:@selector(renewItems:)] autorelease];
     }
     
-    
-    [UIView animateWithDuration:0.25
-                     animations:^ {
-                         [self.parentController.navigationItem setRightBarButtonItem:self.renewBarItem
-                                                                            animated:YES];
-                         [self.parentController.navigationItem setLeftBarButtonItem:self.cancelBarItem
-                                                                           animated:YES];
-                         [self.parentController.navigationItem setTitle:@"Renew"];
-                         [self.tabView setTabBarHidden:YES animated:YES];
-                         
-                         [self.tableView setEditing:YES animated:YES];
-                         [self.tableView beginUpdates];
-                         [self.tableView endUpdates];
-                     }];
+
+    [self.parentController.navigationItem setRightBarButtonItem:self.renewBarItem
+                                                    animated:YES];
+    [self.parentController.navigationItem setLeftBarButtonItem:self.cancelBarItem
+                                                   animated:YES];
+    [self.parentController.navigationItem setTitle:@"Renew"];
+
+    [self.tabView setTabBarHidden:YES
+                         animated:YES
+                         finished:^ {
+                             [self.tableView setEditing:YES animated:YES];
+                             [self.tableView beginUpdates];
+                             [self.tableView endUpdates];
+                         }];
+
+
 }
 
 - (IBAction)restoreTabView:(id)sender
 {
     self.renewItems = nil;
     self.cancelBarItem.enabled = YES;
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         [self.parentController.navigationItem setRightBarButtonItem:nil animated:YES];
-                         [self.parentController.navigationItem setLeftBarButtonItem:nil animated:YES];
-                         [self.parentController.navigationItem setTitle:self.parentController.title];
-                         [self.tabView setTabBarHidden:NO animated:YES];
-                         [self.tableView setEditing:NO animated:YES];
-                     }
-                     completion:^(BOOL finished) {
-                         if (finished)
-                         {
-                             [self updateLoanData];
-                             [self.tableView beginUpdates];
-                             [self.tableView endUpdates];
-                         }
-                     }];
+    [self.parentController.navigationItem setRightBarButtonItem:nil animated:YES];
+    [self.parentController.navigationItem setLeftBarButtonItem:nil animated:YES];
+    [self.parentController.navigationItem setTitle:self.parentController.title];
+
+    [UIView transitionWithView:self.tableView
+                      duration:0.25
+                       options:0
+                    animations:^{
+                        [self.tableView setEditing:NO];
+                    }
+                    completion:^ (BOOL finished) {
+                        if (finished)
+                        {
+                            [self.tabView setTabBarHidden:NO
+                                                 animated:YES];
+                        }
+                    }];
 }
 
 - (IBAction)renewItems:(id)sender
@@ -376,6 +393,5 @@
 {
     
 }
-
 
 @end
