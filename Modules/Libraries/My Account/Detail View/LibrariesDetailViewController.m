@@ -23,6 +23,7 @@
                             bundle:nil];
     if (self) {
         self.type = type;
+        self.details = dictionary;
     }
     return self;
 }
@@ -70,6 +71,10 @@
     {
         UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                         reuseIdentifier:nil] autorelease];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.editingAccessoryType = UITableViewCellAccessoryNone;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
         switch(self.type)
         {
             case LibrariesDetailFineType:
@@ -97,7 +102,7 @@
                                             inSection:1]];
     }
     
-    if (self.type)
+    if (self.type == LibrariesDetailLoanType)
     {
         UITableViewCell *buttonCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
         buttonCell.accessoryType = UITableViewCellAccessoryNone;
@@ -142,13 +147,12 @@
     CGFloat navHeight = self.navigationController.navigationBarHidden ? 0 : CGRectGetHeight(self.navigationController.navigationBar.frame);
     CGRect viewRect = [[UIScreen mainScreen] applicationFrame];
     viewRect = UIEdgeInsetsInsetRect(viewRect, UIEdgeInsetsMake(navHeight, 0, 0, 0));
-    
+
     UIView *view = [[[UIView alloc] initWithFrame:viewRect] autorelease];
-    CGPoint origin = CGPointZero;
     
     {
-        CGRect tableFrame = CGRectZero;
-        tableFrame.origin = origin;
+        CGRect tableFrame = view.bounds;
+        [self loadTableCells];
         
         UITableView *tableView = [[[UITableView alloc] initWithFrame:tableFrame
                                                                style:UITableViewStyleGrouped] autorelease];
@@ -229,7 +233,7 @@
 {
     CGFloat height = 0;
 
-    if ((self.type == LibrariesDetailLoanType) && (section == 2))
+    if ((self.type == LibrariesDetailLoanType) && (section == 1))
     {
         CGSize size = [@"Status" sizeWithFont:[UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE]
                             constrainedToSize:CGSizeMake(PADDED_WIDTH(320),CGFLOAT_MAX)
@@ -243,9 +247,7 @@
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UIView *sectionHeader = nil;
-    
-    if ((self.type == LibrariesDetailLoanType) && (section == 2))
+    if ((self.type == LibrariesDetailLoanType) && (section == 1))
     {
         UILabel *titleView = titleView = [[[UILabel alloc] init] autorelease];
         titleView.font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
@@ -261,14 +263,25 @@
                                      0,
                                      titleSize.width,
                                      titleSize.height);
-        sectionHeader = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, titleSize.height)] autorelease];
-        [sectionHeader addSubview:titleView];
+        
+        UIView *headerView = [[[UIView alloc] init] autorelease];
+        headerView.frame = CGRectMake(0, 0, titleSize.width, titleSize.height);
+        [headerView addSubview:titleView];
+        return headerView;
     }
     
-    return sectionHeader;
+    return nil;
 }
 
 
 #pragma mark - UITableView Delegate
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [self.tableCells objectForKey:indexPath];
+    [cell.contentView sizeToFit];
+    
+    return CGRectGetHeight(cell.contentView.frame);
+}
 
 @end
