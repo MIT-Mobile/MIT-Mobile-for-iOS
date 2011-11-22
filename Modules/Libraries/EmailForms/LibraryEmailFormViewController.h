@@ -36,16 +36,16 @@
 @interface MenuLibraryFormElement : LibraryFormElement {
 @private
     NSInteger _currentOptionIndex;
+    NSString *_defaultOption;
 }
 
 @property (nonatomic, assign) NSInteger currentOptionIndex;
 @property (nonatomic, retain) NSArray *options;
 @property (nonatomic, retain) NSArray *displayOptions;
+@property (nonatomic, retain) NSString *value;
 
 - (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel required:(BOOL)required values:(NSArray *)values;
 - (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel required:(BOOL)required values:(NSArray *)values displayValues:(NSArray *)displayValues;
-
-- (NSString *)value;
 
 @end
 

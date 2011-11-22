@@ -61,7 +61,7 @@ static const NSInteger kLibraryEmailFormTextView = 0x382;
 }
 
 - (NSString *)value {
-    NSAssert(NO, @"Need to overrdi method value");
+    NSAssert(NO, @"Need to override method value");
     return nil;
 }
 
@@ -70,6 +70,7 @@ static const NSInteger kLibraryEmailFormTextView = 0x382;
 @implementation MenuLibraryFormElement
 @synthesize options;
 @synthesize displayOptions;
+@dynamic value;
 
 - (id)initWithKey:(NSString *)aKey displayLabel:(NSString *)aDisplayLabel required:(BOOL)isRequired values:(NSArray *)theValues displayValues:(NSArray *)theDisplayValues {
     self = [super initWithKey:aKey displayLabel:aDisplayLabel required:isRequired];
@@ -126,6 +127,15 @@ static const NSInteger kLibraryEmailFormTextView = 0x382;
 
 - (NSString *)value {
     return [self.options objectAtIndex:self.currentOptionIndex];
+}
+
+- (void)setValue:(NSString *)value {
+    NSInteger index = [self.options indexOfObject:value];
+    if (index == NSNotFound) {
+        ELog(@"Unable to set field to \"%@\" as it does not exist among possible options: %@", value, self.options);
+    } else {
+        self.currentOptionIndex = index;
+    }
 }
 
 @end
@@ -202,7 +212,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 NSString* placeholderText(NSString *displayLabel, BOOL required) {
     NSString *placeHolder = displayLabel;
     if (!required) {
-        placeHolder = [placeHolder stringByAppendingString:@" (Optional)"];
+        placeHolder = [placeHolder stringByAppendingString:@" (optional)"];
     }
     return placeHolder;
 }
@@ -282,7 +292,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 }
 
 - (CGFloat)heightForTableViewCell {
-    return 140;
+    return 110;
 }
 
 - (UIView *)textInputView {
@@ -748,12 +758,19 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 }
 
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return GROUPED_SECTION_HEADER_HEIGHT;
+    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+    if (formGroup.name) {
+        return GROUPED_SECTION_HEADER_HEIGHT;
+    }
+    return 0;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
-    return [UITableView groupedSectionHeaderWithTitle:formGroup.name];
+    if (formGroup.name) {
+        return [UITableView groupedSectionHeaderWithTitle:formGroup.name];
+    }
+    return nil;
 }
 
 - (BOOL)formValid {

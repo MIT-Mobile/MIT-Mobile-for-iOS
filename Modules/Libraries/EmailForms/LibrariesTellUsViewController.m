@@ -16,7 +16,7 @@
 - (NSArray *)formGroups {
     return [NSArray arrayWithObject:
             [LibraryFormElementGroup 
-             groupForName:@"Feedback"
+             groupForName:nil
              elements:[NSArray arrayWithObjects:
                        [self statusMenuFormElementWithRequired:NO],
                        [[[TextAreaLibraryFormElement alloc] 

@@ -71,6 +71,7 @@ static const CGFloat kEditViewWidth = 300.0f;
     // bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self.tableView applyStandardColors];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 - (void)viewDidUnload

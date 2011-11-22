@@ -5,7 +5,7 @@
 
 + (TopicsMenuLibraryFormElement *)formElementWithDelegate:(id<LibraryFormElementDelegate>) delegate {
     TopicsMenuLibraryFormElement *element = [[[TopicsMenuLibraryFormElement alloc] initWithKey:@"topic"
-                                                 displayLabel:@"Topic Area:"
+                                                 displayLabel:@"Topic"
                                                      required:YES
                                                        values:[NSArray arrayWithObjects:
                                                                @"Art, Architecture & Planning", 
@@ -17,6 +17,7 @@
                                                                @"Circulation",
                                                                @"Technical Help",
                                                                nil]] autorelease];
+    element.value = @"General"; // default
     element.delegate = delegate;
     return element;
 }
@@ -28,33 +29,34 @@
     
     TextLibraryFormElement *phoneElement = 
     [[[TextLibraryFormElement alloc] 
-      initWithKey:@"phone" displayLabel:@"Phone Number" required:NO] 
+      initWithKey:@"phone" displayLabel:@"Phone" required:NO] 
      autorelease];
     phoneElement.keyboardType = UIKeyboardTypePhonePad;
     
     return [NSArray arrayWithObjects:
-        [LibraryFormElementGroup groupForName:@"Question" elements:[NSArray arrayWithObjects:
+        [LibraryFormElementGroup groupForName:nil
+                                     elements:[NSArray arrayWithObjects:
             [TopicsMenuLibraryFormElement formElementWithDelegate:self],
             
             [[[TextLibraryFormElement alloc] initWithKey:@"subject" 
-                                            displayLabel:@"Subject line:" 
+                                            displayLabel:@"Subject" 
                                                 required:YES] autorelease],
             
             [[[TextAreaLibraryFormElement alloc] initWithKey:@"question" 
-                                            displayLabel:@"Detailed question:" 
+                                            displayLabel:@"Detailed question" 
                                                 required:YES] autorelease],
                                     
             nil]],
             
          [LibraryFormElementGroup hiddenGroupForName:@"Technical Help" elements:[NSArray arrayWithObjects:
             [[[MenuLibraryFormElement alloc] initWithKey:@"on_campus"
-                                             displayLabel:@"Is the problem happening on or off campus?"
+                                             displayLabel:@"Location"
                                                  required:YES 
                                                    values:[NSArray arrayWithObjects:@"on campus", @"off campus", nil] 
                                             displayValues:[NSArray arrayWithObjects:@"On campus", @"Off campus", nil]] autorelease],
 
             [[[MenuLibraryFormElement alloc] initWithKey:@"vpn"
-                                             displayLabel:@"Are you using VPN?"
+                                             displayLabel:@"Using VPN"
                                                  required:YES 
                                                    values:[NSArray arrayWithObjects:@"yes", @"no", nil] 
                                             displayValues:[NSArray arrayWithObjects:@"Yes", @"No", nil]] autorelease],
@@ -62,9 +64,9 @@
             nil]],
                                                                              
             
-         [LibraryFormElementGroup groupForName:@"MIT Status" elements:[NSArray arrayWithObjects:
+         [LibraryFormElementGroup groupForName:@"Personal Info" elements:[NSArray arrayWithObjects:
             [self statusMenuFormElementWithRequired:YES],            
-            [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Your department" required:YES] autorelease],
+            [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Department" required:YES] autorelease],
             phoneElement,
             nil]],
         nil];

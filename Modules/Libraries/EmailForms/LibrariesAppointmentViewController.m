@@ -16,19 +16,19 @@
 - (NSArray *)formGroups {
     TextLibraryFormElement *phoneElement = 
     [[[TextLibraryFormElement alloc] 
-      initWithKey:@"phone" displayLabel:@"Phone Number" required:NO] 
+      initWithKey:@"phone" displayLabel:@"Phone" required:NO] 
      autorelease];
     phoneElement.keyboardType = UIKeyboardTypePhonePad;
 
     return [NSArray arrayWithObjects:
-        [LibraryFormElementGroup groupForName:@"Question" elements:[NSArray arrayWithObjects:
+        [LibraryFormElementGroup groupForName:@"Research Info" elements:[NSArray arrayWithObjects:
                                                                     // Temporary.
             [[[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"subject" 
-                                            displayLabel:@"Topic of your research" 
+                                            displayLabel:@"Topic" 
                                                 required:YES] autorelease],
             
             [[[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"timeframe" 
-                                            displayLabel:@"Timeframe for your research:" 
+                                            displayLabel:@"Timeframe" 
                                                 required:YES] autorelease],
                                                                     
             [[[TextAreaLibraryFormElement alloc] initWithKey:@"description" 
@@ -37,16 +37,16 @@
                                                 required:YES] autorelease],
                                                                     
             [[[MenuLibraryFormElement alloc] initWithKey:@"why" 
-                                            displayLabel:@"Purpose of research:" 
+                                            displayLabel:@"Purpose" 
                                                 required:NO 
                                                   values:[NSArray arrayWithObjects:@"Course", @"Thesis", @"Research", nil]] autorelease],
                                                                     
             [[[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"course" 
-                                            displayLabel:@"Which course?" 
+                                            displayLabel:@"Course" 
                                                 required:NO] autorelease],
                                                                     
             [[[MenuLibraryFormElement alloc] initWithKey:@"topic" 
-                                            displayLabel:@"I would like to discuss" 
+                                            displayLabel:@"Subject" 
                                                 required:YES 
                                                   values:[NSArray arrayWithObjects:
                                                           @"General",
@@ -61,9 +61,9 @@
                                                                 
             nil]],
         
-        [LibraryFormElementGroup groupForName:@"MIT Status" elements:[NSArray arrayWithObjects:
+        [LibraryFormElementGroup groupForName:@"Personal Info" elements:[NSArray arrayWithObjects:
             [self statusMenuFormElementWithRequired:YES],            
-            [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Your department" required:YES] autorelease],
+            [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Department" required:YES] autorelease],
             phoneElement,
             nil]],
         
