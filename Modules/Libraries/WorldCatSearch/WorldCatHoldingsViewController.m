@@ -1,6 +1,10 @@
 #import "WorldCatHoldingsViewController.h"
 #import "WorldCatBook.h"
 #import "UIKit+MITAdditions.h"
+#import "MITUIConstants.h"
+
+#define PADDING 10
+#define CELL_LABEL_TAG 232
 
 @implementation WorldCatHoldingsViewController
 
@@ -100,12 +104,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return self.holdings.count;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 1;
+    return self.holdings.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -115,18 +119,38 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, 280, 0)];
+        label.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+        label.textColor = CELL_STANDARD_FONT_COLOR;
+        label.tag = CELL_LABEL_TAG;
+        label.numberOfLines = 0;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [cell.contentView addSubview:label];
     }
     
-    cell.textLabel.text = @"Request item";
-    cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+    UILabel *label = (UILabel *)[cell viewWithTag:CELL_LABEL_TAG];
+    WorldCatHolding *holding = [self.holdings objectAtIndex:indexPath.row];
+    NSString *labelText = holding.library;
+    CGSize textSize = [labelText sizeWithFont:label.font constrainedToSize:CGSizeMake(280, 500)];
+    CGRect labelFrame = label.frame;
+    labelFrame.size.height = textSize.height;
+    label.frame = labelFrame;
+    label.text = labelText;
+
     
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    WorldCatHolding *holding = [self.holdings objectAtIndex:indexPath.row];
+    NSString *labelText = holding.library;
+    CGSize textSize = [labelText sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(280, 500)];
+    return textSize.height + 2 * PADDING;
+}
+
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    WorldCatHolding *holding = [self.holdings objectAtIndex:section];
-    return holding.library;
+    return @"Boston Library Consortium";
 }
 
 #pragma mark - Table view delegate
