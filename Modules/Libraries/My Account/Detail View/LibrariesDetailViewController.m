@@ -9,7 +9,7 @@
 @interface LibrariesDetailViewController ()
 @property (nonatomic,retain) NSDictionary *details;
 @property (nonatomic) LibrariesDetailType type;
-@property (nonatomic,retain) NSMutableDictionary *tableCells;
+@property (nonatomic,retain) NSDictionary *tableCells;
 @end
 
 @implementation LibrariesDetailViewController
@@ -127,8 +127,13 @@
                         action:@selector(renewBook:)
               forControlEvents:UIControlEventTouchUpInside];
         
-        [buttonCell.contentView addSubview:renewButton];
+        [buttonCell addSubview:renewButton];
+        [cells setObject:buttonCell
+                  forKey:[NSIndexPath indexPathForRow:0
+                                            inSection:2]];
     }
+
+    self.tableCells = cells;
 }
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
@@ -144,7 +149,6 @@
     {
         CGRect tableFrame = CGRectZero;
         tableFrame.origin = origin;
-        tableFrame.size = viewRect.size;
         
         UITableView *tableView = [[[UITableView alloc] initWithFrame:tableFrame
                                                                style:UITableViewStyleGrouped] autorelease];
