@@ -141,6 +141,7 @@ LocationsHoursTableRows;
         titleLabel.backgroundColor = [UIColor clearColor];
         titleLabel.numberOfLines = 0;
         [cell.contentView addSubview:titleLabel];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     return cell;
 }
