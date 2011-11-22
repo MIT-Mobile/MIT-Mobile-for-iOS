@@ -420,6 +420,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 
 @interface LibraryEmailFormViewController (Private)
 - (NSArray *)nonHiddenFormGroups;
+- (void)back:(id)sender;
 - (void)submitForm:(NSDictionary *)parameters;
 - (void)submitForm;
 - (BOOL)formValid;
@@ -465,7 +466,10 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     
     // setup the form and event listeners required
     self.tableView.backgroundColor = [UIColor clearColor];
-    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Submit" style:UIBarButtonItemStyleBordered target:self action:@selector(submitForm)] autorelease];
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Submit" 
+                                                                               style:UIBarButtonItemStyleDone 
+                                                                              target:self 
+                                                                              action:@selector(submitForm)] autorelease];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
     [self setFormGroups:[self formGroups]];
@@ -545,8 +549,14 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:YES];
     [self.tableView reloadData];
+    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                           target:self
+                                                                                           action:@selector(back:)] autorelease];
 }
 
+- (void)back:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 - (NSArray *)textInputs {
     NSMutableArray *textInputs = [NSMutableArray array];
