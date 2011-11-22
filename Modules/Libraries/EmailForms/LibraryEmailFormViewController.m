@@ -723,7 +723,6 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    NSLog(@"sections=%d", [self nonHiddenFormGroups].count);
     return [self nonHiddenFormGroups].count;
 }
 
