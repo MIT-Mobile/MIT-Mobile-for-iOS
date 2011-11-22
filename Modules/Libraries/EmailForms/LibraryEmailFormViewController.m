@@ -5,6 +5,7 @@
 #import "LibraryMenuElementViewController.h"
 #import "ThankYouViewController.h"
 #import "LibraryTextElementViewController.h"
+#import "ExplanatorySectionLabel.h"
 
 #define PADDING 10
 
@@ -311,6 +312,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 
 @implementation LibraryFormElementGroup
 @synthesize name;
+@synthesize headerText;
+@synthesize footerText;
 @synthesize hidden;
 
 + (LibraryFormElementGroup *)groupForName:(NSString *)name elements:(NSArray *)elements {
@@ -773,7 +776,12 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
-    if (formGroup.name) {
+    if (formGroup.headerText) {
+        CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.headerText
+                                                   accessoryView:nil 
+                                                           width:self.view.frame.size.width];
+        return height;
+    } else if (formGroup.name) {
         return GROUPED_SECTION_HEADER_HEIGHT;
     }
     return 0;
@@ -784,11 +792,48 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         return nil;
     }
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
-    if (formGroup.name) {
+    if (formGroup.headerText) {
+        CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:formGroup.headerText 
+                                                         accessoryView:nil
+                                                                 width:self.view.frame.size.width];
+        ExplanatorySectionLabel *headerLabel = [[ExplanatorySectionLabel alloc] 
+            initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
+        headerLabel.text = formGroup.headerText;
+        return headerLabel;
+    } else if (formGroup.name) {
         return [UITableView groupedSectionHeaderWithTitle:formGroup.name];
     }
     return nil;
 }
+
+- (CGFloat)tableView: (UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+    if (formGroup.footerText) {
+        CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.footerText
+                                                   accessoryView:nil 
+                                                           width:self.view.frame.size.width];
+        return height;
+    }
+    return 0;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    if (!identityVerified) {
+        return nil;
+    }
+    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+    if (formGroup.footerText) {
+        CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:formGroup.footerText 
+                                                         accessoryView:nil
+                                                                 width:self.view.frame.size.width];
+        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] 
+                                                initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
+        footerLabel.text = formGroup.footerText;
+        return footerLabel;
+    }
+    return nil;
+}
+
 
 - (BOOL)formValid {
     for (LibraryFormElementGroup *formGroup in [self nonHiddenFormGroups]) {

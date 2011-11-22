@@ -98,6 +98,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required);
 - (id)initWithName:(NSString *)name formElements:(NSArray *)formElements;
 
 @property (nonatomic, retain) NSString *name;
+@property (nonatomic, retain) NSString *headerText;
+@property (nonatomic, retain) NSString *footerText;
 @property (nonatomic) BOOL hidden;
 @property (nonatomic, assign) LibraryEmailFormViewController *formViewController;
 
