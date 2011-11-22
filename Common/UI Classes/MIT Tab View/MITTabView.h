@@ -29,5 +29,8 @@ extern NSString* const MITTabViewDidBecomeInactiveNotification;
 
 - (BOOL)addView:(UIView*)view withItem:(UITabBarItem*)item animate:(BOOL)animate;
 - (BOOL)insertView:(UIView*)view withItem:(UITabBarItem*)item atIndex:(NSInteger)index animate:(BOOL)animate;
+
 - (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated;
+- (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated finished:(void (^)())finished;
+
 @end

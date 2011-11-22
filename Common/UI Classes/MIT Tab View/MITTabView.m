@@ -362,25 +362,39 @@ static CGFloat kHeaderDefaultHeight = 5.0;
 - (void)setTabBarHidden:(BOOL)tabBarHidden
 {
     [self setTabBarHidden:tabBarHidden
-                 animated:NO];
+                 animated:NO
+                 finished:nil];
 }
 
 - (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated
+{
+    [self setTabBarHidden:tabBarHidden
+                 animated:animated
+                 finished:nil];
+}
+
+- (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated finished:(void(^)(void))finishedBlock
 {
     if (tabBarHidden != _tabBarHidden)
     {
         _tabBarHidden = tabBarHidden;
         {
-            [UIView animateWithDuration:(animated ? 0.25 : 0.0)
-                                  delay:0.0
-                                options:(UIViewAnimationOptionAllowAnimatedContent |
-                                         UIViewAnimationOptionCurveLinear)
-                             animations:^ {
-                                 [self layoutSubviews];
-                                 self.activeHeaderView.hidden = tabBarHidden;
-                                 self.tabControl.hidden = tabBarHidden;
-                             }
-                             completion:nil];
+            [UIView transitionWithView:self
+                              duration:(animated ? 0.25 : 0.0)
+                               options:(UIViewAnimationOptionOverrideInheritedCurve |
+                                       UIViewAnimationOptionCurveLinear |
+                                       UIViewAnimationOptionOverrideInheritedDuration)
+                            animations:^{
+                                self.activeHeaderView.hidden = tabBarHidden;
+                                self.tabControl.hidden = tabBarHidden;
+                                [self layoutSubviews];
+                            }
+                            completion:^(BOOL finished) {
+                                if (finished && finishedBlock)
+                                {
+                                    finishedBlock();
+                                }
+                            }];
         }
     }
 }
