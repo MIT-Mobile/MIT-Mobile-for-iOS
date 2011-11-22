@@ -474,7 +474,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     
     [self setFormGroups:[self formGroups]];
     
-    self.prevNextSegmentedControl = [[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"Prev", @"Next", nil]] autorelease];
+    self.prevNextSegmentedControl = [[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"Previous", @"Next", nil]] autorelease];
     self.prevNextSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
     self.prevNextSegmentedControl.momentary = YES;
     [self.prevNextSegmentedControl addTarget:self action:@selector(updateFocusedTextView:) forControlEvents:UIControlEventValueChanged];
@@ -635,6 +635,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         NSInteger textInputIndex = [textInputs indexOfObject:self.currentTextView];
         UIView *nextTextInput = [textInputs objectAtIndex:textInputIndex+1];
         [nextTextInput becomeFirstResponder];
+        [self.tableView scrollToRowAtIndexPath:[self indexPathForTextInput:nextTextInput] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     } else {
         if ([self formValid] && textField.returnKeyType == UIReturnKeySend) {
             [self submitForm];

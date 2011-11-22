@@ -33,6 +33,14 @@
      autorelease];
     phoneElement.keyboardType = UIKeyboardTypePhonePad;
     
+    MenuLibraryFormElement *vpnElement = 
+    [[[MenuLibraryFormElement alloc] initWithKey:@"vpn"
+                                    displayLabel:@"Using VPN"
+                                        required:YES 
+                                          values:[NSArray arrayWithObjects:@"yes", @"no", nil] 
+                                   displayValues:[NSArray arrayWithObjects:@"Yes", @"No", nil]] autorelease];
+    vpnElement.value = @"no";
+    
     return [NSArray arrayWithObjects:
         [LibraryFormElementGroup groupForName:nil
                                      elements:[NSArray arrayWithObjects:
@@ -55,11 +63,7 @@
                                                    values:[NSArray arrayWithObjects:@"on campus", @"off campus", nil] 
                                             displayValues:[NSArray arrayWithObjects:@"On campus", @"Off campus", nil]] autorelease],
 
-            [[[MenuLibraryFormElement alloc] initWithKey:@"vpn"
-                                             displayLabel:@"Using VPN"
-                                                 required:YES 
-                                                   values:[NSArray arrayWithObjects:@"yes", @"no", nil] 
-                                            displayValues:[NSArray arrayWithObjects:@"Yes", @"No", nil]] autorelease],
+            vpnElement,
                                                                            
             nil]],
                                                                              
