@@ -17,13 +17,13 @@
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     if (section == 0) {
         NSString *labelText = @"Some text";
-        CGFloat fittedHeight = [TableSectionExplanatoryLabelView 
+        CGFloat fittedHeight = [ExplanatorySectionLabel 
             heightWithText:labelText 
              accessoryView:nil
                      width:self.view.frame.size.width];
         
-        TableSectionExplanatoryLabelView *footerLabel = 
-            [[TableSectionExplanatoryLabelView alloc] 
+        ExplanatorySectionLabel *footerLabel = 
+            [[ExplanatorySectionLabel alloc] 
                 initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
         footerLabel.text = labelText;
         return footerLabel;
@@ -34,7 +34,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     if (section == 0) {
         NSString *labelText = @"Some text";
-        CGFloat height = [TableSectionExplanatoryLabelView 
+        CGFloat height = [ExplanatorySectionLabel 
             heightWithText:labelText 
              accessoryView:nil 
                      width:self.view.frame.size.width];
