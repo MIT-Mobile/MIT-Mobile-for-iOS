@@ -373,7 +373,7 @@ static CGFloat kHeaderDefaultHeight = 5.0;
                  finished:nil];
 }
 
-- (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated finished:(void(^)(void))finishedBlock
+- (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated finished:(void(^)())finishedBlock
 {
     if (tabBarHidden != _tabBarHidden)
     {
