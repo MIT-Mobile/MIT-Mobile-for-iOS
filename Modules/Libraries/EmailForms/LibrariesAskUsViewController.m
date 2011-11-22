@@ -46,7 +46,7 @@
                                     
             nil]],
             
-         [LibraryFormElementGroup hiddenGroupForName:@"TechHelp" elements:[NSArray arrayWithObjects:
+         [LibraryFormElementGroup hiddenGroupForName:@"Technical Help" elements:[NSArray arrayWithObjects:
             [[[MenuLibraryFormElement alloc] initWithKey:@"on_campus"
                                              displayLabel:@"Is the problem happening on or off campus?"
                                                  required:YES 
@@ -62,7 +62,7 @@
             nil]],
                                                                              
             
-         [LibraryFormElementGroup groupForName:@"PersonalInfo" elements:[NSArray arrayWithObjects:
+         [LibraryFormElementGroup groupForName:@"MIT Status" elements:[NSArray arrayWithObjects:
             [self statusMenuFormElementWithRequired:YES],            
             [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Your department" required:YES] autorelease],
             phoneElement,
@@ -78,7 +78,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    LibraryFormElementGroup *techFormGroup = [self groupForName:@"TechHelp"];
+    LibraryFormElementGroup *techFormGroup = [self groupForName:@"Technical Help"];
     if (techHelpSectionHidden != techFormGroup.hidden) {
         NSIndexSet *techHelpSection = [NSIndexSet indexSetWithIndex:1];
         techFormGroup.hidden = techHelpSectionHidden;

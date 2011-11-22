@@ -723,6 +723,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    NSLog(@"sections=%d", [self nonHiddenFormGroups].count);
     return [self nonHiddenFormGroups].count;
 }
 
@@ -730,7 +731,6 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
     return [formGroup numberOfRows];
 }
-
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:indexPath.section];
@@ -746,6 +746,15 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         vc.textElement = (DedicatedViewTextLibraryFormElement *)element;
         [self.navigationController pushViewController:vc animated:YES];
     }
+}
+
+- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return GROUPED_SECTION_HEADER_HEIGHT;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+    return [UITableView groupedSectionHeaderWithTitle:formGroup.name];
 }
 
 - (BOOL)formValid {

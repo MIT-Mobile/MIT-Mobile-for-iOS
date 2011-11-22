@@ -61,7 +61,7 @@
                                                                 
             nil]],
         
-        [LibraryFormElementGroup groupForName:@"PersonalInfo" elements:[NSArray arrayWithObjects:
+        [LibraryFormElementGroup groupForName:@"MIT Status" elements:[NSArray arrayWithObjects:
             [self statusMenuFormElementWithRequired:YES],            
             [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Your department" required:YES] autorelease],
             phoneElement,
