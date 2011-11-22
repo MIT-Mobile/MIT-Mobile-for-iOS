@@ -4,6 +4,7 @@
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
+#import "MITUIConstants.h"
 
 typedef enum 
 {
@@ -15,6 +16,10 @@ typedef enum
     CONTENT_ROW
 }
 LocationsHoursTableRows;
+
+#define TITLE_ROW_TAG 423
+#define PADDING 11
+#define TITLE_WIDTH 278
 
 @interface LibrariesLocationsHoursDetailViewController (Private)
 - (NSString *)contentHtml;
@@ -124,6 +129,22 @@ LocationsHoursTableRows;
     }
 }
 
+- (UITableViewCell *)titleRowWithTable:(UITableView *)tableView {
+    NSString *cellIdentifier = @"titleRow";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (cell == nil) {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier]autorelease];
+        UILabel *titleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, TITLE_WIDTH, 0)] autorelease];
+        titleLabel.tag = TITLE_ROW_TAG;
+        titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+        titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
+        titleLabel.backgroundColor = [UIColor clearColor];
+        titleLabel.numberOfLines = 0;
+        [cell.contentView addSubview:titleLabel];
+    }
+    return cell;
+}
+
 - (UITableViewCell *)defaultRowWithTable:(UITableView *)tableView {
     NSString *cellIdentifier = @"defaultRow";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
@@ -138,9 +159,12 @@ LocationsHoursTableRows;
 {
     UITableViewCell *cell = nil;
     if (indexPath.row == TITLE_ROW) {
-        cell = [self defaultRowWithTable:tableView];
-        cell.textLabel.text = self.library.title;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell = [self titleRowWithTable:tableView];
+        UILabel *titleLabel = (UILabel *)[cell viewWithTag:TITLE_ROW_TAG];
+        titleLabel.text = self.library.title;
+        CGSize titleSize = [self.library.title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] 
+                                          constrainedToSize:CGSizeMake(TITLE_WIDTH, 500)];
+        titleLabel.frame = CGRectMake(PADDING, PADDING, TITLE_WIDTH, titleSize.height);
     } else {
         if (self.librariesDetailStatus != LibrariesDetailStatusLoaded) {
             cell = [self defaultRowWithTable:tableView];
@@ -214,6 +238,10 @@ LocationsHoursTableRows;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row == CONTENT_ROW) {
         return self.contentRowHeight;
+    } if (indexPath.row == TITLE_ROW) {
+        CGSize titleSize = [self.library.title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] 
+                                          constrainedToSize:CGSizeMake(TITLE_WIDTH, 500)];
+        return titleSize.height + 2*PADDING;
     } else {
         return tableView.rowHeight;
     }
