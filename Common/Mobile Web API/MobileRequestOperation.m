@@ -849,14 +849,23 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     
     self.touchstoneUser = chompedUser;
     self.touchstonePassword = password;
-    
+
     if (saveLogin)
     {
         MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, password);
     }
     else
     {
-        MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
+        NSDictionary *mobileCredentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
+
+        if ([mobileCredentials objectForKey:kSecAttrAccount])
+        {
+            MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, @"");
+        }
+        else
+        {
+            MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
+        }
     }
     
     [gSecureStateTracker dispatchAuthenticationBlock];

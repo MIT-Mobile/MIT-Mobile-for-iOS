@@ -59,7 +59,6 @@
     if (self) {
         self.username = aUsername;
         self.password = aPassword;
-        self.wantsFullScreenLayout = YES;
     }
     
     return self;
@@ -177,7 +176,10 @@
     
     {
         UISwitch *saveToggle = [[[UISwitch alloc] init] autorelease];
-        saveToggle.on = ([self.username length] > 0);
+
+        NSDictionary *credentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
+
+        saveToggle.on = [credentials objectForKey:kSecAttrAccount] && ([self.password length] > 0);
         self.saveCredentials = saveToggle;
 
         UITableViewCell *saveCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
