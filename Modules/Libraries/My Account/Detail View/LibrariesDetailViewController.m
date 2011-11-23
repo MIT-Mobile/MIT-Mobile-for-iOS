@@ -4,6 +4,7 @@
 #import "MITUIConstants.h"
 #import "MobileRequestOperation.h"
 #import "MITNavigationActivityView.h"
+#import "Foundation+MITAdditions.h"
 
 @interface LibrariesDetailViewController ()
 @property (nonatomic,retain) NSDictionary *details;
@@ -124,6 +125,7 @@
         UILabel *statusLabel = [[[UILabel alloc] init] autorelease];
         statusLabel.numberOfLines = 0;
         statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+        statusLabel.font = [UIFont systemFontOfSize:14.0];
         
         NSMutableString *statusText = [NSMutableString string];
         switch (self.type)
@@ -174,6 +176,18 @@
             }
 
             case LibrariesDetailFineType:
+            {
+                [statusText appendFormat:@"Amount owed: %@", [self.details objectForKey:@"display-amount"]];
+
+                NSTimeInterval fineInterval = [[self.details objectForKey:@"fine-date"] doubleValue];
+                NSDate *fineDate = [NSDate dateWithTimeIntervalSince1970:fineInterval];
+                [statusText appendFormat:@"\nFined on %@", [NSDateFormatter localizedStringFromDate:fineDate
+                                                                       dateStyle:NSDateFormatterShortStyle
+                                                                       timeStyle:NSDateFormatterNoStyle]];
+
+                statusLabel.textColor = [UIColor redColor];
+                statusLabel.font = [UIFont boldSystemFontOfSize:14.0];
+            }
             default:
                 break;
         }
@@ -186,8 +200,7 @@
                                                                CGRectGetMaxY(statusContentFrame))
                                       lineBreakMode:statusLabel.lineBreakMode];
 
-        statusLabel.text = statusText;
-        statusLabel.font = [UIFont systemFontOfSize:14.0];
+        statusLabel.text = [[statusText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
         statusLabel.frame = statusFrame;
         [statusView addSubview:statusLabel];
 
