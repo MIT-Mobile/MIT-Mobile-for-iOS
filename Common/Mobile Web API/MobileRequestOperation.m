@@ -57,6 +57,9 @@ typedef enum {
 - (void)dispatchCompleteBlockWithResult:(id)jsonResult
                                   error:(NSError*)error;
 - (void)displayLoginPrompt;
+
+- (void)displayLoginPrompt:(BOOL)forceDisplay;
+
 - (void)finish;
 - (void)transitionToState:(MobileRequestState)state
           willSendRequest:(NSURLRequest*)request;
@@ -484,10 +487,15 @@ typedef enum {
     }
 }
 
-- (void)displayLoginPrompt {
+- (void)displayLoginPrompt
+{
+    [self displayLoginPrompt:NO];
+}
+
+- (void)displayLoginPrompt:(BOOL)forceDisplay {
     if (self.loginViewController == nil) {
         dispatch_async(dispatch_get_main_queue(), ^ {
-            if ([self authenticationRequired]) {
+            if ([self authenticationRequired] || forceDisplay) {
                 UIWindow *mainWindow = [[UIApplication sharedApplication] keyWindow];
                 MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
                                                                                                                  password:self.touchstonePassword] autorelease];
@@ -689,8 +697,6 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 TouchstoneAuthResponse *tsResponse = [[[TouchstoneAuthResponse alloc] initWithResponseData:self.requestData] autorelease];
                 if (tsResponse.error) {
                     if (tsResponse.error.code == MobileWebInvalidLoginError) {
-                        [MobileRequestOperation clearAuthenticatedSession];
-                        
                         if (self.presetCredentials)
                         {
                             NSError *error = [NSError errorWithDomain:NSURLErrorDomain
@@ -701,17 +707,18 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                         }
                         else
                         {
-                            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                if (self.loginViewController == nil)
-                                {
-                                    [self displayLoginPrompt];
-                                } else {
+                            self.touchstonePassword = nil;
+                            if (self.loginViewController == nil)
+                            {
+                                [self displayLoginPrompt:YES];
+                            }
+                            else
+                            {
+                                dispatch_sync(dispatch_get_main_queue(), ^(void) {
                                     [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password"
                                                                                    willRetry:YES];
-                                }
-                            });
-                            
-                            self.touchstonePassword = nil;
+                                });
+                            }
                         }
                     } else {
                         [self connection:connection
@@ -748,8 +755,6 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 SAMLResponse *samlResponse = [[[SAMLResponse alloc] initWithResponseData:self.requestData] autorelease];
                 if (samlResponse.error) {
                     if (samlResponse.error.code == MobileWebInvalidLoginError) {
-                        [MobileRequestOperation clearAuthenticatedSession];
-                        
                         if (self.presetCredentials)
                         {
                             NSError *error = [NSError errorWithDomain:NSURLErrorDomain
@@ -760,17 +765,18 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                         }
                         else
                         {
-                            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                if (self.loginViewController == nil)
-                                {
-                                    [self displayLoginPrompt];
-                                } else {
+                            self.touchstonePassword = nil;
+                            if (self.loginViewController == nil)
+                            {
+                                [self displayLoginPrompt:YES];
+                            }
+                            else
+                            {
+                                dispatch_async(dispatch_get_main_queue(), ^(void) {
                                     [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password"
                                                                                    willRetry:YES];
-                                }
-                            });
-                            
-                            self.touchstonePassword = nil;
+                                });
+                            }
                         }
                     } else {
                         [self connection:connection
