@@ -235,7 +235,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
     }
     customDetailLabel.text = 
     [NSString stringWithFormat:@"%@; %@", 
-     yearText, [book.authors componentsJoinedByString:@" "]];
+     yearText, [book.authors componentsJoinedByString:@", "]];
     // Move detail label to within 1/2 margin of main label.
     customDetailLabel.frame = 
     CGRectMake(kSearchCellLabelMargin, 
