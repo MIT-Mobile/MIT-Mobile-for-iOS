@@ -2,6 +2,7 @@
 #import "MITLoadingActivityView.h"
 #import "MobileRequestOperation.h"
 #import "LibrariesHoldsTableViewCell.h"
+#import "LibrariesDetailViewController.h"
 
 @interface LibrariesHoldsTabController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
@@ -61,6 +62,19 @@
 }
 
 #pragma mark - UITableViewDelegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView.isEditing == NO)
+    {
+        NSArray *book = [self.loanData objectForKey:@"items"];
+        LibrariesDetailViewController *viewControler = [[[LibrariesDetailViewController alloc] initWithBookDetails:[book objectAtIndex:indexPath.row]
+                                                                                                        detailType:LibrariesDetailHoldType] autorelease];
+        [self.parentController.navigationController pushViewController:viewControler
+                                                              animated:YES];
+        [tableView deselectRowAtIndexPath:indexPath
+                                 animated:YES];
+    }
+}
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
