@@ -279,14 +279,11 @@
     [self.parentController.navigationItem setLeftBarButtonItem:self.cancelBarItem
                                                       animated:YES];
 
-    [self.tabView setTabBarHidden:YES
-                         animated:YES
-                         finished:^ {
-                             [self.tableView setEditing:YES animated:YES];
-                             [self.tableView beginUpdates];
-                             [self.tableView endUpdates];
-                         }];
+    [self.tabView setTabBarHidden:YES animated:YES];
 
+    [self.tableView setEditing:YES animated:YES];
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 
 }
 
@@ -299,19 +296,9 @@
     [self.parentController.navigationItem setRightBarButtonItem:nil animated:YES];
     [self.parentController.navigationItem setLeftBarButtonItem:nil animated:YES];
 
-    [UIView transitionWithView:self.tableView
-                      duration:0.25
-                       options:0
-                    animations:^{
-                        [self.tableView setEditing:NO];
-                    }
-                    completion:^ (BOOL finished) {
-                        if (finished)
-                        {
-                            [self.tabView setTabBarHidden:NO
-                                                 animated:YES];
-                        }
-                    }];
+    [self.tableView setEditing:NO animated:YES];
+    [self.tabView setTabBarHidden:NO
+                         animated:YES];
 }
 
 - (IBAction)renewItems:(id)sender
