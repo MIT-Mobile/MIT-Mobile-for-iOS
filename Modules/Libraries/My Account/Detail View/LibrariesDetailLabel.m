@@ -7,7 +7,6 @@ static NSString const * LibrariesDetailYearKey = @"year";
 static NSString const * LibrariesDetailCallNumberKey = @"call-no";
 static NSString const * LibrariesDetailLibraryKey = @"sub-library";
 static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
-static UIEdgeInsets kLabelInsets = {.top = 10, .bottom = 10, .left = 5, .right = 5};
 #pragma mark -
 
 @interface LibrariesDetailLabel ()
@@ -22,6 +21,7 @@ static UIEdgeInsets kLabelInsets = {.top = 10, .bottom = 10, .left = 5, .right =
 @implementation LibrariesDetailLabel
 @synthesize bookDetails = _bookDetails;
 @synthesize textString = _textString;
+@synthesize textInsets = _textInsets;
 @dynamic framesetter;
 
 - (id)initWithBook:(NSDictionary*)details
@@ -29,26 +29,37 @@ static UIEdgeInsets kLabelInsets = {.top = 10, .bottom = 10, .left = 5, .right =
     self = [super init];
     if (self) {
         self.bookDetails = details;
+        self.textInsets = UIEdgeInsetsMake(10, 5, 10, 5);
     }
     return self;
+}
+
+- (void)dealloc
+{
+    self.bookDetails = nil;
+    self.textString = nil;
+    self.framesetter = nil;
+    [super dealloc];
 }
 
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
+    UIEdgeInsets insets = self.textInsets;
     CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(self.framesetter,
                                                                    CFRangeMake(0, 0),
                                                                    NULL,
-                                                                   CGSizeMake(size.width - (kLabelInsets.left + kLabelInsets.right),CGFLOAT_MAX),
+                                                                   CGSizeMake(size.width - (insets.left + insets.right),CGFLOAT_MAX),
                                                                    NULL);
-    
-    size.height = ceil(textSize.height) + kLabelInsets.top + kLabelInsets.bottom + 1;
+
+    size.height = floor(textSize.height) + insets.top + insets.bottom + 1;
     return size;
 }
 
 - (void)drawTextInRect:(CGRect)rect
 {
-    CGRect frame = UIEdgeInsetsInsetRect(self.bounds, kLabelInsets);
+    UIEdgeInsets insets = self.textInsets;
+    CGRect frame = UIEdgeInsetsInsetRect(self.bounds, insets);
     
     UIBezierPath *path = [UIBezierPath bezierPathWithRect:frame];
     CTFrameRef textFrame = CTFramesetterCreateFrame(self.framesetter,
@@ -58,7 +69,7 @@ static UIEdgeInsets kLabelInsets = {.top = 10, .bottom = 10, .left = 5, .right =
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-	CGContextTranslateCTM(context, 0, CGRectGetHeight(self.bounds));
+	CGContextTranslateCTM(context, 0, CGRectGetHeight(self.bounds) + insets.top - insets.bottom);
 	CGContextScaleCTM(context, 1.0, -1.0);
     
     CTFrameDraw(textFrame, context);
@@ -151,7 +162,7 @@ static UIEdgeInsets kLabelInsets = {.top = 10, .bottom = 10, .left = 5, .right =
         NSDictionary *isbNumbers = [self.bookDetails objectForKey:LibrariesDetailISBNKey];
         if ([isbNumbers count])
         {
-            NSString *isbnString = [isbNumbers objectForKey:@"display"];
+            NSString *isbnString = [[isbNumbers objectForKey:@"display"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
             [detailText appendAttributedString:[self attributedStringWithHeader:@"\nISBN: "
                                                                     displayText:isbnString]];
         }
@@ -164,10 +175,11 @@ static UIEdgeInsets kLabelInsets = {.top = 10, .bottom = 10, .left = 5, .right =
     displayText:(NSString*)text
 {
     NSMutableAttributedString *resultString = [[NSMutableAttributedString alloc] init];
+    CGFloat fontSize = 14.0;
     
     if ([header length])
     {
-        UIFont *defaultBoldFont = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
+        UIFont *defaultBoldFont = [UIFont boldSystemFontOfSize:fontSize];
         CTFontRef boldFont = CTFontCreateWithName((CFStringRef)[defaultBoldFont fontName],
                                                   [defaultBoldFont pointSize],
                                                   NULL);
@@ -184,7 +196,7 @@ static UIEdgeInsets kLabelInsets = {.top = 10, .bottom = 10, .left = 5, .right =
     
     if ([text length])
     {
-        UIFont *defaultFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+        UIFont *defaultFont = [UIFont systemFontOfSize:fontSize];
         CTFontRef font = CTFontCreateWithName((CFStringRef)[defaultFont fontName],
                                                   [defaultFont pointSize],
                                                   NULL);
@@ -201,7 +213,7 @@ static UIEdgeInsets kLabelInsets = {.top = 10, .bottom = 10, .left = 5, .right =
     
     if ([resultString length])
     {
-        CGFloat lineSpacing = 0.5;
+        CGFloat lineSpacing = 1.0;
         CTParagraphStyleSetting paragraphSetting = 
         {
             .spec = kCTParagraphStyleSpecifierLineSpacing,
