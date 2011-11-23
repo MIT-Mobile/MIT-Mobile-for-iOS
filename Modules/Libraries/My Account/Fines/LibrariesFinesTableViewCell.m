@@ -26,10 +26,11 @@
 - (void)layoutContentUsingBounds:(CGRect)bounds
 {
     {
+        CGRect fineBounds = UIEdgeInsetsInsetRect(bounds, self.contentViewInsets);
         CGRect fineFrame = CGRectZero;
         fineFrame.size = [[self.fineLabel text] sizeWithFont:self.fineLabel.font];
-        fineFrame.origin = CGPointMake(CGRectGetMaxX(bounds) - fineFrame.size.width,
-                                       CGRectGetMinY(bounds));
+        fineFrame.origin = CGPointMake(CGRectGetMaxX(fineBounds) - fineFrame.size.width,
+                                       CGRectGetMinY(fineBounds));
         self.fineLabel.frame = fineFrame;
         bounds.size.width -= (CGRectGetWidth(fineFrame) + 5.0);
     }
