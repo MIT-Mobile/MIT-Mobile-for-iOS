@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
 
 extern const CGFloat kLibrariesTableCellDefaultWidth;
-extern const CGFloat kLibrariesTableCellEditingWidth;
 
 @interface LibrariesTableViewCell : UITableViewCell
 @property (nonatomic,copy) NSDictionary *itemDetails;

@@ -99,7 +99,7 @@
     NSArray *loans = [self.loanData objectForKey:@"items"];
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
     
-    CGFloat width = (tableView.isEditing ? kLibrariesTableCellEditingWidth : kLibrariesTableCellDefaultWidth);
+    CGFloat width = kLibrariesTableCellDefaultWidth;
     
     return [cell heightForContentWithWidth:width];
 }

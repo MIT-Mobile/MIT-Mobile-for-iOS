@@ -2,8 +2,7 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
-const CGFloat kLibrariesTableCellDefaultWidth = 300;
-const CGFloat kLibrariesTableCellEditingWidth = 296;
+const CGFloat kLibrariesTableCellDefaultWidth = 290;
 
 @interface LibrariesTableViewCell ()
 - (void)privateInit;
@@ -84,14 +83,12 @@ const CGFloat kLibrariesTableCellEditingWidth = 296;
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-
-    CGRect contentBounds = UIEdgeInsetsInsetRect(self.contentView.frame, self.contentViewInsets);
-    self.contentView.frame = contentBounds;
     [self layoutContentUsingBounds:self.contentView.bounds];
 }
 
 - (void)layoutContentUsingBounds:(CGRect)viewBounds
 {
+    viewBounds = UIEdgeInsetsInsetRect(viewBounds, self.contentViewInsets);
     CGFloat viewWidth = CGRectGetWidth(viewBounds);
     
     {
