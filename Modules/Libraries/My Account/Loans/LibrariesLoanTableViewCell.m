@@ -64,6 +64,8 @@
             [self.contentView addSubview:self.selectionView];
             [self.contentView sendSubviewToBack:self.selectionView];
         }
+        // make sure the selection is cleared between renews
+        self.selected = NO;
     }
 }
 
@@ -130,8 +132,4 @@
     [super layoutContentUsingBounds:bounds];
 }
 
-- (CGFloat)heightForContentWithWidth:(CGFloat)width
-{
-    return [super heightForContentWithWidth:width];
-}
 @end
