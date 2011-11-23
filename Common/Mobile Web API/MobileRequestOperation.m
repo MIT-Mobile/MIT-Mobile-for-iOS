@@ -689,6 +689,8 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 TouchstoneAuthResponse *tsResponse = [[[TouchstoneAuthResponse alloc] initWithResponseData:self.requestData] autorelease];
                 if (tsResponse.error) {
                     if (tsResponse.error.code == MobileWebInvalidLoginError) {
+                        [MobileRequestOperation clearAuthenticatedSession];
+                        
                         if (self.presetCredentials)
                         {
                             NSError *error = [NSError errorWithDomain:NSURLErrorDomain
@@ -746,6 +748,8 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 SAMLResponse *samlResponse = [[[SAMLResponse alloc] initWithResponseData:self.requestData] autorelease];
                 if (samlResponse.error) {
                     if (samlResponse.error.code == MobileWebInvalidLoginError) {
+                        [MobileRequestOperation clearAuthenticatedSession];
+                        
                         if (self.presetCredentials)
                         {
                             NSError *error = [NSError errorWithDomain:NSURLErrorDomain
