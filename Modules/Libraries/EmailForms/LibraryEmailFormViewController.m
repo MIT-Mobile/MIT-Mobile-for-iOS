@@ -563,10 +563,9 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
                 identityVerified = YES;
                 [self.tableView reloadData];
             } else {
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Not Authorized" message:@"Must login with an MIT account" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Not Authorized" message:@"Must login with an MIT account" delegate:self cancelButtonTitle:@"ok" otherButtonTitles: nil];
                 [alertView show];
                 [alertView release];
-                [self.navigationController popViewControllerAnimated:YES];
             }
         }
     };
