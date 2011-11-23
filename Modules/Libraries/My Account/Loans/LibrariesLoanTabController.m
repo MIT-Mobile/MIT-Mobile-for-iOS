@@ -273,12 +273,11 @@
                                                              action:@selector(renewItems:)] autorelease];
     }
     
-
+    [self.parentController.navigationItem setHidesBackButton:YES animated:YES];
     [self.parentController.navigationItem setRightBarButtonItem:self.renewBarItem
-                                                    animated:YES];
+                                                       animated:YES];
     [self.parentController.navigationItem setLeftBarButtonItem:self.cancelBarItem
-                                                   animated:YES];
-    [self.parentController.navigationItem setTitle:@"Renew"];
+                                                      animated:YES];
 
     [self.tabView setTabBarHidden:YES
                          animated:YES
@@ -295,9 +294,10 @@
 {
     self.renewItems = nil;
     self.cancelBarItem.enabled = YES;
+
+    [self.parentController.navigationItem setHidesBackButton:NO animated:YES];
     [self.parentController.navigationItem setRightBarButtonItem:nil animated:YES];
     [self.parentController.navigationItem setLeftBarButtonItem:nil animated:YES];
-    [self.parentController.navigationItem setTitle:self.parentController.title];
 
     [UIView transitionWithView:self.tableView
                       duration:0.25
