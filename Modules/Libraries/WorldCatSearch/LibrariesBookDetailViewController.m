@@ -106,6 +106,7 @@ BookDetailViewTags;
 {
     NSString *result = nil;
     if (self.book) {
+        result = @"";
         if (self.book.authors.count) {
             result = [self.book.authors componentsJoinedByString:@", "];
         }
