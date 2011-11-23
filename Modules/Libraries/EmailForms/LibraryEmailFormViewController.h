@@ -77,6 +77,10 @@ NSString* placeholderText(NSString *displayLabel, BOOL required);
 
 @end
 
+@interface ExternalLinkLibraryFormElement : LibraryFormElement
+@property (nonatomic, retain) NSURL *url;
+@end
+
 
 @interface LibraryFormElementGroup : NSObject {
 @private

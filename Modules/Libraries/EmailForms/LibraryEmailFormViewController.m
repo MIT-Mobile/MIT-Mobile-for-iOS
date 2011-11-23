@@ -310,6 +310,40 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 
 @end
 
+@implementation ExternalLinkLibraryFormElement
+
+@synthesize url;
+
+- (void)dealloc {
+    self.url = nil;
+    [super dealloc];
+}
+
+- (UITableViewCell *)tableViewCell {
+    UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:self.key] autorelease];
+    return cell;
+}
+
+- (CGFloat)heightForTableViewCell {
+    return 46;
+}
+
+- (NSString *)value {
+    return nil;
+}
+
+- (void)updateCell:(UITableViewCell *)tableViewCell {
+    tableViewCell.textLabel.text = self.displayLabel;
+    tableViewCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+}
+
+- (UIView *)textInputView {
+    return nil;
+}
+
+
+@end
+
 @implementation LibraryFormElementGroup
 @synthesize name;
 @synthesize headerText;
@@ -771,6 +805,13 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         [[[LibraryTextElementViewController alloc] init] autorelease];
         vc.textElement = (DedicatedViewTextLibraryFormElement *)element;
         [self.navigationController pushViewController:vc animated:YES];
+    }
+    else if ([element isKindOfClass:[ExternalLinkLibraryFormElement class]]) {
+        ExternalLinkLibraryFormElement *externalLink = (ExternalLinkLibraryFormElement *)element;
+        if ([[UIApplication sharedApplication] canOpenURL:externalLink.url]) {
+            [[UIApplication sharedApplication] openURL:externalLink.url];
+        }
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
 
