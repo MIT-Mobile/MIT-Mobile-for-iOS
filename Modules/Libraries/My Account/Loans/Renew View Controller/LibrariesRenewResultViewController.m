@@ -212,6 +212,7 @@
     
     NSDictionary *bookDetails = [self.renewItems objectAtIndex:indexPath.row];
     cell.itemDetails = [bookDetails objectForKey:@"details"];
+    cell.accessoryType = UITableViewCellAccessoryNone;
     
     return cell;
 }
@@ -225,6 +226,7 @@
     
     NSDictionary *bookDetails = [self.renewItems objectAtIndex:indexPath.row];
     cell.itemDetails = [bookDetails objectForKey:@"details"];
+    cell.accessoryType = UITableViewCellAccessoryNone;
     
     return [cell heightForContentWithWidth:kLibrariesTableCellDefaultWidth];
 }
