@@ -202,6 +202,7 @@
         viewRect.origin.y = CGRectGetMaxY(statusView.frame) + 25;
     }
 
+    if (self.type == LibrariesDetailLoanType)
     {
         UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 10, 0, 10);
         CGRect loginFrame = CGRectMake(viewRect.origin.x,
