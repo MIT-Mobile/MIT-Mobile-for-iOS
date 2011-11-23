@@ -684,7 +684,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
         {
             NSString *method = [[[[self.activeRequest URL] pathComponents] lastObject] lowercaseString];
             
-            if ([method isEqualToString:@"userpassword"] || [method isEqualToString:@"mit"])
+            if ([method isEqualToString:@"userpassword"] || [method isEqualToString:@"mit"] || [method isEqualToString:@"usernamepassword"])
             {
                 TouchstoneAuthResponse *tsResponse = [[[TouchstoneAuthResponse alloc] initWithResponseData:self.requestData] autorelease];
                 if (tsResponse.error) {
