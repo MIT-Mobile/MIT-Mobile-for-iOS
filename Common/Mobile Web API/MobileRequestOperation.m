@@ -141,11 +141,8 @@ typedef enum {
         NSRange range = [[cookie name] rangeOfString:@"_saml"
                                              options:NSCaseInsensitiveSearch];
         if ((range.location != NSNotFound) || [self isAuthenticationCookie:cookie]) {
-            DLog(@"Expiring cookie: %@[%@]",[cookie name], [cookie domain]);
-            NSMutableDictionary *properties = [[cookie properties] mutableCopy];
-            [properties setObject:[NSDate distantPast]
-                           forKey:NSHTTPCookieExpires];
-            [cookieStore setCookie:[NSHTTPCookie cookieWithProperties:properties]];
+            DLog(@"Deleting cookie: %@[%@]",[cookie name], [cookie domain]);
+            [cookieStore deleteCookie:cookie];
         }
     }
 }
