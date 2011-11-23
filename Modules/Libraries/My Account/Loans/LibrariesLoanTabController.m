@@ -189,7 +189,7 @@
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
     cell.editing = tableView.isEditing;
 
-    return [cell heightForContentWithWidth:kLibrariesTableCellDefaultWidth];
+    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame)];
 }
 
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath

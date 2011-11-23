@@ -50,6 +50,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
     self.infoLabel.numberOfLines = 0;
     self.infoLabel.font = [UIFont systemFontOfSize:14.0];
+    self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
     self.infoLabel.highlightedTextColor = [UIColor whiteColor];
     self.infoLabel.autoresizingMask = UIViewAutoresizingNone;
     
@@ -59,6 +60,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
     self.statusLabel.numberOfLines = 0;
     self.statusLabel.font = [UIFont systemFontOfSize:14.0];
+    self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
     self.statusLabel.highlightedTextColor = [UIColor whiteColor];
     self.statusLabel.autoresizingMask = UIViewAutoresizingNone;
     [self.contentView addSubview:self.statusLabel];
@@ -135,10 +137,11 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     }
 }
 
+// This should not be called by cells in an actual tableview
 - (CGFloat)heightForContentWithWidth:(CGFloat)width
 {
     CGFloat height = 0;
-    width -= (self.contentViewInsets.left + self.contentViewInsets.right);
+    width -= self.contentViewInsets.left + self.contentViewInsets.right + 20.0; // 20.0 for the accessory view
     
     {
         CGSize titleSize = [[self.titleLabel text] sizeWithFont:self.titleLabel.font
