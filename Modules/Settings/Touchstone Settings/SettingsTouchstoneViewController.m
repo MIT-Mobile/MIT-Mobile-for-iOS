@@ -4,6 +4,7 @@
 #import "MITConstants.h"
 #import "UIKit+MITAdditions.h"
 #import "ExplanatorySectionLabel.h"
+#import "MITNavigationActivityView.h"
 
 enum {
     TouchstoneUserCell = 0,
@@ -288,6 +289,11 @@ enum {
         else if (self.authOperation == nil)
         {
             [self clearTouchstoneLogin:nil];
+
+            MITNavigationActivityView *activityView = [[[MITNavigationActivityView alloc] init] autorelease];
+            self.navigationItem.titleView = activityView;
+            [activityView startActivityWithTitle:@"Verifying..."];
+            
             self.authOperation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                      command:@"getUserIdentity"
                                                                   parameters:nil];
@@ -297,6 +303,7 @@ enum {
             self.authOperation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error)
             {
                 self.authOperation = nil;
+                self.navigationItem.titleView = nil;
                 if (error)
                 {
                     self.navigationItem.rightBarButtonItem.enabled = YES;
