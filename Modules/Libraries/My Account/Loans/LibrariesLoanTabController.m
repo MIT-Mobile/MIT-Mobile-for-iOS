@@ -273,21 +273,17 @@
                                                              action:@selector(renewItems:)] autorelease];
     }
     
-
+    [self.parentController.navigationItem setHidesBackButton:YES animated:YES];
     [self.parentController.navigationItem setRightBarButtonItem:self.renewBarItem
-                                                    animated:YES];
+                                                       animated:YES];
     [self.parentController.navigationItem setLeftBarButtonItem:self.cancelBarItem
-                                                   animated:YES];
-    [self.parentController.navigationItem setTitle:@"Renew"];
+                                                      animated:YES];
 
-    [self.tabView setTabBarHidden:YES
-                         animated:YES
-                         finished:^ {
-                             [self.tableView setEditing:YES animated:YES];
-                             [self.tableView beginUpdates];
-                             [self.tableView endUpdates];
-                         }];
+    [self.tabView setTabBarHidden:YES animated:YES];
 
+    [self.tableView setEditing:YES animated:YES];
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 
 }
 
@@ -295,23 +291,14 @@
 {
     self.renewItems = nil;
     self.cancelBarItem.enabled = YES;
+
+    [self.parentController.navigationItem setHidesBackButton:NO animated:YES];
     [self.parentController.navigationItem setRightBarButtonItem:nil animated:YES];
     [self.parentController.navigationItem setLeftBarButtonItem:nil animated:YES];
-    [self.parentController.navigationItem setTitle:self.parentController.title];
 
-    [UIView transitionWithView:self.tableView
-                      duration:0.25
-                       options:0
-                    animations:^{
-                        [self.tableView setEditing:NO];
-                    }
-                    completion:^ (BOOL finished) {
-                        if (finished)
-                        {
-                            [self.tabView setTabBarHidden:NO
-                                                 animated:YES];
-                        }
-                    }];
+    [self.tableView setEditing:NO animated:YES];
+    [self.tabView setTabBarHidden:NO
+                         animated:YES];
 }
 
 - (IBAction)renewItems:(id)sender

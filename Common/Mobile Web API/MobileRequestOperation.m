@@ -57,6 +57,9 @@ typedef enum {
 - (void)dispatchCompleteBlockWithResult:(id)jsonResult
                                   error:(NSError*)error;
 - (void)displayLoginPrompt;
+
+- (void)displayLoginPrompt:(BOOL)forceDisplay;
+
 - (void)finish;
 - (void)transitionToState:(MobileRequestState)state
           willSendRequest:(NSURLRequest*)request;
@@ -141,11 +144,8 @@ typedef enum {
         NSRange range = [[cookie name] rangeOfString:@"_saml"
                                              options:NSCaseInsensitiveSearch];
         if ((range.location != NSNotFound) || [self isAuthenticationCookie:cookie]) {
-            DLog(@"Expiring cookie: %@[%@]",[cookie name], [cookie domain]);
-            NSMutableDictionary *properties = [[cookie properties] mutableCopy];
-            [properties setObject:[NSDate distantPast]
-                           forKey:NSHTTPCookieExpires];
-            [cookieStore setCookie:[NSHTTPCookie cookieWithProperties:properties]];
+            DLog(@"Deleting cookie: %@[%@]",[cookie name], [cookie domain]);
+            [cookieStore deleteCookie:cookie];
         }
     }
 }
@@ -487,10 +487,15 @@ typedef enum {
     }
 }
 
-- (void)displayLoginPrompt {
+- (void)displayLoginPrompt
+{
+    [self displayLoginPrompt:NO];
+}
+
+- (void)displayLoginPrompt:(BOOL)forceDisplay {
     if (self.loginViewController == nil) {
         dispatch_async(dispatch_get_main_queue(), ^ {
-            if ([self authenticationRequired]) {
+            if ([self authenticationRequired] || forceDisplay) {
                 UIWindow *mainWindow = [[UIApplication sharedApplication] keyWindow];
                 MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
                                                                                                                  password:self.touchstonePassword] autorelease];
@@ -687,7 +692,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
         {
             NSString *method = [[[[self.activeRequest URL] pathComponents] lastObject] lowercaseString];
             
-            if ([method isEqualToString:@"userpassword"] || [method isEqualToString:@"mit"])
+            if ([method isEqualToString:@"userpassword"] || [method isEqualToString:@"mit"] || [method isEqualToString:@"usernamepassword"])
             {
                 TouchstoneAuthResponse *tsResponse = [[[TouchstoneAuthResponse alloc] initWithResponseData:self.requestData] autorelease];
                 if (tsResponse.error) {
@@ -702,17 +707,18 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                         }
                         else
                         {
-                            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                if (self.loginViewController == nil)
-                                {
-                                    [self displayLoginPrompt];
-                                } else {
+                            self.touchstonePassword = nil;
+                            if (self.loginViewController == nil)
+                            {
+                                [self displayLoginPrompt:YES];
+                            }
+                            else
+                            {
+                                dispatch_sync(dispatch_get_main_queue(), ^(void) {
                                     [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password"
                                                                                    willRetry:YES];
-                                }
-                            });
-                            
-                            self.touchstonePassword = nil;
+                                });
+                            }
                         }
                     } else {
                         [self connection:connection
@@ -759,17 +765,18 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                         }
                         else
                         {
-                            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                if (self.loginViewController == nil)
-                                {
-                                    [self displayLoginPrompt];
-                                } else {
+                            self.touchstonePassword = nil;
+                            if (self.loginViewController == nil)
+                            {
+                                [self displayLoginPrompt:YES];
+                            }
+                            else
+                            {
+                                dispatch_async(dispatch_get_main_queue(), ^(void) {
                                     [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password"
                                                                                    willRetry:YES];
-                                }
-                            });
-                            
-                            self.touchstonePassword = nil;
+                                });
+                            }
                         }
                     } else {
                         [self connection:connection
@@ -842,11 +849,23 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     
     self.touchstoneUser = chompedUser;
     self.touchstonePassword = password;
-    
-    if (saveLogin) {
+
+    if (saveLogin)
+    {
         MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, password);
-    } else {
-        MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
+    }
+    else
+    {
+        NSDictionary *mobileCredentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
+
+        if ([mobileCredentials objectForKey:kSecAttrAccount])
+        {
+            MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, @"");
+        }
+        else
+        {
+            MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
+        }
     }
     
     [gSecureStateTracker dispatchAuthenticationBlock];

@@ -134,7 +134,6 @@ static CGFloat kHeaderDefaultHeight = 5.0;
     CGRect headerFrame = CGRectZero;
     CGRect contentFrame = CGRectZero;
     
-    if (self.tabBarHidden == NO)
     {
         barFrame = CGRectZero;
         barFrame.origin = frameOrigin;
@@ -145,7 +144,6 @@ static CGFloat kHeaderDefaultHeight = 5.0;
         frameOrigin.y += CGRectGetHeight(barFrame);
     }
     
-    if (self.tabBarHidden == NO)
     {
         headerFrame = viewRect;
         headerFrame.origin = frameOrigin;
@@ -164,14 +162,21 @@ static CGFloat kHeaderDefaultHeight = 5.0;
         }
     }
     
+    if (self.tabBarHidden) {
+        // At this point, frameOrigin.y is the total vertical offset of the 
+        // tabs plus any header. If we translate them up by that amount, they 
+        // should slide up under and out of the navbar together without stretching
+        barFrame.origin.y -= frameOrigin.y;
+        headerFrame.origin.y -= frameOrigin.y;
+        frameOrigin = viewRect.origin;
+    }
+
     {
         contentFrame = viewRect;
         contentFrame.origin = frameOrigin;
         contentFrame.size.height -= frameOrigin.y;
     }
 
-
-    if (self.tabBarHidden)
     {
         self.activeHeaderView.frame = CGRectStandardize(headerFrame);
         self.tabControl.frame = barFrame;
@@ -180,17 +185,6 @@ static CGFloat kHeaderDefaultHeight = 5.0;
         {
             self.activeView.frame = self.contentView.bounds;
         }
-    }
-    else
-    {
-        self.contentView.frame = CGRectStandardize(contentFrame);
-        if (self.activeView)
-        {
-            self.activeView.frame = self.contentView.bounds;
-        }
-        
-        self.activeHeaderView.frame = CGRectStandardize(headerFrame);
-        self.tabControl.frame = barFrame;
     }
 }
 
@@ -378,20 +372,28 @@ static CGFloat kHeaderDefaultHeight = 5.0;
     if (tabBarHidden != _tabBarHidden)
     {
         _tabBarHidden = tabBarHidden;
+
+        if (tabBarHidden == NO) {
+            self.activeHeaderView.hidden = tabBarHidden;
+            self.tabControl.hidden = tabBarHidden;
+        }
+
         {
             [UIView transitionWithView:self
-                              duration:(animated ? 0.25 : 0.0)
+                              duration:(animated ? 0.275 : 0.0)
                                options:(UIViewAnimationOptionOverrideInheritedCurve |
-                                       UIViewAnimationOptionCurveLinear |
+                                       UIViewAnimationOptionCurveEaseInOut |
                                        UIViewAnimationOptionOverrideInheritedDuration)
                             animations:^{
-                                self.activeHeaderView.hidden = tabBarHidden;
-                                self.tabControl.hidden = tabBarHidden;
                                 [self layoutSubviews];
                             }
                             completion:^(BOOL finished) {
                                 if (finished && finishedBlock)
                                 {
+                                    if (tabBarHidden == YES) {
+                                        self.activeHeaderView.hidden = tabBarHidden;
+                                        self.tabControl.hidden = tabBarHidden;
+                                    }
                                     finishedBlock();
                                 }
                             }];

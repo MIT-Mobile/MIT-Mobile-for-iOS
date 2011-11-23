@@ -2,20 +2,24 @@
 #import "LibrariesDetailLabel.h"
 #import "LibrariesRenewResultViewController.h"
 #import "MITUIConstants.h"
-
-#define PADDING 10.0
-#define PADDED_WIDTH(x) (floorf(x - PADDING))
+#import "MobileRequestOperation.h"
+#import "MITNavigationActivityView.h"
+#import "Foundation+MITAdditions.h"
 
 @interface LibrariesDetailViewController ()
 @property (nonatomic,retain) NSDictionary *details;
 @property (nonatomic) LibrariesDetailType type;
-@property (nonatomic,retain) NSDictionary *tableCells;
+@property (nonatomic, retain) MobileRequestOperation *request;
+@property (nonatomic, assign) UIButton *renewButton;
 @end
 
 @implementation LibrariesDetailViewController
 @synthesize details = _details;
 @synthesize type = _type;
-@synthesize tableCells = _tableCells;
+@synthesize request = _request;
+@synthesize renewButton = _renewButton;
+
+
 
 - (id)initWithBookDetails:(NSDictionary*)dictionary detailType:(LibrariesDetailType)type
 {
@@ -28,6 +32,14 @@
     return self;
 }
 
+- (void)dealloc
+{
+    self.details = nil;
+    [self.request cancel];
+    self.request = nil;
+    [super dealloc];
+}
+
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -37,93 +49,185 @@
 }
 
 #pragma mark - View lifecycle
-
-- (void)loadTableCells
+- (void)loadView
 {
-    NSMutableDictionary *cells = [NSMutableDictionary dictionary];
+    CGFloat navHeight = self.navigationController.navigationBarHidden ? 0 : CGRectGetHeight(self.navigationController.navigationBar.frame);
+    CGRect viewRect = [[UIScreen mainScreen] applicationFrame];
+    viewRect.origin.y += navHeight;
+    viewRect.size.height -= navHeight;
+
+    UIView *view = [[[UIView alloc] initWithFrame:viewRect] autorelease];
+
+    viewRect = view.bounds;
     
     {
-        UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                        reuseIdentifier:nil] autorelease];
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.editingAccessoryType = UITableViewCellAccessoryNone;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        LibrariesDetailLabel *detailLabel = [[[LibrariesDetailLabel alloc] initWithBook:self.details] autorelease];
+        detailLabel.backgroundColor = [UIColor whiteColor];
+        CGRect detailFrame = CGRectMake(viewRect.origin.x,
+                                        viewRect.origin.y,
+                                        CGRectGetWidth(viewRect),
+                                        0);
+        detailLabel.textInsets = UIEdgeInsetsMake(10, 10, 5, 10);
+        detailFrame.size = [detailLabel sizeThatFits:detailFrame.size];
+        detailLabel.frame = detailFrame;
         
-        LibrariesDetailLabel *label = [[[LibrariesDetailLabel alloc] initWithBook:self.details] autorelease];
-        label.backgroundColor = [UIColor clearColor];
-        label.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-        
-        CGRect contentFrame = cell.contentView.frame;
-        contentFrame.size = [label sizeThatFits:contentFrame.size];
-        
-        [cell.contentView addSubview:label];
-        
-        cell.contentView.frame = contentFrame;
-        contentFrame.origin = cell.contentView.bounds.origin;
-        label.frame = contentFrame;
-        
-        
-        [cells setObject:cell
-                  forKey:[NSIndexPath indexPathForRow:0
-                                            inSection:0]];
+        [view addSubview:detailLabel];
+        viewRect.origin.y = CGRectGetMaxY(detailLabel.frame);
     }
-    
+
     {
-        UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                        reuseIdentifier:nil] autorelease];
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.editingAccessoryType = UITableViewCellAccessoryNone;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-        switch(self.type)
+        UIView *statusView = [[[UIView alloc] init] autorelease];
+
+        UIEdgeInsets statusInsets = UIEdgeInsetsMake(0, 10, 10, 10);
+        CGRect statusContentFrame = CGRectMake(0, 0, CGRectGetWidth(viewRect), CGFLOAT_MAX);;
+        statusContentFrame.origin = CGPointZero;
+        statusContentFrame = UIEdgeInsetsInsetRect(statusContentFrame,statusInsets);
+
+        UIImageView *statusIcon = nil;
+        switch (self.type)
         {
-            case LibrariesDetailFineType:
-            {
-                cell.textLabel.text = @"Fine date: \nAmount owed: +∞";
+            case LibrariesDetailHoldType:
+                if ([[self.details objectForKey:@"ready"] boolValue])
+                {
+                    statusIcon = [[[UIImageView alloc] init] autorelease];
+                    statusIcon.image = [UIImage imageNamed:@"libraries/status-ok"];
+                }
                 break;
-            }
-                
+
+            case LibrariesDetailLoanType:
+                if ([[self.details objectForKey:@"overdue"] boolValue])
+                {
+                    statusIcon = [[[UIImageView alloc] init] autorelease];
+                    statusIcon.image = [UIImage imageNamed:@"libraries/status-alert"];
+                }
+                break;
+
+            case LibrariesDetailFineType:
+            default:
+                break;
+        }
+
+        CGRect iconFrame = CGRectZero;
+        if (statusIcon)
+        {
+            iconFrame.size = statusIcon.image.size;
+            iconFrame.origin = statusContentFrame.origin;
+            iconFrame.origin.y += 2.0;
+            
+            statusIcon.frame = iconFrame;
+
+            [statusView addSubview:statusIcon];
+            statusContentFrame.origin.x += CGRectGetWidth(iconFrame) + 5;
+            
+        }
+
+
+        UILabel *statusLabel = [[[UILabel alloc] init] autorelease];
+        statusLabel.numberOfLines = 0;
+        statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+        statusLabel.font = [UIFont systemFontOfSize:14.0];
+        
+        NSMutableString *statusText = [NSMutableString string];
+        switch (self.type)
+        {
             case LibrariesDetailHoldType:
             {
-                cell.textLabel.text = @"In Process";
+                [statusText appendString:[self.details objectForKey:@"status"]];
+                if ([[self.details objectForKey:@"ready"] boolValue])
+                {
+                    statusLabel.textColor = [UIColor colorWithRed:0
+                                                            green:0.5
+                                                             blue:0
+                                                            alpha:1.0];
+                    [statusText appendFormat:@"\nPick up at %@", [self.details objectForKey:@"pickup-location"]];
+                }
+                else
+                {
+                    statusLabel.textColor = [UIColor blackColor];
+                    statusIcon.hidden = YES;
+                }
                 break;
             }
-                
+
+
             case LibrariesDetailLoanType:
             {
-                cell.textLabel.textColor = [UIColor redColor];
-                cell.textLabel.text = @"Long Overdue";
+                if ([[self.details objectForKey:@"has-hold"] boolValue])
+                {
+                    [statusText appendString:@"Item has holds\n"];
+                }
+
+                if ([[self.details objectForKey:@"overdue"] boolValue])
+                {
+                    statusLabel.textColor = [UIColor redColor];
+                }
+                else
+                {
+                    statusLabel.textColor = [UIColor blackColor];
+                    statusIcon.hidden = YES;
+                }
+
+                NSString *dueText = [self.details objectForKey:@"dueText"];
+                if (dueText)
+                {
+                    [statusText appendString:dueText];
+                }
                 break;
             }
+
+            case LibrariesDetailFineType:
+            {
+                [statusText appendFormat:@"Amount owed: %@", [self.details objectForKey:@"display-amount"]];
+
+                NSTimeInterval fineInterval = [[self.details objectForKey:@"fine-date"] doubleValue];
+                NSDate *fineDate = [NSDate dateWithTimeIntervalSince1970:fineInterval];
+                [statusText appendFormat:@"\nFined on %@", [NSDateFormatter localizedStringFromDate:fineDate
+                                                                       dateStyle:NSDateFormatterShortStyle
+                                                                       timeStyle:NSDateFormatterNoStyle]];
+
+                statusLabel.textColor = [UIColor redColor];
+                statusLabel.font = [UIFont boldSystemFontOfSize:14.0];
+            }
+            default:
+                break;
         }
-        
-        [cells setObject:cell
-                  forKey:[NSIndexPath indexPathForRow:0
-                                            inSection:1]];
+
+
+        CGRect statusFrame = CGRectZero;
+        statusFrame.origin = CGPointMake(statusContentFrame.origin.x, statusContentFrame.origin.y);
+        statusFrame.size = [statusText sizeWithFont:statusLabel.font
+                                  constrainedToSize:CGSizeMake(CGRectGetMaxX(statusContentFrame) - CGRectGetMaxX(iconFrame),
+                                                               CGRectGetMaxY(statusContentFrame))
+                                      lineBreakMode:statusLabel.lineBreakMode];
+
+        statusLabel.text = [[statusText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
+        statusLabel.frame = statusFrame;
+        [statusView addSubview:statusLabel];
+
+
+        statusView.backgroundColor = [UIColor whiteColor];
+        statusView.frame = CGRectMake(viewRect.origin.x,
+                                      viewRect.origin.y,
+                                      CGRectGetWidth(viewRect),
+                                      MAX(CGRectGetHeight(statusFrame), CGRectGetHeight(iconFrame)) + statusInsets.bottom);
+        [view addSubview:statusView];
+
+        viewRect.origin.y = CGRectGetMaxY(statusView.frame) + 25;
     }
-    
+
     if (self.type == LibrariesDetailLoanType)
     {
-        UITableViewCell *buttonCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
-        buttonCell.accessoryType = UITableViewCellAccessoryNone;
-        buttonCell.editingAccessoryType = UITableViewCellAccessoryNone;
-        buttonCell.selectionStyle = UITableViewCellSelectionStyleNone;
-        buttonCell.backgroundColor = [UIColor clearColor];
-        
-        UIView *transparentView = [[[UIView alloc] initWithFrame:CGRectMake(0,0,320,44)] autorelease];
-        transparentView.backgroundColor = [UIColor clearColor];
-        transparentView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                            UIViewAutoresizingFlexibleWidth);
-        [buttonCell setBackgroundView:transparentView];
-        
         UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 10, 0, 10);
-        CGRect loginFrame = CGRectMake(0,0,320,44);
+        CGRect loginFrame = CGRectMake(viewRect.origin.x,
+                                       viewRect.origin.y,
+                                       CGRectGetWidth(viewRect),
+                                       44);
         loginFrame = UIEdgeInsetsInsetRect(loginFrame, buttonInsets);
-        
+
         UIButton *renewButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         renewButton.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         renewButton.frame = loginFrame;
-        
+
         [renewButton setTitle:@"Renew this book"
                      forState:UIControlStateNormal];
         [renewButton setTitleColor:[UIColor grayColor]
@@ -131,34 +235,9 @@
         [renewButton addTarget:self
                         action:@selector(renewBook:)
               forControlEvents:UIControlEventTouchUpInside];
-        
-        [buttonCell addSubview:renewButton];
-        [cells setObject:buttonCell
-                  forKey:[NSIndexPath indexPathForRow:0
-                                            inSection:2]];
-    }
 
-    self.tableCells = cells;
-}
-
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView
-{
-    CGFloat navHeight = self.navigationController.navigationBarHidden ? 0 : CGRectGetHeight(self.navigationController.navigationBar.frame);
-    CGRect viewRect = [[UIScreen mainScreen] applicationFrame];
-    viewRect = UIEdgeInsetsInsetRect(viewRect, UIEdgeInsetsMake(navHeight, 0, 0, 0));
-
-    UIView *view = [[[UIView alloc] initWithFrame:viewRect] autorelease];
-    
-    {
-        CGRect tableFrame = view.bounds;
-        [self loadTableCells];
-        
-        UITableView *tableView = [[[UITableView alloc] initWithFrame:tableFrame
-                                                               style:UITableViewStyleGrouped] autorelease];
-        tableView.delegate = self;
-        tableView.dataSource = self;
-        [view addSubview:tableView];
+        [view addSubview:renewButton];
+        self.renewButton = renewButton;
     }
 
     [self setView:view];
@@ -166,9 +245,39 @@
 
 - (IBAction)renewBook:(id)sender
 {
-    LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:[NSArray arrayWithObject:self.details]] autorelease];
-    [self.navigationController pushViewController:vc
-                                         animated:YES];
+    MITNavigationActivityView *activityView = [[[MITNavigationActivityView alloc] init] autorelease];
+    self.navigationItem.titleView = activityView;
+    [activityView startActivityWithTitle:@"Renewing..."];
+    self.renewButton.enabled = NO;
+    
+    NSDictionary *params = [NSDictionary dictionaryWithObject:[self.details objectForKey:@"barcode"]
+                                                       forKey:@"barcodes"];
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
+                                                                            command:@"renewBooks"
+                                                                         parameters:params];
+    [operation setCompleteBlock:^(MobileRequestOperation *operation, id jsonData, NSError *error) {
+        self.request = nil;
+        self.navigationItem.titleView = nil;
+        self.renewButton.enabled = YES;
+
+        if (error)
+        {
+            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Renew"
+                                                             message:[error localizedDescription]
+                                                            delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil] autorelease];
+            [alert show];
+        }
+        else
+        {
+            LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:(NSArray *) jsonData] autorelease];
+            [self.navigationController pushViewController:vc
+                                                 animated:YES];
+        }
+
+    }];
+
+    self.request = operation;
+    [operation start];
 }
 
 
@@ -191,97 +300,4 @@
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
-
-
-#pragma mark - UITableView Data Source
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    NSInteger maxSection = 0;
-    
-    for (NSIndexPath *indexPath in self.tableCells)
-    {
-        if (indexPath.section > maxSection)
-        {
-            maxSection = indexPath.section;
-        }
-    }
-    
-    return (maxSection + 1);
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    NSInteger rowCount = 0;
-    
-    for (NSIndexPath *indexPath in self.tableCells)
-    {
-        if (indexPath.section == section)
-        {
-            ++rowCount;
-        }
-    }
-    
-    return rowCount;
-}
-
-- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [self.tableCells objectForKey:indexPath];
-}
-
-- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    CGFloat height = 0;
-
-    if ((self.type == LibrariesDetailLoanType) && (section == 1))
-    {
-        CGSize size = [@"Status" sizeWithFont:[UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE]
-                            constrainedToSize:CGSizeMake(PADDED_WIDTH(320),CGFLOAT_MAX)
-                                lineBreakMode:UILineBreakModeWordWrap];
-        
-        height = size.height;
-    }
-    
-    return height;
-}
-
-- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    if ((self.type == LibrariesDetailLoanType) && (section == 1))
-    {
-        UILabel *titleView = titleView = [[[UILabel alloc] init] autorelease];
-        titleView.font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
-        titleView.textColor = GROUPED_SECTION_FONT_COLOR;
-        titleView.backgroundColor = [UIColor clearColor];
-        titleView.lineBreakMode = UILineBreakModeTailTruncation;
-        titleView.text = @"Status";
-        
-        CGSize titleSize = [titleView.text sizeWithFont:titleView.font
-                                      constrainedToSize:CGSizeMake(PADDED_WIDTH(320),CGFLOAT_MAX)
-                                          lineBreakMode:titleView.lineBreakMode];
-        titleView.frame = CGRectMake(PADDING,
-                                     0,
-                                     titleSize.width,
-                                     titleSize.height);
-        
-        UIView *headerView = [[[UIView alloc] init] autorelease];
-        headerView.frame = CGRectMake(0, 0, titleSize.width, titleSize.height);
-        [headerView addSubview:titleView];
-        return headerView;
-    }
-    
-    return nil;
-}
-
-
-#pragma mark - UITableView Delegate
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [self.tableCells objectForKey:indexPath];
-    [cell.contentView sizeToFit];
-    
-    return CGRectGetHeight(cell.contentView.frame);
-}
-
 @end

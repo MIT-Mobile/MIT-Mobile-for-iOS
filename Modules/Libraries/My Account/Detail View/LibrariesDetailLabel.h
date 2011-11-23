@@ -5,6 +5,7 @@
 {
     CTFramesetterRef _framesetter;
 }
+@property (nonatomic) UIEdgeInsets textInsets;
 
 - (id)initWithBook:(NSDictionary*)details;
 

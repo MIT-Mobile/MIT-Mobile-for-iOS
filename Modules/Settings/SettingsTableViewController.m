@@ -3,6 +3,7 @@
 #import "MITModule.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
+#import "ExplanatorySectionLabel.h"
 #import "MITMobileServerConfiguration.h"
 #import "MITDeviceRegistration.h"
 #import "MITLogging.h"
@@ -176,139 +177,98 @@ enum {
     return rows;
 }
 
-- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-	UIView *result = [[[UIView alloc] init] autorelease];
+- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    UIView *result = nil;
     NSString *titleText = nil;
+    
+    switch(section) {
+        case kSettingsNotificationSection:
+            titleText = SettingsTitleString;
+            break;
+            
+        case kSettingsTouchstoneSection:
+            titleText = TouchstoneTitleString;
+            break;
+            
+        case kSettingsServerSection: {
+            if (_advancedOptionsVisible) {
+                titleText = ServersTitleString;
+            }
+            break;
+        }
+    }
+    
+    if (titleText) {
+        result = [UITableView groupedSectionHeaderWithTitle:titleText];
+    }
+    
+    return result;
+}
+
+- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    CGFloat height = 0;
+    
+    switch(section) {
+        case kSettingsNotificationSection:
+        case kSettingsTouchstoneSection:
+            height = GROUPED_SECTION_HEADER_HEIGHT;
+            break;
+            
+        case kSettingsServerSection: {
+            if (_advancedOptionsVisible) {
+                height = GROUPED_SECTION_HEADER_HEIGHT;
+            }
+            break;
+        }
+    }
+    
+    return height;
+}
+
+- (UIView *) tableView: (UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    UIView *result = nil;
     NSString *subtitleText = nil;
     
     switch(section) {
         case kSettingsNotificationSection:
-        {
-            titleText = SettingsTitleString;
             subtitleText = SettingsSubtitleString;
             break;
-        }
-            
-        case kSettingsTouchstoneSection:
-        {
-            titleText = TouchstoneTitleString;
-            subtitleText = TouchstoneSubtitleString;
-            break;
-        }
-            
-        case kSettingsServerSection:
-        {
-            if (_advancedOptionsVisible) {
-                titleText = ServersTitleString;
-                subtitleText = nil;
-            } else {
-                result = nil;
-            }
-            
-            break;
-        }
-            
-        default:
-            result = nil;
-            break;
     }
     
-    if (result) {
-        CGFloat height = PADDING;
-        CGSize titleSize = CGSizeZero;
-        CGSize subtitleSize = CGSizeZero;
-        CGSize constraintSize = CGSizeMake(PADDED_WIDTH(CGRectGetWidth(tableView.bounds)),
-                                           CGFLOAT_MAX);
+    if (subtitleText) {
+        CGFloat fittedHeight = [ExplanatorySectionLabel 
+                                heightWithText:subtitleText 
+                                accessoryView:nil
+                                width:self.view.frame.size.width];
         
-        {
-            UILabel *titleView = titleView = [[[UILabel alloc] init] autorelease];
-            titleView.font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
-            titleView.textColor = GROUPED_SECTION_FONT_COLOR;
-            titleView.backgroundColor = [UIColor clearColor];
-            titleView.lineBreakMode = UILineBreakModeTailTruncation;
-            titleView.text = titleText;
-            
-            titleSize = [titleView.text sizeWithFont:titleView.font
-                                   constrainedToSize:constraintSize
-                                       lineBreakMode:titleView.lineBreakMode];
-            height += titleSize.height;
-            
-            titleView.frame = CGRectMake(PADDING,
-                                         0,
-                                         titleSize.width,
-                                         titleSize.height);
-            [result addSubview:titleView];
-        }
-        
-        if (subtitleText) {
-            UILabel *subtitleView = subtitleView = [[[UILabel alloc] init] autorelease];
-            subtitleView.numberOfLines = 0;
-            subtitleView.backgroundColor = [UIColor clearColor];
-            subtitleView.lineBreakMode = UILineBreakModeWordWrap;
-            subtitleView.font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
-            subtitleView.text = subtitleText;
-            
-            subtitleSize = [subtitleView.text sizeWithFont:subtitleView.font
-                                         constrainedToSize:constraintSize
-                                             lineBreakMode:subtitleView.lineBreakMode];
-            height += subtitleSize.height;
-            subtitleView.frame = CGRectMake(PADDING,
-                                            titleSize.height + 2.0,
-                                            subtitleSize.width,
-                                            subtitleSize.height);
-            [result addSubview:subtitleView];
-        }
-        
-        result.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), height);
+        ExplanatorySectionLabel *footerLabel = 
+        [[ExplanatorySectionLabel alloc] 
+         initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
+        footerLabel.text = subtitleText;
+        result = footerLabel;
     }
     
-	return result;
+    return result;
 }
 
-- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    CGSize titleSize = CGSizeZero;
-    CGSize subtitleSize = CGSizeZero;
-    CGFloat frameWidth = PADDED_WIDTH(CGRectGetWidth(tableView.bounds));
-    CGSize constraintSize = CGSizeMake(frameWidth, CGFLOAT_MAX);
+- (CGFloat)tableView: (UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    CGFloat height = 0;
     
-    switch (section) {
+    NSString *subtitleText = nil;
+    
+    switch(section) {
         case kSettingsNotificationSection:
-        {
-            titleSize = [SettingsTitleString sizeWithFont:[UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE]
-                                                   forWidth:constraintSize.width
-                                              lineBreakMode:UILineBreakModeTailTruncation];
-            subtitleSize = [SettingsSubtitleString sizeWithFont:[UIFont systemFontOfSize:[UIFont systemFontSize]]
-                                              constrainedToSize:constraintSize
-                                                  lineBreakMode:UILineBreakModeWordWrap];
+            subtitleText = SettingsSubtitleString;
             break;
-        }
-        
-        case kSettingsTouchstoneSection:
-        {
-            titleSize = [TouchstoneTitleString sizeWithFont:[UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE]
-                                                   forWidth:constraintSize.width
-                                                lineBreakMode:UILineBreakModeTailTruncation];
-            subtitleSize = [TouchstoneSubtitleString sizeWithFont:[UIFont systemFontOfSize:[UIFont systemFontSize]]
-                                                constrainedToSize:constraintSize
-                                                    lineBreakMode:UILineBreakModeWordWrap];
-            break;
-        }
-        
-        case kSettingsServerSection:
-        {
-            titleSize = [ServersTitleString sizeWithFont:[UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE]
-                                                  forWidth:constraintSize.width
-                                             lineBreakMode:UILineBreakModeTailTruncation];
-            break;
-        }
-            
-        default:
-            return 0;
     }
     
-    return (titleSize.height + subtitleSize.height + PADDING);
+    if (subtitleText) {
+        height = [ExplanatorySectionLabel heightWithText:subtitleText accessoryView:nil width:self.view.frame.size.width];
+    }
+    
+    return height;
 }
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
