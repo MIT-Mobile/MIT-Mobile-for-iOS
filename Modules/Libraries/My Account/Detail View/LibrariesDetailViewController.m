@@ -9,13 +9,11 @@
 @interface LibrariesDetailViewController ()
 @property (nonatomic,retain) NSDictionary *details;
 @property (nonatomic) LibrariesDetailType type;
-@property (nonatomic,retain) NSDictionary *tableCells;
 @end
 
 @implementation LibrariesDetailViewController
 @synthesize details = _details;
 @synthesize type = _type;
-@synthesize tableCells = _tableCells;
 
 - (id)initWithBookDetails:(NSDictionary*)dictionary detailType:(LibrariesDetailType)type
 {
@@ -138,10 +136,9 @@
                                             inSection:2]];
     }
 
-    self.tableCells = cells;
 }
 
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
+
 - (void)loadView
 {
     CGFloat navHeight = self.navigationController.navigationBarHidden ? 0 : CGRectGetHeight(self.navigationController.navigationBar.frame);
@@ -149,18 +146,138 @@
     viewRect = UIEdgeInsetsInsetRect(viewRect, UIEdgeInsetsMake(navHeight, 0, 0, 0));
 
     UIView *view = [[[UIView alloc] initWithFrame:viewRect] autorelease];
+    CGPoint origin = CGPointZero;
     
     {
-        CGRect tableFrame = view.bounds;
-        [self loadTableCells];
+        LibrariesDetailLabel *detailLabel = [[[LibrariesDetailLabel alloc] initWithBook:self.details] autorelease];
+        CGRect detailFrame = CGRectMake(origin.x,origin.y,
+                                        CGRectGetWidth(viewRect),0);
+        detailLabel.frame = detailFrame;
+        [detailLabel sizeToFit];
         
-        UITableView *tableView = [[[UITableView alloc] initWithFrame:tableFrame
-                                                               style:UITableViewStyleGrouped] autorelease];
-        tableView.delegate = self;
-        tableView.dataSource = self;
-        [view addSubview:tableView];
+        [view addSubview:detailLabel];
+        origin.y += CGRectGetMaxY(detailLabel.frame);
     }
 
+    {
+        UIView *statusView = [[[UIView alloc] init] autorelease];
+        CGPoint subOrigin = CGPointZero;
+
+        UIImageView *statusIcon = nil;
+        switch (self.type)
+        {
+            case LibrariesDetailHoldType:
+                if ([[self.details objectForKey:@"ready"] boolValue])
+                {
+                    statusIcon = [[[UIImageView alloc] init] autorelease];
+                    statusIcon.image = [UIImage imageNamed:@"libraries/status-ok"];
+                }
+                break;
+
+            case LibrariesDetailLoanType:
+                if ([[self.details objectForKey:@"overdue"] boolValue])
+                {
+                    statusIcon = [[[UIImageView alloc] init] autorelease];
+                    statusIcon.image = [UIImage imageNamed:@"libraries/status-alert"];
+                }
+                break;
+
+            case LibrariesDetailFineType:
+            default:
+                break;
+        }
+
+        CGRect iconFrame = CGRectZero;
+        if (statusIcon)
+        {
+            iconFrame.size = statusIcon.image.size;
+            iconFrame.origin = subOrigin;
+            statusIcon.frame = iconFrame;
+            statusIcon.backgroundColor = [UIColor whiteColor];
+
+            [statusView addSubview:statusIcon];
+            subOrigin.x += CGRectGetWidth(iconFrame) + 5;
+            
+        }
+
+
+        UILabel *statusLabel = [[[UILabel alloc] init] autorelease];
+        statusLabel.numberOfLines = 0;
+        statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+        
+        NSMutableString *statusText = [NSMutableString string];
+        switch (self.type)
+        {
+            case LibrariesDetailHoldType:
+            {
+                [statusText appendString:[self.details objectForKey:@"status"]];
+                if ([[self.details objectForKey:@"ready"] boolValue])
+                {
+                    statusLabel.textColor = [UIColor colorWithRed:0
+                                                            green:0.5
+                                                             blue:0
+                                                            alpha:1.0];
+                    [statusText appendFormat:@"\nPick up at %@", [self.details objectForKey:@"pickup-location"]];
+                }
+                else
+                {
+                    statusLabel.textColor = [UIColor blackColor];
+                    statusIcon.hidden = YES;
+                }
+                break;
+            }
+
+
+            case LibrariesDetailLoanType:
+            {
+                if ([[self.details objectForKey:@"has-hold"] boolValue])
+                {
+                    [statusText appendString:@"Item has holds\n"];
+                }
+
+                if ([[self.details objectForKey:@"overdue"] boolValue])
+                {
+                    statusLabel.textColor = [UIColor redColor];
+                }
+                else
+                {
+                    statusLabel.textColor = [UIColor blackColor];
+                    statusIcon.hidden = YES;
+                }
+
+                NSString *dueText = [self.details objectForKey:@"dueText"];
+                if (dueText)
+                {
+                    [statusText appendString:dueText];
+                }
+                break;
+            }
+
+            case LibrariesDetailFineType:
+            default:
+                break;
+        }
+
+
+        CGRect statusFrame = CGRectZero;
+        statusFrame.origin = CGPointMake(subOrigin.x, subOrigin.y);
+        statusFrame.size = [statusText sizeWithFont:statusLabel.font
+                                  constrainedToSize:CGSizeMake(CGRectGetMaxX(viewRect) - subOrigin.x,
+                                                               CGRectGetMaxY(viewRect) - subOrigin.y)
+                                      lineBreakMode:statusLabel.lineBreakMode];
+
+        statusLabel.text = statusText;
+        statusLabel.frame = statusFrame;
+        [statusView addSubview:statusLabel];
+
+
+        statusView.backgroundColor = [UIColor whiteColor];
+        statusView.frame = CGRectMake(origin.x,
+                                      origin.y,
+                                      CGRectGetWidth(viewRect),
+                MAX(CGRectGetHeight(statusFrame), CGRectGetHeight(iconFrame)));
+        [view addSubview:statusView];
+    }
     [self setView:view];
 }
 
@@ -191,97 +308,4 @@
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
-
-
-#pragma mark - UITableView Data Source
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    NSInteger maxSection = 0;
-    
-    for (NSIndexPath *indexPath in self.tableCells)
-    {
-        if (indexPath.section > maxSection)
-        {
-            maxSection = indexPath.section;
-        }
-    }
-    
-    return (maxSection + 1);
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    NSInteger rowCount = 0;
-    
-    for (NSIndexPath *indexPath in self.tableCells)
-    {
-        if (indexPath.section == section)
-        {
-            ++rowCount;
-        }
-    }
-    
-    return rowCount;
-}
-
-- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [self.tableCells objectForKey:indexPath];
-}
-
-- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    CGFloat height = 0;
-
-    if ((self.type == LibrariesDetailLoanType) && (section == 1))
-    {
-        CGSize size = [@"Status" sizeWithFont:[UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE]
-                            constrainedToSize:CGSizeMake(PADDED_WIDTH(320),CGFLOAT_MAX)
-                                lineBreakMode:UILineBreakModeWordWrap];
-        
-        height = size.height;
-    }
-    
-    return height;
-}
-
-- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    if ((self.type == LibrariesDetailLoanType) && (section == 1))
-    {
-        UILabel *titleView = titleView = [[[UILabel alloc] init] autorelease];
-        titleView.font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
-        titleView.textColor = GROUPED_SECTION_FONT_COLOR;
-        titleView.backgroundColor = [UIColor clearColor];
-        titleView.lineBreakMode = UILineBreakModeTailTruncation;
-        titleView.text = @"Status";
-        
-        CGSize titleSize = [titleView.text sizeWithFont:titleView.font
-                                      constrainedToSize:CGSizeMake(PADDED_WIDTH(320),CGFLOAT_MAX)
-                                          lineBreakMode:titleView.lineBreakMode];
-        titleView.frame = CGRectMake(PADDING,
-                                     0,
-                                     titleSize.width,
-                                     titleSize.height);
-        
-        UIView *headerView = [[[UIView alloc] init] autorelease];
-        headerView.frame = CGRectMake(0, 0, titleSize.width, titleSize.height);
-        [headerView addSubview:titleView];
-        return headerView;
-    }
-    
-    return nil;
-}
-
-
-#pragma mark - UITableView Delegate
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [self.tableCells objectForKey:indexPath];
-    [cell.contentView sizeToFit];
-    
-    return CGRectGetHeight(cell.contentView.frame);
-}
-
 @end
