@@ -3,6 +3,7 @@
 #import "MobileRequestLoginViewController.h"
 #import "MobileKeychainServices.h"
 #import "ExplanatorySectionLabel.h"
+#import "MITNavigationActivityView.h"
 
 @interface MobileRequestLoginViewController ()
 @property (nonatomic,retain) NSDictionary *tableCells;
@@ -14,7 +15,7 @@
 
 @property (nonatomic,copy) NSString *username;
 @property (nonatomic,copy) NSString *password;
-@property (nonatomic,retain) UIView *activityView;
+@property (nonatomic,retain) MITNavigationActivityView *activityView;
 
 @property (nonatomic) BOOL dismissAfterAlert;
 
@@ -206,35 +207,7 @@
     self.tableView.delegate = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
-    {
-        UIView *promptView = [[[UIView alloc] initWithFrame:CGRectMake(64, 164, 190, 132)] autorelease];
-        promptView.backgroundColor = [UIColor colorWithWhite:0.0
-                                                       alpha:1.0];
-        promptView.layer.borderColor = [[UIColor whiteColor] CGColor];
-        promptView.layer.borderWidth = 2.0;
-        promptView.layer.cornerRadius = 5.0;
-        
-        {
-            UILabel *infoLabel = [[[UILabel alloc] initWithFrame:CGRectMake(20, 20, 150, 47)] autorelease];
-            infoLabel.text = @"Logging into Touchstone";
-            infoLabel.numberOfLines = 2;
-            infoLabel.lineBreakMode = UILineBreakModeWordWrap;
-            infoLabel.backgroundColor = [UIColor clearColor];
-            infoLabel.textAlignment = UITextAlignmentCenter;
-            infoLabel.textColor = [UIColor whiteColor];
-            [promptView addSubview:infoLabel];
-        }
-        
-        {
-            UIActivityIndicatorView *activityView = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge] autorelease];
-            activityView.frame = CGRectMake(77, 75, 37, 37);
-            activityView.hidesWhenStopped = NO;
-            [activityView startAnimating];
-            [promptView addSubview:activityView];
-        }
-        
-        self.activityView = promptView;
-    }
+    self.activityView = [[[MITNavigationActivityView alloc] init] autorelease];
 }
 
 #pragma mark - Event Handlers
@@ -274,29 +247,40 @@
 {
     if (showView)
     {
-        if (self.activityView.superview == nil)
+        if (self.navigationItem.titleView == nil)
         {
             self.navigationItem.leftBarButtonItem.enabled = NO;
+            self.loginButton.enabled = NO;
+            
             [self.usernameField resignFirstResponder];
+            self.usernameField.userInteractionEnabled = NO;
+            
             [self.passwordField resignFirstResponder];
-            [self.view addSubview:self.activityView];
+            self.passwordField.userInteractionEnabled = NO;
+            
+            self.navigationItem.titleView = self.activityView;
+            [self.activityView startActivityWithTitle:@"Authenticating..."];
         }
     }
     else
     {
-        if (self.activityView.superview)
+        if (self.navigationItem.titleView)
         {
             self.navigationItem.leftBarButtonItem.enabled = YES;
-            [self.usernameField resignFirstResponder];
-            [self.passwordField resignFirstResponder];
-            [self.activityView removeFromSuperview];
+            self.loginButton.enabled = YES;
+            
+            self.usernameField.userInteractionEnabled = YES;
+            self.passwordField.userInteractionEnabled = YES;
+            
+            [self.activityView stopActivity];
+            self.navigationItem.titleView = nil;
         }
     }
 }
 
 - (BOOL)showActivityView
 {
-    return ([self.activityView isDescendantOfView:self.view] == NO);
+    return (self.navigationItem.titleView == self.activityView);
 }
 
 - (BOOL)shouldSaveLogin
