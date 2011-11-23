@@ -113,9 +113,7 @@
     NSArray *loans = [self.loanData objectForKey:@"items"];
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
     
-    CGFloat width = kLibrariesTableCellDefaultWidth;
-    
-    return [cell heightForContentWithWidth:width];
+    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame)];
 }
 
 - (void)updateLoanData
