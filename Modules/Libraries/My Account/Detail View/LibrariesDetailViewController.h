@@ -6,6 +6,6 @@ typedef enum {
     LibrariesDetailHoldType
 } LibrariesDetailType;
 
-@interface LibrariesDetailViewController : UIViewController <UITableViewDelegate,UITableViewDataSource>
+@interface LibrariesDetailViewController : UIViewController
 - (id)initWithBookDetails:(NSDictionary*)dictionary detailType:(LibrariesDetailType)type;
 @end
