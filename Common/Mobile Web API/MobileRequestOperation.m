@@ -844,9 +844,12 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     self.touchstoneUser = chompedUser;
     self.touchstonePassword = password;
     
-    if (saveLogin) {
+    if (saveLogin)
+    {
         MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, password);
-    } else {
+    }
+    else
+    {
         MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
     }
     
