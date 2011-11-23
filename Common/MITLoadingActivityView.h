@@ -1,8 +1,7 @@
-
 #import <UIKit/UIKit.h>
 
 
 @interface MITLoadingActivityView : UIView
-@property (nonatomic) BOOL usesBackgroundImage;
+@property (nonatomic, assign) BOOL usesBackgroundImage;
 
 @end

@@ -177,6 +177,7 @@
     {
         UISwitch *saveToggle = [[[UISwitch alloc] init] autorelease];
         saveToggle.on = ([self.username length] > 0);
+        self.saveCredentials = saveToggle;
 
         UITableViewCell *saveCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
         saveCell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -248,7 +249,8 @@
 }
 
 - (IBAction)loginButtonPressed:(id)sender {
-    if (self.delegate) {
+    if (self.delegate)
+    {
         [self.delegate loginRequest:self
                  didEndWithUsername:self.usernameField.text
                            password:self.passwordField.text
@@ -328,7 +330,15 @@
 
 #pragma mark - UITextField Delegate
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    self.loginButton.enabled = ([self.usernameField.text length] > 0) && ([self.passwordField.text length] > 0);
+    NSInteger lengthChange = ([string length]) ? [string length] : -range.length;
+    if (textField == self.usernameField)
+    {
+        self.loginButton.enabled = (([textField.text length] + lengthChange) > 0) && ([self.passwordField.text length] > 0);
+    }
+    else
+    {
+        self.loginButton.enabled = (([textField.text length] + lengthChange) > 0) && ([self.usernameField.text length] > 0);
+    }
     
     if ([string isEqualToString:@"\n"]) {
         [textField resignFirstResponder];

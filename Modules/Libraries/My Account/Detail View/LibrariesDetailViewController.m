@@ -1,5 +1,5 @@
 #import "LibrariesDetailViewController.h"
-#import "LibrariesDetailTableViewCell.h"
+#import "LibrariesDetailLabel.h"
 #import "LibrariesRenewResultViewController.h"
 #import "MITUIConstants.h"
 
@@ -9,7 +9,7 @@
 @interface LibrariesDetailViewController ()
 @property (nonatomic,retain) NSDictionary *details;
 @property (nonatomic) LibrariesDetailType type;
-@property (nonatomic,retain) NSMutableDictionary *tableCells;
+@property (nonatomic,retain) NSDictionary *tableCells;
 @end
 
 @implementation LibrariesDetailViewController
@@ -23,6 +23,7 @@
                             bundle:nil];
     if (self) {
         self.type = type;
+        self.details = dictionary;
     }
     return self;
 }
@@ -42,8 +43,26 @@
     NSMutableDictionary *cells = [NSMutableDictionary dictionary];
     
     {
-        LibrariesDetailTableViewCell *cell = [[[LibrariesDetailTableViewCell alloc] initWithReuseIdentifier:nil] autorelease];
-        cell.bookDetails = self.details;
+        UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                        reuseIdentifier:nil] autorelease];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.editingAccessoryType = UITableViewCellAccessoryNone;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        LibrariesDetailLabel *label = [[[LibrariesDetailLabel alloc] initWithBook:self.details] autorelease];
+        label.backgroundColor = [UIColor clearColor];
+        label.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+        
+        CGRect contentFrame = cell.contentView.frame;
+        contentFrame.size = [label sizeThatFits:contentFrame.size];
+        
+        [cell.contentView addSubview:label];
+        
+        cell.contentView.frame = contentFrame;
+        contentFrame.origin = cell.contentView.bounds.origin;
+        label.frame = contentFrame;
+        
+        
         [cells setObject:cell
                   forKey:[NSIndexPath indexPathForRow:0
                                             inSection:0]];
@@ -52,6 +71,10 @@
     {
         UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                         reuseIdentifier:nil] autorelease];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.editingAccessoryType = UITableViewCellAccessoryNone;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
         switch(self.type)
         {
             case LibrariesDetailFineType:
@@ -79,7 +102,7 @@
                                             inSection:1]];
     }
     
-    if (self.type)
+    if (self.type == LibrariesDetailLoanType)
     {
         UITableViewCell *buttonCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
         buttonCell.accessoryType = UITableViewCellAccessoryNone;
@@ -109,8 +132,13 @@
                         action:@selector(renewBook:)
               forControlEvents:UIControlEventTouchUpInside];
         
-        [buttonCell.contentView addSubview:renewButton];
+        [buttonCell addSubview:renewButton];
+        [cells setObject:buttonCell
+                  forKey:[NSIndexPath indexPathForRow:0
+                                            inSection:2]];
     }
+
+    self.tableCells = cells;
 }
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
@@ -119,14 +147,12 @@
     CGFloat navHeight = self.navigationController.navigationBarHidden ? 0 : CGRectGetHeight(self.navigationController.navigationBar.frame);
     CGRect viewRect = [[UIScreen mainScreen] applicationFrame];
     viewRect = UIEdgeInsetsInsetRect(viewRect, UIEdgeInsetsMake(navHeight, 0, 0, 0));
-    
+
     UIView *view = [[[UIView alloc] initWithFrame:viewRect] autorelease];
-    CGPoint origin = CGPointZero;
     
     {
-        CGRect tableFrame = CGRectZero;
-        tableFrame.origin = origin;
-        tableFrame.size = viewRect.size;
+        CGRect tableFrame = view.bounds;
+        [self loadTableCells];
         
         UITableView *tableView = [[[UITableView alloc] initWithFrame:tableFrame
                                                                style:UITableViewStyleGrouped] autorelease];
@@ -140,7 +166,7 @@
 
 - (IBAction)renewBook:(id)sender
 {
-    LibrariesRenewResultViewController *vc = [[[LibrariesRenewViewController alloc] initWithItems:[NSArray arrayWithObject:self.details]] autorelease];
+    LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:[NSArray arrayWithObject:self.details]] autorelease];
     [self.navigationController pushViewController:vc
                                          animated:YES];
 }
@@ -207,7 +233,7 @@
 {
     CGFloat height = 0;
 
-    if ((self.type == LibrariesDetailLoanType) && (section == 2))
+    if ((self.type == LibrariesDetailLoanType) && (section == 1))
     {
         CGSize size = [@"Status" sizeWithFont:[UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE]
                             constrainedToSize:CGSizeMake(PADDED_WIDTH(320),CGFLOAT_MAX)
@@ -221,9 +247,7 @@
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UIView *sectionHeader = nil;
-    
-    if ((self.type == LibrariesDetailLoanType) && (section == 2))
+    if ((self.type == LibrariesDetailLoanType) && (section == 1))
     {
         UILabel *titleView = titleView = [[[UILabel alloc] init] autorelease];
         titleView.font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
@@ -239,14 +263,25 @@
                                      0,
                                      titleSize.width,
                                      titleSize.height);
-        sectionHeader = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, titleSize.height)] autorelease];
-        [sectionHeader addSubview:titleView];
+        
+        UIView *headerView = [[[UIView alloc] init] autorelease];
+        headerView.frame = CGRectMake(0, 0, titleSize.width, titleSize.height);
+        [headerView addSubview:titleView];
+        return headerView;
     }
     
-    return sectionHeader;
+    return nil;
 }
 
 
 #pragma mark - UITableView Delegate
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [self.tableCells objectForKey:indexPath];
+    [cell.contentView sizeToFit];
+    
+    return CGRectGetHeight(cell.contentView.frame);
+}
 
 @end

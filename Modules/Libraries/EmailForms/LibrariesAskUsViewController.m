@@ -33,43 +33,52 @@
      autorelease];
     phoneElement.keyboardType = UIKeyboardTypePhonePad;
     
-    return [NSArray arrayWithObjects:
-        [LibraryFormElementGroup groupForName:nil
-                                     elements:[NSArray arrayWithObjects:
-            [TopicsMenuLibraryFormElement formElementWithDelegate:self],
-            
-            [[[TextLibraryFormElement alloc] initWithKey:@"subject" 
-                                            displayLabel:@"Subject" 
-                                                required:YES] autorelease],
-            
-            [[[TextAreaLibraryFormElement alloc] initWithKey:@"question" 
-                                            displayLabel:@"Detailed question" 
-                                                required:YES] autorelease],
-                                    
-            nil]],
-            
-         [LibraryFormElementGroup hiddenGroupForName:@"Technical Help" elements:[NSArray arrayWithObjects:
-            [[[MenuLibraryFormElement alloc] initWithKey:@"on_campus"
-                                             displayLabel:@"Location"
-                                                 required:YES 
-                                                   values:[NSArray arrayWithObjects:@"on campus", @"off campus", nil] 
-                                            displayValues:[NSArray arrayWithObjects:@"On campus", @"Off campus", nil]] autorelease],
+    MenuLibraryFormElement *vpnElement = 
+    [[[MenuLibraryFormElement alloc] initWithKey:@"vpn"
+                                    displayLabel:@"Using VPN"
+                                        required:YES 
+                                          values:[NSArray arrayWithObjects:@"yes", @"no", nil] 
+                                   displayValues:[NSArray arrayWithObjects:@"Yes", @"No", nil]] autorelease];
+    vpnElement.value = @"no";
+    
+    LibraryFormElementGroup *questionGroup = [LibraryFormElementGroup 
+     groupForName:nil
+     elements:[NSArray arrayWithObjects:
+               [TopicsMenuLibraryFormElement formElementWithDelegate:self],
+               
+               [[[TextLibraryFormElement alloc] initWithKey:@"subject" 
+                                               displayLabel:@"Subject" 
+                                                   required:YES] autorelease],
+               
+               [[[TextAreaLibraryFormElement alloc] initWithKey:@"question" 
+                                                   displayLabel:@"Detailed question" 
+                                                       required:YES] autorelease],
+               
+               nil]];
 
-            [[[MenuLibraryFormElement alloc] initWithKey:@"vpn"
-                                             displayLabel:@"Using VPN"
-                                                 required:YES 
-                                                   values:[NSArray arrayWithObjects:@"yes", @"no", nil] 
-                                            displayValues:[NSArray arrayWithObjects:@"Yes", @"No", nil]] autorelease],
-                                                                           
-            nil]],
-                                                                             
-            
-         [LibraryFormElementGroup groupForName:@"Personal Info" elements:[NSArray arrayWithObjects:
-            [self statusMenuFormElementWithRequired:YES],            
-            [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Department" required:YES] autorelease],
-            phoneElement,
-            nil]],
-        nil];
+    LibraryFormElementGroup *technicalGroup = [LibraryFormElementGroup 
+     hiddenGroupForName:@"Technical Help" 
+     elements:[NSArray arrayWithObjects:
+               [[[MenuLibraryFormElement alloc] initWithKey:@"on_campus"
+                                               displayLabel:@"Location"
+                                                   required:YES 
+                                                     values:[NSArray arrayWithObjects:@"on campus", @"off campus", nil] 
+                                              displayValues:[NSArray arrayWithObjects:@"On campus", @"Off campus", nil]] autorelease],
+               
+               vpnElement,
+               
+               nil]];
+    
+    LibraryFormElementGroup *personalGroup = [LibraryFormElementGroup 
+     groupForName:@"Personal Info" 
+     elements:[NSArray arrayWithObjects:
+               [self statusMenuFormElementWithRequired:YES],
+               [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Department, Lab, or Center" required:YES] autorelease],
+               phoneElement,
+               nil]];
+
+    
+    return [NSArray arrayWithObjects:questionGroup, technicalGroup, personalGroup, nil];
 }
 
 - (void)viewDidLoad {

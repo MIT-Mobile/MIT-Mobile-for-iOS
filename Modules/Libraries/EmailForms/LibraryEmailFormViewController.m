@@ -5,6 +5,7 @@
 #import "LibraryMenuElementViewController.h"
 #import "ThankYouViewController.h"
 #import "LibraryTextElementViewController.h"
+#import "ExplanatorySectionLabel.h"
 
 #define PADDING 10
 
@@ -309,8 +310,44 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 
 @end
 
+@implementation ExternalLinkLibraryFormElement
+
+@synthesize url;
+
+- (void)dealloc {
+    self.url = nil;
+    [super dealloc];
+}
+
+- (UITableViewCell *)tableViewCell {
+    UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:self.key] autorelease];
+    return cell;
+}
+
+- (CGFloat)heightForTableViewCell {
+    return 46;
+}
+
+- (NSString *)value {
+    return nil;
+}
+
+- (void)updateCell:(UITableViewCell *)tableViewCell {
+    tableViewCell.textLabel.text = self.displayLabel;
+    tableViewCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+}
+
+- (UIView *)textInputView {
+    return nil;
+}
+
+
+@end
+
 @implementation LibraryFormElementGroup
 @synthesize name;
+@synthesize headerText;
+@synthesize footerText;
 @synthesize hidden;
 
 + (LibraryFormElementGroup *)groupForName:(NSString *)name elements:(NSArray *)elements {
@@ -474,7 +511,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     
     [self setFormGroups:[self formGroups]];
     
-    self.prevNextSegmentedControl = [[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"Prev", @"Next", nil]] autorelease];
+    self.prevNextSegmentedControl = [[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"Previous", @"Next", nil]] autorelease];
     self.prevNextSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
     self.prevNextSegmentedControl.momentary = YES;
     [self.prevNextSegmentedControl addTarget:self action:@selector(updateFocusedTextView:) forControlEvents:UIControlEventValueChanged];
@@ -504,6 +541,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     
     // force the user to login
     MITLoadingActivityView *loginLoadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
+    loginLoadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.tableView addSubview:loginLoadingView];
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag
                                                                               command:@"getUserIdentity"
@@ -634,6 +672,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         NSInteger textInputIndex = [textInputs indexOfObject:self.currentTextView];
         UIView *nextTextInput = [textInputs objectAtIndex:textInputIndex+1];
         [nextTextInput becomeFirstResponder];
+        [self.tableView scrollToRowAtIndexPath:[self indexPathForTextInput:nextTextInput] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     } else {
         if ([self formValid] && textField.returnKeyType == UIReturnKeySend) {
             [self submitForm];
@@ -767,11 +806,23 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         vc.textElement = (DedicatedViewTextLibraryFormElement *)element;
         [self.navigationController pushViewController:vc animated:YES];
     }
+    else if ([element isKindOfClass:[ExternalLinkLibraryFormElement class]]) {
+        ExternalLinkLibraryFormElement *externalLink = (ExternalLinkLibraryFormElement *)element;
+        if ([[UIApplication sharedApplication] canOpenURL:externalLink.url]) {
+            [[UIApplication sharedApplication] openURL:externalLink.url];
+        }
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
 }
 
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
-    if (formGroup.name) {
+    if (formGroup.headerText) {
+        CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.headerText
+                                                   accessoryView:nil 
+                                                           width:self.view.frame.size.width];
+        return height;
+    } else if (formGroup.name) {
         return GROUPED_SECTION_HEADER_HEIGHT;
     }
     return 0;
@@ -782,11 +833,48 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         return nil;
     }
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
-    if (formGroup.name) {
+    if (formGroup.headerText) {
+        CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:formGroup.headerText 
+                                                         accessoryView:nil
+                                                                 width:self.view.frame.size.width];
+        ExplanatorySectionLabel *headerLabel = [[ExplanatorySectionLabel alloc] 
+            initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
+        headerLabel.text = formGroup.headerText;
+        return headerLabel;
+    } else if (formGroup.name) {
         return [UITableView groupedSectionHeaderWithTitle:formGroup.name];
     }
     return nil;
 }
+
+- (CGFloat)tableView: (UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+    if (formGroup.footerText) {
+        CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.footerText
+                                                   accessoryView:nil 
+                                                           width:self.view.frame.size.width];
+        return height;
+    }
+    return 0;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    if (!identityVerified) {
+        return nil;
+    }
+    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+    if (formGroup.footerText) {
+        CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:formGroup.footerText 
+                                                         accessoryView:nil
+                                                                 width:self.view.frame.size.width];
+        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] 
+                                                initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
+        footerLabel.text = formGroup.footerText;
+        return footerLabel;
+    }
+    return nil;
+}
+
 
 - (BOOL)formValid {
     for (LibraryFormElementGroup *formGroup in [self nonHiddenFormGroups]) {

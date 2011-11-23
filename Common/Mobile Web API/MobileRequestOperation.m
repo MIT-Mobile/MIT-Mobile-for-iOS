@@ -779,8 +779,10 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                     self.touchstoneUser = nil;
                     self.touchstonePassword = nil;
                     gSecureStateTracker.authenticationBlock = nil;
-                    
-                    [self.loginViewController authenticationDidSucceed];
+
+                    dispatch_async(dispatch_get_main_queue(), ^(void) {
+                        [self.loginViewController authenticationDidSucceed];
+                    });
                     
                     NSMutableString *body = [NSMutableString stringWithFormat:@"%@=%@",
                                              [@"SAMLResponse" urlEncodeUsingEncoding:NSUTF8StringEncoding],
