@@ -18,9 +18,6 @@
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.editingAccessoryType = UITableViewCellAccessoryNone;
 
-        self.selectionView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/cell-unselected"]] autorelease];
-        [self.contentView addSubview:self.selectionView];
-        
         self.statusIcon.image = [UIImage imageNamed:@"libraries/status-alert"];
         self.statusIcon.hidden = YES;
     }
@@ -52,12 +49,31 @@
     [self setNeedsLayout];
 }
 
-- (void)setEditing:(BOOL)editing animated:(BOOL)animated
-{
-    [super setEditing:editing animated:animated];
+- (void)willTransitionToState:(UITableViewCellStateMask)state {
+    // Before transitioning to editing:
+    // - selectionView is totally invisible and hidden, so make it unhidden
+    if (state & UITableViewCellStateShowingEditControlMask) {
+        if (!self.selectionView) {
+            self.selectionView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/cell-unselected"]] autorelease];
+            
+            CGRect frame = self.selectionView.frame;
+            frame.origin.x = -CGRectGetWidth(frame);
+            frame.origin.y = floor((CGRectGetHeight(self.contentView.bounds) - CGRectGetHeight(self.selectionView.frame)) / 2.0);
+            self.selectionView.frame = frame;
 
-    self.selectionView.hidden = !editing;
-    [self setNeedsLayout];
+            [self.contentView addSubview:self.selectionView];
+            [self.contentView sendSubviewToBack:self.selectionView];
+        }
+    }
+}
+
+- (void)didTransitionToState:(UITableViewCellStateMask)state {
+    // After transitioning away from editing:
+    // - selectionView should be totally hidden, so remove it to free up memory
+    if (state & !UITableViewCellStateShowingEditControlMask) {
+        [self.selectionView removeFromSuperview];
+        self.selectionView = nil;
+    }
 }
 
 - (void)setItemDetails:(NSDictionary *)itemDetails
@@ -89,30 +105,33 @@
 
 - (void)layoutContentUsingBounds:(CGRect)bounds
 {
-    if (self.isEditing)
-    {
-        CGRect selectionFrame = CGRectZero;
-        selectionFrame.size = self.selectionView.image.size;
-        selectionFrame.origin = CGPointMake(bounds.origin.x,
-                                            floor((CGRectGetHeight(bounds) - selectionFrame.size.height) / 2.0));
+    if (self.selectionView) {
+        // The checkmark image is 31px wide, but should really be 30px wide
+        // to match the width of the accessory on the right.
+        CGFloat leftSpace = 30.0 - self.contentViewInsets.left;
+        CGRect selectionFrame = self.selectionView.frame;
+        selectionFrame.origin.y = floor((CGRectGetHeight(bounds) - selectionFrame.size.height) / 2.0);
+        
+        if (!self.editing) {
+            // The checkbox starts out of view on the left
+            selectionFrame.origin.x = -leftSpace;
+            
+        }
+        if (self.editing) {
+            // slide everything to the right as the accessory disappears
+            selectionFrame.origin.x = 0.0;
+            bounds.origin.x += leftSpace;
+            bounds.size.width -= 30.0 - self.contentViewInsets.right;
+        }
+        
         self.selectionView.frame = selectionFrame;
-
-        bounds = CGRectMake(bounds.origin.x + CGRectGetWidth(selectionFrame),
-                            bounds.origin.y,
-                            CGRectGetWidth(bounds) - CGRectGetWidth(selectionFrame),
-                            CGRectGetHeight(bounds));
     }
-
+    
     [super layoutContentUsingBounds:bounds];
 }
 
 - (CGFloat)heightForContentWithWidth:(CGFloat)width
 {
-    if (self.isEditing)
-    {
-        width -= self.selectionView.image.size.width;
-    }
-
     return [super heightForContentWithWidth:width];
 }
 @end
