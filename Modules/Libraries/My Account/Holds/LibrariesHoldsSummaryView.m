@@ -1,7 +1,8 @@
 #import "LibrariesHoldsSummaryView.h"
+#import "UIKit+MITAdditions.h"
 
-static NSString* kLibrariesHoldsStatusText = @"You have %@ hold requests.";
-static NSString* kLibrariesHoldsPickupText = @"%@ are ready for pickup.";
+static NSString* kLibrariesHoldsStatusText = @"You have %ld hold %@.";
+static NSString* kLibrariesHoldsPickupText = @"\n%ld %@ ready for pickup.";
 
 @interface LibrariesHoldsSummaryView ()
 @property (nonatomic,retain) UILabel *infoLabel;
@@ -19,13 +20,14 @@ static NSString* kLibrariesHoldsPickupText = @"%@ are ready for pickup.";
     if (self) {
         self.infoLabel = [[[UILabel alloc] init] autorelease];
         self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
-        self.infoLabel.numberOfLines = 1;
+        self.infoLabel.numberOfLines = 2;
         self.infoLabel.backgroundColor = [UIColor clearColor];
-        self.infoLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+        self.infoLabel.font = [UIFont systemFontOfSize:15.0];
         self.infoLabel.text = @"";
+        self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
         [self addSubview:self.infoLabel];
         
-        self.edgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
+        self.edgeInsets = UIEdgeInsetsMake(6, 10, 9, 10);
     }
     
     return self;
@@ -69,16 +71,15 @@ static NSString* kLibrariesHoldsPickupText = @"%@ are ready for pickup.";
 {
     [_accountDetails release];
     _accountDetails = [accountDetails retain];
+    NSInteger totalHolds = [[accountDetails objectForKey:@"total"] integerValue];
+    NSInteger ready = [[accountDetails objectForKey:@"ready"] integerValue];
+
+    NSMutableString *text = [NSMutableString stringWithFormat:kLibrariesHoldsStatusText, totalHolds, ((totalHolds == 1) ? @"request" : @"requests")];
     
-    NSString *totalHolds = [accountDetails objectForKey:@"total"];
-    if (totalHolds)
-    {
-        self.infoLabel.text = [NSString stringWithFormat:kLibrariesHoldsStatusText, totalHolds];
+    if (ready) {
+        [text appendFormat:kLibrariesHoldsPickupText, ready, ((ready == 1) ? @"is" : @"are")];
     }
-    else
-    {
-        self.infoLabel.text = @"";
-    }
+    self.infoLabel.text = text;
     
     [self setNeedsLayout];
 }

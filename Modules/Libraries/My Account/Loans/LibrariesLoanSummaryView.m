@@ -1,9 +1,10 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "LibrariesLoanSummaryView.h"
+#import "UIKit+MITAdditions.h"
 
-static NSString* kLibrariesLoanFormatString = @"You have %lu items on loan.";
-static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
+static NSString* kLibrariesLoanFormatString = @"You have %lu %@ on loan.";
+static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu %@ overdue.";
 
 @interface LibrariesLoanSummaryView ()
 @property (nonatomic, retain) UILabel* infoLabel;
@@ -22,6 +23,8 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
         self.infoLabel = [[[UILabel alloc] init] autorelease];
         self.infoLabel.backgroundColor = [UIColor clearColor];
         self.infoLabel.text = @"";
+        self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
+        self.infoLabel.font = [UIFont systemFontOfSize:15.0];
         self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.infoLabel.numberOfLines = 2;
         [self addSubview:self.infoLabel];
@@ -34,7 +37,7 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
                                forState:UIControlStateDisabled];
         [self addSubview:self.renewButton];
         
-        self.edgeInsets = UIEdgeInsetsMake(5, 5, 5, 10);
+        self.edgeInsets = UIEdgeInsetsMake(6, 10, 9, 10);
     }
     return self;
 }
@@ -101,11 +104,11 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu are overdue.";
     }
     else
     {
-        NSMutableString *infoText = [NSMutableString stringWithFormat:kLibrariesLoanFormatString, loanCount];
+        NSMutableString *infoText = [NSMutableString stringWithFormat:kLibrariesLoanFormatString, loanCount, ((loanCount == 1) ? @"item" : @"items")];
         
         if (overdueCount > 0)
         {
-            [infoText appendFormat:kLibrariesLoanOverdueFormatString, overdueCount];
+            [infoText appendFormat:kLibrariesLoanOverdueFormatString, overdueCount, ((overdueCount == 1) ? @"is" : @"are")];
         }
         
         self.infoLabel.text = infoText;
