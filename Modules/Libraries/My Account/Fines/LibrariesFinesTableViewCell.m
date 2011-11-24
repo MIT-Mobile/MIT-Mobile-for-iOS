@@ -1,6 +1,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "LibrariesFinesTableViewCell.h"
 #import "Foundation+MITAdditions.h"
+#import "UIKit+MITAdditions.h"
 
 @implementation LibrariesFinesTableViewCell
 @synthesize fineLabel = _fineLabel;
@@ -56,7 +57,7 @@
                                                                      dateStyle:NSDateFormatterShortStyle
                                                                      timeStyle:NSDateFormatterNoStyle]];
     
-    self.statusLabel.textColor = [UIColor blackColor];            
+    self.statusLabel.textColor = [UIColor colorWithHexString:@"#404649"];
     self.statusLabel.text = [[status stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
     
     self.fineLabel.text= [itemDetails objectForKey:@"display-amount"];

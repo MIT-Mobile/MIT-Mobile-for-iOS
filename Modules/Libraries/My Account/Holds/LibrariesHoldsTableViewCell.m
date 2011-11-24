@@ -1,6 +1,6 @@
-#import <QuartzCore/QuartzCore.h>
 #import "LibrariesHoldsTableViewCell.h"
 #import "Foundation+MITAdditions.h"
+#import "UIKit+MITAdditions.h"
 
 @implementation LibrariesHoldsTableViewCell
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
@@ -31,7 +31,7 @@
             [status appendFormat:@"\nPick up at %@", [itemDetails objectForKey:@"pickup-location"]];
             self.statusIcon.hidden = NO;
         } else {
-            self.statusLabel.textColor = [UIColor blackColor];
+            self.statusLabel.textColor = [UIColor colorWithHexString:@"#404649"];
             self.statusIcon.hidden = YES;
         }
         

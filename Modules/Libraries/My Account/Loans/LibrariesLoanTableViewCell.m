@@ -1,6 +1,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "LibrariesLoanTableViewCell.h"
 #import "Foundation+MITAdditions.h"
+#import "UIKit+MITAdditions.h"
 
 @interface LibrariesLoanTableViewCell ()
 @property (nonatomic, retain) UIImageView *selectionView;
@@ -57,7 +58,7 @@
             self.selectionView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/cell-unselected"]] autorelease];
             
             CGRect frame = self.selectionView.frame;
-            frame.origin.x = -CGRectGetWidth(frame);
+            frame.origin.x = -30.0 + self.contentViewInsets.left;
             frame.origin.y = floor((CGRectGetHeight(self.contentView.bounds) - CGRectGetHeight(self.selectionView.frame)) / 2.0);
             self.selectionView.frame = frame;
 
@@ -72,7 +73,7 @@
 - (void)didTransitionToState:(UITableViewCellStateMask)state {
     // After transitioning away from editing:
     // - selectionView should be totally hidden, so remove it to free up memory
-    if (state & !UITableViewCellStateShowingEditControlMask) {
+    if (!state & UITableViewCellStateShowingEditControlMask) {
         [self.selectionView removeFromSuperview];
         self.selectionView = nil;
     }
@@ -91,7 +92,7 @@
         self.statusLabel.textColor = [UIColor redColor];
         self.statusIcon.hidden = NO;
     } else {
-        self.statusLabel.textColor = [UIColor blackColor];
+        self.statusLabel.textColor = [UIColor colorWithHexString:@"#404649"];
         self.statusIcon.hidden = YES;
     }
     
