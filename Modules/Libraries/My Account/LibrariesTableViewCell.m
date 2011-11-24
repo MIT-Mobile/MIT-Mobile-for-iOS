@@ -47,8 +47,8 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     [self.contentView addSubview:self.titleLabel];
     
     self.infoLabel = [[[UILabel alloc] init] autorelease];
-    self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
-    self.infoLabel.numberOfLines = 0;
+    self.infoLabel.lineBreakMode = UILineBreakModeTailTruncation;
+    self.infoLabel.numberOfLines = 1;
     self.infoLabel.font = [UIFont systemFontOfSize:14.0];
     self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
     self.infoLabel.highlightedTextColor = [UIColor whiteColor];
@@ -60,7 +60,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
     self.statusLabel.numberOfLines = 0;
     self.statusLabel.font = [UIFont systemFontOfSize:14.0];
-    self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
+    self.statusLabel.textColor = [UIColor colorWithHexString:@"#404649"];
     self.statusLabel.highlightedTextColor = [UIColor whiteColor];
     self.statusLabel.autoresizingMask = UIViewAutoresizingNone;
     [self.contentView addSubview:self.statusLabel];
@@ -69,7 +69,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     self.statusIcon.hidden = YES;
     [self.contentView addSubview:self.statusIcon];
     
-    self.contentViewInsets = UIEdgeInsetsMake(5, 5, 5, 10);
+    self.contentViewInsets = UIEdgeInsetsMake(10, 10, 10, 10);
 }
 
 - (void)dealloc
@@ -103,12 +103,14 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     }
     
     {
+        
         CGRect infoFrame = CGRectZero;
         infoFrame.origin = CGPointMake(CGRectGetMinX(viewBounds),
-                                       CGRectGetMaxY(self.titleLabel.frame) + 3);
+                                       CGRectGetMaxY(self.titleLabel.frame) + 3.0);
         
+        CGFloat constrainedHeight = (self.infoLabel.numberOfLines == 1) ? self.infoLabel.font.lineHeight : 2000.0;
         infoFrame.size = [[self.infoLabel text] sizeWithFont:self.infoLabel.font
-                                           constrainedToSize:CGSizeMake(viewWidth, CGFLOAT_MAX)
+                                           constrainedToSize:CGSizeMake(viewWidth, constrainedHeight)
                                                lineBreakMode:self.infoLabel.lineBreakMode];
         self.infoLabel.frame = infoFrame;
     }
@@ -120,7 +122,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
         {
             iconFrame.size = self.statusIcon.image.size;
             iconFrame.origin.x = CGRectGetMinX(viewBounds);
-            iconFrame.origin.y = CGRectGetMaxY(self.infoLabel.frame);
+            iconFrame.origin.y = CGRectGetMaxY(self.infoLabel.frame) + 3.0;
             self.statusIcon.frame = iconFrame;
             
             // Add in some padding between the icon and the text that will follow
@@ -129,7 +131,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
         
         CGRect statusFrame = CGRectZero;
         statusFrame.origin = CGPointMake(CGRectGetMinX(viewBounds) + iconFrame.size.width,
-                                         CGRectGetMaxY(self.infoLabel.frame));
+                                         CGRectGetMaxY(self.infoLabel.frame) + 3.0);
         statusFrame.size = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
                                                constrainedToSize:CGSizeMake(viewWidth - iconFrame.size.width, CGFLOAT_MAX)
                                                    lineBreakMode:self.statusLabel.lineBreakMode];
@@ -151,8 +153,9 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     }
     
     {
+        CGFloat constrainedHeight = (self.infoLabel.numberOfLines == 1) ? self.infoLabel.font.lineHeight : 2000.0;
         CGSize infoSize = [[self.infoLabel text] sizeWithFont:self.infoLabel.font
-                                            constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
+                                            constrainedToSize:CGSizeMake(width, constrainedHeight)
                                                 lineBreakMode:self.infoLabel.lineBreakMode];
         height += infoSize.height;
     }
@@ -166,11 +169,11 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
             iconSize.width += 3;
         }
         
-        CGSize noticeSize = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
+        CGSize statusSize = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
                                                 constrainedToSize:CGSizeMake(width - iconSize.width, CGFLOAT_MAX)
                                                     lineBreakMode:self.statusLabel.lineBreakMode];
 
-        height += MAX(noticeSize.height,iconSize.height);
+        height += MAX(statusSize.height,iconSize.height);
     }
     
     return (height + self.contentViewInsets.top + self.contentViewInsets.bottom);
