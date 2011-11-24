@@ -39,7 +39,8 @@
         self.imageView = [[UIImageView alloc] init];
         [self addSubview:self.imageView];
         
-        self.backgroundImage = [UIImage imageNamed:@"global/tab2-header"];
+        UIImage *image = [UIImage imageNamed:@"global/tab2-header"];
+        self.backgroundImage = [image stretchableImageWithLeftCapWidth:1 topCapHeight:1];
     }
     return self;
 }
