@@ -149,7 +149,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
         CGSize titleSize = [[self.titleLabel text] sizeWithFont:self.titleLabel.font
                                               constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
                                                   lineBreakMode:self.titleLabel.lineBreakMode];
-        height += titleSize.height + 3;
+        height += titleSize.height + 3.0;
     }
     
     {
@@ -157,7 +157,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
         CGSize infoSize = [[self.infoLabel text] sizeWithFont:self.infoLabel.font
                                             constrainedToSize:CGSizeMake(width, constrainedHeight)
                                                 lineBreakMode:self.infoLabel.lineBreakMode];
-        height += infoSize.height;
+        height += infoSize.height + 3.0;
     }
     
     {
@@ -166,14 +166,14 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
         if (self.statusIcon.image && (self.statusIcon.hidden == NO))
         {
             iconSize = self.statusIcon.image.size;
-            iconSize.width += 3;
+            iconSize.width += 3.0;
         }
         
         CGSize statusSize = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
                                                 constrainedToSize:CGSizeMake(width - iconSize.width, CGFLOAT_MAX)
                                                     lineBreakMode:self.statusLabel.lineBreakMode];
 
-        height += MAX(statusSize.height,iconSize.height);
+        height += MAX(statusSize.height,iconSize.height) + 3.0;
     }
     
     return (height + self.contentViewInsets.top + self.contentViewInsets.bottom);
