@@ -27,7 +27,15 @@
     
     if (self)
     {
-        self.renewItems = renewItems;
+        // filter out NSNulls that might have come through the JSON parser
+        NSIndexSet *validItems = [renewItems indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+            if ([[obj valueForKey:@"details"] isKindOfClass:[NSDictionary class]]) {
+                return YES;
+            } else {
+                return NO;
+            }
+        }];
+        self.renewItems = [renewItems objectsAtIndexes:validItems];
         self.title = @"Renew";
         self.navigationItem.hidesBackButton = YES;
         self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
