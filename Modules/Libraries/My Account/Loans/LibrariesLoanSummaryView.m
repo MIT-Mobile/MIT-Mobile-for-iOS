@@ -4,7 +4,7 @@
 #import "UIKit+MITAdditions.h"
 
 static NSString* kLibrariesLoanFormatString = @"You have %lu %@ on loan.";
-static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu %@ overdue.";
+static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
 
 @interface LibrariesLoanSummaryView ()
 @property (nonatomic, retain) UILabel* infoLabel;
@@ -91,13 +91,13 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu %@ overdue.";
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-    CGFloat width = size.width - (self.edgeInsets.left + self.edgeInsets.right);
+    CGFloat width = size.width - (self.edgeInsets.left + self.renewButton.frame.size.width + self.edgeInsets.right);
     
     CGSize contentSize = [self.infoLabel.text sizeWithFont:self.infoLabel.font
                                  constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
                                        lineBreakMode:self.infoLabel.lineBreakMode];
 
-    contentSize.height = MAX(contentSize.height, 31);
+    contentSize.height = MAX(contentSize.height, self.renewButton.frame.size.height + self.edgeInsets.top + self.edgeInsets.bottom);
     contentSize.height += (self.edgeInsets.top + self.edgeInsets.bottom);
     return contentSize;
 }
@@ -120,6 +120,9 @@ static NSString* kLibrariesLoanOverdueFormatString = @"\n%lu %@ overdue.";
         
         if (overdueCount > 0)
         {
+            // highly unlikely this will ever be false, but it's best to be careful
+            [infoText appendFormat:(loanCount < 1000) ? @"\n" : @" "];
+
             [infoText appendFormat:kLibrariesLoanOverdueFormatString, overdueCount, ((overdueCount == 1) ? @"is" : @"are")];
         }
         
