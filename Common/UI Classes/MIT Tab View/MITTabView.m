@@ -380,7 +380,7 @@ static CGFloat kHeaderDefaultHeight = 5.0;
 
         {
             [UIView transitionWithView:self
-                              duration:(animated ? 0.275 : 0.0)
+                              duration:(animated ? 0.3 : 0.0)
                                options:(UIViewAnimationOptionOverrideInheritedCurve |
                                        UIViewAnimationOptionCurveEaseInOut |
                                        UIViewAnimationOptionOverrideInheritedDuration)
