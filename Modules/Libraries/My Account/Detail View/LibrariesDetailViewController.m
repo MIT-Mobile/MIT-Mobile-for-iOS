@@ -28,6 +28,18 @@
     if (self) {
         self.type = type;
         self.details = dictionary;
+        
+        switch (type) {
+            case LibrariesDetailLoanType:
+                self.title = @"Loan";
+                break;
+            case LibrariesDetailFineType:
+                self.title = @"Fine";
+                break;
+            case LibrariesDetailHoldType:
+                self.title = @"Hold";
+                break;
+        }
     }
     return self;
 }
