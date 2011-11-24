@@ -44,6 +44,10 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
                                      stretchableImageWithLeftCapWidth:5 topCapHeight:5];
         [self.renewButton setBackgroundImage:buttonBackground forState:UIControlStateNormal];
         self.renewButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 3.0, 0.0, -3.0);
+
+        CGRect buttonFrame = self.renewButton.frame;
+        buttonFrame.size = CGSizeMake(118.0, 35.0);
+        self.renewButton.frame = buttonFrame;
         
         [self addSubview:self.renewButton];
         
@@ -67,14 +71,9 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
     CGRect bounds = UIEdgeInsetsInsetRect(self.bounds, self.edgeInsets);
     
     {
-        CGFloat buttonWidth = 118.0;
-        CGFloat buttonHeight = 35.0;
         CGRect buttonFrame = self.renewButton.frame;
-
-        buttonFrame.origin.x = CGRectGetMaxX(bounds) - buttonWidth;
-        buttonFrame.origin.y = floor((CGRectGetHeight(self.bounds) - buttonHeight) / 2.0);
-        buttonFrame.size.width = buttonWidth;
-        buttonFrame.size.height = buttonHeight;
+        buttonFrame.origin.x = CGRectGetMaxX(bounds) - buttonFrame.size.width;
+        buttonFrame.origin.y = floor((CGRectGetHeight(self.bounds) - buttonFrame.size.height) / 2.0);
         self.renewButton.frame = buttonFrame;
         
         bounds.size.width -= CGRectGetWidth(self.renewButton.frame);
@@ -97,7 +96,7 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
                                  constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
                                        lineBreakMode:self.infoLabel.lineBreakMode];
 
-    contentSize.height = MAX(contentSize.height, self.renewButton.frame.size.height + self.edgeInsets.top + self.edgeInsets.bottom);
+    contentSize.height = MAX(contentSize.height, self.renewButton.frame.size.height);
     contentSize.height += (self.edgeInsets.top + self.edgeInsets.bottom);
     return contentSize;
 }
