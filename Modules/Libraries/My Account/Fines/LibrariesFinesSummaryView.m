@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "LibrariesFinesSummaryView.h"
+#import "UIKit+MITAdditions.h"
 
 @interface LibrariesFinesSummaryView ()
 @property (nonatomic,retain) UILabel *balanceLabel;
@@ -28,12 +29,15 @@
         self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.infoLabel.numberOfLines = 2;
         self.infoLabel.backgroundColor = [UIColor clearColor];
+        self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
         self.infoLabel.font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
         
-        self.infoLabel.text = @"";
+        self.infoLabel.text = @"Payable at any MIT library service desk." "\n"
+                               "TechCASH accepted only at Hayden Library.";
+
         [self addSubview:self.infoLabel];
 
-        self.edgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
+        self.edgeInsets = UIEdgeInsetsMake(6, 10, 9, 10);
     }
     
     return self;
@@ -103,11 +107,6 @@
     if (totalFines)
     {
         self.balanceLabel.text = [NSString stringWithFormat:@"Balance as of %@: %@", dateString, totalFines];
-        
-        NSMutableString *string = [NSMutableString string];
-        [string appendString:@"Payable at any MIT library service desk.\n"];
-        [string appendString:@"TechCASH accepted only at Hayden Library."];
-        self.infoLabel.text = string;
     }
     else
     {
