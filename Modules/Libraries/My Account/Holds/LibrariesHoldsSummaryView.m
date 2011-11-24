@@ -22,7 +22,7 @@ static NSString* kLibrariesHoldsPickupText = @"\n%ld %@ ready for pickup.";
         self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.infoLabel.numberOfLines = 2;
         self.infoLabel.backgroundColor = [UIColor clearColor];
-        self.infoLabel.font = [UIFont systemFontOfSize:15.0];
+        self.infoLabel.font = [UIFont systemFontOfSize:14.0];
         self.infoLabel.text = @"";
         self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
         [self addSubview:self.infoLabel];

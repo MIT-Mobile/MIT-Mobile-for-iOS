@@ -101,7 +101,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"My Account";
+    self.title = @"Your Account";
 }
 
 
