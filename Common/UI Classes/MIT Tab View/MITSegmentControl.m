@@ -87,17 +87,15 @@ static CGFloat const kMITSegmentMinimumHeight = 28.0;
         self.textLabel.numberOfLines = 1;
         self.textLabel.adjustsFontSizeToFitWidth = YES;
         self.textLabel.minimumFontSize = kMITSegmentMinimumFontSize;
-        self.titleFont = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+        self.titleFont = [UIFont boldSystemFontOfSize:15.0];
     }
     
-    self.titleInsets = UIEdgeInsetsMake(5.0, 5.0, 5.0, 5.0);
+    self.titleInsets = UIEdgeInsetsMake(2.0, 0.0, -2.0, 0.0);
     
     self.stateDictionary = [NSMutableDictionary dictionary];
     
     [self setTitleColor:[UIColor lightTextColor]
                forState:UIControlStateNormal];
-    [self setTitleColor:[UIColor lightTextColor]
-               forState:UIControlStateHighlighted];
     [self setTitleColor:[UIColor darkTextColor]
                forState:UIControlStateSelected];
     [self setTitleColor:[UIColor darkTextColor]
@@ -146,9 +144,6 @@ static CGFloat const kMITSegmentMinimumHeight = 28.0;
 
 - (void)drawRect:(CGRect)rect
 {
-    UIEdgeInsets insets = UIEdgeInsetsMake(4, 2, 0, 2);
-    rect = UIEdgeInsetsInsetRect(rect, insets);
-    
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     UIImage *tabImage = [self imageForState:self.state];
@@ -250,7 +245,11 @@ static CGFloat const kMITSegmentMinimumHeight = 28.0;
     if ([title length] > 0) {
         self.textLabel.text = title;
         self.textLabel.textColor = [self titleColorForState:self.state];
-        [self.textLabel drawTextInRect:UIEdgeInsetsInsetRect(rect, self.titleInsets)];
+        CGRect titleRect = CGRectZero;
+        titleRect.size = [self.textLabel sizeThatFits:self.bounds.size];
+        titleRect.origin.x = (self.bounds.size.width - titleRect.size.width) / 2.0;
+        titleRect.origin.y = (self.bounds.size.height - titleRect.size.height) / 2.0;
+        [self.textLabel drawTextInRect:CGRectIntegral(UIEdgeInsetsInsetRect(titleRect, self.titleInsets))];
     }
 }
 

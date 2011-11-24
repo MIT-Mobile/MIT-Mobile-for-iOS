@@ -108,16 +108,19 @@
             self.tabViews = ([array count] > 0) ? array : nil;
         }
     
-        CGFloat width = (self.bounds.size.width - ([self.items count] - 1)) / [self.items count];
+        // divide the width equally between segments
+        // but lop off 3px from each side
+        // and add 1px between each segment
+        CGFloat width = (self.bounds.size.width - (6.0 + [self.items count] - 1)) / [self.items count];
         
         CGRect rect = CGRectZero;
-        rect.origin = CGPointMake(self.bounds.origin.x, self.bounds.origin.y);
+        rect.origin = CGPointMake(self.bounds.origin.x + 3.0, self.bounds.origin.y + 1.0);
         rect.size = CGSizeMake(width, self.bounds.size.height);
         
         for (MITSegmentControl *control in self.tabViews)
         {
             control.frame = rect;
-            rect.origin.x += width + 1;
+            rect.origin.x += width + 1.0;
         }
         
         [self updateTabs];
