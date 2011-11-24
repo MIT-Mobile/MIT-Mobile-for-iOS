@@ -19,7 +19,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.balanceLabel = [[[UILabel alloc] init] autorelease];
-        self.balanceLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
+        self.balanceLabel.font = [UIFont boldSystemFontOfSize:17.0];
         self.balanceLabel.backgroundColor = [UIColor clearColor];
         self.balanceLabel.lineBreakMode = UILineBreakModeTailTruncation;
         self.balanceLabel.text = @"";
@@ -30,7 +30,7 @@
         self.infoLabel.numberOfLines = 2;
         self.infoLabel.backgroundColor = [UIColor clearColor];
         self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
-        self.infoLabel.font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
+        self.infoLabel.font = [UIFont systemFontOfSize:14.0];
         
         self.infoLabel.text = @"Payable at any MIT library service desk." "\n"
                                "TechCASH accepted only at Hayden Library.";
