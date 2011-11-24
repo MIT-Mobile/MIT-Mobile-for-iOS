@@ -126,7 +126,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
             self.statusIcon.frame = iconFrame;
             
             // Add in some padding between the icon and the text that will follow
-            iconFrame.size.width += 3;
+            iconFrame.size.width += 4.0;
         }
         
         CGRect statusFrame = CGRectZero;
@@ -166,7 +166,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
         if (self.statusIcon.image && (self.statusIcon.hidden == NO))
         {
             iconSize = self.statusIcon.image.size;
-            iconSize.width += 3.0;
+            iconSize.width += 4.0;
         }
         
         CGSize statusSize = [[self.statusLabel text] sizeWithFont:self.statusLabel.font
