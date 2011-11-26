@@ -541,7 +541,7 @@ typedef enum {
              [MobileRequestOperation descriptionForState:state]);
         DLog(@"\tFor URL:\n\t\t:%@", request.URL);
         
-        NSMutableURLRequest *mutableRequest = [request mutableCopy];
+        NSMutableURLRequest *mutableRequest = [[request mutableCopy] autorelease];
         mutableRequest.timeoutInterval = 10.0;
         self.activeRequest = mutableRequest;
         self.requestData = nil;
@@ -574,7 +574,7 @@ typedef enum {
                 return nil;
             }
         } else if (self.requestState == MobileRequestStateAuthOK) {
-            NSMutableURLRequest *newRequest = [self.initialRequest mutableCopy];
+            NSMutableURLRequest *newRequest = [[self.initialRequest mutableCopy] autorelease];
             newRequest.URL = [request URL];
             request = newRequest;
         }

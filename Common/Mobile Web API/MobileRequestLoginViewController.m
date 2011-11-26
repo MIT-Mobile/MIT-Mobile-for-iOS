@@ -407,7 +407,7 @@
                                                                   accessoryView:nil 
                                                                           width:self.view.frame.size.width];
         
-        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
+        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
         footerLabel.text = labelText;
         return footerLabel;
     }

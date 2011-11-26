@@ -36,7 +36,7 @@
                                         [NSNumber numberWithFloat:1.0],
                                         nil];
         
-        self.imageView = [[UIImageView alloc] init];
+        self.imageView = [[[UIImageView alloc] init] autorelease];
         [self addSubview:self.imageView];
         
         UIImage *image = [UIImage imageNamed:@"global/tab2-header"];
