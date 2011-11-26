@@ -206,22 +206,6 @@ typedef enum {
 {
     if (view == self.finesController.tableView)
     {
-        [self.finesController tabDidBecomeInactive];
-    }
-    else if (view == self.holdsController.tableView)
-    {
-        [self.holdsController tabDidBecomeInactive];
-    }
-    else if (view == self.loansController.tableView)
-    {
-        [self.loansController tabDidBecomeInactive];
-    }
-}
-
-- (void)tabView:(MITTabView*)tabView viewDidBecomeInactive:(UIView*)view
-{
-    if (view == self.finesController.tableView)
-    {
         [self.finesController tabWillBecomeInactive];
     }
     else if (view == self.holdsController.tableView)
@@ -231,6 +215,22 @@ typedef enum {
     else if (view == self.loansController.tableView)
     {
         [self.loansController tabWillBecomeInactive];
+    }
+}
+
+- (void)tabView:(MITTabView*)tabView viewDidBecomeInactive:(UIView*)view
+{
+    if (view == self.finesController.tableView)
+    {
+        [self.finesController tabDidBecomeInactive];
+    }
+    else if (view == self.holdsController.tableView)
+    {
+        [self.holdsController tabDidBecomeInactive];
+    }
+    else if (view == self.loansController.tableView)
+    {
+        [self.loansController tabDidBecomeInactive];
     }
 }
 
