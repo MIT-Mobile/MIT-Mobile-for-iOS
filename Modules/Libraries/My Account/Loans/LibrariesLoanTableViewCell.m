@@ -16,7 +16,7 @@
     
     if (self)
     {
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        self.selectionStyle = UITableViewCellSelectionStyleBlue;
         self.editingAccessoryType = UITableViewCellAccessoryNone;
 
         self.statusIcon.image = [UIImage imageNamed:@"libraries/status-alert"];
@@ -62,6 +62,8 @@
             frame.origin.y = floor((CGRectGetHeight(self.contentView.bounds) - CGRectGetHeight(self.selectionView.frame)) / 2.0);
             self.selectionView.frame = frame;
 
+            self.selectionStyle = UITableViewCellSelectionStyleNone;
+            
             [self.contentView addSubview:self.selectionView];
             [self.contentView sendSubviewToBack:self.selectionView];
         }
@@ -76,6 +78,7 @@
     if (!state & UITableViewCellStateShowingEditControlMask) {
         [self.selectionView removeFromSuperview];
         self.selectionView = nil;
+        self.selectionStyle = UITableViewCellSelectionStyleBlue;
     }
 }
 
