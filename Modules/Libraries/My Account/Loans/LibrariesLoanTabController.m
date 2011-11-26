@@ -272,6 +272,7 @@
                                                              target:self
                                                              action:@selector(renewItems:)] autorelease];
     }
+    self.renewBarItem.enabled = NO;
     
     [self.parentController.navigationItem setHidesBackButton:YES animated:YES];
     [self.parentController.navigationItem setRightBarButtonItem:self.renewBarItem
