@@ -113,7 +113,7 @@
     NSArray *loans = [self.loanData objectForKey:@"items"];
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
     
-    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame)];
+    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame) - 20.0]; // 20.0 for the accessory view
 }
 
 - (void)updateLoanData

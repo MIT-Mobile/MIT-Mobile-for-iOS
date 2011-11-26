@@ -189,7 +189,7 @@
     cell.itemDetails = [loans objectAtIndex:indexPath.row];
     cell.editing = tableView.isEditing;
 
-    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame)];
+    return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame) - 20.0]; // 20.0 for the accessory view
 }
 
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath

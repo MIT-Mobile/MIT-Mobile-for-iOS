@@ -143,7 +143,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
 - (CGFloat)heightForContentWithWidth:(CGFloat)width
 {
     CGFloat height = 0;
-    width -= self.contentViewInsets.left + self.contentViewInsets.right + 20.0; // 20.0 for the accessory view
+    width -= self.contentViewInsets.left + self.contentViewInsets.right;
     
     {
         CGSize titleSize = [[self.titleLabel text] sizeWithFont:self.titleLabel.font
