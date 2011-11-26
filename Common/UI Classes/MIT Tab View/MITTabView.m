@@ -280,15 +280,15 @@ static CGFloat kHeaderDefaultHeight = 5.0;
                     animate:animate];
 }
 
-- (BOOL)insertView:(UIView*)controller withItem:(UITabBarItem*)item atIndex:(NSInteger)index animate:(BOOL)animate
+- (BOOL)insertView:(UIView*)view withItem:(UITabBarItem*)item atIndex:(NSInteger)index animate:(BOOL)animate
 {
-    if ([self.tabViews containsObject:controller]) {
+    if ([self.tabViews containsObject:view]) {
         return NO;
     } else if ([item.title length] == 0) {
         return NO;
     }
     
-    [self.tabViews addObject:controller];
+    [self.tabViews addObject:view];
     [self.tabControl insertSegmentWithItem:item
                                     atIndex:index
                                    animated:animate];
