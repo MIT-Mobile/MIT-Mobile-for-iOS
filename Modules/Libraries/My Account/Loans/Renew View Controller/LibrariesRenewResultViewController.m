@@ -2,6 +2,7 @@
 #import "LibrariesLoanTableViewCell.h"
 #import "MobileRequestOperation.h"
 #import "MITTabHeaderView.h"
+#import "UIKit+MITAdditions.h"
 
 @interface LibrariesRenewResultViewController ()
 @property (nonatomic,retain) NSArray *renewItems;
@@ -85,89 +86,71 @@
 
 - (UIView*)tableHeaderViewForWidth:(CGFloat)width
 {
-    NSUInteger failureCount = 0;
-    NSUInteger successCount = 0;
+    NSIndexSet *failureIndexes = [self.renewItems indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        return ([obj valueForKey:@"error"] != nil);
+    }];
+    NSUInteger failureCount = [failureIndexes count];
+    NSUInteger successCount = [self.renewItems count] - failureCount; 
     
-    for (NSDictionary *result in self.renewItems)
-    {
-        if ([result objectForKey:@"error"])
-        {
-            ++failureCount;
-        }
-        else
-        {
-            ++successCount;
-        }
+    // This initial size is arbitrary.
+    UIView *headerView = [[MITTabHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, 100.0, 100.0)];
+    headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    
+    UIEdgeInsets headerInsets = UIEdgeInsetsMake(6, 10, 3, 10);
+    __block CGRect contentFrame = UIEdgeInsetsInsetRect(headerView.frame, headerInsets);
+
+    contentFrame.size.height = 0.0;
+    
+    void(^addIconAndLabel)(UIImage *, NSString *) = ^(UIImage *image, NSString *text) {
+        UIImageView *icon = [[[UIImageView alloc] initWithImage:image] autorelease];
+        icon.autoresizingMask = UIViewAutoresizingNone;
+        
+        CGRect iconFrame = icon.frame;
+        iconFrame.origin = CGPointMake(contentFrame.origin.x, contentFrame.origin.y + 1.0);
+        icon.frame = iconFrame;
+        iconFrame.size.width += 4.0;
+        
+        UILabel *label = [[[UILabel alloc] init] autorelease];
+        label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        label.backgroundColor = [UIColor clearColor];
+        label.textColor = [UIColor colorWithHexString:@"#404649"];
+        label.font = [UIFont systemFontOfSize:14.0];
+        label.lineBreakMode = UILineBreakModeTailTruncation;
+        label.text = text;
+        
+        CGRect labelFrame = label.frame;
+        labelFrame.origin.x = CGRectGetMaxX(iconFrame);
+        labelFrame.origin.y = contentFrame.origin.y;
+        labelFrame.size.width = contentFrame.size.width - iconFrame.size.width;
+        labelFrame.size.height = label.font.lineHeight;
+        label.frame = labelFrame;
+        
+        [headerView addSubview:icon];
+        [headerView addSubview:label];
+        
+        contentFrame.origin.y += CGRectGetHeight(label.frame) + 3.0;
+        
+        CGFloat height = MAX(CGRectGetMaxY(icon.frame), CGRectGetMaxY(label.frame));
+        contentFrame.size.height = MAX(contentFrame.size.height, height);
+    };
+    
+    if (successCount) {
+        addIconAndLabel([UIImage imageNamed:@"libraries/status-ok"], 
+                        [NSString stringWithFormat:@"%lu renewed successfully!", successCount]);
     }
     
-    
-    UIView *tableHeader = [[MITTabHeaderView alloc] init];
-    CGRect headerFrame = CGRectMake(0, 0, width, 10);
-    UIEdgeInsets headerInsets = UIEdgeInsetsMake(5, 10, 5, 10);
-    headerFrame = UIEdgeInsetsInsetRect(headerFrame, headerInsets);
-    
-    CGPoint origin = headerFrame.origin;
-    
-    if (successCount)
-    {
-        UIImageView *successIcon = nil;
-        UILabel *successLabel = nil;
-        successIcon = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/status-ok"]] autorelease];
-        successLabel = [[[UILabel alloc] init] autorelease];
-        successLabel.lineBreakMode = UILineBreakModeTailTruncation;
-        successLabel.text = [NSString stringWithFormat:@"%lu renewed successfully!", successCount];
-        
-        CGSize successSize = [successLabel.text sizeWithFont:successLabel.font
-                                           constrainedToSize:CGSizeMake(CGRectGetWidth(headerFrame), CGFLOAT_MAX)
-                                               lineBreakMode:successLabel.lineBreakMode];
-        
-        CGRect iconRect = CGRectMake(origin.x, origin.y, successIcon.image.size.width, successIcon.image.size.height);
-        successIcon.frame = iconRect;
-        
-        CGRect labelRect = CGRectMake(origin.x + CGRectGetWidth(iconRect), origin.y, successSize.width, successSize.height);
-        successLabel.frame = labelRect;
-        
-        [tableHeader addSubview:successIcon];
-        [tableHeader addSubview:successLabel];
-        
-        CGFloat height = MAX(CGRectGetHeight(iconRect), CGRectGetHeight(labelRect));
-        headerFrame.size.height += height;
-        origin.y += height;
+    if (failureCount) {
+        addIconAndLabel([UIImage imageNamed:@"libraries/status-error"], 
+                        [NSString stringWithFormat:@"%lu could not be renewed.", failureCount]);
     }
     
-    if (failureCount)
-    {
-        UIImageView *errorIcon = nil;
-        UILabel *errorLabel = nil;
-        errorIcon = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/status-error"]] autorelease];
-        errorIcon.contentMode = UIViewContentModeCenter;
-        errorIcon.backgroundColor = [UIColor clearColor];
-        
-        errorLabel = [[[UILabel alloc] init] autorelease];
-        errorLabel.backgroundColor = [UIColor clearColor];
-        errorLabel.lineBreakMode = UILineBreakModeTailTruncation;
-        errorLabel.text = [NSString stringWithFormat:@"%lu could not be renewed.", failureCount];
-        
-        CGSize failureSize = [errorLabel.text sizeWithFont:errorLabel.font
-                                         constrainedToSize:CGSizeMake(CGRectGetWidth(headerFrame), CGFLOAT_MAX)
-                                             lineBreakMode:errorLabel.lineBreakMode];
-        
-        CGRect iconRect = CGRectMake(origin.x, origin.y, errorIcon.image.size.width, errorIcon.image.size.height);
-        errorIcon.frame = iconRect;
-        
-        CGRect labelRect = CGRectMake(origin.x + CGRectGetWidth(iconRect), origin.y, failureSize.width, failureSize.height);
-        errorLabel.frame = labelRect;
-        
-        [tableHeader addSubview:errorIcon];
-        [tableHeader addSubview:errorLabel];
-        headerFrame.size.height += failureSize.height;
-    }
+    contentFrame.origin = CGPointZero;
+    contentFrame.size.height += (headerInsets.top + headerInsets.bottom);
+//    contentFrame.size.width += (headerInsets.left + headerInsets.right);
     
-    headerFrame.size.height += (headerInsets.top + headerInsets.bottom);
+    headerView.frame = contentFrame;
     
-    tableHeader.frame = headerFrame;
-    
-    return [tableHeader autorelease];
+    return [headerView autorelease];
 }
 
 
