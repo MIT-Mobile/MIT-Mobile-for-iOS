@@ -27,10 +27,10 @@
     feedbackGroup.footerText = @"Please let us know your thoughts for improving our services. We'd also appreciate hearing what you like about our current services.";
     
     ExternalLinkLibraryFormElement *suggestedPurchaseElement = 
-    [[ExternalLinkLibraryFormElement alloc] 
+    [[[ExternalLinkLibraryFormElement alloc] 
      initWithKey:@"suggested_purchase" 
      displayLabel:@"Suggested Purchase Form"
-     required:NO];
+     required:NO] autorelease];
     suggestedPurchaseElement.url = [NSURL URLWithString:@"http://libraries.mit.edu/suggest-purchase"];
     
     LibraryFormElementGroup *suggestedPurchaseGroup = 

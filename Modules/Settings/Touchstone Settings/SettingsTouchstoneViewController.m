@@ -76,7 +76,7 @@ enum {
 - (void)loadView
 {
     CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
-    UIView *mainView = [[UIView alloc] initWithFrame:screenRect];
+    UIView *mainView = [[[UIView alloc] initWithFrame:screenRect] autorelease];
     
     CGRect viewBounds = mainView.bounds;
     {
@@ -104,13 +104,13 @@ enum {
     [super viewDidLoad];
     
     self.title = @"Touchstone";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                            target:self
-                                                                                           action:@selector(cancel:)];
+                                                                                           action:@selector(cancel:)] autorelease];
     self.navigationItem.rightBarButtonItem.tag = NSIntegerMax;
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                           target:self
-                                                                                          action:@selector(cancel:)];
+                                                                                          action:@selector(cancel:)] autorelease];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -411,7 +411,7 @@ enum {
                                                                   accessoryView:secureIcon 
                                                                           width:self.view.frame.size.width];
 
-        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
+        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
         footerLabel.text = labelText;
         footerLabel.accessoryView = secureIcon;
         return footerLabel;

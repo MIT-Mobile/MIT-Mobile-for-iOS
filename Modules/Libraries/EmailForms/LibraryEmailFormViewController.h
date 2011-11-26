@@ -36,7 +36,6 @@
 @interface MenuLibraryFormElement : LibraryFormElement {
 @private
     NSInteger _currentOptionIndex;
-    NSString *_defaultOption;
 }
 
 @property (nonatomic, assign) NSInteger currentOptionIndex;
