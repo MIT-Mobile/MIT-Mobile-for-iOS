@@ -110,9 +110,12 @@
     [super viewDidUnload];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
+    [super viewDidAppear:animated];
+    if (self.tabView.activeView == self.loansController.tableView) {
+        [self.loansController tabDidBecomeActive];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
