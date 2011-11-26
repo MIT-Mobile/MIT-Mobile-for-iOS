@@ -1,12 +1,17 @@
 #import <Foundation/Foundation.h>
 #import "LibrariesLoanSummaryView.h"
-#import "MITTabView.h"
+
+@protocol MITTabViewHidingDelegate <NSObject>
+@optional
+- (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated;
+- (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated finished:(void (^)())finished;
+@end
 
 @interface LibrariesLoanTabController : NSObject <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic,retain) LibrariesLoanSummaryView *headerView;
 @property (nonatomic,retain) UIViewController *parentController;
 @property (nonatomic,retain) UITableView *tableView;
-@property (nonatomic,retain) MITTabView *tabView;
+@property (nonatomic,assign) id<MITTabViewHidingDelegate> tabViewHidingDelegate;
 
 - (id)initWithTableView:(UITableView*)tableView;
 

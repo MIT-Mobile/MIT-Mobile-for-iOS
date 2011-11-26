@@ -20,7 +20,6 @@ static CGFloat kHeaderDefaultHeight = 5.0;
 
 - (void)privateInit;
 - (void)controlWasTouched:(id)sender;
-- (void)selectTabAtIndex:(NSInteger)index;
 - (void)makeViewActive:(UIView*)newView;
 
 - (void)tabViewWillBecomeActive:(UIView*)view;
@@ -202,7 +201,9 @@ static CGFloat kHeaderDefaultHeight = 5.0;
 {
     if (index >= 0) {
         UIView *selectedView = [self.views objectAtIndex:index];
-        if (selectedView == self.activeView) {
+        // short circuit if there is no change
+        // if self.activeHeaderView is nil, that means the current tab was never fully selected
+        if (selectedView == self.activeView && self.activeHeaderView) {
             return;
         }
         else

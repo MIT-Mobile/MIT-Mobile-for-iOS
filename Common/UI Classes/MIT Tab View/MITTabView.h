@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import "LibrariesLoanTabController.h"
 
 extern NSString* const MITTabViewWillBecomeActiveNotification;
 extern NSString* const MITTabViewDidBecomeActiveNotification;
@@ -18,7 +19,7 @@ extern NSString* const MITTabViewDidBecomeInactiveNotification;
 - (UIView*)tabView:(MITTabView*)tabView headerForView:(UIView*)view;
 @end
 
-@interface MITTabView : UIView
+@interface MITTabView : UIView <MITTabViewHidingDelegate>
 @property (nonatomic,assign) id<MITTabViewDelegate> delegate;
 @property (nonatomic,readonly) NSArray *views;
 @property (nonatomic,readonly,retain) UIView *contentView;
@@ -31,7 +32,6 @@ extern NSString* const MITTabViewDidBecomeInactiveNotification;
 - (BOOL)addView:(UIView*)view withItem:(UITabBarItem*)item animate:(BOOL)animate;
 - (BOOL)insertView:(UIView*)view withItem:(UITabBarItem*)item atIndex:(NSInteger)index animate:(BOOL)animate;
 
-- (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated;
-- (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated finished:(void (^)())finished;
+- (void)selectTabAtIndex:(NSInteger)index;
 
 @end

@@ -6,9 +6,9 @@
 #import "LibrariesDetailViewController.h"
 
 @interface LibrariesLoanTabController ()
-@property (nonatomic,retain) MITLoadingActivityView *loadingView;
+@property (nonatomic, retain) MITLoadingActivityView *loadingView;
 
-@property (nonatomic,retain) NSDictionary *loanData;
+@property (nonatomic, retain) NSDictionary *loanData;
 @property (nonatomic, retain) NSMutableIndexSet *renewItems;
 @property (nonatomic, retain) UIBarButtonItem *renewBarItem;
 @property (nonatomic, retain) UIBarButtonItem *cancelBarItem;
@@ -26,7 +26,7 @@
 @implementation LibrariesLoanTabController
 @synthesize parentController = _parentController;
 @synthesize tableView = _tableView;
-@synthesize tabView = _tabView;
+@synthesize tabViewHidingDelegate = _tabViewHidingDelegate;
 
 @synthesize headerView = _headerView;
 @synthesize loadingView = _loadingView;
@@ -58,7 +58,7 @@
 {
     self.parentController = nil;
     self.tableView = nil;
-    self.tabView = nil;
+    self.tabViewHidingDelegate = nil;
     self.headerView = nil;
     self.loadingView = nil;
     self.loanData = nil;
@@ -284,7 +284,9 @@
     [self.parentController.navigationItem setLeftBarButtonItem:self.cancelBarItem
                                                       animated:YES];
 
-    [self.tabView setTabBarHidden:YES animated:YES];
+    if ([self.tabViewHidingDelegate conformsToProtocol:@protocol(MITTabViewHidingDelegate)]) {
+        [self.tabViewHidingDelegate setTabBarHidden:YES animated:YES];
+    }
 
     [self.tableView setEditing:YES animated:YES];
     [self.tableView beginUpdates];
@@ -302,8 +304,9 @@
     [self.parentController.navigationItem setLeftBarButtonItem:nil animated:animated];
 
     [self.tableView setEditing:NO animated:animated];
-    [self.tabView setTabBarHidden:NO
-                         animated:animated];
+    if ([self.tabViewHidingDelegate conformsToProtocol:@protocol(MITTabViewHidingDelegate)]) {
+        [self.tabViewHidingDelegate setTabBarHidden:NO animated:animated];
+    }
 }
 
 - (IBAction)renewItems:(id)sender
