@@ -34,7 +34,8 @@
         
         self.infoLabel.text = @"Payable at any MIT library service desk." "\n"
                                "TechCASH accepted only at Hayden Library.";
-
+        self.accountDetails = nil;
+        
         [self addSubview:self.infoLabel];
 
         self.edgeInsets = UIEdgeInsetsMake(6, 10, 9, 10);
@@ -104,14 +105,10 @@
                                                           dateStyle:NSDateFormatterShortStyle
                                                           timeStyle:NSDateFormatterNoStyle];
     NSString *totalFines = [accountDetails objectForKey:@"balance"];
-    if (totalFines)
-    {
-        self.balanceLabel.text = [NSString stringWithFormat:@"Balance as of %@: %@", dateString, totalFines];
+    if (!totalFines) {
+        totalFines = @"";
     }
-    else
-    {
-        self.balanceLabel.text = @"";
-    }
+    self.balanceLabel.text = [NSString stringWithFormat:@"Balance as of %@: %@", dateString, totalFines];
     
     [self setNeedsLayout];
 }
