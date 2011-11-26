@@ -39,6 +39,17 @@
     return self;
 }
 
+- (void)dealloc {
+    self.parentController = nil;
+    self.tableView = nil;
+    self.headerView = nil;
+    self.loadingView = nil;
+    self.loanData = nil;
+    self.operation = nil;
+    self.lastUpdate = nil;
+    [super dealloc];
+}
+
 - (void)setupTableView
 {
     {

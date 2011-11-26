@@ -2,7 +2,7 @@
 #import "LibrariesFinesSummaryView.h"
 
 @interface LibrariesFinesTabController : NSObject <UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic,retain) UIViewController *parentController;
+@property (nonatomic,assign) UIViewController *parentController;
 @property (nonatomic,retain) UITableView *tableView;
 @property (nonatomic,retain) LibrariesFinesSummaryView* headerView;
 
