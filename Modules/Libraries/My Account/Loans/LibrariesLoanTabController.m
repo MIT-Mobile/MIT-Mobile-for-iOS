@@ -17,6 +17,10 @@
 
 - (void)setupTableView;
 - (void)updateLoanData;
+- (IBAction)beginRenew:(id)sender;
+- (IBAction)restoreTabView:(id)sender animated:(BOOL)animated;
+- (IBAction)renewItems:(id)sender;
+- (IBAction)cancelRenew:(id)sender;
 @end
 
 @implementation LibrariesLoanTabController
@@ -288,18 +292,18 @@
 
 }
 
-- (IBAction)restoreTabView:(id)sender
+- (IBAction)restoreTabView:(id)sender animated:(BOOL)animated
 {
     self.renewItems = nil;
     self.cancelBarItem.enabled = YES;
 
-    [self.parentController.navigationItem setHidesBackButton:NO animated:YES];
-    [self.parentController.navigationItem setRightBarButtonItem:nil animated:YES];
-    [self.parentController.navigationItem setLeftBarButtonItem:nil animated:YES];
+    [self.parentController.navigationItem setHidesBackButton:NO animated:animated];
+    [self.parentController.navigationItem setRightBarButtonItem:nil animated:animated];
+    [self.parentController.navigationItem setLeftBarButtonItem:nil animated:animated];
 
-    [self.tableView setEditing:NO animated:YES];
+    [self.tableView setEditing:NO animated:animated];
     [self.tabView setTabBarHidden:NO
-                         animated:YES];
+                         animated:animated];
 }
 
 - (IBAction)renewItems:(id)sender
@@ -342,7 +346,6 @@
             LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:(NSArray*)jsonData] autorelease];
             [self.parentController.navigationController pushViewController:vc
                                                                   animated:YES];
-            [self restoreTabView:sender];
         }
 
     }];
@@ -358,12 +361,13 @@
         [self.operation cancel];
     }
 
-    [self restoreTabView:sender];
+    [self restoreTabView:sender animated:YES];
 }
 
 #pragma mark - Tab Activity Notifications
 - (void)tabWillBecomeActive
 {
+    [self restoreTabView:nil animated:NO];
 }
 
 - (void)tabDidBecomeActive
