@@ -115,7 +115,6 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
     }
     else if (_textString == nil)
     {
-        NSMutableAttributedString *detailText = [[NSMutableAttributedString alloc] init];
         NSMutableAttributedString *detailText = [[[NSMutableAttributedString alloc] init] autorelease];
 
         UIFont *defaultBoldFont = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
@@ -149,14 +148,14 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
         NSString *callNumber = [self.bookDetails objectForKey:LibrariesDetailCallNumberKey];
         if ([callNumber length])
         {
-            [detailText appendAttributedString:[self attributedStringWithHeader:@"\nCall #: "
+            [detailText appendAttributedString:[self attributedStringWithHeader:@"\nCall #"
                                                                     displayText:[NSString stringWithFormat:@"%@",callNumber]]];
         }
-
+ 
         NSString *library = [self.bookDetails objectForKey:LibrariesDetailLibraryKey];
         if ([library length])
         {
-            [detailText appendAttributedString:[self attributedStringWithHeader:@"\nLibrary: "
+            [detailText appendAttributedString:[self attributedStringWithHeader:@"\nLibrary"
                                                                     displayText:[NSString stringWithFormat:@"%@",library]]];
         }
 
@@ -164,11 +163,33 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
         if ([isbNumbers count])
         {
             NSString *isbnString = [[isbNumbers objectForKey:@"display"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            [detailText appendAttributedString:[self attributedStringWithHeader:@"\nISBN: "
+            [detailText appendAttributedString:[self attributedStringWithHeader:@"\nISBN"
                                                                     displayText:isbnString]];
         }
+        
+        
+        NSString *displayAmount = [self.bookDetails objectForKey:@"display-amount"];
+        if ([displayAmount length])
+        {
+            [detailText appendAttributedString:[self attributedStringWithHeader:@"\nAmount owed"
+                                                                    displayText:displayAmount]];
+        }
+        
+        
+        NSNumber *fineTimestamp = [self.bookDetails objectForKey:@"fine-date"];
+        if (fineTimestamp)
+        {
+            NSDate *fineDate = [NSDate dateWithTimeIntervalSince1970:[fineTimestamp doubleValue]];
+            NSString *dateText = [NSDateFormatter localizedStringFromDate:fineDate
+                                                                dateStyle:NSDateFormatterShortStyle
+                                                                timeStyle:NSDateFormatterNoStyle];
+            [detailText appendAttributedString:[self attributedStringWithHeader:@"\nFined on"
+                                                                    displayText:dateText]];
+        }
+        
         self.textString = detailText;
     }
+    
     return _textString;
 }
 
@@ -187,7 +208,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
         
         NSDictionary *attributes = [NSDictionary dictionaryWithObject:(id)boldFont
                                                                forKey:(id)kCTFontAttributeName];
-        NSAttributedString *headerString = [[NSAttributedString alloc] initWithString:header
+        NSAttributedString *headerString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@: ",header]
                                                                            attributes:attributes];
         
         [resultString appendAttributedString:headerString];
