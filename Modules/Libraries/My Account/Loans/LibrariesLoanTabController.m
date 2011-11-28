@@ -196,15 +196,6 @@
     return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame) - 20.0]; // 20.0 for the accessory view
 }
 
--(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (tableView.isEditing)
-    {
-        cell.selected = [self.renewItems containsIndex:indexPath.row];
-    }
-}
-
-
 #pragma mark -
 - (void)updateLoanData
 {
