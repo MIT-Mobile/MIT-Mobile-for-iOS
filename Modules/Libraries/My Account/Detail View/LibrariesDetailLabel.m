@@ -116,6 +116,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
     else if (_textString == nil)
     {
         NSMutableAttributedString *detailText = [[NSMutableAttributedString alloc] init];
+        NSMutableAttributedString *detailText = [[[NSMutableAttributedString alloc] init] autorelease];
 
         UIFont *defaultBoldFont = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
 
