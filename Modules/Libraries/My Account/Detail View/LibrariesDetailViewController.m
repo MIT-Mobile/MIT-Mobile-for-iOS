@@ -61,16 +61,15 @@
 }
 
 #pragma mark - View lifecycle
-- (void)loadView
+
+- (void)viewDidLoad
 {
-    CGFloat navHeight = self.navigationController.navigationBarHidden ? 0 : CGRectGetHeight(self.navigationController.navigationBar.frame);
-    CGRect viewRect = [[UIScreen mainScreen] applicationFrame];
-    viewRect.origin.y += navHeight;
-    viewRect.size.height -= navHeight;
-
-    UIView *view = [[[UIView alloc] initWithFrame:viewRect] autorelease];
-
-    viewRect = view.bounds;
+    [super viewDidLoad];
+    
+    CGRect viewRect = self.view.bounds;
+    
+    UIEdgeInsets detailInsets = UIEdgeInsetsMake(14, 10, 14, 10);
+    UIEdgeInsets statusInsets = UIEdgeInsetsMake(4 - detailInsets.top, 10, 4, 10);
     
     {
         LibrariesDetailLabel *detailLabel = [[[LibrariesDetailLabel alloc] initWithBook:self.details] autorelease];
@@ -79,18 +78,17 @@
                                         viewRect.origin.y,
                                         CGRectGetWidth(viewRect),
                                         0);
-        detailLabel.textInsets = UIEdgeInsetsMake(10, 10, 5, 10);
+        detailLabel.textInsets = detailInsets;
         detailFrame.size = [detailLabel sizeThatFits:detailFrame.size];
         detailLabel.frame = detailFrame;
         
-        [view addSubview:detailLabel];
+        [self.view addSubview:detailLabel];
         viewRect.origin.y = CGRectGetMaxY(detailLabel.frame);
     }
 
     {
         UIView *statusView = [[[UIView alloc] init] autorelease];
-
-        UIEdgeInsets statusInsets = UIEdgeInsetsMake(0, 10, 10, 10);
+        
         CGRect statusContentFrame = CGRectMake(0, 0, CGRectGetWidth(viewRect), CGFLOAT_MAX);;
         statusContentFrame.origin = CGPointZero;
         statusContentFrame = UIEdgeInsetsInsetRect(statusContentFrame,statusInsets);
@@ -124,12 +122,11 @@
         {
             iconFrame.size = statusIcon.image.size;
             iconFrame.origin = statusContentFrame.origin;
-            iconFrame.origin.y += 2.0;
             
             statusIcon.frame = iconFrame;
 
             [statusView addSubview:statusIcon];
-            statusContentFrame.origin.x += CGRectGetWidth(iconFrame) + 5;
+            statusContentFrame.origin.x += CGRectGetWidth(iconFrame) + 4.0;
             
         }
 
@@ -192,27 +189,27 @@
                 break;
         }
 
-
-        CGRect statusFrame = CGRectZero;
-        statusFrame.origin = CGPointMake(statusContentFrame.origin.x, statusContentFrame.origin.y);
-        statusFrame.size = [statusText sizeWithFont:statusLabel.font
-                                  constrainedToSize:CGSizeMake(CGRectGetMaxX(statusContentFrame) - CGRectGetMaxX(iconFrame),
-                                                               CGRectGetMaxY(statusContentFrame))
-                                      lineBreakMode:statusLabel.lineBreakMode];
-
-        statusLabel.text = [[statusText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
-        statusLabel.frame = statusFrame;
-        [statusView addSubview:statusLabel];
-
-
-        statusView.backgroundColor = [UIColor whiteColor];
-        statusView.frame = CGRectMake(viewRect.origin.x,
-                                      viewRect.origin.y,
-                                      CGRectGetWidth(viewRect),
-                                      MAX(CGRectGetHeight(statusFrame), CGRectGetHeight(iconFrame)) + statusInsets.bottom);
-        [view addSubview:statusView];
-
-        viewRect.origin.y = CGRectGetMaxY(statusView.frame) + 25;
+        if (statusIcon || [statusText length] > 0) {
+            CGRect statusFrame = CGRectZero;
+            statusFrame.origin = CGPointMake(statusContentFrame.origin.x, statusContentFrame.origin.y);
+            statusFrame.size = [statusText sizeWithFont:statusLabel.font
+                                      constrainedToSize:CGSizeMake(CGRectGetMaxX(statusContentFrame) - CGRectGetMaxX(iconFrame),
+                                                                   CGRectGetMaxY(statusContentFrame))
+                                          lineBreakMode:statusLabel.lineBreakMode];
+            
+            statusLabel.text = [[statusText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
+            statusLabel.frame = statusFrame;
+            [statusView addSubview:statusLabel];
+            
+            
+            statusView.backgroundColor = [UIColor whiteColor];
+            statusView.frame = CGRectMake(viewRect.origin.x,
+                                          viewRect.origin.y,
+                                          CGRectGetWidth(viewRect),
+                                          MAX(CGRectGetHeight(statusFrame), CGRectGetHeight(iconFrame)) + statusInsets.bottom);
+            [self.view addSubview:statusView];
+            viewRect.origin.y = CGRectGetMaxY(statusView.frame) + 25;
+        }
     }
 
     if (self.type == LibrariesDetailLoanType)
@@ -225,10 +222,10 @@
         loginFrame = UIEdgeInsetsInsetRect(loginFrame, buttonInsets);
 
         UIButton *renewButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        renewButton.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        renewButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         renewButton.frame = loginFrame;
 
-        [renewButton setTitle:@"Renew this book"
+        [renewButton setTitle:@"Renew This Book"
                      forState:UIControlStateNormal];
         [renewButton setTitleColor:[UIColor grayColor]
                           forState:UIControlStateDisabled];
@@ -236,12 +233,26 @@
                         action:@selector(renewBook:)
               forControlEvents:UIControlEventTouchUpInside];
 
-        [view addSubview:renewButton];
+        [self.view addSubview:renewButton];
         self.renewButton = renewButton;
     }
-
-    [self setView:view];
 }
+
+- (void)viewDidUnload
+{
+    [super viewDidUnload];
+    // Release any retained subviews of the main view.
+    // e.g. self.myOutlet = nil;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    // Return YES for supported orientations
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+
+#pragma mark - User Actions
 
 - (IBAction)renewBook:(id)sender
 {
@@ -280,24 +291,4 @@
     [operation start];
 }
 
-
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-}
-
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
 @end
