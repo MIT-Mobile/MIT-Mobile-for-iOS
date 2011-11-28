@@ -208,17 +208,18 @@
     
     if (self.operation == nil)
     {
-        NSDictionary *requestLimit = [NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
-                                                                 forKey:@"limit"];
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                                 command:@"loans"
-                                                                             parameters:requestLimit];
-        self.headerView.renewButton.enabled = NO;
+                                                                             parameters:nil];
+        self.headerView.renewButton.enabled = ([self.renewItems count] > 0);
+        
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
             if (error) {
                 ELog(@"Loan: %@", [error localizedDescription]);
-                DLog(@"Data:\n-----\n%@\n-----", jsonResult);
-                [self.parentController.navigationController popViewControllerAnimated:YES];
+                if (error.code == MobileWebInvalidLoginError)
+                {
+                   [self.parentController.navigationController popViewControllerAnimated:YES];
+                }
             } else {
                 if (self.loadingView.superview != nil) {
                     [self.loadingView removeFromSuperview];
@@ -230,8 +231,8 @@
             self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
             self.headerView.accountDetails = (NSDictionary *)self.loanData;
             [self.headerView sizeToFit];
-
             [self.tableView reloadData];
+
             self.operation = nil;
         };
     
