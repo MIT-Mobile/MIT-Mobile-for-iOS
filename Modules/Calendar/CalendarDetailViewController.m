@@ -23,8 +23,8 @@
 	self.shareDelegate = self;
 	
 	// setup table view
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height)
-												  style:UITableViewStylePlain];
+	self.tableView = [[[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height)
+												  style:UITableViewStylePlain] autorelease];
 	self.tableView.delegate = self;
 	self.tableView.dataSource = self;
 	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
