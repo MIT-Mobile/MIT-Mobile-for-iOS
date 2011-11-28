@@ -495,7 +495,9 @@ static ToursDataManager *s_toursDataManager = nil;
 #pragma mark -
 
 - (id)init {
-    if (self == [super init]) {
+    self = [super init];
+    
+    if (self) {
         _tours = [[NSMutableDictionary alloc] init];
         NSArray *allTours = [CoreDataManager objectsForEntity:CampusTourEntityName matchingPredicate:nil];
         for (CampusTour *aTour in allTours) {
