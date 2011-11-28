@@ -127,16 +127,6 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
                                                        18.0,
                                                        NULL);
 
-            CGFloat lineSpacing = 6.0;
-            CTParagraphStyleSetting paragraphSetting = 
-            {
-                .spec = kCTParagraphStyleSpecifierLineSpacing,
-                .valueSize = sizeof(CGFloat),
-                .value = &lineSpacing
-            };
-            
-            CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(&paragraphSetting, 1);
-            [titleAttributes setObject:(id)paragraphStyle forKey:(id)kCTParagraphStyleAttributeName];
             [titleAttributes setObject:(id)titleFont
                              forKey:(id)kCTFontAttributeName];
             NSMutableAttributedString *title = [[NSMutableAttributedString alloc] initWithString:[self.bookDetails objectForKey:LibrariesDetailTitleKey]
@@ -247,15 +237,22 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
     
     if ([resultString length])
     {
-        CGFloat lineSpacing = 6.0;
-        CTParagraphStyleSetting paragraphSetting = 
+        CGFloat lineSpacing = 1.0;
+        CGFloat paragraphSpacing = 6.0;
+        CTParagraphStyleSetting paragraphSetting[] = 
         {
-            .spec = kCTParagraphStyleSpecifierLineSpacing,
-            .valueSize = sizeof(CGFloat),
-            .value = &lineSpacing
-        };
-        
-        CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(&paragraphSetting, 1);
+            {
+                .spec = kCTParagraphStyleSpecifierLineSpacing,
+                .valueSize = sizeof(CGFloat),
+                .value = &lineSpacing
+            },
+            {
+                .spec = kCTParagraphStyleSpecifierParagraphSpacingBefore,
+                .valueSize = sizeof(CGFloat),
+                .value = &paragraphSpacing
+            }
+        };   
+        CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphSetting, 2);
         NSMutableDictionary *textAttributes = [NSMutableDictionary dictionary];
         [textAttributes setObject:(id)paragraphStyle forKey:(id)kCTParagraphStyleAttributeName];
         [textAttributes setObject:(id)[[UIColor colorWithHexString:@"#404649"] CGColor] forKey:(id)kCTForegroundColorAttributeName];
