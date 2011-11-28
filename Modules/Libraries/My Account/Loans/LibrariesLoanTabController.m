@@ -241,9 +241,6 @@
             [self.headerView sizeToFit];
 
             [self.tableView reloadData];
-            [self.tableView beginUpdates];
-            [self.tableView endUpdates];
-            
             self.operation = nil;
         };
     
@@ -285,9 +282,6 @@
     }
 
     [self.tableView setEditing:YES animated:YES];
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
-
 }
 
 - (IBAction)restoreTabView:(id)sender animated:(BOOL)animated
