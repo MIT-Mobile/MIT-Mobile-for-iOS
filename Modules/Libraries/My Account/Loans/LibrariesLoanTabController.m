@@ -211,7 +211,8 @@
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                                 command:@"loans"
                                                                              parameters:nil];
-        self.headerView.renewButton.enabled = ([self.renewItems count] > 0);
+        
+        self.headerView.renewButton.enabled = ([self.loanData count] > 0);
         
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
             if (error) {
