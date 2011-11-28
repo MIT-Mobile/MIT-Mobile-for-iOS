@@ -188,18 +188,6 @@
             }
 
             case LibrariesDetailFineType:
-            {
-                [statusText appendFormat:@"Amount owed: %@", [self.details objectForKey:@"display-amount"]];
-
-                NSTimeInterval fineInterval = [[self.details objectForKey:@"fine-date"] doubleValue];
-                NSDate *fineDate = [NSDate dateWithTimeIntervalSince1970:fineInterval];
-                [statusText appendFormat:@"\nFined on %@", [NSDateFormatter localizedStringFromDate:fineDate
-                                                                       dateStyle:NSDateFormatterShortStyle
-                                                                       timeStyle:NSDateFormatterNoStyle]];
-
-                statusLabel.textColor = [UIColor redColor];
-                statusLabel.font = [UIFont boldSystemFontOfSize:14.0];
-            }
             default:
                 break;
         }
