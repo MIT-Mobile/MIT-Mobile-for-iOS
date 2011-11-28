@@ -256,10 +256,6 @@
 #pragma mark - Event Handlers
 - (IBAction)beginRenew:(id)sender
 {
-    //LibrariesRenewViewController *vc = [[[LibrariesRenewViewController alloc] initWithItems:[self.loanData objectForKey:@"items"]] autorelease];
-    //[self.parentController.navigationController pushViewController:vc
-    //                                                      animated:YES];
-
     self.renewItems = [NSMutableIndexSet indexSet];
 
     if (self.cancelBarItem == nil)
