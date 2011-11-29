@@ -54,7 +54,7 @@
     // Before transitioning to editing:
     // - selectionView is totally invisible and hidden, so make it unhidden
     if (state & UITableViewCellStateShowingEditControlMask) {
-        if (!self.selectionView) {
+        if (self.selectionView == nil) {
             self.selectionView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/cell-unselected"]] autorelease];
             
             CGRect frame = self.selectionView.frame;
@@ -63,13 +63,12 @@
             self.selectionView.frame = frame;
 
             self.selectionStyle = UITableViewCellSelectionStyleNone;
-            
             [self.contentView addSubview:self.selectionView];
             [self.contentView sendSubviewToBack:self.selectionView];
         }
-        // make sure the selection is cleared between renews
-        self.selected = NO;
     }
+
+    [super willTransitionToState:state];
 }
 
 - (void)didTransitionToState:(UITableViewCellStateMask)state {
@@ -80,6 +79,10 @@
         self.selectionView = nil;
         self.selectionStyle = UITableViewCellSelectionStyleBlue;
     }
+
+    // make sure the selection is cleared between renews
+    self.selected = NO;
+    [super didTransitionToState:state];
 }
 
 - (void)setItemDetails:(NSDictionary *)itemDetails
@@ -118,16 +121,15 @@
         CGRect selectionFrame = self.selectionView.frame;
         selectionFrame.origin.y = floor((CGRectGetHeight(bounds) - selectionFrame.size.height) / 2.0);
         
-        if (!self.editing) {
-            // The checkbox starts out of view on the left
-            selectionFrame.origin.x = -leftSpace;
-            
-        }
         if (self.editing) {
             // slide everything to the right as the accessory disappears
             selectionFrame.origin.x = 0.0;
             bounds.origin.x += leftSpace;
             bounds.size.width -= 30.0 - self.contentViewInsets.right;
+        } else {
+            // The checkbox starts out of view on the left
+            selectionFrame.origin.x = -leftSpace;
+            
         }
         
         self.selectionView.frame = selectionFrame;
