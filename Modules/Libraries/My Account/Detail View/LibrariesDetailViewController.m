@@ -61,37 +61,46 @@
 }
 
 #pragma mark - View lifecycle
-
-- (void)viewDidLoad
+- (void)loadView
 {
-    [super viewDidLoad];
+    CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
     
-    CGRect viewRect = self.view.bounds;
+    if (self.navigationController.navigationBarHidden == NO)
+    {
+        mainFrame.origin.y += CGRectGetHeight(self.navigationController.navigationBar.frame);
+        mainFrame.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
+    }
+    UIScrollView *mainView = [[[UIScrollView alloc] initWithFrame:mainFrame] autorelease];
+
+    CGRect contentFrame = mainFrame;
+    contentFrame.origin = CGPointZero;
+    contentFrame.size.height = 0.0;
     
     UIEdgeInsets detailInsets = UIEdgeInsetsMake(14, 10, 14, 10);
     UIEdgeInsets statusInsets = UIEdgeInsetsMake(4 - detailInsets.top, 10, 4, 10);
-    
+
     {
         LibrariesDetailLabel *detailLabel = [[[LibrariesDetailLabel alloc] initWithBook:self.details] autorelease];
         detailLabel.backgroundColor = [UIColor whiteColor];
-        CGRect detailFrame = CGRectMake(viewRect.origin.x,
-                                        viewRect.origin.y,
-                                        CGRectGetWidth(viewRect),
+        CGRect detailFrame = CGRectMake(contentFrame.origin.x,
+                                        contentFrame.origin.y,
+                                        CGRectGetWidth(contentFrame),
                                         0);
         detailLabel.textInsets = detailInsets;
         detailFrame.size = [detailLabel sizeThatFits:detailFrame.size];
         detailLabel.frame = detailFrame;
-        
-        [self.view addSubview:detailLabel];
-        viewRect.origin.y = CGRectGetMaxY(detailLabel.frame);
+
+        [mainView addSubview:detailLabel];
+        contentFrame.origin.y = CGRectGetMaxY(detailFrame);
     }
+
 
     {
         UIView *statusView = [[[UIView alloc] init] autorelease];
-        
-        CGRect statusContentFrame = CGRectMake(0, 0, CGRectGetWidth(viewRect), CGFLOAT_MAX);;
+
+        CGRect statusContentFrame = CGRectMake(0, 0, CGRectGetWidth(contentFrame), CGFLOAT_MAX);;
         statusContentFrame.origin = CGPointZero;
-        statusContentFrame = UIEdgeInsetsInsetRect(statusContentFrame,statusInsets);
+        statusContentFrame = UIEdgeInsetsInsetRect(statusContentFrame, statusInsets);
 
         UIImageView *statusIcon = nil;
         switch (self.type)
@@ -122,12 +131,11 @@
         {
             iconFrame.size = statusIcon.image.size;
             iconFrame.origin = statusContentFrame.origin;
-            
+
             statusIcon.frame = iconFrame;
 
             [statusView addSubview:statusIcon];
             statusContentFrame.origin.x += CGRectGetWidth(iconFrame) + 4.0;
-            
         }
 
 
@@ -135,7 +143,7 @@
         statusLabel.numberOfLines = 0;
         statusLabel.lineBreakMode = UILineBreakModeWordWrap;
         statusLabel.font = [UIFont systemFontOfSize:14.0];
-        
+
         NSMutableString *statusText = [NSMutableString string];
         switch (self.type)
         {
@@ -189,35 +197,36 @@
                 break;
         }
 
-        if (statusIcon || [statusText length] > 0) {
+        if (statusIcon || [statusText length] > 0)
+        {
             CGRect statusFrame = CGRectZero;
             statusFrame.origin = CGPointMake(statusContentFrame.origin.x, statusContentFrame.origin.y);
             statusFrame.size = [statusText sizeWithFont:statusLabel.font
                                       constrainedToSize:CGSizeMake(CGRectGetMaxX(statusContentFrame) - CGRectGetMaxX(iconFrame),
                                                                    CGRectGetMaxY(statusContentFrame))
                                           lineBreakMode:statusLabel.lineBreakMode];
-            
+
             statusLabel.text = [[statusText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
             statusLabel.frame = statusFrame;
             [statusView addSubview:statusLabel];
-            
-            
+
+
             statusView.backgroundColor = [UIColor whiteColor];
-            statusView.frame = CGRectMake(viewRect.origin.x,
-                                          viewRect.origin.y,
-                                          CGRectGetWidth(viewRect),
-                                          MAX(CGRectGetHeight(statusFrame), CGRectGetHeight(iconFrame)) + statusInsets.bottom);
-            [self.view addSubview:statusView];
-            viewRect.origin.y = CGRectGetMaxY(statusView.frame) + 25;
+            statusView.frame = CGRectMake(contentFrame.origin.x,
+                                          contentFrame.origin.y,
+                                          CGRectGetWidth(contentFrame),
+                    MAX(CGRectGetHeight(statusFrame), CGRectGetHeight(iconFrame)) + statusInsets.bottom);
+            [mainView addSubview:statusView];
+            contentFrame.origin.y = CGRectGetMaxY(statusView.frame) + 25;
         }
     }
 
     if (self.type == LibrariesDetailLoanType)
     {
         UIEdgeInsets buttonInsets = UIEdgeInsetsMake(0, 10, 0, 10);
-        CGRect loginFrame = CGRectMake(viewRect.origin.x,
-                                       viewRect.origin.y,
-                                       CGRectGetWidth(viewRect),
+        CGRect loginFrame = CGRectMake(contentFrame.origin.x,
+                                       contentFrame.origin.y,
+                                       CGRectGetWidth(contentFrame),
                                        44);
         loginFrame = UIEdgeInsetsInsetRect(loginFrame, buttonInsets);
 
@@ -233,9 +242,16 @@
                         action:@selector(renewBook:)
               forControlEvents:UIControlEventTouchUpInside];
 
-        [self.view addSubview:renewButton];
+        [mainView addSubview:renewButton];
         self.renewButton = renewButton;
+        contentFrame.origin.y = CGRectGetMaxY(loginFrame) + 5.0;
     }
+
+    mainView.contentSize = CGSizeMake(CGRectGetWidth(contentFrame), contentFrame.origin.y);
+    mainView.showsHorizontalScrollIndicator = NO;
+    mainView.alwaysBounceHorizontal = NO;
+
+    [self setView:mainView];
 }
 
 - (void)viewDidUnload
