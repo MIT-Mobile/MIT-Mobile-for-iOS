@@ -16,13 +16,47 @@ NSString * const MITLibrariesOCLCCode = @"MYG";
 @synthesize library;
 @synthesize code;
 @synthesize count;
+@synthesize availability = _availability;
 
 - (void)dealloc {
     self.address = nil;
     self.url = nil;
     self.library = nil;
     self.code = nil;
+    self.availability = nil;
     [super dealloc];
+}
+
+- (void)setAvailability:(NSArray *)availability {
+    if (availability != _availability) {
+        [_availability release];
+        _availability = nil;
+    }
+    NSIndexSet *goodIndexes = [availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        if ([obj isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *dict = obj;
+            if ([[dict objectForKey:@"location"] isKindOfClass:[NSString class]] &&
+                [[dict objectForKey:@"call-no"] isKindOfClass:[NSString class]] &&
+                [[dict objectForKey:@"status"] isKindOfClass:[NSString class]]) {
+                return YES;
+            }
+        }
+        return NO;
+    }];
+    _availability = [[availability objectsAtIndexes:goodIndexes] retain];
+}
+
+- (NSUInteger)inLibraryCount {
+    NSIndexSet *indexes = [self.availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        NSString *status = [obj valueForKey:@"status"];
+        NSRange range = [status rangeOfString:@"In Library" options:NSCaseInsensitiveSearch];
+        if ([status length] > 0 && range.location == 0) {
+            return YES;
+        } else {
+            return NO;
+        }
+    }];
+    return [indexes count];
 }
 
 @end
@@ -95,12 +129,15 @@ NSString * const MITLibrariesOCLCCode = @"MYG";
         WorldCatHolding *holding = [[[WorldCatHolding alloc] init] autorelease];
         holding.address = [self stringFromDict:holdingDict key:@"address"];
         holding.library = [self stringFromDict:holdingDict key:@"library"];
-        holding.url = [self stringFromDict:holdingDict key:@"url"];
+        if ([holdingDict objectForKey:@"url"]) {
+            holding.url = [self stringFromDict:holdingDict key:@"url"];
+        }
         holding.code = [self stringFromDict:holdingDict key:@"code"];
         id countObj = [holdingDict objectForKey:@"count"];
         if ([countObj isKindOfClass:[NSNumber class]]) {
             holding.count = [countObj unsignedIntegerValue];
         }
+        holding.availability = [holdingDict objectForKey:@"availability"];
         [tempHoldings setObject:holding forKey:holding.code];
     }
     self.holdings = tempHoldings;
@@ -114,7 +151,7 @@ NSString * const MITLibrariesOCLCCode = @"MYG";
         NSArray *array = object;
         for (id item in array) {
             if (![item isKindOfClass:[NSString class]]) {
-                NSLog(@"key %@ has invalid data format",key);
+                WLog(@"key %@ has invalid data format",key);
                 self.parseFailure = YES;
                 return nil;
             }
@@ -126,7 +163,7 @@ NSString * const MITLibrariesOCLCCode = @"MYG";
 - (NSString *)stringFromDict:(NSDictionary *)dict key:(NSString *)key {
     id object = [dict objectForKey:key];
     if (![object isKindOfClass:[NSString class]]) {
-        NSLog(@"key %@ key not string", key);
+        WLog(@"key %@ key not string", key);
         self.parseFailure = YES;
         return nil;
     }

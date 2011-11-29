@@ -257,6 +257,16 @@ BookDetailViewTags;
             case kEmailAndCiteSection:
                 rows = 1;
                 break;
+            case kMITHoldingSection: {
+                WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+                NSInteger availabilityCount = [mitHoldings.availability count];
+                if (availabilityCount == 0) {
+                    rows = 1;
+                } else {
+                    rows = availabilityCount + 2;
+                }
+                break;
+            }
             default: // one of the holdings sections
                 rows = 1;
                 break;
@@ -267,6 +277,55 @@ BookDetailViewTags;
     return 0;
 }
 
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *infoIdentifier = @"info";
+    static NSString *availabilityIdentifier = @"availability";
+    static NSString *defaultIdentifier = @"default";
+    
+    UITableViewCell *cell = nil; 
+    
+    switch (indexPath.section) {
+        case kInfoSection: {
+            cell = [tableView dequeueReusableCellWithIdentifier:infoIdentifier];
+            if (!cell) {
+                cell = [[[BookDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                       reuseIdentifier:infoIdentifier] autorelease];
+            }
+            NSAttributedString *displayString = [self.bookInfo objectAtIndex:indexPath.row];
+            ((BookDetailTableViewCell *)cell).displayString = displayString;
+            break;
+        }
+        case kMITHoldingSection: {
+            if (indexPath.row < 2) {
+                cell = [tableView dequeueReusableCellWithIdentifier:defaultIdentifier];
+                if (!cell) {
+                    cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                   reuseIdentifier:defaultIdentifier] autorelease];
+                }
+            } else {
+                cell = [tableView dequeueReusableCellWithIdentifier:availabilityIdentifier];
+                if (!cell) {
+                    cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                                   reuseIdentifier:availabilityIdentifier] autorelease];
+                }
+            }
+            [self configureCell:cell forRowAtIndexPath:indexPath];
+            break;
+        }
+        default: {
+            cell = [tableView dequeueReusableCellWithIdentifier:defaultIdentifier];
+            if (!cell) {
+                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault 
+                                               reuseIdentifier:defaultIdentifier] autorelease];
+            }
+            [self configureCell:cell forRowAtIndexPath:indexPath];
+            break;
+        }
+    }
+    
+    return cell;
+}
+
 - (void)configureCell:(UITableViewCell *)cell 
     forRowAtIndexPath:(NSIndexPath *)indexPath 
 {
@@ -275,17 +334,80 @@ BookDetailViewTags;
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
             cell.textLabel.text = @"Email & Cite Item";
             break;
-        case kMITHoldingSection:
-            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
-            cell.textLabel.text = @"Request Item";
+        case kMITHoldingSection: {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.accessoryView = nil;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            switch (indexPath.row) {
+                case 0:
+                    cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+                    cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+                    cell.textLabel.text = @"Request Item";
+                    break;
+                case 1: {
+                    WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+                    cell.textLabel.text = [NSString stringWithFormat:@"%ld of %ld available", [mitHoldings inLibraryCount], [mitHoldings.availability count]] ;
+                    break;
+                }
+                default: {
+                    WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+                    NSDictionary *item = [mitHoldings.availability objectAtIndex:indexPath.row - 2];
+
+                    cell.textLabel.text = [item objectForKey:@"location"];
+                    cell.textLabel.numberOfLines = 0;
+                    cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+                    
+                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@\n%@", [item objectForKey:@"call-no"], [item objectForKey:@"status"]];
+                    cell.detailTextLabel.numberOfLines = 0;
+                    cell.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
+                    break;
+                }
+            }
             break;
+        }
         case kBLCHoldingSection:
+            cell.accessoryView = nil;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             cell.textLabel.text = @"View Holdings";
             break;
         default:
             break;
     }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat height = tableView.rowHeight;
+    switch (indexPath.section) {
+        case kInfoSection: {
+            NSAttributedString *displayString = [self.bookInfo objectAtIndex:indexPath.row];
+            height = [BookDetailTableViewCell sizeForDisplayString:displayString tableView:tableView].height + 8;
+            break;
+        }
+        case kMITHoldingSection: {
+            if (indexPath.row >= 2) {
+                WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+                NSDictionary *item = [mitHoldings.availability objectAtIndex:indexPath.row - 2];
+                NSString *title = [item objectForKey:@"location"];
+                NSString *detail = [NSString stringWithFormat:@"%@\n%@", [item objectForKey:@"call-no"], [item objectForKey:@"status"]];
+                
+                CGSize titleSize = [title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE]
+                                     constrainedToSize:CGSizeMake(tableView.frame.size.width, 2000.0) 
+                                         lineBreakMode:UILineBreakModeWordWrap];
+                
+                CGSize detailSize = [detail sizeWithFont:[UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE]
+                                       constrainedToSize:CGSizeMake(tableView.frame.size.width, 2000.0) 
+                                           lineBreakMode:UILineBreakModeWordWrap];
+                
+                height = titleSize.height + detailSize.height + 2.0 * 10.0;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    return height;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -307,12 +429,14 @@ BookDetailViewTags;
             break;
         case kMITHoldingSection:
         {
-            WorldCatHolding *holding = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
-            NSURL *url = [NSURL URLWithString:holding.url];
-            if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
-                [[UIApplication sharedApplication] openURL:url];
+            if (indexPath.row == 0) {
+                WorldCatHolding *holding = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+                NSURL *url = [NSURL URLWithString:holding.url];
+                if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
+                    [[UIApplication sharedApplication] openURL:url];
+                }
+                [tableView deselectRowAtIndexPath:indexPath animated:YES];
             }
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
             break;
         }
         case kBLCHoldingSection:
@@ -325,42 +449,6 @@ BookDetailViewTags;
         default:
             break;
     }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (indexPath.section == kInfoSection) {
-        NSAttributedString *displayString = [self.bookInfo objectAtIndex:indexPath.row];
-        return [BookDetailTableViewCell sizeForDisplayString:displayString tableView:tableView].height + 8;
-    }
-    return tableView.rowHeight;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView 
-         cellForRowAtIndexPath:(NSIndexPath *)indexPath 
-{
-    NSString *identifier = [NSString stringWithFormat:@"%d", indexPath.section];
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-    
-    if (!cell) {
-        if (indexPath.section == kInfoSection) {
-            cell = [[[BookDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                   reuseIdentifier:identifier] autorelease];
-        } else {        
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault 
-                                           reuseIdentifier:identifier] autorelease];
-        }
-    }
-
-    if (indexPath.section == kInfoSection) {
-        NSAttributedString *displayString = [self.bookInfo objectAtIndex:indexPath.row];
-        BookDetailTableViewCell *bookCell = (BookDetailTableViewCell *)cell;
-        bookCell.displayString = displayString;
-    } else {
-        [self configureCell:cell forRowAtIndexPath:indexPath];
-    }
-        
-    return cell;
 }
 
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
