@@ -212,7 +212,7 @@
                                                                                 command:@"loans"
                                                                              parameters:nil];
         
-        self.headerView.renewButton.enabled = ([self.loanData count] > 0);
+        self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
         
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
             if (error) {
@@ -233,6 +233,7 @@
             self.headerView.accountDetails = (NSDictionary *)self.loanData;
             [self.headerView sizeToFit];
             [self.tableView reloadData];
+
 
             self.operation = nil;
         };
