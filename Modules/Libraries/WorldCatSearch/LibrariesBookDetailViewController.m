@@ -85,11 +85,9 @@ BookDetailViewTags;
 {
     [super viewDidLoad];
     self.tableView.backgroundColor = [UIColor clearColor];
-    self.tableView.separatorColor = [UIColor clearColor];
     self.activityView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
     self.activityView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:self.activityView];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self loadBookDetails];
 }
 
@@ -349,8 +347,8 @@ BookDetailViewTags;
             cell = [[[BookDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                    reuseIdentifier:identifier] autorelease];
         } else {        
-            cell = [[[LibrariesBorderedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault 
-                                                          reuseIdentifier:identifier] autorelease];
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault 
+                                           reuseIdentifier:identifier] autorelease];
         }
     }
 
@@ -359,14 +357,6 @@ BookDetailViewTags;
         BookDetailTableViewCell *bookCell = (BookDetailTableViewCell *)cell;
         bookCell.displayString = displayString;
     } else {
-        LibrariesBorderedTableViewCell *borderCell = (LibrariesBorderedTableViewCell *)cell;
-        if (indexPath.row == 0) {
-            borderCell.cellPosition = borderCell.cellPosition | TableViewCellPositionFirst;
-        }
-        if (indexPath.row == [tableView numberOfRowsInSection:indexPath.section] - 1) {
-            borderCell.cellPosition = borderCell.cellPosition | TableViewCellPositionLast;
-        }
-        
         [self configureCell:cell forRowAtIndexPath:indexPath];
     }
         

@@ -13,6 +13,8 @@
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
+        self.backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+        self.backgroundView.backgroundColor = [UIColor clearColor];
     }
     return self;
 }
@@ -120,98 +122,3 @@
 }
 
 @end
-
-
-@implementation LibrariesBorderedTableViewCell
-
-@synthesize borderColor, fillColor, cellPosition;
-
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        self.borderColor = [UIColor colorWithWhite:0.5 alpha:1];
-        self.fillColor = [UIColor whiteColor];
-        self.backgroundColor = [UIColor clearColor];
-        self.cellPosition = 0;
-    }
-    return self;
-}
-
-- (void)drawRect:(CGRect)rect
-{
-    CGContextRef context = UIGraphicsGetCurrentContext();
-
-    CGColorRef currentColor = [self.borderColor CGColor];
-    CGColorSpaceRef colorSpace = CGColorGetColorSpace(currentColor);
-    CGContextSetStrokeColorSpace(context, colorSpace);
-    const CGFloat *components = CGColorGetComponents(currentColor);
-    CGContextSetStrokeColor(context, components);
-    
-    currentColor = [self.fillColor CGColor];
-    colorSpace = CGColorGetColorSpace(currentColor);
-    CGContextSetFillColorSpace(context, colorSpace);
-    components = CGColorGetComponents(currentColor);
-    CGContextSetFillColor(context, components);
-
-    // we don't know the actual values of left and right margins,
-    // which depend on the, width of the table view
-    // so we do the fill manually in addition to the stroke
-    CGFloat minx = CGRectGetMinX(rect) + 10;
-    CGFloat midx = CGRectGetMidX(rect);
-    CGFloat maxx = CGRectGetMaxX(rect) - 10;
-    CGFloat miny = CGRectGetMinY(rect);
-    CGFloat midy = CGRectGetMidY(rect);
-    CGFloat maxy = CGRectGetMaxY(rect);
-    CGFloat radius = 10;
-
-    for (NSInteger i = 0; i < 2; i++) {
-        // start from left and move clockwise
-        CGContextMoveToPoint(context, minx, midy);
-        if (self.cellPosition & TableViewCellPositionFirst) {
-            CGContextAddArcToPoint(context, minx, miny, midx, miny, radius);
-            CGContextAddArcToPoint(context, maxx, miny, maxx, midy, radius);
-        } else {
-            CGContextAddLineToPoint(context, minx, miny);
-            CGContextAddLineToPoint(context, maxx, miny);
-            CGContextAddLineToPoint(context, maxx, midy);
-        }
-        
-        if (self.cellPosition & TableViewCellPositionLast) {
-            CGContextAddArcToPoint(context, maxx, maxy, midx, maxy, radius);
-            CGContextAddArcToPoint(context, minx, maxy, minx, midy, radius);
-        } else {
-            CGContextAddLineToPoint(context, maxx, maxy);
-            CGContextAddLineToPoint(context, midx, maxy);
-            CGContextAddLineToPoint(context, minx, maxy);
-            CGContextAddLineToPoint(context, minx, midy);
-        }
-        
-        CGContextClosePath(context);
-
-        if (i == 0) {
-            CGContextFillPath(context);
-        } else {
-            CGContextStrokePath(context);
-        }
-    }
-}
-
-- (void)dealloc
-{
-    self.borderColor = nil;
-    self.fillColor = nil;
-    [super dealloc];
-}
-
-@end
-
-
-
-
-
-
-
-
-
-
