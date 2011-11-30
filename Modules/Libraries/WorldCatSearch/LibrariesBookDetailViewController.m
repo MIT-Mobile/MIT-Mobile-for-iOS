@@ -23,12 +23,6 @@ typedef enum
 }
 BookDetailSections;
 
-typedef enum
-{
-    kWebViewTag = 0x438
-}
-BookDetailViewTags;
-
 #define HORIZONTAL_MARGIN 10
 #define VERTICAL_PADDING 5
 #define HORIZONTAL_PADDING 5
