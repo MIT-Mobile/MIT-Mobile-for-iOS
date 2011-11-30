@@ -110,6 +110,7 @@
 		2CB2D2FF141E39F300FFC716 /* LibrariesLoanSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D2FE141E39F300FFC716 /* LibrariesLoanSummaryView.m */; };
 		2CB2D302141E72A900FFC716 /* LibrariesLoanTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D301141E72A900FFC716 /* LibrariesLoanTabController.m */; };
 		2CB2D305141FB44700FFC716 /* LibrariesLoanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2D304141FB44700FFC716 /* LibrariesLoanTableViewCell.m */; };
+		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB645EC134CC63800E85E64 /* QRReaderHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */; };
 		2CB64608134CF13500E85E64 /* QRReaderScanViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */; };
@@ -608,6 +609,8 @@
 		2CB2D301141E72A900FFC716 /* LibrariesLoanTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanTabController.m; sourceTree = "<group>"; };
 		2CB2D303141FB44700FFC716 /* LibrariesLoanTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesLoanTableViewCell.h; sourceTree = "<group>"; };
 		2CB2D304141FB44700FFC716 /* LibrariesLoanTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesLoanTableViewCell.m; sourceTree = "<group>"; };
+		2CB383341486A01600D4B168 /* LibrariesHoldingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesHoldingsDetailViewController.h; path = WorldCatSearch/LibrariesHoldingsDetailViewController.h; sourceTree = "<group>"; };
+		2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesHoldingsDetailViewController.m; path = WorldCatSearch/LibrariesHoldingsDetailViewController.m; sourceTree = "<group>"; };
 		2CB6459D134CAF1A00E85E64 /* QRReaderModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderModule.h; sourceTree = "<group>"; };
 		2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderModule.m; sourceTree = "<group>"; };
 		2CB645E9134CC63800E85E64 /* QRReaderHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderHistoryViewController.h; sourceTree = "<group>"; };
@@ -1813,6 +1816,8 @@
 				4B7B66F7142D01FE00366615 /* WorldCatBook.m */,
 				4B9EF9B514321E360071F8E3 /* LibrariesBookDetailViewController.h */,
 				4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */,
+				2CB383341486A01600D4B168 /* LibrariesHoldingsDetailViewController.h */,
+				2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */,
 				EB9FF4A4145A1D7500028A18 /* BookDetailTableViewCell.h */,
 				EB9FF4A5145A1D7500028A18 /* BookDetailTableViewCell.m */,
 				EB9FF4E0145F495900028A18 /* WorldCatHoldingsViewController.h */,
@@ -2918,6 +2923,7 @@
 				2C943D9D1471A0E600205F32 /* LibrariesDetailViewController.m in Sources */,
 				DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */,
 				EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */,
+				2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
