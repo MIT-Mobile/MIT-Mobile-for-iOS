@@ -2,12 +2,21 @@
 
 NSString * const MITLibrariesOCLCCode = @"MYG";
 
+static NSString * const WCHoldingStatusKey = @"status";
+static NSString * const WCHoldingLocationKey = @"location";
+static NSString * const WCHoldingCallNumberKey = @"call-no";
+
+
 
 @interface WorldCatBook (Private)
 
 - (NSArray *)arrayOfStringsFromDict:(NSDictionary *)dict key:(NSString *)key;
 - (NSString *)stringFromDict:(NSDictionary *)dict key:(NSString *)key;
 
+@end
+
+@interface WorldCatHolding ()
+@property (nonatomic,retain) NSDictionary *libraryAvailability;
 @end
 
 @implementation WorldCatHolding
@@ -17,6 +26,7 @@ NSString * const MITLibrariesOCLCCode = @"MYG";
 @synthesize code;
 @synthesize count;
 @synthesize availability = _availability;
+@synthesize libraryAvailability = _libraryAvailability;
 
 - (void)dealloc {
     self.address = nil;
@@ -32,23 +42,74 @@ NSString * const MITLibrariesOCLCCode = @"MYG";
         [_availability release];
         _availability = nil;
     }
+    
     NSIndexSet *goodIndexes = [availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
         if ([obj isKindOfClass:[NSDictionary class]]) {
             NSDictionary *dict = obj;
-            if ([[dict objectForKey:@"location"] isKindOfClass:[NSString class]] &&
-                [[dict objectForKey:@"call-no"] isKindOfClass:[NSString class]] &&
-                [[dict objectForKey:@"status"] isKindOfClass:[NSString class]]) {
+            if ([[dict objectForKey:WCHoldingLocationKey] isKindOfClass:[NSString class]] &&
+                [[dict objectForKey:WCHoldingCallNumberKey] isKindOfClass:[NSString class]] &&
+                [[dict objectForKey:WCHoldingStatusKey] isKindOfClass:[NSString class]]) {
                 return YES;
             }
         }
         return NO;
     }];
+    
     _availability = [[availability objectsAtIndexes:goodIndexes] retain];
+}
+
+- (NSDictionary*)libraryAvailability
+{
+    if (_libraryAvailability == nil)
+    {
+        NSMutableDictionary *availability = [NSMutableDictionary dictionary];
+        [self.availability enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            NSDictionary *book = (NSDictionary*)obj;
+            NSString *location = [book objectForKey:WCHoldingLocationKey];
+            NSMutableArray *array = [availability objectForKey:location];
+            
+            if (array == nil)
+            {
+                array = [NSMutableArray array];
+                [availability setObject:array
+                                 forKey:location];
+            }
+            
+            [array addObject:book];
+        }];
+        
+        [self setLibraryAvailability:availability];
+    }
+    
+    return _libraryAvailability;
+}
+
+- (NSUInteger)inLibraryCountForLocation:(NSString*)location
+{
+    location = [location lowercaseString];
+    
+    NSIndexSet *set = [self.availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        NSDictionary *dict = (NSDictionary*)obj;
+        NSString *bookLocation = [[dict objectForKey:WCHoldingLocationKey] lowercaseString];
+        
+        if ([bookLocation isEqualToString:location])
+        {
+            NSString *status = [obj valueForKey:WCHoldingStatusKey];
+            NSRange range = [status rangeOfString:@"In Library"
+                                          options:NSCaseInsensitiveSearch];
+            
+            return (([status length] > 0) && (range.location != NSNotFound));
+        }
+        
+        return NO;
+    }];
+                           
+    return [set count];
 }
 
 - (NSUInteger)inLibraryCount {
     NSIndexSet *indexes = [self.availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        NSString *status = [obj valueForKey:@"status"];
+        NSString *status = [obj valueForKey:WCHoldingStatusKey];
         NSRange range = [status rangeOfString:@"In Library" options:NSCaseInsensitiveSearch];
         if ([status length] > 0 && range.location == 0) {
             return YES;

@@ -13,8 +13,10 @@ extern NSString * const MITLibrariesOCLCCode;
 @property (nonatomic, retain) NSArray *availability;
 @property (nonatomic) NSUInteger count;
 
-- (NSUInteger)inLibraryCount;
+- (NSDictionary*)libraryAvailability;
 
+- (NSUInteger)inLibraryCount;
+- (NSUInteger)inLibraryCountForLocation:(NSString*)location;
 @end
 
 
