@@ -388,11 +388,16 @@ BookDetailViewTags;
         case kMITHoldingSection: {
             if (indexPath.row >= 1) {
                 WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
-                NSDictionary *item = [mitHoldings.availability objectAtIndex:indexPath.row - 1];
-                NSString *title = [item objectForKey:@"location"];
-                NSString *detail = [NSString stringWithFormat:@"%@\n%@", [item objectForKey:@"call-no"], [item objectForKey:@"status"]];
+                NSArray *libraries = [[mitHoldings libraryAvailability] allKeys];
+                libraries = [libraries sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
                 
-                CGSize titleSize = [title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE]
+                NSString *location = [libraries objectAtIndex:indexPath.row - 1];
+                NSUInteger available = [mitHoldings inLibraryCountForLocation:location];
+                NSUInteger total = [[[mitHoldings libraryAvailability] objectForKey:location] count];
+                
+                NSString *detail = [NSString stringWithFormat:@"%ld of %ld available", available, total];
+                
+                CGSize titleSize = [location sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE]
                                      constrainedToSize:CGSizeMake(tableView.frame.size.width, 2000.0) 
                                          lineBreakMode:UILineBreakModeWordWrap];
                 
