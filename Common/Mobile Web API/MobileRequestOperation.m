@@ -315,12 +315,14 @@ typedef enum {
         if (jsonError == nil) {
             jsonResult = [MITJSON objectWithJSONData:jsonData
                                                error:&jsonError];
+#ifdef DEBUG
             if (jsonError)
             {
                 NSString *data = [[[NSString alloc] initWithData:jsonData
                                                         encoding:NSUTF8StringEncoding] autorelease];
                 DLog(@"JSON failed on data:\n-----\n%@\n-----",data);
             }
+#endif
         }
         
         [self dispatchCompleteBlockWithResult:((jsonError == nil) ? jsonResult : jsonData)
