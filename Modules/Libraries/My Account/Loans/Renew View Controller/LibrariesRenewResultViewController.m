@@ -80,6 +80,7 @@
         view.tableHeaderView = header;
         
         self.tableView = view;
+        self.tableView.allowsSelection = NO;
         [self setView:view];
     }
 }
