@@ -6,6 +6,7 @@
 #import "Foundation+MITAdditions.h"
 #import "BookDetailTableViewCell.h"
 #import "WorldCatHoldingsViewController.h"
+#import "LibrariesHoldingsDetailViewController.h"
 
 #define TITLE_ROW 0
 #define YEAR_AUTHOR_ROW 1
@@ -259,12 +260,7 @@ BookDetailViewTags;
                 break;
             case kMITHoldingSection: {
                 WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
-                NSInteger availabilityCount = [mitHoldings.availability count];
-                if (availabilityCount == 0) {
-                    rows = 1;
-                } else {
-                    rows = availabilityCount + 2;
-                }
+                rows = [[mitHoldings libraryAvailability] count] + 1;
                 break;
             }
             default: // one of the holdings sections
@@ -296,7 +292,7 @@ BookDetailViewTags;
             break;
         }
         case kMITHoldingSection: {
-            if (indexPath.row < 2) {
+            if (indexPath.row == 0) {
                 cell = [tableView dequeueReusableCellWithIdentifier:defaultIdentifier];
                 if (!cell) {
                     cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -344,22 +340,26 @@ BookDetailViewTags;
                     cell.selectionStyle = UITableViewCellSelectionStyleBlue;
                     cell.textLabel.text = @"Request Item";
                     break;
-                case 1: {
-                    WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
-                    cell.textLabel.text = [NSString stringWithFormat:@"%ld of %ld available", [mitHoldings inLibraryCount], [mitHoldings.availability count]] ;
-                    break;
-                }
                 default: {
                     WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
-                    NSDictionary *item = [mitHoldings.availability objectAtIndex:indexPath.row - 2];
+                    
+                    NSArray *libraries = [[mitHoldings libraryAvailability] allKeys];
+                    libraries = [libraries sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+                    
+                    NSString *location = [libraries objectAtIndex:indexPath.row - 1];
+                    NSUInteger available = [mitHoldings inLibraryCountForLocation:location];
+                    NSUInteger total = [[[mitHoldings libraryAvailability] objectForKey:location] count];
 
-                    cell.textLabel.text = [item objectForKey:@"location"];
+                    cell.textLabel.text = location;
                     cell.textLabel.numberOfLines = 0;
                     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
                     
-                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@\n%@", [item objectForKey:@"call-no"], [item objectForKey:@"status"]];
-                    cell.detailTextLabel.numberOfLines = 0;
-                    cell.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
+                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld of %ld available", available, total];
+                    cell.detailTextLabel.numberOfLines = 1;
+                    cell.detailTextLabel.lineBreakMode = UILineBreakModeTailTruncation;
+                    
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    cell.selectionStyle = UITableViewCellSelectionStyleBlue;
                     break;
                 }
             }
@@ -386,9 +386,9 @@ BookDetailViewTags;
             break;
         }
         case kMITHoldingSection: {
-            if (indexPath.row >= 2) {
+            if (indexPath.row >= 1) {
                 WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
-                NSDictionary *item = [mitHoldings.availability objectAtIndex:indexPath.row - 2];
+                NSDictionary *item = [mitHoldings.availability objectAtIndex:indexPath.row - 1];
                 NSString *title = [item objectForKey:@"location"];
                 NSString *detail = [NSString stringWithFormat:@"%@\n%@", [item objectForKey:@"call-no"], [item objectForKey:@"status"]];
                 
@@ -429,13 +429,26 @@ BookDetailViewTags;
             break;
         case kMITHoldingSection:
         {
+            WorldCatHolding *holding = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+            
             if (indexPath.row == 0) {
-                WorldCatHolding *holding = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
                 NSURL *url = [NSURL URLWithString:holding.url];
                 if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
                     [[UIApplication sharedApplication] openURL:url];
                 }
                 [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            } else {
+                NSArray *locations = [[holding libraryAvailability] allKeys];
+                locations = [locations sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+                
+                NSString *location = [locations objectAtIndex:indexPath.row - 1];
+                NSArray *holdings = [[holding libraryAvailability] objectForKey:location];
+                LibrariesHoldingsDetailViewController *detailVC = [[[LibrariesHoldingsDetailViewController alloc] initWithHoldings:holdings] autorelease];
+                detailVC.title = location;
+                [self.navigationController pushViewController:detailVC
+                                                     animated:YES];
+                [tableView deselectRowAtIndexPath:indexPath
+                                         animated:YES];
             }
             break;
         }
