@@ -14,8 +14,8 @@
 NSString * const SettingsTitleString = @"Notifications";
 NSString * const SettingsSubtitleString = @"Turn off Notifications to disable alerts for that module.";
 
-NSString * const TouchstoneTitleString = @"Touchstone";
-NSString * const TouchstoneSubtitleString = @"";
+NSString * const TouchstoneTitleString = @"MIT Touchstone";
+NSString * const TouchstoneSubtitleString = @"Touchstone is MIT's single sign-on authentication service.";
 
 NSString * const ServersTitleString = @"API Server";
 
@@ -233,6 +233,9 @@ enum {
         case kSettingsNotificationSection:
             subtitleText = SettingsSubtitleString;
             break;
+        case kSettingsTouchstoneSection:
+            subtitleText = TouchstoneSubtitleString;
+            break;
     }
     
     if (subtitleText) {
@@ -259,6 +262,9 @@ enum {
     switch(section) {
         case kSettingsNotificationSection:
             subtitleText = SettingsSubtitleString;
+            break;
+        case kSettingsTouchstoneSection:
+            subtitleText = TouchstoneSubtitleString;
             break;
     }
     
