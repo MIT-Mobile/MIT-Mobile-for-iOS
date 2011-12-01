@@ -172,12 +172,9 @@ typedef enum {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [[self.tabControllers objectAtIndex:LibrariesActiveTabLoans] tabDidBecomeActive];
-    /*
     if (self.activeTabIndex == LibrariesActiveTabLoans) {
-        [self.loansController tabDidBecomeActive];
+        [[self.tabControllers objectAtIndex:LibrariesActiveTabLoans] tabDidBecomeActive];
     }
-    */
 }
 
 - (void)viewWillDisappear:(BOOL)animated
