@@ -18,8 +18,6 @@ typedef enum {
 @property (nonatomic,retain) NSMutableArray *barItems;
 @property (nonatomic,retain) NSMutableArray *tabControllers;
 @property (nonatomic) BOOL alertIsActive;
-
-- (LibrariesActiveTabType)tabTypeForController:(id)tabController;
 @end
 
 @implementation LibrariesAccountViewController
