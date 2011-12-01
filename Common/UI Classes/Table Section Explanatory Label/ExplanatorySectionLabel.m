@@ -132,7 +132,6 @@
         self.accessoryView.frame = frame;
     }
     
-    // Touchstone is MIT's single sign-on authentication service.
     CGFloat labelWidth = tableWidth - (leftPadding + imageWidth + rightPadding);
     CGSize fittedSize = [self.text sizeWithFont:self.font
                               constrainedToSize:CGSizeMake(labelWidth, 2000.0)

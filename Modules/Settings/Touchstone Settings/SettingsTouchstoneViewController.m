@@ -405,7 +405,6 @@ enum {
 
         // TODO: move these user-visible strings out of code
         NSString *labelText = @"A lock icon appears next to services requiring authentication. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
-        // Touchstone is MIT's single sign-on authentication service.
 
         CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:labelText 
                                                                   accessoryView:secureIcon 
