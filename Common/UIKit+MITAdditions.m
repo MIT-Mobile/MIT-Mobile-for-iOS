@@ -182,7 +182,7 @@
 	UIFont *font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
 	CGSize size = [title sizeWithFont:font];
 	CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 8.0, appFrame.size.width - 20.0, size.height)];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(19.0, 7.0, appFrame.size.width - 19.0, size.height)];
 	
 	label.text = title;
 	label.textColor = GROUPED_SECTION_FONT_COLOR;

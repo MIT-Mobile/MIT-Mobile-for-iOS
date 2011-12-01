@@ -16,6 +16,8 @@ NSString * const MITUnreadNotificationsKey = @"UnreadNotifications";
 NSString * const PushNotificationSettingsKey = @"ModulesDisabledForPush";
 NSString * const MITModulesSavedStateKey = @"MITModulesSavedState";
 NSString * const CachedMapSearchQueryKey = @"CachedMapSearchQuerey";
+NSString * const LibrariesLinksUpdatedKey = @"LibrariesLinksUpdated";
+NSString * const LibrariesLinksKey = @"LibrariesLinks";
 
 NSString * const MITInternalURLScheme = @"mitmobile";
 
@@ -35,6 +37,7 @@ NSString * const SettingsTag   = @"settings";
 NSString * const AboutTag      = @"about";
 NSString * const QRReaderTag    = @"qrreader";
 NSString * const FacilitiesTag    = @"facilities";
+NSString * const LibrariesTag   = @"libraries";
 
 // notification names
 NSString * const EmergencyInfoDidLoadNotification = @"MITEmergencyInfoDidLoadNotification";
@@ -112,3 +115,10 @@ NSString * const MITImageNameBookmark = @"global/bookmark.png";
 
 NSString * const MITBuildRevisionKey = @"MITBuildRevision";
 NSString * const MITBuildDescriptionKey = @"MITBuildDescription";
+
+
+/* Touchstone/Shibboleth-related errors */
+NSString * const MobileWebErrorDomain = @"edu.mit.mobile.WebRequestError";
+NSString * const MobileWebTouchstoneErrorDomain = @"edu.mit.mobile.TouchstoneError";
+
+NSString* const MobileLoginKeychainIdentifier = @"edu.mit.mobile.MobileWebLogin";

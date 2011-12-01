@@ -31,7 +31,7 @@
 #define UNGROUPED_SECTION_FONT_COLOR [UIColor colorWithHexString:@"#CCCCCC"]
 #define UNGROUPED_SECTION_BACKGROUND_COLOR [UIColor colorWithHexString:@"#333333"]
 
-#define GROUPED_SECTION_HEADER_HEIGHT 37.0
+#define GROUPED_SECTION_HEADER_HEIGHT 36.0
 #define GROUPED_SECTION_FONT_COLOR [UIColor colorWithHexString:@"#333333"]
 
 #define CELL_SELECTION_BLUE [UIColor colorWithHexString:@"#0257EE"]

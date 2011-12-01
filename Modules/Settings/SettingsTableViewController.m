@@ -3,22 +3,40 @@
 #import "MITModule.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
+#import "ExplanatorySectionLabel.h"
 #import "MITMobileServerConfiguration.h"
 #import "MITDeviceRegistration.h"
 #import "MITLogging.h"
+#import "MobileKeychainServices.h"
+#import "MITConstants.h"
+#import "SettingsTouchstoneViewController.h"
 
-NSString * const SectionTitleString = @"Notifications";
-NSString * const SectionSubtitleString = @"Turn off Notifications to disable alerts for that module.";
+NSString * const SettingsTitleString = @"Notifications";
+NSString * const SettingsSubtitleString = @"Turn off Notifications to disable alerts for that module.";
+
+NSString * const TouchstoneTitleString = @"Touchstone";
+NSString * const TouchstoneSubtitleString = @"";
+
+NSString * const ServersTitleString = @"API Server";
+
 #define TITLE_HEIGHT 20.0
 #define SUBTITLE_HEIGHT NAVIGATION_BAR_HEIGHT
 #define PADDING 10.0
+#define PADDED_WIDTH(x) (floorf(x - PADDING))
 
-#define NOTIFICATION_SECTION_INDEX 0
-#define SERVER_SECTION_INDEX 1
+enum {
+    kSettingsNotificationSection = 0,
+    kSettingsTouchstoneSection = 1,
+    kSettingsServerSection = 2,
+    kSettingsSectionCount
+};
 
 @interface SettingsTableViewController ()
 @property (nonatomic,retain) UIGestureRecognizer* showServerListGesture;
 @property (nonatomic,retain) UIGestureRecognizer* hideServerListGesture;
+
+@property (nonatomic,retain) UITextField *touchstoneUsernameField;
+@property (nonatomic,retain) UITextField *touchstonePasswordField;
 
 - (void)gestureWasRecognized:(UIGestureRecognizer*)gesture;
 - (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled;
@@ -36,6 +54,9 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
 @synthesize apiRequests = _apiRequests;
 @synthesize showServerListGesture = _showAdvancedGesture;
 @synthesize hideServerListGesture = _hideAdvancedGesture;
+
+@synthesize touchstoneUsernameField = _touchstoneUsernameField,
+            touchstonePasswordField = _touchstonePasswordField;
 
 
 - (void)dealloc {
@@ -55,7 +76,7 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
     [super viewDidLoad];
     self.title = @"Settings";
     
-    _requestQueue = dispatch_queue_create("SettingsAPIQueue", NULL);
+    _requestQueue = dispatch_queue_create(NULL, NULL);
     self.apiRequests = [NSMutableDictionary dictionary];
     
     [self.tableView applyStandardColors];
@@ -82,6 +103,13 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
     _advancedOptionsVisible = NO;
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:kSettingsTouchstoneSection]
+                  withRowAnimation:UITableViewRowAnimationFade];
+}
+
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
@@ -105,11 +133,11 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
         [self.view removeGestureRecognizer:self.showServerListGesture];
         [self.view addGestureRecognizer:self.hideServerListGesture];
         _advancedOptionsVisible = YES;
-        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:SERVER_SECTION_INDEX]
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:kSettingsServerSection]
                       withRowAnimation:UITableViewRowAnimationFade];
     } else if (gesture == self.hideServerListGesture) {
         _advancedOptionsVisible = NO;
-        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:SERVER_SECTION_INDEX]
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:kSettingsServerSection]
                       withRowAnimation:UITableViewRowAnimationFade];
         [self.view removeGestureRecognizer:self.hideServerListGesture];
         [self.view addGestureRecognizer:self.showServerListGesture];
@@ -120,129 +148,212 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
 #pragma mark Table view methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (_advancedOptionsVisible) {
-        return 2;
+        return kSettingsSectionCount;
     } else {
-        return 1;
+        return kSettingsSectionCount - 1;
     }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NSInteger rows = 0;
+    
     switch (section) {
-        case NOTIFICATION_SECTION_INDEX:
+        case kSettingsNotificationSection:
             rows = [self.notifications count];
             break;
-        case SERVER_SECTION_INDEX:
+        
+        case kSettingsTouchstoneSection:
+            rows = 1;
+            break;
+            
+        case kSettingsServerSection:
             rows = (_advancedOptionsVisible) ? [MITMobileWebGetAPIServerList() count] : 0;
             break;
+        
         default:
-            rows = 0;
             break;
     }
+    
     return rows;
 }
 
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *result = nil;
-    UILabel *titleView = nil;
-    UILabel *subtitleView = nil;
+    UIView *result = nil;
+    NSString *titleText = nil;
     
-    if (section == NOTIFICATION_SECTION_INDEX) {
-        result = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, SUBTITLE_HEIGHT + TITLE_HEIGHT)] autorelease];
-        
-        titleView = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, 200, TITLE_HEIGHT)];
-        titleView.font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
-        titleView.textColor = GROUPED_SECTION_FONT_COLOR;
-        titleView.backgroundColor = [UIColor clearColor];
-        titleView.text = SectionTitleString;
-                          
-        subtitleView = [[UILabel alloc] initWithFrame:CGRectMake(PADDING,
-                                                                 round(TITLE_HEIGHT + 1.5 * PADDING),
-                                                                 round(tableView.frame.size.width-2 * PADDING),
-                                                                 SUBTITLE_HEIGHT)];
-        subtitleView.numberOfLines = 0;
-        subtitleView.backgroundColor = [UIColor clearColor];
-        subtitleView.lineBreakMode = UILineBreakModeWordWrap;
-        subtitleView.font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
-        subtitleView.text = SectionSubtitleString;
-        
-        [result addSubview:titleView];
-        [titleView release];
-        [result addSubview:subtitleView];
-        [subtitleView release];
-    } else if (section == SERVER_SECTION_INDEX) {
-        if (_advancedOptionsVisible) {
-            result = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, TITLE_HEIGHT)] autorelease];
-            titleView = [[[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, tableView.frame.size.width, TITLE_HEIGHT)] autorelease];
-            titleView.font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
-            titleView.textColor = GROUPED_SECTION_FONT_COLOR;
-            titleView.backgroundColor = [UIColor clearColor];
-            titleView.text = @"API Servers";
+    switch(section) {
+        case kSettingsNotificationSection:
+            titleText = SettingsTitleString;
+            break;
             
-            [result addSubview:titleView];
+        case kSettingsTouchstoneSection:
+            titleText = TouchstoneTitleString;
+            break;
+            
+        case kSettingsServerSection: {
+            if (_advancedOptionsVisible) {
+                titleText = ServersTitleString;
+            }
+            break;
         }
     }
     
-	return result;
+    if (titleText) {
+        result = [UITableView groupedSectionHeaderWithTitle:titleText];
+    }
+    
+    return result;
 }
 
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    switch (section) {
-        case NOTIFICATION_SECTION_INDEX:
-            return SUBTITLE_HEIGHT + TITLE_HEIGHT + 2.5 * PADDING;
+    CGFloat height = 0;
+    
+    switch(section) {
+        case kSettingsNotificationSection:
+        case kSettingsTouchstoneSection:
+            height = GROUPED_SECTION_HEADER_HEIGHT;
+            break;
             
-        case SERVER_SECTION_INDEX:
-            return TITLE_HEIGHT + 2.5 * PADDING;
-        default:
-            return 0;
+        case kSettingsServerSection: {
+            if (_advancedOptionsVisible) {
+                height = GROUPED_SECTION_HEADER_HEIGHT;
+            }
+            break;
+        }
     }
+    
+    return height;
 }
+
+- (UIView *) tableView: (UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    UIView *result = nil;
+    NSString *subtitleText = nil;
+    
+    switch(section) {
+        case kSettingsNotificationSection:
+            subtitleText = SettingsSubtitleString;
+            break;
+    }
+    
+    if (subtitleText) {
+        CGFloat fittedHeight = [ExplanatorySectionLabel 
+                                heightWithText:subtitleText 
+                                accessoryView:nil
+                                width:self.view.frame.size.width];
+        
+        ExplanatorySectionLabel *footerLabel = 
+        [[[ExplanatorySectionLabel alloc] 
+         initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
+        footerLabel.text = subtitleText;
+        result = footerLabel;
+    }
+    
+    return result;
+}
+
+- (CGFloat)tableView: (UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    CGFloat height = 0;
+    
+    NSString *subtitleText = nil;
+    
+    switch(section) {
+        case kSettingsNotificationSection:
+            subtitleText = SettingsSubtitleString;
+            break;
+    }
+    
+    if (subtitleText) {
+        height = [ExplanatorySectionLabel heightWithText:subtitleText accessoryView:nil width:self.view.frame.size.width];
+    }
+    
+    return height;
+}
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
-    static NSString* AdvancedCellIdentifier = @"AdvancedCell";
+    static NSString *AdvancedCellIdentifier = @"AdvancedCell";
+    static NSString *TouchstoneUsernameCellIdentifier = @"TouchstoneUsernameCell";
     
     UITableViewCell *cell = nil;
     
-    if (indexPath.section == NOTIFICATION_SECTION_INDEX) {
-        cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        if (cell == nil) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
+    switch (indexPath.section) {
+        case kSettingsNotificationSection:
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+            if (cell == nil) {
+                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
+                
+                UISwitch *aSwitch = [[[UISwitch alloc] initWithFrame:CGRectZero] autorelease];
+                [aSwitch addTarget:self action:@selector(switchDidToggle:) forControlEvents:UIControlEventValueChanged];
+                cell.accessoryView = aSwitch;
+            }
             
-            UISwitch *aSwitch = [[[UISwitch alloc] initWithFrame:CGRectZero] autorelease];
-            [aSwitch addTarget:self action:@selector(switchDidToggle:) forControlEvents:UIControlEventValueChanged];
-            cell.accessoryView = aSwitch;
+            MITModule *aModule = [self.notifications objectAtIndex:indexPath.row];
+            cell.textLabel.text = aModule.longName;
+            cell.textLabel.backgroundColor = [UIColor clearColor];
+            cell.detailTextLabel.text = nil;
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.accessoryView.tag = indexPath.row;
+            [((UISwitch *)(cell.accessoryView)) setOn:aModule.pushNotificationEnabled];
+            
+            break;
         }
-        
-        MITModule *aModule = [self.notifications objectAtIndex:indexPath.row];
-        cell.textLabel.text = aModule.longName;
-        cell.textLabel.backgroundColor = [UIColor clearColor];
-        cell.detailTextLabel.text = nil;
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.accessoryView.tag = indexPath.row;
-        [((UISwitch *)(cell.accessoryView)) setOn:aModule.pushNotificationEnabled];
-    } else if (indexPath.section == SERVER_SECTION_INDEX) {
-        cell = [tableView dequeueReusableCellWithIdentifier:AdvancedCellIdentifier];
-        if (cell == nil) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                           reuseIdentifier:AdvancedCellIdentifier] autorelease];
-            cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
+            
+        case kSettingsTouchstoneSection:
+        {
+            switch (indexPath.row)
+            {
+                case 0:
+                {
+                    cell = [tableView dequeueReusableCellWithIdentifier:TouchstoneUsernameCellIdentifier];
+                    if (cell == nil)
+                    {
+                        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                       reuseIdentifier:CellIdentifier] autorelease];
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                        cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
+                        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+                        
+                        cell.textLabel.backgroundColor = [UIColor clearColor];
+                    }
+                    
+                    cell.textLabel.text = @"Touchstone Settings";
+                    break;
+                }
+            }
+            break;
         }
-        
-        NSArray *serverNames = MITMobileWebGetAPIServerList();
-        cell.textLabel.text = [[serverNames objectAtIndex:indexPath.row] host];
-        cell.textLabel.backgroundColor = [UIColor clearColor];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-        if (_selectedRow == NSUIntegerMax) {
-            NSURL *server = MITMobileWebGetCurrentServerURL();
-            NSArray *serverList = MITMobileWebGetAPIServerList();
-            _selectedRow = [serverList indexOfObject:server];
+            
+        case kSettingsServerSection:
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:AdvancedCellIdentifier];
+            if (cell == nil) {
+                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                               reuseIdentifier:AdvancedCellIdentifier] autorelease];
+                cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
+            }
+            
+            NSArray *serverNames = MITMobileWebGetAPIServerList();
+            cell.textLabel.text = [[serverNames objectAtIndex:indexPath.row] host];
+            cell.textLabel.backgroundColor = [UIColor clearColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            if (_selectedRow == NSUIntegerMax) {
+                NSURL *server = MITMobileWebGetCurrentServerURL();
+                NSArray *serverList = MITMobileWebGetAPIServerList();
+                _selectedRow = [serverList indexOfObject:server];
+            }
+            
+            cell.accessoryType = (_selectedRow == indexPath.row) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+            
+            break;
         }
-        
-        cell.accessoryType = (_selectedRow == indexPath.row) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+            
+        default:
+            cell = nil;
     }
     
     return cell;    
@@ -250,15 +361,24 @@ NSString * const SectionSubtitleString = @"Turn off Notifications to disable ale
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == SERVER_SECTION_INDEX) {
-        if (indexPath.row != _selectedRow) {
+    if (indexPath.section == kSettingsServerSection)
+    {
+        if (indexPath.row != _selectedRow)
+        {
             NSUInteger oldRow = _selectedRow;
             _selectedRow = indexPath.row;
-            [tableView reloadSections:[NSIndexSet indexSetWithIndex:SERVER_SECTION_INDEX]
+            [tableView reloadSections:[NSIndexSet indexSetWithIndex:kSettingsServerSection]
                      withRowAnimation:UITableViewRowAnimationNone];
             [self serverSelectionDidChangeFrom:oldRow
                                             to:_selectedRow];
         }
+    }
+    else if (indexPath.section == kSettingsTouchstoneSection)
+    {
+        SettingsTouchstoneViewController *vc = [[[SettingsTouchstoneViewController alloc] init] autorelease];
+        [self.navigationController pushViewController:vc
+                                                     animated:YES];
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
 

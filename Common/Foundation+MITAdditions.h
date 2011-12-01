@@ -18,3 +18,13 @@
 - (NSString *)substringToMaxIndex:(NSUInteger)to;
 
 @end
+
+@interface NSString (MITAdditions_URLEncoding)
+- (NSString*)urlEncodeUsingEncoding:(NSStringEncoding)encoding;
+- (NSString*)urlEncodeUsingEncoding:(NSStringEncoding)encoding useFormURLEncoded:(BOOL)formUrlEncoded;
+- (NSString*)urlDecodeUsingEncoding:(NSStringEncoding)encoding;
+@end
+
+@interface NSString (MITAdditions_HTMLEntity)
+- (NSString *)stringByDecodingXMLEntities;
+@end

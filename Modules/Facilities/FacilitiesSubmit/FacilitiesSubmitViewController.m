@@ -142,9 +142,8 @@
     [self.request setValue:[self.reportDictionary objectForKey:FacilitiesRequestUserDescriptionKey]
               forParameter:@"message"];
     
-    UIImage *picture = [self.reportDictionary objectForKey:FacilitiesRequestImageKey];
-    if (picture) {
-        NSData *pictureData = UIImageJPEGRepresentation(picture,0.75);
+    NSData *pictureData = [self.reportDictionary objectForKey:FacilitiesRequestImageDataKey];
+    if (pictureData) {
         [self.request setValue:[pictureData base64EncodingWithLineLength:64]
                   forParameter:@"image"];
         [self.request setValue:@"image/jpeg"

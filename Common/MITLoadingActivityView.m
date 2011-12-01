@@ -1,59 +1,78 @@
-
 #import "MITLoadingActivityView.h"
 
+@interface MITLoadingActivityView ()
+@property (nonatomic,retain) UIView *activityView;
+@end
 
 @implementation MITLoadingActivityView
+
+@synthesize activityView = _activityView;
+@synthesize usesBackgroundImage = _usesBackgroundImage;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-		self.opaque = YES;
+        self.usesBackgroundImage = YES;
+        
+        UIView *activityView = [[[UIView alloc] init] autorelease];
+        UILabel *loadingLabel = [[[UILabel alloc] init] autorelease];
+        UIActivityIndicatorView *spinner = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease];
+        
+        NSString *loadingText = @"Loading...";
+        
+        CGSize labelSize = [loadingText sizeWithFont:loadingLabel.font];
+        CGFloat labelLeftMargin = 5.0;
+        loadingLabel.frame = CGRectMake(spinner.frame.size.width + labelLeftMargin,
+                                        0.0,
+                                        labelSize.width,
+                                        labelSize.height);
+        loadingLabel.backgroundColor = [UIColor clearColor];
+        loadingLabel.text = loadingText;
+        
+        CGRect viewFrame = CGRectMake(0.0,
+                                      0.0,
+                                      labelSize.width + spinner.frame.size.width + labelLeftMargin,
+                                      labelSize.height);
+        
+        activityView.frame = viewFrame;
+        activityView.autoresizingMask = UIViewAutoresizingNone;
+        
+        [activityView addSubview:spinner];
+        [activityView addSubview:loadingLabel];
+        
+        [spinner startAnimating];
+        [self addSubview:activityView];
+        self.activityView = activityView;
     }
     return self;
 }
 
 - (void)layoutSubviews {
-    {
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageNameBackground]];
-        CGRect frame = self.frame;
-        frame.origin = CGPointZero;
-        
-        imageView.frame = frame;
-        _backgroundView = imageView;
-        [self addSubview:imageView];
-    }
-    
-    {
-        CGFloat labelLeftMargin = 5.0;
-        CGRect frame = self.frame;
-        UIActivityIndicatorView *spinny = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease];
-		[spinny startAnimating];
-		
-		UILabel *loadingLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-		NSString *loadingText = @"Loading...";
-		loadingLabel.backgroundColor = [UIColor clearColor];
-		loadingLabel.text = loadingText;
-		CGSize labelSize = [loadingText sizeWithFont:loadingLabel.font];
-		loadingLabel.frame = CGRectMake(spinny.frame.size.width + labelLeftMargin, 0.0, labelSize.width, labelSize.height);
-		
-        CGRect viewFrame = CGRectMake(0.0,
-                                      0.0,
-                                      labelSize.width + spinny.frame.size.width + labelLeftMargin,
-                                      labelSize.height);
-		UIView *centeredView = [[[UIView alloc] initWithFrame:viewFrame] autorelease];
-		[centeredView addSubview:spinny];
-		[centeredView addSubview:loadingLabel];
-		
-		centeredView.center = CGPointMake(frame.size.width / 2, frame.size.height / 2);
-		[self addSubview:centeredView];
-    }
+    // center the loading indicator
+    CGRect frame = self.activityView.frame;
+    frame.origin.x = (self.bounds.size.width - frame.size.width) / 2.0;
+    frame.origin.y = (self.bounds.size.height - frame.size.height) / 2.0;
+    // make sure it is always whole pixel aligned
+    self.activityView.frame = CGRectIntegral(frame);
 }
 
 - (void)dealloc {
-    [_backgroundView release], _backgroundView = nil;
+    self.activityView = nil;
     
     [super dealloc];
 }
 
+- (void)setUsesBackgroundImage:(BOOL)usesBackgroundImage
+{
+    if (usesBackgroundImage != self.usesBackgroundImage) {
+        _usesBackgroundImage = usesBackgroundImage;
+        if (self.usesBackgroundImage) {
+            self.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
+        } else {
+            self.backgroundColor = [UIColor clearColor];
+        }
+        [self setNeedsDisplay];
+    }
+}
 
 @end

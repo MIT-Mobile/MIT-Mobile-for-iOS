@@ -151,8 +151,8 @@ enum {
     SecondaryGroupedTableViewCell *cell = (SecondaryGroupedTableViewCell*)[tableView dequeueReusableCellWithIdentifier:cellReuseIdentifier];
     
     if (cell == nil) {
-        cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                    reuseIdentifier:cellReuseIdentifier];
+        cell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                     reuseIdentifier:cellReuseIdentifier] autorelease];
         cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.textLabel.backgroundColor = [UIColor clearColor];

@@ -30,6 +30,8 @@ extern NSString * const MITUnreadNotificationsKey;
 extern NSString * const PushNotificationSettingsKey;
 extern NSString * const MITModulesSavedStateKey;
 extern NSString * const CachedMapSearchQueryKey;
+extern NSString * const LibrariesLinksUpdatedKey;
+extern NSString * const LibrariesLinksKey;
 
 extern NSString * const MITInternalURLScheme;
 
@@ -48,6 +50,7 @@ extern NSString * const SettingsTag;
 extern NSString * const AboutTag;
 extern NSString * const QRReaderTag;
 extern NSString * const FacilitiesTag;
+extern NSString * const LibrariesTag;
 
 // notification names
 extern NSString * const EmergencyInfoDidLoadNotification;
@@ -134,3 +137,16 @@ typedef enum {
 // Info.plist additions
 extern NSString * const MITBuildRevisionKey;
 extern NSString * const MITBuildDescriptionKey;
+
+
+// Touchstone* Identifier for keychain password
+extern NSString * const MobileWebErrorDomain;
+extern NSString * const MobileWebTouchstoneErrorDomain;
+
+enum {
+    MobileWebUnknownError = 0,
+    MobileWebTouchstoneError,
+    MobileWebInvalidLoginError
+};
+
+extern NSString * const MobileLoginKeychainIdentifier;

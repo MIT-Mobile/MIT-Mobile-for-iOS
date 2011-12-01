@@ -181,8 +181,11 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
 }
 
 - (NSDictionary*)searchContentForLocation:(FacilitiesLocation*)location forSubstring:(NSString*)substring {
+    NSMutableSet *names = [NSMutableSet setWithCapacity:1];
+    
     for (FacilitiesContent *content in location.contents) {
-        NSMutableSet *names = [NSMutableSet setWithObject:content.name];
+        [names removeAllObjects];
+        [names addObject:content.name];
         [names addObjectsFromArray:content.altname];
         
         for (NSString *name in names) {

@@ -107,7 +107,6 @@
     
     [self stopCapture];
     self.overlayView = nil;
-    
     self.previewLayer = nil;
 }
 
@@ -185,7 +184,6 @@
     
     [self.captureSession stopRunning];
     self.captureSession = nil;
-    
     self.isCaptureActive = NO;
 }
 
@@ -264,6 +262,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                  colorSpace,
                                                  kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst);
     
+    CGColorSpaceRelease(colorSpace);
+    
     if (context == nil) {
         if (mustFreeBuffer)
             free(bufferBase);
@@ -278,7 +278,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     CGImageRef cgImage = CGBitmapContextCreateImage(context);
     
     CGContextRelease(context);
-    CGColorSpaceRelease(colorSpace);
     
     CGRect clipRect = [self.overlayView qrRect];
     clipRect = [self.previewLayer convertRect:clipRect
