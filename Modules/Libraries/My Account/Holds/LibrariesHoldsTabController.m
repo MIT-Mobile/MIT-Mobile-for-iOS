@@ -145,20 +145,33 @@
                                                                              parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
                                                                                                                     forKey:@"limit"]];
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+            if (self.loadingView.superview != nil) {
+                [self.loadingView removeFromSuperview];
+            }
+            
             if (error) {
-                ELog(@"%@", [error localizedDescription]);
-                DLog(@"Data:\n-----\n%@\n-----", jsonResult);
-                [self.parentController.navigationController popViewControllerAnimated:YES];
-            } else {
-                if (self.loadingView.superview != nil) {
-                    [self.loadingView removeFromSuperview];
+                if (error.code == MobileWebInvalidLoginError)
+                {
+                    [self.parentController.navigationController popViewControllerAnimated:YES];
+                }
+                else
+                {
+                    if ([self.parentController respondsToSelector:@selector(reportError:fromTab:)])
+                    {
+                        [self.parentController performSelector:@selector(reportError:fromTab:)
+                                                    withObject:error
+                                                    withObject:self];
+                    }
                 }
                 
+                self.loanData = [NSDictionary dictionary];
+            } else {
                 self.loanData = (NSDictionary*)jsonResult;
-                self.headerView.accountDetails = (NSDictionary*)jsonResult;
-                [self.headerView sizeToFit];
-                [self.tableView reloadData];
             }
+            
+            self.headerView.accountDetails = (NSDictionary *)self.loanData;
+            [self.headerView sizeToFit];
+            [self.tableView reloadData];
             
             self.operation = nil;
         };

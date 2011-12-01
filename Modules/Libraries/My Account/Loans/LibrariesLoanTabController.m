@@ -215,17 +215,27 @@
         self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
         
         operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+            if (self.loadingView.superview != nil) {
+                [self.loadingView removeFromSuperview];
+            }
+            
             if (error) {
-                ELog(@"Loan: %@", [error localizedDescription]);
                 if (error.code == MobileWebInvalidLoginError)
                 {
                    [self.parentController.navigationController popViewControllerAnimated:YES];
                 }
-            } else {
-                if (self.loadingView.superview != nil) {
-                    [self.loadingView removeFromSuperview];
+                else
+                {
+                    if ([self.parentController respondsToSelector:@selector(reportError:fromTab:)])
+                    {
+                        [self.parentController performSelector:@selector(reportError:fromTab:)
+                                                    withObject:error
+                                                    withObject:self];
+                    }
                 }
                 
+                self.loanData = [NSDictionary dictionary];
+            } else {
                 self.loanData = (NSDictionary*)jsonResult;
             }
 
@@ -323,7 +333,9 @@
         {
             UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Renew"
                                                              message:[error localizedDescription]
-                                                            delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil] autorelease];
+                                                            delegate:nil
+                                                   cancelButtonTitle:nil
+                                                   otherButtonTitles:@"OK", nil] autorelease];
             [alert show];
             self.renewBarItem.enabled = YES;
             self.cancelBarItem.enabled = YES;
