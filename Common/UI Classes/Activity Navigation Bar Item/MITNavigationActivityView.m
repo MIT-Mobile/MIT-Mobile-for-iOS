@@ -26,7 +26,11 @@
         self.titleView.backgroundColor = [UIColor clearColor];
         self.titleView.textAlignment = UITextAlignmentCenter;
         self.titleView.textColor = [UIColor whiteColor];
+        self.titleView.font = [UIFont boldSystemFontOfSize:20.0];
+        self.titleView.adjustsFontSizeToFitWidth=YES;
+        self.titleView.minimumFontSize=15;
         self.titleView.lineBreakMode = UILineBreakModeTailTruncation;
+        self.titleView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin);
         self.titleView.numberOfLines = 1;
         [self addSubview:self.titleView];
         
@@ -44,7 +48,6 @@
     self.titleView = nil;
     [super dealloc];
 }
-
 
 #pragma mark - View Management
 - (void)layoutSubviews
