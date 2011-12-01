@@ -5,7 +5,7 @@
 
 @implementation BookDetailTableViewCell
 
-@synthesize displayString;
+@synthesize displayString = _displayString;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -17,6 +17,14 @@
         self.backgroundView.backgroundColor = [UIColor clearColor];
     }
     return self;
+}
+
+- (void)setDisplayString:(NSAttributedString *)displayString {
+    if (displayString != _displayString) {
+        [_displayString release];
+        _displayString = [displayString retain];
+        [self setNeedsDisplay];
+    }
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
