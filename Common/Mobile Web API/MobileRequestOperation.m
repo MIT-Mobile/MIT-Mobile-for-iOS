@@ -235,7 +235,6 @@ typedef enum {
         self.isExecuting = YES;
         self.isFinished = NO;
         
-        [self retain];
         [self main];
     }
 }
@@ -268,21 +267,6 @@ typedef enum {
 }
 
 - (void)finish {
-/*    MobileRequestLoginViewController *loginViewController = self.loginViewController;
-    dispatch_async(dispatch_get_main_queue(), ^(void) {
-        if (loginViewController) {
-            [loginViewController hideActivityView];
-            [rootViewController dismissModalViewControllerAnimated:YES];
-        }
-    });
-    
-    
-    // Wait for the animation to complete and clear the modalViewController
-    // property otherwise the backed up blocks might stumble over it
-    while ([rootViewController modalViewController] != nil) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
-    }*/
-    
     self.loginViewController = nil;
     self.activeRequest = nil;
     self.connection = nil;
@@ -294,7 +278,6 @@ typedef enum {
     
     [self.runLoopTimer invalidate];
     self.runLoopTimer = nil;
-    
     [gSecureStateTracker resumeQueue];
     
     
@@ -332,7 +315,6 @@ typedef enum {
         self.isFinished = YES;
     });
     dispatch_release(parseQueue);
-    [self release];
 }
 
 - (void)cancel {
