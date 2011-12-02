@@ -320,20 +320,23 @@ typedef enum {
 - (void)cancel {
     [super cancel];
 
-    self.requestState = MobileRequestStateCanceled;
-    
-    if (self.connection) {
-        [self.connection cancel];
-    } else {
-        self.requestData = nil;
+    if (self.isExecuting)
+    {
+        self.requestState = MobileRequestStateCanceled;
         
-        if (self.requestError == nil)
-        {
-            self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
-                                                    code:NSUserCancelledError
-                                                userInfo:nil];
+        if (self.connection) {
+            [self.connection cancel];
+        } else {
+            self.requestData = nil;
+            
+            if (self.requestError == nil)
+            {
+                self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
+                                                        code:NSUserCancelledError
+                                                    userInfo:nil];
+            }
+            [self finish];
         }
-        [self finish];
     }
 }
 
