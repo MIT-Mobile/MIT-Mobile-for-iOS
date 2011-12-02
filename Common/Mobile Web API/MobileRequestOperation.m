@@ -882,6 +882,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
                                             code:MobileWebInvalidLoginError
                                         userInfo:nil];
+    [MobileRequestOperation clearAuthenticatedSession];
     [self cancel];
 }
 @end
