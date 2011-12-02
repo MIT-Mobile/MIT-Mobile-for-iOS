@@ -242,7 +242,8 @@ enum {
         CGFloat fittedHeight = [ExplanatorySectionLabel 
                                 heightWithText:subtitleText 
                                 accessoryView:nil
-                                width:self.view.frame.size.width];
+                                width:self.view.frame.size.width
+                                type:ExplanatorySectionFooter];
         
         ExplanatorySectionLabel *footerLabel = 
         [[[ExplanatorySectionLabel alloc] 
@@ -269,7 +270,10 @@ enum {
     }
     
     if (subtitleText) {
-        height = [ExplanatorySectionLabel heightWithText:subtitleText accessoryView:nil width:self.view.frame.size.width];
+        height = [ExplanatorySectionLabel heightWithText:subtitleText 
+                                           accessoryView:nil 
+                                                   width:self.view.frame.size.width 
+                                                    type:ExplanatorySectionFooter];
     }
     
     return height;

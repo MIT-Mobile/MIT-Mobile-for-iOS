@@ -17,7 +17,5 @@ typedef enum {
 @property (nonatomic) BookLoadingStatus loadingStatus;
 @property (nonatomic, retain) NSArray *bookInfo;
 
-- (NSString *)subtitleDisplayStringHTML:(BOOL)isHTML;
-
 @end
 

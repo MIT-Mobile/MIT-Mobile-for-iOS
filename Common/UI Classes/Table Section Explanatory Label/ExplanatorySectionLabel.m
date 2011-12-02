@@ -54,6 +54,10 @@
 @property (nonatomic, retain) UIFont *font;
 
 + (UIFont *)labelFont;
++ (UIEdgeInsets)headerInsetsWithAccessory;
++ (UIEdgeInsets)headerInsetsWithoutAccessory;
++ (UIEdgeInsets)footerInsetsWithAccessory;
++ (UIEdgeInsets)footerInsetsWithoutAccessory;
 
 @end
 
@@ -63,6 +67,7 @@
 @synthesize text = _text;
 @synthesize label = _label;
 @synthesize font = _font;
+@synthesize type = _type;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -73,6 +78,8 @@
         _accessoryView = nil;
         _text = nil;
         _font = [[[self class] labelFont] retain];
+        _type = ExplanatorySectionFooter;
+        self.clipsToBounds = YES;
     }
     return self;
 }
@@ -115,39 +122,54 @@
      | 20px space -- flexible text space -- 20px space |
      */
     
-    CGFloat leftPadding = 20.0;
-    CGFloat rightPadding = 20.0;
-    CGFloat topPadding = 15.0;
+    UIEdgeInsets insets = UIEdgeInsetsZero;
     CGFloat imageWidth = 0;
+    
+    switch (self.type) {
+        case ExplanatorySectionHeader:
+            if (self.accessoryView) {
+                insets = [[self class] headerInsetsWithAccessory];
+            } else {
+                insets = [[self class] headerInsetsWithoutAccessory];
+            }
+            break;
+        case ExplanatorySectionFooter:
+        default:
+            if (self.accessoryView) {
+                insets = [[self class] footerInsetsWithAccessory];
+            } else {
+                insets = [[self class] footerInsetsWithoutAccessory];
+            }
+            break;
+    }
+
     CGFloat tableWidth = self.frame.size.width;
 
     if (self.accessoryView) {
-        leftPadding = 9.0;
-        rightPadding = 30.0;
         imageWidth = 38.0;
         
         CGRect frame = self.accessoryView.frame;
-        frame.origin.x = leftPadding + floor((imageWidth - frame.size.width) / 2.0);
-        frame.origin.y = topPadding;
+        frame.origin.x = insets.left + floor((imageWidth - frame.size.width) / 2.0);
+        frame.origin.y = insets.top;
         self.accessoryView.frame = frame;
     }
     
-    CGFloat labelWidth = tableWidth - (leftPadding + imageWidth + rightPadding);
-    CGSize fittedSize = [self.text sizeWithFont:self.font
+    CGFloat labelWidth = tableWidth - (insets.left + imageWidth + insets.right);
+    CGSize fittedSize = [self.text sizeWithFont:[[self class] labelFont]
                               constrainedToSize:CGSizeMake(labelWidth, 2000.0)
                                   lineBreakMode:UILineBreakModeWordWrap];
     
     // raise the label's origin.y so the text starts at padding.height and not just the view itself
     self.label.frame = CGRectMake(
-                                  leftPadding + imageWidth, 
-                                  topPadding - floor([self.font ascender] - [self.font capHeight]), 
+                                  insets.left + imageWidth, 
+                                  insets.top - floor([self.font ascender] - [self.font capHeight]), 
                                   labelWidth, 
                                   fittedSize.height);
     self.label.text = self.text;
     self.label.font = self.font;
     self.label.backgroundColor = [UIColor clearColor];
     self.label.textAlignment = (!self.accessoryView) ? UITextAlignmentCenter : UITextAlignmentLeft;
-    self.label.textColor = [UIColor colorWithWhite:0.33 alpha:1.0];
+    self.label.textColor = [UIColor colorWithWhite:0.22 alpha:1.0];
     self.label.shadowColor = [UIColor whiteColor];
     self.label.shadowOffset = CGSizeMake(0, 1);
     self.label.lineBreakMode = UILineBreakModeWordWrap;
@@ -158,27 +180,58 @@
     return [UIFont systemFontOfSize:15.0];
 }
 
-+ (CGFloat)heightWithText:(NSString *)text accessoryView:(UIImageView *)accessoryView width:(CGFloat)width {
-    CGFloat leftPadding = 20.0;
-    CGFloat rightPadding = 20.0;
-    CGFloat topPadding = 15.0;
-    CGFloat imageWidth = 0.0;
-    CGFloat tableWidth = width;
++ (UIEdgeInsets)headerInsetsWithAccessory {
+    return UIEdgeInsetsMake(0.0, 9.0, 15.0, 30.0);
+}
+
++ (UIEdgeInsets)headerInsetsWithoutAccessory {
+    return UIEdgeInsetsMake(0.0, 20.0, 15.0, 20.0);
+}
+
++ (UIEdgeInsets)footerInsetsWithAccessory {
+    return UIEdgeInsetsMake(15.0, 9.0, 5.0, 30.0);
+}
+
++ (UIEdgeInsets)footerInsetsWithoutAccessory {
+    return UIEdgeInsetsMake(15.0, 20.0, 5.0, 20.0);
+}
+
++ (CGFloat)heightWithText:(NSString *)text accessoryView:(UIImageView *)accessoryView width:(CGFloat)width type:(ExplanatorySectionLabelType)type {
+
+    UIEdgeInsets insets = {};
+    CGFloat imageWidth = 0;
+
+    switch (type) {
+        case ExplanatorySectionHeader:
+            if (accessoryView) {
+                insets = [self headerInsetsWithAccessory];
+            } else {
+                insets = [self headerInsetsWithoutAccessory];
+            }
+            break;
+        case ExplanatorySectionFooter:
+        default:
+            if (accessoryView) {
+                insets = [self footerInsetsWithAccessory];
+            } else {
+                insets = [self footerInsetsWithoutAccessory];
+            }
+            break;
+    }
     
+    CGFloat tableWidth = width;
     if (accessoryView) {
-        leftPadding = 9.0;
-        rightPadding = 30.0;
         imageWidth = 38.0;
     }
     
-    CGFloat labelWidth = tableWidth - (leftPadding + imageWidth + rightPadding);
+    CGFloat labelWidth = tableWidth - (insets.left + imageWidth + insets.right);
     
     UIFont *labelFont = [self labelFont];
     CGSize fittedSize = [text sizeWithFont:labelFont
                               constrainedToSize:CGSizeMake(labelWidth, 2000.0)
                                   lineBreakMode:UILineBreakModeWordWrap];
-    
-    return fittedSize.height + topPadding;
+
+    return fittedSize.height + insets.top + insets.bottom;
 }
 
 @end

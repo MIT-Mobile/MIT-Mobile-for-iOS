@@ -819,7 +819,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     if (formGroup.headerText) {
         CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.headerText
                                                    accessoryView:nil 
-                                                           width:self.view.frame.size.width];
+                                                           width:self.view.frame.size.width
+                                                            type:ExplanatorySectionFooter];
         return height;
     } else if (formGroup.name) {
         return GROUPED_SECTION_HEADER_HEIGHT;
@@ -835,7 +836,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     if (formGroup.headerText) {
         CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:formGroup.headerText 
                                                          accessoryView:nil
-                                                                 width:self.view.frame.size.width];
+                                                                 width:self.view.frame.size.width
+                                                                  type:ExplanatorySectionFooter];
         ExplanatorySectionLabel *headerLabel = [[[ExplanatorySectionLabel alloc] 
             initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
         headerLabel.text = formGroup.headerText;
@@ -851,7 +853,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     if (formGroup.footerText) {
         CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.footerText
                                                    accessoryView:nil 
-                                                           width:self.view.frame.size.width];
+                                                           width:self.view.frame.size.width
+                                                            type:ExplanatorySectionFooter];
         return height;
     }
     return 0;
@@ -865,7 +868,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     if (formGroup.footerText) {
         CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:formGroup.footerText 
                                                          accessoryView:nil
-                                                                 width:self.view.frame.size.width];
+                                                                 width:self.view.frame.size.width
+                                                                  type:ExplanatorySectionFooter];
         ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] 
                                                 initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
         footerLabel.text = formGroup.footerText;

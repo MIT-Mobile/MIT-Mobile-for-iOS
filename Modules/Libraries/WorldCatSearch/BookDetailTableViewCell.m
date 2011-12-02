@@ -3,6 +3,9 @@
 
 #define BOOK_DETAIL_CELL_MARGIN 10
 
+const CGFloat BookDetailFontSizeTitle = 18.0;
+const CGFloat BookDetailFontSizeDefault = 15.0;
+
 @implementation BookDetailTableViewCell
 
 @synthesize displayString = _displayString;

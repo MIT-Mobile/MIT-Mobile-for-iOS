@@ -408,7 +408,8 @@ enum {
 
         CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:labelText 
                                                                   accessoryView:secureIcon 
-                                                                          width:self.view.frame.size.width];
+                                                                          width:self.view.frame.size.width
+                                                                  type:ExplanatorySectionFooter];
 
         ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
         footerLabel.text = labelText;
@@ -424,7 +425,8 @@ enum {
         UIImageView *secureIcon = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
         CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
                                                   accessoryView:secureIcon 
-                                                          width:self.view.frame.size.width];
+                                                          width:self.view.frame.size.width
+                                                            type:ExplanatorySectionFooter];
         return height;
     }
     return 0;

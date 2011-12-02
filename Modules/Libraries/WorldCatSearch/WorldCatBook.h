@@ -50,4 +50,6 @@ extern NSString * const MITLibrariesOCLCCode;
 - (NSString *)authorYear;
 - (NSString *)isbn;
 
+- (NSString *)subtitleDisplayStringHTML:(BOOL)isHTML;
+
 @end

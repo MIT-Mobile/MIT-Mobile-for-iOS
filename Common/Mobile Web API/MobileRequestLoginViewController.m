@@ -405,7 +405,8 @@
         NSString *labelText = @"Log in with your MIT Kerberos username or Touchstone Collaboration Account to continue.";
         CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:labelText 
                                                                   accessoryView:nil 
-                                                                          width:self.view.frame.size.width];
+                                                                          width:self.view.frame.size.width
+                                                                  type:ExplanatorySectionFooter];
         
         ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
         footerLabel.text = labelText;
@@ -420,7 +421,8 @@
         NSString *labelText = @"Log in with your MIT Kerberos username or Touchstone Collaboration Account to continue.";
         CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
                                                             accessoryView:nil 
-                                                                    width:self.view.frame.size.width];
+                                                                    width:self.view.frame.size.width
+                                                            type:ExplanatorySectionFooter];
         return height;
     }
     return 0;

@@ -95,22 +95,6 @@ BookDetailSections;
     // e.g. self.myOutlet = nil;
 }
 
-- (NSString *)subtitleDisplayStringHTML:(BOOL)isHTML
-{
-    NSString *result = nil;
-    if (self.book) {
-        result = @"";
-        if (self.book.authors.count) {
-            result = [self.book.authors componentsJoinedByString:@", "];
-        }
-        
-        if ([self.book.years count] > 0) {
-            result = [NSString stringWithFormat:@"%@; %@", [self.book.years objectAtIndex:0], result]; 
-        }
-    }
-    return result;
-}
-
 - (void)loadBookDetails {
     NSDictionary *parameters = [NSDictionary dictionaryWithObject:self.book.identifier forKey:@"id"];
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"detail" parameters:parameters] autorelease];
@@ -129,21 +113,19 @@ BookDetailSections;
             
             NSMutableArray *bookAttribs = [NSMutableArray array];
             
-            // title, author, format
-            NSString *bookTitle = self.book.title ? self.book.title : @"";
-            NSString *bookSubtitle = [self subtitleDisplayStringHTML:NO];
-            
+            // title
             [bookAttribs addObject:[BookDetailTableViewCell 
-                                    displayStringWithTitle:bookTitle
+                                    displayStringWithTitle:self.book.title
                                     subtitle:nil
                                     separator:nil
-                                    fontSize:18.0]];
+                                    fontSize:BookDetailFontSizeTitle]];
 
+            // year; authors
             [bookAttribs addObject:[BookDetailTableViewCell
                                     displayStringWithTitle:nil
-                                    subtitle:bookSubtitle
+                                    subtitle:[self.book subtitleDisplayStringHTML:NO]
                                     separator:nil
-                                    fontSize:15.0]];
+                                    fontSize:BookDetailFontSizeDefault]];
             
             // format
             if (self.book.formats.count) {
@@ -151,7 +133,7 @@ BookDetailSections;
                                         displayStringWithTitle:@"Format" 
                                         subtitle:[self.book.formats componentsJoinedByString:@","] 
                                         separator:@": "
-                                        fontSize:15.0]];
+                                        fontSize:BookDetailFontSizeDefault]];
             }
 
             // summary
@@ -160,7 +142,7 @@ BookDetailSections;
                                         displayStringWithTitle:@"Summary"
                                         subtitle:[self.book.summarys componentsJoinedByString:@"; "]
                                         separator:@": "
-                                        fontSize:15.0]];
+                                        fontSize:BookDetailFontSizeDefault]];
             }
 
             // publisher
@@ -169,7 +151,7 @@ BookDetailSections;
                                         displayStringWithTitle:@"Publisher"
                                         subtitle:[self.book.publishers componentsJoinedByString:@"; "]
                                         separator:@": "
-                                        fontSize:15.0]];
+                                        fontSize:BookDetailFontSizeDefault]];
             }
 
             // edition
@@ -178,7 +160,7 @@ BookDetailSections;
                                         displayStringWithTitle:@"Edition"
                                         subtitle:[self.book.editions componentsJoinedByString:@", "]
                                         separator:@": "
-                                        fontSize:15.0]];
+                                        fontSize:BookDetailFontSizeDefault]];
             }
 
             // description
@@ -187,7 +169,7 @@ BookDetailSections;
                                         displayStringWithTitle:@"Description"
                                         subtitle:[self.book.extents componentsJoinedByString:@", "]
                                         separator:@": "
-                                        fontSize:15.0]];
+                                        fontSize:BookDetailFontSizeDefault]];
             }
 
             // isbn
@@ -196,7 +178,7 @@ BookDetailSections;
                                         displayStringWithTitle:@"ISBN"
                                         subtitle:[self.book.isbns componentsJoinedByString:@" : "]
                                         separator:@": "
-                                        fontSize:15.0]];
+                                        fontSize:BookDetailFontSizeDefault]];
             }
             
             self.bookInfo = [NSArray arrayWithArray:bookAttribs];
@@ -391,11 +373,11 @@ BookDetailSections;
                 
                 NSString *detail = [NSString stringWithFormat:@"%ld of %ld available", available, total];
                 
-                CGSize titleSize = [location sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE]
+                CGSize titleSize = [location sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
                                      constrainedToSize:CGSizeMake(tableView.frame.size.width, 2000.0) 
                                          lineBreakMode:UILineBreakModeWordWrap];
                 
-                CGSize detailSize = [detail sizeWithFont:[UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE]
+                CGSize detailSize = [detail sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
                                        constrainedToSize:CGSizeMake(tableView.frame.size.width, 2000.0) 
                                            lineBreakMode:UILineBreakModeWordWrap];
                 
@@ -417,7 +399,7 @@ BookDetailSections;
                 NSString *bodyString = [NSString stringWithFormat:
                                         @"<strong>%@</strong><br/>%@",
                                         self.book.title,
-                                        [self subtitleDisplayStringHTML:YES]];
+                                        [self.book subtitleDisplayStringHTML:YES]];
                 
                 MFMailComposeViewController *mailView = [[[MFMailComposeViewController alloc] init] autorelease];
                 [mailView setMailComposeDelegate:self];

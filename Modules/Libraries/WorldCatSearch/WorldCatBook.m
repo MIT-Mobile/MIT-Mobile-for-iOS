@@ -247,4 +247,17 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
     }
     return nil;
 }
+
+- (NSString *)subtitleDisplayStringHTML:(BOOL)isHTML
+{
+    NSString *result = @"";
+    if ([self.authors count] > 0) {
+        result = [self.authors componentsJoinedByString:@", "];
+    }
+    if ([self.years count] > 0) {
+        result = [NSString stringWithFormat:@"%@; %@", [self.years objectAtIndex:0], result]; 
+    }
+    return result;
+}
+
 @end
