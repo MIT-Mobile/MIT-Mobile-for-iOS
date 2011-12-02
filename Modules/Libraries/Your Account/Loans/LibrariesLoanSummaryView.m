@@ -109,24 +109,17 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
     NSUInteger loanCount = [[accountDetails objectForKey:@"total"] unsignedIntegerValue];
     NSUInteger overdueCount = [[accountDetails objectForKey:@"overdue"] unsignedIntegerValue];
     
-    if (loanCount == 0)
+    NSMutableString *infoText = [NSMutableString stringWithFormat:kLibrariesLoanFormatString, loanCount, ((loanCount == 1) ? @"item" : @"items")];
+    
+    if (overdueCount > 0)
     {
-        self.infoLabel.text = @"";
-    }
-    else
-    {
-        NSMutableString *infoText = [NSMutableString stringWithFormat:kLibrariesLoanFormatString, loanCount, ((loanCount == 1) ? @"item" : @"items")];
-        
-        if (overdueCount > 0)
-        {
-            // highly unlikely this will ever be false, but it's best to be careful
-            [infoText appendFormat:(loanCount < 1000) ? @"\n" : @" "];
+        // highly unlikely this will ever be false, but it's best to be careful
+        [infoText appendFormat:(loanCount < 1000) ? @"\n" : @" "];
 
-            [infoText appendFormat:kLibrariesLoanOverdueFormatString, overdueCount, ((overdueCount == 1) ? @"is" : @"are")];
-        }
-        
-        self.infoLabel.text = infoText;
+        [infoText appendFormat:kLibrariesLoanOverdueFormatString, overdueCount, ((overdueCount == 1) ? @"is" : @"are")];
     }
+    
+    self.infoLabel.text = infoText;
 
     [self setNeedsLayout];
 }
