@@ -3,6 +3,7 @@
 #import "MobileRequestOperation.h"
 #import "LibrariesHoldsTableViewCell.h"
 #import "LibrariesDetailViewController.h"
+#import "LibrariesAccountViewController.h"
 
 @interface LibrariesHoldsTabController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
@@ -150,20 +151,7 @@
             }
             
             if (error) {
-                if (error.code == MobileWebInvalidLoginError)
-                {
-                    [self.parentController.navigationController popViewControllerAnimated:YES];
-                }
-                else
-                {
-                    if ([self.parentController respondsToSelector:@selector(reportError:fromTab:)])
-                    {
-                        [self.parentController performSelector:@selector(reportError:fromTab:)
-                                                    withObject:error
-                                                    withObject:self];
-                    }
-                }
-                
+                [self.parentController reportError:error fromTab:self];
                 self.loanData = [NSDictionary dictionary];
             } else {
                 self.loanData = (NSDictionary*)jsonResult;

@@ -1,8 +1,10 @@
 #import <Foundation/Foundation.h>
 #import "LibrariesFinesSummaryView.h"
 
+@class LibrariesAccountViewController;
+
 @interface LibrariesFinesTabController : NSObject <UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic,assign) UIViewController *parentController;
+@property (nonatomic,assign) LibrariesAccountViewController *parentController;
 @property (nonatomic,retain) UITableView *tableView;
 @property (nonatomic,retain) LibrariesFinesSummaryView* headerView;
 
