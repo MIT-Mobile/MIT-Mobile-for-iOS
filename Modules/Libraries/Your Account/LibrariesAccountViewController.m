@@ -27,6 +27,8 @@ typedef enum {
             tabControllers = _tabControllers,
             alertIsActive = _alertIsActive;
 
+@dynamic activeTabController;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -52,6 +54,11 @@ typedef enum {
     [super didReceiveMemoryWarning];
     
     // Release any cached data, images, etc that aren't in use.
+}
+
+- (id)activeTabController
+{
+    return [self.tabControllers objectAtIndex:self.activeTabIndex];
 }
 
 #pragma mark - View lifecycle
@@ -265,17 +272,32 @@ typedef enum {
 
 - (void)reportError:(NSError*)error fromTab:(id)tabController;
 {
+    if (error == nil)
+    {
+        error = [NSError errorWithDomain:NSURLErrorDomain
+                                    code:NSURLErrorUnknown
+                                userInfo:nil];
+    }
+    
     LibrariesActiveTabType type = (LibrariesActiveTabType)[self.tabControllers indexOfObject:tabController];
     DLog(@"Tab <%@> encountered an error: %@", [[self.barItems objectAtIndex:type] title], [error localizedDescription]);
+    
     if ((self.alertIsActive == NO) && (self.activeTabIndex == type))
     {
-        UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:self.title
-                                                         message:[error localizedDescription]
-                                                        delegate:self
-                                               cancelButtonTitle:nil
-                                               otherButtonTitles:@"OK",nil] autorelease];
-        self.alertIsActive = YES;
-        [alert show];
+        if (error.code == MobileWebInvalidLoginError)
+        {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+        else
+        {
+            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:self.title
+                                                             message:[error localizedDescription]
+                                                            delegate:self
+                                                   cancelButtonTitle:nil
+                                                   otherButtonTitles:@"OK",nil] autorelease];
+            self.alertIsActive = YES;
+            [alert show];
+        }
     }
 }
 
