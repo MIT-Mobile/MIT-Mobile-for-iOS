@@ -48,9 +48,9 @@
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
 	// create our own view
-	self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 364)] retain];
+	self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 364)] autorelease];
 	
-	_viewTypeButton = [[UIBarButtonItem alloc] initWithTitle:@"Browse" style:UIBarButtonItemStylePlain target:self action:@selector(viewTypeChanged:)];
+	_viewTypeButton = [[[UIBarButtonItem alloc] initWithTitle:@"Browse" style:UIBarButtonItemStylePlain target:self action:@selector(viewTypeChanged:)] autorelease];
 	self.navigationItem.rightBarButtonItem = _viewTypeButton;
 	
 	// add a search bar to our view

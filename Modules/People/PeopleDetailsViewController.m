@@ -278,6 +278,7 @@
 			MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 			[appDelegate presentAppModalViewController:navController animated:YES];
 
+            CFRelease(person);
 			[creator release];
 			[navController release];
 			

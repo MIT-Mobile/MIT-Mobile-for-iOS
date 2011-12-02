@@ -249,8 +249,10 @@
 }
 
 - (void)setEvent:(MITCalendarEvent *)anEvent {
-	[event release];
-    event = [anEvent retain];
+	if (anEvent != event) {
+        [event release];
+        event = [anEvent retain];
+    }
     
     [descriptionString release];
     [categoriesString release];
@@ -578,9 +580,7 @@
         [apiRequest abortRequest];
     }
     
-	[self.event release];
     self.event = nil;
-    [self.events release];
     self.events = nil;
 	free(rowTypes);
 

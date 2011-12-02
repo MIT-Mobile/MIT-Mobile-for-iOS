@@ -115,11 +115,11 @@ NSString * termText(NSString *termCode) {
 
 - (void) viewDidLoad {
 	
-	self.tableView.tableHeaderView = [[UIView alloc]
-		initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, headerHeight)];
+	self.tableView.tableHeaderView = [[[UIView alloc]
+		initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, headerHeight)] autorelease];
 	
-	self.tableView.tableFooterView = [[UIView alloc]
-		initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, footerHeight)];
+	self.tableView.tableFooterView = [[[UIView alloc]
+		initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, footerHeight)] autorelease];
 	self.tableView.tableFooterView.backgroundColor = [UIColor whiteColor];
 	
 	[self.tableView applyStandardColors];
@@ -127,14 +127,14 @@ NSString * termText(NSString *termCode) {
 	CGRect titleFrame = CGRectMake(
 		leftMargin, verticalPadding,
 		self.tableView.tableHeaderView.frame.size.width-2*leftMargin-buttonWidth-myStellarPadding-2, headerHeight);
-	self.titleView = [[UILabel alloc] initWithFrame:titleFrame];
+	self.titleView = [[[UILabel alloc] initWithFrame:titleFrame] autorelease];
 	self.titleView.lineBreakMode = UILineBreakModeWordWrap;
 	self.titleView.numberOfLines = 0;
 	self.titleView.font = [UIFont fontWithName:BOLD_FONT size:20.0];
 	self.titleView.backgroundColor = [UIColor clearColor];
 	[self.tableView.tableHeaderView addSubview:self.titleView];
 	
-	self.termView = [[UILabel alloc] initWithFrame:CGRectMake(leftMargin, 0, 100.0, termHeight)];
+	self.termView = [[[UILabel alloc] initWithFrame:CGRectMake(leftMargin, 0, 100.0, termHeight)] autorelease];
 	self.termView.font = [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE];
 	self.termView.backgroundColor = [UIColor clearColor];
 	[self.tableView.tableHeaderView addSubview:self.termView];
@@ -191,7 +191,7 @@ NSString * termText(NSString *termCode) {
 		[parameters setObject:stellarClass.masterSubjectId forKey:@"subject"];
 		[parameters setObject:stellarClass.term forKey:@"term"];
 	
-		self.myStellarStatusDelegate = [[MyStellarStatusDelegate alloc] initWithClass:stellarClass status:newMyStellarStatus viewController:self];
+		self.myStellarStatusDelegate = [[[MyStellarStatusDelegate alloc] initWithClass:stellarClass status:newMyStellarStatus viewController:self] autorelease];
 		[[MITMobileWebAPI jsonLoadedDelegate:myStellarStatusDelegate]
 			requestObjectFromModule:StellarTag command:@"myStellar" parameters:parameters];
 

@@ -63,11 +63,11 @@
 	NSArray *sortDescriptors = [NSArray arrayWithObjects:dateSort, orderSort, nil];
 	[fetchRequest setSortDescriptors:sortDescriptors];
 	
-	self.frc = [[NSFetchedResultsController alloc]
+	self.frc = [[[NSFetchedResultsController alloc]
 				initWithFetchRequest:fetchRequest
 				managedObjectContext:context
 				sectionNameKeyPath:nil
-				cacheName:nil];
+				cacheName:nil] autorelease];
 //	self.frc.delegate = self;
 	[fetchRequest release];
 	[frc release];

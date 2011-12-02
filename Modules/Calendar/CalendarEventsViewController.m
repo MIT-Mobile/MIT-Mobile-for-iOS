@@ -285,7 +285,7 @@
 - (void)datePickerValueChanged:(id)sender
 {
     UIDatePicker *picker = (UIDatePicker *)sender;
-    NSDate *oldDate = [self.startDate retain];
+    NSDate *oldDate = [[self.startDate retain] autorelease];
     self.startDate = picker.date;
     [self setupDatePicker];
     self.startDate = oldDate;
@@ -332,7 +332,7 @@
 	if (![self canShowMap:activeEventList]) {
 		showList = YES;
 	} else if (self.mapView == nil) {
-		self.mapView = [[CalendarMapView alloc] initWithFrame:contentFrame];
+		self.mapView = [[[CalendarMapView alloc] initWithFrame:contentFrame] autorelease];
 		self.mapView.delegate = self;
 	}
 
@@ -358,11 +358,10 @@
 	
 	if (showList) {
 		
-		[self.tableView release];
 		self.tableView = nil;
 		
 		if ([activeEventList.listID isEqualToString:@"categories"]) {
-			self.tableView = [[EventCategoriesTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped];			
+			self.tableView = [[[EventCategoriesTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped] autorelease];		
 			[self.tableView applyStandardColors];
 			EventCategoriesTableView *categoriesTV = (EventCategoriesTableView *)self.tableView;
 			categoriesTV.delegate = categoriesTV;
@@ -392,7 +391,7 @@
             requestNeeded = NO;
 
 		} else if([activeEventList.listID isEqualToString:@"OpenHouse"]) {
-            OpenHouseTableView *openHouseTV = [[OpenHouseTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped];
+            OpenHouseTableView *openHouseTV = [[[OpenHouseTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped] autorelease];
             [openHouseTV applyStandardColors];
             self.tableView = openHouseTV;
             self.tableView.delegate = openHouseTV;
@@ -405,7 +404,7 @@
             requestNeeded = NO;
             
         } else {
-			self.tableView = [[EventListTableView alloc] initWithFrame:contentFrame];
+			self.tableView = [[[EventListTableView alloc] initWithFrame:contentFrame] autorelease];
 			self.tableView.delegate = (EventListTableView *)self.tableView;
 			self.tableView.dataSource = (EventListTableView *)self.tableView;
 			((EventListTableView *)self.tableView).parentViewController = self;
@@ -474,7 +473,7 @@
 															 fromDate:startDate
 															  forward:forward];
     
-    NSDate *newDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:startDate];
+    NSDate *newDate = [[[NSDate alloc] initWithTimeInterval:interval sinceDate:startDate] autorelease];
     self.startDate = newDate;
     
 	dateRangeDidChange = YES;

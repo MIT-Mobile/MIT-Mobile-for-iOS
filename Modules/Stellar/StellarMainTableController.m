@@ -46,7 +46,7 @@
 	[super viewDidLoad];
     self.title = @"MIT Stellar";
     
-	self.mainTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, searchBarHeight, self.view.frame.size.width, self.view.frame.size.height-searchBarHeight) style:UITableViewStyleGrouped];
+	self.mainTableView = [[[UITableView alloc] initWithFrame:CGRectMake(0, searchBarHeight, self.view.frame.size.width, self.view.frame.size.height-searchBarHeight) style:UITableViewStyleGrouped] autorelease];
 	self.mainTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	self.mainTableView.delegate = self;
 	self.mainTableView.dataSource = self;
@@ -58,7 +58,7 @@
 	self.myStellar = [NSArray array];
 	
 	CGRect viewFrame = self.view.frame;
-	self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, viewFrame.size.width, searchBarHeight)];
+	self.searchBar = [[[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, viewFrame.size.width, searchBarHeight)] autorelease];
 	searchBar.tintColor = SEARCH_BAR_TINT_COLOR;	
 	[self.view addSubview:searchBar];	
 	

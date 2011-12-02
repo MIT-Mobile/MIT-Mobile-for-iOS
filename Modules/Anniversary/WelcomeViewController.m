@@ -20,7 +20,7 @@
 - (void)viewDidLoad {
 	self.navigationItem.title = @"Welcome";
 	
-	self.webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
+	self.webView = [[[UIWebView alloc] initWithFrame:self.view.bounds] autorelease];
     self.webView.dataDetectorTypes = UIDataDetectorTypeLink;
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.scalesPageToFit = NO;
