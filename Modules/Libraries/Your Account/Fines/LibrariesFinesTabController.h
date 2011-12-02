@@ -4,7 +4,7 @@
 @class LibrariesAccountViewController;
 
 @interface LibrariesFinesTabController : NSObject <UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic,assign) LibrariesAccountViewController *parentController;
+@property (nonatomic,retain) LibrariesAccountViewController *parentController;
 @property (nonatomic,retain) UITableView *tableView;
 @property (nonatomic,retain) LibrariesFinesSummaryView* headerView;
 

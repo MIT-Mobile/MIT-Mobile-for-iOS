@@ -8,8 +8,6 @@
 @interface LibrariesFinesTabController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
 @property (nonatomic,retain) NSDictionary *loanData;
-@property (nonatomic,retain) MobileRequestOperation *operation;
-@property (nonatomic,retain) NSDate *lastUpdate;
 
 - (void)setupTableView;
 - (void)updateLoanData;
@@ -21,8 +19,6 @@
 
 @synthesize loadingView = _loadingView,
             loanData = _loanData,
-            operation = _operation,
-            lastUpdate = _lastUpdate,
             headerView = _headerView;
 
 - (id)initWithTableView:(UITableView *)tableView
@@ -46,8 +42,6 @@
     self.headerView = nil;
     self.loadingView = nil;
     self.loanData = nil;
-    self.operation = nil;
-    self.lastUpdate = nil;
 
     [super dealloc];
 }
@@ -137,36 +131,31 @@
         [self.tableView.superview insertSubview:self.loadingView
                                    aboveSubview:self.tableView];
     }
-    
-    BOOL shouldUpdate = (self.lastUpdate == nil) || ([self.lastUpdate timeIntervalSinceNow] > 15.0);
-    
-    if ((self.operation == nil) && shouldUpdate)
-    {
-        MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                                command:@"fines"
-                                                                             parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
-                                                                                                                    forKey:@"limit"]];
-        operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-            if (self.loadingView.superview != nil) {
-                [self.loadingView removeFromSuperview];
-            }
-            
-            if (error) {
-                [self.parentController reportError:error fromTab:self];
-                self.loanData = [NSDictionary dictionary];
-            } else {
-                self.loanData = (NSDictionary*)jsonResult;
-            }
-            
-            self.headerView.accountDetails = (NSDictionary *)self.loanData;
-            [self.headerView sizeToFit];
-            [self.tableView reloadData];
-            
-            self.operation = nil;
-        };
+
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
+                                                                            command:@"fines"
+                                                                         parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
+                                                                                                                forKey:@"limit"]];
+    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (self.loadingView.superview != nil) {
+            [self.loadingView removeFromSuperview];
+        }
         
-        self.operation = operation;
-        [operation start];
+        if (error) {
+            [self.parentController reportError:error fromTab:self];
+            self.loanData = [NSDictionary dictionary];
+        } else {
+            self.loanData = (NSDictionary*)jsonResult;
+        }
+        
+        self.headerView.accountDetails = (NSDictionary *)self.loanData;
+        [self.headerView sizeToFit];
+        [self.tableView reloadData];
+    };
+    
+    if ([self.parentController.requestOperations.operations containsObject:operation] == NO)
+    {
+        [self.parentController.requestOperations addOperation:operation];
     }
 }
 

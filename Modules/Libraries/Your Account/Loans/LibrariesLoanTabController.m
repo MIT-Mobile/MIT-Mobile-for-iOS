@@ -14,7 +14,7 @@
 @property (nonatomic, retain) UIBarButtonItem *renewBarItem;
 @property (nonatomic, retain) UIBarButtonItem *cancelBarItem;
 
-@property (nonatomic,retain) MobileRequestOperation *operation;
+@property (nonatomic,retain) MobileRequestOperation *renewOperation;
 
 - (void)setupTableView;
 - (void)updateLoanData;
@@ -38,7 +38,7 @@
 @synthesize cancelBarItem = _cancelBarItem;
 
 
-@synthesize operation = _operation;
+@synthesize renewOperation = _renewOperation;
 
 - (id)initWithTableView:(UITableView *)tableView
 {
@@ -50,6 +50,8 @@
             [self setupTableView];
             [self updateLoanData];
         }
+        
+        self.loanData = [NSDictionary dictionary];
     }
     
     return self;
@@ -57,13 +59,14 @@
 
 - (void)dealloc
 {
+    [self.renewOperation cancel];
+    
     self.parentController = nil;
     self.tableView = nil;
     self.tabViewHidingDelegate = nil;
     self.headerView = nil;
     self.loadingView = nil;
     self.loanData = nil;
-    self.operation = nil;
     self.renewItems = nil;
     self.renewBarItem = nil;
     self.cancelBarItem = nil;
@@ -206,38 +209,32 @@
         [self.tableView.superview insertSubview:self.loadingView
                                    aboveSubview:self.tableView];
     }
-    
-    if (self.operation == nil)
-    {
-        MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                                command:@"loans"
-                                                                             parameters:nil];
-        
-        self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
-        
-        operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-            if (self.loadingView.superview != nil) {
-                [self.loadingView removeFromSuperview];
-            }
-            
-            if (error) {
-                [self.parentController reportError:error fromTab:self];
-                self.loanData = [NSDictionary dictionary];
-            } else {
-                self.loanData = (NSDictionary*)jsonResult;
-            }
 
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
+                                                                            command:@"loans"
+                                                                         parameters:nil];
+    
+    self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
+    
+    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (self.loadingView.superview != nil) {
+            [self.loadingView removeFromSuperview];
+        }
+        
+        if (error) {
+            [self.parentController reportError:error fromTab:self];
+        } else {
+            self.loanData = (NSDictionary*)jsonResult;
             self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
             self.headerView.accountDetails = (NSDictionary *)self.loanData;
             [self.headerView sizeToFit];
             [self.tableView reloadData];
-
-
-            self.operation = nil;
-        };
+        }
+    };
     
-        self.operation = operation;
-        [operation start];
+    if ([self.parentController.requestOperations.operations containsObject:operation] == NO)
+    {
+        [self.parentController.requestOperations addOperation:operation];
     }
 }
 
@@ -315,16 +312,11 @@
                                                                             command:@"renewBooks"
                                                                          parameters:params];
     [operation setCompleteBlock:^(MobileRequestOperation *operation, id jsonData, NSError *error) {
-        self.operation = nil;
+        self.renewOperation = nil;
         
         if (error)
         {
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Renew"
-                                                             message:[error localizedDescription]
-                                                            delegate:nil
-                                                   cancelButtonTitle:nil
-                                                   otherButtonTitles:@"OK", nil] autorelease];
-            [alert show];
+            [self.parentController reportError:error fromTab:self];
             self.renewBarItem.enabled = YES;
             self.cancelBarItem.enabled = YES;
         }
@@ -336,16 +328,16 @@
         }
 
     }];
-
-    self.operation = operation;
-    [operation start];
+    
+    self.renewOperation = operation;
+    [self.parentController.requestOperations addOperation:operation];
 }
 
 - (IBAction)cancelRenew:(id)sender
 {
-    if (self.operation)
+    if (self.renewOperation)
     {
-        [self.operation cancel];
+        [self.renewOperation cancel];
     }
 
     [self restoreTabView:sender animated:YES];
