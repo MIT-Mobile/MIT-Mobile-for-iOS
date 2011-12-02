@@ -344,9 +344,13 @@ typedef enum {
         [self.connection cancel];
     } else {
         self.requestData = nil;
-        self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
-                                                code:NSUserCancelledError
-                                            userInfo:nil];
+        
+        if (self.requestError == nil)
+        {
+            self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
+                                                    code:NSUserCancelledError
+                                                userInfo:nil];
+        }
         [self finish];
     }
 }
@@ -875,6 +879,9 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 
 - (void)cancelWasPressedForLoginRequest:(MobileRequestLoginViewController *)view {
     [gSecureStateTracker userCanceledAuthentication];
+    self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
+                                            code:MobileWebInvalidLoginError
+                                        userInfo:nil];
     [self cancel];
 }
 @end
