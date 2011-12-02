@@ -632,10 +632,13 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 [gSecureStateTracker suspendQueue];
                 if (gSecureStateTracker.authenticationBlock == nil) {
                     [gSecureStateTracker addBlockToQueue:^(BOOL canceled) {
-                        if (canceled) {
+                        if (canceled || self.isCancelled) {
                             // Authentication is required but the user canceled
                             // the last authentication attempt and the timeout has
                             // not been triggered yet. Abort the request.
+                            self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
+                                                                    code:MobileWebInvalidLoginError
+                                                                userInfo:nil];
                             [self cancel];
                             return;
                         } else {
@@ -671,10 +674,13 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                     }];
                 } else {
                     [gSecureStateTracker addBlockToQueue:^(BOOL canceled) {
-                        if (canceled) {
+                        if (canceled || self.isCancelled) {
                             // Authentication is required but the user canceled
                             // the last authentication attempt and the timeout has
                             // not been triggered yet. Abort the request.
+                            self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
+                                                                    code:MobileWebInvalidLoginError
+                                                                userInfo:nil];
                             [self cancel];
                             return;
                         } else {
