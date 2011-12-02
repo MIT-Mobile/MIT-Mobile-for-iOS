@@ -73,9 +73,7 @@
     NSInteger i = 0;
     
     for (UIView *aView in self.icons) {
-        CGRect iconFrame = aView.frame;
-        iconFrame.origin = CGPointMake(floor(xOrigin), floor(yOrigin));
-        aView.frame = iconFrame;
+        aView.frame = CGRectMake(floor(xOrigin), floor(yOrigin), aView.frame.size.width, aView.frame.size.height);
         [self addSubview:aView];
         
         // add right padding

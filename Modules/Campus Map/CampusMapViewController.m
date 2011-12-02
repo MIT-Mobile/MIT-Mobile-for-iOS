@@ -122,18 +122,18 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	self.title = @"Campus Map";
-    
-	// turn on the location dot
-	_mapView.showsUserLocation = YES;
 }
 
 -(void) viewWillAppear:(BOOL)animated {
     [self.mapView addTileOverlay];
+    self.mapView.showsUserLocation = YES;
+    
     [self updateMapListButton];
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
     [self.mapView removeTileOverlay];
+    self.mapView.showsUserLocation = NO;
 }
 
 -(void) viewDidAppear:(BOOL)animated
