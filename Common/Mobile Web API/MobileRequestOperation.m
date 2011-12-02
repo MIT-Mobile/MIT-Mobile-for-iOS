@@ -869,7 +869,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 - (void)cancelWasPressedForLoginRequest:(MobileRequestLoginViewController *)view {
     [gSecureStateTracker userCanceledAuthentication];
     self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
-                                            code:MobileWebInvalidLoginError
+                                            code:NSUserCancelledError
                                         userInfo:nil];
     [MobileRequestOperation clearAuthenticatedSession];
     [self cancel];
