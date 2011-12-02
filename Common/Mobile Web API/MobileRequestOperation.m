@@ -11,6 +11,7 @@
 #import "MobileRequestOperation.h"
 #import "SAMLResponse.h"
 #import "TouchstoneAuthResponse.h"
+#import "MIT_MobileAppDelegate.h"
 
 static  MobileRequestAuthenticationTracker* gSecureStateTracker = nil;
 
@@ -487,7 +488,6 @@ typedef enum {
     if (self.loginViewController == nil) {
         dispatch_async(dispatch_get_main_queue(), ^ {
             if ([self authenticationRequired] || forceDisplay) {
-                UIWindow *mainWindow = [[UIApplication sharedApplication] keyWindow];
                 MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
                                                                                                                  password:self.touchstonePassword] autorelease];
                 loginView.delegate = self;
@@ -495,10 +495,8 @@ typedef enum {
                 UINavigationController *loginNavController = [[[UINavigationController alloc] initWithRootViewController:loginView] autorelease];
                 loginNavController.navigationBar.barStyle = UIBarStyleBlack;
                 
-                //[MobileRequestOperation clearAuthenticatedSession];
-                
-                [[mainWindow rootViewController] presentModalViewController:loginNavController
-                                                                   animated:YES];
+                [[MITAppDelegate() rootNavigationController] presentModalViewController:loginNavController
+                                                            animated:YES];
                 self.loginViewController = loginView;
             } else {
                 [gSecureStateTracker dispatchAuthenticationBlock];
