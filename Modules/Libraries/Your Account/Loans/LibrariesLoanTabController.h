@@ -11,7 +11,7 @@
 
 @interface LibrariesLoanTabController : NSObject <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic,retain) LibrariesLoanSummaryView *headerView;
-@property (nonatomic,assign) LibrariesAccountViewController *parentController;
+@property (nonatomic,retain) LibrariesAccountViewController *parentController;
 @property (nonatomic,retain) UITableView *tableView;
 @property (nonatomic,assign) id<MITTabViewHidingDelegate> tabViewHidingDelegate;
 
