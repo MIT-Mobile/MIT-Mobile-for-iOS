@@ -303,8 +303,6 @@
 		EB4C3A0B1283698000058748 /* TourOverviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C3A091283698000058748 /* TourOverviewViewController.m */; };
 		EB4C3A8C1283812A00058748 /* MITSpringboard.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C3A8A1283812A00058748 /* MITSpringboard.m */; };
 		EB4C3A93128456DB00058748 /* TourOverviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB4C3A92128456DB00058748 /* TourOverviewViewController.xib */; };
-		EB4C409B1288974C00058748 /* DataCache.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C40971288974C00058748 /* DataCache.m */; };
-		EB4C409D1288974C00058748 /* FlowCoverView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C40991288974C00058748 /* FlowCoverView.m */; };
 		EB4C40D51288988900058748 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4C40D41288988900058748 /* OpenGLES.framework */; };
 		EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C42DD1289CC8000058748 /* MITMapRoute.m */; };
 		EB4C4407128B662C00058748 /* SuperThinProgressBar.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C4405128B662C00058748 /* SuperThinProgressBar.m */; };
@@ -985,10 +983,6 @@
 		EB4C3A891283812A00058748 /* MITSpringboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITSpringboard.h; path = "App Delegate/MITSpringboard.h"; sourceTree = "<group>"; };
 		EB4C3A8A1283812A00058748 /* MITSpringboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITSpringboard.m; path = "App Delegate/MITSpringboard.m"; sourceTree = "<group>"; };
 		EB4C3A92128456DB00058748 /* TourOverviewViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TourOverviewViewController.xib; sourceTree = "<group>"; };
-		EB4C40961288974C00058748 /* DataCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataCache.h; sourceTree = "<group>"; };
-		EB4C40971288974C00058748 /* DataCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataCache.m; sourceTree = "<group>"; };
-		EB4C40981288974C00058748 /* FlowCoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlowCoverView.h; sourceTree = "<group>"; };
-		EB4C40991288974C00058748 /* FlowCoverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlowCoverView.m; sourceTree = "<group>"; };
 		EB4C40D41288988900058748 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = iphoneos4.0/System/Library/Frameworks/OpenGLES.framework; sourceTree = "<group>"; };
 		EB4C42DD1289CC8000058748 /* MITMapRoute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapRoute.m; sourceTree = "<group>"; };
 		EB4C4404128B662C00058748 /* SuperThinProgressBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperThinProgressBar.h; sourceTree = "<group>"; };
@@ -1156,7 +1150,6 @@
 				2CFB87CF1416AFB10014E141 /* UI Classes */,
 				3AA21C481039DDBA00DB7637 /* Connection */,
 				3AA21C491039DDBD00DB7637 /* Core Data */,
-				EB4C40951288974C00058748 /* FlowCover */,
 				BD1E92F3103B5D60004429AA /* JSON */,
 				2C5DECC813E9BABB00F9C089 /* Mobile Web API */,
 				2C5DECC113E9BA9100F9C089 /* TBXML */,
@@ -2298,17 +2291,6 @@
 			path = Anniversary;
 			sourceTree = "<group>";
 		};
-		EB4C40951288974C00058748 /* FlowCover */ = {
-			isa = PBXGroup;
-			children = (
-				EB4C40961288974C00058748 /* DataCache.h */,
-				EB4C40971288974C00058748 /* DataCache.m */,
-				EB4C40981288974C00058748 /* FlowCoverView.h */,
-				EB4C40991288974C00058748 /* FlowCoverView.m */,
-			);
-			path = FlowCover;
-			sourceTree = "<group>";
-		};
 		EB7F326610CD6C5B00188BCD /* People */ = {
 			isa = PBXGroup;
 			children = (
@@ -2652,7 +2634,6 @@
 				DE2E588212B81029009857A1 /* CorridorListViewController.m in Sources */,
 				1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */,
 				DE2E58E012B81529009857A1 /* CorridorStory.m in Sources */,
-				EB4C409B1288974C00058748 /* DataCache.m in Sources */,
 				EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */,
 				B64B47081288502E002E2F1D /* DummyRotatingViewController.m in Sources */,
 				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
@@ -2686,7 +2667,6 @@
 				2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */,
 				EBF8A53412AEB8BC00D39AE6 /* FeatureLink.m in Sources */,
 				DEA57EBD12B5A767003211AC /* FeatureSection.m in Sources */,
-				EB4C409D1288974C00058748 /* FlowCoverView.m in Sources */,
 				DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */,
 				2C99DCAF1370508D00114A9A /* HighlightLabel.m in Sources */,
 				2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */,
