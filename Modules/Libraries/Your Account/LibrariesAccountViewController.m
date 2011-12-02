@@ -13,6 +13,7 @@ typedef enum {
 } LibrariesActiveTabType;
 
 @interface LibrariesAccountViewController ()
+@property (nonatomic,retain) NSOperationQueue *requestOperations;
 @property (nonatomic,retain) MITTabView *tabView;
 @property (nonatomic,assign) LibrariesActiveTabType activeTabIndex;
 @property (nonatomic,retain) NSMutableArray *barItems;
@@ -25,7 +26,8 @@ typedef enum {
             activeTabIndex = _activeTabIndex,
             barItems = _barItems,
             tabControllers = _tabControllers,
-            alertIsActive = _alertIsActive;
+            alertIsActive = _alertIsActive,
+            requestOperations = _requestOperations;
 
 @dynamic activeTabController;
 
@@ -36,11 +38,17 @@ typedef enum {
         self.activeTabIndex = LibrariesActiveTabLoans;
         self.barItems = [NSMutableArray array];
         self.tabControllers = [NSMutableArray array];
+        
+        self.requestOperations = [[[NSOperationQueue alloc] init] autorelease];
+        self.requestOperations.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
     }
     return self;
 }
 
 - (void)dealloc {
+    self.activeTabIndex = LibrariesActiveTabInvalid;
+    [self.requestOperations cancelAllOperations];
+    
     self.tabView = nil;
     self.barItems = nil;
     self.tabControllers = nil;
@@ -151,7 +159,6 @@ typedef enum {
     self.title = @"Your Account";
 }
 
-
 - (void)viewDidUnload
 {
     [self.tabView removeFromSuperview];
@@ -180,11 +187,6 @@ typedef enum {
     if (self.activeTabIndex == LibrariesActiveTabLoans) {
         [[self.tabControllers objectAtIndex:LibrariesActiveTabLoans] tabDidBecomeActive];
     }
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -280,12 +282,18 @@ typedef enum {
     }
     
     LibrariesActiveTabType type = (LibrariesActiveTabType)[self.tabControllers indexOfObject:tabController];
+    if (type == LibrariesActiveTabInvalid)
+    {
+        return;
+    }
+    
     DLog(@"Tab <%@> encountered an error: %@", [[self.barItems objectAtIndex:type] title], [error localizedDescription]);
     
     if ((self.alertIsActive == NO) && (self.activeTabIndex == type))
     {
         if ((error.code == MobileWebInvalidLoginError) || (error.code == NSUserCancelledError))
         {
+            [self.requestOperations cancelAllOperations];
             [self.navigationController popViewControllerAnimated:YES];
         }
         else
