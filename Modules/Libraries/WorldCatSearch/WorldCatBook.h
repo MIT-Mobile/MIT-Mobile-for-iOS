@@ -43,6 +43,7 @@ extern NSString * const MITLibrariesOCLCCode;
 @property (nonatomic, retain) NSArray *subjects;
 @property (nonatomic, retain) NSArray *summarys;
 @property (nonatomic, retain) NSArray *editions;
+@property (nonatomic, retain) NSString *emailAndCiteMessage;
 
 @property (nonatomic) BOOL parseFailure;
 

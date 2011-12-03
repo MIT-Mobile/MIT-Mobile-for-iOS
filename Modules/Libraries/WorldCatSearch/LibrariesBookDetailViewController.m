@@ -397,15 +397,13 @@ BookDetailSections;
     switch (indexPath.section) {
         case kEmailAndCiteSection:
             if ([MFMailComposeViewController canSendMail]) {
-                NSString *bodyString = [NSString stringWithFormat:
-                                        @"<strong>%@</strong><br/>%@",
-                                        self.book.title,
-                                        [self.book subtitleDisplayStringHTML:YES]];
+                NSString *subject = [NSString stringWithFormat:@"MIT Libraries Item Details for: %@", self.book.title];
+                NSString *body = self.book.emailAndCiteMessage;
                 
                 MFMailComposeViewController *mailView = [[[MFMailComposeViewController alloc] init] autorelease];
                 [mailView setMailComposeDelegate:self];
-                [mailView setSubject:self.book.title];
-                [mailView setMessageBody:bodyString isHTML:YES];
+                [mailView setSubject:subject];
+                [mailView setMessageBody:body isHTML:YES];
                 [self presentModalViewController:mailView animated:YES]; 
             }
             break;
