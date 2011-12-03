@@ -233,14 +233,12 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
     return object;
 }
 
-- (NSString *)authorYear {
-    NSString *authorYear = @"";
+- (NSString *)yearWithAuthors {
+    NSString *yearWithAuthors = [self.authors componentsJoinedByString:@", "];
     if (self.years.count > 0) {
-        authorYear = [NSString stringWithFormat:@"%@; ", [self.years objectAtIndex:0]];
+        yearWithAuthors = [NSString stringWithFormat:@"%@; %@", [self.years objectAtIndex:0], yearWithAuthors];
     }
-    
-    NSString *authorsString = [self.authors componentsJoinedByString:@" "];
-    return [authorYear stringByAppendingString:authorsString];
+    return yearWithAuthors;
 }
 
 - (NSString *)isbn {
@@ -272,18 +270,6 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
         output = composedPublishers;
     }
     return output;
-}
-
-- (NSString *)subtitleDisplayStringHTML:(BOOL)isHTML
-{
-    NSString *result = @"";
-    if ([self.authors count] > 0) {
-        result = [self.authors componentsJoinedByString:@", "];
-    }
-    if ([self.years count] > 0) {
-        result = [NSString stringWithFormat:@"%@; %@", [self.years objectAtIndex:0], result]; 
-    }
-    return result;
 }
 
 @end

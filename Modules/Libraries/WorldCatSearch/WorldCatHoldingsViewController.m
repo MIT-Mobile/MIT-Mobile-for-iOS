@@ -136,7 +136,7 @@ typedef enum {
                 case 1:
                     displayString = [BookDetailTableViewCell 
                                      displayStringWithTitle:nil
-                                     subtitle:[self.book subtitleDisplayStringHTML:NO]
+                                     subtitle:[self.book yearWithAuthors]
                                      separator:nil
                                      fontSize:BookDetailFontSizeDefault];
                     break;
@@ -178,7 +178,7 @@ typedef enum {
                 case 1:
                     displayString = [BookDetailTableViewCell 
                                      displayStringWithTitle:nil
-                                     subtitle:[self.book subtitleDisplayStringHTML:NO]
+                                     subtitle:[self.book yearWithAuthors]
                                      separator:nil
                                      fontSize:BookDetailFontSizeDefault];
                     break;

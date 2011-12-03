@@ -14,7 +14,7 @@ typedef enum {
 
 @property (nonatomic, retain) UIView *activityView;
 @property (nonatomic, retain) WorldCatBook *book;
-@property (nonatomic) BookLoadingStatus loadingStatus;
+@property (nonatomic, assign) BookLoadingStatus loadingStatus;
 @property (nonatomic, retain) NSArray *bookInfo;
 
 @end

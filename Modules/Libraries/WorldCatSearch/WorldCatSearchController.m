@@ -292,7 +292,7 @@ typedef enum {
     }
     WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
     cell.textLabel.text = book.title;
-    cell.detailTextLabel.text = [book subtitleDisplayStringHTML:NO];
+    cell.detailTextLabel.text = [book yearWithAuthors];
     
     return cell;
 }
@@ -305,7 +305,7 @@ typedef enum {
         
         CGSize titleSize = [book.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(availableWidth, 2000.0) lineBreakMode:UILineBreakModeWordWrap];
         
-        CGSize detailSize = [[book subtitleDisplayStringHTML:NO] sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE] forWidth:availableWidth lineBreakMode:UILineBreakModeTailTruncation];
+        CGSize detailSize = [[book yearWithAuthors] sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE] forWidth:availableWidth lineBreakMode:UILineBreakModeTailTruncation];
         
         return titleSize.height + detailSize.height + margins.top + margins.bottom;
     } else {

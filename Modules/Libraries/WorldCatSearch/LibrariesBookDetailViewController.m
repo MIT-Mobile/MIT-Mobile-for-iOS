@@ -8,34 +8,22 @@
 #import "WorldCatHoldingsViewController.h"
 #import "LibrariesHoldingsDetailViewController.h"
 
-#define TITLE_ROW 0
-#define YEAR_AUTHOR_ROW 1
-#define ISBN_ROW 2
-
-static const CGFloat kWebViewHeight = 300.0f;
-
-typedef enum 
-{
+typedef enum {
     kInfoSection = 0,
     kEmailAndCiteSection = 1,
     kMITHoldingSection = 2,
     kBLCHoldingSection = 3
-}
-BookDetailSections;
-
-#define HORIZONTAL_MARGIN 10
-#define VERTICAL_PADDING 5
-#define HORIZONTAL_PADDING 5
+} BookDetailSections;
 
 @interface LibrariesBookDetailViewController (Private)
+
 - (void)loadBookDetails;
-- (void)updateUI;
-- (void)configureCell:(UITableViewCell *)cell 
-    forRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)configureCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
 @implementation LibrariesBookDetailViewController
+
 @synthesize book;
 @synthesize activityView;
 @synthesize loadingStatus;
@@ -54,30 +42,15 @@ BookDetailSections;
 - (void)dealloc
 {
     self.activityView = nil;
+    self.book = nil;
+    self.bookInfo = nil;
     [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
 }
 
 #pragma mark - View lifecycle
 
-/*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView
-{
-}
-*/
-
-
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     self.tableView.backgroundColor = [UIColor clearColor];
     self.activityView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
@@ -87,8 +60,7 @@ BookDetailSections;
 }
 
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
     [super viewDidUnload];
     self.activityView = nil;
     // Release any retained subviews of the main view.
@@ -123,7 +95,7 @@ BookDetailSections;
             // year; authors
             [bookAttribs addObject:[BookDetailTableViewCell
                                     displayStringWithTitle:nil
-                                    subtitle:[self.book subtitleDisplayStringHTML:NO]
+                                    subtitle:[self.book yearWithAuthors]
                                     separator:nil
                                     fontSize:BookDetailFontSizeDefault]];
             
@@ -193,23 +165,10 @@ BookDetailSections;
     librariesModule.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
     [librariesModule.requestQueue addOperation:request];
 }
-    
-- (CGFloat)titleHeight:(UITableView *)tableView {
-    CGSize titleSize = [self.book.title sizeWithFont:
-        [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE] 
-                                   constrainedToSize:CGSizeMake(tableView.frame.size.width-2*HORIZONTAL_MARGIN, 400)];
-    return titleSize.height;
-}
 
-- (CGFloat)authorYearHeight:(UITableView *)tableView {
-    CGSize authorYearSize = [[self.book authorYear] sizeWithFont:
-                             [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE] 
-                                               constrainedToSize:CGSizeMake(tableView.frame.size.width-2*HORIZONTAL_MARGIN, 400)];
-    return authorYearSize.height;
-}
+#pragma mark - UITableView Data Source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     NSInteger sections = 2; // one for book info, one for email & cite
     if (self.loadingStatus == BookLoadingStatusCompleted) {
         NSInteger numHoldings = self.book.holdings.count;
@@ -224,8 +183,7 @@ BookDetailSections;
     return sections;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView 
- numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (self.loadingStatus == BookLoadingStatusCompleted) {
         NSInteger rows = 0;
         switch (section) {
@@ -299,9 +257,7 @@ BookDetailSections;
     return cell;
 }
 
-- (void)configureCell:(UITableViewCell *)cell 
-    forRowAtIndexPath:(NSIndexPath *)indexPath 
-{
+- (void)configureCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case kEmailAndCiteSection:
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
@@ -326,7 +282,7 @@ BookDetailSections;
                     NSString *location = [libraries objectAtIndex:indexPath.row - 1];
                     NSUInteger available = [mitHoldings inLibraryCountForLocation:location];
                     NSUInteger total = [[[mitHoldings libraryAvailability] objectForKey:location] count];
-
+                    
                     cell.textLabel.text = location;
                     cell.textLabel.numberOfLines = 0;
                     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
@@ -353,8 +309,9 @@ BookDetailSections;
     }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+#pragma mark - UITableView Delegate
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGFloat height = tableView.rowHeight;
     switch (indexPath.section) {
         case kInfoSection: {
@@ -392,8 +349,7 @@ BookDetailSections;
     return height;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case kEmailAndCiteSection:
             if ([MFMailComposeViewController canSendMail]) {
@@ -444,7 +400,7 @@ BookDetailSections;
     }
 }
 
-- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     NSString *title = nil;
     switch (section) {
         case kMITHoldingSection:
@@ -477,10 +433,11 @@ BookDetailSections;
     }
 }
 
+#pragma mark - MFMailComposeViewController Delegate
+
 - (void)mailComposeController:(MFMailComposeViewController*)controller
           didFinishWithResult:(MFMailComposeResult)result
-                        error:(NSError*)error 
-{
+                        error:(NSError*)error {
 	[self dismissModalViewControllerAnimated:YES];
 }
 
