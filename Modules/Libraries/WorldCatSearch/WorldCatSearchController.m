@@ -8,10 +8,10 @@
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
 
-#define ACTIVITY_ORIGIN_X 20
+#define ACTIVITY_ORIGIN_X 8
 #define ACTIVITY_ORIGIN_Y 20
 #define ACTIVITY_SIZE 30
-#define LABEL_ORIGIN_X 70
+#define LABEL_ORIGIN_X 40
 #define LABEL_ORIGIN_Y 20
 
 #define LOADER_HEIGHT 70
@@ -161,7 +161,7 @@ typedef enum {
         [self.loadMoreView addSubview:activityView];
         
         UILabel *label = [[[UILabel alloc] initWithFrame:CGRectMake(LABEL_ORIGIN_X, LABEL_ORIGIN_Y, 200.0, 30)] autorelease];
-        label.font = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
+        label.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
         label.textColor = CELL_STANDARD_FONT_COLOR;
         label.tag = LABEL_TAG;
         [self.loadMoreView addSubview:label];        
@@ -220,7 +220,7 @@ typedef enum {
         if (self.searchingStatus == BooksSearchingStatusLoading) {
             activityView.hidden = NO;
             [activityView startAnimating];
-            label.text = @"Loading...";
+            label.text = @"Loading…";
         } else {
             activityView.hidden = YES;
             [activityView stopAnimating];
