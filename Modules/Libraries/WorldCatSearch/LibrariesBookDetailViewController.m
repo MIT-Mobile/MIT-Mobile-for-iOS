@@ -146,10 +146,11 @@ BookDetailSections;
             }
 
             // publisher
-            if (self.book.publishers.count) {
+            NSArray *addressesWithPublishers = [self.book addressesWithPublishers];
+            if ([addressesWithPublishers count] > 0) {
                 [bookAttribs addObject:[BookDetailTableViewCell 
                                         displayStringWithTitle:@"Publisher"
-                                        subtitle:[self.book.publishers componentsJoinedByString:@"; "]
+                                        subtitle:[addressesWithPublishers componentsJoinedByString:@"; "]
                                         separator:@": "
                                         fontSize:BookDetailFontSizeDefault]];
             }

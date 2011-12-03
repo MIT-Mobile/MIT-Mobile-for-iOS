@@ -48,6 +48,7 @@ extern NSString * const MITLibrariesOCLCCode;
 
 - (void)updateDetailsWithDictionary:(NSDictionary *)dict;
 - (NSString *)authorYear;
+- (NSArray *)addressesWithPublishers;
 - (NSString *)isbn;
 
 - (NSString *)subtitleDisplayStringHTML:(BOOL)isHTML;

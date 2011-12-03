@@ -248,6 +248,30 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
     return nil;
 }
 
+- (NSArray *)addressesWithPublishers {
+    // Publishers should be displayed as Address + Publisher Name,
+    // e.g. "New York : Modern Language Association of America,"
+    // where address == "New York :" and publisher == " Modern Language Association of America," 
+
+    // If the number of addresses doesn't match the number of publishers, just return publisher names as-is without addresses
+    
+    NSArray *rawPublishers = self.publishers;
+    NSArray *rawAddresses = self.addresses;
+    NSArray *output = rawPublishers;
+    if ([rawPublishers count] != [rawAddresses count]) {
+        WLog(@"%@ mismatch between number of publishers and addresses for OCLC ID %@", NSStringFromSelector(_cmd), self.identifier);
+    } else {
+        NSMutableArray *composedPublishers = [NSMutableArray array];
+        for (NSInteger i = 0; i < [rawPublishers count]; i++) {
+            NSString *address = [rawAddresses objectAtIndex:i];
+            NSString *publisher = [rawPublishers objectAtIndex:i];
+            [composedPublishers addObject:[NSString stringWithFormat:@"%@ %@", address, publisher]];
+        }
+        output = composedPublishers;
+    }
+    return output;
+}
+
 - (NSString *)subtitleDisplayStringHTML:(BOOL)isHTML
 {
     NSString *result = @"";
