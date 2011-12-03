@@ -239,15 +239,7 @@ enum {
     }
     
     if (subtitleText) {
-        CGFloat fittedHeight = [ExplanatorySectionLabel 
-                                heightWithText:subtitleText 
-                                accessoryView:nil
-                                width:self.view.frame.size.width
-                                type:ExplanatorySectionFooter];
-        
-        ExplanatorySectionLabel *footerLabel = 
-        [[[ExplanatorySectionLabel alloc] 
-         initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
+        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter] autorelease];
         footerLabel.text = subtitleText;
         result = footerLabel;
     }
@@ -271,7 +263,6 @@ enum {
     
     if (subtitleText) {
         height = [ExplanatorySectionLabel heightWithText:subtitleText 
-                                           accessoryView:nil 
                                                    width:self.view.frame.size.width 
                                                     type:ExplanatorySectionFooter];
     }

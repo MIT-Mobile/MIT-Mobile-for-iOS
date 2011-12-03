@@ -14,17 +14,11 @@
  
  Usage:
 
+NSString * const labelText = @"Some Text";
+
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     if (section == 0) {
-        NSString *labelText = @"Some text";
-        CGFloat fittedHeight = [ExplanatorySectionLabel 
-            heightWithText:labelText 
-             accessoryView:nil
-                     width:self.view.frame.size.width];
-        
-        ExplanatorySectionLabel *footerLabel = 
-            [[ExplanatorySectionLabel alloc] 
-                initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)];
+        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter] autorelease];
         footerLabel.text = labelText;
         return footerLabel;
     }
@@ -33,11 +27,9 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     if (section == 0) {
-        NSString *labelText = @"Some text";
-        CGFloat height = [ExplanatorySectionLabel 
-            heightWithText:labelText 
-             accessoryView:nil 
-                     width:self.view.frame.size.width];
+        CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
+                                                           width:CGRectGetWidth(tableView.bounds)
+                                                            type:ExplanatorySectionFooter];
         return height;
     }
     return 0;
@@ -58,6 +50,7 @@
 + (UIEdgeInsets)headerInsetsWithoutAccessory;
 + (UIEdgeInsets)footerInsetsWithAccessory;
 + (UIEdgeInsets)footerInsetsWithoutAccessory;
++ (UIEdgeInsets)insetsForType:(ExplanatorySectionLabelType)type accessoryView:(UIView *)accessoryView;
 
 @end
 
@@ -68,17 +61,21 @@
 @synthesize label = _label;
 @synthesize font = _font;
 @synthesize type = _type;
+@synthesize fontSize = _fontSize;
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
+- (id)initWithFrame:(CGRect)frame {
+    return [self initWithType:ExplanatorySectionFooter];
+}
+
+- (id)initWithType:(ExplanatorySectionLabelType)type {
+    self = [super initWithFrame:CGRectZero];
     if (self) {
-        _label = [[UILabel alloc] initWithFrame:frame];
+        _label = [[UILabel alloc] initWithFrame:CGRectZero];
         [self addSubview:self.label];
         _accessoryView = nil;
         _text = nil;
         _font = [[[self class] labelFont] retain];
-        _type = ExplanatorySectionFooter;
+        _type = type;
         self.clipsToBounds = YES;
     }
     return self;
@@ -110,6 +107,14 @@
     }
 }
 
+- (void)setFontSize:(CGFloat)fontSize {
+    if (fontSize != _fontSize) {
+        _fontSize = fontSize;
+        _font = [UIFont fontWithName:[[[self class] labelFont] fontName] size:fontSize];
+        [self setNeedsLayout];
+    }
+}
+
 - (void)layoutSubviews {
     /*
      Layout with an accessoryView:
@@ -122,27 +127,9 @@
      | 20px space -- flexible text space -- 20px space |
      */
     
-    UIEdgeInsets insets = UIEdgeInsetsZero;
+    UIEdgeInsets insets = [[self class] insetsForType:self.type accessoryView:self.accessoryView];
     CGFloat imageWidth = 0;
     
-    switch (self.type) {
-        case ExplanatorySectionHeader:
-            if (self.accessoryView) {
-                insets = [[self class] headerInsetsWithAccessory];
-            } else {
-                insets = [[self class] headerInsetsWithoutAccessory];
-            }
-            break;
-        case ExplanatorySectionFooter:
-        default:
-            if (self.accessoryView) {
-                insets = [[self class] footerInsetsWithAccessory];
-            } else {
-                insets = [[self class] footerInsetsWithoutAccessory];
-            }
-            break;
-    }
-
     CGFloat tableWidth = self.frame.size.width;
 
     if (self.accessoryView) {
@@ -155,7 +142,7 @@
     }
     
     CGFloat labelWidth = tableWidth - (insets.left + imageWidth + insets.right);
-    CGSize fittedSize = [self.text sizeWithFont:[[self class] labelFont]
+    CGSize fittedSize = [self.text sizeWithFont:self.font
                               constrainedToSize:CGSizeMake(labelWidth, 2000.0)
                                   lineBreakMode:UILineBreakModeWordWrap];
     
@@ -196,11 +183,8 @@
     return UIEdgeInsetsMake(15.0, 20.0, 5.0, 20.0);
 }
 
-+ (CGFloat)heightWithText:(NSString *)text accessoryView:(UIImageView *)accessoryView width:(CGFloat)width type:(ExplanatorySectionLabelType)type {
-
-    UIEdgeInsets insets = {};
-    CGFloat imageWidth = 0;
-
++ (UIEdgeInsets)insetsForType:(ExplanatorySectionLabelType)type accessoryView:(UIView *)accessoryView {
+    UIEdgeInsets insets = UIEdgeInsetsZero;
     switch (type) {
         case ExplanatorySectionHeader:
             if (accessoryView) {
@@ -218,6 +202,21 @@
             }
             break;
     }
+    return insets;
+}
+
++ (CGFloat)heightWithText:(NSString *)text width:(CGFloat)width type:(ExplanatorySectionLabelType)type {
+    return [self heightWithText:text width:width type:type accessoryView:nil];
+}
+
++ (CGFloat)heightWithText:(NSString *)text width:(CGFloat)width type:(ExplanatorySectionLabelType)type accessoryView:(UIImageView *)accessoryView {
+    return [self heightWithText:text width:width type:type accessoryView:accessoryView fontSize:[[self labelFont] pointSize]];
+}
+
++ (CGFloat)heightWithText:(NSString *)text width:(CGFloat)width type:(ExplanatorySectionLabelType)type accessoryView:(UIImageView *)accessoryView fontSize:(CGFloat)fontSize {
+
+    UIEdgeInsets insets = [self insetsForType:type accessoryView:accessoryView];
+    CGFloat imageWidth = 0;
     
     CGFloat tableWidth = width;
     if (accessoryView) {
@@ -226,7 +225,7 @@
     
     CGFloat labelWidth = tableWidth - (insets.left + imageWidth + insets.right);
     
-    UIFont *labelFont = [self labelFont];
+    UIFont *labelFont = [UIFont fontWithName:[[self labelFont] fontName] size:fontSize];
     CGSize fittedSize = [text sizeWithFont:labelFont
                               constrainedToSize:CGSizeMake(labelWidth, 2000.0)
                                   lineBreakMode:UILineBreakModeWordWrap];

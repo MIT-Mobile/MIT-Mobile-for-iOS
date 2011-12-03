@@ -140,6 +140,7 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
 @synthesize summarys;
 @synthesize editions;
 @synthesize emailAndCiteMessage;
+@synthesize url;
 
 @synthesize parseFailure;
 
@@ -170,10 +171,14 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
     self.formats = nil;
     self.addresses = nil;
     self.extents = nil;
-    self.holdings = nil;
     self.lang = nil;
     self.subjects = nil;
     self.summarys = nil;
+    self.editions = nil;
+    self.emailAndCiteMessage = nil;
+    self.url = nil;
+
+    self.holdings = nil;
     [super dealloc];
 }
 
@@ -186,6 +191,7 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
     self.summarys = [self arrayOfStringsFromDict:dict key:@"summary"];
     self.editions = [self arrayOfStringsFromDict:dict key:@"edition"];
     self.emailAndCiteMessage = [dict objectForKey:@"composed-html"];
+    self.url = [dict objectForKey:@"url"];
     
     NSMutableDictionary *tempHoldings = [NSMutableDictionary dictionary];
     for (NSDictionary *holdingDict in [dict objectForKey:@"holdings"]) {

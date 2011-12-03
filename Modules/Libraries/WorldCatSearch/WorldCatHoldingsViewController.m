@@ -205,9 +205,7 @@ typedef enum {
         case LinkSection: {
             NSString *labelText = @"Items unavailable from MIT may be available from the Boston Library Consortium members listed below. Visit the WorldCat website to request an interlibrary loan.";
             ExplanatorySectionLabel *footerLabel = 
-            [[[ExplanatorySectionLabel alloc] 
-              initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 0.0)] autorelease];
-            footerLabel.type = ExplanatorySectionHeader;
+            [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader] autorelease];
             footerLabel.text = labelText;
             return footerLabel;
         }
@@ -224,7 +222,6 @@ typedef enum {
         case LinkSection: {
             NSString *labelText = @"Items unavailable from MIT may be available from the Boston Library Consortium members listed below. Visit the WorldCat website to request an interlibrary loan.";
             CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
-                                                       accessoryView:nil 
                                                                width:CGRectGetWidth(tableView.bounds)
                                                                 type:ExplanatorySectionHeader];
             return height;
@@ -240,8 +237,7 @@ typedef enum {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case LinkSection: {
-            NSString *blcRequestURLString = [NSString stringWithFormat:@"http://mit.worldcat.org/oclc/%@", self.book.identifier];
-            NSURL *url = [NSURL URLWithString:blcRequestURLString];
+            NSURL *url = [NSURL URLWithString:self.book.url];
             if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
                 [[UIApplication sharedApplication] openURL:url];
             }

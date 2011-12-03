@@ -8,6 +8,7 @@
 #import "MITMailComposeController.h"
 #import "MITBuildInfo.h"
 #import  <QuartzCore/CALayer.h>
+#import "ExplanatorySectionLabel.h"
 
 @implementation AboutTableViewController
 
@@ -16,21 +17,9 @@
     self.title = @"About";
     
     showBuildNumber = NO;
-    
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(10, 0, self.view.frame.size.width - 20, 45)];
-    UILabel *footerLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, footerView.frame.size.width, 30)];
-    footerLabel.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITCopyright"];
-    footerLabel.backgroundColor = [UIColor clearColor];
-    footerLabel.textAlignment = UITextAlignmentCenter;
-    footerLabel.textColor = CELL_DETAIL_FONT_COLOR;
-    footerLabel.font = [UIFont systemFontOfSize:12.0];
-    footerLabel.lineBreakMode = UILineBreakModeWordWrap;
-    footerLabel.numberOfLines = 0;
-    [footerView addSubview:footerLabel];
-    self.tableView.tableFooterView = footerView;
-    [footerLabel release];
-    [footerView release];
 }
+
+#pragma mark - UITableView Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 2;
@@ -146,6 +135,8 @@
     return cell;    
 }
 
+#pragma mark - UITableView Delegate
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0 && indexPath.row == 0) {
         showBuildNumber = !showBuildNumber;
@@ -176,12 +167,32 @@
                     [mailView setToRecipients:[NSArray arrayWithObject:email]];
                     [self presentModalViewController:mailView
                                             animated:YES]; 
-            }            
-            }            
-            default:
-                break;
+                }            
+            }
         }
     }
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    switch (section) {
+        case 1: {
+            ExplanatorySectionLabel *copyrightFooter = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter] autorelease];
+            copyrightFooter.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITCopyright"];
+            copyrightFooter.fontSize = 12.0;
+            return copyrightFooter;
+        }
+    }
+    return nil;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    switch (section) {
+        case 1: {
+            NSString *copyrightText = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITCopyright"];
+            return [ExplanatorySectionLabel heightWithText:copyrightText width:CGRectGetWidth(tableView.bounds) type:ExplanatorySectionFooter accessoryView:nil fontSize:12.0];
+        }
+    }
+    return 0;
 }
 
 #pragma mark - MFMailComposeViewController delegation
@@ -191,11 +202,6 @@
     [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow]
                                   animated:YES];
 }
-
-- (void)dealloc {
-    [super dealloc];
-}
-
 
 @end
 
