@@ -54,6 +54,10 @@
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                         UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor whiteColor];
+        loadingView.usesBackgroundImage = NO;
+        
+        [self.tableView addSubview:loadingView];
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.loadingView = loadingView;
     }
     
@@ -125,32 +129,25 @@
 
 - (void)updateLoanData
 {
-    if (self.loanData == nil)
-    {
-        self.loadingView.frame = self.tableView.frame;
-        [self.tableView.superview insertSubview:self.loadingView
-                                   aboveSubview:self.tableView];
-    }
-
     MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                             command:@"fines"
                                                                          parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
                                                                                                                 forKey:@"limit"]];
     operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-        if (self.loadingView.superview != nil) {
+        if ([self.loadingView isDescendantOfView:self.tableView]) {
             [self.loadingView removeFromSuperview];
+            self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         }
         
         if (error) {
-            [self.parentController reportError:error fromTab:self];
-            self.loanData = [NSDictionary dictionary];
+            [self.parentController reportError:error
+                                       fromTab:self];
         } else {
             self.loanData = (NSDictionary*)jsonResult;
+            self.headerView.accountDetails = (NSDictionary *)self.loanData;
+            [self.headerView sizeToFit];
+            [self.tableView reloadData];
         }
-        
-        self.headerView.accountDetails = (NSDictionary *)self.loanData;
-        [self.headerView sizeToFit];
-        [self.tableView reloadData];
     };
     
     if ([self.parentController.requestOperations.operations containsObject:operation] == NO)

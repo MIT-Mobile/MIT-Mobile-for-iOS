@@ -83,6 +83,9 @@
                                         UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor whiteColor];
         loadingView.usesBackgroundImage = NO;
+        
+        [self.tableView addSubview:loadingView];
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.loadingView = loadingView;
     }
     
@@ -203,13 +206,6 @@
 #pragma mark -
 - (void)updateLoanData
 {
-    if (self.loanData == nil)
-    {
-        self.loadingView.frame = self.tableView.frame;
-        [self.tableView.superview insertSubview:self.loadingView
-                                   aboveSubview:self.tableView];
-    }
-
     MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                             command:@"loans"
                                                                          parameters:nil];
@@ -217,12 +213,14 @@
     self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
     
     operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-        if (self.loadingView.superview != nil) {
+        if ([self.loadingView isDescendantOfView:self.tableView]) {
             [self.loadingView removeFromSuperview];
+            self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         }
         
         if (error) {
-            [self.parentController reportError:error fromTab:self];
+            [self.parentController reportError:error
+                                       fromTab:self];
         } else {
             self.loanData = (NSDictionary*)jsonResult;
             self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
