@@ -179,7 +179,7 @@
 
         NSDictionary *credentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
 
-        saveToggle.on = [credentials objectForKey:kSecAttrAccount] && ([self.password length] > 0);
+        saveToggle.on = [credentials objectForKey:(id)kSecAttrAccount] && ([self.password length] > 0);
         self.saveCredentials = saveToggle;
 
         UITableViewCell *saveCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];

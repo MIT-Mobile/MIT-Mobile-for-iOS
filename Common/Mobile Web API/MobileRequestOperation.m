@@ -853,7 +853,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     {
         NSDictionary *mobileCredentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
 
-        if ([mobileCredentials objectForKey:kSecAttrAccount])
+        if ([mobileCredentials objectForKey:(id)kSecAttrAccount])
         {
             MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, @"");
         }
