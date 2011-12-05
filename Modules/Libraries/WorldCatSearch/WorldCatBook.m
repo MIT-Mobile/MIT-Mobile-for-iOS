@@ -5,6 +5,7 @@ NSString * const MITLibrariesOCLCCode = @"MYG";
 static NSString * const WCHoldingStatusKey = @"status";
 static NSString * const WCHoldingLocationKey = @"location";
 static NSString * const WCHoldingCallNumberKey = @"call-no";
+static NSString * const WCHoldingAvailableKey = @"available";
 
 
 
@@ -92,16 +93,8 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
         NSDictionary *dict = (NSDictionary*)obj;
         NSString *bookLocation = [[dict objectForKey:WCHoldingLocationKey] lowercaseString];
         
-        if ([bookLocation isEqualToString:location])
-        {
-            NSString *status = [obj valueForKey:WCHoldingStatusKey];
-            NSRange range = [status rangeOfString:@"In Library"
-                                          options:NSCaseInsensitiveSearch];
-            
-            return (([status length] > 0) && (range.location != NSNotFound));
-        }
-        
-        return NO;
+        return ([[dict objectForKey:WCHoldingAvailableKey] boolValue] &&
+                [bookLocation isEqualToString:location]);
     }];
                            
     return [set count];
@@ -109,13 +102,8 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
 
 - (NSUInteger)inLibraryCount {
     NSIndexSet *indexes = [self.availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        NSString *status = [obj valueForKey:WCHoldingStatusKey];
-        NSRange range = [status rangeOfString:@"In Library" options:NSCaseInsensitiveSearch];
-        if ([status length] > 0 && range.location == 0) {
-            return YES;
-        } else {
-            return NO;
-        }
+        NSDictionary *dict = (NSDictionary*)obj;
+        return [[dict objectForKey:WCHoldingAvailableKey] boolValue];
     }];
     return [indexes count];
 }
