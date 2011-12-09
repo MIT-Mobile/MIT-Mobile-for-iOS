@@ -146,6 +146,10 @@
             self.headerView.accountDetails = (NSDictionary *)self.loanData;
             [self.headerView sizeToFit];
             [self.tableView reloadData];
+            if (self.parentController.activeTabController == self)
+            {
+                [self.parentController forceTabLayout];
+            }
         }
     };
     
