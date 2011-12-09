@@ -6,4 +6,5 @@
 @property (nonatomic,readonly) id activeTabController;
 
 - (void)reportError:(NSError*)error fromTab:(id)tabController;
+- (void)forceTabLayout;
 @end

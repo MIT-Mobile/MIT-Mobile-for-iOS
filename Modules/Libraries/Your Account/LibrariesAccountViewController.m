@@ -313,4 +313,9 @@ typedef enum {
 {
     self.alertIsActive = NO;
 }
+
+- (void)forceTabLayout
+{
+    [self.tabView setNeedsLayout];
+}
 @end
