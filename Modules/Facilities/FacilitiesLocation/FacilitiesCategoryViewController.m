@@ -125,7 +125,7 @@
         MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                              UIViewAutoresizingFlexibleWidth);
-        loadingView.backgroundColor = [UIColor redColor];
+        loadingView.backgroundColor = [UIColor clearColor];
         
         self.loadingView = loadingView;
         [mainView insertSubview:loadingView
