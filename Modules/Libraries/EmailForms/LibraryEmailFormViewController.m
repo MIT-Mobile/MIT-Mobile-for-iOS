@@ -552,7 +552,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         [self.loadingView removeFromSuperview];
         
         if (error && (error.code != NSUserCancelledError)) {
-            NSLog(@"Request failed with error: %@",[error localizedDescription]); 
+            DLog(@"Request failed with error: %@",[error localizedDescription]); 
             [MITMobileWebAPI showError:nil header:@"Login" alertViewDelegate:self];
         } else if (!jsonResult) {
             [self.navigationController popViewControllerAnimated:YES];    
@@ -922,7 +922,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         NSDictionary *jsonDict = jsonResult;
         BOOL success = [(NSNumber *)[jsonDict objectForKey:@"success"] boolValue];
         if (error || !success) {
-            NSLog(@"Request failed with error: %@",[error localizedDescription]);
+            DLog(@"Request failed with error: %@",[error localizedDescription]);
             [self.navigationController popViewControllerAnimated:NO];
             [self showErrorSubmittingForm];
         } else {

@@ -508,7 +508,7 @@ enum {
             [self.apiRequests setObject:request
                                  forKey:tag];
         } else {
-            NSLog(@"Error: attempting to overwrite in-flight request with tag %@",tag);
+            ELog(@"Error: attempting to overwrite in-flight request with tag %@",tag);
         }
     });
 }

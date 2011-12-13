@@ -256,7 +256,7 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     [self stopUpdatingLocation];
     
-    NSLog(@"%@",[error localizedDescription]);
+    ELog(@"%@",[error localizedDescription]);
     
     switch([error code])
     {
