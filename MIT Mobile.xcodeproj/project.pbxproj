@@ -2935,7 +2935,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
-					"${SDK_DIR}/usr/include/libxml2",
 				);
 				PRODUCT_NAME = MITMobile;
 				SDKROOT = iphoneos;
@@ -2960,7 +2959,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
-					"${SDK_DIR}/usr/include/libxml2",
 				);
 				PRODUCT_NAME = MITMobile;
 				SDKROOT = iphoneos;
@@ -3062,7 +3060,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
-					"${SDK_DIR}/usr/include/libxml2",
 				);
 				PRODUCT_NAME = MITMobile;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -3116,7 +3113,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
-					"${SDK_DIR}/usr/include/libxml2",
 				);
 				PRODUCT_NAME = MITMobile;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
