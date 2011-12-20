@@ -52,32 +52,34 @@ NSString * const shuttlePathExtension = @"shuttles/";
 
 
 - (id)init {
-	_shuttleRoutes = nil;
-	_shuttleRoutesByID = nil;
-	_stopLocations = nil;
-	_stopLocationsByID = nil;
-	
-	// populate route cache in memory
-	_shuttleRoutes = [[NSMutableArray alloc] init];	
-	_shuttleRoutesByID = [[NSMutableDictionary alloc] init];
-	
-	NSPredicate *matchAll = [NSPredicate predicateWithFormat:@"TRUEPREDICATE"];
-    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"sortOrder" ascending:YES];
-    NSArray *cachedRoutes = [CoreDataManager objectsForEntity:ShuttleRouteEntityName
-                                            matchingPredicate:matchAll
-                                              sortDescriptors:[NSArray arrayWithObject:sort]];
-	[sort release];
-	VLog(@"%d routes cached", [cachedRoutes count]);
-	
-	for (ShuttleRouteCache *cachedRoute in cachedRoutes) {
-		NSString *routeID = cachedRoute.routeID;
-		ShuttleRoute *route = [[ShuttleRoute alloc] initWithCache:cachedRoute];
-		VLog(@"fetched route %@ from core data", route.routeID);
-		[_shuttleRoutes addObject:route];
-		[_shuttleRoutesByID setValue:route forKey:routeID];
-		[route release];
-	}
-	
+    self = [super init];
+    if (self) {
+        _shuttleRoutes = nil;
+        _shuttleRoutesByID = nil;
+        _stopLocations = nil;
+        _stopLocationsByID = nil;
+        
+        // populate route cache in memory
+        _shuttleRoutes = [[NSMutableArray alloc] init];	
+        _shuttleRoutesByID = [[NSMutableDictionary alloc] init];
+        
+        NSPredicate *matchAll = [NSPredicate predicateWithFormat:@"TRUEPREDICATE"];
+        NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"sortOrder" ascending:YES];
+        NSArray *cachedRoutes = [CoreDataManager objectsForEntity:ShuttleRouteEntityName
+                                                matchingPredicate:matchAll
+                                                  sortDescriptors:[NSArray arrayWithObject:sort]];
+        [sort release];
+        DLog(@"%d routes cached", [cachedRoutes count]);
+        
+        for (ShuttleRouteCache *cachedRoute in cachedRoutes) {
+            NSString *routeID = cachedRoute.routeID;
+            ShuttleRoute *route = [[ShuttleRoute alloc] initWithCache:cachedRoute];
+            DLog(@"fetched route %@ from core data", route.routeID);
+            [_shuttleRoutes addObject:route];
+            [_shuttleRoutesByID setValue:route forKey:routeID];
+            [route release];
+        }
+    }
 	return self;
 }
 
