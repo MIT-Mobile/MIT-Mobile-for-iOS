@@ -91,14 +91,14 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
 - (CGSize)sizeThatFits:(CGSize)size
 {
     CGFloat width = size.width - (self.edgeInsets.left + self.renewButton.frame.size.width + self.edgeInsets.right);
-    
     CGSize contentSize = [self.infoLabel.text sizeWithFont:self.infoLabel.font
-                                 constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
-                                       lineBreakMode:self.infoLabel.lineBreakMode];
-
-    CGFloat height = MAX(contentSize.height, self.renewButton.frame.size.height);
+                                         constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
+                                             lineBreakMode:self.infoLabel.lineBreakMode];
+    
+    CGFloat frameHeight = CGRectGetHeight(self.renewButton.frame);
+    CGFloat height = MAX(contentSize.height,frameHeight);
     height += (self.edgeInsets.top + self.edgeInsets.bottom);
-    return CGSizeMake(width, height);
+    return CGSizeMake(size.width, height);
 }
 
 - (void)setAccountDetails:(NSDictionary *)accountDetails
