@@ -4,14 +4,22 @@
 
 @implementation ConnectionDetector
 
-+(bool)isConnected {
-	if ([[Reachability sharedReachability] internetConnectionStatus] != NotReachable)	// if the internet is reachable
+@synthesize reachability = _reachability;
+
+// TODO: We should be making use of Reachability's notification 
+// system to intelligently retry connections.
+
++ (BOOL)isConnected {
+    Reachability *reachability = [[self sharedConnectionDetector] reachability];
+	if ([reachability currentReachabilityStatus] != NotReachable) {	
+                        // if the internet is reachable
 		return true;	// we are connected
-	else			// otherwise
+    } else {			// otherwise
 		return false;	// we're not connected
+    }
 }
 
-+(id)sharedConnectionDetector {
++ (id)sharedConnectionDetector {
 	static ConnectionDetector *sharedInstance;
 	if (!sharedInstance) {
 		sharedInstance = [[ConnectionDetector alloc] init];
@@ -20,12 +28,17 @@
 	return sharedInstance;
 }
 
--(id)init {
+- (id)init {
 	self = [super init];
 	if (self) {
-		[[Reachability sharedReachability] setHostName:MITMobileWebGetCurrentServerDomain()];	// when we check for an internet connection, ping our server
+        // use our api server to check for a connection
+		_reachability = [Reachability reachabilityWithHostName:MITMobileWebGetCurrentServerDomain()];
 	}
 	return self;
+}
+
+- (void)dealloc {
+    self.reachability = nil;
 }
 
 @end
