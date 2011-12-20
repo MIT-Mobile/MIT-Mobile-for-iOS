@@ -710,7 +710,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                             else
                             {
                                 dispatch_sync(dispatch_get_main_queue(), ^(void) {
-                                    [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password"
+                                    [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password."
                                                                                    willRetry:YES];
                                 });
                             }
@@ -768,7 +768,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                             else
                             {
                                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                    [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password"
+                                    [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password."
                                                                                    willRetry:YES];
                                 });
                             }
