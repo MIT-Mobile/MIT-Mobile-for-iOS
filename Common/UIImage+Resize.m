@@ -5,15 +5,6 @@
 
 #import "UIImage+Resize.h"
 
-// Private helper methods
-@interface UIImage ()
-- (UIImage *)resizedImage:(CGSize)newSize
-                transform:(CGAffineTransform)transform
-           drawTransposed:(BOOL)transpose
-     interpolationQuality:(CGInterpolationQuality)quality;
-- (CGAffineTransform)transformForOrientation:(CGSize)newSize;
-@end
-
 @implementation UIImage (Resize)
 // Returns a rescaled copy of the image, taking into account its orientation
 // The image will be scaled disproportionately if necessary to fit the bounds specified by the parameter
