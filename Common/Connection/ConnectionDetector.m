@@ -39,6 +39,7 @@
 
 - (void)dealloc {
     self.reachability = nil;
+    [super dealloc];
 }
 
 @end
