@@ -195,8 +195,6 @@ NSString * termText(NSString *termCode) {
 		[[MITMobileWebAPI jsonLoadedDelegate:myStellarStatusDelegate]
 			requestObjectFromModule:StellarTag command:@"myStellar" parameters:parameters];
 
-		[myStellarStatusDelegate release];
-
 		myStellarButton.selected = !(myStellarButton.selected);
 	} else {
 		NSString *message;
