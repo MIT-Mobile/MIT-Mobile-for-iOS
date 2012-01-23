@@ -577,7 +577,7 @@ typedef enum {
         mutableRequest.timeoutInterval = 10.0;
         [mutableRequest addValue:[MobileRequestOperation userAgent]
               forHTTPHeaderField:@"User-Agent"];
-        NSLog(@"%@",[mutableRequest valueForHTTPHeaderField:@"User-Agent"]);
+        
         self.activeRequest = mutableRequest;
         self.requestData = nil;
         self.connection = [[[NSURLConnection alloc] initWithRequest:mutableRequest
