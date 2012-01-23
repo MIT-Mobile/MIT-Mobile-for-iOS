@@ -151,6 +151,49 @@ typedef enum {
     }
 }
 
++ (NSString*)userAgent
+{
+    NSMutableArray *userAgent = [NSMutableArray array];
+    
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSString *appName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
+    if (appName == nil) {
+        appName = [infoDictionary objectForKey:@"CFBundleName"];
+    }
+    
+    NSString *appVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    if (appVersion == nil)
+    {
+        appVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
+    }
+    appVersion = [[appVersion componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@""];
+    
+    NSString *appRevision = [infoDictionary objectForKey:@"MITBuildDescription"];
+    if (appRevision == nil)
+    {
+        appRevision = @"";
+    }
+    
+    [userAgent addObject:[NSString stringWithFormat:@"%@/%@ (%@;)",
+                          appName,
+                          appVersion,
+                          appRevision]];
+    
+    
+    NSMutableString *deviceInfo = [NSMutableString string];
+    UIDevice *device = [UIDevice currentDevice];
+    
+    NSString *osName = [[[device systemName] componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@""];
+    [deviceInfo appendFormat:@"%@/%@ (", osName, [device systemVersion]];
+    [deviceInfo appendFormat:@"%@; ", [device model]];
+    [deviceInfo appendFormat:@"%@; ", [device cpuType]];
+    [deviceInfo appendFormat:@"%@;", [device sysInfoByName:@"hw.machine"]];
+    [deviceInfo appendFormat:@")"];
+    [userAgent addObject:deviceInfo];
+    
+    return [userAgent componentsJoinedByString:@" "];
+}
+
 
 #pragma mark - Instance Methods        
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params
@@ -532,6 +575,9 @@ typedef enum {
         
         NSMutableURLRequest *mutableRequest = [[request mutableCopy] autorelease];
         mutableRequest.timeoutInterval = 10.0;
+        [mutableRequest addValue:[MobileRequestOperation userAgent]
+              forHTTPHeaderField:@"User-Agent"];
+        NSLog(@"%@",[mutableRequest valueForHTTPHeaderField:@"User-Agent"]);
         self.activeRequest = mutableRequest;
         self.requestData = nil;
         self.connection = [[[NSURLConnection alloc] initWithRequest:mutableRequest
