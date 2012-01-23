@@ -1147,6 +1147,7 @@
 		080E96DDFE201D6D7F000001 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2C3C9D7314CDC0B2005646F7 /* Categories */,
 				2CFB87CF1416AFB10014E141 /* UI Classes */,
 				3AA21C481039DDBA00DB7637 /* Connection */,
 				3AA21C491039DDBD00DB7637 /* Core Data */,
@@ -1154,20 +1155,14 @@
 				2C5DECC813E9BABB00F9C089 /* Mobile Web API */,
 				2C5DECC113E9BA9100F9C089 /* TBXML */,
 				29C45423118B55E100A321B0 /* Twitter+OAuth */,
-				EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */,
-				EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */,
 				B64B47051288502E002E2F1D /* DummyRotatingViewController.h */,
 				B64B47061288502E002E2F1D /* DummyRotatingViewController.m */,
-				DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */,
-				DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */,
 				2C99DCAD1370508D00114A9A /* HighlightLabel.h */,
 				2C99DCAE1370508D00114A9A /* HighlightLabel.m */,
 				2C03C6D2137C66100005F1FC /* HighlightTableViewCell.h */,
 				2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */,
 				EB4C2911127B224800058748 /* IconGrid.h */,
 				EB4C2912127B224800058748 /* IconGrid.m */,
-				2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */,
-				2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */,
 				DE0A62AA10CDAEA90058B2C2 /* MITBuildInfo.h */,
 				2C09824A13A8F21D00778B53 /* ModuleVersions.h */,
 				2C09824B13A8F21D00778B53 /* ModuleVersions.m */,
@@ -1196,8 +1191,6 @@
 				EB6F2B6910E9023300A29A2A /* MITUIConstants.h */,
 				EB6DEE3E11D246EA00B65CE3 /* MultiLineTableViewCell.h */,
 				EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */,
-				2C6AB73E13564F74003B174A /* NSDateFormatter+RelativeString.h */,
-				2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */,
 				EB07B06512B89440005D6A4C /* NavScrollerView.h */,
 				EB07B06612B89440005D6A4C /* NavScrollerView.m */,
 				29C454BE118B61CA00A321B0 /* SFHFKeychainUtils.h */,
@@ -1210,10 +1203,6 @@
 				EB74ED2D11924E7C006673F9 /* ShareDetailViewController.m */,
 				EBBFAF93129C2A23009AAEE0 /* TabViewControl.h */,
 				EBBFAF94129C2A23009AAEE0 /* TabViewControl.m */,
-				2C544B9B1358A24400685545 /* UIImage+Resize.h */,
-				2C544B9C1358A24400685545 /* UIImage+Resize.m */,
-				DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */,
-				DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */,
 				29974B6F1160F1DA009D03B9 /* URLShortener.h */,
 				29974B701160F1DA009D03B9 /* URLShortener.m */,
 				DEAF6EEE13B3C7B40078AB8F /* PlaceholderTextView.h */,
@@ -1460,6 +1449,25 @@
 				2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */,
 			);
 			path = FacilitiesRoot;
+			sourceTree = "<group>";
+		};
+		2C3C9D7314CDC0B2005646F7 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */,
+				EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */,
+				DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */,
+				DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */,
+				2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */,
+				2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */,
+				2C6AB73E13564F74003B174A /* NSDateFormatter+RelativeString.h */,
+				2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */,
+				DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */,
+				DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */,
+				2C544B9B1358A24400685545 /* UIImage+Resize.h */,
+				2C544B9C1358A24400685545 /* UIImage+Resize.m */,
+			);
+			name = Categories;
 			sourceTree = "<group>";
 		};
 		2C40A0F01367362600C83847 /* FacilitiesLocation */ = {
