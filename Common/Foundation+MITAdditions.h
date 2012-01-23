@@ -28,3 +28,9 @@
 @interface NSString (MITAdditions_HTMLEntity)
 - (NSString *)stringByDecodingXMLEntities;
 @end
+
+
+@interface UIDevice (MITAdditions)
+- (NSString*)sysInfoByName:(NSString*)typeSpecifier;
+- (NSString*)cpuType;
+@end
