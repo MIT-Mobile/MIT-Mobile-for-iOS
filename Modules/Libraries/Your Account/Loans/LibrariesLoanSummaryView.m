@@ -91,14 +91,14 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
 - (CGSize)sizeThatFits:(CGSize)size
 {
     CGFloat width = size.width - (self.edgeInsets.left + self.renewButton.frame.size.width + self.edgeInsets.right);
-    
     CGSize contentSize = [self.infoLabel.text sizeWithFont:self.infoLabel.font
-                                 constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
-                                       lineBreakMode:self.infoLabel.lineBreakMode];
-
-    contentSize.height = MAX(contentSize.height, self.renewButton.frame.size.height);
-    contentSize.height += (self.edgeInsets.top + self.edgeInsets.bottom);
-    return contentSize;
+                                         constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
+                                             lineBreakMode:self.infoLabel.lineBreakMode];
+    
+    CGFloat frameHeight = CGRectGetHeight(self.renewButton.frame);
+    CGFloat height = MAX(contentSize.height,frameHeight);
+    height += (self.edgeInsets.top + self.edgeInsets.bottom);
+    return CGSizeMake(size.width, height);
 }
 
 - (void)setAccountDetails:(NSDictionary *)accountDetails
@@ -109,24 +109,17 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
     NSUInteger loanCount = [[accountDetails objectForKey:@"total"] unsignedIntegerValue];
     NSUInteger overdueCount = [[accountDetails objectForKey:@"overdue"] unsignedIntegerValue];
     
-    if (loanCount == 0)
+    NSMutableString *infoText = [NSMutableString stringWithFormat:kLibrariesLoanFormatString, loanCount, ((loanCount == 1) ? @"item" : @"items")];
+    
+    if (overdueCount > 0)
     {
-        self.infoLabel.text = @"";
-    }
-    else
-    {
-        NSMutableString *infoText = [NSMutableString stringWithFormat:kLibrariesLoanFormatString, loanCount, ((loanCount == 1) ? @"item" : @"items")];
-        
-        if (overdueCount > 0)
-        {
-            // highly unlikely this will ever be false, but it's best to be careful
-            [infoText appendFormat:(loanCount < 1000) ? @"\n" : @" "];
+        // highly unlikely this will ever be false, but it's best to be careful
+        [infoText appendFormat:(loanCount < 1000) ? @"\n" : @" "];
 
-            [infoText appendFormat:kLibrariesLoanOverdueFormatString, overdueCount, ((overdueCount == 1) ? @"is" : @"are")];
-        }
-        
-        self.infoLabel.text = infoText;
+        [infoText appendFormat:kLibrariesLoanOverdueFormatString, overdueCount, ((overdueCount == 1) ? @"is" : @"are")];
     }
+    
+    self.infoLabel.text = infoText;
 
     [self setNeedsLayout];
 }

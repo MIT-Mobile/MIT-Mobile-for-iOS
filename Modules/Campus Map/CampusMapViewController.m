@@ -48,9 +48,9 @@
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
 	// create our own view
-	self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 364)] retain];
+	self.view = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 364)] autorelease];
 	
-	_viewTypeButton = [[UIBarButtonItem alloc] initWithTitle:@"Browse" style:UIBarButtonItemStylePlain target:self action:@selector(viewTypeChanged:)];
+	_viewTypeButton = [[[UIBarButtonItem alloc] initWithTitle:@"Browse" style:UIBarButtonItemStylePlain target:self action:@selector(viewTypeChanged:)] autorelease];
 	self.navigationItem.rightBarButtonItem = _viewTypeButton;
 	
 	// add a search bar to our view
@@ -122,18 +122,18 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	self.title = @"Campus Map";
-    
-	// turn on the location dot
-	_mapView.showsUserLocation = YES;
 }
 
 -(void) viewWillAppear:(BOOL)animated {
     [self.mapView addTileOverlay];
+    self.mapView.showsUserLocation = YES;
+    
     [self updateMapListButton];
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
     [self.mapView removeTileOverlay];
+    self.mapView.showsUserLocation = NO;
 }
 
 -(void) viewDidAppear:(BOOL)animated

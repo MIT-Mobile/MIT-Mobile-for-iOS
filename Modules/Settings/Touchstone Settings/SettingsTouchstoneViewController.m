@@ -406,11 +406,7 @@ enum {
         // TODO: move these user-visible strings out of code
         NSString *labelText = @"A lock icon appears next to services requiring authentication. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
 
-        CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:labelText 
-                                                                  accessoryView:secureIcon 
-                                                                          width:self.view.frame.size.width];
-
-        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
+        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter] autorelease];
         footerLabel.text = labelText;
         footerLabel.accessoryView = secureIcon;
         return footerLabel;
@@ -423,8 +419,9 @@ enum {
         NSString *labelText = @"Features requiring authentication are marked with a lock icon. Use your MIT Kerberos username or Touchstone Collaboration Account to log in.";
         UIImageView *secureIcon = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
         CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
-                                                  accessoryView:secureIcon 
-                                                          width:self.view.frame.size.width];
+                                                          width:self.view.frame.size.width
+                                                            type:ExplanatorySectionFooter
+                                                   accessoryView:secureIcon];
         return height;
     }
     return 0;

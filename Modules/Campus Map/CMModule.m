@@ -69,25 +69,28 @@
 	if ([[NSFileManager defaultManager] fileExistsAtPath:regionFilename]) {
 		regionDictionary = [NSDictionary dictionaryWithContentsOfFile:regionFilename];
 	}
-	MKCoordinateRegion region;
 	
-	CLLocationCoordinate2D centerCoord;
-	if(nil != [regionDictionary objectForKey:@"centerLat"] && nil != [regionDictionary objectForKey:@"centerLong"])
-	{
-		centerCoord.latitude = [[regionDictionary objectForKey:@"centerLat"] doubleValue];
-		centerCoord.longitude = [[regionDictionary objectForKey:@"centerLong"] doubleValue];
+    NSNumber *centerLatNumber = [regionDictionary objectForKey:@"centerLat"];
+    NSNumber *centerLongNumber = [regionDictionary objectForKey:@"centerLong"];
+    CLLocationDegrees centerLat = 0.0;
+    CLLocationDegrees centerLong = 0.0;
+	if (centerLatNumber && centerLongNumber) {
+        centerLat = [centerLatNumber doubleValue];
+        centerLong = [centerLongNumber doubleValue];
 	}
-	region.center = centerCoord;
-	
-	MKCoordinateSpan span;
-	if(nil != [regionDictionary objectForKey:@"spanLat"] && nil != [regionDictionary objectForKey:@"spanLong"])
-	{
-		span.latitudeDelta = [[regionDictionary objectForKey:@"spanLat"] doubleValue];
-		span.longitudeDelta = [[regionDictionary objectForKey:@"spanLong"] doubleValue];
-		region.span = span;
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(centerLat, centerLong);
+
+    NSNumber *spanLatNumber = [regionDictionary objectForKey:@"spanLat"];
+    NSNumber *spanLongNumber = [regionDictionary objectForKey:@"spanLong"];
+    CLLocationDegrees spanLat = 0.0;
+    CLLocationDegrees spanLong = 0.0;
+	if (spanLatNumber && spanLongNumber) {
+        spanLat = [spanLatNumber doubleValue];
+        spanLong = [spanLongNumber doubleValue];
 	}
+	MKCoordinateSpan span = MKCoordinateSpanMake(spanLat, spanLong);
     
-    // 
+    MKCoordinateRegion region = MKCoordinateRegionMake(center, span);
 	
 	if (localPath.length == 0) {
         [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
@@ -98,9 +101,7 @@
 		}
 		return YES;
 	}
-    else
-    {
-        
+    else {
         NSMutableArray *components = [NSMutableArray arrayWithArray:[localPath componentsSeparatedByString:@"/"]];
         NSString *pathRoot = [components objectAtIndex:0];
         

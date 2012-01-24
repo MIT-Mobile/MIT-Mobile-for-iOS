@@ -54,8 +54,6 @@
 	[self refreshRouteTitleInfo];
 	self.title = NSLocalizedString(@"Route", nil);	
 
-	[self.mapView setShowsUserLocation:YES];
-
 	if ([self.route.pathLocations count]) {
 		[self.mapView addRoute:self.route];
 	}
@@ -79,7 +77,8 @@
 -(void) viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
     
-    [_mapView addTileOverlay];
+	self.mapView.showsUserLocation = YES;
+    [self.mapView addTileOverlay];
 
 	// make sure its registered. 
 	[[ShuttleDataManager sharedDataManager] registerDelegate:self];
@@ -109,7 +108,9 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [_mapView removeTileOverlay];
+    
+	self.mapView.showsUserLocation = NO;
+    [self.mapView removeTileOverlay];
 }
 
 - (void)didReceiveMemoryWarning {

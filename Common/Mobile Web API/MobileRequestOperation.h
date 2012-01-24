@@ -18,6 +18,7 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 
 + (BOOL)isAuthenticationCookie:(NSHTTPCookie*)cookie;
 + (void)clearAuthenticatedSession;
++ (NSString*)userAgent;
 
 /* 
  * Since these blocks may be used for UI operations

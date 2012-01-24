@@ -5,6 +5,7 @@ NSString * const MITLibrariesOCLCCode = @"MYG";
 static NSString * const WCHoldingStatusKey = @"status";
 static NSString * const WCHoldingLocationKey = @"location";
 static NSString * const WCHoldingCallNumberKey = @"call-no";
+static NSString * const WCHoldingAvailableKey = @"available";
 
 
 
@@ -92,16 +93,8 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
         NSDictionary *dict = (NSDictionary*)obj;
         NSString *bookLocation = [[dict objectForKey:WCHoldingLocationKey] lowercaseString];
         
-        if ([bookLocation isEqualToString:location])
-        {
-            NSString *status = [obj valueForKey:WCHoldingStatusKey];
-            NSRange range = [status rangeOfString:@"In Library"
-                                          options:NSCaseInsensitiveSearch];
-            
-            return (([status length] > 0) && (range.location != NSNotFound));
-        }
-        
-        return NO;
+        return ([[dict objectForKey:WCHoldingAvailableKey] boolValue] &&
+                [bookLocation isEqualToString:location]);
     }];
                            
     return [set count];
@@ -109,13 +102,8 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
 
 - (NSUInteger)inLibraryCount {
     NSIndexSet *indexes = [self.availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        NSString *status = [obj valueForKey:WCHoldingStatusKey];
-        NSRange range = [status rangeOfString:@"In Library" options:NSCaseInsensitiveSearch];
-        if ([status length] > 0 && range.location == 0) {
-            return YES;
-        } else {
-            return NO;
-        }
+        NSDictionary *dict = (NSDictionary*)obj;
+        return [[dict objectForKey:WCHoldingAvailableKey] boolValue];
     }];
     return [indexes count];
 }
@@ -139,6 +127,8 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
 @synthesize subjects;
 @synthesize summarys;
 @synthesize editions;
+@synthesize emailAndCiteMessage;
+@synthesize url;
 
 @synthesize parseFailure;
 
@@ -169,10 +159,14 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
     self.formats = nil;
     self.addresses = nil;
     self.extents = nil;
-    self.holdings = nil;
     self.lang = nil;
     self.subjects = nil;
     self.summarys = nil;
+    self.editions = nil;
+    self.emailAndCiteMessage = nil;
+    self.url = nil;
+
+    self.holdings = nil;
     [super dealloc];
 }
 
@@ -184,6 +178,8 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
     self.subjects = [self arrayOfStringsFromDict:dict key:@"subject"];
     self.summarys = [self arrayOfStringsFromDict:dict key:@"summary"];
     self.editions = [self arrayOfStringsFromDict:dict key:@"edition"];
+    self.emailAndCiteMessage = [dict objectForKey:@"composed-html"];
+    self.url = [dict objectForKey:@"url"];
     
     NSMutableDictionary *tempHoldings = [NSMutableDictionary dictionary];
     for (NSDictionary *holdingDict in [dict objectForKey:@"holdings"]) {
@@ -231,14 +227,12 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
     return object;
 }
 
-- (NSString *)authorYear {
-    NSString *authorYear = @"";
+- (NSString *)yearWithAuthors {
+    NSString *yearWithAuthors = [self.authors componentsJoinedByString:@", "];
     if (self.years.count > 0) {
-        authorYear = [NSString stringWithFormat:@"%@; ", [self.years objectAtIndex:0]];
+        yearWithAuthors = [NSString stringWithFormat:@"%@; %@", [self.years objectAtIndex:0], yearWithAuthors];
     }
-    
-    NSString *authorsString = [self.authors componentsJoinedByString:@" "];
-    return [authorYear stringByAppendingString:authorsString];
+    return yearWithAuthors;
 }
 
 - (NSString *)isbn {
@@ -247,4 +241,29 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
     }
     return nil;
 }
+
+- (NSArray *)addressesWithPublishers {
+    // Publishers should be displayed as Address + Publisher Name,
+    // e.g. "New York : Modern Language Association of America,"
+    // where address == "New York :" and publisher == " Modern Language Association of America," 
+
+    // If the number of addresses doesn't match the number of publishers, just return publisher names as-is without addresses
+    
+    NSArray *rawPublishers = self.publishers;
+    NSArray *rawAddresses = self.addresses;
+    NSArray *output = rawPublishers;
+    if ([rawPublishers count] != [rawAddresses count]) {
+        WLog(@"%@ mismatch between number of publishers and addresses for OCLC ID %@", NSStringFromSelector(_cmd), self.identifier);
+    } else {
+        NSMutableArray *composedPublishers = [NSMutableArray array];
+        for (NSInteger i = 0; i < [rawPublishers count]; i++) {
+            NSString *address = [rawAddresses objectAtIndex:i];
+            NSString *publisher = [rawPublishers objectAtIndex:i];
+            [composedPublishers addObject:[NSString stringWithFormat:@"%@ %@", address, publisher]];
+        }
+        output = composedPublishers;
+    }
+    return output;
+}
+
 @end

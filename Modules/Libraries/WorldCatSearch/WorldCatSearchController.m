@@ -8,28 +8,21 @@
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
 
-#define ACTIVITY_ORIGIN_X 20
+#define ACTIVITY_ORIGIN_X 8
 #define ACTIVITY_ORIGIN_Y 20
 #define ACTIVITY_SIZE 30
-#define LABEL_ORIGIN_X 70
+#define LABEL_ORIGIN_X 40
 #define LABEL_ORIGIN_Y 20
 
 #define LOADER_HEIGHT 70
 
-typedef enum 
-{
+typedef enum {
     ACTIVITY_TAG = 1,
     LABEL_TAG,
     LOADING_ACTIVITY_TAG,
     CELL_CUSTOM_LABEL_TAG, 
     CELL_CUSTOM_DETAIL_LABEL_TAG 
-}
-WorldCatSearchViewTags;
-
-static const CGFloat kSearchCellLabelInitialHeight = 44.0f;
-static const CGFloat kSearchCellDetailLabelHeight = 24.0f;
-static const CGFloat kSearchCellLabelMargin = 8.0f;
-static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
+} WorldCatSearchViewTags;
 
 @interface WorldCatSearchController (Private)
 
@@ -39,7 +32,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
 - (void)initLoadMoreViewToTableView:(UITableView *)tableView;
 - (void)updateLoaderView;
 - (NSNumber *)getNumberFromDict:(NSDictionary *)dict forKey:(NSString *)key required:(BOOL)required;
-+ (CGFloat)maxLabelWidthForCell:(UITableViewCell *)cell;
++ (UIEdgeInsets)searchCellMargins;
 
 @end
 
@@ -96,7 +89,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
         
         self.lastSearchAttempt = [[NSDate date] timeIntervalSince1970];
         if (error) {
-            NSLog(@"Request failed with error: %@",[error localizedDescription]);
+            DLog(@"Request failed with error: %@",[error localizedDescription]);
             [self showSearchError];
             self.searchingStatus = BooksSearchingStatusFailed;
             [self.searchResultsTableView reloadData];
@@ -104,7 +97,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
             self.nextIndex = [self getNumberFromDict:jsonResult forKey:@"nextIndex" required:NO];
             self.totalResultsCount = [self getNumberFromDict:jsonResult forKey:@"totalResultsCount" required:YES];
             if (self.parseError) {
-                NSLog(@"World cat parse error parsing nextIndex or totalResultsCount");
+                WLog(@"World cat parse error parsing nextIndex or totalResultsCount");
                 self.searchingStatus = BooksSearchingStatusFailed;
                 [self.searchResultsTableView reloadData];
                 [self showSearchError];
@@ -131,7 +124,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
                 [self.searchResults addObjectsFromArray:temporarySearchResults];                
                 [self.searchResultsTableView reloadData];
             } else {
-                NSLog(@"World cat result not an array");
+                WLog(@"World cat result not an array");
                 self.searchingStatus = BooksSearchingStatusFailed;
                 [self.searchResultsTableView reloadData];
                 [self showSearchError];
@@ -158,139 +151,6 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
     }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    [self initLoadMoreViewToTableView:tableView];
-    self.searchResultsTableView = tableView;
-    
-    if (!self.searchResults) {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EmptyCell"];
-        if (!cell) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"EmptyCell"] autorelease];            
-        }        
-        return cell;
-    }
-        
-    NSString *cellIdentifier = @"book";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (!cell) 
-    {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier] autorelease];
-        
-        // Include space on the right to make for a disclosure 
-        // indicator.
-        
-        // Set up custom multiline label.
-        UILabel *label = 
-        [[UILabel alloc] initWithFrame:
-         CGRectMake(kSearchCellLabelMargin, kSearchCellLabelMargin, 
-                    [[self class] maxLabelWidthForCell:cell], 
-                    kSearchCellLabelInitialHeight)];
-        label.tag = CELL_CUSTOM_LABEL_TAG;
-        label.numberOfLines = 0;
-        
-        // Set up custom detail label.
-        // Set detail frame later, after main label's content has been set.
-        UILabel *detailLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-        detailLabel.tag = CELL_CUSTOM_DETAIL_LABEL_TAG;
-        
-        [cell applyStandardFonts];
-        
-        label.font = cell.textLabel.font;
-        label.textColor = cell.textLabel.textColor;
-        [cell.contentView addSubview:label];
-        [label release];
-
-        detailLabel.font = cell.detailTextLabel.font;
-        detailLabel.textColor = cell.detailTextLabel.textColor;
-        [cell.contentView addSubview:detailLabel];
-        [detailLabel release];        
-
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }
-    WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
-    UILabel *customLabel = 
-    (UILabel *)[cell.contentView viewWithTag:CELL_CUSTOM_LABEL_TAG];
-    customLabel.text = book.title;
-    customLabel.highlightedTextColor = [UIColor whiteColor];
-    
-    CGFloat maxLabelWidth = [[self class] maxLabelWidthForCell:cell];
-    // Book title label must fit to maxLabelWidth but can be whatever height 
-    // is needed.
-    CGSize sizeThatFits = 
-    [customLabel sizeThatFits:
-     CGSizeMake(maxLabelWidth, kSearchCellLabelInitialHeight)];
-    CGFloat labelHeight = sizeThatFits.height;
-    customLabel.frame = 
-    CGRectMake(customLabel.frame.origin.x, customLabel.frame.origin.y, 
-               maxLabelWidth, labelHeight);
-    
-    // Set up detail label.
-    UILabel *customDetailLabel = 
-    (UILabel *)[cell.contentView viewWithTag:CELL_CUSTOM_DETAIL_LABEL_TAG];
-    NSString *yearText = @"";
-    if (book.years.count > 0)
-    {
-        yearText = [book.years objectAtIndex:0];
-    }
-    customDetailLabel.text = 
-    [NSString stringWithFormat:@"%@; %@", 
-     yearText, [book.authors componentsJoinedByString:@", "]];
-    // Move detail label to within 1/2 margin of main label.
-    customDetailLabel.frame = 
-    CGRectMake(kSearchCellLabelMargin, 
-               1.5f * kSearchCellLabelMargin + customLabel.frame.size.height,
-               // Include double the margin space on the right to make 
-               // space for a disclosure indicator.
-               cell.frame.size.width - 2 * kSearchCellLabelMargin
-               - kDisclosureIndicatorClearanceWidth, 
-               kSearchCellDetailLabelHeight);    
-    customDetailLabel.highlightedTextColor = [UIColor whiteColor];
-    
-    return cell;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if (self.searchResults) {
-        return UNGROUPED_SECTION_HEADER_HEIGHT;
-    } else {
-        return 0;
-    }
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (self.searchResults) {
-        NSString *title;
-        if (!self.nextIndex) {
-            title = [NSString stringWithFormat:@"%d books found", self.searchResults.count];
-        } else {
-            title = [NSString stringWithFormat:@"%d results", [self.totalResultsCount intValue]];
-        }
-        return [UITableView ungroupedSectionHeaderWithTitle:title];    
-    } else {
-        return nil;
-    }
-}
-
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
-    LibrariesBookDetailViewController *vc = [[LibrariesBookDetailViewController new] autorelease];
-    vc.book = book;
-    [self.navigationController pushViewController:vc animated:YES];
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (self.searchResults) {
-        return self.searchResults.count;
-    }
-    return 1;  // returning 1 prevents "No results"
-}
-
 - (void)initLoadMoreViewToTableView:(UITableView *)tableView {
     if (!self.loadMoreView) {
         self.loadMoreView = [[[UIView alloc] initWithFrame:CGRectMake(
@@ -301,7 +161,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
         [self.loadMoreView addSubview:activityView];
         
         UILabel *label = [[[UILabel alloc] initWithFrame:CGRectMake(LABEL_ORIGIN_X, LABEL_ORIGIN_Y, 200.0, 30)] autorelease];
-        label.font = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
+        label.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
         label.textColor = CELL_STANDARD_FONT_COLOR;
         label.tag = LABEL_TAG;
         [self.loadMoreView addSubview:label];        
@@ -360,7 +220,7 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
         if (self.searchingStatus == BooksSearchingStatusLoading) {
             activityView.hidden = NO;
             [activityView startAnimating];
-            label.text = @"Loading...";
+            label.text = @"Loading…";
         } else {
             activityView.hidden = YES;
             [activityView stopAnimating];
@@ -396,24 +256,98 @@ static const CGFloat kDisclosureIndicatorClearanceWidth = 20.0f;
     return number;
 }
 
-+ (CGFloat)maxLabelWidthForCell:(UITableViewCell *)cell
-{
-    return cell.frame.size.width -
-    2 * kSearchCellLabelMargin - kDisclosureIndicatorClearanceWidth;
++(UIEdgeInsets)searchCellMargins {
+    return UIEdgeInsetsMake(13.0, 10.0, 13.0, 30.0);
 }
 
 #pragma mark UITableViewDelegate
-- (CGFloat)tableView:(UITableView *)tableView 
-heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = 
-    [self tableView:tableView cellForRowAtIndexPath:indexPath];
-    UIView *customLabel = 
-    [cell.contentView viewWithTag:CELL_CUSTOM_LABEL_TAG];
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    return 
-    customLabel.frame.size.height + kSearchCellDetailLabelHeight + 
-    2.5f * kSearchCellLabelMargin;    
+    [self initLoadMoreViewToTableView:tableView];
+    self.searchResultsTableView = tableView;
+    
+    if (!self.searchResults) {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EmptyCell"];
+        if (!cell) {
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"EmptyCell"] autorelease];            
+        }        
+        return cell;
+    }
+    
+    NSString *cellIdentifier = @"book";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (!cell) 
+    {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier] autorelease];
+        cell.textLabel.numberOfLines = 0;
+        cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+        cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
+        cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
+        cell.detailTextLabel.numberOfLines = 1;
+        cell.detailTextLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        cell.detailTextLabel.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
+        cell.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }
+    WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
+    cell.textLabel.text = book.title;
+    cell.detailTextLabel.text = [book yearWithAuthors];
+    
+    return cell;
 }
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.searchResults) {
+        WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
+        UIEdgeInsets margins = [[self class] searchCellMargins];
+        CGFloat availableWidth = CGRectGetWidth(tableView.bounds) - (margins.left + margins.right);
+        
+        CGSize titleSize = [book.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(availableWidth, 2000.0) lineBreakMode:UILineBreakModeWordWrap];
+        
+        CGSize detailSize = [[book yearWithAuthors] sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE] forWidth:availableWidth lineBreakMode:UILineBreakModeTailTruncation];
+        
+        return titleSize.height + detailSize.height + margins.top + margins.bottom;
+    } else {
+        return tableView.rowHeight;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if (self.searchResults) {
+        return UNGROUPED_SECTION_HEADER_HEIGHT;
+    } else {
+        return 0;
+    }
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (self.searchResults) {
+        NSString *title;
+        title = [NSString stringWithFormat:@"%d results", [self.totalResultsCount intValue]];
+        return [UITableView ungroupedSectionHeaderWithTitle:title];    
+    } else {
+        return nil;
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
+    LibrariesBookDetailViewController *vc = [[LibrariesBookDetailViewController new] autorelease];
+    vc.book = book;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (self.searchResults) {
+        return self.searchResults.count;
+    }
+    return 1;  // returning 1 prevents "No results"
+}
+
 
 @end

@@ -60,8 +60,8 @@ static NSString* kLibrariesHoldsPickupText = @"\n%ld %@ ready for pickup.";
     CGFloat width = size.width - (self.edgeInsets.left + self.edgeInsets.right);
     
     CGSize textSize = [self.infoLabel.text sizeWithFont:self.infoLabel.font
-                               constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
-                                   lineBreakMode:self.infoLabel.lineBreakMode];
+                                      constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
+                                          lineBreakMode:self.infoLabel.lineBreakMode];
     
     textSize.height += (self.edgeInsets.top + self.edgeInsets.bottom);
     return textSize;

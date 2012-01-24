@@ -11,6 +11,7 @@
 #import "MobileRequestOperation.h"
 #import "SAMLResponse.h"
 #import "TouchstoneAuthResponse.h"
+#import "MIT_MobileAppDelegate.h"
 
 static  MobileRequestAuthenticationTracker* gSecureStateTracker = nil;
 
@@ -150,6 +151,49 @@ typedef enum {
     }
 }
 
++ (NSString*)userAgent
+{
+    NSMutableArray *userAgent = [NSMutableArray array];
+    
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSString *appName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
+    if (appName == nil) {
+        appName = [infoDictionary objectForKey:@"CFBundleName"];
+    }
+    
+    NSString *appVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    if (appVersion == nil)
+    {
+        appVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
+    }
+    appVersion = [[appVersion componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@""];
+    
+    NSString *appRevision = [infoDictionary objectForKey:@"MITBuildDescription"];
+    if (appRevision == nil)
+    {
+        appRevision = @"";
+    }
+    
+    [userAgent addObject:[NSString stringWithFormat:@"%@/%@ (%@;)",
+                          appName,
+                          appVersion,
+                          appRevision]];
+    
+    
+    NSMutableString *deviceInfo = [NSMutableString string];
+    UIDevice *device = [UIDevice currentDevice];
+    
+    NSString *osName = [[[device systemName] componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@""];
+    [deviceInfo appendFormat:@"%@/%@ (", osName, [device systemVersion]];
+    [deviceInfo appendFormat:@"%@; ", [device model]];
+    [deviceInfo appendFormat:@"%@; ", [device cpuType]];
+    [deviceInfo appendFormat:@"%@;", [device sysInfoByName:@"hw.machine"]];
+    [deviceInfo appendFormat:@")"];
+    [userAgent addObject:deviceInfo];
+    
+    return [userAgent componentsJoinedByString:@" "];
+}
+
 
 #pragma mark - Instance Methods        
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params
@@ -235,7 +279,6 @@ typedef enum {
         self.isExecuting = YES;
         self.isFinished = NO;
         
-        [self retain];
         [self main];
     }
 }
@@ -268,21 +311,6 @@ typedef enum {
 }
 
 - (void)finish {
-/*    MobileRequestLoginViewController *loginViewController = self.loginViewController;
-    dispatch_async(dispatch_get_main_queue(), ^(void) {
-        if (loginViewController) {
-            [loginViewController hideActivityView];
-            [rootViewController dismissModalViewControllerAnimated:YES];
-        }
-    });
-    
-    
-    // Wait for the animation to complete and clear the modalViewController
-    // property otherwise the backed up blocks might stumble over it
-    while ([rootViewController modalViewController] != nil) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
-    }*/
-    
     self.loginViewController = nil;
     self.activeRequest = nil;
     self.connection = nil;
@@ -294,7 +322,6 @@ typedef enum {
     
     [self.runLoopTimer invalidate];
     self.runLoopTimer = nil;
-    
     [gSecureStateTracker resumeQueue];
     
     
@@ -332,22 +359,28 @@ typedef enum {
         self.isFinished = YES;
     });
     dispatch_release(parseQueue);
-    [self release];
 }
 
 - (void)cancel {
     [super cancel];
 
-    self.requestState = MobileRequestStateCanceled;
-    
-    if (self.connection) {
-        [self.connection cancel];
-    } else {
-        self.requestData = nil;
-        self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
-                                                code:NSUserCancelledError
-                                            userInfo:nil];
-        [self finish];
+    if (self.isExecuting)
+    {
+        self.requestState = MobileRequestStateCanceled;
+        
+        if (self.connection) {
+            [self.connection cancel];
+        } else {
+            self.requestData = nil;
+            
+            if (self.requestError == nil)
+            {
+                self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
+                                                        code:NSUserCancelledError
+                                                    userInfo:nil];
+            }
+            [self finish];
+        }
     }
 }
 
@@ -498,7 +531,6 @@ typedef enum {
     if (self.loginViewController == nil) {
         dispatch_async(dispatch_get_main_queue(), ^ {
             if ([self authenticationRequired] || forceDisplay) {
-                UIWindow *mainWindow = [[UIApplication sharedApplication] keyWindow];
                 MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
                                                                                                                  password:self.touchstonePassword] autorelease];
                 loginView.delegate = self;
@@ -506,10 +538,8 @@ typedef enum {
                 UINavigationController *loginNavController = [[[UINavigationController alloc] initWithRootViewController:loginView] autorelease];
                 loginNavController.navigationBar.barStyle = UIBarStyleBlack;
                 
-                //[MobileRequestOperation clearAuthenticatedSession];
-                
-                [[mainWindow rootViewController] presentModalViewController:loginNavController
-                                                                   animated:YES];
+                [[MITAppDelegate() rootNavigationController] presentModalViewController:loginNavController
+                                                            animated:YES];
                 self.loginViewController = loginView;
             } else {
                 [gSecureStateTracker dispatchAuthenticationBlock];
@@ -545,6 +575,9 @@ typedef enum {
         
         NSMutableURLRequest *mutableRequest = [[request mutableCopy] autorelease];
         mutableRequest.timeoutInterval = 10.0;
+        [mutableRequest addValue:[MobileRequestOperation userAgent]
+              forHTTPHeaderField:@"User-Agent"];
+        
         self.activeRequest = mutableRequest;
         self.requestData = nil;
         self.connection = [[[NSURLConnection alloc] initWithRequest:mutableRequest
@@ -628,10 +661,13 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 [gSecureStateTracker suspendQueue];
                 if (gSecureStateTracker.authenticationBlock == nil) {
                     [gSecureStateTracker addBlockToQueue:^(BOOL canceled) {
-                        if (canceled) {
+                        if (canceled || self.isCancelled) {
                             // Authentication is required but the user canceled
                             // the last authentication attempt and the timeout has
                             // not been triggered yet. Abort the request.
+                            self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
+                                                                    code:MobileWebInvalidLoginError
+                                                                userInfo:nil];
                             [self cancel];
                             return;
                         } else {
@@ -667,10 +703,13 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                     }];
                 } else {
                     [gSecureStateTracker addBlockToQueue:^(BOOL canceled) {
-                        if (canceled) {
+                        if (canceled || self.isCancelled) {
                             // Authentication is required but the user canceled
                             // the last authentication attempt and the timeout has
                             // not been triggered yet. Abort the request.
+                            self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
+                                                                    code:MobileWebInvalidLoginError
+                                                                userInfo:nil];
                             [self cancel];
                             return;
                         } else {
@@ -717,7 +756,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                             else
                             {
                                 dispatch_sync(dispatch_get_main_queue(), ^(void) {
-                                    [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password"
+                                    [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password."
                                                                                    willRetry:YES];
                                 });
                             }
@@ -775,7 +814,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                             else
                             {
                                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                    [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password"
+                                    [self.loginViewController authenticationDidFailWithError:@"Please enter a valid username and password."
                                                                                    willRetry:YES];
                                 });
                             }
@@ -860,7 +899,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     {
         NSDictionary *mobileCredentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
 
-        if ([mobileCredentials objectForKey:kSecAttrAccount])
+        if ([mobileCredentials objectForKey:(id)kSecAttrAccount])
         {
             MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, @"");
         }
@@ -875,6 +914,10 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 
 - (void)cancelWasPressedForLoginRequest:(MobileRequestLoginViewController *)view {
     [gSecureStateTracker userCanceledAuthentication];
+    self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
+                                            code:NSUserCancelledError
+                                        userInfo:nil];
+    [MobileRequestOperation clearAuthenticatedSession];
     [self cancel];
 }
 @end

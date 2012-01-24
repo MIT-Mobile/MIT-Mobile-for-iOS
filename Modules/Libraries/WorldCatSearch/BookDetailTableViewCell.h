@@ -1,5 +1,8 @@
 #import <UIKit/UIKit.h>
 
+const CGFloat BookDetailFontSizeTitle;
+const CGFloat BookDetailFontSizeDefault;
+
 @interface BookDetailTableViewCell : UITableViewCell
 
 @property (nonatomic, retain) NSAttributedString *displayString;

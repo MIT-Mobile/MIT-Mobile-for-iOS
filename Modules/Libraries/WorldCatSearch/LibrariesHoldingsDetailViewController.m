@@ -13,11 +13,6 @@
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
         self.holdings = holdings;
-        
-        self.navigationItem.hidesBackButton = YES;
-        self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                                target:self
-                                                                                                action:@selector(done:)] autorelease];
     }
     return self;
 }
@@ -107,19 +102,16 @@
     cell.textLabel.text = [holding objectForKey:@"call-no"];
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
-    cell.textLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
     
-    
-    NSMutableString *detailString = [NSMutableString string];
     BOOL available = [[holding objectForKey:@"available"] boolValue];
-    [detailString appendFormat:@"%@%@",(available ? @"Available\n" : @"Unavailable\n"), [holding objectForKey:@"status"]];
-    
-    cell.detailTextLabel.text = detailString;
+
+    cell.detailTextLabel.text = [holding objectForKey:@"status"];
     cell.detailTextLabel.numberOfLines = 0;
     cell.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
-    cell.detailTextLabel.font = (available ?
-                                 [UIFont fontWithName:BOLD_FONT size:CELL_DETAIL_FONT_SIZE] :
-                                 [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE]);
+    cell.detailTextLabel.font = (available) ?
+                                 [UIFont boldSystemFontOfSize:CELL_DETAIL_FONT_SIZE] :
+                                 [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
     cell.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
     return cell;
 }
@@ -127,19 +119,23 @@
 #pragma mark - TableView Delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    // TODO:
     NSDictionary *holding = [self.holdings objectAtIndex:indexPath.row];
-    CGSize labelSize = [[holding objectForKey:@"call-no"] sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE]
-                                                     constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - 20, CGFLOAT_MAX)
+    CGSize labelSize = [[holding objectForKey:@"call-no"] sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
+                                                     constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - (CELL_HORIZONTAL_PADDING * 2.0), CGFLOAT_MAX)
                                                          lineBreakMode:UILineBreakModeWordWrap];
     
     
-    NSMutableString *detailString = [NSMutableString string];
     BOOL available = [[holding objectForKey:@"available"] boolValue];
-    [detailString appendFormat:@"%@%@",(available ? @"Available\n" : @"Unavailable\n"), [holding objectForKey:@"status"]];
-    CGSize detailSize = [detailString sizeWithFont:[UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE]
-                                 constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - 20, CGFLOAT_MAX)
+    NSString *detailString = [holding objectForKey:@"status"];
+    UIFont *detailFont = (available) ? 
+                          [UIFont boldSystemFontOfSize:CELL_DETAIL_FONT_SIZE] :
+                          [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
+
+    CGSize detailSize = [detailString sizeWithFont:detailFont
+                                 constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - (CELL_HORIZONTAL_PADDING * 2.0), CGFLOAT_MAX)
                                      lineBreakMode:UILineBreakModeWordWrap];
     
-    return (labelSize.height + detailSize.height + 10);
+    return (labelSize.height + detailSize.height + (CELL_VERTICAL_PADDING * 2.0));
 }
 @end

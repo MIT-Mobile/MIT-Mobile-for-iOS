@@ -5,16 +5,16 @@
 
 @synthesize recents;
 
-static PeopleRecentsData *instance = nil;
+static PeopleRecentsData *sharedData = nil;
 
 #pragma mark Singleton Boilerplate
 
 + (PeopleRecentsData *)sharedData
 {
-	if (instance == nil) {
-		instance = [[super allocWithZone:NULL] init];
+	if (sharedData == nil) {
+		sharedData = [[super allocWithZone:NULL] init];
 	}
-	return instance;
+	return sharedData;
 }
 
 + (id)allocWithZone:(NSZone *)zone
@@ -58,19 +58,22 @@ static PeopleRecentsData *instance = nil;
 
 - (id)init
 {
-	recents = [[NSMutableArray alloc] initWithCapacity:0];
-	NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lastUpdate" ascending:NO];
-	for (PersonDetails *person in [CoreDataManager fetchDataForAttribute:PersonDetailsEntityName 
-														  sortDescriptor:sortDescriptor]) {
-		// if the person's result was viewed over X days ago, remove it
-		if ([[person valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -1500000) {
-			[CoreDataManager deleteObject:person]; // this invokes saveData
-		} else {
-			[recents addObject:person]; // store in memory
-		}
-	}
-    [CoreDataManager saveData];
-	[sortDescriptor release];
+    self = [super init];
+    if (self) {
+        recents = [[NSMutableArray alloc] initWithCapacity:0];
+        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lastUpdate" ascending:NO];
+        for (PersonDetails *person in [CoreDataManager fetchDataForAttribute:PersonDetailsEntityName 
+                                                              sortDescriptor:sortDescriptor]) {
+            // if the person's result was viewed over X days ago, remove it
+            if ([[person valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -1500000) {
+                [CoreDataManager deleteObject:person]; // this invokes saveData
+            } else {
+                [recents addObject:person]; // store in memory
+            }
+        }
+        [CoreDataManager saveData];
+        [sortDescriptor release];
+    }
 	return self;
 }
 

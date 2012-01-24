@@ -1,4 +1,5 @@
 #import "ConnectionWrapper.h"
+#import "MobileRequestOperation.h"
 
 #define TIMEOUT_INTERVAL	15.0
 
@@ -148,13 +149,18 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 
 #pragma mark Request methods
 - (BOOL)requestDataWithRequest:(NSURLRequest*)request {
+    NSMutableURLRequest *newRequest = [request mutableCopy];
+    [newRequest setValue:[MobileRequestOperation userAgent]
+      forHTTPHeaderField:@"User-Agent"];
+    
     // 'pre-flight' check to make sure it will go through
-	if(![NSURLConnection canHandleRequest:request]) {	// if the request will fail
+	if(![NSURLConnection canHandleRequest:newRequest]) {	// if the request will fail
 		[self resetObjects];							// then release & reset variables
 		return NO;										// and notify of failure
 	}
 	
-	self.urlConnection = [[[NSURLConnection alloc] initWithRequest:request delegate:self] autorelease];	// try and form a connection
+	self.urlConnection = [[[NSURLConnection alloc] initWithRequest:newRequest
+                                                          delegate:self] autorelease];	// try and form a connection
 	
 	if (self.urlConnection) {			// if the connection was successfully formed
 		isConnected = YES;								// record that it's successful

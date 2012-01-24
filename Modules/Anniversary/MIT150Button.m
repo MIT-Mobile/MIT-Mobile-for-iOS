@@ -106,7 +106,7 @@
         if (!overlay) {
             CGFloat * colorComps = (CGFloat *)CGColorGetComponents([tintColor CGColor]);
             
-            UIView *overlay = [[UIView alloc] initWithFrame:frame];
+            UIView *overlay = [[[UIView alloc] initWithFrame:frame] autorelease];
             overlay.userInteractionEnabled = NO;
             overlay.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
             overlay.backgroundColor = [UIColor colorWithRed:colorComps[0] * 0.3

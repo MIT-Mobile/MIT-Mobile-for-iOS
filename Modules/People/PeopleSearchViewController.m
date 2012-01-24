@@ -47,7 +47,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 		theSearchBar.text = self.searchTerms;
     
     // set up search controller
-    self.searchController = [[MITSearchDisplayController alloc] initWithSearchBar:theSearchBar contentsController:self];
+    self.searchController = [[[MITSearchDisplayController alloc] initWithSearchBar:theSearchBar contentsController:self] autorelease];
 	self.searchController.delegate = self;
     
     CGRect frame = CGRectMake(0.0, theSearchBar.frame.size.height, theSearchBar.frame.size.width, self.view.frame.size.height - theSearchBar.frame.size.height);
@@ -57,7 +57,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
     self.searchController.searchResultsDataSource = self;
     
     // set up tableview
-    self.tableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStyleGrouped];
+    self.tableView = [[[UITableView alloc] initWithFrame:frame style:UITableViewStyleGrouped] autorelease];
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -407,7 +407,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 - (void)showLoadingView {
 	if (self.loadingView == nil) {
         CGRect frame = CGRectMake(0.0, self.searchBar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.searchBar.frame.size.height);
-		self.loadingView = [[MITLoadingActivityView alloc] initWithFrame:frame];
+		self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:frame] autorelease];
 	}
 	
 	[self.view addSubview:self.loadingView];

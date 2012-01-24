@@ -4,7 +4,6 @@
 
 @interface PeopleRecentsData : NSObject {
 	
-	NSMutableArray *recents;
 }
 
 @property (nonatomic, retain) NSMutableArray *recents;

@@ -78,11 +78,13 @@ enum {
 */
 
 - (void)viewWillAppear:(BOOL)animated {
+    self.mapView.showsUserLocation = YES;
     [self.mapView addTileOverlay];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
+    self.mapView.showsUserLocation = NO;
     [self.mapView removeTileOverlay];
 }
 

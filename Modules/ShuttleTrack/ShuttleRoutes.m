@@ -90,7 +90,7 @@
 	self.isLoading = YES;
 	[dataManager requestRoutes];
 
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshRoutes)];
+	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshRoutes)] autorelease];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

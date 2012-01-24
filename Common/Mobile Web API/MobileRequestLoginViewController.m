@@ -179,7 +179,7 @@
 
         NSDictionary *credentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
 
-        saveToggle.on = [credentials objectForKey:kSecAttrAccount] && ([self.password length] > 0);
+        saveToggle.on = [credentials objectForKey:(id)kSecAttrAccount] && ([self.password length] > 0);
         self.saveCredentials = saveToggle;
 
         UITableViewCell *saveCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
@@ -403,11 +403,7 @@
     if (section == 1) {
         // TODO: move these user-visible strings out of code
         NSString *labelText = @"Log in with your MIT Kerberos username or Touchstone Collaboration Account to continue.";
-        CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:labelText 
-                                                                  accessoryView:nil 
-                                                                          width:self.view.frame.size.width];
-        
-        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
+        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter] autorelease];
         footerLabel.text = labelText;
         return footerLabel;
     }
@@ -419,8 +415,8 @@
     if (section == 1) {
         NSString *labelText = @"Log in with your MIT Kerberos username or Touchstone Collaboration Account to continue.";
         CGFloat height = [ExplanatorySectionLabel heightWithText:labelText 
-                                                            accessoryView:nil 
-                                                                    width:self.view.frame.size.width];
+                                                           width:self.view.frame.size.width
+                                                            type:ExplanatorySectionFooter];
         return height;
     }
     return 0;

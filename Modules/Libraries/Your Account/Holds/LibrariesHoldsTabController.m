@@ -1,28 +1,25 @@
-#import "LibrariesFinesTabController.h"
+#import "LibrariesHoldsTabController.h"
 #import "MITLoadingActivityView.h"
 #import "MobileRequestOperation.h"
-#import "LibrariesFinesTableViewCell.h"
+#import "LibrariesHoldsTableViewCell.h"
 #import "LibrariesDetailViewController.h"
+#import "LibrariesAccountViewController.h"
 
-@interface LibrariesFinesTabController ()
+@interface LibrariesHoldsTabController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
 @property (nonatomic,retain) NSDictionary *loanData;
-@property (nonatomic,retain) MobileRequestOperation *operation;
-@property (nonatomic,retain) NSDate *lastUpdate;
 
 - (void)setupTableView;
 - (void)updateLoanData;
 @end
 
-@implementation LibrariesFinesTabController
+@implementation LibrariesHoldsTabController
 @synthesize parentController = _parentController,
             tableView = _tableView;
 
-@synthesize loadingView = _loadingView,
-            loanData = _loanData,
-            operation = _operation,
-            lastUpdate = _lastUpdate,
-            headerView = _headerView;
+@synthesize headerView = _headerView,
+            loadingView = _loadingView,
+            loanData = _loanData;
 
 - (id)initWithTableView:(UITableView *)tableView
 {
@@ -45,9 +42,6 @@
     self.headerView = nil;
     self.loadingView = nil;
     self.loanData = nil;
-    self.operation = nil;
-    self.lastUpdate = nil;
-
     [super dealloc];
 }
 
@@ -59,11 +53,15 @@
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                         UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor whiteColor];
+        loadingView.usesBackgroundImage = NO;
+        
+        [self.tableView addSubview:loadingView];
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.loadingView = loadingView;
     }
     
     {
-        LibrariesFinesSummaryView *headerView = [[[LibrariesFinesSummaryView alloc] initWithFrame:CGRectZero] autorelease];
+        LibrariesHoldsSummaryView *headerView = [[[LibrariesHoldsSummaryView alloc] initWithFrame:CGRectZero] autorelease];
         headerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                        UIViewAutoresizingFlexibleWidth);
         self.headerView = headerView;
@@ -80,7 +78,7 @@
     {
         NSArray *book = [self.loanData objectForKey:@"items"];
         LibrariesDetailViewController *viewControler = [[[LibrariesDetailViewController alloc] initWithBookDetails:[book objectAtIndex:indexPath.row]
-                                                                                                        detailType:LibrariesDetailFineType] autorelease];
+                                                                                                        detailType:LibrariesDetailHoldType] autorelease];
         [self.parentController.navigationController pushViewController:viewControler
                                                               animated:YES];
         [tableView deselectRowAtIndexPath:indexPath
@@ -101,12 +99,12 @@
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString* LoanCellIdentifier = @"LibariesFinesTableViewCell";
+    static NSString* LoanCellIdentifier = @"LibariesHoldsTableViewCell";
     
-    LibrariesFinesTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
+    LibrariesHoldsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
     
     if (cell == nil) {
-        cell = [[[LibrariesFinesTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier] autorelease];
+        cell = [[[LibrariesHoldsTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier] autorelease];
     }
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
@@ -117,9 +115,9 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static LibrariesFinesTableViewCell *cell = nil;
+    static LibrariesHoldsTableViewCell *cell = nil;
     if (cell == nil) {
-        cell = [[LibrariesFinesTableViewCell alloc] init];
+        cell = [[LibrariesHoldsTableViewCell alloc] init];
     }
     
     NSArray *loans = [self.loanData objectForKey:@"items"];
@@ -130,42 +128,35 @@
 
 - (void)updateLoanData
 {
-    if (self.loanData == nil)
-    {
-        self.loadingView.frame = self.tableView.frame;
-        [self.tableView.superview insertSubview:self.loadingView
-                                   aboveSubview:self.tableView];
-    }
-    
-    BOOL shouldUpdate = (self.lastUpdate == nil) || ([self.lastUpdate timeIntervalSinceNow] > 15.0);
-    
-    if ((self.operation == nil) && shouldUpdate)
-    {
-        MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                                command:@"fines"
-                                                                             parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
-                                                                                                                    forKey:@"limit"]];
-        operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-            if (error) {
-                ELog(@"%@", [error localizedDescription]);
-                DLog(@"Data:\n-----\n%@\n-----", jsonResult);
-                [self.parentController.navigationController popViewControllerAnimated:YES];
-            } else {
-                if (self.loadingView.superview != nil) {
-                    [self.loadingView removeFromSuperview];
-                }
-                
-                self.loanData = (NSDictionary*)jsonResult;
-                self.headerView.accountDetails = (NSDictionary*)jsonResult;
-                [self.headerView sizeToFit];
-                [self.tableView reloadData];
-            }
-            
-            self.operation = nil;
-        };
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
+                                                                            command:@"holds"
+                                                                         parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
+                                                                                                                forKey:@"limit"]];
+    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if ([self.loadingView isDescendantOfView:self.tableView]) {
+            [self.loadingView removeFromSuperview];
+            self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        }
         
-        self.operation = operation;
-        [operation start];
+        if (error) {
+            [self.parentController reportError:error
+                                       fromTab:self];
+        } else {
+            self.loanData = (NSDictionary*)jsonResult;
+            self.headerView.accountDetails = (NSDictionary *)self.loanData;
+            [self.headerView sizeToFit];
+            [self.tableView reloadData];
+            if (self.parentController.activeTabController == self)
+            {
+                [self.parentController forceTabLayout];
+            }
+        }
+    };
+    
+    
+    if ([self.parentController.requestOperations.operations containsObject:operation] == NO)
+    {
+        [self.parentController.requestOperations addOperation:operation];
     }
 }
 

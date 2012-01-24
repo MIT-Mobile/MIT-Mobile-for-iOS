@@ -4,6 +4,7 @@
 #import "LibrariesLoanTableViewCell.h"
 #import "LibrariesRenewResultViewController.h"
 #import "LibrariesDetailViewController.h"
+#import "LibrariesAccountViewController.h"
 
 @interface LibrariesLoanTabController ()
 @property (nonatomic, retain) MITLoadingActivityView *loadingView;
@@ -13,7 +14,7 @@
 @property (nonatomic, retain) UIBarButtonItem *renewBarItem;
 @property (nonatomic, retain) UIBarButtonItem *cancelBarItem;
 
-@property (nonatomic,retain) MobileRequestOperation *operation;
+@property (nonatomic,retain) MobileRequestOperation *renewOperation;
 
 - (void)setupTableView;
 - (void)updateLoanData;
@@ -37,7 +38,7 @@
 @synthesize cancelBarItem = _cancelBarItem;
 
 
-@synthesize operation = _operation;
+@synthesize renewOperation = _renewOperation;
 
 - (id)initWithTableView:(UITableView *)tableView
 {
@@ -49,6 +50,8 @@
             [self setupTableView];
             [self updateLoanData];
         }
+        
+        self.loanData = [NSDictionary dictionary];
     }
     
     return self;
@@ -56,13 +59,14 @@
 
 - (void)dealloc
 {
+    [self.renewOperation cancel];
+    
     self.parentController = nil;
     self.tableView = nil;
     self.tabViewHidingDelegate = nil;
     self.headerView = nil;
     self.loadingView = nil;
     self.loanData = nil;
-    self.operation = nil;
     self.renewItems = nil;
     self.renewBarItem = nil;
     self.cancelBarItem = nil;
@@ -79,6 +83,9 @@
                                         UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor whiteColor];
         loadingView.usesBackgroundImage = NO;
+        
+        [self.tableView addSubview:loadingView];
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.loadingView = loadingView;
     }
     
@@ -199,47 +206,37 @@
 #pragma mark -
 - (void)updateLoanData
 {
-    if (self.loanData == nil)
-    {
-        self.loadingView.frame = self.tableView.frame;
-        [self.tableView.superview insertSubview:self.loadingView
-                                   aboveSubview:self.tableView];
-    }
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
+                                                                            command:@"loans"
+                                                                         parameters:nil];
     
-    if (self.operation == nil)
-    {
-        MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                                command:@"loans"
-                                                                             parameters:nil];
+    self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
+    
+    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if ([self.loadingView isDescendantOfView:self.tableView]) {
+            [self.loadingView removeFromSuperview];
+            self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        }
         
-        self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
-        
-        operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-            if (error) {
-                ELog(@"Loan: %@", [error localizedDescription]);
-                if (error.code == MobileWebInvalidLoginError)
-                {
-                   [self.parentController.navigationController popViewControllerAnimated:YES];
-                }
-            } else {
-                if (self.loadingView.superview != nil) {
-                    [self.loadingView removeFromSuperview];
-                }
-                
-                self.loanData = (NSDictionary*)jsonResult;
-            }
-
+        if (error) {
+            [self.parentController reportError:error
+                                       fromTab:self];
+        } else {
+            self.loanData = (NSDictionary*)jsonResult;
             self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
             self.headerView.accountDetails = (NSDictionary *)self.loanData;
             [self.headerView sizeToFit];
             [self.tableView reloadData];
-
-
-            self.operation = nil;
-        };
+            if (self.parentController.activeTabController == self)
+            {
+                [self.parentController forceTabLayout];
+            }
+        }
+    };
     
-        self.operation = operation;
-        [operation start];
+    if ([self.parentController.requestOperations.operations containsObject:operation] == NO)
+    {
+        [self.parentController.requestOperations addOperation:operation];
     }
 }
 
@@ -317,14 +314,11 @@
                                                                             command:@"renewBooks"
                                                                          parameters:params];
     [operation setCompleteBlock:^(MobileRequestOperation *operation, id jsonData, NSError *error) {
-        self.operation = nil;
+        self.renewOperation = nil;
         
         if (error)
         {
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Renew"
-                                                             message:[error localizedDescription]
-                                                            delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil] autorelease];
-            [alert show];
+            [self.parentController reportError:error fromTab:self];
             self.renewBarItem.enabled = YES;
             self.cancelBarItem.enabled = YES;
         }
@@ -336,16 +330,16 @@
         }
 
     }];
-
-    self.operation = operation;
-    [operation start];
+    
+    self.renewOperation = operation;
+    [self.parentController.requestOperations addOperation:operation];
 }
 
 - (IBAction)cancelRenew:(id)sender
 {
-    if (self.operation)
+    if (self.renewOperation)
     {
-        [self.operation cancel];
+        [self.renewOperation cancel];
     }
 
     [self restoreTabView:sender animated:YES];

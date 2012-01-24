@@ -109,7 +109,7 @@ NSString *stripLetters(NSString *courseNumber);
 }
 
 - (id) initNumeric: (BOOL)aNumeric lower: (NSString *)aLower upper: (NSString *)aUpper {
-	[super init];
+	self = [super init];
 	self.lower = aLower;
 	self.upper = aUpper;
 	numeric = aNumeric;

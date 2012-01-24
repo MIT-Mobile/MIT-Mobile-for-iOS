@@ -17,7 +17,7 @@ NSDictionary* MobileKeychainFindItem(NSString *itemIdentifier, BOOL returnData) 
     OSStatus error = SecItemCopyMatching((CFDictionaryRef)searchDictionary, (CFTypeRef*)&itemAttrs);
     
     if ((error != noErr) && (error != errSecItemNotFound)) {
-        NSLog(@"SecItemCopyMatching failed with error %ld", error);
+        ELog(@"SecItemCopyMatching failed with error %ld", error);
     } else if (returnData) {
         [searchDictionary setObject:(id)kCFBooleanTrue
                              forKey:(id)kSecReturnData];

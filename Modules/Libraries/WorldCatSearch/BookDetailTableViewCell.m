@@ -3,9 +3,12 @@
 
 #define BOOK_DETAIL_CELL_MARGIN 10
 
+const CGFloat BookDetailFontSizeTitle = 18.0;
+const CGFloat BookDetailFontSizeDefault = 15.0;
+
 @implementation BookDetailTableViewCell
 
-@synthesize displayString;
+@synthesize displayString = _displayString;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -17,6 +20,14 @@
         self.backgroundView.backgroundColor = [UIColor clearColor];
     }
     return self;
+}
+
+- (void)setDisplayString:(NSAttributedString *)displayString {
+    if (displayString != _displayString) {
+        [_displayString release];
+        _displayString = [displayString retain];
+        [self setNeedsDisplay];
+    }
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

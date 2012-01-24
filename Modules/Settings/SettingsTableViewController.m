@@ -239,14 +239,7 @@ enum {
     }
     
     if (subtitleText) {
-        CGFloat fittedHeight = [ExplanatorySectionLabel 
-                                heightWithText:subtitleText 
-                                accessoryView:nil
-                                width:self.view.frame.size.width];
-        
-        ExplanatorySectionLabel *footerLabel = 
-        [[[ExplanatorySectionLabel alloc] 
-         initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
+        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter] autorelease];
         footerLabel.text = subtitleText;
         result = footerLabel;
     }
@@ -269,7 +262,9 @@ enum {
     }
     
     if (subtitleText) {
-        height = [ExplanatorySectionLabel heightWithText:subtitleText accessoryView:nil width:self.view.frame.size.width];
+        height = [ExplanatorySectionLabel heightWithText:subtitleText 
+                                                   width:self.view.frame.size.width 
+                                                    type:ExplanatorySectionFooter];
     }
     
     return height;
@@ -513,7 +508,7 @@ enum {
             [self.apiRequests setObject:request
                                  forKey:tag];
         } else {
-            NSLog(@"Error: attempting to overwrite in-flight request with tag %@",tag);
+            ELog(@"Error: attempting to overwrite in-flight request with tag %@",tag);
         }
     });
 }

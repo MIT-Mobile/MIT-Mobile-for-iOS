@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "LibrariesLoanSummaryView.h"
 
+@class LibrariesAccountViewController;
+
 @protocol MITTabViewHidingDelegate <NSObject>
 @optional
 - (void)setTabBarHidden:(BOOL)tabBarHidden animated:(BOOL)animated;
@@ -9,7 +11,7 @@
 
 @interface LibrariesLoanTabController : NSObject <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic,retain) LibrariesLoanSummaryView *headerView;
-@property (nonatomic,assign) UIViewController *parentController;
+@property (nonatomic,retain) LibrariesAccountViewController *parentController;
 @property (nonatomic,retain) UITableView *tableView;
 @property (nonatomic,assign) id<MITTabViewHidingDelegate> tabViewHidingDelegate;
 

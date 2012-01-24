@@ -109,7 +109,7 @@
                 if ([[self.details objectForKey:@"ready"] boolValue])
                 {
                     statusIcon = [[[UIImageView alloc] init] autorelease];
-                    statusIcon.image = [UIImage imageNamed:@"libraries/status-ok"];
+                    statusIcon.image = [UIImage imageNamed:@"libraries/status-ready"];
                 }
                 break;
 
@@ -241,6 +241,7 @@
         [renewButton addTarget:self
                         action:@selector(renewBook:)
               forControlEvents:UIControlEventTouchUpInside];
+        self.renewButton.titleLabel.textColor = [UIColor blackColor];
 
         [mainView addSubview:renewButton];
         self.renewButton = renewButton;

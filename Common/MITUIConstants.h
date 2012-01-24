@@ -2,6 +2,10 @@
 
 /*** universal font constants ***/
 
+// Note: we need to stop using these.
+// Devices with Retina displays use Helvetica Neue instead of Helvetica.
+// Use systemFontOfSize and boldSystemFontOfSize instead.
+
 #define STANDARD_FONT @"Helvetica"
 #define BOLD_FONT @"Helvetica-Bold"
 
@@ -24,6 +28,7 @@
 #define CELL_DETAIL_FONT_COLOR [UIColor colorWithHexString:@"#4C4C4C"]
 #define CELL_DETAIL_FONT_SIZE 13.0
 
+#define CELL_HORIZONTAL_PADDING 10.0
 #define CELL_VERTICAL_PADDING 10.0
 #define CELL_TWO_LINE_HEIGHT 56.0 /* the height needed for a standard cell to have 10 pixel padding */
 

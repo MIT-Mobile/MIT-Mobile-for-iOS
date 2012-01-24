@@ -552,7 +552,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         [self.loadingView removeFromSuperview];
         
         if (error && (error.code != NSUserCancelledError)) {
-            NSLog(@"Request failed with error: %@",[error localizedDescription]); 
+            DLog(@"Request failed with error: %@",[error localizedDescription]); 
             [MITMobileWebAPI showError:nil header:@"Login" alertViewDelegate:self];
         } else if (!jsonResult) {
             [self.navigationController popViewControllerAnimated:YES];    
@@ -818,8 +818,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
     if (formGroup.headerText) {
         CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.headerText
-                                                   accessoryView:nil 
-                                                           width:self.view.frame.size.width];
+                                                           width:self.view.frame.size.width
+                                                            type:ExplanatorySectionFooter];
         return height;
     } else if (formGroup.name) {
         return GROUPED_SECTION_HEADER_HEIGHT;
@@ -833,11 +833,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     }
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
     if (formGroup.headerText) {
-        CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:formGroup.headerText 
-                                                         accessoryView:nil
-                                                                 width:self.view.frame.size.width];
-        ExplanatorySectionLabel *headerLabel = [[[ExplanatorySectionLabel alloc] 
-            initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
+        ExplanatorySectionLabel *headerLabel = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader] autorelease];
         headerLabel.text = formGroup.headerText;
         return headerLabel;
     } else if (formGroup.name) {
@@ -850,8 +846,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
     if (formGroup.footerText) {
         CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.footerText
-                                                   accessoryView:nil 
-                                                           width:self.view.frame.size.width];
+                                                           width:self.view.frame.size.width
+                                                            type:ExplanatorySectionFooter];
         return height;
     }
     return 0;
@@ -863,11 +859,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     }
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
     if (formGroup.footerText) {
-        CGFloat fittedHeight = [ExplanatorySectionLabel heightWithText:formGroup.footerText 
-                                                         accessoryView:nil
-                                                                 width:self.view.frame.size.width];
-        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] 
-                                                initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, fittedHeight)] autorelease];
+        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter] autorelease];
         footerLabel.text = formGroup.footerText;
         return footerLabel;
     }
@@ -930,7 +922,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         NSDictionary *jsonDict = jsonResult;
         BOOL success = [(NSNumber *)[jsonDict objectForKey:@"success"] boolValue];
         if (error || !success) {
-            NSLog(@"Request failed with error: %@",[error localizedDescription]);
+            DLog(@"Request failed with error: %@",[error localizedDescription]);
             [self.navigationController popViewControllerAnimated:NO];
             [self showErrorSubmittingForm];
         } else {
