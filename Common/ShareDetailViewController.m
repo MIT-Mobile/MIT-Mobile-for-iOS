@@ -49,7 +49,7 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 0) {
 		// Email
-        [MITMailComposeController presentMailControllerWithEmail:nil subject:[self.shareDelegate emailSubject] body:[self.shareDelegate emailBody]];
+        [MITMailComposeController presentMailControllerWithRecipient:nil subject:[self.shareDelegate emailSubject] body:[self.shareDelegate emailBody]];
 	}
     else if (buttonIndex == 1) {
 		// Facebook session

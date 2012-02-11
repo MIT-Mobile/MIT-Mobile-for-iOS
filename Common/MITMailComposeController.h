@@ -3,10 +3,17 @@
 
 // TODO: add protocol for classes to do things after the controller is dismissed
 
+typedef void(^CompletionBlock)(MFMailComposeViewController *, MFMailComposeResult, NSError *);
+
 @interface MITMailComposeController : NSObject <MFMailComposeViewControllerDelegate> {
 
 }
 
-+ (void)presentMailControllerWithEmail:(NSString *)email subject:(NSString *)subject body:(NSString *)body;
+@property (nonatomic, copy) CompletionBlock completionBlock;
 
++ (void)presentMailControllerWithRecipient:(NSString *)email subject:(NSString *)subject body:(NSString *)body;
+
+// Set a completionBlock if you want to handle the MFMailComposeResult yourself. Note that means you'll have to dismiss the modal view.
+
++ (void)presentMailControllerWithRecipient:(NSString *)email subject:(NSString *)subject body:(NSString *)body completionBlock:(CompletionBlock)completionBlock;
 @end

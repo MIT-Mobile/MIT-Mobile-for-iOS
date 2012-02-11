@@ -491,7 +491,7 @@
 
 - (void)emailIconTapped:(NSString *)email
 {
-    [MITMailComposeController presentMailControllerWithEmail:email subject:nil body:nil];
+    [MITMailComposeController presentMailControllerWithRecipient:email subject:nil body:nil];
 }
 
 
