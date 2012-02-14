@@ -9,9 +9,9 @@ static NSString * const kShibbolethLoginUsernamePath = @"//div[@id='loginbox']/f
 static NSString * const kShibbolethLoginPasswordPath = @"//div[@id='loginbox']/form[@id='loginform']/fieldset/label/input[@type='password']/@name";
 
 static NSString * const kShibbolethMobileErrorPath = @"//div[@id='container']/div[@class='alertbox warning']/text()";
-static NSString * const kShibbolethMobileLoginFormPath = @"//div[@id='container']/form[@id='cform']/@action";
-static NSString * const kShibbolethMobileLoginUsernamePath = @"//div[@id='container']/form[@id='cform']//input[@id='username']/@name";
-static NSString * const kShibbolethMobileLoginPasswordPath = @"//div[@id='container']/form[@id='cform']/fieldset/label/input[@id='pwd']/@name";
+static NSString * const kShibbolethMobileLoginFormPath = @"//div[@id='container']/form[@id='kform']/@action";
+static NSString * const kShibbolethMobileLoginUsernamePath = @"//div[@id='container']/form[@id='kform']//input[@id='username']/@name";
+static NSString * const kShibbolethMobileLoginPasswordPath = @"//div[@id='container']/form[@id='kform']//input[@id='pwd']/@name";
 
 static NSString * const kShibbolethAssertActionPath = @"//body/form/@action";
 static NSString * const kShibbolethAssertInputsPath = @"//body/form/div/input";
