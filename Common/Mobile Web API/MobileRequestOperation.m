@@ -132,18 +132,22 @@ typedef enum {
 + (BOOL)isAuthenticationCookie:(NSHTTPCookie*)cookie
 {
     NSString *name = [cookie name];
-    NSRange range = [name rangeOfString:@"_shib"
-                                options:NSCaseInsensitiveSearch];
-    return (range.location != NSNotFound);
+    return ([name containsSubstring:@"_shib" options:NSCaseInsensitiveSearch] ||
+            [name containsSubstring:@"_idp" options:NSCaseInsensitiveSearch] ||
+            [name containsSubstring:@"JSESSION" options:NSCaseInsensitiveSearch] ||
+            [name containsSubstring:@"_device" options:NSCaseInsensitiveSearch]);
 }
 
 + (void)clearAuthenticatedSession
 {
     NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     for (NSHTTPCookie *cookie in [cookieStore cookies]) {
-        NSRange range = [[cookie name] rangeOfString:@"_saml"
-                                             options:NSCaseInsensitiveSearch];
-        if ((range.location != NSNotFound) || [self isAuthenticationCookie:cookie]) {
+        DLog(@"Checking '%@'", [cookie name]);
+        BOOL samlCookie = [[cookie name] containsSubstring:@"_saml"
+                                                   options:NSCaseInsensitiveSearch];
+        
+        if (samlCookie || [self isAuthenticationCookie:cookie])
+        {
             DLog(@"Deleting cookie: %@[%@]",[cookie name], [cookie domain]);
             [cookieStore deleteCookie:cookie];
         }
