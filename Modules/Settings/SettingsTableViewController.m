@@ -313,7 +313,7 @@ enum {
                     if (cell == nil)
                     {
                         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                       reuseIdentifier:CellIdentifier] autorelease];
+                                                       reuseIdentifier:TouchstoneUsernameCellIdentifier] autorelease];
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                         cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
                         cell.selectionStyle = UITableViewCellSelectionStyleBlue;

@@ -16,6 +16,7 @@
 @interface NSString (MITAdditions)
 
 - (NSString *)substringToMaxIndex:(NSUInteger)to;
+- (BOOL)containsSubstring:(NSString*)string options:(NSStringCompareOptions)mask;
 
 @end
 
