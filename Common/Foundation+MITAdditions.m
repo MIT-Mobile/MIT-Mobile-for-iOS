@@ -43,6 +43,14 @@
 	return [self substringToIndex:(to > maxLength) ? maxLength : to];
 }
 
+- (BOOL)containsSubstring:(NSString*)string options:(NSStringCompareOptions)mask
+{
+    NSRange substringRange = [self rangeOfString:string
+                                         options:mask];
+    
+    return (substringRange.location != NSNotFound);
+}
+
 @end
 
 

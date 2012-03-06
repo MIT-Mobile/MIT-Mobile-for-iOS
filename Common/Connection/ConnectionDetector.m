@@ -32,7 +32,7 @@
 	self = [super init];
 	if (self) {
         // use our api server to check for a connection
-		_reachability = [Reachability reachabilityWithHostName:MITMobileWebGetCurrentServerDomain()];
+		_reachability = [[Reachability reachabilityWithHostName:MITMobileWebGetCurrentServerDomain()] retain];
 	}
 	return self;
 }
