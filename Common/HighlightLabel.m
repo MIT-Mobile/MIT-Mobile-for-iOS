@@ -1,8 +1,14 @@
 #import "HighlightLabel.h"
 
+@interface HighlightLabel ()
+@property (nonatomic,retain) NSAttributedString *attributedString;
+@end
+
 @implementation HighlightLabel
+@synthesize matchedTextColor = _matchedTextColor;
 @synthesize searchString = _searchString;
-@synthesize highlightsAllMatches = _highlightAllMatches;
+@synthesize highlightAllMatches = _highlightAllMatches;
+@synthesize attributedString = _attributedString;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -11,11 +17,11 @@
         self.searchString = nil;
         
         self.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-        self.highlightedTextColor = [UIColor colorWithRed:0.643
-                                                    green:0.000
-                                                     blue:0.114
-                                                    alpha:1.0];
-        self.highlightsAllMatches = YES;
+        self.matchedTextColor = [UIColor colorWithRed:0.643
+                                                green:0.000
+                                                 blue:0.114
+                                                alpha:1.0];
+        self.highlightAllMatches = YES;
         
         [self addObserver:self
                forKeyPath:@"font"
@@ -48,7 +54,7 @@
     [self removeObserver:self
               forKeyPath:@"searchString"];
     
-    [_attributedString release], _attributedString = nil;
+    self.attributedString = nil;
     
     [super dealloc];
 }
@@ -58,14 +64,13 @@
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-    if (_attributedString) {
-        [_attributedString release];
-        _attributedString = nil;
+    if (self.attributedString) {
+        self.attributedString = nil;
         [self setNeedsDisplay];
     }
 }
 
-- (NSAttributedString*)highlightedString {
+- (NSAttributedString*)attributedString {
     if (_attributedString) {
         return _attributedString;
     }
@@ -92,10 +97,11 @@
             .value = &breakMode
         };
     
+    UIColor *textColor = (self.isHighlighted ? self.highlightedTextColor : self.textColor);
     CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(&styleSettings, 1);
     NSDictionary *attrs = [[[NSDictionary alloc] initWithObjectsAndKeys:
                                     (id)ctFont, kCTFontAttributeName, 
-                                    [self.textColor CGColor], kCTForegroundColorAttributeName,
+                                    [textColor CGColor], kCTForegroundColorAttributeName,
                                     (id)paragraphStyle,kCTParagraphStyleAttributeName,
                                     nil] autorelease];
     CFRelease(paragraphStyle);
@@ -103,7 +109,7 @@
                         range:NSMakeRange(0, [fullString length])];
 
     
-    if (searchString && ([searchString length] > 0)) {
+    if (searchString && ([searchString length] > 0) && (self.isHighlighted == NO)) {
         NSError *error = NULL;
         NSString *pattern = [NSRegularExpression escapedPatternForString:searchString];
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
@@ -119,7 +125,7 @@
                 [fullString addAttribute:(NSString *)kCTForegroundColorAttributeName 
                                    value:(id)[self.highlightedTextColor CGColor] 
                                    range:matchRange];
-                if (self.highlightsAllMatches == NO) {
+                if (self.highlightAllMatches == NO) {
                     *stop = YES;
                 }
             }
@@ -128,8 +134,18 @@
     
     CFRelease(ctFont);
     
-    _attributedString = [[NSAttributedString alloc] initWithAttributedString:fullString];
+    self.attributedString = [[NSAttributedString alloc] initWithAttributedString:fullString];
     return _attributedString;
+}
+
+- (void)setHighlighted:(BOOL)highlighted
+{
+    if (self.highlighted != highlighted)
+    {
+        self.attributedString = nil;
+    }
+    
+    [super setHighlighted:highlighted];
 }
 
 - (void)drawTextInRect:(CGRect)rect {
@@ -138,7 +154,7 @@
     CGContextTranslateCTM(context, 0, rect.size.height);
     CGContextScaleCTM(context, 1.0f, -1.0f);
     
-    NSAttributedString *attrString = [[[NSAttributedString alloc] initWithAttributedString:[self highlightedString]] autorelease];
+    NSAttributedString *attrString = [[[NSAttributedString alloc] initWithAttributedString:self.attributedString] autorelease];
     CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attrString);
     
     CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, 
