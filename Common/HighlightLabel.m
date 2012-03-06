@@ -21,6 +21,7 @@
                                                 green:0.000
                                                  blue:0.114
                                                 alpha:1.0];
+        self.highlightedTextColor = [UIColor whiteColor];
         self.highlightAllMatches = YES;
         
         [self addObserver:self
@@ -117,13 +118,13 @@
                                                                                  error:&error];
         
         [regex enumerateMatchesInString:labelString 
-                                options:0 
+                                options:0
                                   range:NSMakeRange(0, [labelString length]) 
                              usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
             NSRange matchRange = [result range];
             if (matchRange.location != NSNotFound) {
                 [fullString addAttribute:(NSString *)kCTForegroundColorAttributeName 
-                                   value:(id)[self.highlightedTextColor CGColor] 
+                                   value:(id)[self.matchedTextColor CGColor] 
                                    range:matchRange];
                 if (self.highlightAllMatches == NO) {
                     *stop = YES;
