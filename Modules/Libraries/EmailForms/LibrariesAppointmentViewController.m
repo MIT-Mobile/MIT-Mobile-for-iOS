@@ -49,7 +49,7 @@
                                           required:YES 
                                             values:[NSArray arrayWithObjects:
                                                     @"General",
-                                                    @"Art, Architecture & Planning",
+                                                    @"Art & Architecture",
                                                     @"Engineering & Computer Science",
                                                     @"GIS",
                                                     @"Humanities",

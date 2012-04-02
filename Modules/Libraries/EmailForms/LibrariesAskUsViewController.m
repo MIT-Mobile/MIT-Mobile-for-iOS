@@ -8,12 +8,12 @@
                                                  displayLabel:@"Topic"
                                                      required:YES
                                                        values:[NSArray arrayWithObjects:
+                                                               @"General",
                                                                @"Art, Architecture & Planning", 
                                                                @"Engineering & Computer Science",
                                                                @"Management & Business",
                                                                @"Science",
                                                                @"Social Sciences",
-                                                               @"General",
                                                                @"Circulation",
                                                                @"Technical Help",
                                                                nil]] autorelease];
