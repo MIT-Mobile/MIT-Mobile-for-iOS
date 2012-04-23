@@ -1,4 +1,6 @@
 #import <Foundation/Foundation.h>
+#ifndef _MIT_LOGGING_
+#define _MIT_LOGGING_
 
 /*
  * Log statements that turn to no-ops depending on compiler flags.
@@ -32,7 +34,7 @@
 #elif SILENT
     #define MIT_LOG_LEVEL MIT_SILENT
 #else
-    #define MIT_LOG_LEVEL MIT_RELEASE
+    #define MIT_LOG_LEVEL MIT_SILENT
 #endif
 
 #define MITNSLog(level, fmt, ...) NSLog((@"" level " [%s:%d] " fmt), __FILE__, __LINE__, ##__VA_ARGS__)
@@ -76,3 +78,5 @@ void MyLog(const char *level, const char *filepath, int line, NSString *format, 
     #define WLog(...)
     #define ELog(...)
 #endif
+
+#endif //_MIT_LOGGING_
