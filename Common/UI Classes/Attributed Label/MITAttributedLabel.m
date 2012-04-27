@@ -146,8 +146,6 @@
             NULL);
     CFRelease(framesetter);
 
-    NSLog(@"Framesetting string '%@', size: %@", [self.attributedString string], NSStringFromCGSize(fitSize));
-
     return CGSizeMake(size.width,
                       ceilf(fitSize.height) + 20);
 }
@@ -187,7 +185,6 @@
     NSMutableAttributedString *drawableString = [[[NSMutableAttributedString alloc] initWithAttributedString:self.mutableAttributedString] autorelease];
     CTParagraphStyleSetting styleSettings[2];
 
-    NSLog(@"Line Break Mode: %d [%d]", self.lineBreakMode, UILineBreakModeWordWrap);
     CTLineBreakMode lineBreakMode = (CTLineBreakMode)(self.lineBreakMode);
     styleSettings[0].spec = kCTParagraphStyleSpecifierLineBreakMode;
     styleSettings[0].valueSize = sizeof(CTLineBreakMode);
