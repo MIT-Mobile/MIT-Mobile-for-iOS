@@ -371,6 +371,7 @@
 		EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA07 /* TextEntryTableViewCell.m */; };
 		EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA0B /* MITNavigationActivityView.m */; };
 		EF3B3B15103F072400E8AA10 /* MITAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA0F /* MITAttributedLabel.m */; };
+		EF3B3B15103F072400E8AA13 /* NSMutableAttributedString+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1099,6 +1100,8 @@
 		EF3B3B15103F072400E8AA0D /* MITNavigationActivityView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNavigationActivityView.h; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA0F /* MITAttributedLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITAttributedLabel.m; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA11 /* MITAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITAttributedLabel.h; sourceTree = "<group>"; };
+		EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+MITAdditions.m"; sourceTree = "<group>"; };
+		EF3B3B15103F072400E8AA14 /* NSMutableAttributedString+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+MITAdditions.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1451,6 +1454,8 @@
 		2C3C9D7314CDC0B2005646F7 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				EF3B3B15103F072400E8AA14 /* NSMutableAttributedString+MITAdditions.h */,
+				EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */,
 				EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */,
 				EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */,
 				DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */,
@@ -2912,6 +2917,7 @@
 				2CDE951614EAAA2B000271BD /* GDataXMLNode.m in Sources */,
 				2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */,
 				EF3B3B15103F072400E8AA10 /* MITAttributedLabel.m in Sources */,
+				EF3B3B15103F072400E8AA13 /* NSMutableAttributedString+MITAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
