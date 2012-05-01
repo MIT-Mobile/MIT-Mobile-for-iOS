@@ -83,9 +83,6 @@
 	if(cell == nil) {
         cell = [[[StellarClassTableCell alloc] initWithReuseIdentifier:@"StellarClasses"] autorelease];
 	}
-	
-	//StellarClass *stellarClass = [classes objectAtIndex:indexPath.row];
-	//return [StellarClassTableCell configureCell:cell withStellarClass:stellarClass];
 
     cell.stellarClassID = [[classes objectAtIndex:indexPath.row] objectID];
     return cell;
