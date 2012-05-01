@@ -63,28 +63,27 @@ static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment
 }
 
 @implementation NSMutableAttributedString (MITAdditions)
-- (NSRange)appendString:(NSString *)string
+- (void)appendString:(NSString *)string
                withFont:(UIFont *)font
               textColor:(UIColor *)color
 {
-    NSRange stringRange = NSMakeRange([self length] - 1, [string length]);
+    if ([string length] > 0)
+    {
+        if (color == nil)
+        {
+            color = [UIColor blackColor];
+        }
 
-    [[self mutableString] appendString:string];
-    NSMutableDictionary *attrs = [NSMutableDictionary dictionary];
+        CTFontRef ctFont = createCTFontFromUIFont(font);
 
-    CTFontRef ctFont = createCTFontFromUIFont(font);
-    [attrs setObject:(id)ctFont
-              forKey:(id)kCTFontAttributeName];
-    CFRelease(ctFont);
+        NSDictionary *attributes = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:(id)ctFont,(id)[color CGColor], nil]
+                                                               forKeys:[NSArray arrayWithObjects:kCTFontAttributeName, kCTForegroundColorAttributeName, nil]];
+        NSAttributedString *tmpString = [[[NSAttributedString alloc] initWithString:string
+                                                                         attributes:attributes] autorelease];
+        [self appendAttributedString:tmpString];
 
-    CGColorRef textColor = [color CGColor];
-    [attrs setObject:(id)[color CGColor]
-              forKey:(id)kCTForegroundColorAttributeName];
-
-    [self setAttributes:attrs
-                  range:stringRange];
-
-    return stringRange;
+        CFRelease(ctFont);
+    }
 }
 
 - (void)setFont:(UIFont *)font
@@ -112,6 +111,20 @@ static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment
                  range:attrRange];
 
     CFRelease(ctFont);
+}
+
+
+- (void)setForegroundColor:(UIColor *)foregroundColor
+                  forRange:(NSRange)attrRange
+{
+    if (foregroundColor == nil)
+    {
+        foregroundColor = [UIColor whiteColor];
+    }
+
+    [self addAttribute:(NSString *)kCTForegroundColorAttributeName
+                 value:(id)[foregroundColor CGColor]
+                 range:attrRange];
 }
 
 - (void)setUnderline:(CTUnderlineStyle)underlineStyle
