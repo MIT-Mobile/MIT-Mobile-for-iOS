@@ -42,6 +42,7 @@
         self.attributedLabel = label;
 
         self.edgeInsets = UIEdgeInsetsMake(5, 10, 5, 10);
+        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
 
     return self;
