@@ -77,7 +77,7 @@ static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment
         CTFontRef ctFont = createCTFontFromUIFont(font);
 
         NSDictionary *attributes = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:(id)ctFont,(id)[color CGColor], nil]
-                                                               forKeys:[NSArray arrayWithObjects:kCTFontAttributeName, kCTForegroundColorAttributeName, nil]];
+                                                               forKeys:[NSArray arrayWithObjects:(const NSString*)kCTFontAttributeName, (const NSString*)kCTForegroundColorAttributeName, nil]];
         NSAttributedString *tmpString = [[[NSAttributedString alloc] initWithString:string
                                                                          attributes:attributes] autorelease];
         [self appendAttributedString:tmpString];
