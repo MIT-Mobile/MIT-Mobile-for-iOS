@@ -234,7 +234,9 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     // because stories are added to Core Data in separate threads, there may be merge conflicts. this thread wins when we're pruning
     NSManagedObjectContext *context = [CoreDataManager managedObjectContext];
     id originalMergePolicy = [context mergePolicy];
-    [context setMergePolicy:NSOverwriteMergePolicy];
+    
+    context.undoManager = nil;
+    context.mergePolicy = NSOverwriteMergePolicy;
 
     NewsCategoryId allCategories[] = {
         NewsCategoryIdTopNews, NewsCategoryIdCampus,
