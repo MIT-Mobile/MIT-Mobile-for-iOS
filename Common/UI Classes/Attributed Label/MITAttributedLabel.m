@@ -1,24 +1,25 @@
 #import "MITAttributedLabel.h"
+#import "NSMutableAttributedString+MITAdditions.h"
 
 @interface MITAttributedLabel ()
-@property (nonatomic, strong) NSMutableAttributedString *mutableAttributedString;
+@property (nonatomic, strong) NSMutableAttributedString *visibleAttributedString;
+@property (nonatomic, assign) CTFramesetterRef framesetter;
 
-- (CTFontRef)createCTFontFromUIFont:(UIFont *)uiFont;
+- (NSSet *)invalidatingKeyPaths;
 
-- (UIFont *)fontFromCTFont:(CTFontRef)ctFont;
-
-- (NSDictionary *)dictionaryWithFont:(UIFont *)font
-                           textStyle:(MITAttributedLabelStyle)style
-                           textColor:(UIColor *)foregroundColor;
+- (void)invalidateCache;
 @end
 
 @implementation MITAttributedLabel
 {
+    NSAttributedString *_attributedString;
+    NSMutableAttributedString *_visibleAttributedString;
     CTFramesetterRef _framesetter;
 }
 
-@synthesize mutableAttributedString = _mutableAttributedString;
 @dynamic attributedString;
+@dynamic framesetter;
+@dynamic visibleAttributedString;
 
 - (id)init
 {
@@ -30,7 +31,14 @@
     self = [super initWithFrame:frame];
     if (self)
     {
-        self.mutableAttributedString = [[[NSMutableAttributedString alloc] init] autorelease];
+        self.visibleAttributedString = [[[NSMutableAttributedString alloc] init] autorelease];
+
+        [[self invalidatingKeyPaths] enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+            [self addObserver:self
+                   forKeyPath:(NSString *)obj
+                      options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
+                      context:nil];
+        }];
     }
 
     return self;
@@ -38,66 +46,43 @@
 
 - (void)dealloc
 {
-    self.mutableAttributedString = nil;
+    [[self invalidatingKeyPaths] enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+        [self removeObserver:self
+                  forKeyPath:(NSString *)obj];
+    }];
+
+    self.visibleAttributedString = nil;
+    self.attributedString = nil;
+    self.framesetter = nil;
     [super dealloc];
 }
 
-- (void)setString:(NSString *)string withFont:(UIFont *)font style:(MITAttributedLabelStyle)style
-{
-    [self setString:string
-           withFont:font
-              style:style
-          textColor:nil];
-}
-
-- (void)setString:(NSString *)string withFont:(UIFont *)font style:(MITAttributedLabelStyle)style textColor:(UIColor *)textColor
-{
-    [self.mutableAttributedString deleteCharactersInRange:NSMakeRange(0, [self.mutableAttributedString length])];
-    [self appendString:string
-              withFont:font
-                 style:style
-             textColor:textColor];
-}
-
-- (void)appendString:(NSString *)string withFont:(UIFont *)font style:(MITAttributedLabelStyle)style
-{
-    [self appendString:string
-              withFont:font
-                 style:style
-             textColor:nil];
-}
-
-- (void)appendString:(NSString *)string withFont:(UIFont *)font style:(MITAttributedLabelStyle)style textColor:(UIColor *)textColor
-{
-    if (string == nil)
-    {
-        return;
-    }
-
-    if (textColor == nil)
-    {
-        textColor = self.textColor;
-    }
-
-    if (font == nil)
-    {
-        font = self.font;
-    }
-
-    NSMutableDictionary *ctOptions = [NSMutableDictionary dictionaryWithDictionary:[self dictionaryWithFont:font
-                                                                                                  textStyle:style
-                                                                                                  textColor:textColor]];
-    NSAttributedString *tempString = [[[NSAttributedString alloc] initWithString:string
-                                                                      attributes:ctOptions] autorelease];
-    [self.mutableAttributedString appendAttributedString:tempString];
-}
-
 #pragma mark - Overridden methods
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    NSSet *keys = [self invalidatingKeyPaths];
+    if ([keys containsObject:keyPath])
+    {
+        id oldValue = [change objectForKey:NSKeyValueChangeOldKey];
+        id newValue = [change objectForKey:NSKeyValueChangeNewKey];
+
+        if ([oldValue isEqual:newValue] == NO)
+        {
+            [self invalidateCache];
+        }
+    }
+}
+
 - (void)setText:(NSString *)aText
 {
-    [self setString:aText
-           withFont:self.font
-              style:MITAttributedStyleDefault];
+    if (aText)
+    {
+        self.attributedString = [[[NSAttributedString alloc] initWithString:aText] autorelease];
+    }
+    else
+    {
+        self.attributedString = nil;
+    }
 }
 
 - (void)drawTextInRect:(CGRect)rect
@@ -107,12 +92,7 @@
     CGContextTranslateCTM(context, 0, rect.size.height);
     CGContextScaleCTM(context, 1.0f, -1.0f);
 
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)[self drawableAttributedString]);
-    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter,
-                                                                  CFRangeMake(0, 0),
-            NULL,
-                                                                  rect.size,
-            NULL);
+    CGSize fitSize = [self sizeThatFits:rect.size];
 
     CGRect stringRect = CGRectZero;
     stringRect.size.height = ceilf(fitSize.height);
@@ -122,193 +102,127 @@
 
 
     CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddRect(path, NULL, stringRect);
-    CTFrameRef frame = CTFramesetterCreateFrame(framesetter,
+    CGPathAddRect(path, NULL, CGRectStandardize(stringRect));
+    CTFrameRef frame = CTFramesetterCreateFrame(self.framesetter,
                                                 CFRangeMake(0, 0),
                                                 path,
             NULL);
     CGPathRelease(path);
 
     CTFrameDraw(frame, context);
-
-    CFRelease(framesetter);
     CFRelease(frame);
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-    NSAttributedString *attributedString = [self drawableAttributedString];
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attributedString);
+    CTFramesetterRef framesetter = self.framesetter;
     CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter,
-                                                                  CFRangeMake(0,0),
+                                                                  CFRangeMake(0, 0),
             NULL,
                                                                   CGSizeMake(size.width, CGFLOAT_MAX),
             NULL);
-    CFRelease(framesetter);
 
-    return CGSizeMake(size.width,
-                      ceilf(fitSize.height) + 20);
+    fitSize.width = (CGFloat)ceil(fitSize.width);
+    fitSize.height = (CGFloat)ceil(fitSize.height);
+
+    return fitSize;
 }
 
 
 #pragma mark - Dynamic Properties
 - (NSAttributedString *)attributedString
 {
-    NSAttributedString *attributedString = nil;
-    if (self.mutableAttributedString)
-    {
-        attributedString = [[NSAttributedString alloc] initWithAttributedString:self.mutableAttributedString];
-    }
-
-    return [attributedString autorelease];
+    return _attributedString;
 }
 
 - (void)setAttributedString:(NSAttributedString *)anAttributedString
 {
-    NSMutableAttributedString *mutableAttributedString = nil;
-
-    if (anAttributedString)
+    if ([anAttributedString isEqualToAttributedString:_attributedString] == NO)
     {
-        mutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:anAttributedString];
+        [self willChangeValueForKey:@"attributedString"];
+        [_attributedString release];
+        _attributedString = [anAttributedString retain];
+        [self didChangeValueForKey:@"attributedString"];
     }
-    else
+}
+
+- (CTFramesetterRef)framesetter
+{
+    if (_framesetter == NULL)
     {
-        mutableAttributedString = [[NSMutableAttributedString alloc] init];
+        CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(self.visibleAttributedString);
+        self.framesetter = framesetter;
+        CFRelease(framesetter);
     }
 
-    self.mutableAttributedString = [mutableAttributedString autorelease];
+    return _framesetter;
+}
+
+- (void)setFramesetter:(CTFramesetterRef)aFramesetter
+{
+    if (_framesetter)
+    {
+        CFRelease(_framesetter);
+        _framesetter = nil;
+    }
+
+    if (aFramesetter)
+    {
+        _framesetter = CFRetain(aFramesetter);
+    }
+}
+
+- (NSMutableAttributedString *)visibleAttributedString
+{
+    if (_visibleAttributedString == nil)
+    {
+        NSMutableAttributedString *attributedString = [[[NSMutableAttributedString alloc] initWithAttributedString:self.attributedString] autorelease];
+
+        [attributedString setLineBreakStyle:self.lineBreakMode
+                              textAlignment:self.textAlignment
+                                   forRange:NSMakeRange(0, [attributedString length])];
+
+        if (self.isHighlighted)
+        {
+            [attributedString setForegroundColor:self.highlightedTextColor
+                                        forRange:NSMakeRange(0, [attributedString length])];
+        }
+
+        self.visibleAttributedString = attributedString;
+    }
+
+    return _visibleAttributedString;
+}
+
+- (void)setVisibleAttributedString:(NSMutableAttributedString *)aVisibleAttributedString
+{
+    if ([aVisibleAttributedString isEqualToAttributedString:_visibleAttributedString] == NO)
+    {
+        [_visibleAttributedString release];
+        _visibleAttributedString = (aVisibleAttributedString ?
+                                    [[NSMutableAttributedString alloc] initWithAttributedString:aVisibleAttributedString] :
+                                    nil);
+        self.framesetter = nil;
+        [self setNeedsDisplay];
+    }
 }
 
 #pragma mark - Private Methods
-- (NSMutableAttributedString *)drawableAttributedString
+- (NSSet *)invalidatingKeyPaths
 {
-    NSMutableAttributedString *drawableString = [[[NSMutableAttributedString alloc] initWithAttributedString:self.mutableAttributedString] autorelease];
-    CTParagraphStyleSetting styleSettings[2];
-
-    CTLineBreakMode lineBreakMode = (CTLineBreakMode)(self.lineBreakMode);
-    styleSettings[0].spec = kCTParagraphStyleSpecifierLineBreakMode;
-    styleSettings[0].valueSize = sizeof(CTLineBreakMode);
-    styleSettings[0].value = &lineBreakMode;
-
-    // The range of values for the UITextAlignment does not represent
-    // the full range of values for CTTextAlignment. More specifically,
-    // the range of UITextAlignment values is equivalent to
-    // (<CTTextAlignment> & 0x3)
-    CTTextAlignment textAlignment = (CTTextAlignment)(self.textAlignment);
-    styleSettings[1].spec = kCTParagraphStyleSpecifierAlignment;
-    styleSettings[1].valueSize = sizeof(CTTextAlignment);
-    styleSettings[1].value = &textAlignment;
-
-
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-    CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(styleSettings, 2);
-    [attributes setObject:(id)paragraphStyle
-                   forKey:(id)kCTParagraphStyleAttributeName];
-    CFRelease(paragraphStyle);
-
-
-    if (self.isHighlighted)
-    {
-        UIColor *highlightColor = self.highlightedTextColor;
-        [attributes setObject:(id)(highlightColor ? [highlightColor CGColor] : [[UIColor whiteColor] CGColor])
-                       forKey:(id)kCTForegroundColorAttributeName];
-
-    }
-
-    [drawableString addAttributes:attributes
-                            range:NSMakeRange(0, [drawableString length])];
-    return drawableString;
+    return [NSSet setWithObjects:@"lineBreakMode",
+                                 @"highlightedTextColor",
+                                 @"font",
+                                 @"textColor",
+                                 @"textAlignment",
+                                 @"enabled",
+                                 @"highlighted",
+                                 @"attributedString",
+                                 @"text", nil];
 }
 
-- (NSDictionary *)dictionaryWithFont:(UIFont *)font
-                           textStyle:(MITAttributedLabelStyle)style
-                           textColor:(UIColor *)foregroundColor
+- (void)invalidateCache
 {
-    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-
-    CTFontRef ctFont = [self createCTFontFromUIFont:font];
-
-    CTFontSymbolicTraits traitsValue = 0;
-    CTFontSymbolicTraits traitsMask = 0;
-
-    if (style & MITAttributedStyleBold)
-    {
-        traitsValue |= kCTFontBoldTrait;
-        traitsMask |= kCTFontBoldTrait;
-    }
-
-    if (style & MITAttributedStyleItalic)
-    {
-        traitsValue |= kCTFontItalicTrait;
-        traitsMask |= kCTFontItalicTrait;
-    }
-
-    if (style & MITAttributedStyleNormal)
-    {
-        traitsValue = 0;
-        traitsMask = (CTFontSymbolicTraits)(~0);
-    }
-
-    traitsValue |= kCTFontUIOptimizedTrait;
-    traitsMask |= kCTFontUIOptimizedTrait;
-
-    CTFontRef styledFont = CTFontCreateCopyWithSymbolicTraits(ctFont,
-                                                              0.0,
-            NULL,
-                                                              traitsValue,
-                                                              traitsMask);
-
-    if (styledFont != NULL)
-    {
-        ctFont = styledFont;
-        CFRelease(styledFont);
-        styledFont = NULL;
-    }
-
-    [dictionary setObject:(id)ctFont
-                   forKey:(id)kCTFontAttributeName];
-
-    [dictionary setObject:(id)[foregroundColor CGColor]
-                   forKey:(id)kCTForegroundColorAttributeName];
-    CFRelease(ctFont);
-
-
-    if (style & MITAttributedStyleSingleUnderline)
-    {
-        [dictionary setObject:(id)[foregroundColor CGColor]
-                       forKey:(id)kCTUnderlineColorAttributeName];
-        [dictionary setObject:[NSNumber numberWithInteger:kCTUnderlinePatternSolid]
-                       forKey:(id)kCTUnderlineStyleAttributeName];
-    }
-
-    return dictionary;
+    self.visibleAttributedString = nil;
 }
-
-- (UIFont *)fontFromCTFont:(CTFontRef)ctFont
-{
-    CFStringRef psFontName = CTFontCopyPostScriptName(ctFont);
-    NSString *ctFontName = [NSString stringWithString:(NSString *)psFontName];
-    CFRelease(psFontName);
-
-    CGFloat ptSize = CTFontGetSize(ctFont);
-
-    return [UIFont fontWithName:ctFontName
-                           size:ptSize];
-}
-
-- (CTFontRef)createCTFontFromUIFont:(UIFont *)uiFont
-{
-    CTFontRef ctFont = NULL;
-
-    if (uiFont)
-    {
-        ctFont = CTFontCreateWithName((CFStringRef)(uiFont.fontName),
-                                      uiFont.pointSize,
-                NULL);
-    }
-
-    return ctFont;
-}
-
-
 @end

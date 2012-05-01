@@ -14,23 +14,4 @@ typedef enum
 @property (nonatomic, strong) NSAttributedString *attributedString;
 
 - (id)initWithFrame:(CGRect)frame;
-
-- (void)setString:(NSString *)string
-         withFont:(UIFont *)font
-            style:(MITAttributedLabelStyle)style;
-
-- (void)setString:(NSString *)string
-         withFont:(UIFont *)font
-            style:(MITAttributedLabelStyle)style
-        textColor:(UIColor *)textColor;
-
-
-- (void)appendString:(NSString *)string
-         withFont:(UIFont *)font
-            style:(MITAttributedLabelStyle)style;
-
-- (void)appendString:(NSString *)string
-            withFont:(UIFont *)font
-               style:(MITAttributedLabelStyle)style
-           textColor:(UIColor *)textColor;
 @end
