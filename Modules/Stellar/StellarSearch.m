@@ -57,18 +57,32 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	UITableViewCell *cell = [aTableView dequeueReusableCellWithIdentifier:@"StellarSearch"];
+    StellarClassTableCell *cell = [aTableView dequeueReusableCellWithIdentifier:@"StellarSearch"];
+
 	if(cell == nil) {
-		cell = [[[StellarClassTableCell alloc] initWithReusableCellIdentifier:@"StellarSearch"] autorelease];
+		cell = [[[StellarClassTableCell alloc] initWithReuseIdentifier:@"StellarSearch"] autorelease];
 	}
 
 	StellarClass *stellarClass = [self.lastResults objectAtIndex:indexPath.row];
-	[StellarClassTableCell configureCell:cell withStellarClass:stellarClass];
+    cell.stellarClassID = [stellarClass objectID];
 	return cell;
 }
 
-- (CGFloat) tableView: (UITableView *)tableView heightForRowAtIndexPath: (NSIndexPath *)indexPath {
-	return [StellarClassTableCell cellHeightForTableView:tableView class:[self.lastResults objectAtIndex:indexPath.row]];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static StellarClassTableCell *calcCell = nil;
+
+    if (calcCell == nil)
+    {
+        calcCell = [[StellarClassTableCell alloc] init];
+    }
+
+    calcCell.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 44.0f);
+    calcCell.stellarClassID = [[self.lastResults objectAtIndex:indexPath.row] objectID];
+    [calcCell layoutSubviews];
+
+    CGSize fitSize = [calcCell sizeThatFits:calcCell.contentView.bounds.size];
+    return fitSize.height;
 }
 			
 - (NSInteger) numberOfSectionsInTableView: (UITableView *)tableView {
