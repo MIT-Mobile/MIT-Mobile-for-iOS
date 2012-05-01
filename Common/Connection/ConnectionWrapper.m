@@ -149,7 +149,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 
 #pragma mark Request methods
 - (BOOL)requestDataWithRequest:(NSURLRequest*)request {
-    NSMutableURLRequest *newRequest = [request mutableCopy];
+    NSMutableURLRequest *newRequest = [[request mutableCopy] autorelease];
     [newRequest setValue:[MobileRequestOperation userAgent]
       forHTTPHeaderField:@"User-Agent"];
     
