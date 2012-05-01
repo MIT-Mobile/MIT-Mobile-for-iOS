@@ -30,8 +30,6 @@
 
     if (self)
     {
-        self.autoresizesSubviews = YES;
-
         MITAttributedLabel *label = [[[MITAttributedLabel alloc] initWithFrame:self.contentView.bounds] autorelease];
         label.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                   UIViewAutoresizingFlexibleWidth);
@@ -39,8 +37,8 @@
 
         self.contentView.autoresizesSubviews = YES;
         [self.contentView addSubview:label];
+        
         self.attributedLabel = label;
-
         self.edgeInsets = UIEdgeInsetsMake(5, 10, 5, 10);
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
@@ -54,25 +52,6 @@
     self.stellarClassID = nil;
     self.attributedLabel = nil;
     [super dealloc];
-}
-
-+ (UITableViewCell *)configureCell:(UITableViewCell *)cell withStellarClass:(StellarClass *)class
-{
-    NSString *name;
-    if ([class.name length])
-    {
-        name = class.name;
-    }
-    else
-    {
-        name = class.masterSubjectId;
-    }
-    cell.textLabel.text = name;
-
-    cell.detailTextLabel.text = class.title;
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    [cell applyStandardFonts];
-    return cell;
 }
 
 #pragma mark - Dynamic Properties
