@@ -46,7 +46,7 @@
 @synthesize stories;
 @synthesize searchResults;
 @synthesize searchQuery;
-@synthesize categories;
+@synthesize categories = _categories;
 @synthesize activeCategoryId;
 @synthesize xmlParser;
 
