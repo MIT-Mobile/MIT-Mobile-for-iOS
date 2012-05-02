@@ -2,14 +2,10 @@
 #import "StoryListViewController.h"
 #import "StoryDetailViewController.h"
 #import "StoryThumbnailView.h"
-#import "StoryXMLParser.h"
 #import "NewsStory.h"
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
-#import "TabScrollerBackgroundView.h"
 #import "MITUIConstants.h"
-#import "MITMobileWebAPI.h"
-#include <objc/runtime.h>
 
 #define SCROLL_TAB_HORIZONTAL_PADDING 5.0
 #define SCROLL_TAB_HORIZONTAL_MARGIN  5.0
@@ -32,7 +28,6 @@
 
 - (void)setupNavScroller;
 - (void)setupNavScrollButtons;
-//- (void)sideButtonPressed:(id)sender;
 - (void)buttonPressed:(id)sender;
 
 - (void)setupActivityIndicator;
@@ -41,11 +36,7 @@
 - (void)setProgress:(CGFloat)value;
 
 - (void)showSearchBar;
-//- (void)focusSearchBar;
-//- (void)unfocusSearchBar;
 - (void)hideSearchBar;
-//- (void)showSearchOverlay;
-//- (void)hideSearchOverlay;
 - (void)releaseSearchBar;
 
 @end
