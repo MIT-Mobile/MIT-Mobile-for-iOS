@@ -193,20 +193,14 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     [super didReceiveMemoryWarning];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"UIApplicationWillTerminateNotification" object:nil];
-    navScrollView = nil;
-    storyTable = nil;
-    [stories release];
-    stories = nil;
-    [categories release];
-    categories = nil;
-    [xmlParser release];
-    xmlParser = nil;
-    [theSearchBar release];
-    theSearchBar = nil;
-    [searchController release];
-    searchController = nil;
+    self.stories = nil;
+    self.searchQuery = nil;
+    self.searchResults = nil;
+    self.categories = nil;
+    self.xmlParser = nil;
     [super dealloc];
 }
 
