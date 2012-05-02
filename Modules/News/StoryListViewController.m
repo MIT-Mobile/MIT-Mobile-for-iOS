@@ -204,60 +204,112 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     [super dealloc];
 }
 
-- (void)pruneStories {
-	// delete all cached news articles that aren't bookmarked
-	if (![[NSUserDefaults standardUserDefaults] boolForKey:MITNewsTwoFirstRunKey]) {
-		NSPredicate *predicate = [NSPredicate predicateWithFormat:@"NOT bookmarked == YES"];
-		NSArray *nonBookmarkedStories = [CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate];
-		[CoreDataManager deleteObjects:nonBookmarkedStories];
-		[[NSUserDefaults standardUserDefaults] setBool:YES forKey:MITNewsTwoFirstRunKey];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
-	
-    // retain only the 10 most recent stories for each category plus anything bookmarked (here and when saving, because we may have crashed before having a chance to prune the story list last time)
+- (void)pruneStories
+{
+    static BOOL pruneInProgress = NO;
+    static char *queueName = "edu.mit.mobile.news.queue.CachePrune";
 
-    // because stories are added to Core Data in separate threads, there may be merge conflicts. this thread wins when we're pruning
-    NSManagedObjectContext *context = [CoreDataManager managedObjectContext];
-    id originalMergePolicy = [context mergePolicy];
-    
-    context.undoManager = nil;
-    context.mergePolicy = NSOverwriteMergePolicy;
+    if (pruneInProgress == NO)
+    {
+        pruneInProgress = YES;
+        dispatch_queue_t pruneQueue = dispatch_queue_create(queueName, NULL);
 
-    NewsCategoryId allCategories[] = {
-        NewsCategoryIdTopNews, NewsCategoryIdCampus,
-        NewsCategoryIdEngineering, NewsCategoryIdScience, 
-        NewsCategoryIdManagement, NewsCategoryIdArchitecture, 
-        NewsCategoryIdHumanities
-    };
-	
-    NSMutableSet *allStoriesToSave = [NSMutableSet setWithCapacity:100];
-    NSInteger i, count = sizeof(allCategories) / sizeof(NewsCategoryId);
-    for (i = 0; i < count; i++) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY categories.category_id == %d", allCategories[i]];
-        NSSortDescriptor *postDateSortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"postDate" ascending:NO];
-        NSArray *categoryStories = [CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate sortDescriptors:[NSArray arrayWithObject:postDateSortDescriptor]];
-        // only the 10 most recent
-        if ([categoryStories count] > 10) {
-            [allStoriesToSave addObjectsFromArray:[categoryStories subarrayWithRange:NSMakeRange(0, 10)]];
-        } else {
-            [allStoriesToSave addObjectsFromArray:categoryStories];
-        }
-        [postDateSortDescriptor release];
+        dispatch_async(pruneQueue, ^{
+            NSManagedObjectContext *context = [[NSManagedObjectContext alloc] init];
+            context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+            context.undoManager = nil;
+            context.mergePolicy = NSOverwriteMergePolicy;
+            [context lock];
+
+            // bskinner (note): This is legacy code from 1.x. It was added to clean up
+            //  duplicate, un-bookmarked articles when upgrading from 1.x to 2.x.
+            //  On all new installs this ends up being a NOOP.
+            if (![[NSUserDefaults standardUserDefaults] boolForKey:MITNewsTwoFirstRunKey])
+            {
+                NSEntityDescription *newsStoryEntity = [NSEntityDescription entityForName:NewsStoryEntityName
+                                                                   inManagedObjectContext:context];
+                
+                NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
+                fetchRequest.entity = newsStoryEntity;
+                fetchRequest.predicate = [NSPredicate predicateWithFormat:@"NOT bookmarked == YES"];
+
+                NSArray *results = [context executeFetchRequest:fetchRequest
+                                                          error:NULL];
+                for (NSManagedObject *result in results)
+                {
+                    [context deleteObject:result];
+                }
+                [[NSUserDefaults standardUserDefaults] setBool:YES
+                                                        forKey:MITNewsTwoFirstRunKey];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+            }
+            else
+            {
+                NSMutableSet *savedArticles = [NSMutableSet set];
+                NSMutableSet *deletedArticles = [NSMutableSet set];
+
+                NSEntityDescription *newsCategoryEntity = [NSEntityDescription entityForName:NewsCategoryEntityName
+                                                                      inManagedObjectContext:context];
+
+                NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
+                fetchRequest.entity = newsCategoryEntity;
+                fetchRequest.resultType = NSManagedObjectResultType;
+
+                NSArray *categories = [context executeFetchRequest:fetchRequest
+                                                             error:NULL];
+
+                for (NSManagedObject *category in categories)
+                {
+                    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"postDate"
+                                                                                     ascending:NO];
+                    NSArray *articles = [[category valueForKey:@"stories"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+                    
+                    [articles enumerateObjectsUsingBlock:^ (id obj, NSUInteger idx, BOOL *stop) {
+                        if ([savedArticles containsObject:obj])
+                        {
+                            // The article is already marked as being saved,
+                            //  nothing else to be done here
+                            return;
+                        }
+                        else if (idx < 10)
+                        {
+                            if ([deletedArticles containsObject:obj])
+                            {
+                                [deletedArticles removeObject:obj];
+                            }
+
+                            [savedArticles addObject:obj];
+                        }
+                        else
+                        {
+                            [deletedArticles addObject:obj];
+                        }
+                    }];
+
+                    for (NSManagedObject *articles in deletedArticles)
+                    {
+                        [context deleteObject:articles];
+                    }
+                }
+            }
+
+            NSError *error = nil;
+            [context save:&error];
+
+            if (error)
+            {
+                ELog(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
+            }
+
+            [context unlock];
+            [context release];
+            pruneInProgress = NO;
+        });
+
+        dispatch_release(pruneQueue);
     }
-
-	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"NOT bookmarked == YES"];
-    NSMutableArray *allStories = [CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate];
-    NSMutableSet *allStoriesToDelete = [NSMutableSet setWithArray:allStories];
-    [allStoriesToDelete minusSet:allStoriesToSave];
-    [CoreDataManager deleteObjects:[allStoriesToDelete allObjects]];
-    [CoreDataManager saveData];
-    
-    // put merge policy back where it was before we started
-    [[CoreDataManager managedObjectContext] setMergePolicy:originalMergePolicy];
 }
 
-#pragma mark -
-#pragma mark Category selector
 
 - (void)setupNavScroller {
     // Nav Scroller View
