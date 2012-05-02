@@ -273,15 +273,18 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
                 NSArray *categories = [context executeFetchRequest:fetchRequest
                                                              error:NULL];
-
+                
                 for (NSManagedObject *category in categories)
                 {
                     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"postDate"
                                                                                      ascending:NO];
-                    NSArray *articles = [[category valueForKey:@"stories"] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+                    NSSet *articleSet = [[category valueForKey:@"stories"] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"(bookmarked == nil) OR (bookmarked == NO)"]];
+                    NSArray *sortedArticles = [articleSet sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
                     
-                    [articles enumerateObjectsUsingBlock:^ (id obj, NSUInteger idx, BOOL *stop) {
-                        if ([savedArticles containsObject:obj])
+                    [sortedArticles enumerateObjectsUsingBlock:^ (id obj, NSUInteger idx, BOOL *stop) {
+                        NSManagedObjectID *storyID = [obj objectID];
+                        
+                        if ([savedArticles containsObject:storyID])
                         {
                             // The article is already marked as being saved,
                             //  nothing else to be done here
@@ -289,23 +292,23 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
                         }
                         else if (idx < 10)
                         {
-                            if ([deletedArticles containsObject:obj])
+                            if ([deletedArticles containsObject:storyID])
                             {
-                                [deletedArticles removeObject:obj];
+                                [deletedArticles removeObject:storyID];
                             }
 
-                            [savedArticles addObject:obj];
+                            [savedArticles addObject:storyID];
                         }
                         else
                         {
-                            [deletedArticles addObject:obj];
+                            [deletedArticles addObject:storyID];
                         }
                     }];
-
-                    for (NSManagedObject *articles in deletedArticles)
-                    {
-                        [context deleteObject:articles];
-                    }
+                }
+                
+                for (NSManagedObjectID *articleID in deletedArticles)
+                {
+                    [context deleteObject:[context objectWithID:articleID]];
                 }
             }
 
