@@ -16,6 +16,7 @@
 #import "MITUIConstants.h"
 
 @interface FacilitiesSummaryViewController ()
+@property (nonatomic,assign) UIResponder *firstResponder;
 @property (nonatomic,retain) UIActivityIndicatorView *imageActivityView;
 @property (retain) NSData *imageData;
 
@@ -37,6 +38,7 @@
 @synthesize reportData = _reportData;
 @synthesize imageData = _imageData;
 @synthesize imageActivityView = _imageActivityView;
+@synthesize firstResponder = _firstResponder;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -58,6 +60,10 @@
     self.scrollView = nil;
     self.imageButton = nil;
     self.imageActivityView = nil;
+    self.imageData = nil;
+    self.descriptionContainingView = nil;
+    self.submitButton = nil;
+    self.shiftingContainingView = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dealloc];
@@ -252,9 +258,7 @@
 
 #pragma mark - IBAction Methods
 - (IBAction)selectPicture:(id)sender {
-    if (_keyboardIsVisible) {
-        return;
-    }
+    [self dismissKeyboard:self];
 
     // show an "unattach photo" button if one is already set
     NSString *destructiveButtonTitle = nil;
@@ -279,7 +283,7 @@
 }
 
 - (IBAction)submitReport:(id)sender {
-    [self dismissKeyboard:nil];
+    [self dismissKeyboard:self];
     
     FacilitiesSubmitViewController *vc = [[FacilitiesSubmitViewController alloc] initWithNibName:nil bundle:nil];
     vc.reportDictionary = self.reportData;
@@ -289,17 +293,19 @@
 }
 
 - (IBAction)dismissKeyboard:(id)sender {
-    if (_keyboardIsVisible) {
-        UIView *firstResponder = [self firstResponderInView:self.view];
-        
-        if (firstResponder) {
-            [firstResponder resignFirstResponder];
-        }
+    if (self.firstResponder)
+    {
+        [self.firstResponder resignFirstResponder];
     }
 }
 
 
 #pragma mark - UITextViewDelegate
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    self.firstResponder = textView;
+}
+
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
     if ([text isEqualToString:@"\n"]) {
         [textView resignFirstResponder];
@@ -324,9 +330,15 @@
     [dictionary setObject:self.descriptionTextView.text
                    forKey:FacilitiesRequestUserDescriptionKey];
     self.reportData = dictionary;
+    self.firstResponder = nil;
 }
 
 #pragma mark - UITextField Delegate
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    self.firstResponder = textField;
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     NSString *trimmedText = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
@@ -345,6 +357,7 @@
     [dictionary setObject:self.emailField.text
                    forKey:FacilitiesRequestUserEmailKey];
     self.reportData = dictionary;
+    self.firstResponder = nil;
 }
 
 
