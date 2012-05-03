@@ -164,7 +164,10 @@
 }
 
 -(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate sortDescriptors:(NSArray *)sortDescriptors {
-	NSEntityDescription *entity = [NSEntityDescription entityForName:entityName inManagedObjectContext:self.managedObjectContext];
+    NSManagedObjectContext *context = self.managedObjectContext;
+    
+	NSEntityDescription *entity = [NSEntityDescription entityForName:entityName
+                                              inManagedObjectContext:context];
 	NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
 	[request setEntity:entity];
 	if (predicate != nil) {
@@ -175,7 +178,8 @@
     }
 	
 	NSError *error = nil;
-	NSArray *objects = [self.managedObjectContext executeFetchRequest:request error:&error];
+	NSArray *objects = [context executeFetchRequest:request
+                                              error:&error];
 
     // Should only return 'nil' on error
     return objects;
@@ -194,7 +198,8 @@
 
 -(void)saveData {
 	NSError *error = nil;
-	if (![self.managedObjectContext save:&error]) {
+	if (![self.managedObjectContext save:&error])
+    {
         ELog(@"Failed to save to data store: %@", [error localizedDescription]);
         NSArray* detailedErrors = [[error userInfo] objectForKey:NSDetailedErrorsKey];
         if(detailedErrors != nil && [detailedErrors count] > 0) {
@@ -205,7 +210,7 @@
         else {
             ELog(@"  %@", [error userInfo]);
         }
-	}	
+	}
 }
 
 - (BOOL)wipeData {
@@ -255,8 +260,9 @@
     NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
     if (coordinator != nil) {
         localContext = [[NSManagedObjectContext alloc] init];
-        [localContext setPersistentStoreCoordinator: coordinator];
-        [threadDict setObject:localContext forKey:@"MITCoreDataManagedObjectContext"];
+        localContext.persistentStoreCoordinator = coordinator;
+        [threadDict setObject:localContext
+                       forKey:@"MITCoreDataManagedObjectContext"];
         [localContext release];
     }
     return localContext;
