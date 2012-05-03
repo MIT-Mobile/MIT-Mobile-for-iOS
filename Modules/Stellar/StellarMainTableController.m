@@ -127,8 +127,8 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadMyStellarNotifications) name:MyStellarAlertNotification object:nil];
     
     
-    StellarSearch *stellarSearch = [[StellarSearch alloc] initWithSearchBar:self.searchBar
-                                                             viewController:self];
+    StellarSearch *stellarSearch = [[[StellarSearch alloc] initWithSearchBar:self.searchBar
+                                                             viewController:self] autorelease];
     self.searchResultsTableView.delegate = stellarSearch;
     self.searchResultsTableView.dataSource = stellarSearch;
     self.stellarSearch = stellarSearch;
