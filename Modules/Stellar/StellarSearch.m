@@ -31,7 +31,9 @@
 	return hasSearchInitiated && activeMode;
 }
 	
-- (id) initWithSearchBar: theSearchBar viewController: (StellarMainTableController *)controller{
+- (id) initWithSearchBar:(UISearchBar *)theSearchBar
+          viewController:(StellarMainTableController *)controller
+{
 	self = [super init];
 	if (self) {
 		activeMode = NO;
@@ -63,8 +65,7 @@
 		cell = [[[StellarClassTableCell alloc] initWithReuseIdentifier:@"StellarSearch"] autorelease];
 	}
 
-	StellarClass *stellarClass = [self.lastResults objectAtIndex:indexPath.row];
-    cell.stellarClassID = [stellarClass objectID];
+    cell.stellarClass = [self.lastResults objectAtIndex:indexPath.row];
 	return cell;
 }
 
@@ -78,7 +79,7 @@
     }
 
     calcCell.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 44.0f);
-    calcCell.stellarClassID = [[self.lastResults objectAtIndex:indexPath.row] objectID];
+    calcCell.stellarClass = [self.lastResults objectAtIndex:indexPath.row];
     [calcCell layoutSubviews];
 
     CGSize fitSize = [calcCell sizeThatFits:calcCell.contentView.bounds.size];
@@ -93,10 +94,11 @@
 	NSString *headerTitle = nil;
 	
 	if([lastResults count]) {
-		headerTitle = [NSString stringWithFormat:@"%i found", [lastResults count]];
+		headerTitle = [NSString stringWithFormat:@"%lu found", [lastResults count]];
 	} else {
 		headerTitle = @"No matches found";
 	}
+    
 	return [UITableView ungroupedSectionHeaderWithTitle:headerTitle];
 }
 

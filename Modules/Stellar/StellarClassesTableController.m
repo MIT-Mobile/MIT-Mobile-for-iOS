@@ -84,7 +84,7 @@
         cell = [[[StellarClassTableCell alloc] initWithReuseIdentifier:@"StellarClasses"] autorelease];
 	}
 
-    cell.stellarClassID = [[classes objectAtIndex:indexPath.row] objectID];
+    cell.stellarClass = [classes objectAtIndex:indexPath.row];
     return cell;
 }	
 
@@ -107,7 +107,7 @@
     }
 
     calcCell.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 44.0f);
-    calcCell.stellarClassID = [[classes objectAtIndex:indexPath.row] objectID];
+    calcCell.stellarClass = [classes objectAtIndex:indexPath.row];
     [calcCell layoutSubviews];
 
     CGSize fitSize = [calcCell sizeThatFits:calcCell.contentView.bounds.size];

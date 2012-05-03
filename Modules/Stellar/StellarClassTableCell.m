@@ -4,19 +4,18 @@
 #import "NSMutableAttributedString+MITAdditions.h"
 
 @interface StellarClassTableCell ()
-@property (nonatomic, strong) StellarClass *stellarClass;
 @property (nonatomic, assign) MITAttributedLabel *attributedLabel;
 @end
 
 @implementation StellarClassTableCell
 {
     UIEdgeInsets _edgeInsets;
+    StellarClass *_stellarClass;
 }
 
-@synthesize stellarClass = _stellarClass;
 @synthesize attributedLabel = _attributedLabel;
 
-@dynamic stellarClassID;
+@dynamic stellarClass;
 @dynamic edgeInsets;
 
 - (id)init
@@ -26,7 +25,8 @@
 
 - (id)initWithReuseIdentifier:(NSString *)identifier
 {
-    self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier];
+    self = [super initWithStyle:UITableViewCellStyleSubtitle
+                reuseIdentifier:identifier];
 
     if (self)
     {
@@ -39,7 +39,8 @@
         [self.contentView addSubview:label];
         
         self.attributedLabel = label;
-        self.edgeInsets = UIEdgeInsetsMake(5, 10, 5, 10);
+        
+        self.edgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
 
@@ -49,24 +50,17 @@
 - (void)dealloc
 {
     self.stellarClass = nil;
-    self.stellarClassID = nil;
     self.attributedLabel = nil;
     [super dealloc];
 }
 
 #pragma mark - Dynamic Properties
-- (void)setStellarClassID:(NSManagedObjectID *)aStellarClassID
+- (void)setStellarClass:(StellarClass*)class
 {
-    if (aStellarClassID)
-    {
-        self.stellarClass = (StellarClass *)[[[CoreDataManager coreDataManager] managedObjectContext] objectWithID:aStellarClassID];
-    }
-    else
-    {
-        self.stellarClass = nil;
-    }
-
-    if (self.stellarClass)
+    [_stellarClass release];
+    _stellarClass = [class retain];
+    
+    if (_stellarClass)
     {
         NSMutableAttributedString *classString = [[[NSMutableAttributedString alloc] init] autorelease];
         [classString appendString:[NSString stringWithFormat:@"%@\n", self.stellarClass.name]
@@ -80,13 +74,15 @@
 
         self.attributedLabel.attributedString = classString;
     }
-
-    [self setNeedsDisplay];
+    else
+    {
+        self.attributedLabel.text = @"";
+    }
 }
 
-- (NSManagedObjectID *)stellarClassID
+- (NSManagedObject *)stellarClass
 {
-    return [self.stellarClass objectID];
+    return _stellarClass;
 }
 
 - (void)setEdgeInsets:(UIEdgeInsets)anEdgeInsets
@@ -99,7 +95,6 @@
 {
     return _edgeInsets;
 }
-
 
 #pragma mark - Overridden Methods
 - (CGSize)sizeThatFits:(CGSize)size
@@ -131,7 +126,7 @@
 
 - (void)prepareForReuse
 {
-    self.stellarClassID = nil;
+    self.stellarClass = nil;
     self.attributedLabel.text = nil;
 }
 @end
