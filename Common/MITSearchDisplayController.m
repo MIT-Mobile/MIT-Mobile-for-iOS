@@ -148,8 +148,6 @@ active = _active;
 }
 
 - (void)searchOverlayTapped {
-    // if there are still search results, keep them up
-	//if ([_searchResultsTableView numberOfSections] && [_searchResultsTableView numberOfRowsInSection:0]) {
     if ([_searchBar.text length]) {
 		[self setActive:NO animated:YES];
 	} else {

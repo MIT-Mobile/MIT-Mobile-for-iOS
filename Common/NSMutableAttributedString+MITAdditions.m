@@ -110,7 +110,8 @@ static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment
                  value:(NSString *)kCTFontAttributeName
                  range:attrRange];
 
-    CFRelease(ctFont);
+    if (ctFont)
+        CFRelease(ctFont);
 }
 
 
