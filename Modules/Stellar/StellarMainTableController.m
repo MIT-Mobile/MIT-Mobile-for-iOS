@@ -19,13 +19,13 @@
 @property (nonatomic, strong) NSString *doSearchTerms;
 @property (nonatomic, strong) StellarSearch *stellarSearch;
 @property (strong) UITableView *searchResultsTableView;
+@property (nonatomic, strong) MITSearchDisplayController *searchController;
 @end
 
 @implementation StellarMainTableController
 {
 	BOOL isViewAppeared;
 	BOOL doSearchExecute;
-    MITSearchDisplayController *searchController;
 }
 
 @synthesize courseGroups = _courseGroups;
@@ -38,6 +38,7 @@
 @synthesize searchBar = _searchBar;
 @synthesize doSearchTerms = _doSearchTerms;
 @synthesize stellarSearch = _stellarSearch;
+@synthesize searchController = _searchController;
 
 - (id) init {
 	self = [super init];
@@ -108,15 +109,7 @@
                                          UIViewAutoresizingFlexibleWidth);
         
         self.searchResultsTableView = searchTable;
-        
-        StellarSearch *stellarSearch = [[StellarSearch alloc] initWithSearchBar:self.searchBar
-                                                                 viewController:self];
-        searchTable.delegate = stellarSearch;
-        searchTable.dataSource = stellarSearch;
-        
-        self.stellarSearch = stellarSearch;
     }
-    
     
 	self.loadingView = nil;
     
@@ -132,11 +125,25 @@
 	[self reloadMyStellarData];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadMyStellarData) name:MyStellarChanged object:nil];	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadMyStellarNotifications) name:MyStellarAlertNotification object:nil];
+    
+    
+    StellarSearch *stellarSearch = [[StellarSearch alloc] initWithSearchBar:self.searchBar
+                                                             viewController:self];
+    self.searchResultsTableView.delegate = stellarSearch;
+    self.searchResultsTableView.dataSource = stellarSearch;
+    self.stellarSearch = stellarSearch;
+
+
+    MITSearchDisplayController *searchController = [[[MITSearchDisplayController alloc] initWithSearchBar:self.searchBar
+                                                                                       contentsController:self] autorelease];
+    searchController.delegate = self.stellarSearch;
+    searchController.searchResultsTableView = self.searchResultsTableView;
+    self.searchController = searchController;
 	
 	// load all course groups (asynchronously) in case it requires server access
 	[StellarModel loadCoursesFromServerAndNotify:self];
 	[StellarModel removeOldFavorites:self];
-	
+
 	self.doSearchTerms = nil;
 }
 

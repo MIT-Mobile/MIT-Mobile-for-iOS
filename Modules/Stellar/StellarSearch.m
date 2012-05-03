@@ -37,8 +37,10 @@
 	self = [super init];
 	if (self) {
 		activeMode = NO;
-		searchBar = [theSearchBar retain];
-        searchBar.delegate = self;
+        
+        theSearchBar.delegate = self;
+		self.searchBar = theSearchBar;
+        
 		viewController = controller;
 		self.lastResults = [NSArray array];
 		hasSearchInitiated = NO;
@@ -47,8 +49,8 @@
 }
 
 - (void) dealloc {
-    [searchBar release];
-	[lastResults release];
+    self.searchBar = nil;
+    self.lastResults = nil;
 	[super dealloc];
 }
 
