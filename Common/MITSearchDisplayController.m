@@ -24,19 +24,13 @@ active = _active;
 
 - (id)initWithSearchBar:(UISearchBar *)searchBar contentsController:(UIViewController *)viewController
 {
-    self = [super init];
-    if (self) {
-        _searchBar = searchBar;
-        _searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
-        _searchBar.delegate = self;
-        _searchContentsController = viewController;
-        CGRect frame = CGRectMake(0.0, _searchBar.frame.size.height, viewController.view.frame.size.width,
-                                  viewController.view.frame.size.height - _searchBar.frame.size.height);
-        self.searchResultsTableView = [[[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain] autorelease];
-        self.searchResultsTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        _searchResultsTableIsDefault = YES;
-    }
-    return self;
+   CGRect frame = CGRectMake(0.0,
+                             searchBar.frame.size.height,
+                             viewController.view.frame.size.width,
+                             viewController.view.frame.size.height - _searchBar.frame.size.height);
+   return [self initWithFrame:frame 
+                    searchBar:searchBar
+           contentsController:viewController];
 }
 
 - (id)initWithFrame:(CGRect)frame searchBar:(UISearchBar *)searchBar contentsController:(UIViewController *)viewController {
@@ -50,6 +44,7 @@ active = _active;
         self.searchResultsTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         _searchResultsTableIsDefault = YES;
     }
+    
     return self;
 }
 
@@ -111,7 +106,9 @@ active = _active;
         }
         _searchOverlay = [[UIControl alloc] initWithFrame:frame];
         _searchOverlay.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.8];
-        [_searchOverlay addTarget:self action:@selector(searchOverlayTapped) forControlEvents:UIControlEventTouchDown];
+        [_searchOverlay addTarget:self
+                           action:@selector(searchOverlayTapped)
+                 forControlEvents:UIControlEventTouchDown];
     }
     
     _searchOverlay.alpha = 0.0;
