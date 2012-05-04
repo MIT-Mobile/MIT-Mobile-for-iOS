@@ -109,6 +109,10 @@
 }
 
 - (void)tourInfoLoaded:(NSNotification *)aNotification {
+    // Remember to stop observing as soon as the task is done.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:TourInfoLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:TourInfoFailedToLoadNotification object:nil];
+
     loading = NO;
     shouldRetry = NO;
     
@@ -118,6 +122,10 @@
 }
 
 - (void)tourInfoFailedToLoad:(NSNotification *)aNotification {
+    // Remember to stop observing as soon as the task is done.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:TourInfoLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:TourInfoFailedToLoadNotification object:nil];
+
     loading = NO;
     shouldRetry = YES;
     [self.tableView reloadData];

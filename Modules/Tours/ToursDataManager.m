@@ -392,7 +392,10 @@ static ToursDataManager *s_toursDataManager = nil;
         }
         [CoreDataManager saveData];
         
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:TourInfoLoadedNotification object:nil]];
+        [[NSNotificationCenter defaultCenter] postNotificationName:TourInfoLoadedNotification 
+                                                            object:self 
+                                                          userInfo:nil];
+
     }
     
     else if ([command isEqualToString:@"tourDetails"]
@@ -470,7 +473,9 @@ static ToursDataManager *s_toursDataManager = nil;
         
         [CoreDataManager saveData];
         
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:TourDetailsLoadedNotification object:tourID]];
+        [[NSNotificationCenter defaultCenter] postNotificationName:TourDetailsLoadedNotification 
+                                                            object:self 
+                                                          userInfo:[NSDictionary dictionaryWithObjectsAndKeys:tourID, @"tourID", nil]];
     }
 }
 
@@ -480,10 +485,12 @@ static ToursDataManager *s_toursDataManager = nil;
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
     if ([request.userData isEqualToString:@"toursList"]) {
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:TourInfoFailedToLoadNotification object:nil]];
+        [[NSNotificationCenter defaultCenter] postNotificationName:TourInfoFailedToLoadNotification object:self userInfo:nil];
     } else {
         NSString *tourID = [request.params objectForKey:@"tourId"];
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:TourDetailsFailedToLoadNotification object:tourID]];
+        [[NSNotificationCenter defaultCenter] postNotificationName:TourDetailsFailedToLoadNotification 
+                                                            object:self 
+                                                          userInfo:[NSDictionary dictionaryWithObjectsAndKeys:tourID, @"tourID", nil]];
     }
 }
 

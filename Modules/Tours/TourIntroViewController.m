@@ -54,8 +54,8 @@
 
 - (void)loadTourInfo {
     [self.view removeAllSubviews];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tourInfoLoaded:) name:TourDetailsLoadedNotification object:[[ToursDataManager sharedManager] activeTour].tourID];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tourInfoFailedToLoad:) name:TourDetailsFailedToLoadNotification object:[[ToursDataManager sharedManager] activeTour].tourID];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tourInfoLoaded:) name:TourDetailsLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tourInfoFailedToLoad:) name:TourDetailsFailedToLoadNotification object:nil];
     
     // this just triggers a download if data is absent, we don't actually use the results
     NSArray* startLocations = [[ToursDataManager sharedManager] startLocationsForTour];
@@ -67,6 +67,10 @@
 }
 
 - (void)tourInfoLoaded:(NSNotification *)aNotification {
+    // Remember to stop observing as soon as the task is done.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:TourDetailsLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:TourDetailsFailedToLoadNotification object:nil];
+    
     NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     NSURL *fileURL = [NSURL URLWithString:@"tours/tour_intro_template.html" relativeToURL:baseURL];
     NSError *error = nil;
@@ -92,6 +96,10 @@
 }
 
 - (void)tourInfoFailedToLoad:(NSNotification *)aNotification {
+    // Remember to stop observing as soon as the task is done.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:TourDetailsLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:TourDetailsFailedToLoadNotification object:nil];
+
     [self hideLoadingView];
     [self.view removeAllSubviews];
 
