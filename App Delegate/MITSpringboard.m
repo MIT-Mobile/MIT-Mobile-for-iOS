@@ -249,28 +249,7 @@
        didShowViewController:(UIViewController *)viewController
                     animated:(BOOL)animated
 {
-    /*
-	NSInteger newStackDepth = navigationController.viewControllers.count;
-	if (newStackDepth < navStackDepth) {
-		if ([self.delegate respondsToSelector:@selector(springboardDidPopModule:)]) {
-			[self.delegate springboardDidPopModule:self];
-		}
-	} else {
-		NSString *tag = nil;
-		for (MITModule *aModule in self.primaryModules) {
-			//if ([navigationController.viewControllers containsObject:aModule.tabNavController.visibleViewController]) {
-			//	tag = aModule.tag;
-			//	break;
-			//}
-		}
-		if (tag) {
-			if ([self.delegate respondsToSelector:@selector(springboard:didPushModuleForTag:)]) {
-				[self.delegate springboard:self didPushModuleForTag:tag];
-			}
-		}
-	}
-	navStackDepth = newStackDepth;
-     */
+    
 }
 
 #pragma mark -
