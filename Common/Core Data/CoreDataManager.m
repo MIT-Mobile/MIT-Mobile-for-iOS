@@ -7,6 +7,7 @@
 
 @interface CoreDataManager ()
 @property (nonatomic,strong) NSMutableSet *contextThreads;
+@property (nonatomic,strong) NSSet *modelNames;
 @end
 
 @implementation CoreDataManager
