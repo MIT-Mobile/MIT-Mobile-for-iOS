@@ -222,111 +222,106 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
 - (void)pruneStories
 {
-    static BOOL pruneInProgress = NO;
-    static char *queueName = "edu.mit.mobile.news.queue.CachePrune";
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSManagedObjectContext *context = [[NSManagedObjectContext alloc] init];
+        context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+        context.undoManager = nil;
+        context.mergePolicy = NSOverwriteMergePolicy;
+        [context lock];
 
-    if (pruneInProgress == NO)
-    {
-        pruneInProgress = YES;
-        dispatch_queue_t pruneQueue = dispatch_queue_create(queueName, NULL);
+        NSPredicate *notBookmarkedPredicate = [NSPredicate predicateWithFormat:@"(bookmarked == nil) || (bookmarked == NO)"];
 
-        dispatch_async(pruneQueue, ^{
-            NSManagedObjectContext *context = [[NSManagedObjectContext alloc] init];
-            context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-            context.undoManager = nil;
-            context.mergePolicy = NSOverwriteMergePolicy;
-            [context lock];
+        // bskinner (note): This is legacy code from 1.x. It was added to clean up
+        //  duplicate, un-bookmarked articles when upgrading from 1.x to 2.x.
+        //  On all new installs this ends up being a NOOP.
+        if (![[NSUserDefaults standardUserDefaults] boolForKey:MITNewsTwoFirstRunKey])
+        {
+            NSEntityDescription *newsStoryEntity = [NSEntityDescription entityForName:NewsStoryEntityName
+                                                               inManagedObjectContext:context];
+            
+            NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
+            fetchRequest.entity = newsStoryEntity;
+            fetchRequest.predicate = notBookmarkedPredicate;
 
-            // bskinner (note): This is legacy code from 1.x. It was added to clean up
-            //  duplicate, un-bookmarked articles when upgrading from 1.x to 2.x.
-            //  On all new installs this ends up being a NOOP.
-            if (![[NSUserDefaults standardUserDefaults] boolForKey:MITNewsTwoFirstRunKey])
+            NSArray *results = [context executeFetchRequest:fetchRequest
+                                                      error:NULL];
+            for (NSManagedObject *result in results)
             {
-                NSEntityDescription *newsStoryEntity = [NSEntityDescription entityForName:NewsStoryEntityName
-                                                                   inManagedObjectContext:context];
-                
-                NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
-                fetchRequest.entity = newsStoryEntity;
-                fetchRequest.predicate = [NSPredicate predicateWithFormat:@"NOT bookmarked == YES"];
-
-                NSArray *results = [context executeFetchRequest:fetchRequest
-                                                          error:NULL];
-                for (NSManagedObject *result in results)
-                {
-                    [context deleteObject:result];
-                }
-                [[NSUserDefaults standardUserDefaults] setBool:YES
-                                                        forKey:MITNewsTwoFirstRunKey];
-                [[NSUserDefaults standardUserDefaults] synchronize];
+                [context deleteObject:result];
             }
-            else
+            [[NSUserDefaults standardUserDefaults] setBool:YES
+                                                    forKey:MITNewsTwoFirstRunKey];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+
+        {
+            NSMutableSet *savedArticles = [NSMutableSet set];
+            NSMutableSet *deletedArticles = [NSMutableSet set];
+
+            NSEntityDescription *newsCategoryEntity = [NSEntityDescription entityForName:NewsCategoryEntityName
+                                                                  inManagedObjectContext:context];
+
+            NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
+            fetchRequest.entity = newsCategoryEntity;
+            fetchRequest.resultType = NSManagedObjectResultType;
+
+            NSArray *categories = [context executeFetchRequest:fetchRequest
+                                                         error:NULL];
+            
+            for (NSManagedObject *category in categories)
             {
-                NSMutableSet *savedArticles = [NSMutableSet set];
-                NSMutableSet *deletedArticles = [NSMutableSet set];
+                NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"postDate"
+                                                                                 ascending:NO];
+                NSSet *articleSet = [[category valueForKey:@"stories"] filteredSetUsingPredicate:notBookmarkedPredicate];
+                NSArray *sortedArticles = [articleSet sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
 
-                NSEntityDescription *newsCategoryEntity = [NSEntityDescription entityForName:NewsCategoryEntityName
-                                                                      inManagedObjectContext:context];
-
-                NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
-                fetchRequest.entity = newsCategoryEntity;
-                fetchRequest.resultType = NSManagedObjectResultType;
-
-                NSArray *categories = [context executeFetchRequest:fetchRequest
-                                                             error:NULL];
-                
-                for (NSManagedObject *category in categories)
-                {
-                    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"postDate"
-                                                                                     ascending:NO];
-                    NSSet *articleSet = [[category valueForKey:@"stories"] filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"(bookmarked == nil) OR (bookmarked == NO)"]];
-                    NSArray *sortedArticles = [articleSet sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+                __block NSUInteger savedCount = 0;
+                [sortedArticles enumerateObjectsUsingBlock:^ (id obj, NSUInteger idx, BOOL *stop) {
+                    NewsStory *story = (NewsStory *)obj;
+                    NSManagedObjectID *storyID = [story objectID];
                     
-                    [sortedArticles enumerateObjectsUsingBlock:^ (id obj, NSUInteger idx, BOOL *stop) {
-                        NSManagedObjectID *storyID = [obj objectID];
-                        
-                        if ([savedArticles containsObject:storyID])
+                    if ((story.postDate == nil) || ([story.postDate compare:[NSDate date]] == NSOrderedDescending))
+                    {
+                        [deletedArticles addObject:storyID];
+                    }
+                    else if (savedCount < 10)
+                    {
+                        if ([deletedArticles containsObject:storyID])
                         {
-                            // The article is already marked as being saved,
-                            //  nothing else to be done here
-                            return;
+                            [deletedArticles removeObject:storyID];
                         }
-                        else if (idx < 10)
-                        {
-                            if ([deletedArticles containsObject:storyID])
-                            {
-                                [deletedArticles removeObject:storyID];
-                            }
 
-                            [savedArticles addObject:storyID];
-                        }
-                        else
-                        {
-                            [deletedArticles addObject:storyID];
-                        }
-                    }];
-                }
-                
-                for (NSManagedObjectID *articleID in deletedArticles)
-                {
-                    [context deleteObject:[context objectWithID:articleID]];
-                }
+                        [savedArticles addObject:storyID];
+                        ++savedCount;
+                    }
+                    else if ([savedArticles containsObject:storyID] == NO)
+                    {
+                        [deletedArticles addObject:storyID];
+                    }
+                }];
             }
-
-            NSError *error = nil;
-            [context save:&error];
-
-            if (error)
+            
+            for (NSManagedObjectID *articleID in deletedArticles)
             {
-                ELog(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
+                [context deleteObject:[context objectWithID:articleID]];
             }
+        }
 
-            [context unlock];
-            [context release];
-            pruneInProgress = NO;
+        NSError *error = nil;
+        [context save:&error];
+
+        if (error)
+        {
+            ELog(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
+        }
+
+        [context unlock];
+        [context release];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self loadFromCache];
         });
-
-        dispatch_release(pruneQueue);
-    }
+    });
 }
 
 
@@ -614,17 +609,14 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     {
         // load what's in CoreData, up to categoryCount
         NSPredicate *predicate = nil;
-        NSSortDescriptor *featuredSortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"featured" ascending:NO];
-        NSSortDescriptor *postDateSortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"postDate" ascending:NO];
-        NSSortDescriptor *storyIdSortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"story_id" ascending:NO];
-        NSArray *sortDescriptors = [NSArray arrayWithObjects:featuredSortDescriptor, postDateSortDescriptor, storyIdSortDescriptor, nil];
-        [storyIdSortDescriptor release];
-        [postDateSortDescriptor release];
-        [featuredSortDescriptor release];
+        //NSSortDescriptor *featuredSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:NO];
+        NSSortDescriptor *postDateSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"postDate" ascending:NO];
+        NSSortDescriptor *storyIdSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"title" ascending:NO];
+        NSArray *sortDescriptors = [NSArray arrayWithObjects:postDateSortDescriptor, storyIdSortDescriptor, nil];
 
         if (self.activeCategoryId == NewsCategoryIdTopNews)
         {
-            predicate = [NSPredicate predicateWithFormat:@"topStory == YES"];
+            predicate = [NSPredicate predicateWithFormat:@"(topStory != nil) && (topStory == YES)"];
         }
         else
         {
@@ -633,7 +625,20 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
         // if maxLength == 0, nothing's been loaded from the server this session -- show up to 10 results from core data
         // else show up to maxLength
-        NSArray *results = [CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate sortDescriptors:sortDescriptors];
+        NSMutableArray *results = [NSMutableArray arrayWithArray:[CoreDataManager objectsForEntity:NewsStoryEntityName
+                                                                                 matchingPredicate:predicate
+                                                                                   sortDescriptors:sortDescriptors]];
+        
+        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            NewsStory *story = (NewsStory*)obj;
+            
+            if ([story.featured boolValue])
+            {
+                [results replaceObjectAtIndex:0 withObject:obj];
+                (*stop) = YES;
+            }
+        }]; 
+        
         NSManagedObject *aCategory = [[self.categories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"category_id == %d", self.activeCategoryId]] lastObject];
         NSDate *lastUpdatedDate = [aCategory valueForKey:@"lastUpdated"];
 
