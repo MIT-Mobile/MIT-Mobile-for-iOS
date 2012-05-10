@@ -5,12 +5,16 @@
 // not sure what to call this, just a placeholder for now, still hard coding file name below
 #define SQLLITE_PREFIX @"CoreDataXML."
 
+@interface CoreDataManager ()
+@property (nonatomic,strong) NSMutableSet *contextThreads;
+@end
 
 @implementation CoreDataManager
 
 @synthesize managedObjectModel;
 @synthesize managedObjectContext;
 @synthesize persistentStoreCoordinator;
+@synthesize contextThreads = _contextThreads;
 @dynamic modelNames;
 
 #pragma mark -
@@ -279,12 +283,23 @@
     
     NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
     if (coordinator != nil) {
-        localContext = [[NSManagedObjectContext alloc] init];
-        localContext.persistentStoreCoordinator = coordinator;
+        localContext = [[[NSManagedObjectContext alloc] init] autorelease];
+        [localContext setPersistentStoreCoordinator: coordinator];
         [threadDict setObject:localContext
                        forKey:@"MITCoreDataManagedObjectContext"];
-        [localContext release];
+        
+        if (self.contextThreads == nil)
+        {
+            self.contextThreads = [NSMutableSet set];
+        }
+        
+        [self.contextThreads addObject:[NSThread currentThread]];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(syncManagedObjectContexts:)
+                                                     name:NSManagedObjectContextDidSaveNotification
+                                                   object:localContext];
     }
+    
     return localContext;
 }
 
@@ -495,8 +510,32 @@
 	[managedObjectModel release];
 	[managedObjectContext release];
 	[persistentStoreCoordinator release];
+    self.contextThreads = nil;
 
 	[super dealloc];
 }
 
+
+- (void)syncManagedObjectContexts:(NSNotification*)notification
+{
+    NSMutableSet *finishedThreads = [NSMutableSet set];
+    [self.contextThreads enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+        NSThread *thread = (NSThread*)obj;
+        NSManagedObjectContext *moc = [[thread threadDictionary] objectForKey:@"MITCoreDataManagedObjectContext"];
+        
+        if ([thread isFinished])
+        {
+            [finishedThreads addObject:thread];
+            [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                            name:NSManagedObjectContextDidSaveNotification
+                                                          object:moc];
+        }
+        else
+        {
+            [moc mergeChangesFromContextDidSaveNotification:notification];
+        }
+    }];
+    
+    [self.contextThreads minusSet:finishedThreads];
+}
 @end
