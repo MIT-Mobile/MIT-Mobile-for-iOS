@@ -519,24 +519,27 @@
 
 - (void)syncManagedObjectContexts:(NSNotification*)notification
 {
-    NSMutableSet *finishedThreads = [NSMutableSet set];
-    [self.contextThreads enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-        NSThread *thread = (NSThread*)obj;
-        NSManagedObjectContext *moc = [[thread threadDictionary] objectForKey:@"MITCoreDataManagedObjectContext"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSMutableSet *finishedThreads = [NSMutableSet set];
+        [self.contextThreads enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+            NSThread *thread = (NSThread*)obj;
+            NSManagedObjectContext *moc = [[thread threadDictionary] objectForKey:@"MITCoreDataManagedObjectContext"];
+            
+            if ([thread isFinished])
+            {
+                [finishedThreads addObject:thread];
+                [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                                name:NSManagedObjectContextDidSaveNotification
+                                                              object:moc];
+                [[thread threadDictionary] removeObjectForKey:@"MITCoreDataManagedObjectContext"];
+            }
+            else
+            {
+                [moc mergeChangesFromContextDidSaveNotification:notification];
+            }
+        }];
         
-        if ([thread isFinished])
-        {
-            [finishedThreads addObject:thread];
-            [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                            name:NSManagedObjectContextDidSaveNotification
-                                                          object:moc];
-        }
-        else
-        {
-            [moc mergeChangesFromContextDidSaveNotification:notification];
-        }
-    }];
-    
-    [self.contextThreads minusSet:finishedThreads];
+        [self.contextThreads minusSet:finishedThreads];
+    });
 }
 @end
