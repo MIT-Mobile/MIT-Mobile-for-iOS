@@ -380,24 +380,22 @@ static CalendarDataManager *s_sharedManager = nil;
 		[df setDateFormat:@"MMMM yyyy"];
 		dateString = [df stringFromDate:aDate];
 	} else if ([listType.listID isEqualToString:@"holidays"]) {
+		// Find which Academic Year / Fiscal Year `aDate` falls under.
+        // MIT's calendar starts July 1st and ends June 30th. 
+        // e.g. 5/10/2012 would be in FY12 and comes out as the @"2011-2012" year.
+        
 		[df setDateFormat:@"yyyy"];
-		
-		// align year with MIT fiscal year.
-		// this means our results will be incorrect if MIT ever decides to change
-		// the start date of their fiscal year
-		// but i doubt that will happen in the next several years
-		NSCalendar *calendar = [NSCalendar currentCalendar];
-		NSDateComponents *comps = [[NSDateComponents alloc] init];
+        // Ignore the user's locale. MIT's calendar is based on the Gregorian calendar.
+		NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+		NSDateComponents *comps = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit) fromDate:aDate];
 		if ([comps month] <= 6) {
-			[comps setYear:-1];
-			NSDate *earlierDate = [calendar dateByAddingComponents:comps toDate:aDate options:0];
-			dateString = [NSString stringWithFormat:@"%@-%@", [df stringFromDate:earlierDate], [df stringFromDate:aDate]];
-		} else {
-			[comps setYear:1];
-			NSDate *laterDate = [calendar dateByAddingComponents:comps toDate:aDate options:0];
-			dateString = [NSString stringWithFormat:@"%@-%@", [df stringFromDate:aDate], [df stringFromDate:laterDate]];
-		}
-		[comps release];
+			[comps setYear:[comps year] - 1];
+        }
+        NSDate *startDate = [calendar dateFromComponents:comps];
+        [comps setYear:[comps year] + 1];
+        NSDate *endDate = [calendar dateFromComponents:comps];
+        dateString = [NSString stringWithFormat:@"%@-%@", [df stringFromDate:startDate], [df stringFromDate:endDate]];
+        [calendar release];
 	} else {
 		[df setDateStyle:kCFDateFormatterMediumStyle];
 		dateString = [df stringFromDate:aDate];
