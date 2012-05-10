@@ -299,6 +299,11 @@
                                                  selector:@selector(syncManagedObjectContexts:)
                                                      name:NSManagedObjectContextDidSaveNotification
                                                    object:localContext];
+        
+        if ([[NSThread currentThread] isMainThread])
+        {
+            localContext.stalenessInterval = 0.0;
+        }
     }
     
     return localContext;
