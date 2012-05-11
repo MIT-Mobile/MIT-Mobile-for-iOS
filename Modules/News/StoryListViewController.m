@@ -275,56 +275,52 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         }
         
         {
-            NSMutableSet *savedArticles = [NSMutableSet set];
-            NSMutableSet *deletedArticles = [NSMutableSet set];
-            
-            NSEntityDescription *newsCategoryEntity = [NSEntityDescription entityForName:NewsCategoryEntityName
-                                                                  inManagedObjectContext:context];
+            NSEntityDescription *newsStoryEntity = [NSEntityDescription entityForName:NewsStoryEntityName
+                                                               inManagedObjectContext:context];
             
             NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
-            fetchRequest.entity = newsCategoryEntity;
-            fetchRequest.resultType = NSManagedObjectResultType;
+            fetchRequest.entity = newsStoryEntity;
+            fetchRequest.predicate = notBookmarkedPredicate;
+            fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"postDate" ascending:NO]];
             
-            NSArray *categories = [context executeFetchRequest:fetchRequest
-                                                         error:NULL];
+            NSArray *stories = [context executeFetchRequest:fetchRequest
+                                                      error:NULL];
             
-            for (NSManagedObject *category in categories)
+            NSMutableDictionary *savedArticles = [NSMutableDictionary dictionary];
+            for (NewsStory *story in stories)
             {
-                NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"postDate"
-                                                                                 ascending:NO];
-                NSSet *articleSet = [[category valueForKey:@"stories"] filteredSetUsingPredicate:notBookmarkedPredicate];
-                NSArray *sortedArticles = [articleSet sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+                BOOL storySaved = NO;
                 
-                __block NSUInteger savedCount = 0;
-                [sortedArticles enumerateObjectsUsingBlock:^ (id obj, NSUInteger idx, BOOL *stop) {
-                    NewsStory *story = (NewsStory *)obj;
-                    NSManagedObjectID *storyID = [story objectID];
+                for (NSManagedObject *category in story.categories)
+                {
+                    NSNumber *categoryID = [category valueForKey:@"category_id"];
+                    NSMutableSet *categoryStories = [savedArticles objectForKey:categoryID];
                     
-                    if ((story.postDate == nil) || ([story.postDate compare:[NSDate date]] == NSOrderedDescending))
+                    if (categoryStories == nil)
                     {
-                        [deletedArticles addObject:storyID];
+                        categoryStories = [NSMutableSet set];
+                        [savedArticles setObject:categoryStories
+                                          forKey:categoryID];
                     }
-                    else if (savedCount < 10)
+                    
+                    BOOL shouldSave = storySaved = (([categoryStories count] < 10) &&
+                                                    (story.postDate != nil) &&
+                                                    ([story.postDate compare:[NSDate date]] != NSOrderedDescending));
+                    if (shouldSave)
                     {
-                        if ([deletedArticles containsObject:storyID])
-                        {
-                            [deletedArticles removeObject:storyID];
-                        }
-                        
-                        [savedArticles addObject:storyID];
-                        ++savedCount;
+                        [categoryStories addObject:story];
                     }
-                    else if ([savedArticles containsObject:storyID] == NO)
-                    {
-                        [deletedArticles addObject:storyID];
-                    }
-                }];
+                }
+            
+                if (storySaved == NO) 
+                {
+                    [context deleteObject:story];
+                }
             }
             
-            for (NSManagedObjectID *articleID in deletedArticles)
-            {
-                [context deleteObject:[context objectWithID:articleID]];
-            }
+            [savedArticles enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                NSLog(@"Category %@ has %d articles after pruning", key, [obj count]);
+            }];
         }
         
         NSError *error = nil;
@@ -628,10 +624,11 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     else
     {
         // load what's in CoreData, up to categoryCount
-        NSSortDescriptor *featuredSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:NO];
-        NSSortDescriptor *postDateSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"postDate" ascending:NO];
-        NSSortDescriptor *storyIdSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"story_id" ascending:NO];
-        NSArray *sortDescriptors = [NSArray arrayWithObjects:featuredSortDescriptor, postDateSortDescriptor, storyIdSortDescriptor, nil];
+        NSArray *sortDescriptors = [NSArray arrayWithObjects:
+                                    //[NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:NO],
+                                    [NSSortDescriptor sortDescriptorWithKey:@"postDate" ascending:NO],
+                                    [NSSortDescriptor sortDescriptorWithKey:@"story_id" ascending:NO],
+                                    nil];
         
         NSPredicate *predicate = nil;
         if (self.activeCategoryId == NewsCategoryIdTopNews)
@@ -654,9 +651,10 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
             [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 NewsStory *story = (NewsStory*)obj;
                 
-                if ([story.featured boolValue])
+                if ([story.featured boolValue] == YES)
                 {
-                    [results exchangeObjectAtIndex:0 withObjectAtIndex:idx];
+                    [results exchangeObjectAtIndex:0
+                                 withObjectAtIndex:idx];
                     (*stop) = YES;
                 }
             }];
@@ -698,7 +696,9 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     }
     self.xmlParser = [[[StoryXMLParser alloc] init] autorelease];
     xmlParser.delegate = self;
-    [xmlParser loadStoriesForCategory:self.activeCategoryId afterStoryId:lastStoryId count:10]; // count doesn't do anything at the moment (no server support)
+    [xmlParser loadStoriesForCategory:self.activeCategoryId
+                         afterStoryId:lastStoryId
+                                count:10]; // count doesn't do anything at the moment (no server support)
 }
 
 - (void)loadSearchResultsFromCache
