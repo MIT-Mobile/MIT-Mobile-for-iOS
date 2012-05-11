@@ -39,6 +39,8 @@
 - (void)hideSearchBar;
 - (void)releaseSearchBar;
 
+- (void)pruneStories:(BOOL)asyncPrune;
+
 @end
 
 @implementation StoryListViewController
@@ -220,17 +222,35 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     [super dealloc];
 }
 
+
 - (void)pruneStories
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    [self pruneStories:YES];
+}
+
+- (void)pruneStories:(BOOL)asyncPrune
+{
+    
+    void (*dispatch_func)(dispatch_queue_t,dispatch_block_t) = NULL;
+    
+    if (asyncPrune)
+    {
+        dispatch_func = &dispatch_async;
+    }
+    else
+    {
+        dispatch_func = &dispatch_sync;
+    }
+    
+    (*dispatch_func)(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         NSManagedObjectContext *context = [[NSManagedObjectContext alloc] init];
         context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
         context.undoManager = nil;
         context.mergePolicy = NSOverwriteMergePolicy;
         [context lock];
-
+        
         NSPredicate *notBookmarkedPredicate = [NSPredicate predicateWithFormat:@"(bookmarked == nil) || (bookmarked == NO)"];
-
+        
         // bskinner (note): This is legacy code from 1.x. It was added to clean up
         //  duplicate, un-bookmarked articles when upgrading from 1.x to 2.x.
         //  On all new installs this ends up being a NOOP.
@@ -242,7 +262,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
             NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
             fetchRequest.entity = newsStoryEntity;
             fetchRequest.predicate = notBookmarkedPredicate;
-
+            
             NSArray *results = [context executeFetchRequest:fetchRequest
                                                       error:NULL];
             for (NSManagedObject *result in results)
@@ -253,18 +273,18 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
                                                     forKey:MITNewsTwoFirstRunKey];
             [[NSUserDefaults standardUserDefaults] synchronize];
         }
-
+        
         {
             NSMutableSet *savedArticles = [NSMutableSet set];
             NSMutableSet *deletedArticles = [NSMutableSet set];
-
+            
             NSEntityDescription *newsCategoryEntity = [NSEntityDescription entityForName:NewsCategoryEntityName
                                                                   inManagedObjectContext:context];
-
+            
             NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
             fetchRequest.entity = newsCategoryEntity;
             fetchRequest.resultType = NSManagedObjectResultType;
-
+            
             NSArray *categories = [context executeFetchRequest:fetchRequest
                                                          error:NULL];
             
@@ -274,7 +294,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
                                                                                  ascending:NO];
                 NSSet *articleSet = [[category valueForKey:@"stories"] filteredSetUsingPredicate:notBookmarkedPredicate];
                 NSArray *sortedArticles = [articleSet sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-
+                
                 __block NSUInteger savedCount = 0;
                 [sortedArticles enumerateObjectsUsingBlock:^ (id obj, NSUInteger idx, BOOL *stop) {
                     NewsStory *story = (NewsStory *)obj;
@@ -290,7 +310,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
                         {
                             [deletedArticles removeObject:storyID];
                         }
-
+                        
                         [savedArticles addObject:storyID];
                         ++savedCount;
                     }
@@ -306,15 +326,15 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
                 [context deleteObject:[context objectWithID:articleID]];
             }
         }
-
+        
         NSError *error = nil;
         [context save:&error];
-
+        
         if (error)
         {
             ELog(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
         }
-
+        
         [context unlock];
         [context release];
         
@@ -608,12 +628,12 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     else
     {
         // load what's in CoreData, up to categoryCount
-        NSPredicate *predicate = nil;
-        //NSSortDescriptor *featuredSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:NO];
+        NSSortDescriptor *featuredSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:NO];
         NSSortDescriptor *postDateSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"postDate" ascending:NO];
-        NSSortDescriptor *storyIdSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"title" ascending:NO];
-        NSArray *sortDescriptors = [NSArray arrayWithObjects:postDateSortDescriptor, storyIdSortDescriptor, nil];
-
+        NSSortDescriptor *storyIdSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"story_id" ascending:NO];
+        NSArray *sortDescriptors = [NSArray arrayWithObjects:featuredSortDescriptor, postDateSortDescriptor, storyIdSortDescriptor, nil];
+        
+        NSPredicate *predicate = nil;
         if (self.activeCategoryId == NewsCategoryIdTopNews)
         {
             predicate = [NSPredicate predicateWithFormat:@"(topStory != nil) && (topStory == YES)"];
@@ -629,15 +649,18 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
                                                                                  matchingPredicate:predicate
                                                                                    sortDescriptors:sortDescriptors]];
         
-        [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            NewsStory *story = (NewsStory*)obj;
-            
-            if ([story.featured boolValue])
-            {
-                [results replaceObjectAtIndex:0 withObject:obj];
-                (*stop) = YES;
-            }
-        }]; 
+        if ([[[results objectAtIndex:0] featured] boolValue] == NO)
+        {
+            [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                NewsStory *story = (NewsStory*)obj;
+                
+                if ([story.featured boolValue])
+                {
+                    [results exchangeObjectAtIndex:0 withObjectAtIndex:idx];
+                    (*stop) = YES;
+                }
+            }];
+        }
         
         NSManagedObject *aCategory = [[self.categories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"category_id == %d", self.activeCategoryId]] lastObject];
         NSDate *lastUpdatedDate = [aCategory valueForKey:@"lastUpdated"];
@@ -823,7 +846,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
             
             if (parser.loadingMore == NO)
             {
-                [self pruneStories];
+                [self pruneStories:NO];
             }
             
             [self loadFromCache];
