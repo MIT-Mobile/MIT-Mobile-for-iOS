@@ -5,6 +5,7 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "MITUIConstants.h"
+#import "MobileRequestOperation.h"
 
 typedef enum 
 {
@@ -28,7 +29,6 @@ LocationsHoursTableRows;
 @implementation LibrariesLocationsHoursDetailViewController
 @synthesize library;
 @synthesize librariesDetailStatus;
-@synthesize request;
 @synthesize contentRowHeight;
 @synthesize contentWebView;
 
@@ -42,7 +42,6 @@ LocationsHoursTableRows;
 
 - (void)dealloc
 {
-    self.request = nil;
     self.library = nil;
     self.contentWebView.delegate = nil;
     self.contentWebView = nil;
@@ -70,9 +69,21 @@ LocationsHoursTableRows;
         self.librariesDetailStatus = LibrariesDetailStatusLoading;
         
         NSDictionary *params = [NSDictionary dictionaryWithObject:self.library.title forKey:@"library"];
-        self.request = [[[MITMobileWebAPI alloc] initWithModule:@"libraries" command:@"locationDetail" parameters:params] autorelease];
-        self.request.jsonDelegate = self;
-        [self.request start];
+        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locationDetail" parameters:params] autorelease];
+        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+            if (error) {
+                self.librariesDetailStatus = LibrariesDetailStatusLoadingFailed;
+                [self.tableView reloadData];
+            } else {
+                [self.library updateDetailsWithDict:jsonResult];
+                [CoreDataManager saveData];
+                self.librariesDetailStatus = LibrariesDetailStatusLoaded;
+                [self.tableView reloadData];
+            }
+        };
+        
+        [[NSOperationQueue mainQueue] addOperation:request];
+        
     } else {
         self.librariesDetailStatus = LibrariesDetailStatusLoaded;
     }
@@ -246,24 +257,6 @@ LocationsHoursTableRows;
     } else {
         return tableView.rowHeight;
     }
-}
-
-#pragma mark - JSONLoaded delegate methods
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
-    [self.library updateDetailsWithDict:JSONObject];
-    [CoreDataManager saveData];
-    self.librariesDetailStatus = LibrariesDetailStatusLoaded;
-    [self.tableView reloadData];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    return NO;
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-    self.librariesDetailStatus = LibrariesDetailStatusLoadingFailed;
-    [self.tableView reloadData];
 }
 
 #pragma mark - UIWebView delegate 
