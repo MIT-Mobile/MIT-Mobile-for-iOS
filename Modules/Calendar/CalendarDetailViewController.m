@@ -7,6 +7,7 @@
 #import "URLShortener.h"
 #import "CalendarDataManager.h"
 #import <EventKit/EventKit.h>
+#import "MobileRequestOperation.h"
 
 #define WEB_VIEW_PADDING 10.0
 #define BUTTON_PADDING 10.0
@@ -84,17 +85,31 @@
 - (void)requestEventDetails
 {
     if (isLoading) {
-        [apiRequest abortRequest];
-        isLoading = NO;
+        return;
     }
-    
-	apiRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-	NSString *eventID = [NSString stringWithFormat:@"%d", [self.event.eventID intValue]];
-	
-	[apiRequest requestObjectFromModule:@"calendar" 
-								command:@"detail" 
-							 parameters:[NSDictionary dictionaryWithObjectsAndKeys:eventID, @"id", nil]];
+
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:[self.event.eventID description], @"id", nil];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
+                                                                              command:@"detail"
+                                                                           parameters:params] autorelease];
+
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        isLoading = NO;
+        
+        if (error) {
+
+        } else {
+            if ([jsonResult isKindOfClass:[NSDictionary class]]
+                && [[jsonResult objectForKey:@"id"] integerValue] == [self.event.eventID integerValue])
+            {
+                [self.event updateWithDict:jsonResult];
+                [self reloadEvent];
+            }
+        }
+    };
+
     isLoading = YES;
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 - (void)reloadEvent
@@ -559,27 +574,7 @@
 
 #pragma mark JSONLoadedDelegate for background refreshing of events
 
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
-    isLoading = NO;
-	if (result && [result isKindOfClass:[NSDictionary class]]) {
-        // make sure the event that the server returns is the one being viewed
-        if ([[result objectForKey:@"id"] intValue] == [self.event.eventID intValue]) {
-            [self.event updateWithDict:result];
-            [self reloadEvent];
-        }
-	}
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    isLoading = NO;
-	return NO;
-}
-
 - (void)dealloc {
-    if (isLoading) {
-        [apiRequest abortRequest];
-    }
-    
     self.event = nil;
     self.events = nil;
 	free(rowTypes);

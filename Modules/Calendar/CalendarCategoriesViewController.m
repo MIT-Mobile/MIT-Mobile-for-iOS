@@ -1,5 +1,5 @@
 #import "CalendarCategoriesViewController.h"
-
+#import "MobileRequestOperation.h"
 
 @implementation CalendarCategoriesViewController
 
@@ -23,13 +23,20 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 
 	self.categories = nil;
-	
-	MITMobileWebAPI *apiRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-	
-	[apiRequest requestObjectFromModule:@"calendar" 
-								command:@"categories" 
-							 parameters:nil];
-	
+    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"calendar"
+                                                                              command:@"categories"
+                                                                           parameters:nil] autorelease];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            DLog(@"request failed");
+        } else if ([jsonResult isKindOfClass:[NSArray class]]) {
+            self.categories = jsonResult;
+            [self.tableView reloadData];
+        }
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 
@@ -159,24 +166,6 @@
 
 - (void)dealloc {
     [super dealloc];
-}
-
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
-	
-	if (result && [result isKindOfClass:[NSArray class]]) {
-		self.categories = result;
-		[self.tableView reloadData];
-	}
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
-{
-	DLog(@"request failed");
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    return YES;
 }
 
 @end

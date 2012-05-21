@@ -8,6 +8,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "MITEventList.h"
 #import "CoreDataManager.h"
+#import "MobileRequestOperation.h"
 
 #define SCROLL_TAB_HORIZONTAL_PADDING 5.0
 #define SCROLL_TAB_HORIZONTAL_MARGIN  5.0
@@ -47,6 +48,7 @@
 @synthesize activeEventList, showList, showScroller;
 @synthesize tableView = theTableView, mapView = theMapView, category = theCategory;
 @synthesize childViewController;
+@synthesize lastSearchTerm;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -81,6 +83,8 @@
 	
     [childViewController release];
     
+    self.lastSearchTerm = nil;
+
     [super dealloc];
 }
 
@@ -157,7 +161,6 @@
 	
 	theTableView = nil;
 	dateRangeDidChange = YES;
-	requestDispatched = NO;
 	
 	[[CalendarDataManager sharedManager] registerDelegate:self];
 	
@@ -337,7 +340,6 @@
 	}
 
 	if (dateRangeDidChange && [self shouldShowDatePicker:activeEventList]) {
-        [self abortEventListRequest];
 		requestNeeded = YES;
 	}
 	
@@ -367,27 +369,23 @@
 			categoriesTV.delegate = categoriesTV;
 			categoriesTV.dataSource = categoriesTV;
 			categoriesTV.parentViewController = self;
-
-            if (categoriesRequestDispatched) {
-                [self addLoadingIndicatorForSearch:NO];
+            
+            // populate (sub)categories from core data
+            // if we receive nil from core data, then make a trip to the server
+            NSArray *categories = nil;
+            if (self.category) {
+                NSMutableArray *subCategories = [[[self.category.subCategories allObjects] mutableCopy] autorelease];
+                // sort "All" category, i.e. the category that is a subcategory of itself, to the beginning
+                [subCategories removeObject:self.category];
+                categories = [[NSArray arrayWithObject:self.category] arrayByAddingObjectsFromArray:subCategories];
             } else {
-                
-                // populate (sub)categories from core data
-                // if we receive nil from core data, then make a trip to the server
-                NSArray *categories = nil;
-                if (self.category) {
-                    NSMutableArray *subCategories = [[[self.category.subCategories allObjects] mutableCopy] autorelease];
-                    // sort "All" category, i.e. the category that is a subcategory of itself, to the beginning
-                    [subCategories removeObject:self.category];
-                    categories = [[NSArray arrayWithObject:self.category] arrayByAddingObjectsFromArray:subCategories];
-                } else {
-                    categories = [CalendarDataManager topLevelCategories];
-					if (!categories) {
-						[self makeCategoriesRequest];
-					}
+                categories = [CalendarDataManager topLevelCategories];
+                if (!categories) {
+                    [self makeCategoriesRequest];
                 }
-                categoriesTV.categories = categories;
             }
+            categoriesTV.categories = categories;
+
             requestNeeded = NO;
 
 		} else if([activeEventList.listID isEqualToString:@"OpenHouse"]) {
@@ -636,8 +634,6 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {	
-	[self abortEventListRequest];
-
 	theSearchBar.text = [NSString string];
 	[self hideSearchBar];
     
@@ -721,65 +717,107 @@
 
 #pragma mark Server connection methods
 
-- (void)abortEventListRequest
-{
-	if (requestDispatched) {
-		[apiRequest abortRequest];
-        apiRequest = nil;
-		[self removeLoadingIndicator];
-		requestDispatched = NO;
-	}
-}
-
 - (void)makeSearchRequest:(NSString *)searchTerms
 {
-	[self abortEventListRequest];
-
-	apiRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-	apiRequest.userData = CalendarEventAPISearch;
-	requestDispatched = [apiRequest requestObjectFromModule:CalendarTag 
-												   command:@"search" 
-												parameters:[NSDictionary dictionaryWithObjectsAndKeys:searchTerms, @"q", nil]];
-
-	if (requestDispatched) {
-		if (showList) {
-			searchResultsTableView.events = nil;
+    if (searchTerms.length) {
+        self.lastSearchTerm = searchTerms;
+        
+        NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:searchTerms, @"q", nil];
+        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
+                                                                                  command:@"search"
+                                                                               parameters:params] autorelease];
+        
+        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+            if ([searchTerms isEqualToString:self.lastSearchTerm]) {
+                if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
+                        
+                        NSArray *resultEvents = [jsonResult objectForKey:@"events"];
+                        NSString *resultSpan = [jsonResult objectForKey:@"span"];
+                        
+                        NSMutableArray *arrayForTable = [NSMutableArray arrayWithCapacity:[resultEvents count]];
+                        
+                        for (NSDictionary *eventDict in resultEvents) {
+                            MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
+                            [arrayForTable addObject:event];
+                        }
+                        
+                        if ([resultEvents count] > 0) {
+                            
+                            NSArray *eventsArray = [NSArray arrayWithArray:arrayForTable];
+                            searchResultsMapView.events = eventsArray;
+                            searchResultsTableView.events = eventsArray;
+                            searchResultsTableView.searchSpan = resultSpan;
+                            searchResultsTableView.isSearchResults = YES;
+                            [searchResultsTableView reloadData];
+                            
+                            if (showList) {
+                                [self showSearchResultsTableView];
+                            } else {
+                                [self showSearchResultsMapView];
+                            }
+                            
+                        } else {
+                            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+                                                                                message:NSLocalizedString(@"Nothing found.", nil)
+                                                                               delegate:self
+                                                                      cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                            [alertView show];
+                            [alertView release];
+                        }
+                        
+                } else {
+                    
+                
+                }
+                [self removeLoadingIndicator];
+            }
+        };
+        
+        if (showList) {
+            searchResultsTableView.events = nil;
             searchResultsTableView.isSearchResults = NO;
-			[searchResultsTableView reloadData];
-			[self showSearchResultsTableView];
-		} else {
-			searchResultsMapView.events = nil;
-			[self showSearchResultsMapView];
-		}
-		
-		[self addLoadingIndicatorForSearch:YES];
-	}
+            [searchResultsTableView reloadData];
+            [self showSearchResultsTableView];
+        } else {
+            searchResultsMapView.events = nil;
+            [self showSearchResultsMapView];
+        }
+        
+        [self addLoadingIndicatorForSearch:YES];
+        
+        [[NSOperationQueue mainQueue] addOperation:request];
+    }
 }
 
 - (void)makeCategoriesRequest
 {
-    if (categoriesRequestDispatched) return;
-    
-    if (!categoriesRequest) {
-        categoriesRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-    }
-    
 	MITEventList *categories = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
-    if ([categoriesRequest requestObjectFromModule:CalendarTag
-										   command:[CalendarDataManager apiCommandForEventType:categories]
-                                        parameters:nil]) {
-        
-		categoriesRequestDispatched = YES;
-	}
+    NSString *command = [CalendarDataManager apiCommandForEventType:categories];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil] autorelease];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            
+        } else {
+            for (NSDictionary *catDict in jsonResult) {
+                [CalendarDataManager categoryWithDict:catDict forListID:nil]; // save this to core data
+                [CoreDataManager saveData];
+            }
+            
+            if ([activeEventList.listID isEqualToString:@"categories"]) {
+                [(EventCategoriesTableView *)self.tableView setCategories:[CalendarDataManager topLevelCategories]];
+                [self.tableView reloadData];
+            }
+        }
+        [self removeLoadingIndicator];
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 - (void)makeRequest
 {
-	[self abortEventListRequest];
-	
-	apiRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-	apiRequest.userData = activeEventList.listID;
-	
+    MobileRequestOperation *request = nil;
+    
 	if ([[CalendarDataManager sharedManager] isDailyEvent:activeEventList]) {
 		NSTimeInterval interval = [startDate timeIntervalSince1970];
 		NSString *timeString = [NSString stringWithFormat:@"%d", (int)interval];
@@ -791,37 +829,69 @@
             if(self.category.listID) {
                 [params setObject:self.category.listID forKey:@"type"];
             }
-			requestDispatched = [apiRequest requestObjectFromModule:CalendarTag
-															command:@"category"
-														 parameters:params];
+            request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:@"category" parameters:params] autorelease];
+
 		} else {
-			
-			requestDispatched = [apiRequest requestObjectFromModule:CalendarTag
-															command:[CalendarDataManager apiCommandForEventType:activeEventList]
-														 parameters:[NSDictionary dictionaryWithObjectsAndKeys:
-																	 activeEventList.listID, @"type",
-																	 timeString, @"time", nil]];
+            NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    activeEventList.listID, @"type",
+                                    timeString, @"time", nil];
+            NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
+            request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params] autorelease];
 		}
-	} else if ([activeEventList.listID isEqualToString:@"academic"] || [activeEventList.listID isEqualToString:@"holidays"]) {
+    
+    } else if ([activeEventList.listID isEqualToString:@"academic"] || [activeEventList.listID isEqualToString:@"holidays"]) {
 		NSCalendar *calendar = [NSCalendar currentCalendar];
 		NSUInteger unitFlags = NSYearCalendarUnit | NSMonthCalendarUnit;
 		NSDateComponents *comps = [calendar components:unitFlags fromDate:startDate];
 		NSString *month = [NSString stringWithFormat:@"%d", [comps month]];
 		NSString *year = [NSString stringWithFormat:@"%d", [comps year]];
-		
-		requestDispatched = [apiRequest requestObjectFromModule:CalendarTag
-														command:[CalendarDataManager apiCommandForEventType:activeEventList]
-													 parameters:[NSDictionary dictionaryWithObjectsAndKeys:year, @"year", month, @"month", nil]];
+
+        NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:year, @"year", month, @"month", nil];
+        NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
+        request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params] autorelease];
+
 	} else {
-		requestDispatched = [apiRequest requestObjectFromModule:CalendarTag
-														command:[CalendarDataManager apiCommandForEventType:activeEventList]
-													 parameters:nil];
-		
+        NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
+        request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil] autorelease];
 	}
+    
+    
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
+            
+            NSMutableArray *arrayForTable = [NSMutableArray arrayWithCapacity:[jsonResult count]];
+            
+            EventCategory *category = nil;
+            
+            if ([activeEventList.listID isEqualToString:@"Exhibits"]) {
+                category = [CalendarDataManager categoryForExhibits];
+            } else {
+                category = self.category;
+            }
+            
+            for (NSDictionary *eventDict in jsonResult) {
+                MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
+                // assign a category if we know already what it is
+                if (category != nil) {
+                    [event addCategoriesObject:category];
+                }
+                [activeEventList addEventsObject:event];
+                [CoreDataManager saveData]; // save now to preserve many-many relationships
+                [arrayForTable addObject:event];
+            }
+            
+            self.events = [NSArray arrayWithArray:arrayForTable];
+            
+            [self.tableView reloadData];
+
+        } else {
+
+        }
+        [self removeLoadingIndicator];
+    };
 	
-	if (requestDispatched) {
-		[self addLoadingIndicatorForSearch:NO];
-	}
+    [self addLoadingIndicatorForSearch:NO];
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 - (void)addLoadingIndicatorForSearch:(BOOL)isSearch
@@ -904,118 +974,6 @@
 
 - (void)calendarListsFailedToLoad {
 	DLog(@"failed to load lists");
-}
-
-#pragma mark MITMobileWebAPI
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
-
-	[self removeLoadingIndicator];
-    
-    if (request == categoriesRequest) {
-        categoriesRequestDispatched = NO;
-        categoriesRequest = nil;
-        
-        for (NSDictionary *catDict in result) {
-            [CalendarDataManager categoryWithDict:catDict forListID:nil]; // save this to core data
-			[CoreDataManager saveData];
-        }
-		
-		if ([activeEventList.listID isEqualToString:@"categories"]) {
-			[(EventCategoriesTableView *)self.tableView setCategories:[CalendarDataManager topLevelCategories]];
-			[self.tableView reloadData];
-		}
-
-        return;
-    }
-    
-	requestDispatched = NO;
-    apiRequest = nil;
-    
-    if (result && [request.userData isEqualToString:CalendarEventAPISearch] && [result isKindOfClass:[NSDictionary class]]) {
-		
-        NSArray *resultEvents = [result objectForKey:@"events"];
-        NSString *resultSpan = [result objectForKey:@"span"];
-        
-		NSMutableArray *arrayForTable = [NSMutableArray arrayWithCapacity:[resultEvents count]];
-		
-        for (NSDictionary *eventDict in resultEvents) {
-            MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
-            [arrayForTable addObject:event];
-        }
-        
-        if ([resultEvents count] > 0) {
-            
-            NSArray *eventsArray = [NSArray arrayWithArray:arrayForTable];
-            searchResultsMapView.events = eventsArray;
-            searchResultsTableView.events = eventsArray;
-            searchResultsTableView.searchSpan = resultSpan;
-            searchResultsTableView.isSearchResults = YES;
-            [searchResultsTableView reloadData];
-            
-            if (showList) {
-                [self showSearchResultsTableView];
-            } else {
-                [self showSearchResultsMapView];
-            }
-            
-        } else {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-																message:NSLocalizedString(@"Nothing found.", nil)
-															   delegate:self
-													  cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alertView show];
-            [alertView release];
-        }
-        
-    } else if (result && [result isKindOfClass:[NSArray class]]) {
-		
-		NSMutableArray *arrayForTable = [NSMutableArray arrayWithCapacity:[result count]];
-		
-        EventCategory *category = nil;
-		
-		if ([activeEventList.listID isEqualToString:@"Exhibits"]) {
-			category = [CalendarDataManager categoryForExhibits];
-		} else {
-            category = self.category;
-        }
-        
-        for (NSDictionary *eventDict in result) {
-            MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
-            // assign a category if we know already what it is
-            if (category != nil) {
-				[event addCategoriesObject:category];
-            }
-			[activeEventList addEventsObject:event];
-			[CoreDataManager saveData]; // save now to preserve many-many relationships
-            [arrayForTable addObject:event];
-        }
-        
-        self.events = [NSArray arrayWithArray:arrayForTable];
-		
-        [self.tableView reloadData];
-	}
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
-{
-	DLog(@"request failed: %@", [[request userData] description]);
-	
-	[self removeLoadingIndicator];
-    
-    if (request == apiRequest) {
-        requestDispatched = NO;
-    } else {
-        categoriesRequestDispatched = NO;
-    }
-}
-
-- (BOOL) request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
-	return @"Events";
 }
 
 @end

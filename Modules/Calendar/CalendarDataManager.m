@@ -4,6 +4,7 @@
 #import "MITEventList.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MIT_MobileAppDelegate+ModuleList.h"
+#import "MobileRequestOperation.h"
 
 NSString * const CalendarStateEventList = @"events";
 NSString * const CalendarStateCategoryList = @"categories";
@@ -76,11 +77,62 @@ static CalendarDataManager *s_sharedManager = nil;
 	}
 	[_staticEventListIDs release];
 	_staticEventListIDs = [[NSArray alloc] initWithArray:mutableStaticEvents];
-
-	// then make a request for more updated data
-	MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
+    
     NSDictionary *params = [NSDictionary dictionaryWithObject:@"2" forKey:@"version"];
-	[api requestObjectFromModule:CalendarTag command:@"extraTopLevels" parameters:params];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
+                                                                              command:@"extraTopLevels"
+                                                                           parameters:params] autorelease];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            if ([[CoreDataManager managedObjectContext] hasChanges]) {
+                [[CoreDataManager managedObjectContext] rollback];
+            }
+            [_delegate calendarListsFailedToLoad];
+        } else {
+            NSMutableArray *newLists = [NSMutableArray arrayWithArray:[CalendarDataManager staticEventTypes]];
+            if (jsonResult && [jsonResult isKindOfClass:[NSArray class]]) {
+                NSInteger sortOrder = 1;
+                for (id anObject in jsonResult) {
+                    if ([anObject isKindOfClass:[NSDictionary class]]) {
+                        NSDictionary *dict = (NSDictionary *)anObject;
+                        NSString *listID = [dict objectForKey:@"type"];
+                        MITEventList *list = [CalendarDataManager eventListWithID:listID];
+                        if (!list.title)
+                            list.title = [dict objectForKey:@"shortName"];
+                        if ([list.sortOrder integerValue] != sortOrder)
+                            list.sortOrder = [NSNumber numberWithInt:sortOrder];
+                        sortOrder++;
+                        [newLists addObject:list];
+                    }
+                }
+            }
+            
+            if ([[NSSet setWithArray:newLists] isEqualToSet:[NSSet setWithArray:_eventLists]] == NO) {
+                DLog(@"event lists have changed");
+                [CoreDataManager saveData];
+                
+                // check for deleted categories
+                NSMutableSet *newEventListIDs = [NSMutableSet setWithCapacity:newLists.count];
+                for (MITEventList *newEventList in newLists) {
+                    [newEventListIDs addObject:newEventList.listID];
+                }
+                
+                for (MITEventList *oldEventList in _eventLists) {
+                    if (![newEventListIDs containsObject:oldEventList.listID]) {
+                        DLog(@"deleting old list %@", [oldEventList description]);
+                        [CoreDataManager deleteObject:oldEventList];
+                    }
+                }
+                
+                NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
+                [_eventLists release];
+                _eventLists = [[newLists sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]] retain];
+                [_delegate calendarListsLoaded];
+            }
+        }
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 - (BOOL)isDailyEvent:(MITEventList *)listType {
@@ -115,66 +167,6 @@ static CalendarDataManager *s_sharedManager = nil;
 		[mutableArray addObject:eventList];
 	}
 	return [NSArray arrayWithArray:mutableArray];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
-    return @"Events";
-}
-                                                         
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
-	NSMutableArray *newLists = [NSMutableArray arrayWithArray:[CalendarDataManager staticEventTypes]];
-	if (JSONObject && [JSONObject isKindOfClass:[NSArray class]]) {
-		NSInteger sortOrder = 1;
-		for (id anObject in JSONObject) {
-			if (![anObject isKindOfClass:[NSDictionary class]]) {
-				[self handleConnectionFailureForRequest:request];
-				return;
-			}
-			NSDictionary *dict = (NSDictionary *)anObject;
-			NSString *listID = [dict objectForKey:@"type"];
-			MITEventList *list = [CalendarDataManager eventListWithID:listID];
-			if (!list.title)
-				list.title = [dict objectForKey:@"shortName"];
-			if ([list.sortOrder integerValue] != sortOrder)
-				list.sortOrder = [NSNumber numberWithInt:sortOrder];
-			sortOrder++;
-			[newLists addObject:list];
-		}
-	}
-
-	if ([[NSSet setWithArray:newLists] isEqualToSet:[NSSet setWithArray:_eventLists]] == NO) {
-		DLog(@"event lists have changed");
-		[CoreDataManager saveData];
-
-		// check for deleted categories
-		NSMutableSet *newEventListIDs = [NSMutableSet setWithCapacity:newLists.count];
-		for (MITEventList *newEventList in newLists) {
-			[newEventListIDs addObject:newEventList.listID];
-		}
-
-		for (MITEventList *oldEventList in _eventLists) {
-			if (![newEventListIDs containsObject:oldEventList.listID]) {
-				DLog(@"deleting old list %@", [oldEventList description]);
-				[CoreDataManager deleteObject:oldEventList];
-			}
-		}
-		
-		NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
-		[_eventLists release];
-		_eventLists = [[newLists sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]] retain];
-		[_delegate calendarListsLoaded];
-	}
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	if ([[CoreDataManager managedObjectContext] hasChanges]) {
-		[[CoreDataManager managedObjectContext] rollback];
-	}
-	[_delegate calendarListsFailedToLoad];
 }
 
 #pragma mark -

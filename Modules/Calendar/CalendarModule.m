@@ -3,7 +3,6 @@
 #import "CalendarDetailViewController.h"
 #import "CalendarDataManager.h"
 #import "MITModuleURL.h"
-#import "MITMobileWebAPI.h"
 #import "CalendarEventMapAnnotation.h"
 #import "MITEventList.h"
 
