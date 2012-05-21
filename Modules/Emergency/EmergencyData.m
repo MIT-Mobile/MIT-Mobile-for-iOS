@@ -2,13 +2,13 @@
 #import "MITJSON.h"
 #import "MIT_MobileAppDelegate.h"
 #import "CoreDataManager.h"
-#import "MITMobileWebAPI.h"
 #import "Foundation+MITAdditions.h"
 #import "EmergencyModule.h"
+#import "MobileRequestOperation.h"
 
 @implementation EmergencyData
 
-@synthesize primaryPhoneNumbers, allPhoneNumbers, infoConnection, contactsConnection;
+@synthesize primaryPhoneNumbers, allPhoneNumbers;
 
 @dynamic htmlString, lastUpdated, lastFetched;
 
@@ -166,137 +166,83 @@ static EmergencyData *sharedEmergencyData = nil;
 }
 
 #pragma mark -
-#pragma mark Asynchronous HTTP - preferred
+#pragma mark Server requests
 
 // Send request
 - (void)checkForEmergencies {
-    if (infoRequest != nil) {
-        return;
-    }
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"emergency" command:nil parameters:nil] autorelease];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:self];
 
-    infoRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-    BOOL dispatchedSuccessfully = [infoRequest requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"emergency", @"module", nil]];
-    if (!dispatchedSuccessfully) {
-        DLog(@"failed to fetch emergency info");
-    }
-    
-    /*
-    if ([self.infoConnection isConnected]) {
-        return; // a connection already exists
-    }
-    // TODO: use Reachability to wait until app gets a connection to perform check
-    self.infoConnection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-    NSURL *url = [MITMobileWebAPI buildURL:[NSDictionary dictionaryWithObjectsAndKeys:@"emergency", @"module", nil]
-								 queryBase:MITMobileWebAPIURLString];
-    BOOL dispatchedSuccessfully = [infoConnection requestDataFromURL:url];
-    if (dispatchedSuccessfully) {
-        [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
-    }
-    */
+        } else {
+            if (![jsonResult isKindOfClass:[NSArray class]]) {
+                ELog(@"%@ received json result as %@, not NSArray.", NSStringFromClass([self class]), NSStringFromClass([jsonResult class]));
+            } else {
+                NSDictionary *response = [(NSArray *)jsonResult lastObject];
+                
+                NSDate *lastUpdated = [NSDate dateWithTimeIntervalSince1970:[[response objectForKey:@"unixtime"] doubleValue]];
+                NSDate *previouslyUpdated = [info valueForKey:@"lastUpdated"];
+                
+                if (!previouslyUpdated) { // user has never opened the app, set a baseline date
+                    [self setLastRead:[NSDate date]];
+                }
+                
+                if (!previouslyUpdated || [lastUpdated timeIntervalSinceDate:previouslyUpdated] > 0) {
+                    [info setValue:lastUpdated forKey:@"lastUpdated"];
+                    [info setValue:[NSDate date] forKey:@"lastFetched"];
+                    [info setValue:[response objectForKey:@"text"] forKey:@"htmlString"];
+                    [CoreDataManager saveData];
+                    
+                    [self fetchEmergencyInfo];
+                    // notify listeners that this is a new emergency
+                    
+                    //[[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:self];
+                }
+                // notify listeners that the info is done loading, regardless of whether it's changed
+                [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidLoadNotification object:self];
+            }
+        }
+    };
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 // request contacts
 - (void)reloadContacts {
-    if (contactsRequest != nil) {
-        return;
-    }
-    contactsRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-    if (![contactsRequest requestObjectFromModule:@"emergency" command:@"contacts" parameters:nil]) {
-        DLog(@"failed to fetch emergency contacts");
-    }
-    
-    /*
-    if ([self.contactsConnection isConnected]) {
-        return; // a connection already exists
-    }
-    self.contactsConnection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-    NSURL *url = [MITMobileWebAPI buildURL:[NSDictionary dictionaryWithObjectsAndKeys:@"emergency", @"module", @"contacts", @"command", nil]
-								 queryBase:MITMobileWebAPIURLString];
-    if ([self.contactsConnection requestDataFromURL:url]) {
-        [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
-    }
-    */
-}
-
-// Receive response
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)jsonObject {
-    if (request == infoRequest) {
-        
-        if (![jsonObject isKindOfClass:[NSArray class]]) {
-            ELog(@"%@ received json result as %@, not NSArray.", NSStringFromClass([self class]), NSStringFromClass([jsonObject class]));
-        } else {
-            NSDictionary *response = [(NSArray *)jsonObject lastObject];
-            
-            NSDate *lastUpdated = [NSDate dateWithTimeIntervalSince1970:[[response objectForKey:@"unixtime"] doubleValue]];
-            NSDate *previouslyUpdated = [info valueForKey:@"lastUpdated"];
-            
-            if (!previouslyUpdated) { // user has never opened the app, set a baseline date
-                [self setLastRead:[NSDate date]];
-            }
-            
-            if (!previouslyUpdated || [lastUpdated timeIntervalSinceDate:previouslyUpdated] > 0) {
-                [info setValue:lastUpdated forKey:@"lastUpdated"];
-                [info setValue:[NSDate date] forKey:@"lastFetched"];
-                [info setValue:[response objectForKey:@"text"] forKey:@"htmlString"];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"emergency"
+                                                                              command:@"contacts"
+                                                                           parameters:nil] autorelease];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
+                NSArray *contactsArray = (NSArray *)jsonResult;
+                
+                // delete all of the old numbers
+                NSArray *oldContacts = [CoreDataManager fetchDataForAttribute:EmergencyContactEntityName];
+                if ([oldContacts count] > 0) {
+                    [CoreDataManager deleteObjects:oldContacts];
+                }
+                
+                // create new entry for each contact in contacts
+                NSInteger i = 0;
+                for (NSDictionary *contactDict in contactsArray) {
+                    NSManagedObject *contact = [CoreDataManager insertNewObjectForEntityForName:EmergencyContactEntityName];
+                    [contact setValue:[contactDict objectForKey:@"contact"] forKey:@"title"];
+                    [contact setValue:[contactDict objectForKey:@"description"] forKey:@"summary"];
+                    [contact setValue:[contactDict objectForKey:@"phone"] forKey:@"phone"];
+                    [contact setValue:[NSNumber numberWithInteger:i] forKey:@"ordinality"];
+                    i++;
+                }
                 [CoreDataManager saveData];
+                [self fetchContacts];
                 
-                [self fetchEmergencyInfo];
-                // notify listeners that this is a new emergency
-                
-                //[[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:self];
-            }
-            // notify listeners that the info is done loading, regardless of whether it's changed
-            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidLoadNotification object:self];
+                // notify listeners that contacts have finished loading
+                [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
+        } else {
+            
         }
-        
-        infoRequest = nil;
-        
-    } else if (request == contactsRequest) {
-        
-        if (jsonObject && [jsonObject isKindOfClass:[NSArray class]]) {
-            NSArray *contactsArray = (NSArray *)jsonObject;
-            
-            // delete all of the old numbers
-            NSArray *oldContacts = [CoreDataManager fetchDataForAttribute:EmergencyContactEntityName];
-            if ([oldContacts count] > 0) {
-                [CoreDataManager deleteObjects:oldContacts];
-            }
-            
-            // create new entry for each contact in contacts
-            NSInteger i = 0;
-            for (NSDictionary *contactDict in contactsArray) {
-                NSManagedObject *contact = [CoreDataManager insertNewObjectForEntityForName:EmergencyContactEntityName];
-                [contact setValue:[contactDict objectForKey:@"contact"] forKey:@"title"];
-                [contact setValue:[contactDict objectForKey:@"description"] forKey:@"summary"];
-                [contact setValue:[contactDict objectForKey:@"phone"] forKey:@"phone"];
-                [contact setValue:[NSNumber numberWithInteger:i] forKey:@"ordinality"];
-                i++;
-            }
-            [CoreDataManager saveData];
-            [self fetchContacts];
-            
-            // notify listeners that contacts have finished loading
-            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
-        }
-        
-        contactsRequest = nil;
-    }
-}
+    };
+    [[NSOperationQueue mainQueue] addOperation:request];
 
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
-    return NO;
-}
-
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-    // TODO: possibly retry at a later date if connection dropped or server was unavailable
-    if (request == infoRequest) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:self];
-        infoRequest = nil;
-    } else if (request == contactsRequest) {
-        contactsRequest = nil;
-    }
 }
 
 @end
