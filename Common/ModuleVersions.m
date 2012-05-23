@@ -1,21 +1,20 @@
 #import "ModuleVersions.h"
+#import "MobileRequestOperation.h"
+
 static ModuleVersions *_sharedVersions = nil;
 
 @interface ModuleVersions ()
 @property (nonatomic,retain) NSDictionary *moduleDates;
-@property (nonatomic, retain) MITMobileWebAPI *apiRequest;
 @end
 
 @implementation ModuleVersions
 @synthesize moduleDates = _moduleDates;
-@synthesize apiRequest = _apiRequest;
 
 - (id)init {
     self = [super init];
 
     if (self) {
         self.moduleDates = nil;
-        self.apiRequest = nil;
     }
 
     return self;
@@ -23,7 +22,6 @@ static ModuleVersions *_sharedVersions = nil;
 
 - (void)dealloc {
     self.moduleDates = nil;
-    self.apiRequest = nil;
     [super dealloc];
 }
 
@@ -33,16 +31,37 @@ static ModuleVersions *_sharedVersions = nil;
 }
 
 - (void)updateVersionInformation {
-    if (self.apiRequest == nil) {
-        self.apiRequest = [[[MITMobileWebAPI alloc] initWithModule:@"version"
-                                                           command:@"list"
-                                                        parameters:nil] autorelease];
-        self.apiRequest.jsonDelegate = self;
-    }
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"version"
+                                                                              command:@"list"
+                                                                           parameters:nil] autorelease];
+    
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (!error) {
+            NSDictionary *remoteDates = (NSDictionary *)jsonResult;
+            NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+            
+            for (NSString *key in remoteDates) {
+                NSDictionary *moduleDates = [remoteDates objectForKey:key];
+                NSMutableDictionary *dateDict = [NSMutableDictionary dictionary];
+                
+                for (NSString *key in moduleDates) {
+                    NSString *epochString = [moduleDates objectForKey:key];
+                    NSTimeInterval epochTime = [epochString integerValue];
+                    NSDate *date = [[[NSDate alloc] initWithTimeIntervalSince1970:epochTime] autorelease];
+                    
+                    [dateDict setObject:date
+                                 forKey:key];
+                }
+                
+                [dict setObject:dateDict
+                         forKey:key];
+            }
+            
+            self.moduleDates = dict;
+        }
+    };
 
-    if ([self.apiRequest isActive] == NO) {
-        [self.apiRequest start];
-    }
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 - (NSDictionary *)lastUpdateDatesForModule:(NSString *)module {
@@ -53,35 +72,6 @@ static ModuleVersions *_sharedVersions = nil;
     } else {
         return nil;
     }
-}
-
-#pragma mark - JSONDelegate Methods
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
-    NSDictionary *remoteDates = (NSDictionary *)JSONObject;
-    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-
-    for (NSString *key in remoteDates) {
-        NSDictionary *moduleDates = [remoteDates objectForKey:key];
-        NSMutableDictionary *dateDict = [NSMutableDictionary dictionary];
-        
-        for (NSString *key in moduleDates) {
-            NSString *epochString = [moduleDates objectForKey:key];
-            NSTimeInterval epochTime = [epochString integerValue];
-            NSDate *date = [[[NSDate alloc] initWithTimeIntervalSince1970:epochTime] autorelease];
-
-            [dateDict setObject:date
-                         forKey:key];
-        }
-
-        [dict setObject:dateDict
-                  forKey:key];
-    }
-
-    self.moduleDates = dict;
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
-    return NO;
 }
 
 #pragma mark - Singleton Implementation
