@@ -4,6 +4,8 @@
 #import "LibrariesLocationsHours.h"
 #import "MITLoadingActivityView.h"
 #import "MITUIConstants.h"
+#import "MobileRequestOperation.h"
+#import "MITMobileWebAPI.h"
 
 #define PADDING 10
 #define CELL_TITLE_TAG 1
@@ -13,7 +15,6 @@
 @implementation LibrariesLocationsHoursViewController
 @synthesize loadingView;
 @synthesize libraries;
-@synthesize request;
 
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -28,7 +29,6 @@
 - (void)dealloc
 {
     self.loadingView = nil;
-    self.request = nil;
     [super dealloc];
 }
 
@@ -53,9 +53,28 @@
         self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self.view addSubview:self.loadingView];
         
-        self.request = [[[MITMobileWebAPI alloc] initWithModule:@"libraries" command:@"locations" parameters:nil] autorelease];
-        self.request.jsonDelegate = self;
-        [self.request start];
+        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locations" parameters:nil] autorelease];
+        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+            if (error) {
+                [MITMobileWebAPI showError:error header:@"Libraries" alertViewDelegate:self];
+            } else {
+                [LibrariesLocationsHours removeAllLibraries];
+                
+                NSArray *libraryItems = jsonResult;
+                NSMutableArray *mutableLibraries = [NSMutableArray arrayWithCapacity:libraryItems.count];
+                for (NSDictionary *libraryItem in libraryItems) {
+                    LibrariesLocationsHours *library = [LibrariesLocationsHours libraryWithDict:libraryItem];
+                    [mutableLibraries addObject:library];
+                }
+                [CoreDataManager saveData];
+                [self.loadingView removeFromSuperview];
+                self.libraries = mutableLibraries;
+                [self.tableView reloadData];
+            
+            }
+        };
+
+        [[NSOperationQueue mainQueue] addOperation:request];
     }
     
     
@@ -174,31 +193,6 @@
     CGSize titleSize = [library.title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] 
                                  constrainedToSize:CGSizeMake(CELL_LABEL_WIDTH, 500)];
     return titleSize.height + 2 * PADDING + [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE].lineHeight;
-}
-
-#pragma mark - JSONLoaded delegate methods
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)jsonObject {
-    [LibrariesLocationsHours removeAllLibraries];
-     
-    NSArray *libraryItems = jsonObject;
-    NSMutableArray *mutableLibraries = [NSMutableArray arrayWithCapacity:libraryItems.count];
-    for (NSDictionary *libraryItem in libraryItems) {
-        LibrariesLocationsHours *library = [LibrariesLocationsHours libraryWithDict:libraryItem];
-        [mutableLibraries addObject:library];
-    }
-    [CoreDataManager saveData];
-    [self.loadingView removeFromSuperview];
-    self.libraries = mutableLibraries;
-    [self.tableView reloadData];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    return YES;
-}
-
-- (id<UIAlertViewDelegate>)request:(MITMobileWebAPI *)request alertViewDelegateForError:(NSError *)error {
-    return self;
 }
 
 #pragma mark - UIAlertView delegate methods
