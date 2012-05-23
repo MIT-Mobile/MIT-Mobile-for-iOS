@@ -5,6 +5,8 @@
 #import "StellarCache.h"
 #import "ConnectionWrapper.h"
 #import "CoreDataManager.h"
+#import "MobileRequestOperation.h"
+#import "MITMobileWebAPI.h"
 
 #define DAY 24 * 60 * 60
 #define MONTH 30 * DAY
@@ -31,7 +33,7 @@ NSString* cleanPersonName(NSString *personName);
 
 + (BOOL) classesFreshForCourse: (StellarCourse *)course;
 + (NSArray *) classesForCourse: (StellarCourse *)course;
-+ (void) classesForCourseCompleteRequest:(ClassesRequest *)classesRequest;
++ (void) classesForCourseRequestComplete:(StellarCourse *)stellarCourse delegate:(id<ClassesLoadedDelegate>)delegate;
 
 @end
 
@@ -52,11 +54,47 @@ NSString* cleanPersonName(NSString *personName);
 		[delegate coursesLoaded];
 		return;
 	}
-	
-	MITMobileWebAPI *apiRequest = [MITMobileWebAPI 
-		jsonLoadedDelegate:[[[CoursesRequest alloc] 
-			initWithCoursesDelegate:delegate] autorelease]];
-	[apiRequest requestObjectFromModule:@"stellar" command:@"courses" parameters:nil];
+    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"stellar"
+                                                                              command:@"courses"
+                                                                           parameters:nil] autorelease];
+    
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            if ([StellarModel allCourses].count) {
+                // courses failed to load, but we still have courses save on disk so it is okay
+                [delegate coursesLoaded];
+            } else {
+                [MITMobileWebAPI showErrorWithHeader:StellarHeader];
+            }
+            
+        } else {
+            NSArray *courses = (NSArray *)jsonResult;
+            if (courses.count == 0) {
+                // no courses to save
+                return;
+            }
+            
+            for(NSDictionary *aDict in courses) {
+                StellarCourse *oldStellarCourse = [CoreDataManager getObjectForEntity:StellarCourseEntityName attribute:@"number" value:[aDict objectForKey:@"short"]];
+                if(oldStellarCourse) {
+                    // delete old course (will replace all the data, occasionally non-critical relationships
+                    // between a course and its subject will be lost
+                    [CoreDataManager deleteObject:oldStellarCourse];
+                }
+                
+                StellarCourse *newStellarCourse = (StellarCourse *)[CoreDataManager insertNewObjectForEntityForName:StellarCourseEntityName];
+                newStellarCourse.number = [aDict objectForKey:@"short"];
+                newStellarCourse.title = [aDict objectForKey:@"name"];
+            }
+            [CoreDataManager saveData];
+            [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"stellarCoursesLastSaved"];
+            [delegate coursesLoaded];
+        }
+    
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 + (BOOL) classesFreshForCourse: (StellarCourse *)course term: (NSString *)term {
@@ -79,27 +117,43 @@ NSString* cleanPersonName(NSString *personName);
 }
 	
 + (void) loadClassesForCourse: (StellarCourse *)stellarCourse delegate: (NSObject<ClassesLoadedDelegate>*) delegate {
-	ClassesRequest *classesRequest = [[[ClassesRequest alloc] initWithDelegate:delegate course:stellarCourse] autorelease];
 	// check if the current class list cache for course is old
 
 	NSString *term = [[NSUserDefaults standardUserDefaults] objectForKey:StellarTermKey];
 	if ([StellarModel classesFreshForCourse:stellarCourse term:term]) {
-		[classesRequest performSelector:@selector(notifyClassesLoadedDelegate) withObject:nil afterDelay:0.1];
+        [delegate performSelector:@selector(classesLoaded:) withObject:[StellarModel classesForCourse:stellarCourse] afterDelay:0.1];
+
 	} else {
 		// see if the class info has changed using a checksum		
 		if(stellarCourse.lastChecksum) {
-			MITMobileWebAPI *apiRequest = [MITMobileWebAPI
-										   jsonLoadedDelegate:[[[ClassesChecksumRequest alloc] initWithClassesRequest:classesRequest] autorelease]];
-		
-			[apiRequest 
-				requestObjectFromModule:@"stellar" 
-				command:@"subjectList" 
-				parameters:[NSDictionary dictionaryWithObjectsAndKeys: 
-					stellarCourse.number, @"id", 
-					@"true", @"checksum", 
-					nil]];
+            NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys: 
+                                    stellarCourse.number, @"id", 
+                                    @"true", @"checksum", 
+                                    nil];
+            MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"stellar"
+                                                                                      command:@"subjectList"
+                                                                                   parameters:params] autorelease];
+            
+            request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+                if (error) {
+                    [delegate handleCouldNotReachStellar];
+                    [MITMobileWebAPI showError:error header:StellarHeader alertViewDelegate:[delegate standardErrorAlertDelegate]];
+                    
+                } else {
+                    if ([stellarCourse.lastChecksum isEqualToString:[(NSDictionary *)jsonResult objectForKey:@"checksum"]]) {
+                        // checksum is the same no need to update class list
+                        [stellarCourse markAsNew];
+                        [delegate classesLoaded:[StellarModel classesForCourse:stellarCourse]];
+                    } else {
+                        [[self class] classesForCourseRequestComplete:stellarCourse delegate:delegate];
+                    }
+                }
+            };
+            
+            [[NSOperationQueue mainQueue] addOperation:request];
+
 		} else {
-			[self classesForCourseCompleteRequest:classesRequest];
+            [[self class] classesForCourseRequestComplete:stellarCourse delegate:delegate];
 		}
 	}
 }
@@ -107,16 +161,35 @@ NSString* cleanPersonName(NSString *personName);
 /* this method is the final call to the server, to retreive all the classes for a given course
    along with a checksum for detecting changes to a course
  */
-+ (void) classesForCourseCompleteRequest:(ClassesRequest *)classesRequest {
-	MITMobileWebAPI *apiRequest = [MITMobileWebAPI jsonLoadedDelegate:classesRequest];
-	[apiRequest 
-	 requestObjectFromModule:@"stellar" 
-	 command:@"subjectList" 
-	 parameters:[NSDictionary dictionaryWithObjectsAndKeys: 
-		classesRequest.stellarCourse.number, @"id",
-		@"true", @"checksum",
-		@"true", @"full",
-		nil]];
++ (void) classesForCourseRequestComplete:(StellarCourse *)stellarCourse delegate:(id<ClassesLoadedDelegate>)delegate {
+    // this is the final call to the server, to retreive all the classes for a given course
+    // along with a checksum for detecting changes to a course
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys: 
+                            stellarCourse.number, @"id",
+                            @"true", @"checksum",
+                            @"true", @"full",
+                            nil];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"stellar"
+                                                                              command:@"subjectList"
+                                                                           parameters:params] autorelease];
+    
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            [delegate handleCouldNotReachStellar];
+            [MITMobileWebAPI showError:error header:StellarHeader alertViewDelegate:[delegate standardErrorAlertDelegate]];
+            
+        } else {
+            NSArray *classes = [jsonResult objectForKey:@"classes"];
+            for (NSDictionary *aDict in classes) {
+                [[StellarModel StellarClassFromDictionary:aDict] addCourseObject:stellarCourse];
+            }
+            stellarCourse.lastChecksum = [jsonResult objectForKey:@"checksum"];
+            [stellarCourse markAsNew];
+            [delegate classesLoaded:[StellarModel classesForCourse:stellarCourse]];
+        }
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 + (NSArray *) classesForCourse:(StellarCourse *)course {
@@ -124,13 +197,27 @@ NSString* cleanPersonName(NSString *personName);
 }
 
 + (void) executeStellarSearch: (NSString *)searchTerms delegate: (id<ClassesSearchDelegate>)delegate {
-	MITMobileWebAPI *apiRequest = [MITMobileWebAPI
-		jsonLoadedDelegate:[[[ClassesSearchRequest alloc]
-			initWithDelegate:delegate searchTerms:searchTerms] autorelease]];
-	[apiRequest 
-		requestObjectFromModule:@"stellar" 
-		command:@"search" 
-		parameters:[NSDictionary dictionaryWithObject:searchTerms forKey:@"query"]];
+    NSDictionary *params = [NSDictionary dictionaryWithObject:searchTerms forKey:@"query"];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"stellar"
+                                                                              command:@"search"
+                                                                           parameters:params] autorelease];
+
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            [delegate handleCouldNotReachStellarWithSearchTerms:searchTerms];
+            [MITMobileWebAPI showErrorWithHeader:StellarHeader];
+        
+        } else {
+            NSMutableArray *classes = [NSMutableArray array];
+            for(NSDictionary *aDict in (NSArray *)jsonResult) {
+                [classes addObject:[StellarModel StellarClassFromDictionary:aDict]];
+            }
+            [CoreDataManager saveData];
+            [delegate searchComplete:classes searchTerms:searchTerms];
+        }
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 	
 + (NSArray *) allCourses {
@@ -162,16 +249,32 @@ NSString* cleanPersonName(NSString *personName);
 	if([class.isFavorited boolValue]) {
 		[delegate initialAllClassInfoLoaded:class];
 	}
-	
+    
 	// finally we call the server to get the most definitive data
-	MITMobileWebAPI *apiRequest = [MITMobileWebAPI
-		jsonLoadedDelegate:[[[ClassInfoRequest alloc] 
-			initWithClassInfoDelegate:delegate] autorelease]];
-	
-	[apiRequest 
-		requestObjectFromModule:@"stellar" 
-		command:@"subjectInfo" 
-		parameters:[NSDictionary dictionaryWithObject: class.masterSubjectId forKey:@"id"]];
+    NSDictionary *params = [NSDictionary dictionaryWithObject: class.masterSubjectId forKey:@"id"];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"stellar"
+                                                                              command:@"subjectInfo"
+                                                                           parameters:params] autorelease];
+
+	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            [delegate handleCouldNotReachStellar];
+            [MITMobileWebAPI showErrorWithHeader:StellarHeader];
+
+        } else {
+            if ([(NSDictionary *)jsonResult objectForKey:@"error"]) {
+                [delegate handleClassNotFound];
+                return;
+            }
+            
+            StellarClass *class = [StellarModel StellarClassFromDictionary:(NSDictionary *)jsonResult];
+            
+            [CoreDataManager saveData];
+            [delegate finalAllClassInfoLoaded:class];
+        }
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 + (void) saveClassToFavorites: (StellarClass *)class {
@@ -197,11 +300,32 @@ NSString* cleanPersonName(NSString *personName);
 + (void) removeOldFavorites: (id<ClearMyStellarDelegate>)delegate {
 	// we call the server to get the current semester
 	NSArray *favorites = [self myStellarClasses];
-	MITMobileWebAPI *apiRequest = [MITMobileWebAPI
-		jsonLoadedDelegate:[[[TermRequest alloc] 
-			initWithClearMyStellarDelegate:delegate stellarClasses:favorites] autorelease]];
-		
-	[apiRequest requestObjectFromModule:@"stellar" command:@"term" parameters:nil];
+
+	MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"stellar"
+                                                                              command:@"term"
+                                                                           parameters:nil] autorelease];
+    
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (!error) {
+            NSString *term = [(NSDictionary *)jsonResult objectForKey:@"term"];
+            [[NSUserDefaults standardUserDefaults] setObject:term forKey:StellarTermKey];
+            
+            NSMutableArray *oldClasses = [NSMutableArray array];
+            for (StellarClass *class in favorites) {
+                if(![term isEqualToString:class.term]) {
+                    [StellarModel removeClassFromFavorites:class notify:NO];
+                    [oldClasses addObject:class];
+                }
+            }
+            
+            if ([oldClasses count]) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:MyStellarChanged object:nil];
+                [delegate classesRemoved:oldClasses];
+            }
+        }
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 + (StellarCourse *) courseWithId: (NSString *)courseId {
@@ -302,280 +426,6 @@ NSString* cleanPersonName(NSString *personName);
 }
 	
 @end
-
-@implementation CoursesRequest
-@synthesize coursesLoadedDelegate;
-
-- (id) initWithCoursesDelegate: (id<CoursesLoadedDelegate>)delegate {
-	self = [super init];
-	if (self) {
-		self.coursesLoadedDelegate = delegate;
-	}
-	return self;
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
-	NSArray *courses = (NSArray *)object;
-	if (courses.count == 0) {
-		// no courses to save
-		return;
-	}
-
-	for(NSDictionary *aDict in courses) {
-		StellarCourse *oldStellarCourse = [CoreDataManager getObjectForEntity:StellarCourseEntityName attribute:@"number" value:[aDict objectForKey:@"short"]];
-		if(oldStellarCourse) {
-			// delete old course (will replace all the data, occasionally non-critical relationships
-			// between a course and its subject will be lost
-			[CoreDataManager deleteObject:oldStellarCourse];
-		}
-		
-		StellarCourse *newStellarCourse = (StellarCourse *)[CoreDataManager insertNewObjectForEntityForName:StellarCourseEntityName];
-		newStellarCourse.number = [aDict objectForKey:@"short"];
-		newStellarCourse.title = [aDict objectForKey:@"name"];
-	}
-	[CoreDataManager saveData];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"stellarCoursesLastSaved"];
-	[self.coursesLoadedDelegate coursesLoaded];
-}
-	
-- (void) dealloc {
-	[coursesLoadedDelegate release];
-	[super dealloc];
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	if([StellarModel allCourses].count) {
-		// courses failed to load, but we still have courses save on disk so it is okay
-		[self.coursesLoadedDelegate coursesLoaded];
-	}
-}
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
-	return ([StellarModel allCourses].count == 0);
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error {
-	return StellarHeader;
-}
-
-@end
-
-@implementation ClassesChecksumRequest
-- (id) initWithClassesRequest: (ClassesRequest *)aClassesRequest {
-	self = [super init];
-	if (self) {
-		classesRequest = [aClassesRequest retain];
-	}
-	return self;
-}
-
-- (void) dealloc {
-	[classesRequest release];
-	[super dealloc];
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
-	if([classesRequest.stellarCourse.lastChecksum isEqualToString:[(NSDictionary *)object objectForKey:@"checksum"]]) {
-		// checksum is the same no need to update class list
-		[classesRequest markCourseAsNew];
-		[classesRequest notifyClassesLoadedDelegate];
-	} else {
-		[StellarModel classesForCourseCompleteRequest:classesRequest];
-	}
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	[classesRequest handleConnectionFailureForRequest:request];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error {
-	return StellarHeader;
-}
-
-@end
-@implementation ClassesRequest
-@synthesize classesLoadedDelegate, stellarCourse;
-
-- (id) initWithDelegate: (id<ClassesLoadedDelegate>)delegate course: (StellarCourse *)course {
-	self = [super init];
-	if (self) {
-		self.classesLoadedDelegate = delegate;
-		self.stellarCourse = course;
-	}
-	return self;
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
-	NSArray *classes = [object objectForKey:@"classes"];
-	for(NSDictionary *aDict in classes) {
-		[[StellarModel StellarClassFromDictionary:aDict] addCourseObject:self.stellarCourse];
-	}
-	self.stellarCourse.lastChecksum = [object objectForKey:@"checksum"];
-	[self markCourseAsNew];
-	[self notifyClassesLoadedDelegate];
-}	
-
-- (void) markCourseAsNew {
-	self.stellarCourse.lastCache = [NSDate dateWithTimeIntervalSinceNow:0];
-	self.stellarCourse.term = [[NSUserDefaults standardUserDefaults] objectForKey:StellarTermKey];
-	[CoreDataManager saveData];
-}
-	
-- (void) notifyClassesLoadedDelegate {
-	[self.classesLoadedDelegate classesLoaded:[StellarModel classesForCourse:self.stellarCourse]];
-}
-
-- (void) dealloc {
-	[classesLoadedDelegate release];
-	[super dealloc];
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	[self.classesLoadedDelegate handleCouldNotReachStellar];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
-	return StellarHeader;
-}
-
-- (id<UIAlertViewDelegate>)request:(MITMobileWebAPI *)request alertViewDelegateForError:(NSError *)error {
-	return [self.classesLoadedDelegate standardErrorAlertDelegate];
-}
-
-@end
-
-@implementation ClassesSearchRequest
-
-- (id) initWithDelegate: (id<ClassesSearchDelegate>)delegate searchTerms: (NSString *)theSearchTerms {
-	self = [super init];
-	if (self) {
-		classesSearchDelegate = [delegate retain];
-		searchTerms = [theSearchTerms retain];
-	}
-	return self;
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
-	NSMutableArray *classes = [NSMutableArray array];
-	for(NSDictionary *aDict in (NSArray *)object) {
-		[classes addObject:[StellarModel StellarClassFromDictionary:aDict]];
-	}
-	[CoreDataManager saveData];
-	[classesSearchDelegate searchComplete:classes searchTerms:searchTerms];
-}	
-
-- (void) dealloc {
-	[classesSearchDelegate release];
-	[searchTerms release];
-	[super dealloc];
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	[classesSearchDelegate handleCouldNotReachStellarWithSearchTerms:searchTerms];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error {
-	return StellarHeader;
-}
-
-@end
-
-@implementation ClassInfoRequest
-@synthesize classInfoLoadedDelegate;
-
-- (id) initWithClassInfoDelegate: (id<ClassInfoLoadedDelegate>)delegate {
-	self = [super init];
-	if (self) {
-		self.classInfoLoadedDelegate = delegate;
-	}
-	return self;
-}
-
-- (void) dealloc {
-	[classInfoLoadedDelegate release];
-	[super dealloc];
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {	
-	if([(NSDictionary *)object objectForKey:@"error"]) {
-		[self.classInfoLoadedDelegate handleClassNotFound];
-		return;
-	}
-	
-	StellarClass *class = [StellarModel StellarClassFromDictionary:(NSDictionary *)object];
-	
-	[CoreDataManager saveData];
-	[self.classInfoLoadedDelegate finalAllClassInfoLoaded:class];
-}
-
-- (void) handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	[self.classInfoLoadedDelegate handleCouldNotReachStellar];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error {
-	return StellarHeader;
-}
-
-@end
-
-
-@implementation TermRequest
-
-- (id) initWithClearMyStellarDelegate: (id<ClearMyStellarDelegate>)delegate stellarClasses: (NSArray *)theMyStellarClasses {
-	self = [super init];
-	if (self) {
-		clearMyStellarDelegate = [delegate retain];
-		myStellarClasses = [theMyStellarClasses retain];
-		
-	}
-	return self;
-}
-
-- (void) dealloc {
-	[myStellarClasses release];
-	[clearMyStellarDelegate release];
-	[super dealloc];
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
-	NSString *term = [(NSDictionary *)object objectForKey:@"term"];
-	[[NSUserDefaults standardUserDefaults] setObject:term forKey:StellarTermKey];
-	
-	NSMutableArray *oldClasses = [NSMutableArray array];
-	for(StellarClass *class in myStellarClasses) {
-		if(![term isEqualToString:class.term]) {
-			[StellarModel removeClassFromFavorites:class notify:NO];
-			[oldClasses addObject:class];
-		}
-	}
-	
-	if([oldClasses count]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:MyStellarChanged object:nil];
-		[clearMyStellarDelegate classesRemoved:oldClasses];
-	}
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
-	return NO;
-}
-    
-@end
-
 
 NSInteger classIdCompare(NSDictionary *classId1, NSDictionary *classId2) {
 	// check the nil cases first
