@@ -1,13 +1,11 @@
 #import <UIKit/UIKit.h>
-#import "MITMobileWebAPI.h"
 
-@interface FacilitiesSubmitViewController : UIViewController <JSONLoadedDelegate> {
+@interface FacilitiesSubmitViewController : UIViewController {
     UILabel *_statusLabel;
     UIProgressView *_progressView;
     UIButton *_completeButton;
     BOOL _abortRequest;
     NSDictionary *_reportDictionary;
-    MITMobileWebAPI *_request;
 }
 
 @property (nonatomic,retain) IBOutlet UILabel* statusLabel;

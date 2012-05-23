@@ -651,7 +651,7 @@ static FacilitiesLocationData *_sharedData = nil;
     [cdm saveData];
 }
 
-#pragma mark - MITMobileWebAPI request management
+#pragma mark - Server request management
 - (BOOL)hasActiveRequest:(MobileRequestOperation*)request {
     return [[self.requestQueue operations] containsObject:request];
 }

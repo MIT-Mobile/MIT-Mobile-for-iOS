@@ -1,8 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
-#import "MITMobileWebAPI.h"
-
 extern NSString* const FacilitiesDidLoadDataNotification;
 extern NSString* const FacilitiesCategoriesKey;
 extern NSString* const FacilitiesLocationsKey;
