@@ -5,6 +5,7 @@
 #import "PartialHighlightTableViewCell.h"
 #import "MIT_MobileAppDelegate.h"
 #import "ConnectionDetector.h"
+#import "MobileRequestOperation.h"
 // common UI elements
 #import "MITLoadingActivityView.h"
 #import "SecondaryGroupedTableViewCell.h"
@@ -35,8 +36,6 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 	[super viewDidLoad];
     self.title = @"People Directory";
     
-	requestWasDispatched = NO;
-	
 	// set up search bar
 	theSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, NAVIGATION_BAR_HEIGHT)];
     theSearchBar.tintColor = SEARCH_BAR_TINT_COLOR;
@@ -154,11 +153,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
 	self.searchResults = nil;
-	// if they cancelled while waiting for loading
-	if (requestWasDispatched) {
-		[api abortRequest];
-		[self cleanUpConnection];
-	}
+    _searchCancelled = YES;
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -173,13 +168,35 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 	NSMutableArray *tempTokens = [NSMutableArray arrayWithArray:[[self.searchTerms lowercaseString] componentsSeparatedByString:@" "]];
 	[tempTokens sortUsingFunction:strLenSort context:NULL]; // match longer tokens first
 	self.searchTokens = [NSArray arrayWithArray:tempTokens];
-	
-	api = [MITMobileWebAPI jsonLoadedDelegate:self];
-	requestWasDispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"people", @"module", self.searchTerms, @"q", nil]];
-	
-    if (requestWasDispatched) {
-		[self showLoadingView];
-    }
+
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:self.searchTerms, @"q", nil];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"people"
+                                                                              command:nil
+                                                                           parameters:params] autorelease];
+
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (_searchCancelled) {
+            return;
+        }
+        
+        [self.loadingView removeFromSuperview];	
+        if (!error) {
+            if ([jsonResult isKindOfClass:[NSArray class]]) {
+                self.searchResults = jsonResult;
+            } else {
+                self.searchResults = nil;
+            }
+            
+            self.searchController.searchResultsTableView.frame = self.tableView.frame;
+            [self.view addSubview:self.searchController.searchResultsTableView];
+            [self.searchController.searchResultsTableView reloadData];    
+        }
+    };
+
+    [self showLoadingView];
+
+	_searchCancelled = NO;
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 #pragma mark -
@@ -340,10 +357,6 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 	UIView *titleView = nil;
 	
 	if (section == 1) {
-        if (requestWasDispatched) {
-            return nil;
-        }
-        
 		if (recentlyViewedHeader == nil) {
 			recentlyViewedHeader = [[UITableView groupedSectionHeaderWithTitle:@"Recently Viewed"] retain];
 		}
@@ -411,38 +424,6 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 	}
 	
 	[self.view addSubview:self.loadingView];
-}
-
-- (void)cleanUpConnection {
-	requestWasDispatched = NO;
-	[self.loadingView removeFromSuperview];	
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
-    [self cleanUpConnection];
-	
-	if (result && [result isKindOfClass:[NSArray class]]) {
-		self.searchResults = result;
-	} else {
-		self.searchResults = nil;
-	}
-
-    self.searchController.searchResultsTableView.frame = self.tableView.frame;
-    [self.view addSubview:self.searchController.searchResultsTableView];
-	[self.searchController.searchResultsTableView reloadData];
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
-{
-	[self cleanUpConnection];
-}
-
-- (BOOL) request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
-	return @"Directory";
 }
 
 #pragma mark -

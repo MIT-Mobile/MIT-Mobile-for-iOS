@@ -7,6 +7,7 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "MITMailComposeController.h"
+#import "MobileRequestOperation.h"
 
 @implementation PeopleDetailsViewController
 
@@ -80,9 +81,22 @@
 	// TODO: change this time interval to something more reasonable
 	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300) { // 5 mins for testing
 		if ([ConnectionDetector isConnected]) {
-			// issue this query but don't care too much if it fails
-			MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
-			[api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"people", @"module", self.fullname, @"q", nil]];
+            NSDictionary *parameters = [NSDictionary dictionaryWithObjectsAndKeys:self.fullname, @"q", nil];
+            MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"people"
+                                                                                      command:nil
+                                                                                   parameters:parameters] autorelease];
+            request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+                if (!error && [jsonResult isKindOfClass:[NSArray class]]) { // fail silently
+                    for (NSDictionary *entry in jsonResult) {
+                        if ([[entry objectForKey:@"id"] isEqualToString:[self.personDetails valueForKey:@"uid"]]) {
+                            self.personDetails = [PeopleRecentsData updatePerson:self.personDetails withSearchResult:entry];
+                            [self.tableView reloadData];
+                        }
+                    }
+                }
+            };
+            
+            [[NSOperationQueue mainQueue] addOperation:request];
 		}
 	}
 	
@@ -102,29 +116,6 @@
 	[fullname release];
     [super dealloc];
 }
-
-#pragma mark -
-#pragma mark Connection methods + wrapper delegate
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
-	if (result && [result isKindOfClass:[NSArray class]]) { // fail silently
-		for (NSDictionary *entry in result) {
-			if ([[entry objectForKey:@"id"] isEqualToString:[self.personDetails valueForKey:@"uid"]]) {
-				self.personDetails = [PeopleRecentsData updatePerson:self.personDetails withSearchResult:entry];
-				[self.tableView reloadData];
-			}
-		}
-	}
-}
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
-	return NO;
-}
-
-/*
--(void)handleConnectionFailure
-{
-}
-*/
 
 #pragma mark -
 #pragma mark Table view methods
