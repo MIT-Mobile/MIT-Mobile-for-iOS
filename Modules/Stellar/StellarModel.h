@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "ConnectionWrapper.h"
 #import "StellarCourse.h"
 #import "StellarClass.h"
 #import "StellarClassTime.h"

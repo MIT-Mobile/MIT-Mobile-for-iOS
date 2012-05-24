@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "ConnectionWrapper.h"
 
 @protocol EmergencyViewControllerDelegate<NSObject>
 

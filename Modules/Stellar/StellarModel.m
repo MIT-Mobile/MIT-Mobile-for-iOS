@@ -3,7 +3,6 @@
 #import "StellarClass.h"
 #import "StellarAnnouncement.h"
 #import "StellarCache.h"
-#import "ConnectionWrapper.h"
 #import "CoreDataManager.h"
 #import "MobileRequestOperation.h"
 #import "MITMobileWebAPI.h"

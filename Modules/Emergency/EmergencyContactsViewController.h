@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "ConnectionWrapper.h"
 
 
 @interface EmergencyContactsViewController : UITableViewController {
