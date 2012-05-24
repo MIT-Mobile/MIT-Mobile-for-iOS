@@ -44,7 +44,6 @@ extern NSString * const DirectoryTag;
 extern NSString * const StellarTag;
 extern NSString * const ShuttleTag;
 extern NSString * const ToursTag;
-extern NSString * const AnniversaryTag;
 extern NSString * const MobileWebTag;
 extern NSString * const SettingsTag;
 extern NSString * const AboutTag;

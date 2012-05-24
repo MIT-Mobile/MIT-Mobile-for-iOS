@@ -197,11 +197,13 @@
  * the "should_show_mit150" bit on http://m.mit.edu/?module=general.
  */
 
+/*
 - (BOOL)shouldShowOpenHouseContent {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     return ([defaults boolForKey:@"ShouldHideOpenHouse"] == NO);
 }
-
+*/
+ 
 - (void)updateBasicServerInfo {
     [[ModuleVersions sharedVersions] updateVersionInformation];
 }

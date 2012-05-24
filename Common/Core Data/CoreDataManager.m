@@ -274,7 +274,7 @@
                           @"PeopleDataModel", @"News",
                           @"Emergency", @"ShuttleTrack",
                           @"Calendar", @"CampusMap",
-                          @"Tours", @"Anniversary",
+                          @"Tours", 
                           @"QRReaderResult", @"FacilitiesLocations", 
                           @"LibrariesLocationsHours",
                           nil];
