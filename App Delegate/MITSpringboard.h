@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "MITMobileWebAPI.h"
 #import "ConnectionWrapper.h"
 
 @class MITSpringboard;
@@ -19,7 +18,7 @@
 
 @end
 
-@interface MITSpringboard : UIViewController <JSONLoadedDelegate, UINavigationControllerDelegate, ConnectionWrapperDelegate> {
+@interface MITSpringboard : UIViewController <UINavigationControllerDelegate, ConnectionWrapperDelegate> {
 	id<MITSpringboardDelegate> delegate;
     NSArray *primaryModules;
     IconGrid *grid;
