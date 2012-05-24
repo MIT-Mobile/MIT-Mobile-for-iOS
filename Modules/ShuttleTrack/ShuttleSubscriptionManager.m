@@ -1,37 +1,69 @@
-
 #import "ShuttleSubscriptionManager.h"
 #import "ShuttleStop.h"
 #import "ShuttleRoute.h"
 #import "MITDeviceRegistration.h"
+#import "MobileRequestOperation.h"
+#import "MITMobileWebAPI.h"
 
 @implementation ShuttleSubscriptionManager
 	
 + (void) subscribeForRoute:(NSString *)routeID atStop:(NSString *)stopID scheduleTime: (NSDate *)time delegate: (id<ShuttleSubscriptionDelegate>)delegate object: (id)object {
 	NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
-	[parameters setObject:@"subscribe" forKey:@"command"];
 	[parameters setObject:routeID forKey:@"route"];
 	[parameters setObject:stopID forKey:@"stop"];
 	
 	NSInteger unixtime_int = round([time timeIntervalSince1970]);
 	NSString *unixtime_string = [NSString stringWithFormat:@"%i", unixtime_int];	
 	[parameters setObject:unixtime_string forKey:@"time"];	
-	
-	MITMobileWebAPI *mobileWebApi = [MITMobileWebAPI jsonLoadedDelegate:
-		[[[SubscribeRequest alloc] initWithDelegate:delegate routeID:routeID stopID:stopID object:object] autorelease]];
+    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"shuttles"
+                                                                              command:@"subscribe"
+                                                                           parameters:parameters] autorelease];
+    
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error || ![jsonResult isKindOfClass:[NSDictionary class]]) {
+            [delegate subscriptionFailedWithObject:object passkeyError:NO];
+            [MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
 
-	[mobileWebApi requestObject:parameters pathExtension:@"shuttles"];
+        } else if (![jsonResult objectForKey:@"success"]) {
+            [delegate subscriptionFailedWithObject:object passkeyError:YES];
+        
+        } else {
+            NSNumber *startTimeNumber = [jsonResult objectForKey:@"start_time"];
+            NSNumber *endTimeNumber = [jsonResult objectForKey:@"expire_time"];
+            
+            NSDate *startTime = [NSDate dateWithTimeIntervalSince1970:[startTimeNumber doubleValue]];
+            NSDate *endTime = [NSDate dateWithTimeIntervalSince1970:[endTimeNumber doubleValue]];
+            
+            [ShuttleSubscriptionManager addSubscriptionForRouteID:routeID atStopID:stopID startTime:startTime endTime:endTime];
+            [delegate subscriptionSucceededWithObject:object];
+        }
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 + (void) unsubscribeForRoute:(NSString *)routeID atStop:(NSString *)stopID delegate: (id<ShuttleSubscriptionDelegate>)delegate object: (id)object {
 	NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
-	[parameters setObject:@"unsubscribe" forKey:@"command"];
 	[parameters setObject:routeID forKey:@"route"];
 	[parameters setObject:stopID forKey:@"stop"];
-	
-	MITMobileWebAPI *mobileWebApi = [MITMobileWebAPI jsonLoadedDelegate:
-		[[[UnsubscribeRequest alloc] initWithDelegate:delegate routeID:routeID stopID:stopID object:object] autorelease]];
-	
-	[mobileWebApi requestObject:parameters pathExtension:@"shuttles"];
+    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"shuttles"
+                                                                              command:@"unsubscribe"
+                                                                           parameters:parameters] autorelease];
+
+	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            [delegate subscriptionFailedWithObject:object passkeyError:NO];
+            [MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
+            
+        } else {
+            [ShuttleSubscriptionManager removeSubscriptionForRouteID:routeID atStopID:stopID];
+            [delegate subscriptionSucceededWithObject:object];
+        }
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 	
 + (BOOL) hasSubscription: (NSString *)routeID atStop: (NSString *)stopID scheduleTime: (NSDate *)time {
@@ -113,110 +145,4 @@
 }
 			
 @end
-
-@implementation SubscribeRequest
-
-- (id) initWithDelegate: (id<ShuttleSubscriptionDelegate>)theDelegate routeID:(NSString *)theRouteID stopID:(NSString *)theStopID object:(id)theObject {
-	self = [super init];
-	if (self) {
-		delegate = [theDelegate retain];
-		object = [theObject retain];
-		routeID = [theRouteID retain];
-		stopID = [theStopID retain];
-	}
-	return self;
-}
-
-- (void) dealloc {
-	[delegate release];
-	[object release];
-	[routeID release];
-	[stopID release];
-	[super dealloc];
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)jsonObject {
-	if ([jsonObject isKindOfClass:[NSDictionary class]]) {
-		NSDictionary *jsonDict = jsonObject;
-		
-		if([jsonDict objectForKey:@"success"]) {		
-			NSNumber *startTimeNumber = [jsonDict objectForKey:@"start_time"];
-			NSNumber *endTimeNumber = [jsonDict objectForKey:@"expire_time"];
-			
-			NSDate *startTime = [NSDate dateWithTimeIntervalSince1970:[startTimeNumber doubleValue]];
-			NSDate *endTime = [NSDate dateWithTimeIntervalSince1970:[endTimeNumber doubleValue]];
-			
-			[ShuttleSubscriptionManager addSubscriptionForRouteID:routeID atStopID:stopID startTime:startTime endTime:endTime];
-			[delegate subscriptionSucceededWithObject:object];
-		} else {
-			[delegate subscriptionFailedWithObject:object passkeyError:YES];
-		}
-	} else {
-		ELog(@"%s received non-dictionary response for %@", __FUNCTION__, request);
-		ELog(@"response was %@", jsonObject);
-	}
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	[delegate subscriptionFailedWithObject:object passkeyError:NO];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
-	return @"Shuttles";
-}
-
-@end
-
-@implementation UnsubscribeRequest
-
-- (id)initWithDelegate:(id<ShuttleSubscriptionDelegate>)theDelegate routeID:(NSString *)theRouteID stopID:(NSString *)theStopID object:(id)theObject {
-	self = [super init];
-	if (self) {
-		delegate = [theDelegate retain];
-		object = [theObject retain];
-		routeID = [theRouteID retain];
-		stopID = [theStopID retain];
-	}
-	return self;
-}
-
-- (void) dealloc {
-	[delegate release];
-	[object release];
-	[routeID release];
-	[stopID release];
-	[super dealloc];
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)jsonObject {
-	[ShuttleSubscriptionManager removeSubscriptionForRouteID:routeID atStopID:stopID];
-	[delegate subscriptionSucceededWithObject:object];
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	[delegate subscriptionFailedWithObject:object passkeyError:NO];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
-	return @"Shuttles";
-}
-
-@end
-
-
-
-
-
-
-
-
-
 

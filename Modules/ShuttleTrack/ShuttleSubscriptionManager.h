@@ -1,6 +1,4 @@
-
 #import <Foundation/Foundation.h>
-#import "MITMobileWebAPI.h"
 
 
 @class ShuttleStop;
@@ -30,33 +28,5 @@
 + (void)removeSubscriptionForRouteID:(NSString *)routeID atStopID:(NSString *)stopID;
 
 + (void)pruneSubscriptions;
-
-@end
-
-@interface SubscribeRequest : NSObject<JSONLoadedDelegate>
-{
-	id object;
-	id<ShuttleSubscriptionDelegate> delegate;
-	NSString *routeID;
-	NSString *stopID;
-	//ShuttleRoute *route;
-	//ShuttleStop *stop;
-}
-
-- (id)initWithDelegate:(id<ShuttleSubscriptionDelegate>)delegate routeID:(NSString *)routeID stopID:(NSString *)stopID object: (id)object;
-
-@end
-
-@interface UnsubscribeRequest : NSObject<JSONLoadedDelegate>
-{
-	id object;
-	id<ShuttleSubscriptionDelegate> delegate;
-	NSString *routeID;
-	NSString *stopID;
-	//ShuttleRoute *route;
-	//ShuttleStop *stop;
-}
-
-- (id)initWithDelegate:(id<ShuttleSubscriptionDelegate>)delegate routeID:(NSString *)routeID stopID:(NSString *)stopID object:(id)object;
 
 @end
