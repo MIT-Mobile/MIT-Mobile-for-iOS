@@ -10,6 +10,8 @@
 #import "MobileKeychainServices.h"
 #import "MITConstants.h"
 #import "SettingsTouchstoneViewController.h"
+#import "MobileRequestOperation.h"
+#import "MITMobileWebAPI.h"
 
 NSString * const SettingsTitleString = @"Notifications";
 NSString * const SettingsSubtitleString = @"Turn off Notifications to disable alerts for that module.";
@@ -42,10 +44,6 @@ enum {
 - (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled;
 - (void)serverSelectionDidChangeFrom:(NSInteger)old to:(NSInteger)new;
 
-- (void)addRequest:(MITMobileWebAPI*)request withTag:(NSString*)tag;
-- (MITMobileWebAPI*)requestWithTag:(NSString*)tag;
-- (void)removeRequestWithTag:(NSString*)tag;
-- (NSUInteger)numberOfActiveRequests;
 @end
 
 @implementation SettingsTableViewController
@@ -64,20 +62,12 @@ enum {
     self.showServerListGesture = nil;
     self.hideServerListGesture = nil;
     
-    if (_requestQueue) {
-        dispatch_release(_requestQueue);
-    }
-	self.apiRequests = nil;
-    
     [super dealloc];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Settings";
-    
-    _requestQueue = dispatch_queue_create(NULL, NULL);
-    self.apiRequests = [NSMutableDictionary dictionary];
     
     [self.tableView applyStandardColors];
 
@@ -407,9 +397,9 @@ enum {
     *  until ALL requests to the current server have completed
     *  before sending registration requests to the new server.
     */
-    while([self numberOfActiveRequests] > 0) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
-    }
+    //while([self numberOfActiveRequests] > 0) {
+    //    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
+    //}
     
     NSArray *server = MITMobileWebGetAPIServerList();
     
@@ -444,99 +434,34 @@ enum {
     [parameters setObject:(enabled) ? @"1" : @"0"
                    forKey:@"enabled"];
     
-    MITMobileWebAPI *existingRequest = [self requestWithTag:tag];
-    if (existingRequest != nil) {
-        [existingRequest abortRequest];
-        [self removeRequestWithTag:tag];
-    }
-    
-    MITMobileWebAPI *request = [MITMobileWebAPI jsonLoadedDelegate:self];
-    [self addRequest:request
-             withTag:tag];
-    [request requestObjectFromModule:@"push"
-                             command:@"moduleSetting"
-                          parameters:parameters];
-}
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
+                                                                              command:@"moduleSetting"
+                                                                           parameters:parameters] autorelease];
 
-- (void) reloadSettings {
-	[self.tableView reloadData];
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)object {
-	if (object && [object isKindOfClass:[NSDictionary class]] && [object objectForKey:@"success"]) {
-        MITMobileWebAPI *aRequest = [self requestWithTag:request.userData];
-        
-        if (aRequest) {
-            // this backwards finding would be a lot simpler if 
-            // the backend would just return module and enabled status
-            MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-            MITModule *module = [appDelegate moduleForTag:aRequest.userData];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            [MITMobileWebAPI showErrorWithHeader:@"Settings"];
+            [self reloadSettings];
             
-            NSUInteger tag = [self.notifications indexOfObject:module];
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:tag
-                                                        inSection:0];
-            [indexPath indexPathByAddingIndex:tag];
+        } else if ([jsonResult isKindOfClass:[NSDictionary class]] && [jsonResult objectForKey:@"success"]) {
+            MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
+            MITModule *module = [appDelegate moduleForTag:tag];
+            
+            NSUInteger index = [self.notifications indexOfObject:module];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+            //[indexPath indexPathByAddingIndex:index];
             
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
             UISwitch *aSwitch = (UISwitch *)cell.accessoryView;
             [module setPushNotificationEnabled: aSwitch.isOn];
-            [self removeRequestWithTag: aRequest.userData];
         }
-	}
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-    [self removeRequestWithTag:request.userData];
-	[self reloadSettings];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    DLog(@"%@",[error localizedDescription]);
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
-	return @"Settings";
-}
-
-- (void)addRequest:(MITMobileWebAPI*)request
-           withTag:(NSString*)tag
-{
-    dispatch_async(_requestQueue, ^(void) {
-        if ([self.apiRequests objectForKey:tag] == nil) {
-            request.userData = tag;
-            [self.apiRequests setObject:request
-                                 forKey:tag];
-        } else {
-            ELog(@"Error: attempting to overwrite in-flight request with tag %@",tag);
-        }
-    });
-}
-
-- (MITMobileWebAPI*)requestWithTag:(NSString*)tag {
-    __block MITMobileWebAPI *request = nil;
+    };
     
-    dispatch_sync(_requestQueue, ^(void) {
-        request = [self.apiRequests objectForKey:tag];
-    });
-    
-    return request;
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
-- (void)removeRequestWithTag:(NSString*)tag {
-    dispatch_async(_requestQueue, ^(void) {
-        [self.apiRequests removeObjectForKey:tag];
-    });
-}
-
-- (NSUInteger)numberOfActiveRequests {
-    __block NSUInteger requestCount = 0;
-    
-    dispatch_sync(_requestQueue, ^(void) {
-        requestCount = [self.apiRequests count];
-    });
-    
-    return requestCount;
+- (void) reloadSettings {
+	[self.tableView reloadData];
 }
 
 @end

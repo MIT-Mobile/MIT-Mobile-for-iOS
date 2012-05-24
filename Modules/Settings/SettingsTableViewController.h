@@ -1,18 +1,14 @@
 #import <UIKit/UIKit.h>
-#import "MITMobileWebAPI.h"
 #import "MITModule.h"
 
-@interface SettingsTableViewController : UITableViewController <JSONLoadedDelegate> {
+@interface SettingsTableViewController : UITableViewController {
 
     NSArray *_notifications;
     NSDictionary *_pushServers;
-	NSMutableDictionary *_apiRequests;
     UIGestureRecognizer *_showAdvancedGesture;
     UIGestureRecognizer *_hideAdvancedGesture;
     BOOL                _advancedOptionsVisible;
     NSUInteger          _selectedRow;
-    
-    dispatch_queue_t _requestQueue;
 }
 
 - (void)switchDidToggle:(id)sender;
