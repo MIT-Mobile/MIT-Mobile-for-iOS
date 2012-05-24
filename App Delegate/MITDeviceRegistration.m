@@ -1,5 +1,6 @@
-
 #import "MITDeviceRegistration.h"
+#import "MobileRequestOperation.h"
+
 #define APPLE @"apple"
 #define DEVICE_TYPE_KEY @"device_type"
 
@@ -48,9 +49,25 @@
 		[parameters setObject:[self stringFromToken:deviceToken] forKey:@"device_token"];
 		[parameters setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"] forKey:@"app_id"];
 	}		
-		
-	[[MITMobileWebAPI jsonLoadedDelegate:[MITIdentityLoadedDelegate withDeviceToken:deviceToken]]
-		requestObjectFromModule:@"push" command:@"register" parameters:parameters];
+    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
+                                                                              command:@"register"
+                                                                           parameters:parameters] autorelease];
+    
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+            
+        } else {
+            [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:DeviceTokenKey];
+            
+            if ([jsonResult isKindOfClass:[NSDictionary class]]) {
+                NSDictionary *jsonDict = jsonResult;
+                [[NSUserDefaults standardUserDefaults] setObject:[jsonDict objectForKey:MITDeviceIdKey] forKey:MITDeviceIdKey];
+                [[NSUserDefaults standardUserDefaults] setObject:[jsonDict objectForKey:MITPassCodeKey] forKey:MITPassCodeKey];
+            }
+        }
+    };
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 + (void) newDeviceToken: (NSData *)deviceToken {
@@ -58,9 +75,25 @@
 	[parameters setObject:APPLE forKey:DEVICE_TYPE_KEY];
 	[parameters setObject:[self stringFromToken:deviceToken] forKey:@"device_token"];
 	[parameters setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"] forKey:@"app_id"];
-	
-	[[MITMobileWebAPI jsonLoadedDelegate:[MITIdentityLoadedDelegate withDeviceToken:deviceToken]]
-		requestObjectFromModule:@"push" command:@"newDeviceToken" parameters:parameters];
+    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
+                                                                              command:@"newDeviceToken"
+                                                                           parameters:parameters] autorelease];
+
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (error) {
+
+        } else {
+            [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:DeviceTokenKey];
+            
+            if ([jsonResult isKindOfClass:[NSDictionary class]]) {
+                NSDictionary *jsonDict = jsonResult;
+                [[NSUserDefaults standardUserDefaults] setObject:[jsonDict objectForKey:MITDeviceIdKey] forKey:MITDeviceIdKey];
+                [[NSUserDefaults standardUserDefaults] setObject:[jsonDict objectForKey:MITPassCodeKey] forKey:MITPassCodeKey];
+            }
+        }
+    };
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 	
 + (MITIdentity *) identity {
@@ -73,36 +106,4 @@
 		return nil;
 	}
 }
-@end
-
-
-@implementation MITIdentityLoadedDelegate
-@synthesize deviceToken;
-
-+ (MITIdentityLoadedDelegate *) withDeviceToken: (NSData *)deviceToken {
-	MITIdentityLoadedDelegate *delegate = [[self new] autorelease];
-	delegate.deviceToken = deviceToken;
-	return delegate;
-}
-		
-- (void) dealloc {
-	[deviceToken release];
-	[super dealloc];
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)JSONObject {
-	
-	[[NSUserDefaults standardUserDefaults] setObject:self.deviceToken forKey:DeviceTokenKey];
-
-	if (JSONObject && [JSONObject isKindOfClass:[NSDictionary class]]) {
-		NSDictionary *jsonDict = JSONObject;
-		[[NSUserDefaults standardUserDefaults] setObject:[jsonDict objectForKey:MITDeviceIdKey] forKey:MITDeviceIdKey];
-		[[NSUserDefaults standardUserDefaults] setObject:[jsonDict objectForKey:MITPassCodeKey] forKey:MITPassCodeKey];
-	}
-}
-
-- (BOOL) request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return NO;
-}
-
 @end

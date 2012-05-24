@@ -1,9 +1,9 @@
-
 #import "MITUnreadNotifications.h"
 #import "MITDeviceRegistration.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
 #import "SBJSON.h"
+#import "MobileRequestOperation.h"
 
 #define TAB_COUNT 4
 
@@ -75,7 +75,39 @@
 }
 		
 
++ (MobileRequestOperation *)requestOperationForCommand:(NSString *)command parameters:(NSDictionary *)params {
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
+                                                                              command:command
+                                                                           parameters:params] autorelease];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
+            NSMutableArray *notifications = [NSMutableArray array];
+            for(NSString *noticeString in (NSArray *)jsonResult) {
+                [notifications addObject:[MITNotification fromString:noticeString]];
+            }
+            
+            [MITUnreadNotifications saveUnreadNotifications:notifications];
+            [MITUnreadNotifications updateUI];
+            
+            // since receiving the unread notices from the server is asynchrous event
+            // we want all the modules to know that this data may have changed
+            // so we pass of the new version of the data to each module
+            NSArray *modules = ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]).modules;
+            for (MITModule *module in modules) {
+                NSMutableArray *moduleNotifications = [NSMutableArray array];
+                
+                for (MITNotification *notification in notifications) {
+                    if([notification.moduleName isEqualToString:module.tag]) {
+                        [moduleNotifications addObject:notification];
+                    }
+                }
+                [module handleUnreadNotificationsSync:moduleNotifications];
+            }
+        }
+    };
 
+    return request;
+}
 
 // this method will get the most recent unread data from the MIT server
 // and save it on the phone
@@ -84,8 +116,8 @@
 	
 	if(identity) {
 		NSMutableDictionary *parameters = [identity mutableDictionary];
-		[[MITMobileWebAPI jsonLoadedDelegate:[[SynchronizeUnreadNotificationsDelegate new] autorelease]]
-			requestObjectFromModule:@"push" command:@"getUnreadNotifications" parameters:parameters];
+        MobileRequestOperation *request = [[self class] requestOperationForCommand:@"getUnreadNotifications" parameters:parameters];
+        [[NSOperationQueue mainQueue] addOperation:request];
 	}
 }
 
@@ -104,11 +136,10 @@
 		
 			NSMutableDictionary *parameters = [identity mutableDictionary];
 			[parameters setObject:[sbjson stringWithObject:noticeStrings] forKey:@"tags"];
-		
-			[[MITMobileWebAPI jsonLoadedDelegate:[[SynchronizeUnreadNotificationsDelegate new] autorelease]]
-				requestObjectFromModule:@"push" command:@"markNotificationsAsRead" parameters:parameters];
-		
 			[sbjson release];
+            
+            MobileRequestOperation *request = [[self class] requestOperationForCommand:@"markNotificationsAsRead" parameters:parameters];
+            [[NSOperationQueue mainQueue] addOperation:request];
 		}
         
         [MITUnreadNotifications updateUI];
@@ -180,39 +211,3 @@
 	return [NSString stringWithFormat:@"{module:%@, tag:%@}", moduleName, noticeId];
 }
 @end
-
-@implementation SynchronizeUnreadNotificationsDelegate 
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)JSONObject {
-	if (JSONObject && [JSONObject isKindOfClass:[NSArray class]]) {
-		NSMutableArray *notifications = [NSMutableArray array];
-		for(NSString *noticeString in (NSArray *)JSONObject) {
-			[notifications addObject:[MITNotification fromString:noticeString]];
-		}
-		
-		[MITUnreadNotifications saveUnreadNotifications:notifications];
-		[MITUnreadNotifications updateUI];
-		
-		// since receiving the unread notices from the server is asynchrous event
-		// we want all the modules to know that this data may have changed
-		// so we pass of the new version of the data to each module
-		NSArray *modules = ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]).modules;
-		for(MITModule *module in modules) {
-			NSMutableArray *moduleNotifications = [NSMutableArray array];
-			
-			for(MITNotification *notification in notifications) {
-				if([notification.moduleName isEqualToString:module.tag]) {
-					[moduleNotifications addObject:notification];
-				}
-			}
-			[module handleUnreadNotificationsSync:moduleNotifications];
-		}
-	}
-}
-
-- (BOOL) request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return NO;
-}
-
-@end
-
