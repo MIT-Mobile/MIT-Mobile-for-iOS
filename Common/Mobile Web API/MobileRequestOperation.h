@@ -4,12 +4,9 @@
 @class MobileRequestOperation;
 
 typedef void (^MobileRequestProgressBlock)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger expectedBytesWritten);
-typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id jsonResult, NSError *error);
+typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id content, NSError *error);
 
-@interface MobileRequestOperation : NSOperation <MobileRequestLoginViewDelegate> {
-    BOOL _isExecuting;
-    BOOL _isFinished;
-}
+@interface MobileRequestOperation : NSOperation <MobileRequestLoginViewDelegate>
 
 @property (nonatomic,readonly,copy) NSString *module;
 @property (nonatomic,readonly,copy) NSString *command;
@@ -28,11 +25,17 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
  *  should either be dispatched onto a new queue/background
  *  thread to avoid blocking the main UI
  */
-@property (nonatomic,copy) void (^completeBlock)(MobileRequestOperation *operation, id jsonResult, NSError *error);
-@property (nonatomic,copy) void (^progressBlock)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger expectedBytesWritten);
+@property (nonatomic,copy) MobileRequestCompleteBlock completeBlock;
+@property (nonatomic,copy) MobileRequestProgressBlock progressBlock;
 
 + (id)operationWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params;
++ (id)operationWithRelativePath:(NSString*)relativePath parameters:(NSDictionary*)params;
++ (id)operationWithURL:(NSURL*)requestURL parameters:(NSDictionary*)params;
+
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params;
+- (id)initWithRelativePath:(NSString*)relativePath parameters:(NSDictionary*)params;
+- (id)initWithURL:(NSURL*)requestURL parameters:(NSDictionary*)params;
+
 - (NSURLRequest*)urlRequest;
 
 // Override the saved username/password (if there is one) when attempting
