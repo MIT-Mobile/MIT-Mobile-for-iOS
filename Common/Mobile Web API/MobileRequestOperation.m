@@ -434,7 +434,8 @@ typedef enum
         
 #warning Remove the chk* variables once the server properly reports the Content-Type for JSON data
         chkJSON = ((chkString != nil) &&
-                        (([chkString hasPrefix:@"["]) ||
+                        (([chkString length] == 0) ||
+                         ([chkString hasPrefix:@"["]) ||
                          ([chkString hasPrefix:@"{"])));
         
         if (chkJSON || [contentType containsSubstring:@"json" options:NSCaseInsensitiveSearch])
@@ -625,18 +626,23 @@ typedef enum
             // Assume that the URL is properly formed. In that case,
             // the parameters should come after the '?' and there shouldn't
             // be any stray '?' characters as they are reserved
-            if ([urlString containsSubstring:@"?" options:0] == YES)
+            if ([urlString containsSubstring:@"?" options:0])
             {
                 if ([urlString hasSuffix:@"?"])
+                {
+                    // Assume the URL is of the format '.../someResource/?...' or '.../someResource?...'
+                    [urlString appendFormat:@"%@", paramString];
+                }
+                else
                 {
                     // Assume the url is of the format '...?(parameters*)'
                     [urlString appendFormat:@"&%@", paramString];
                 }
-                else
-                {
-                    // Assume the URL is of the format '.../someResource/' or '.../someResource'
-                    [urlString appendFormat:@"?%@", paramString];
-                }
+            }
+            else
+            {
+                // Assume the URL is of the format '.../someResource/' or '.../someResource'
+                [urlString appendFormat:@"?%@", paramString];
             }
         }
 
