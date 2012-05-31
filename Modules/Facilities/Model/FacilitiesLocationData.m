@@ -300,7 +300,7 @@ static FacilitiesLocationData *_sharedData = nil;
                                                                            parameters:params] autorelease];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-        NSString *command = operation.command;
+        NSString *blkCommand = operation.command;
         NSDictionary *parameters = operation.parameters;
         dispatch_queue_t handlerQueue = dispatch_queue_create(NULL, 0);
         
@@ -308,13 +308,13 @@ static FacilitiesLocationData *_sharedData = nil;
             ELog(@"Request failed with error: %@",[error localizedDescription]);
         } else {
             dispatch_async(handlerQueue, ^(void) {
-                if ([command isEqualToString:FacilitiesCategoriesKey]) {
+                if ([blkCommand isEqualToString:FacilitiesCategoriesKey]) {
                     [self loadCategoriesWithArray:(NSArray*)jsonResult];
-                } else if ([command isEqualToString:FacilitiesLocationsKey]) {
+                } else if ([blkCommand isEqualToString:FacilitiesLocationsKey]) {
                     [self loadLocationsWithArray:(NSArray*)jsonResult];
-                } else if ([command isEqualToString:FacilitiesRepairTypesKey]) {
+                } else if ([blkCommand isEqualToString:FacilitiesRepairTypesKey]) {
                     [self loadRepairTypesWithArray:(NSArray*)jsonResult];
-                } else if ([command isEqualToString:FacilitiesRoomsKey]) {
+                } else if ([blkCommand isEqualToString:FacilitiesRoomsKey]) {
                     NSDictionary *roomData = (NSDictionary*)jsonResult;
                     NSString *requestedId = [parameters objectForKey:@"building"];
                     
@@ -326,19 +326,19 @@ static FacilitiesLocationData *_sharedData = nil;
                     [self loadRoomsWithData:roomData];
                 }
             
-                BOOL shouldUpdateDate = !([command isEqualToString:FacilitiesRoomsKey] && [parameters objectForKey:@"building"]);
+                BOOL shouldUpdateDate = !([blkCommand isEqualToString:FacilitiesRoomsKey] && [parameters objectForKey:@"building"]);
                 
                 if (shouldUpdateDate) {
                     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
                     [dict setObject:[NSDate date]
-                             forKey:command];
+                             forKey:blkCommand];
                     [[NSUserDefaults standardUserDefaults] setObject:dict
                                                               forKey:FacilitiesFetchDatesKey];
                     [[NSUserDefaults standardUserDefaults] synchronize];
                 }
                 
                 [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
-                                     withUserData:command
+                                     withUserData:blkCommand
                                  newDataAvailable:YES];
             });
             
