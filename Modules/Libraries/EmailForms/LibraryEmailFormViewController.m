@@ -548,16 +548,16 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
                                                                            parameters:[NSDictionary dictionary]] autorelease];
     
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         [self.loadingView removeFromSuperview];
         
         if (error && (error.code != NSUserCancelledError)) {
             DLog(@"Request failed with error: %@",[error localizedDescription]); 
             [MITMobileWebAPI showError:nil header:@"Login" alertViewDelegate:self];
-        } else if (!jsonResult) {
+        } else if (!content) {
             [self.navigationController popViewControllerAnimated:YES];    
         } else {
-            NSNumber *isMITIdentity = [(NSDictionary *)jsonResult objectForKey:@"is_mit_identity"];
+            NSNumber *isMITIdentity = [(NSDictionary *)content objectForKey:@"is_mit_identity"];
             if ([isMITIdentity boolValue]) {
                 [loginLoadingView removeFromSuperview];
                 identityVerified = YES;
@@ -918,8 +918,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     [self.navigationController pushViewController:thanksController animated:NO];
     [thanksController release];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-        NSDictionary *jsonDict = jsonResult;
+    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
+        NSDictionary *jsonDict = content;
         BOOL success = [(NSNumber *)[jsonDict objectForKey:@"success"] boolValue];
         if (error || !success) {
             DLog(@"Request failed with error: %@",[error localizedDescription]);

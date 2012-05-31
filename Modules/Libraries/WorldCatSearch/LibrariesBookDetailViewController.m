@@ -73,7 +73,7 @@ typedef enum {
     
     self.loadingStatus = BookLoadingStatusPartial;
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         [self.activityView removeFromSuperview];
         
         if (error) {
@@ -81,7 +81,7 @@ typedef enum {
             self.loadingStatus = BookLoadingStatusFailed;
 
         } else {
-            [self.book updateDetailsWithDictionary:jsonResult];
+            [self.book updateDetailsWithDictionary:content];
             
             NSMutableArray *bookAttribs = [NSMutableArray array];
             
