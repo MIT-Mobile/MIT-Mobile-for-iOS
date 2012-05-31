@@ -299,7 +299,7 @@ static FacilitiesLocationData *_sharedData = nil;
                                                                               command:command
                                                                            parameters:params] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         NSString *blkCommand = operation.command;
         NSDictionary *parameters = operation.parameters;
         dispatch_queue_t handlerQueue = dispatch_queue_create(NULL, 0);
@@ -309,13 +309,13 @@ static FacilitiesLocationData *_sharedData = nil;
         } else {
             dispatch_async(handlerQueue, ^(void) {
                 if ([blkCommand isEqualToString:FacilitiesCategoriesKey]) {
-                    [self loadCategoriesWithArray:(NSArray*)jsonResult];
+                    [self loadCategoriesWithArray:(NSArray*)content];
                 } else if ([blkCommand isEqualToString:FacilitiesLocationsKey]) {
-                    [self loadLocationsWithArray:(NSArray*)jsonResult];
+                    [self loadLocationsWithArray:(NSArray*)content];
                 } else if ([blkCommand isEqualToString:FacilitiesRepairTypesKey]) {
-                    [self loadRepairTypesWithArray:(NSArray*)jsonResult];
+                    [self loadRepairTypesWithArray:(NSArray*)content];
                 } else if ([blkCommand isEqualToString:FacilitiesRoomsKey]) {
-                    NSDictionary *roomData = (NSDictionary*)jsonResult;
+                    NSDictionary *roomData = (NSDictionary*)content;
                     NSString *requestedId = [parameters objectForKey:@"building"];
                     
                     if (requestedId) {

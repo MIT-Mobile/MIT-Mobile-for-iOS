@@ -4,7 +4,7 @@
 @class MobileRequestOperation;
 
 typedef void (^MobileRequestProgressBlock)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger expectedBytesWritten);
-typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id content, NSError *error);
+typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error);
 
 @interface MobileRequestOperation : NSOperation <MobileRequestLoginViewDelegate>
 

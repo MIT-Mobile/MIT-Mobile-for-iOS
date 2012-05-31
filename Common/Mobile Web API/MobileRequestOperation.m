@@ -35,9 +35,10 @@ typedef enum
 
 @property (nonatomic, copy) NSURLRequest *activeRequest;
 @property (retain) NSURLConnection *connection;
-@property (nonatomic, strong) MobileRequestLoginViewController *loginViewController;
-@property (nonatomic, strong) NSMutableData *requestData;
-@property (nonatomic, strong) NSError *requestError;
+@property (nonatomic,retain) MobileRequestLoginViewController *loginViewController;
+@property (nonatomic,retain) NSMutableData *contentData;
+@property (nonatomic,retain) NSString *contentType;
+@property (nonatomic,retain) NSError *requestError;
 @property (nonatomic) MobileRequestState requestState;
 @property (copy) NSString *touchstoneUser;
 @property (copy) NSString *touchstonePassword;
@@ -53,16 +54,17 @@ typedef enum
 + (NSString *)descriptionForState:(MobileRequestState)state;
 
 - (BOOL)authenticationRequired;
-- (NSURLRequest *)buildURLRequest;
-- (void)dispatchCompleteBlockWithResult:(id)jsonResult
-                                  error:(NSError *)error;
+- (NSURLRequest*)buildURLRequest;
+- (void)dispatchCompleteBlockWithResult:(id)content
+                            contentType:(NSString*)contentType
+                                  error:(NSError*)error;
 - (void)displayLoginPrompt;
 
 - (void)displayLoginPrompt:(BOOL)forceDisplay;
 
 - (void)finish;
 - (void)transitionToState:(MobileRequestState)state
-          willSendRequest:(NSURLRequest *)request;
+          willSendRequest:(NSURLRequest*)request;
 
 @end
 
@@ -87,7 +89,8 @@ typedef enum
 @synthesize initialRequest = _initialRequest;
 @synthesize operationRunLoop = _operationRunLoop;
 @synthesize runLoopTimer = _runLoopTimer;
-@synthesize requestData = _requestData;
+@synthesize contentData = _requestData;
+@synthesize contentType = _requestType;
 @synthesize requestState = _requestState;
 @synthesize requestError = _requestError;
 @synthesize touchstoneUser = _touchstoneUser;
@@ -296,7 +299,7 @@ typedef enum
     self.connection = nil;
     self.initialRequest = nil;
     self.operationRunLoop = nil;
-    self.requestData = nil;
+    self.contentData = nil;
     self.requestError = nil;
     self.touchstoneUser = nil;
     self.touchstonePassword = nil;
@@ -355,7 +358,7 @@ typedef enum
     if ([NSURLConnection canHandleRequest:request])
     {
         self.initialRequest = request;
-        self.requestData = nil;
+        self.contentData = nil;
         self.requestError = nil;
 
         self.isExecuting = YES;
@@ -413,32 +416,51 @@ typedef enum
     // cases where the -(void)finish method is called on the main
     // thread (instead of the operation's thread) and it shouldn't
     // block.
-    NSData *jsonData = [[self.requestData copy] autorelease];
-    NSError *error = [[self.requestError copy] autorelease];
-    self.requestData = nil;
+    NSData *content = [self.contentData retain];
+    NSString *contentType = [self.contentType retain];
+    NSError *error = [self.requestError retain];
+    
+    self.contentData = nil;
+    self.contentType = nil;
     self.requestError = nil;
     dispatch_queue_t parseQueue = dispatch_queue_create("edu.mit.mobile.json-parse", 0);
     dispatch_async(parseQueue, ^(void) {
-        id jsonResult = nil;
-        NSError *jsonError = error;
-
-        if (jsonError == nil)
+        
+        BOOL chkJSON = NO;
+        NSData *chkData = [content subdataWithRange:NSMakeRange(0, MIN(32,[content length]))];
+        NSString *chkString = [[[NSString alloc] initWithData:chkData
+                                                     encoding:NSUTF8StringEncoding] autorelease];
+        chkString = [chkString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        
+#warning Remove the chk* variables once the server properly reports the Content-Type for JSON data
+        chkJSON = ((chkString != nil) &&
+                        (([chkString hasPrefix:@"["]) ||
+                         ([chkString hasPrefix:@"{"])));
+        
+        if (chkJSON || [contentType containsSubstring:@"json" options:NSCaseInsensitiveSearch])
         {
-            jsonResult = [MITJSON objectWithJSONData:jsonData
-                                               error:&jsonError];
-#ifdef DEBUG
-            if (jsonError)
-            {
-                NSString *data = [[[NSString alloc] initWithData:jsonData
-                                                        encoding:NSUTF8StringEncoding] autorelease];
-                DLog(@"JSON failed on data:\n-----\n%@\n-----", data);
+            id jsonResult = nil;
+            NSError *jsonError = error;
+            
+            if (jsonError == nil) {
+                jsonResult = [MITJSON objectWithJSONData:content
+                                                   error:&jsonError];
             }
-#endif
+            
+            [content release];
+            [contentType release];
+            
+            [self dispatchCompleteBlockWithResult:jsonResult
+                                      contentType:@"application/json"
+                                            error:jsonError];
         }
-
-        [self dispatchCompleteBlockWithResult:((jsonError == nil) ? jsonResult : jsonData)
-                                        error:jsonError];
-
+        else
+        {
+            [self dispatchCompleteBlockWithResult:[content autorelease]
+                                      contentType:[contentType autorelease]
+                                            error:[error autorelease]];
+        }
+        
         self.isExecuting = NO;
         self.isFinished = YES;
     });
@@ -456,11 +478,9 @@ typedef enum
         if (self.connection)
         {
             [self.connection cancel];
-        }
-        else
-        {
-            self.requestData = nil;
-
+        } else {
+            self.contentData = nil;
+            
             if (self.requestError == nil)
             {
                 self.requestError = [NSError errorWithDomain:MobileWebErrorDomain
@@ -629,12 +649,12 @@ typedef enum
     return request;
 }
 
-- (void)dispatchCompleteBlockWithResult:(id)jsonResult error:(NSError *)error
-{
-    if (self.completeBlock)
-    {
+- (void)dispatchCompleteBlockWithResult:(id)content
+                            contentType:(NSString*)contentType
+                                  error:(NSError*)error {
+    if (self.completeBlock) {
         dispatch_sync(dispatch_get_main_queue(), ^(void) {
-            self.completeBlock(self, jsonResult, error);
+            self.completeBlock(self,content,contentType,error);
         });
     }
 }
@@ -701,7 +721,7 @@ typedef enum
                         forHTTPHeaderField:@"User-Agent"];
 
         self.activeRequest = mutableRequest;
-        self.requestData = nil;
+        self.contentData = nil;
         self.connection = [[[NSURLConnection alloc] initWithRequest:mutableRequest
                                                            delegate:self
                                                    startImmediately:NO] autorelease];
@@ -749,27 +769,21 @@ typedef enum
 }
 
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    if (self.requestData)
-    {
-        [self.requestData setLength:0];
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    if (self.contentData) {
+        [self.contentData setLength:0];
+    } else {
+        self.contentData = [NSMutableData data];
     }
-    else
-    {
-        self.requestData = [NSMutableData data];
-    }
+    
+    self.contentType = [response MIMEType];
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    if (self.requestData)
-    {
-        [self.requestData appendData:data];
-    }
-    else
-    {
-        self.requestData = [NSMutableData data];
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    if (self.contentData) {
+        [self.contentData appendData:data];
+    } else {
+        self.contentData = [NSMutableData data];
     }
 
 }
@@ -885,8 +899,8 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
         case MobileRequestStateIDP:
         {
             TouchstoneResponse *response = [[[TouchstoneResponse alloc] initWithRequest:self.activeRequest
-                                                                                   data:self.requestData] autorelease];
-
+                                                                                   data:self.contentData] autorelease];
+            
             if (response.error)
             {
                 if (response.error.code == MobileWebInvalidLoginError)
@@ -988,12 +1002,10 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
         }
     }
 }
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    self.requestData = nil;
-    if (self.requestError == nil)
-    {
+         
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    self.contentData = nil;
+    if (self.requestError == nil) {
         self.requestError = error;
     }
 
