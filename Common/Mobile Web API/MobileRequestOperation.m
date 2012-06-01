@@ -22,8 +22,8 @@ typedef enum
 } MobileRequestState;
 
 @interface MobileRequestOperation ()
-@property (nonatomic, copy) NSString *command;
-@property (nonatomic, copy) NSString *module;
+@property (nonatomic, strong) NSString *command;
+@property (nonatomic, strong) NSString *module;
 @property (nonatomic, copy) NSDictionary *parameters;
 
 @property (nonatomic, strong) NSURL *requestBaseURL;
@@ -35,21 +35,21 @@ typedef enum
 
 @property (nonatomic, copy) NSURLRequest *activeRequest;
 @property (retain) NSURLConnection *connection;
-@property (nonatomic,retain) MobileRequestLoginViewController *loginViewController;
-@property (nonatomic,retain) NSMutableData *contentData;
-@property (nonatomic,retain) NSString *contentType;
-@property (nonatomic,retain) NSError *requestError;
+@property (nonatomic, strong) MobileRequestLoginViewController *loginViewController;
+@property (nonatomic, strong) NSMutableData *contentData;
+@property (nonatomic, strong) NSString *contentType;
+@property (nonatomic, strong) NSError *requestError;
 @property (nonatomic) MobileRequestState requestState;
 @property (copy) NSString *touchstoneUser;
 @property (copy) NSString *touchstonePassword;
 
 
-@property (retain) NSRunLoop *operationRunLoop;
+@property (nonatomic, strong) NSRunLoop *operationRunLoop;
 
 // Used to prevent the run loop from prematurely exiting
 // if there are no active connections and the class
 // is waiting for the user to authenticate
-@property (retain) NSTimer *runLoopTimer;
+@property (nonatomic, strong) NSTimer *runLoopTimer;
 
 + (NSString *)descriptionForState:(MobileRequestState)state;
 
@@ -107,21 +107,21 @@ typedef enum
 
 + (id)operationWithURL:(NSURL *)requestURL parameters:(NSDictionary *)params
 {
-    return [[[self alloc] initWithURL:requestURL
-                           parameters:params] autorelease];
+    return [[self alloc] initWithURL:requestURL
+                           parameters:params];
 }
 
 + (id)operationWithRelativePath:(NSString *)relativePath parameters:(NSDictionary *)params
 {
-    return [[[self alloc] initWithRelativePath:relativePath
-                                    parameters:params] autorelease];
+    return [[self alloc] initWithRelativePath:relativePath
+                                    parameters:params];
 }
 
 + (id)operationWithModule:(NSString *)aModule command:(NSString *)theCommand parameters:(NSDictionary *)params
 {
-    return [[[self alloc] initWithModule:aModule
+    return [[self alloc] initWithModule:aModule
                                  command:theCommand
-                              parameters:params] autorelease];
+                              parameters:params];
 }
 
 
@@ -306,8 +306,6 @@ typedef enum
 
     [self.runLoopTimer invalidate];
     self.runLoopTimer = nil;
-
-    [super dealloc];
 }
 
 
@@ -378,21 +376,21 @@ typedef enum
         return;
     }
 
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    self.operationRunLoop = [NSRunLoop currentRunLoop];
-    self.runLoopTimer = [[[NSTimer alloc] initWithFireDate:[NSDate distantFuture]
-                                   interval:0.0
-                                     target:self
-                                   selector:nil userInfo:nil repeats:NO] autorelease];
-    [self.operationRunLoop addTimer:self.runLoopTimer
-                            forMode:NSDefaultRunLoopMode];
-    [self transitionToState:MobileRequestStateOK
-            willSendRequest:self.initialRequest];
+    @autoreleasepool {
+        self.operationRunLoop = [NSRunLoop currentRunLoop];
+        self.runLoopTimer = [[NSTimer alloc] initWithFireDate:[NSDate distantFuture]
+                                       interval:0.0
+                                         target:self
+                                       selector:nil userInfo:nil repeats:NO];
+        [self.operationRunLoop addTimer:self.runLoopTimer
+                                forMode:NSDefaultRunLoopMode];
+        [self transitionToState:MobileRequestStateOK
+                willSendRequest:self.initialRequest];
 
-    // Without this (unless we are on the main run loop) the
-    // NSURLConnections will never be processed
-    [self.operationRunLoop run];
-    [pool drain];
+        // Without this (unless we are on the main run loop) the
+        // NSURLConnections will never be processed
+        [self.operationRunLoop run];
+    }
 }
 
 - (void)finish
@@ -411,14 +409,14 @@ typedef enum
     [gSecureStateTracker resumeQueue];
 
 
-    // This may not be completely necessary since the operation
-    // should be running on it's own thread but there may be
-    // cases where the -(void)finish method is called on the main
-    // thread (instead of the operation's thread) and it shouldn't
-    // block.
-    NSData *content = [self.contentData retain];
-    NSString *contentType = [self.contentType retain];
-    NSError *error = [self.requestError retain];
+    // Grab the pointers to the data we'll need
+    // otherwise, since the properties are method calls
+    // not direct ivar accesses, will be a potential race
+    // condition between the block running and the
+    // ivar being deallocated
+    NSData *content = self.contentData;
+    NSString *contentType = self.contentType;
+    NSError *error = self.requestError;
     
     self.contentData = nil;
     self.contentType = nil;
@@ -428,8 +426,8 @@ typedef enum
         
         BOOL chkJSON = NO;
         NSData *chkData = [content subdataWithRange:NSMakeRange(0, MIN(32,[content length]))];
-        NSString *chkString = [[[NSString alloc] initWithData:chkData
-                                                     encoding:NSUTF8StringEncoding] autorelease];
+        NSString *chkString = [[NSString alloc] initWithData:chkData
+                                                     encoding:NSUTF8StringEncoding];
         chkString = [chkString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         
 #warning Remove the chk* variables once the server properly reports the Content-Type for JSON data
@@ -448,23 +446,21 @@ typedef enum
                                                    error:&jsonError];
             }
             
-            [content release];
-            [contentType release];
-            
             [self dispatchCompleteBlockWithResult:jsonResult
                                       contentType:@"application/json"
                                             error:jsonError];
         }
         else
         {
-            [self dispatchCompleteBlockWithResult:[content autorelease]
-                                      contentType:[contentType autorelease]
-                                            error:[error autorelease]];
+            [self dispatchCompleteBlockWithResult:content
+                                      contentType:contentType
+                                            error:error];
         }
         
         self.isExecuting = NO;
         self.isFinished = YES;
     });
+    
     dispatch_release(parseQueue);
 }
 
@@ -567,8 +563,8 @@ typedef enum
 
         if (authItem)
         {
-            self.touchstoneUser = [authItem objectForKey:(id) kSecAttrAccount];
-            self.touchstonePassword = [authItem objectForKey:(id) kSecValueData];
+            self.touchstoneUser = [authItem objectForKey:(__bridge id)kSecAttrAccount];
+            self.touchstonePassword = [authItem objectForKey:(__bridge id)kSecValueData];
         }
     }
 
@@ -677,11 +673,11 @@ typedef enum
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([self authenticationRequired] || forceDisplay)
             {
-                MobileRequestLoginViewController *loginView = [[[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
-                                                                                                                 password:self.touchstonePassword] autorelease];
+                MobileRequestLoginViewController *loginView = [[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
+                                                                                                                password:self.touchstonePassword];
                 loginView.delegate = self;
 
-                UINavigationController *loginNavController = [[[UINavigationController alloc] initWithRootViewController:loginView] autorelease];
+                UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginView];
                 loginNavController.navigationBar.barStyle = UIBarStyleBlack;
 
                 [[MITAppDelegate() rootNavigationController] presentModalViewController:loginNavController
@@ -721,16 +717,16 @@ typedef enum
         [MobileRequestOperation descriptionForState:state]);
         DLog(@"\tFor URL:\n\t\t:%@", request.URL);
 
-        NSMutableURLRequest *mutableRequest = [[request mutableCopy] autorelease];
+        NSMutableURLRequest *mutableRequest = [request mutableCopy];
         mutableRequest.timeoutInterval = 10.0;
         [mutableRequest addValue:[MobileRequestOperation userAgent]
                         forHTTPHeaderField:@"User-Agent"];
 
         self.activeRequest = mutableRequest;
         self.contentData = nil;
-        self.connection = [[[NSURLConnection alloc] initWithRequest:mutableRequest
+        self.connection = [[NSURLConnection alloc] initWithRequest:mutableRequest
                                                            delegate:self
-                                                   startImmediately:NO] autorelease];
+                                                   startImmediately:NO];
         [self.connection scheduleInRunLoop:self.operationRunLoop
                                    forMode:NSDefaultRunLoopMode];
         [self.connection start];
@@ -764,7 +760,7 @@ typedef enum
         }
         else if (self.requestState == MobileRequestStateAuthOK)
         {
-            NSMutableURLRequest *newRequest = [[self.initialRequest mutableCopy] autorelease];
+            NSMutableURLRequest *newRequest = [self.initialRequest mutableCopy];
             newRequest.URL = [request URL];
             request = newRequest;
         }
@@ -904,8 +900,8 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 
         case MobileRequestStateIDP:
         {
-            TouchstoneResponse *response = [[[TouchstoneResponse alloc] initWithRequest:self.activeRequest
-                                                                                   data:self.contentData] autorelease];
+            TouchstoneResponse *response = [[TouchstoneResponse alloc] initWithRequest:self.activeRequest
+                                                                                  data:self.contentData];
             
             if (response.error)
             {
@@ -1037,7 +1033,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     {
         NSDictionary *mobileCredentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
 
-        if ([mobileCredentials objectForKey:(id) kSecAttrAccount])
+        if ([mobileCredentials objectForKey:(__bridge id) kSecAttrAccount])
         {
             MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, @"");
         }

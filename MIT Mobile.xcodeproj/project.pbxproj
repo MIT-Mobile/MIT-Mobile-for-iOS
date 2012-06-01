@@ -77,7 +77,7 @@
 		2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */; };
 		2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */; };
 		2C5DECD613E9BABB00F9C089 /* MobileRequestLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCC13E9BABB00F9C089 /* MobileRequestLoginViewController.m */; };
-		2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */; };
+		2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C5DECDC13E9BEF400F9C089 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5DECDB13E9BEF400F9C089 /* libz.dylib */; };
 		2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C603011139EA21700D34F1B /* FacilitiesRepairType.m */; };
 		2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */; };
@@ -2928,6 +2928,7 @@
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
@@ -2952,6 +2953,7 @@
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
@@ -3056,6 +3058,7 @@
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",
@@ -3110,6 +3113,7 @@
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Common/Libraries & Headers/OAuthConsumer\"",

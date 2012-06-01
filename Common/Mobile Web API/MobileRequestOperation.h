@@ -8,8 +8,8 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 
 @interface MobileRequestOperation : NSOperation <MobileRequestLoginViewDelegate>
 
-@property (nonatomic,readonly,copy) NSString *module;
-@property (nonatomic,readonly,copy) NSString *command;
+@property (nonatomic,readonly,strong) NSString *module;
+@property (nonatomic,readonly,strong) NSString *command;
 @property (nonatomic,readonly,copy) NSDictionary *parameters;
 @property (nonatomic) BOOL usePOST;
 
