@@ -16,7 +16,7 @@
         case UIImageOrientationLeftMirrored:
         case UIImageOrientationRight:
         case UIImageOrientationRightMirrored:
-            drawTransposed = YES;
+            drawTransposed = NO;
             break;
             
         default:
@@ -50,7 +50,7 @@
                                                 CGImageGetBitsPerComponent(imageRef),
                                                 0,
                                                 CGImageGetColorSpace(imageRef),
-                                                CGImageGetBitmapInfo(imageRef));
+                                                kCGImageAlphaPremultipliedFirst);
     
     // Rotate and/or flip the image if required by its orientation
     CGContextConcatCTM(bitmap, transform);

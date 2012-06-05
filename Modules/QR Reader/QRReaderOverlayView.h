@@ -7,6 +7,8 @@
     UIColor *_highlightColor;
     UIColor *_outlineColor;
     UIColor *_overlayColor;
+    UIInterfaceOrientation _interfaceOrientation;
+    NSTimeInterval _animationDuration;
 }
 
 @property (nonatomic) BOOL highlighted;
@@ -16,4 +18,6 @@
 
 
 - (CGRect)qrRect;
+- (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) orient
+                                 duration: (NSTimeInterval) duration;
 @end

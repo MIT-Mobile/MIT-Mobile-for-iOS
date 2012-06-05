@@ -8,18 +8,9 @@
 #import "QRReaderOverlayView.h"
 #import "QRReaderScanViewController.h"
 
-// ZXing
-#import "QRCodeReader.h"
-#import "FormatReader.h"
-#import "Decoder.h"
-#import "TwoDDecoderResult.h"
-
 #import "UIImage+Resize.h"
 
 @interface QRReaderScanViewController ()
-
-@property (nonatomic,retain) AVCaptureSession *captureSession;
-@property (nonatomic,retain) AVCaptureVideoPreviewLayer *previewLayer;
 @property (nonatomic,retain) QRReaderOverlayView *overlayView;
 @property (nonatomic,retain) UILabel *adviceLabel;
 @property (nonatomic) BOOL isCaptureActive;
@@ -30,24 +21,39 @@
 @end
 
 @implementation QRReaderScanViewController
-
-@synthesize captureSession = _captureSession;
-@synthesize previewLayer = _previewLayer;
-
 @synthesize overlayView = _overlayView;
 @synthesize adviceLabel;
 @synthesize isCaptureActive = _isCaptureActive;
-@synthesize reader = _reader;
 @synthesize scanDelegate = _scanDelegate;
 @synthesize cancelButton = _cancelButton;
 
-+ (FormatReader*)defaultReader {
-    return [[[QRCodeReader alloc] init] autorelease];
+- (void)dealloc
+{
+    self.cancelButton = nil;
+    self.overlayView = nil;
+    [super dealloc];
 }
 
-- (void)loadView {
+- (void)didReceiveMemoryWarning
+{
+    // Releases the view if it doesn't have a superview.
+    [super didReceiveMemoryWarning];
+    
+    // Release any cached data, images, etc that aren't in use.
+}
+
+#pragma mark - View lifecycle
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    _readerView = [ZBarReaderViewController new].readerView;
+    _readerView.readerDelegate = self;
+    _readerView.frame = self.view.bounds;
+    self.view = _readerView;
+    self.overlayView = [[[QRReaderOverlayView alloc] initWithFrame:self.view.bounds] autorelease];
+    self.isCaptureActive = NO;
     self.wantsFullScreenLayout = YES;
-    self.view = [[[UIView alloc] init] autorelease];
     self.view.backgroundColor = [UIColor blackColor];
     self.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                   UIViewAutoresizingFlexibleWidth);
@@ -68,35 +74,6 @@
                           action:@selector(cancelScan:)
                 forControlEvents:UIControlEventTouchUpInside];
     self.cancelButton.titleLabel.font = [UIFont boldSystemFontOfSize:14.0];
-
-    _decodedResult = NO;
-}
-
-- (void)dealloc
-{
-    self.cancelButton = nil;
-    self.overlayView = nil;
-    
-    self.captureSession = nil;
-    self.previewLayer = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
-}
-
-#pragma mark - View lifecycle
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    self.overlayView = [[[QRReaderOverlayView alloc] initWithFrame:self.view.bounds] autorelease];
-    self.isCaptureActive = NO;
     
     [self startCapture];
 }
@@ -107,13 +84,6 @@
     
     [self stopCapture];
     self.overlayView = nil;
-    self.previewLayer = nil;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 
@@ -132,37 +102,7 @@
         return NO;
     }
     
-    _decodedResult = NO;
-    
-    AVCaptureVideoDataOutput *output = [[[AVCaptureVideoDataOutput alloc] init] autorelease];
-    
-    output.alwaysDiscardsLateVideoFrames = YES;
-    
-    dispatch_queue_t queue = dispatch_queue_create("decoderQueue", NULL);
-    [output setSampleBufferDelegate:self
-                              queue:queue];
-    dispatch_release(queue);
-     
-    [output setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA]
-                                                         forKey:(NSString*)kCVPixelBufferPixelFormatTypeKey]];
-    
-    self.captureSession = [[[AVCaptureSession alloc] init] autorelease];
-    
-    if (self.captureSession) {
-        self.captureSession.sessionPreset = AVCaptureSessionPresetMedium;
-        [self.captureSession addInput:inputDevice];
-        [self.captureSession addOutput:output];
-        
-        self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.captureSession];
-        self.previewLayer.frame = self.view.bounds;
-        self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-        [self.view.layer addSublayer:self.previewLayer];
-        [self.captureSession startRunning];
-        self.isCaptureActive = YES;
-    }
-    
-    [self.view addSubview:self.overlayView];
-    
+    [_readerView addSubview:self.overlayView];
     [self.cancelButton sizeToFit];
     self.cancelButton.center = CGPointMake(self.view.frame.size.width / 2.0, self.view.frame.size.height - 60.0);
 
@@ -173,38 +113,16 @@
 
     
     [self.view insertSubview:self.adviceLabel aboveSubview:self.overlayView];
-    
-    return (self.captureSession != nil);
+    [_readerView start];
+    return YES;
 }
 
 - (void)stopCapture {
+    [_readerView stop];
     if (self.isCaptureActive == NO) {
         return;
     }
-    
-    [self.captureSession stopRunning];
-    self.captureSession = nil;
     self.isCaptureActive = NO;
-}
-
-- (BOOL)hasVMCopyBug {
-    size_t size = 0;
-    sysctlbyname("hw.machine",
-                 NULL, &size,
-                 NULL, 0);
-    
-    char *mname = (char*)malloc(size);
-    memset((void*)mname,'\0',size + 1);
-    sysctlbyname("hw.machine",
-                 mname, &size,
-                 NULL, 0);
-    
-    NSString *mstr = [NSString stringWithCString:mname
-                                        encoding:NSASCIIStringEncoding];
-    free(mname);
-    
-    return ([mstr isEqualToString:@"iPhone1,1"] ||
-            [mstr isEqualToString:@"iPhone1,2"]);
 }
 
 - (void)cancelScan:(id)sender {
@@ -215,73 +133,18 @@
     [self stopCapture];
 }
 
-
-#pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate
-- (void)captureOutput:(AVCaptureOutput*)captureOutput
-didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-       fromConnection:(AVCaptureConnection *)connection
-{
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
-    if ((self.isCaptureActive == NO) ||
-        (self.reader == nil) ||
-        _decodedResult)
-    {
-        [pool drain];
-        return;
-    }
-    
-    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    CVPixelBufferLockBaseAddress(imageBuffer,0);
-    
-    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
-    size_t width = CVPixelBufferGetWidth(imageBuffer);
-    size_t height = CVPixelBufferGetHeight(imageBuffer);
-    void *bufferBase = NULL;
-    BOOL mustFreeBuffer = NO;
-    
-    
-    if ([self hasVMCopyBug]) {
-        // vm_copy fails with the iPhone 3G series so, in order to avoid
-        // flooding the log, we need to malloc, copy and free our own
-        // copy of the pixel data.
-        mustFreeBuffer = YES;
-        size_t size = CVPixelBufferGetDataSize(imageBuffer);
-        bufferBase = malloc(size);
-        memcpy(bufferBase,CVPixelBufferGetBaseAddress(imageBuffer),size);
-    } else {
-        bufferBase = (void*)CVPixelBufferGetBaseAddress(imageBuffer);
-    }
-    
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGContextRef context = CGBitmapContextCreate(bufferBase,
-                                                 width,
-                                                 height,
-                                                 8,
-                                                 bytesPerRow,
-                                                 colorSpace,
-                                                 kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst);
-    
-    CGColorSpaceRelease(colorSpace);
-    
-    if (context == nil) {
-        if (mustFreeBuffer)
-            free(bufferBase);
-        
-        if (imageBuffer)
-            CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-        
-        [pool drain];
-        return;
-    }
-    
-    CGImageRef cgImage = CGBitmapContextCreateImage(context);
-    
-    CGContextRelease(context);
-    
+- (void) readerView: (ZBarReaderView*) areaderView
+     didReadSymbols: (ZBarSymbolSet*) symbols
+          fromImage: (UIImage*) image {    
+    CGImageRef cgImage = image.CGImage;
     CGRect clipRect = [self.overlayView qrRect];
-    clipRect = [self.previewLayer convertRect:clipRect
-                                    fromLayer:self.overlayView.layer];
+    CGFloat w_view = self.view.frame.size.width;
+    CGFloat h_view = self.view.frame.size.height;
+    CGFloat hRate = image.size.width / w_view;
+    CGFloat vRate = image.size.height / h_view;
+    CGFloat y_preview = hRate * clipRect.origin.y;
+    CGFloat x_preview = vRate * clipRect.origin.x;
+    clipRect = CGRectMake(x_preview, y_preview, clipRect.size.width * vRate, clipRect.size.height * vRate);
     
     // Fix the origin for the clipping rect as the video capture is 4:3
     // Will not work properly if the clipping rect is not centered on the
@@ -296,46 +159,26 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     CGImageRef cropped = CGImageCreateWithImageInRect(cgImage, clipRect);
     UIImage *qrImage = [UIImage imageWithCGImage:cropped];
-    CGImageRelease(cgImage);
-    CGImageRelease(cropped);
     
-    
-    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-    
-    if (mustFreeBuffer)
-        free(bufferBase);
-    
-    Decoder *decoder = [[[Decoder alloc] init] autorelease];
-    decoder.readers = [NSArray arrayWithObject:_reader];
-    decoder.delegate = self;
-    
-    _decodedResult = [decoder decodeImage:qrImage];
-    
-    [pool drain];
-}
-
-#pragma mark -
-#pragma mark DecoderDelegate (ZXing)
-- (void)decoder:(Decoder *)decoder
- didDecodeImage:(UIImage *)image
-    usingSubset:(UIImage *)subset
-     withResult:(TwoDDecoderResult *)result {
     self.overlayView.highlightColor = [UIColor greenColor];
     self.overlayView.highlighted = YES;
     
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     [self stopCapture];
+    NSString *result = nil;
+    for (ZBarSymbol *symbol in symbols) {
+        result = symbol.data;
+    }
     
-    UIImage *rotateImage = [UIImage imageWithCGImage:[image CGImage]
+    UIImage *rotateImage = [UIImage imageWithCGImage:[qrImage CGImage]
                                                scale:1.0
                                          orientation:UIImageOrientationRight];
-
-    rotateImage = [rotateImage resizedImage:image.size
-                       interpolationQuality:kCGInterpolationDefault];
     
+    rotateImage = [rotateImage resizedImage:qrImage.size
+                       interpolationQuality:kCGInterpolationDefault];
     if (self.scanDelegate) {
         [self.scanDelegate scanView:self
-                      didScanResult:[NSString stringWithString:result.text]
+                      didScanResult:[NSString stringWithString:result]
                           fromImage:rotateImage];
     }
 }

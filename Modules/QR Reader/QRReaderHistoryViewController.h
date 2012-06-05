@@ -5,7 +5,7 @@
 @class QRReaderScanViewController;
 @class QRReaderHelpView;
 
-@interface QRReaderHistoryViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,QRReaderScanDelegate> {
+@interface QRReaderHistoryViewController : UIViewController <UITableViewDelegate,UITableViewDataSource,ZBarReaderDelegate,QRReaderScanDelegate> {
     UITableView *_tableView;
     UIView *_contentView;
     QRReaderHelpView *_helpView;

@@ -157,9 +157,7 @@
     [self.navigationController popToViewController:self
                                           animated:YES];
     self.scanController = [[[QRReaderScanViewController alloc] init] autorelease];
-    self.scanController.reader = [QRReaderScanViewController defaultReader];
     self.scanController.scanDelegate = self;
-    
     [self presentModalViewController:self.scanController
                             animated:YES];
 }
@@ -212,6 +210,15 @@
                         }
                         completion:nil];
     }
+}
+
+#pragma mark -
+#pragma mark ZBarReaderDelegate Methods
+
+- (void) readerControllerDidFailToRead: (ZBarReaderController*) reader
+                             withRetry: (BOOL) retry {
+    [self dismissModalViewControllerAnimated:YES];
+    self.scanController = nil;
 }
 
 #pragma mark -
