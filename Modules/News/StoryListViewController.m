@@ -645,8 +645,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         NSMutableArray *results = [NSMutableArray arrayWithArray:[CoreDataManager objectsForEntity:NewsStoryEntityName
                                                                                  matchingPredicate:predicate
                                                                                    sortDescriptors:sortDescriptors]];
-        
-        if ([[[results objectAtIndex:0] featured] boolValue] == NO)
+        if ([results count] && ([[[results objectAtIndex:0] featured] boolValue] == NO))
         {
             [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 NewsStory *story = (NewsStory*)obj;
