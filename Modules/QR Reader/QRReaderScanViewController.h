@@ -6,7 +6,7 @@
 @protocol QRReaderScanDelegate;
 @class QRReaderOverlayView;
 
-@interface QRReaderScanViewController : UIViewController <ZBarReaderViewDelegate>{
+@interface QRReaderScanViewController : UIViewController <ZBarReaderViewDelegate,NSURLConnectionDelegate>{
     id<QRReaderScanDelegate> _scanDelegate;
     QRReaderOverlayView *_overlayView;
     ZBarReaderView *_readerView;
@@ -14,12 +14,15 @@
     BOOL _isCaptureActive;
     
     UIButton *_cancelButton;
+    
 }
 
 @property (nonatomic,retain) id<QRReaderScanDelegate> scanDelegate;
 @property (nonatomic,retain,readonly) IBOutlet QRReaderOverlayView *overlayView;
 @property (nonatomic,retain,readonly) UILabel *adviceLabel;
 @property (nonatomic,readonly) BOOL isCaptureActive;
+@property (nonatomic, retain)  UIImage *qrcodeImage;
+
 @end
 
 @protocol QRReaderScanDelegate <NSObject>

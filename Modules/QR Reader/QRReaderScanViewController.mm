@@ -9,6 +9,7 @@
 #import "QRReaderScanViewController.h"
 
 #import "UIImage+Resize.h"
+#import "MobileRequestOperation.h"
 
 @interface QRReaderScanViewController ()
 @property (nonatomic,retain) QRReaderOverlayView *overlayView;
@@ -26,11 +27,14 @@
 @synthesize isCaptureActive = _isCaptureActive;
 @synthesize scanDelegate = _scanDelegate;
 @synthesize cancelButton = _cancelButton;
+@synthesize qrcodeImage;
 
 - (void)dealloc
 {
     self.cancelButton = nil;
     self.overlayView = nil;
+    self.qrcodeImage = nil;
+
     [super dealloc];
 }
 
@@ -133,6 +137,7 @@
     [self stopCapture];
 }
 
+
 - (void) readerView: (ZBarReaderView*) areaderView
      didReadSymbols: (ZBarSymbolSet*) symbols
           fromImage: (UIImage*) image {    
@@ -169,17 +174,63 @@
     for (ZBarSymbol *symbol in symbols) {
         result = symbol.data;
     }
-    
     UIImage *rotateImage = [UIImage imageWithCGImage:[qrImage CGImage]
                                                scale:1.0
                                          orientation:UIImageOrientationRight];
-    
     rotateImage = [rotateImage resizedImage:qrImage.size
                        interpolationQuality:kCGInterpolationDefault];
+    
+    [self checkQRCode:result fromImage:rotateImage];
+}
+
+- (NSString *)typeByEvaluateQRCodeResult:(NSString *)src {
+    NSString *url = @"url";
+    NSString *barcode = @"barcode";
+    NSURL *nsurl = [NSURL URLWithString:src];
+    if ([[UIApplication sharedApplication] canOpenURL:nsurl]) {
+        return url;
+    } else {
+        return barcode;
+    }
+}
+
+- (void)handleJsonResult:(id)jsonResult {
+    NSString *qrcode = nil;
+    NSDictionary *result = (NSDictionary *)jsonResult;
+    if ([[result objectForKey:@"error"] boolValue]) {
+        MobileRequestOperation *operation = [result objectForKey:@"operation"];
+        qrcode = [[operation.parameters allValues] objectAtIndex:0];
+    } else {
+        NSDictionary *dic = [result objectForKey:@"result"];
+        if ([[dic objectForKey:@"success"] boolValue]) {
+            qrcode = [dic objectForKey:@"url"];
+        } else {
+            MobileRequestOperation *operation = [result objectForKey:@"operation"];
+            qrcode = [[operation.parameters allValues] objectAtIndex:0];
+        }
+    }
     if (self.scanDelegate) {
         [self.scanDelegate scanView:self
-                      didScanResult:[NSString stringWithString:result]
-                          fromImage:rotateImage];
+                      didScanResult:[NSString stringWithString:qrcode]
+                          fromImage:self.qrcodeImage];
     }
+}
+
+- (void)checkQRCode:(NSString *)qrcString fromImage:(UIImage *)image {
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:qrcString forKey:[self typeByEvaluateQRCodeResult:qrcString]];
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"qr"
+                                                                            command:@""
+                                                                         parameters:params];
+    self.qrcodeImage = image;
+    __block QRReaderScanViewController *blockSelf = self;
+    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        NSMutableDictionary *result = [NSMutableDictionary dictionary];
+        [result setObject:operation forKey:@"operation"];
+        [result setObject:[NSNumber numberWithBool:(error != nil)] forKey:@"error"];
+        [result setObject:jsonResult ? jsonResult : @"" forKey:@"result"];
+        [blockSelf performSelectorOnMainThread:@selector(handleJsonResult:) withObject:result waitUntilDone:YES];
+    };
+    [operation start];
 }
 @end
