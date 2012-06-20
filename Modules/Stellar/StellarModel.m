@@ -58,7 +58,7 @@ NSString* cleanPersonName(NSString *personName);
                                                                               command:@"courses"
                                                                            parameters:nil] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             if ([StellarModel allCourses].count) {
                 // courses failed to load, but we still have courses save on disk so it is okay
@@ -133,7 +133,7 @@ NSString* cleanPersonName(NSString *personName);
                                                                                       command:@"subjectList"
                                                                                    parameters:params] autorelease];
             
-            request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+            request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
                 if (error) {
                     [delegate handleCouldNotReachStellar];
                     [MITMobileWebAPI showError:error header:StellarHeader alertViewDelegate:[delegate standardErrorAlertDelegate]];
@@ -172,7 +172,7 @@ NSString* cleanPersonName(NSString *personName);
                                                                               command:@"subjectList"
                                                                            parameters:params] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [delegate handleCouldNotReachStellar];
             [MITMobileWebAPI showError:error header:StellarHeader alertViewDelegate:[delegate standardErrorAlertDelegate]];
@@ -201,7 +201,7 @@ NSString* cleanPersonName(NSString *personName);
                                                                               command:@"search"
                                                                            parameters:params] autorelease];
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [delegate handleCouldNotReachStellarWithSearchTerms:searchTerms];
             [MITMobileWebAPI showErrorWithHeader:StellarHeader];
@@ -255,7 +255,7 @@ NSString* cleanPersonName(NSString *personName);
                                                                               command:@"subjectInfo"
                                                                            parameters:params] autorelease];
 
-	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [delegate handleCouldNotReachStellar];
             [MITMobileWebAPI showErrorWithHeader:StellarHeader];
@@ -304,7 +304,7 @@ NSString* cleanPersonName(NSString *personName);
                                                                               command:@"term"
                                                                            parameters:nil] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error) {
             NSString *term = [(NSDictionary *)jsonResult objectForKey:@"term"];
             [[NSUserDefaults standardUserDefaults] setObject:term forKey:StellarTermKey];

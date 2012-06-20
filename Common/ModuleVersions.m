@@ -35,7 +35,7 @@ static ModuleVersions *_sharedVersions = nil;
                                                                               command:@"list"
                                                                            parameters:nil] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error) {
             NSDictionary *remoteDates = (NSDictionary *)jsonResult;
             NSMutableDictionary *dict = [NSMutableDictionary dictionary];

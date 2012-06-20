@@ -438,7 +438,7 @@ enum {
                                                                               command:@"moduleSetting"
                                                                            parameters:parameters] autorelease];
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [MITMobileWebAPI showErrorWithHeader:@"Settings"];
             [self reloadSettings];

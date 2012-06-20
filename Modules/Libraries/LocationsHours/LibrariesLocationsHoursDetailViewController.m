@@ -70,7 +70,7 @@ LocationsHoursTableRows;
         
         NSDictionary *params = [NSDictionary dictionaryWithObject:self.library.title forKey:@"library"];
         MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locationDetail" parameters:params] autorelease];
-        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
             if (error) {
                 self.librariesDetailStatus = LibrariesDetailStatusLoadingFailed;
                 [self.tableView reloadData];

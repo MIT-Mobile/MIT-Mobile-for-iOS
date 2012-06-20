@@ -727,7 +727,7 @@
                                                                                   command:@"search"
                                                                                parameters:params] autorelease];
         
-        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
             if ([searchTerms isEqualToString:self.lastSearchTerm]) {
                 if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
                         
@@ -794,7 +794,7 @@
 	MITEventList *categories = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
     NSString *command = [CalendarDataManager apiCommandForEventType:categories];
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil] autorelease];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             
         } else {
@@ -856,7 +856,7 @@
 	}
     
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
             
             NSMutableArray *arrayForTable = [NSMutableArray arrayWithCapacity:[jsonResult count]];

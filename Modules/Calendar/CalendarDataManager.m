@@ -82,7 +82,7 @@ static CalendarDataManager *s_sharedManager = nil;
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
                                                                               command:@"extraTopLevels"
                                                                            parameters:params] autorelease];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             if ([[CoreDataManager managedObjectContext] hasChanges]) {
                 [[CoreDataManager managedObjectContext] rollback];

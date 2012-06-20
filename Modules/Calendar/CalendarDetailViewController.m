@@ -93,7 +93,7 @@
                                                                               command:@"detail"
                                                                            parameters:params] autorelease];
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         isLoading = NO;
         
         if (error) {

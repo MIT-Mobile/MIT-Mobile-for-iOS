@@ -85,7 +85,7 @@
             MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"people"
                                                                                       command:nil
                                                                                    parameters:parameters] autorelease];
-            request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+            request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
                 if (!error && [jsonResult isKindOfClass:[NSArray class]]) { // fail silently
                     for (NSDictionary *entry in jsonResult) {
                         if ([[entry objectForKey:@"id"] isEqualToString:[self.personDetails valueForKey:@"uid"]]) {

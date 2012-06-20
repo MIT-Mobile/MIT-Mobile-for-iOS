@@ -54,7 +54,7 @@
                                                                               command:@"register"
                                                                            parameters:parameters] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             
         } else {
@@ -80,7 +80,7 @@
                                                                               command:@"newDeviceToken"
                                                                            parameters:parameters] autorelease];
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
 
         } else {

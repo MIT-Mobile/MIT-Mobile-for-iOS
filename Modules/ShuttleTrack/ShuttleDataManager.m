@@ -205,7 +205,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
                                                                               command:@"routes"
                                                                            parameters:params] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
             
             BOOL routesChanged = NO;
@@ -271,7 +271,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
                                                                               command:@"stopInfo"
                                                                            parameters:params] autorelease];
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
             
             NSArray* routesAtStop = [jsonResult objectForKey:@"stops"]; // the api should've called this "routes", this is confusing
@@ -319,7 +319,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
                                                                               command:@"routeInfo"
                                                                            parameters:params] autorelease];
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
             
             NSString *routeID = [jsonResult objectForKey:@"route_id"];

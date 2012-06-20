@@ -171,7 +171,7 @@ static EmergencyData *sharedEmergencyData = nil;
 // Send request
 - (void)checkForEmergencies {
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"emergency" command:nil parameters:nil] autorelease];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:self];
 
@@ -212,7 +212,7 @@ static EmergencyData *sharedEmergencyData = nil;
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"emergency"
                                                                               command:@"contacts"
                                                                            parameters:nil] autorelease];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
                 NSArray *contactsArray = (NSArray *)jsonResult;
                 

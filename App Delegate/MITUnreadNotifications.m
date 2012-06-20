@@ -79,7 +79,7 @@
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
                                                                               command:command
                                                                            parameters:params] autorelease];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
             NSMutableArray *notifications = [NSMutableArray array];
             for(NSString *noticeString in (NSArray *)jsonResult) {

@@ -54,7 +54,7 @@
         [self.view addSubview:self.loadingView];
         
         MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locations" parameters:nil] autorelease];
-        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
             if (error) {
                 [MITMobileWebAPI showError:error header:@"Libraries" alertViewDelegate:self];
             } else {

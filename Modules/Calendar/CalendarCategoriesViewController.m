@@ -27,7 +27,7 @@
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"calendar"
                                                                               command:@"categories"
                                                                            parameters:nil] autorelease];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             DLog(@"request failed");
         } else if ([jsonResult isKindOfClass:[NSArray class]]) {

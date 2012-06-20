@@ -138,7 +138,7 @@
                                                                               command:@"upload"
                                                                            parameters:params] autorelease];
     request.usePOST = YES;
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && 
             [jsonResult respondsToSelector:@selector(objectForKey:)] &&
             [[jsonResult objectForKey:@"success"] boolValue] == YES)

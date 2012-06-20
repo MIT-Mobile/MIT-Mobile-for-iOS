@@ -335,7 +335,7 @@ static ToursDataManager *s_toursDataManager = nil;
                                                                               command:@"toursList"
                                                                            parameters:nil] autorelease];
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
             NSMutableSet *oldTourKeys = [NSMutableSet setWithArray:[_tours allKeys]];
             
@@ -394,7 +394,7 @@ static ToursDataManager *s_toursDataManager = nil;
                                                                               command:@"tourDetails"
                                                                            parameters:params] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:TourDetailsFailedToLoadNotification
                                                                                                  object:tourID]];

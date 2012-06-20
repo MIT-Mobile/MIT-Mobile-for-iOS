@@ -20,7 +20,7 @@
                                                                               command:@"subscribe"
                                                                            parameters:parameters] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error || ![jsonResult isKindOfClass:[NSDictionary class]]) {
             [delegate subscriptionFailedWithObject:object passkeyError:NO];
             [MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
@@ -52,7 +52,7 @@
                                                                               command:@"unsubscribe"
                                                                            parameters:parameters] autorelease];
 
-	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [delegate subscriptionFailedWithObject:object passkeyError:NO];
             [MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
