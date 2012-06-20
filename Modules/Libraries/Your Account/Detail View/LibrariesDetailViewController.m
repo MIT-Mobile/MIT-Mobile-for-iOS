@@ -283,7 +283,7 @@
     MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                             command:@"renewBooks"
                                                                          parameters:params];
-    [operation setCompleteBlock:^(MobileRequestOperation *operation, id jsonData, NSError *error) {
+    [operation setCompleteBlock:^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         self.request = nil;
         self.navigationItem.titleView = nil;
         self.renewButton.enabled = YES;
@@ -297,7 +297,7 @@
         }
         else
         {
-            LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:(NSArray *) jsonData] autorelease];
+            LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:(NSArray *) content] autorelease];
             [self.navigationController pushViewController:vc
                                                  animated:YES];
         }

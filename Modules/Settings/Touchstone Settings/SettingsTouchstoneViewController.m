@@ -300,7 +300,7 @@ enum {
             
             [self.authOperation authenticateUsingUsername:username
                                                  password:password];
-            self.authOperation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error)
+            self.authOperation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error)
             {
                 self.authOperation = nil;
                 self.navigationItem.titleView = nil;

@@ -83,7 +83,7 @@ typedef enum {
     
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"search" parameters:parameters] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         UIView *loadingView = [self.searchResultsTableView viewWithTag:LOADING_ACTIVITY_TAG];
         [loadingView removeFromSuperview];
         
@@ -94,8 +94,8 @@ typedef enum {
             self.searchingStatus = BooksSearchingStatusFailed;
             [self.searchResultsTableView reloadData];
         } else {
-            self.nextIndex = [self getNumberFromDict:jsonResult forKey:@"nextIndex" required:NO];
-            self.totalResultsCount = [self getNumberFromDict:jsonResult forKey:@"totalResultsCount" required:YES];
+            self.nextIndex = [self getNumberFromDict:content forKey:@"nextIndex" required:NO];
+            self.totalResultsCount = [self getNumberFromDict:content forKey:@"totalResultsCount" required:YES];
             if (self.parseError) {
                 WLog(@"World cat parse error parsing nextIndex or totalResultsCount");
                 self.searchingStatus = BooksSearchingStatusFailed;
@@ -104,7 +104,7 @@ typedef enum {
                 return;
             }
             
-            id items = [jsonResult objectForKey:@"items"];
+            id items = [content objectForKey:@"items"];
             if ([items isKindOfClass:[NSArray class]]) {
                 NSMutableArray *temporarySearchResults = [NSMutableArray array];
                 for (NSDictionary *dict in items) {

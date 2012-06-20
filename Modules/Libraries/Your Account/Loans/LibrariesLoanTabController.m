@@ -212,7 +212,7 @@
     
     self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
     
-    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         if ([self.loadingView isDescendantOfView:self.tableView]) {
             [self.loadingView removeFromSuperview];
             self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
@@ -222,7 +222,7 @@
             [self.parentController reportError:error
                                        fromTab:self];
         } else {
-            self.loanData = (NSDictionary*)jsonResult;
+            self.loanData = (NSDictionary*)content;
             self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
             self.headerView.accountDetails = (NSDictionary *)self.loanData;
             [self.headerView sizeToFit];
@@ -313,7 +313,7 @@
     MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                             command:@"renewBooks"
                                                                          parameters:params];
-    [operation setCompleteBlock:^(MobileRequestOperation *operation, id jsonData, NSError *error) {
+    [operation setCompleteBlock:^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         self.renewOperation = nil;
         
         if (error)
@@ -324,7 +324,7 @@
         }
         else
         {
-            LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:(NSArray*)jsonData] autorelease];
+            LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:(NSArray*)content] autorelease];
             [self.parentController.navigationController pushViewController:vc
                                                                   animated:YES];
         }
