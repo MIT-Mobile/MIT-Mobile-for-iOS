@@ -3,6 +3,7 @@
 #import "CoreDataManager.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITMobileServerConfiguration.h"
+#import "MobileRequestOperation.h"
 
 @interface StoryXMLParser (Private)
 
@@ -30,7 +31,6 @@
 @synthesize isSearch;
 @synthesize loadingMore;
 @synthesize totalAvailableResults;
-@synthesize connection;
 @synthesize xmlParser;
 @synthesize currentElement;
 @synthesize currentStack;
@@ -79,7 +79,6 @@ NSString * const NewsTagImageHeight     = @"height";
 		thread = nil;
         expectedStoryCount = 0;
         parsingTopStories = NO;
-        connection = nil;
         currentElement = nil;
         currentStack = nil;
         currentContents = nil;
@@ -103,7 +102,6 @@ NSString * const NewsTagImageHeight     = @"height";
 	[thread release];
 	thread = nil;
     self.delegate = nil;
-    self.connection = nil;
 	self.xmlParser = nil;
     self.addedStories = nil;
     self.currentElement = nil;
@@ -146,7 +144,7 @@ NSString * const NewsTagImageHeight     = @"height";
     
     expectedStoryCount = 10; // if the server is ever made to support a range param, set this to count instead
     
-	[self detachAndParseURL:fullURL];
+	[self downloadAndParseURL:fullURL];
 }
 
 - (void)loadStoriesforQuery:(NSString *)query afterIndex:(NSInteger)start count:(NSInteger)count {
@@ -166,15 +164,7 @@ NSString * const NewsTagImageHeight     = @"height";
     NSURL *fullURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://web.mit.edu/newsoffice/index.php?option=com_search&view=isearch&searchword=%@&ordering=newest&limit=%d&start=%d", [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], count, start]];
     expectedStoryCount = count;
     
-	[self detachAndParseURL:fullURL];
-}
-
-- (void)detachAndParseURL:(NSURL *)url {
-	if (thread) {
-		ELog(@"***** %s called twice on the same instance", __PRETTY_FUNCTION__);
-	}
-	thread = [[NSThread alloc] initWithTarget:self selector:@selector(downloadAndParse:) object:url];
-	[thread start];
+	[self downloadAndParseURL:fullURL];
 }
 
 - (void)abort {
@@ -183,56 +173,32 @@ NSString * const NewsTagImageHeight     = @"height";
 }
 
 // should be spawned on a separate thread
-- (void)downloadAndParse:(NSURL *)url {
+- (void)downloadAndParseURL:(NSURL *)url {
 	self.downloadAndParsePool = [[NSAutoreleasePool alloc] init];
 	done = NO;
     parseSuccessful = NO;
     
-    self.connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-    self.addedStories = [NSMutableArray array];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:url parameters:nil];
     
-    BOOL requestStarted = [connection requestDataFromURL:url];
-	if (requestStarted) {
-        [self performSelectorOnMainThread:@selector(didStartDownloading) withObject:nil waitUntilDone:NO];
-		do {
-			if ([[NSThread currentThread] isCancelled]) {
-				if (self.connection) {
-					[self.connection cancel];
-					self.connection = nil;
-				}
-				if (self.xmlParser) {
-					[self.xmlParser abortParsing];
-					self.xmlParser = nil;
-				}
-				break;
-			}
-			[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-		} while (!done);
-	} else {
-        [self performSelectorOnMainThread:@selector(downloadError:) withObject:nil waitUntilDone:NO];
-    }
-    [downloadAndParsePool release];
-	self.downloadAndParsePool = nil;
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-	if (shouldAbort) {
-		return;
-	}
-    self.connection = nil;
-    self.xmlParser = [[[NSXMLParser alloc] initWithData:data] autorelease];
-	self.xmlParser.delegate = self;
-    self.currentContents = [NSMutableDictionary dictionary];
-    self.currentStack = [NSMutableArray array];
-	[self.xmlParser parse];
-	self.xmlParser = nil;
-    self.currentStack = nil;
-	done = YES;
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
-	[self performSelectorOnMainThread:@selector(downloadError:) withObject:error waitUntilDone:NO];
-	done = YES;
+    request.completeBlock = ^(MobileRequestOperation *request, NSData *xmlData, NSString *contentType, NSError *error) {
+        if (error) {
+            parseSuccessful = NO;
+            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(parser:didFailWithDownloadError:)]) {
+                [self.delegate parser:self didFailWithDownloadError:error];	
+            }
+            done = YES;
+        } else {
+            self.addedStories = [NSMutableArray array];
+            self.xmlParser = [[[NSXMLParser alloc] initWithData:xmlData] autorelease];
+            self.xmlParser.delegate = self;
+            self.currentContents = [NSMutableDictionary dictionary];
+            self.currentStack = [NSMutableArray array];
+            [self.xmlParser parse];
+            self.xmlParser = nil;
+            self.currentStack = nil;
+        }
+    };
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 #pragma mark NSXMLParser delegation
@@ -495,13 +461,6 @@ NSString * const NewsTagImageHeight     = @"height";
     if (parseSuccessful) {
         [self performSelectorOnMainThread:@selector(parseEnded) withObject:nil waitUntilDone:NO];
     }
-}
-
-- (void)downloadError:(NSError *)error {
-    parseSuccessful = NO;
-	if (self.delegate != nil && [self.delegate respondsToSelector:@selector(parser:didFailWithDownloadError:)]) {
-		[self.delegate parser:self didFailWithDownloadError:error];	
-	}
 }
 
 - (void)parseError:(NSError *)error {

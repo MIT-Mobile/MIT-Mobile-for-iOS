@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "ConnectionWrapper.h"
 
 @class StoryXMLParser;
 @class NewsImage;
@@ -17,12 +16,10 @@
 - (void)parser:(StoryXMLParser *)parser didFailWithParseError:(NSError *)error;
 @end
 
-@interface StoryXMLParser : NSObject <ConnectionWrapperDelegate, NSXMLParserDelegate> {
+@interface StoryXMLParser : NSObject <NSXMLParserDelegate> {
     id <StoryXMLParserDelegate> delegate;
     
 	NSThread *thread;
-	
-    ConnectionWrapper *connection;
     
 	NSXMLParser *xmlParser;
 	
@@ -42,12 +39,9 @@
 	NSInteger totalAvailableResults;
     
     NSMutableArray *addedStories;
-    
-	NSAutoreleasePool *downloadAndParsePool;
 }
 
 @property (nonatomic, assign) id <StoryXMLParserDelegate> delegate;
-@property (nonatomic, retain) ConnectionWrapper *connection;
 @property (nonatomic, retain) NSXMLParser *xmlParser;
 @property (nonatomic, assign) BOOL parsingTopStories;
 @property (nonatomic, assign) BOOL isSearch;

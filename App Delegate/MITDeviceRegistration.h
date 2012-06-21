@@ -1,6 +1,5 @@
 
 #import <Foundation/Foundation.h>
-#import "MITMobileWebAPI.h"
 
 @interface MITIdentity : NSObject
 {
