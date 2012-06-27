@@ -121,7 +121,7 @@
         DLog(@"handling internal url: %@", url);
         canHandle = [module handleLocalPath:path query:query];
     } else {
-        WLog(@"%s couldn't handle url: %@", _cmd, url);
+        WLog(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
     }
 
     return canHandle;
