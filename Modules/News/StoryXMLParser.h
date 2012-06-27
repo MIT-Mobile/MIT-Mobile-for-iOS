@@ -17,34 +17,7 @@
 - (void)parser:(StoryXMLParser *)parser didFailWithParseError:(NSError *)error;
 @end
 
-@interface StoryXMLParser : NSObject <ConnectionWrapperDelegate, NSXMLParserDelegate> {
-    id <StoryXMLParserDelegate> delegate;
-    
-	NSThread *thread;
-	
-    ConnectionWrapper *connection;
-    
-	NSXMLParser *xmlParser;
-	
-    NSInteger expectedStoryCount;
-    
-    BOOL parsingTopStories;
-    
-	NSString *currentElement;
-    NSMutableArray *currentStack;
-    NSMutableDictionary *currentContents;
-    NSMutableDictionary *currentImage;
-	BOOL done;
-    BOOL parseSuccessful;
-    BOOL shouldAbort;
-	BOOL isSearch;
-	BOOL loadingMore;
-	NSInteger totalAvailableResults;
-    
-    NSMutableArray *addedStories;
-    
-	NSAutoreleasePool *downloadAndParsePool;
-}
+@interface StoryXMLParser : NSObject <ConnectionWrapperDelegate, NSXMLParserDelegate>
 
 @property (nonatomic, assign) id <StoryXMLParserDelegate> delegate;
 @property (nonatomic, retain) ConnectionWrapper *connection;
@@ -58,7 +31,6 @@
 @property (nonatomic, retain) NSMutableDictionary *currentContents;
 @property (nonatomic, retain) NSMutableDictionary *currentImage;
 @property (nonatomic, retain) NSMutableArray *addedStories;
-@property (nonatomic, assign) NSAutoreleasePool *downloadAndParsePool;
 
 // called by main thread
 - (void)loadStoriesForCategory:(NSInteger)category afterStoryId:(NSInteger)storyId count:(NSInteger)count;

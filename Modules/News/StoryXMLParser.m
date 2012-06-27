@@ -5,7 +5,8 @@
 #import "MITMobileWebAPI.h"
 #import "MITMobileServerConfiguration.h"
 
-@interface StoryXMLParser (Private)
+@interface StoryXMLParser ()
+@property (nonatomic, assign) NSAutoreleasePool *downloadAndParsePool;
 
 - (void)detachAndParseURL:(NSURL *)url;
 - (void)downloadAndParse:(NSURL *)url;
@@ -25,6 +26,34 @@
 
 
 @implementation StoryXMLParser
+{
+    id <StoryXMLParserDelegate> delegate;
+    
+	NSThread *thread;
+	
+    ConnectionWrapper *connection;
+    
+	NSXMLParser *xmlParser;
+	
+    NSInteger expectedStoryCount;
+    
+    BOOL parsingTopStories;
+    
+	NSString *currentElement;
+    NSMutableArray *currentStack;
+    NSMutableDictionary *currentContents;
+    NSMutableDictionary *currentImage;
+	BOOL done;
+    BOOL parseSuccessful;
+    BOOL shouldAbort;
+	BOOL isSearch;
+	BOOL loadingMore;
+	NSInteger totalAvailableResults;
+    
+    NSMutableArray *addedStories;
+    
+	NSAutoreleasePool *downloadAndParsePool;
+}
 
 @synthesize delegate;
 @synthesize parsingTopStories;
