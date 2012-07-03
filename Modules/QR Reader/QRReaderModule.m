@@ -1,6 +1,7 @@
 #import "QRReaderModule.h"
 #import "QRReaderHistoryViewController.h"
 #import "MITModule+Protected.h"
+#import "MITScannerViewController.h"
 
 
 @implementation QRReaderModule
@@ -23,7 +24,7 @@
 
 - (void)loadModuleHomeController
 {
-    self.moduleHomeController = [[[QRReaderHistoryViewController alloc] init] autorelease];
+    self.moduleHomeController = [[[MITScannerViewController alloc] init] autorelease];
 }
 
 @end
