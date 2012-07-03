@@ -141,6 +141,19 @@
     return qrRect;
 }
 
+- (CGRect)normalizedCropRect
+{
+    CGRect cropRect = [self qrRect];
+    CGRect normalizedRect = CGRectZero;
+    
+    normalizedRect.origin.x = cropRect.origin.x / CGRectGetMaxX(self.bounds);
+    normalizedRect.origin.y = cropRect.origin.y / CGRectGetMaxY(self.bounds);
+    normalizedRect.size.width = cropRect.size.width / CGRectGetWidth(self.bounds);
+    normalizedRect.size.height = cropRect.size.height / CGRectGetHeight(self.bounds);
+    
+    return normalizedRect;
+}
+
 - (void)setHighlightColor:(UIColor *)highlightColor {
     if (![self.highlightColor isEqual:highlightColor]) {
         [self setNeedsDisplay];

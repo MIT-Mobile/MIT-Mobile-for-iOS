@@ -17,7 +17,13 @@
 @property (nonatomic,retain) UIColor *overlayColor;
 
 
+// Returns the rect in pixels
 - (CGRect)qrRect;
-- (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) orient
+
+// Returns the rect in normalized
+//  image coordinates x->{0,1}, y->{0,1}
+- (CGRect)normalizedCropRect;
+
+- (void)willRotateToInterfaceOrientation: (UIInterfaceOrientation) orient
                                  duration: (NSTimeInterval) duration;
 @end
