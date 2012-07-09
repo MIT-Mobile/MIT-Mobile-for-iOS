@@ -37,12 +37,6 @@ static QRReaderHistoryData *sharedHistoryData = nil;
     [_results removeObject:result];
 }
 
-- (QRReaderResult*)scanWithUID:(NSString *)uid {
-    return [[CoreDataManager coreDataManager] getObjectForEntity:QRReaderResultEntityName
-                                                       attribute:@"objectID"
-                                                           value:uid];
-}
-
 - (QRReaderResult*)insertScanResult:(NSString *)scanResult
                            withDate:(NSDate *)date {
     return [self insertScanResult:scanResult
