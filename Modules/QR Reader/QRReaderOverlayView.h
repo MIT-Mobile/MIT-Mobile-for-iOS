@@ -1,23 +1,17 @@
 #import <UIKit/UIKit.h>
 
 
-@interface QRReaderOverlayView : UIView {
-    BOOL _highlighted;
-    CGRect _qrRect;
-    UIColor *_highlightColor;
-    UIColor *_outlineColor;
-    UIColor *_overlayColor;
-    UIInterfaceOrientation _interfaceOrientation;
-    NSTimeInterval _animationDuration;
-}
+@interface QRReaderOverlayView : UIView
 
 @property (nonatomic) BOOL highlighted;
 @property (nonatomic,retain) UIColor *highlightColor;
 @property (nonatomic,retain) UIColor *outlineColor;
 @property (nonatomic,retain) UIColor *overlayColor;
+@property (nonatomic,retain) NSString *helpText;
 
 
-// Returns the rect in pixels
+// Returns the rect in pixels. This rect is in this view's
+// coordinate system
 - (CGRect)qrRect;
 
 // Returns the rect in normalized

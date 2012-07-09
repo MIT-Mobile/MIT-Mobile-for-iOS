@@ -1,10 +1,26 @@
 #import "QRReaderOverlayView.h"
 #include <QuartzCore/QuartzCore.h>
+
+@interface QRReaderOverlayView ()
+@property (retain) UILabel *helpLabel;
+@end
+
 @implementation QRReaderOverlayView
+{
+    UIInterfaceOrientation _interfaceOrientation;
+}
+
 @synthesize highlighted = _highlighted;
 @synthesize highlightColor = _highlightColor;
 @synthesize outlineColor = _outlineColor;
 @synthesize overlayColor = _overlayColor;
+@synthesize helpLabel = _helpLabel;
+@dynamic helpText;
+
+- (id)init
+{
+    return [self initWithFrame:CGRectZero];
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -17,6 +33,20 @@
                                               alpha:1.0];
         self.overlayColor = [UIColor colorWithWhite:0.0
                                               alpha:0.5];
+        
+        {
+            UILabel *helpLabel = [[[UILabel alloc] init] autorelease];
+            helpLabel.backgroundColor = [UIColor clearColor];
+            helpLabel.textColor = [UIColor whiteColor];
+            helpLabel.textAlignment = UITextAlignmentCenter;
+            helpLabel.text = @"Frame a bar or QR code to scan it.\nAvoid glare and shadows.";
+            helpLabel.lineBreakMode = UILineBreakModeWordWrap;
+            helpLabel.numberOfLines = 0;
+            [self addSubview:helpLabel];
+            self.helpLabel = helpLabel;
+        }
+        
+        [self setNeedsLayout];
     }
     return self;
 }
@@ -44,6 +74,31 @@
             return(2 * M_PI);
     }
     return(0);
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    // Layout the help text view
+    {
+        CGRect cropRect = self.qrRect;
+        CGRect bounds = self.bounds;
+        CGRect textFrame = CGRectZero;
+        
+        CGFloat maxHeight = cropRect.origin.y - bounds.origin.y;
+        CGSize textSize = [self.helpLabel.text sizeWithFont:self.helpLabel.font
+                                          constrainedToSize:CGSizeMake(CGRectGetWidth(bounds), maxHeight)
+                                              lineBreakMode:self.helpLabel.lineBreakMode];
+        
+        textFrame.size.width = textSize.width;
+        textFrame.size.height = textSize.height;
+        textFrame.origin.y = (bounds.origin.y +
+                              ((maxHeight - textSize.height) / 2.0));
+        textFrame.origin.x = (
+                              ((bounds.size.width - textSize.width) / 2.0));
+        self.helpLabel.frame = textFrame;
+    }
 }
 
 
@@ -126,32 +181,19 @@
     static CGFloat kRectScalingFactor = 0.75;
 
     CGRect qrRect = self.bounds;
-    CGSize psize;
+    CGSize boundSize;
     if(UIInterfaceOrientationIsLandscape(_interfaceOrientation)) {
-        psize = CGSizeMake(qrRect.size.height, qrRect.size.width);
+        boundSize = CGSizeMake(qrRect.size.height, qrRect.size.width);
     } else {
-        psize = qrRect.size;
+        boundSize = qrRect.size;
     }
-    qrRect.size = psize;
+    qrRect.size = boundSize;
     CGFloat minRect = MIN(qrRect.size.width, qrRect.size.height) * kRectScalingFactor;
     qrRect.origin.x = (qrRect.size.width - minRect) / 2.0;
     qrRect.origin.y = (qrRect.size.height - minRect) / 2.0;
     qrRect.size = CGSizeMake(minRect, minRect);
     
     return qrRect;
-}
-
-- (CGRect)normalizedCropRect
-{
-    CGRect cropRect = [self qrRect];
-    CGRect normalizedRect = CGRectZero;
-    
-    normalizedRect.origin.x = cropRect.origin.x / CGRectGetMaxX(self.bounds);
-    normalizedRect.origin.y = cropRect.origin.y / CGRectGetMaxY(self.bounds);
-    normalizedRect.size.width = cropRect.size.width / CGRectGetWidth(self.bounds);
-    normalizedRect.size.height = cropRect.size.height / CGRectGetHeight(self.bounds);
-    
-    return normalizedRect;
 }
 
 - (void)setHighlightColor:(UIColor *)highlightColor {
@@ -181,13 +223,19 @@
     _overlayColor = [overlayColor retain];
 }
 
+- (void)setHelpText:(NSString *)helpText
+{
+    self.helpLabel.text = helpText;
+}
+
+- (NSString*)helpText
+{
+    return self.helpLabel.text;
+}
+
 - (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) orient
                                  duration: (NSTimeInterval) duration {
-    if(_interfaceOrientation != orient) {
-        _interfaceOrientation = orient;
-        _animationDuration = duration;
-    }
-    [self setNeedsDisplay];
+    [self setNeedsLayout];
 }
 
 @end
