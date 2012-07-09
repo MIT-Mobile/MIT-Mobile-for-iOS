@@ -2,6 +2,17 @@
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
 
+CGRect CGRectNormalizeWithParentRect(CGRect subRect, CGRect parentRect)
+{
+    CGRect normalizedRect = CGRectMake(subRect.origin.x / CGRectGetMaxX(parentRect),
+                                       subRect.origin.y / CGRectGetMaxY(parentRect),
+                                       subRect.size.width / CGRectGetWidth(parentRect),
+                                       subRect.size.height / CGRectGetHeight(parentRect));
+    
+    return normalizedRect;
+}
+
+
 @implementation NSString (MITUIAdditions)
 
 - (NSInteger)lengthOfLineWithFont:(UIFont *)font constrainedToSize:(CGSize)size {
