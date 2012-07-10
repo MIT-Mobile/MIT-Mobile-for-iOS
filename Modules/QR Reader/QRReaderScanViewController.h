@@ -1,34 +1,28 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 
-#import "DecoderDelegate.h"
+
 
 @protocol QRReaderScanDelegate;
 @class QRReaderOverlayView;
-@class FormatReader;
 
-@interface QRReaderScanViewController : UIViewController <DecoderDelegate> {
+@interface QRReaderScanViewController : UIViewController <ZBarReaderViewDelegate,NSURLConnectionDelegate>{
     id<QRReaderScanDelegate> _scanDelegate;
     QRReaderOverlayView *_overlayView;
+    ZBarReaderView *_readerView;
     UILabel *adviceLabel;
     BOOL _isCaptureActive;
-    BOOL _decodedResult;
-    
-    FormatReader *_reader;
     
     UIButton *_cancelButton;
     
-    AVCaptureSession *_captureSession;
-    AVCaptureVideoPreviewLayer *_previewLayer;
 }
 
 @property (nonatomic,retain) id<QRReaderScanDelegate> scanDelegate;
 @property (nonatomic,retain,readonly) IBOutlet QRReaderOverlayView *overlayView;
 @property (nonatomic,retain,readonly) UILabel *adviceLabel;
 @property (nonatomic,readonly) BOOL isCaptureActive;
-@property (nonatomic,retain) FormatReader *reader;
+@property (nonatomic, retain)  UIImage *qrcodeImage;
 
-+ (FormatReader*)defaultReader;
 @end
 
 @protocol QRReaderScanDelegate <NSObject>

@@ -53,7 +53,7 @@
 - (void)feedbackButtonPressed:(id)sender {
     NSString *email = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"];
     NSString *subject = [[ToursDataManager sharedManager] activeTour].feedbackSubject;
-    [MITMailComposeController presentMailControllerWithEmail:email subject:subject body:nil];
+    [MITMailComposeController presentMailControllerWithRecipient:email subject:subject body:nil];
 }
 
 - (IBAction)previousButtonPressed:(id)sender {

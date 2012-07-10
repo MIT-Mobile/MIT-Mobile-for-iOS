@@ -1,5 +1,5 @@
 #import "QRReaderOverlayView.h"
-
+#include <QuartzCore/QuartzCore.h>
 @implementation QRReaderOverlayView
 @synthesize highlighted = _highlighted;
 @synthesize highlightColor = _highlightColor;
@@ -29,15 +29,41 @@
     [super dealloc];
 }
 
+- (CGFloat)rotationForInterfaceOrientation:(int)orient
+{
+    // resolve camera/device image orientation to view/interface orientation
+    switch(orient)
+    {
+        case UIInterfaceOrientationLandscapeLeft:
+            return(M_PI_2);
+        case UIInterfaceOrientationPortraitUpsideDown:
+            return(M_PI);
+        case UIInterfaceOrientationLandscapeRight:
+            return(3 * M_PI_2);
+        case UIInterfaceOrientationPortrait:
+            return(2 * M_PI);
+    }
+    return(0);
+}
+
 
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
+    CGRect bds = CGRectZero;
+    if (!UIInterfaceOrientationIsLandscape(_interfaceOrientation))
+	{
+		bds = [self bounds];
+	} else {
+        CGContextRotateCTM(context,[self rotationForInterfaceOrientation:_interfaceOrientation]);
+		bds = CGRectMake(0., 0., [self bounds].size.height, [self bounds].size.width);
+	}
+    
     CGRect qrRect = [self qrRect];
     
     {
         CGContextBeginPath(context);
-        CGContextAddRect(context, self.bounds);
+        CGContextAddRect(context, bds);
         CGContextAddRect(context, qrRect);
         CGContextClosePath(context);
         
@@ -100,6 +126,13 @@
     static CGFloat kRectScalingFactor = 0.75;
 
     CGRect qrRect = self.bounds;
+    CGSize psize;
+    if(UIInterfaceOrientationIsLandscape(_interfaceOrientation)) {
+        psize = CGSizeMake(qrRect.size.height, qrRect.size.width);
+    } else {
+        psize = qrRect.size;
+    }
+    qrRect.size = psize;
     CGFloat minRect = MIN(qrRect.size.width, qrRect.size.height) * kRectScalingFactor;
     qrRect.origin.x = (qrRect.size.width - minRect) / 2.0;
     qrRect.origin.y = (qrRect.size.height - minRect) / 2.0;
@@ -133,6 +166,15 @@
     
     [_overlayColor release];
     _overlayColor = [overlayColor retain];
+}
+
+- (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) orient
+                                 duration: (NSTimeInterval) duration {
+    if(_interfaceOrientation != orient) {
+        _interfaceOrientation = orient;
+        _animationDuration = duration;
+    }
+    [self setNeedsDisplay];
 }
 
 @end

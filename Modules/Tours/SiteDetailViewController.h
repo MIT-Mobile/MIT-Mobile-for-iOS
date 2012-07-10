@@ -1,9 +1,8 @@
 #import <UIKit/UIKit.h>
 #import "MITThumbnailView.h"
 #import "MITMapView.h"
-#import "CampusTourInteriorController.h"
 #import "ConnectionWrapper.h"
-
+#import <AVFoundation/AVFoundation.h>
 @class TourSiteOrRoute;
 @class CampusTourSideTrip;
 @class TourComponent;

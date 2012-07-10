@@ -297,16 +297,16 @@
 		NSArray *personInfo = [[self.sectionArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
 		NSString *tag = [personInfo objectAtIndex:0];
 		
-		if ([tag isEqualToString:@"email"])
+		if ([tag isEqualToString:@"email"]) {
 			[self emailIconTapped:[personInfo objectAtIndex:1]];
-		else if ([tag isEqualToString:@"phone"])
+        } else if ([tag isEqualToString:@"phone"]) {
 			[self phoneIconTapped:[personInfo objectAtIndex:1]];
-		else if ([tag isEqualToString:@"office"])
+            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+        } else if ([tag isEqualToString:@"office"]) {
 			[self mapIconTapped:[personInfo objectAtIndex:1]];
+        }
 
 	}
-	
-	[self.tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 #pragma mark -
@@ -491,7 +491,7 @@
 
 - (void)emailIconTapped:(NSString *)email
 {
-    [MITMailComposeController presentMailControllerWithEmail:email subject:nil body:nil];
+    [MITMailComposeController presentMailControllerWithRecipient:email subject:nil body:nil];
 }
 
 
