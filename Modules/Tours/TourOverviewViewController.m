@@ -29,7 +29,6 @@ TourOverviewTags;
 
 
 - (NSString *)distanceTextForLocation:(id<TourGeoLocation>)location;
-- (void)requestImageForComponent:(TourComponent *)component;
 - (NSString *)textForDistance:(CLLocationDistance)meters;
 - (void)selectAnnotationClosestTo:(CLLocation *)location;
 - (void)showStartSuggestions:(id)sender;
@@ -740,33 +739,6 @@ enum {
     [self.components addObjectsFromArray:allSites];
 }
 
-#pragma mark connection
-
-- (void)requestImageForComponent:(TourComponent *)component {
-    ConnectionWrapper *connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-    [connection requestDataFromURL:[NSURL URLWithString:component.photoURL] 
-               allowCachedResponse:YES];
-    
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate showNetworkActivityIndicator];
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    for (int i = 0; i < self.components.count; i++) {
-        TourSiteOrRoute *aSite = [self.components objectAtIndex:i];
-        if ([aSite.photoURL isEqualToString:[wrapper.theURL absoluteString]]) {
-            aSite.photo = data;
-            break;
-        }
-    }
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate hideNetworkActivityIndicator];
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate hideNetworkActivityIndicator];
-}
 
 #pragma mark MITMapViewDelegate
 
