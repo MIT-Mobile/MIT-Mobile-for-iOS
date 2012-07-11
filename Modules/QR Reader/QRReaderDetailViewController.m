@@ -2,23 +2,31 @@
 
 #import "QRReaderDetailViewController.h"
 #import "QRReaderResult.h"
+#import "MobileRequestOperation.h"
+#import "MITLoadingActivityView.h"
 
-@interface QRReaderDetailViewController ()
+@interface QRReaderDetailViewController () <ShareItemDelegate>
 @property (nonatomic,retain) QRReaderResult *scanResult;
-@property (nonatomic,retain) UIImageView *qrImage;
-@property (nonatomic,retain) UIImageView *backgroundImageView;
-@property (nonatomic,retain) UITextView *textView;
-@property (nonatomic,retain) UIButton *actionButton;
-@property (nonatomic,retain) UIButton *shareButton;
+@property (retain) NSString *resultText;
+@property (retain) MITLoadingActivityView *loadingView;
+@property (retain) NSOperation *urlMappingOperation;
+@property (nonatomic,assign) UIImageView *qrImageView;
+@property (nonatomic,assign) UIImageView *backgroundImageView;
+@property (nonatomic,assign) UITextView *textView;
+@property (nonatomic,assign) UIButton *actionButton;
+@property (nonatomic,assign) UIButton *shareButton;
 @end
 
 @implementation QRReaderDetailViewController
 @synthesize scanResult = _scanResult;
-@synthesize qrImage = _qrImage;
-@synthesize textView = _textView;
+@synthesize qrImageView = _qrImageView;
 @synthesize actionButton = _actionButton;
 @synthesize shareButton = _shareButton;
 @synthesize backgroundImageView = _backgroundImageView;
+@synthesize loadingView = _loadingView;
+@synthesize resultText = _resultText;
+@synthesize urlMappingOperation = _urlMappingOperation;
+@synthesize textView = _textView;
 
 + (QRReaderDetailViewController*)detailViewControllerForResult:(QRReaderResult*)result {
     QRReaderDetailViewController *reader = [[self alloc] initWithNibName:@"QRReaderDetailViewController"
@@ -33,12 +41,21 @@
     if (self) {
         self.scanResult = nil;
         self.title = @"QR Details";
+        self.urlMappingOperation = nil;
     }
     return self;
 }
 
 - (void)dealloc
 {
+    self.urlMappingOperation = nil;
+    self.resultText = nil;
+    self.scanResult = nil;
+    self.qrImageView = nil;
+    self.textView = nil;
+    self.actionButton = nil;
+    self.shareButton = nil;
+    self.backgroundImageView = nil;
     [super dealloc];
 }
 
@@ -56,18 +73,18 @@
     self.backgroundImageView.image = [UIImage imageNamed:@"global/body-background"];
     
     if (self.scanResult.image) {
-        self.qrImage.image = self.scanResult.image;
+        self.qrImageView.image = self.scanResult.image;
     } else {
-        self.qrImage.image = [UIImage imageNamed:@"qrreader/qr-missing-image"];
+        self.qrImageView.image = [UIImage imageNamed:@"qrreader/qr-missing-image"];
     }
     
-    self.qrImage.layer.borderColor = [[UIColor blackColor] CGColor];
-    self.qrImage.layer.borderWidth = 2.0;
+    self.qrImageView.layer.borderColor = [[UIColor blackColor] CGColor];
+    self.qrImageView.layer.borderWidth = 2.0;
     
     CGFloat inset = 0.0;
     CGFloat margin = 12.0;
     
-    [self.textView setText:self.scanResult.text];
+    // [self.textView setText:self.scanResult.text];
     [self.actionButton setTitle:@"Open URL"
                        forState:UIControlStateNormal];
     [self.actionButton setImage:[UIImage imageNamed:@"global/action-external"]
@@ -88,13 +105,24 @@
     
     [self.actionButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.actionButton.frame.origin.x) + margin, 0, 0)];
     [self.shareButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.shareButton.frame.origin.x) + margin, 0, 0)];
+    
+    {
+        CGRect loadingViewBounds = self.view.bounds;
+        loadingViewBounds.origin.y += CGRectGetHeight(self.qrImageView.frame);
+        loadingViewBounds.size.height -= CGRectGetHeight(self.qrImageView.frame);
+        
+        self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingViewBounds] autorelease];
+        self.loadingView.hidden = NO;
+        [self.view addSubview:self.loadingView];
+    
+    }
 }
 
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    self.qrImage = nil;
+    self.qrImageView = nil;
     self.textView = nil;
     self.actionButton = nil;
     self.shareButton = nil;
@@ -102,8 +130,63 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self.navigationController setToolbarHidden:NO
-                                       animated:animated];
+    self.loadingView.hidden = NO;
+    
+    // Check for any available code => URL mappings from
+    // the mobile server
+    {
+        NSURL *url = [NSURL URLWithString:self.scanResult.text];
+        NSString *paramKey = @"barcode";
+        if (url && [[UIApplication sharedApplication] canOpenURL:url])
+        {
+            paramKey = @"url";
+        }
+        
+        NSMutableDictionary *params = [NSDictionary dictionaryWithObject:self.scanResult.text
+                                                                  forKey:paramKey];
+        MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"qr"
+                                                                                command:@""
+                                                                             parameters:params];
+        
+        operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSError *error)
+        {
+            BOOL success = [[codeInfo objectForKey:@"success"] boolValue] && (error == nil);
+            NSURL *url = [NSURL URLWithString:[codeInfo objectForKey:@"url"]];
+            
+            if (url == nil)
+            {
+                url = [NSURL URLWithString:self.scanResult.text];
+            }
+            
+            BOOL canHandleURL = [[UIApplication sharedApplication] canOpenURL:url];
+            
+            if ((success || url) && canHandleURL)
+            {
+                self.resultText = [url absoluteString];
+                self.actionButton.hidden = NO;
+                
+            }
+            else
+            {
+                self.resultText = self.scanResult.text;
+                
+                self.actionButton.hidden = YES;
+                [self.shareButton setTitle:@"Share this code"
+                                  forState:UIControlStateNormal];
+            }
+            
+            self.textView.text = self.resultText;
+            self.loadingView.hidden = YES;
+        };
+        
+        self.urlMappingOperation = operation;
+        [operation start];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [self.urlMappingOperation cancel];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -120,7 +203,7 @@
 }
 
 - (IBAction)pressedActionButton:(id)sender {
-    NSString *altURL = self.scanResult.text;
+    NSString *altURL = self.resultText;
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:altURL]];
     
@@ -135,7 +218,7 @@
 #pragma mark -
 #pragma mark ShareItemDelegate (MIT)
 - (NSString *)actionSheetTitle {
-	return [NSString stringWithString:@"Share This Link"];
+	return @"Share This Link";
 }
 
 - (NSString *)emailSubject {
@@ -143,7 +226,7 @@
 }
 
 - (NSString *)emailBody {
-	return [NSString stringWithFormat:@"I thought you might be interested in this link...\n\n%@", self.scanResult.text];
+	return [NSString stringWithFormat:@"I thought you might be interested in this link...\n\n%@", self.resultText];
 }
 
 - (NSString *)fbDialogPrompt {
@@ -157,12 +240,12 @@
 			"\"description\":\"%@\""
 			"}",
 			self.scanResult.text,
-            self.scanResult.text,
+            self.resultText,
             @"MIT QR Code"];
 }
 
 - (NSString *)twitterUrl {
-    return self.scanResult.text;
+    return self.resultText;
 }
 
 - (NSString *)twitterTitle {
