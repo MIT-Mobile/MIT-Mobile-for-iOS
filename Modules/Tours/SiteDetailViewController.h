@@ -2,7 +2,6 @@
 #import "MITThumbnailView.h"
 #import "MITMapView.h"
 #import "CampusTourInteriorController.h"
-#import "ConnectionWrapper.h"
 
 @class TourSiteOrRoute;
 @class CampusTourSideTrip;
@@ -14,7 +13,7 @@
 @interface SiteDetailViewController : UIViewController
 <MITThumbnailDelegate, UIAlertViewDelegate,
 UIWebViewDelegate, MITMapViewDelegate,
-ConnectionWrapperDelegate, UITableViewDelegate, UITableViewDataSource> {
+UITableViewDelegate, UITableViewDataSource> {
 
     TourSiteOrRoute *_siteOrRoute;
     CampusTourSideTrip *_sideTrip;
@@ -55,7 +54,6 @@ ConnectionWrapperDelegate, UITableViewDelegate, UITableViewDataSource> {
 @property (nonatomic, retain) CampusTourSideTrip *sideTrip;
 @property (nonatomic, retain) TourSiteOrRoute *firstSite;
 @property (nonatomic, retain) NSArray *sites;
-@property (nonatomic, retain) ConnectionWrapper *connection;
 @property (nonatomic) BOOL showingConclusionScreen;
 
 - (IBAction)previousButtonPressed:(id)sender;
