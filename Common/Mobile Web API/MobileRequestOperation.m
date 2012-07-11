@@ -475,9 +475,12 @@ typedef enum {
         [urlString appendString:@"/"];
     }
         
-    [urlString appendFormat:@"?module=%@&command=%@",
-                            [self.module urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                            [self.command urlEncodeUsingEncoding:NSUTF8StringEncoding]];
+    [urlString appendFormat:@"?module=%@",[self.module urlEncodeUsingEncoding:NSUTF8StringEncoding]];
+    
+    if ([self.command length])
+    {
+        [urlString appendFormat:@"&command=%@", [self.command urlEncodeUsingEncoding:NSUTF8StringEncoding]];
+    }
     
     NSMutableArray *params = [NSMutableArray arrayWithCapacity:[self.parameters count]];
     
