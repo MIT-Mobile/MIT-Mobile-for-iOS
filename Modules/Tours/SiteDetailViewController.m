@@ -16,6 +16,7 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "TourLink.h"
+#import "MobileRequestOperation.h"
 
 #define WEB_VIEW_TAG 646
 #define END_TOUR_ALERT_TAG 878
@@ -48,7 +49,7 @@
 
 #pragma mark Actions
 
-@synthesize siteOrRoute = _siteOrRoute, sideTrip = _sideTrip, sites = _sites, connection, showingConclusionScreen;
+@synthesize siteOrRoute = _siteOrRoute, sideTrip = _sideTrip, sites = _sites, showingConclusionScreen;
 
 - (void)feedbackButtonPressed:(id)sender {
     NSString *email = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"];
@@ -155,14 +156,60 @@
         
         TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
         
-        [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
-        self.connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
         NSURL *audioURL = [NSURL URLWithString:component.audioURL];
-        [self.connection requestDataFromURL:audioURL];
         
+        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:audioURL parameters:nil] autorelease];
+        request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
+            TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
+            
+            if (error) {
+                UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:@"Connection Failed"
+                                                                     message:@"Audio could not be loaded"
+                                                                    delegate:self
+                                                           cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
+                alertView.tag = CONNECTION_FAILED_TAG;
+                [alertView show];
+                
+            } else {
+                
+                if ([[audioURL absoluteString] isEqualToString:component.audioURL]) {
+                
+                    [data writeToFile:component.audioFile atomically:YES];
+                
+                    NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
+                
+                    NSError *error;
+                    audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
+                    [audioPlayer prepareToPlay];
+                    if (!audioPlayer) {
+                        ELog(@"%@", [error description]);
+                    }
+                
+                    progressView.progress = 1.0;
+                    [UIView beginAnimations:@"fadeProgressView" context:nil];
+                    [UIView setAnimationDelegate:self];
+                    [UIView setAnimationDelay:0.3];
+                    [UIView setAnimationDuration:0.5];
+                    if (audioPlayer) {
+                        [UIView setAnimationDidStopSelector:@selector(playAudio)];
+                    }
+                    progressView.alpha = 0.0;
+                    [UIView commitAnimations];
+                }            
+            }
+        };
+        
+        request.progressBlock = ^(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger expectedBytesWritten) {
+            if (progressView) {
+                progressView.progress = 0.1 + 0.9 * totalBytesWritten / totalBytesWritten;
+            }
+        };
+
         progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
         progressView.frame = CGRectMake(200, 0, 120, 20);
         [self.view addSubview:progressView];
+        
+        [[NSOperationQueue mainQueue] addOperation:request];
     }
 }
 
@@ -192,59 +239,6 @@
 - (void)connection:(ConnectionWrapper *)wrapper madeProgress:(CGFloat)progress {
     if (progressView)
         progressView.progress = 0.1 + 0.9 * progress;
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
-
-    if ([[wrapper.theURL absoluteString] isEqualToString:component.audioURL]) {
-
-        [data writeToFile:component.audioFile atomically:YES];
-        
-        NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
-        
-        NSError *error;
-        audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
-        [audioPlayer prepareToPlay];
-        if (!audioPlayer) {
-            ELog(@"%@", [error description]);
-        }
-        
-        progressView.progress = 1.0;
-        [UIView beginAnimations:@"fadeProgressView" context:nil];
-        [UIView setAnimationDelegate:self];
-        [UIView setAnimationDelay:0.3];
-        [UIView setAnimationDuration:0.5];
-        if (audioPlayer) {
-            [UIView setAnimationDidStopSelector:@selector(playAudio)];
-        }
-        progressView.alpha = 0.0;
-        [UIView commitAnimations];
-    } else if ([[wrapper.theURL absoluteString] isEqualToString:component.photoURL]) {
-        [data writeToFile:component.photoFile atomically:YES];
-        NSString *js = [NSString stringWithFormat:@"var img = document.getElementById(\"directionsphoto\");\n"
-                        "img.src = \"%@\";\n", component.photoFile];
-        UIWebView *webView = (UIWebView *)[newSlidingView viewWithTag:WEB_VIEW_TAG];
-        [webView stringByEvaluatingJavaScriptFromString:js];
-    }
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    self.connection = nil;
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
-    TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
-    
-    if ([[wrapper.theURL absoluteString] isEqualToString:component.audioURL]) {
-        UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:@"Connection Failed"
-                                                             message:@"Audio could not be loaded"
-                                                            delegate:self
-                                                   cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-        alertView.tag = CONNECTION_FAILED_TAG;
-        [alertView show];
-    }
-    
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    self.connection = nil;
 }
 
 #pragma mark UIViewController
@@ -527,9 +521,20 @@
                 NSInteger imageHeight = 100;
                 if (![[NSFileManager defaultManager] fileExistsAtPath:photoFile]) {
                     photoFile = [NSString stringWithString:@"tours/tour_photo_loading_animation.gif"];
-                    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
-                    self.connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-                    [self.connection requestDataFromURL:[NSURL URLWithString:component.photoURL]];
+
+                    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:component.photoURL] parameters:nil] autorelease];
+                    request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
+                        if (error) {
+                            
+                        } else {
+                            [data writeToFile:component.photoFile atomically:YES];
+                            NSString *js = [NSString stringWithFormat:@"var img = document.getElementById(\"directionsphoto\");\n"
+                                            "img.src = \"%@\";\n", component.photoFile];
+                            UIWebView *webView = (UIWebView *)[newSlidingView viewWithTag:WEB_VIEW_TAG];
+                            [webView stringByEvaluatingJavaScriptFromString:js];
+                        }
+                    };
+                    [[NSOperationQueue mainQueue] addOperation:request];
                 }
                 
                 TourSiteOrRoute *nextComponent = self.siteOrRoute.nextComponent;
@@ -726,8 +731,6 @@
         audioPlayer = nil;
     }
     [self hideProgressView]; // also releases progress view
-    self.connection.delegate = nil;
-    self.connection = nil;
 }
 
 - (void)viewDidUnload {
@@ -751,8 +754,6 @@
         [audioPlayer release];
     }
     [self hideProgressView]; // also releases progress view
-    self.connection.delegate = nil;
-    self.connection = nil;
     self.siteOrRoute = nil;
     self.sideTrip = nil;
     self.sites = nil;
