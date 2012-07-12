@@ -11,7 +11,7 @@
         self.tag = QRReaderTag;
         self.shortName = @"Scanner";
         self.longName = @"Scanner";
-        self.iconName = @"scanner";
+        self.iconName = @"qrreader";
     }
     
     return self;
