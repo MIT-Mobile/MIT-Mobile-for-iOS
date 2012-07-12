@@ -229,18 +229,6 @@
     audioPlayer = nil;
 }
 
-#pragma mark ConnectionWrapper delegate
-
-- (void)connectionDidReceiveResponse:(ConnectionWrapper *)wrapper {
-    if (progressView)
-        progressView.progress = 0.1;
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper madeProgress:(CGFloat)progress {
-    if (progressView)
-        progressView.progress = 0.1 + 0.9 * progress;
-}
-
 #pragma mark UIViewController
 /*
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

@@ -44,7 +44,6 @@ UITableViewDelegate, UITableViewDataSource> {
     
     AVAudioPlayer *audioPlayer;
     
-    ConnectionWrapper *connection;
     UIProgressView *progressView;
 }
 
