@@ -191,6 +191,11 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    if (self.scanView.hidden == NO)
+    {
+        [self startCapture];
+    }
+    
     self.navigationController.navigationBar.translucent = YES;
 }
 
@@ -198,11 +203,6 @@
 {
     self.navigationController.navigationBar.translucent = NO;
     [self stopCapture];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [self startCapture];
 }
 
 - (void)viewDidLoad
@@ -233,7 +233,6 @@
 - (IBAction)showHistory:(id)sender
 {
     [self stopCapture];
-    
     [UIView transitionFromView:self.scanView
                         toView:self.historyView
                       duration:1.0
