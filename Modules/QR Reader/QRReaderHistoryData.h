@@ -11,7 +11,6 @@
 
 - (void)eraseAll;
 
-- (QRReaderResult*)scanWithUID:(NSString *)uid;
 - (QRReaderResult*)insertScanResult:(NSString*)scanResult withDate:(NSDate*)date;
 - (QRReaderResult*)insertScanResult:(NSString*)scanResult withDate:(NSDate*)date withImage:(UIImage*)image;
 - (void)deleteScanResult:(QRReaderResult*)result;
