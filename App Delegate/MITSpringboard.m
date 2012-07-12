@@ -19,7 +19,7 @@
 #define BANNER_CONTROL_TAG 9966
 
 @implementation MITSpringboard
-@synthesize grid, primaryModules, delegate, connection;
+@synthesize grid, primaryModules, delegate;
 
 - (id)init
 {
@@ -109,11 +109,27 @@
                 if (![oldPhotoURL isEqualToString:photoURL] // new image
                     || ![self.view viewWithTag:BANNER_CONTROL_TAG]) // or we haven't displayed the image
                 {
-                    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
-                    
-                    self.connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-                    [self.connection requestDataFromURL:[NSURL URLWithString:photoURL] allowCachedResponse:YES];
-                    
+                    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:photoURL] parameters:nil] autorelease];
+                    request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
+                        if (error) {
+                            
+                        } else {
+                            UIImage *image = [UIImage imageWithData:data];
+                            if (image) {
+                                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                                NSString *documentPath = [paths objectAtIndex:0];
+                                NSString *bannerFile = [documentPath stringByAppendingPathComponent:@"banner"];
+                                DLog(@"writing to %@", bannerFile);
+                                NSError *error = nil;
+                                if (![data writeToFile:bannerFile options:NSDataWritingAtomic error:&error]) {
+                                    ELog(@"%@", [error description]);
+                                }
+                            }
+                            
+                            [self displayBannerImage];
+                        }
+                    };
+                    [[NSOperationQueue mainQueue] addOperation:request];
                 } else { // redraw the image anyway, in case they changed something other than the photoURL
                     [self displayBannerImage];
                 }
@@ -194,32 +210,6 @@
             [module didAppear];
         }
     }
-}
-
-#pragma mark ConnectionWrapper
-
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    UIImage *image = [UIImage imageWithData:data];
-    if (image) {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentPath = [paths objectAtIndex:0];
-        NSString *bannerFile = [documentPath stringByAppendingPathComponent:@"banner"];
-        DLog(@"writing to %@", bannerFile);
-        NSError *error = nil;
-        if (![data writeToFile:bannerFile options:NSDataWritingAtomic error:&error]) {
-            ELog(@"%@", [error description]);
-        }
-    }
-    
-    [self displayBannerImage];
-    
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    self.connection = nil;
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    self.connection = nil;
 }
 
 #pragma mark UINavigationControllerDelegate
