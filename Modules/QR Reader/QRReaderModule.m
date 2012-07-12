@@ -10,9 +10,9 @@
     self = [super init];
     if (self != nil) {
         self.tag = QRReaderTag;
-        self.shortName = @"QR Reader";
-        self.longName = @"QR Reader";
-        self.iconName = @"qrreader";
+        self.shortName = @"Scanner";
+        self.longName = @"Scanner";
+        self.iconName = @"scanner";
     }
     
     return self;
