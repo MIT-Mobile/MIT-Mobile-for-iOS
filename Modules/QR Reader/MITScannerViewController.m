@@ -233,6 +233,8 @@
 - (IBAction)showHistory:(id)sender
 {
     [self stopCapture];
+    self.navigationItem.rightBarButtonItem.enabled = NO;
+    
     [UIView transitionFromView:self.scanView
                         toView:self.historyView
                       duration:1.0
@@ -240,19 +242,18 @@
                                 UIViewAnimationOptionBeginFromCurrentState |
                                 UIViewAnimationOptionShowHideTransitionViews |
                                 UIViewAnimationOptionTransitionFlipFromRight)
-                    completion:^(BOOL finished) {
-                        UIBarButtonItem *toolbarItem = [[[UIBarButtonItem alloc] initWithTitle:@"Scan"
-                                                                                        style:UIBarButtonItemStyleBordered
-                                                                                       target:self
-                                                                                       action:@selector(showScanner:)] autorelease];
-                        [self.navigationItem setRightBarButtonItem:toolbarItem
-                                                          animated:YES];
+                    completion:^(BOOL finished)
+                    {
+                        self.navigationItem.rightBarButtonItem.title = @"Scan";
+                        [self.navigationItem.rightBarButtonItem setAction:@selector(showScanner:)];
+                        self.navigationItem.rightBarButtonItem.enabled = YES;
                     }];
 }
 
 - (IBAction)showScanner:(id)sender
 {
     [self startCapture];
+    self.navigationItem.rightBarButtonItem.enabled = NO;
     
     [UIView transitionFromView:self.historyView
                         toView:self.scanView
@@ -262,12 +263,9 @@
                                 UIViewAnimationOptionShowHideTransitionViews |
                                 UIViewAnimationOptionTransitionFlipFromLeft)
                     completion:^(BOOL finished) {
-                        UIBarButtonItem *toolbarItem = [[[UIBarButtonItem alloc] initWithTitle:@"History"
-                                                                                        style:UIBarButtonItemStyleBordered
-                                                                                       target:self
-                                                                                       action:@selector(showHistory:)] autorelease];
-                        [self.navigationItem setRightBarButtonItem:toolbarItem
-                                                          animated:YES];
+                        self.navigationItem.rightBarButtonItem.title = @"History";
+                        [self.navigationItem.rightBarButtonItem setAction:@selector(showHistory:)];
+                        self.navigationItem.rightBarButtonItem.enabled = YES;
                     }];
 }
 
