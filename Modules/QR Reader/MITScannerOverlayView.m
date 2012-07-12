@@ -39,7 +39,6 @@
             helpLabel.backgroundColor = [UIColor clearColor];
             helpLabel.textColor = [UIColor whiteColor];
             helpLabel.textAlignment = UITextAlignmentCenter;
-            helpLabel.text = @"Frame a bar or QR code to scan it.\nAvoid glare and shadows.";
             helpLabel.lineBreakMode = UILineBreakModeWordWrap;
             helpLabel.numberOfLines = 0;
             [self addSubview:helpLabel];
