@@ -157,6 +157,7 @@
             
             MITScannerOverlayView *overlay = [[[MITScannerOverlayView alloc] initWithFrame:overlayFrame] autorelease];
             overlay.userInteractionEnabled = NO;
+            overlay.helpText = @"To scan a bar code or QR code, frame it below.\nAvoid glare and shadows.";
             [scanView addSubview:overlay];
             
             CGRect cropRect = [self.readerView convertRect:[overlay qrRect]
