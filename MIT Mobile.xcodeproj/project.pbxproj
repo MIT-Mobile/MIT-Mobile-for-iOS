@@ -95,8 +95,6 @@
 		2CA454F213C7468F00891428 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA454F113C7468F00891428 /* AssetsLibrary.framework */; };
 		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
-		2CB645EC134CC63800E85E64 /* QRReaderHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */; };
-		2CB64608134CF13500E85E64 /* QRReaderScanViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; };
@@ -563,10 +561,6 @@
 		2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesHoldingsDetailViewController.m; path = WorldCatSearch/LibrariesHoldingsDetailViewController.m; sourceTree = "<group>"; };
 		2CB6459D134CAF1A00E85E64 /* QRReaderModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderModule.h; sourceTree = "<group>"; };
 		2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderModule.m; sourceTree = "<group>"; };
-		2CB645E9134CC63800E85E64 /* QRReaderHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderHistoryViewController.h; sourceTree = "<group>"; };
-		2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderHistoryViewController.m; sourceTree = "<group>"; };
-		2CB64605134CF13500E85E64 /* QRReaderScanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderScanViewController.h; sourceTree = "<group>"; };
-		2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = QRReaderScanViewController.mm; sourceTree = "<group>"; };
 		2CC2E9CA144DC9B000151C71 /* MITTabHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabHeaderView.h; sourceTree = "<group>"; };
 		2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabHeaderView.m; sourceTree = "<group>"; };
 		2CC487CD13B3854600E58350 /* FacilitiesLocationSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocationSearch.h; sourceTree = "<group>"; };
@@ -1548,7 +1542,7 @@
 			path = FacilitiesSummary;
 			sourceTree = "<group>";
 		};
-		2CB6459C134CAF1A00E85E64 /* QR Reader */ = {
+		2CB6459C134CAF1A00E85E64 /* Scanner */ = {
 			isa = PBXGroup;
 			children = (
 				2C15EB7415A349B200C9C345 /* MITScannerViewController.h */,
@@ -1563,29 +1557,18 @@
 				2CED98F013534B2C0034F6F1 /* QRReaderDetailView */,
 				2CB64604134CF10700E85E64 /* MITScannerOverlayView */,
 				2C927AD913561A41008A8A36 /* QRReaderHelpView */,
-				2CB645E8134CC61200E85E64 /* QRReaderHistoryView */,
 			);
+			name = Scanner;
 			path = "QR Reader";
 			sourceTree = "<group>";
 		};
 		2CB64604134CF10700E85E64 /* MITScannerOverlayView */ = {
 			isa = PBXGroup;
 			children = (
-				2CB645E9134CC63800E85E64 /* QRReaderHistoryViewController.h */,
-				2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */,
 				2CED98F913537DEC0034F6F1 /* MITScannerOverlayView.h */,
 				2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */,
 			);
-			name = QRReaderHistoryView;
-			sourceTree = "<group>";
-		};
-		2CB64604134CF10700E85E64 /* QRReaderScanView */ = {
-			isa = PBXGroup;
-			children = (
-				2CB64605134CF13500E85E64 /* QRReaderScanViewController.h */,
-				2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */,
-			);
-			name = QRReaderScanView;
+			name = MITScannerOverlayView;
 			sourceTree = "<group>";
 		};
 		2CCB85F61361D9790024E474 /* Model */ = {
@@ -1999,7 +1982,7 @@
 				DE81CF6310C6BC490085573D /* Mobile Web */,
 				DE81CF5F10C6BC390085573D /* News */,
 				EB7F326610CD6C5B00188BCD /* People */,
-				2CB6459C134CAF1A00E85E64 /* QR Reader */,
+				2CB6459C134CAF1A00E85E64 /* Scanner */,
 				DE9EFBCE10FE7D3200F5F07E /* Settings */,
 				DE715449102FE468005E6111 /* ShuttleTrack */,
 				DE71544A102FE468005E6111 /* Stellar */,
@@ -2817,14 +2800,12 @@
 				2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */,
 				2C00912C13567CDE001000D2 /* QRReaderHelpView.m in Sources */,
 				2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */,
-				2CB645EC134CC63800E85E64 /* QRReaderHistoryViewController.m in Sources */,
 				2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */,
 				2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */,
 				2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */,
 				2C77F0321355EE2500CD11D6 /* QRReaderResult.m in Sources */,
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				2CFCABA3135DE705006464AF /* QRReaderResultTransform.m in Sources */,
-				2CB64608134CF13500E85E64 /* QRReaderScanViewController.mm in Sources */,
 				3A827081103DAA0500BB4109 /* Reachability.m in Sources */,
 				4499332E11A371CF00A7041B /* RecentSearchesViewController.m in Sources */,
 				44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */,
