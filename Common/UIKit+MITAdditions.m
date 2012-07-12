@@ -228,3 +228,29 @@
 @end
 
 
+#define JSON_ERROR_CODE -2
+@implementation UIAlertView (MITUIAdditions)
++ (UIAlertView*)alertViewForError:(NSError*)error withTitle:(NSString*)title alertViewDelegate:(id<UIAlertViewDelegate>)delegate
+{
+	// Generic message
+	NSString *message = @"Connection Failure. Please try again later.";
+    
+	// if the error can be classifed we will use a more specific error message
+	if(error) {
+		if ([[error domain] isEqualToString:@"NSURLErrorDomain"] && ([error code] == NSURLErrorTimedOut)) {
+			message = @"Connection Timed Out. Please try again later.";
+		} else if ([[error domain] isEqualToString:@"MITMobileWebAPI"] && ([error code] == JSON_ERROR_CODE)) {
+			message = @"Server Failure. Please try again later.";
+		}
+	}
+    
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+														message:message
+													   delegate:delegate
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:nil];
+    
+    return [alertView autorelease];
+}
+@end
+
