@@ -17,7 +17,7 @@
 #import "QRReaderResult.h"
 #import "NSDateFormatter+RelativeString.h"
 
-@interface MITScannerViewController () <ZBarReaderViewDelegate>
+@interface MITScannerViewController () <ZBarReaderViewDelegate,UITableViewDelegate, UITableViewDataSource>
 
 #pragma mark - Scanner Extensions
 @property (retain) UIView *scanView;
