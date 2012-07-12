@@ -16,6 +16,7 @@
 #import "UIKit+MITAdditions.h"
 #import "QRReaderResult.h"
 #import "NSDateFormatter+RelativeString.h"
+#import "QRReaderHelpView.h"
 
 @interface MITScannerViewController () <ZBarReaderViewDelegate,UITableViewDelegate, UITableViewDataSource>
 
@@ -104,10 +105,9 @@
     else
     {
         CGRect scanFrame = mainView.bounds;
-
-        
-        UIView *unsupportedView = [[[UIView alloc] initWithFrame:scanFrame] autorelease];
-        unsupportedView.backgroundColor = [UIColor redColor];
+        scanFrame.origin.y += navBarHeight;
+        scanFrame.size.height -= navBarHeight;
+        QRReaderHelpView *unsupportedView = [[[QRReaderHelpView alloc] initWithFrame:scanFrame] autorelease];
         [mainView addSubview:unsupportedView];
         self.unsupportedView = unsupportedView;
     }
@@ -133,7 +133,6 @@
         
         // View hierarchy for the scanView
         // This should be in the order (top-most view first):
-        //  scanHelpLabel
         //  overlayView
         //  readerView
         
