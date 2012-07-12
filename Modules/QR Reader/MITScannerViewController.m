@@ -9,7 +9,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 #import "MITScannerViewController.h"
-#import "QRReaderOverlayView.h"
+#import "MITScannerOverlayView.h"
 #import "ZBarSDK.h"
 #import "QRReaderHistoryData.h"
 #import "QRReaderDetailViewController.h"
@@ -22,7 +22,7 @@
 #pragma mark - Scanner Extensions
 @property (retain) UIView *scanView;
 @property (assign) UIView *unsupportedView;
-@property (assign) QRReaderOverlayView *overlayView;
+@property (assign) MITScannerOverlayView *overlayView;
 @property (assign) ZBarReaderView *readerView;
 
 @property (nonatomic,assign) BOOL isCaptureActive;
@@ -156,7 +156,7 @@
             overlayFrame.origin.y += navBarHeight;
             overlayFrame.size.height -= navBarHeight;
             
-            QRReaderOverlayView *overlay = [[[QRReaderOverlayView alloc] initWithFrame:overlayFrame] autorelease];
+            MITScannerOverlayView *overlay = [[[MITScannerOverlayView alloc] initWithFrame:overlayFrame] autorelease];
             overlay.userInteractionEnabled = NO;
             [scanView addSubview:overlay];
             

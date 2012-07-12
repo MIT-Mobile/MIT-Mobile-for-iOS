@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface QRReaderOverlayView : UIView
+@interface MITScannerOverlayView : UIView
 
 @property (nonatomic) BOOL highlighted;
 @property (nonatomic,retain) UIColor *highlightColor;

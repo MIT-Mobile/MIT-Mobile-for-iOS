@@ -1,11 +1,11 @@
-#import "QRReaderOverlayView.h"
+#import "MITScannerOverlayView.h"
 #include <QuartzCore/QuartzCore.h>
 
-@interface QRReaderOverlayView ()
+@interface MITScannerOverlayView ()
 @property (retain) UILabel *helpLabel;
 @end
 
-@implementation QRReaderOverlayView
+@implementation MITScannerOverlayView
 {
     UIInterfaceOrientation _interfaceOrientation;
 }

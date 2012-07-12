@@ -113,7 +113,7 @@
 		2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */; };
 		2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */; };
 		2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */; };
-		2CED98FB13537DEC0034F6F1 /* QRReaderOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98FA13537DEC0034F6F1 /* QRReaderOverlayView.m */; };
+		2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */; };
 		2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */; };
 		2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D41416B1AC0014E141 /* MITTabBar.m */; };
 		2CFB87D91416B1AC0014E141 /* MITTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D61416B1AC0014E141 /* MITTabView.m */; };
@@ -595,8 +595,8 @@
 		2CED98F113534B5C0034F6F1 /* QRReaderDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderDetailViewController.h; sourceTree = "<group>"; };
 		2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderDetailViewController.m; sourceTree = "<group>"; };
 		2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QRReaderDetailViewController.xib; sourceTree = "<group>"; };
-		2CED98F913537DEC0034F6F1 /* QRReaderOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderOverlayView.h; sourceTree = "<group>"; };
-		2CED98FA13537DEC0034F6F1 /* QRReaderOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderOverlayView.m; sourceTree = "<group>"; };
+		2CED98F913537DEC0034F6F1 /* MITScannerOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerOverlayView.h; sourceTree = "<group>"; };
+		2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerOverlayView.m; sourceTree = "<group>"; };
 		2CFB87D11416B1AC0014E141 /* MITSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITSegmentControl.h; sourceTree = "<group>"; };
 		2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITSegmentControl.m; sourceTree = "<group>"; };
 		2CFB87D31416B1AC0014E141 /* MITTabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabBar.h; sourceTree = "<group>"; };
@@ -1561,18 +1561,20 @@
 				2C96776113575E8900F52BDB /* QRReaderResultTransform.h */,
 				2CFCABA2135DE705006464AF /* QRReaderResultTransform.m */,
 				2CED98F013534B2C0034F6F1 /* QRReaderDetailView */,
-				2CB64604134CF10700E85E64 /* QRReaderScanView */,
+				2CB64604134CF10700E85E64 /* MITScannerOverlayView */,
 				2C927AD913561A41008A8A36 /* QRReaderHelpView */,
 				2CB645E8134CC61200E85E64 /* QRReaderHistoryView */,
 			);
 			path = "QR Reader";
 			sourceTree = "<group>";
 		};
-		2CB645E8134CC61200E85E64 /* QRReaderHistoryView */ = {
+		2CB64604134CF10700E85E64 /* MITScannerOverlayView */ = {
 			isa = PBXGroup;
 			children = (
 				2CB645E9134CC63800E85E64 /* QRReaderHistoryViewController.h */,
 				2CB645EA134CC63800E85E64 /* QRReaderHistoryViewController.m */,
+				2CED98F913537DEC0034F6F1 /* MITScannerOverlayView.h */,
+				2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */,
 			);
 			name = QRReaderHistoryView;
 			sourceTree = "<group>";
@@ -1580,8 +1582,6 @@
 		2CB64604134CF10700E85E64 /* QRReaderScanView */ = {
 			isa = PBXGroup;
 			children = (
-				2CED98F913537DEC0034F6F1 /* QRReaderOverlayView.h */,
-				2CED98FA13537DEC0034F6F1 /* QRReaderOverlayView.m */,
 				2CB64605134CF13500E85E64 /* QRReaderScanViewController.h */,
 				2CB64606134CF13500E85E64 /* QRReaderScanViewController.mm */,
 			);
@@ -2820,7 +2820,7 @@
 				2CB645EC134CC63800E85E64 /* QRReaderHistoryViewController.m in Sources */,
 				2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */,
 				2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */,
-				2CED98FB13537DEC0034F6F1 /* QRReaderOverlayView.m in Sources */,
+				2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */,
 				2C77F0321355EE2500CD11D6 /* QRReaderResult.m in Sources */,
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				2CFCABA3135DE705006464AF /* QRReaderResultTransform.m in Sources */,
