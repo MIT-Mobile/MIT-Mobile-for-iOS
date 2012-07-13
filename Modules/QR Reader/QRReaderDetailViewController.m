@@ -40,7 +40,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.scanResult = nil;
-        self.title = @"QR Details";
+        self.title = @"Scan Detail";
         self.urlMappingOperation = nil;
     }
     return self;
