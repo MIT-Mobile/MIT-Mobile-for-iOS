@@ -5,12 +5,14 @@
 @class QRReaderResult;
 @interface QRReaderDetailViewController : ShareDetailViewController
 
-@property (nonatomic,readonly,retain) QRReaderResult *scanResult;
-@property (nonatomic,readonly,assign) IBOutlet UIImageView *qrImageView;
-@property (nonatomic,readonly,assign) IBOutlet UIImageView *backgroundImageView;
-@property (nonatomic,readonly,assign) IBOutlet UITextView *textView;
-@property (nonatomic,readonly,assign) IBOutlet UIButton *actionButton;
-@property (nonatomic,readonly,assign) IBOutlet UIButton *shareButton;
+@property (readonly,retain) QRReaderResult *scanResult;
+@property (readonly,assign) IBOutlet UIImageView *qrImageView;
+@property (readonly,assign) IBOutlet UIImageView *backgroundImageView;
+@property (readonly,assign) IBOutlet UILabel *textTitleLabel;
+@property (readonly,assign) IBOutlet UITextView *textView;
+@property (readonly,assign) IBOutlet UILabel *dateLabel;
+@property (readonly,assign) IBOutlet UIButton *actionButton;
+@property (readonly,assign) IBOutlet UIButton *shareButton;
 
 + (QRReaderDetailViewController*)detailViewControllerForResult:(QRReaderResult*)result;
 - (IBAction)pressedShareButton:(id)sender;

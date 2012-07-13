@@ -4,17 +4,25 @@
 #import "QRReaderResult.h"
 #import "MobileRequestOperation.h"
 #import "MITLoadingActivityView.h"
+#import "NSDateFormatter+RelativeString.h"
 
 @interface QRReaderDetailViewController () <ShareItemDelegate>
-@property (nonatomic,retain) QRReaderResult *scanResult;
 @property (retain) NSString *resultText;
-@property (retain) MITLoadingActivityView *loadingView;
 @property (retain) NSOperation *urlMappingOperation;
-@property (nonatomic,assign) UIImageView *qrImageView;
-@property (nonatomic,assign) UIImageView *backgroundImageView;
-@property (nonatomic,assign) UITextView *textView;
-@property (nonatomic,assign) UIButton *actionButton;
-@property (nonatomic,assign) UIButton *shareButton;
+@property (assign) MITLoadingActivityView *loadingView;
+
+#pragma mark - Public Properties
+@property (retain) QRReaderResult *scanResult;
+
+#pragma mark - Public IBOutlets
+@property (assign) UIImageView *qrImageView;
+@property (assign) UIImageView *backgroundImageView;
+@property (assign) UILabel *textTitleLabel;
+@property (assign) UITextView *textView;
+@property (assign) UILabel *dateLabel;
+@property (assign) UIButton *actionButton;
+@property (assign) UIButton *shareButton;
+#pragma mark -
 @end
 
 @implementation QRReaderDetailViewController
@@ -27,6 +35,8 @@
 @synthesize resultText = _resultText;
 @synthesize urlMappingOperation = _urlMappingOperation;
 @synthesize textView = _textView;
+@synthesize dateLabel = _dateLabel;
+@synthesize textTitleLabel = _textTitleLabel;
 
 + (QRReaderDetailViewController*)detailViewControllerForResult:(QRReaderResult*)result {
     QRReaderDetailViewController *reader = [[self alloc] initWithNibName:@"QRReaderDetailViewController"
@@ -48,22 +58,12 @@
 
 - (void)dealloc
 {
-    self.urlMappingOperation = nil;
     self.resultText = nil;
+    self.urlMappingOperation = nil;
     self.scanResult = nil;
-    self.qrImageView = nil;
-    self.textView = nil;
-    self.actionButton = nil;
-    self.shareButton = nil;
-    self.backgroundImageView = nil;
     [super dealloc];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-}
 
 #pragma mark - View lifecycle
 
@@ -78,15 +78,9 @@
         self.qrImageView.image = [UIImage imageNamed:@"qrreader/qr-missing-image"];
     }
     
-    self.qrImageView.layer.borderColor = [[UIColor blackColor] CGColor];
-    self.qrImageView.layer.borderWidth = 2.0;
-    
     CGFloat inset = 0.0;
     CGFloat margin = 12.0;
     
-    // [self.textView setText:self.scanResult.text];
-    [self.actionButton setTitle:@"Open URL"
-                       forState:UIControlStateNormal];
     [self.actionButton setImage:[UIImage imageNamed:@"global/action-external"]
                       forState:UIControlStateNormal];
     [self.actionButton setImage:[UIImage imageNamed:@"global/action-external-highlighted"]
@@ -95,8 +89,6 @@
     inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-external"].size.width + margin);
     [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
     
-    [self.shareButton setTitle:@"Share this link"
-                      forState:UIControlStateNormal];
     [self.shareButton setImage:[UIImage imageNamed:@"global/action-share"]
                       forState:UIControlStateNormal];
     
@@ -114,7 +106,6 @@
         self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingViewBounds] autorelease];
         self.loadingView.hidden = NO;
         [self.view addSubview:self.loadingView];
-    
     }
 }
 
@@ -122,11 +113,15 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
+    
+    self.loadingView = nil;
     self.qrImageView = nil;
+    self.backgroundImageView = nil;
+    self.textTitleLabel = nil;
     self.textView = nil;
+    self.dateLabel = nil;
     self.actionButton = nil;
     self.shareButton = nil;
-    self.backgroundImageView = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -150,6 +145,13 @@
         
         operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSError *error)
         {
+            // TODO (bskinner): Make sure this is even needed and adjust the timing
+            //
+            // Prevent the loading view from 'flashing' when the view
+            // first appears (caused by the operation completing VERY
+            // quickly)
+            [NSThread sleepForTimeInterval:1.0];
+            
             BOOL success = [[codeInfo objectForKey:@"success"] boolValue] && (error == nil);
             NSURL *url = [NSURL URLWithString:[codeInfo objectForKey:@"url"]];
             
@@ -165,17 +167,25 @@
                 self.resultText = [url absoluteString];
                 self.actionButton.hidden = NO;
                 
+                self.textTitleLabel.text = @"Website";
+                [self.actionButton setTitle:@"Go to website"
+                                   forState:UIControlStateNormal];
+                [self.shareButton setTitle:@"Share this link"
+                                  forState:UIControlStateNormal];
             }
             else
             {
                 self.resultText = self.scanResult.text;
                 
                 self.actionButton.hidden = YES;
+                self.textTitleLabel.text = @"Code";
                 [self.shareButton setTitle:@"Share this code"
                                   forState:UIControlStateNormal];
             }
             
             self.textView.text = self.resultText;
+            self.dateLabel.text = [NSString stringWithFormat:@"Scanned %@", [NSDateFormatter relativeDateStringFromDate:self.scanResult.date
+                                                                       toDate:[NSDate date]]];
             self.loadingView.hidden = YES;
         };
         
