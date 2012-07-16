@@ -7,6 +7,7 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
+#import <AudioToolbox/AudioToolbox.h>
 
 #import "MITScannerViewController.h"
 #import "MITScannerOverlayView.h"
@@ -311,6 +312,7 @@
     
     if (readerSymbol)
     {
+        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
         self.overlayView.highlighted = YES;
         QRReaderResult *result = [[QRReaderHistoryData sharedHistory] insertScanResult:readerSymbol.data
                                                                               withDate:[NSDate date]
