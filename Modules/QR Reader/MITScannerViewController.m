@@ -312,11 +312,15 @@
     
     if (readerSymbol)
     {
+        self.navigationController.navigationBar.userInteractionEnabled = NO;
+        [self stopCapture];
         AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
         self.overlayView.highlighted = YES;
+        
         QRReaderResult *result = [[QRReaderHistoryData sharedHistory] insertScanResult:readerSymbol.data
                                                                               withDate:[NSDate date]
                                                                              withImage:image];
+        
         QRReaderDetailViewController *viewController = [QRReaderDetailViewController detailViewControllerForResult:result];
         
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
@@ -324,6 +328,7 @@
             [self.navigationController pushViewController:viewController
                                                  animated:YES];
             
+            self.navigationController.navigationBar.userInteractionEnabled = YES;
             self.overlayView.highlighted = NO;
         }); 
     }
