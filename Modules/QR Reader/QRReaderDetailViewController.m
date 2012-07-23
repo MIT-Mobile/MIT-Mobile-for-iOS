@@ -6,7 +6,7 @@
 #import "MITLoadingActivityView.h"
 #import "NSDateFormatter+RelativeString.h"
 
-@interface QRReaderDetailViewController () <ShareItemDelegate>
+@interface QRReaderDetailViewController () <ShareItemDelegate,UITableViewDataSource,UITableViewDelegate>
 @property (retain) NSString *resultText;
 @property (retain) NSOperation *urlMappingOperation;
 @property (assign) MITLoadingActivityView *loadingView;
@@ -18,18 +18,16 @@
 @property (assign) UIImageView *qrImageView;
 @property (assign) UIImageView *backgroundImageView;
 @property (assign) UILabel *textTitleLabel;
-@property (assign) UITextView *textView;
+@property (assign) UILabel *textView;
 @property (assign) UILabel *dateLabel;
-@property (assign) UIButton *actionButton;
-@property (assign) UIButton *shareButton;
+@property (assign) UITableView *scanActionTable;
+@property (strong) NSMutableArray *scanActions;
 #pragma mark -
 @end
 
 @implementation QRReaderDetailViewController
 @synthesize scanResult = _scanResult;
 @synthesize qrImageView = _qrImageView;
-@synthesize actionButton = _actionButton;
-@synthesize shareButton = _shareButton;
 @synthesize backgroundImageView = _backgroundImageView;
 @synthesize loadingView = _loadingView;
 @synthesize resultText = _resultText;
@@ -37,6 +35,8 @@
 @synthesize textView = _textView;
 @synthesize dateLabel = _dateLabel;
 @synthesize textTitleLabel = _textTitleLabel;
+@synthesize scanActionTable = scanActionTable;
+@synthesize scanActions = _scanActions;
 
 + (QRReaderDetailViewController*)detailViewControllerForResult:(QRReaderResult*)result {
     QRReaderDetailViewController *reader = [[self alloc] initWithNibName:@"QRReaderDetailViewController"
@@ -61,6 +61,7 @@
     self.resultText = nil;
     self.urlMappingOperation = nil;
     self.scanResult = nil;
+    self.scanActions = nil;
     [super dealloc];
 }
 
@@ -77,26 +78,8 @@
     } else {
         self.qrImageView.image = [UIImage imageNamed:@"qrreader/qr-missing-image"];
     }
-    
-    CGFloat inset = 0.0;
-    CGFloat margin = 12.0;
-    
-    [self.actionButton setImage:[UIImage imageNamed:@"global/action-external"]
-                      forState:UIControlStateNormal];
-    [self.actionButton setImage:[UIImage imageNamed:@"global/action-external-highlighted"]
-                      forState:UIControlStateHighlighted];
-    
-    inset = self.actionButton.frame.size.width - ([UIImage imageNamed:@"global/action-external"].size.width + margin);
-    [self.actionButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
-    
-    [self.shareButton setImage:[UIImage imageNamed:@"global/action-share"]
-                      forState:UIControlStateNormal];
-    
-    inset = self.shareButton.frame.size.width - ([UIImage imageNamed:@"global/action-share"].size.width + margin);
-    [self.shareButton setImageEdgeInsets:UIEdgeInsetsMake(0, inset, 0, 0)];
-    
-    [self.actionButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.actionButton.frame.origin.x) + margin, 0, 0)];
-    [self.shareButton setTitleEdgeInsets:UIEdgeInsetsMake(0, (-self.shareButton.frame.origin.x) + margin, 0, 0)];
+
+    self.scanActions = [NSMutableArray array];
     
     {
         CGRect loadingViewBounds = self.view.bounds;
@@ -120,8 +103,24 @@
     self.textTitleLabel = nil;
     self.textView = nil;
     self.dateLabel = nil;
-    self.actionButton = nil;
-    self.shareButton = nil;
+}
+
+- (NSDictionary*)dictionaryWithTitle:(NSString*)title iconNamed:(NSString*)iconName action:(void(^)(void))actionBlock
+{
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+    
+    [dictionary setObject:[[actionBlock copy] autorelease]
+                   forKey:@"action"];
+    [dictionary setObject:title
+                   forKey:@"title"];
+
+    if ([iconName length])
+    {
+        [dictionary setObject:iconName
+                       forKey:@"icon-name"];
+    }
+    
+    return dictionary;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -162,30 +161,57 @@
             
             BOOL canHandleURL = [[UIApplication sharedApplication] canOpenURL:url];
             
+            [self.scanActions removeAllObjects];
+            
             if ((success || url) && canHandleURL)
             {
-                self.resultText = [url absoluteString];
-                self.actionButton.hidden = NO;
-                
                 self.textTitleLabel.text = @"Website";
-                [self.actionButton setTitle:@"Go to website"
-                                   forState:UIControlStateNormal];
-                [self.shareButton setTitle:@"Share this link"
-                                  forState:UIControlStateNormal];
+                self.resultText = [url absoluteString];
+                
+                [self.scanActions addObject:[self dictionaryWithTitle:@"Go to website"
+                                                      iconNamed:@"global/action-external"
+                                                         action:^{
+                                                             [self pressedActionButton:nil];
+                                                         }]];
+                
+                [self.scanActions addObject:[self dictionaryWithTitle:@"Share this link"
+                                                            iconNamed:@"global/action-share"
+                                                               action:^{
+                                                                   [self pressedShareButton:nil];
+                                                               }]];
             }
             else
             {
+                self.textTitleLabel.text = @"Code";
                 self.resultText = self.scanResult.text;
                 
-                self.actionButton.hidden = YES;
-                self.textTitleLabel.text = @"Code";
-                [self.shareButton setTitle:@"Share this code"
-                                  forState:UIControlStateNormal];
+                [self.scanActions addObject:[self dictionaryWithTitle:@"Share this code"
+                                                            iconNamed:@"global/action-share"
+                                                               action:^{
+                                                                   [self pressedShareButton:nil];
+                                                               }]];
             }
             
             self.textView.text = self.resultText;
+            [self.textView sizeToFit];
+            
+            CGFloat padding = 15.0;
+            CGRect textFrame = self.textView.frame;
+            CGRect tableFrame = self.scanActionTable.frame;
+
+            // The size of '85' is so that the table view has at least
+            // 100 pixels of space. This number can probably be tweaked a bit
+            // later on.
+            textFrame.size.height = MIN(textFrame.size.height,85);
+            tableFrame.origin.y = CGRectGetMaxY(textFrame) + padding;
+            tableFrame.size.height = CGRectGetHeight(self.view.bounds) - tableFrame.origin.y;
+            
+            self.textView.frame = textFrame;
+            self.scanActionTable.frame = tableFrame;
+            
             self.dateLabel.text = [NSString stringWithFormat:@"Scanned %@", [NSDateFormatter relativeDateStringFromDate:self.scanResult.date
                                                                        toDate:[NSDate date]]];
+            [self.scanActionTable reloadData];
             self.loadingView.hidden = YES;
         };
         
@@ -260,5 +286,56 @@
 
 - (NSString *)twitterTitle {
 	return self.scanResult.text;
+}
+
+                 
+#pragma mark - UITableViewDelegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
+    
+    dispatch_block_t action = [cellDetails objectForKey:@"action"];
+    if (action)
+    {
+        dispatch_async(dispatch_get_main_queue(), action);
+    }
+    
+    [tableView deselectRowAtIndexPath:indexPath
+                             animated:YES];
+}
+                 
+                 
+#pragma mark - UITableViewDataSource
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *actionCellIdentifier = @"ActionCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:actionCellIdentifier];
+    
+    if (cell == nil)
+    {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                      reuseIdentifier:actionCellIdentifier];
+    }
+    
+    NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
+    
+    cell.textLabel.text = [cellDetails objectForKey:@"title"];
+    
+    NSString *iconName = [cellDetails objectForKey:@"icon-name"];
+    if ([iconName length])
+    {
+        UIImage *icon = [UIImage imageNamed:iconName];
+        UIImage *highlightIcon = [UIImage imageNamed:[NSString stringWithFormat:@"%@-highlight", iconName]];
+        
+        cell.accessoryView = [[UIImageView alloc] initWithImage:icon
+                                               highlightedImage:highlightIcon];
+    }
+    
+    return cell;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.scanActions count];
 }
 @end

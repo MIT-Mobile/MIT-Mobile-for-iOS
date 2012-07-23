@@ -9,10 +9,9 @@
 @property (readonly,assign) IBOutlet UIImageView *qrImageView;
 @property (readonly,assign) IBOutlet UIImageView *backgroundImageView;
 @property (readonly,assign) IBOutlet UILabel *textTitleLabel;
-@property (readonly,assign) IBOutlet UITextView *textView;
+@property (readonly,assign) IBOutlet UILabel *textView;
 @property (readonly,assign) IBOutlet UILabel *dateLabel;
-@property (readonly,assign) IBOutlet UIButton *actionButton;
-@property (readonly,assign) IBOutlet UIButton *shareButton;
+@property (readonly,assign) IBOutlet UITableView *scanActionTable;
 
 + (QRReaderDetailViewController*)detailViewControllerForResult:(QRReaderResult*)result;
 - (IBAction)pressedShareButton:(id)sender;
