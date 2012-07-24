@@ -92,11 +92,11 @@
 						<string key="IBUIShadowOffset">{0, 1}</string>
 						<int key="IBUIBaselineAdjustment">0</int>
 						<float key="IBUIMinimumFontSize">10</float>
-						<object class="IBUIFontDescription" key="IBUIFontDescription">
+						<object class="IBUIFontDescription" key="IBUIFontDescription" id="223923521">
 							<int key="type">2</int>
 							<double key="pointSize">17</double>
 						</object>
-						<object class="NSFont" key="IBUIFont">
+						<object class="NSFont" key="IBUIFont" id="183953067">
 							<string key="NSName">Helvetica-Bold</string>
 							<double key="NSSize">17</double>
 							<int key="NSfFlags">16</int>
@@ -185,15 +185,8 @@
 						<float key="IBUIMinimumFontSize">10</float>
 						<int key="IBUINumberOfLines">0</int>
 						<int key="IBUILineBreakMode">1</int>
-						<object class="IBUIFontDescription" key="IBUIFontDescription">
-							<int key="type">1</int>
-							<double key="pointSize">17</double>
-						</object>
-						<object class="NSFont" key="IBUIFont">
-							<string key="NSName">Helvetica</string>
-							<double key="NSSize">17</double>
-							<int key="NSfFlags">16</int>
-						</object>
+						<reference key="IBUIFontDescription" ref="223923521"/>
+						<reference key="IBUIFont" ref="183953067"/>
 					</object>
 				</object>
 				<string key="NSFrame">{{0, 64}, {320, 416}}</string>
@@ -312,8 +305,8 @@
 							<reference ref="320159111"/>
 							<reference ref="246565669"/>
 							<reference ref="361585985"/>
-							<reference ref="816466067"/>
 							<reference ref="356757734"/>
+							<reference ref="816466067"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -467,7 +460,7 @@
 							<string>UIImageView</string>
 							<string>UITableView</string>
 							<string>UILabel</string>
-							<string>UITextView</string>
+							<string>UILabel</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -505,7 +498,7 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">textView</string>
-								<string key="candidateClassName">UITextView</string>
+								<string key="candidateClassName">UILabel</string>
 							</object>
 						</object>
 					</object>
