@@ -207,6 +207,7 @@
                                                                style:UITableViewStylePlain] autorelease];
         tableView.delegate = self;
         tableView.dataSource = self;
+        self.historyTableView = tableView;
         [historyView addSubview:tableView];
     }
 
@@ -258,6 +259,7 @@
 {
     [self stopCapture];
     self.navigationItem.rightBarButtonItem.enabled = NO;
+    [self.historyTableView reloadData];
     
     [UIView transitionFromView:self.scanView
                         toView:self.historyView
