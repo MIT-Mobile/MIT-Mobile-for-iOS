@@ -26,6 +26,7 @@
 @property (assign) UIView *unsupportedView;
 @property (assign) MITScannerOverlayView *overlayView;
 @property (assign) ZBarReaderView *readerView;
+@property (assign) UIButton *infoButton;
 
 @property (nonatomic,assign) BOOL isCaptureActive;
 @property (assign, readonly) BOOL isScanningSupported;
@@ -53,6 +54,8 @@
 @synthesize unsupportedView = _unsupportedView;
 @synthesize overlayView = _overlayView;
 @synthesize isCaptureActive = _isCaptureActive;
+@synthesize readerView = _readerView;
+@synthesize infoButton = _infoButton;
 
 @dynamic isScanningSupported;
 
@@ -171,6 +174,23 @@
             self.overlayView = overlay;
         }
         
+        {
+            UIButton *info = [UIButton buttonWithType:UIButtonTypeInfoLight];
+            [info addTarget:self
+                     action:@selector(showHelp:)
+           forControlEvents:UIControlEventTouchUpInside];
+            
+            CGRect frame = info.bounds;
+            CGRect parentBounds = scanView.bounds;
+            frame.origin.x = CGRectGetMaxX(parentBounds) - (CGRectGetWidth(frame) * 2.0);
+            frame.origin.y = CGRectGetMaxY(parentBounds) - (CGRectGetHeight(frame) * 2.0);
+            
+            info.frame = frame;
+            self.infoButton = info;
+            [scanView insertSubview:info
+                       aboveSubview:self.overlayView];
+        }
+        
         resultView = scanView;
     }
 
@@ -271,6 +291,11 @@
                         [self.navigationItem.rightBarButtonItem setAction:@selector(showHistory:)];
                         self.navigationItem.rightBarButtonItem.enabled = YES;
                     }];
+}
+
+- (IBAction)showHelp:(id)sender
+{
+    /* Do Nothing...for now */
 }
 
 - (BOOL)isCaptureActive
