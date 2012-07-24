@@ -2,7 +2,7 @@
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
 
-CGRect CGRectNormalizeWithParentRect(CGRect subRect, CGRect parentRect)
+CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect)
 {
     CGRect normalizedRect = CGRectMake(subRect.origin.x / CGRectGetMaxX(parentRect),
                                        subRect.origin.y / CGRectGetMaxY(parentRect),

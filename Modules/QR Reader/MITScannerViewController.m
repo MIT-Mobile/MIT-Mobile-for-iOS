@@ -164,7 +164,10 @@
             CGRect cropRect = [self.readerView convertRect:[overlay qrRect]
                                                   fromView:overlay];
             
-            self.readerView.scanCrop = CGRectNormalizeWithParentRect(cropRect, self.readerView.bounds);
+            CGRect normalizedRect = CGRectNormalizeRectInRect(cropRect, self.readerView.bounds);
+            normalizedRect.origin.x = 0;
+            normalizedRect.size.width = 1;
+            self.readerView.scanCrop = normalizedRect;
             self.overlayView = overlay;
         }
         
