@@ -2,9 +2,7 @@
 
 @class QRReaderResult;
 
-@interface QRReaderHistoryData : NSObject {
-	NSMutableArray *_results;
-}
+@interface QRReaderHistoryData : NSObject
 
 @property (nonatomic, retain) NSArray *results;
 + (QRReaderHistoryData*)sharedHistory;

@@ -4,7 +4,12 @@
 
 static QRReaderHistoryData *sharedHistoryData = nil;
 
+@interface QRReaderHistoryData ()
+@property (strong) NSMutableArray *mutableResults;
+@end
+
 @implementation QRReaderHistoryData
+@synthesize mutableResults = _mutableResults;
 @dynamic results;
 
 - (id)init {
@@ -12,29 +17,29 @@ static QRReaderHistoryData *sharedHistoryData = nil;
     if (self) {
         NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"date"
                                                                      ascending:NO];
-        _results = [[NSMutableArray alloc] initWithArray:[[CoreDataManager coreDataManager] objectsForEntity:QRReaderResultEntityName
-                                                                                           matchingPredicate:nil
-                                                                                             sortDescriptors:[NSArray arrayWithObject:descriptor]]];
+        self.mutableResults = [[[NSMutableArray alloc] initWithArray:[[CoreDataManager coreDataManager] objectsForEntity:QRReaderResultEntityName
+                                                                                                      matchingPredicate:nil
+                                                                                                        sortDescriptors:[NSArray arrayWithObject:descriptor]]] autorelease];
     }
     
     return self;
 }
 
 - (void)dealloc {
-    [_results release];
+    self.mutableResults = nil;
     [super dealloc];
 }
 
 - (void)eraseAll {
     [[CoreDataManager coreDataManager] deleteObjects:self.results];
     [[CoreDataManager coreDataManager] saveData];
-    [_results removeAllObjects];
+    [self.mutableResults removeAllObjects];
 }
 
 - (void)deleteScanResult:(QRReaderResult*)result {
     [[CoreDataManager coreDataManager] deleteObject:result];
     [[CoreDataManager coreDataManager] saveData];
-    [_results removeObject:result];
+    [self.mutableResults removeObject:result];
 }
 
 - (QRReaderResult*)insertScanResult:(NSString *)scanResult
@@ -53,8 +58,8 @@ static QRReaderHistoryData *sharedHistoryData = nil;
     result.image = image;
     [[CoreDataManager coreDataManager] saveData];
     
-    [_results insertObject:result
-                   atIndex:0];
+    [self.mutableResults insertObject:result
+                              atIndex:0];
     
     return result;
 }
@@ -62,7 +67,7 @@ static QRReaderHistoryData *sharedHistoryData = nil;
 #pragma mark -
 #pragma mark Dynamic Properties
 - (NSArray*)results {
-    return [NSArray arrayWithArray:_results];
+    return [NSArray arrayWithArray:self.mutableResults];
 }
 
 #pragma mark -
