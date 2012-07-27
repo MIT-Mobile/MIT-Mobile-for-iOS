@@ -6,6 +6,7 @@
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate+ModuleList.h"
 
+
 @implementation ShuttleRoutes
 
 @synthesize shuttleRoutes = _shuttleRoutes;
@@ -359,7 +360,7 @@
 	self.shuttleRoutes = routes;
 	
 	if (nil == routes) {
-		[MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
+        [UIAlertView alertViewForError:nil withTitle:@"Shuttles" alertViewDelegate:nil];
 		self.shuttleRoutes = oldRoutes;
 	}
 }

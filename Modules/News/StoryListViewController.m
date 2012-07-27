@@ -847,7 +847,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         }
 		[self setStatusText:@"Update failed"];
 		
-		[MITMobileWebAPI showErrorWithHeader:@"News"];
+        [UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
         if ([self.stories count] > 0) {
             [storyTable deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0] animated:YES];
         }
@@ -858,7 +858,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     if (parser == self.xmlParser) {
         // TODO: communicate parse failure to user
 		[self setStatusText:@"Update failed"];
-		[MITMobileWebAPI showErrorWithHeader:@"News"];
+		[UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
         if ([self.stories count] > 0) {
             [storyTable deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0] animated:YES];
         }

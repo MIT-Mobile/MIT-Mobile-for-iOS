@@ -326,7 +326,7 @@
 }
 
 - (void)showLinksLoadingFailure {
-    [MITMobileWebAPI showErrorWithHeader:@"Libraries"];
+    [UIAlertView alertViewForError:nil withTitle:@"Libraries" alertViewDelegate:nil];
     self.linksStatus = LinksStatusFailed;
     [self.tableView reloadData];
 }

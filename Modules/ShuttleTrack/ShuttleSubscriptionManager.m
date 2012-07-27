@@ -4,6 +4,7 @@
 #import "MITDeviceRegistration.h"
 #import "MobileRequestOperation.h"
 #import "MITMobileWebAPI.h"
+#import "MITUIConstants.h"
 
 @implementation ShuttleSubscriptionManager
 	
@@ -23,7 +24,7 @@
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error || ![jsonResult isKindOfClass:[NSDictionary class]]) {
             [delegate subscriptionFailedWithObject:object passkeyError:NO];
-            [MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
+            [UIAlertView alertViewForError:nil withTitle:@"Shuttles" alertViewDelegate:nil];
 
         } else if (![jsonResult objectForKey:@"success"]) {
             [delegate subscriptionFailedWithObject:object passkeyError:YES];
@@ -55,7 +56,7 @@
 	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [delegate subscriptionFailedWithObject:object passkeyError:NO];
-            [MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
+            [UIAlertView alertViewForError:nil withTitle:@"Shuttles" alertViewDelegate:nil];
             
         } else {
             [ShuttleSubscriptionManager removeSubscriptionForRouteID:routeID atStopID:stopID];

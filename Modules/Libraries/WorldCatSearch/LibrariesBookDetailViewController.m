@@ -77,7 +77,7 @@ typedef enum {
         [self.activityView removeFromSuperview];
         
         if (error) {
-            [MITMobileWebAPI showErrorWithHeader:@"WorldCat Book Details"];
+            [UIAlertView alertViewForError:error withTitle:@"WorldCat Book Details" alertViewDelegate:nil];
             self.loadingStatus = BookLoadingStatusFailed;
 
         } else {

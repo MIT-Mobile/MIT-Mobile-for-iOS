@@ -440,7 +440,7 @@ enum {
 
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
-            [MITMobileWebAPI showErrorWithHeader:@"Settings"];
+            [UIAlertView alertViewForError:error withTitle:@"Settings" alertViewDelegate:nil];
             [self reloadSettings];
             
         } else if ([jsonResult isKindOfClass:[NSDictionary class]] && [jsonResult objectForKey:@"success"]) {

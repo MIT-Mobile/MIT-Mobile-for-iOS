@@ -147,7 +147,7 @@ typedef enum {
 - (void)showSearchError {
     // only show errors for fresh searches not for a load more search
     if (!self.nextIndex) {
-        [MITMobileWebAPI showErrorWithHeader:@"WorldCat Search"];
+        [UIAlertView alertViewForError:nil withTitle:@"WorldCat Search" alertViewDelegate:nil];
     }
 }
 

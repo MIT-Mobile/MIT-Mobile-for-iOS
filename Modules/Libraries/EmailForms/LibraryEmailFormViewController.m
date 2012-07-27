@@ -553,7 +553,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         
         if (error && (error.code != NSUserCancelledError)) {
             DLog(@"Request failed with error: %@",[error localizedDescription]); 
-            [MITMobileWebAPI showError:nil header:@"Login" alertViewDelegate:self];
+            [UIAlertView alertViewForError:nil withTitle:@"Login" alertViewDelegate:self];
         } else if (!content) {
             [self.navigationController popViewControllerAnimated:YES];    
         } else {

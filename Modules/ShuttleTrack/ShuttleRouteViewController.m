@@ -3,6 +3,7 @@
 #import "ShuttleStopMapAnnotation.h"
 #import "ShuttleStopCell.h"
 #import "ShuttleStopViewController.h"
+#import "MITUIConstants.h"
 
 @interface ShuttleRouteViewController(Private)
 
@@ -286,7 +287,7 @@
 		if (!_shownError) {
 			_shownError = YES;
 			
-			[MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
+            [UIAlertView alertViewForError:nil withTitle:@"Shuttles" alertViewDelegate:nil];
 			
 			if([routeID isEqualToString:self.route.routeID]) {
 				self.route.liveStatusFailed = YES;

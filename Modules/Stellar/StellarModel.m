@@ -6,6 +6,7 @@
 #import "CoreDataManager.h"
 #import "MobileRequestOperation.h"
 #import "MITMobileWebAPI.h"
+#import "MITUIConstants.h"
 
 #define DAY 24 * 60 * 60
 #define MONTH 30 * DAY
@@ -64,7 +65,7 @@ NSString* cleanPersonName(NSString *personName);
                 // courses failed to load, but we still have courses save on disk so it is okay
                 [delegate coursesLoaded];
             } else {
-                [MITMobileWebAPI showErrorWithHeader:StellarHeader];
+                [UIAlertView alertViewForError:error withTitle:StellarHeader alertViewDelegate:nil];
             }
             
         } else {
@@ -136,7 +137,7 @@ NSString* cleanPersonName(NSString *personName);
             request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
                 if (error) {
                     [delegate handleCouldNotReachStellar];
-                    [MITMobileWebAPI showError:error header:StellarHeader alertViewDelegate:[delegate standardErrorAlertDelegate]];
+                    [UIAlertView alertViewForError:error withTitle:StellarHeader alertViewDelegate:[delegate standardErrorAlertDelegate]];
                     
                 } else {
                     if ([stellarCourse.lastChecksum isEqualToString:[(NSDictionary *)jsonResult objectForKey:@"checksum"]]) {
@@ -175,7 +176,7 @@ NSString* cleanPersonName(NSString *personName);
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [delegate handleCouldNotReachStellar];
-            [MITMobileWebAPI showError:error header:StellarHeader alertViewDelegate:[delegate standardErrorAlertDelegate]];
+            [UIAlertView alertViewForError:error withTitle:StellarHeader alertViewDelegate:[delegate standardErrorAlertDelegate]];
             
         } else {
             NSArray *classes = [jsonResult objectForKey:@"classes"];
@@ -204,7 +205,7 @@ NSString* cleanPersonName(NSString *personName);
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [delegate handleCouldNotReachStellarWithSearchTerms:searchTerms];
-            [MITMobileWebAPI showErrorWithHeader:StellarHeader];
+            [UIAlertView alertViewForError:error withTitle:StellarHeader alertViewDelegate:nil];
         
         } else {
             NSMutableArray *classes = [NSMutableArray array];
@@ -258,7 +259,7 @@ NSString* cleanPersonName(NSString *personName);
 	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [delegate handleCouldNotReachStellar];
-            [MITMobileWebAPI showErrorWithHeader:StellarHeader];
+            [UIAlertView alertViewForError:error withTitle:StellarHeader alertViewDelegate:nil];
 
         } else {
             if ([(NSDictionary *)jsonResult objectForKey:@"error"]) {

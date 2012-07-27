@@ -56,7 +56,7 @@
         MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locations" parameters:nil] autorelease];
         request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
             if (error) {
-                [MITMobileWebAPI showError:error header:@"Libraries" alertViewDelegate:self];
+                [UIAlertView alertViewForError:error withTitle:@"Libraries" alertViewDelegate:self];
             } else {
                 [LibrariesLocationsHours removeAllLibraries];
                 

@@ -4,6 +4,7 @@
 #import "MIT_MobileAppDelegate.h"
 #import "MITJSON.h"
 #import "Foundation+MITAdditions.h"
+#import "MITUIConstants.h"
 
 #define TIMED_OUT_CODE -1001
 #define JSON_ERROR_CODE -2
@@ -323,7 +324,7 @@
 			alertViewDelegate = [delegate request:self alertViewDelegateForError:error];
 		} 
 		
-		[MITMobileWebAPI showError:error header:header alertViewDelegate:alertViewDelegate];
+        [UIAlertView alertViewForError:error withTitle:header alertViewDelegate:alertViewDelegate];
 	}
     
     self.connectionWrapper = nil;
