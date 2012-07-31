@@ -92,10 +92,9 @@
         
         textFrame.size.width = textSize.width;
         textFrame.size.height = textSize.height;
-        textFrame.origin.y = (bounds.origin.y +
+        textFrame.origin.y = floor(bounds.origin.y +
                               ((maxHeight - textSize.height) / 2.0));
-        textFrame.origin.x = (
-                              ((bounds.size.width - textSize.width) / 2.0));
+        textFrame.origin.x = floor(((bounds.size.width - textSize.width) / 2.0));
         self.helpLabel.frame = textFrame;
     }
 }
