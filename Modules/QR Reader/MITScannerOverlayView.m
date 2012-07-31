@@ -87,7 +87,7 @@
         
         CGFloat maxHeight = cropRect.origin.y - bounds.origin.y;
         CGSize textSize = [self.helpLabel.text sizeWithFont:self.helpLabel.font
-                                          constrainedToSize:CGSizeMake(CGRectGetWidth(bounds), maxHeight)
+                                          constrainedToSize:CGSizeMake(CGRectGetWidth(cropRect), maxHeight)
                                               lineBreakMode:self.helpLabel.lineBreakMode];
         
         textFrame.size.width = textSize.width;
