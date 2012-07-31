@@ -14,10 +14,6 @@
 // coordinate system
 - (CGRect)qrRect;
 
-// Returns the rect in normalized
-//  image coordinates x->{0,1}, y->{0,1}
-- (CGRect)normalizedCropRect;
-
 - (void)willRotateToInterfaceOrientation: (UIInterfaceOrientation) orient
                                  duration: (NSTimeInterval) duration;
 @end
