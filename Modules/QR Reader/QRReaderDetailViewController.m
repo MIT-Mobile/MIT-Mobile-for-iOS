@@ -22,6 +22,8 @@
 @property (assign) UILabel *dateLabel;
 @property (assign) UITableView *scanActionTable;
 @property (strong) NSMutableArray *scanActions;
+@property (strong) NSDictionary *scanShareDetails;
+@property (strong) NSString *scanType;
 #pragma mark -
 @end
 
@@ -37,6 +39,7 @@
 @synthesize textTitleLabel = _textTitleLabel;
 @synthesize scanActionTable = scanActionTable;
 @synthesize scanActions = _scanActions;
+@synthesize scanShareDetails = _scanShareDetails;
 
 + (QRReaderDetailViewController*)detailViewControllerForResult:(QRReaderResult*)result {
     QRReaderDetailViewController *reader = [[self alloc] initWithNibName:@"QRReaderDetailViewController"
@@ -105,114 +108,23 @@
     self.dateLabel = nil;
 }
 
-- (NSDictionary*)dictionaryWithTitle:(NSString*)title iconNamed:(NSString*)iconName action:(void(^)(void))actionBlock
-{
-    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    
-    [dictionary setObject:[[actionBlock copy] autorelease]
-                   forKey:@"action"];
-    [dictionary setObject:title
-                   forKey:@"title"];
-
-    if ([iconName length])
-    {
-        [dictionary setObject:iconName
-                       forKey:@"icon-name"];
-    }
-    
-    return dictionary;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     self.loadingView.hidden = NO;
     
     // Check for any available code => URL mappings from
     // the mobile server
     {
-        NSURL *url = [NSURL URLWithString:self.scanResult.text];
-        NSString *paramKey = @"barcode";
-        if (url && [[UIApplication sharedApplication] canOpenURL:url])
-        {
-            paramKey = @"url";
-        }
         
         NSMutableDictionary *params = [NSDictionary dictionaryWithObject:self.scanResult.text
-                                                                  forKey:paramKey];
+                                                                  forKey:@"q"];
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"qr"
-                                                                                command:@""
+                                                                                command:nil
                                                                              parameters:params];
         
         operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSError *error)
         {
-            // TODO (bskinner): Make sure this is even needed and adjust the timing
-            //
-            // Prevent the loading view from 'flashing' when the view
-            // first appears (caused by the operation completing VERY
-            // quickly)
-            [NSThread sleepForTimeInterval:1.0];
-            
-            BOOL success = [[codeInfo objectForKey:@"success"] boolValue] && (error == nil);
-            NSURL *url = [NSURL URLWithString:[codeInfo objectForKey:@"url"]];
-            
-            if (url == nil)
-            {
-                url = [NSURL URLWithString:self.scanResult.text];
-            }
-            
-            BOOL canHandleURL = [[UIApplication sharedApplication] canOpenURL:url];
-            
-            [self.scanActions removeAllObjects];
-            
-            if ((success || url) && canHandleURL)
-            {
-                self.textTitleLabel.text = @"Website";
-                self.resultText = [url absoluteString];
-                
-                [self.scanActions addObject:[self dictionaryWithTitle:@"Go to website"
-                                                      iconNamed:@"global/action-external"
-                                                         action:^{
-                                                             [self pressedActionButton:nil];
-                                                         }]];
-                
-                [self.scanActions addObject:[self dictionaryWithTitle:@"Share this link"
-                                                            iconNamed:@"global/action-share"
-                                                               action:^{
-                                                                   [self pressedShareButton:nil];
-                                                               }]];
-            }
-            else
-            {
-                self.textTitleLabel.text = @"Code";
-                self.resultText = self.scanResult.text;
-                
-                [self.scanActions addObject:[self dictionaryWithTitle:@"Share this code"
-                                                            iconNamed:@"global/action-share"
-                                                               action:^{
-                                                                   [self pressedShareButton:nil];
-                                                               }]];
-            }
-            
-            self.textView.text = self.resultText;
-            [self.textView sizeToFit];
-            
-            CGFloat padding = 15.0;
-            CGRect textFrame = self.textView.frame;
-            CGRect tableFrame = self.scanActionTable.frame;
-
-            // The size of '85' is so that the table view has at least
-            // 100 pixels of space. This number can probably be tweaked a bit
-            // later on.
-            textFrame.size.height = MIN(textFrame.size.height,85);
-            tableFrame.origin.y = CGRectGetMaxY(textFrame) + padding;
-            tableFrame.size.height = CGRectGetHeight(self.view.bounds) - tableFrame.origin.y;
-            
-            self.textView.frame = textFrame;
-            self.scanActionTable.frame = tableFrame;
-            
-            self.dateLabel.text = [NSString stringWithFormat:@"Scanned %@", [NSDateFormatter relativeDateStringFromDate:self.scanResult.date
-                                                                       toDate:[NSDate date]]];
-            [self.scanActionTable reloadData];
-            self.loadingView.hidden = YES;
+            [self handleScanInfoResponse:codeInfo
+                                   error:error];
         };
         
         self.urlMappingOperation = operation;
@@ -231,38 +143,104 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+- (void)handleScanInfoResponse:(NSDictionary*)codeInfo error:(NSError*)error
+{
+    // TODO (bskinner): Make sure this is even needed and adjust the timing
+    //
+    // Prevent the loading view from 'flashing' when the view
+    // first appears (caused by the operation completing VERY
+    // quickly)
+    [NSThread sleepForTimeInterval:1.0];
+    
+    BOOL success = (error == nil) && [[codeInfo objectForKey:@"success"] boolValue];
+    
+    [self.scanActions removeAllObjects];
+    
+    if (success)
+    {
+        NSArray *actions = [codeInfo objectForKey:@"actions"];
+        for (NSDictionary *action in actions)
+        {
+            [self.scanActions addObject:action];
+        }
+        
+        self.scanShareDetails = [codeInfo objectForKey:@"share"];
+        self.textTitleLabel.text = [codeInfo objectForKey:@"displayType"];
+        self.textView.text = [codeInfo objectForKey:@"displayName"];
+        self.scanType = [codeInfo objectForKey:@"type"];
+    }
+    else
+    {
+        NSURL *url = [NSURL URLWithString:self.scanResult.text];
+        if ([[UIApplication sharedApplication] canOpenURL:url])
+        {
+            self.scanShareDetails = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Share this website", self.scanResult.text, nil]
+                                                            forKeys:[NSArray arrayWithObjects:@"title",@"data", nil]];
+            [self.scanActions addObject:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Open this website", self.scanResult.text, nil]
+                                                                    forKeys:[NSArray arrayWithObjects:@"title",@"url", nil]]];
+            self.scanType = @"Website";
+            self.textTitleLabel.text = @"Website";
+            self.textView.text = self.scanResult.text;
+        }
+        else
+        {
+            self.scanShareDetails = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Share this code", self.scanResult.text, nil]
+                                                                forKeys:[NSArray arrayWithObjects:@"title",@"data", nil]];
+            self.scanType = @"Code";
+            self.textTitleLabel.text = @"Code";
+            self.textView.text = self.scanResult.text;
+        }
+    }
+    
+    [self.textView sizeToFit];
+    
+    CGFloat padding = 15.0;
+    CGRect textFrame = self.textView.frame;
+    CGRect tableFrame = self.scanActionTable.frame;
+    
+    // The size of '85' is so that the table view has at least
+    // 100 pixels of space. This number can probably be tweaked a bit
+    // later on.
+    textFrame.size.height = MIN(textFrame.size.height,85);
+    tableFrame.origin.y = CGRectGetMaxY(textFrame) + padding;
+    tableFrame.size.height = CGRectGetHeight(self.view.bounds) - tableFrame.origin.y;
+    
+    self.textView.frame = textFrame;
+    self.scanActionTable.frame = tableFrame;
+    
+    self.dateLabel.text = [NSString stringWithFormat:@"Scanned %@", [NSDateFormatter relativeDateStringFromDate:self.scanResult.date
+                                                                                                         toDate:[NSDate date]]];
+    [self.scanActionTable reloadData];
+    self.loadingView.hidden = YES;
+}
+
 #pragma mark -
 #pragma mark IBAction methods
 - (IBAction)pressedShareButton:(id)sender {
-    self.shareDelegate = self;
-    [self share:self];
+    if (self.scanShareDetails)
+    {
+        self.shareDelegate = self;
+        [self share:self];
+    }
 }
 
 - (IBAction)pressedActionButton:(id)sender {
     NSString *altURL = self.resultText;
-    
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:altURL]];
-    
-    // Bouncing to an internal link
-    if ([altURL hasPrefix:@"mitmobile"]) {
-        [self.navigationController setToolbarHidden:YES
-                                           animated:YES];
-    }
 }
-
 
 #pragma mark -
 #pragma mark ShareItemDelegate (MIT)
 - (NSString *)actionSheetTitle {
-	return @"Share This Link";
+	return [self.scanShareDetails objectForKey:@"data"];
 }
 
 - (NSString *)emailSubject {
-	return [NSString stringWithFormat:@"%@", self.scanResult.text];
+	return self.textView.text;
 }
 
 - (NSString *)emailBody {
-	return [NSString stringWithFormat:@"I thought you might be interested in this link...\n\n%@", self.resultText];
+	return [NSString stringWithFormat:@"I thought you might be interested in this %@...\n\n%@", [self.scanType lowercaseString], self.textView.text];
 }
 
 - (NSString *)fbDialogPrompt {
@@ -275,13 +253,13 @@
 			"\"href\":\"%@\","
 			"\"description\":\"%@\""
 			"}",
-			self.scanResult.text,
-            self.resultText,
-            @"MIT QR Code"];
+			@"MIT scan result",
+            self.textView.text,
+            self.textTitleLabel.text];
 }
 
 - (NSString *)twitterUrl {
-    return self.resultText;
+    return self.textView.text;
 }
 
 - (NSString *)twitterTitle {
@@ -292,13 +270,23 @@
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
     
-    dispatch_block_t action = [cellDetails objectForKey:@"action"];
-    if (action)
+    if (indexPath.row < [self.scanActions count])
     {
-        dispatch_async(dispatch_get_main_queue(), action);
+        NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
+        NSURL *url = [NSURL URLWithString:[cellDetails objectForKey:@"url"]];
+        
+        if ([[UIApplication sharedApplication] canOpenURL:url])
+        {
+            [[UIApplication sharedApplication] openURL:url];
+        }
     }
+    else if (self.scanShareDetails)
+    {
+        self.shareDelegate = self;
+        [self share:self];
+    }
+    
     
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];
@@ -317,18 +305,19 @@
                                       reuseIdentifier:actionCellIdentifier];
     }
     
-    NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
     
-    cell.textLabel.text = [cellDetails objectForKey:@"title"];
-    
-    NSString *iconName = [cellDetails objectForKey:@"icon-name"];
-    if ([iconName length])
+    if (indexPath.row < [self.scanActions count])
     {
-        UIImage *icon = [UIImage imageNamed:iconName];
-        UIImage *highlightIcon = [UIImage imageNamed:[NSString stringWithFormat:@"%@-highlight", iconName]];
+        NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
         
-        cell.accessoryView = [[UIImageView alloc] initWithImage:icon
-                                               highlightedImage:highlightIcon];
+        cell.textLabel.text = [cellDetails objectForKey:@"title"];
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-external"]
+                                               highlightedImage:[UIImage imageNamed:@"global/action-external-highlight"]];
+    }
+    else
+    {
+        cell.textLabel.text = [self.scanShareDetails objectForKey:@"title"];
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-share"]];
     }
     
     return cell;
@@ -336,6 +325,8 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.scanActions count];
+    int count = [self.scanActions count];
+    count += [self.scanShareDetails count] ? 1 : 0;
+    return count;
 }
 @end
