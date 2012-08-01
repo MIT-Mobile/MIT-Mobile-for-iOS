@@ -427,11 +427,8 @@
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         [self.historyEntries deleteScanResult:result];
-        [tableView reloadData];
-        
-        if ([self.historyEntries.results count] == 0) {
-            //[self showHelp:nil];
-        }
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                         withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
