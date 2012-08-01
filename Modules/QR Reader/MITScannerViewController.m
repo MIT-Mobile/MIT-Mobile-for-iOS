@@ -199,11 +199,14 @@
     {
         UIImageView *unsupportedView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"qrreader/camera-unsupported"]];
         unsupportedView.backgroundColor = [UIColor clearColor];
-        unsupportedView.frame = [scanView convertRect:self.overlayView.qrRect
-                                             fromView:self.overlayView];
+        CGRect cropRect = [scanView convertRect:self.overlayView.qrRect
+                                       fromView:self.overlayView];
+        CGRect frame = CGRectInset(cropRect,
+                                   (CGRectGetWidth(cropRect) - unsupportedView.image.size.width) / 2.0,
+                                   (CGRectGetHeight(cropRect) - unsupportedView.image.size.height) / 2.0);
+        unsupportedView.frame = frame;
         [scanView addSubview:unsupportedView];
         self.unsupportedView = unsupportedView;
-        NSLog(@"%@",NSStringFromCGRect(unsupportedView.frame));
     }
     
     resultView = scanView;
@@ -214,6 +217,7 @@
 - (UIView*)loadHistoryViewWithFrame:(CGRect)viewFrame
 {
     UIView *historyView = [[[UIView alloc] initWithFrame:viewFrame] autorelease];
+    historyView.hidden = YES;
     
     // Setup the table view for viewing the history
     {
