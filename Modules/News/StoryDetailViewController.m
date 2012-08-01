@@ -212,7 +212,7 @@
 }
 
 - (NSString *)actionSheetTitle {
-	return [NSString stringWithString:@"Share article with a friend"];
+	return @"Share article with a friend";
 }
 
 - (NSString *)emailSubject {

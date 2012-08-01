@@ -522,7 +522,7 @@
 #pragma mark ShareItemDelegate
 
 - (NSString *)actionSheetTitle {
-	return [NSString stringWithString:@"Share this event"];
+	return @"Share this event";
 }
 
 - (NSString *)emailSubject {

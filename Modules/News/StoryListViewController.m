@@ -1113,7 +1113,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
             }
             else
             {
-                ELog(@"%s attempted to show non-existent row (%d) with actual count of %d", NSStringFromSelector(_cmd), indexPath.row, self.stories.count);
+                ELog(@"%@ attempted to show non-existent row (%d) with actual count of %d", NSStringFromSelector(_cmd), indexPath.row, self.stories.count);
             }
         }
             break;

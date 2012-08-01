@@ -49,11 +49,11 @@ static ToursDataManager *s_toursDataManager = nil;
 + (NSString *)labelForVisitStatus:(TourSiteVisitStatus)visitStatus {
     switch (visitStatus) {
         case TourSiteVisited:
-            return [NSString stringWithString:@"Visited"];
+            return @"Visited";
         case TourSiteVisiting:
-            return [NSString stringWithString:@"Current stop"];
+            return @"Current stop";
         case TourSiteNotVisited:
-            return [NSString stringWithString:@"Not yet visited"];
+            return @"Not yet visited";
         default:
             return nil;
     }
