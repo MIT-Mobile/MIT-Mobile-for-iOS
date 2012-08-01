@@ -156,6 +156,23 @@
         self.overlayView = overlay;
     }
     
+    {
+        UIButton *info = [UIButton buttonWithType:UIButtonTypeInfoLight];
+        [info addTarget:self
+                 action:@selector(showHelp:)
+       forControlEvents:UIControlEventTouchUpInside];
+        
+        CGRect frame = info.bounds;
+        CGRect parentBounds = scanView.bounds;
+        frame.origin.x = CGRectGetMaxX(parentBounds) - (CGRectGetWidth(frame) * 2.0);
+        frame.origin.y = CGRectGetMaxY(parentBounds) - (CGRectGetHeight(frame) * 2.0);
+        
+        info.frame = frame;
+        self.infoButton = info;
+        [scanView insertSubview:info
+                   aboveSubview:self.overlayView];
+    }
+    
     if (scanningSupported)
     {
         {
@@ -176,23 +193,6 @@
             [scanView insertSubview:readerView
                        belowSubview:self.overlayView];
             self.readerView = readerView;
-        }
-        
-        {
-            UIButton *info = [UIButton buttonWithType:UIButtonTypeInfoLight];
-            [info addTarget:self
-                     action:@selector(showHelp:)
-           forControlEvents:UIControlEventTouchUpInside];
-            
-            CGRect frame = info.bounds;
-            CGRect parentBounds = scanView.bounds;
-            frame.origin.x = CGRectGetMaxX(parentBounds) - (CGRectGetWidth(frame) * 2.0);
-            frame.origin.y = CGRectGetMaxY(parentBounds) - (CGRectGetHeight(frame) * 2.0);
-            
-            info.frame = frame;
-            self.infoButton = info;
-            [scanView insertSubview:info
-                       aboveSubview:self.overlayView];
         }
     }
     else
