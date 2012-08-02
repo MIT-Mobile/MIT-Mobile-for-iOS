@@ -182,14 +182,6 @@
             readerView.frame = scanView.bounds;
             readerView.readerDelegate = self;
             
-            CGRect cropRect = [self.readerView convertRect:[self.overlayView qrRect]
-                                                  fromView:self.overlayView];
-            
-            CGRect normalizedRect = CGRectNormalizeRectInRect(cropRect, readerView.bounds);
-            normalizedRect.origin.x = 0;
-            normalizedRect.size.width = 1;
-            readerView.scanCrop = normalizedRect;
-            
             [scanView insertSubview:readerView
                        belowSubview:self.overlayView];
             self.readerView = readerView;
