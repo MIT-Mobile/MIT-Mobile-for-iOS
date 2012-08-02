@@ -17,7 +17,6 @@
 #import "UIKit+MITAdditions.h"
 #import "QRReaderResult.h"
 #import "NSDateFormatter+RelativeString.h"
-#import "QRReaderHelpView.h"
 
 @interface MITScannerViewController () <ZBarReaderViewDelegate,UITableViewDelegate, UITableViewDataSource>
 
