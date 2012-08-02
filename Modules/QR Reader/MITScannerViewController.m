@@ -17,7 +17,7 @@
 #import "UIKit+MITAdditions.h"
 #import "QRReaderResult.h"
 #import "NSDateFormatter+RelativeString.h"
-#import "QRReaderHelpView.h"
+#import "MITScannerHelpViewController.h"
 
 @interface MITScannerViewController () <ZBarReaderViewDelegate,UITableViewDelegate, UITableViewDataSource>
 
@@ -307,7 +307,10 @@
 
 - (IBAction)showHelp:(id)sender
 {
-    /* Do Nothing...for now */
+    MITScannerHelpViewController *vc = [[[MITScannerHelpViewController alloc] init] autorelease];
+    vc.modalPresentationStyle = UIModalPresentationCurrentContext;
+    [self.navigationController presentModalViewController:vc
+                                                 animated:YES];
 }
 
 - (BOOL)isCaptureActive
@@ -335,8 +338,7 @@
 #pragma mark - Scanning Methods
 - (BOOL)isScanningSupported
 {
-    return [UIImagePickerController isCameraDeviceAvailable:(UIImagePickerControllerCameraDeviceFront |
-                                                             UIImagePickerControllerCameraDeviceRear)];
+    return [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear];
 }
 
 - (void)readerView:(ZBarReaderView*)readerView
