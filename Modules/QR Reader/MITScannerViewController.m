@@ -343,8 +343,7 @@
 #pragma mark - Scanning Methods
 - (BOOL)isScanningSupported
 {
-    return [UIImagePickerController isCameraDeviceAvailable:(UIImagePickerControllerCameraDeviceFront |
-                                                             UIImagePickerControllerCameraDeviceRear)];
+    return [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear];
 }
 
 - (void)readerView:(ZBarReaderView*)readerView
