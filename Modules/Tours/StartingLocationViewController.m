@@ -56,7 +56,7 @@
         if (startLocation.photoURL) {
             NSString *photoFile = startLocation.photoFile;
             if (![[NSFileManager defaultManager] fileExistsAtPath:photoFile]) {
-                photoFile = [NSString stringWithString:@"tours/tour_photo_loading_animation.gif"];
+                photoFile = @"tours/tour_photo_loading_animation.gif";
                 [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
                 ConnectionWrapper *connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
                 [connections addObject:connection];

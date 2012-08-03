@@ -41,7 +41,7 @@
 
 - (void)loadView {
     CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
-    UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
+    UIView *mainView = [[[UIView alloc] initWithFrame:mainFrame] autorelease];
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;

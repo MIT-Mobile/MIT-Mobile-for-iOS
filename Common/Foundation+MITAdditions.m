@@ -265,7 +265,8 @@ typedef struct {
     memset(result, 0, size);
     status = sysctlbyname(typeString, result, &size, NULL, 0);
     if (status) {
-        ELog(@"sysctl '%@' failed: %s", typeSpecifier, strerror(status));
+        ELog(@"sysctl '%@' failed: %s", typeSpecifier, (const char*)strerror(status));
+        free(result);
         return nil;
     }
     

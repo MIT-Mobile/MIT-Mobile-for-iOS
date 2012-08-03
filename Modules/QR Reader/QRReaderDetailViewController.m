@@ -301,8 +301,8 @@
     
     if (cell == nil)
     {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                      reuseIdentifier:actionCellIdentifier];
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                      reuseIdentifier:actionCellIdentifier] autorelease];
     }
     
     
@@ -311,13 +311,13 @@
         NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
         
         cell.textLabel.text = [cellDetails objectForKey:@"title"];
-        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-external"]
-                                               highlightedImage:[UIImage imageNamed:@"global/action-external-highlight"]];
+        cell.accessoryView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-external"]
+                                               highlightedImage:[UIImage imageNamed:@"global/action-external-highlight"]] autorelease];
     }
     else
     {
         cell.textLabel.text = [self.scanShareDetails objectForKey:@"title"];
-        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-share"]];
+        cell.accessoryView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-share"]] autorelease];
     }
     
     return cell;

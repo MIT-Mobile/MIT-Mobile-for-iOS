@@ -82,6 +82,14 @@
     return self;
 }
 
+- (void)dealloc
+{
+    self.scanView = nil;
+    self.historyView = nil;
+    self.historyEntries = nil;
+    [super dealloc];
+}
+
 - (void)loadView
 {
     CGFloat navBarHeight = (self.navigationController.navigationBarHidden ?
@@ -185,7 +193,7 @@
     }
     else
     {
-        UIImageView *unsupportedView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"qrreader/camera-unsupported"]];
+        UIImageView *unsupportedView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"qrreader/camera-unsupported"]] autorelease];
         unsupportedView.backgroundColor = [UIColor clearColor];
         CGRect cropRect = [scanView convertRect:self.overlayView.qrRect
                                        fromView:self.overlayView];
