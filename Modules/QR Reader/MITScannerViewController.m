@@ -240,6 +240,11 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    if (self.navigationController.modalViewController == nil)
+    {
+        self.navigationController.navigationBar.translucent = NO;
+    }
+    
     [self stopCapture];
 }
 
