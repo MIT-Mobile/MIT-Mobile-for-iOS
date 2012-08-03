@@ -84,15 +84,14 @@
 
 - (void)loadView
 {
-    CGRect frame = [[UIScreen mainScreen] applicationFrame];
-    UIView *mainView = [[[UIView alloc] initWithFrame:frame] autorelease];
-    mainView.backgroundColor = [UIColor blackColor];
-    self.view = mainView;
-    
     CGFloat navBarHeight = (self.navigationController.navigationBarHidden ?
                             0.0 :
                             CGRectGetHeight(self.navigationController.navigationBar.frame));
     
+    CGRect frame = [[UIScreen mainScreen] applicationFrame];
+    UIView *mainView = [[[UIView alloc] initWithFrame:frame] autorelease];
+    mainView.backgroundColor = [UIColor blackColor];
+    self.view = mainView;
     
     self.scanView = [self loadScannerViewWithFrame:mainView.bounds];
     [mainView addSubview:self.scanView];
@@ -112,7 +111,6 @@
 
 - (UIView*)loadScannerViewWithFrame:(CGRect)viewFrame
 {
-    UIView *resultView = nil;
     BOOL scanningSupported = self.isScanningSupported;
     
     
@@ -124,8 +122,6 @@
     UIView *scanView = [[[UIView alloc] initWithFrame:viewFrame] autorelease];
     
     scanView.backgroundColor = [UIColor blackColor];
-    scanView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                 UIViewAutoresizingFlexibleWidth);
     
     // View hierarchy for the scanView
     // This should be in the order (top-most view first):
@@ -201,9 +197,7 @@
         self.unsupportedView = unsupportedView;
     }
     
-    resultView = scanView;
-    
-    return resultView;
+    return scanView;
 }
 
 - (UIView*)loadHistoryViewWithFrame:(CGRect)viewFrame
@@ -232,11 +226,11 @@
     }
     
     self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    self.navigationController.navigationBar.translucent = NO;
     [self stopCapture];
 }
 
@@ -354,6 +348,7 @@
     
     if (readerSymbol)
     {
+        DLog(@"Found symbol '%@' with type '%@'", readerSymbol.data, readerSymbol.typeName);
         self.navigationController.navigationBar.userInteractionEnabled = NO;
         [self stopCapture];
         AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
