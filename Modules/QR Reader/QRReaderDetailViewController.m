@@ -110,6 +110,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     self.loadingView.hidden = NO;
+    self.navigationController.navigationBar.translucent = NO;
     
     // Check for any available code => URL mappings from
     // the mobile server
