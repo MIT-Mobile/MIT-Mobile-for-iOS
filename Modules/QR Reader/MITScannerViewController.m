@@ -18,6 +18,8 @@
 #import "QRReaderResult.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "MITScannerHelpViewController.h"
+#import "UIImage+Resize.h"
+#import "CoreDataManager.h"
 
 @interface MITScannerViewController () <ZBarReaderViewDelegate,UITableViewDelegate, UITableViewDataSource>
 
@@ -354,15 +356,13 @@
          fromImage:(UIImage*)image
 {
     ZBarSymbol *readerSymbol = nil;
-    for( ZBarSymbol *symbol in symbols)
-    {
-        readerSymbol = symbol;
+    
+    // Grab the first symbol
+    for(readerSymbol in symbols)
         break;
-    }
     
     if (readerSymbol)
     {
-        DLog(@"Found symbol '%@' with type '%@'", readerSymbol.data, readerSymbol.typeName);
         self.navigationController.navigationBar.userInteractionEnabled = NO;
         [self stopCapture];
         AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
@@ -370,7 +370,9 @@
         
         QRReaderResult *result = [[QRReaderHistoryData sharedHistory] insertScanResult:readerSymbol.data
                                                                               withDate:[NSDate date]
-                                                                             withImage:image];
+                                                                             withImage:[UIImage imageWithCGImage:image.CGImage
+                                                                                                           scale:1.0
+                                                                                                     orientation:image.imageOrientation]];
         
         QRReaderDetailViewController *viewController = [QRReaderDetailViewController detailViewControllerForResult:result];
         
@@ -408,7 +410,19 @@
     cell.textLabel.numberOfLines = 3;
     cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date
                                                                      toDate:[NSDate date]];
-    cell.imageView.image = result.image;
+    
+    if (result.thumbnail == nil)
+    {
+        result.thumbnail = [result.image resizedImage:[QRReaderHistoryData defaultThumbnailSize]
+                                 interpolationQuality:kCGInterpolationDefault];
+        [CoreDataManager saveData];
+    }
+
+    CGRect frame = cell.imageView.frame;
+    frame.size = result.thumbnail.size;
+    cell.imageView.frame = frame;
+    cell.imageView.image = result.thumbnail;
+    cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
     
     return cell;
 }
@@ -444,8 +458,16 @@
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     QRReaderResult *result = [self.historyEntries.results objectAtIndex:indexPath.row];
+    
+    CGSize imageSize = [QRReaderHistoryData defaultImageSize];
+    if (CGSizeEqualToSize(imageSize, result.image.size) == NO)
+    {
+        result.image = [result.image resizedImage:imageSize
+                             interpolationQuality:kCGInterpolationDefault];
+        [CoreDataManager saveData];
+    }
+    
     QRReaderDetailViewController *detailView = [QRReaderDetailViewController detailViewControllerForResult:result];
-    [detailView setToolbarItems:self.toolbarItems];
     [self.navigationController pushViewController:detailView
                                          animated:YES];
     [tableView deselectRowAtIndexPath:indexPath
@@ -454,7 +476,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 96.0;
+    CGSize thumbnailSize = [QRReaderHistoryData defaultThumbnailSize];
+    return thumbnailSize.height;
 }
 
 @end
