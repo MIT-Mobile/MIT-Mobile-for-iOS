@@ -1,5 +1,6 @@
 #import "QRReaderHistoryData.h"
 #import "QRReaderResult.h"
+#import "UIImage+Resize.h"
 #import "CoreDataManager.h"
 
 static QRReaderHistoryData *sharedHistoryData = nil;
@@ -11,6 +12,17 @@ static QRReaderHistoryData *sharedHistoryData = nil;
 @implementation QRReaderHistoryData
 @synthesize mutableResults = _mutableResults;
 @dynamic results;
+
+
++ (CGSize)defaultImageSize
+{
+    return CGSizeMake(320,240);
+}
+
++ (CGSize)defaultThumbnailSize
+{
+    return CGSizeMake(96,96);
+}
 
 - (id)init {
     self = [super init];
@@ -51,11 +63,21 @@ static QRReaderHistoryData *sharedHistoryData = nil;
 
 - (QRReaderResult*)insertScanResult:(NSString*)scanResult
                            withDate:(NSDate*)date
-                          withImage:(UIImage*)image {
+                          withImage:(UIImage*)image
+{
     QRReaderResult *result = (QRReaderResult*)[[CoreDataManager coreDataManager] insertNewObjectForEntityForName:QRReaderResultEntityName];
     result.text = scanResult;
     result.date = date;
-    result.image = image;
+    
+    if (image)
+    {
+        result.image = [image resizedImage:[QRReaderHistoryData defaultImageSize]
+                      interpolationQuality:kCGInterpolationDefault];
+        
+        result.thumbnail = [image resizedImage:[QRReaderHistoryData defaultThumbnailSize]
+                          interpolationQuality:kCGInterpolationDefault];
+    }
+    
     [[CoreDataManager coreDataManager] saveData];
     
     [self.mutableResults insertObject:result

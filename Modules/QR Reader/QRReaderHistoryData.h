@@ -7,6 +7,9 @@
 @property (nonatomic, retain) NSArray *results;
 + (QRReaderHistoryData*)sharedHistory;
 
++ (CGSize)defaultImageSize;
++ (CGSize)defaultThumbnailSize;
+
 - (void)eraseAll;
 
 - (QRReaderResult*)insertScanResult:(NSString*)scanResult withDate:(NSDate*)date;

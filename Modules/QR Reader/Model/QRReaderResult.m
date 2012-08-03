@@ -5,5 +5,6 @@
 @dynamic date;
 @dynamic text;
 @dynamic image;
+@dynamic thumbnail;
 
 @end
