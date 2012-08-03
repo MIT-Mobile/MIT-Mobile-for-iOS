@@ -154,23 +154,39 @@
     
     BOOL success = (error == nil) && [[codeInfo objectForKey:@"success"] boolValue];
     
-    [self.scanActions removeAllObjects];
+    NSArray *actions = [codeInfo objectForKey:@"actions"];
+    BOOL validResponse = actions && [actions isKindOfClass:[NSArray class]];
     
-    if (success)
+    if (success && validResponse)
     {
-        NSArray *actions = [codeInfo objectForKey:@"actions"];
+        [self.scanActions removeAllObjects];
         for (NSDictionary *action in actions)
         {
-            [self.scanActions addObject:action];
+            if ([action isKindOfClass:[NSDictionary class]] == NO)
+            {
+                validResponse = NO;
+                break;
+            }
+            else
+            {
+                [self.scanActions addObject:action];
+            }
         }
         
-        self.scanShareDetails = [codeInfo objectForKey:@"share"];
-        self.textTitleLabel.text = [codeInfo objectForKey:@"displayType"];
-        self.textView.text = [codeInfo objectForKey:@"displayName"];
-        self.scanType = [codeInfo objectForKey:@"type"];
+        if (validResponse)
+        {
+            self.scanShareDetails = [codeInfo objectForKey:@"share"];
+            self.textTitleLabel.text = [codeInfo objectForKey:@"displayType"];
+            self.textView.text = [codeInfo objectForKey:@"displayName"];
+            self.scanType = [codeInfo objectForKey:@"type"];
+        }
     }
-    else
+    
+    if (validResponse == NO)
     {
+        DLog(@"Did not recieve a valid action response from the server for code '%@'", self.scanResult.text);
+        
+        [self.scanActions removeAllObjects];
         NSURL *url = [NSURL URLWithString:self.scanResult.text];
         if ([[UIApplication sharedApplication] canOpenURL:url])
         {
