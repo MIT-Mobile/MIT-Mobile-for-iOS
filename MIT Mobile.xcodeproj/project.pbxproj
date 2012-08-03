@@ -117,7 +117,6 @@
 		2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D41416B1AC0014E141 /* MITTabBar.m */; };
 		2CFB87D91416B1AC0014E141 /* MITTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D61416B1AC0014E141 /* MITTabView.m */; };
 		2CFBF916138EC2610080883D /* FacilitiesSubmitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFBF915138EC2610080883D /* FacilitiesSubmitViewController.m */; };
-		2CFCABA3135DE705006464AF /* QRReaderResultTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCABA2135DE705006464AF /* QRReaderResultTransform.m */; };
 		3A827081103DAA0500BB4109 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A827080103DAA0500BB4109 /* Reachability.m */; };
 		3A82708D103DAA2400BB4109 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */; };
 		3A827171103DBC6F00BB4109 /* ConnectionDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A82716F103DBC6F00BB4109 /* ConnectionDetector.m */; };
@@ -552,7 +551,6 @@
 		2C95A1D5137DB24D0025B28D /* FacilitiesSummaryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesSummaryViewController.h; sourceTree = "<group>"; };
 		2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesSummaryViewController.m; sourceTree = "<group>"; };
 		2C95A1D7137DB24D0025B28D /* FacilitiesSummaryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesSummaryViewController.xib; sourceTree = "<group>"; };
-		2C96776113575E8900F52BDB /* QRReaderResultTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderResultTransform.h; sourceTree = "<group>"; };
 		2C96FD93143CA3C500A2E798 /* MITModule+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MITModule+Protected.h"; sourceTree = "<group>"; };
 		2C99DCAD1370508D00114A9A /* HighlightLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightLabel.h; sourceTree = "<group>"; };
 		2C99DCAE1370508D00114A9A /* HighlightLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightLabel.m; sourceTree = "<group>"; };
@@ -603,7 +601,6 @@
 		2CFB87D61416B1AC0014E141 /* MITTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabView.m; sourceTree = "<group>"; };
 		2CFBF914138EC2610080883D /* FacilitiesSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesSubmitViewController.h; sourceTree = "<group>"; };
 		2CFBF915138EC2610080883D /* FacilitiesSubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesSubmitViewController.m; sourceTree = "<group>"; };
-		2CFCABA2135DE705006464AF /* QRReaderResultTransform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResultTransform.m; sourceTree = "<group>"; };
 		3A82707F103DAA0500BB4109 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A827080103DAA0500BB4109 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = ../../../../../System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SOURCE_ROOT; };
@@ -1563,8 +1560,6 @@
 				2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */,
 				2CDF3020134E05ED007C6813 /* QRReaderHistoryData.h */,
 				2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */,
-				2C96776113575E8900F52BDB /* QRReaderResultTransform.h */,
-				2CFCABA2135DE705006464AF /* QRReaderResultTransform.m */,
 				2CED98F013534B2C0034F6F1 /* QRReaderDetailView */,
 				2CB64604134CF10700E85E64 /* MITScannerOverlayView */,
 				2C927AD913561A41008A8A36 /* QRReaderHelpView */,
@@ -2826,7 +2821,6 @@
 				2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */,
 				2C77F0321355EE2500CD11D6 /* QRReaderResult.m in Sources */,
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
-				2CFCABA3135DE705006464AF /* QRReaderResultTransform.m in Sources */,
 				3A827081103DAA0500BB4109 /* Reachability.m in Sources */,
 				4499332E11A371CF00A7041B /* RecentSearchesViewController.m in Sources */,
 				44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */,
