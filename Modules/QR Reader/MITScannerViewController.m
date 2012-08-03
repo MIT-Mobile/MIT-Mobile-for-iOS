@@ -184,6 +184,7 @@
             readerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                            UIViewAutoresizingFlexibleWidth);
             readerView.frame = scanView.bounds;
+            readerView.torchMode = AVCaptureTorchModeOff;
             readerView.readerDelegate = self;
             
             [scanView insertSubview:readerView
