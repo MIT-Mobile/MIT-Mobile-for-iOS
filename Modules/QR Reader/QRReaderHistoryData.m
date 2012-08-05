@@ -2,6 +2,7 @@
 #import "QRReaderResult.h"
 #import "UIImage+Resize.h"
 #import "CoreDataManager.h"
+#import "UIKit+MITAdditions.h"
 
 static QRReaderHistoryData *sharedHistoryData = nil;
 
@@ -12,12 +13,6 @@ static QRReaderHistoryData *sharedHistoryData = nil;
 @implementation QRReaderHistoryData
 @synthesize mutableResults = _mutableResults;
 @dynamic results;
-
-
-+ (CGSize)defaultImageSize
-{
-    return CGSizeMake(320,240);
-}
 
 + (CGSize)defaultThumbnailSize
 {
@@ -71,11 +66,13 @@ static QRReaderHistoryData *sharedHistoryData = nil;
     
     if (image)
     {
-        result.image = [image resizedImage:[QRReaderHistoryData defaultImageSize]
-                      interpolationQuality:kCGInterpolationDefault];
+        image = [[UIImage imageWithCGImage:image.CGImage
+                                    scale:1.0
+                              orientation:UIImageOrientationUp] imageByRotatingImageInRadians:-M_PI_2];
         
-        result.thumbnail = [image resizedImage:[QRReaderHistoryData defaultThumbnailSize]
-                          interpolationQuality:kCGInterpolationDefault];
+        result.image = image;
+        result.thumbnail =  [image resizedImage:[QRReaderHistoryData defaultThumbnailSize]
+                           interpolationQuality:kCGInterpolationDefault];
     }
     
     [[CoreDataManager coreDataManager] saveData];
