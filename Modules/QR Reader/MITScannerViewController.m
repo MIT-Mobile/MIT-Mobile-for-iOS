@@ -370,9 +370,7 @@
         
         QRReaderResult *result = [[QRReaderHistoryData sharedHistory] insertScanResult:readerSymbol.data
                                                                               withDate:[NSDate date]
-                                                                             withImage:[UIImage imageWithCGImage:image.CGImage
-                                                                                                           scale:1.0
-                                                                                                     orientation:image.imageOrientation]];
+                                                                             withImage:image];
         
         QRReaderDetailViewController *viewController = [QRReaderDetailViewController detailViewControllerForResult:result];
         
