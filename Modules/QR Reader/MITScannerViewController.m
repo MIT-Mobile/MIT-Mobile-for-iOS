@@ -411,6 +411,9 @@
     
     if (result.thumbnail == nil)
     {
+        result.image = [[UIImage imageWithCGImage:result.image.CGImage
+                                            scale:1.0
+                                      orientation:UIImageOrientationUp] imageByRotatingImageInRadians:-M_PI_2];
         result.thumbnail = [result.image resizedImage:[QRReaderHistoryData defaultThumbnailSize]
                                  interpolationQuality:kCGInterpolationDefault];
         [CoreDataManager saveData];
@@ -457,10 +460,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     QRReaderResult *result = [self.historyEntries.results objectAtIndex:indexPath.row];
     
-    CGSize imageSize = [QRReaderHistoryData defaultImageSize];
-    if (CGSizeEqualToSize(imageSize, result.image.size) == NO)
+    
+    if (result.image.imageOrientation != UIImageOrientationUp)
     {
-        result.image = [result.image resizedImage:imageSize
+        result.image = [result.image resizedImage:result.image.size
                              interpolationQuality:kCGInterpolationDefault];
         [CoreDataManager saveData];
     }
