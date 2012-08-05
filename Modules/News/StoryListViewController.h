@@ -17,7 +17,6 @@ typedef enum {
 
 @interface StoryListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, MITSearchDisplayDelegate, StoryXMLParserDelegate, NavScrollerDelegate> {
 	UITableView *storyTable;
-    NSArray *stories;
     NSArray *_categories;
     NSInteger activeCategoryId;
 	StoryXMLParser *xmlParser;

@@ -45,7 +45,7 @@
 
 @implementation StoryListViewController
 
-@synthesize stories;
+@synthesize stories = _stories;
 @synthesize searchResults;
 @synthesize searchQuery;
 @synthesize categories = _categories;
