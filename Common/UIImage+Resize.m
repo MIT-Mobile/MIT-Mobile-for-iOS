@@ -6,6 +6,60 @@
 #import "UIImage+Resize.h"
 
 @implementation UIImage (Resize)
+-(UIImage*)imageByRotatingImageInRadians:(float)radians
+{
+	const size_t width = self.size.width;
+	const size_t height = self.size.height;
+    
+    static CGColorSpaceRef rgbColorSpace = NULL;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{ rgbColorSpace = CGColorSpaceCreateDeviceRGB(); });
+	
+    CGRect imgRect = CGRectMake(0.0, 0.0, width, height);
+    
+	CGRect rotatedRect = CGRectApplyAffineTransform(imgRect, CGAffineTransformMakeRotation(radians));
+    
+    
+	CGContextRef bmpContext = CGBitmapContextCreate(NULL,
+                                                   rotatedRect.size.width,
+                                                   rotatedRect.size.height,
+                                                   8,
+                                                   0,
+                                                   rgbColorSpace,
+                                                   kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedFirst);
+	if (bmpContext == NULL)
+    {
+		return nil;
+    }
+    
+	CGContextSetShouldAntialias(bmpContext, true);
+	CGContextSetAllowsAntialiasing(bmpContext, true);
+	CGContextSetInterpolationQuality(bmpContext, kCGInterpolationHigh);
+    
+	// Rotation here (based around the center)
+	CGContextTranslateCTM(bmpContext,
+                          (rotatedRect.size.width * 0.5f),
+                          (rotatedRect.size.height * 0.5f));
+	CGContextRotateCTM(bmpContext, radians);
+    
+	// Copy the image into the bitmap context
+    CGRect drawRect = CGRectMake(-(width * 0.5),
+                                 -(height * 0.5),
+                                 width,
+                                 height);
+	CGContextDrawImage(bmpContext, drawRect, self.CGImage);
+    
+	// Create a UIImage object from the context
+	CGImageRef rotatedImageRef = CGBitmapContextCreateImage(bmpContext);
+	UIImage* rotated = [UIImage imageWithCGImage:rotatedImageRef];
+    
+	// Clean up the CF* stuff
+	CGImageRelease(rotatedImageRef);
+	CGContextRelease(bmpContext);
+    
+	return rotated;
+}
+
 // Returns a rescaled copy of the image, taking into account its orientation
 // The image will be scaled disproportionately if necessary to fit the bounds specified by the parameter
 - (UIImage *)resizedImage:(CGSize)newSize interpolationQuality:(CGInterpolationQuality)quality {
@@ -126,5 +180,4 @@
     
     return transform;
 }
-
 @end

@@ -14,4 +14,6 @@
      interpolationQuality:(CGInterpolationQuality)quality;
 
 - (CGAffineTransform)transformForOrientation:(CGSize)newSize;
+
+-(UIImage*)imageByRotatingImageInRadians:(float)radians;
 @end
