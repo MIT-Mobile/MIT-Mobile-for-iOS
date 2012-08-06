@@ -191,20 +191,20 @@
         NSURL *url = [NSURL URLWithString:self.scanResult.text];
         if ([[UIApplication sharedApplication] canOpenURL:url])
         {
-            self.scanShareDetails = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Share this website", self.scanResult.text, nil]
+            self.scanShareDetails = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Share URL", self.scanResult.text, nil]
                                                             forKeys:[NSArray arrayWithObjects:@"title",@"data", nil]];
-            [self.scanActions addObject:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Open this website", self.scanResult.text, nil]
+            [self.scanActions addObject:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Open URL", self.scanResult.text, nil]
                                                                     forKeys:[NSArray arrayWithObjects:@"title",@"url", nil]]];
-            self.scanType = @"Website";
-            self.textTitleLabel.text = @"Website";
+            self.scanType = @"url";
+            self.textTitleLabel.text = @"URL";
             self.textView.text = self.scanResult.text;
         }
         else
         {
-            self.scanShareDetails = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Share this code", self.scanResult.text, nil]
+            self.scanShareDetails = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Share data", self.scanResult.text, nil]
                                                                 forKeys:[NSArray arrayWithObjects:@"title",@"data", nil]];
-            self.scanType = @"Code";
-            self.textTitleLabel.text = @"Code";
+            self.scanType = @"other";
+            self.textTitleLabel.text = @"Other";
             self.textView.text = self.scanResult.text;
         }
     }
