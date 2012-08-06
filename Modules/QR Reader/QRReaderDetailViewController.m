@@ -146,13 +146,6 @@
 
 - (void)handleScanInfoResponse:(NSDictionary*)codeInfo error:(NSError*)error
 {
-    // TODO (bskinner): Make sure this is even needed and adjust the timing
-    //
-    // Prevent the loading view from 'flashing' when the view
-    // first appears (caused by the operation completing VERY
-    // quickly)
-    [NSThread sleepForTimeInterval:1.0];
-    
     BOOL success = (error == nil) && [[codeInfo objectForKey:@"success"] boolValue];
     
     NSArray *actions = [codeInfo objectForKey:@"actions"];
