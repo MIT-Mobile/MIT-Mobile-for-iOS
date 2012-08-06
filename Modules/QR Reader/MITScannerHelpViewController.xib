@@ -77,7 +77,7 @@
 					<object class="IBUILabel" id="187716903">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 64}, {280, 150}}</string>
+						<string key="NSFrame">{{20, 64}, {280, 168}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="565634121"/>
@@ -87,7 +87,10 @@
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Many groups at MIT use barcodes and QR codes to tag objects with extra information, such as URLs, phone numbers, and other data. MIT Mobile's Scanner can recognize those codes and provice special features for some of them.</string>
+						<string type="base64-UTF8" key="IBUIText">TWFueSBncm91cHMgYXQgTUlUIHVzZSBiYXJjb2RlcyBhbmQgUVIgY29kZXMgdG8gdGFnIG9iamVjdHMg
+d2l0aCBleHRyYSBpbmZvcm1hdGlvbiwgc3VjaCBhcyBVUkxzLCBwaG9uZSBudW1iZXJzLCBhbmQgb3Ro
+ZXIgZGF0YS4KCk1JVCBNb2JpbGUncyBTY2FubmVyIGNhbiByZWNvZ25pemUgdGhvc2UgY29kZXMgYW5k
+IGNhbiBwcm92aWRlIHNwZWNpYWwgZnVuY3Rpb25hbGl0eSBpbiBzb21lIGNhc2VzLg</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
@@ -110,7 +113,7 @@
 					<object class="IBUIImageView" id="565634121">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{20, 222}, {93, 93}}</string>
+						<string key="NSFrame">{{20, 252}, {93, 93}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="607038867"/>
@@ -125,9 +128,10 @@
 					<object class="IBUIImageView" id="607038867">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{151, 240}, {149, 57}}</string>
+						<string key="NSFrame">{{151, 270}, {149, 57}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<int key="IBUIContentMode">4</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
@@ -221,9 +225,9 @@
 						<array class="NSMutableArray" key="children">
 							<reference ref="210692671"/>
 							<reference ref="719795166"/>
-							<reference ref="187716903"/>
 							<reference ref="565634121"/>
 							<reference ref="607038867"/>
+							<reference ref="187716903"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
