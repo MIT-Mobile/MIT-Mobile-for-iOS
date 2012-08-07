@@ -38,8 +38,8 @@
     
 	// Rotation here (based around the center)
 	CGContextTranslateCTM(bmpContext,
-                          (rotatedRect.size.width * 0.5f),
-                          (rotatedRect.size.height * 0.5f));
+                          (rotatedRect.size.width * 0.5),
+                          (rotatedRect.size.height * 0.5));
 	CGContextRotateCTM(bmpContext, radians);
     
 	// Copy the image into the bitmap context
