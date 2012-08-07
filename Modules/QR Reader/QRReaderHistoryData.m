@@ -51,9 +51,21 @@ static QRReaderHistoryData *sharedHistoryData = nil;
                         withImage:nil];
 }
 
+
 - (QRReaderResult*)insertScanResult:(NSString*)scanResult
                            withDate:(NSDate*)date
                           withImage:(UIImage*)image
+{
+    return [self insertScanResult:scanResult
+                         withDate:date
+                        withImage:image
+          shouldGenerateThumbnail:NO];
+}
+
+- (QRReaderResult*)insertScanResult:(NSString*)scanResult
+                           withDate:(NSDate*)date
+                          withImage:(UIImage*)image
+            shouldGenerateThumbnail:(BOOL)generateThumbnail
 {
     QRReaderResult *result = (QRReaderResult*)[[CoreDataManager coreDataManager] insertNewObjectForEntityForName:QRReaderResultEntityName];
     result.text = scanResult;
@@ -66,8 +78,12 @@ static QRReaderHistoryData *sharedHistoryData = nil;
                               orientation:UIImageOrientationUp] imageByRotatingImageInRadians:-M_PI_2];
         
         result.scanImage = image;
-        result.thumbnail =  [image resizedImage:[QRReaderResult defaultThumbnailSize]
-                           interpolationQuality:kCGInterpolationDefault];
+        
+        if (generateThumbnail)
+        {
+            result.thumbnail =  [image resizedImage:[QRReaderResult defaultThumbnailSize]
+                               interpolationQuality:kCGInterpolationDefault];
+        }
     }
     
     [[CoreDataManager coreDataManager] saveData];
