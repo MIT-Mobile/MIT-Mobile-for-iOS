@@ -1,11 +1,3 @@
-//
-//  QRReaderResult.h
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 8/6/12.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 

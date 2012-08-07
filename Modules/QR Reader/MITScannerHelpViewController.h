@@ -1,11 +1,3 @@
-//
-//  MITScannerHelpViewController.h
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 8/2/12.
-//
-//
-
 #import <UIKit/UIKit.h>
 
 @interface MITScannerHelpViewController : UIViewController

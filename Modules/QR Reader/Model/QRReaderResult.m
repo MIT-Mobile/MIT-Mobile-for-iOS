@@ -1,11 +1,3 @@
-//
-//  QRReaderResult.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 8/6/12.
-//
-//
-
 #import "QRReaderResult.h"
 #import "MITScannerImage.h"
 
