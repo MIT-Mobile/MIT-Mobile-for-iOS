@@ -14,11 +14,6 @@ static QRReaderHistoryData *sharedHistoryData = nil;
 @synthesize mutableResults = _mutableResults;
 @dynamic results;
 
-+ (CGSize)defaultThumbnailSize
-{
-    return CGSizeMake(96,96);
-}
-
 - (id)init {
     self = [super init];
     if (self) {
@@ -70,8 +65,8 @@ static QRReaderHistoryData *sharedHistoryData = nil;
                                     scale:1.0
                               orientation:UIImageOrientationUp] imageByRotatingImageInRadians:-M_PI_2];
         
-        result.image = image;
-        result.thumbnail =  [image resizedImage:[QRReaderHistoryData defaultThumbnailSize]
+        result.scanImage = image;
+        result.thumbnail =  [image resizedImage:[QRReaderResult defaultThumbnailSize]
                            interpolationQuality:kCGInterpolationDefault];
     }
     
