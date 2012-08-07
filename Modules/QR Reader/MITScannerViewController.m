@@ -228,6 +228,7 @@
                                                                style:UITableViewStylePlain] autorelease];
         tableView.delegate = self;
         tableView.dataSource = self;
+        tableView.rowHeight = [QRReaderResult defaultThumbnailSize].height;
         self.historyTableView = tableView;
         [historyView addSubview:tableView];
     }
