@@ -76,8 +76,8 @@
     [super viewDidLoad];
     self.backgroundImageView.image = [UIImage imageNamed:@"global/body-background"];
     
-    if (self.scanResult.image) {
-        self.qrImageView.image = self.scanResult.image;
+    if (self.scanResult.scanImage) {
+        self.qrImageView.image = self.scanResult.scanImage;
     } else {
         self.qrImageView.image = [UIImage imageNamed:@"qrreader/qr-missing-image"];
     }
