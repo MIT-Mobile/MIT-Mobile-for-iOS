@@ -157,7 +157,7 @@
         overlay.userInteractionEnabled = NO;
         if (scanningSupported)
         {
-            overlay.helpText = @"To scan a barcode or QR code, frame it below.\nAvoid glare and shadows.";
+            overlay.helpText = @"To scan a QR code or barcode, frame it below.\nAvoid glare and shadows.";
         }
         else
         {
