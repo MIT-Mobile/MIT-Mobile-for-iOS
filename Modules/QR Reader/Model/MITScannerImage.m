@@ -2,8 +2,6 @@
 
 
 @implementation MITScannerImage
-
-@dynamic data;
-@dynamic orientation;
+@dynamic image;
 
 @end

@@ -2,6 +2,12 @@
 
 
 @implementation QRReaderImageTransformer
++ (void)initialize
+{
+    [NSValueTransformer setValueTransformer:[[QRReaderImageTransformer alloc] init]
+                                    forName:@"QRReaderImageTransformer"];
+}
+
 + (BOOL)allowsReverseTransformation {
     return YES;
 }
