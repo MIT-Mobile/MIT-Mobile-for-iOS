@@ -238,13 +238,16 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
     if (self.scanView.hidden == NO)
     {
         [self startCapture];
     }
-    
-    self.navigationController.navigationBar.translucent = YES;
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
