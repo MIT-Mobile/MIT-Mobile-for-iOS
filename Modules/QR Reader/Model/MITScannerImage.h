@@ -4,7 +4,7 @@
 
 @interface MITScannerImage : NSManagedObject
 
-@property (nonatomic, retain) NSData * imageData;
+@property (nonatomic, retain) NSData * data;
 @property (nonatomic, retain) NSNumber * orientation;
 
 @end
