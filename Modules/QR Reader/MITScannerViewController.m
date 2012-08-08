@@ -28,7 +28,7 @@
 #pragma mark - History Properties
 @property (retain) UIView *historyView;
 @property (assign) UITableView *historyTableView;
-@property (retain) QRReaderHistoryData *historyEntries;
+@property (retain) QRReaderHistoryData *scannerHistory;
 
 @property (retain) NSManagedObjectContext *fetchContext;
 @property (retain) NSFetchedResultsController *fetchController;
@@ -60,7 +60,6 @@
     if (self) {
         self.title = @"Scanner";
         self.isCaptureActive = NO;
-        self.historyEntries = [QRReaderHistoryData sharedHistory];
         
         
         self.renderingQueue = [[[NSOperationQueue alloc] init] autorelease];
@@ -70,22 +69,25 @@
         NSManagedObjectContext *fetchContext = [[[NSManagedObjectContext alloc] init] autorelease];
         fetchContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
         fetchContext.undoManager = nil;
+        fetchContext.stalenessInterval = 0;
+        
+        self.scannerHistory = [[[QRReaderHistoryData alloc] initWithManagedContext:fetchContext] autorelease];
         self.fetchContext = fetchContext;
         
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"QRReaderResult"
                                                   inManagedObjectContext:fetchContext];
+        NSSortDescriptor *dateDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"date"
+                                                                        ascending:NO] autorelease];
         
         NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
         fetchRequest.entity = entity;
-        
-        NSSortDescriptor *dateDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"date"
-                                                                       ascending:NO] autorelease];
         fetchRequest.sortDescriptors = @[dateDescriptor];
         
         self.fetchController = [[[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                     managedObjectContext:fetchContext
                                                                       sectionNameKeyPath:nil
                                                                                cacheName:nil] autorelease];
+        self.fetchController.delegate = self;
     }
     return self;
 }
@@ -94,7 +96,9 @@
 {
     self.scanView = nil;
     self.historyView = nil;
-    self.historyEntries = nil;
+    self.scannerHistory = nil;
+    self.fetchContext = nil;
+    self.fetchController = nil;
     [super dealloc];
 }
 
@@ -251,6 +255,13 @@
     {
         [self startCapture];
     }
+    else
+    {
+        [self.historyTableView reloadData];
+    }
+    
+    self.navigationController.navigationBar.translucent = YES;
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -258,6 +269,14 @@
     if (self.navigationController.modalViewController == nil)
     {
         self.navigationController.navigationBar.translucent = NO;
+    }
+    
+    [self.renderingQueue cancelAllOperations];
+    NSError *saveError = nil;
+    [self.fetchContext save:&saveError];
+    if (saveError)
+    {
+        NSLog(@"Error saving: %@", [saveError localizedDescription]);
     }
     
     [self stopCapture];
@@ -292,8 +311,8 @@
 {
     [self stopCapture];
     self.navigationItem.rightBarButtonItem.enabled = NO;
+    
     [self.fetchController performFetch:nil];
-    [self.historyTableView reloadData];
     
     [UIView transitionFromView:self.scanView
                         toView:self.historyView
@@ -307,6 +326,7 @@
          self.navigationItem.rightBarButtonItem.title = @"Scan";
          [self.navigationItem.rightBarButtonItem setAction:@selector(showScanner:)];
          self.navigationItem.rightBarButtonItem.enabled = YES;
+         [self.historyTableView reloadData];
      }];
 }
 
@@ -326,6 +346,7 @@
                         self.navigationItem.rightBarButtonItem.title = @"History";
                         [self.navigationItem.rightBarButtonItem setAction:@selector(showHistory:)];
                         self.navigationItem.rightBarButtonItem.enabled = YES;
+                        [self.fetchContext save:nil];
                     }];
 }
 
@@ -382,9 +403,9 @@
         AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
         self.overlayView.highlighted = YES;
         
-        QRReaderResult *result = [[QRReaderHistoryData sharedHistory] insertScanResult:readerSymbol.data
-                                                                              withDate:[NSDate date]
-                                                                             withImage:image];
+        QRReaderResult *result = [self.scannerHistory insertScanResult:readerSymbol.data
+                                                              withDate:[NSDate date]
+                                                             withImage:image];
         
         QRReaderDetailViewController *viewController = [QRReaderDetailViewController detailViewControllerForResult:result];
         
@@ -409,46 +430,40 @@
     cell.textLabel.numberOfLines = 3;
     cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date
                                                                      toDate:[NSDate date]];
-    [cell.imageView removeAllSubviews];
     
-    if ((result.thumbnail == nil) && result.scanImage)
+    if (result.thumbnail == nil)
     {
-        CGSize accessorySize = [QRReaderResult defaultThumbnailSize];
-        UIView *loadingView = [[UIView alloc] initWithFrame:CGRectMake(0,0,
-                                                                       accessorySize.width,
-                                                                       accessorySize.height)];
-        loadingView.backgroundColor = [UIColor lightGrayColor];
+        CGRect imageFrame = cell.imageView.frame;
+        imageFrame.size = [QRReaderResult defaultThumbnailSize];
         
-        UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-        [indicatorView sizeToFit];
-        
-        CGRect activityRect = indicatorView.frame;
-        activityRect.origin.x = (accessorySize.width - CGRectGetWidth(activityRect)) / 2.0;
-        activityRect.origin.y = (accessorySize.height - CGRectGetHeight(activityRect)) / 2.0;
-        indicatorView.frame = activityRect;
-        
-        [loadingView addSubview:indicatorView];
-        
-        cell.imageView.frame = loadingView.bounds;
-        [cell.imageView addSubview:loadingView];
+        cell.imageView.frame = imageFrame;
+        cell.imageView.contentMode = UIViewContentModeScaleToFill;
+        cell.imageView.image = [UIImage imageNamed:@"news/news-placeholder.png"];
+        cell.imageView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                           UIViewAutoresizingFlexibleWidth);
         
         UIImage *scanImage = result.scanImage;
-        [self.renderingQueue addOperationWithBlock:^{
-
-            UIImage *thumbnail = [scanImage resizedImage:[QRReaderResult defaultThumbnailSize]
-                              interpolationQuality:kCGInterpolationDefault];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                result.thumbnail = thumbnail;
-                [self.fetchContext save:nil];
-                [self.historyTableView reloadRowsAtIndexPaths:@[indexPath]
-                                             withRowAnimation:UITableViewRowAnimationFade];
-            });
-        }];
+        NSManagedObjectID *scanId = [result objectID];
+        if (scanImage)
+        {
+            [self.renderingQueue addOperationWithBlock:^{
+                UIImage *thumbnail = [scanImage resizedImage:[QRReaderResult defaultThumbnailSize]
+                                        interpolationQuality:kCGInterpolationDefault];
+                
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    QRReaderResult *scan = (QRReaderResult*)([self.fetchContext objectWithID:scanId]);
+                    
+                    if (scan.isDeleted == NO)
+                    {
+                        scan.thumbnail = thumbnail;
+                        [self.fetchContext save:nil];
+                    }
+                });
+            }];
+        }
     }
     else
     {
-        cell.imageView.image = result.thumbnail;
         CGRect frame = cell.imageView.frame;
         frame.size = result.thumbnail.size;
         cell.imageView.frame = frame;
@@ -503,9 +518,7 @@
     QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.historyEntries deleteScanResult:result];
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                         withRowAnimation:UITableViewRowAnimationFade];
+        [self.scannerHistory deleteScanResult:result];
     }
 }
 
@@ -520,12 +533,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                          animated:YES];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    CGSize thumbnailSize = [QRReaderResult defaultThumbnailSize];
-    return thumbnailSize.height;
-}
-
 #pragma mark - NSFetchedResultsControllerDelegate
 - (void)controller:(NSFetchedResultsController *)controller
    didChangeObject:(id)anObject
@@ -533,12 +540,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
      forChangeType:(NSFetchedResultsChangeType)type
       newIndexPath:(NSIndexPath *)newIndexPath
 {
+    
+    if (self.historyView.isHidden)
+    {
+        return;
+    }
+    
     UITableView *tableView = self.historyTableView;
     
     switch (type)
     {
         case NSFetchedResultsChangeInsert:
-            [tableView insertRowsAtIndexPaths:@[indexPath]
+            [tableView insertRowsAtIndexPaths:@[newIndexPath]
                              withRowAnimation:UITableViewRowAnimationFade];
             break;
             
@@ -548,9 +561,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             break;
             
         case NSFetchedResultsChangeUpdate:
-            [self configureCell:[tableView cellForRowAtIndexPath:indexPath]
-                    atIndexPath:indexPath];
-            [tableView reloadRowsAtIndexPaths:@[indexPath]
+            [tableView reloadRowsAtIndexPaths:@[newIndexPath]
                              withRowAnimation:UITableViewRowAnimationFade];
             break;
             
@@ -561,12 +572,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
 {
-    [self.historyTableView beginUpdates];
+    
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    [self.historyTableView endUpdates];
+    
 }
 
 @end
