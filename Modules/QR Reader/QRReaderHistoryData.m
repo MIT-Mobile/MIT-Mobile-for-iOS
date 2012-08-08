@@ -1,47 +1,39 @@
 #import "QRReaderHistoryData.h"
 #import "QRReaderResult.h"
+#import "MITScannerImage.h"
 #import "UIImage+Resize.h"
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 
-static QRReaderHistoryData *sharedHistoryData = nil;
-
 @interface QRReaderHistoryData ()
-@property (strong) NSMutableArray *mutableResults;
 @end
 
 @implementation QRReaderHistoryData
-@synthesize mutableResults = _mutableResults;
-@dynamic results;
-
 - (id)init {
+    NSManagedObjectContext *context = [[[NSManagedObjectContext alloc] init] autorelease];
+    context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+    
+    return [self initWithManagedContext:context];
+}
+
+- (id)initWithManagedContext:(NSManagedObjectContext *)context
+{
     self = [super init];
-    if (self) {
-        NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"date"
-                                                                     ascending:NO];
-        self.mutableResults = [[[NSMutableArray alloc] initWithArray:[[CoreDataManager coreDataManager] objectsForEntity:QRReaderResultEntityName
-                                                                                                      matchingPredicate:nil
-                                                                                                        sortDescriptors:[NSArray arrayWithObject:descriptor]]] autorelease];
+    if (self)
+    {
+        self.context = context;
     }
     
     return self;
 }
 
 - (void)dealloc {
-    self.mutableResults = nil;
+    self.context = nil;
     [super dealloc];
 }
 
-- (void)eraseAll {
-    [[CoreDataManager coreDataManager] deleteObjects:self.results];
-    [[CoreDataManager coreDataManager] saveData];
-    [self.mutableResults removeAllObjects];
-}
-
 - (void)deleteScanResult:(QRReaderResult*)result {
-    [[CoreDataManager coreDataManager] deleteObject:result];
-    [[CoreDataManager coreDataManager] saveData];
-    [self.mutableResults removeObject:result];
+    [self.context deleteObject:result];
 }
 
 - (QRReaderResult*)insertScanResult:(NSString *)scanResult
@@ -67,7 +59,8 @@ static QRReaderHistoryData *sharedHistoryData = nil;
                           withImage:(UIImage*)image
             shouldGenerateThumbnail:(BOOL)generateThumbnail
 {
-    QRReaderResult *result = (QRReaderResult*)[[CoreDataManager coreDataManager] insertNewObjectForEntityForName:QRReaderResultEntityName];
+    QRReaderResult *result = (QRReaderResult*)[NSEntityDescription insertNewObjectForEntityForName:@"QRReaderResult"
+                                                                            inManagedObjectContext:self.context];
     result.text = scanResult;
     result.date = date;
     
@@ -76,7 +69,6 @@ static QRReaderHistoryData *sharedHistoryData = nil;
         image = [[UIImage imageWithCGImage:image.CGImage
                                     scale:1.0
                               orientation:UIImageOrientationUp] imageByRotatingImageInRadians:-M_PI_2];
-        
         result.scanImage = image;
         
         if (generateThumbnail)
@@ -86,51 +78,6 @@ static QRReaderHistoryData *sharedHistoryData = nil;
         }
     }
     
-    [[CoreDataManager coreDataManager] saveData];
-    
-    [self.mutableResults insertObject:result
-                              atIndex:0];
-    
     return result;
-}
-
-#pragma mark -
-#pragma mark Dynamic Properties
-- (NSArray*)results {
-    return [NSArray arrayWithArray:self.mutableResults];
-}
-
-#pragma mark -
-#pragma mark Singleton Implementation
-+ (QRReaderHistoryData*)sharedHistory {
-    if (sharedHistoryData == nil) {
-        sharedHistoryData = [[super allocWithZone:NULL] init];
-    }
-    
-    return sharedHistoryData;
-}
-
-+ (id)allocWithZone:(NSZone *)zone {
-    return [[self sharedHistory] retain];
-}
-
-- (id)copyWithZone:(NSZone*)zone {
-    return self;
-}
-
-- (id)retain {
-    return self;
-}
-
-- (NSUInteger)retainCount {
-    return NSUIntegerMax;
-}
-
-- (oneway void)release {
-    return;
-}
-
-- (id)autorelease {
-    return self;
 }
 @end
