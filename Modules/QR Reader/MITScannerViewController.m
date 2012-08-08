@@ -238,6 +238,9 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    if (self.historyTableView) {
+        [self.historyTableView deselectRowAtIndexPath:[self.historyTableView indexPathForSelectedRow] animated:YES];
+    }
     self.navigationController.navigationBar.translucent = YES;
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
 }
@@ -515,8 +518,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     QRReaderDetailViewController *detailView = [QRReaderDetailViewController detailViewControllerForResult:result];
     [self.navigationController pushViewController:detailView
                                          animated:YES];
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:NO];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
