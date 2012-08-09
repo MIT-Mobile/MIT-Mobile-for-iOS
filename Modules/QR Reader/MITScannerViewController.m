@@ -569,15 +569,4 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             break;
     }
 }
-
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
-{
-    
-}
-
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
-{
-    
-}
-
 @end
