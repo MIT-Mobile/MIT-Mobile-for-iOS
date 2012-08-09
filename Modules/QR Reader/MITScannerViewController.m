@@ -456,7 +456,7 @@
                 UIImage *thumbnail = [scanImage resizedImage:[QRReaderResult defaultThumbnailSize]
                                         interpolationQuality:kCGInterpolationDefault];
                 
-                dispatch_sync(dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
                     QRReaderResult *scan = (QRReaderResult*)([self.fetchContext objectWithID:scanId]);
                     
                     if (scan.isDeleted == NO)
