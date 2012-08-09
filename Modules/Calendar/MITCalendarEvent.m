@@ -76,7 +76,7 @@
                 timeString = [formatter stringFromDate:self.start];
                 // ?
             } else if (interval == 86340.0) { // seconds between 12:00am and 11:59pm
-                timeString = [NSString stringWithString:@"All day"];
+                timeString = @"All day";
                 // fallback to showing time range
             } else {
                 timeString = [NSString stringWithFormat:@"%@-%@", [formatter stringFromDate:self.start], [formatter stringFromDate:self.end]];

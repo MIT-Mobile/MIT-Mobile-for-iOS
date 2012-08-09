@@ -137,12 +137,12 @@
     
     if (successCount) {
         addIconAndLabel([UIImage imageNamed:@"libraries/status-ok"], 
-                        [NSString stringWithFormat:@"%lu renewed successfully!", successCount]);
+                        [NSString stringWithFormat:@"%lu renewed successfully!", (unsigned long)successCount]);
     }
     
     if (failureCount) {
         addIconAndLabel([UIImage imageNamed:@"libraries/status-error"], 
-                        [NSString stringWithFormat:@"%lu could not be renewed.", failureCount]);
+                        [NSString stringWithFormat:@"%lu could not be renewed.", (unsigned long)failureCount]);
     }
     
     contentFrame.origin = CGPointZero;

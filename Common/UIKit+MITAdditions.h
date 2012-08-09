@@ -2,7 +2,8 @@
 #import <UIKit/UIKit.h>
 
 #pragma mark - UIKit Additon Function Prototypes
-CGRect CGRectNormalizeWithParentRect(CGRect subRect, CGRect parentRect);
+CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect);
+NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation);
 
 #pragma mark - Category Definitions
 @interface NSString (MITUIAdditions)

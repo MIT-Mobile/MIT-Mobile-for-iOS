@@ -1,40 +1,39 @@
 #import "QRReaderHistoryData.h"
 #import "QRReaderResult.h"
+#import "MITScannerImage.h"
+#import "UIImage+Resize.h"
 #import "CoreDataManager.h"
+#import "UIKit+MITAdditions.h"
 
-static QRReaderHistoryData *sharedHistoryData = nil;
+@interface QRReaderHistoryData ()
+@end
 
 @implementation QRReaderHistoryData
-@dynamic results;
-
 - (id)init {
+    NSManagedObjectContext *context = [[[NSManagedObjectContext alloc] init] autorelease];
+    context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+    
+    return [self initWithManagedContext:context];
+}
+
+- (id)initWithManagedContext:(NSManagedObjectContext *)context
+{
     self = [super init];
-    if (self) {
-        NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"date"
-                                                                     ascending:NO];
-        _results = [[NSMutableArray alloc] initWithArray:[[CoreDataManager coreDataManager] objectsForEntity:QRReaderResultEntityName
-                                                                                           matchingPredicate:nil
-                                                                                             sortDescriptors:[NSArray arrayWithObject:descriptor]]];
+    if (self)
+    {
+        self.context = context;
     }
     
     return self;
 }
 
 - (void)dealloc {
-    [_results release];
+    self.context = nil;
     [super dealloc];
 }
 
-- (void)eraseAll {
-    [[CoreDataManager coreDataManager] deleteObjects:self.results];
-    [[CoreDataManager coreDataManager] saveData];
-    [_results removeAllObjects];
-}
-
 - (void)deleteScanResult:(QRReaderResult*)result {
-    [[CoreDataManager coreDataManager] deleteObject:result];
-    [[CoreDataManager coreDataManager] saveData];
-    [_results removeObject:result];
+    [self.context deleteObject:result];
 }
 
 - (QRReaderResult*)insertScanResult:(NSString *)scanResult
@@ -44,58 +43,41 @@ static QRReaderHistoryData *sharedHistoryData = nil;
                         withImage:nil];
 }
 
+
 - (QRReaderResult*)insertScanResult:(NSString*)scanResult
                            withDate:(NSDate*)date
-                          withImage:(UIImage*)image {
-    QRReaderResult *result = (QRReaderResult*)[[CoreDataManager coreDataManager] insertNewObjectForEntityForName:QRReaderResultEntityName];
+                          withImage:(UIImage*)image
+{
+    return [self insertScanResult:scanResult
+                         withDate:date
+                        withImage:image
+          shouldGenerateThumbnail:NO];
+}
+
+- (QRReaderResult*)insertScanResult:(NSString*)scanResult
+                           withDate:(NSDate*)date
+                          withImage:(UIImage*)image
+            shouldGenerateThumbnail:(BOOL)generateThumbnail
+{
+    QRReaderResult *result = (QRReaderResult*)[NSEntityDescription insertNewObjectForEntityForName:@"QRReaderResult"
+                                                                            inManagedObjectContext:self.context];
     result.text = scanResult;
     result.date = date;
-    result.image = image;
-    [[CoreDataManager coreDataManager] saveData];
     
-    [_results insertObject:result
-                   atIndex:0];
-    
-    return result;
-}
-
-#pragma mark -
-#pragma mark Dynamic Properties
-- (NSArray*)results {
-    return [NSArray arrayWithArray:_results];
-}
-
-#pragma mark -
-#pragma mark Singleton Implementation
-+ (QRReaderHistoryData*)sharedHistory {
-    if (sharedHistoryData == nil) {
-        sharedHistoryData = [[super allocWithZone:NULL] init];
+    if (image)
+    {
+        image = [[UIImage imageWithCGImage:image.CGImage
+                                    scale:1.0
+                              orientation:UIImageOrientationUp] imageByRotatingImageInRadians:-M_PI_2];
+        result.scanImage = image;
+        
+        if (generateThumbnail)
+        {
+            result.thumbnail =  [image resizedImage:[QRReaderResult defaultThumbnailSize]
+                               interpolationQuality:kCGInterpolationDefault];
+        }
     }
     
-    return sharedHistoryData;
-}
-
-+ (id)allocWithZone:(NSZone *)zone {
-    return [[self sharedHistory] retain];
-}
-
-- (id)copyWithZone:(NSZone*)zone {
-    return self;
-}
-
-- (id)retain {
-    return self;
-}
-
-- (NSUInteger)retainCount {
-    return NSUIntegerMax;
-}
-
-- (oneway void)release {
-    return;
-}
-
-- (id)autorelease {
-    return self;
+    return result;
 }
 @end

@@ -96,7 +96,7 @@
 	NSString *headerTitle = nil;
 	
 	if([lastResults count]) {
-		headerTitle = [NSString stringWithFormat:@"%lu found", [lastResults count]];
+		headerTitle = [NSString stringWithFormat:@"%lu found", (unsigned long)[lastResults count]];
 	} else {
 		headerTitle = @"No matches found";
 	}

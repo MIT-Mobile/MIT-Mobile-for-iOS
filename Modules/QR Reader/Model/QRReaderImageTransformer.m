@@ -2,6 +2,12 @@
 
 
 @implementation QRReaderImageTransformer
++ (void)initialize
+{
+    [NSValueTransformer setValueTransformer:[[[QRReaderImageTransformer alloc] init] autorelease]
+                                    forName:@"QRReaderImageTransformer"];
+}
+
 + (BOOL)allowsReverseTransformation {
     return YES;
 }
@@ -16,12 +22,13 @@
     } else if ([value isKindOfClass:[NSData class]]) {
         return value;
     } else {
-        return UIImagePNGRepresentation((UIImage*)value);
+        UIImage *image = (UIImage*)value;
+        return UIImagePNGRepresentation(image);
     }
 }
 
 - (id)reverseTransformedValue:(id)value {
-    return [UIImage imageWithData:value];
+    return [UIImage imageWithData:(NSData*)value];
 }
 
 @end

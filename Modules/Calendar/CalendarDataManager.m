@@ -118,7 +118,7 @@ static CalendarDataManager *s_sharedManager = nil;
 }
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return YES;
+    return NO;
 }
 
 - (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
@@ -174,6 +174,7 @@ static CalendarDataManager *s_sharedManager = nil;
 	if ([[CoreDataManager managedObjectContext] hasChanges]) {
 		[[CoreDataManager managedObjectContext] rollback];
 	}
+    
 	[_delegate calendarListsFailedToLoad];
 }
 

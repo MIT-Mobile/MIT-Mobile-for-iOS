@@ -82,7 +82,7 @@ static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment
                                                                          attributes:attributes] autorelease];
         [self appendAttributedString:tmpString];
 
-        CFRelease(ctFont);
+        if (ctFont) CFRelease(ctFont);
     }
 }
 
@@ -101,7 +101,7 @@ static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment
     {
         ELog(@"Error: Unable to create font '%@' with traits 0x%x", [font fontName], traits);
 
-        CFRelease(ctFont);
+        if (ctFont) CFRelease(ctFont);
         ctFont = styledFont;
         styledFont = NULL;
     }

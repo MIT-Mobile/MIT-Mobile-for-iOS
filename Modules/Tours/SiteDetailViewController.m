@@ -526,7 +526,7 @@
                 NSInteger imageWidth = 160;
                 NSInteger imageHeight = 100;
                 if (![[NSFileManager defaultManager] fileExistsAtPath:photoFile]) {
-                    photoFile = [NSString stringWithString:@"tours/tour_photo_loading_animation.gif"];
+                    photoFile = @"tours/tour_photo_loading_animation.gif";
                     [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
                     self.connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
                     [self.connection requestDataFromURL:[NSURL URLWithString:component.photoURL]];

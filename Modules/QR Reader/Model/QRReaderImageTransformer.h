@@ -1,9 +1,6 @@
 #import <Foundation/Foundation.h>
 
-
-@interface QRReaderImageTransformer : NSValueTransformer {
-    
-}
+@interface QRReaderImageTransformer : NSValueTransformer
 + (BOOL)allowsReverseTransformation;
 + (Class)transformedValueClass;
 
