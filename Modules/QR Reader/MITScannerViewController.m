@@ -99,6 +99,9 @@
     self.scannerHistory = nil;
     self.fetchContext = nil;
     self.fetchController = nil;
+    
+    [self.renderingQueue cancelAllOperations];
+    self.renderingQueue = nil;
     [super dealloc];
 }
 
