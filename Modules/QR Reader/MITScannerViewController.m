@@ -37,12 +37,15 @@
 #pragma mark - Private methods
 - (IBAction)showHistory:(id)sender;
 - (IBAction)showScanner:(id)sender;
+- (IBAction)showHelp:(id)sender;
 
 - (void)startCapture;
 - (void)stopCapture;
 
 - (UIView*)loadScannerViewWithFrame:(CGRect)viewFrame;
 - (UIView*)loadHistoryViewWithFrame:(CGRect)viewFrame;
+
+- (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath;
 @end
 #pragma mark -
 

@@ -2,5 +2,6 @@
 #import "ZBarSDK.h"
 
 @interface MITScannerViewController : UIViewController
+-(id)init;
 
 @end
