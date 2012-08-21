@@ -35,6 +35,7 @@ NSString * const AnniversaryTag = @"mit150";
 NSString * const MobileWebTag  = @"mobileweb";
 NSString * const SettingsTag   = @"settings";
 NSString * const AboutTag      = @"about";
+NSString * const LinksTag      = @"links";
 NSString * const QRReaderTag    = @"qrreader";
 NSString * const FacilitiesTag    = @"facilities";
 NSString * const LibrariesTag   = @"libraries";
