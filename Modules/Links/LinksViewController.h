@@ -1,20 +1,17 @@
 #import <UIKit/UIKit.h>
-#import "MITMobileWebApi.h"
+#import "MobileRequestOperation.h"
 #import "MITLoadingActivityView.h"
 
-@interface LinksViewController : UIViewController <JSONLoadedDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface LinksViewController : UIViewController < UITableViewDataSource, UITableViewDelegate>
 {
-    UITableView *table;
+    NSArray         *_linkResults;
+    UITableView     *table;
     BOOL requestWasDispatched;
-	MITMobileWebAPI *api;
     MITLoadingActivityView *_loadingView;
     
 }
 
-@property (nonatomic, retain) NSArray * linkResults;           // array holds sections of links
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject;
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error;
+@property (retain) NSOperation *urlMappingOperation;
 
 
 // Table View Data Source
@@ -30,5 +27,7 @@
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section;
 
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section;
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 
 @end

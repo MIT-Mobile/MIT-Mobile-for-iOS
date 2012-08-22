@@ -13,8 +13,11 @@
 #define kLinksKeyLinkUrl @"link"
 #define kLinksKeyLinkTitle @"name"
 
+#define PADDING 10
+#define LINK_TITLE_WIDTH 250
+
 @implementation LinksViewController
-@synthesize linkResults = _linkResults;
+@synthesize urlMappingOperation;
 
 - (void) dealloc
 {
@@ -44,6 +47,7 @@
     table.delegate = self;
     table.dataSource = self;
     [table setBackgroundColor:[UIColor clearColor]];
+    [table applyStandardColors];
     
     [self.view addSubview:table];
 }
@@ -72,17 +76,28 @@
 
 - (void) queryForLinks
 {
-    api = [MITMobileWebAPI jsonLoadedDelegate:self];
-    requestWasDispatched = [api requestObject:[NSDictionary dictionaryWithObject:@"links" forKey:@"module"]];
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"links"
+                                                                            command:nil
+                                                                         parameters:nil];
     
-    if (requestWasDispatched) {
-        [self showLoadingView];
-    }
+    operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSError *error)
+    {
+        [self handleRequestResponse:codeInfo
+                               error:error];
+    };
+    
+    self.urlMappingOperation = operation;
+    [operation start];
 }
 
 - (void) reloadTableView
 {
     [table reloadData];
+}
+
+- (CGFloat)heightForLinkTitle:(NSString *)aTitle {
+    CGSize titleSize = [aTitle sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(LINK_TITLE_WIDTH, 100)];
+    return titleSize.height;
 }
 
 #pragma mark - JSONLoadedDelegate
@@ -92,21 +107,19 @@
 	[_loadingView removeFromSuperview];
 }
 
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result
+- (void)handleRequestResponse:(NSDictionary *)result error:(NSError *) error
 {
-    [self cleanUpConnection];
-    NSLog(@"Results Log     ::  \n%@", result);
-    if (result && [result isKindOfClass:[NSArray class]]) {
-		_linkResults = [result copy];
-        [self reloadTableView];
-	} else {
-		_linkResults = nil;
-	}
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error
-{
-    return false;
+    if (error == nil) {
+        [self cleanUpConnection];
+        NSLog(@"Results Log     ::  \n%@", result);
+        if (result && [result isKindOfClass:[NSArray class]]) {
+            _linkResults = [result copy];
+            [self reloadTableView];
+        } else {
+            _linkResults = nil;
+            
+        }
+    }
 }
 
 #pragma mark - Table View Data Source Delegate
@@ -125,7 +138,7 @@
     UITableViewCell *cell = nil;
     cell = [tableView dequeueReusableCellWithIdentifier:reuseID];
     if (!cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseID] autorelease];
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseID] autorelease];
     }
     
     NSDictionary *section = [_linkResults objectAtIndex:indexPath.section];
@@ -133,9 +146,12 @@
     NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
     
     cell.textLabel.text = [currentLink objectForKey:kLinksKeyLinkTitle];
-    cell.detailTextLabel.text = [currentLink objectForKey:kLinksKeyLinkUrl];
     
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+    
+    cell.textLabel.numberOfLines = 0;
+    [cell applyStandardFonts];
+    
     return cell;
 }
 
@@ -157,6 +173,16 @@
 
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
 	return GROUPED_SECTION_HEADER_HEIGHT;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSDictionary *section = [_linkResults objectAtIndex:indexPath.section];
+    NSArray *links = [section objectForKey:kLinksKeySectionLinks];
+    NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
+    
+    NSString *title = [currentLink objectForKey:kLinksKeyLinkTitle];
+    return MAX([self heightForLinkTitle:title] + 2 * PADDING, tableView.rowHeight);
 }
 
 #pragma mark - Table View Delegate
