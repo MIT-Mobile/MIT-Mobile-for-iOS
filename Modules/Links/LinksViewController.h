@@ -11,8 +11,7 @@
     
 }
 
-@property (retain) NSOperation *urlMappingOperation;
-
+- (void) replaceTableViewWithUpdatedLinks;
 
 // Table View Data Source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;

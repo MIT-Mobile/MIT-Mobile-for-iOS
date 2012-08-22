@@ -7,17 +7,17 @@
 
 @end
 
-
-#define kLinksKeySectionTitle @"title"
-#define kLinksKeySectionLinks @"links"
-#define kLinksKeyLinkUrl @"link"
-#define kLinksKeyLinkTitle @"name"
-
 #define PADDING 10
 #define LINK_TITLE_WIDTH 250
 
+static NSString * kLinksCacheFileName = @"links_cache.plist";
+
+static NSString * kLinksKeySectionTitle = @"title";
+static NSString * kLinksKeySectionLinks = @"links";
+static NSString * kLinksKeyLinkUrl      = @"link";
+static NSString * kLinksKeyLinkTitle    = @"name";
+
 @implementation LinksViewController
-@synthesize urlMappingOperation;
 
 - (void) dealloc
 {
@@ -50,10 +50,17 @@
     [table applyStandardColors];
     
     [self.view addSubview:table];
+    
+    _linkResults = [[self loadLinksFromCache] copy];
+    
+    [self reloadTableView];
 }
 
 - (void) viewDidAppear:(BOOL)animated
 {
+    if (!_linkResults) {
+        [self showLoadingViewWithDelay:0.0];
+    }
     [self queryForLinks];
 }
 
@@ -68,27 +75,33 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-- (void) showLoadingView {
-    _loadingView = [[MITLoadingActivityView alloc] initWithFrame:CGRectInset(self.view.frame, 0, 0)];
-    _loadingView.usesBackgroundImage = NO;
-    [self.view addSubview:_loadingView];
+#pragma mark - Loading View
+
+- (void) showLoadingViewWithDelay:(float) delay {
+    if (!_loadingView) {
+        _loadingView = [[MITLoadingActivityView alloc] initWithFrame:CGRectInset(self.view.frame, 0, 0)];
+        _loadingView.usesBackgroundImage = NO;
+        _loadingView.alpha = 0.0;
+        [self.view addSubview:_loadingView];
+        
+        [UIView animateWithDuration:0.3f delay:delay options:UIViewAnimationCurveEaseInOut animations:^(void){
+            _loadingView.alpha = 1.0;
+        }completion:^(BOOL finished){
+        }];
+    }
 }
 
-- (void) queryForLinks
-{
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"links"
-                                                                            command:nil
-                                                                         parameters:nil];
+- (void) removeLoadingView {
+    [UIView animateWithDuration:0.3f delay:0.0 options:UIViewAnimationCurveEaseInOut animations:^(void){
+        _loadingView.alpha = 0.0;
+    }completion:^(BOOL finished){
+        [_loadingView removeFromSuperview];
+        _loadingView = nil;
+    }];
     
-    operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSError *error)
-    {
-        [self handleRequestResponse:codeInfo
-                               error:error];
-    };
-    
-    self.urlMappingOperation = operation;
-    [operation start];
 }
+
+#pragma mark - Misc Helpers
 
 - (void) reloadTableView
 {
@@ -100,25 +113,75 @@
     return titleSize.height;
 }
 
-#pragma mark - JSONLoadedDelegate
+#pragma mark - Server/Cache Difference handling
+
+- (void) replaceTableViewWithUpdatedLinks
+{
+    [self reloadTableView];
+    [self showTableView];
+    
+    [self removeLoadingView];
+    _loadingView = nil;
+    
+}
+
+- (void) hideTableView
+{
+    [self showLoadingViewWithDelay:0.4];
+    [UIView animateWithDuration:0.8f delay:0.0 options:UIViewAnimationCurveEaseInOut animations:^(void){
+        table.frame = CGRectMake(0, 0, CGRectGetWidth(table.bounds), 0);
+        table.alpha = 0.0;
+    }completion:^(BOOL finished){
+        table.hidden = YES;
+        [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(replaceTableViewWithUpdatedLinks) userInfo:nil repeats:NO];
+    }];
+}
+
+- (void) showTableView
+{
+    table.hidden = NO;
+    [UIView animateWithDuration:0.8f delay:0.0 options:UIViewAnimationCurveEaseInOut animations:^(void){
+        table.frame = CGRectMake(0, 0, CGRectGetWidth(table.bounds), CGRectGetHeight(self.view.bounds));
+        table.alpha = 1.0;
+    }completion:^(BOOL finished){
+    
+    }];
+}
+
+#pragma mark - Connection
+- (void) queryForLinks
+{
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"links"
+                                                                            command:nil
+                                                                         parameters:nil];
+    
+    operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSError *error)
+    {
+        [self handleRequestResponse:codeInfo
+                              error:error];
+        [self saveLinksToCache:codeInfo];
+    };
+
+    [operation start];
+}
 
 - (void)cleanUpConnection {
 	requestWasDispatched = NO;
-	[_loadingView removeFromSuperview];
 }
 
 - (void)handleRequestResponse:(NSDictionary *)result error:(NSError *) error
 {
     if (error == nil) {
         [self cleanUpConnection];
-        NSLog(@"Results Log     ::  \n%@", result);
         if (result && [result isKindOfClass:[NSArray class]]) {
-            _linkResults = [result copy];
-            [self reloadTableView];
+            if (![(NSArray *)result isEqualToArray:_linkResults]) {     // remove ! to test case where cache is different from server response
+                _linkResults = [result copy];
+                [self hideTableView];
+            }
         } else {
             _linkResults = nil;
-            
         }
+        
     }
 }
 
@@ -197,5 +260,72 @@
     NSString *urlString = [currentLink objectForKey:kLinksKeyLinkUrl];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString: urlString]];
 }
+
+#pragma mark - Link Caching
+
+- (NSString *) findOrCreateDirectory:(NSSearchPathDirectory) searchPathDirectory inDomain:(NSSearchPathDomainMask) domainMask appendComponent:(NSString *) appendComponenent error:(NSError **) errorOut
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(searchPathDirectory, domainMask, YES);
+    if ([paths count] == 0) {
+        NSDictionary *errorDict = @{ NSLocalizedDescriptionKey : @"No file or directory at requested location" };
+        *errorOut = [NSError errorWithDomain:@"Link Cache" code:405 userInfo:errorDict];
+        return nil;
+    }
+    
+    NSString *resolvedPath = [paths objectAtIndex:0];
+    
+    if (appendComponenent) {
+        resolvedPath = [resolvedPath stringByAppendingPathComponent:appendComponenent];
+    }
+    
+    NSError *error;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL success = [fileManager
+                        createDirectoryAtPath:resolvedPath
+                        withIntermediateDirectories:YES
+                        attributes:nil
+                        error:&error];
+    
+    if (!success) {
+        if (errorOut) {
+            *errorOut = error;
+        }
+        return nil;
+    }
+    
+    if (errorOut) {
+        *errorOut = nil;
+    }
+    
+    return resolvedPath;
+}
+
+- (NSString *) applicationCachesDirectory
+{
+    NSString *executableName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
+    NSError *error;
+    NSString *result = [self
+                            findOrCreateDirectory:NSCachesDirectory
+                            inDomain:NSUserDomainMask
+                            appendComponent:executableName
+                            error:&error];
+    if (error) {
+        NSLog(@"Unable to find or create application caches directory:\n%@", error);
+    }
+    return result;
+}
+
+- (void) saveLinksToCache:(NSDictionary *) linksDictionary
+{
+    NSString *linksPlistPath = [[self applicationCachesDirectory] stringByAppendingPathComponent:kLinksCacheFileName];
+    [linksDictionary writeToFile:linksPlistPath atomically:YES];
+}
+
+- (NSArray *) loadLinksFromCache
+{
+    NSArray *loaded = [NSArray arrayWithContentsOfFile:[[self applicationCachesDirectory] stringByAppendingPathComponent:kLinksCacheFileName]];
+    return loaded;
+}
+
 
 @end
