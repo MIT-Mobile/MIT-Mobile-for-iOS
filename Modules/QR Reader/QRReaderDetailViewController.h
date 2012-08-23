@@ -6,6 +6,7 @@
 @interface QRReaderDetailViewController : ShareDetailViewController
 
 @property (readonly,retain) QRReaderResult *scanResult;
+@property (readonly,assign) IBOutlet UIScrollView *scrollView;
 @property (readonly,assign) IBOutlet UIImageView *qrImageView;
 @property (readonly,assign) IBOutlet UIImageView *backgroundImageView;
 @property (readonly,assign) IBOutlet UILabel *textTitleLabel;

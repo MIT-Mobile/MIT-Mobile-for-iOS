@@ -201,19 +201,17 @@
             self.textView.text = self.scanResult.text;
         }
     }
-    
-    [self.textView sizeToFit];
+    CGSize boundingSize = CGSizeMake(CGRectGetWidth(self.textView.frame), CGFLOAT_MAX);
+    CGSize requiredSize = [self.textView.text sizeWithFont:self.textView.font
+                                                constrainedToSize:boundingSize
+                                                lineBreakMode:UILineBreakModeWordWrap];
+    CGFloat requiredHeight = requiredSize.height;
     
     CGFloat padding = 15.0;
-    CGRect textFrame = self.textView.frame;
+    CGRect textFrame = CGRectMake(self.textView.frame.origin.x, self.textView.frame.origin.y, requiredSize.width, requiredHeight);
     CGRect tableFrame = self.scanActionTable.frame;
-    
-    // The size of '85' is so that the table view has at least
-    // 100 pixels of space. This number can probably be tweaked a bit
-    // later on.
-    textFrame.size.height = MIN(textFrame.size.height,85);
+
     tableFrame.origin.y = CGRectGetMaxY(textFrame) + padding;
-    tableFrame.size.height = CGRectGetHeight(self.view.bounds) - tableFrame.origin.y;
     
     self.textView.frame = textFrame;
     self.scanActionTable.frame = tableFrame;
@@ -222,6 +220,7 @@
                                                                                                          toDate:[NSDate date]]];
     [self.scanActionTable reloadData];
     self.loadingView.hidden = YES;
+    self.scrollView.contentSize = CGSizeMake(self.view.frame.size.width, CGRectGetMaxY(self.scanActionTable.frame) + padding);
 }
 
 #pragma mark -

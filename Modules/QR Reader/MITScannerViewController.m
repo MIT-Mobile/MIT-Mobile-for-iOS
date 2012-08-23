@@ -432,8 +432,8 @@
     QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
     
     cell.textLabel.text = result.text;
-    cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
-    cell.textLabel.numberOfLines = 3;
+    cell.textLabel.numberOfLines = 2;
+    cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
     cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date
                                                                      toDate:[NSDate date]];
     
