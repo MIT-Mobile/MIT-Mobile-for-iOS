@@ -2,13 +2,18 @@
 #import "LinksViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
+#import "MIT_MobileAppDelegate.h"
 
 @interface LinksViewController ()
-
+//  properties
+    @property (nonatomic, assign) BOOL requestWasDispatched;
+    @property (nonatomic, retain) NSArray *linkResults;
+    @property (nonatomic, retain) MITLoadingActivityView *loadingView;
+//  private methods
+//    - (void) reloadAndShowTableView;
 @end
 
 #define PADDING 10
-#define LINK_TITLE_WIDTH 250
 
 static NSString * kLinksCacheFileName = @"links_cache.plist";
 
@@ -19,9 +24,12 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 @implementation LinksViewController
 
+@synthesize requestWasDispatched;
+@synthesize linkResults = _linkResults;
+@synthesize loadingView = _loadingView;
+
 - (void) dealloc
 {
-    [table release];
     [_linkResults release];
     [super dealloc];
 }
@@ -42,24 +50,22 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 	// Do any additional setup after loading the view.
     self.title = @"Links";
     
-    table = [[UITableView alloc]    initWithFrame:CGRectInset(self.view.bounds, 0, 0)
-                                        style:UITableViewStyleGrouped];
-    table.delegate = self;
-    table.dataSource = self;
-    [table setBackgroundColor:[UIColor clearColor]];
-    [table applyStandardColors];
+    self.tableView = [[[UITableView alloc]    initWithFrame:CGRectInset(self.view.bounds, 0, 0)
+                                        style:UITableViewStyleGrouped] autorelease];
+    [self.tableView setBackgroundColor:[UIColor clearColor]];
+    [self.tableView applyStandardColors];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
     
-    [self.view addSubview:table];
-    
-    _linkResults = [[self loadLinksFromCache] copy];
+    _linkResults = [[self loadLinksFromCache] retain];
     
     [self reloadTableView];
 }
 
-- (void) viewDidAppear:(BOOL)animated
+- (void) viewWillAppear:(BOOL)animated
 {
     if (!_linkResults) {
-        [self showLoadingViewWithDelay:0.0];
+        [self showLoadingView];
     }
     [self queryForLinks];
 }
@@ -67,6 +73,9 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 - (void)viewDidUnload
 {
     [super viewDidUnload];
+    self.tableView.delegate = nil;
+    self.tableView.dataSource = nil;
+    self.tableView = nil;
     // Release any retained subviews of the main view.
 }
 
@@ -77,75 +86,54 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 #pragma mark - Loading View
 
-- (void) showLoadingViewWithDelay:(float) delay {
+- (void) showLoadingView {
     if (!_loadingView) {
-        _loadingView = [[MITLoadingActivityView alloc] initWithFrame:CGRectInset(self.view.frame, 0, 0)];
+        CGRect loadingFrame = [MITAppDelegate() rootNavigationController].view.bounds;
+        _loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
         _loadingView.usesBackgroundImage = NO;
-        _loadingView.alpha = 0.0;
+        _loadingView.alpha = 1.0;
         [self.view addSubview:_loadingView];
-        
-        [UIView animateWithDuration:0.3f delay:delay options:UIViewAnimationCurveEaseInOut animations:^(void){
-            _loadingView.alpha = 1.0;
-        }completion:^(BOOL finished){
-        }];
     }
 }
 
 - (void) removeLoadingView {
-    [UIView animateWithDuration:0.3f delay:0.0 options:UIViewAnimationCurveEaseInOut animations:^(void){
-        _loadingView.alpha = 0.0;
-    }completion:^(BOOL finished){
-        [_loadingView removeFromSuperview];
-        _loadingView = nil;
-    }];
-    
+    [_loadingView removeFromSuperview];
+    _loadingView = nil;
 }
 
 #pragma mark - Misc Helpers
 
 - (void) reloadTableView
 {
-    [table reloadData];
+    [self.tableView reloadData];
 }
 
 - (CGFloat)heightForLinkTitle:(NSString *)aTitle {
-    CGSize titleSize = [aTitle sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(LINK_TITLE_WIDTH, 100)];
+    float link_title_width = CGRectGetWidth(self.tableView.bounds) - 70;        // 20 for padding, 50 for good measure
+    CGSize titleSize = [aTitle sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(link_title_width, 100)];
     return titleSize.height;
 }
 
 #pragma mark - Server/Cache Difference handling
 
-- (void) replaceTableViewWithUpdatedLinks
+- (void) reloadAndShowTableView:(NSTimer *) timer
 {
+    _linkResults = [timer userInfo];
+    
     [self reloadTableView];
-    [self showTableView];
     
     [self removeLoadingView];
     _loadingView = nil;
     
 }
 
-- (void) hideTableView
+- (void) refreshTableView:(NSArray *) linksCache
 {
-    [self showLoadingViewWithDelay:0.4];
-    [UIView animateWithDuration:0.8f delay:0.0 options:UIViewAnimationCurveEaseInOut animations:^(void){
-        table.frame = CGRectMake(0, 0, CGRectGetWidth(table.bounds), 0);
-        table.alpha = 0.0;
-    }completion:^(BOOL finished){
-        table.hidden = YES;
-        [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(replaceTableViewWithUpdatedLinks) userInfo:nil repeats:NO];
-    }];
-}
-
-- (void) showTableView
-{
-    table.hidden = NO;
-    [UIView animateWithDuration:0.8f delay:0.0 options:UIViewAnimationCurveEaseInOut animations:^(void){
-        table.frame = CGRectMake(0, 0, CGRectGetWidth(table.bounds), CGRectGetHeight(self.view.bounds));
-        table.alpha = 1.0;
-    }completion:^(BOOL finished){
+    _linkResults = [NSArray array];     // empty the table
+    [self reloadTableView];             // reload the empty table  (necessary because using a UITableViewController)
     
-    }];
+    [self showLoadingView];
+    [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(reloadAndShowTableView:) userInfo:linksCache repeats:NO];
 }
 
 #pragma mark - Connection
@@ -159,7 +147,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     {
         [self handleRequestResponse:codeInfo
                               error:error];
-        [self saveLinksToCache:codeInfo];
+        
     };
 
     [operation start];
@@ -175,8 +163,8 @@ static NSString * kLinksKeyLinkTitle    = @"name";
         [self cleanUpConnection];
         if (result && [result isKindOfClass:[NSArray class]]) {
             if (![(NSArray *)result isEqualToArray:_linkResults]) {     // remove ! to test case where cache is different from server response
-                _linkResults = [result copy];
-                [self hideTableView];
+                [self refreshTableView:[(NSArray *)result retain]];
+                [self saveLinksToCache:result];
             }
         } else {
             _linkResults = nil;
@@ -268,7 +256,9 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     NSArray *paths = NSSearchPathForDirectoriesInDomains(searchPathDirectory, domainMask, YES);
     if ([paths count] == 0) {
         NSDictionary *errorDict = @{ NSLocalizedDescriptionKey : @"No file or directory at requested location" };
-        *errorOut = [NSError errorWithDomain:@"Link Cache" code:405 userInfo:errorDict];
+        if (errorOut != NULL) {
+            *errorOut = [NSError errorWithDomain:NSCocoaErrorDomain code:405 userInfo:errorDict];
+        }
         return nil;
     }
     
