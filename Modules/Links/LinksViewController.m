@@ -30,7 +30,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (void) dealloc
 {
-    [_linkResults release];
+    self.linkResults = nil;
     [super dealloc];
 }
 
@@ -57,14 +57,14 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     
-    _linkResults = [[self loadLinksFromCache] retain];
+    self.linkResults = [self loadLinksFromCache];
     
     [self reloadTableView];
 }
 
 - (void) viewWillAppear:(BOOL)animated
 {
-    if (!_linkResults) {
+    if (!self.linkResults) {
         [self showLoadingView];
     }
     [self queryForLinks];
@@ -87,18 +87,18 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 #pragma mark - Loading View
 
 - (void) showLoadingView {
-    if (!_loadingView) {
+    if (!self.loadingView) {
         CGRect loadingFrame = [MITAppDelegate() rootNavigationController].view.bounds;
-        _loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
-        _loadingView.usesBackgroundImage = NO;
-        _loadingView.alpha = 1.0;
-        [self.view addSubview:_loadingView];
+        self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        self.loadingView.usesBackgroundImage = NO;
+        self.loadingView.alpha = 1.0;
+        [self.view addSubview:self.loadingView];
     }
 }
 
 - (void) removeLoadingView {
-    [_loadingView removeFromSuperview];
-    _loadingView = nil;
+    [self.loadingView removeFromSuperview];
+    self.loadingView = nil;
 }
 
 #pragma mark - Misc Helpers
@@ -118,18 +118,16 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (void) reloadAndShowTableView:(NSTimer *) timer
 {
-    _linkResults = [timer userInfo];
+    self.linkResults = [timer userInfo];
     
     [self reloadTableView];
     
     [self removeLoadingView];
-    _loadingView = nil;
-    
 }
 
 - (void) refreshTableView:(NSArray *) linksCache
 {
-    _linkResults = [NSArray array];     // empty the table
+    self.linkResults = @[];             // empty the table
     [self reloadTableView];             // reload the empty table  (necessary because using a UITableViewController)
     
     [self showLoadingView];
@@ -143,7 +141,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
                                                                             command:nil
                                                                          parameters:nil];
     
-    operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSError *error)
+    operation.completeBlock = ^(MobileRequestOperation *operation, id *codeInfo, NSError *error)
     {
         [self handleRequestResponse:codeInfo
                               error:error];
@@ -162,12 +160,12 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     if (error == nil) {
         [self cleanUpConnection];
         if (result && [result isKindOfClass:[NSArray class]]) {
-            if (![(NSArray *)result isEqualToArray:_linkResults]) {     // remove ! to test case where cache is different from server response
+            if (![(NSArray *)result isEqualToArray:self.linkResults]) {     // remove ! to test case where cache is different from server response
                 [self refreshTableView:[(NSArray *)result retain]];
                 [self saveLinksToCache:result];
             }
         } else {
-            _linkResults = nil;
+            self.linkResults = nil;
         }
         
     }
@@ -176,8 +174,8 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 #pragma mark - Table View Data Source Delegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (_linkResults) {
-        NSDictionary * sectionDict = [_linkResults objectAtIndex:section];
+    if (self.linkResults) {
+        NSDictionary * sectionDict = [self.linkResults objectAtIndex:section];
         return [[sectionDict objectForKey:kLinksKeySectionLinks] count];
     }
     return 0;
@@ -192,7 +190,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseID] autorelease];
     }
     
-    NSDictionary *section = [_linkResults objectAtIndex:indexPath.section];
+    NSDictionary *section = [self.linkResults objectAtIndex:indexPath.section];
     NSArray *links = [section objectForKey:kLinksKeySectionLinks];
     NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
     
@@ -208,15 +206,15 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if (_linkResults) {
-        return [_linkResults count];
+    if (self.linkResults) {
+        return [self.linkResults count];
     }
     return 0;
 }
 
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (_linkResults) {
-        NSString *headerTitle = [[_linkResults objectAtIndex:section] objectForKey:kLinksKeySectionTitle];
+    if (self.linkResults) {
+        NSString *headerTitle = [[self.linkResults objectAtIndex:section] objectForKey:kLinksKeySectionTitle];
         return [UITableView groupedSectionHeaderWithTitle:headerTitle];
     }
     return nil;
@@ -228,7 +226,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSDictionary *section = [_linkResults objectAtIndex:indexPath.section];
+    NSDictionary *section = [self.linkResults objectAtIndex:indexPath.section];
     NSArray *links = [section objectForKey:kLinksKeySectionLinks];
     NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
     
@@ -241,7 +239,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSDictionary *section = [_linkResults objectAtIndex:indexPath.section];
+    NSDictionary *section = [self.linkResults objectAtIndex:indexPath.section];
     NSArray *links = [section objectForKey:kLinksKeySectionLinks];
     NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
     
