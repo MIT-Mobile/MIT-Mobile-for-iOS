@@ -5,12 +5,12 @@
 #import "MIT_MobileAppDelegate.h"
 
 @interface LinksViewController ()
-//  properties
-    @property (nonatomic, retain) NSArray *linkResults;
-    @property (nonatomic, retain) MITLoadingActivityView *loadingView;
-@end
 
-#define PADDING 10
+@property (nonatomic, retain) NSArray *linkResults;
+@property (nonatomic, retain) MITLoadingActivityView *loadingView;
+@property (nonatomic, retain) UILabel *errorLabel;
+
+@end
 
 static NSString * kLinksCacheFileName = @"links_cache.plist";
 
@@ -23,6 +23,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 @synthesize linkResults = _linkResults;
 @synthesize loadingView = _loadingView;
+@synthesize errorLabel = _errorLabel;
 
 - (void) dealloc
 {
@@ -58,9 +59,14 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (void) viewWillAppear:(BOOL)animated
 {
+    if (self.errorLabel) {
+        [self.errorLabel removeFromSuperview];
+        self.errorLabel = nil;
+    }
     if (!self.linkResults) {
         [self showLoadingView];
     }
+    self.tableView.userInteractionEnabled = YES;
     [self queryForLinks];
 }
 
@@ -82,23 +88,18 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (void) showLoadingView {
     if (!self.loadingView) {
+        self.tableView.userInteractionEnabled = NO;
         CGRect loadingFrame = self.tableView.bounds;
         self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        self.loadingView.usesBackgroundImage = NO;
         [self.view addSubview:self.loadingView];
     }
 }
 
 - (void) removeLoadingView {
+    self.tableView.userInteractionEnabled = YES;
     [self.loadingView removeFromSuperview];
     self.loadingView = nil;
-}
-
-#pragma mark - Misc Helpers
-
-- (CGFloat)heightForLinkTitle:(NSString *)aTitle {
-    float link_title_width = CGRectGetWidth(self.tableView.bounds) - 70;        // 20 for padding, 50 for good measure
-    CGSize titleSize = [aTitle sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(link_title_width, 100)];
-    return titleSize.height;
 }
 
 #pragma mark - Server/Cache Difference handling
@@ -131,15 +132,39 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     
     operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error)
     {
-        if (!error) {
-            if (jsonResult && [jsonResult isKindOfClass:[NSArray class]]) {
-                [self updateLinksIfNeeded:(NSArray *)jsonResult];
+        if (!error && jsonResult && [jsonResult isKindOfClass:[NSArray class]]) {
+            [self updateLinksIfNeeded:(NSArray *)jsonResult];
+        } else {
+            // If there was an error or if the jsonResult is not an array as expected, ignore this call and rely on the cache.
+            // If there is no cache, report the error.
+            if (!self.linkResults || [self.linkResults count] == 0) {
+                [self displayLoadingError];
             }
         }
-        // if there was an error or if the jsonResult is not an array as expected, ignore this call and rely on the cache
+        
     };
 
     [operation start];
+}
+
+- (void)displayLoadingError {
+    [self removeLoadingView];
+    CGFloat horizontalPadding = 20.0;
+    CGRect frame = self.tableView.bounds;
+    frame.origin.x = horizontalPadding;
+    frame.size.width -= 2 * horizontalPadding;
+    self.errorLabel = [[[UILabel alloc] initWithFrame:frame] autorelease];
+    self.errorLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.errorLabel.backgroundColor = [UIColor clearColor];
+    self.errorLabel.text = @"There was a problem loading the links. Please try again later.";
+    self.errorLabel.textAlignment = UITextAlignmentCenter;
+    self.errorLabel.shadowColor = [UIColor whiteColor];
+    self.errorLabel.shadowOffset = CGSizeMake(0, 1);
+    self.errorLabel.numberOfLines = 0;
+    self.errorLabel.lineBreakMode = UILineBreakModeWordWrap;
+    [self.tableView addSubview:self.errorLabel];
+    
+    self.tableView.userInteractionEnabled = NO;
 }
 
 #pragma mark - Table View Data Source Delegate
@@ -202,7 +227,13 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
     
     NSString *title = [currentLink objectForKey:kLinksKeyLinkTitle];
-    return MAX([self heightForLinkTitle:title] + 2 * PADDING, tableView.rowHeight);
+
+    CGFloat padding = 10.0f;
+    CGFloat linkTitleWidth = CGRectGetWidth(tableView.bounds) - (3 * padding + 39); // padding on each side due to being a grouped tableview + padding on left + 39px of accessory view on right
+    NSLog(@"%f", linkTitleWidth);
+    CGSize titleSize = [title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 100) lineBreakMode:UILineBreakModeWordWrap];
+
+    return MAX(titleSize.height + 2 * padding, tableView.rowHeight);
 }
 
 #pragma mark - Table View Delegate
