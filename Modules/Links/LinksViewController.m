@@ -163,7 +163,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
             NSArray *jsonArray = (NSArray *)jsonResult;
             if (![jsonArray isEqualToArray:self.linkResults]) {     // remove ! to test case where cache is different from server response
                 [self refreshTableView:[jsonArray retain]];
-                [self saveLinksToCache:jsonResult];
+                [self saveLinksToCache:jsonArray];
             }
         } else {
             self.linkResults = nil;
@@ -304,10 +304,10 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     return result;
 }
 
-- (void) saveLinksToCache:(NSDictionary *) linksDictionary
+- (void) saveLinksToCache:(NSArray *) linksArray
 {
     NSString *linksPlistPath = [[self applicationCachesDirectory] stringByAppendingPathComponent:kLinksCacheFileName];
-    [linksDictionary writeToFile:linksPlistPath atomically:YES];
+    [linksArray writeToFile:linksPlistPath atomically:YES];
 }
 
 - (NSArray *) loadLinksFromCache
