@@ -141,9 +141,9 @@ static NSString * kLinksKeyLinkTitle    = @"name";
                                                                             command:nil
                                                                          parameters:nil];
     
-    operation.completeBlock = ^(MobileRequestOperation *operation, id *codeInfo, NSError *error)
+    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error)
     {
-        [self handleRequestResponse:codeInfo
+        [self handleRequestResponse:jsonResult
                               error:error];
         
     };
@@ -155,14 +155,15 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 	requestWasDispatched = NO;
 }
 
-- (void)handleRequestResponse:(NSDictionary *)result error:(NSError *) error
+- (void)handleRequestResponse:(id)jsonResult error:(NSError *) error
 {
     if (error == nil) {
         [self cleanUpConnection];
-        if (result && [result isKindOfClass:[NSArray class]]) {
-            if (![(NSArray *)result isEqualToArray:self.linkResults]) {     // remove ! to test case where cache is different from server response
-                [self refreshTableView:[(NSArray *)result retain]];
-                [self saveLinksToCache:result];
+        if (jsonResult && [jsonResult isKindOfClass:[NSArray class]]) {
+            NSArray *jsonArray = (NSArray *)jsonResult;
+            if (![jsonArray isEqualToArray:self.linkResults]) {     // remove ! to test case where cache is different from server response
+                [self refreshTableView:[jsonArray retain]];
+                [self saveLinksToCache:jsonResult];
             }
         } else {
             self.linkResults = nil;
