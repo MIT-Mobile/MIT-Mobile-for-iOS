@@ -82,10 +82,8 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (void) showLoadingView {
     if (!self.loadingView) {
-        CGRect loadingFrame = [MITAppDelegate() rootNavigationController].view.bounds;
+        CGRect loadingFrame = self.tableView.bounds;
         self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
-        self.loadingView.usesBackgroundImage = NO;
-        self.loadingView.alpha = 1.0;
         [self.view addSubview:self.loadingView];
     }
 }
