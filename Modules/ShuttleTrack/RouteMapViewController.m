@@ -369,18 +369,11 @@
 // any touch on the map will invoke this.  
 - (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch
 {
-	
+    /* Do Nothing! */
 }
 
 -(void)mapView:(MITMapView *)mapView annotationSelected:(id<MKAnnotation>)annotation {
-	MITModuleURL *url = ((id<MITModuleURLContainer>)self.parentViewController).url;
-	ShuttleStopMapAnnotation *stopAnnotation = (ShuttleStopMapAnnotation *)annotation;
-	if (stopAnnotation.shuttleStop.stopID)
-		[url setPath:[NSString stringWithFormat:@"route-map/%@/%@", _route.routeID, stopAnnotation.shuttleStop.stopID] query:nil];
-	[url setAsModulePath];
-	
-
-	
+    /* Do Nothing! */
 }
 
 -(void) annotationCalloutDidDisappear:(MITMapView *)mapView {
@@ -388,35 +381,6 @@
 	[url setPath:[NSString stringWithFormat:@"route-map/%@", _route.routeID] query:nil];
 	[url setAsModulePath];
 }
-/*
-- (MKOverlayView *)mapView:(MITMapView *)mapView viewForOverlay:(id <MKOverlay>)overlay
-{
-	MKOverlayView* overlayView = nil;
-	
-	if(overlay == self.routeLine)
-	{
-		//if we have not yet created an overlay view for this overlay, create it now. 
-		if(nil == self.routeLineView)
-		{
-			self.routeLineView = [[[MKPolylineView alloc] initWithPolyline:self.routeLine] autorelease];
-			self.routeLineView.fillColor = [UIColor redColor];
-			self.routeLineView.strokeColor = [UIColor redColor];
-            
-            if ([[UIScreen mainScreen] scale] > 1.0) {
-                self.routeLineView.lineWidth = 5;
-            } else {
-                self.routeLineView.lineWidth = 3;
-            }
-		}
-		
-		overlayView = self.routeLineView;
-		
-	}
-	
-	return overlayView;
-	
-}
-*/	
 
 #pragma mark ShuttleDataManagerDelegate
 // message sent when a shuttle route is received. If request fails, this is called with nil
