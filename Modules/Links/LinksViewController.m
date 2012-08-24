@@ -6,11 +6,8 @@
 
 @interface LinksViewController ()
 //  properties
-    @property (nonatomic, assign) BOOL requestWasDispatched;
     @property (nonatomic, retain) NSArray *linkResults;
     @property (nonatomic, retain) MITLoadingActivityView *loadingView;
-//  private methods
-//    - (void) reloadAndShowTableView;
 @end
 
 #define PADDING 10
@@ -24,7 +21,6 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 @implementation LinksViewController
 
-@synthesize requestWasDispatched;
 @synthesize linkResults = _linkResults;
 @synthesize loadingView = _loadingView;
 
@@ -50,16 +46,14 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 	// Do any additional setup after loading the view.
     self.title = @"Links";
     
-    self.tableView = [[[UITableView alloc]    initWithFrame:CGRectInset(self.view.bounds, 0, 0)
-                                        style:UITableViewStyleGrouped] autorelease];
+    self.tableView = [[[UITableView alloc] initWithFrame:CGRectInset(self.view.bounds, 0, 0)
+                                                   style:UITableViewStyleGrouped] autorelease];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
     [self.tableView applyStandardColors];
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
     
-    self.linkResults = [self loadLinksFromCache];
+    self.linkResults = [self cachedLinks];
     
-    [self reloadTableView];
+    [self.tableView reloadData];
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -103,11 +97,6 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 #pragma mark - Misc Helpers
 
-- (void) reloadTableView
-{
-    [self.tableView reloadData];
-}
-
 - (CGFloat)heightForLinkTitle:(NSString *)aTitle {
     float link_title_width = CGRectGetWidth(self.tableView.bounds) - 70;        // 20 for padding, 50 for good measure
     CGSize titleSize = [aTitle sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(link_title_width, 100)];
@@ -116,26 +105,27 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 #pragma mark - Server/Cache Difference handling
 
-- (void) reloadAndShowTableView:(NSTimer *) timer
-{
-    self.linkResults = [timer userInfo];
-    
-    [self reloadTableView];
-    
-    [self removeLoadingView];
-}
+- (void)updateLinksIfNeeded:(NSArray *)linksArray {
+    if (![linksArray isEqualToArray:self.linkResults]) {     // remove ! to test case where cache is different from server response
+        [self saveLinksToCache:linksArray];
 
-- (void) refreshTableView:(NSArray *) linksCache
-{
-    self.linkResults = @[];             // empty the table
-    [self reloadTableView];             // reload the empty table  (necessary because using a UITableViewController)
-    
-    [self showLoadingView];
-    [NSTimer scheduledTimerWithTimeInterval:0.5f target:self selector:@selector(reloadAndShowTableView:) userInfo:linksCache repeats:NO];
+        self.linkResults = @[];             // empty the table
+        [self.tableView reloadData];        // reload the empty table  (necessary because using a UITableViewController)
+        
+        [self showLoadingView];
+        
+        double delayInSeconds = 0.5f;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            self.linkResults = linksArray;
+            [self.tableView reloadData];
+            [self removeLoadingView];
+        });
+    }
 }
 
 #pragma mark - Connection
-- (void) queryForLinks
+- (void)queryForLinks
 {
     MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"links"
                                                                             command:nil
@@ -143,33 +133,15 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     
     operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error)
     {
-        [self handleRequestResponse:jsonResult
-                              error:error];
-        
+        if (!error) {
+            if (jsonResult && [jsonResult isKindOfClass:[NSArray class]]) {
+                [self updateLinksIfNeeded:(NSArray *)jsonResult];
+            }
+        }
+        // if there was an error or if the jsonResult is not an array as expected, ignore this call and rely on the cache
     };
 
     [operation start];
-}
-
-- (void)cleanUpConnection {
-	requestWasDispatched = NO;
-}
-
-- (void)handleRequestResponse:(id)jsonResult error:(NSError *) error
-{
-    if (error == nil) {
-        [self cleanUpConnection];
-        if (jsonResult && [jsonResult isKindOfClass:[NSArray class]]) {
-            NSArray *jsonArray = (NSArray *)jsonResult;
-            if (![jsonArray isEqualToArray:self.linkResults]) {     // remove ! to test case where cache is different from server response
-                [self refreshTableView:[jsonArray retain]];
-                [self saveLinksToCache:jsonArray];
-            }
-        } else {
-            self.linkResults = nil;
-        }
-        
-    }
 }
 
 #pragma mark - Table View Data Source Delegate
@@ -293,27 +265,30 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 {
     NSString *executableName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
     NSError *error;
-    NSString *result = [self
-                            findOrCreateDirectory:NSCachesDirectory
-                            inDomain:NSUserDomainMask
-                            appendComponent:executableName
-                            error:&error];
+    NSString *result = [self findOrCreateDirectory:NSCachesDirectory
+                                          inDomain:NSUserDomainMask
+                                   appendComponent:executableName
+                                             error:&error];
     if (error) {
         NSLog(@"Unable to find or create application caches directory:\n%@", error);
     }
     return result;
 }
 
+- (NSString *)linkCachePath {
+    return [[self applicationCachesDirectory] stringByAppendingPathComponent:kLinksCacheFileName];
+}
+
 - (void) saveLinksToCache:(NSArray *) linksArray
 {
-    NSString *linksPlistPath = [[self applicationCachesDirectory] stringByAppendingPathComponent:kLinksCacheFileName];
+    NSString *linksPlistPath = [self linkCachePath];
     [linksArray writeToFile:linksPlistPath atomically:YES];
 }
 
-- (NSArray *) loadLinksFromCache
+- (NSArray *) cachedLinks
 {
-    NSArray *loaded = [NSArray arrayWithContentsOfFile:[[self applicationCachesDirectory] stringByAppendingPathComponent:kLinksCacheFileName]];
-    return loaded;
+    NSArray *linksArray = [NSArray arrayWithContentsOfFile:[self linkCachePath]];
+    return linksArray;
 }
 
 
