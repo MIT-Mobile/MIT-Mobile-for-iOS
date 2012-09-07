@@ -31,6 +31,7 @@
 {
     if ([localPath isEqualToString:@""]) {
         [self loadModuleHomeController];
+        [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
         [[MITAppDelegate() rootNavigationController] pushViewController:self.moduleHomeController animated:YES];
         return YES;
     }
