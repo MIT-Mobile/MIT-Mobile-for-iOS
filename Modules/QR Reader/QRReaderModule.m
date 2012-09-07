@@ -26,4 +26,16 @@
     self.moduleHomeController = [[[MITScannerViewController alloc] init] autorelease];
 }
 
+#pragma mark Handle Url
+- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query
+{
+    if ([localPath isEqualToString:@""]) {
+        [self loadModuleHomeController];
+        [[MITAppDelegate() rootNavigationController] pushViewController:self.moduleHomeController animated:YES];
+        return YES;
+    }
+    return NO;
+}
+
+
 @end
