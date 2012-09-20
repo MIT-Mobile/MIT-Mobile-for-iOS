@@ -3021,7 +3021,6 @@
 					"\"$(SRCROOT)/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				SDKROOT = iphoneos;
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Debug;
@@ -3047,7 +3046,6 @@
 					"\"$(SRCROOT)/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
@@ -3075,7 +3073,7 @@
 					"-ObjC",
 				);
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos5.1;
 			};
 			name = Debug;
 		};
@@ -3101,7 +3099,7 @@
 					"-all_load",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos5.1;
 			};
 			name = Release;
 		};
@@ -3129,7 +3127,7 @@
 					"-ObjC",
 				);
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos5.1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Distribution - App Store";
@@ -3157,7 +3155,6 @@
 				);
 				PRODUCT_NAME = MITMobile;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos;
 			};
 			name = "Distribution - App Store";
 		};
@@ -3186,7 +3183,7 @@
 					"-ObjC",
 				);
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos5.1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Distribution - Ad Hoc";
@@ -3214,7 +3211,6 @@
 				);
 				PRODUCT_NAME = MITMobile;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos;
 			};
 			name = "Distribution - Ad Hoc";
 		};
