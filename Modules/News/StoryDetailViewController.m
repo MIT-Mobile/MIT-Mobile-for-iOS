@@ -186,7 +186,7 @@
 
         if ([[url scheme] caseInsensitiveCompare:@"mailto"] == NSOrderedSame) {
             if ([MFMailComposeViewController canSendMail]) {
-                MFMailComposeViewController *mailController = [[[MFMailComposeViewController alloc] initWithURL:url] autorelease];
+                MFMailComposeViewController *mailController = [[[MFMailComposeViewController alloc] initWithMailToURL:url] autorelease];
                 mailController.mailComposeDelegate = self;
                 [self presentModalViewController:mailController animated:YES];
             }
