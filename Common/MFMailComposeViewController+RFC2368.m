@@ -88,7 +88,7 @@
     return [NSDictionary dictionaryWithDictionary:fields];
 } 
 
-- (id)initWithURL:(NSURL*)mailtoUrl
+- (id)initWithMailToURL:(NSURL*)mailtoUrl
 {
     self = [super init];
     
