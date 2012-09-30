@@ -230,7 +230,6 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
     CGFloat padding = 10.0f;
     CGFloat linkTitleWidth = CGRectGetWidth(tableView.bounds) - (3 * padding + 39); // padding on each side due to being a grouped tableview + padding on left + 39px of accessory view on right
-    NSLog(@"%f", linkTitleWidth);
     CGSize titleSize = [title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 100) lineBreakMode:UILineBreakModeWordWrap];
 
     return MAX(titleSize.height + 2 * padding, tableView.rowHeight);
@@ -299,7 +298,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
                                    appendComponent:executableName
                                              error:&error];
     if (error) {
-        NSLog(@"Unable to find or create application caches directory:\n%@", error);
+        ELog(@"Unable to find or create application caches directory:\n%@", error);
     }
     return result;
 }
