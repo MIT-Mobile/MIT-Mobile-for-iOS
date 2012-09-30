@@ -22,4 +22,14 @@
     self.moduleHomeController = [[[LinksViewController alloc] init] autorelease];
 }
 
+#pragma mark Handle Url
+- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query
+{
+    [self loadModuleHomeController];
+    [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
+    [[MITAppDelegate() rootNavigationController] pushViewController:self.moduleHomeController animated:YES];
+    return YES;
+}
+
+
 @end
