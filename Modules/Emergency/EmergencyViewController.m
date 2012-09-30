@@ -240,6 +240,8 @@
             }
             existingWebView.frame = infoWebView.frame;
             [existingWebView loadHTMLString:htmlString baseURL:nil];
+            existingWebView.backgroundColor = [UIColor clearColor];
+            existingWebView.opaque = NO;
 			return cell;
 		}
         // Emergency numbers
