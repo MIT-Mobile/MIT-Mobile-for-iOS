@@ -183,7 +183,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     UITableViewCell *cell = nil;
     cell = [tableView dequeueReusableCellWithIdentifier:reuseID];
     if (!cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseID] autorelease];
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseID] autorelease];
     }
     
     NSDictionary *section = [self.linkResults objectAtIndex:indexPath.section];
@@ -191,6 +191,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
     
     cell.textLabel.text = [currentLink objectForKey:kLinksKeyLinkTitle];
+    cell.detailTextLabel.text = [currentLink objectForKey:kLinksKeyLinkUrl];
     
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     
@@ -227,12 +228,15 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
     
     NSString *title = [currentLink objectForKey:kLinksKeyLinkTitle];
+    NSString *url = [currentLink objectForKey:kLinksKeyLinkUrl];
 
     CGFloat padding = 10.0f;
     CGFloat linkTitleWidth = CGRectGetWidth(tableView.bounds) - (3 * padding + 39); // padding on each side due to being a grouped tableview + padding on left + 39px of accessory view on right
-    CGSize titleSize = [title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 100) lineBreakMode:UILineBreakModeWordWrap];
+    CGSize titleSize = [title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:UILineBreakModeWordWrap];
+    
+    CGSize urlSize = [url sizeWithFont:[UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:UILineBreakModeTailTruncation];
 
-    return MAX(titleSize.height + 2 * padding, tableView.rowHeight);
+    return MAX(titleSize.height + urlSize.height + 2 * padding, tableView.rowHeight);
 }
 
 #pragma mark - Table View Delegate
