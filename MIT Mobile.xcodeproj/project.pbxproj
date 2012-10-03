@@ -255,6 +255,10 @@
 		DE81CF6210C6BC390085573D /* NewsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE81CF6110C6BC390085573D /* NewsModule.m */; };
 		DE81CF6610C6BC630085573D /* MobileWebModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE81CF6510C6BC630085573D /* MobileWebModule.m */; };
 		DE821E8110EAB4F500B4C4C8 /* UIKit+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */; };
+		DE936CA0161CD1FB00B69F7C /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936C9F161CD1FB00B69F7C /* Icon.png */; };
+		DE936CA2161CD1FF00B69F7C /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA1161CD1FF00B69F7C /* Icon@2x.png */; };
+		DE936CA4161CD28100B69F7C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA3161CD28100B69F7C /* Default.png */; };
+		DE936CA6161CD28300B69F7C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA5161CD28300B69F7C /* Default@2x.png */; };
 		DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */; };
 		DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B48C10C9BB7300BDA774 /* AboutModule.m */; };
 		DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B6F710CB126200BDA774 /* MITConstants.m */; };
@@ -280,7 +284,6 @@
 		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; };
 		DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6A110F8F71D009FAE35 /* NewsImage.m */; };
 		DECBF6B610F8F91B009FAE35 /* NewsImageRep.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6B510F8F91B009FAE35 /* NewsImageRep.m */; };
-		DED3CCE910418F5F003D3B74 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = DED3CCE810418F5F003D3B74 /* Default.png */; };
 		DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */; };
 		DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */; };
 		DEE6AF201117477E0037F03C /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = DEE6AF1F1117477E0037F03C /* credits.html */; };
@@ -312,7 +315,6 @@
 		EB4C4407128B662C00058748 /* SuperThinProgressBar.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C4405128B662C00058748 /* SuperThinProgressBar.m */; };
 		EB54943810DFF03600B708B3 /* icons in Resources */ = {isa = PBXBuildFile; fileRef = EB54942710DFF03600B708B3 /* icons */; };
 		EB54947310DFF7E200B708B3 /* global in Resources */ = {isa = PBXBuildFile; fileRef = EB54947210DFF7E200B708B3 /* global */; };
-		EB5C619D1201D6CA00805EBE /* MIT-Mobile-Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5C61981201D6CA00805EBE /* MIT-Mobile-Icon@2x.png */; };
 		EB5C621E1201D92E00805EBE /* map in Resources */ = {isa = PBXBuildFile; fileRef = EB5C61FC1201D92E00805EBE /* map */; };
 		EB5C625A1201D93A00805EBE /* news in Resources */ = {isa = PBXBuildFile; fileRef = EB5C621F1201D93A00805EBE /* news */; };
 		EB5C625B1201D93A00805EBE /* people in Resources */ = {isa = PBXBuildFile; fileRef = EB5C622A1201D93A00805EBE /* people */; };
@@ -373,7 +375,6 @@
 		EBF8B5F412B5CAF600D39AE6 /* IntroToMITController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8B5F212B5CAF600D39AE6 /* IntroToMITController.m */; };
 		EBF8B8C512B6B8B400D39AE6 /* TourStartLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8B8C312B6B8B400D39AE6 /* TourStartLocation.m */; };
 		EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */; };
-		EF3B3B15103F072400E8AA05 /* MIT-Mobile-Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = EF3B3B14103F072400E8AA05 /* MIT-Mobile-Icon.png */; };
 		EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA07 /* TextEntryTableViewCell.m */; };
 		EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA0B /* MITNavigationActivityView.m */; };
 		EF3B3B15103F072400E8AA10 /* MITAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA0F /* MITAttributedLabel.m */; };
@@ -899,6 +900,10 @@
 		DE81CF6510C6BC630085573D /* MobileWebModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileWebModule.m; sourceTree = "<group>"; };
 		DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIKit+MITAdditions.h"; sourceTree = "<group>"; };
 		DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIKit+MITAdditions.m"; sourceTree = "<group>"; };
+		DE936C9F161CD1FB00B69F7C /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		DE936CA1161CD1FF00B69F7C /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
+		DE936CA3161CD28100B69F7C /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		DE936CA5161CD28300B69F7C /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		DE9EFBD010FE7D8900F5F07E /* SettingsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsModule.h; path = Settings/SettingsModule.h; sourceTree = "<group>"; };
 		DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingsModule.m; path = Settings/SettingsModule.m; sourceTree = "<group>"; };
 		DEA3B48B10C9BB7300BDA774 /* AboutModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutModule.h; sourceTree = "<group>"; };
@@ -950,7 +955,6 @@
 		DECBF6A110F8F71D009FAE35 /* NewsImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsImage.m; sourceTree = "<group>"; };
 		DECBF6B410F8F91B009FAE35 /* NewsImageRep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsImageRep.h; sourceTree = "<group>"; };
 		DECBF6B510F8F91B009FAE35 /* NewsImageRep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsImageRep.m; sourceTree = "<group>"; };
-		DED3CCE810418F5F003D3B74 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = Resources/Default.png; sourceTree = "<group>"; };
 		DEE283E910F5109000B39531 /* Emergency.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = Emergency.xcdatamodel; sourceTree = "<group>"; };
 		DEE6AECD111740BF0037F03C /* AboutCreditsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutCreditsVC.h; sourceTree = "<group>"; };
 		DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutCreditsVC.m; sourceTree = "<group>"; };
@@ -1002,7 +1006,6 @@
 		EB4C4405128B662C00058748 /* SuperThinProgressBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SuperThinProgressBar.m; sourceTree = "<group>"; };
 		EB54942710DFF03600B708B3 /* icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icons; path = Resources/icons; sourceTree = "<group>"; };
 		EB54947210DFF7E200B708B3 /* global */ = {isa = PBXFileReference; lastKnownFileType = folder; name = global; path = Resources/global; sourceTree = "<group>"; };
-		EB5C61981201D6CA00805EBE /* MIT-Mobile-Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "MIT-Mobile-Icon@2x.png"; path = "Resources/MIT-Mobile-Icon@2x.png"; sourceTree = "<group>"; };
 		EB5C61FC1201D92E00805EBE /* map */ = {isa = PBXFileReference; lastKnownFileType = folder; name = map; path = Resources/map; sourceTree = "<group>"; };
 		EB5C621F1201D93A00805EBE /* news */ = {isa = PBXFileReference; lastKnownFileType = folder; name = news; path = Resources/news; sourceTree = "<group>"; };
 		EB5C622A1201D93A00805EBE /* people */ = {isa = PBXFileReference; lastKnownFileType = folder; name = people; path = Resources/people; sourceTree = "<group>"; };
@@ -1110,7 +1113,6 @@
 		EBF8B8C312B6B8B400D39AE6 /* TourStartLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourStartLocation.m; sourceTree = "<group>"; };
 		EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CoreLocation+MITAdditions.h"; sourceTree = "<group>"; };
 		EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CoreLocation+MITAdditions.m"; sourceTree = "<group>"; };
-		EF3B3B14103F072400E8AA05 /* MIT-Mobile-Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "MIT-Mobile-Icon.png"; path = "Resources/MIT-Mobile-Icon.png"; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA07 /* TextEntryTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextEntryTableViewCell.m; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA09 /* TextEntryTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextEntryTableViewCell.h; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA0B /* MITNavigationActivityView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNavigationActivityView.m; sourceTree = "<group>"; };
@@ -1239,6 +1241,10 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				DE936CA5161CD28300B69F7C /* Default@2x.png */,
+				DE936CA3161CD28100B69F7C /* Default.png */,
+				DE936CA1161CD1FF00B69F7C /* Icon@2x.png */,
+				DE936C9F161CD1FB00B69F7C /* Icon.png */,
 				4B83721C157E5B19004CBC49 /* Contrib */,
 				DE715445102FE468005E6111 /* Modules */,
 				080E96DDFE201D6D7F000001 /* Common */,
@@ -1273,15 +1279,12 @@
 				EB5C62301201D93A00805EBE /* shuttle */,
 				EB5C62501201D93A00805EBE /* stellar */,
 				EB5C61FC1201D92E00805EBE /* map */,
-				EB5C61981201D6CA00805EBE /* MIT-Mobile-Icon@2x.png */,
-				EF3B3B14103F072400E8AA05 /* MIT-Mobile-Icon.png */,
 				4BE4D3001416EB4D00E723F0 /* libraries */,
 				DE1348F810FFC2CC006FFF33 /* debug_tiles */,
 				EB54947210DFF7E200B708B3 /* global */,
 				EB54942710DFF03600B708B3 /* icons */,
 				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */,
-				DED3CCE810418F5F003D3B74 /* Default.png */,
 				DEE6AF1F1117477E0037F03C /* credits.html */,
 				DE5E99D21124B57C00498760 /* emergency_template.html */,
 				DEE6B1CC111774300037F03C /* Entitlements.plist */,
@@ -2620,13 +2623,10 @@
 				EB5C625C1201D93A00805EBE /* shuttle in Resources */,
 				EB5C625D1201D93A00805EBE /* stellar in Resources */,
 				EB4C34FA1281FCBD00058748 /* tours in Resources */,
-				DED3CCE910418F5F003D3B74 /* Default.png in Resources */,
 				DEE6B1CD111774300037F03C /* Entitlements.plist in Resources */,
 				DE6F046311139CA40046684B /* FBConnect.bundle in Resources */,
 				2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */,
 				2C95A1D9137DB24D0025B28D /* FacilitiesSummaryViewController.xib in Resources */,
-				EF3B3B15103F072400E8AA05 /* MIT-Mobile-Icon.png in Resources */,
-				EB5C619D1201D6CA00805EBE /* MIT-Mobile-Icon@2x.png in Resources */,
 				4463D09510D92CB00048CA83 /* MITMapDetailViewController.xib in Resources */,
 				44293C3610DAE88500273119 /* MITMapSearchResultsVC.xib in Resources */,
 				28AD73600D9D9599002E5188 /* MainWindow.xib in Resources */,
@@ -2648,6 +2648,10 @@
 				4B83723E157E5B5C004CBC49 /* zbar-helpicons.png in Resources */,
 				4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */,
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
+				DE936CA0161CD1FB00B69F7C /* Icon.png in Resources */,
+				DE936CA2161CD1FF00B69F7C /* Icon@2x.png in Resources */,
+				DE936CA4161CD28100B69F7C /* Default.png in Resources */,
+				DE936CA6161CD28300B69F7C /* Default@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3052,21 +3056,17 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = armv7;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -3080,21 +3080,17 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = armv7;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -3106,22 +3102,17 @@
 		DE30C9EE112205BA00598A1A /* Distribution - App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = armv7;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Massachusetts Institute of Technology";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				OTHER_CFLAGS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -3161,23 +3152,18 @@
 		DEF93C661110C9C4009DF154 /* Distribution - Ad Hoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = armv7;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Massachusetts Institute of Technology";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_THUMB_SUPPORT = NO;
-				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				OTHER_CFLAGS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
