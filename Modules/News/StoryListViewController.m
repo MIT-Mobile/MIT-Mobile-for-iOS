@@ -899,6 +899,14 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 }
 
 #pragma mark -
+#pragma mark UIViewController
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
+
+#pragma mark -
 #pragma mark UITableViewDataSource and UITableViewDelegate
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
