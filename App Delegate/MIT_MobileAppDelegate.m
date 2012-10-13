@@ -7,6 +7,7 @@
 #import "AudioToolbox/AudioToolbox.h"
 #import "MITSpringboard.h"
 #import "ModuleVersions.h"
+#import "MITRotationForwardingNavigationController.h"
 
 @implementation MIT_MobileAppDelegate
 @synthesize window,
@@ -37,7 +38,7 @@
     springboard.primaryModules = [NSArray arrayWithArray:self.modules];
     springboard.delegate = self;
     
-    UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:springboard];
+    MITRotationForwardingNavigationController *rootController = [[MITRotationForwardingNavigationController alloc] initWithRootViewController:springboard];
     rootController.delegate = springboard;
     rootController.navigationBar.barStyle = UIBarStyleBlack;
     

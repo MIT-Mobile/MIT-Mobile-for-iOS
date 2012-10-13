@@ -259,6 +259,8 @@
 		DE936CA2161CD1FF00B69F7C /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA1161CD1FF00B69F7C /* Icon@2x.png */; };
 		DE936CA4161CD28100B69F7C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA3161CD28100B69F7C /* Default.png */; };
 		DE936CA6161CD28300B69F7C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA5161CD28300B69F7C /* Default@2x.png */; };
+		DE952E6816295EBA007E7356 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE952E6716295EBA007E7356 /* Default-568h@2x.png */; };
+		DE952E6C1629BFAB007E7356 /* MITRotationForwardingNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE952E6B1629BFAB007E7356 /* MITRotationForwardingNavigationController.m */; };
 		DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */; };
 		DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B48C10C9BB7300BDA774 /* AboutModule.m */; };
 		DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B6F710CB126200BDA774 /* MITConstants.m */; };
@@ -904,6 +906,9 @@
 		DE936CA1161CD1FF00B69F7C /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		DE936CA3161CD28100B69F7C /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		DE936CA5161CD28300B69F7C /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		DE952E6716295EBA007E7356 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		DE952E6A1629BFAB007E7356 /* MITRotationForwardingNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITRotationForwardingNavigationController.h; path = "Container Views/MITRotationForwardingNavigationController.h"; sourceTree = "<group>"; };
+		DE952E6B1629BFAB007E7356 /* MITRotationForwardingNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITRotationForwardingNavigationController.m; path = "Container Views/MITRotationForwardingNavigationController.m"; sourceTree = "<group>"; };
 		DE9EFBD010FE7D8900F5F07E /* SettingsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsModule.h; path = Settings/SettingsModule.h; sourceTree = "<group>"; };
 		DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingsModule.m; path = Settings/SettingsModule.m; sourceTree = "<group>"; };
 		DEA3B48B10C9BB7300BDA774 /* AboutModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutModule.h; sourceTree = "<group>"; };
@@ -1168,6 +1173,7 @@
 			children = (
 				2C3C9D7314CDC0B2005646F7 /* Categories */,
 				3AA21C481039DDBA00DB7637 /* Connection */,
+				DE952E691629BF59007E7356 /* Container Views */,
 				3AA21C491039DDBD00DB7637 /* Core Data */,
 				B64B47051288502E002E2F1D /* DummyRotatingViewController.h */,
 				B64B47061288502E002E2F1D /* DummyRotatingViewController.m */,
@@ -1241,6 +1247,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				DE952E6716295EBA007E7356 /* Default-568h@2x.png */,
 				DE936CA5161CD28300B69F7C /* Default@2x.png */,
 				DE936CA3161CD28100B69F7C /* Default.png */,
 				DE936CA1161CD1FF00B69F7C /* Icon@2x.png */,
@@ -2218,6 +2225,15 @@
 			path = "Mobile Web";
 			sourceTree = "<group>";
 		};
+		DE952E691629BF59007E7356 /* Container Views */ = {
+			isa = PBXGroup;
+			children = (
+				DE952E6A1629BFAB007E7356 /* MITRotationForwardingNavigationController.h */,
+				DE952E6B1629BFAB007E7356 /* MITRotationForwardingNavigationController.m */,
+			);
+			name = "Container Views";
+			sourceTree = "<group>";
+		};
 		DE9EFBCE10FE7D3200F5F07E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -2652,6 +2668,7 @@
 				DE936CA2161CD1FF00B69F7C /* Icon@2x.png in Resources */,
 				DE936CA4161CD28100B69F7C /* Default.png in Resources */,
 				DE936CA6161CD28300B69F7C /* Default@2x.png in Resources */,
+				DE952E6816295EBA007E7356 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2996,6 +3013,7 @@
 				2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */,
 				48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
+				DE952E6C1629BFAB007E7356 /* MITRotationForwardingNavigationController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
