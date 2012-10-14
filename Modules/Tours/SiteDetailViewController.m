@@ -161,7 +161,7 @@
         MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:audioURL parameters:nil] autorelease];
         request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
             TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
-            
+
             if (error) {
                 UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:@"Connection Failed"
                                                                      message:@"Audio could not be loaded"
@@ -169,42 +169,42 @@
                                                            cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
                 alertView.tag = CONNECTION_FAILED_TAG;
                 [alertView show];
-                
+
             } else {
-                
+
                 if ([[audioURL absoluteString] isEqualToString:component.audioURL]) {
-                
-                    [data writeToFile:component.audioFile atomically:YES];
-                
-                    NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
-                
-                    NSError *error;
-                    audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
-                    [audioPlayer prepareToPlay];
-                    if (!audioPlayer) {
-                        ELog(@"%@", [error description]);
-                    }
-                
-                    progressView.progress = 1.0;
-                    [UIView beginAnimations:@"fadeProgressView" context:nil];
-                    [UIView setAnimationDelegate:self];
-                    [UIView setAnimationDelay:0.3];
-                    [UIView setAnimationDuration:0.5];
-                    if (audioPlayer) {
-                        [UIView setAnimationDidStopSelector:@selector(playAudio)];
-                    }
-                    progressView.alpha = 0.0;
-                    [UIView commitAnimations];
-                }            
-            }
-        };
+    
+        [data writeToFile:component.audioFile atomically:YES];
         
+        NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
+        
+        NSError *error;
+        audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
+        [audioPlayer prepareToPlay];
+        if (!audioPlayer) {
+            ELog(@"%@", [error description]);
+        }
+        
+        progressView.progress = 1.0;
+        [UIView beginAnimations:@"fadeProgressView" context:nil];
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDelay:0.3];
+        [UIView setAnimationDuration:0.5];
+        if (audioPlayer) {
+            [UIView setAnimationDidStopSelector:@selector(playAudio)];
+        }
+        progressView.alpha = 0.0;
+        [UIView commitAnimations];
+    }
+}
+        };
+
         request.progressBlock = ^(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger expectedBytesWritten) {
             if (progressView) {
                 progressView.progress = 0.1 + 0.9 * totalBytesWritten / totalBytesWritten;
             }
         };
-
+    
         progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
         progressView.frame = CGRectMake(200, 0, 120, 20);
         [self.view addSubview:progressView];
@@ -212,7 +212,7 @@
         [[NSOperationQueue mainQueue] addOperation:request];
     }
 }
-
+    
 - (void)pauseAudio {
     [audioPlayer pause];
     [self enablePlayButton];
@@ -508,7 +508,7 @@
                 NSInteger imageWidth = 160;
                 NSInteger imageHeight = 100;
                 if (![[NSFileManager defaultManager] fileExistsAtPath:photoFile]) {
-                    photoFile = [NSString stringWithString:@"tours/tour_photo_loading_animation.gif"];
+                    photoFile = @"tours/tour_photo_loading_animation.gif";
 
                     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:component.photoURL] parameters:nil] autorelease];
                     request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
@@ -520,7 +520,7 @@
                                             "img.src = \"%@\";\n", component.photoFile];
                             UIWebView *webView = (UIWebView *)[newSlidingView viewWithTag:WEB_VIEW_TAG];
                             [webView stringByEvaluatingJavaScriptFromString:js];
-                        }
+                }
                     };
                     [[NSOperationQueue mainQueue] addOperation:request];
                 }

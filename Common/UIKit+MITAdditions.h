@@ -1,6 +1,11 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#pragma mark - UIKit Additon Function Prototypes
+CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect);
+NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation);
+
+#pragma mark - Category Definitions
 @interface NSString (MITUIAdditions)
 
 - (NSInteger)lengthOfLineWithFont:(UIFont *)font constrainedToSize:(CGSize)size;

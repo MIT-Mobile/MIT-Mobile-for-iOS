@@ -31,12 +31,16 @@
 	return hasSearchInitiated && activeMode;
 }
 	
-- (id) initWithSearchBar: theSearchBar viewController: (StellarMainTableController *)controller{
+- (id) initWithSearchBar:(UISearchBar *)theSearchBar
+          viewController:(StellarMainTableController *)controller
+{
 	self = [super init];
 	if (self) {
 		activeMode = NO;
-		searchBar = [theSearchBar retain];
-        searchBar.delegate = self;
+        
+        theSearchBar.delegate = self;
+		self.searchBar = theSearchBar;
+        
 		viewController = controller;
 		self.lastResults = [NSArray array];
 		hasSearchInitiated = NO;
@@ -45,8 +49,8 @@
 }
 
 - (void) dealloc {
-    [searchBar release];
-	[lastResults release];
+    self.searchBar = nil;
+    self.lastResults = nil;
 	[super dealloc];
 }
 
@@ -57,18 +61,31 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	UITableViewCell *cell = [aTableView dequeueReusableCellWithIdentifier:@"StellarSearch"];
+    StellarClassTableCell *cell = [aTableView dequeueReusableCellWithIdentifier:@"StellarSearch"];
+
 	if(cell == nil) {
-		cell = [[[StellarClassTableCell alloc] initWithReusableCellIdentifier:@"StellarSearch"] autorelease];
+		cell = [[[StellarClassTableCell alloc] initWithReuseIdentifier:@"StellarSearch"] autorelease];
 	}
 
-	StellarClass *stellarClass = [self.lastResults objectAtIndex:indexPath.row];
-	[StellarClassTableCell configureCell:cell withStellarClass:stellarClass];
+    cell.stellarClass = [self.lastResults objectAtIndex:indexPath.row];
 	return cell;
 }
 
-- (CGFloat) tableView: (UITableView *)tableView heightForRowAtIndexPath: (NSIndexPath *)indexPath {
-	return [StellarClassTableCell cellHeightForTableView:tableView class:[self.lastResults objectAtIndex:indexPath.row]];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static StellarClassTableCell *calcCell = nil;
+
+    if (calcCell == nil)
+    {
+        calcCell = [[StellarClassTableCell alloc] init];
+    }
+
+    calcCell.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 44.0f);
+    calcCell.stellarClass = [self.lastResults objectAtIndex:indexPath.row];
+    [calcCell layoutSubviews];
+
+    CGSize fitSize = [calcCell sizeThatFits:calcCell.contentView.bounds.size];
+    return fitSize.height;
 }
 			
 - (NSInteger) numberOfSectionsInTableView: (UITableView *)tableView {
@@ -79,10 +96,11 @@
 	NSString *headerTitle = nil;
 	
 	if([lastResults count]) {
-		headerTitle = [NSString stringWithFormat:@"%i found", [lastResults count]];
+		headerTitle = [NSString stringWithFormat:@"%lu found", (unsigned long)[lastResults count]];
 	} else {
 		headerTitle = @"No matches found";
 	}
+    
 	return [UITableView ungroupedSectionHeaderWithTitle:headerTitle];
 }
 

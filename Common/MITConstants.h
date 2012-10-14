@@ -47,6 +47,7 @@ extern NSString * const ToursTag;
 extern NSString * const MobileWebTag;
 extern NSString * const SettingsTag;
 extern NSString * const AboutTag;
+extern NSString * const LinksTag;
 extern NSString * const QRReaderTag;
 extern NSString * const FacilitiesTag;
 extern NSString * const LibrariesTag;

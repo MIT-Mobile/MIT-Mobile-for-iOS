@@ -195,7 +195,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGFloat rowHeight = 0;
-    UIFont *cellFont = [UIFont fontWithName:@"Helvetica" size:14.0];
+    UIFont *cellFont = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
     CGSize constraintSize = CGSizeMake(270.0f, 2009.0f);
     NSString *cellText = nil;
     
@@ -207,6 +207,7 @@
             cellText = @"A"; // just something to guarantee one line
             CGSize labelSize = [cellText sizeWithFont:cellFont constrainedToSize:constraintSize lineBreakMode:UILineBreakModeWordWrap];
             rowHeight = labelSize.height + 20.0f;
+            rowHeight = MAX(44.0, rowHeight);
             break;
     }
     
@@ -240,6 +241,8 @@
             }
             existingWebView.frame = infoWebView.frame;
             [existingWebView loadHTMLString:htmlString baseURL:nil];
+            existingWebView.backgroundColor = [UIColor clearColor];
+            existingWebView.opaque = NO;
 			return cell;
 		}
         // Emergency numbers
@@ -353,7 +356,8 @@
 
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidLoadNotification object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidFailToLoadNotification object:nil];
 	[htmlFormatString release];
 	self.htmlString = nil;
 	self.infoWebView = nil;

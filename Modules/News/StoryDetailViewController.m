@@ -2,6 +2,7 @@
 
 #import "StoryDetailViewController.h"
 
+#import "MITConstants.h"
 #import "ConnectionDetector.h"
 #import "CoreDataManager.h"
 #import "Foundation+MITAdditions.h"
@@ -13,12 +14,82 @@
 #import "StoryGalleryViewController.h"
 #import "URLShortener.h"
 
-@implementation StoryDetailViewController
+@interface StoryDetailViewController ()
+@property (strong) UISegmentedControl *storyPager;
+@property (strong) UIWebView *storyView;
+@end
 
-@synthesize newsController, story, storyView;
+@implementation StoryDetailViewController
+{
+	StoryListViewController *newsController;
+    NewsStory *story;
+}
+
+@synthesize newsController, story;
+@synthesize storyView = _storyView;
+@synthesize storyPager = _storyPager;
+
+- (void)dealloc
+{
+    self.newsController = nil;
+    self.storyView = nil;
+    self.story = nil;
+    self.storyPager = nil;
+    
+    [super dealloc];
+}
 
 - (void)loadView {
-    [super loadView]; // surprisingly necessary empty call to super due to the way memory warnings work
+    CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
+    UIView *mainView = [[[UIView alloc] initWithFrame:mainFrame] autorelease];
+    mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleWidth);
+    mainView.autoresizesSubviews = YES;
+    mainView.backgroundColor = [UIColor whiteColor];
+
+    {
+        NSArray *pagerItems = [NSArray arrayWithObjects:
+                               [UIImage imageNamed:MITImageNameUpArrow], 
+                               [UIImage imageNamed:MITImageNameDownArrow], 
+                               nil];
+        UISegmentedControl *pager = [[[UISegmentedControl alloc] initWithItems:pagerItems] autorelease];
+        
+        pager.momentary = YES;
+        pager.segmentedControlStyle = UISegmentedControlStyleBar;
+        pager.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                  UIViewAutoresizingFlexibleHeight |
+                                  UIViewAutoresizingFlexibleBottomMargin);
+        pager.frame = CGRectMake(0, 0, 80.0, CGRectGetHeight(pager.frame));
+        
+        [pager setEnabled:NO forSegmentAtIndex:0];
+        [pager setEnabled:NO forSegmentAtIndex:1];
+        
+        [pager addTarget:self
+                  action:@selector(didPressNavButton:)
+        forControlEvents:UIControlEventValueChanged];
+        
+        UIBarButtonItem *segmentItem = [[[UIBarButtonItem alloc] initWithCustomView:pager] autorelease];
+        self.navigationItem.rightBarButtonItem = segmentItem;
+        self.storyPager = pager;
+    }
+    
+    {
+        UIWebView *webView = [[[UIWebView alloc] initWithFrame:mainView.bounds] autorelease];
+        webView.dataDetectorTypes = UIDataDetectorTypeLink;
+        webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                    UIViewAutoresizingFlexibleHeight);
+        webView.scalesPageToFit = NO;
+        webView.delegate = self;
+        [mainView addSubview:webView];
+        self.storyView = webView;
+    }
+    
+    [self setView:mainView];
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    return YES;
 }
 
 - (void)viewDidLoad {
@@ -26,42 +97,14 @@
 	
 	self.shareDelegate = self;
 	
-	storyPager = [[UISegmentedControl alloc] initWithItems:
-											[NSArray arrayWithObjects:
-											 [UIImage imageNamed:MITImageNameUpArrow], 
-											 [UIImage imageNamed:MITImageNameDownArrow], 
-											 nil]];
-	[storyPager setMomentary:YES];
-	[storyPager setEnabled:NO forSegmentAtIndex:0];
-	[storyPager setEnabled:NO forSegmentAtIndex:1];
-	storyPager.segmentedControlStyle = UISegmentedControlStyleBar;
-	storyPager.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-	storyPager.frame = CGRectMake(0, 0, 80.0, storyPager.frame.size.height);
-	[storyPager addTarget:self action:@selector(didPressNavButton:) forControlEvents:UIControlEventValueChanged];
-	
-	UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView: storyPager];
-	self.navigationItem.rightBarButtonItem = segmentBarItem;
-	[segmentBarItem release];
-	
-    self.view.opaque = YES;
-    self.view.backgroundColor = [UIColor whiteColor];
-    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-	storyView = [[UIWebView alloc] initWithFrame:self.view.bounds];
-    storyView.dataDetectorTypes = UIDataDetectorTypeLink;
-    storyView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    storyView.scalesPageToFit = NO;
-	[self.view addSubview: storyView];
-	storyView.delegate = self;
-	
 	if (self.story) {
 		[self displayStory:self.story];
 	}
 }
 
 - (void)displayStory:(NewsStory *)aStory {
-	[storyPager setEnabled:[self.newsController canSelectPreviousStory] forSegmentAtIndex:0];
-	[storyPager setEnabled:[self.newsController canSelectNextStory] forSegmentAtIndex:1];
+	[self.storyPager setEnabled:[self.newsController canSelectPreviousStory] forSegmentAtIndex:0];
+	[self.storyPager setEnabled:[self.newsController canSelectNextStory] forSegmentAtIndex:1];
 
 	NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     NSURL *fileURL = [NSURL URLWithString:@"news/news_story_template.html" relativeToURL:baseURL];
@@ -72,10 +115,9 @@
         return;
     }
     
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
     [dateFormatter setDateFormat:@"MMM dd, y"];
     NSString *postDate = [dateFormatter stringFromDate:story.postDate];
-	[dateFormatter release];
     
     NSString *thumbnailURL = story.inlineImage.smallImage.url;
     NSString *thumbnailWidth = [story.inlineImage.smallImage.width stringValue];
@@ -115,7 +157,7 @@
     // mark story as read
     self.story.read = [NSNumber numberWithBool:YES];
 	[CoreDataManager saveDataWithTemporaryMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-	[storyView loadHTMLString:htmlString baseURL:baseURL];
+	[self.storyView loadHTMLString:htmlString baseURL:baseURL];
 }
 
 - (void)didPressNavButton:(id)sender {
@@ -144,7 +186,7 @@
 
         if ([[url scheme] caseInsensitiveCompare:@"mailto"] == NSOrderedSame) {
             if ([MFMailComposeViewController canSendMail]) {
-                MFMailComposeViewController *mailController = [[[MFMailComposeViewController alloc] initWithURL:url] autorelease];
+                MFMailComposeViewController *mailController = [[[MFMailComposeViewController alloc] initWithMailToURL:url] autorelease];
                 mailController.mailComposeDelegate = self;
                 [self presentModalViewController:mailController animated:YES];
             }
@@ -153,10 +195,9 @@
             result = NO;
         } else {
             if ([[url path] rangeOfString:@"image" options:NSBackwardsSearch].location != NSNotFound) {
-                StoryGalleryViewController *galleryVC = [[StoryGalleryViewController alloc] init];
+                StoryGalleryViewController *galleryVC = [[[StoryGalleryViewController alloc] init] autorelease];
                 galleryVC.images = story.allImages;
                 [self.navigationController pushViewController:galleryVC animated:YES];
-                [galleryVC release];
                 result = NO;
             } else if ([[url path] rangeOfString:@"bookmark" options:NSBackwardsSearch].location != NSNotFound) {
                 // toggle bookmarked state
@@ -171,7 +212,7 @@
 }
 
 - (NSString *)actionSheetTitle {
-	return [NSString stringWithString:@"Share article with a friend"];
+	return @"Share article with a friend";
 }
 
 - (NSString *)emailSubject {
@@ -211,12 +252,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning]; 
-}
-
-- (void)dealloc {
-	[storyView release];
-    [story release];
-    [super dealloc];
 }
 
 #pragma mark MFMailComposeViewControllerDelegate

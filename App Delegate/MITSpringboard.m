@@ -158,24 +158,22 @@
         CGFloat bannerHeight = [[bannerInfo objectForKey:@"height"] floatValue];
         if (!bannerHeight) bannerHeight = 72;
         
-		UIImageView *imageView = [[[UIImageView alloc] initWithImage:image] autorelease];
-		imageView.userInteractionEnabled = NO;
-        imageView.frame = CGRectMake(0, 0, bannerWidth, bannerHeight);
-		
-		UIControl *control = (UIControl *)[self.view viewWithTag:BANNER_CONTROL_TAG];
-		if (control)
-			[control removeFromSuperview];
-		control = [[[UIControl alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - bannerHeight, bannerWidth, bannerHeight)] autorelease];
-        control.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
-		control.tag = BANNER_CONTROL_TAG;
-		[control addSubview:imageView];
-		[control addTarget:self action:@selector(showModuleForBanner) forControlEvents:UIControlEventTouchUpInside];
-		
-		[self.view addSubview:control];
+		UIButton *bannerButton = (UIButton *)[self.view viewWithTag:BANNER_CONTROL_TAG];
+        if (bannerButton) {
+            [bannerButton removeFromSuperview];
+        }
+        bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        bannerButton.frame = CGRectMake(0, self.view.frame.size.height - bannerHeight, bannerWidth, bannerHeight);
+        bannerButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
+        bannerButton.tag = BANNER_CONTROL_TAG;
+        [bannerButton setImage:image forState:UIControlStateNormal];
+        [bannerButton addTarget:self action:@selector(showModuleForBanner) forControlEvents:UIControlEventTouchUpInside];
+        		
+		[self.view addSubview:bannerButton];
         
         // will trigger a relayout of grid if the frame is different
         CGRect newGridFrame = grid.frame;
-        newGridFrame.size.height = self.view.frame.size.height - control.frame.size.height;
+        newGridFrame.size.height = self.view.frame.size.height - bannerButton.frame.size.height;
         grid.frame = newGridFrame;
 	}
 }
@@ -229,28 +227,7 @@
        didShowViewController:(UIViewController *)viewController
                     animated:(BOOL)animated
 {
-    /*
-	NSInteger newStackDepth = navigationController.viewControllers.count;
-	if (newStackDepth < navStackDepth) {
-		if ([self.delegate respondsToSelector:@selector(springboardDidPopModule:)]) {
-			[self.delegate springboardDidPopModule:self];
-		}
-	} else {
-		NSString *tag = nil;
-		for (MITModule *aModule in self.primaryModules) {
-			//if ([navigationController.viewControllers containsObject:aModule.tabNavController.visibleViewController]) {
-			//	tag = aModule.tag;
-			//	break;
-			//}
-		}
-		if (tag) {
-			if ([self.delegate respondsToSelector:@selector(springboard:didPushModuleForTag:)]) {
-				[self.delegate springboard:self didPushModuleForTag:tag];
-			}
-		}
-	}
-	navStackDepth = newStackDepth;
-     */
+    
 }
 
 #pragma mark -

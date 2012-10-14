@@ -2,6 +2,39 @@
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
 
+CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect)
+{
+    CGRect normalizedRect = CGRectMake(subRect.origin.x / CGRectGetMaxX(parentRect),
+                                       subRect.origin.y / CGRectGetMaxY(parentRect),
+                                       subRect.size.width / CGRectGetWidth(parentRect),
+                                       subRect.size.height / CGRectGetHeight(parentRect));
+    
+    return normalizedRect;
+}
+
+NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
+{
+    switch (orientation) {
+        case UIImageOrientationDown:
+            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationDown", UIImageOrientationDown];
+        case UIImageOrientationDownMirrored:
+            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationDownMirrored", UIImageOrientationDownMirrored];
+        case UIImageOrientationLeft:
+            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationLeft", UIImageOrientationLeft];
+        case UIImageOrientationLeftMirrored:
+            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationLeftMirrored", UIImageOrientationLeftMirrored];
+        case UIImageOrientationUp:
+            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationUp", UIImageOrientationUp];
+        case UIImageOrientationUpMirrored:
+            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationUpMirrored", UIImageOrientationUpMirrored];
+        case UIImageOrientationRight:
+            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationRight", UIImageOrientationRight];
+        case UIImageOrientationRightMirrored:
+            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationRightMirrored", UIImageOrientationRightMirrored];
+    }
+}
+
+
 @implementation NSString (MITUIAdditions)
 
 - (NSInteger)lengthOfLineWithFont:(UIFont *)font constrainedToSize:(CGSize)size {

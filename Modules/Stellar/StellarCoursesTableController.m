@@ -70,14 +70,6 @@
                                                     detailText:stellarCourse.title
                                                  accessoryType:UITableViewCellAccessoryDisclosureIndicator]
         + 2.0;
-    
-    /*
-	return 2.0 + [MultiLineTableViewCell cellHeightForTableView:tableView 
-													 main:@"single line" 
-												   detail:stellarCourse.title
-											accessoryType:UITableViewCellAccessoryDisclosureIndicator
-												isGrouped:YES];
-    */
 }
 
 

@@ -160,7 +160,7 @@ static NSString * kMapPathExtension = @"map/";
         
         if (!didSetup) {
             MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
-            api.userData = [NSString stringWithString:@"capabilities"];
+            api.userData = @"capabilities";
             [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"serviceinfo", @"command", nil] pathExtension:kMapPathExtension];
         }
         
@@ -435,7 +435,7 @@ static NSString * kMapPathExtension = @"map/";
         
         if (newMapTimestamp != _mapTimestamp) {
             // store the new timestamp and wipe out the cache.
-            DLog(@"New map tiles found. New timestamp: %ld Old timestamp: %ld", newMapTimestamp, _mapTimestamp);
+            DLog(@"New map tiles found. New timestamp: %lld Old timestamp: %lld", newMapTimestamp, _mapTimestamp);
             [dictionary writeToFile:[MITMKProjection mapTimestampFilename] atomically:YES];
             
             NSString* tileCachePath = [MITMKProjection tileCachePath];

@@ -108,20 +108,20 @@ typedef enum
 + (id)operationWithURL:(NSURL *)requestURL parameters:(NSDictionary *)params
 {
     return [[self alloc] initWithURL:requestURL
-                           parameters:params];
+                          parameters:params];
 }
 
 + (id)operationWithRelativePath:(NSString *)relativePath parameters:(NSDictionary *)params
 {
     return [[self alloc] initWithRelativePath:relativePath
-                                    parameters:params];
+                                   parameters:params];
 }
 
 + (id)operationWithModule:(NSString *)aModule command:(NSString *)theCommand parameters:(NSDictionary *)params
 {
     return [[self alloc] initWithModule:aModule
-                                 command:theCommand
-                              parameters:params];
+                                command:theCommand
+                             parameters:params];
 }
 
 
@@ -131,22 +131,22 @@ typedef enum
     {
         case MobileRequestStateOK:
             return @"MobileRequestStateOK";
-
+            
         case MobileRequestStateWAYF:
             return @"MobileRequestStateWAYF";
-
+            
         case MobileRequestStateIDP:
             return @"MobileRequestStateIDP";
-
+            
         case MobileRequestStateAuthOK:
             return @"MobileRequestStateAuthOK";
-
+            
         case MobileRequestStateCanceled:
             return @"MobileRequestStateCanceled";
-
+            
         case MobileRequestStateAuthError:
             return @"MobileRequestStateAuthError";
-
+            
         default:
             return @"MobileRequestStateUnknown";
     }
@@ -169,7 +169,7 @@ typedef enum
         DLog(@"Checking '%@'", [cookie name]);
         BOOL samlCookie = [[cookie name] containsSubstring:@"_saml"
                                                    options:NSCaseInsensitiveSearch];
-
+        
         if (samlCookie || [self isAuthenticationCookie:cookie])
         {
             DLog(@"Deleting cookie: %@[%@]", [cookie name], [cookie domain]);
@@ -181,36 +181,36 @@ typedef enum
 + (NSString *)userAgent
 {
     NSMutableArray *userAgent = [NSMutableArray array];
-
+    
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     NSString *appName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
     if (appName == nil)
     {
         appName = [infoDictionary objectForKey:@"CFBundleName"];
     }
-
+    
     NSString *appVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
     if (appVersion == nil)
     {
         appVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
     }
     appVersion = [[appVersion componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@""];
-
+    
     NSString *appRevision = [infoDictionary objectForKey:@"MITBuildDescription"];
     if (appRevision == nil)
     {
         appRevision = @"";
     }
-
+    
     [userAgent addObject:[NSString stringWithFormat:@"%@/%@ (%@;)",
-                                                    appName,
-                                                    appVersion,
-                                                    appRevision]];
-
-
+                          appName,
+                          appVersion,
+                          appRevision]];
+    
+    
     NSMutableString *deviceInfo = [NSMutableString string];
     UIDevice *device = [UIDevice currentDevice];
-
+    
     NSString *osName = [[[device systemName] componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] componentsJoinedByString:@""];
     [deviceInfo appendFormat:@"%@/%@ (", osName, [device systemVersion]];
     [deviceInfo appendFormat:@"%@; ", [device model]];
@@ -218,16 +218,16 @@ typedef enum
     [deviceInfo appendFormat:@"%@;", [device sysInfoByName:@"hw.machine"]];
     [deviceInfo appendFormat:@")"];
     [userAgent addObject:deviceInfo];
-
+    
     return [userAgent componentsJoinedByString:@" "];
 }
 
 
-#pragma mark - Instance Methods        
+#pragma mark - Instance Methods
 - (id)initWithModule:(NSString *)aModule command:(NSString *)theCommand parameters:(NSDictionary *)params
 {
     NSURL *baseURL = MITMobileWebGetCurrentServerURL();
-
+    
     if ([aModule length] || [theCommand length])
     {
         NSMutableArray *coreParams = [NSMutableArray array];
@@ -244,18 +244,18 @@ typedef enum
         
         NSString *urlString = [NSString stringWithFormat:@"%@?%@", [baseURL absoluteString], [coreParams componentsJoinedByString:@"&"]];
         baseURL = [NSURL URLWithString:urlString];
-        DLog(@"Initialized module request with URL '%@'", urlString);
+        //DLog(@"Initialized module request with URL '%@'", urlString);
     }
-
+    
     id objSelf = [self initWithURL:baseURL
                         parameters:params];
-
+    
     if (objSelf)
     {
         self.module = aModule;
         self.command = theCommand;
     }
-
+    
     return objSelf;
 }
 
@@ -269,7 +269,7 @@ typedef enum
 - (id)initWithURL:(NSURL *)requestURL parameters:(NSDictionary *)params
 {
     self = [super init];
-
+    
     if (self)
     {
         self.module = nil;
@@ -277,12 +277,12 @@ typedef enum
         self.requestBaseURL = requestURL;
         self.parameters = params;
         self.usePOST = NO;
-
+        
         self.isExecuting = NO;
         self.isFinished = NO;
         self.presetCredentials = NO;
     }
-
+    
     return self;
 }
 
@@ -294,7 +294,7 @@ typedef enum
     self.parameters = nil;
     self.progressBlock = nil;
     self.completeBlock = nil;
-
+    
     self.activeRequest = nil;
     self.connection = nil;
     self.initialRequest = nil;
@@ -303,7 +303,7 @@ typedef enum
     self.requestError = nil;
     self.touchstoneUser = nil;
     self.touchstonePassword = nil;
-
+    
     [self.runLoopTimer invalidate];
     self.runLoopTimer = nil;
 }
@@ -333,13 +333,13 @@ typedef enum
     NSUInteger hash = [self.module hash];
     hash ^= [self.command hash];
     hash ^= [self.parameters hash];
-
+    
     for (NSString *key in self.parameters)
     {
         hash ^= [key hash];
         hash ^= [[self.parameters objectForKey:key] hash];
     }
-
+    
     return hash;
 }
 
@@ -352,16 +352,16 @@ typedef enum
 - (void)start
 {
     NSURLRequest *request = [self urlRequest];
-
+    
     if ([NSURLConnection canHandleRequest:request])
     {
         self.initialRequest = request;
         self.contentData = nil;
         self.requestError = nil;
-
+        
         self.isExecuting = YES;
         self.isFinished = NO;
-
+        
         [self main];
     }
 }
@@ -375,18 +375,18 @@ typedef enum
                                withObject:nil];
         return;
     }
-
+    
     @autoreleasepool {
         self.operationRunLoop = [NSRunLoop currentRunLoop];
         self.runLoopTimer = [[NSTimer alloc] initWithFireDate:[NSDate distantFuture]
-                                       interval:0.0
-                                         target:self
-                                       selector:nil userInfo:nil repeats:NO];
+                                                     interval:0.0
+                                                       target:self
+                                                     selector:nil userInfo:nil repeats:NO];
         [self.operationRunLoop addTimer:self.runLoopTimer
                                 forMode:NSDefaultRunLoopMode];
         [self transitionToState:MobileRequestStateOK
                 willSendRequest:self.initialRequest];
-
+        
         // Without this (unless we are on the main run loop) the
         // NSURLConnections will never be processed
         [self.operationRunLoop run];
@@ -403,12 +403,12 @@ typedef enum
     self.requestState = MobileRequestStateOK;
     self.touchstoneUser = nil;
     self.touchstonePassword = nil;
-
+    
     [self.runLoopTimer invalidate];
     self.runLoopTimer = nil;
     [gSecureStateTracker resumeQueue];
-
-
+    
+    
     // Grab the pointers to the data we'll need
     // otherwise, since the properties are method calls
     // not direct ivar accesses, will be a potential race
@@ -427,14 +427,14 @@ typedef enum
         BOOL chkJSON = NO;
         NSData *chkData = [content subdataWithRange:NSMakeRange(0, MIN(32,[content length]))];
         NSString *chkString = [[NSString alloc] initWithData:chkData
-                                                     encoding:NSUTF8StringEncoding];
+                                                    encoding:NSUTF8StringEncoding];
         chkString = [chkString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         
 #warning Remove the chk* variables once the server properly reports the Content-Type for JSON data
         chkJSON = ((chkString != nil) &&
-                        (([chkString length] == 0) ||
-                         ([chkString hasPrefix:@"["]) ||
-                         ([chkString hasPrefix:@"{"])));
+                   (([chkString length] == 0) ||
+                    ([chkString hasPrefix:@"["]) ||
+                    ([chkString hasPrefix:@"{"])));
         
         if (chkJSON || [contentType containsSubstring:@"json" options:NSCaseInsensitiveSearch])
         {
@@ -467,11 +467,11 @@ typedef enum
 - (void)cancel
 {
     [super cancel];
-
+    
     if (self.isExecuting)
     {
         self.requestState = MobileRequestStateCanceled;
-
+        
         if (self.connection)
         {
             [self.connection cancel];
@@ -560,18 +560,18 @@ typedef enum
     if (self.presetCredentials == NO)
     {
         authItem = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
-
+        
         if (authItem)
         {
             self.touchstoneUser = [authItem objectForKey:(__bridge id)kSecAttrAccount];
             self.touchstonePassword = [authItem objectForKey:(__bridge id)kSecValueData];
         }
     }
-
+    
     BOOL promptForAuth = (authItem == nil);
     promptForAuth = promptForAuth || ([self.touchstoneUser length] == 0);
     promptForAuth = promptForAuth || ([self.touchstonePassword length] == 0);
-
+    
     if (self.presetCredentials)
     {
         return NO;
@@ -587,28 +587,28 @@ typedef enum
 {
     NSMutableString *urlString = [NSMutableString stringWithString:[self.requestBaseURL absoluteString]];
     NSMutableArray *params = [NSMutableArray arrayWithCapacity:[self.parameters count]];
-
+    
     for (NSString *key in self.parameters)
     {
         NSString *value = [self.parameters objectForKey:key];
-
+        
         if (!([[NSNull null] isEqual:value] || ([value length] == 0)))
         {
             NSString *param = [NSString stringWithFormat:@"%@=%@",
-                                                         [key urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
-                                                         [value urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                               [key urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
+                               [value urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
             [params addObject:param];
         }
     }
-
+    
     NSMutableURLRequest *request = nil;
     NSString *paramString = [params componentsJoinedByString:@"&"];
-
+    
     if (self.usePOST)
     {
         request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
-                                       cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                   timeoutInterval:5.0];
+                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
+                                      timeoutInterval:5.0];
         [request setHTTPMethod:@"POST"];
         [request setHTTPBody:[paramString dataUsingEncoding:NSUTF8StringEncoding]];
         [request setValue:@"application/x-www-form-urlencoded"
@@ -641,13 +641,13 @@ typedef enum
                 [urlString appendFormat:@"?%@", paramString];
             }
         }
-
+        
         request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
-                                       cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                   timeoutInterval:5.0];
+                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
+                                      timeoutInterval:5.0];
         [request setHTTPMethod:@"GET"];
     }
-
+    
     return request;
 }
 
@@ -676,10 +676,10 @@ typedef enum
                 MobileRequestLoginViewController *loginView = [[MobileRequestLoginViewController alloc] initWithUsername:self.touchstoneUser
                                                                                                                 password:self.touchstonePassword];
                 loginView.delegate = self;
-
+                
                 UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginView];
                 loginNavController.navigationBar.barStyle = UIBarStyleBlack;
-
+                
                 [[MITAppDelegate() rootNavigationController] presentModalViewController:loginNavController
                                                                                animated:YES];
                 self.loginViewController = loginView;
@@ -695,10 +695,10 @@ typedef enum
 - (void)transitionToState:(MobileRequestState)state
           willSendRequest:(NSURLRequest *)request
 {
-
+    
     MobileRequestState prevState = self.requestState;
     self.requestState = state;
-
+    
     if (request)
     {
         if (request.URL == nil)
@@ -706,27 +706,27 @@ typedef enum
             NSMutableString *errorString = [NSMutableString string];
             [errorString appendString:@"Unable to send request: nil URL requested"];
             [errorString appendFormat:@"\n\tTransition: [%@]->[%@]",
-                                      [MobileRequestOperation descriptionForState:prevState],
-                                      [MobileRequestOperation descriptionForState:state]];
+             [MobileRequestOperation descriptionForState:prevState],
+             [MobileRequestOperation descriptionForState:state]];
             [errorString appendFormat:@"\n\tURL: %@", self.activeRequest.URL];
             ELog(@"%@", errorString);
         }
-
-        DLog(@"Transition:\n\t'%@' -> '%@'",
-        [MobileRequestOperation descriptionForState:prevState],
-        [MobileRequestOperation descriptionForState:state]);
-        DLog(@"\tFor URL:\n\t\t:%@", request.URL);
-
+        
+        //DLog(@"Transition:\n\t'%@' -> '%@'",
+        //     [MobileRequestOperation descriptionForState:prevState],
+        //     [MobileRequestOperation descriptionForState:state]);
+        //DLog(@"\tFor URL:\n\t\t:%@", request.URL);
+        
         NSMutableURLRequest *mutableRequest = [request mutableCopy];
         mutableRequest.timeoutInterval = 10.0;
         [mutableRequest addValue:[MobileRequestOperation userAgent]
-                        forHTTPHeaderField:@"User-Agent"];
-
+              forHTTPHeaderField:@"User-Agent"];
+        
         self.activeRequest = mutableRequest;
         self.contentData = nil;
         self.connection = [[NSURLConnection alloc] initWithRequest:mutableRequest
-                                                           delegate:self
-                                                   startImmediately:NO];
+                                                          delegate:self
+                                                  startImmediately:NO];
         [self.connection scheduleInRunLoop:self.operationRunLoop
                                    forMode:NSDefaultRunLoopMode];
         [self.connection start];
@@ -741,10 +741,10 @@ typedef enum
 {
     if (redirectResponse)
     {
-        DLog(@"Redirecting to '%@'", request.URL);
-
+        //DLog(@"Redirecting to '%@'", request.URL);
+        
         BOOL wayfRedirect = [[[request.URL host] lowercaseString] isEqualToString:@"wayf.mit.edu"];
-
+        
         if (wayfRedirect)
         {
             if (self.requestState == MobileRequestStateOK)
@@ -765,7 +765,7 @@ typedef enum
             request = newRequest;
         }
     }
-
+    
     self.activeRequest = request;
     return request;
 }
@@ -787,12 +787,12 @@ typedef enum
     } else {
         self.contentData = [NSMutableData data];
     }
-
+    
 }
 
 - (void)connection:(NSURLConnection *)connection
    didSendBodyData:(NSInteger)bytesWritten
-        totalBytesWritten:(NSInteger)totalBytesWritten
+ totalBytesWritten:(NSInteger)totalBytesWritten
 totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 {
     if (self.progressBlock)
@@ -808,7 +808,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     self.connection = nil;
-
+    
     switch (self.requestState)
     {
         case MobileRequestStateWAYF:
@@ -842,7 +842,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                                 NSRange range = [self.touchstoneUser rangeOfString:@"@"];
                                 BOOL useMitIdp = [self.touchstoneUser hasSuffix:@"@mit.edu"];
                                 useMitIdp = useMitIdp || (range.location == NSNotFound);
-
+                                
                                 if (useMitIdp)
                                 {
                                     idp = @"https://idp.mit.edu/shibboleth";
@@ -851,17 +851,17 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                                 {
                                     idp = @"https://idp.touchstonenetwork.net/shibboleth-idp";
                                 }
-
+                                
                                 NSString *body = [NSString stringWithFormat:@"user_idp=%@", [idp urlEncodeUsingEncoding:NSUTF8StringEncoding
                                                                                                       useFormURLEncoded:YES]];
-
+                                
                                 NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:[self.activeRequest URL]];
                                 [wayfRequest setHTTPMethod:@"POST"];
                                 [wayfRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
                                 [self transitionToState:MobileRequestStateIDP
                                         willSendRequest:wayfRequest];
                             };
-
+                            
                             [self displayLoginPrompt];
                         }
                     }];
@@ -896,8 +896,8 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
             }
             break;
         }
-
-
+            
+            
         case MobileRequestStateIDP:
         {
             TouchstoneResponse *response = [[TouchstoneResponse alloc] initWithRequest:self.activeRequest
@@ -941,20 +941,20 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                                                                                       withString:@""
                                                                                          options:NSCaseInsensitiveSearch
                                                                                            range:NSMakeRange(0, [self.touchstoneUser length])];
-
+                
                 NSString *body = [NSString stringWithFormat:@"%@=%@&%@=%@",
-                                                            [response.userFieldName urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                                                            [tsUsername urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
-                                                            [response.passwordFieldName urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                                                            [self.touchstonePassword urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
-
+                                  [response.userFieldName urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                                  [tsUsername urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES],
+                                  [response.passwordFieldName urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                                  [self.touchstonePassword urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                
                 DLog(@"Got POST URL: %@", response.touchstoneURL);
                 NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:response.touchstoneURL];
                 [wayfRequest setHTTPMethod:@"POST"];
                 [wayfRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
                 [wayfRequest setValue:@"application/x-www-form-urlencoded"
                    forHTTPHeaderField:@"Content-Type"];
-
+                
                 [self transitionToState:MobileRequestStateIDP
                         willSendRequest:wayfRequest];
             }
@@ -963,37 +963,37 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                 self.touchstoneUser = nil;
                 self.touchstonePassword = nil;
                 gSecureStateTracker.authenticationBlock = nil;
-
+                
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     [self.loginViewController authenticationDidSucceed];
                 });
-
-
+                
+                
                 NSMutableArray *parameters = [NSMutableArray array];
                 for (NSString *name in response.touchstoneParameters)
                 {
                     NSString *value = [response.touchstoneParameters objectForKey:name];
-
+                    
                     [parameters addObject:[NSString stringWithFormat:@"%@=%@",
-                                                                     [name urlEncodeUsingEncoding:NSUTF8StringEncoding],
-                                                                     [value urlEncodeUsingEncoding:NSUTF8StringEncoding]]];
+                                           [name urlEncodeUsingEncoding:NSUTF8StringEncoding],
+                                           [value urlEncodeUsingEncoding:NSUTF8StringEncoding]]];
                 }
-
-
+                
+                
                 NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:response.touchstoneURL];
                 [wayfRequest setHTTPMethod:@"POST"];
                 [wayfRequest setHTTPBody:[[parameters componentsJoinedByString:@"&"] dataUsingEncoding:NSUTF8StringEncoding]];
                 [wayfRequest setValue:@"application/x-www-form-urlencoded"
                    forHTTPHeaderField:@"Content-Type"];
-
+                
                 [self transitionToState:MobileRequestStateAuthOK
                         willSendRequest:wayfRequest];
             }
-
+            
             break;
         }
-
-
+            
+            
         case MobileRequestStateOK:
         case MobileRequestStateAuthOK:
         case MobileRequestStateCanceled:
@@ -1004,15 +1004,15 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
         }
     }
 }
-         
+
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     self.contentData = nil;
     if (self.requestError == nil) {
         self.requestError = error;
     }
-
+    
     gSecureStateTracker.authenticationBlock = nil;
-
+    
     [self finish];
 }
 
@@ -1021,10 +1021,10 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 - (void)loginRequest:(MobileRequestLoginViewController *)view didEndWithUsername:(NSString *)username password:(NSString *)password shouldSaveLogin:(BOOL)saveLogin
 {
     NSString *chompedUser = [username stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-
+    
     self.touchstoneUser = chompedUser;
     self.touchstonePassword = password;
-
+    
     if (saveLogin)
     {
         MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, password);
@@ -1032,7 +1032,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
     else
     {
         NSDictionary *mobileCredentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, NO);
-
+        
         if ([mobileCredentials objectForKey:(__bridge id) kSecAttrAccount])
         {
             MobileKeychainSetItem(MobileLoginKeychainIdentifier, username, @"");
@@ -1042,7 +1042,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
             MobileKeychainDeleteItem(MobileLoginKeychainIdentifier);
         }
     }
-
+    
     [gSecureStateTracker dispatchAuthenticationBlock];
 }
 

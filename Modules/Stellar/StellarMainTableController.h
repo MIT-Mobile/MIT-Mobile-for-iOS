@@ -6,25 +6,11 @@
 
 @class MITSearchDisplayController;
 
-@interface StellarMainTableController : UIViewController <CoursesLoadedDelegate, ClearMyStellarDelegate, UITableViewDelegate, UITableViewDataSource> {
-	NSArray *courseGroups;
-	NSArray *myStellar;
-	BOOL myStellarUIisUpToDate;
-	StellarSearch *stellarSearch;
-	UISearchBar *searchBar;
-	UITableView *mainTableView;
-	UITableView *searchResultsTableView;
-	UIView *loadingView;
-	MITModuleURL *url;
-	BOOL isViewAppeared;
-	NSString *doSearchTerms;
-	BOOL doSearchExecute;
-    MITSearchDisplayController *searchController;
-}
+@interface StellarMainTableController : UIViewController <CoursesLoadedDelegate, ClearMyStellarDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (retain) NSArray *courseGroups;
 @property (retain) NSArray *myStellar;
-@property (readonly) UITableView *searchResultsTableView;
+@property (readonly,strong) UITableView *searchResultsTableView;
 @property (retain) UITableView *mainTableView;
 @property (retain) UISearchBar *searchBar;
 @property (retain) UIView *loadingView;

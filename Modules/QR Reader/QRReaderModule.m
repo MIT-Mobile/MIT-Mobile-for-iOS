@@ -1,6 +1,6 @@
 #import "QRReaderModule.h"
-#import "QRReaderHistoryViewController.h"
 #import "MITModule+Protected.h"
+#import "MITScannerViewController.h"
 
 
 @implementation QRReaderModule
@@ -9,8 +9,8 @@
     self = [super init];
     if (self != nil) {
         self.tag = QRReaderTag;
-        self.shortName = @"QR Reader";
-        self.longName = @"QR Reader";
+        self.shortName = @"Scanner";
+        self.longName = @"Scanner";
         self.iconName = @"qrreader";
     }
     
@@ -23,7 +23,20 @@
 
 - (void)loadModuleHomeController
 {
-    self.moduleHomeController = [[[QRReaderHistoryViewController alloc] init] autorelease];
+    self.moduleHomeController = [[[MITScannerViewController alloc] init] autorelease];
 }
+
+#pragma mark Handle Url
+- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query
+{
+    if ([localPath isEqualToString:@""]) {
+        [self loadModuleHomeController];
+        [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
+        [[MITAppDelegate() rootNavigationController] pushViewController:self.moduleHomeController animated:YES];
+        return YES;
+    }
+    return NO;
+}
+
 
 @end

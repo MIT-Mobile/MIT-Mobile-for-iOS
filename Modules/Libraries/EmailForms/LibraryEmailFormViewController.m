@@ -728,7 +728,6 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     formInputAccessoryView = nil;
     [self setFormGroups:nil];
     self.currentTextView = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)dealloc {
@@ -736,7 +735,10 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     [self setFormGroups:nil];
     [formInputAccessoryView release];
     formInputAccessoryView = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextFieldTextDidBeginEditingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextViewTextDidBeginEditingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextFieldTextDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextViewTextDidChangeNotification object:nil];
     self.currentTextView = nil;
     [super dealloc];
 }

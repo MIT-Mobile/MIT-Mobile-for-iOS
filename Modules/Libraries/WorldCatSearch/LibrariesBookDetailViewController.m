@@ -287,7 +287,7 @@ typedef enum {
                     cell.textLabel.numberOfLines = 0;
                     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
                     
-                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld of %ld available", available, total];
+                    cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu of %lu available", (unsigned long)available, (unsigned long)total];
                     cell.detailTextLabel.numberOfLines = 1;
                     cell.detailTextLabel.lineBreakMode = UILineBreakModeTailTruncation;
                     
@@ -329,7 +329,7 @@ typedef enum {
                 NSUInteger available = [mitHoldings inLibraryCountForLocation:location];
                 NSUInteger total = [[[mitHoldings libraryAvailability] objectForKey:location] count];
                 
-                NSString *detail = [NSString stringWithFormat:@"%ld of %ld available", available, total];
+                NSString *detail = [NSString stringWithFormat:@"%lu of %lu available", (unsigned long)available, (unsigned long)total];
                 
                 CGSize titleSize = [location sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
                                      constrainedToSize:CGSizeMake(tableView.frame.size.width, 2000.0) 

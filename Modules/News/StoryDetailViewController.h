@@ -5,18 +5,10 @@
 @class NewsStory;
 @class StoryListViewController;
 
-@interface StoryDetailViewController : ShareDetailViewController <UIWebViewDelegate, MFMailComposeViewControllerDelegate, ShareItemDelegate> {
-	StoryListViewController *newsController;
-    NewsStory *story;
-	
-	UISegmentedControl *storyPager;
-    
-    UIWebView *storyView;
-}
+@interface StoryDetailViewController : ShareDetailViewController <UIWebViewDelegate, MFMailComposeViewControllerDelegate, ShareItemDelegate>
 
-@property (nonatomic, retain) StoryListViewController *newsController;
-@property (nonatomic, retain) NewsStory *story;
-@property (nonatomic, retain) UIWebView *storyView;
+@property (strong) StoryListViewController *newsController;
+@property (strong) NewsStory *story;
 
 - (void)displayStory:(NewsStory *)aStory;
 

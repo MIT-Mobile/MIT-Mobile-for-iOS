@@ -96,7 +96,7 @@
         NSDictionary *hoursDict = [hoursArray objectAtIndex:index];
         hours.title = [hoursDict objectForKey:@"title"];
         hours.hoursDescription = [hoursDict objectForKey:@"description"];
-        hours.sortOrder = [NSNumber numberWithInteger:sortOrder];
+        hours.sortOrder = [NSNumber numberWithInteger:index];
         [hoursSet addObject:hours];
     }
     term.hours = hoursSet;

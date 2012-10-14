@@ -6,25 +6,87 @@
 #import "UIImage+Resize.h"
 
 @implementation UIImage (Resize)
+-(UIImage*)imageByRotatingImageInRadians:(float)radians
+{
+	const size_t width = self.size.width;
+	const size_t height = self.size.height;
+    
+    static CGColorSpaceRef rgbColorSpace = NULL;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{ rgbColorSpace = CGColorSpaceCreateDeviceRGB(); });
+	
+    CGRect imgRect = CGRectMake(0.0, 0.0, width, height);
+    
+	CGRect rotatedRect = CGRectApplyAffineTransform(imgRect, CGAffineTransformMakeRotation(radians));
+    
+    
+	CGContextRef bmpContext = CGBitmapContextCreate(NULL,
+                                                   rotatedRect.size.width,
+                                                   rotatedRect.size.height,
+                                                   8,
+                                                   0,
+                                                   rgbColorSpace,
+                                                   kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedFirst);
+	if (bmpContext == NULL)
+    {
+		return nil;
+    }
+    
+	CGContextSetShouldAntialias(bmpContext, true);
+	CGContextSetAllowsAntialiasing(bmpContext, true);
+	CGContextSetInterpolationQuality(bmpContext, kCGInterpolationHigh);
+    
+	// Rotation here (based around the center)
+	CGContextTranslateCTM(bmpContext,
+                          (rotatedRect.size.width * 0.5),
+                          (rotatedRect.size.height * 0.5));
+	CGContextRotateCTM(bmpContext, radians);
+    
+	// Copy the image into the bitmap context
+    CGRect drawRect = CGRectMake(-(width * 0.5),
+                                 -(height * 0.5),
+                                 width,
+                                 height);
+	CGContextDrawImage(bmpContext, drawRect, self.CGImage);
+    
+	// Create a UIImage object from the context
+	CGImageRef rotatedImageRef = CGBitmapContextCreateImage(bmpContext);
+	UIImage* rotated = [UIImage imageWithCGImage:rotatedImageRef];
+    
+	// Clean up the CF* stuff
+	CGImageRelease(rotatedImageRef);
+	CGContextRelease(bmpContext);
+    
+	return rotated;
+}
+
 // Returns a rescaled copy of the image, taking into account its orientation
 // The image will be scaled disproportionately if necessary to fit the bounds specified by the parameter
 - (UIImage *)resizedImage:(CGSize)newSize interpolationQuality:(CGInterpolationQuality)quality {
     BOOL drawTransposed;
+    CGAffineTransform transform = CGAffineTransformIdentity;
     
-    switch (self.imageOrientation) {
-        case UIImageOrientationLeft:
-        case UIImageOrientationLeftMirrored:
-        case UIImageOrientationRight:
-        case UIImageOrientationRightMirrored:
-            drawTransposed = YES;
-            break;
-            
-        default:
-            drawTransposed = NO;
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5.0) {
+        // Apprently in iOS 5 the image is already correctly rotated, so we don't need to rotate it manually
+        drawTransposed = NO;
+    } else {
+        switch (self.imageOrientation) {
+            case UIImageOrientationLeft:
+            case UIImageOrientationLeftMirrored:
+            case UIImageOrientationRight:
+            case UIImageOrientationRightMirrored:
+                drawTransposed = YES;
+                break;
+                
+            default:
+                drawTransposed = NO;
+        }
+        
+        transform = [self transformForOrientation:newSize];
     }
     
     return [self resizedImage:newSize
-                    transform:[self transformForOrientation:newSize]
+                    transform:transform
                drawTransposed:drawTransposed
          interpolationQuality:quality];
 }
@@ -50,7 +112,7 @@
                                                 CGImageGetBitsPerComponent(imageRef),
                                                 0,
                                                 CGImageGetColorSpace(imageRef),
-                                                CGImageGetBitmapInfo(imageRef));
+                                                kCGImageAlphaPremultipliedFirst);
     
     // Rotate and/or flip the image if required by its orientation
     CGContextConcatCTM(bitmap, transform);
@@ -118,5 +180,4 @@
     
     return transform;
 }
-
 @end

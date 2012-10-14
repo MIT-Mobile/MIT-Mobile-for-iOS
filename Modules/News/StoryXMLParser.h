@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 
+
 @class StoryXMLParser;
 @class NewsImage;
 @class NewsImageRep;
@@ -16,30 +17,7 @@
 - (void)parser:(StoryXMLParser *)parser didFailWithParseError:(NSError *)error;
 @end
 
-@interface StoryXMLParser : NSObject <NSXMLParserDelegate> {
-    id <StoryXMLParserDelegate> delegate;
-    
-	NSThread *thread;
-    
-	NSXMLParser *xmlParser;
-	
-    NSInteger expectedStoryCount;
-    
-    BOOL parsingTopStories;
-    
-	NSString *currentElement;
-    NSMutableArray *currentStack;
-    NSMutableDictionary *currentContents;
-    NSMutableDictionary *currentImage;
-	BOOL done;
-    BOOL parseSuccessful;
-    BOOL shouldAbort;
-	BOOL isSearch;
-	BOOL loadingMore;
-	NSInteger totalAvailableResults;
-    
-    NSMutableArray *addedStories;
-}
+@interface StoryXMLParser : NSObject <NSXMLParserDelegate>
 
 @property (nonatomic, assign) id <StoryXMLParserDelegate> delegate;
 @property (nonatomic, retain) NSXMLParser *xmlParser;
@@ -52,7 +30,6 @@
 @property (nonatomic, retain) NSMutableDictionary *currentContents;
 @property (nonatomic, retain) NSMutableDictionary *currentImage;
 @property (nonatomic, retain) NSMutableArray *addedStories;
-@property (nonatomic, assign) NSAutoreleasePool *downloadAndParsePool;
 
 // called by main thread
 - (void)loadStoriesForCategory:(NSInteger)category afterStoryId:(NSInteger)storyId count:(NSInteger)count;

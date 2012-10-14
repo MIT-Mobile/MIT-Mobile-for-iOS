@@ -3,21 +3,16 @@
 
 
 @class QRReaderResult;
-@interface QRReaderDetailViewController : ShareDetailViewController <ShareItemDelegate> {
-    QRReaderResult *_scanResult;
-    UIImageView *_qrImage;
-    UIImageView *_backgroundImageView;
-    UITextView *_textView;
-    UIButton *_actionButton;
-    UIButton *_shareButton;
-}
+@interface QRReaderDetailViewController : ShareDetailViewController
 
-@property (nonatomic,readonly,retain) QRReaderResult *scanResult;
-@property (nonatomic,readonly,retain) IBOutlet UIImageView *qrImage;
-@property (nonatomic,readonly,retain) IBOutlet UIImageView *backgroundImageView;
-@property (nonatomic,readonly,retain) IBOutlet UITextView *textView;
-@property (nonatomic,readonly,retain) IBOutlet UIButton *actionButton;
-@property (nonatomic,readonly,retain) IBOutlet UIButton *shareButton;
+@property (readonly,retain) QRReaderResult *scanResult;
+@property (readonly,assign) IBOutlet UIScrollView *scrollView;
+@property (readonly,assign) IBOutlet UIImageView *qrImageView;
+@property (readonly,assign) IBOutlet UIImageView *backgroundImageView;
+@property (readonly,assign) IBOutlet UILabel *textTitleLabel;
+@property (readonly,assign) IBOutlet UILabel *textView;
+@property (readonly,assign) IBOutlet UILabel *dateLabel;
+@property (readonly,assign) IBOutlet UITableView *scanActionTable;
 
 + (QRReaderDetailViewController*)detailViewControllerForResult:(QRReaderResult*)result;
 - (IBAction)pressedShareButton:(id)sender;

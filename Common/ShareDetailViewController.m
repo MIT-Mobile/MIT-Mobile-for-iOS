@@ -9,19 +9,6 @@
 
 @synthesize fbSession, shareDelegate;
 
-/*
-- (id)init
-{
-	self = [super init];
-	if (self) {
-		actionSheetTitle = nil;
-		emailSubject = nil;
-		emailBody = nil;
-	}
-	return self;
-}
-*/
-
 - (void)loadView {
     [super loadView];
 }

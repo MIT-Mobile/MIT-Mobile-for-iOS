@@ -135,7 +135,7 @@
     
     CFRelease(ctFont);
     
-    self.attributedString = [[NSAttributedString alloc] initWithAttributedString:fullString];
+    self.attributedString = [[[NSAttributedString alloc] initWithAttributedString:fullString] autorelease];
     return _attributedString;
 }
 
