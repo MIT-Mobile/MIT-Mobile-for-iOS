@@ -54,6 +54,7 @@
 		aModule.currentQuery = [pathAndQuery objectForKey:@"query"];
 	}
 
+    self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     [self.window setRootViewController:self.rootNavigationController];
     self.window.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     [self.window makeKeyAndVisible];
