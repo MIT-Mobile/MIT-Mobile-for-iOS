@@ -14,11 +14,9 @@ MIT Mobile for iPhone will build for the iPhone Simulator without any modificati
 
 #Technical Details
 
-- Base SDK is Latest iPhone OS
-- Deployment Target is iPhone OS 4.0
+- Base SDK is Latest iPhone OS (6.0)
+- Deployment Target is iPhone OS 5.0
 
 #Feedback
 
 Questions, comments, and feedback are welcome at [iphone-app-feedback@mit.edu](mailto:iphone-app-feedback@mit.edu?subject=MIT Mobile for iPhone on GitHub).
-
-A better README is forthcoming.
