@@ -8,12 +8,13 @@
 #import "MobileRequestOperation.h"
 
 @interface MITSpringboard ()
+@property (nonatomic, retain) NSMutableDictionary *bannerInfo;
+
 - (void)internalInit;
 - (void)showModuleForIcon:(id)sender;
 - (void)showModuleForBanner;
 - (void)checkForFeaturedModule;
 - (void)displayBannerImage;
-
 @end
 
 #define BANNER_CONTROL_TAG 9966
@@ -54,7 +55,7 @@
 }
 
 - (void)showModuleForBanner {
-    NSString *bannerURL = [bannerInfo objectForKey:@"url"];
+    NSString *bannerURL = [self.bannerInfo objectForKey:@"url"];
 	if (bannerURL) {
 		NSURL *url = [NSURL URLWithString:bannerURL];
 		if ([[UIApplication sharedApplication] canOpenURL:url]) {
@@ -92,20 +93,19 @@
             NSDictionary *dimensions = [jsonResult objectForKey:@"dimensions"];
             if (dimensions) {
                 NSNumber *width = [dimensions objectForKey:@"width"];
-                if (width) [bannerInfo setObject:width forKey:@"width"];
+                if (width) [self.bannerInfo setObject:width forKey:@"width"];
                 NSNumber *height = [dimensions objectForKey:@"height"];
-                if (height) [bannerInfo setObject:height forKey:@"height"];
+                if (height) [self.bannerInfo setObject:height forKey:@"height"];
             }
             
             NSString *url = [jsonResult objectForKey:@"url"];
-            if (url) [bannerInfo setObject:url forKey:@"url"];
+            if (url) [self.bannerInfo setObject:url forKey:@"url"];
             
             NSString *photoURL = [jsonResult objectForKey:@"photo-url"];
             if (photoURL) {
-                
-                NSString *oldPhotoURL = [bannerInfo objectForKey:@"photo-url"];
-                [bannerInfo setObject:photoURL forKey:@"photo-url"];
-                
+                NSString *oldPhotoURL = [[[self.bannerInfo objectForKey:@"photo-url"] retain] autorelease];
+                [self.bannerInfo setObject:photoURL forKey:@"photo-url"];
+
                 if (![oldPhotoURL isEqualToString:photoURL] // new image
                     || ![self.view viewWithTag:BANNER_CONTROL_TAG]) // or we haven't displayed the image
                 {
@@ -138,7 +138,7 @@
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *documentPath = [paths objectAtIndex:0];
             NSString *bannerInfoFile = [documentPath stringByAppendingPathComponent:@"bannerInfo.plist"];
-            [bannerInfo writeToFile:bannerInfoFile atomically:YES];
+            [self.bannerInfo writeToFile:bannerInfoFile atomically:YES];
         }
     };
     [[NSOperationQueue mainQueue] addOperation:request];
@@ -153,9 +153,9 @@
 		UIImage *image = [[UIImage imageWithContentsOfFile:bannerFile] stretchableImageWithLeftCapWidth:0.0 topCapHeight:0.0];
         if (!image) return;
         
-        CGFloat bannerWidth = [[bannerInfo objectForKey:@"width"] floatValue];
+        CGFloat bannerWidth = [[self.bannerInfo objectForKey:@"width"] floatValue];
         if (!bannerWidth)  bannerWidth = self.view.frame.size.width;
-        CGFloat bannerHeight = [[bannerInfo objectForKey:@"height"] floatValue];
+        CGFloat bannerHeight = [[self.bannerInfo objectForKey:@"height"] floatValue];
         if (!bannerHeight) bannerHeight = 72;
         
 		UIButton *bannerButton = (UIButton *)[self.view viewWithTag:BANNER_CONTROL_TAG];
@@ -283,10 +283,10 @@
     NSString *documentPath = [paths objectAtIndex:0];
     NSString *bannerInfoFile = [documentPath stringByAppendingPathComponent:@"bannerInfo.plist"];
     if ([[NSFileManager defaultManager] fileExistsAtPath:bannerInfoFile]) {
-        bannerInfo = [[NSDictionary dictionaryWithContentsOfFile:bannerInfoFile] retain];
+        self.bannerInfo = [[NSDictionary dictionaryWithContentsOfFile:bannerInfoFile] retain];
     }
-    if (!bannerInfo) {
-        bannerInfo = [[NSMutableDictionary alloc] init];
+    if (!self.bannerInfo) {
+        self.bannerInfo = [[NSMutableDictionary alloc] init];
     }
     
     [self displayBannerImage];
@@ -323,7 +323,7 @@
 - (void)dealloc {
 	self.primaryModules = nil;
 	[checkBannerTimer release];
-	[bannerInfo release];
+    self.bannerInfo = nil;
     [super dealloc];
 }
 

@@ -23,8 +23,6 @@
     IconGrid *grid;
     
 	NSTimer *checkBannerTimer;
-	
-    NSMutableDictionary *bannerInfo;
 }
 
 @property (nonatomic, assign) id<MITSpringboardDelegate> delegate;
