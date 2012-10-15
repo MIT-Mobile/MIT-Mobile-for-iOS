@@ -91,6 +91,8 @@ enum {
         tableView.allowsSelection = NO;
         tableView.scrollEnabled = NO;
         tableView.backgroundColor = [UIColor clearColor];
+        tableView.backgroundView = nil;
+        tableView.opaque = NO;
         
         viewBounds.origin.y += tableFrame.size.height;
         [mainView addSubview:tableView];
