@@ -244,7 +244,7 @@ typedef enum
         
         NSString *urlString = [NSString stringWithFormat:@"%@?%@", [baseURL absoluteString], [coreParams componentsJoinedByString:@"&"]];
         baseURL = [NSURL URLWithString:urlString];
-        //DLog(@"Initialized module request with URL '%@'", urlString);
+        DLog(@"Initialized module request with URL '%@'", urlString);
     }
     
     id objSelf = [self initWithURL:baseURL
@@ -712,10 +712,10 @@ typedef enum
             ELog(@"%@", errorString);
         }
         
-        //DLog(@"Transition:\n\t'%@' -> '%@'",
-        //     [MobileRequestOperation descriptionForState:prevState],
-        //     [MobileRequestOperation descriptionForState:state]);
-        //DLog(@"\tFor URL:\n\t\t:%@", request.URL);
+        DLog(@"Transition:\n\t'%@' -> '%@'",
+             [MobileRequestOperation descriptionForState:prevState],
+             [MobileRequestOperation descriptionForState:state]);
+        DLog(@"\tFor URL:\n\t\t:%@", request.URL);
         
         NSMutableURLRequest *mutableRequest = [request mutableCopy];
         mutableRequest.timeoutInterval = 10.0;
@@ -741,7 +741,7 @@ typedef enum
 {
     if (redirectResponse)
     {
-        //DLog(@"Redirecting to '%@'", request.URL);
+        DLog(@"Redirecting to '%@'", request.URL);
         
         BOOL wayfRedirect = [[[request.URL host] lowercaseString] isEqualToString:@"wayf.mit.edu"];
         
