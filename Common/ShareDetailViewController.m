@@ -4,10 +4,22 @@
 #import "UIKit+MITAdditions.h"
 #import "MITMailComposeController.h"
 #import "Secret.h"
+#import <FacebookSDK/FacebookSDK.h>
+#import <Twitter/Twitter.h>
+#import <Social/Social.h>
+#import <Accounts/Accounts.h>
+
+static NSString *kShareDetailEmail = @"Email";
+static NSString *kShareDetailFacebook = @"Facebook";
+static NSString *kShareDetailTwitter = @"Twitter";
+
+@interface ShareDetailViewController () <UIActivityItemSource>
+- (void)showFacebookComposeDialog;
+- (void)showTwitterComposeDialog;
+- (void)showMailComposeDialog;
+@end
 
 @implementation ShareDetailViewController
-
-@synthesize fbSession, shareDelegate;
 
 - (void)loadView {
     [super loadView];

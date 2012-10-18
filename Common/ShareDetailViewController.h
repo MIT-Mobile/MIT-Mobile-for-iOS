@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "FBConnect.h"
 
 @protocol ShareItemDelegate
 
