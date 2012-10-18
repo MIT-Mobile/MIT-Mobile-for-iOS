@@ -23,15 +23,11 @@
 @end
 
 
-@interface ShareDetailViewController : UIViewController <UIActionSheetDelegate, FBSessionDelegate, FBDialogDelegate> {
-
-	FBSession *fbSession;
-	id<ShareItemDelegate> shareDelegate;
+@interface ShareDetailViewController : UIViewController <UIActionSheetDelegate> {
 
 }
 
-@property (nonatomic, retain) FBSession *fbSession;
-@property (nonatomic, retain) id<ShareItemDelegate> shareDelegate;
+@property (nonatomic, weak) id<ShareItemDelegate> shareDelegate;
 
 - (void)share:(id)sender;
 - (void)showTwitterView;
