@@ -115,7 +115,6 @@
     [modelSet addObject:@"Calendar"];
     [modelSet addObject:@"CampusMap"];
     [modelSet addObject:@"Tours"];
-    [modelSet addObject:@"Anniversary"];
     [modelSet addObject:@"QRReaderResult"];
     [modelSet addObject:@"FacilitiesLocations"];
     [modelSet addObject:@"LibrariesLocationsHours"];
@@ -318,8 +317,9 @@
 	NSMutableArray *models = [[NSMutableArray alloc] initWithCapacity:2];
 
 	for (NSString *modelName in self.modelNames) {
-		NSString *path = [[NSBundle mainBundle] pathForResource:modelName ofType:@"momd"];
-        NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path]];
+		NSURL *path = [[NSBundle mainBundle] URLForResource:modelName
+                                              withExtension:@"momd"];
+        NSManagedObjectModel *aModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:path];
 		[models addObject:aModel];
         [aModel release];
 	}

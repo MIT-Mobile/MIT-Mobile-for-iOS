@@ -228,6 +228,11 @@ typedef enum
 {
     NSURL *baseURL = MITMobileWebGetCurrentServerURL();
     
+    if ([[baseURL absoluteString] hasSuffix:@"/"] == NO)
+    {
+        baseURL = [NSURL URLWithString:[[baseURL absoluteString] stringByAppendingString:@"/"]];
+    }
+    
     if ([aModule length] || [theCommand length])
     {
         NSMutableArray *coreParams = [NSMutableArray array];
