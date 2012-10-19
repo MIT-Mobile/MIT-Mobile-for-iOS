@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@protocol ShareItemDelegate
+@protocol ShareItemDelegate <NSObject>
 
 - (NSString *)actionSheetTitle;
 
@@ -19,6 +19,7 @@
 - (NSString *)twitterTitle;
 
 @optional
+- (UIImage*)postImage;
 
 @end
 

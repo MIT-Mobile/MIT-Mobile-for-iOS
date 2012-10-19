@@ -38,22 +38,26 @@ static NSString *kShareDetailTwitter = @"Twitter";
     {
         UIActionSheet *sheet = nil;
         
+        sheet = [[UIActionSheet alloc] initWithTitle:[self.shareDelegate actionSheetTitle]
+                                            delegate:self
+                                   cancelButtonTitle:nil
+                              destructiveButtonTitle:nil
+                                   otherButtonTitles:nil];
+        
+        if ([MFMailComposeViewController canSendMail])
+        {
+            [sheet addButtonWithTitle:kShareDetailEmail];
+        }
+        
+        [sheet addButtonWithTitle:kShareDetailFacebook];
+        
         if ([TWTweetComposeViewController canSendTweet])
         {
-            sheet = [[UIActionSheet alloc] initWithTitle:[self.shareDelegate actionSheetTitle]
-                                                                    delegate:self
-                                                           cancelButtonTitle:@"Cancel"
-                                                      destructiveButtonTitle:nil
-                                                           otherButtonTitles:kShareDetailEmail, kShareDetailFacebook, kShareDetailTwitter, nil];
+            [sheet addButtonWithTitle:kShareDetailTwitter];
         }
-        else
-        {
-           sheet = [[UIActionSheet alloc] initWithTitle:[self.shareDelegate actionSheetTitle]
-                                                                    delegate:self
-                                                           cancelButtonTitle:@"Cancel"
-                                                      destructiveButtonTitle:nil
-                                                           otherButtonTitles:kShareDetailEmail, kShareDetailFacebook, nil];
-        }
+        
+        [sheet addButtonWithTitle:@"Cancel"];
+        sheet.cancelButtonIndex = [sheet numberOfButtons] - 1;
         
         [sheet showFromAppDelegate];
     }
@@ -81,20 +85,36 @@ static NSString *kShareDetailTwitter = @"Twitter";
 
 - (void)showFacebookComposeDialog
 {
-    BOOL nativeSupported = [self composeForServiceType:SLServiceTypeFacebook];
+    BOOL newStyleSupported = [self composeForServiceType:SLServiceTypeFacebook];
     
-    if (nativeSupported == NO) {
+    if (newStyleSupported == NO) {
         [self showFacebookDialog];
     }
 }
 
 - (void)showTwitterComposeDialog
 {
-    BOOL newStyleSupported = [self composeForServiceType:SLServiceTypeFacebook];
+    BOOL newStyleSupported = [self composeForServiceType:SLServiceTypeTwitter];
     
     if (newStyleSupported == NO)
     {
+        TWTweetComposeViewController *tweetComposer = [[TWTweetComposeViewController alloc] init];
+        [tweetComposer setInitialText:[self.shareDelegate twitterTitle]];
         
+        NSURL *twURL = [NSURL URLWithString:[self.shareDelegate twitterUrl]];
+        if (twURL)
+        {
+            [tweetComposer addURL:twURL];
+        }
+        
+        if ([self.shareDelegate respondsToSelector:@selector(postImage)])
+        {
+            UIImage *image = [self.shareDelegate postImage];
+            if (image)
+            {
+                [tweetComposer addImage:image];
+            }
+        }
     }
     
 }
@@ -123,15 +143,22 @@ static NSString *kShareDetailTwitter = @"Twitter";
             [composeView addURL:sharedURL];
         }
         
+        if ([self.shareDelegate respondsToSelector:@selector(postImage)])
+        {
+            UIImage *image = [self.shareDelegate postImage];
+            if (image)
+            {
+                [composeView addImage:image];
+            }
+        }
+        
         [self presentViewController:composeView
                            animated:YES
                          completion:nil];
         return YES;
     }
-    else
-    {
-        return NO;
-    }
+    
+    return NO;
 }
 
 - (void)showMailComposeDialog
