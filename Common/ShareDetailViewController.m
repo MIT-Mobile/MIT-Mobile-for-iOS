@@ -134,6 +134,8 @@ static NSString *kShareDetailTwitter = @"Twitter";
                     NSLog(@"Compose Finished");
                     break;
             }
+            
+            [self dismissModalViewControllerAnimated:YES];
         };
         
         NSURL *sharedURL = [NSURL URLWithString:[self.shareDelegate twitterUrl]];
