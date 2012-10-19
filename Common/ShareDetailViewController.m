@@ -1,6 +1,5 @@
 #import "ShareDetailViewController.h"
 #import "MIT_MobileAppDelegate.h"
-#import "TwitterViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "MITMailComposeController.h"
 #import "Secret.h"
@@ -177,46 +176,12 @@ static NSString *kShareDetailTwitter = @"Twitter";
 #pragma mark Facebook delegation
 - (void)showFacebookDialog
 {
-	BOOL resuming = NO;
-	/*(
-    if (!self.fbSession && !(self.fbSession == [FBSession activeSession])) {
-        self.fbSession = [[FBSession alloc] initWithAppID:FacebookAPIKey
-                                              permissions:<#(NSArray *)#>
-                                          defaultAudience:FBSessionDefaultAudienceFriends
-                                          urlSchemeSuffix:<#(NSString *)#> tokenCacheStrategy:<#(FBSessionTokenCachingStrategy *)#>]
-		self.fbSession = [FBSession sessionForApplication:FacebookAPIKey secret:FacebookAPISecret delegate:self];
-		resuming = [self.fbSession resume];
-	}
-	
-	if (!self.fbSession.isConnected) {
-		FBLoginDialog* dialog = [[[FBLoginDialog alloc] initWithSession:self.fbSession] autorelease];
-		[dialog show];
-	} else if (!resuming) {
-		[self postItemToFacebook];
-	}
-     */
+
 }
 
 - (void)postItemToFacebook {
-	/*
-    FBStreamDialog* dialog = [[[FBStreamDialog alloc] init] autorelease];
-	dialog.delegate = self;
-	dialog.userMessagePrompt = [self.shareDelegate fbDialogPrompt];
-	dialog.attachment = [self.shareDelegate fbDialogAttachment];
-	[dialog show];
-    */
+
 }
-
-#pragma mark -
-#pragma mark Share by Twitter
-
-- (void)showTwitterView {
-	UIViewController *twitterVC = [[TwitterViewController alloc] initWithMessage:[self.shareDelegate twitterTitle]
-																			 url:[self.shareDelegate twitterUrl]];	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate presentAppModalViewController:twitterVC animated:YES];
-}
-
 
 #pragma mark -
 

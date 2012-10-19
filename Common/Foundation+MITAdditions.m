@@ -37,7 +37,6 @@
 @end
 
 @implementation NSString (MITAdditions)
-
 - (NSString *)substringToMaxIndex:(NSUInteger)to {
 	NSUInteger maxLength = [self length] - 1;
 	return [self substringToIndex:(to > maxLength) ? maxLength : to];
@@ -50,7 +49,6 @@
     
     return (substringRange.location != NSNotFound);
 }
-
 @end
 
 

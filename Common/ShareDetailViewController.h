@@ -31,7 +31,6 @@
 @property (nonatomic, weak) id<ShareItemDelegate> shareDelegate;
 
 - (void)share:(id)sender;
-- (void)showTwitterView;
 - (void)showFacebookDialog;
 - (void)postItemToFacebook;
 

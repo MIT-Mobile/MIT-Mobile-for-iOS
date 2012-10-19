@@ -14,10 +14,8 @@
 @end
 
 @interface NSString (MITAdditions)
-
 - (NSString *)substringToMaxIndex:(NSUInteger)to;
 - (BOOL)containsSubstring:(NSString*)string options:(NSStringCompareOptions)mask;
-
 @end
 
 @interface NSString (MITAdditions_URLEncoding)
@@ -29,7 +27,6 @@
 @interface NSString (MITAdditions_HTMLEntity)
 - (NSString *)stringByDecodingXMLEntities;
 @end
-
 
 @interface UIDevice (MITAdditions)
 - (NSString*)sysInfoByName:(NSString*)typeSpecifier;
