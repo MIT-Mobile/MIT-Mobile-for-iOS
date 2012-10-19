@@ -39,24 +39,9 @@ static NSString *kShareDetailTwitter = @"Twitter";
         
         sheet = [[UIActionSheet alloc] initWithTitle:[self.shareDelegate actionSheetTitle]
                                             delegate:self
-                                   cancelButtonTitle:nil
+                                   cancelButtonTitle:@"Cancel"
                               destructiveButtonTitle:nil
-                                   otherButtonTitles:nil];
-        
-        if ([MFMailComposeViewController canSendMail])
-        {
-            [sheet addButtonWithTitle:kShareDetailEmail];
-        }
-        
-        [sheet addButtonWithTitle:kShareDetailFacebook];
-        
-        if ([TWTweetComposeViewController canSendTweet])
-        {
-            [sheet addButtonWithTitle:kShareDetailTwitter];
-        }
-        
-        [sheet addButtonWithTitle:@"Cancel"];
-        sheet.cancelButtonIndex = [sheet numberOfButtons] - 1;
+                                   otherButtonTitles:kShareDetailEmail, kShareDetailFacebook, kShareDetailTwitter,nil];
         
         [sheet showFromAppDelegate];
     }
