@@ -53,8 +53,22 @@
 		aModule.currentPath = [pathAndQuery objectForKey:@"path"];
 		aModule.currentQuery = [pathAndQuery objectForKey:@"query"];
 	}
-
-    self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
+    
+    DLog(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
+    
+    if (self.window == nil)
+    {
+        self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
+        [self.window addSubview:self.rootNavigationController.view];
+        self.window.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                        UIViewAutoresizingFlexibleWidth);
+    }
+    else
+    {
+        self.window.frame = [[UIScreen mainScreen] bounds];
+    }
+    
+    DLog(@"Main screen size: %@ [%@]", NSStringFromCGRect([[UIScreen mainScreen] bounds]), self.window);
     [self.window setRootViewController:self.rootNavigationController];
     self.window.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     [self.window makeKeyAndVisible];
