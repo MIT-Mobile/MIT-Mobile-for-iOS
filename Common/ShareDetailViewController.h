@@ -24,14 +24,7 @@
 @end
 
 
-@interface ShareDetailViewController : UIViewController <UIActionSheetDelegate> {
-
-}
-
+@interface ShareDetailViewController : UIViewController <UIActionSheetDelegate>
 @property (nonatomic, weak) id<ShareItemDelegate> shareDelegate;
-
 - (void)share:(id)sender;
-- (void)showFacebookDialog;
-- (void)postItemToFacebook;
-
 @end
