@@ -3,6 +3,7 @@
 #import "UIKit+MITAdditions.h"
 #import "MITMailComposeController.h"
 #import "Secret.h"
+#import "DEFacebookComposeViewController.h"
 #import <FacebookSDK/FacebookSDK.h>
 #import <Twitter/Twitter.h>
 #import <Social/Social.h>
@@ -12,7 +13,7 @@ static NSString *kShareDetailEmail = @"Email";
 static NSString *kShareDetailFacebook = @"Facebook";
 static NSString *kShareDetailTwitter = @"Twitter";
 
-@interface ShareDetailViewController () <UIActivityItemSource>
+@interface ShareDetailViewController ()
 - (void)showFacebookComposeDialog;
 - (void)showTwitterComposeDialog;
 - (void)showMailComposeDialog;
@@ -33,6 +34,12 @@ static NSString *kShareDetailTwitter = @"Twitter";
 // subclasses should make sure actionSheetTitle is set up before this gets called
 // or call [super share:sender] at the end of this
 - (void)share:(id)sender {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSLog(@"Setting default app id to '%@'", FacebookAppId);
+        [FBSession setDefaultAppID:FacebookAppId];
+    });
+    
     if (self.shareDelegate)
     {
         UIActionSheet *sheet = nil;
@@ -69,16 +76,49 @@ static NSString *kShareDetailTwitter = @"Twitter";
 
 - (void)showFacebookComposeDialog
 {
-    BOOL newStyleSupported = [self composeForServiceType:SLServiceTypeFacebook];
+    BOOL newStyleSupported = NO;
+    if ([SLComposeViewController class])
+    {
+        newStyleSupported = [self composeForServiceType:SLServiceTypeFacebook];
+    }
     
     if (newStyleSupported == NO) {
-        [self showFacebookDialog];
+        [self showLegacyFacebookDialog];
     }
+}
+
+- (void)showLegacyFacebookDialog
+{
+    DEFacebookComposeViewController *composeController = [[DEFacebookComposeViewController alloc] init];
+    [composeController setInitialText:[self.shareDelegate twitterTitle]];
+    [composeController addURL:[self.shareDelegate twitterUrl]];
+    composeController.completionHandler = ^(DEFacebookComposeViewControllerResult result) {
+        switch (result) {
+            case DEFacebookComposeViewControllerResultCancelled:
+                NSLog(@"Facebook Result: Cancelled");
+                break;
+            case DEFacebookComposeViewControllerResultDone:
+                NSLog(@"Facebook Result: Sent");
+                break;
+        }
+        
+        [self dismissModalViewControllerAnimated:YES];
+    };
+    
+    self.modalPresentationStyle = UIModalPresentationCurrentContext;
+    [self presentViewController:composeController
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)showTwitterComposeDialog
 {
-    BOOL newStyleSupported = [self composeForServiceType:SLServiceTypeTwitter];
+    BOOL newStyleSupported = NO;
+    
+    if ([SLComposeViewController class])
+    {
+        newStyleSupported = [self composeForServiceType:SLServiceTypeTwitter];
+    }
     
     if (newStyleSupported == NO)
     {
@@ -105,43 +145,46 @@ static NSString *kShareDetailTwitter = @"Twitter";
 
 - (BOOL)composeForServiceType:(NSString*)serviceType
 {
-    if ([SLComposeViewController class] && [SLComposeViewController isAvailableForServiceType:serviceType])
+    if ([SLComposeViewController class])
     {
-        SLComposeViewController *composeView = [SLComposeViewController composeViewControllerForServiceType:serviceType];
-        [composeView setInitialText:[self.shareDelegate twitterTitle]];
-        composeView.completionHandler = ^(SLComposeViewControllerResult result) {
-            switch (result) {
-                case SLComposeViewControllerResultCancelled:
-                    NSLog(@"Compose Canceled");
-                    break;
-                    
-                case SLComposeViewControllerResultDone:
-                    NSLog(@"Compose Finished");
-                    break;
+        if ([SLComposeViewController isAvailableForServiceType:serviceType])
+        {
+            SLComposeViewController *composeView = [SLComposeViewController composeViewControllerForServiceType:serviceType];
+            [composeView setInitialText:[self.shareDelegate twitterTitle]];
+            composeView.completionHandler = ^(SLComposeViewControllerResult result) {
+                switch (result) {
+                    case SLComposeViewControllerResultCancelled:
+                        NSLog(@"Compose Canceled");
+                        break;
+                        
+                    case SLComposeViewControllerResultDone:
+                        NSLog(@"Compose Finished");
+                        break;
+                }
+                
+                [self dismissModalViewControllerAnimated:YES];
+            };
+            
+            NSURL *sharedURL = [NSURL URLWithString:[self.shareDelegate twitterUrl]];
+            if (sharedURL)
+            {
+                [composeView addURL:sharedURL];
             }
             
-            [self dismissModalViewControllerAnimated:YES];
-        };
-        
-        NSURL *sharedURL = [NSURL URLWithString:[self.shareDelegate twitterUrl]];
-        if (sharedURL)
-        {
-            [composeView addURL:sharedURL];
-        }
-        
-        if ([self.shareDelegate respondsToSelector:@selector(postImage)])
-        {
-            UIImage *image = [self.shareDelegate postImage];
-            if (image)
+            if ([self.shareDelegate respondsToSelector:@selector(postImage)])
             {
-                [composeView addImage:image];
+                UIImage *image = [self.shareDelegate postImage];
+                if (image)
+                {
+                    [composeView addImage:image];
+                }
             }
+            
+            [self presentViewController:composeView
+                               animated:YES
+                             completion:nil];
+            return YES;
         }
-        
-        [self presentViewController:composeView
-                           animated:YES
-                         completion:nil];
-        return YES;
     }
     
     return NO;
@@ -160,17 +203,6 @@ static NSString *kShareDetailTwitter = @"Twitter";
 }
 
 #pragma mark -
-#pragma mark Facebook delegation
-- (void)showFacebookDialog
-{
-
-}
-
-- (void)postItemToFacebook {
-
-}
-
-#pragma mark -
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -178,35 +210,4 @@ static NSString *kShareDetailTwitter = @"Twitter";
 	
 	// Release any cached data, images, etc that aren't in use.
 }
-         
-#pragma mark - UIActivityItemSource
-- (id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(NSString *)activityType
-{
-    id result = nil;
-    
-    if (self.shareDelegate == nil)
-    {
-        return nil;
-    }
-    else if ([activityType isEqualToString:UIActivityTypeMail])
-    {
-        result = [self.shareDelegate emailBody];
-    }
-    else if ([activityType isEqualToString:UIActivityTypePostToFacebook])
-    {
-        result = [NSString stringWithFormat:@"(MIT Mobile test) Check out this link from the MIT News office!\n'%@'\n\t%@", [self.shareDelegate twitterTitle],[self.shareDelegate twitterUrl]];
-    }
-    else if ([activityType isEqualToString:UIActivityTypePostToTwitter])
-    {
-        result = [NSString stringWithFormat:@"(MIT Mobile test) '%@': %@", [self.shareDelegate twitterTitle],[self.shareDelegate twitterUrl]];
-    }
-    
-    return result;
-}
-
-- (id)activityViewControllerPlaceholderItem:(UIActivityViewController *)activityViewController
-{
-    return [NSString stringWithFormat:@"%@: %@", [self.shareDelegate twitterTitle],[self.shareDelegate twitterUrl]];
-}
-
 @end

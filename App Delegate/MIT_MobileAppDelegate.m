@@ -8,6 +8,7 @@
 #import "MITSpringboard.h"
 #import "ModuleVersions.h"
 #import "MITRotationForwardingNavigationController.h"
+#import <FacebookSDK/FacebookSDK.h>
 
 @implementation MIT_MobileAppDelegate
 @synthesize window,
@@ -103,41 +104,46 @@
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     BOOL canHandle = NO;
     
-    NSString *scheme = [url scheme];
-    NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-    NSArray *urlTypes = [infoDict objectForKey:@"CFBundleURLTypes"];
-    for (NSDictionary *type in urlTypes) {
-        NSArray *schemes = [type objectForKey:@"CFBundleURLSchemes"];
-        for (NSString *supportedScheme in schemes) {
-            if ([supportedScheme isEqualToString:scheme]) {
-                canHandle = YES;
+    canHandle = [[FBSession activeSession] handleOpenURL:url];
+    
+    if (canHandle == NO)
+    {
+        NSString *scheme = [url scheme];
+        NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+        NSArray *urlTypes = [infoDict objectForKey:@"CFBundleURLTypes"];
+        for (NSDictionary *type in urlTypes) {
+            NSArray *schemes = [type objectForKey:@"CFBundleURLSchemes"];
+            for (NSString *supportedScheme in schemes) {
+                if ([supportedScheme isEqualToString:scheme]) {
+                    canHandle = YES;
+                    break;
+                }
+            }
+            if (canHandle) {
                 break;
             }
         }
+        
         if (canHandle) {
-            break;
+            NSString *path = [url path];
+            NSString *moduleTag = [url host];
+            MITModule *module = [self moduleForTag:moduleTag];
+            if ([path rangeOfString:@"/"].location == 0) {
+                path = [path substringFromIndex:1];
+            }
+            
+            // right now expecting URLs like mitmobile://people/search?Some%20Guy
+            NSString *query = [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            
+            if (!module.hasLaunchedBegun) {
+                module.hasLaunchedBegun = YES;
+            }
+            
+            DLog(@"handling internal url: %@", url);
+            canHandle = [module handleLocalPath:path query:query];
+        } else {
+            WLog(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
         }
-    }
-    
-    if (canHandle) {
-        NSString *path = [url path];
-        NSString *moduleTag = [url host];
-        MITModule *module = [self moduleForTag:moduleTag];
-        if ([path rangeOfString:@"/"].location == 0) {
-            path = [path substringFromIndex:1];
-        }
-        
-        // right now expecting URLs like mitmobile://people/search?Some%20Guy
-        NSString *query = [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
-        if (!module.hasLaunchedBegun) {
-            module.hasLaunchedBegun = YES;
-        }
-        
-        DLog(@"handling internal url: %@", url);
-        canHandle = [module handleLocalPath:path query:query];
-    } else {
-        WLog(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
     }
 
     return canHandle;
