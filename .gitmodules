@@ -1,0 +1,3 @@
+[submodule "submodules/FacebookComposeViewController"]
+	path = submodules/FacebookComposeViewController
+	url = git://github.com/sakrist/FacebookSample.git
