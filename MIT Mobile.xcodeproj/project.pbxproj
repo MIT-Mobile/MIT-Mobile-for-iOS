@@ -1517,7 +1517,7 @@
 				2CEBBF821635A68500441252 /* UIDevice+DEFacebookComposeViewController.m */,
 			);
 			name = FacebookComposeViewController;
-			path = submodules/FacebookComposeViewController/FacebookComposeViewController;
+			path = Contrib/FacebookComposeViewController;
 			sourceTree = "<group>";
 		};
 		2CEBBF681635A68500441252 /* Resources */ = {
