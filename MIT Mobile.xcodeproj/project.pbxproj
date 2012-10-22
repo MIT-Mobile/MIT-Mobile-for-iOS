@@ -2934,9 +2934,7 @@
 					"\"Facebook Connect\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
-				OTHER_CFLAGS = (
-					"-DDEBUG=1",
-				);
+				OTHER_CFLAGS = "-DDEBUG=1";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
