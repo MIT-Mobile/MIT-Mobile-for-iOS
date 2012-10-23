@@ -113,9 +113,8 @@
 		NSString *stopID = [stopInfo objectForKey:@"stop_id"];
 		if (stopID == nil) {
 			stopID = [stopInfo objectForKey:@"id"];
-			//NSLog(@"using 'id' for stopID for %@", stopID); // should clean up this inconsistency in the API
+			
 		}
-		//else { NSLog(@"using 'stop_id' for stopID for %@", stopID); }
 		
 		for (ShuttleStop *stop in _stops) {
 			if ([stop.stopID isEqualToString:stopID]) {
@@ -141,7 +140,6 @@
         NSArray *newPath = [stopInfo objectForKey:@"path"];
         if (newPath == nil) { newPath = [NSArray array]; }
         if ([shuttleStop.path isEqualToArray: newPath] == NO) {
-            // NSLog(@"Arrays are different: %@ vs %@", newPath, shuttleStop.path);
             pathChanged = YES;
         }
 		[shuttleStop updateInfo:stopInfo];
@@ -250,7 +248,7 @@
 		if (shuttleStop == nil) {
 			shuttleStop = [[[ShuttleStop alloc] initWithRouteStop:routeStop] autorelease];
 		}
-		//NSLog(@"initialized stop %@ while initializing route %@", [shuttleStop description], self.routeID);
+		
 		[_stops addObject:shuttleStop];
 
 		ShuttleStopMapAnnotation* annotation = [[[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop] autorelease];

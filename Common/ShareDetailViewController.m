@@ -152,11 +152,11 @@ static NSString *kShareDetailTwitter = @"Twitter";
             composeView.completionHandler = ^(SLComposeViewControllerResult result) {
                 switch (result) {
                     case SLComposeViewControllerResultCancelled:
-                        NSLog(@"Compose Canceled");
+                        DDLogVerbose(@"Compose Canceled");
                         break;
                         
                     case SLComposeViewControllerResultDone:
-                        NSLog(@"Compose Finished");
+                        DDLogVerbose(@"Compose Finished");
                         break;
                 }
                 

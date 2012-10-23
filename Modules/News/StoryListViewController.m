@@ -319,7 +319,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
             }
             
             [savedArticles enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-                NSLog(@"Category %@ has %d articles after pruning", key, [obj count]);
+                DDLogVerbose(@"Category %@ has %d articles after pruning", key, [obj count]);
             }];
         }
         
