@@ -89,7 +89,7 @@ typedef enum {
         
         self.lastSearchAttempt = [[NSDate date] timeIntervalSince1970];
         if (error) {
-            DLog(@"Request failed with error: %@",[error localizedDescription]);
+            DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]);
             [self showSearchError];
             self.searchingStatus = BooksSearchingStatusFailed;
             [self.searchResultsTableView reloadData];
@@ -97,7 +97,7 @@ typedef enum {
             self.nextIndex = [self getNumberFromDict:content forKey:@"nextIndex" required:NO];
             self.totalResultsCount = [self getNumberFromDict:content forKey:@"totalResultsCount" required:YES];
             if (self.parseError) {
-                WLog(@"World cat parse error parsing nextIndex or totalResultsCount");
+                DDLogWarn(@"World cat parse error parsing nextIndex or totalResultsCount");
                 self.searchingStatus = BooksSearchingStatusFailed;
                 [self.searchResultsTableView reloadData];
                 [self showSearchError];
@@ -124,7 +124,7 @@ typedef enum {
                 [self.searchResults addObjectsFromArray:temporarySearchResults];                
                 [self.searchResultsTableView reloadData];
             } else {
-                WLog(@"World cat result not an array");
+                DDLogWarn(@"World cat result not an array");
                 self.searchingStatus = BooksSearchingStatusFailed;
                 [self.searchResultsTableView reloadData];
                 [self showSearchError];

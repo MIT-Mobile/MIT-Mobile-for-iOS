@@ -152,7 +152,7 @@ static EmergencyData *sharedEmergencyData = nil;
     NSError *error = nil;
     NSMutableString *htmlString = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
     if (!htmlString) {
-        ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
+        DDLogError(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
         return nil;
     }
     
@@ -177,7 +177,7 @@ static EmergencyData *sharedEmergencyData = nil;
 
         } else {
             if (![jsonResult isKindOfClass:[NSArray class]]) {
-                ELog(@"%@ received json result as %@, not NSArray.", NSStringFromClass([self class]), NSStringFromClass([jsonResult class]));
+                DDLogError(@"%@ received json result as %@, not NSArray.", NSStringFromClass([self class]), NSStringFromClass([jsonResult class]));
             } else {
                 NSDictionary *response = [(NSArray *)jsonResult lastObject];
                 

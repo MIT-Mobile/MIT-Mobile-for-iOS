@@ -166,13 +166,13 @@ typedef enum
     NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     for (NSHTTPCookie *cookie in [cookieStore cookies])
     {
-        DLog(@"Checking '%@'", [cookie name]);
+        DDLogVerbose(@"Checking '%@'", [cookie name]);
         BOOL samlCookie = [[cookie name] containsSubstring:@"_saml"
                                                    options:NSCaseInsensitiveSearch];
         
         if (samlCookie || [self isAuthenticationCookie:cookie])
         {
-            DLog(@"Deleting cookie: %@[%@]", [cookie name], [cookie domain]);
+            DDLogVerbose(@"Deleting cookie: %@[%@]", [cookie name], [cookie domain]);
             [cookieStore deleteCookie:cookie];
         }
     }
@@ -249,7 +249,7 @@ typedef enum
         
         NSString *urlString = [NSString stringWithFormat:@"%@?%@", [baseURL absoluteString], [coreParams componentsJoinedByString:@"&"]];
         baseURL = [NSURL URLWithString:urlString];
-        DLog(@"Initialized module request with URL '%@'", urlString);
+        DDLogVerbose(@"Initialized module request with URL '%@'", urlString);
     }
     
     id objSelf = [self initWithURL:baseURL
@@ -714,13 +714,13 @@ typedef enum
              [MobileRequestOperation descriptionForState:prevState],
              [MobileRequestOperation descriptionForState:state]];
             [errorString appendFormat:@"\n\tURL: %@", self.activeRequest.URL];
-            ELog(@"%@", errorString);
+            DDLogError(@"%@", errorString);
         }
         
-        DLog(@"Transition:\n\t'%@' -> '%@'",
+        DDLogVerbose(@"Transition:\n\t'%@' -> '%@'",
              [MobileRequestOperation descriptionForState:prevState],
              [MobileRequestOperation descriptionForState:state]);
-        DLog(@"\tFor URL:\n\t\t:%@", request.URL);
+        DDLogVerbose(@"\tFor URL:\n\t\t:%@", request.URL);
         
         NSMutableURLRequest *mutableRequest = [request mutableCopy];
         mutableRequest.timeoutInterval = 10.0;
@@ -746,7 +746,7 @@ typedef enum
 {
     if (redirectResponse)
     {
-        DLog(@"Redirecting to '%@'", request.URL);
+        DDLogVerbose(@"Redirecting to '%@'", request.URL);
         
         BOOL wayfRedirect = [[[request.URL host] lowercaseString] isEqualToString:@"wayf.mit.edu"];
         
@@ -953,7 +953,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
                                   [response.passwordFieldName urlEncodeUsingEncoding:NSUTF8StringEncoding],
                                   [self.touchstonePassword urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
                 
-                DLog(@"Got POST URL: %@", response.touchstoneURL);
+                DDLogVerbose(@"Got POST URL: %@", response.touchstoneURL);
                 NSMutableURLRequest *wayfRequest = [NSMutableURLRequest requestWithURL:response.touchstoneURL];
                 [wayfRequest setHTTPMethod:@"POST"];
                 [wayfRequest setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];

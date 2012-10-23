@@ -86,6 +86,14 @@
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; };
 		2CCB85F91361F44E0024E474 /* FacilitiesLocationData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */; };
+		2CCF81501636F69900DE273F /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81411636F69900DE273F /* DDAbstractDatabaseLogger.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2CCF81511636F69900DE273F /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81431636F69900DE273F /* DDASLLogger.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2CCF81521636F69900DE273F /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81451636F69900DE273F /* DDFileLogger.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2CCF81531636F69900DE273F /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81471636F69900DE273F /* DDLog.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81491636F69900DE273F /* DDTTYLogger.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2CCF81551636F69900DE273F /* ContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF814C1636F69900DE273F /* ContextFilterLogFormatter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF814E1636F69900DE273F /* DispatchQueueLogFormatter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2CCF81571636F69900DE273F /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2CCF814F1636F69900DE273F /* README.txt */; };
 		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
 		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; };
@@ -520,6 +528,21 @@
 		2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileServerConfiguration.m; sourceTree = "<group>"; };
 		2CCB85F71361F44E0024E474 /* FacilitiesLocationData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocationData.h; sourceTree = "<group>"; };
 		2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationData.m; sourceTree = "<group>"; };
+		2CCF81401636F69900DE273F /* DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
+		2CCF81411636F69900DE273F /* DDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
+		2CCF81421636F69900DE273F /* DDASLLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDASLLogger.h; sourceTree = "<group>"; };
+		2CCF81431636F69900DE273F /* DDASLLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDASLLogger.m; sourceTree = "<group>"; };
+		2CCF81441636F69900DE273F /* DDFileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDFileLogger.h; sourceTree = "<group>"; };
+		2CCF81451636F69900DE273F /* DDFileLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDFileLogger.m; sourceTree = "<group>"; };
+		2CCF81461636F69900DE273F /* DDLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDLog.h; sourceTree = "<group>"; };
+		2CCF81471636F69900DE273F /* DDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDLog.m; sourceTree = "<group>"; };
+		2CCF81481636F69900DE273F /* DDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDTTYLogger.h; sourceTree = "<group>"; };
+		2CCF81491636F69900DE273F /* DDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDTTYLogger.m; sourceTree = "<group>"; };
+		2CCF814B1636F69900DE273F /* ContextFilterLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContextFilterLogFormatter.h; sourceTree = "<group>"; };
+		2CCF814C1636F69900DE273F /* ContextFilterLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContextFilterLogFormatter.m; sourceTree = "<group>"; };
+		2CCF814D1636F69900DE273F /* DispatchQueueLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DispatchQueueLogFormatter.h; sourceTree = "<group>"; };
+		2CCF814E1636F69900DE273F /* DispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DispatchQueueLogFormatter.m; sourceTree = "<group>"; };
+		2CCF814F1636F69900DE273F /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		2CD12D4E1360584F00A73ACA /* facilities */ = {isa = PBXFileReference; lastKnownFileType = folder; name = facilities; path = Resources/facilities; sourceTree = "<group>"; };
 		2CD8FEED13565E8B00B00B28 /* QRReaderResult.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QRReaderResult.xcdatamodel; sourceTree = "<group>"; };
 		2CDB024C15D0403500436B59 /* QRReaderResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderResult.h; sourceTree = "<group>"; };
@@ -1471,6 +1494,37 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		2CCF813F1636F69900DE273F /* Lumberjack */ = {
+			isa = PBXGroup;
+			children = (
+				2CCF81401636F69900DE273F /* DDAbstractDatabaseLogger.h */,
+				2CCF81411636F69900DE273F /* DDAbstractDatabaseLogger.m */,
+				2CCF81421636F69900DE273F /* DDASLLogger.h */,
+				2CCF81431636F69900DE273F /* DDASLLogger.m */,
+				2CCF81441636F69900DE273F /* DDFileLogger.h */,
+				2CCF81451636F69900DE273F /* DDFileLogger.m */,
+				2CCF81461636F69900DE273F /* DDLog.h */,
+				2CCF81471636F69900DE273F /* DDLog.m */,
+				2CCF81481636F69900DE273F /* DDTTYLogger.h */,
+				2CCF81491636F69900DE273F /* DDTTYLogger.m */,
+				2CCF814A1636F69900DE273F /* Extensions */,
+			);
+			name = Lumberjack;
+			path = Contrib/CocoaLumberjack/Lumberjack;
+			sourceTree = "<group>";
+		};
+		2CCF814A1636F69900DE273F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				2CCF814B1636F69900DE273F /* ContextFilterLogFormatter.h */,
+				2CCF814C1636F69900DE273F /* ContextFilterLogFormatter.m */,
+				2CCF814D1636F69900DE273F /* DispatchQueueLogFormatter.h */,
+				2CCF814E1636F69900DE273F /* DispatchQueueLogFormatter.m */,
+				2CCF814F1636F69900DE273F /* README.txt */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		2CDE951014EAAA2B000271BD /* GDataXML */ = {
 			isa = PBXGroup;
 			children = (
@@ -1757,6 +1811,7 @@
 		4B83721C157E5B19004CBC49 /* Contrib */ = {
 			isa = PBXGroup;
 			children = (
+				2CCF813F1636F69900DE273F /* Lumberjack */,
 				2CEBBF5C1635A68400441252 /* FacebookComposeViewController */,
 				2C333496162DD2FA00BBB312 /* Facebook Connect */,
 				4B83721D157E5B5C004CBC49 /* ZBarSDK */,
@@ -2539,6 +2594,7 @@
 				2CEBBF9C1635A68500441252 /* DEFacebookURLAttachment@2x.png in Resources */,
 				2CEBBF9D1635A68500441252 /* NavBarLandscape.png in Resources */,
 				2CEBBF9E1635A68500441252 /* NavBarLandscape@2x.png in Resources */,
+				2CCF81571636F69900DE273F /* README.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2855,6 +2911,13 @@
 				2CEBBF881635A68500441252 /* DERuledView.m in Sources */,
 				2CEBBF9F1635A68500441252 /* UIApplication+DEFacebookComposeViewController.m in Sources */,
 				2CEBBFA01635A68500441252 /* UIDevice+DEFacebookComposeViewController.m in Sources */,
+				2CCF81501636F69900DE273F /* DDAbstractDatabaseLogger.m in Sources */,
+				2CCF81511636F69900DE273F /* DDASLLogger.m in Sources */,
+				2CCF81521636F69900DE273F /* DDFileLogger.m in Sources */,
+				2CCF81531636F69900DE273F /* DDLog.m in Sources */,
+				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
+				2CCF81551636F69900DE273F /* ContextFilterLogFormatter.m in Sources */,
+				2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2922,7 +2985,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2CEBBFA21635C50400441252 /* Secret.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = armv7;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
@@ -2948,7 +3011,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2CEBBFA21635C50400441252 /* Secret.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = armv7;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
@@ -2972,7 +3035,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2CEBBFA21635C50400441252 /* Secret.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = armv7;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Massachusetts Institute of Technology";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
@@ -3027,7 +3090,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2CEBBFA21635C50400441252 /* Secret.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = armv7;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Massachusetts Institute of Technology";
 				GCC_C_LANGUAGE_STANDARD = c99;

@@ -71,7 +71,7 @@
         CGRect rect = [self rectForMapRect:tile.frame];
         UIImage *image = [[UIImage alloc] initWithContentsOfFile:tile.path];
         if (image == nil) {
-            VLog(@"image is nil");
+            DDLogVerbose(@"image is nil");
             NSError *error;
             [[NSFileManager defaultManager] removeItemAtPath:tile.path error:&error];
         } else {

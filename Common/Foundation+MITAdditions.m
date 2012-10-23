@@ -207,7 +207,7 @@ typedef struct {
                                                                range:NSMakeRange(0, [replString length])];
         
         if (entities > 0) {
-            DLog(@"Replaced %lu of %s -> %s", (unsigned long)entities, entity->entityName, entity->entityCode);
+            DDLogVerbose(@"Replaced %lu of %s -> %s", (unsigned long)entities, entity->entityName, entity->entityCode);
         }
         
         ++entity;
@@ -255,7 +255,7 @@ typedef struct {
     int status = sysctlbyname(typeString, NULL, &size, NULL, 0);
 
     if (status) {
-        ELog(@"sysctl '%@' failed: %s", typeSpecifier, strerror(status));
+        DDLogError(@"sysctl '%@' failed: %s", typeSpecifier, strerror(status));
         return nil;
     }
     
@@ -263,7 +263,7 @@ typedef struct {
     memset(result, 0, size);
     status = sysctlbyname(typeString, result, &size, NULL, 0);
     if (status) {
-        ELog(@"sysctl '%@' failed: %s", typeSpecifier, (const char*)strerror(status));
+        DDLogError(@"sysctl '%@' failed: %s", typeSpecifier, (const char*)strerror(status));
         free(result);
         return nil;
     }

@@ -942,7 +942,7 @@
 	}
 	
 	loadingIndicatorCount++;
-	DLog(@"loading indicator count: %d", loadingIndicatorCount);
+	DDLogVerbose(@"loading indicator count: %d", loadingIndicatorCount);
 	if (![loadingIndicator isDescendantOfView:self.view]) {
 		[self.view addSubview:loadingIndicator];
 	}
@@ -951,7 +951,7 @@
 - (void)removeLoadingIndicator
 {
 	loadingIndicatorCount--;
-	DLog(@"loading indicator count: %d", loadingIndicatorCount);
+	DDLogVerbose(@"loading indicator count: %d", loadingIndicatorCount);
 	if (loadingIndicatorCount <= 0) {
 		loadingIndicatorCount = 0;
 		[loadingIndicator removeFromSuperview];
@@ -973,7 +973,7 @@
 }
 
 - (void)calendarListsFailedToLoad {
-	DLog(@"failed to load lists");
+	DDLogVerbose(@"failed to load lists");
 }
 
 @end

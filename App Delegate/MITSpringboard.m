@@ -119,10 +119,10 @@
                                 NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
                                 NSString *documentPath = [paths objectAtIndex:0];
                                 NSString *bannerFile = [documentPath stringByAppendingPathComponent:@"banner"];
-                                DLog(@"writing to %@", bannerFile);
+                                DDLogVerbose(@"writing to %@", bannerFile);
                                 NSError *error = nil;
                                 if (![data writeToFile:bannerFile options:NSDataWritingAtomic error:&error]) {
-                                    ELog(@"%@", [error description]);
+                                    DDLogError(@"%@", [error description]);
                                 }
                             }
                             

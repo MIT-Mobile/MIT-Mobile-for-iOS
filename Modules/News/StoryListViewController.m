@@ -328,7 +328,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         
         if (error)
         {
-            ELog(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
+            DDLogError(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
         }
         
         [context unlock];
@@ -742,7 +742,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    DLog(@"make sure search bar is first responder right now");
+    DDLogVerbose(@"make sure search bar is first responder right now");
 }
 
 - (void)loadSearchResultsFromServer:(BOOL)loadMore forQuery:(NSString *)query
@@ -792,11 +792,11 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         // TODO: communicate download failure to user
         if ([error code] == NSURLErrorNotConnectedToInternet)
         {
-            ELog(@"News download failed because there's no net connection");
+            DDLogError(@"News download failed because there's no net connection");
         }
         else
         {
-            ELog(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
+            DDLogError(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
         }
         [self setStatusText:@"Update failed"];
 
@@ -1119,7 +1119,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
             }
             else
             {
-                ELog(@"%@ attempted to show non-existent row (%d) with actual count of %d", NSStringFromSelector(_cmd), indexPath.row, self.stories.count);
+                DDLogError(@"%@ attempted to show non-existent row (%d) with actual count of %d", NSStringFromSelector(_cmd), indexPath.row, self.stories.count);
             }
         }
             break;

@@ -70,12 +70,12 @@ NSString * const shuttlePathExtension = @"shuttles/";
                                                 matchingPredicate:matchAll
                                                   sortDescriptors:[NSArray arrayWithObject:sort]];
         [sort release];
-        DLog(@"%d routes cached", [cachedRoutes count]);
+        DDLogVerbose(@"%d routes cached", [cachedRoutes count]);
         
         for (ShuttleRouteCache *cachedRoute in cachedRoutes) {
             NSString *routeID = cachedRoute.routeID;
             ShuttleRoute *route = [[ShuttleRoute alloc] initWithCache:cachedRoute];
-            DLog(@"fetched route %@ from core data", route.routeID);
+            DDLogVerbose(@"fetched route %@ from core data", route.routeID);
             [_shuttleRoutes addObject:route];
             [_shuttleRoutesByID setValue:route forKey:routeID];
             [route release];
@@ -147,7 +147,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
         }
         
         if (stop == nil) {
-            VLog(@"attempting to create new ShuttleStop for stop %@ on route %@", stopID, routeID);
+            DDLogVerbose(@"attempting to create new ShuttleStop for stop %@ on route %@", stopID, routeID);
             ShuttleStopLocation *stopLocation = [self stopLocationWithID:stopID];
             stop = [[[ShuttleStop alloc] initWithStopLocation:stopLocation routeID:routeID] autorelease];
         }
@@ -284,7 +284,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
                 ShuttleStop *stop = [ShuttleDataManager stopWithRoute:[routeAtStop objectForKey:@"route_id"] stopID:stopID error:&error];
                 
                 if (error != nil) {
-                    ELog(@"error getting shuttle stop. code: %d; userinfo: %@", error.code, error.userInfo);
+                    DDLogError(@"error getting shuttle stop. code: %d; userinfo: %@", error.code, error.userInfo);
                 }
                 
                 if (stop != nil) {

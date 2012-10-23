@@ -50,7 +50,7 @@
 
 - (void)loadModuleHomeController
 {
-    DLog(@"home controller not defined for module %@", self.tag);
+    DDLogVerbose(@"home controller not defined for module %@", self.tag);
 }
 
 
@@ -112,7 +112,7 @@
 }
 
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
-    //NSLog(@"%@ not handling localPath: %@ query: %@", NSStringFromClass([self class]), localPath, query);
+    DDLogWarn(@"%@ not handling localPath: %@ query: %@", NSStringFromClass([self class]), localPath, query);
     return NO;
 }
 
@@ -122,7 +122,7 @@
 }
 
 - (BOOL)handleNotification:(MITNotification *)notification shouldOpen: (BOOL)shouldOpen {
-	//NSLog(@"%@ can not handle notification %@", NSStringFromClass([self class]), notification);
+	DDLogWarn(@"%@ can not handle notification %@", NSStringFromClass([self class]), notification);
 	return NO;
 }
 

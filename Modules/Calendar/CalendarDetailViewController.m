@@ -404,7 +404,7 @@
 	NSError *error;
 	NSMutableString *target = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
 	if (!target) {
-		ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
+		DDLogError(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
 	}
 
     NSString *maxWidth = [NSString stringWithFormat:@"%.0f", self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING];

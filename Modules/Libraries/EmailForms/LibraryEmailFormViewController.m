@@ -133,7 +133,7 @@ static const NSInteger kLibraryEmailFormTextView = 0x382;
 - (void)setValue:(NSString *)value {
     NSInteger index = [self.options indexOfObject:value];
     if (index == NSNotFound) {
-        ELog(@"Unable to set field to \"%@\" as it does not exist among possible options: %@", value, self.options);
+        DDLogError(@"Unable to set field to \"%@\" as it does not exist among possible options: %@", value, self.options);
     } else {
         self.currentOptionIndex = index;
     }
@@ -552,7 +552,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         [self.loadingView removeFromSuperview];
         
         if (error && (error.code != NSUserCancelledError)) {
-            DLog(@"Request failed with error: %@",[error localizedDescription]); 
+            DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]); 
             [UIAlertView alertViewForError:nil withTitle:@"Login" alertViewDelegate:self];
         } else if (!content) {
             [self.navigationController popViewControllerAnimated:YES];    
@@ -924,7 +924,7 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
         NSDictionary *jsonDict = content;
         BOOL success = [(NSNumber *)[jsonDict objectForKey:@"success"] boolValue];
         if (error || !success) {
-            DLog(@"Request failed with error: %@",[error localizedDescription]);
+            DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]);
             [self.navigationController popViewControllerAnimated:NO];
             [self showErrorSubmittingForm];
         } else {

@@ -514,7 +514,7 @@
                                   updateBlock(image,asset.defaultRepresentation.metadata);
                               }
                              failureBlock:^(NSError *error) {
-                                 WLog(@"Failed to load image metadata: %@", [error localizedDescription]);
+                                 DDLogWarn(@"Failed to load image metadata: %@", [error localizedDescription]);
                              }];
             }
         } else {

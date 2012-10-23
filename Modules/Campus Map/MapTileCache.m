@@ -7,7 +7,7 @@
 
 #define kInMemoryTileLimit 4
 #define kTileSize 256
-#define LogRect(rect, message) DLog(@"%@ rect: %f %f %f %f", message,  rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
+#define LogRect(rect, message) DDLogVerbose(@"%@ rect: %f %f %f %f", message,  rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
 
 #define kLastUpdatedKey @"last_updated"
 
@@ -293,7 +293,7 @@ static MapTileCache* s_cache;
 	
 	if (newMapTimestamp != _mapTimestamp) 
 	{
-		DLog(@"New tiles on server. Wiping out map cache");
+		DDLogVerbose(@"New tiles on server. Wiping out map cache");
 		
 		// store the new timestamp and wipe out the cache.
 		[dictionary writeToFile:[self mapTimestampFilename] atomically:YES];
@@ -306,7 +306,7 @@ static MapTileCache* s_cache;
             
             if(nil != error)
             {
-                ELog(@"Error wiping out map cache: %@", error);
+                DDLogError(@"Error wiping out map cache: %@", error);
             }
         }
 
@@ -321,7 +321,7 @@ static MapTileCache* s_cache;
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
 {
-	DLog(@"Check tile update failed. ");	
+	DDLogVerbose(@"Check tile update failed. ");	
 }
 
 @end
