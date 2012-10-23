@@ -1,13 +1,25 @@
 #import "ShareDetailViewController.h"
 #import "MIT_MobileAppDelegate.h"
-#import "TwitterViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "MITMailComposeController.h"
 #import "Secret.h"
+#import "DEFacebookComposeViewController.h"
+#import <FacebookSDK/FacebookSDK.h>
+#import <Twitter/Twitter.h>
+#import <Social/Social.h>
+#import <Accounts/Accounts.h>
+
+static NSString *kShareDetailEmail = @"Email";
+static NSString *kShareDetailFacebook = @"Facebook";
+static NSString *kShareDetailTwitter = @"Twitter";
+
+@interface ShareDetailViewController ()
+- (void)showFacebookComposeDialog;
+- (void)showTwitterComposeDialog;
+- (void)showMailComposeDialog;
+@end
 
 @implementation ShareDetailViewController
-
-@synthesize fbSession, shareDelegate;
 
 - (void)loadView {
     [super loadView];
@@ -22,72 +34,173 @@
 // subclasses should make sure actionSheetTitle is set up before this gets called
 // or call [super share:sender] at the end of this
 - (void)share:(id)sender {
-	UIActionSheet *shareSheet = [[UIActionSheet alloc] initWithTitle:[self.shareDelegate actionSheetTitle]
-															delegate:self
-												   cancelButtonTitle:@"Cancel"
-											  destructiveButtonTitle:nil
-												   otherButtonTitles:@"Email", @"Facebook", @"Twitter", nil];
-    [shareSheet showFromAppDelegate];
-    [shareSheet release];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSLog(@"Setting default app id to '%@'", FacebookAppId);
+        [FBSession setDefaultAppID:FacebookAppId];
+    });
+    
+    if (self.shareDelegate)
+    {
+        UIActionSheet *sheet = nil;
+        
+        sheet = [[UIActionSheet alloc] initWithTitle:[self.shareDelegate actionSheetTitle]
+                                            delegate:self
+                                   cancelButtonTitle:@"Cancel"
+                              destructiveButtonTitle:nil
+                                   otherButtonTitles:kShareDetailEmail, kShareDetailFacebook, kShareDetailTwitter,nil];
+        
+        [sheet showFromAppDelegate];
+    }
 }
 
 // subclasses should make sure emailBody and emailSubject are set up before this gets called
 // or call [super actionSheet:actionSheet clickedButtonAtIndex:buttonIndex] at the end of this
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 0) {
-		// Email
-        [MITMailComposeController presentMailControllerWithRecipient:nil subject:[self.shareDelegate emailSubject] body:[self.shareDelegate emailBody]];
-	}
-    else if (buttonIndex == 1) {
-		// Facebook session
-		[self showFacebookDialog];
-	}
-	else if (buttonIndex == 2) {
-		[self showTwitterView];
-	}
+    if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailEmail])
+    {
+        [self showMailComposeDialog];
+        [MITMailComposeController presentMailControllerWithRecipient:nil
+                                                             subject:[self.shareDelegate emailSubject]
+                                                                body:[self.shareDelegate emailBody]];
+    }
+    else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailFacebook])
+    {
+        [self showFacebookComposeDialog];
+    }
+    else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailTwitter])
+    {
+        [self showTwitterComposeDialog];
+    }
 }
 
-#pragma mark -
-#pragma mark Facebook delegation
-
-- (void)showFacebookDialog {
-	BOOL resuming = NO;
-	if (!self.fbSession && !(self.fbSession = [FBSession session])) {
-		self.fbSession = [FBSession sessionForApplication:FacebookAPIKey secret:FacebookAPISecret delegate:self];
-		resuming = [self.fbSession resume];
-	}
-	
-	if (!self.fbSession.isConnected) {
-		FBLoginDialog* dialog = [[[FBLoginDialog alloc] initWithSession:self.fbSession] autorelease];
-		[dialog show];
-	} else if (!resuming) {
-		[self postItemToFacebook];
-	}
+- (void)showFacebookComposeDialog
+{
+    BOOL newStyleSupported = NO;
+    if ([SLComposeViewController class])
+    {
+        newStyleSupported = [self composeForServiceType:SLServiceTypeFacebook];
+    }
+    
+    if (newStyleSupported == NO) {
+        [self showLegacyFacebookDialog];
+    }
 }
 
-- (void)session:(FBSession*)session didLogin:(FBUID)uid {
-	[self postItemToFacebook];
+- (void)showLegacyFacebookDialog
+{
+    DEFacebookComposeViewController *composeController = [[DEFacebookComposeViewController alloc] init];
+    [composeController setInitialText:[self.shareDelegate twitterTitle]];
+    [composeController addURL:[self.shareDelegate twitterUrl]];
+    composeController.completionHandler = ^(DEFacebookComposeViewControllerResult result) {
+        switch (result) {
+            case DEFacebookComposeViewControllerResultCancelled:
+                NSLog(@"Facebook Result: Cancelled");
+                break;
+            case DEFacebookComposeViewControllerResultDone:
+                NSLog(@"Facebook Result: Sent");
+                break;
+        }
+        
+        [self dismissModalViewControllerAnimated:YES];
+    };
+    
+    self.modalPresentationStyle = UIModalPresentationCurrentContext;
+    [self presentViewController:composeController
+                       animated:YES
+                     completion:nil];
 }
 
-- (void)postItemToFacebook {
-	FBStreamDialog* dialog = [[[FBStreamDialog alloc] init] autorelease];
-	dialog.delegate = self;
-	dialog.userMessagePrompt = [self.shareDelegate fbDialogPrompt];
-	dialog.attachment = [self.shareDelegate fbDialogAttachment];
-	[dialog show];
+- (void)showTwitterComposeDialog
+{
+    BOOL newStyleSupported = NO;
+    
+    if ([SLComposeViewController class])
+    {
+        newStyleSupported = [self composeForServiceType:SLServiceTypeTwitter];
+    }
+    
+    if (newStyleSupported == NO)
+    {
+        TWTweetComposeViewController *tweetComposer = [[TWTweetComposeViewController alloc] init];
+        [tweetComposer setInitialText:[self.shareDelegate twitterTitle]];
+        
+        NSURL *twURL = [NSURL URLWithString:[self.shareDelegate twitterUrl]];
+        if (twURL)
+        {
+            [tweetComposer addURL:twURL];
+        }
+        
+        if ([self.shareDelegate respondsToSelector:@selector(postImage)])
+        {
+            UIImage *image = [self.shareDelegate postImage];
+            if (image)
+            {
+                [tweetComposer addImage:image];
+            }
+        }
+    }
+    
 }
 
-#pragma mark -
-#pragma mark Share by Twitter
-
-- (void)showTwitterView {
-	UIViewController *twitterVC = [[TwitterViewController alloc] initWithMessage:[self.shareDelegate twitterTitle]
-																			 url:[self.shareDelegate twitterUrl]];	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate presentAppModalViewController:twitterVC animated:YES];
-	[twitterVC release];
+- (BOOL)composeForServiceType:(NSString*)serviceType
+{
+    if ([SLComposeViewController class])
+    {
+        if ([SLComposeViewController isAvailableForServiceType:serviceType])
+        {
+            SLComposeViewController *composeView = [SLComposeViewController composeViewControllerForServiceType:serviceType];
+            [composeView setInitialText:[self.shareDelegate twitterTitle]];
+            composeView.completionHandler = ^(SLComposeViewControllerResult result) {
+                switch (result) {
+                    case SLComposeViewControllerResultCancelled:
+                        NSLog(@"Compose Canceled");
+                        break;
+                        
+                    case SLComposeViewControllerResultDone:
+                        NSLog(@"Compose Finished");
+                        break;
+                }
+                
+                [self dismissModalViewControllerAnimated:YES];
+            };
+            
+            NSURL *sharedURL = [NSURL URLWithString:[self.shareDelegate twitterUrl]];
+            if (sharedURL)
+            {
+                [composeView addURL:sharedURL];
+            }
+            
+            if ([self.shareDelegate respondsToSelector:@selector(postImage)])
+            {
+                UIImage *image = [self.shareDelegate postImage];
+                if (image)
+                {
+                    [composeView addImage:image];
+                }
+            }
+            
+            [self presentViewController:composeView
+                               animated:YES
+                             completion:nil];
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 
+- (void)showMailComposeDialog
+{
+    if ([SLComposeViewController class] == nil)
+    {
+        
+    }
+    else
+    {
+        
+    }
+}
 
 #pragma mark -
 
@@ -97,11 +210,4 @@
 	
 	// Release any cached data, images, etc that aren't in use.
 }
-
-- (void)dealloc {
-    [fbSession release];
-    [super dealloc];
-}
-
-
 @end

@@ -40,6 +40,12 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb${FB_APP_ID}</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleURLName</key>
 			<string>edu.mit.mitmobile</string>
 			<key>CFBundleURLSchemes</key>
@@ -70,8 +76,6 @@ MIT&apos;s commitment to innovation has led to a host of scientific breakthrough
 	<string>iphone-app-feedback@mit.edu</string>
 	<key>MITNavigationParadigm</key>
 	<string>MITSpringboard</string>
-	<key>NSMainNibFile</key>
-	<string>MainWindow</string>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIStatusBarStyle</key>

@@ -13,6 +13,7 @@
 #import "CoreDataManager.h"
 #import "MapSelectionController.h"
 #import "CoreLocation+MITAdditions.h"
+#import "MITModuleURL.h"
 
 #define kSearchBarWidth 270
 #define kSearchBarCancelWidthDiff 28
@@ -24,7 +25,8 @@
 #define kPreviousSearchLimit 25
 
 
-@interface CampusMapViewController(Private)
+@interface CampusMapViewController ()
+@property (nonatomic, strong) MITModuleURL* url;
 
 - (void)updateMapListButton;
 - (void)addAnnotationsForShuttleStops:(NSArray*)shuttleStops;
@@ -41,7 +43,6 @@
 @synthesize hasSearchResults = _hasSearchResults;
 @synthesize displayingList = _displayingList;
 @synthesize searchBar = _searchBar;
-@synthesize url;
 @synthesize campusMapModule = _campusMapModule;
 @synthesize userLocation = _userLocation;
 
@@ -94,7 +95,7 @@
 	[self.view addSubview:_bookmarkButton];
 	[_bookmarkButton addTarget:self action:@selector(bookmarkButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	
-	url = [[MITModuleURL alloc] initWithTag:CampusMapTag];
+	self.url = [[MITModuleURL alloc] initWithTag:CampusMapTag];
 	
 }
 
@@ -153,13 +154,14 @@
 	
 	// if we're in the list view, save that state
 	if (self.displayingList) {
-		[url setPath:[NSString stringWithFormat:@"list", [(MITMapSearchResultAnnotation*)_mapView.currentAnnotation uniqueID]] query:_lastSearchText];
-		[url setAsModulePath];
+		[self.url setPath:@"list"
+                    query:_lastSearchText];
+		[self.url setAsModulePath];
 		[self setURLPathUserLocation];
 	} else {
 		if (_lastSearchText != nil && ![_lastSearchText isEqualToString:@""] && _mapView.currentAnnotation) {
-			[url setPath:[NSString stringWithFormat:@"search/%@", [(MITMapSearchResultAnnotation*)_mapView.currentAnnotation uniqueID]] query:_lastSearchText];
-			[url setAsModulePath];
+			[self.url setPath:[NSString stringWithFormat:@"search/%@", [(MITMapSearchResultAnnotation*)_mapView.currentAnnotation uniqueID]] query:_lastSearchText];
+			[self.url setAsModulePath];
 			[self setURLPathUserLocation];
 		}
 	}
@@ -176,8 +178,7 @@
 - (void)viewDidUnload {
 	[[ShuttleDataManager sharedDataManager] unregisterDelegate:self];
 	
-	[url release];
-    url = nil;
+    self.url = nil;
 	
 	_mapView.delegate = nil;
 	[_mapView release];
@@ -465,14 +466,14 @@
 }
 
 -(void) setURLPathUserLocation {
-	NSMutableArray *components = [NSMutableArray arrayWithArray:[url.path componentsSeparatedByString:@"/"]];
+	NSMutableArray *components = [NSMutableArray arrayWithArray:[self.url.path componentsSeparatedByString:@"/"]];
 	if (_mapView.showsUserLocation && ![[components lastObject] isEqualToString:@"userLoc"]) {
-		[url setPath:[NSString stringWithFormat:@"%@/%@", url.path, @"userLoc"] query:_lastSearchText];
-		[url setAsModulePath];
+		[self.url setPath:[NSString stringWithFormat:@"%@/%@", self.url.path, @"userLoc"] query:_lastSearchText];
+		[self.url setAsModulePath];
 	}
 	if (!_mapView.showsUserLocation && [[components lastObject] isEqualToString:@"userLoc"]) {
-		[url setPath:[url.path stringByReplacingOccurrencesOfString:@"userLoc" withString:@""] query:_lastSearchText];
-		[url setAsModulePath];
+		[self.url setPath:[self.url.path stringByReplacingOccurrencesOfString:@"userLoc" withString:@""] query:_lastSearchText];
+		[self.url setAsModulePath];
 	}
 }
 
@@ -559,8 +560,8 @@
 										  _searchBar.frame.size.height);
 			_bookmarkButton.frame = CGRectMake(281, 8, 32, 28);
 			
-			[url setPath:@"list" query:_lastSearchText];
-			[url setAsModulePath];
+			[self.url setPath:@"list" query:_lastSearchText];
+			[self.url setAsModulePath];
 			[self setURLPathUserLocation];
 		}
 	}
@@ -586,12 +587,13 @@
 		if (_lastSearchText != nil 
         && ![_lastSearchText isEqualToString:@""] 
         && _mapView.currentAnnotation) {
-			[url setPath:[NSString stringWithFormat:@"search/%@", [(MITMapSearchResultAnnotation*)_mapView.currentAnnotation uniqueID]] query:_lastSearchText];
+			[self.url setPath:[NSString stringWithFormat:@"search/%@", [(MITMapSearchResultAnnotation*)_mapView.currentAnnotation uniqueID]]
+                        query:_lastSearchText];
         }
 		else {
-			[url setPath:@"" query:nil];
+			[self.url setPath:@"" query:nil];
         }
-		[url setAsModulePath];
+		[self.url setAsModulePath];
 		[self setURLPathUserLocation];
 	}
 	
@@ -828,10 +830,10 @@
 	if ([annotation class] == [MITMapSearchResultAnnotation class]) {
 		MITMapSearchResultAnnotation* theAnnotation = (MITMapSearchResultAnnotation*)annotation;
 		if (self.displayingList)
-			[url setPath:[NSString stringWithFormat:@"list/detail/%@", theAnnotation.uniqueID] query:_lastSearchText];
+			[self.url setPath:[NSString stringWithFormat:@"list/detail/%@", theAnnotation.uniqueID] query:_lastSearchText];
 		else 
-			[url setPath:[NSString stringWithFormat:@"detail/%@", theAnnotation.uniqueID] query:_lastSearchText];
-		[url setAsModulePath];
+			[self.url setPath:[NSString stringWithFormat:@"detail/%@", theAnnotation.uniqueID] query:_lastSearchText];
+		[self.url setAsModulePath];
 		[self setURLPathUserLocation];
 	}	
 }
@@ -856,8 +858,8 @@
 		{	
 			[MITMapSearchResultAnnotation executeServerSearchWithQuery:searchAnnotation.bldgnum jsonDelegate:self object:annotation];	
 		}
-		[url setPath:[NSString stringWithFormat:@"search/%@", searchAnnotation.uniqueID] query:_lastSearchText];
-		[url setAsModulePath];
+		[self.url setPath:[NSString stringWithFormat:@"search/%@", searchAnnotation.uniqueID] query:_lastSearchText];
+		[self.url setAsModulePath];
 		[self setURLPathUserLocation];
 	}
 }
@@ -966,12 +968,12 @@
 		[MITMapSearchResultAnnotation executeServerSearchWithQuery:searchText jsonDelegate:self object:kAPISearch];
 	}
 	if (self.displayingList)
-		[url setPath:@"list" query:searchText];
+		[self.url setPath:@"list" query:searchText];
 	else if (searchText != nil && ![searchText isEqualToString:@""])
-		[url setPath:@"search" query:searchText];
+		[self.url setPath:@"search" query:searchText];
 	else 
-		[url setPath:@"" query:nil];
-	[url setAsModulePath];
+		[self.url setPath:@"" query:nil];
+	[self.url setAsModulePath];
 	[self setURLPathUserLocation];
 }
 

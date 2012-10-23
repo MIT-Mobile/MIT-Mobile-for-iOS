@@ -65,9 +65,6 @@
 	IBOutlet UIButton* _bookmarkButton;
 	
 	MapSelectionController* _selectionVC;
-	
-	// these are used for saving state
-	MITModuleURL* url;
     
     CLLocation *_userLocation;
 }
@@ -82,7 +79,7 @@
 @property (nonatomic, assign) BOOL hasSearchResults;
 @property (nonatomic, assign) BOOL displayingList;
 @property (nonatomic, readonly) UISearchBar* searchBar;
-@property (nonatomic, readonly) MITModuleURL* url;
+@property (nonatomic, readonly, strong) MITModuleURL* url;
 
 // execute a search
 -(void) search:(NSString*)searchText;
