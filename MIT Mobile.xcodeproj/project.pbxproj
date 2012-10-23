@@ -2557,7 +2557,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "if [[ ! -f \"Common/Secret.m\" ]]; then\n    cp \"Common/Secret.m.in\" \"Common/Secret.m\"\nfi\n\nif [[ ! -f \"Secret.xconfig\" ]]; then\n    cp \"Secret.xcconfig.in\" \"Secret.xcconfig\"\nfi";
+			shellScript = "if [[ ! -f \"Common/Secret.m\" ]]; then\n    cp \"Common/Secret.m.in\" \"Common/Secret.m\"\nfi\n\nif [[ ! -f \"Secret.xcconfig\" ]]; then\n    cp \"Secret.xcconfig.in\" \"Secret.xcconfig\"\nfi";
 			showEnvVarsInLog = 0;
 		};
 		DEE2B550104C17860037A4AB /* Run Script */ = {
