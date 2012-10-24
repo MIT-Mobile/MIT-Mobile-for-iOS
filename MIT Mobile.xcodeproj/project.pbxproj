@@ -1217,7 +1217,7 @@
 				DE936CA3161CD28100B69F7C /* Default.png */,
 				DE936CA1161CD1FF00B69F7C /* Icon@2x.png */,
 				DE936C9F161CD1FB00B69F7C /* Icon.png */,
-				4B83721C157E5B19004CBC49 /* Contrib */,
+				4B83721C157E5B19004CBC49 /* External */,
 				DE715445102FE468005E6111 /* Modules */,
 				080E96DDFE201D6D7F000001 /* Common */,
 				DE783C9810C8651300931EC5 /* App Delegate */,
@@ -1510,7 +1510,7 @@
 				2CCF814A1636F69900DE273F /* Extensions */,
 			);
 			name = Lumberjack;
-			path = Contrib/CocoaLumberjack/Lumberjack;
+			path = External/CocoaLumberjack/Lumberjack;
 			sourceTree = "<group>";
 		};
 		2CCF814A1636F69900DE273F /* Extensions */ = {
@@ -1571,7 +1571,7 @@
 				2CEBBF821635A68500441252 /* UIDevice+DEFacebookComposeViewController.m */,
 			);
 			name = FacebookComposeViewController;
-			path = Contrib/FacebookComposeViewController;
+			path = External/FacebookComposeViewController;
 			sourceTree = "<group>";
 		};
 		2CEBBF681635A68500441252 /* Resources */ = {
@@ -1808,7 +1808,7 @@
 			name = LocationsHours;
 			sourceTree = "<group>";
 		};
-		4B83721C157E5B19004CBC49 /* Contrib */ = {
+		4B83721C157E5B19004CBC49 /* External */ = {
 			isa = PBXGroup;
 			children = (
 				2CCF813F1636F69900DE273F /* Lumberjack */,
@@ -1816,7 +1816,7 @@
 				2C333496162DD2FA00BBB312 /* Facebook Connect */,
 				4B83721D157E5B5C004CBC49 /* ZBarSDK */,
 			);
-			name = Contrib;
+			name = External;
 			sourceTree = "<group>";
 		};
 		4B83721D157E5B5C004CBC49 /* ZBarSDK */ = {
