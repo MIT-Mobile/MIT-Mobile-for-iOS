@@ -745,7 +745,7 @@
 		4B837232157E5B5C004CBC49 /* ZBarReaderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarReaderViewController.h; sourceTree = "<group>"; };
 		4B837233157E5B5C004CBC49 /* ZBarSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarSDK.h; sourceTree = "<group>"; };
 		4B837234157E5B5C004CBC49 /* ZBarSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZBarSymbol.h; sourceTree = "<group>"; };
-		4B837235157E5B5C004CBC49 /* libzbar.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libzbar.a; sourceTree = "<group>"; };
+		4B837235157E5B5C004CBC49 /* libzbar.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzbar.a; path = External/ZBarSDK/libzbar.a; sourceTree = SOURCE_ROOT; };
 		4B837237157E5B5C004CBC49 /* zbar-back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zbar-back.png"; sourceTree = "<group>"; };
 		4B837238157E5B5C004CBC49 /* zbar-help.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "zbar-help.html"; sourceTree = "<group>"; };
 		4B837239157E5B5C004CBC49 /* zbar-helpicons.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zbar-helpicons.png"; sourceTree = "<group>"; };
@@ -1827,16 +1827,18 @@
 				4B837235157E5B5C004CBC49 /* libzbar.a */,
 				4B837236157E5B5C004CBC49 /* Resources */,
 			);
-			path = ZBarSDK;
-			sourceTree = "<group>";
+			name = ZBarSDK;
+			path = External/ZBarSDK;
+			sourceTree = SOURCE_ROOT;
 		};
 		4B83721E157E5B5C004CBC49 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
 				4B83721F157E5B5C004CBC49 /* ZBarSDK */,
 			);
-			path = Headers;
-			sourceTree = "<group>";
+			name = Headers;
+			path = External/ZBarSDK/Headers;
+			sourceTree = SOURCE_ROOT;
 		};
 		4B83721F157E5B5C004CBC49 /* ZBarSDK */ = {
 			isa = PBXGroup;
@@ -2940,15 +2942,13 @@
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/ZXing/ZXingWidget/Classes\"",
-					"\"$(SRCROOT)/ZXing/ZXingWidget/CoreSrc\"",
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
 				WARNING_CFLAGS = "-Wall";
@@ -2968,15 +2968,13 @@
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/ZXing/ZXingWidget/Classes\"",
-					"\"$(SRCROOT)/ZXing/ZXingWidget/CoreSrc\"",
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
 			};
@@ -3072,15 +3070,13 @@
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/ZXing/ZXingWidget/Classes\"",
-					"\"$(SRCROOT)/ZXing/ZXingWidget/CoreSrc\"",
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -3128,15 +3124,13 @@
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/ZXing/ZXingWidget/Classes\"",
-					"\"$(SRCROOT)/ZXing/ZXingWidget/CoreSrc\"",
 					"${SDK_DIR}/usr/include/libxml2",
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/ZBarSDK\"",
+					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
