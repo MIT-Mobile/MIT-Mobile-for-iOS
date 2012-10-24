@@ -48,6 +48,8 @@
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
 		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
+		2C2C8A2816386352001A9CF7 /* GDataHTMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2C8A2516386352001A9CF7 /* GDataHTMLDocument.m */; };
+		2C2C8A2916386352001A9CF7 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2C8A2716386352001A9CF7 /* GDataXMLNode.m */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
 		2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348E162DCF2600BBB312 /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -98,8 +100,6 @@
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
 		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; };
 		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; };
-		2CDE951514EAAA2B000271BD /* GDataHTMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE951214EAAA2B000271BD /* GDataHTMLDocument.m */; };
-		2CDE951614EAAA2B000271BD /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE951414EAAA2B000271BD /* GDataXMLNode.m */; };
 		2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */; };
 		2CDF301F134DF504007C6813 /* qrreader in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF301E134DF504007C6813 /* qrreader */; };
 		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; };
@@ -465,6 +465,10 @@
 		2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRootViewController.h; sourceTree = "<group>"; };
 		2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRootViewController.m; sourceTree = "<group>"; };
 		2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesRootViewController.xib; sourceTree = "<group>"; };
+		2C2C8A2416386352001A9CF7 /* GDataHTMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataHTMLDocument.h; sourceTree = "<group>"; };
+		2C2C8A2516386352001A9CF7 /* GDataHTMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataHTMLDocument.m; sourceTree = "<group>"; };
+		2C2C8A2616386352001A9CF7 /* GDataXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
+		2C2C8A2716386352001A9CF7 /* GDataXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2C2E95401382F00200FA5557 /* FacilitiesConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesConstants.m; sourceTree = "<group>"; };
 		2C2E95411382F00200FA5557 /* FacilitiesConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesConstants.h; sourceTree = "<group>"; };
 		2C32BD24136F27D40015ACF6 /* FacilitiesLocations.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacilitiesLocations.xcdatamodel; sourceTree = "<group>"; };
@@ -549,10 +553,6 @@
 		2CDB024D15D0403500436B59 /* QRReaderResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResult.m; sourceTree = "<group>"; };
 		2CDB024F15D0404500436B59 /* MITScannerImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerImage.h; sourceTree = "<group>"; };
 		2CDB025015D0404500436B59 /* MITScannerImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerImage.m; sourceTree = "<group>"; };
-		2CDE951114EAAA2B000271BD /* GDataHTMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataHTMLDocument.h; sourceTree = "<group>"; };
-		2CDE951214EAAA2B000271BD /* GDataHTMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataHTMLDocument.m; sourceTree = "<group>"; };
-		2CDE951314EAAA2B000271BD /* GDataXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
-		2CDE951414EAAA2B000271BD /* GDataXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2CDE951714EAAA4D000271BD /* TouchstoneResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchstoneResponse.h; sourceTree = "<group>"; };
 		2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchstoneResponse.m; sourceTree = "<group>"; };
 		2CDF301E134DF504007C6813 /* qrreader */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qrreader; path = Resources/qrreader; sourceTree = "<group>"; };
@@ -1144,7 +1144,6 @@
 				3AA21C491039DDBD00DB7637 /* Core Data */,
 				B64B47051288502E002E2F1D /* DummyRotatingViewController.h */,
 				B64B47061288502E002E2F1D /* DummyRotatingViewController.m */,
-				2CDE951014EAAA2B000271BD /* GDataXML */,
 				2C99DCAD1370508D00114A9A /* HighlightLabel.h */,
 				2C99DCAE1370508D00114A9A /* HighlightLabel.m */,
 				2C03C6D2137C66100005F1FC /* HighlightTableViewCell.h */,
@@ -1342,6 +1341,18 @@
 			path = FacilitiesRoot;
 			sourceTree = "<group>";
 		};
+		2C2C8A23163862DC001A9CF7 /* GDataXML */ = {
+			isa = PBXGroup;
+			children = (
+				2C2C8A2416386352001A9CF7 /* GDataHTMLDocument.h */,
+				2C2C8A2516386352001A9CF7 /* GDataHTMLDocument.m */,
+				2C2C8A2616386352001A9CF7 /* GDataXMLNode.h */,
+				2C2C8A2716386352001A9CF7 /* GDataXMLNode.m */,
+			);
+			name = GDataXML;
+			path = External/GDataXML;
+			sourceTree = "<group>";
+		};
 		2C333496162DD2FA00BBB312 /* Facebook Connect */ = {
 			isa = PBXGroup;
 			children = (
@@ -1523,17 +1534,6 @@
 				2CCF814F1636F69900DE273F /* README.txt */,
 			);
 			path = Extensions;
-			sourceTree = "<group>";
-		};
-		2CDE951014EAAA2B000271BD /* GDataXML */ = {
-			isa = PBXGroup;
-			children = (
-				2CDE951114EAAA2B000271BD /* GDataHTMLDocument.h */,
-				2CDE951214EAAA2B000271BD /* GDataHTMLDocument.m */,
-				2CDE951314EAAA2B000271BD /* GDataXMLNode.h */,
-				2CDE951414EAAA2B000271BD /* GDataXMLNode.m */,
-			);
-			path = GDataXML;
 			sourceTree = "<group>";
 		};
 		2CDF3017134DEAD3007C6813 /* Model */ = {
@@ -1811,6 +1811,7 @@
 		4B83721C157E5B19004CBC49 /* External */ = {
 			isa = PBXGroup;
 			children = (
+				2C2C8A23163862DC001A9CF7 /* GDataXML */,
 				2CCF813F1636F69900DE273F /* Lumberjack */,
 				2CEBBF5C1635A68400441252 /* FacebookComposeViewController */,
 				2C333496162DD2FA00BBB312 /* Facebook Connect */,
@@ -2891,8 +2892,6 @@
 				DEBF5FE314886F1A00B5719A /* LibrariesLoanTabController.m in Sources */,
 				DEBF5FE414886F1A00B5719A /* LibrariesLoanTableViewCell.m in Sources */,
 				DEBF5FE514886F1A00B5719A /* LibrariesRenewResultViewController.m in Sources */,
-				2CDE951514EAAA2B000271BD /* GDataHTMLDocument.m in Sources */,
-				2CDE951614EAAA2B000271BD /* GDataXMLNode.m in Sources */,
 				2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */,
 				2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */,
 				EF3B3B15103F072400E8AA10 /* MITAttributedLabel.m in Sources */,
@@ -2918,6 +2917,8 @@
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
 				2CCF81551636F69900DE273F /* ContextFilterLogFormatter.m in Sources */,
 				2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */,
+				2C2C8A2816386352001A9CF7 /* GDataHTMLDocument.m in Sources */,
+				2C2C8A2916386352001A9CF7 /* GDataXMLNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
