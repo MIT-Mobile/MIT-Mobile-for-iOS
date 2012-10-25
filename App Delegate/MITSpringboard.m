@@ -283,10 +283,10 @@
     NSString *documentPath = [paths objectAtIndex:0];
     NSString *bannerInfoFile = [documentPath stringByAppendingPathComponent:@"bannerInfo.plist"];
     if ([[NSFileManager defaultManager] fileExistsAtPath:bannerInfoFile]) {
-        self.bannerInfo = [[NSDictionary dictionaryWithContentsOfFile:bannerInfoFile] retain];
+        self.bannerInfo = [NSDictionary dictionaryWithContentsOfFile:bannerInfoFile];
     }
     if (!self.bannerInfo) {
-        self.bannerInfo = [[NSMutableDictionary alloc] init];
+        self.bannerInfo = [[[NSMutableDictionary alloc] init] autorelease];
     }
     
     [self displayBannerImage];
