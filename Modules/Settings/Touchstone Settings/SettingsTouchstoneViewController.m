@@ -331,7 +331,7 @@ enum {
     }
     else
     {
-        DLog(@"Saved Touchstone password has been cleared");
+        DDLogVerbose(@"Saved Touchstone password has been cleared");
         [self saveWithUsername:nil
                       password:nil];
     }

@@ -199,7 +199,7 @@ static const NSUInteger kMaxResultCount = 10;
 }
 
 - (void)locationUpdateTimedOut {
-    DLog(@"Timeout triggered at accuracy of %f meters", [self.currentLocation horizontalAccuracy]);
+    DDLogVerbose(@"Timeout triggered at accuracy of %f meters", [self.currentLocation horizontalAccuracy]);
     [self displayTableForCurrentLocation];
     [self stopUpdatingLocation];
 }
@@ -256,7 +256,7 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     [self stopUpdatingLocation];
     
-    ELog(@"%@",[error localizedDescription]);
+    DDLogError(@"%@",[error localizedDescription]);
     
     switch([error code])
     {

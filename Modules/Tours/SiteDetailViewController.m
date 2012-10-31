@@ -182,7 +182,7 @@
         audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
         [audioPlayer prepareToPlay];
         if (!audioPlayer) {
-            ELog(@"%@", [error description]);
+            DDLogError(@"%@", [error description]);
         }
         
         progressView.progress = 1.0;

@@ -301,7 +301,7 @@ LocationsHoursTableRows;
     NSError *error;
     NSMutableString *target = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
     if (!target) {
-        ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
+        DDLogError(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
     }
     
     LibrariesLocationsHoursTerm *term = [[self.library.terms filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder = %d", 0]] anyObject];

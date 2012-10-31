@@ -305,7 +305,7 @@
     
 	[((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]) hideNetworkActivityIndicator];
 	
-	VLog(@"connection failed in %@, userinfo: %@, url: %@", [error domain], [error userInfo], wrapper.theURL);
+	DDLogVerbose(@"connection failed in %@, userinfo: %@, url: %@", [error domain], [error userInfo], wrapper.theURL);
     
 	if([delegate respondsToSelector:@selector(handleConnectionFailureForRequest:)]) {
 		[delegate handleConnectionFailureForRequest:self];

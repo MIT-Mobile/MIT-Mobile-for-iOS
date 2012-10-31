@@ -282,7 +282,7 @@
     [self.fetchContext save:&saveError];
     if (saveError)
     {
-        NSLog(@"Error saving: %@", [saveError localizedDescription]);
+        DDLogError(@"Error saving scan: %@", [saveError localizedDescription]);
     }
     
     [self stopCapture];

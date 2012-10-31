@@ -99,7 +99,7 @@ static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment
 
     if (styledFont == NULL)
     {
-        ELog(@"Error: Unable to create font '%@' with traits 0x%x", [font fontName], traits);
+        DDLogError(@"Error: Unable to create font '%@' with traits 0x%x", [font fontName], traits);
 
         if (ctFont) CFRelease(ctFont);
         ctFont = styledFont;

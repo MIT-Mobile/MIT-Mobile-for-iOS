@@ -122,7 +122,7 @@ NSString * const NewsTagImageHeight     = @"height";
 
 - (void)dealloc {
 	if (![thread isFinished]) {
-		ELog(@"***** %s called before parsing finished", __PRETTY_FUNCTION__);
+		DDLogError(@"***** %s called before parsing finished", __PRETTY_FUNCTION__);
 	}
 	[thread release];
 	thread = nil;
@@ -266,7 +266,7 @@ NSString * const NewsTagImageHeight     = @"height";
     self.currentElement = elementName;
 	if ([elementName isEqualToString:NewsTagItem]) {
         if ([[currentContents allValues] count] > 0) {
-            ELog(@"%s warning: found a nested <item> in the News XML.", __PRETTY_FUNCTION__);
+            DDLogError(@"%s warning: found a nested <item> in the News XML.", __PRETTY_FUNCTION__);
             [currentContents removeAllObjects];
         }
         NSArray *whitelist = [self itemWhitelist];

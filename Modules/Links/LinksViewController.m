@@ -302,7 +302,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
                                    appendComponent:executableName
                                              error:&error];
     if (error) {
-        ELog(@"Unable to find or create application caches directory:\n%@", error);
+        DDLogError(@"Unable to find or create application caches directory:\n%@", error);
     }
     return result;
 }

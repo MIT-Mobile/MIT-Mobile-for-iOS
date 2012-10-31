@@ -684,7 +684,7 @@ enum {
         [self selectTourComponent:component];
     }
     else {
-        VLog(@"Could not find TourSiteOrRoute for selected row!");
+        DDLogVerbose(@"Could not find TourSiteOrRoute for selected row!");
     }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];

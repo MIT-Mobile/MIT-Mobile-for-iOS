@@ -54,9 +54,7 @@ static NSInteger s_numberOfCells = 0;
         }
         if (s_numberOfCells > 0) s_numberOfCells--;
         s_numberOfCellsDrawn++;
-        //NSLog(@"cells left: %d; cells drawn: %d; cells visible: %d", s_numberOfCells, s_numberOfCellsDrawn, [[superView indexPathsForVisibleRows] count]);
         if (*cellWidth > 0 && (s_numberOfCells == 0 || s_numberOfCellsDrawn == [[superView indexPathsForVisibleRows] count])) {
-            //NSLog(@"redrawing");
             [MultiLineTableViewCell setNeedsRedrawing:NO];
             [superView reloadData];
         }
@@ -119,7 +117,7 @@ static NSInteger s_numberOfCells = 0;
 + (CGFloat *)cellWidthForTableStyle:(UITableViewStyle)style accessoryType:(UITableViewCellAccessoryType)accessoryType {
     
     CGFloat *cellWidth;
-    //NSLog(@"tablestyle: %d, accessorytype: %d", style, accessoryType);
+    
     
     switch (style) {
         case UITableViewStyleGrouped:
@@ -173,7 +171,7 @@ static NSInteger s_numberOfCells = 0;
                        detailFont:(UIFont *)detailFont
                     accessoryType:(UITableViewCellAccessoryType)accessoryType
 {
-    //NSLog(@"%.1f  %.1f  %.1f  %.1f  |  %.1f  %.1f  %.1f  %.1f", plainLabelWidthCheckmarkAccessory, plainLabelWidthChevronAccessory, 
+    
     //      plainLabelWidthImageAccessory, plainLabelWidthNoAccessory, groupedLabelWidthCheckmarkAccessory,
     //      groupedLabelWidthChevronAccessory, groupedLabelWidthImageAccessory, groupedLabelWidthNoAccessory);
     
@@ -185,7 +183,7 @@ static NSInteger s_numberOfCells = 0;
         for (NSInteger i = 0; i < numberOfSections; i++) {
             s_numberOfCells += [tableView.dataSource tableView:tableView numberOfRowsInSection:i];
         }
-        //NSLog(@"number of cells: %d", s_numberOfCells);
+        
     }
     
     if ([MultiLineTableViewCell needsRedrawing]) {

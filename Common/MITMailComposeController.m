@@ -1,5 +1,6 @@
 #import "MITMailComposeController.h"
 #import "MIT_MobileAppDelegate.h"
+#import "MITLogging.h"
 
 @interface MITMailComposeController ()
 @property (nonatomic, weak) id<MFMailComposeViewControllerDelegate> mailComposeDelegate;
@@ -73,7 +74,7 @@
         {
             mitController.completionBlock(mitController, result, error);
         } else {
-            ELog(@"No handler set for the mailComposeDelegate.");
+            DDLogError(@"No handler set for the mailComposeDelegate.");
         }
     }
     

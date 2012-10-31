@@ -218,9 +218,9 @@ static NSString * kMapPathExtension = @"map/";
 - (void)saveData {
 	NSString *filename = [MITMKProjection serverInfoFilename];
 	BOOL saved = [_serverInfo writeToFile:filename atomically:YES];
-	DLog(@"Saved file: %@ %@", filename, saved ? @"SUCCESS" : @"FAIL");
+	DDLogVerbose(@"Saved file: %@ %@", filename, saved ? @"SUCCESS" : @"FAIL");
     if (!saved) {
-        ELog(@"could not save file with contents %@", [_serverInfo description]);
+        DDLogError(@"could not save file with contents %@", [_serverInfo description]);
     }
 }
 
@@ -435,7 +435,7 @@ static NSString * kMapPathExtension = @"map/";
         
         if (newMapTimestamp != _mapTimestamp) {
             // store the new timestamp and wipe out the cache.
-            DLog(@"New map tiles found. New timestamp: %lld Old timestamp: %lld", newMapTimestamp, _mapTimestamp);
+            DDLogVerbose(@"New map tiles found. New timestamp: %lld Old timestamp: %lld", newMapTimestamp, _mapTimestamp);
             [dictionary writeToFile:[MITMKProjection mapTimestampFilename] atomically:YES];
             
             NSString* tileCachePath = [MITMKProjection tileCachePath];
@@ -443,7 +443,7 @@ static NSString * kMapPathExtension = @"map/";
             if ([[NSFileManager defaultManager] fileExistsAtPath:tileCachePath]) {
                 NSError* error = nil;
                 if (![[NSFileManager defaultManager] removeItemAtPath:tileCachePath error:&error]) {
-                    ELog(@"Error wiping out map cache: %@", error);
+                    DDLogError(@"Error wiping out map cache: %@", error);
                 }
             }
         }
@@ -462,7 +462,7 @@ static NSString * kMapPathExtension = @"map/";
 }
 
 - (void)request:(MITMobileWebAPI *)request handleConnectionError:(NSError *)error {
-    ELog(@"failed to get tile server info");
+    DDLogError(@"failed to get tile server info");
 	// TODO: handle connection failure
 }
 

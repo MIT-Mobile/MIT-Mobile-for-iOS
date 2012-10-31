@@ -178,7 +178,7 @@
     
     if (validResponse == NO)
     {
-        DLog(@"Did not recieve a valid action response from the server for code '%@'", self.scanResult.text);
+        DDLogVerbose(@"Did not recieve a valid action response from the server for code '%@'", self.scanResult.text);
         
         [self.scanActions removeAllObjects];
         NSURL *url = [NSURL URLWithString:self.scanResult.text];

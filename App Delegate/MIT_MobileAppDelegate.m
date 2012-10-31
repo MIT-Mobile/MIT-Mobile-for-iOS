@@ -9,6 +9,7 @@
 #import "ModuleVersions.h"
 #import "MITRotationForwardingNavigationController.h"
 #import <FacebookSDK/FacebookSDK.h>
+#import "MITLogging.h"
 
 @implementation MIT_MobileAppDelegate
 @synthesize window,
@@ -23,7 +24,7 @@
 #pragma mark -
 #pragma mark Application lifecycle
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
+    mit_logger_init();
     networkActivityRefCount = 0;
     
     [self updateBasicServerInfo];
@@ -55,7 +56,7 @@
 		aModule.currentQuery = [pathAndQuery objectForKey:@"query"];
 	}
     
-    DLog(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
+    DDLogVerbose(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
     
     if (self.window == nil)
     {
@@ -69,7 +70,7 @@
         self.window.frame = [[UIScreen mainScreen] bounds];
     }
     
-    DLog(@"Main screen size: %@ [%@]", NSStringFromCGRect([[UIScreen mainScreen] bounds]), self.window);
+    DDLogVerbose(@"Main screen size: %@ [%@]", NSStringFromCGRect([[UIScreen mainScreen] bounds]), self.window);
     [self.window setRootViewController:self.rootNavigationController];
     self.window.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     [self.window makeKeyAndVisible];
@@ -94,7 +95,7 @@
 	if(apnsDict) {
 		MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
 		[[self moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:YES];
-		DLog(@"Application opened in response to notification=%@", notification);
+		DDLogVerbose(@"Application opened in response to notification=%@", notification);
 	}
     
     return YES;
@@ -139,10 +140,10 @@
                 module.hasLaunchedBegun = YES;
             }
             
-            DLog(@"handling internal url: %@", url);
+            DDLogVerbose(@"handling internal url: %@", url);
             canHandle = [module handleLocalPath:path query:query];
         } else {
-            WLog(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
+            DDLogWarn(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
         }
     }
 
@@ -195,17 +196,17 @@
 - (void)showNetworkActivityIndicator {
     networkActivityRefCount++;
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    VLog(@"network indicator ++ %d", networkActivityRefCount);
+    DDLogVerbose(@"network indicator ++ %d", networkActivityRefCount);
 }
 
 - (void)hideNetworkActivityIndicator {
     if (networkActivityRefCount > 0) {
         networkActivityRefCount--;
-        VLog(@"network indicator -- %d", networkActivityRefCount);
+        DDLogVerbose(@"network indicator -- %d", networkActivityRefCount);
     }
     if (networkActivityRefCount == 0) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-        VLog(@"network indicator off");
+        DDLogVerbose(@"network indicator off");
     }
 }
 
@@ -273,7 +274,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
 
 - (void)application:(UIApplication *)application 
 didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-	VLog(@"Registered for push notifications. deviceToken == %@", deviceToken);
+	DDLogVerbose(@"Registered for push notifications. deviceToken == %@", deviceToken);
     self.deviceToken = deviceToken;
     
 	MITIdentity *identity = [MITDeviceRegistration identity];
@@ -290,7 +291,7 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 
 - (void)application:(UIApplication *)application 
 didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-    WLog(@"%@", [error localizedDescription]);
+    DDLogWarn(@"%@", [error localizedDescription]);
 	MITIdentity *identity = [MITDeviceRegistration identity];
 	if(!identity) {
 		[MITDeviceRegistration registerNewDeviceWithToken:nil];

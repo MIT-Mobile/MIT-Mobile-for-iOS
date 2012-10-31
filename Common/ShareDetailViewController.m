@@ -16,7 +16,6 @@ static NSString *kShareDetailTwitter = @"Twitter";
 @interface ShareDetailViewController ()
 - (void)showFacebookComposeDialog;
 - (void)showTwitterComposeDialog;
-- (void)showMailComposeDialog;
 @end
 
 @implementation ShareDetailViewController
@@ -36,7 +35,7 @@ static NSString *kShareDetailTwitter = @"Twitter";
 - (void)share:(id)sender {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSLog(@"Setting default app id to '%@'", FacebookAppId);
+        DDLogInfo(@"Setting default app id to '%@'", FacebookAppId);
         [FBSession setDefaultAppID:FacebookAppId];
     });
     
@@ -59,7 +58,6 @@ static NSString *kShareDetailTwitter = @"Twitter";
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailEmail])
     {
-        [self showMailComposeDialog];
         [MITMailComposeController presentMailControllerWithRecipient:nil
                                                              subject:[self.shareDelegate emailSubject]
                                                                 body:[self.shareDelegate emailBody]];
@@ -95,10 +93,10 @@ static NSString *kShareDetailTwitter = @"Twitter";
     composeController.completionHandler = ^(DEFacebookComposeViewControllerResult result) {
         switch (result) {
             case DEFacebookComposeViewControllerResultCancelled:
-                NSLog(@"Facebook Result: Cancelled");
+                DDLogVerbose(@"Facebook Result: Cancelled");
                 break;
             case DEFacebookComposeViewControllerResultDone:
-                NSLog(@"Facebook Result: Sent");
+                DDLogVerbose(@"Facebook Result: Sent");
                 break;
         }
         
@@ -154,11 +152,11 @@ static NSString *kShareDetailTwitter = @"Twitter";
             composeView.completionHandler = ^(SLComposeViewControllerResult result) {
                 switch (result) {
                     case SLComposeViewControllerResultCancelled:
-                        NSLog(@"Compose Canceled");
+                        DDLogVerbose(@"Compose Canceled");
                         break;
                         
                     case SLComposeViewControllerResultDone:
-                        NSLog(@"Compose Finished");
+                        DDLogVerbose(@"Compose Finished");
                         break;
                 }
                 
@@ -188,18 +186,6 @@ static NSString *kShareDetailTwitter = @"Twitter";
     }
     
     return NO;
-}
-
-- (void)showMailComposeDialog
-{
-    if ([SLComposeViewController class] == nil)
-    {
-        
-    }
-    else
-    {
-        
-    }
 }
 
 #pragma mark -

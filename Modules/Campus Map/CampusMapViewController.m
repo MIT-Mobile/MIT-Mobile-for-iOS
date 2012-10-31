@@ -95,7 +95,7 @@
 	[self.view addSubview:_bookmarkButton];
 	[_bookmarkButton addTarget:self action:@selector(bookmarkButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	
-	self.url = [[MITModuleURL alloc] initWithTag:CampusMapTag];
+	self.url = [[[MITModuleURL alloc] initWithTag:CampusMapTag] autorelease];
 	
 }
 

@@ -28,9 +28,12 @@
                                                                               command:@"categories"
                                                                            parameters:nil] autorelease];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (error) {
-            DLog(@"request failed");
-        } else if ([jsonResult isKindOfClass:[NSArray class]]) {
+        if (error)
+        {
+            DDLogVerbose(@"request failed");
+        }
+        else if ([jsonResult isKindOfClass:[NSArray class]])
+        {
             self.categories = jsonResult;
             [self.tableView reloadData];
         }

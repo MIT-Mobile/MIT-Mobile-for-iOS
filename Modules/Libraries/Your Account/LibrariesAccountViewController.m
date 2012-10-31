@@ -287,7 +287,7 @@ typedef enum {
         return;
     }
     
-    DLog(@"Tab <%@> encountered an error: %@", [[self.barItems objectAtIndex:type] title], [error localizedDescription]);
+    DDLogVerbose(@"Tab <%@> encountered an error: %@", [[self.barItems objectAtIndex:type] title], [error localizedDescription]);
     
     if ((self.alertIsActive == NO) && (self.activeTabIndex == type))
     {

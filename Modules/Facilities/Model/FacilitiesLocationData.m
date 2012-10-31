@@ -305,7 +305,7 @@ static FacilitiesLocationData *_sharedData = nil;
         dispatch_queue_t handlerQueue = dispatch_queue_create(NULL, 0);
         
         if (error) {
-            ELog(@"Request failed with error: %@",[error localizedDescription]);
+            DDLogError(@"Request failed with error: %@",[error localizedDescription]);
         } else {
             dispatch_async(handlerQueue, ^(void) {
                 if ([blkCommand isEqualToString:FacilitiesCategoriesKey]) {
@@ -503,7 +503,7 @@ static FacilitiesLocationData *_sharedData = nil;
         if ([[loc objectForKey:@"leased_bldg_services"] boolValue] == YES) {
             NSString *name = [loc objectForKey:@"contact-name_bldg_services"];
             if (!name) {
-                WLog(@"Leased location \"%@\" missing contact name.", location.uid);
+                DDLogWarn(@"Leased location \"%@\" missing contact name.", location.uid);
             } else {
                 FacilitiesPropertyOwner *propertyOwner = [cdm getObjectForEntity:@"FacilitiesPropertyOwner" attribute:@"name" value:name];
                 if (!propertyOwner) {
