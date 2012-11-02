@@ -2,7 +2,7 @@
 
 #define CROSSFADE_PROPORTION 0.30
 
-@interface ScrollFadeImageView (Private)
+@interface ScrollFadeImageView ()
 
 - (void)animateSlide;
 - (void)animateCrossfade;
@@ -13,37 +13,54 @@
 
 
 @implementation ScrollFadeImageView
-
-@synthesize animationImages, scrollDistance;
-
-- (NSTimeInterval)animationDuration {
-    return animationDuration;
+- (void)setAnimationImages:(NSArray *)animationImages
+{
+    NSMutableArray *animationViews = [NSMutableArray array];
+    
+    for (id<NSObject> image in animationImages)
+    {
+        UIImageView *imageView = nil;
+        
+        if ([image isKindOfClass:[UIImageView class]])
+        {
+            imageView = (UIImageView*)image;
+        }
+        else if ([image isKindOfClass:[UIImage class]])
+        {
+            imageView = [[UIImageView alloc] initWithImage:(UIImage*)image];
+        }
+        else
+        {
+            DDLogError(@"invalid image class '%@'", NSStringFromClass([image class]));
+            break;
+        }
+        
+        [animationViews addObject:imageView];
+    }
+    
+    _animationImages = animationViews;
 }
 
 - (void)setAnimationDuration:(NSTimeInterval)duration {
     if (duration > 0)
-        animationDuration = duration;
-}
-
-- (NSTimeInterval)animationDelay {
-    return animationDelay;
+        _animationDuration = duration;
 }
 
 - (void)setAnimationDelay:(NSTimeInterval)delay {
     if (delay > 0)
-        animationDelay = delay;
+        _animationDelay = delay;
 }
 
 - (void)startAnimating {
-    if (animating || !animationImages) return;
+    if (animating || ([self.animationImages count] == 0)) return;
     animating = YES;
     
-    incomingImage = [animationImages objectAtIndex:currentPosition];
+    incomingImage = [self.animationImages objectAtIndex:currentPosition];
     [self animateSlide];
 }
 
 - (void)stopAnimating {
-    if (!animating || !animationImages) return;
+    if (!animating || ([self.animationImages count] == 0)) return;
     animating = NO;
 }
 
@@ -60,16 +77,16 @@
     [self addSubview:incomingImage];
     
     [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:round(animationDuration * (1 - CROSSFADE_PROPORTION))];
+    [UIView setAnimationDuration:round(self.animationDuration * (1 - CROSSFADE_PROPORTION))];
     [UIView setAnimationCurve:UIViewAnimationCurveLinear];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(animateCrossfade)];
     
-    inFrame.origin.x = round(-scrollDistance * (1 - CROSSFADE_PROPORTION));
+    inFrame.origin.x = round(-(self.scrollDistance) * (1 - CROSSFADE_PROPORTION));
     incomingImage.frame = inFrame;
 
     inFrame = centerImage.frame;
-    inFrame.origin.x = incomingImage.frame.origin.x - scrollDistance;
+    inFrame.origin.x = incomingImage.frame.origin.x - self.scrollDistance;
     centerImage.frame = inFrame;
     
     [UIView commitAnimations];
@@ -79,17 +96,17 @@
     CGRect inFrame = incomingImage.frame;
     
     [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:round(animationDuration * CROSSFADE_PROPORTION)];
+    [UIView setAnimationDuration:round(self.animationDuration * CROSSFADE_PROPORTION)];
     [UIView setAnimationCurve:UIViewAnimationCurveLinear];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(cleanupAnimation)];
     
-    inFrame.origin.x = -scrollDistance;
+    inFrame.origin.x = -(self.scrollDistance);
     incomingImage.frame = inFrame;
     incomingImage.alpha = 1;
     
     inFrame = centerImage.frame;
-    inFrame.origin.x = incomingImage.frame.origin.x - scrollDistance;
+    inFrame.origin.x = incomingImage.frame.origin.x - self.scrollDistance;
     centerImage.frame = inFrame;
     
     [UIView commitAnimations];
@@ -100,37 +117,29 @@
         [outgoingImage removeFromSuperview];
     
     currentPosition++;
-    if (currentPosition == animationImages.count)
+    if (currentPosition == [self.animationImages count])
         currentPosition = 0;
     
     outgoingImage = centerImage;
     centerImage = incomingImage;
-    incomingImage = [animationImages objectAtIndex:currentPosition];
+    incomingImage = [self.animationImages objectAtIndex:currentPosition];
     incomingImage.alpha = 0;
 
-    [self performSelector:@selector(animateSlide) withObject:nil afterDelay:animationDelay];
+    [self performSelector:@selector(animateSlide) withObject:nil afterDelay:self.animationDelay];
 }
 
 - (id)initWithFrame:(CGRect)frame {
-    if ((self = [super initWithFrame:frame])) {
-        animationDuration = 7.0;
-        animationDelay = 0.001;
-        scrollDistance = 30.0;
+    if ((self = [super initWithFrame:frame]))
+    {
+        self.animationDuration = 7.0;
+        self.animationDelay = 0.001;
+        self.scrollDistance = 30.0;
     }
     return self;
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
-
 - (void)dealloc {
     self.animationImages = nil;
-    [super dealloc];
 }
 
 
