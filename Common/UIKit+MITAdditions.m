@@ -12,6 +12,11 @@ inline CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect)
     return normalizedRect;
 }
 
+inline BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation desiredOrientation,UIInterfaceOrientationMask orientationMask)
+{
+    return ((1 << desiredOrientation) & orientationMask) != 0;
+}
+
 NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 {
     switch (orientation) {
