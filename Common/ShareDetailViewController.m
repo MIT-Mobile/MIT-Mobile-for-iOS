@@ -19,7 +19,6 @@ static NSString *kShareDetailTwitter = @"Twitter";
 @end
 
 @implementation ShareDetailViewController
-
 - (void)loadView {
     [super loadView];
 }
@@ -33,12 +32,6 @@ static NSString *kShareDetailTwitter = @"Twitter";
 // subclasses should make sure actionSheetTitle is set up before this gets called
 // or call [super share:sender] at the end of this
 - (void)share:(id)sender {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        DDLogInfo(@"Setting default app id to '%@'", FacebookAppId);
-        [FBSession setDefaultAppID:FacebookAppId];
-    });
-    
     if (self.shareDelegate)
     {
         UIActionSheet *sheet = nil;

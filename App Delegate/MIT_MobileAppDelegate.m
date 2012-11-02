@@ -10,6 +10,7 @@
 #import "MITRotationForwardingNavigationController.h"
 #import <FacebookSDK/FacebookSDK.h>
 #import "MITLogging.h"
+#import "Secret.h"
 
 @implementation MIT_MobileAppDelegate
 @synthesize window,
@@ -25,6 +26,10 @@
 #pragma mark Application lifecycle
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     mit_logger_init();
+    
+    DDLogInfo(@"Setting default app id to '%@'", FacebookAppId);
+    [FBSession setDefaultAppID:FacebookAppId];
+    
     networkActivityRefCount = 0;
     
     [self updateBasicServerInfo];
