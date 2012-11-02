@@ -35,6 +35,12 @@
             break;
         }
         
+        imageView.contentMode = UIViewContentModeScaleAspectFill;
+        
+        CGRect frame = imageView.frame;
+        frame.size.height = MAX(CGRectGetHeight(frame),CGRectGetHeight(self.bounds));
+        frame.size.width= MAX(CGRectGetWidth(frame),CGRectGetWidth(self.bounds));
+        imageView.frame = frame;
         [animationViews addObject:imageView];
     }
     
