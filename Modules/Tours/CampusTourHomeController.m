@@ -51,7 +51,6 @@
                                                [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/tour_wallpaper_great_sail.jpg"]],
                                                nil];
         fadeView.scrollDistance = 40;
-        fadeView.backgroundColor = [UIColor redColor];
         [mainView addSubview:fadeView];
         self.scrollingBackground = fadeView;
     }
