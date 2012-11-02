@@ -3,6 +3,8 @@
 
 #pragma mark - UIKit Additon Function Prototypes
 CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect);
+BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation desiredOrientation,UIInterfaceOrientationMask orientationMask);
+
 NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation);
 
 #pragma mark - Category Definitions
