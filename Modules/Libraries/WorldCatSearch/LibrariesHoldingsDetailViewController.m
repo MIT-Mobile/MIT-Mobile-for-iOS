@@ -111,7 +111,7 @@
     
     BOOL available = [[holding objectForKey:@"available"] boolValue];
 
-    cell.detailTextLabel.text = [holding objectForKey:@"status"];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@\n%@",[holding objectForKey:@"collection"], [holding objectForKey:@"status"]];
     cell.detailTextLabel.numberOfLines = 0;
     cell.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
     cell.detailTextLabel.font = (available) ?
