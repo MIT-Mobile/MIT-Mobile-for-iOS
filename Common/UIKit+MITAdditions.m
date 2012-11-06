@@ -2,7 +2,7 @@
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
 
-CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect)
+inline CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect)
 {
     CGRect normalizedRect = CGRectMake(subRect.origin.x / CGRectGetMaxX(parentRect),
                                        subRect.origin.y / CGRectGetMaxY(parentRect),
@@ -32,6 +32,11 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
         case UIImageOrientationRightMirrored:
             return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationRightMirrored", UIImageOrientationRightMirrored];
     }
+}
+
+BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterfaceOrientationMask supportedOrientations)
+{
+    return ((1 << orientation) & supportedOrientations) != 0;
 }
 
 
