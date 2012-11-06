@@ -3,6 +3,7 @@
 #import "ShuttleStopViewController.h"
 #import "ShuttleStop.h"
 #import "ShuttleLocation.h"
+#import "UIKit+MITAdditions.h"
 
 #define DEGREES_TO_RADIANS(__ANGLE__) ((__ANGLE__) / 180.0 * M_PI)
 #define LARGE_SHUTTLE_ANNOTATION_ZOOM 14.5
@@ -89,6 +90,17 @@
                                                     selector:@selector(pollShuttleLocations)
                                                     userInfo:nil 
 													 repeats:YES] retain];
+}
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 -(void) viewDidAppear:(BOOL)animated {

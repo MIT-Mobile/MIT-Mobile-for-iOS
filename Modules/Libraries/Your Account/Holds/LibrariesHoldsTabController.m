@@ -4,6 +4,7 @@
 #import "LibrariesHoldsTableViewCell.h"
 #import "LibrariesDetailViewController.h"
 #import "LibrariesAccountViewController.h"
+#import "UIKit+MITAdditions.h"
 
 @interface LibrariesHoldsTabController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
@@ -43,6 +44,17 @@
     self.loadingView = nil;
     self.loanData = nil;
     [super dealloc];
+}
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)setupTableView

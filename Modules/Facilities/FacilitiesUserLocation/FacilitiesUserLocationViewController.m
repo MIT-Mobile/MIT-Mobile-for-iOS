@@ -6,6 +6,7 @@
 #import "FacilitiesRoomViewController.h"
 #import "MITLoadingActivityView.h"
 #import "MITLogging.h"
+#import "UIKit+MITAdditions.h"
 
 static const NSUInteger kMaxResultCount = 10;
 
@@ -138,10 +139,15 @@ static const NSUInteger kMaxResultCount = 10;
     [self stopUpdatingLocation];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - Private Methods

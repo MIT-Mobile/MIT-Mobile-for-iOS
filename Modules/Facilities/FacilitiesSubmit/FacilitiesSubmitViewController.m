@@ -167,8 +167,15 @@
     [super viewDidUnload];    
 }
 
+// Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (IBAction)reportCompleted:(id)sender {

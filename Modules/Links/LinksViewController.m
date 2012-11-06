@@ -79,9 +79,15 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     // Release any retained subviews of the main view.
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
 {
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - Loading View
