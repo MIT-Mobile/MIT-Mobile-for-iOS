@@ -132,7 +132,7 @@
     
     
     BOOL available = [[holding objectForKey:@"available"] boolValue];
-    NSString *detailString = [holding objectForKey:@"status"];
+    NSString *detailString = [NSString stringWithFormat:@"%@\n%@",[holding objectForKey:@"collection"], [holding objectForKey:@"status"]];
     UIFont *detailFont = (available) ? 
                           [UIFont boldSystemFontOfSize:CELL_DETAIL_FONT_SIZE] :
                           [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
