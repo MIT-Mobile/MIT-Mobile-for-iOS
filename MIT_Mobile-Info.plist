@@ -74,8 +74,6 @@ MIT&apos;s commitment to innovation has led to a host of scientific breakthrough
 	<string></string>
 	<key>MITFeedbackAddress</key>
 	<string>iphone-app-feedback@mit.edu</string>
-	<key>MITNavigationParadigm</key>
-	<string>MITSpringboard</string>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIStatusBarStyle</key>

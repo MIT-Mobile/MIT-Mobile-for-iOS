@@ -299,26 +299,6 @@
 														repeats:YES] retain];
 }
 
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-
-    // force the visible viewController to reload its view.
-    // without this, all modules except Stellar (still trying to find out why)
-    // drop their view without reloading again until going back in the nav stack.
-    UIViewController *viewController = nil;
-    if (self.navigationController.visibleViewController != self) {
-        viewController = [self.navigationController popViewControllerAnimated:NO];
-        [self.navigationController pushViewController:viewController animated:NO];
-    }
-}
-
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 
 - (void)dealloc {
 	self.primaryModules = nil;
@@ -352,7 +332,8 @@
         
         if (!badgeView) {
             UIImage *image = [UIImage imageNamed:@"global/icon-badge.png"];
-            UIImage *stretchableImage = [image stretchableImageWithLeftCapWidth:floor(image.size.width / 2) - 1 topCapHeight:0];
+            UIImage *stretchableImage = [image stretchableImageWithLeftCapWidth:(NSUInteger)(floor(image.size.width / 2) - 1)
+                                                                   topCapHeight:0];
             
             badgeView = [[[UIImageView alloc] initWithImage:stretchableImage] autorelease];
             badgeView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
@@ -362,7 +343,7 @@
             badgeLabel.backgroundColor = [UIColor clearColor];
             badgeLabel.textColor = [UIColor whiteColor];
             badgeLabel.font = labelFont;
-            badgeLabel.textAlignment = UITextAlignmentCenter;
+            badgeLabel.textAlignment = NSTextAlignmentCenter;
             badgeLabel.tag = BADGE_LABEL_TAG;
             [badgeView addSubview:badgeLabel];
         }

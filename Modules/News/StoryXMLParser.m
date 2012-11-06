@@ -223,7 +223,7 @@ NSString * const NewsTagImageHeight     = @"height";
             self.currentStack = nil;
         }
     };
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:[request autorelease]];
 }
 
 #pragma mark NSXMLParser delegation

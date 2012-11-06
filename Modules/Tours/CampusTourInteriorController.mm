@@ -92,34 +92,17 @@ static NSString * const QRAlertUserDefaultString = @"QRCodeAlertDidShow";
 
 #pragma mark UIViewController
 
-/*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
-}
-*/
-/*
+// Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    if (appDelegate.appModalHolder.modalViewController) {
-        return [appDelegate.appModalHolder.modalViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-    }
-    return UIInterfaceOrientationIsPortrait(interfaceOrientation);
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    if (appDelegate.appModalHolder.modalViewController) {
-        [appDelegate.appModalHolder.modalViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    }
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return shouldAutorotateToInterfaceOrientation;
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    if (appDelegate.appModalHolder.modalViewController) {
-        [appDelegate.appModalHolder.modalViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    }
-}
-*/
 #pragma mark Memory
 
 - (void)didReceiveMemoryWarning {

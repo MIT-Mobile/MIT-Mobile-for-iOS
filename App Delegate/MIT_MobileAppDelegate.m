@@ -181,6 +181,7 @@
     for (MITModule *aModule in self.modules) {
         [aModule applicationWillEnterForeground];
     }
+    
     [MITUnreadNotifications updateUI];
 }
 
@@ -216,22 +217,7 @@
 }
 
 #pragma mark -
-#pragma mark This should probably go in another place
-/*
- * The MIT150 module and all things related to it should suddenly 
- * disappear about two weeks after the Open House on April 30th.
- *
- * If we want it to disappear sooner for some reason, we can flip 
- * the "should_show_mit150" bit on http://m.mit.edu/?module=general.
- */
-
-/*
-- (BOOL)shouldShowOpenHouseContent {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return ([defaults boolForKey:@"ShouldHideOpenHouse"] == NO);
-}
-*/
- 
+#pragma mark This should probably go in another place 
 - (void)updateBasicServerInfo {
     [[ModuleVersions sharedVersions] updateVersionInformation];
 }
