@@ -30,7 +30,18 @@ NSInteger strLenSort(NSString *str1, NSString *str2, void *context)
 @synthesize searchTerms, searchTokens, searchResults, searchController,
 loadingView, searchBar = theSearchBar, tableView = theTableView;;
 
-#pragma mark view
+#pragma mark - View
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 - (void)viewDidLoad {
 	[super viewDidLoad];

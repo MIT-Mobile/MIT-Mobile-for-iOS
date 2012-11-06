@@ -5,6 +5,7 @@
 #import "MobileRequestOperation.h"
 #import "MITLoadingActivityView.h"
 #import "NSDateFormatter+RelativeString.h"
+#import "UIKit+MITAdditions.h"
 
 @interface QRReaderDetailViewController () <ShareItemDelegate,UITableViewDataSource,UITableViewDelegate>
 @property (retain) NSString *resultText;
@@ -138,10 +139,15 @@
     [self.urlMappingOperation cancel];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)handleScanInfoResponse:(NSDictionary*)codeInfo error:(NSError*)error
