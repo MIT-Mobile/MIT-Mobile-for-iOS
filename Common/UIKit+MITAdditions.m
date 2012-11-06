@@ -39,11 +39,6 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
     }
 }
 
-BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterfaceOrientationMask supportedOrientations)
-{
-    return ((1 << orientation) & supportedOrientations) != 0;
-}
-
 
 @implementation NSString (MITUIAdditions)
 
