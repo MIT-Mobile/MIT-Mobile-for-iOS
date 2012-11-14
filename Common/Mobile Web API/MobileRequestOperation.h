@@ -49,6 +49,8 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 - (BOOL)isEqualToOperation:(MobileRequestOperation*)operation;
 - (NSUInteger)hash;
 
+- (void)setCompleteBlock:(MobileRequestCompleteBlock)completionBlock;
+
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse;
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response;
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
