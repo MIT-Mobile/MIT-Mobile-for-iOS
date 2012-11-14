@@ -2589,6 +2589,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MIT Mobile" */;
 			buildPhases = (
+				2C101ABD165440CD000E40E3 /* ShellScript */,
 				2C6894FE1316F4B700245391 /* Run Script */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -2706,6 +2707,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		2C101ABD165440CD000E40E3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /usr/bin/osascript;
+			shellScript = "#!/usr/bin/osascript\n\nset agsSdkPath to system attribute \"ARCGIS_SDK\"\n\nif (agsSdkPath is missing value) or (agsSdkPath is equal to \"\") then\nset userLibrary to POSIX path of (path to library folder from user domain as string)\nset agsSdkPath to (userLibrary & \"SDKs/ArcGIS/ArcGIS.framework\")\nend if\n\nlog (\"Using SDK path: \" & agsSdkPath)\n\ntry\nset agsSdkFolder to (POSIX file agsSdkPath) as alias\non error\ntell app \"Xcode\"\nactivate\ndisplay alert \"ArcGIS iOS SDK Missing\" message \"You must install the ArcGIS iOS SDK in order to build \" & (system attribute \"PRODUCT_NAME\") & \". You can download the latest SDK from http://resources.arcgis.com/content/arcgis-iphone/api\" as critical buttons {\"OK\"} giving up after 15\nend tell\n\nerror \"ArcGIS iOS SDK missing\"\nend try";
+		};
 		2C6894FE1316F4B700245391 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
