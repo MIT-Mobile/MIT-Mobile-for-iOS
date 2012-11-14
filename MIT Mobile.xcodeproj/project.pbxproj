@@ -41,6 +41,18 @@
 		2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */; };
 		2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09824B13A8F21D00778B53 /* ModuleVersions.m */; };
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
+		2C101A7E1653F054000E40E3 /* MGSMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A6E1653F054000E40E3 /* MGSMapAnnotation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2C101A7F1653F054000E40E3 /* MGSMapCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A721653F054000E40E3 /* MGSMapCoordinate.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2C101A801653F054000E40E3 /* MGSMapLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A751653F054000E40E3 /* MGSMapLayer.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2C101A811653F054000E40E3 /* MGSMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A781653F054000E40E3 /* MGSMarker.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2C101A831653F054000E40E3 /* MGSRouteOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A7C1653F054000E40E3 /* MGSRouteOperation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2C101A8B1653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A851653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2C101A8C1653F06C000E40E3 /* MGSMapCoordinate+AGS.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A871653F06C000E40E3 /* MGSMapCoordinate+AGS.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2C101A8D1653F06C000E40E3 /* MGSMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A891653F06C000E40E3 /* MGSMapView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2C101A901653F0C9000E40E3 /* MGSMapView+Legacy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A8F1653F0C9000E40E3 /* MGSMapView+Legacy.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		2C101A9816540A34000E40E3 /* ArcGIS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C101A9716540A34000E40E3 /* ArcGIS.framework */; };
+		2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2C101A9916540A5E000E40E3 /* ArcGIS.bundle */; };
 		2C14C61B13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */; };
 		2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C15EB7515A349B200C9C345 /* MITScannerViewController.m */; };
 		2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */; };
@@ -452,6 +464,33 @@
 		2C09824B13A8F21D00778B53 /* ModuleVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModuleVersions.m; sourceTree = "<group>"; };
 		2C0A33691355CEF300786493 /* QRReaderImageTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderImageTransformer.h; sourceTree = "<group>"; };
 		2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderImageTransformer.m; sourceTree = "<group>"; };
+		2C101A6D1653F054000E40E3 /* MGSMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMapAnnotation.h; sourceTree = "<group>"; };
+		2C101A6E1653F054000E40E3 /* MGSMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMapAnnotation.m; sourceTree = "<group>"; };
+		2C101A6F1653F054000E40E3 /* MGSMapAnnotation+AGS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MGSMapAnnotation+AGS.h"; sourceTree = "<group>"; };
+		2C101A701653F054000E40E3 /* MGSMapAnnotation+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MGSMapAnnotation+Protected.h"; sourceTree = "<group>"; };
+		2C101A711653F054000E40E3 /* MGSMapCoordinate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMapCoordinate.h; sourceTree = "<group>"; };
+		2C101A721653F054000E40E3 /* MGSMapCoordinate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMapCoordinate.m; sourceTree = "<group>"; };
+		2C101A731653F054000E40E3 /* MGSMapCoordinate+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MGSMapCoordinate+Protected.h"; sourceTree = "<group>"; };
+		2C101A741653F054000E40E3 /* MGSMapLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMapLayer.h; sourceTree = "<group>"; };
+		2C101A751653F054000E40E3 /* MGSMapLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMapLayer.m; sourceTree = "<group>"; };
+		2C101A761653F054000E40E3 /* MGSMapLayer+AGS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MGSMapLayer+AGS.h"; sourceTree = "<group>"; };
+		2C101A771653F054000E40E3 /* MGSMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMarker.h; sourceTree = "<group>"; };
+		2C101A781653F054000E40E3 /* MGSMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMarker.m; sourceTree = "<group>"; };
+		2C101A791653F054000E40E3 /* MGSRouteLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSRouteLayer.h; sourceTree = "<group>"; };
+		2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSRouteLayer.m; sourceTree = "<group>"; };
+		2C101A7B1653F054000E40E3 /* MGSRouteOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSRouteOperation.h; sourceTree = "<group>"; };
+		2C101A7C1653F054000E40E3 /* MGSRouteOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSRouteOperation.m; sourceTree = "<group>"; };
+		2C101A841653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSAnnotationInfoTemplateDelegate.h; sourceTree = "<group>"; };
+		2C101A851653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSAnnotationInfoTemplateDelegate.m; sourceTree = "<group>"; };
+		2C101A861653F06C000E40E3 /* MGSMapCoordinate+AGS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MGSMapCoordinate+AGS.h"; sourceTree = "<group>"; };
+		2C101A871653F06C000E40E3 /* MGSMapCoordinate+AGS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MGSMapCoordinate+AGS.m"; sourceTree = "<group>"; };
+		2C101A881653F06C000E40E3 /* MGSMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMapView.h; sourceTree = "<group>"; };
+		2C101A891653F06C000E40E3 /* MGSMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMapView.m; sourceTree = "<group>"; };
+		2C101A8A1653F06C000E40E3 /* MGSMapViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMapViewDelegate.h; sourceTree = "<group>"; };
+		2C101A8E1653F0C8000E40E3 /* MGSMapView+Legacy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MGSMapView+Legacy.h"; sourceTree = "<group>"; };
+		2C101A8F1653F0C9000E40E3 /* MGSMapView+Legacy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MGSMapView+Legacy.m"; sourceTree = "<group>"; };
+		2C101A9716540A34000E40E3 /* ArcGIS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ArcGIS.framework; path = "~/Library/SDKs/ArcGIS/ArcGIS.framework"; sourceTree = "<absolute>"; };
+		2C101A9916540A5E000E40E3 /* ArcGIS.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = ArcGIS.bundle; path = "~/Library/SDKs/ArcGIS/ArcGIS.framework/Versions/Current/Resources/ArcGIS.bundle"; sourceTree = "<absolute>"; };
 		2C14C61913F5B91700B7AD95 /* MobileRequestAuthenticationTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestAuthenticationTracker.h; sourceTree = "<group>"; };
 		2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileRequestAuthenticationTracker.m; sourceTree = "<group>"; };
 		2C15EB7415A349B200C9C345 /* MITScannerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerViewController.h; sourceTree = "<group>"; };
@@ -1096,6 +1135,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C101A9816540A34000E40E3 /* ArcGIS.framework in Frameworks */,
 				2C33349F162F2F0200BBB312 /* libsqlite3.dylib in Frameworks */,
 				2C33349A162F27E200BBB312 /* Social.framework in Frameworks */,
 				2C333498162EEFA700BBB312 /* Twitter.framework in Frameworks */,
@@ -1301,6 +1341,63 @@
 				A63DEE271353CF37001C52BF /* EventKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2C101A451653E931000E40E3 /* ArcGIS Map */ = {
+			isa = PBXGroup;
+			children = (
+				2C101A471653ECB4000E40E3 /* View */,
+				2C101A461653EBE2000E40E3 /* Core */,
+				2C101A8E1653F0C8000E40E3 /* MGSMapView+Legacy.h */,
+				2C101A8F1653F0C9000E40E3 /* MGSMapView+Legacy.m */,
+			);
+			path = "ArcGIS Map";
+			sourceTree = "<group>";
+		};
+		2C101A461653EBE2000E40E3 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				2C101A6D1653F054000E40E3 /* MGSMapAnnotation.h */,
+				2C101A6E1653F054000E40E3 /* MGSMapAnnotation.m */,
+				2C101A6F1653F054000E40E3 /* MGSMapAnnotation+AGS.h */,
+				2C101A701653F054000E40E3 /* MGSMapAnnotation+Protected.h */,
+				2C101A711653F054000E40E3 /* MGSMapCoordinate.h */,
+				2C101A721653F054000E40E3 /* MGSMapCoordinate.m */,
+				2C101A731653F054000E40E3 /* MGSMapCoordinate+Protected.h */,
+				2C101A741653F054000E40E3 /* MGSMapLayer.h */,
+				2C101A751653F054000E40E3 /* MGSMapLayer.m */,
+				2C101A761653F054000E40E3 /* MGSMapLayer+AGS.h */,
+				2C101A771653F054000E40E3 /* MGSMarker.h */,
+				2C101A781653F054000E40E3 /* MGSMarker.m */,
+				2C101A791653F054000E40E3 /* MGSRouteLayer.h */,
+				2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */,
+				2C101A7B1653F054000E40E3 /* MGSRouteOperation.h */,
+				2C101A7C1653F054000E40E3 /* MGSRouteOperation.m */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		2C101A471653ECB4000E40E3 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2C101A841653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.h */,
+				2C101A851653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m */,
+				2C101A861653F06C000E40E3 /* MGSMapCoordinate+AGS.h */,
+				2C101A871653F06C000E40E3 /* MGSMapCoordinate+AGS.m */,
+				2C101A881653F06C000E40E3 /* MGSMapView.h */,
+				2C101A891653F06C000E40E3 /* MGSMapView.m */,
+				2C101A8A1653F06C000E40E3 /* MGSMapViewDelegate.h */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		2C101A9616540907000E40E3 /* ArcGIS */ = {
+			isa = PBXGroup;
+			children = (
+				2C101A9916540A5E000E40E3 /* ArcGIS.bundle */,
+				2C101A9716540A34000E40E3 /* ArcGIS.framework */,
+			);
+			name = ArcGIS;
 			sourceTree = "<group>";
 		};
 		2C1807391382C2DA000CCB6F /* FacilitiesType */ = {
@@ -1813,6 +1910,7 @@
 		4B83721C157E5B19004CBC49 /* External */ = {
 			isa = PBXGroup;
 			children = (
+				2C101A9616540907000E40E3 /* ArcGIS */,
 				2C2C8A23163862DC001A9CF7 /* GDataXML */,
 				2CCF813F1636F69900DE273F /* Lumberjack */,
 				2CEBBF5C1635A68400441252 /* FacebookComposeViewController */,
@@ -1964,6 +2062,7 @@
 		DE715445102FE468005E6111 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				2C101A451653E931000E40E3 /* ArcGIS Map */,
 				48B8129315E428DA00E791F9 /* Links */,
 				4B66705F1403304300714C6A /* Libraries */,
 				DE81CF5E10C6BC390085573D /* About */,
@@ -2600,6 +2699,7 @@
 				2CEBBF9D1635A68500441252 /* NavBarLandscape.png in Resources */,
 				2CEBBF9E1635A68500441252 /* NavBarLandscape@2x.png in Resources */,
 				2CCF81571636F69900DE273F /* README.txt in Resources */,
+				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2923,6 +3023,16 @@
 				2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */,
 				2C2C8A2816386352001A9CF7 /* GDataHTMLDocument.m in Sources */,
 				2C2C8A2916386352001A9CF7 /* GDataXMLNode.m in Sources */,
+				2C101A7E1653F054000E40E3 /* MGSMapAnnotation.m in Sources */,
+				2C101A7F1653F054000E40E3 /* MGSMapCoordinate.m in Sources */,
+				2C101A801653F054000E40E3 /* MGSMapLayer.m in Sources */,
+				2C101A811653F054000E40E3 /* MGSMarker.m in Sources */,
+				2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */,
+				2C101A831653F054000E40E3 /* MGSRouteOperation.m in Sources */,
+				2C101A8B1653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m in Sources */,
+				2C101A8C1653F06C000E40E3 /* MGSMapCoordinate+AGS.m in Sources */,
+				2C101A8D1653F06C000E40E3 /* MGSMapView.m in Sources */,
+				2C101A901653F0C9000E40E3 /* MGSMapView+Legacy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2937,6 +3047,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(HOME)/Documents/FacebookSDK\"",
+					"\"$(HOME)/Library/SDKs/ArcGIS/**\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2965,6 +3076,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(HOME)/Documents/FacebookSDK\"",
+					"$(HOME)/Library/SDKs/ArcGIS/**",
+					"\"$(SRCROOT)/../../../../Library/SDKs/ArcGIS\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
@@ -3067,6 +3180,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(HOME)/Documents/FacebookSDK\"",
+					"$(HOME)/Library/SDKs/ArcGIS/**",
+					"\"$(SRCROOT)/../../../../Library/SDKs/ArcGIS\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
@@ -3121,6 +3236,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(HOME)/Documents/FacebookSDK\"",
+					"$(HOME)/Library/SDKs/ArcGIS/**",
+					"\"$(SRCROOT)/../../../../Library/SDKs/ArcGIS\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
