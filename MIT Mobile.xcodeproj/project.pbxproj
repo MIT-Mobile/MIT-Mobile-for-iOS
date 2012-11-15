@@ -50,9 +50,9 @@
 		2C101A8B1653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A851653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C101A8C1653F06C000E40E3 /* MGSMapCoordinate+AGS.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A871653F06C000E40E3 /* MGSMapCoordinate+AGS.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C101A8D1653F06C000E40E3 /* MGSMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A891653F06C000E40E3 /* MGSMapView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		2C101A901653F0C9000E40E3 /* MGSMapView+Legacy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A8F1653F0C9000E40E3 /* MGSMapView+Legacy.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C101A9816540A34000E40E3 /* ArcGIS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C101A9716540A34000E40E3 /* ArcGIS.framework */; };
 		2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2C101A9916540A5E000E40E3 /* ArcGIS.bundle */; };
+		2C101ACA16552AF5000E40E3 /* NMITMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101AC916552AF5000E40E3 /* NMITMapView.m */; };
 		2C14C61B13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */; };
 		2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C15EB7515A349B200C9C345 /* MITScannerViewController.m */; };
 		2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */; };
@@ -487,10 +487,10 @@
 		2C101A881653F06C000E40E3 /* MGSMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMapView.h; sourceTree = "<group>"; };
 		2C101A891653F06C000E40E3 /* MGSMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMapView.m; sourceTree = "<group>"; };
 		2C101A8A1653F06C000E40E3 /* MGSMapViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMapViewDelegate.h; sourceTree = "<group>"; };
-		2C101A8E1653F0C8000E40E3 /* MGSMapView+Legacy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MGSMapView+Legacy.h"; sourceTree = "<group>"; };
-		2C101A8F1653F0C9000E40E3 /* MGSMapView+Legacy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MGSMapView+Legacy.m"; sourceTree = "<group>"; };
 		2C101A9716540A34000E40E3 /* ArcGIS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ArcGIS.framework; path = "~/Library/SDKs/ArcGIS/ArcGIS.framework"; sourceTree = "<absolute>"; };
 		2C101A9916540A5E000E40E3 /* ArcGIS.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = ArcGIS.bundle; path = "~/Library/SDKs/ArcGIS/ArcGIS.framework/Versions/Current/Resources/ArcGIS.bundle"; sourceTree = "<absolute>"; };
+		2C101AC816552AF5000E40E3 /* NMITMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NMITMapView.h; sourceTree = "<group>"; };
+		2C101AC916552AF5000E40E3 /* NMITMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NMITMapView.m; sourceTree = "<group>"; };
 		2C14C61913F5B91700B7AD95 /* MobileRequestAuthenticationTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestAuthenticationTracker.h; sourceTree = "<group>"; };
 		2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileRequestAuthenticationTracker.m; sourceTree = "<group>"; };
 		2C15EB7415A349B200C9C345 /* MITScannerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerViewController.h; sourceTree = "<group>"; };
@@ -1348,10 +1348,9 @@
 			children = (
 				2C101A471653ECB4000E40E3 /* View */,
 				2C101A461653EBE2000E40E3 /* Core */,
-				2C101A8E1653F0C8000E40E3 /* MGSMapView+Legacy.h */,
-				2C101A8F1653F0C9000E40E3 /* MGSMapView+Legacy.m */,
 			);
-			path = "ArcGIS Map";
+			name = "ArcGIS Map";
+			path = "../ArcGIS Map";
 			sourceTree = "<group>";
 		};
 		2C101A461653EBE2000E40E3 /* Core */ = {
@@ -2062,7 +2061,6 @@
 		DE715445102FE468005E6111 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				2C101A451653E931000E40E3 /* ArcGIS Map */,
 				48B8129315E428DA00E791F9 /* Links */,
 				4B66705F1403304300714C6A /* Libraries */,
 				DE81CF5E10C6BC390085573D /* About */,
@@ -2085,6 +2083,7 @@
 		DE715446102FE468005E6111 /* Campus Map */ = {
 			isa = PBXGroup;
 			children = (
+				2C101A451653E931000E40E3 /* ArcGIS Map */,
 				EBBFAF97129C2A92009AAEE0 /* ArcGIS */,
 				44C1A26011A2E865000FD653 /* Model */,
 				44C1A3C511A3388A000FD653 /* Selection */,
@@ -2114,6 +2113,8 @@
 				4463CC8C10D6F4A50048CA83 /* MITMapUserLocation.m */,
 				4463D5E010DA74240048CA83 /* MITMapView.h */,
 				4463D5E110DA74240048CA83 /* MITMapView.m */,
+				2C101AC816552AF5000E40E3 /* NMITMapView.h */,
+				2C101AC916552AF5000E40E3 /* NMITMapView.m */,
 				4420F31910E96EBE00A8CD05 /* ShuttleStopMapAnnotation.h */,
 				4420F31A10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m */,
 			);
@@ -3046,7 +3047,7 @@
 				2C101A8B1653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m in Sources */,
 				2C101A8C1653F06C000E40E3 /* MGSMapCoordinate+AGS.m in Sources */,
 				2C101A8D1653F06C000E40E3 /* MGSMapView.m in Sources */,
-				2C101A901653F0C9000E40E3 /* MGSMapView+Legacy.m in Sources */,
+				2C101ACA16552AF5000E40E3 /* NMITMapView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
