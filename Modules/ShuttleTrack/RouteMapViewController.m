@@ -379,22 +379,6 @@
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
-// any touch on the map will invoke this.  
-- (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch
-{
-    /* Do Nothing! */
-}
-
--(void)mapView:(MITMapView *)mapView annotationSelected:(id<MKAnnotation>)annotation {
-    /* Do Nothing! */
-}
-
--(void) annotationCalloutDidDisappear:(MITMapView *)mapView {
-	MITModuleURL *url = ((id<MITModuleURLContainer>)self.parentViewController).url;
-	[url setPath:[NSString stringWithFormat:@"route-map/%@", _route.routeID] query:nil];
-	[url setAsModulePath];
-}
-
 #pragma mark ShuttleDataManagerDelegate
 // message sent when a shuttle route is received. If request fails, this is called with nil
 -(void) routeInfoReceived:(ShuttleRoute*)shuttleRoute forRouteID:(NSString*)routeID
