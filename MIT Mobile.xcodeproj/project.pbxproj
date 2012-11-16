@@ -942,7 +942,7 @@
 		EB07B06612B89440005D6A4C /* NavScrollerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavScrollerView.m; sourceTree = "<group>"; };
 		EB07B06912B8971D005D6A4C /* calendar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = calendar; path = Resources/calendar; sourceTree = "<group>"; };
 		EB13860A12F1FC8E004DBB7C /* Secret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Secret.h; sourceTree = "<group>"; };
-		EB13860B12F1FC8E004DBB7C /* Secret.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Secret.m; sourceTree = "<group>"; };
+		EB13860B12F1FC8E004DBB7C /* Secret.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Secret.m; path = Common/Secret.m; sourceTree = SOURCE_ROOT; };
 		EB32946D1166777500DEDC8A /* CalendarEventMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarEventMapAnnotation.h; sourceTree = "<group>"; };
 		EB32946E1166777500DEDC8A /* CalendarEventMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarEventMapAnnotation.m; sourceTree = "<group>"; };
 		EB3F094F118F0FFE00540B8A /* CalendarMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarMapView.h; sourceTree = "<group>"; };
@@ -2618,7 +2618,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "if [[ ! -f \"Common/Secret.m\" ]]; then\n    cp \"Common/Secret.m.in\" \"Common/Secret.m\"\nfi\n\nif [[ ! -f \"Secret.xcconfig\" ]]; then\n    cp \"Secret.xcconfig.in\" \"Secret.xcconfig\"\nfi";
+			shellScript = "CONFIG_REPO_PATH=\"${PROJECT_DIR}/External/MIT-Mobile-for-iPhone-Private\"\nLOCAL_CONFIG_DIR=\"${PROJECT_DIR}/Common\"\n\nSECRET_IMPL=\"Secret.m\"\nSECRET_IMPL_TEMPLATE=\"Secret.m.in\"\n\nSECRET_CFG=\"Secret.xcconfig\"\nSECRET_CFG_TEMPLATE=\"Secret.xcconfig.in\"\n\nif [[ -d \"${CONFIG_REPO_PATH}\" ]]; then\n    echo \"using external configuration at ${CONFIG_REPO_PATH}\"\n    use_ext=1\nelse\n    echo \"using local configuration at ${LOCAL_CONFIG_DIR}\"\n    use_ext=0\nfi\n\nif [[ ! -f \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\" ]]; then\n    echo \"'${SECRET_IMPL}' is missing\"\n    if [[ $use_ext -eq 1 ]]; then\n        cp \"${CONFIG_REPO_PATH}/${SECRET_IMPL}\" \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\"\n    else\n        cp \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL_TEMPLATE}\" \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\"\n    fi\nfi\n\nif [[ ! -f \"${PROJECT_DIR}/${SECRET_CFG}\" ]]; then\n    echo \"'${SECRET_CFG}' is missing\"\n    if [[ $use_ext -eq 1 ]]; then\n        cp \"${CONFIG_REPO_PATH}/${SECRET_CFG}\" \"${PROJECT_DIR}/${SECRET_CFG}\"\n    else\n        cp \"${PROJECT_DIR}/${SECRET_CFG_TEMPLATE}\" \"${PROJECT_DIR}/${SECRET_CFG}\"\n    fi\nfi\n\nexit 0";
 			showEnvVarsInLog = 0;
 		};
 		DEE2B550104C17860037A4AB /* Run Script */ = {
