@@ -51,7 +51,7 @@
 		2C101A8D1653F06C000E40E3 /* MGSMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A891653F06C000E40E3 /* MGSMapView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C101A9816540A34000E40E3 /* ArcGIS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C101A9716540A34000E40E3 /* ArcGIS.framework */; };
 		2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2C101A9916540A5E000E40E3 /* ArcGIS.bundle */; };
-		2C101ACA16552AF5000E40E3 /* NMITMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101AC916552AF5000E40E3 /* NMITMapView.m */; };
+		2C101ACA16552AF5000E40E3 /* NMITMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101AC916552AF5000E40E3 /* NMITMapView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C14C61B13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C14C61A13F5B91700B7AD95 /* MobileRequestAuthenticationTracker.m */; };
 		2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C15EB7515A349B200C9C345 /* MITScannerViewController.m */; };
 		2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */; };
@@ -82,6 +82,7 @@
 		2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */; };
 		2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */; };
 		2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6FE84813B2717700AFD8B8 /* FacilitiesContent.m */; };
+		2C74240E165A9583000020FC /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C742406165A9354000020FC /* libstdc++.dylib */; };
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
 		2C91944C1631CBA700ED97F6 /* NSData+MGTwitterBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C91944B1631CBA700ED97F6 /* NSData+MGTwitterBase64.m */; };
@@ -536,6 +537,7 @@
 		2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDateFormatter+RelativeString.m"; sourceTree = "<group>"; };
 		2C6FE84713B2717700AFD8B8 /* FacilitiesContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesContent.h; sourceTree = "<group>"; };
 		2C6FE84813B2717700AFD8B8 /* FacilitiesContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesContent.m; sourceTree = "<group>"; };
+		2C742406165A9354000020FC /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		2C7661D21369C466000CA2B0 /* FacilitiesCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesCategory.h; sourceTree = "<group>"; };
 		2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesCategory.m; sourceTree = "<group>"; };
 		2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocation.h; sourceTree = "<group>"; };
@@ -1132,15 +1134,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C101A9816540A34000E40E3 /* ArcGIS.framework in Frameworks */,
+				2C74240E165A9583000020FC /* libstdc++.dylib in Frameworks */,
 				2C33349F162F2F0200BBB312 /* libsqlite3.dylib in Frameworks */,
+				2C5DECDC13E9BEF400F9C089 /* libz.dylib in Frameworks */,
+				29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */,
 				2C33349A162F27E200BBB312 /* Social.framework in Frameworks */,
 				2C333498162EEFA700BBB312 /* Twitter.framework in Frameworks */,
 				2C333493162DD0D500BBB312 /* FacebookSDK.framework in Frameworks */,
 				2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */,
 				2C333491162DCF2600BBB312 /* AdSupport.framework in Frameworks */,
-				2C5DECDC13E9BEF400F9C089 /* libz.dylib in Frameworks */,
 				2CA454F213C7468F00891428 /* AssetsLibrary.framework in Frameworks */,
+				2C101A9816540A34000E40E3 /* ArcGIS.framework in Frameworks */,
 				2C3676B813C5F854003CB7A4 /* MobileCoreServices.framework in Frameworks */,
 				2C3676B513C5F6B1003CB7A4 /* ImageIO.framework in Frameworks */,
 				2C99DCE01370782200114A9A /* CoreText.framework in Frameworks */,
@@ -1155,7 +1159,6 @@
 				EB7F32D710CD6FBB00188BCD /* AddressBookUI.framework in Frameworks */,
 				4463CCB210D6F5750048CA83 /* CoreLocation.framework in Frameworks */,
 				296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */,
-				29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */,
 				29366C1E118E4151009D6863 /* Security.framework in Frameworks */,
 				569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */,
 				569DC33C1282ADBC00BA0794 /* CoreMedia.framework in Frameworks */,
@@ -1302,6 +1305,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2C742406165A9354000020FC /* libstdc++.dylib */,
 				2C333499162F27E200BBB312 /* Social.framework */,
 				2C33349E162F2F0200BBB312 /* libsqlite3.dylib */,
 				2C333497162EEFA700BBB312 /* Twitter.framework */,
@@ -3057,6 +3061,7 @@
 					"$(inherited)",
 					"\"$(HOME)/Documents/FacebookSDK\"",
 					"\"$(HOME)/Library/SDKs/ArcGIS/**\"",
+					"\"$(SRCROOT)/../../../../Library/SDKs/ArcGIS\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
