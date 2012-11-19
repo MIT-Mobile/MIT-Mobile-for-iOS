@@ -10,13 +10,12 @@
 #import "MITMobileWebAPI.h"
 #import "MITMapRoute.h"
 
-#import "MGSMapView.h"
-
 @class MapLevel;
 @class MITMapUserLocation;
 @class MITMapView;
 @class MITMapSearchResultAnnotation;
 @class RouteView;
+@class MGSMapView;
 @class MapTileOverlay;
 
 @protocol MITMapViewDelegate<NSObject>
@@ -43,23 +42,22 @@
 
 @interface NMITMapView : UIView
 @property (nonatomic, weak) id<MITMapViewDelegate> delegate;
-@property (nonatomic, strong) MGSMapView *mapView;
+@property (nonatomic, readonly, weak) MGSMapView *mapView;
 @property BOOL stayCenteredOnUserLocation;
 @property CGFloat zoomLevel;
 
-- (void)enableProjectedFeatures;
 - (void)fixateOnCampus;
 
 
 #pragma mark MKMapView forwarding
+@property (nonatomic,readonly) CLLocationCoordinate2D centerCoordinate;
 - (void)setCenterCoordinate:(CLLocationCoordinate2D)coord animated:(BOOL)animated;
+
 - (CGPoint)convertCoordinate:(CLLocationCoordinate2D)coordinate toPointToView:(UIView *)view;
 
 @property MKCoordinateRegion region;
-@property CLLocationCoordinate2D centerCoordinate;
 @property BOOL scrollEnabled;
 @property BOOL showsUserLocation;
-@property (readonly) MKUserLocation *userLocation;
 
 #pragma mark Annotations
 
