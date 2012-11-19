@@ -55,7 +55,7 @@
 
 - (MKCoordinateRegion)region
 {
-    
+    return self.mapView.mapRegion;
 }
 
 - (void)setRegion:(MKCoordinateRegion)region
@@ -75,12 +75,12 @@
 
 - (BOOL)showsUserLocation
 {
-    
+    return self.mapView.showUserLocation;
 }
 
 - (void)setShowsUserLocation:(BOOL)showsUserLocation
 {
-    
+    self.mapView.showUserLocation = showsUserLocation;
 }
 
 
