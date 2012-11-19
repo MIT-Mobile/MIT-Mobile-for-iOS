@@ -291,16 +291,6 @@
 			}
 			
 		}
-		/*if (_mapView.stayCenteredOnUserLocation) {
-			if ([_mapView.userLocation coordinate].latitude < minLat)
-				minLat = [_mapView.userLocation coordinate].latitude;
-			if ([_mapView.userLocation coordinate].latitude > maxLat)
-				maxLat = [_mapView.userLocation coordinate].latitude;
-			if ([_mapView.userLocation coordinate].longitude < minLon)
-				minLon = [_mapView.userLocation coordinate].longitude;
-			if ([_mapView.userLocation coordinate].longitude > maxLon)
-				maxLon = [_mapView.userLocation coordinate].longitude;
-		}*/
 		
 		CLLocationCoordinate2D center;
 		center.latitude = minLat + (maxLat - minLat) / 2;
@@ -395,16 +385,6 @@
 			}
 			
 		}
-		/*if (_mapView.stayCenteredOnUserLocation) {
-		 if ([_mapView.userLocation coordinate].latitude < minLat)
-		 minLat = [_mapView.userLocation coordinate].latitude;
-		 if ([_mapView.userLocation coordinate].latitude > maxLat)
-		 maxLat = [_mapView.userLocation coordinate].latitude;
-		 if ([_mapView.userLocation coordinate].longitude < minLon)
-		 minLon = [_mapView.userLocation coordinate].longitude;
-		 if ([_mapView.userLocation coordinate].longitude > maxLon)
-		 maxLon = [_mapView.userLocation coordinate].longitude;
-		 }*/
 		
 		CLLocationCoordinate2D center;
 		center.latitude = minLat + (maxLat - minLat) / 2;
