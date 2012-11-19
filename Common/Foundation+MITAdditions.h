@@ -1,5 +1,8 @@
 #import <Foundation/Foundation.h>
 
+#define kFPDefaultEpsilon (0.001)
+BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
+
 @interface NSURL (MITAdditions)
 
 + (NSURL *)internalURLWithModuleTag:(NSString *)tag path:(NSString *)path;
