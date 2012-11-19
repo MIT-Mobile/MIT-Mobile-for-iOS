@@ -148,11 +148,17 @@
 
 - (void)removeAnnotations:(NSArray *)annotations
 {
-    
+    for (MGSMapAnnotation *annotation in self.annotationLayer.annotations)
+    {
+        if ([annotations containsObject:annotation.userData])
+        {
+            [self.annotationLayer deleteAnnotation:annotation];
+        }
+    }
 }
 
 - (void)removeAllAnnotations:(BOOL)includeUserLocation
 {
-    
+    [self.annotationLayer deleteAllAnnotations];
 }
 @end
