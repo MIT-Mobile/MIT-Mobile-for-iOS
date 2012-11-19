@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import <MapKit/MapKit.h>
 #import "MGSMapViewDelegate.h"
 
 @class MGSMapCoordinate;
@@ -18,6 +19,7 @@
 @property (nonatomic) BOOL showUserLocation;
 @property (nonatomic,assign) id<MGSMapViewDelegate> mapViewDelegate;
 @property (nonatomic,readonly,strong) MGSMapLayer *defaultLayer;
+@property (nonatomic,readonly) MKCoordinateRegion mapRegion;
 
 #pragma mark - Layer Management
 - (NSString*)nameForBasemapWithIdentifier:(NSString*)basemapIdentifier;
@@ -28,6 +30,9 @@
 - (void)removeLayerWithIdentifier:(NSString*)layerIdentifier;
 
 - (void)centerOnAnnotation:(MGSMapAnnotation*)annotation;
+- (void)centerAtCoordinate:(MGSMapCoordinate*)coordinate;
+- (void)centerAtCoordinate:(MGSMapCoordinate *)coordinate animated:(BOOL)animated;
+- (CGPoint)screenPointForCoordinate:(MGSMapCoordinate*)coordinate;
 
 - (BOOL)isLayerHidden:(NSString*)layerIdentifier;
 - (void)setHidden:(BOOL)hidden forLayerIdentifier:(NSString*)layerIdentifier;

@@ -335,6 +335,18 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     return [[self.mapView gps] enabled];
 }
 
+- (MKCoordinateRegion)mapRegion
+{
+    AGSPolygon *polygon = [self.mapView visibleArea];
+    
+    AGSPolygon *polygonWgs84 = (AGSPolygon*)[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polygon
+                                                                       toSpatialReference:[AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84]];
+
+    
+    return MKCoordinateRegionMake(CLLocationCoordinate2DMake(polygonWgs84.envelope.center.y, polygonWgs84.envelope.center.x),
+                                  MKCoordinateSpanMake(polygonWgs84.envelope.height, polygonWgs84.envelope.height));
+}
+
 #pragma mark - Layer Management
 - (BOOL)addLayer:(MGSMapLayer*)layer
   withIdentifier:(NSString*)layerIdentifier
@@ -454,6 +466,24 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         [self.mapView centerAtPoint:annotation.agsGraphic.geometry.envelope.center
                            animated:YES];
     }
+}
+
+- (void)centerAtCoordinate:(MGSMapCoordinate *)coordinate
+{
+    [self centerAtCoordinate:coordinate
+                    animated:NO];
+}
+
+- (void)centerAtCoordinate:(MGSMapCoordinate *)coordinate animated:(BOOL)animated
+{
+    [self.mapView centerAtPoint:coordinate.agsPoint
+                       animated:animated];
+}
+
+
+- (CGPoint)screenPointForCoordinate:(MGSMapCoordinate*)coordinate
+{
+    return [self.mapView toScreenPoint:[coordinate agsPoint]];
 }
 
 #pragma mark - Callouts
