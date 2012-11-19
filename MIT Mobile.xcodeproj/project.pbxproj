@@ -13,7 +13,6 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
-		294AC7B010E46786003830C3 /* MITMapScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 294AC7AF10E46786003830C3 /* MITMapScrollView.m */; };
 		296F086610CDDF07004B02E4 /* MITMobileWebAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
 		296FC55610CF4E8D00EA7FF7 /* StellarDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 296FC55510CF4E8D00EA7FF7 /* StellarDetailViewController.m */; };
@@ -406,8 +405,6 @@
 		28A0AAE50D9B0CCF005BE974 /* MIT_Mobile_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIT_Mobile_Prefix.pch; sourceTree = "<group>"; };
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		294AC7AE10E46774003830C3 /* MITMapScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapScrollView.h; sourceTree = "<group>"; };
-		294AC7AF10E46786003830C3 /* MITMapScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapScrollView.m; sourceTree = "<group>"; };
 		296F086410CDDF07004B02E4 /* MITMobileWebAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileWebAPI.h; sourceTree = "<group>"; };
 		296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileWebAPI.m; sourceTree = "<group>"; };
 		296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
@@ -2102,8 +2099,6 @@
 				4463D09310D92CB00048CA83 /* MITMapDetailViewController.xib */,
 				442C195410F3B21400CB44EC /* MITMapRoute.h */,
 				EB4C42DD1289CC8000058748 /* MITMapRoute.m */,
-				294AC7AE10E46774003830C3 /* MITMapScrollView.h */,
-				294AC7AF10E46786003830C3 /* MITMapScrollView.m */,
 				4463CC8D10D6F4A50048CA83 /* MITMapSearchResultAnnotation.h */,
 				4463CC8E10D6F4A50048CA83 /* MITMapSearchResultAnnotation.m */,
 				44293C3210DAE88500273119 /* MITMapSearchResultsVC.h */,
@@ -2826,7 +2821,6 @@
 				4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */,
 				4463D09410D92CB00048CA83 /* MITMapDetailViewController.m in Sources */,
 				EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */,
-				294AC7B010E46786003830C3 /* MITMapScrollView.m in Sources */,
 				4463CC9B10D6F4A50048CA83 /* MITMapSearchResultAnnotation.m in Sources */,
 				44293C3510DAE88500273119 /* MITMapSearchResultsVC.m in Sources */,
 				4463CC9A10D6F4A50048CA83 /* MITMapUserLocation.m in Sources */,

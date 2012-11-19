@@ -4,7 +4,6 @@
 #import <MapKit/MapKit.h>
 #import "MITMapAnnotationView.h"
 #import "MITMapAnnotationCalloutView.h"
-#import "MITMapScrollView.h"
 #import "MITProjection.h"
 #import "MITMobileWebAPI.h"
 #import "MITMapRoute.h"
