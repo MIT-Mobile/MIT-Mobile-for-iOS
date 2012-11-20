@@ -153,6 +153,8 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                 [self initBaseLayersWithDictionary:content];
             }
         }];
+        
+        [self.operationQueue addOperation:operation];
     }
 }
 
@@ -170,31 +172,30 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         defaultBasemap = [[NSSet setWithArray:[self.coreLayerSets allKeys]] anyObject];
     }
     
-    for (NSArray *layers in self.coreLayerSets[defaultBasemap])
+    for (NSDictionary *layerInfo in self.coreLayerSets[defaultBasemap])
     {
-        for (NSDictionary *layerInfo in layers)
+        NSString *displayName = layerInfo[@"displayName"];
+        NSString *identifier = layerInfo[@"layerIdentifier"];
+        NSURL *layerURL = [NSURL URLWithString:layerInfo[@"url"]];
+        BOOL isEnabled = [layerInfo[@"isEnabled"] boolValue];
+        
+        if (isEnabled == NO)
         {
-            NSString *displayName = layerInfo[@"displayName"];
-            NSString *identifier = layerInfo[@"layerIdentifier"];
-            NSURL *layerURL = [NSURL URLWithString:layerInfo[@"url"]];
-            BOOL isEnabled = [layerInfo[@"isEnabled"] boolValue];
-            
-            if (isEnabled == NO)
-            {
-                continue;
-            }
-            else if (coreLayers[identifier] != nil)
-            {
-                DDLogError(@"identifier collision for layer '%@ [%@]'",displayName,identifier);
-                continue;
-            }
-            
-            AGSTiledMapServiceLayer *serviceLayer = [AGSTiledMapServiceLayer tiledMapServiceLayerWithURL:layerURL];
-            coreLayers[identifier] = serviceLayer;
-            
-            [self.mapView addMapLayer:serviceLayer
-                             withName:identifier];
+            continue;
         }
+        else if (coreLayers[identifier] != nil)
+        {
+            DDLogError(@"identifier collision for layer '%@ [%@]'",displayName,identifier);
+            continue;
+        }
+        
+        DDLogVerbose(@"adding layer '%@' [%@]",displayName,identifier);
+        
+        AGSTiledMapServiceLayer *serviceLayer = [AGSTiledMapServiceLayer tiledMapServiceLayerWithURL:layerURL];
+        coreLayers[identifier] = serviceLayer;
+        
+        [self.mapView addMapLayer:serviceLayer
+                         withName:identifier];
     }
     
     self.coreLayers = coreLayers;
