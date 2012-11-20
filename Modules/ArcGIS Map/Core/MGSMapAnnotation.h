@@ -15,7 +15,7 @@
 @property (strong) NSString *title;
 @property (strong) NSString *detail;
 @property (strong) UIImage *image;
-@property (strong) id userData;
+@property (strong) id<NSObject> userData;
 @property (strong) NSDictionary *attributes;
 
 - (id)initWithTitle:(NSString*)title
