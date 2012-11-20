@@ -1,6 +1,4 @@
 #import <UIKit/UIKit.h>
-
-#import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
@@ -15,7 +13,7 @@
 @class MITMapView;
 @class MITMapSearchResultAnnotation;
 @class RouteView;
-@class MGSMapView;
+@class GridLayer; // not used
 @class MapTileOverlay;
 
 @protocol MITMapViewDelegate<NSObject>
@@ -24,10 +22,12 @@
 
 // MKMapView-like methods
 - (void)mapView:(MITMapView *)mapView annotationSelected:(id <MKAnnotation>)annotation;
+- (void)annotationCalloutDidDisappear:(MITMapView *)mapView; // TODO: this doesn't get called
 - (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)location;
 - (void)locateUserFailed:(MITMapView *)mapView;
 
 // MKMapViewDelegate forwarding
+- (MKOverlayView *)mapView:(MITMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay;
 - (void)mapViewRegionWillChange:(MITMapView*)mapView;
 - (void)mapViewRegionDidChange:(MITMapView*)mapView;
 - (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
@@ -40,29 +40,53 @@
 @end
 
 
-@interface NMITMapView : UIView
-@property (nonatomic, weak) id<MITMapViewDelegate> delegate;
-@property (nonatomic, readonly, weak) MGSMapView *mapView;
-@property BOOL stayCenteredOnUserLocation;
-@property CGFloat zoomLevel;
+@interface OMITMapView : UIView <MKMapViewDelegate> {
+
+    MKMapView *_mapView;
+	BOOL _stayCenteredOnUserLocation;
+	id<MITMapViewDelegate> _mapDelegate;
+
+	NSMutableArray* _routes;
+    NSMutableDictionary *_routePolylines; // kluge way to associate routes with polylines
+
+	MITMapAnnotationCalloutView * customCallOutView;
+	
+	// didDeselectAnnotationView is always triggered after didSelectAnnotationView.
+	// This BOOL value helps when selecting another Annotation while one is already displaying a custom callout
+	BOOL addRemoveCustomAnnotationCombo;
+    
+    MapTileOverlay *tileOverlay;
+}
+
+// message sent by MITMKProjection to let us know we can add tiles
+- (void)enableProjectedFeatures;
 
 - (void)fixateOnCampus;
 
+@property (nonatomic, assign) id<MITMapViewDelegate> delegate;
+@property (nonatomic, retain) MKMapView *mapView;
+@property BOOL stayCenteredOnUserLocation;
+@property CGFloat zoomLevel;
 
 #pragma mark MKMapView forwarding
-@property (nonatomic,readonly) CLLocationCoordinate2D centerCoordinate;
-- (void)setCenterCoordinate:(CLLocationCoordinate2D)coord animated:(BOOL)animated;
 
+//- (void)didUpdateUserLocation:(MKUserLocation *)userLocation;
+- (void)setCenterCoordinate:(CLLocationCoordinate2D)coord animated:(BOOL)animated;
 - (CGPoint)convertCoordinate:(CLLocationCoordinate2D)coordinate toPointToView:(UIView *)view;
+- (CLLocationCoordinate2D)convertPoint:(CGPoint)point toCoordinateFromView:(UIView *)view;
 
 @property MKCoordinateRegion region;
+@property CLLocationCoordinate2D centerCoordinate;
 @property BOOL scrollEnabled;
 @property BOOL showsUserLocation;
+@property (readonly) MKUserLocation *userLocation;
 
 #pragma mark Annotations
 
 // programmatically select and recenter on an annotation. Must be in our list of annotations
 - (void)refreshCallout;
+- (void)adjustCustomCallOut;
+- (void)positionAnnotationView:(MITMapAnnotationView*)annotationView;
 - (MKCoordinateRegion)regionForAnnotations:(NSArray *)annotations;
 
 - (void)selectAnnotation:(id<MKAnnotation>)annotation;
@@ -84,9 +108,9 @@
 - (void)removeAllRoutes;
 - (void)removeRoute:(id<MITMapRoute>) route;
 
-- (void)addTileOverlay; // NOP
-- (void)removeTileOverlay; // NOP
-- (void)removeAllOverlays; // NOP
+- (void)addTileOverlay;
+- (void)removeTileOverlay;
+- (void)removeAllOverlays;
 
 @property (nonatomic, readonly) NSArray *routes;
 
