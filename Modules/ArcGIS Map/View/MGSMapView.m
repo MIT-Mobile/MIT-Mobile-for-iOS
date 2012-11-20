@@ -154,7 +154,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             }
         }];
         
-        [self.operationQueue addOperation:operation];
+        [[NSOperationQueue mainQueue] addOperation:operation];
     }
 }
 
@@ -390,29 +390,30 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (BOOL)addLayer:(MGSMapLayer*)layer
   withIdentifier:(NSString*)layerIdentifier
 {
-    if ([self layerWithIdentifier:layerIdentifier])
-    {
-        DDLogError(@"Layer already exists for identifier '%@'", layerIdentifier);
-        return NO;
-    }
-    
-    AGSGraphicsLayer *agsLayer = [layer graphicsLayer];
-    
-    DDLogVerbose(@"Adding layer '%@' at index %d", layerIdentifier, [self.mapView.mapLayers count]);
-    
-    [self.mgsLayerIdentifiers addObject:layerIdentifier];
-    [self.mgsLayers setObject:layer
-                       forKey:layerIdentifier];
-    
-    layer.graphicsView = [self.mapView addMapLayer:agsLayer
-                                          withName:layerIdentifier];
-    
-    if ([layerIdentifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
-    {
-        [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
-    }
-    
-    layer.mapView = self;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if ([self layerWithIdentifier:layerIdentifier])
+        {
+            DDLogError(@"Layer already exists for identifier '%@'", layerIdentifier);
+        }
+        
+        AGSGraphicsLayer *agsLayer = [layer graphicsLayer];
+        
+        DDLogVerbose(@"Adding layer '%@' at index %d", layerIdentifier, [self.mapView.mapLayers count]);
+        
+        [self.mgsLayerIdentifiers addObject:layerIdentifier];
+        [self.mgsLayers setObject:layer
+                           forKey:layerIdentifier];
+        
+        layer.graphicsView = [self.mapView addMapLayer:agsLayer
+                                              withName:layerIdentifier];
+        
+        if ([layerIdentifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
+        {
+            [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
+        }
+        
+        layer.mapView = self;
+    }];
     
     return YES;
 }
@@ -421,32 +422,33 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             atIndex:(NSUInteger)layerIndex
      withIdentifier:(NSString*)layerIdentifier
 {
-    if ([self layerWithIdentifier:layerIdentifier])
-    {
-        DDLogError(@"Layer already exists for identifier '%@'", layerIdentifier);
-        return NO;
-    }
-    
-    AGSGraphicsLayer *agsLayer = [layer graphicsLayer];
-    
-    NSUInteger index = self.indexOffset + layerIndex;
-    DDLogVerbose(@"Adding layer '%@' at index %d", layerIdentifier, index);
-    
-    [self.mgsLayerIdentifiers insertObject:layerIdentifier
-                                   atIndex:layerIndex];
-    [self.mgsLayers setObject:layer
-                       forKey:layerIdentifier];
-    
-    layer.graphicsView = [self.mapView insertMapLayer:agsLayer
-                                             withName:layerIdentifier
-                                              atIndex:index];
-    
-    if ([layerIdentifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
-    {
-        [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
-    }
-    
-    layer.mapView = self;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if ([self layerWithIdentifier:layerIdentifier])
+        {
+            DDLogError(@"Layer already exists for identifier '%@'", layerIdentifier);
+        }
+        
+        AGSGraphicsLayer *agsLayer = [layer graphicsLayer];
+        
+        NSUInteger index = self.indexOffset + layerIndex;
+        DDLogVerbose(@"Adding layer '%@' at index %d", layerIdentifier, index);
+        
+        [self.mgsLayerIdentifiers insertObject:layerIdentifier
+                                       atIndex:layerIndex];
+        [self.mgsLayers setObject:layer
+                           forKey:layerIdentifier];
+        
+        layer.graphicsView = [self.mapView insertMapLayer:agsLayer
+                                                 withName:layerIdentifier
+                                                  atIndex:index];
+        
+        if ([layerIdentifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
+        {
+            [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
+        }
+        
+        layer.mapView = self;
+    }];
     
     return YES;
 }
