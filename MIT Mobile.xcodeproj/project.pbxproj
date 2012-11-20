@@ -3059,7 +3059,6 @@
 					"$(inherited)",
 					"\"$(HOME)/Documents/FacebookSDK\"",
 					"\"$(HOME)/Library/SDKs/ArcGIS/**\"",
-					"\"$(SRCROOT)/../../../../Library/SDKs/ArcGIS\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3089,7 +3088,6 @@
 					"$(inherited)",
 					"\"$(HOME)/Documents/FacebookSDK\"",
 					"$(HOME)/Library/SDKs/ArcGIS/**",
-					"\"$(SRCROOT)/../../../../Library/SDKs/ArcGIS\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
@@ -3193,7 +3191,6 @@
 					"$(inherited)",
 					"\"$(HOME)/Documents/FacebookSDK\"",
 					"$(HOME)/Library/SDKs/ArcGIS/**",
-					"\"$(SRCROOT)/../../../../Library/SDKs/ArcGIS\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
@@ -3249,7 +3246,6 @@
 					"$(inherited)",
 					"\"$(HOME)/Documents/FacebookSDK\"",
 					"$(HOME)/Library/SDKs/ArcGIS/**",
-					"\"$(SRCROOT)/../../../../Library/SDKs/ArcGIS\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MIT_Mobile_Prefix.pch;
