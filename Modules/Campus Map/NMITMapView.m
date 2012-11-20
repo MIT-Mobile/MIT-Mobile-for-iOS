@@ -60,17 +60,20 @@
 
 - (void)setRegion:(MKCoordinateRegion)region
 {
-    
+    self.mapView.mapRegion = region;
 }
 
 - (BOOL)scrollEnabled
 {
-    
+    // Always NO
+    // Zoom & Pan disable not currently supported by ArcGIS SDK
+    return NO;
 }
 
 - (void)setScrollEnabled:(BOOL)scrollEnabled
 {
-    
+    // NOP
+    // Zoom & Pan disable not currently supported by ArcGIS SDK
 }
 
 - (BOOL)showsUserLocation
@@ -106,13 +109,31 @@
                 animated:(BOOL)animated
             withRecenter:(BOOL)recenter
 {
+    __block MGSMapAnnotation *mapAnnotation = nil;
     
+    [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(MGSMapAnnotation *obj, NSUInteger idx, BOOL *stop) {
+        if ([obj.userData isEqual:annotation])
+        {
+            mapAnnotation = obj;
+            (*stop) = YES;
+        }
+    }];
+    
+    if (mapAnnotation)
+    {
+        if (recenter)
+        {
+            [self.mapView centerOnAnnotation:mapAnnotation];
+        }
+        
+        [self.mapView showCalloutForAnnotation:mapAnnotation];
+    }
 }
 
 - (void)deselectAnnotation:(id<MKAnnotation>)annotation
                   animated:(BOOL)animated
 {
-    
+    [self.mapView hideCallout];
 }
 
 - (void)addAnnotation:(id<MKAnnotation>)anAnnotation
