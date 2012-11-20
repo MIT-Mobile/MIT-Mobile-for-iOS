@@ -19,7 +19,7 @@
 @property (nonatomic) BOOL showUserLocation;
 @property (nonatomic,assign) id<MGSMapViewDelegate> mapViewDelegate;
 @property (nonatomic,readonly,strong) MGSMapLayer *defaultLayer;
-@property (nonatomic,readonly) MKCoordinateRegion mapRegion;
+@property (nonatomic) MKCoordinateRegion mapRegion;
 
 #pragma mark - Layer Management
 - (NSString*)nameForBasemapWithIdentifier:(NSString*)basemapIdentifier;

@@ -347,6 +347,44 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                                   MKCoordinateSpanMake(polygonWgs84.envelope.height, polygonWgs84.envelope.height));
 }
 
+- (void)setMapRegion:(MKCoordinateRegion)mapRegion
+{
+    double offsetX = (mapRegion.span.longitudeDelta / 2.0);
+    double offsetY = (mapRegion.span.latitudeDelta / 2.0);
+    AGSSpatialReference *wgs84 = [AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84];
+    
+    NSMutableArray *agsPoints = [NSMutableArray arrayWithCapacity:4];
+    
+    [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude + offsetX)
+                                            y:(mapRegion.center.latitude + offsetY)
+                             spatialReference:wgs84]];
+    
+    [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude + offsetX)
+                                            y:(mapRegion.center.latitude - offsetY)
+                             spatialReference:wgs84]];
+    
+    [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude - offsetX)
+                                            y:(mapRegion.center.latitude + offsetY)
+                             spatialReference:wgs84]];
+    
+    [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude - offsetX)
+                                            y:(mapRegion.center.latitude - offsetY)
+                             spatialReference:wgs84]];
+    
+    AGSMutablePolygon *visibleArea = [[AGSMutablePolygon alloc] init];
+    [visibleArea addRingToPolygon];
+    
+    for (AGSPoint *point in agsPoints)
+    {
+        [visibleArea addPointToRing:point];
+    }
+    
+    [visibleArea closePolygon];
+    [self.mapView zoomToGeometry:visibleArea
+                     withPadding:0
+                        animated:YES];
+}
+
 #pragma mark - Layer Management
 - (BOOL)addLayer:(MGSMapLayer*)layer
   withIdentifier:(NSString*)layerIdentifier
