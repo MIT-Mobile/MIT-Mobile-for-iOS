@@ -174,17 +174,11 @@
         }
         else
         {
-            AGSGraphic *graphic = [MGSIMapAnnotation graphicForAnnotation:annotation.annotation
-                                                                template:self.markerTemplate];
-            
-            MGSLayerAnnotation *mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
-                                                                                       graphic:graphic];
-            
-            [graphic.attributes setObject:mapAnnotation
+            graphic = [MGSIMapAnnotation graphicForAnnotation:annotation.annotation
+                                                     template:self.markerTemplate];
+            [graphic.attributes setObject:annotation
                                    forKey:MGSAnnotationAttributeKey];
-            
-            [self.mutableAnnotations addObject:mapAnnotation];
-            [self.graphicsLayer addGraphic:graphic];
+            annotation.graphic = graphic;
         }
         
         [graphicsLayer addGraphic:graphic];
@@ -270,7 +264,7 @@
 
 - (void)willRemoveAnnotations:(NSSet*)annotations
 {
-    if ([self.delegate respondsToSelector:@selector(mapLayer:willDeleteAnnotations:)])
+    if ([self.delegate respondsToSelector:@selector(mapLayer:willRemoveAnnotations:)])
     {
         [self.delegate mapLayer:self
           willRemoveAnnotations:annotations];
@@ -279,7 +273,7 @@
 
 - (void)didRemoveAnnotations:(NSSet*)annotations
 {
-    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    if ([self.delegate respondsToSelector:@selector(mapLayer:didRemoveAnnotations:)])
     {
         [self.delegate mapLayer:self
            didRemoveAnnotations:annotations];
@@ -288,7 +282,7 @@
 
 - (void)willReloadMapLayer
 {
-    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    if ([self.delegate respondsToSelector:@selector(willReloadMapLayer:)])
     {
         [self.delegate willReloadMapLayer:self];
     }
@@ -296,7 +290,7 @@
 
 - (BOOL)shouldDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation
 {
-    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    if ([self.delegate respondsToSelector:@selector(mapLayer:shouldDisplayCalloutForAnnotation:)])
     {
         return [self.delegate mapLayer:self
             shouldDisplayCalloutForAnnotation:annotation];
@@ -307,7 +301,7 @@
 
 - (void)willDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation
 {
-    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    if ([self.delegate respondsToSelector:@selector(mapLayer:willDisplayCalloutForAnnotation:)])
     {
         [self.delegate mapLayer:self
             willDisplayCalloutForAnnotation:annotation];
@@ -316,7 +310,7 @@
 
 - (UIView*)calloutViewForAnnotation:(id<MGSAnnotation>)annotation
 {
-    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    if ([self.delegate respondsToSelector:@selector(mapLayer:calloutViewForAnnotation:)])
     {
         return [self.delegate mapLayer:self
               calloutViewForAnnotation:annotation];
@@ -327,7 +321,7 @@
 
 - (void)calloutAccessoryDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
 {
-    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    if ([self.delegate respondsToSelector:@selector(mapLayer:calloutAccessoryDidReceiveTapForAnnotation:)])
     {
         [self.delegate mapLayer:self
             calloutAccessoryDidReceiveTapForAnnotation:annotation];
@@ -336,7 +330,7 @@
 
 - (void)didPresentCalloutForAnnotation:(id<MGSAnnotation>)annotation
 {
-    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    if ([self.delegate respondsToSelector:@selector(mapLayer:didPresentCalloutForAnnotation:)])
     {
         [self.delegate mapLayer:self
             didPresentCalloutForAnnotation:annotation];
