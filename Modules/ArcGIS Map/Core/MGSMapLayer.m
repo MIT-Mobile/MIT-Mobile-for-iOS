@@ -81,8 +81,6 @@
 
 - (void)addAnnotations:(NSSet*)annotations
 {
-    [self willAddAnnotations:annotations];
-    
     NSMutableSet *newSet = [NSMutableSet setWithSet:annotations];
     [newSet minusSet:[NSSet setWithArray:self.annotations]];
     
