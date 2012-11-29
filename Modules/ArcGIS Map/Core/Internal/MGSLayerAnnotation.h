@@ -8,7 +8,7 @@
 @property (weak) MGSMapLayer *layer;
 @property (weak) AGSLayer *agsLayer;
 
-@property (strong) id<NSObject> userData;
+@property (nonatomic,strong) id<NSObject> userData;
 @property (strong) NSDictionary *attributes;
 
 @property (nonatomic,readonly,strong) id<MGSAnnotation> annotation;
