@@ -186,7 +186,7 @@
     {
         if (recenter)
         {
-            [self.mapView centerOnAnnotation:annotation];
+            [self.mapView centerOnAnnotation:mapAnnotation];
         }
         
         [self.mapView showCalloutForAnnotation:mapAnnotation];
