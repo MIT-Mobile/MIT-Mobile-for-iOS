@@ -3,11 +3,6 @@
 #import <ArcGIS/ArcGIS.h>
 #import "MGSAnnotation.h"
 
-@interface MGSLayerAnnotation ()
-@property (nonatomic,strong) id<MGSAnnotation> annotation;
-@property (nonatomic,strong) AGSGraphic *graphic;
-@end
-
 
 @implementation MGSLayerAnnotation
 - (id)init

@@ -4,15 +4,15 @@
 
 @class MGSMapLayer;
 
-@interface MGSLayerAnnotation : NSObject <MGSAnnotation>
+@interface MGSLayerAnnotation : NSObject
 @property (weak) MGSMapLayer *layer;
 @property (weak) AGSLayer *agsLayer;
 
 @property (nonatomic,strong) id<NSObject> userData;
 @property (strong) NSDictionary *attributes;
 
-@property (nonatomic,readonly,strong) id<MGSAnnotation> annotation;
-@property (nonatomic,readonly,strong) AGSGraphic *graphic;
+@property (nonatomic,strong) id<MGSAnnotation> annotation;
+@property (nonatomic,strong) AGSGraphic *graphic;
 
 - (id)initWithAnnotation:(id<MGSAnnotation>)annotation
                  graphic:(AGSGraphic*)graphic;
