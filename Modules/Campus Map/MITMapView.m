@@ -230,6 +230,7 @@
     }
     
     [self.annotationLayer addAnnotations:addedAnnotations];
+    [self.annotationLayer refreshLayer];
     
     self.annotationCache = nil;
 }
