@@ -40,7 +40,12 @@ NSString* const MGSAnnotationAttributeKey = @"MGSAnnotationAttribute";
 {
     AGSSymbol *symbol = nil;
     
-    MGSMarker *marker = annotation.marker;
+    MGSMarker *marker =nil;
+    
+    if ([annotation respondsToSelector:@selector(marker)])
+    {
+        marker = annotation.marker;
+    }
     
     if (marker == nil)
     {
