@@ -86,6 +86,7 @@
         }
         
         self.locatorCount = [self.annotations count];
+        /*
         [self.annotations enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             if ([obj isKindOfClass:[MGSMapAnnotation class]])
             {
@@ -99,6 +100,7 @@
                 }
             }
         }];
+         */
     }
 }
 
@@ -115,6 +117,7 @@
 {
     if (op == self.routingOperation)
     {
+        /*
         [self.routingAnnotations enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             if ([obj isKindOfClass:[MGSMapAnnotation class]])
             {
@@ -123,6 +126,7 @@
                 annotation.agsGraphic = graphic;
             }
         }];
+         */
         
         self.annotations = self.routingAnnotations;
         DDLogVerbose(@"Routing operation complete!");
@@ -194,7 +198,7 @@
     {
         reference = [AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84];
     }
-    
+    /*
     [self.annotations enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if ([obj isKindOfClass:[MGSMapAnnotation class]])
         {
@@ -213,6 +217,7 @@
             [stops addObject:graphic];
         }
     }];
+    */
     
     AGSRouteTaskParameters *routeParams = self.routingParameters;
     routeParams.preserveFirstStop = NO;
