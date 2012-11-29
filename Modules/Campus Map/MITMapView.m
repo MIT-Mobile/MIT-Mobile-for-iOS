@@ -3,6 +3,44 @@
 #import "MGSMapView.h"
 #import "MGSMapLayer.h"
 #import "MGSMapAnnotation.h"
+#import "MGSAnnotation.h"
+#import <MapKit/MapKit.h>
+
+
+#pragma mark - MKAnnotation Adaptor
+@interface MGSMKAnnotationAdaptor : NSObject <MGSAnnotation>
+@property (strong) id<MKAnnotation> annotation;
+- (id)initWithMKAnnotation:(id<MKAnnotation>)annotation;
+@end
+
+@implementation MGSMKAnnotationAdaptor
+- (id)initWithMKAnnotation:(id<MKAnnotation>)annotation
+{
+    self = [super init];
+    if (self)
+    {
+        self.annotation = annotation;
+    }
+    
+    return self;
+}
+
+- (NSString*)title
+{
+    return self.annotation.title;
+}
+
+- (NSString*)detail
+{
+    return self.annotation.subtitle;
+}
+
+- (CLLocationCoordinate2D)coordinate
+{
+    return self.annotation.coordinate;
+}
+@end
+#pragma mark -
 
 @interface MITMapView ()
 @property (nonatomic, weak) MGSMapView *mapView;
@@ -58,8 +96,7 @@
 
 - (void)setCenterCoordinate:(CLLocationCoordinate2D)coord animated:(BOOL)animated
 {
-    MGSMapCoordinate *coordinate = [[MGSMapCoordinate alloc] initWithLocation:coord];
-    [self.mapView centerAtCoordinate:coordinate
+    [self.mapView centerAtCoordinate:coord
                             animated:animated];
 }
 
@@ -100,8 +137,7 @@
 #pragma mark - MKMapView Forwarding Stubs
 - (CGPoint)convertCoordinate:(CLLocationCoordinate2D)coordinate toPointToView:(UIView *)view
 {
-    MGSMapCoordinate *coord = [[MGSMapCoordinate alloc] initWithLocation:coordinate];
-    CGPoint screenPoint = [self.mapView screenPointForCoordinate:coord];
+    CGPoint screenPoint = [self.mapView screenPointForCoordinate:coordinate];
     
     return [view convertPoint:screenPoint
                      fromView:nil];
@@ -136,9 +172,9 @@
                 animated:(BOOL)animated
             withRecenter:(BOOL)recenter
 {
-    __block MGSMapAnnotation *mapAnnotation = nil;
+    __block id<MGSAnnotation> mapAnnotation = nil;
     
-    [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(MGSMapAnnotation *obj, NSUInteger idx, BOOL *stop) {
+    [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
         if ([obj.userData isEqual:annotation])
         {
             mapAnnotation = obj;
@@ -150,7 +186,7 @@
     {
         if (recenter)
         {
-            [self.mapView centerOnAnnotation:mapAnnotation];
+            [self.mapView centerOnAnnotation:annotation];
         }
         
         [self.mapView showCalloutForAnnotation:mapAnnotation];
@@ -175,23 +211,25 @@
 
 - (void)addAnnotations:(NSArray *)annotations
 {
-    NSMutableArray *currentAnnotations = [NSMutableArray arrayWithArray:annotations];
-    for (MGSMapAnnotation *annotation in self.annotationLayer.annotations)
+    NSMutableSet *annotationSet = [NSMutableSet setWithArray:annotations];
+    NSArray *currentAnnotations = self.annotationLayer.annotations;
+    
+    for (id<MGSAnnotation> annotation in currentAnnotations)
     {
-        if ([currentAnnotations containsObject:annotation.userData])
+        if ([annotation isKindOfClass:[MGSMKAnnotationAdaptor class]])
         {
-            [currentAnnotations removeObject:annotation.userData];
+            MGSMKAnnotationAdaptor *adaptor = (MGSMKAnnotationAdaptor*)annotation;
+            [annotationSet removeObject:adaptor.annotation];
         }
     }
     
-    for (id<MKAnnotation> annotation in currentAnnotations)
+    NSMutableSet *addedAnnotations = [NSMutableSet set];
+    for (id<MKAnnotation> mkAnnotation in annotationSet)
     {
-        MGSMapCoordinate *coord = [[MGSMapCoordinate alloc] initWithLocation:[annotation coordinate]];
-        MGSMapAnnotation *mapAnnotation = [[MGSMapAnnotation alloc] initWithTitle:[annotation title]
-                                                                       detailText:[annotation subtitle]
-                                                                     atCoordinate:coord];
-        [self.annotationLayer addAnnotation:mapAnnotation];
+        [addedAnnotations addObject:[[MGSMKAnnotationAdaptor alloc] initWithMKAnnotation:mkAnnotation]];
     }
+    
+    [self.annotationLayer addAnnotations:addedAnnotations];
     
     self.annotationCache = nil;
 }
@@ -203,14 +241,19 @@
 
 - (void)removeAnnotations:(NSArray *)annotations
 {
-    for (MGSMapAnnotation *annotation in self.annotationLayer.annotations)
-    {
-        if ([annotations containsObject:annotation.userData])
+    NSMutableSet *mgsAnnotations = [NSMutableSet set];
+    [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
+        if ([obj isKindOfClass:[MGSMKAnnotationAdaptor class]])
         {
-            [self.annotationLayer deleteAnnotation:annotation];
+            MGSMKAnnotationAdaptor *adaptor = (MGSMKAnnotationAdaptor*)obj;
+            if ([annotations containsObject:adaptor.annotation])
+            {
+                [mgsAnnotations addObject:adaptor];
+            }
         }
-    }
+    }];
     
+    [self.annotationLayer deleteAnnotations:mgsAnnotations];
     self.annotationCache = nil;
 }
 
@@ -231,10 +274,11 @@
     if (self.annotations == nil)
     {
         NSMutableArray *mkAnnotations = [NSMutableArray array];
-        [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(MGSMapAnnotation *obj, NSUInteger idx, BOOL *stop) {
-            if ([obj.userData conformsToProtocol:@protocol(MKAnnotation)])
+        [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
+            if ([obj isKindOfClass:[MGSMKAnnotationAdaptor class]])
             {
-                [mkAnnotations addObject:obj.userData];
+                MGSMKAnnotationAdaptor *adaptor = (MGSMKAnnotationAdaptor*)obj;
+                [mkAnnotations addObject:adaptor.annotation];
             }
         }];
         
