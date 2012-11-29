@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import <CoreLocation/CoreLocation.h>
 #import "MGSMapViewDelegate.h"
 
 @class MGSMapCoordinate;
@@ -7,6 +8,8 @@
 @class MGSMapQuery;
 @class MGSMapLayer;
 @class MGSQueryLayer;
+
+@protocol MGSAnnotation;
 
 @interface MGSMapView : UIView
 #pragma mark - Basemap Management
@@ -29,18 +32,19 @@
 - (BOOL)containsLayerWithIdentifier:(NSString*)layerIdentifier;
 - (void)removeLayerWithIdentifier:(NSString*)layerIdentifier;
 
-- (void)centerOnAnnotation:(MGSMapAnnotation*)annotation;
-- (void)centerAtCoordinate:(MGSMapCoordinate*)coordinate;
-- (void)centerAtCoordinate:(MGSMapCoordinate *)coordinate animated:(BOOL)animated;
-- (CGPoint)screenPointForCoordinate:(MGSMapCoordinate*)coordinate;
+- (void)centerOnAnnotation:(id<MGSAnnotation>)annotation;
+- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate;
+- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated;
+- (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
 
 - (BOOL)isLayerHidden:(NSString*)layerIdentifier;
 - (void)setHidden:(BOOL)hidden forLayerIdentifier:(NSString*)layerIdentifier;
 
 #pragma mark - Callouts
-- (void)showCalloutForAnnotation:(MGSMapAnnotation*)annotation;
+- (void)showCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 - (void)showCalloutWithView:(UIView*)view
-              forAnnotation:(MGSMapAnnotation*)annotation;
+              forAnnotation:(id<MGSAnnotation>)annotation;
 - (void)hideCallout;
+- (BOOL)isPresentingCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 
 @end

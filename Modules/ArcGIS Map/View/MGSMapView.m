@@ -2,6 +2,7 @@
 
 #import "MGSMapView.h"
 
+#import "MGSAnnotation.h"
 #import "MGSMapAnnotation.h"
 #import "MGSMapCoordinate.h"
 #import "MGSMapLayer.h"
@@ -14,6 +15,7 @@
 #import "MGSMapCoordinate+AGS.h"
 #import "MGSMapLayer+AGS.h"
 #import "MobileRequestOperation.h"
+#import "MGSUtility.h"
 
 static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Default";
 
@@ -500,47 +502,65 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     view.hidden = hidden;
 }
 
-- (void)centerOnAnnotation:(MGSMapAnnotation *)annotation
+- (void)centerOnAnnotation:(id<MGSAnnotation>)annotation
 {
-    if (annotation.agsGraphic)
+    for (MGSMapLayer *layer in [self.mgsLayers allValues])
     {
-        [self.mapView centerAtPoint:annotation.agsGraphic.geometry.envelope.center
-                           animated:YES];
+        if ([layer.annotations containsObject:annotation])
+        {
+            [self centerAtCoordinate:annotation.coordinate];
+        }
     }
 }
 
-- (void)centerAtCoordinate:(MGSMapCoordinate *)coordinate
+- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     [self centerAtCoordinate:coordinate
                     animated:NO];
 }
 
-- (void)centerAtCoordinate:(MGSMapCoordinate *)coordinate animated:(BOOL)animated
+- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated
 {
-    [self.mapView centerAtPoint:coordinate.agsPoint
+    [self.mapView centerAtPoint:AGSPointFromCLLocationCoordinate(coordinate)
                        animated:animated];
 }
 
 
-- (CGPoint)screenPointForCoordinate:(MGSMapCoordinate*)coordinate
+- (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    return [self.mapView toScreenPoint:[coordinate agsPoint]];
+    return [self.mapView toScreenPoint:AGSPointFromCLLocationCoordinate(coordinate)];
 }
 
 #pragma mark - Callouts
-- (void)showCalloutForAnnotation:(MGSMapAnnotation*)annotation
+- (void)showCalloutForAnnotation:(id<MGSAnnotation>)annotation
 {
+    for (MGSMapLayer *layer in [self.mgsLayers allValues])
+    {
+        if ([layer.annotations containsObject:annotation])
+        {
+            [self centerAtCoordinate:annotation.coordinate];
+        }
+    }
+    
     self.mapView.callout.title = annotation.title;
     self.mapView.callout.detail = annotation.detail;
-    self.mapView.callout.image = annotation.image;
+    
+    if ([annotation respondsToSelector:@selector(image)])
+    {
+        self.mapView.callout.image = annotation.image;
+    }
+    else
+    {
+        self.mapView.callout.image = nil;
+    }
+    
     self.mapView.callout.leaderPositionFlags = AGSCalloutLeaderPositionAny;
-    [self.mapView showCalloutAtPoint:[[annotation coordinate] agsPoint]
-                          forGraphic:annotation.agsGraphic
-                            animated:YES];
+    
+    [self.mapView showCalloutAtPoint:AGSPointFromCLLocationCoordinate(annotation.coordinate)];
 }
 
 - (void)showCalloutWithView:(UIView*)view
-              forAnnotation:(MGSMapAnnotation*)annotation
+              forAnnotation:(id<MGSAnnotation>)annotation
 {
     self.mapView.callout.customView = view;
     [self showCalloutForAnnotation:annotation];
