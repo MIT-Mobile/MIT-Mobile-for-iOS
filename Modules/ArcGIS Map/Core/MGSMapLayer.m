@@ -1,8 +1,10 @@
 #import <ArcGIS/ArcGIS.h>
 
 #import "MGSMapLayer.h"
+#import "MGSLayerAnnotation.h"
 
 #import "MGSMapView.h"
+#import "MGSAnnotation.h"
 #import "MGSMapAnnotation.h"
 #import "MGSMapAnnotation+Protected.h"
 
@@ -57,60 +59,93 @@
         [self deleteAllAnnotations];
     }
     
-    for (MGSMapAnnotation *annotation in annotations)
-    {
-        [self addAnnotation:annotation];
-    }
+    [self addAnnotations:[NSSet setWithArray:annotations]];
 }
 
 - (NSArray*)annotations
 {
-    return [NSArray arrayWithArray:self.mutableAnnotations];
+    NSMutableArray *extAnnotations = [NSMutableArray array];
+    for (MGSLayerAnnotation *annotation in extAnnotations)
+    {
+        [extAnnotations addObject:annotation.annotation];
+    }
+    
+    return extAnnotations;
 }
 
 #pragma mark - Public Methods
-- (void)addAnnotation:(MGSMapAnnotation*)annotation
+- (void)addAnnotation:(id<MGSAnnotation>)annotation
 {
-    if (annotation && ([self.mutableAnnotations containsObject:annotation] == NO))
+    [self addAnnotations:[NSSet setWithObject:annotation]];
+}
+
+- (void)addAnnotations:(NSSet*)annotations
+{
+    [self willAddAnnotations:annotations];
+    
+    NSMutableSet *newSet = [NSMutableSet setWithSet:annotations];
+    [newSet minusSet:[NSSet setWithArray:self.annotations]];
+    
+    if ([newSet count])
     {
-        if (annotation.marker.style != MGSMarkerStyleRemote)
+        [self willAddAnnotations:newSet];
+        
+        for (id<MGSAnnotation> annotation in newSet)
         {
-            if (annotation.agsGraphic.layer)
-            {
-                [annotation.agsGraphic.layer removeGraphic:annotation.agsGraphic];
-                annotation.agsGraphic = nil;
-            }
+            AGSGraphic *graphic = [MGSIMapAnnotation graphicForAnnotation:annotation
+                                                                 template:self.markerTemplate];
             
-            annotation.agsGraphic = [MGSMapAnnotation graphicForAnnotation:annotation
-                                                                  template:self.markerTemplate];
+            MGSLayerAnnotation *mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
+                                                                                       graphic:graphic];
+            
+            [graphic.attributes setObject:mapAnnotation
+                                   forKey:MGSAnnotationAttributeKey];
+            
+            [self.mutableAnnotations addObject:mapAnnotation];
+            [self.graphicsLayer addGraphic:graphic];
         }
         
-        [self.graphicsLayer addGraphic:annotation.agsGraphic];
-        [self.mutableAnnotations addObject:annotation];
-        annotation.layer = self;
+        [self didAddAnnotations:newSet];
     }
 }
 
-- (void)deleteAnnotation:(MGSMapAnnotation*)annotation
+- (void)deleteAnnotation:(id<MGSAnnotation>)annotation
 {
     if (annotation && [self.mutableAnnotations containsObject:annotation])
     {
-        if ([self.calloutController isPresentingCalloutForAnnotation:annotation])
+        if ([self.mapView isPresentingCalloutForAnnotation:annotation])
         {
             [self.mapView hideCallout];
         }
         
-        [self.graphicsLayer removeGraphic:annotation.agsGraphic];
+        MGSLayerAnnotation *layerAnnotation = [self.mutableAnnotations objectAtIndex:[self.mutableAnnotations indexOfObject:annotation]];
+        [self.graphicsLayer removeGraphic:layerAnnotation.graphic];
+        [self.mutableAnnotations removeObject:layerAnnotation];
+    }
+}
+
+- (void)deleteAnnotations:(NSSet *)annotations
+{
+    if ([annotations count])
+    {
+        [self willRemoveAnnotations:annotations];
         
-        annotation.agsGraphic = nil;
-        annotation.layer = nil;
-        [self.mutableAnnotations removeObject:annotation];
+        for (id<MGSAnnotation> annotation in annotations)
+        {
+            MGSLayerAnnotation *mapAnnotation = [self.mutableAnnotations objectAtIndex:[self.mutableAnnotations indexOfObject:annotation]];
+            
+            [self.graphicsLayer removeGraphic:mapAnnotation.graphic];
+            [mapAnnotation.graphic.attributes removeObjectForKey:MGSAnnotationAttributeKey];
+            [self.mutableAnnotations removeObject:mapAnnotation];
+        }
+        
+        [self didRemoveAnnotations:annotations];
     }
 }
 
 - (void)deleteAllAnnotations
 {
-    for (MGSMapAnnotation *annotation in self.annotations)
+    for (id<MGSAnnotation> annotation in self.annotations)
     {
         [self deleteAnnotation:annotation];
     }
@@ -131,18 +166,27 @@
 {
     AGSGraphicsLayer *graphicsLayer = [AGSGraphicsLayer graphicsLayer];
     
-    for (MGSMapAnnotation *annotation in self.annotations)
+    for (MGSLayerAnnotation *annotation in self.mutableAnnotations)
     {
         AGSGraphic *graphic = nil;
         
-        if (annotation.agsGraphic)
+        if (annotation.graphic)
         {
-            graphic = annotation.agsGraphic;
+            graphic = annotation.graphic;
         }
         else
         {
-            graphic = [MGSMapAnnotation graphicForAnnotation:annotation
-                                                    template:self.markerTemplate];
+            AGSGraphic *graphic = [MGSIMapAnnotation graphicForAnnotation:annotation.annotation
+                                                                template:self.markerTemplate];
+            
+            MGSLayerAnnotation *mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
+                                                                                       graphic:graphic];
+            
+            [graphic.attributes setObject:mapAnnotation
+                                   forKey:MGSAnnotationAttributeKey];
+            
+            [self.mutableAnnotations addObject:mapAnnotation];
+            [self.graphicsLayer addGraphic:graphic];
         }
         
         [graphicsLayer addGraphic:graphic];
@@ -186,6 +230,118 @@
     {
         _hidden = hidden;
         self.graphicsView.hidden = hidden;
+    }
+}
+
+#pragma mark - Map Layer Delegation
+- (void)willMoveToMapView:(MGSMapView*)mapView
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:willMoveToMapView:)])
+    {
+        [self.delegate mapLayer:self
+              willMoveToMapView:mapView];
+    }
+}
+
+- (void)didMoveToMapView:(MGSMapView*)mapView
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:willMoveToMapView:)])
+    {
+        [self.delegate mapLayer:self
+              willMoveToMapView:mapView];
+    }
+}
+
+- (void)willAddAnnotations:(NSSet*)annotations
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:willAddAnnotations:)])
+    {
+        [self.delegate mapLayer:self
+             willAddAnnotations:annotations];
+    }
+}
+
+- (void)didAddAnnotations:(NSSet*)annotations
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:didAddAnnotations:)])
+    {
+        [self.delegate mapLayer:self
+              didAddAnnotations:annotations];
+    }
+}
+
+- (void)willRemoveAnnotations:(NSSet*)annotations
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:willDeleteAnnotations:)])
+    {
+        [self.delegate mapLayer:self
+          willRemoveAnnotations:annotations];
+    }
+}
+
+- (void)didRemoveAnnotations:(NSSet*)annotations
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    {
+        [self.delegate mapLayer:self
+           didRemoveAnnotations:annotations];
+    }
+}
+
+- (void)willReloadMapLayer
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    {
+        [self.delegate willReloadMapLayer:self];
+    }
+}
+
+- (BOOL)shouldDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    {
+        return [self.delegate mapLayer:self
+            shouldDisplayCalloutForAnnotation:annotation];
+    }
+    
+    return YES;
+}
+
+- (void)willDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    {
+        [self.delegate mapLayer:self
+            willDisplayCalloutForAnnotation:annotation];
+    }
+}
+
+- (UIView*)calloutViewForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    {
+        return [self.delegate mapLayer:self
+              calloutViewForAnnotation:annotation];
+    }
+    
+    return nil;
+}
+
+- (void)calloutAccessoryDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    {
+        [self.delegate mapLayer:self
+            calloutAccessoryDidReceiveTapForAnnotation:annotation];
+    }
+}
+
+- (void)didPresentCalloutForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([self.delegate respondsToSelector:@selector(mapLayer:)])
+    {
+        [self.delegate mapLayer:self
+            didPresentCalloutForAnnotation:annotation];
     }
 }
 

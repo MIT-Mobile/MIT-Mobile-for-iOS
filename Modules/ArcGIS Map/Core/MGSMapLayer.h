@@ -44,8 +44,10 @@
 @property (strong) MGSMarker *markerTemplate;
 @property (assign,nonatomic) BOOL hidden;
 
-- (void)addAnnotation:(MGSMapAnnotation*)annotation;
-- (void)deleteAnnotation:(MGSMapAnnotation*)annotation;
+- (void)addAnnotation:(id<MGSAnnotation>)annotation;
+- (void)addAnnotations:(NSSet *)objects;
+- (void)deleteAnnotation:(id<MGSAnnotation>)annotation;
+- (void)deleteAnnotations:(NSSet*)annotation;
 - (void)deleteAllAnnotations;
 
 - (id)initWithName:(NSString*)name;
