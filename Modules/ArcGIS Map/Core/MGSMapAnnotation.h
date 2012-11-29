@@ -1,24 +1,17 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import "MGSMapAnnotation+AGS.h"
 
-@class MGSMapCoordinate;
 @class MGSMarker;
-@class MGSMapAnnotation;
-@class MGSMapLayer;
+@class AGSGraphic;
+@protocol MGSAnnotation;
 
 
-@interface MGSMapAnnotation : NSObject <NSCopying>
-@property (weak,readonly) MGSMapLayer *layer;
-@property (strong) MGSMapCoordinate *coordinate;
-@property (strong) MGSMarker *marker;
-
-@property (strong) NSString *title;
-@property (strong) NSString *detail;
-@property (strong) UIImage *image;
-@property (strong) id<NSObject> userData;
-@property (strong) NSDictionary *attributes;
-
-- (id)initWithTitle:(NSString*)title
-         detailText:(NSString*)detail
-       atCoordinate:(MGSMapCoordinate*)coordinate;
+@interface MGSIMapAnnotation : NSObject
++ (id)annotationWithGraphic:(AGSGraphic*)graphic;
++ (AGSSymbol*)symbolForAnnotation:(id<MGSAnnotation>)annotation defaultMarker:(MGSMarker*)templateMarker;
++ (AGSGraphic*)graphicOfType:(MGSGraphicType)graphicType
+              withAnnotation:(id<MGSAnnotation>)annotation
+                    template:(MGSMarker*)template;
++ (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation template:(MGSMarker*)template;
 @end

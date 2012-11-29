@@ -4,15 +4,19 @@
 #import "MGSMapCoordinate.h"
 #import "MGSMarker.h"
 #import "MGSAnnotationInfoTemplateDelegate.h"
+#import "MGSAnnotation.h"
 
 #import "MGSMapAnnotation+AGS.h"
 #import "MGSMapCoordinate+AGS.h"
 
+#import "MGSUtility.h"
+
 NSString* const MGSAnnotationAttributeKey = @"MGSAnnotationAttribute";
 
-@implementation MGSMapAnnotation
+@implementation MGSIMapAnnotation
 + (id)annotationWithGraphic:(AGSGraphic*)graphic
 {
+    /*
     AGSPoint *point = (AGSPoint*)[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry.envelope.center
                                                                          toSpatialReference:[AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84]];
     MGSMapCoordinate *coordinate = [[MGSMapCoordinate alloc] initWithX:point.x
@@ -27,12 +31,12 @@ NSString* const MGSAnnotationAttributeKey = @"MGSAnnotationAttribute";
     annotation.attributes = graphic.attributes;
     [graphic.attributes setObject:annotation
                            forKey:MGSAnnotationAttributeKey];
-    
-    return annotation;
+    */
+    return nil;
 }
 
 
-+ (AGSSymbol*)symbolForAnnotation:(MGSMapAnnotation*)annotation defaultMarker:(MGSMarker*)templateMarker
++ (AGSSymbol*)symbolForAnnotation:(id<MGSAnnotation>)annotation defaultMarker:(MGSMarker*)templateMarker
 {
     AGSSymbol *symbol = nil;
     
@@ -102,7 +106,7 @@ NSString* const MGSAnnotationAttributeKey = @"MGSAnnotationAttribute";
 
 
 + (AGSGraphic*)graphicOfType:(MGSGraphicType)graphicType
-               withAnnotation:(MGSMapAnnotation*)annotation
+               withAnnotation:(id<MGSAnnotation>)annotation
                     template:(MGSMarker*)template
 {
     AGSGraphic *graphic = nil;
@@ -110,99 +114,27 @@ NSString* const MGSAnnotationAttributeKey = @"MGSAnnotationAttribute";
     switch(graphicType)
     {
         case MGSGraphicStop:
-            graphic = [AGSStopGraphic graphicWithGeometry:[annotation.coordinate agsPoint]
+            graphic = [AGSStopGraphic graphicWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
                                                 symbol:[self symbolForAnnotation:annotation
                                                                    defaultMarker:template]
                                             attributes:[NSMutableDictionary dictionary]
                                   infoTemplateDelegate:[MGSAnnotationInfoTemplateDelegate sharedInfoTemplate]];
         case MGSGraphicDefault:
         default:
-            graphic = [AGSGraphic graphicWithGeometry:[annotation.coordinate agsPoint]
+            graphic = [AGSGraphic graphicWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
                                             symbol:[self symbolForAnnotation:annotation
                                                                defaultMarker:template]
                                         attributes:[NSMutableDictionary dictionary]
                               infoTemplateDelegate:[MGSAnnotationInfoTemplateDelegate sharedInfoTemplate]];
     }
     
-    [graphic.attributes setObject:annotation
-                           forKey:MGSAnnotationAttributeKey];
-    
     return graphic;
 }
 
-+ (AGSGraphic*)graphicForAnnotation:(MGSMapAnnotation*)annotation template:(MGSMarker*)template
++ (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation template:(MGSMarker*)template
 {
     return [self graphicOfType:MGSGraphicDefault
                  withAnnotation:annotation
                       template:template];
 }
-
-- (id)initWithTitle:(NSString *)title
-         detailText:(NSString *)detail
-       atCoordinate:(MGSMapCoordinate *)coordinate {
-    self = [super init];
-
-    if (self) {
-        self.title = title;
-        self.detail = detail;
-        self.coordinate = coordinate;
-    }
-
-    return self;
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    MGSMapAnnotation *annotation = [[MGSMapAnnotation allocWithZone:zone] initWithTitle:self.title
-                                                                             detailText:self.detail
-                                                                           atCoordinate:self.coordinate];
-    annotation.image = self.image;
-    annotation.marker = self.marker;
-    
-    return annotation;
-}
-
-- (BOOL)isEqual:(id)object {
-    if (object == self) {
-        return YES;
-    }
-    else if ([object isKindOfClass:[self class]]) {
-        return [self isEqualToAnnotation:(MGSMapAnnotation *) object];
-    }
-    else {
-        return [super isEqual:object];
-    }
-}
-
-- (BOOL)isEqualToAnnotation:(MGSMapAnnotation *)mapAnnotation {
-    if (mapAnnotation == self) {
-        return YES;
-    }
-    else {
-        return ([self.title isEqualToString:mapAnnotation.title] &&
-                [self.detail isEqualToString:mapAnnotation.detail] &&
-                [self.coordinate isEqual:mapAnnotation.coordinate]);
-    }
-}
-
-- (NSUInteger)hash
-{
-    return ([self.title hash] ^
-            [self.detail hash] ^
-            [self.coordinate hash]);
-}
-
-- (void)setAgsGraphic:(AGSGraphic *)agsGraphic
-{
-    [self.agsGraphic.attributes removeObjectForKey:MGSAnnotationAttributeKey];
-    
-    if (agsGraphic)
-    {
-        [self.agsGraphic.attributes setObject:self
-                                       forKey:MGSAnnotationAttributeKey];
-    }
-    
-    _agsGraphic = agsGraphic;
-}
-
 @end
