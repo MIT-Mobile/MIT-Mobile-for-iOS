@@ -1,13 +1,19 @@
-//
-//  MGSLayerAnnotation.h
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 11/26/12.
-//
-//
-
 #import <Foundation/Foundation.h>
+#import <ArcGIS/ArcGIS.h>
+#import "MGSAnnotation.h"
 
-@interface MGSLayerAnnotation : NSObject
+@class MGSMapLayer;
 
+@interface MGSLayerAnnotation : NSObject <MGSAnnotation>
+@property (weak) MGSMapLayer *layer;
+@property (weak) AGSLayer *agsLayer;
+
+@property (strong) id<NSObject> userData;
+@property (strong) NSDictionary *attributes;
+
+@property (nonatomic,readonly,strong) id<MGSAnnotation> annotation;
+@property (nonatomic,readonly,strong) AGSGraphic *graphic;
+
+- (id)initWithAnnotation:(id<MGSAnnotation>)annotation
+                 graphic:(AGSGraphic*)graphic;
 @end
