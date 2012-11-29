@@ -1,31 +1,17 @@
-//
-//  MGSUtility.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 11/27/12.
-//
-//
-
 #import "MGSUtility.h"
 
-@implementation MGSUtility
 
-- (id)initWithFrame:(CGRect)frame
+AGSPoint* AGSPointFromCLLocationCoordinate(CLLocationCoordinate2D coord)
 {
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
-    }
-    return self;
+    return [AGSPoint pointWithX:coord.longitude
+                              y:coord.latitude
+               spatialReference:[AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84]];
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
+CLLocationCoordinate2D CLLocationCoordinateFromAGSPoint(AGSPoint *point)
 {
-    // Drawing code
+    AGSGeometryEngine *geoEngine = [AGSGeometryEngine defaultGeometryEngine];
+    AGSPoint *projectedPoint = (AGSPoint*)[geoEngine projectGeometry:point
+                                                  toSpatialReference:[AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84]];
+    return CLLocationCoordinate2DMake(projectedPoint.y, projectedPoint.x);
 }
-*/
-
-@end

@@ -1,13 +1,6 @@
-//
-//  MGSUtility.h
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 11/27/12.
-//
-//
+#import <ArcGIS/ArcGIS.h>
+#import <MapKit/MapKit.h>
+#import <CoreLocation/CoreLocation.h>
 
-#import <UIKit/UIKit.h>
-
-@interface MGSUtility : UIView
-
-@end
+FOUNDATION_EXPORT AGSPoint* AGSPointFromCLLocationCoordinate(CLLocationCoordinate2D coord);
+FOUNDATION_EXPORT CLLocationCoordinate2D CLLocationCoordinateFromAGSPoint(AGSPoint *point);
