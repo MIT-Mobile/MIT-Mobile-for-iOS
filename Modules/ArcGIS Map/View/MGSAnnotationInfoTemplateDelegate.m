@@ -26,19 +26,22 @@
 - (NSString *)titleForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint
 {
     MGSLayerAnnotation *layerAnnotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
-    return layerAnnotation.annotation.title;
+    
+    return [self titleForAnnotation:layerAnnotation.annotation];
 }
 
 - (NSString *)detailForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint
 {
     MGSLayerAnnotation *layerAnnotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
-    return layerAnnotation.annotation.detail;
+    
+    return [self detailForAnnotation:layerAnnotation.annotation];
 }
 
 -(UIImage*)imageForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint
 {
     MGSLayerAnnotation *layerAnnotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
-    return layerAnnotation.annotation.image;
+    
+    return [self imageForAnnotation:layerAnnotation.annotation];
 }
 
 - (UIView*)customViewForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint
@@ -103,4 +106,35 @@
     return resultView;
 }
 
+- (NSString*)titleForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([annotation respondsToSelector:@selector(title)])
+    {
+        return [annotation title];
+    }
+    
+    return @"";
+}
+
+
+- (NSString*)detailForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([annotation respondsToSelector:@selector(image)])
+    {
+        return [annotation detail];
+    }
+    
+    return @"";
+}
+
+
+- (UIImage*)imageForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([annotation respondsToSelector:@selector(image)])
+    {
+        return [annotation image];
+    }
+
+    return [UIImage imageNamed:@"map/map_pin_complete.png"];
+}
 @end
