@@ -88,9 +88,7 @@
         
         for (id<MGSAnnotation> annotation in newSet)
         {
-            AGSGraphic *graphic = [MGSIMapAnnotation graphicForAnnotation:annotation
-                                                                 template:self.markerTemplate];
-            
+            AGSGraphic *graphic = AGSGraphicFromAnnotation(annotation, MGSGraphicDefault, self.markerTemplate);
             MGSLayerAnnotation *mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
                                                                                        graphic:graphic];
             
@@ -172,8 +170,7 @@
         }
         else
         {
-            graphic = [MGSIMapAnnotation graphicForAnnotation:annotation.annotation
-                                                     template:self.markerTemplate];
+            graphic = AGSGraphicFromAnnotation(annotation.annotation, MGSGraphicDefault, self.markerTemplate);
             [graphic.attributes setObject:annotation
                                    forKey:MGSAnnotationAttributeKey];
             annotation.graphic = graphic;
