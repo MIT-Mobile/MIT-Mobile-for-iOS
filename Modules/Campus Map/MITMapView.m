@@ -156,7 +156,16 @@
 
 - (MKCoordinateRegion)regionForAnnotations:(NSArray *)annotations
 {
-    return MKCoordinateRegionMake(CLLocationCoordinate2DMake(0, 0), MKCoordinateSpanMake(0, 0));
+    NSMutableSet *regionAnnotations = [NSMutableSet set];
+    for (MGSMKAnnotationAdaptor *adaptor in self.annotations)
+    {
+        if ([annotations containsObject:adaptor.annotation])
+        {
+            [regionAnnotations addObject:adaptor];
+        }
+    }
+    
+    return [self.annotationLayer regionForAnnotations:regionAnnotations];
 }
 
 - (void)selectAnnotation:(id<MKAnnotation>)annotation
