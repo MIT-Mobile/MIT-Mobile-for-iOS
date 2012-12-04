@@ -220,6 +220,37 @@
     }
 }
 
+- (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations
+{
+    NSMutableArray *latitudeCoordinates = [NSMutableArray array];
+    NSMutableArray *longitudeCoordinates = [NSMutableArray array];
+    NSArray *allAnnotations = self.annotations;
+    
+    for (id<MGSAnnotation> annotation in annotations)
+    {
+        if ([allAnnotations containsObject:annotation])
+        {
+            CLLocationCoordinate2D coord = annotation.coordinate;
+            [latitudeCoordinates addObject:[NSNumber numberWithDouble:coord.latitude]];
+            [longitudeCoordinates addObject:[NSNumber numberWithDouble:coord.longitude]];
+        }
+    }
+    
+    NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"doubleValue"
+                                                               ascending:YES]];
+    [latitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
+    [longitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
+    
+    CLLocationDegrees minLat = [[latitudeCoordinates objectAtIndex:0] doubleValue];
+    CLLocationDegrees maxLat = [[latitudeCoordinates lastObject] doubleValue];
+    CLLocationDegrees minLon = [[longitudeCoordinates objectAtIndex:0] doubleValue];
+    CLLocationDegrees maxLon = [[longitudeCoordinates lastObject] doubleValue];
+    
+    MKCoordinateSpan span = MKCoordinateSpanMake((maxLat - minLat), (maxLon - minLon));
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(minLat + ((maxLat - minLat) / 2.0), minLon + ((maxLon - minLon) / 2.0));
+    return MKCoordinateRegionMake(center, span);
+}
+
 #pragma mark - Map Layer Delegation
 - (void)willMoveToMapView:(MGSMapView*)mapView
 {

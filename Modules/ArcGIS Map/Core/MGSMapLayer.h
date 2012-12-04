@@ -52,6 +52,8 @@
 - (void)deleteAnnotations:(NSSet*)annotation;
 - (void)deleteAllAnnotations;
 
+- (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations;
+
 - (id)initWithName:(NSString*)name;
 - (void)refreshLayer;
 @end
