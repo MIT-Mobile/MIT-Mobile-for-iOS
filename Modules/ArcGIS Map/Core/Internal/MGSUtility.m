@@ -84,7 +84,7 @@ AGSSymbol* AGSSymbolFromAnnotation(id<MGSAnnotation> annotation, MGSMarker *temp
         case MGSMarkerStylePin:
         default:
         {
-            AGSPictureMarkerSymbol *pictureSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map_pin_complete"];
+            AGSPictureMarkerSymbol *pictureSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"];
             pictureSymbol.yoffset = (CGFloat) (ceil(pictureSymbol.image.size.height / 2.0) - 1);
             symbol = pictureSymbol;
             break;
@@ -103,25 +103,16 @@ AGSGraphic* AGSGraphicFromAnnotation(id<MGSAnnotation> annotation, MGSGraphicTyp
     {
         case MGSGraphicStop:
             graphic = [AGSStopGraphic graphicWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
-                                                   symbol:[self symbolForAnnotation:annotation
-                                                                      defaultMarker:template]
+                                                   symbol:AGSSymbolFromAnnotation(annotation, template)
                                                attributes:[NSMutableDictionary dictionary]
                                      infoTemplateDelegate:[MGSAnnotationInfoTemplateDelegate sharedInfoTemplate]];
         case MGSGraphicDefault:
         default:
             graphic = [AGSGraphic graphicWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
-                                               symbol:[self symbolForAnnotation:annotation
-                                                                  defaultMarker:template]
+                                               symbol:AGSSymbolFromAnnotation(annotation, template)
                                            attributes:[NSMutableDictionary dictionary]
                                  infoTemplateDelegate:[MGSAnnotationInfoTemplateDelegate sharedInfoTemplate]];
     }
     
     return graphic;
-}
-
-+ (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation template:(MGSMarker*)template
-{
-    return [self graphicOfType:MGSGraphicDefault
-                withAnnotation:annotation
-                      template:template];
 }
