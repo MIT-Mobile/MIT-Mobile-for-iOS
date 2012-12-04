@@ -37,6 +37,21 @@
 {
     return self.annotation.coordinate;
 }
+
+- (BOOL)isEqual:(id)object
+{
+    if ([super isEqual:object])
+    {
+        return YES;
+    }
+    
+    if ([object isKindOfClass:[self class]])
+    {
+        return [self.annotation isEqual:[object annotation]];
+    }
+    
+    return NO;
+}
 @end
 #pragma mark -
 
