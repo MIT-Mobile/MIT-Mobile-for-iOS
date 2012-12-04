@@ -9,6 +9,7 @@
 @property (nonatomic,strong) AGSGraphicsLayer *graphicsLayer;
 @property (strong) AGSRenderer *renderer;
 @property (nonatomic,readonly) BOOL hasGraphicsLayer;
+@property (nonatomic,strong) NSMutableArray *layerAnnotations;
 
 - (void)loadGraphicsLayer;
 @end

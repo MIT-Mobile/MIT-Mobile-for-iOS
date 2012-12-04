@@ -1,9 +1,7 @@
 #import "MGSRouteLayer.h"
+#import "MGSMapLayer+Protected.h"
 
 #import <ArcGIS/ArcGIS.h>
-#import "MGSMapLayer+AGS.h"
-#import "MGSMapAnnotation+AGS.h"
-#import "MGSMapCoordinate+AGS.h"
 
 #define MGSRoutingURL(map) [NSURL URLWithString:[NSString stringWithFormat:@"http://ims-pub.mit.edu/ArcGIS/rest/services/mobile/%@/NAServer/Route",map]]
 

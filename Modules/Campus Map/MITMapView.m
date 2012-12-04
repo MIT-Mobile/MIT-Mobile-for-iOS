@@ -1,8 +1,6 @@
 #import "MITMapView.h"
-#import "MGSMapCoordinate.h"
 #import "MGSMapView.h"
 #import "MGSMapLayer.h"
-#import "MGSMapAnnotation.h"
 #import "MGSAnnotation.h"
 #import <MapKit/MapKit.h>
 

@@ -464,7 +464,7 @@
 		2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGSLayerAnnotation.m; path = Core/Internal/MGSLayerAnnotation.m; sourceTree = "<group>"; };
 		2C101A741653F054000E40E3 /* MGSMapLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMapLayer.h; sourceTree = "<group>"; };
 		2C101A751653F054000E40E3 /* MGSMapLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMapLayer.m; sourceTree = "<group>"; };
-		2C101A761653F054000E40E3 /* MGSMapLayer+AGS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MGSMapLayer+AGS.h"; path = "Core/MGSMapLayer+AGS.h"; sourceTree = "<group>"; };
+		2C101A761653F054000E40E3 /* MGSMapLayer+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MGSMapLayer+Protected.h"; path = "Core/MGSMapLayer+Protected.h"; sourceTree = "<group>"; };
 		2C101A771653F054000E40E3 /* MGSMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMarker.h; sourceTree = "<group>"; };
 		2C101A781653F054000E40E3 /* MGSMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMarker.m; sourceTree = "<group>"; };
 		2C101A791653F054000E40E3 /* MGSRouteLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSRouteLayer.h; path = Core/MGSRouteLayer.h; sourceTree = "<group>"; };
@@ -1526,7 +1526,7 @@
 				2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */,
 				2C101A841653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.h */,
 				2C101A851653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m */,
-				2C101A761653F054000E40E3 /* MGSMapLayer+AGS.h */,
+				2C101A761653F054000E40E3 /* MGSMapLayer+Protected.h */,
 				2C3AFD2F166518CB00392AE3 /* MGSUtility.h */,
 				2C3AFD30166518CB00392AE3 /* MGSUtility.m */,
 			);

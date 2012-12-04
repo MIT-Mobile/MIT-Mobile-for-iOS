@@ -5,15 +5,13 @@
 
 #import "MGSMapView.h"
 #import "MGSAnnotation.h"
-#import "MGSMapAnnotation.h"
-#import "MGSMapAnnotation+Protected.h"
 
 #import "MGSMarker.h"
 #import "MGSAnnotationInfoTemplateDelegate.h"
 
-#import "MGSMapLayer+AGS.h"
-#import "MGSMapAnnotation+AGS.h"
-#import "MGSMapCoordinate+AGS.h"
+#import "MGSMapLayer+Protected.h"
+#import "MGSUtility.h"
+#import "MGSAnnotationInfoTemplateDelegate.h"
 
 @interface NSURLRequest (NSURLRequestWithIgnoreSSL)
 +(BOOL)allowsAnyHTTPSCertificateForHost:(NSString*)host;

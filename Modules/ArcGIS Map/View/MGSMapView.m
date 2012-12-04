@@ -1,19 +1,14 @@
-
+#import <ArcGIS/ArcGIS.h>
 
 #import "MGSMapView.h"
 
 #import "MGSAnnotation.h"
-#import "MGSMapAnnotation.h"
-#import "MGSMapCoordinate.h"
 #import "MGSMapLayer.h"
 
 #import "MITLoadingActivityView.h"
 #import "MITMobileServerConfiguration.h"
 
-#import <ArcGIS/ArcGIS.h>
-#import "MGSMapAnnotation+AGS.h"
-#import "MGSMapCoordinate+AGS.h"
-#import "MGSMapLayer+AGS.h"
+#import "MGSMapLayer+Protected.h"
 #import "MobileRequestOperation.h"
 #import "MGSUtility.h"
 

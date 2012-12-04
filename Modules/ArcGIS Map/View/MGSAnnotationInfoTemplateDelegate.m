@@ -1,9 +1,7 @@
 #import "MGSAnnotationInfoTemplateDelegate.h"
 #import "MGSMapLayer.h"
-#import "MGSMapAnnotation.h"
-#import "MGSMapAnnotation+Protected.h"
-#import "MGSMapAnnotation+AGS.h"
 #import "MGSLayerAnnotation.h"
+#import "MGSUtility.h"
 
 @implementation MGSAnnotationInfoTemplateDelegate
 + (id)sharedInfoTemplate

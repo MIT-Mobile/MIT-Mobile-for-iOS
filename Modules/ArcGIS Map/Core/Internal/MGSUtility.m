@@ -1,4 +1,7 @@
 #import "MGSUtility.h"
+#import "MGSMarker.h"
+#import "MGSAnnotationInfoTemplateDelegate.h"
+
 NSString* const MGSAnnotationAttributeKey = @"MGSAnnotationAttribute";
 
 
