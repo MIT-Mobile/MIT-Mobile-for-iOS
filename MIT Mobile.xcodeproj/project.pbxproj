@@ -705,8 +705,6 @@
 		4463D09110D92CB00048CA83 /* MITMapDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapDetailViewController.h; sourceTree = "<group>"; };
 		4463D09210D92CB00048CA83 /* MITMapDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapDetailViewController.m; sourceTree = "<group>"; };
 		4463D09310D92CB00048CA83 /* MITMapDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MITMapDetailViewController.xib; sourceTree = "<group>"; };
-		4463D5E010DA74240048CA83 /* OMITMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OMITMapView.h; sourceTree = "<group>"; };
-		4463D5E110DA74240048CA83 /* OMITMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OMITMapView.m; sourceTree = "<group>"; };
 		448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShuttleRouteViewController.xib; sourceTree = "<group>"; };
 		4499332B11A371CE00A7041B /* RecentSearchesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentSearchesViewController.h; sourceTree = "<group>"; };
 		4499332C11A371CF00A7041B /* RecentSearchesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentSearchesViewController.m; sourceTree = "<group>"; };
@@ -2109,8 +2107,6 @@
 				44293C3410DAE88500273119 /* MITMapSearchResultsVC.xib */,
 				4463CC8B10D6F4A50048CA83 /* MITMapUserLocation.h */,
 				4463CC8C10D6F4A50048CA83 /* MITMapUserLocation.m */,
-				4463D5E010DA74240048CA83 /* OMITMapView.h */,
-				4463D5E110DA74240048CA83 /* OMITMapView.m */,
 				2C101AC816552AF5000E40E3 /* MITMapView.h */,
 				2C101AC916552AF5000E40E3 /* MITMapView.m */,
 				4420F31910E96EBE00A8CD05 /* ShuttleStopMapAnnotation.h */,
