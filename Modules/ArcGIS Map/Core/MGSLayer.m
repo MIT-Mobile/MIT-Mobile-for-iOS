@@ -274,13 +274,13 @@
     
     NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"doubleValue"
                                                                ascending:YES]];
-    [latitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
-    [longitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
+    NSArray *sortedLat = [latitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
+    NSArray *sortedLon = [longitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
     
-    CLLocationDegrees minLat = [[latitudeCoordinates objectAtIndex:0] doubleValue];
-    CLLocationDegrees maxLat = [[latitudeCoordinates lastObject] doubleValue];
-    CLLocationDegrees minLon = [[longitudeCoordinates objectAtIndex:0] doubleValue];
-    CLLocationDegrees maxLon = [[longitudeCoordinates lastObject] doubleValue];
+    CLLocationDegrees minLat = [[sortedLat objectAtIndex:0] doubleValue];
+    CLLocationDegrees maxLat = [[sortedLat lastObject] doubleValue];
+    CLLocationDegrees minLon = [[sortedLon objectAtIndex:0] doubleValue];
+    CLLocationDegrees maxLon = [[sortedLon lastObject] doubleValue];
     
     MKCoordinateSpan span = MKCoordinateSpanMake((maxLat - minLat), (maxLon - minLon));
     CLLocationCoordinate2D center = CLLocationCoordinate2DMake(minLat + ((maxLat - minLat) / 2.0), minLon + ((maxLon - minLon) / 2.0));
