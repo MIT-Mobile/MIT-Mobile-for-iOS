@@ -309,7 +309,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 {
     double offsetX = (mapRegion.span.longitudeDelta / 2.0);
     double offsetY = (mapRegion.span.latitudeDelta / 2.0);
-    AGSSpatialReference *wgs84 = [AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84];
+    AGSSpatialReference *wgs84 = [AGSSpatialReference wgs84SpatialReference];
     
     NSMutableArray *agsPoints = [NSMutableArray arrayWithCapacity:4];
     
@@ -330,6 +330,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                              spatialReference:wgs84]];
     
     AGSMutablePolygon *visibleArea = [[AGSMutablePolygon alloc] init];
+    visibleArea.spatialReference = wgs84;
     [visibleArea addRingToPolygon];
     
     for (AGSPoint *point in agsPoints)
