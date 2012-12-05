@@ -289,6 +289,7 @@
         self.showsUserLocation = NO;
     }
     
+    [self.annotationLayer refreshLayer];
     self.annotationCache = nil;
 }
 
