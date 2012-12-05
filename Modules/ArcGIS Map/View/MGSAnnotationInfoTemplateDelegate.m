@@ -1,5 +1,5 @@
 #import "MGSAnnotationInfoTemplateDelegate.h"
-#import "MGSMapLayer.h"
+#import "MGSLayer.h"
 #import "MGSLayerAnnotation.h"
 #import "MGSUtility.h"
 

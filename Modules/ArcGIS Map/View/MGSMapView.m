@@ -3,7 +3,7 @@
 #import "MGSMapView.h"
 
 #import "MGSAnnotation.h"
-#import "MGSMapLayer.h"
+#import "MGSLayer.h"
 
 #import "MITLoadingActivityView.h"
 #import "MITMobileServerConfiguration.h"
@@ -32,7 +32,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 @property (strong) NSMutableDictionary *queryTasks;
 @property (nonatomic, assign) AGSMapView *mapView;
 @property (nonatomic, assign) MITLoadingActivityView *loadingView;
-@property (nonatomic, strong) MGSMapLayer *defaultLayer;
+@property (nonatomic, strong) MGSLayer *defaultLayer;
 
 - (void)initView;
 - (AGSLayer*)arcgisLayerWithIdentifier:(NSString*)identifier;
@@ -236,11 +236,11 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     return (UIView<AGSLayerView>*)(self.mapView.mapLayerViews[identifier]);
 }
 
-- (MGSMapLayer*)defaultLayer
+- (MGSLayer*)defaultLayer
 {
     if (_defaultLayer == nil)
     {
-      self.defaultLayer = [[MGSMapLayer alloc] initWithName:@"Default"];
+      self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
       [self addLayer:_defaultLayer
       withIdentifier:kMGSMapDefaultLayerIdentifier];
     }
@@ -261,7 +261,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             for (NSDictionary *dict in self.pendingLayers)
             {
                 NSString *identifier = dict[@"identifier"];
-                MGSMapLayer *layer = dict[@"layer"];
+                MGSLayer *layer = dict[@"layer"];
                 NSUInteger index = [dict[@"index"] unsignedIntegerValue];
                 
                 [self insertLayer:layer
@@ -347,7 +347,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 #pragma mark - Layer Management
-- (void)addLayer:(MGSMapLayer*)layer
+- (void)addLayer:(MGSLayer*)layer
   withIdentifier:(NSString*)layerIdentifier
 {
     [self insertLayer:layer
@@ -355,7 +355,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
        withIdentifier:layerIdentifier];
 }
 
-- (void)insertLayer:(MGSMapLayer*)layer
+- (void)insertLayer:(MGSLayer*)layer
             atIndex:(NSUInteger)layerIndex
      withIdentifier:(NSString*)layerIdentifier
 {
@@ -391,7 +391,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (void)moveLayerToTop:(NSString*)layerIdentifier
 {
-    MGSMapLayer *layer = [self layerWithIdentifier:layerIdentifier];
+    MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
     
     if (layer)
     {
@@ -401,7 +401,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     }
 }
 
-- (MGSMapLayer*)layerWithIdentifier:(NSString*)layerIdentifier
+- (MGSLayer*)layerWithIdentifier:(NSString*)layerIdentifier
 {
     return self.userLayers[layerIdentifier];
 }
@@ -413,7 +413,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (void)removeLayerWithIdentifier:(NSString*)layerIdentifier
 {
-    MGSMapLayer *layer = [self layerWithIdentifier:layerIdentifier];
+    MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
     
     if (layer)
     {
@@ -436,7 +436,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (void)centerOnAnnotation:(id<MGSAnnotation>)annotation
 {
-    for (MGSMapLayer *layer in [self.userLayers allValues])
+    for (MGSLayer *layer in [self.userLayers allValues])
     {
         if ([layer.annotations containsObject:annotation])
         {
@@ -467,7 +467,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark - Callouts
 - (void)showCalloutForAnnotation:(id<MGSAnnotation>)annotation
 {
-    for (MGSMapLayer *layer in [self.userLayers allValues])
+    for (MGSLayer *layer in [self.userLayers allValues])
     {
         if ([layer.annotations containsObject:annotation])
         {
@@ -564,7 +564,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     }
     else
     {
-        MGSMapLayer *layer = [self layerWithIdentifier:identifier];
+        MGSLayer *layer = [self layerWithIdentifier:identifier];
         layer.graphicsView = layerView;
         DDLogVerbose(@"Successfully loaded layer %@", identifier);
     }

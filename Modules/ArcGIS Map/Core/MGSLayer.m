@@ -1,6 +1,6 @@
 #import <ArcGIS/ArcGIS.h>
 
-#import "MGSMapLayer.h"
+#import "MGSLayer.h"
 #import "MGSLayerAnnotation.h"
 
 #import "MGSMapView.h"
@@ -13,22 +13,11 @@
 #import "MGSUtility.h"
 #import "MGSAnnotationInfoTemplateDelegate.h"
 
-@interface NSURLRequest (NSURLRequestWithIgnoreSSL)
-+(BOOL)allowsAnyHTTPSCertificateForHost:(NSString*)host;
-@end
-
-@implementation NSURLRequest (NSURLRequestWithIgnoreSSL)
-+(BOOL)allowsAnyHTTPSCertificateForHost:(NSString*)host
-{
-    return YES;
-}
-@end
-
-@interface MGSMapLayer ()
+@interface MGSLayer ()
 @property (nonatomic, strong) NSMutableArray *mutableAnnotations;
 @end
 
-@implementation MGSMapLayer
+@implementation MGSLayer
 @dynamic annotations;
 @dynamic hasGraphicsLayer;
 

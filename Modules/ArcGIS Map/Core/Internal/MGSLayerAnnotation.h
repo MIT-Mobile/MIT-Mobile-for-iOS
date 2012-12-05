@@ -2,10 +2,10 @@
 #import <ArcGIS/ArcGIS.h>
 #import "MGSAnnotation.h"
 
-@class MGSMapLayer;
+@class MGSLayer;
 
 @interface MGSLayerAnnotation : NSObject
-@property (weak) MGSMapLayer *layer;
+@property (weak) MGSLayer *layer;
 @property (weak) AGSLayer *agsLayer;
 
 @property (nonatomic,strong) id<NSObject> userData;

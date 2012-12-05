@@ -1,6 +1,6 @@
 #import "MITMapView.h"
 #import "MGSMapView.h"
-#import "MGSMapLayer.h"
+#import "MGSLayer.h"
 #import "MGSAnnotation.h"
 #import <MapKit/MapKit.h>
 
@@ -44,7 +44,7 @@
     {
         return YES;
     }
-    
+
     if ([object isKindOfClass:[self class]])
     {
         return [self.annotation isEqual:[object annotation]];
@@ -58,8 +58,8 @@
 @interface MITMapView ()
 @property (nonatomic, weak) MGSMapView *mapView;
 @property (nonatomic, weak) id<MKAnnotation> currentAnnotation;
-@property (nonatomic, strong) MGSMapLayer *annotationLayer;
-@property (nonatomic, strong) MGSMapLayer *routeLayer;
+@property (nonatomic, strong) MGSLayer *annotationLayer;
+@property (nonatomic, strong) MGSLayer *routeLayer;
 @property (nonatomic, strong) NSArray *annotationCache;
 
 @end
@@ -81,11 +81,11 @@
         self.mapView = mapView;
         [self addSubview:mapView];
         
-        self.annotationLayer = [[MGSMapLayer alloc] init];
+        self.annotationLayer = [[MGSLayer alloc] init];
         [self.mapView addLayer:self.annotationLayer
                 withIdentifier:@"edu.mit.mobile.map.annotations"];
         
-        self.routeLayer = [[MGSMapLayer alloc] init];
+        self.routeLayer = [[MGSLayer alloc] init];
         [self.mapView addLayer:self.routeLayer
                 withIdentifier:@"edu.mit.mobile.map.routes"];
         

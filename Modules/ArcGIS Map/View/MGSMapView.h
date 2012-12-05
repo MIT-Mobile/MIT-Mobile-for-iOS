@@ -6,7 +6,7 @@
 @class MGSMapCoordinate;
 @class MGSMapAnnotation;
 @class MGSMapQuery;
-@class MGSMapLayer;
+@class MGSLayer;
 @class MGSQueryLayer;
 
 @protocol MGSAnnotation;
@@ -21,15 +21,15 @@
 
 @property (nonatomic) BOOL showUserLocation;
 @property (nonatomic,assign) id<MGSMapViewDelegate> mapViewDelegate;
-@property (nonatomic,readonly,strong) MGSMapLayer *defaultLayer;
+@property (nonatomic,readonly,strong) MGSLayer *defaultLayer;
 @property (nonatomic) MKCoordinateRegion mapRegion;
 
 #pragma mark - Layer Management
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)basemapIdentifier;
 
-- (void)addLayer:(MGSMapLayer*)layer withIdentifier:(NSString*)layerIdentifier;
-- (void)insertLayer:(MGSMapLayer*)layer atIndex:(NSUInteger)layerIndex withIdentifier:(NSString*)layerIdentifier; 
-- (MGSMapLayer*)layerWithIdentifier:(NSString*)layerIdentifier;
+- (void)addLayer:(MGSLayer*)layer withIdentifier:(NSString*)layerIdentifier;
+- (void)insertLayer:(MGSLayer*)layer atIndex:(NSUInteger)layerIndex withIdentifier:(NSString*)layerIdentifier; 
+- (MGSLayer*)layerWithIdentifier:(NSString*)layerIdentifier;
 - (BOOL)containsLayerWithIdentifier:(NSString*)layerIdentifier;
 - (void)removeLayerWithIdentifier:(NSString*)layerIdentifier;
 

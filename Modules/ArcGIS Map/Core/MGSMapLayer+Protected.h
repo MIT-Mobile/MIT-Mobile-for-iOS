@@ -1,9 +1,9 @@
-#import "MGSMapLayer.h"
+#import "MGSLayer.h"
 #import <ArcGIS/ArcGIS.h>
 
 @class MGSMapView;
 
-@interface MGSMapLayer ()
+@interface MGSLayer ()
 @property (weak) MGSMapView *mapView;
 @property (weak) UIView<AGSLayerView> *graphicsView;
 @property (nonatomic,strong) AGSGraphicsLayer *graphicsLayer;

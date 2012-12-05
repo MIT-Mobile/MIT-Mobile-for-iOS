@@ -1,9 +1,9 @@
-#import "MGSMapLayer.h"
+#import "MGSLayer.h"
 
 @class MGSMapAnnotation;
 @class MGSMapCoordinate;
 
-@interface MGSRouteLayer : MGSMapLayer
+@interface MGSRouteLayer : MGSLayer
 @property (strong) MGSMapAnnotation *current;
 @property (strong,readonly) MGSMapAnnotation *start;
 @property (strong,readonly) MGSMapAnnotation *end;
