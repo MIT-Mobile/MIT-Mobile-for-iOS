@@ -264,6 +264,11 @@
 
 - (void)removeAnnotations:(NSArray *)annotations
 {
+    if ([annotations count] == 0)
+    {
+        return;
+    }
+    
     NSMutableSet *mgsAnnotations = [NSMutableSet set];
     [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
         if ([obj isKindOfClass:[MGSMKAnnotationAdaptor class]])
