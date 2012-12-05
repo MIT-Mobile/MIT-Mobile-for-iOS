@@ -233,20 +233,18 @@
 
 - (void)addAnnotations:(NSArray *)annotations
 {
-    NSMutableSet *annotationSet = [NSMutableSet setWithArray:annotations];
-    NSArray *currentAnnotations = self.annotationLayer.annotations;
-    
-    for (id<MGSAnnotation> annotation in currentAnnotations)
+    NSMutableArray *newAnnotations = [NSMutableArray arrayWithArray:annotations];
+    for (id<MGSAnnotation> annotation in self.annotationLayer.annotations)
     {
         if ([annotation isKindOfClass:[MGSMKAnnotationAdaptor class]])
         {
             MGSMKAnnotationAdaptor *adaptor = (MGSMKAnnotationAdaptor*)annotation;
-            [annotationSet removeObject:adaptor.annotation];
+            [newAnnotations removeObject:adaptor.annotation];
         }
     }
     
-    NSMutableSet *addedAnnotations = [NSMutableSet set];
-    for (id<MKAnnotation> mkAnnotation in annotationSet)
+    NSMutableArray *addedAnnotations = [NSMutableArray array];
+    for (id<MKAnnotation> mkAnnotation in newAnnotations)
     {
         [addedAnnotations addObject:[[MGSMKAnnotationAdaptor alloc] initWithMKAnnotation:mkAnnotation]];
     }
@@ -269,7 +267,7 @@
         return;
     }
     
-    NSMutableSet *mgsAnnotations = [NSMutableSet set];
+    NSMutableArray *mgsAnnotations = [NSMutableArray array];
     [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
         if ([obj isKindOfClass:[MGSMKAnnotationAdaptor class]])
         {

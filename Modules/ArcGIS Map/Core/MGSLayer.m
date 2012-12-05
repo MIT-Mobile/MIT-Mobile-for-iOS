@@ -1,4 +1,6 @@
 #import <ArcGIS/ArcGIS.h>
+#import <CoreLocation/CoreLocation.h>
+#import <MapKit/MapKit.h>
 
 #import "MGSLayer.h"
 #import "MGSLayerAnnotation.h"
@@ -48,7 +50,7 @@
         [self deleteAllAnnotations];
     }
     
-    [self addAnnotations:[NSSet setWithArray:annotations]];
+    [self addAnnotations:annotations];
 }
 
 - (NSArray*)annotations
@@ -65,19 +67,46 @@
 #pragma mark - Public Methods
 - (void)addAnnotation:(id<MGSAnnotation>)annotation
 {
-    [self addAnnotations:[NSSet setWithObject:annotation]];
+    [self addAnnotations:@[annotation]];
 }
 
-- (void)addAnnotations:(NSSet*)annotations
+- (void)addAnnotations:(NSArray*)annotations
 {
-    NSMutableSet *newSet = [NSMutableSet setWithSet:annotations];
-    [newSet minusSet:[NSSet setWithArray:self.annotations]];
+    NSMutableArray *newAnnotations = [NSMutableArray arrayWithArray:annotations];
+    [newAnnotations removeObjectsInArray:self.annotations];
     
-    if ([newSet count])
+    if ([newAnnotations count])
     {
-        [self willAddAnnotations:newSet];
+        [self willAddAnnotations:newAnnotations];
         
-        for (id<MGSAnnotation> annotation in newSet)
+        // Sort the add order of the annotations so they are added
+        // top to bottom (prevents higher markers from being overlayed
+        // on top of lower ones) and left to right
+        NSArray *sortedAnnotations = [newAnnotations sortedArrayUsingComparator:^NSComparisonResult(id<MGSAnnotation> obj1, id<MGSAnnotation> obj2) {
+            CLLocationCoordinate2D point1 = obj1.coordinate;
+            CLLocationCoordinate2D point2 = obj2.coordinate;
+            
+            if (point1.latitude > point2.latitude)
+            {
+                return NSOrderedAscending;
+            }
+            else if (point1.latitude < point2.latitude)
+            {
+                return NSOrderedDescending;
+            }
+            else if (point1.longitude > point2.longitude)
+            {
+                return NSOrderedDescending;
+            }
+            else if (point1.longitude < point2.longitude)
+            {
+                return NSOrderedDescending;
+            }
+            
+            return NSOrderedSame;
+        }];
+        
+        for (id<MGSAnnotation> annotation in sortedAnnotations)
         {
             AGSGraphic *graphic = AGSGraphicFromAnnotation(annotation, MGSGraphicDefault, self.markerTemplate);
             MGSLayerAnnotation *mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
@@ -90,7 +119,7 @@
             [self.graphicsLayer addGraphic:graphic];
         }
         
-        [self didAddAnnotations:newSet];
+        [self didAddAnnotations:newAnnotations];
     }
 }
 
@@ -109,7 +138,7 @@
     }
 }
 
-- (void)deleteAnnotations:(NSSet *)annotations
+- (void)deleteAnnotations:(NSArray*)annotations
 {
     if ([annotations count])
     {
@@ -277,7 +306,7 @@
     }
 }
 
-- (void)willAddAnnotations:(NSSet*)annotations
+- (void)willAddAnnotations:(NSArray*)annotations
 {
     if ([self.delegate respondsToSelector:@selector(mapLayer:willAddAnnotations:)])
     {
@@ -286,7 +315,7 @@
     }
 }
 
-- (void)didAddAnnotations:(NSSet*)annotations
+- (void)didAddAnnotations:(NSArray*)annotations
 {
     if ([self.delegate respondsToSelector:@selector(mapLayer:didAddAnnotations:)])
     {
@@ -295,7 +324,7 @@
     }
 }
 
-- (void)willRemoveAnnotations:(NSSet*)annotations
+- (void)willRemoveAnnotations:(NSArray*)annotations
 {
     if ([self.delegate respondsToSelector:@selector(mapLayer:willRemoveAnnotations:)])
     {
@@ -304,7 +333,7 @@
     }
 }
 
-- (void)didRemoveAnnotations:(NSSet*)annotations
+- (void)didRemoveAnnotations:(NSArray*)annotations
 {
     if ([self.delegate respondsToSelector:@selector(mapLayer:didRemoveAnnotations:)])
     {

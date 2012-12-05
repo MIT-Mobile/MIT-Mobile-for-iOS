@@ -19,11 +19,11 @@
 - (void)mapLayer:(MGSLayer*)layer willMoveToMapView:(MGSMapView*)mapView;
 - (void)mapLayer:(MGSLayer*)layer didMoveToMapView:(MGSMapView*)mapView;
 
-- (void)mapLayer:(MGSLayer*)layer willAddAnnotations:(NSSet*)annotations;
-- (void)mapLayer:(MGSLayer*)layer didAddAnnotations:(NSSet*)annotations;
+- (void)mapLayer:(MGSLayer*)layer willAddAnnotations:(NSArray*)annotations;
+- (void)mapLayer:(MGSLayer*)layer didAddAnnotations:(NSArray*)annotations;
 
-- (void)mapLayer:(MGSLayer*)layer willRemoveAnnotations:(NSSet*)annotations;
-- (void)mapLayer:(MGSLayer*)layer didRemoveAnnotations:(NSSet*)annotations;
+- (void)mapLayer:(MGSLayer*)layer willRemoveAnnotations:(NSArray*)annotations;
+- (void)mapLayer:(MGSLayer*)layer didRemoveAnnotations:(NSArray*)annotations;
 
 - (void)willReloadMapLayer:(MGSLayer*)mapLayer;
 
@@ -47,9 +47,9 @@
 @property (assign,nonatomic) BOOL hidden;
 
 - (void)addAnnotation:(id<MGSAnnotation>)annotation;
-- (void)addAnnotations:(NSSet *)objects;
+- (void)addAnnotations:(NSArray *)objects;
 - (void)deleteAnnotation:(id<MGSAnnotation>)annotation;
-- (void)deleteAnnotations:(NSSet*)annotation;
+- (void)deleteAnnotations:(NSArray*)annotation;
 - (void)deleteAllAnnotations;
 
 - (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations;
