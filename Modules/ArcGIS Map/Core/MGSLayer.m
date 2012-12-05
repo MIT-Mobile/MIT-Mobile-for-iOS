@@ -15,6 +15,8 @@
 
 @interface MGSLayer ()
 @property (nonatomic, strong) NSMutableArray *mutableAnnotations;
+
+- (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation;
 @end
 
 @implementation MGSLayer
@@ -101,7 +103,7 @@
             [self.mapView hideCallout];
         }
         
-        MGSLayerAnnotation *layerAnnotation = [self.mutableAnnotations objectAtIndex:[self.mutableAnnotations indexOfObject:annotation]];
+        MGSLayerAnnotation *layerAnnotation = [self layerAnnotationForAnnotation:annotation];
         [self.graphicsLayer removeGraphic:layerAnnotation.graphic];
         [self.mutableAnnotations removeObject:layerAnnotation];
     }
@@ -115,7 +117,7 @@
         
         for (id<MGSAnnotation> annotation in annotations)
         {
-            MGSLayerAnnotation *mapAnnotation = [self.mutableAnnotations objectAtIndex:[self.mutableAnnotations indexOfObject:annotation]];
+            MGSLayerAnnotation *mapAnnotation = [self layerAnnotationForAnnotation:annotation];
             
             [self.graphicsLayer removeGraphic:mapAnnotation.graphic];
             [mapAnnotation.graphic.attributes removeObjectForKey:MGSAnnotationAttributeKey];
@@ -132,6 +134,22 @@
     {
         [self deleteAnnotation:annotation];
     }
+}
+
+#pragma mark - Class Extension methods
+- (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation
+{
+    __block void *layerAnnotation = nil;
+    [self.mutableAnnotations enumerateObjectsWithOptions:NSEnumerationConcurrent
+                                              usingBlock:^(MGSLayerAnnotation *obj, NSUInteger idx, BOOL *stop) {
+                                                  if ([obj.annotation isEqual:annotation])
+                                                  {
+                                                      (*stop) = YES;
+                                                      OSAtomicCompareAndSwapPtrBarrier(nil, (__bridge void *)(obj), &layerAnnotation);
+                                                  }
+                                              }];
+    
+    return (__bridge MGSLayerAnnotation*)layerAnnotation;
 }
 
 #pragma mark - ArcGIS Methods
