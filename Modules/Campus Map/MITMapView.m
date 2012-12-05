@@ -172,7 +172,7 @@
 - (MKCoordinateRegion)regionForAnnotations:(NSArray *)annotations
 {
     NSMutableSet *regionAnnotations = [NSMutableSet set];
-    for (MGSMKAnnotationAdaptor *adaptor in self.annotations)
+    for (MGSMKAnnotationAdaptor *adaptor in self.annotationLayer.annotations)
     {
         if ([annotations containsObject:adaptor.annotation])
         {
@@ -298,7 +298,7 @@
 
 - (NSArray*)annotations
 {
-    if (self.annotations == nil)
+    if (self.annotationCache == nil)
     {
         NSMutableArray *mkAnnotations = [NSMutableArray array];
         [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
