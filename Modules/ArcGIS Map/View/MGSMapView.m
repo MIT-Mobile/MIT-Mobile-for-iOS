@@ -343,7 +343,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     AGSPolygon *projectedPolygon = (AGSPolygon*)[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:visibleArea
                                                                                         toSpatialReference:self.mapView.spatialReference];
     [self.mapView zoomToGeometry:projectedPolygon
-                     withPadding:0
+                     withPadding:20
                         animated:YES];
 }
 
