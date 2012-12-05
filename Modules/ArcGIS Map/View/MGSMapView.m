@@ -279,7 +279,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     AGSGPS *gps = [self.mapView gps];
     if (showUserLocation && (gps.enabled == NO))
     {
-        gps.autoPanMode = AGSGPSAutoPanModeDefault;
+        gps.autoPanMode = AGSGPSAutoPanModeOff;
         [gps start];
     }
     else if ((showUserLocation == NO) && gps.enabled)
