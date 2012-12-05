@@ -1,6 +1,7 @@
 #import "CalendarMapView.h"
 #import "MITCalendarEvent.h"
 #import "CalendarEventMapAnnotation.h"
+#import "CoreLocation+MITAdditions.h"
 
 @implementation CalendarMapView
 

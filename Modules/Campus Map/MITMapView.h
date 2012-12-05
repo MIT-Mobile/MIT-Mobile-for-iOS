@@ -6,7 +6,6 @@
 #import <MapKit/MapKit.h>
 #import "MITMapAnnotationView.h"
 #import "MITMapAnnotationCalloutView.h"
-#import "MITProjection.h"
 #import "MITMobileWebAPI.h"
 #import "MITMapRoute.h"
 
@@ -16,7 +15,6 @@
 @class MITMapSearchResultAnnotation;
 @class RouteView;
 @class MGSMapView;
-@class MapTileOverlay;
 
 @protocol MITMapViewDelegate<NSObject>
 

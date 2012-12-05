@@ -1,5 +1,4 @@
 #import "CoreLocation+MITAdditions.h"
-#import "MITProjection.h"
 
 @implementation CLLocation (MITAdditions)
 

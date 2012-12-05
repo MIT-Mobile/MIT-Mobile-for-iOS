@@ -171,8 +171,8 @@
     if (self.locatorCount == 0)
     {
         // Time to start routing!
-        NSArray *sortedKeys = [[self.locatedStops allKeys] sortedArrayUsingSelector:@selector(compare:)];
         /*
+        NSArray *sortedKeys = [[self.locatedStops allKeys] sortedArrayUsingSelector:@selector(compare:)];
         [sortedKeys enumerateObjectsUsingBlock:^(NSNumber *key, NSUInteger idx, BOOL *stop) {
             AGSPoint *point = [self.locatedStops objectForKey:key];
             MGSMapAnnotation *annotation = [self.annotations ]

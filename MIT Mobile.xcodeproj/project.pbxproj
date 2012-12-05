@@ -169,15 +169,9 @@
 		44293C3610DAE88500273119 /* MITMapSearchResultsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44293C3410DAE88500273119 /* MITMapSearchResultsVC.xib */; };
 		442C192A10F3AE3400CB44EC /* RouteMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 442C192810F3AE3400CB44EC /* RouteMapViewController.m */; };
 		442C192B10F3AE3400CB44EC /* RouteMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 442C192910F3AE3400CB44EC /* RouteMapViewController.xib */; };
-		442C19AE10F3D70900CB44EC /* RouteView.m in Sources */ = {isa = PBXBuildFile; fileRef = 442C19AD10F3D70900CB44EC /* RouteView.m */; };
 		442C1CA310F4FE8900CB44EC /* ShuttleLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 442C1CA210F4FE8900CB44EC /* ShuttleLocation.m */; };
 		4463CC9110D6F4A50048CA83 /* CampusMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC7A10D6F4A50048CA83 /* CampusMapViewController.m */; };
-		4463CC9210D6F4A50048CA83 /* MapLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC7C10D6F4A50048CA83 /* MapLevel.m */; };
-		4463CC9310D6F4A50048CA83 /* MapTileExtent.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC7E10D6F4A50048CA83 /* MapTileExtent.m */; };
-		4463CC9510D6F4A50048CA83 /* MapTileCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8210D6F4A50048CA83 /* MapTileCache.m */; };
-		4463CC9710D6F4A50048CA83 /* SaveOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8610D6F4A50048CA83 /* SaveOperation.m */; };
 		4463CC9810D6F4A50048CA83 /* CMModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8810D6F4A50048CA83 /* CMModule.m */; };
-		4463CC9910D6F4A50048CA83 /* MITProjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8A10D6F4A50048CA83 /* MITProjection.m */; };
 		4463CC9A10D6F4A50048CA83 /* MITMapUserLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8C10D6F4A50048CA83 /* MITMapUserLocation.m */; };
 		4463CC9B10D6F4A50048CA83 /* MITMapSearchResultAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8E10D6F4A50048CA83 /* MITMapSearchResultAnnotation.m */; };
 		4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC9010D6F4A50048CA83 /* MITMapAnnotationView.m */; };
@@ -376,8 +370,6 @@
 		EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */; };
 		EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFABAE129461C3009AAEE0 /* ScrollFadeImageView.m */; };
 		EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFAF94129C2A23009AAEE0 /* TabViewControl.m */; };
-		EBBFAFD6129C403A009AAEE0 /* MapTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFAFCE129C403A009AAEE0 /* MapTileOverlay.m */; };
-		EBBFAFDA129C403A009AAEE0 /* MapZoomLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFAFD2129C403A009AAEE0 /* MapZoomLevel.m */; };
 		EBBFB233129C7DED009AAEE0 /* TourSiteMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFB231129C7DED009AAEE0 /* TourSiteMapAnnotation.m */; };
 		EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */; };
 		EBDB0C4D11484072008AAE42 /* ShuttleTrack.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EBDB0C4C11484072008AAE42 /* ShuttleTrack.xcdatamodeld */; };
@@ -677,24 +669,12 @@
 		442C192810F3AE3400CB44EC /* RouteMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouteMapViewController.m; sourceTree = "<group>"; };
 		442C192910F3AE3400CB44EC /* RouteMapViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RouteMapViewController.xib; sourceTree = "<group>"; };
 		442C195410F3B21400CB44EC /* MITMapRoute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapRoute.h; sourceTree = "<group>"; };
-		442C19AC10F3D70900CB44EC /* RouteView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouteView.h; sourceTree = "<group>"; };
-		442C19AD10F3D70900CB44EC /* RouteView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouteView.m; sourceTree = "<group>"; };
 		442C1CA110F4FE8900CB44EC /* ShuttleLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleLocation.h; sourceTree = "<group>"; };
 		442C1CA210F4FE8900CB44EC /* ShuttleLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleLocation.m; sourceTree = "<group>"; };
 		4463CC7910D6F4A50048CA83 /* CampusMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CampusMapViewController.h; sourceTree = "<group>"; };
 		4463CC7A10D6F4A50048CA83 /* CampusMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CampusMapViewController.m; sourceTree = "<group>"; };
-		4463CC7B10D6F4A50048CA83 /* MapLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapLevel.h; sourceTree = "<group>"; };
-		4463CC7C10D6F4A50048CA83 /* MapLevel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapLevel.m; sourceTree = "<group>"; };
-		4463CC7D10D6F4A50048CA83 /* MapTileExtent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapTileExtent.h; sourceTree = "<group>"; };
-		4463CC7E10D6F4A50048CA83 /* MapTileExtent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapTileExtent.m; sourceTree = "<group>"; };
-		4463CC8110D6F4A50048CA83 /* MapTileCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapTileCache.h; sourceTree = "<group>"; };
-		4463CC8210D6F4A50048CA83 /* MapTileCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapTileCache.m; sourceTree = "<group>"; };
-		4463CC8510D6F4A50048CA83 /* SaveOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveOperation.h; sourceTree = "<group>"; };
-		4463CC8610D6F4A50048CA83 /* SaveOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SaveOperation.m; sourceTree = "<group>"; };
 		4463CC8710D6F4A50048CA83 /* CMModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMModule.h; sourceTree = "<group>"; };
 		4463CC8810D6F4A50048CA83 /* CMModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMModule.m; sourceTree = "<group>"; };
-		4463CC8910D6F4A50048CA83 /* MITProjection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITProjection.h; sourceTree = "<group>"; };
-		4463CC8A10D6F4A50048CA83 /* MITProjection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITProjection.m; sourceTree = "<group>"; };
 		4463CC8B10D6F4A50048CA83 /* MITMapUserLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapUserLocation.h; sourceTree = "<group>"; };
 		4463CC8C10D6F4A50048CA83 /* MITMapUserLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapUserLocation.m; sourceTree = "<group>"; };
 		4463CC8D10D6F4A50048CA83 /* MITMapSearchResultAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapSearchResultAnnotation.h; sourceTree = "<group>"; };
@@ -1087,10 +1067,6 @@
 		EBBFABAE129461C3009AAEE0 /* ScrollFadeImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScrollFadeImageView.m; sourceTree = "<group>"; };
 		EBBFAF93129C2A23009AAEE0 /* TabViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabViewControl.h; sourceTree = "<group>"; };
 		EBBFAF94129C2A23009AAEE0 /* TabViewControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabViewControl.m; sourceTree = "<group>"; };
-		EBBFAFCD129C403A009AAEE0 /* MapTileOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapTileOverlay.h; sourceTree = "<group>"; };
-		EBBFAFCE129C403A009AAEE0 /* MapTileOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapTileOverlay.m; sourceTree = "<group>"; };
-		EBBFAFD1129C403A009AAEE0 /* MapZoomLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapZoomLevel.h; sourceTree = "<group>"; };
-		EBBFAFD2129C403A009AAEE0 /* MapZoomLevel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapZoomLevel.m; sourceTree = "<group>"; };
 		EBBFB230129C7DED009AAEE0 /* TourSiteMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TourSiteMapAnnotation.h; sourceTree = "<group>"; };
 		EBBFB231129C7DED009AAEE0 /* TourSiteMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TourSiteMapAnnotation.m; sourceTree = "<group>"; };
 		EBCA123210CEF3C400577C5D /* PeopleSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleSearchViewController.h; sourceTree = "<group>"; };
@@ -2082,7 +2058,6 @@
 			isa = PBXGroup;
 			children = (
 				2C101A451653E931000E40E3 /* ArcGIS Map */,
-				EBBFAF97129C2A92009AAEE0 /* ArcGIS */,
 				44C1A26011A2E865000FD653 /* Model */,
 				44C1A3C511A3388A000FD653 /* Selection */,
 				4463CC8710D6F4A50048CA83 /* CMModule.h */,
@@ -2513,29 +2488,6 @@
 			path = Calendar;
 			sourceTree = "<group>";
 		};
-		EBBFAF97129C2A92009AAEE0 /* ArcGIS */ = {
-			isa = PBXGroup;
-			children = (
-				EBBFAFCD129C403A009AAEE0 /* MapTileOverlay.h */,
-				EBBFAFCE129C403A009AAEE0 /* MapTileOverlay.m */,
-				EBBFAFD1129C403A009AAEE0 /* MapZoomLevel.h */,
-				EBBFAFD2129C403A009AAEE0 /* MapZoomLevel.m */,
-				442C19AC10F3D70900CB44EC /* RouteView.h */,
-				442C19AD10F3D70900CB44EC /* RouteView.m */,
-				4463CC8510D6F4A50048CA83 /* SaveOperation.h */,
-				4463CC8610D6F4A50048CA83 /* SaveOperation.m */,
-				4463CC8910D6F4A50048CA83 /* MITProjection.h */,
-				4463CC8A10D6F4A50048CA83 /* MITProjection.m */,
-				4463CC7B10D6F4A50048CA83 /* MapLevel.h */,
-				4463CC7C10D6F4A50048CA83 /* MapLevel.m */,
-				4463CC7D10D6F4A50048CA83 /* MapTileExtent.h */,
-				4463CC7E10D6F4A50048CA83 /* MapTileExtent.m */,
-				4463CC8110D6F4A50048CA83 /* MapTileCache.h */,
-				4463CC8210D6F4A50048CA83 /* MapTileCache.m */,
-			);
-			name = ArcGIS;
-			sourceTree = "<group>";
-		};
 		EBDB0C4711483FE3008AAE42 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -2828,19 +2780,13 @@
 				DE715349102FC897005E6111 /* MITModule.m in Sources */,
 				DE71537C102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m in Sources */,
 				29E308871176018C005211A7 /* MITModuleURL.m in Sources */,
-				4463CC9910D6F4A50048CA83 /* MITProjection.m in Sources */,
 				EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */,
 				EB4C3A8C1283812A00058748 /* MITSpringboard.m in Sources */,
 				EB4C2525127A0E8F00058748 /* MITThumbnailView.m in Sources */,
 				2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */,
 				44ACF76E1187884300F1F4B2 /* MapBookmarkManager.m in Sources */,
-				4463CC9210D6F4A50048CA83 /* MapLevel.m in Sources */,
 				44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */,
 				44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */,
-				4463CC9510D6F4A50048CA83 /* MapTileCache.m in Sources */,
-				4463CC9310D6F4A50048CA83 /* MapTileExtent.m in Sources */,
-				EBBFAFD6129C403A009AAEE0 /* MapTileOverlay.m in Sources */,
-				EBBFAFDA129C403A009AAEE0 /* MapZoomLevel.m in Sources */,
 				DE81CF6610C6BC630085573D /* MobileWebModule.m in Sources */,
 				4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */,
 				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
@@ -2873,13 +2819,11 @@
 				4499332E11A371CF00A7041B /* RecentSearchesViewController.m in Sources */,
 				44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */,
 				442C192A10F3AE3400CB44EC /* RouteMapViewController.m in Sources */,
-				442C19AE10F3D70900CB44EC /* RouteView.m in Sources */,
 				BD1E930B103B5D60004429AA /* SBJSON.m in Sources */,
 				BD1E930C103B5D60004429AA /* SBJsonBase.m in Sources */,
 				BD1E930D103B5D60004429AA /* SBJsonParser.m in Sources */,
 				BD1E930E103B5D60004429AA /* SBJsonWriter.m in Sources */,
 				29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */,
-				4463CC9710D6F4A50048CA83 /* SaveOperation.m in Sources */,
 				EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */,
 				EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */,
 				EB13860D12F1FC8E004DBB7C /* Secret.m in Sources */,
