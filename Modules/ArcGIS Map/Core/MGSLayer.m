@@ -52,7 +52,7 @@
 - (NSArray*)annotations
 {
     NSMutableArray *extAnnotations = [NSMutableArray array];
-    for (MGSLayerAnnotation *annotation in extAnnotations)
+    for (MGSLayerAnnotation *annotation in self.mutableAnnotations)
     {
         [extAnnotations addObject:annotation.annotation];
     }
