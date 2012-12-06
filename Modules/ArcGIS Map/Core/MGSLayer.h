@@ -16,6 +16,7 @@
 @end
 
 @protocol MGSLayerDelegate <NSObject>
+@optional
 - (void)mapLayer:(MGSLayer*)layer willMoveToMapView:(MGSMapView*)mapView;
 - (void)mapLayer:(MGSLayer*)layer didMoveToMapView:(MGSMapView*)mapView;
 
