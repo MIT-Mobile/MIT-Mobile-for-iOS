@@ -375,6 +375,9 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         layer.graphicsView = [self.mapView insertMapLayer:agsLayer
                                                  withName:layerIdentifier
                                                   atIndex:index];
+        layer.graphicsView.drawDuringPanning = YES;
+        layer.graphicsView.drawDuringZooming = YES;
+        
         layer.mapView = self;
         
         if ([layerIdentifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
