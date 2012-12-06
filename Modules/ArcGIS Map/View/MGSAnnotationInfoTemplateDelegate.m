@@ -135,6 +135,6 @@
         return [annotation image];
     }
 
-    return [UIImage imageNamed:@"map/map_pin_complete.png"];
+    return nil;
 }
 @end
