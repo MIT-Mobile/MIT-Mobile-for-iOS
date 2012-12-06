@@ -170,7 +170,7 @@
 		442C192A10F3AE3400CB44EC /* RouteMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 442C192810F3AE3400CB44EC /* RouteMapViewController.m */; };
 		442C192B10F3AE3400CB44EC /* RouteMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 442C192910F3AE3400CB44EC /* RouteMapViewController.xib */; };
 		442C1CA310F4FE8900CB44EC /* ShuttleLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 442C1CA210F4FE8900CB44EC /* ShuttleLocation.m */; };
-		4463CC9110D6F4A50048CA83 /* CampusMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC7A10D6F4A50048CA83 /* CampusMapViewController.m */; };
+		4463CC9110D6F4A50048CA83 /* CampusMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC7A10D6F4A50048CA83 /* CampusMapViewController.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		4463CC9810D6F4A50048CA83 /* CMModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8810D6F4A50048CA83 /* CMModule.m */; };
 		4463CC9A10D6F4A50048CA83 /* MITMapUserLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8C10D6F4A50048CA83 /* MITMapUserLocation.m */; };
 		4463CC9B10D6F4A50048CA83 /* MITMapSearchResultAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8E10D6F4A50048CA83 /* MITMapSearchResultAnnotation.m */; };
