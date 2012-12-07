@@ -358,15 +358,6 @@
     return YES;
 }
 
-- (void)willDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation
-{
-    if ([self.delegate respondsToSelector:@selector(mapLayer:willDisplayCalloutForAnnotation:)])
-    {
-        [self.delegate mapLayer:self
-            willDisplayCalloutForAnnotation:annotation];
-    }
-}
-
 - (UIView*)calloutViewForAnnotation:(id<MGSAnnotation>)annotation
 {
     if ([self.delegate respondsToSelector:@selector(mapLayer:calloutViewForAnnotation:)])
@@ -376,24 +367,6 @@
     }
     
     return nil;
-}
-
-- (void)calloutAccessoryDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
-{
-    if ([self.delegate respondsToSelector:@selector(mapLayer:calloutAccessoryDidReceiveTapForAnnotation:)])
-    {
-        [self.delegate mapLayer:self
-            calloutAccessoryDidReceiveTapForAnnotation:annotation];
-    }
-}
-
-- (void)didPresentCalloutForAnnotation:(id<MGSAnnotation>)annotation
-{
-    if ([self.delegate respondsToSelector:@selector(mapLayer:didPresentCalloutForAnnotation:)])
-    {
-        [self.delegate mapLayer:self
-            didPresentCalloutForAnnotation:annotation];
-    }
 }
 
 @end
