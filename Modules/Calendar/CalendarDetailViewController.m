@@ -14,23 +14,58 @@
 #define kCategoriesWebViewTag 521
 #define kDescriptionWebViewTag 516
 
+@interface CalendarDetailViewController ()
+@property (nonatomic, retain) UISegmentedControl *eventPager;
+@end
+
 @implementation CalendarDetailViewController
 
 @synthesize event, events, tableView = _tableView;
+
+- (void)loadView
+{
+    CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
+    
+    if (self.navigationController && (self.navigationController.navigationBarHidden == NO))
+    {
+        CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.frame);
+        mainFrame.origin.y += navBarHeight;
+        mainFrame.size.height -= navBarHeight;
+    }
+    
+    if (self.navigationController && (self.navigationController.toolbarHidden == NO))
+    {
+        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.frame);
+        mainFrame.size.height -= toolbarHeight;
+    }
+    
+    UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
+    CGRect mainBounds = mainView.bounds;
+    
+    {
+        CGRect tableViewFrame = CGRectMake(CGRectGetMinX(mainBounds),
+                                           CGRectGetMinY(mainBounds),
+                                           CGRectGetWidth(mainBounds),
+                                           CGRectGetHeight(mainBounds));
+        
+        UITableView *tableView = [[UITableView alloc] initWithFrame:tableViewFrame
+                                                              style:UITableViewStylePlain];
+        tableView.delegate = self;
+        tableView.dataSource = self;
+        tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                      UIViewAutoresizingFlexibleWidth);
+        
+        self.tableView = [tableView autorelease];
+        [mainView addSubview:tableView];
+    }
+    
+    self.view = mainView;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 	
 	self.shareDelegate = self;
-	
-	// setup table view
-	self.tableView = [[[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height)
-												  style:UITableViewStylePlain] autorelease];
-	self.tableView.delegate = self;
-	self.tableView.dataSource = self;
-	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-
-	[self.view addSubview:_tableView];
 	
 	// setup nav bar
 	if (self.events.count > 1) {
