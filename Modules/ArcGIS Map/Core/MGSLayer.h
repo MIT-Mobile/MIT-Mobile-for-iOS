@@ -29,12 +29,7 @@
 - (void)willReloadMapLayer:(MGSLayer*)mapLayer;
 
 - (BOOL)mapLayer:(MGSLayer*)layer shouldDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation;
-- (void)mapLayer:(MGSLayer*)layer willDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation;
-
 - (UIView*)mapLayer:(MGSLayer*)layer calloutViewForAnnotation:(id<MGSAnnotation>)annotation;
-- (void)mapLayer:(MGSLayer*)layer calloutAccessoryDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation;
-
-- (void)mapLayer:(MGSLayer*)layer didPresentCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 @end
 
 @interface MGSLayer : NSObject
