@@ -159,10 +159,7 @@
 
 - (void)deleteAllAnnotations
 {
-    for (id<MGSAnnotation> annotation in self.annotations)
-    {
-        [self deleteAnnotation:annotation];
-    }
+    [self deleteAnnotations:self.annotations];
 }
 
 #pragma mark - Class Extension methods
