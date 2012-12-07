@@ -19,8 +19,7 @@
 @end
 
 @implementation CalendarDetailViewController
-
-@synthesize event, events, tableView = _tableView;
+@synthesize event, events;
 
 - (void)loadView
 {
@@ -69,15 +68,15 @@
 	
 	// setup nav bar
 	if (self.events.count > 1) {
-		eventPager = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:
+		_eventPager = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:
                                                                 [UIImage imageNamed:MITImageNameUpArrow],
                                                                 [UIImage imageNamed:MITImageNameDownArrow], nil]];
-		[eventPager setMomentary:YES];
-		[eventPager addTarget:self action:@selector(showNextEvent:) forControlEvents:UIControlEventValueChanged];
-		eventPager.segmentedControlStyle = UISegmentedControlStyleBar;
-		eventPager.frame = CGRectMake(0, 0, 80.0, eventPager.frame.size.height);
+		[_eventPager setMomentary:YES];
+		[_eventPager addTarget:self action:@selector(showNextEvent:) forControlEvents:UIControlEventValueChanged];
+		_eventPager.segmentedControlStyle = UISegmentedControlStyleBar;
+		_eventPager.frame = CGRectMake(0, 0, 80.0, _eventPager.frame.size.height);
 		
-        UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:eventPager];
+        UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:_eventPager];
 		self.navigationItem.rightBarButtonItem = segmentBarItem;
 		[segmentBarItem release];
 	}
@@ -97,7 +96,7 @@
 - (void)showNextEvent:(id)sender
 {
 	if ([sender isKindOfClass:[UISegmentedControl class]]) {
-        NSInteger i = eventPager.selectedSegmentIndex;
+        NSInteger i = _eventPager.selectedSegmentIndex;
 		NSInteger currentEventIndex = [self.events indexOfObject:self.event];
 		if (i == 0) { // previous
             if (currentEventIndex > 0) {
@@ -157,8 +156,8 @@
     
     if ([self.events count] > 1) {
         NSInteger currentEventIndex = [self.events indexOfObject:self.event];
-        [eventPager setEnabled:(currentEventIndex > 0) forSegmentAtIndex:0];
-        [eventPager setEnabled:(currentEventIndex < [self.events count] - 1) forSegmentAtIndex:1];
+        [_eventPager setEnabled:(currentEventIndex > 0) forSegmentAtIndex:0];
+        [_eventPager setEnabled:(currentEventIndex < [self.events count] - 1) forSegmentAtIndex:1];
     }
 	
 	if (numRows > 0) {
@@ -617,11 +616,12 @@
     self.events = nil;
 	free(rowTypes);
 
-    [eventPager release];
 	[shareButton release];
     [categoriesString release];
     [descriptionString release];
-    [_tableView release];
+    
+    self.eventPager = nil;
+    self.tableView = nil;
     [super dealloc];
 }
 
