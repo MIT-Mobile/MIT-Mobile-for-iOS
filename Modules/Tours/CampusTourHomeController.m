@@ -44,7 +44,8 @@
     {
         ScrollFadeImageView *fadeView = [[ScrollFadeImageView alloc] initWithFrame:viewBounds];
         fadeView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
-                                     UIViewAutoresizingFlexibleHeight);
+                                     UIViewAutoresizingFlexibleHeight |
+                                     UIViewAutoresizingFlexibleBottomMargin);
         fadeView.animationImages = [NSArray arrayWithObjects:
                                                [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/tour_wallpaper_killian.jpg"]],
                                                [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/tour_wallpaper_stata.jpg"]],
@@ -60,9 +61,6 @@
                                                                    12,
                                                                    CGRectGetWidth(viewBounds) - 12,
                                                                    0)];
-        label.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
-                                  UIViewAutoresizingFlexibleHeight |
-                                  UIViewAutoresizingFlexibleBottomMargin);
         label.backgroundColor = [UIColor clearColor];
         label.lineBreakMode = UILineBreakModeWordWrap;
         label.numberOfLines = 0;
