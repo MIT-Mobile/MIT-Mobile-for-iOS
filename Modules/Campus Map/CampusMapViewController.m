@@ -59,7 +59,7 @@
 	[_searchBar setDelegate:self];
 	_searchBar.placeholder = NSLocalizedString(@"Search MIT Campus", nil);
 	_searchBar.translucent = NO;
-	_searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
+    _searchBar.backgroundImage = [UIImage imageNamed:@"global/toolbar-background.png"];
 	_searchBar.showsBookmarkButton = NO; // we'll be adding a custom bookmark button
 	[self.view addSubview:_searchBar];
 		
