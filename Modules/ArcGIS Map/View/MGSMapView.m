@@ -86,6 +86,9 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     
     self.coreLayersLoaded = NO;
     
+    self.userLayers = [NSMutableDictionary dictionary];
+    self.userLayerOrder = [NSMutableArray array];
+    
     [self initView];
 }
 
@@ -365,24 +368,33 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         if (self.userLayers[layerIdentifier])
         {
             DDLogError(@"layer identifier collision for '%@'", layerIdentifier);
-            return;
         }
-        
-        NSUInteger index = [self.coreMapIdentifiers count] + layerIndex;
-        DDLogVerbose(@"adding layer '%@' at index %d (%d)", layerIdentifier, layerIndex, index);
-        
-        AGSGraphicsLayer *agsLayer = [layer graphicsLayer];
-        layer.graphicsView = [self.mapView insertMapLayer:agsLayer
-                                                 withName:layerIdentifier
-                                                  atIndex:index];
-        layer.graphicsView.drawDuringPanning = YES;
-        layer.graphicsView.drawDuringZooming = YES;
-        
-        layer.mapView = self;
-        
-        if ([layerIdentifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
+        else
         {
-            [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
+            NSUInteger index = [self.coreMapIdentifiers count] + layerIndex;
+            DDLogVerbose(@"adding layer '%@' at index %d (%d)", layerIdentifier, layerIndex, index);
+            
+            [self willAddLayer:layer];
+            
+            AGSGraphicsLayer *agsLayer = [layer graphicsLayer];
+            layer.graphicsView = [self.mapView insertMapLayer:agsLayer
+                                                     withName:layerIdentifier
+                                                      atIndex:index];
+            layer.graphicsView.drawDuringPanning = YES;
+            layer.graphicsView.drawDuringZooming = YES;
+            
+            layer.mapView = self;
+            
+            self.userLayers[layerIdentifier] = layer;
+            [self.userLayerOrder insertObject:layer
+                                      atIndex:layerIndex];
+            
+            if ([layerIdentifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
+            {
+                [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
+            }
+            
+            [self didAddLayer:layer];
         }
     }
     else
@@ -399,9 +411,14 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     
     if (layer)
     {
-        [self removeLayerWithIdentifier:layerIdentifier];
-        [self addLayer:layer
-        withIdentifier:layerIdentifier];
+        AGSGraphicsLayer *agsLayer = layer.graphicsLayer;
+        
+        [self.mapView removeMapLayerWithName:layerIdentifier];
+        [self.userLayerOrder removeObject:layer];
+        
+        layer.graphicsView = [self.mapView addMapLayer:agsLayer
+                                              withName:layerIdentifier];
+        [self.userLayerOrder addObject:layer];
     }
 }
 
@@ -421,8 +438,16 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     
     if (layer)
     {
+        [self willRemoveLayer:layer];
         
+        AGSLayer *graphicsLayer = layer.graphicsLayer;
+        [self.mapView removeMapLayerWithName:graphicsLayer.name];
+        
+        layer.graphicsView = nil;
+        layer.graphicsLayer = nil;
         layer.mapView = nil;
+        
+        [self didRemoveLayer:layer];
     }
 }
 
@@ -559,11 +584,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         if (coreLayersLoaded)
         {
             self.coreLayersLoaded = YES;
-            
-            if ([self.mapViewDelegate respondsToSelector:@selector(didFinishLoadingMapView:)])
-            {
-                [self.mapViewDelegate didFinishLoadingMapView:self];
-            }
+            [self didFinishLoadingMapView];
         }
     }
     else
@@ -583,5 +604,78 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (void)mapView:(AGSMapView *)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics
 {
     DDLogVerbose(@"Got a tap, found %d graphics", [graphics count]);
+}
+
+
+#pragma mark - MGSMapView Delegate Forwarding
+- (void)didFinishLoadingMapView
+{
+    if ([self.mapViewDelegate respondsToSelector:@selector(didFinishLoadingMapView:)])
+    {
+        [self.mapViewDelegate didFinishLoadingMapView:self];
+    }
+}
+
+- (void)willShowCalloutForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:willShowCalloutForAnnotation:)])
+    {
+        [self.mapViewDelegate mapView:self
+         willShowCalloutForAnnotation:annotation];
+    }
+}
+
+- (void)didShowCalloutForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:didShowCalloutForAnnotation:)])
+    {
+        [self.mapViewDelegate mapView:self
+          didShowCalloutForAnnotation:annotation];
+    }
+}
+
+- (void)calloutAccessoryDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:calloutAccessoryDidReceiveTapForAnnotation:)])
+    {
+        [self.mapViewDelegate mapView:self
+calloutAccessoryDidReceiveTapForAnnotation:annotation];
+    }
+}
+
+- (void)willAddLayer:(MGSLayer*)layer
+{
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:willAddLayer:)])
+    {
+        [self.mapViewDelegate mapView:self
+                         willAddLayer:layer];
+    }
+}
+
+- (void)didAddLayer:(MGSLayer*)layer
+{
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:didAddLayer:)])
+    {
+        [self.mapViewDelegate mapView:self
+                          didAddLayer:layer];
+    }
+}
+
+- (void)willRemoveLayer:(MGSLayer*)layer
+{
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:willRemoveLayer:)])
+    {
+        [self.mapViewDelegate mapView:self
+                      willRemoveLayer:layer];
+    }
+}
+
+- (void)didRemoveLayer:(MGSLayer*)layer
+{
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:didRemoveLayer:)])
+    {
+        [self.mapViewDelegate mapView:self
+                       didRemoveLayer:layer];
+    }
 }
 @end
