@@ -3,6 +3,7 @@
 #import "LibrariesHoldsTabController.h"
 #import "LibrariesLoanTabController.h"
 #import "UIKit+MITAdditions.h"
+#import "MITLogging.h"
 
 // keep this order in sync with view instantiation in loadView below
 typedef enum {
