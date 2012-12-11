@@ -170,6 +170,7 @@
 		442C192A10F3AE3400CB44EC /* RouteMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 442C192810F3AE3400CB44EC /* RouteMapViewController.m */; };
 		442C192B10F3AE3400CB44EC /* RouteMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 442C192910F3AE3400CB44EC /* RouteMapViewController.xib */; };
 		442C1CA310F4FE8900CB44EC /* ShuttleLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 442C1CA210F4FE8900CB44EC /* ShuttleLocation.m */; };
+		4431A8DABEAF34B5B5A061EB /* MITAnnotationAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4431A16598A7CF09AC6AC61A /* MITAnnotationAdaptor.m */; };
 		4463CC9110D6F4A50048CA83 /* CampusMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC7A10D6F4A50048CA83 /* CampusMapViewController.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		4463CC9810D6F4A50048CA83 /* CMModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8810D6F4A50048CA83 /* CMModule.m */; };
 		4463CC9A10D6F4A50048CA83 /* MITMapUserLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463CC8C10D6F4A50048CA83 /* MITMapUserLocation.m */; };
@@ -671,6 +672,8 @@
 		442C195410F3B21400CB44EC /* MITMapRoute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapRoute.h; sourceTree = "<group>"; };
 		442C1CA110F4FE8900CB44EC /* ShuttleLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleLocation.h; sourceTree = "<group>"; };
 		442C1CA210F4FE8900CB44EC /* ShuttleLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleLocation.m; sourceTree = "<group>"; };
+		4431A16598A7CF09AC6AC61A /* MITAnnotationAdaptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITAnnotationAdaptor.m; sourceTree = "<group>"; };
+		4431A384646993384D06783E /* MITAnnotationAdaptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITAnnotationAdaptor.h; sourceTree = "<group>"; };
 		4463CC7910D6F4A50048CA83 /* CampusMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CampusMapViewController.h; sourceTree = "<group>"; };
 		4463CC7A10D6F4A50048CA83 /* CampusMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CampusMapViewController.m; sourceTree = "<group>"; };
 		4463CC8710D6F4A50048CA83 /* CMModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMModule.h; sourceTree = "<group>"; };
@@ -2086,6 +2089,8 @@
 				2C101AC916552AF5000E40E3 /* MITMapView.m */,
 				4420F31910E96EBE00A8CD05 /* ShuttleStopMapAnnotation.h */,
 				4420F31A10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m */,
+				4431A16598A7CF09AC6AC61A /* MITAnnotationAdaptor.m */,
+				4431A384646993384D06783E /* MITAnnotationAdaptor.h */,
 			);
 			path = "Campus Map";
 			sourceTree = "<group>";
@@ -2983,6 +2988,7 @@
 				2C101ACA16552AF5000E40E3 /* MITMapView.m in Sources */,
 				2C0CE20C1663FFA80020E70D /* MGSLayerAnnotation.m in Sources */,
 				2C3AFD31166518CB00392AE3 /* MGSUtility.m in Sources */,
+				4431A8DABEAF34B5B5A061EB /* MITAnnotationAdaptor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

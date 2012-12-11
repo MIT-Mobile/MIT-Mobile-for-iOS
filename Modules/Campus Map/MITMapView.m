@@ -1,67 +1,17 @@
+#import <MapKit/MapKit.h>
+
 #import "MITMapView.h"
 #import "MGSMapView.h"
 #import "MGSLayer.h"
 #import "MGSAnnotation.h"
-#import <MapKit/MapKit.h>
+#import "MITAnnotationAdaptor.h"
 
-
-#pragma mark - MKAnnotation Adaptor
-@interface MGSMKAnnotationAdaptor : NSObject <MGSAnnotation>
-@property (strong) id<MKAnnotation> annotation;
-- (id)initWithMKAnnotation:(id<MKAnnotation>)annotation;
-@end
-
-@implementation MGSMKAnnotationAdaptor
-- (id)initWithMKAnnotation:(id<MKAnnotation>)annotation
-{
-    self = [super init];
-    if (self)
-    {
-        self.annotation = annotation;
-    }
-    
-    return self;
-}
-
-- (NSString*)title
-{
-    return self.annotation.title;
-}
-
-- (NSString*)detail
-{
-    return self.annotation.subtitle;
-}
-
-- (CLLocationCoordinate2D)coordinate
-{
-    return self.annotation.coordinate;
-}
-
-- (BOOL)isEqual:(id)object
-{
-    if ([super isEqual:object])
-    {
-        return YES;
-    }
-
-    if ([object isKindOfClass:[self class]])
-    {
-        return [self.annotation isEqual:[object annotation]];
-    }
-    
-    return NO;
-}
-@end
-#pragma mark -
-
-@interface MITMapView ()
+@interface MITMapView () <MGSMapViewDelegate,MGSLayerDelegate>
 @property (nonatomic, weak) MGSMapView *mapView;
 @property (nonatomic, weak) id<MKAnnotation> currentAnnotation;
 @property (nonatomic, strong) MGSLayer *annotationLayer;
 @property (nonatomic, strong) MGSLayer *routeLayer;
 @property (nonatomic, strong) NSArray *annotationCache;
-
 @end
 
 @implementation MITMapView
@@ -78,10 +28,13 @@
         MGSMapView *mapView = [[MGSMapView alloc] initWithFrame:self.bounds];
         mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                     UIViewAutoresizingFlexibleWidth);
+        mapView.mapViewDelegate = self;
+
         self.mapView = mapView;
         [self addSubview:mapView];
         
         self.annotationLayer = [[MGSLayer alloc] init];
+        self.annotationLayer.delegate = self;
         [self.mapView addLayer:self.annotationLayer
                 withIdentifier:@"edu.mit.mobile.map.annotations"];
         
@@ -146,7 +99,6 @@
     self.mapView.showUserLocation = showsUserLocation;
 }
 
-
 #pragma mark - MKMapView Forwarding Stubs
 - (CGPoint)convertCoordinate:(CLLocationCoordinate2D)coordinate toPointToView:(UIView *)view
 {
@@ -172,7 +124,7 @@
 - (MKCoordinateRegion)regionForAnnotations:(NSArray *)annotations
 {
     NSMutableSet *regionAnnotations = [NSMutableSet set];
-    for (MGSMKAnnotationAdaptor *adaptor in self.annotationLayer.annotations)
+    for (MITAnnotationAdaptor *adaptor in self.annotationLayer.annotations)
     {
         if ([annotations containsObject:adaptor.annotation])
         {
@@ -213,6 +165,13 @@
         
         [self.mapView showCalloutForAnnotation:mapAnnotation];
         self.currentAnnotation = annotation;
+
+
+        if ([self.delegate respondsToSelector:@selector(mapView:annotationSelected:)])
+        {
+            [self.delegate mapView:self
+                annotationSelected:self.currentAnnotation];
+        }
     }
 }
 
@@ -236,9 +195,9 @@
     NSMutableArray *newAnnotations = [NSMutableArray arrayWithArray:annotations];
     for (id<MGSAnnotation> annotation in self.annotationLayer.annotations)
     {
-        if ([annotation isKindOfClass:[MGSMKAnnotationAdaptor class]])
+        if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
         {
-            MGSMKAnnotationAdaptor *adaptor = (MGSMKAnnotationAdaptor*)annotation;
+            MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
             [newAnnotations removeObject:adaptor.annotation];
         }
     }
@@ -246,7 +205,15 @@
     NSMutableArray *addedAnnotations = [NSMutableArray array];
     for (id<MKAnnotation> mkAnnotation in newAnnotations)
     {
-        [addedAnnotations addObject:[[MGSMKAnnotationAdaptor alloc] initWithMKAnnotation:mkAnnotation]];
+        MITAnnotationAdaptor *adaptor = [[MITAnnotationAdaptor alloc] initWithMKAnnotation:mkAnnotation];
+        
+        if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)])
+        {
+            adaptor.annotationView = [self.delegate mapView:self
+                                          viewForAnnotation:mkAnnotation];
+        }
+        
+        [addedAnnotations addObject:adaptor];
     }
     
     [self.annotationLayer addAnnotations:addedAnnotations];
@@ -269,9 +236,9 @@
     
     NSMutableArray *mgsAnnotations = [NSMutableArray array];
     [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
-        if ([obj isKindOfClass:[MGSMKAnnotationAdaptor class]])
+        if ([obj isKindOfClass:[MITAnnotationAdaptor class]])
         {
-            MGSMKAnnotationAdaptor *adaptor = (MGSMKAnnotationAdaptor*)obj;
+            MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)obj;
             if ([annotations containsObject:adaptor.annotation])
             {
                 [mgsAnnotations addObject:adaptor];
@@ -302,9 +269,9 @@
     {
         NSMutableArray *mkAnnotations = [NSMutableArray array];
         [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
-            if ([obj isKindOfClass:[MGSMKAnnotationAdaptor class]])
+            if ([obj isKindOfClass:[MITAnnotationAdaptor class]])
             {
-                MGSMKAnnotationAdaptor *adaptor = (MGSMKAnnotationAdaptor*)obj;
+                MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)obj;
                 [mkAnnotations addObject:adaptor.annotation];
             }
         }];
@@ -361,5 +328,55 @@
 {
     // Do nothing!
     return;
+}
+
+/*
+// MKMapView-like methods
+- (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)location;
+
+// MKMapViewDelegate forwarding
+- (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view;
+- (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views;
+
+// any touch on the map will invoke this.
+- (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch;
+ */
+
+#pragma mark - MGSMapView Delegation Methods
+- (void)mapView:(MGSMapView *)mapView calloutAccessoryDidReceiveTapForAnnotation:(id <MGSAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
+    {
+        if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)])
+        {
+            MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
+
+            [self.delegate mapView:self
+                    annotationViewCalloutAccessoryTapped:adaptor.annotationView];
+        }
+    }
+}
+
+- (void)mapView:(MGSMapView *)mapView willShowCalloutForAnnotation:(id <MGSAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
+    {
+        if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)])
+        {
+            
+        }
+    }
+}
+
+
+#pragma mark - MGSLayer Delegation Methods
+- (UIView*)mapLayer:(MGSLayer *)layer calloutViewForAnnotation:(id <MGSAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
+    {
+        
+    }
+
+    return nil;
 }
 @end

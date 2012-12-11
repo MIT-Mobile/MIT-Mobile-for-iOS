@@ -23,11 +23,8 @@
 // MKMapView-like methods
 - (void)mapView:(MITMapView *)mapView annotationSelected:(id <MKAnnotation>)annotation;
 - (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)location;
-- (void)locateUserFailed:(MITMapView *)mapView;
 
 // MKMapViewDelegate forwarding
-- (void)mapViewRegionWillChange:(MITMapView*)mapView;
-- (void)mapViewRegionDidChange:(MITMapView*)mapView;
 - (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
 - (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view;
 - (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views;
@@ -71,7 +68,7 @@
 - (void)removeAllAnnotations:(BOOL)includeUserLocation;
 
 @property (nonatomic, readonly) NSArray *annotations;
-@property (nonatomic, readonly) id<MKAnnotation> currentAnnotation;
+@property (nonatomic, readonly, weak) id<MKAnnotation> currentAnnotation;
 
 #pragma mark Overlays
 
