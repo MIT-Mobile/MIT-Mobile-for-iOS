@@ -1,19 +1,15 @@
 #import <ArcGIS/ArcGIS.h>
-#import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
 
 #import "MGSLayer.h"
 #import "MGSLayerAnnotation.h"
 
 #import "MGSMapView.h"
-#import "MGSAnnotation.h"
 
 #import "MGSMarker.h"
-#import "MGSAnnotationInfoTemplateDelegate.h"
 
 #import "MGSMapLayer+Protected.h"
 #import "MGSUtility.h"
-#import "MGSAnnotationInfoTemplateDelegate.h"
 
 @interface MGSLayer ()
 @property (nonatomic, strong) NSMutableArray *mutableAnnotations;
@@ -41,6 +37,17 @@
     }
     
     return self;
+}
+
+#pragma mark - Property Accessor/Mutators
+- (void)setMapView:(MGSMapView *)mapView
+{
+    if ([_mapView isEqual:mapView] == NO)
+    {
+        [self willMoveToMapView:mapView];
+        _mapView = mapView;
+        [self didMoveToMapView:mapView];
+    }
 }
 
 - (void)setAnnotations:(NSArray *)annotations

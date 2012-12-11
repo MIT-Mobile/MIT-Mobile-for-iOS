@@ -10,11 +10,6 @@
 
 @protocol MGSAnnotation;
 
-@protocol MGSCalloutController
-- (BOOL)isPresentingCalloutForAnnotation:(MGSMapAnnotation*)annotation;
-- (UIView*)viewForAnnotation:(MGSMapAnnotation*)annotation;
-@end
-
 @protocol MGSLayerDelegate <NSObject>
 @optional
 - (void)mapLayer:(MGSLayer*)layer willMoveToMapView:(MGSMapView*)mapView;
@@ -52,4 +47,7 @@
 
 - (id)initWithName:(NSString*)name;
 - (void)refreshLayer;
+
+- (BOOL)shouldDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation;
+- (UIView*)calloutViewForAnnotation:(id<MGSAnnotation>)annotation;
 @end
