@@ -28,13 +28,12 @@
 @end
 
 @interface MGSLayer : NSObject
-@property (weak) id<MGSLayerDelegate> delegate;
-@property (strong) NSString *name;
-@property (weak,readonly) MGSMapView *mapView;
-@property (strong) UIViewController<MGSCalloutController> *calloutController;
+@property (nonatomic,weak) id<MGSLayerDelegate> delegate;
+@property (nonatomic,strong) NSString *name;
+@property (nonatomic,weak,readonly) MGSMapView *mapView;
 
-@property (strong) NSArray *annotations;
-@property (strong) MGSMarker *markerTemplate;
+@property (nonatomic,strong) NSArray *annotations;
+@property (nonatomic,strong) MGSMarker *markerTemplate;
 @property (assign,nonatomic) BOOL hidden;
 
 - (void)addAnnotation:(id<MGSAnnotation>)annotation;

@@ -2089,8 +2089,8 @@
 				2C101AC916552AF5000E40E3 /* MITMapView.m */,
 				4420F31910E96EBE00A8CD05 /* ShuttleStopMapAnnotation.h */,
 				4420F31A10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m */,
-				4431A16598A7CF09AC6AC61A /* MITAnnotationAdaptor.m */,
 				4431A384646993384D06783E /* MITAnnotationAdaptor.h */,
+				4431A16598A7CF09AC6AC61A /* MITAnnotationAdaptor.m */,
 			);
 			path = "Campus Map";
 			sourceTree = "<group>";
