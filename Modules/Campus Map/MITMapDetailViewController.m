@@ -506,7 +506,6 @@
 		[annotationView addSubview:imageView];
 		annotationView.backgroundColor = [UIColor clearColor];
 		annotationView.centeredVertically = YES;
-		//annotationView.alreadyOnMap = YES;
 	}
 	
 	return annotationView;
