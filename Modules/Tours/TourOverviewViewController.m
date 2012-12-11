@@ -964,7 +964,6 @@ enum {
 
 - (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views {
     if (selectedAnnotation) {
-        //[self.mapView selectAnnotation:selectedAnnotation animated:YES withRecenter:YES];
         self.selectedAnnotation = nil;
     }
 }
