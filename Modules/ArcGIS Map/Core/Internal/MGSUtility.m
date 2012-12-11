@@ -24,8 +24,7 @@ CLLocationCoordinate2D CLLocationCoordinateFromAGSPoint(AGSPoint *point)
 AGSSymbol* AGSSymbolFromAnnotation(id<MGSAnnotation> annotation, MGSMarker *templateMarker)
 {
     AGSSymbol *symbol = nil;
-    
-    MGSMarker *marker =nil;
+    MGSMarker *marker = nil;
     
     if ([annotation respondsToSelector:@selector(marker)])
     {
@@ -47,7 +46,7 @@ AGSSymbol* AGSSymbolFromAnnotation(id<MGSAnnotation> annotation, MGSMarker *temp
     markerSize = (markerSize < 0.1 ? 32.0 : markerSize);
     
     switch (marker.style) {
-        case MGSMarkerStyleSquare:
+        case MGSMarkerStyleStroke:
         {
             AGSSimpleMarkerSymbolStyle symbolStyle = AGSSimpleMarkerSymbolStyleSquare;
             AGSSimpleMarkerSymbol *markerSymbol = [AGSSimpleMarkerSymbol simpleMarkerSymbolWithColor:markerColor];
@@ -57,7 +56,7 @@ AGSSymbol* AGSSymbolFromAnnotation(id<MGSAnnotation> annotation, MGSMarker *temp
             break;
         }
             
-        case MGSMarkerStyleCircle:
+        case MGSMarkerStyleFill:
         {
             AGSSimpleMarkerSymbolStyle symbolStyle = AGSSimpleMarkerSymbolStyleCircle;
             AGSSimpleMarkerSymbol *markerSymbol = [AGSSimpleMarkerSymbol simpleMarkerSymbolWithColor:markerColor];
@@ -67,9 +66,9 @@ AGSSymbol* AGSSymbolFromAnnotation(id<MGSAnnotation> annotation, MGSMarker *temp
         }
             break;
             
-        case MGSMarkerStyleIcon:
+        case MGSMarkerStyleImage:
         {
-            UIImage *markerImage = marker.icon;
+            UIImage *markerImage = marker.image;
             AGSPictureMarkerSymbol *pictureSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:markerImage];
             pictureSymbol.yoffset = (CGFloat) (ceil(markerImage.size.height / 2.0) - 1);
             symbol = pictureSymbol;
