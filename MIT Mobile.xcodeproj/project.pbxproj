@@ -164,7 +164,6 @@
 		4420F23110E9513700A8CD05 /* ShuttleDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4420F23010E9513700A8CD05 /* ShuttleDataManager.m */; };
 		4420F31B10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4420F31A10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m */; };
 		4420F62910EBA5D000A8CD05 /* ShuttleStopViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4420F62810EBA5D000A8CD05 /* ShuttleStopViewController.m */; };
-		44259C7110DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 44259C7010DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.m */; };
 		44293C3510DAE88500273119 /* MITMapSearchResultsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 44293C3310DAE88500273119 /* MITMapSearchResultsVC.m */; };
 		44293C3610DAE88500273119 /* MITMapSearchResultsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44293C3410DAE88500273119 /* MITMapSearchResultsVC.xib */; };
 		442C192A10F3AE3400CB44EC /* RouteMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 442C192810F3AE3400CB44EC /* RouteMapViewController.m */; };
@@ -661,8 +660,6 @@
 		4420F31A10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleStopMapAnnotation.m; sourceTree = "<group>"; };
 		4420F62710EBA5D000A8CD05 /* ShuttleStopViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleStopViewController.h; sourceTree = "<group>"; };
 		4420F62810EBA5D000A8CD05 /* ShuttleStopViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleStopViewController.m; sourceTree = "<group>"; };
-		44259C6F10DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapAnnotationCalloutView.h; sourceTree = "<group>"; };
-		44259C7010DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapAnnotationCalloutView.m; sourceTree = "<group>"; };
 		44293C3210DAE88500273119 /* MITMapSearchResultsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapSearchResultsVC.h; sourceTree = "<group>"; };
 		44293C3310DAE88500273119 /* MITMapSearchResultsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapSearchResultsVC.m; sourceTree = "<group>"; };
 		44293C3410DAE88500273119 /* MITMapSearchResultsVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MITMapSearchResultsVC.xib; sourceTree = "<group>"; };
@@ -2069,8 +2066,6 @@
 				441009DD110A6DAF00451B23 /* CampusMapToolbar.m */,
 				4463CC7910D6F4A50048CA83 /* CampusMapViewController.h */,
 				4463CC7A10D6F4A50048CA83 /* CampusMapViewController.m */,
-				44259C6F10DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.h */,
-				44259C7010DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.m */,
 				4463CC8F10D6F4A50048CA83 /* MITMapAnnotationView.h */,
 				4463CC9010D6F4A50048CA83 /* MITMapAnnotationView.m */,
 				4463D09110D92CB00048CA83 /* MITMapDetailViewController.h */,
@@ -2773,7 +2768,6 @@
 				EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */,
 				DE12901A134B748E00BEBDA2 /* MITLogging.m in Sources */,
 				EBF8B37412B581AC00D39AE6 /* MITMailComposeController.m in Sources */,
-				44259C7110DBDCDC008FCAF1 /* MITMapAnnotationCalloutView.m in Sources */,
 				4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */,
 				4463D09410D92CB00048CA83 /* MITMapDetailViewController.m in Sources */,
 				EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */,
