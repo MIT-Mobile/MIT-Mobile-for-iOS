@@ -558,11 +558,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                     completion:^(BOOL finished) {
                         if (finished)
                         {
-                            if (self.mapViewDelegate)
-                            {
-                                [self.mapViewDelegate didFinishLoadingMapView:self];
-                            }
-                            
+                            [self didFinishLoadingMapView];
                         }
                     }];
 }
