@@ -303,7 +303,7 @@
 		EB3294701166777500DEDC8A /* CalendarEventMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = EB32946E1166777500DEDC8A /* CalendarEventMapAnnotation.m */; };
 		EB3F0952118F0FFE00540B8A /* CalendarMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3F0950118F0FFE00540B8A /* CalendarMapView.m */; };
 		EB4C1E9B127723B700058748 /* ToursModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C1E99127723B700058748 /* ToursModule.m */; };
-		EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C215B1277786300058748 /* CampusTourHomeController.m */; };
+		EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C215B1277786300058748 /* CampusTourHomeController.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		EB4C21DA12777C8D00058748 /* StartingLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C21D812777C8D00058748 /* StartingLocationViewController.m */; };
 		EB4C21DE127780EC00058748 /* ToursDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C21DC127780EC00058748 /* ToursDataManager.m */; };
 		EB4C225B1278962000058748 /* Tours.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EB4C225A1278962000058748 /* Tours.xcdatamodeld */; };
@@ -364,7 +364,7 @@
 		EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2867810E082010003BA01 /* MITLoadingActivityView.m */; };
 		EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB15C211BE970900D481B5 /* DatePickerViewController.m */; };
 		EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */; };
-		EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFABAE129461C3009AAEE0 /* ScrollFadeImageView.m */; };
+		EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFABAE129461C3009AAEE0 /* ScrollFadeImageView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFAF94129C2A23009AAEE0 /* TabViewControl.m */; };
 		EBBFAFD6129C403A009AAEE0 /* MapTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFAFCE129C403A009AAEE0 /* MapTileOverlay.m */; };
 		EBBFAFDA129C403A009AAEE0 /* MapZoomLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFAFD2129C403A009AAEE0 /* MapZoomLevel.m */; };

@@ -23,9 +23,7 @@ UIWebViewDelegate, EKEventEditViewDelegate> {
 	CalendarDetailRowType* rowTypes;
 	NSInteger numRows;
 	
-	UITableView *_tableView;
 	UIButton *shareButton;
-    UISegmentedControl *eventPager;
 	
     CGFloat descriptionHeight;
 	NSString *descriptionString;

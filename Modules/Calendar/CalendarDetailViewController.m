@@ -14,35 +14,69 @@
 #define kCategoriesWebViewTag 521
 #define kDescriptionWebViewTag 516
 
-@implementation CalendarDetailViewController
+@interface CalendarDetailViewController ()
+@property (nonatomic, retain) UISegmentedControl *eventPager;
+@end
 
-@synthesize event, events, tableView = _tableView;
+@implementation CalendarDetailViewController
+@synthesize event, events;
+
+- (void)loadView
+{
+    CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
+    
+    if (self.navigationController && (self.navigationController.navigationBarHidden == NO))
+    {
+        CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.frame);
+        mainFrame.origin.y += navBarHeight;
+        mainFrame.size.height -= navBarHeight;
+    }
+    
+    if (self.navigationController && (self.navigationController.toolbarHidden == NO))
+    {
+        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.frame);
+        mainFrame.size.height -= toolbarHeight;
+    }
+    
+    UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
+    CGRect mainBounds = mainView.bounds;
+    
+    {
+        CGRect tableViewFrame = CGRectMake(CGRectGetMinX(mainBounds),
+                                           CGRectGetMinY(mainBounds),
+                                           CGRectGetWidth(mainBounds),
+                                           CGRectGetHeight(mainBounds));
+        
+        UITableView *tableView = [[UITableView alloc] initWithFrame:tableViewFrame
+                                                              style:UITableViewStylePlain];
+        tableView.delegate = self;
+        tableView.dataSource = self;
+        tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                      UIViewAutoresizingFlexibleWidth);
+        
+        self.tableView = [tableView autorelease];
+        [mainView addSubview:tableView];
+    }
+    
+    self.view = mainView;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 	
 	self.shareDelegate = self;
 	
-	// setup table view
-	self.tableView = [[[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height)
-												  style:UITableViewStylePlain] autorelease];
-	self.tableView.delegate = self;
-	self.tableView.dataSource = self;
-	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-
-	[self.view addSubview:_tableView];
-	
 	// setup nav bar
 	if (self.events.count > 1) {
-		eventPager = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:
+		_eventPager = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:
                                                                 [UIImage imageNamed:MITImageNameUpArrow],
                                                                 [UIImage imageNamed:MITImageNameDownArrow], nil]];
-		[eventPager setMomentary:YES];
-		[eventPager addTarget:self action:@selector(showNextEvent:) forControlEvents:UIControlEventValueChanged];
-		eventPager.segmentedControlStyle = UISegmentedControlStyleBar;
-		eventPager.frame = CGRectMake(0, 0, 80.0, eventPager.frame.size.height);
+		[_eventPager setMomentary:YES];
+		[_eventPager addTarget:self action:@selector(showNextEvent:) forControlEvents:UIControlEventValueChanged];
+		_eventPager.segmentedControlStyle = UISegmentedControlStyleBar;
+		_eventPager.frame = CGRectMake(0, 0, 80.0, _eventPager.frame.size.height);
 		
-        UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:eventPager];
+        UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:_eventPager];
 		self.navigationItem.rightBarButtonItem = segmentBarItem;
 		[segmentBarItem release];
 	}
@@ -62,7 +96,7 @@
 - (void)showNextEvent:(id)sender
 {
 	if ([sender isKindOfClass:[UISegmentedControl class]]) {
-        NSInteger i = eventPager.selectedSegmentIndex;
+        NSInteger i = _eventPager.selectedSegmentIndex;
 		NSInteger currentEventIndex = [self.events indexOfObject:self.event];
 		if (i == 0) { // previous
             if (currentEventIndex > 0) {
@@ -122,8 +156,8 @@
     
     if ([self.events count] > 1) {
         NSInteger currentEventIndex = [self.events indexOfObject:self.event];
-        [eventPager setEnabled:(currentEventIndex > 0) forSegmentAtIndex:0];
-        [eventPager setEnabled:(currentEventIndex < [self.events count] - 1) forSegmentAtIndex:1];
+        [_eventPager setEnabled:(currentEventIndex > 0) forSegmentAtIndex:0];
+        [_eventPager setEnabled:(currentEventIndex < [self.events count] - 1) forSegmentAtIndex:1];
     }
 	
 	if (numRows > 0) {
@@ -582,11 +616,12 @@
     self.events = nil;
 	free(rowTypes);
 
-    [eventPager release];
 	[shareButton release];
     [categoriesString release];
     [descriptionString release];
-    [_tableView release];
+    
+    self.eventPager = nil;
+    self.tableView = nil;
     [super dealloc];
 }
 
