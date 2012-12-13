@@ -5,7 +5,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
 #import "MITMapAnnotationView.h"
-#import "MITMapAnnotationCalloutView.h"
 #import "MITMobileWebAPI.h"
 #import "MITMapRoute.h"
 
