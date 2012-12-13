@@ -118,6 +118,7 @@
             AGSGraphic *graphic = AGSGraphicFromAnnotation(annotation, MGSGraphicDefault, self.markerTemplate);
             MGSLayerAnnotation *mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
                                                                                        graphic:graphic];
+            mapAnnotation.layer = self;
             
             [graphic.attributes setObject:mapAnnotation
                                    forKey:MGSAnnotationAttributeKey];
@@ -140,6 +141,7 @@
         }
         
         MGSLayerAnnotation *layerAnnotation = [self layerAnnotationForAnnotation:annotation];
+        layerAnnotation.layer = nil;
         [self.graphicsLayer removeGraphic:layerAnnotation.graphic];
         [self.mutableAnnotations removeObject:layerAnnotation];
     }
