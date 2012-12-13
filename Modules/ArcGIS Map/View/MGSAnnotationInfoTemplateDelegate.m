@@ -62,26 +62,34 @@
         
         if (view == nil)
         {
-            UITableViewCell *view = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                                           reuseIdentifier:nil];
+            UIView *view = [[UIView alloc] init];
             view.backgroundColor = [UIColor clearColor];
             
-            view.textLabel.backgroundColor = [UIColor clearColor];
-            view.textLabel.textColor = [UIColor whiteColor];
-            view.textLabel.text = [self titleForGraphic:graphic
-                                            screenPoint:screen
-                                               mapPoint:mapPoint];
+            UILabel *titleLabel = [[UILabel alloc] init];
+            titleLabel.backgroundColor = [UIColor clearColor];
+            titleLabel.textColor = [UIColor whiteColor];
+            titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
+            titleLabel.text = [self titleForGraphic:graphic
+                                        screenPoint:screen
+                                           mapPoint:mapPoint];
             
-            view.detailTextLabel.backgroundColor = [UIColor clearColor];
-            view.detailTextLabel.textColor = [UIColor whiteColor];
-            view.detailTextLabel.numberOfLines = 0;
-            view.detailTextLabel.text = [self detailForGraphic:graphic
-                                                   screenPoint:screen
-                                                      mapPoint:mapPoint];
+            UILabel *detailLabel = [[UILabel alloc] init];
+            titleLabel.backgroundColor = [UIColor clearColor];
+            titleLabel.textColor = [UIColor whiteColor];
+            titleLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
+            titleLabel.numberOfLines = 0;
+            titleLabel.text = [self detailForGraphic:graphic
+                                         screenPoint:screen
+                                            mapPoint:mapPoint];
             
-            view.imageView.image = [self imageForGraphic:graphic
-                                             screenPoint:screen
-                                                mapPoint:mapPoint];
+            UIImage *image = [self imageForGraphic:graphic
+                                       screenPoint:screen
+                                          mapPoint:mapPoint];
+            if (image)
+            {
+                UIImageView *imageView = [[UIImageView alloc] init];
+                imageView.image = image;
+            }
             
             resultView = view;
         }
@@ -103,7 +111,7 @@
 
 - (NSString*)detailForAnnotation:(id<MGSAnnotation>)annotation
 {
-    if ([annotation respondsToSelector:@selector(image)])
+    if ([annotation respondsToSelector:@selector(detail)])
     {
         return [annotation detail];
     }
