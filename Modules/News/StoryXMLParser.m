@@ -185,8 +185,13 @@ NSString * const NewsTagImageHeight     = @"height";
 		}
 		[CoreDataManager saveDataWithTemporaryMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
 	}
-	
-    NSURL *fullURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://web.mit.edu/newsoffice/index.php?option=com_search&view=isearch&searchword=%@&ordering=newest&limit=%d&start=%d", [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], count, start]];
+    
+    NSURL *mobileServer = MITMobileWebGetCurrentServerURL();
+    NSString *relativeString = [NSString stringWithFormat:@"%@/newsoffice/index.php?command=search&q=%@&start=%d&limit=%d",
+                                [mobileServer absoluteString], [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], start, count];
+    
+    NSURL *fullURL = [NSURL URLWithString:relativeString];
+    
     expectedStoryCount = count;
     
 	[self downloadAndParseURL:fullURL];
