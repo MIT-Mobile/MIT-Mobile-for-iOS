@@ -84,6 +84,7 @@
 		2C74240E165A9583000020FC /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C742406165A9354000020FC /* libstdc++.dylib */; };
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
+		2C8F3C20167FB853005BF07D /* MGSCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8F3C1F167FB853005BF07D /* MGSCalloutView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C91944C1631CBA700ED97F6 /* NSData+MGTwitterBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C91944B1631CBA700ED97F6 /* NSData+MGTwitterBase64.m */; };
 		2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D2137D677A0025B28D /* FacilitiesRoomViewController.m */; };
 		2C95A1D8137DB24D0025B28D /* FacilitiesSummaryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */; };
@@ -528,6 +529,8 @@
 		2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesCategory.m; sourceTree = "<group>"; };
 		2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocation.h; sourceTree = "<group>"; };
 		2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocation.m; sourceTree = "<group>"; };
+		2C8F3C1E167FB853005BF07D /* MGSCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSCalloutView.h; path = Core/Internal/MGSCalloutView.h; sourceTree = "<group>"; };
+		2C8F3C1F167FB853005BF07D /* MGSCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGSCalloutView.m; path = Core/Internal/MGSCalloutView.m; sourceTree = "<group>"; };
 		2C91944A1631CBA700ED97F6 /* NSData+MGTwitterBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+MGTwitterBase64.h"; sourceTree = "<group>"; };
 		2C91944B1631CBA700ED97F6 /* NSData+MGTwitterBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+MGTwitterBase64.m"; sourceTree = "<group>"; };
 		2C95A1D1137D677A0025B28D /* FacilitiesRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRoomViewController.h; sourceTree = "<group>"; };
@@ -1500,6 +1503,8 @@
 				2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */,
 				2C101A841653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.h */,
 				2C101A851653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m */,
+				2C8F3C1E167FB853005BF07D /* MGSCalloutView.h */,
+				2C8F3C1F167FB853005BF07D /* MGSCalloutView.m */,
 				2C101A761653F054000E40E3 /* MGSMapLayer+Protected.h */,
 				2C3AFD2F166518CB00392AE3 /* MGSUtility.h */,
 				2C3AFD30166518CB00392AE3 /* MGSUtility.m */,
@@ -2983,6 +2988,7 @@
 				2C0CE20C1663FFA80020E70D /* MGSLayerAnnotation.m in Sources */,
 				2C3AFD31166518CB00392AE3 /* MGSUtility.m in Sources */,
 				4431A8DABEAF34B5B5A061EB /* MITAnnotationAdaptor.m in Sources */,
+				2C8F3C20167FB853005BF07D /* MGSCalloutView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
