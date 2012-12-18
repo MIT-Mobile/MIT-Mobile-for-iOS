@@ -563,6 +563,30 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                     }];
 }
 
+- (void)mapView:(AGSMapView *)mapView failedLoadingLayerForLayerView:(UIView<AGSLayerView> *)layerView baseLayer:(BOOL)baseLayer withError:(NSError *)error
+{
+    
+    NSString *identifier = layerView.agsLayer.name;
+    
+    if ([self.coreMapIdentifiers containsObject:identifier])
+    {
+        BOOL coreLayersLoaded = YES;
+        for (NSString *identifier in self.coreMapIdentifiers)
+        {
+            UIView<AGSLayerView> *layerView = mapView.mapLayerViews[identifier];
+            coreLayersLoaded = coreLayersLoaded && (layerView.agsLayer.isLoaded || layerView.agsLayer.error);
+        }
+        
+        if (coreLayersLoaded)
+        {
+            self.coreLayersLoaded = YES;
+            [self didFinishLoadingMapView];
+        }
+        
+        DDLogError(@"Layer '%@' [%d,%p] failed to load: %@", layerView.agsLayer.name, layerView.agsLayer.isLoaded, layerView.agsLayer.error, [error localizedDescription]);
+    }
+}
+
 - (void)mapView:(AGSMapView *)mapView didLoadLayerForLayerView:(UIView<AGSLayerView> *)layerView
 {
     
@@ -574,7 +598,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         for (NSString *identifier in self.coreMapIdentifiers)
         {
             UIView<AGSLayerView> *layerView = mapView.mapLayerViews[identifier];
-            coreLayersLoaded = coreLayersLoaded && layerView.agsLayer.isLoaded;
+            coreLayersLoaded = coreLayersLoaded && (layerView.agsLayer.isLoaded || layerView.agsLayer.error);
         }
         
         if (coreLayersLoaded)
@@ -582,6 +606,8 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             self.coreLayersLoaded = YES;
             [self didFinishLoadingMapView];
         }
+        
+        DDLogVerbose(@"Successfully loaded core layer '%@'", identifier);
     }
     else
     {
@@ -589,11 +615,6 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         layer.graphicsView = layerView;
         DDLogVerbose(@"Successfully loaded layer %@", identifier);
     }
-}
-
-- (void)mapView:(AGSMapView *)mapView failedLoadingLayerForLayerView:(UIView<AGSLayerView> *)layerView withError:(NSError *)error
-{
-    DDLogError(@"Layer '%@' failed to load: %@", layerView.agsLayer.name, [error localizedDescription]);
 }
 
 #pragma mark - AGSMapViewTouchDelegate
