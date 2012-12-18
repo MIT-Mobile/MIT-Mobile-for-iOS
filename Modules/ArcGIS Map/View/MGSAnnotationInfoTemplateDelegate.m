@@ -1,7 +1,12 @@
+#import <CoreGraphics/CoreGraphics.h>
+
 #import "MGSAnnotationInfoTemplateDelegate.h"
 #import "MGSLayer.h"
 #import "MGSLayerAnnotation.h"
 #import "MGSUtility.h"
+#import "MGSMapView.h"
+#import "MITAdditions.h"
+#import "MGSCalloutView.h"
 
 @implementation MGSAnnotationInfoTemplateDelegate
 + (id)sharedInfoTemplate
@@ -27,14 +32,32 @@
 {
     MGSLayerAnnotation *layerAnnotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
     
-    return [self titleForAnnotation:layerAnnotation.annotation];
+    NSString *title = [self titleForAnnotation:layerAnnotation.annotation];
+    
+    if ([title length])
+    {
+        return title;
+    }
+    else
+    {
+        return @"";
+    }
 }
 
 - (NSString *)detailForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint
 {
     MGSLayerAnnotation *layerAnnotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
     
-    return [self detailForAnnotation:layerAnnotation.annotation];
+    NSString *detail = [self detailForAnnotation:layerAnnotation.annotation];
+    
+    if ([detail length])
+    {
+        return detail;
+    }
+    else
+    {
+        return @"";
+    }
 }
 
 -(UIImage*)imageForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint
@@ -53,45 +76,24 @@
     if (layerAnnotation.layer)
     {
         id<MGSLayerDelegate> layerDelegate = layerAnnotation.layer.delegate;
-        UIView *view = nil;
         if (layerDelegate && [layerDelegate respondsToSelector:@selector(mapLayer:calloutViewForAnnotation:)])
         {
-            view = [layerDelegate mapLayer:layerAnnotation.layer
+            resultView = [layerDelegate mapLayer:layerAnnotation.layer
                   calloutViewForAnnotation:layerAnnotation.annotation];
         }
         
-        if (view == nil)
+        if (resultView == nil)
         {
-            UIView *view = [[UIView alloc] init];
-            view.backgroundColor = [UIColor clearColor];
+            MGSCalloutView *calloutView = [[MGSCalloutView alloc] init];
+            calloutView.autoresizesSubviews = YES;
+            calloutView.imageView.image = [self imageForAnnotation:layerAnnotation.annotation];
+            calloutView.titleLabel.text = [self titleForAnnotation:layerAnnotation.annotation];
+            calloutView.detailLabel.text = [self detailForAnnotation:layerAnnotation.annotation];
             
-            UILabel *titleLabel = [[UILabel alloc] init];
-            titleLabel.backgroundColor = [UIColor clearColor];
-            titleLabel.textColor = [UIColor whiteColor];
-            titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
-            titleLabel.text = [self titleForGraphic:graphic
-                                        screenPoint:screen
-                                           mapPoint:mapPoint];
+            [calloutView sizeToFit];
+            [calloutView setNeedsLayout];
             
-            UILabel *detailLabel = [[UILabel alloc] init];
-            titleLabel.backgroundColor = [UIColor clearColor];
-            titleLabel.textColor = [UIColor whiteColor];
-            titleLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
-            titleLabel.numberOfLines = 0;
-            titleLabel.text = [self detailForGraphic:graphic
-                                         screenPoint:screen
-                                            mapPoint:mapPoint];
-            
-            UIImage *image = [self imageForGraphic:graphic
-                                       screenPoint:screen
-                                          mapPoint:mapPoint];
-            if (image)
-            {
-                UIImageView *imageView = [[UIImageView alloc] init];
-                imageView.image = image;
-            }
-            
-            resultView = view;
+            resultView = calloutView;
         }
     }
     
@@ -105,7 +107,7 @@
         return [annotation title];
     }
     
-    return @"";
+    return nil;
 }
 
 
@@ -116,7 +118,7 @@
         return [annotation detail];
     }
     
-    return @"";
+    return nil;
 }
 
 
