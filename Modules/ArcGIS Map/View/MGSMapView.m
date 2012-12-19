@@ -470,14 +470,14 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated
 {
-    [self.mapView centerAtPoint:AGSPointFromCLLocationCoordinate(coordinate)
+    [self.mapView centerAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate,self.mapView.spatialReference)
                        animated:animated];
 }
 
 
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    return [self.mapView toScreenPoint:AGSPointFromCLLocationCoordinate(coordinate)];
+    return [self.mapView toScreenPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate,self.mapView.spatialReference)];
 }
 
 #pragma mark - Callouts
