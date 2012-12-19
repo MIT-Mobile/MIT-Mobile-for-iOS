@@ -149,10 +149,14 @@
     __block id<MGSAnnotation> mapAnnotation = nil;
     
     [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
-        if ([obj.userData isEqual:annotation])
+        if ([obj isKindOfClass:[MITAnnotationAdaptor class]])
         {
-            mapAnnotation = obj;
-            (*stop) = YES;
+            MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)obj;
+            if ([adaptor.annotation isEqual:annotation])
+            {
+                mapAnnotation = obj;
+                (*stop) = YES;
+            }
         }
     }];
     
