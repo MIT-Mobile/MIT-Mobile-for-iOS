@@ -480,6 +480,34 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     return [self.mapView toScreenPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate,self.mapView.spatialReference)];
 }
 
+
+- (MKCoordinateRegion)regionForAnnotations:(NSArray*)annotations
+{
+    NSMutableArray *latitudeCoordinates = [NSMutableArray array];
+    NSMutableArray *longitudeCoordinates = [NSMutableArray array];
+    
+    for (id<MGSAnnotation> annotation in annotations)
+    {
+        CLLocationCoordinate2D coord = annotation.coordinate;
+        [latitudeCoordinates addObject:[NSNumber numberWithDouble:coord.latitude]];
+        [longitudeCoordinates addObject:[NSNumber numberWithDouble:coord.longitude]];
+    }
+    
+    NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"doubleValue"
+                                                               ascending:YES]];
+    NSArray *sortedLat = [latitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
+    NSArray *sortedLon = [longitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
+    
+    CLLocationDegrees minLat = [[sortedLat objectAtIndex:0] doubleValue];
+    CLLocationDegrees maxLat = [[sortedLat lastObject] doubleValue];
+    CLLocationDegrees minLon = [[sortedLon objectAtIndex:0] doubleValue];
+    CLLocationDegrees maxLon = [[sortedLon lastObject] doubleValue];
+    
+    MKCoordinateSpan span = MKCoordinateSpanMake((maxLat - minLat), (maxLon - minLon));
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(minLat + ((maxLat - minLat) / 2.0), minLon + ((maxLon - minLon) / 2.0));
+    return MKCoordinateRegionMake(center, span);
+}
+
 #pragma mark - Callouts
 - (void)showCalloutForAnnotation:(id<MGSAnnotation>)annotation
 {
@@ -495,7 +523,16 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         return;
     }
     
-    MGSCalloutView *callout = [[MGSCalloutView alloc] init];
+    MGSCalloutView *callout = (MGSCalloutView*)self.mapView.callout.customView;
+    if ((callout == nil) || ([callout isKindOfClass:[MGSCalloutView class]] == NO))
+    {
+        callout = [[MGSCalloutView alloc] init];
+        self.mapView.callout.customView = callout;
+    }
+    else
+    {
+        callout = (MGSCalloutView*)self.mapView.callout.customView;
+    }
     
     callout.titleLabel.text = [annotation title];
     
@@ -512,7 +549,6 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     [callout sizeToFit];
     [callout setNeedsLayout];
     
-    self.mapView.callout.customView = callout;
     self.mapView.callout.leaderPositionFlags = AGSCalloutLeaderPositionAny;
     
     [self.mapView showCalloutAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(annotation.coordinate,self.mapView.spatialReference)

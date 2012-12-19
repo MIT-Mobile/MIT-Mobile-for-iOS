@@ -38,6 +38,8 @@
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated;
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
 
+- (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations;
+
 - (BOOL)isLayerHidden:(NSString*)layerIdentifier;
 - (void)setHidden:(BOOL)hidden forLayerIdentifier:(NSString*)layerIdentifier;
 
