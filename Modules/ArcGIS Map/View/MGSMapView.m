@@ -8,7 +8,6 @@
 #import "MGSLayerAnnotation.h"
 #import "MGSCalloutView.h"
 
-#import "MITLoadingActivityView.h"
 #import "MITMobileServerConfiguration.h"
 #import "MobileRequestOperation.h"
 
@@ -31,7 +30,6 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 @property (strong) NSMutableDictionary *queryTasks;
 @property (nonatomic, assign) AGSMapView *mapView;
-@property (nonatomic, assign) MITLoadingActivityView *loadingView;
 @property (nonatomic, strong) MGSLayer *defaultLayer;
 
 - (void)initView;
@@ -105,20 +103,9 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                                      UIViewAutoresizingFlexibleHeight);
             view.touchDelegate = self;
             view.layerDelegate = self;
-            view.hidden = YES;
             
             [self addSubview:view];
             self.mapView = view;
-        }
-        
-        {
-            MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:mainBounds];
-            loadingView.backgroundColor = [UIColor clearColor];
-            loadingView.usesBackgroundImage = NO;
-            
-            self.loadingView = loadingView;
-            [self insertSubview:loadingView
-                   aboveSubview:self.mapView];
         }
         
         
@@ -549,18 +536,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     [mapView setMaxEnvelope:projectedEnvelope];
     [mapView zoomToEnvelope:projectedEnvelope
                    animated:YES];
-
-    [UIView transitionFromView:self.loadingView
-                        toView:self.mapView
-                      duration:0.5
-                       options:(UIViewAnimationOptionShowHideTransitionViews |
-                                UIViewAnimationOptionTransitionCrossDissolve)
-                    completion:^(BOOL finished) {
-                        if (finished)
-                        {
-                            [self didFinishLoadingMapView];
-                        }
-                    }];
+    [self didFinishLoadingMapView];
 }
 
 - (void)mapView:(AGSMapView *)mapView failedLoadingLayerForLayerView:(UIView<AGSLayerView> *)layerView baseLayer:(BOOL)baseLayer withError:(NSError *)error
