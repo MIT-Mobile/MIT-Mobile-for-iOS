@@ -483,29 +483,41 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark - Callouts
 - (void)showCalloutForAnnotation:(id<MGSAnnotation>)annotation
 {
-    for (MGSLayer *layer in [self.userLayers allValues])
+    __block MGSLayerAnnotation *layerAnnotation = nil;
+    
+    [[self.userLayers allValues] enumerateObjectsUsingBlock:^(MGSLayer *layer, NSUInteger idx, BOOL *stop) {
+        layerAnnotation = [layer layerAnnotationForAnnotation:annotation];
+        (*stop) = (layerAnnotation != nil);
+    }];
+    
+    if (layerAnnotation == nil)
     {
-        if ([layer.annotations containsObject:annotation])
-        {
-            [self centerAtCoordinate:annotation.coordinate];
-        }
+        return;
     }
     
-    self.mapView.callout.title = annotation.title;
-    self.mapView.callout.detail = annotation.detail;
+    MGSCalloutView *callout = [[MGSCalloutView alloc] init];
+    
+    callout.titleLabel.text = [annotation title];
+    
+    if ([annotation respondsToSelector:@selector(detail)])
+    {
+        callout.detailLabel.text = [annotation detail];
+    }
     
     if ([annotation respondsToSelector:@selector(image)])
     {
-        self.mapView.callout.image = annotation.image;
-    }
-    else
-    {
-        self.mapView.callout.image = nil;
+        callout.imageView.image = [annotation image];
     }
     
+    [callout sizeToFit];
+    [callout setNeedsLayout];
+    
+    self.mapView.callout.customView = callout;
     self.mapView.callout.leaderPositionFlags = AGSCalloutLeaderPositionAny;
     
-    [self.mapView showCalloutAtPoint:AGSPointFromCLLocationCoordinate(annotation.coordinate)];
+    [self.mapView showCalloutAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(annotation.coordinate,self.mapView.spatialReference)
+                          forGraphic:layerAnnotation.graphic
+                            animated:YES];
 }
 
 - (void)showCalloutWithView:(UIView*)view
