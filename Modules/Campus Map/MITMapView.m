@@ -9,9 +9,12 @@
 @interface MITMapView () <MGSMapViewDelegate,MGSLayerDelegate>
 @property (nonatomic, weak) MGSMapView *mapView;
 @property (nonatomic, weak) id<MKAnnotation> currentAnnotation;
+
 @property (nonatomic, strong) MGSLayer *annotationLayer;
 @property (nonatomic, strong) MGSLayer *routeLayer;
+
 @property (nonatomic, strong) NSArray *annotationCache;
+@property (nonatomic, strong) NSMutableArray *internalRoutes;
 @end
 
 @implementation MITMapView
@@ -38,6 +41,7 @@
         [self.mapView addLayer:self.annotationLayer
                 withIdentifier:@"edu.mit.mobile.map.annotations"];
         
+        self.internalRoutes = [NSMutableArray array];
         self.routeLayer = [[MGSLayer alloc] init];
         [self.mapView addLayer:self.routeLayer
                 withIdentifier:@"edu.mit.mobile.map.routes"];
@@ -132,7 +136,7 @@
         }
     }
     
-    return [self.annotationLayer regionForAnnotations:regionAnnotations];
+    return [self.mapView regionForAnnotations:regionAnnotations];
 }
 
 - (void)selectAnnotation:(id<MKAnnotation>)annotation
@@ -286,34 +290,80 @@
     return self.annotationCache;
 }
 
+#pragma mark - Route Handling
 - (NSArray*)routes
 {
-    return @[];
+    return self.internalRoutes;
 }
 
 - (void)addRoute:(id<MITMapRoute>)route
 {
-    // TODO: Implement me!
+    if ([self.internalRoutes containsObject:route])
+    {
+        return;
+    }
+    
+    [self.internalRoutes addObject:route];
+    
+    if ([route respondsToSelector:@selector(annotations)])
+    {
+        NSMutableArray *routeAnnotations = [NSMutableArray array];
+        for (id<MKAnnotation> annotation in [route annotations])
+        {
+            MITAnnotationAdaptor *adaptor = [[MITAnnotationAdaptor alloc] initWithMKAnnotation:annotation];
+            [routeAnnotations addObject:adaptor];
+        }
+        
+        [self.routeLayer addAnnotations:routeAnnotations];
+    }
+    
+    [self.routeLayer refreshLayer];
+    
     return;
 }
 
 - (MKCoordinateRegion)regionForRoute:(id<MITMapRoute>)route
-
 {
-    // TODO: Implement me!
-    return MKCoordinateRegionMake(CLLocationCoordinate2DMake(0, 0), MKCoordinateSpanMake(0, 0));
+    if ([route respondsToSelector:@selector(annotations)])
+    {
+        if ([[route annotations] count])
+        {
+            return [self.mapView regionForAnnotations:[NSSet setWithArray:[route annotations]]];
+        }
+    }
+    
+    return self.mapView.mapRegion;
 }
 
 - (void)removeAllRoutes
 {
-    // TODO: Implement me!
-    return;
+    [self.internalRoutes removeAllObjects];
+    [self.routeLayer deleteAllAnnotations];
+    [self.routeLayer refreshLayer];
 }
 
 - (void)removeRoute:(id<MITMapRoute>) route
 {
-    // TODO: Implement me!
-    return;
+    if ([self.internalRoutes containsObject:route])
+    {
+        [self.internalRoutes removeObject:route];
+        
+        if ([route respondsToSelector:@selector(annotations)])
+        {
+            NSMutableArray *routeAnnotations = [NSMutableArray array];
+            for (MITAnnotationAdaptor *adaptor in self.routeLayer.annotations)
+            {
+                if ([[route annotations] containsObject:adaptor.annotation])
+                {
+                    [routeAnnotations addObject:adaptor];
+                }
+            }
+            
+            [self.routeLayer deleteAnnotations:routeAnnotations];
+        }
+        
+        [self.routeLayer refreshLayer];
+    }
 }
 
 - (void)addTileOverlay
@@ -333,18 +383,6 @@
     // Do nothing!
     return;
 }
-
-/*
-// MKMapView-like methods
-- (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)location;
-
-// MKMapViewDelegate forwarding
-- (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view;
-- (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views;
-
-// any touch on the map will invoke this.
-- (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch;
- */
 
 #pragma mark - MGSMapView Delegation Methods
 - (void)mapView:(MGSMapView *)mapView calloutAccessoryDidReceiveTapForAnnotation:(id <MGSAnnotation>)annotation
