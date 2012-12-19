@@ -457,7 +457,7 @@
 		2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGSLayerAnnotation.m; path = Core/Internal/MGSLayerAnnotation.m; sourceTree = "<group>"; };
 		2C101A741653F054000E40E3 /* MGSLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSLayer.h; sourceTree = "<group>"; };
 		2C101A751653F054000E40E3 /* MGSLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSLayer.m; sourceTree = "<group>"; };
-		2C101A761653F054000E40E3 /* MGSMapLayer+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MGSMapLayer+Protected.h"; path = "Core/MGSMapLayer+Protected.h"; sourceTree = "<group>"; };
+		2C101A761653F054000E40E3 /* MGSLayer+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MGSLayer+Protected.h"; path = "Core/MGSLayer+Protected.h"; sourceTree = "<group>"; };
 		2C101A771653F054000E40E3 /* MGSMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMarker.h; sourceTree = "<group>"; };
 		2C101A781653F054000E40E3 /* MGSMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMarker.m; sourceTree = "<group>"; };
 		2C101A791653F054000E40E3 /* MGSRouteLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSRouteLayer.h; path = Core/MGSRouteLayer.h; sourceTree = "<group>"; };
@@ -1505,7 +1505,7 @@
 				2C101A851653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m */,
 				2C8F3C1E167FB853005BF07D /* MGSCalloutView.h */,
 				2C8F3C1F167FB853005BF07D /* MGSCalloutView.m */,
-				2C101A761653F054000E40E3 /* MGSMapLayer+Protected.h */,
+				2C101A761653F054000E40E3 /* MGSLayer+Protected.h */,
 				2C3AFD2F166518CB00392AE3 /* MGSUtility.h */,
 				2C3AFD30166518CB00392AE3 /* MGSUtility.m */,
 			);

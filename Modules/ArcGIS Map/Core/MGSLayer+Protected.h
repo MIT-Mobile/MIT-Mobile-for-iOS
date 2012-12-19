@@ -2,6 +2,8 @@
 #import <ArcGIS/ArcGIS.h>
 
 @class MGSMapView;
+@class MGSLayerAnnotation;
+@protocol MGSAnnotation;
 
 @interface MGSLayer ()
 @property (nonatomic,weak) MGSMapView *mapView;
@@ -12,4 +14,5 @@
 @property (nonatomic,strong) NSMutableArray *layerAnnotations;
 
 - (void)loadGraphicsLayer;
+- (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation;
 @end

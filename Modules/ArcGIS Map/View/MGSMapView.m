@@ -1,16 +1,16 @@
 #import <ArcGIS/ArcGIS.h>
 
 #import "MGSMapView.h"
-
+#import "MGSUtility.h"
 #import "MGSAnnotation.h"
 #import "MGSLayer.h"
+#import "MGSLayer+Protected.h"
+#import "MGSLayerAnnotation.h"
+#import "MGSCalloutView.h"
 
 #import "MITLoadingActivityView.h"
 #import "MITMobileServerConfiguration.h"
-
-#import "MGSMapLayer+Protected.h"
 #import "MobileRequestOperation.h"
-#import "MGSUtility.h"
 
 static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Default";
 

@@ -8,7 +8,7 @@
 
 #import "MGSMarker.h"
 
-#import "MGSMapLayer+Protected.h"
+#import "MGSLayer+Protected.h"
 #import "MGSUtility.h"
 
 @interface MGSLayer ()

@@ -1,5 +1,5 @@
 #import "MGSRouteLayer.h"
-#import "MGSMapLayer+Protected.h"
+#import "MGSLayer+Protected.h"
 
 #import <ArcGIS/ArcGIS.h>
 
