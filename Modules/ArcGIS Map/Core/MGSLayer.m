@@ -13,8 +13,6 @@
 
 @interface MGSLayer ()
 @property (nonatomic, strong) NSMutableArray *mutableAnnotations;
-
-- (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation;
 @end
 
 @implementation MGSLayer
@@ -175,6 +173,11 @@
 - (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation
 {
     __block void *layerAnnotation = nil;
+    
+    // Using OSAtomicCompareAndSwapPtrBarrier so we have atomic pointer
+    // assignments since the array is going to be enumerated concurrently
+    // and I'd rather not deal with odd race conditions since a standard
+    // if-nil-else is not atomic.
     [self.mutableAnnotations enumerateObjectsWithOptions:NSEnumerationConcurrent
                                               usingBlock:^(MGSLayerAnnotation *obj, NSUInteger idx, BOOL *stop) {
                                                   if ([obj.annotation isEqual:annotation])
