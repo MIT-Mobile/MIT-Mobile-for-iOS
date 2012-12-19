@@ -6,7 +6,7 @@
 
 @interface RouteMapViewController : UIViewController <MITMapViewDelegate, ShuttleDataManagerDelegate>{
 
-	IBOutlet MITMapView* _mapView;
+	 MITMapView* _mapView;
 	
 	IBOutlet UILabel* _routeTitleLabel;
 	IBOutlet UILabel* _routeStatusLabel;
@@ -52,7 +52,8 @@
 @property (nonatomic, retain) ShuttleRoute* routeInfo;
 @property (nonatomic, assign) UIViewController* parentViewController;
 
-@property (readonly) MITMapView* mapView;
+@property (nonatomic, retain, readonly) IBOutlet MITMapView* mapView;
+@property (nonatomic, retain, readonly) IBOutlet UIView* routeInfoView;
 
 @property (nonatomic, retain) MKPolyline * routeLine;
 @property (nonatomic, retain) MKPolylineView* routeLineView;

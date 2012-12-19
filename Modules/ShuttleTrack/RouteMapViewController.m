@@ -8,7 +8,9 @@
 #define DEGREES_TO_RADIANS(__ANGLE__) ((__ANGLE__) / 180.0 * M_PI)
 #define LARGE_SHUTTLE_ANNOTATION_ZOOM 14.5
 
-@interface RouteMapViewController(Private)
+@interface RouteMapViewController ()
+@property (nonatomic, retain) MITMapView *mapView;
+@property (nonatomic, retain) UIView *routeInfoView;
 
 // add the shuttles based on self.route.vehicleLocations
 -(void) addShuttles;
@@ -38,6 +40,16 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
+    
+    if (self.mapView == nil)
+    {
+        MITMapView *mapView = [[MITMapView alloc] initWithFrame:self.view.bounds];
+        mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                    UIViewAutoresizingFlexibleWidth);
+        self.mapView = mapView;
+        [self.view insertSubview:mapView
+                    belowSubview:self.routeInfoView];
+    }
     
     [_scrim setImage:[UIImage imageNamed:@"shuttle/shuttle-secondary-scrim.png"]];
     [_resetButton setImage:[UIImage imageNamed:@"shuttle/button-icon-reset-zoom.png"] forState:UIControlStateNormal];
