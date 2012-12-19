@@ -7,9 +7,23 @@ NSString* const MGSAnnotationAttributeKey = @"MGSAnnotationAttribute";
 
 AGSPoint* AGSPointFromCLLocationCoordinate(CLLocationCoordinate2D coord)
 {
-    return [AGSPoint pointWithX:coord.longitude
-                              y:coord.latitude
-               spatialReference:[AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84]];
+    AGSPoint *clPoint = [AGSPoint pointWithX:coord.longitude
+                                           y:coord.latitude
+                            spatialReference:[AGSSpatialReference wgs84SpatialReference]];
+    
+    return clPoint;
+}
+
+AGSPoint* AGSPointWithReferenceFromCLLocationCoordinate(CLLocationCoordinate2D coord, AGSSpatialReference *targetReference)
+{
+    AGSPoint *clPoint = (AGSPoint*)[AGSPoint pointWithX:coord.longitude
+                                                      y:coord.latitude
+                                       spatialReference:[AGSSpatialReference wgs84SpatialReference]];
+    
+    AGSPoint *projectedPoint = (AGSPoint*)[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:clPoint
+                                                                                  toSpatialReference:targetReference];
+    
+    return projectedPoint;
 }
 
 CLLocationCoordinate2D CLLocationCoordinateFromAGSPoint(AGSPoint *point)
