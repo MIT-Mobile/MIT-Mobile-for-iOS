@@ -19,7 +19,6 @@
         forEnvelope:(AGSEnvelope *) env
        atResolution:(double) resolution
 {
-    if ([self.annotation respondsToSelector:@selector(<#selector#>)])
     CGRect gfxFrame = CGRectZero;
     
     gfxFrame.origin = [MGSAnnotationSymbol toScreenPointWithX:graphic.geometry.envelope.xmin
