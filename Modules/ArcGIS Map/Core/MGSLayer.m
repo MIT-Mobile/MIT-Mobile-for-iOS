@@ -6,8 +6,6 @@
 
 #import "MGSMapView.h"
 
-#import "MGSMarker.h"
-
 #import "MGSLayer+Protected.h"
 #import "MGSUtility.h"
 

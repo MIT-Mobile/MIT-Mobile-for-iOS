@@ -1,5 +1,4 @@
 #import "MGSUtility.h"
-#import "MGSMarker.h"
 #import "MGSAnnotationInfoTemplateDelegate.h"
 
 NSString* const MGSAnnotationAttributeKey = @"MGSAnnotationAttribute";
@@ -34,7 +33,7 @@ CLLocationCoordinate2D CLLocationCoordinateFromAGSPoint(AGSPoint *point)
     return CLLocationCoordinate2DMake(projectedPoint.y, projectedPoint.x);
 }
 
-
+/*
 AGSSymbol* AGSSymbolFromAnnotation(id<MGSAnnotation> annotation, MGSMarker *templateMarker)
 {
     AGSSymbol *symbol = nil;
@@ -106,6 +105,7 @@ AGSSymbol* AGSSymbolFromAnnotation(id<MGSAnnotation> annotation, MGSMarker *temp
     
     return symbol;
 }
+*/
 
 
 AGSGraphic* AGSGraphicFromAnnotation(id<MGSAnnotation> annotation, MGSGraphicType graphicType, MGSMarker *template)
