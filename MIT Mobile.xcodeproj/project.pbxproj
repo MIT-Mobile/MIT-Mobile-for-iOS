@@ -42,7 +42,6 @@
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
 		2C0CE20C1663FFA80020E70D /* MGSLayerAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C101A801653F054000E40E3 /* MGSLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A751653F054000E40E3 /* MGSLayer.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		2C101A811653F054000E40E3 /* MGSMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A781653F054000E40E3 /* MGSMarker.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C101A831653F054000E40E3 /* MGSRouteOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A7C1653F054000E40E3 /* MGSRouteOperation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C101A8B1653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A851653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -458,8 +457,6 @@
 		2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSLayerAnnotation.m; sourceTree = "<group>"; };
 		2C101A741653F054000E40E3 /* MGSLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSLayer.h; sourceTree = "<group>"; };
 		2C101A751653F054000E40E3 /* MGSLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSLayer.m; sourceTree = "<group>"; };
-		2C101A771653F054000E40E3 /* MGSMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMarker.h; sourceTree = "<group>"; };
-		2C101A781653F054000E40E3 /* MGSMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMarker.m; sourceTree = "<group>"; };
 		2C101A761653F054000E40E3 /* MGSLayer+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MGSLayer+Protected.h"; sourceTree = "<group>"; };
 		2C101A791653F054000E40E3 /* MGSRouteLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSRouteLayer.h; path = Core/MGSRouteLayer.h; sourceTree = "<group>"; };
 		2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGSRouteLayer.m; path = Core/MGSRouteLayer.m; sourceTree = "<group>"; };
@@ -1340,8 +1337,6 @@
 				2C101A761653F054000E40E3 /* MGSLayer+Protected.h */,
 				2C101A741653F054000E40E3 /* MGSLayer.h */,
 				2C101A751653F054000E40E3 /* MGSLayer.m */,
-				2C101A771653F054000E40E3 /* MGSMarker.h */,
-				2C101A781653F054000E40E3 /* MGSMarker.m */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -2983,7 +2978,6 @@
 				2C2C8A2816386352001A9CF7 /* GDataHTMLDocument.m in Sources */,
 				2C2C8A2916386352001A9CF7 /* GDataXMLNode.m in Sources */,
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,
-				2C101A811653F054000E40E3 /* MGSMarker.m in Sources */,
 				2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */,
 				2C101A831653F054000E40E3 /* MGSRouteOperation.m in Sources */,
 				2C101A8B1653F06C000E40E3 /* MGSAnnotationInfoTemplateDelegate.m in Sources */,

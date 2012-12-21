@@ -18,7 +18,6 @@ typedef enum _MGSAnnotationType {
 @property (nonatomic, readonly, copy) UIImage *image;
 @property (nonatomic, readonly, weak) UIView *calloutView;
 
-@property (nonatomic, readonly, copy) MGSMarker *marker;
 @property (nonatomic, readonly) MGSAnnotationType annotationType;
 
 @property (nonatomic, readonly, weak) id<NSObject> userData;
