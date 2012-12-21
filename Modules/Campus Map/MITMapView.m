@@ -318,8 +318,6 @@
     }
     
     [self.routeLayer refreshLayer];
-    
-    return;
 }
 
 - (MKCoordinateRegion)regionForRoute:(id<MITMapRoute>)route
