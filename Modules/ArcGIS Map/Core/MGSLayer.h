@@ -36,11 +36,15 @@
 @property (nonatomic,strong) MGSMarker *markerTemplate;
 @property (assign,nonatomic) BOOL hidden;
 
++ (MKCoordinateRegion)regionForAnnotations:(NSArray*)annotations;
+
 - (void)addAnnotation:(id<MGSAnnotation>)annotation;
 - (void)addAnnotations:(NSArray *)objects;
 - (void)deleteAnnotation:(id<MGSAnnotation>)annotation;
 - (void)deleteAnnotations:(NSArray*)annotation;
 - (void)deleteAllAnnotations;
+
+- (void)centerOnAnnotation:(id<MGSAnnotation>)annotation;
 
 - (id)initWithName:(NSString*)name;
 - (void)refreshLayer;

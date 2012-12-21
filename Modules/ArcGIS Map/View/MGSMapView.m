@@ -450,18 +450,6 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     view.hidden = hidden;
 }
 
-- (void)centerOnAnnotation:(id<MGSAnnotation>)annotation
-{
-    for (MGSLayer *layer in [self.userLayers allValues])
-    {
-        if ([layer.annotations containsObject:annotation])
-        {
-            [self centerAtCoordinate:annotation.coordinate];
-            return;
-        }
-    }
-}
-
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     [self centerAtCoordinate:coordinate
@@ -485,24 +473,24 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 {
     NSMutableArray *latitudeCoordinates = [NSMutableArray array];
     NSMutableArray *longitudeCoordinates = [NSMutableArray array];
-    
+
     for (id<MGSAnnotation> annotation in annotations)
     {
         CLLocationCoordinate2D coord = annotation.coordinate;
         [latitudeCoordinates addObject:[NSNumber numberWithDouble:coord.latitude]];
         [longitudeCoordinates addObject:[NSNumber numberWithDouble:coord.longitude]];
     }
-    
+
     NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"doubleValue"
                                                                ascending:YES]];
     NSArray *sortedLat = [latitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
     NSArray *sortedLon = [longitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
-    
+
     CLLocationDegrees minLat = [[sortedLat objectAtIndex:0] doubleValue];
     CLLocationDegrees maxLat = [[sortedLat lastObject] doubleValue];
     CLLocationDegrees minLon = [[sortedLon objectAtIndex:0] doubleValue];
     CLLocationDegrees maxLon = [[sortedLon lastObject] doubleValue];
-    
+
     MKCoordinateSpan span = MKCoordinateSpanMake((maxLat - minLat), (maxLon - minLon));
     CLLocationCoordinate2D center = CLLocationCoordinate2DMake(minLat + ((maxLat - minLat) / 2.0), minLon + ((maxLon - minLon) / 2.0));
     return MKCoordinateRegionMake(center, span);

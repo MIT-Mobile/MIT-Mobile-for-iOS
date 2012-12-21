@@ -169,6 +169,14 @@
     [self deleteAnnotations:self.annotations];
 }
 
+- (void)centerOnAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([self.annotations containsObject:annotation])
+    {
+        [self.mapView centerAtCoordinate:annotation.coordinate];
+    }
+}
+
 #pragma mark - Class Extension methods
 - (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation
 {
