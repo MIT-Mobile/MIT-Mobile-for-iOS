@@ -42,6 +42,10 @@
     {
         result = YES;
     }
+    else if ([object isKindOfClass:[MGSLayerAnnotation class]])
+    {
+        result = [self isEqualToLayerAnnotation:(MGSLayerAnnotation*)object];
+    }
     else if ([object conformsToProtocol:@protocol(MGSAnnotation)])
     {
         result = [self.annotation isEqual:object];
@@ -49,10 +53,6 @@
     else if ([object isKindOfClass:[AGSGraphic class]])
     {
         result = [self.graphic isEqual:object];
-    }
-    else if ([object isKindOfClass:[MGSLayerAnnotation class]])
-    {
-        result = [self isEqualToLayerAnnotation:(MGSLayerAnnotation*)object];
     }
     
     return result;
@@ -63,4 +63,86 @@
     return ([self.annotation isEqual:annotation.annotation] &&
             [self.graphic isEqual:annotation.graphic]);
 }
+
+#pragma mark - AGSAnnotation wrapper delegate
+- (BOOL)canShowCallout
+{
+    if ([self.annotation respondsToSelector:_cmd])
+    {
+        return [self.annotation canShowCallout];
+    }
+    
+    return NO;
+}
+
+- (NSString*)title
+{
+    if ([self.annotation respondsToSelector:_cmd])
+    {
+        return [self.annotation title];
+    }
+    
+    return nil;
+}
+
+- (NSString*)detail
+{
+    if ([self.annotation respondsToSelector:_cmd])
+    {
+        return [self.annotation detail];
+    }
+    
+    return nil;
+}
+
+- (UIImage*)image
+{
+    if ([self.annotation respondsToSelector:_cmd])
+    {
+        return [self.annotation image];
+    }
+    
+    return nil;
+}
+
+- (UIView*)annotationView
+{
+    if ([self.annotation respondsToSelector:_cmd])
+    {
+        return [self.annotation annotationView];
+    }
+    
+    return nil;
+}
+
+- (UIView*)calloutView
+{
+    if ([self.annotation respondsToSelector:_cmd])
+    {
+        return [self.annotation calloutView];
+    }
+    
+    return nil;
+}
+
+- (MGSAnnotationType)annotationType
+{
+    if ([self.annotation respondsToSelector:_cmd])
+    {
+        return [self.annotation annotationType];
+    }
+    
+    return MGSAnnotationMarker;
+}
+
+- (id<NSObject>)userData
+{
+    if ([self.annotation respondsToSelector:_cmd])
+    {
+        return [self.annotation userData];
+    }
+    
+    return nil;
+}
+
 @end
