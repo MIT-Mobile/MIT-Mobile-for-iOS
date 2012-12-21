@@ -13,18 +13,14 @@ typedef enum _MGSAnnotationType {
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
 @optional
+@property (nonatomic, readonly, assign) BOOL canShowCallout;
 @property (nonatomic, readonly, copy) NSString *title;
 @property (nonatomic, readonly, copy) NSString *detail;
-@property (nonatomic, readonly, copy) UIImage *image;
-@property (nonatomic, readonly, weak) UIView *calloutView;
+@property (nonatomic, readonly, strong) UIImage *image;
 
+@property (nonatomic, readonly, strong) UIView *annotationView;
+@property (nonatomic, readonly, strong) UIView *calloutView;
 @property (nonatomic, readonly) MGSAnnotationType annotationType;
 
-@property (nonatomic, readonly, weak) id<NSObject> userData;
-
-- (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate;
-@end
-
-@protocol MGSAnnotationView <NSObject>
-- (void)prepareForReuseWithAnnotation:(id<MGSAnnotation>) annotation;
+@property (nonatomic, readonly, strong) id<NSObject> userData;
 @end
