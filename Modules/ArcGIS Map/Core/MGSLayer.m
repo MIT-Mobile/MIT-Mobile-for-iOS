@@ -8,6 +8,7 @@
 
 #import "MGSLayer+Protected.h"
 #import "MGSUtility.h"
+#import "MGSAnnotationSymbol.h"
 
 @interface MGSLayer ()
 @property (nonatomic, strong) NSMutableArray *mutableAnnotations;
@@ -111,7 +112,7 @@
         
         for (id<MGSAnnotation> annotation in sortedAnnotations)
         {
-            AGSGraphic *graphic = AGSGraphicFromAnnotation(annotation, MGSGraphicDefault, self.markerTemplate);
+            AGSGraphic *graphic = [[MGSAnnotationSymbol alloc] initWithAnnotation:annotation];
             MGSLayerAnnotation *mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
                                                                                        graphic:graphic];
             mapAnnotation.layer = self;
@@ -221,7 +222,7 @@
         }
         else
         {
-            graphic = AGSGraphicFromAnnotation(annotation.annotation, MGSGraphicDefault, self.markerTemplate);
+            graphic = [[MGSAnnotationSymbol alloc] initWithAnnotation:annotation];
             [graphic.attributes setObject:annotation
                                    forKey:MGSAnnotationAttributeKey];
             annotation.graphic = graphic;
