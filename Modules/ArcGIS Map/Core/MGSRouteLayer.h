@@ -1,16 +1,17 @@
 #import "MGSLayer.h"
 
-@class MGSMapAnnotation;
-@class MGSMapCoordinate;
+@protocol MGSAnnotation;
 
 @interface MGSRouteLayer : MGSLayer
-@property (strong) MGSMapAnnotation *current;
-@property (strong,readonly) MGSMapAnnotation *start;
-@property (strong,readonly) MGSMapAnnotation *end;
+@property (nonatomic,weak) id<MGSAnnotation> currentStop;
+@property (nonatomic,readonly,weak) id<MGSAnnotation> nextStop;
+@property (nonatomic,readonly,weak) id<MGSAnnotation> previousStop;
 
-@property (assign) BOOL requireIdentification;
-@property (assign) BOOL requireHandicapAccess;
+@property (nonatomic,strong) NSArray *pathCoordinates;
 
-- (void)solveRouteOnCompletion:(void (^)(BOOL routeSuccess, NSError *error))completionBlock;
+@property (nonatomic,assign) BOOL requireIdentification;
+@property (nonatomic,assign) BOOL requireHandicapAccess;
 
+- (id)initWithName:(NSString*)name;
+- (NSArray*)directionsFromStart:(id<MGSAnnotation>)start toEnd:(id<MGSAnnotation>)end;
 @end
