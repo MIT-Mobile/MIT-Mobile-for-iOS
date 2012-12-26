@@ -14,4 +14,3 @@ typedef enum _MGSGraphicType {
 FOUNDATION_EXPORT AGSPoint* AGSPointFromCLLocationCoordinate(CLLocationCoordinate2D coord);
 FOUNDATION_EXPORT AGSPoint* AGSPointWithReferenceFromCLLocationCoordinate(CLLocationCoordinate2D coord, AGSSpatialReference *targetReference);
 FOUNDATION_EXPORT CLLocationCoordinate2D CLLocationCoordinateFromAGSPoint(AGSPoint *point);
-FOUNDATION_EXPORT AGSGraphic* AGSGraphicFromAnnotation(id<MGSAnnotation> annotation, MGSGraphicType graphicType, MGSMarker *template);

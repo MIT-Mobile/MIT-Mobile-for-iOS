@@ -107,7 +107,7 @@ AGSSymbol* AGSSymbolFromAnnotation(id<MGSAnnotation> annotation, MGSMarker *temp
 }
 */
 
-
+/*
 AGSGraphic* AGSGraphicFromAnnotation(id<MGSAnnotation> annotation, MGSGraphicType graphicType, MGSMarker *template)
 {
     AGSGraphic *graphic = nil;
@@ -129,3 +129,4 @@ AGSGraphic* AGSGraphicFromAnnotation(id<MGSAnnotation> annotation, MGSGraphicTyp
     
     return graphic;
 }
+*/
