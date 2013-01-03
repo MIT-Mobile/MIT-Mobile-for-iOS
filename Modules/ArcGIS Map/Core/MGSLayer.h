@@ -36,7 +36,7 @@
 @property (nonatomic,strong) MGSMarker *markerTemplate;
 @property (assign,nonatomic) BOOL hidden;
 
-+ (MKCoordinateRegion)regionForAnnotations:(NSArray*)annotations;
++ (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations;
 
 - (void)addAnnotation:(id<MGSAnnotation>)annotation;
 - (void)addAnnotations:(NSArray *)objects;
@@ -45,6 +45,7 @@
 - (void)deleteAllAnnotations;
 
 - (void)centerOnAnnotation:(id<MGSAnnotation>)annotation;
+- (MKCoordinateRegion)regionForAnnotations;
 
 - (id)initWithName:(NSString*)name;
 - (void)refreshLayer;

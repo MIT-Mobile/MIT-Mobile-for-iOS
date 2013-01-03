@@ -8,16 +8,20 @@
 
 #import "MGSLayer+Protected.h"
 #import "MGSUtility.h"
+#import "MGSAnnotationInfoTemplateDelegate.h"
 #import "MGSAnnotationSymbol.h"
 
 @interface MGSLayer ()
-@property (nonatomic, strong) NSMutableArray *mutableAnnotations;
+@property (nonatomic, strong) NSMutableArray *layerAnnotations;
+@property (nonatomic, readonly) AGSGraphicsLayer *agsGraphicsLayer;
 @end
 
 @implementation MGSLayer
 @dynamic annotations;
 @dynamic hasGraphicsLayer;
 
+#pragma mark - Class Methods
+@dynamic agsGraphicsLayer;
 - (id)init
 {
     return [self initWithName:nil];
@@ -30,7 +34,7 @@
     if (self)
     {
         self.name = name;
-        self.mutableAnnotations = [NSMutableArray array];
+        self.layerAnnotations = [NSMutableArray array];
     }
     
     return self;
@@ -60,12 +64,17 @@
 - (NSArray*)annotations
 {
     NSMutableArray *extAnnotations = [NSMutableArray array];
-    for (MGSLayerAnnotation *annotation in self.mutableAnnotations)
+    for (MGSLayerAnnotation *annotation in self.layerAnnotations)
     {
         [extAnnotations addObject:annotation.annotation];
     }
     
     return extAnnotations;
+}
+
+- (AGSGraphicsLayer*)agsGraphicsLayer
+{
+    return _graphicsLayer;
 }
 
 #pragma mark - Public Methods
@@ -112,16 +121,31 @@
         
         for (id<MGSAnnotation> annotation in sortedAnnotations)
         {
-            AGSGraphic *graphic = [[MGSAnnotationSymbol alloc] initWithAnnotation:annotation];
-            MGSLayerAnnotation *mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
-                                                                                       graphic:graphic];
+            MGSLayerAnnotation *mapAnnotation = nil;
+            
+            if ([annotation isKindOfClass:[MGSLayerAnnotation class]])
+            {
+                mapAnnotation = (MGSLayerAnnotation*)annotation;
+                
+                // Make sure some other layer doesn't already have a claim on this
+                // annotation and, if one does, we need to create a new layer annotation
+                // which wraps the annotation we are working with
+                if ((mapAnnotation.layer != nil) && (mapAnnotation.layer != self))
+                {
+                    mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:mapAnnotation.annotation
+                                                                           graphic:nil];
+                }
+            }
+            
+            if (mapAnnotation == nil)
+            {
+                mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
+                                                                       graphic:nil];
+            }
+            
             mapAnnotation.layer = self;
             
-            [graphic.attributes setObject:mapAnnotation
-                                   forKey:MGSAnnotationAttributeKey];
-            
-            [self.mutableAnnotations addObject:mapAnnotation];
-            [self.graphicsLayer addGraphic:graphic];
+            [self.layerAnnotations addObject:mapAnnotation];
         }
         
         [self didAddAnnotations:newAnnotations];
@@ -130,7 +154,7 @@
 
 - (void)deleteAnnotation:(id<MGSAnnotation>)annotation
 {
-    if (annotation && [self.mutableAnnotations containsObject:annotation])
+    if (annotation && [self.layerAnnotations containsObject:annotation])
     {
         if ([self.mapView isPresentingCalloutForAnnotation:annotation])
         {
@@ -140,7 +164,7 @@
         MGSLayerAnnotation *layerAnnotation = [self layerAnnotationForAnnotation:annotation];
         layerAnnotation.layer = nil;
         [self.graphicsLayer removeGraphic:layerAnnotation.graphic];
-        [self.mutableAnnotations removeObject:layerAnnotation];
+        [self.layerAnnotations removeObject:layerAnnotation];
     }
 }
 
@@ -154,9 +178,9 @@
         {
             MGSLayerAnnotation *mapAnnotation = [self layerAnnotationForAnnotation:annotation];
             
+            [self.layerAnnotations removeObject:mapAnnotation];
             [self.graphicsLayer removeGraphic:mapAnnotation.graphic];
             [mapAnnotation.graphic.attributes removeObjectForKey:MGSAnnotationAttributeKey];
-            [self.mutableAnnotations removeObject:mapAnnotation];
         }
         
         [self didRemoveAnnotations:annotations];
@@ -185,7 +209,7 @@
     // assignments since the array is going to be enumerated concurrently
     // and I'd rather not deal with odd race conditions since a standard
     // if-nil-else is not atomic.
-    [self.mutableAnnotations enumerateObjectsWithOptions:NSEnumerationConcurrent
+    [self.layerAnnotations enumerateObjectsWithOptions:NSEnumerationConcurrent
                                               usingBlock:^(MGSLayerAnnotation *obj, NSUInteger idx, BOOL *stop) {
                                                   if ([obj.annotation isEqual:annotation])
                                                   {
@@ -197,12 +221,34 @@
     return (__bridge MGSLayerAnnotation*)layerAnnotation;
 }
 
+// This method should return an AGSGraphic object suitable for
+// displaying the given annotation on a map view. The default
+// implementation will just return nil. Graphics
+// can be pretty messy objects so we'll just leave it to any
+// subclasses to implement properly.
+- (AGSGraphic*)loadGraphicForAnnotation:(id<MGSAnnotation>)annotation
+{
+    return nil;
+}
+
+// This method should return a MGSAnnotation object which wraps
+// the given graphic. This method is called when there exists a
+// graphic in the map view which does not already have a matching
+// MGSAnnotation object. Generally, this should only be the case
+// for server-side map layers. Like the loadGraphicForAnnotation:
+// method, the default implementation just returns nil
+- (id<MGSAnnotation>)loadAnnotationForGraphic:(AGSGraphic*)graphic
+{
+    return nil;
+}
+
 #pragma mark - ArcGIS Methods
 - (AGSGraphicsLayer*)graphicsLayer
 {
     if (_graphicsLayer == nil)
     {
         [self loadGraphicsLayer];
+        [self refreshLayer];
     }
     
     return _graphicsLayer;
@@ -211,26 +257,6 @@
 - (void)loadGraphicsLayer
 {
     AGSGraphicsLayer *graphicsLayer = [AGSGraphicsLayer graphicsLayer];
-    
-    for (MGSLayerAnnotation *annotation in self.mutableAnnotations)
-    {
-        AGSGraphic *graphic = nil;
-        
-        if (annotation.graphic)
-        {
-            graphic = annotation.graphic;
-        }
-        else
-        {
-            graphic = [[MGSAnnotationSymbol alloc] initWithAnnotation:annotation];
-            [graphic.attributes setObject:annotation
-                                   forKey:MGSAnnotationAttributeKey];
-            annotation.graphic = graphic;
-        }
-        
-        [graphicsLayer addGraphic:graphic];
-    }
-    
     [self setGraphicsLayer:graphicsLayer];
 }
 
@@ -241,22 +267,66 @@
 
 - (void)refreshLayer
 {
-    AGSSpatialReference *graphicsReference = self.graphicsLayer.spatialReference;
-    AGSSpatialReference *viewReference = self.graphicsView.mapView.spatialReference;
-    BOOL referencesEqual = [graphicsReference isEqualToSpatialReference:viewReference];
-    
-    if (graphicsReference && viewReference && (referencesEqual == NO))
+    if (_graphicsLayer == nil)
     {
-        DDLogVerbose(@"Converting %@ to %@", graphicsReference, viewReference);
-        
-        for (AGSGraphic *graphic in self.graphicsLayer.graphics)
+        // No graphics layer and we don't want to forcefully
+        // create one here so just return.
+        return;
+    }
+    
+    // Create internal annotations for each graphic which already
+    // exists in the map layer. The default implementation ignores
+    // any pre-existing graphics.
+    for (AGSGraphic *graphic in self.agsGraphicsLayer.graphics)
+    {
+        MGSLayerAnnotation *annotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
+        if (annotation == nil)
         {
-            // Only reproject on a spatial reference mismatch
-            if ([graphic.geometry.spatialReference isEqualToSpatialReference:viewReference] == NO)
+            id<MGSAnnotation> annotation = [self loadAnnotationForGraphic:graphic];
+            if (annotation)
             {
-                graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
-                                                                           toSpatialReference:viewReference];
+                [self addAnnotation:annotation];
             }
+        }
+    }
+    
+    // Sync our current annotations with the graphics. Updating
+    // each graphic for possible annotation changes could be a pain in the
+    // ass so just brute force it for now; this may need to be
+    // optimized in the future.
+    NSMutableArray *graphics = [NSMutableArray array];
+    for (MGSLayerAnnotation *annotation in self.layerAnnotations)
+    {
+        if (annotation.graphic)
+        {
+            [self.graphicsLayer removeGraphic:annotation.graphic];
+        }
+        
+        annotation.graphic = [self loadGraphicForAnnotation:annotation];
+        
+        if (annotation.graphic == nil)
+        {
+            annotation.graphic = [AGSGraphic graphicWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
+                                                          symbol:[[MGSAnnotationSymbol alloc] initWithAnnotation:annotation]
+                                                      attributes:[NSMutableDictionary dictionary]
+                                            infoTemplateDelegate:[MGSAnnotationInfoTemplateDelegate sharedInfoTemplate]];
+        }
+        
+        [annotation.graphic.attributes setObject:annotation
+                                          forKey:MGSAnnotationAttributeKey];
+        [graphics addObject:annotation.graphic];
+    }
+    [self.graphicsLayer addGraphics:graphics];
+    
+    AGSSpatialReference *viewReference = self.graphicsView.mapView.spatialReference;
+
+    for (AGSGraphic *graphic in self.graphicsLayer.graphics)
+    {
+        // Only reproject on a spatial reference mismatch
+        if ([graphic.geometry.spatialReference isEqualToSpatialReference:viewReference] == NO)
+        {
+            graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
+                                                                       toSpatialReference:viewReference];
         }
     }
 
