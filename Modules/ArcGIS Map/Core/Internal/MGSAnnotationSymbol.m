@@ -1,6 +1,5 @@
 #import "MGSAnnotationSymbol.h"
 #import "MGSLayerAnnotation.h"
-#import "MGSAnnotationGraphic.h"
 
 @interface MGSAnnotationSymbol ()
 @property (nonatomic,strong) id<MGSAnnotation> annotation;
