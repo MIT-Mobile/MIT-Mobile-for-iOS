@@ -22,6 +22,34 @@
 
 #pragma mark - Class Methods
 @dynamic agsGraphicsLayer;
+
++ (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations
+{
+    NSMutableArray *latitudeCoordinates = [NSMutableArray array];
+    NSMutableArray *longitudeCoordinates = [NSMutableArray array];
+    
+    for (id<MGSAnnotation> annotation in annotations)
+    {
+        CLLocationCoordinate2D coord = annotation.coordinate;
+        [latitudeCoordinates addObject:[NSNumber numberWithDouble:coord.latitude]];
+        [longitudeCoordinates addObject:[NSNumber numberWithDouble:coord.longitude]];
+    }
+    
+    NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"doubleValue"
+                                                               ascending:YES]];
+    NSArray *sortedLat = [latitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
+    NSArray *sortedLon = [longitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
+    
+    CLLocationDegrees minLat = [[sortedLat objectAtIndex:0] doubleValue];
+    CLLocationDegrees maxLat = [[sortedLat lastObject] doubleValue];
+    CLLocationDegrees minLon = [[sortedLon objectAtIndex:0] doubleValue];
+    CLLocationDegrees maxLon = [[sortedLon lastObject] doubleValue];
+    
+    MKCoordinateSpan span = MKCoordinateSpanMake((maxLat - minLat), (maxLon - minLon));
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(minLat + ((maxLat - minLat) / 2.0), minLon + ((maxLon - minLon) / 2.0));
+    return MKCoordinateRegionMake(center, span);
+}
+
 - (id)init
 {
     return [self initWithName:nil];
@@ -198,6 +226,11 @@
     {
         [self.mapView centerAtCoordinate:annotation.coordinate];
     }
+}
+
+- (MKCoordinateRegion)regionForAnnotations
+{
+    return [MGSLayer regionForAnnotations:[NSSet setWithArray:self.layerAnnotations]];
 }
 
 #pragma mark - Class Extension methods
