@@ -3,6 +3,9 @@
 #import <ArcGIS/ArcGIS.h>
 #import "MGSAnnotation.h"
 
+@interface MGSLayerAnnotation ()
+@property (nonatomic,strong) id<MGSAnnotation> annotation;
+@end
 
 @implementation MGSLayerAnnotation
 - (id)init
@@ -143,6 +146,16 @@
     }
     
     return nil;
+}
+
+- (CLLocationCoordinate2D)coordinate
+{
+    if ([self.annotation respondsToSelector:_cmd])
+    {
+        return [self.annotation coordinate];
+    }
+    
+    return CLLocationCoordinate2DMake(0,0);
 }
 
 @end
