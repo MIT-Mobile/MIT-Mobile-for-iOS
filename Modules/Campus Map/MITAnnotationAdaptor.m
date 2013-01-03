@@ -8,7 +8,7 @@
     self = [super init];
     if (self)
     {
-        self.annotation = annotation;
+        self.mkAnnotation = annotation;
     }
 
     return self;
@@ -16,23 +16,22 @@
 
 - (NSString*)title
 {
-    return self.annotation.title;
+    return self.mkAnnotation.title;
 }
 
 - (NSString*)detail
 {
-    return self.annotation.subtitle;
+    return self.mkAnnotation.subtitle;
 }
 
 - (CLLocationCoordinate2D)coordinate
 {
-    return self.annotation.coordinate;
+    return self.mkAnnotation.coordinate;
 }
 
-- (void)setAnnotationView:(MITMapAnnotationView *)annotationView
+- (UIView*)annotationView
 {
-    self.cachedMarker = nil;
-    _annotationView = annotationView;
+    return (UIView*)self.legacyAnnotationView;
 }
 
 - (BOOL)isEqual:(id)object
@@ -44,7 +43,7 @@
 
     if ([object isKindOfClass:[self class]])
     {
-        return [self.annotation isEqual:[object annotation]];
+        return [self.mkAnnotation isEqual:[object annotation]];
     }
 
     return NO;

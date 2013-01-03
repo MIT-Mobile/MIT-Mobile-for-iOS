@@ -2,13 +2,12 @@
 #import <MapKit/MapKit.h>
 
 #import "MITMapAnnotationView.h"
+#import "MGSSimpleAnnotation.h"
 
-@class MGSMarker;
 
-@interface MITAnnotationAdaptor : NSObject
-@property (nonatomic,strong) id<MKAnnotation> annotation;
-@property (nonatomic,strong) MITMapAnnotationView *annotationView;
-@property (nonatomic,strong) MGSMarker *cachedMarker;
+@interface MITAnnotationAdaptor : MGSSimpleAnnotation
+@property (nonatomic,strong) id<MKAnnotation> mkAnnotation;
+@property (nonatomic,strong) MITMapAnnotationView *legacyAnnotationView;
 
 - (id)initWithMKAnnotation:(id<MKAnnotation>)annotation;
 @end
