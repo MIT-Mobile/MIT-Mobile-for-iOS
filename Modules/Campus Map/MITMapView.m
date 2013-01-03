@@ -43,6 +43,7 @@
         
         self.internalRoutes = [NSMutableArray array];
         self.routeLayer = [[MGSLayer alloc] init];
+        self.routeLayer.delegate = self;
         [self.mapView addLayer:self.routeLayer
                 withIdentifier:@"edu.mit.mobile.map.routes"];
         
@@ -130,13 +131,13 @@
     NSMutableSet *regionAnnotations = [NSMutableSet set];
     for (MITAnnotationAdaptor *adaptor in self.annotationLayer.annotations)
     {
-        if ([annotations containsObject:adaptor.annotation])
+        if ([annotations containsObject:adaptor.mkAnnotation])
         {
             [regionAnnotations addObject:adaptor];
         }
     }
     
-    return [self.mapView regionForAnnotations:regionAnnotations];
+    return [MGSLayer regionForAnnotations:regionAnnotations];
 }
 
 - (void)selectAnnotation:(id<MKAnnotation>)annotation
@@ -156,7 +157,7 @@
         if ([obj isKindOfClass:[MITAnnotationAdaptor class]])
         {
             MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)obj;
-            if ([adaptor.annotation isEqual:annotation])
+            if ([adaptor.mkAnnotation isEqual:annotation])
             {
                 mapAnnotation = obj;
                 (*stop) = YES;
@@ -168,7 +169,7 @@
     {
         if (recenter)
         {
-            [self.mapView centerOnAnnotation:mapAnnotation];
+            [self.mapView centerAtCoordinate:mapAnnotation.coordinate];
         }
         
         [self.mapView showCalloutForAnnotation:mapAnnotation];
@@ -206,7 +207,7 @@
         if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
         {
             MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
-            [newAnnotations removeObject:adaptor.annotation];
+            [newAnnotations removeObject:adaptor.mkAnnotation];
         }
     }
     
@@ -217,8 +218,8 @@
         
         if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)])
         {
-            adaptor.annotationView = [self.delegate mapView:self
-                                          viewForAnnotation:mkAnnotation];
+            adaptor.legacyAnnotationView = [self.delegate mapView:self
+                                                viewForAnnotation:mkAnnotation];
         }
         
         [addedAnnotations addObject:adaptor];
@@ -247,7 +248,7 @@
         if ([obj isKindOfClass:[MITAnnotationAdaptor class]])
         {
             MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)obj;
-            if ([annotations containsObject:adaptor.annotation])
+            if ([annotations containsObject:adaptor.mkAnnotation])
             {
                 [mgsAnnotations addObject:adaptor];
             }
@@ -280,7 +281,7 @@
             if ([obj isKindOfClass:[MITAnnotationAdaptor class]])
             {
                 MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)obj;
-                [mkAnnotations addObject:adaptor.annotation];
+                [mkAnnotations addObject:adaptor.mkAnnotation];
             }
         }];
         
@@ -326,7 +327,7 @@
     {
         if ([[route annotations] count])
         {
-            return [self.mapView regionForAnnotations:[NSSet setWithArray:[route annotations]]];
+            return [MGSLayer regionForAnnotations:[NSSet setWithArray:[route annotations]]];
         }
     }
     
@@ -351,7 +352,7 @@
             NSMutableArray *routeAnnotations = [NSMutableArray array];
             for (MITAnnotationAdaptor *adaptor in self.routeLayer.annotations)
             {
-                if ([[route annotations] containsObject:adaptor.annotation])
+                if ([[route annotations] containsObject:adaptor.mkAnnotation])
                 {
                     [routeAnnotations addObject:adaptor];
                 }
@@ -392,7 +393,7 @@
             MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
 
             [self.delegate mapView:self
-                    annotationViewCalloutAccessoryTapped:adaptor.annotationView];
+                    annotationViewCalloutAccessoryTapped:adaptor.legacyAnnotationView];
         }
     }
 }
