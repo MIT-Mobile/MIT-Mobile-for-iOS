@@ -108,7 +108,7 @@
 		2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF814E1636F69900DE273F /* DispatchQueueLogFormatter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2CCF81571636F69900DE273F /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2CCF814F1636F69900DE273F /* README.txt */; };
 		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
-		2CD400531684A23D0066924B /* MGSAnnotationSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD400521684A23D0066924B /* MGSAnnotationSymbol.m */; };
+		2CD400531684A23D0066924B /* MGSAnnotationSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD400521684A23D0066924B /* MGSAnnotationSymbol.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
 		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; };
 		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; };
