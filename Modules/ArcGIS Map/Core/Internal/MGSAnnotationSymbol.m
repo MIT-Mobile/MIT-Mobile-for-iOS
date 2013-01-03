@@ -1,49 +1,88 @@
 #import "MGSAnnotationSymbol.h"
-#include "MGSLayerAnnotation.h"
+#import "MGSLayerAnnotation.h"
+#import "MGSAnnotationGraphic.h"
+
+@interface MGSAnnotationSymbol ()
+@property (nonatomic,strong) id<MGSAnnotation> annotation;
+@property (nonatomic,strong) UIImage *cachedImage;
+@end
 
 @implementation MGSAnnotationSymbol
-- (id)initWithLayerAnnotation:(MGSLayerAnnotation*)annotation
+- (id)initWithAnnotation:(id<MGSAnnotation>)annotation
 {
-    self = [super init];
+    return [self initWithAnnotation:annotation
+                   defaultImageName:@"map/map_pin_complete"];
+}
+
+- (id)initWithAnnotation:(id<MGSAnnotation>)layerAnnotation defaultImageName:(NSString *)imageName
+{
+    self = [super initWithImageNamed:imageName];
     
     if (self)
     {
-        self.annotation = annotation;
+        self.annotation = layerAnnotation;
     }
     
     return self;
 }
 
-- (void)drawGraphic:(AGSGraphic *) graphic
-          inContext:(CGContextRef) context
-        forEnvelope:(AGSEnvelope *) env
-       atResolution:(double) resolution
+- (UIImage*)image
 {
-    CGRect gfxFrame = CGRectZero;
+    UIView *annotationView = self.annotation.annotationView;
     
-    gfxFrame.origin = [MGSAnnotationSymbol toScreenPointWithX:graphic.geometry.envelope.xmin
-                                                            y:graphic.geometry.envelope.ymin
-                                                     envelope:env
-                                                   resolution:resolution];
+    if (annotationView)
+    {
+        [annotationView layoutIfNeeded];
+        CALayer *annotationLayer = annotationView.layer;
+        
+        if ((self.cachedImage == nil) || annotationLayer.needsDisplay)
+        {
+            UIGraphicsBeginImageContextWithOptions(annotationView.frame.size, NO, [[UIScreen mainScreen] scale]);
+            [annotationLayer renderInContext:UIGraphicsGetCurrentContext()];
+            self.cachedImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+        }
+        
+        return self.cachedImage;
+    }
     
-    CGPoint origin = [MGSAnnotationSymbol toScreenPointWithX:graphic.geometry.envelope.xmin
-                                                           y:graphic.geometry.envelope.ymin
-                                                    envelope:env
-                                                  resolution:resolution];
-    
-    CGPoint max = [MGSAnnotationSymbol toScreenPointWithX:graphic.geometry.envelope.xmax
-                                                        y:graphic.geometry.envelope.ymax
-                                                 envelope:env
-                                               resolution:resolution];
-    
-    gfxFrame.size.width = max.x - origin.x;
-    gfxFrame.size.height = max.y - origin.y;
-    gfxFrame = CGRectStandardize(gfxFrame);
-    
-    
-    AGSEnvelope *graphicEnv = graphic.geometry.envelope;
-    CGRect gfxRect = CGRectMake(graphicEnv.xmin,graphicEnv.ymin,graphicEnv.width,graphicEnv.height);
-    
+    UIImage *image = [super image];
+    NSLog(@"%@", NSStringFromCGSize(image.size));
+    return image;
 }
 
+/*
+- (CGSize)drawingSize
+{
+    UIView *annotationView = self.annotation.annotationView;
+    CGSize size = CGSizeZero;
+    
+    if (annotationView)
+    {
+        CGSize size = annotationView.frame.size;
+        return size;
+    }
+    else
+    {
+        if ([super respondsToSelector:@selector(drawingSize)])
+        {
+            return [super drawingSize];
+        }
+    }
+}
+ */
+
+- (void)setAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([annotation isEqual:_annotation] == NO)
+    {
+        _annotation = annotation;
+        self.cachedImage = nil;
+    }
+}
+
+- (BOOL)shouldCacheSymbol
+{
+    return NO;
+}
 @end

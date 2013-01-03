@@ -1,15 +1,11 @@
 #import <ArcGIS/ArcGIS.h>
 
-@class MGSLayerAnnotation;
+@protocol MGSAnnotation;
 
-@interface MGSAnnotationSymbol : AGSSymbol
-@property (nonatomic,strong) MGSLayerAnnotation* annotation;
+@interface MGSAnnotationSymbol : AGSPictureMarkerSymbol
+@property (nonatomic, readonly, strong) id<MGSAnnotation> annotation;
 
-+ (CGPoint)toScreenPointWithX:(double)x
-                            y:(double)y
-                     envelope:(AGSEnvelope *)env
-                   resolution:(double)res;
+- (id)initWithAnnotation:(id<MGSAnnotation>)annotation;
+- (id)initWithAnnotation:(id<MGSAnnotation>)annotation defaultImageName:(NSString *)imageName;
 
-- (id)initWithAnnotation:(MGSLayerAnnotation*)annotation;
-- (UIImage *)swatchForGeometryType:(AGSGeometryType)geometryType size:(CGSize)size;
 @end
