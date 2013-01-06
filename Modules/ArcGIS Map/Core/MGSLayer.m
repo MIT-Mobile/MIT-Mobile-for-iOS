@@ -307,6 +307,8 @@
         return;
     }
     
+    [self willReloadMapLayer];
+    
     // Create internal annotations for each graphic which already
     // exists in the map layer. The default implementation ignores
     // any pre-existing graphics.
@@ -362,6 +364,8 @@
                                                                        toSpatialReference:viewReference];
         }
     }
+    
+    [self didReloadMapLayer];
 
     [self.graphicsLayer dataChanged];
 }
@@ -433,6 +437,14 @@
 - (void)willReloadMapLayer
 {
     if ([self.delegate respondsToSelector:@selector(willReloadMapLayer:)])
+    {
+        [self.delegate willReloadMapLayer:self];
+    }
+}
+
+- (void)didReloadMapLayer
+{
+    if ([self.delegate respondsToSelector:@selector(didReloadMapLayer:)])
     {
         [self.delegate willReloadMapLayer:self];
     }

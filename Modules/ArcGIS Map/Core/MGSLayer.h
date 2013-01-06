@@ -22,6 +22,7 @@
 - (void)mapLayer:(MGSLayer*)layer didRemoveAnnotations:(NSArray*)annotations;
 
 - (void)willReloadMapLayer:(MGSLayer*)mapLayer;
+- (void)didReloadMapLayer:(MGSLayer*)mapLayer;
 
 - (BOOL)mapLayer:(MGSLayer*)layer shouldDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 - (UIView*)mapLayer:(MGSLayer*)layer calloutViewForAnnotation:(id<MGSAnnotation>)annotation;
@@ -49,6 +50,18 @@
 
 - (id)initWithName:(NSString*)name;
 - (void)refreshLayer;
+
+- (BOOL)shouldDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation;
+- (UIView*)calloutViewForAnnotation:(id<MGSAnnotation>)annotation;
+
+- (void)willMoveToMapView:(MGSMapView*)mapView;
+- (void)didMoveToMapView:(MGSMapView*)mapView;
+- (void)willAddAnnotations:(NSArray*)annotations;
+- (void)didAddAnnotations:(NSArray*)annotations;
+- (void)willRemoveAnnotations:(NSArray*)annotations;
+- (void)didRemoveAnnotations:(NSArray*)annotations;
+- (void)willReloadMapLayer;
+- (void)didReloadMapLayer;
 
 - (BOOL)shouldDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 - (UIView*)calloutViewForAnnotation:(id<MGSAnnotation>)annotation;
