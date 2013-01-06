@@ -1,20 +1,22 @@
-#import <MapKit/MapKit.h>
+#import <CoreLocation/CoreLocation.h>
 
 #import "MITMapView.h"
 #import "MGSMapView.h"
 #import "MGSLayer.h"
 #import "MGSAnnotation.h"
 #import "MITAnnotationAdaptor.h"
+#import "MGSRouteLayer.h"
+#import "CoreLocation+MITAdditions.h"
 
 @interface MITMapView () <MGSMapViewDelegate,MGSLayerDelegate>
 @property (nonatomic, weak) MGSMapView *mapView;
 @property (nonatomic, weak) id<MKAnnotation> currentAnnotation;
 
 @property (nonatomic, strong) MGSLayer *annotationLayer;
-@property (nonatomic, strong) MGSLayer *routeLayer;
 
 @property (nonatomic, strong) NSArray *annotationCache;
-@property (nonatomic, strong) NSMutableArray *internalRoutes;
+@property (nonatomic, strong) NSMutableArray *legacyRoutes;
+@property (nonatomic, strong) NSMutableArray *routeLayers;
 @end
 
 @implementation MITMapView
@@ -41,11 +43,8 @@
         [self.mapView addLayer:self.annotationLayer
                 withIdentifier:@"edu.mit.mobile.map.annotations"];
         
-        self.internalRoutes = [NSMutableArray array];
-        self.routeLayer = [[MGSLayer alloc] init];
-        self.routeLayer.delegate = self;
-        [self.mapView addLayer:self.routeLayer
-                withIdentifier:@"edu.mit.mobile.map.routes"];
+        self.legacyRoutes = [NSMutableArray array];
+        self.routeLayers = [NSMutableArray array];
         
         [self setNeedsLayout];
     }
@@ -294,31 +293,44 @@
 #pragma mark - Route Handling
 - (NSArray*)routes
 {
-    return self.internalRoutes;
+    return [NSArray arrayWithArray:self.legacyRoutes];
 }
 
 - (void)addRoute:(id<MITMapRoute>)route
 {
-    if ([self.internalRoutes containsObject:route])
+    if ([self.legacyRoutes containsObject:route])
     {
+        
         return;
     }
     
-    [self.internalRoutes addObject:route];
+    NSMutableArray *pathCoordinates = [NSMutableArray array];
+    for (CLLocation *location in [route pathLocations])
+    {
+        NSValue *locationValue = [NSValue valueWithMKCoordinate:[location coordinate]];
+        [pathCoordinates addObject:locationValue];
+    }
     
+    NSMutableArray *stops = [NSMutableArray array];
     if ([route respondsToSelector:@selector(annotations)])
     {
-        NSMutableArray *routeAnnotations = [NSMutableArray array];
         for (id<MKAnnotation> annotation in [route annotations])
         {
             MITAnnotationAdaptor *adaptor = [[MITAnnotationAdaptor alloc] initWithMKAnnotation:annotation];
-            [routeAnnotations addObject:adaptor];
+            [stops addObject:adaptor];
         }
-        
-        [self.routeLayer addAnnotations:routeAnnotations];
     }
     
-    [self.routeLayer refreshLayer];
+    NSString *identifier = [NSString stringWithFormat:@"edu.mit.mobile.map.routes.%d",[self.routeLayers count]];
+    MGSRouteLayer *layer = [[MGSRouteLayer alloc] initWithName:identifier
+                                                     withStops:stops
+                                               pathCoordinates:pathCoordinates];
+    [self.legacyRoutes addObject:route];
+    [self.routeLayers addObject:layer];
+    
+    [self.mapView addLayer:layer
+            withIdentifier:identifier];
+    [layer refreshLayer];
 }
 
 - (MKCoordinateRegion)regionForRoute:(id<MITMapRoute>)route
@@ -336,32 +348,29 @@
 
 - (void)removeAllRoutes
 {
-    [self.internalRoutes removeAllObjects];
-    [self.routeLayer deleteAllAnnotations];
-    [self.routeLayer refreshLayer];
+    NSArray *routes = self.routeLayers;
+    self.routeLayers = nil;
+    
+    [routes enumerateObjectsUsingBlock:^(MGSRouteLayer *layer, NSUInteger idx, BOOL *stop) {
+        NSString *identifier = [NSString stringWithFormat:@"edu.mit.mobile.map.routes.%d",idx];
+        
+        [self.mapView removeLayerWithIdentifier:identifier];
+        [self.legacyRoutes removeObjectAtIndex:idx];
+    }];
 }
 
 - (void)removeRoute:(id<MITMapRoute>) route
 {
-    if ([self.internalRoutes containsObject:route])
+    if ([self.legacyRoutes containsObject:route])
     {
-        [self.internalRoutes removeObject:route];
-        
-        if ([route respondsToSelector:@selector(annotations)])
-        {
-            NSMutableArray *routeAnnotations = [NSMutableArray array];
-            for (MITAnnotationAdaptor *adaptor in self.routeLayer.annotations)
-            {
-                if ([[route annotations] containsObject:adaptor.mkAnnotation])
-                {
-                    [routeAnnotations addObject:adaptor];
-                }
-            }
+        [self.legacyRoutes enumerateObjectsUsingBlock:^(id<MITMapRoute> route, NSUInteger idx, BOOL *stop) {
+            NSString *identifier = [NSString stringWithFormat:@"edu.mit.mobile.map.routes.%d",idx];
             
-            [self.routeLayer deleteAnnotations:routeAnnotations];
-        }
+            [self.routeLayers removeObjectAtIndex:idx];
+            [self.mapView removeLayerWithIdentifier:identifier];
+        }];
         
-        [self.routeLayer refreshLayer];
+        [self.legacyRoutes removeObject:route];
     }
 }
 
