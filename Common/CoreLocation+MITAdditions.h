@@ -17,3 +17,9 @@
 - (BOOL)isNearCampus;
 
 @end
+
+@interface NSValue (CL_MITAdditions)
++ (NSValue *)valueWithMKCoordinate:(CLLocationCoordinate2D)coordinate;
+- (CLLocationCoordinate2D)MKCoordinateValue;
+
+@end

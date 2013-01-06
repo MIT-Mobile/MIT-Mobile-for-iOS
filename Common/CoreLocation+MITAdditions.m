@@ -18,3 +18,25 @@
 }
 
 @end
+
+
+@implementation NSValue (CL_MITAdditions)
++ (NSValue *)valueWithMKCoordinate:(CLLocationCoordinate2D)coordinate
+{
+    return [NSValue valueWithBytes:(const void*)(&coordinate)
+                          objCType:@encode(CLLocationCoordinate2D)];
+}
+
+- (CLLocationCoordinate2D)MKCoordinateValue
+{
+    if (strcmp([self objCType], @encode(CLLocationCoordinate2D)) == 0)
+    {
+        CLLocationCoordinate2D coordinate;
+        [self getValue:&coordinate];
+        
+        return coordinate;
+    }
+    
+    return CLLocationCoordinate2DMake(CGFLOAT_MAX, CGFLOAT_MAX);
+}
+@end
