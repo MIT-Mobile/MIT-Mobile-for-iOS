@@ -31,13 +31,20 @@
     
     if (annotationView)
     {
+        CGRect frame = annotationView.frame;
+        frame.origin = CGPointZero;
+        annotationView.frame = frame;
+        
         [annotationView layoutIfNeeded];
         CALayer *annotationLayer = annotationView.layer;
         
         if ((self.cachedImage == nil) || annotationLayer.needsDisplay)
         {
-            UIGraphicsBeginImageContextWithOptions(annotationView.frame.size, NO, [[UIScreen mainScreen] scale]);
-            [annotationLayer renderInContext:UIGraphicsGetCurrentContext()];
+            CGSize size = CGSizeMake(annotationView.frame.size.height, annotationView.frame.size.width);
+            UIGraphicsBeginImageContextWithOptions(size, NO, [[UIScreen mainScreen] scale]);
+            CGContextRef context = UIGraphicsGetCurrentContext();
+            CGContextConcatCTM(context, annotationView.transform);
+            [annotationLayer renderInContext:context];
             self.cachedImage = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
         }
@@ -46,30 +53,8 @@
     }
     
     UIImage *image = [super image];
-    NSLog(@"%@", NSStringFromCGSize(image.size));
     return image;
 }
-
-/*
-- (CGSize)drawingSize
-{
-    UIView *annotationView = self.annotation.annotationView;
-    CGSize size = CGSizeZero;
-    
-    if (annotationView)
-    {
-        CGSize size = annotationView.frame.size;
-        return size;
-    }
-    else
-    {
-        if ([super respondsToSelector:@selector(drawingSize)])
-        {
-            return [super drawingSize];
-        }
-    }
-}
- */
 
 - (void)setAnnotation:(id<MGSAnnotation>)annotation
 {
