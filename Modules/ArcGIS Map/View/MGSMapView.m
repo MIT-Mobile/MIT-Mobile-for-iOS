@@ -257,6 +257,8 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                 [self insertLayer:layer
                           atIndex:index
                    withIdentifier:identifier];
+                
+                [layer.graphicsLayer dataChanged];
             }
             
             [self.pendingLayers removeAllObjects];
