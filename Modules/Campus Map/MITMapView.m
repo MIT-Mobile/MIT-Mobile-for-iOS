@@ -17,6 +17,8 @@
 @property (nonatomic, strong) NSArray *annotationCache;
 @property (nonatomic, strong) NSMutableArray *legacyRoutes;
 @property (nonatomic, strong) NSMutableArray *routeLayers;
+
+- (void)refreshLayers;
 @end
 
 @implementation MITMapView
@@ -55,6 +57,15 @@
 - (void)layoutSubviews
 {
     self.mapView.frame = self.bounds;
+}
+
+- (void)refreshLayers
+{
+    [self.annotationLayer refreshLayer];
+    for (MGSLayer *layer in self.routeLayers)
+    {
+        [layer refreshLayer];
+    }
 }
 
 #pragma mark - Dynamic Properties
