@@ -59,7 +59,7 @@
     symbol.style = AGSSimpleLineSymbolStyleSolid;
     symbol.width = 2.0f;
     
-    NSLog(@"Adding polyline with %d points using symbol %@", [polyline numPointsInPath:0], symbol);
+    DDLogVerbose(@"[%@] adding route with %d points using symbol %@", self.name, [polyline numPointsInPath:0], symbol);
     AGSGraphic *pathGraphic = [AGSGraphic graphicWithGeometry:polyline
                                                        symbol:symbol
                                                    attributes:nil
