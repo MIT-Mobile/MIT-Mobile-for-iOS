@@ -258,7 +258,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                           atIndex:index
                    withIdentifier:identifier];
                 
-                [layer.graphicsLayer dataChanged];
+                [layer refreshLayer];
             }
             
             [self.pendingLayers removeAllObjects];
@@ -576,11 +576,12 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (void)mapView:(AGSMapView *)mapView didLoadLayerForLayerView:(UIView<AGSLayerView> *)layerView
 {
-    
     NSString *identifier = layerView.agsLayer.name;
     
     if ([self.coreMapIdentifiers containsObject:identifier])
     {
+        DDLogVerbose(@"successfully loaded core layer '%@'", identifier);
+        
         BOOL coreLayersLoaded = YES;
         for (NSString *identifier in self.coreMapIdentifiers)
         {
@@ -594,7 +595,6 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             [self didFinishLoadingMapView];
         }
         
-        DDLogVerbose(@"Successfully loaded core layer '%@'", identifier);
     }
     else
     {
