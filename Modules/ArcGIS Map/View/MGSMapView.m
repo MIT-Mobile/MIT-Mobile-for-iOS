@@ -365,6 +365,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             
             [self willAddLayer:layer];
             
+            DDLogVerbose(@"\tbasemap has spatial reference [%d]", self.mapView.spatialReference.wkid);
             AGSGraphicsLayer *agsLayer = layer.graphicsLayer;
             layer.graphicsView = [self.mapView insertMapLayer:agsLayer
                                                      withName:layerIdentifier
