@@ -21,6 +21,8 @@
     {
         self.stopAnnotations = stopAnnotations;
         self.pathCoordinates = pathCoordinates;
+        self.lineColor = [UIColor redColor];
+        self.lineWidth = 4.0f;
     }
     
     return self;
@@ -67,6 +69,36 @@
     
     [layer addGraphic:pathGraphic];
     [layer dataChanged];
+}
+
+- (void)setLineColor:(UIColor *)lineColor
+{
+    if (_lineColor != lineColor)
+    {
+        _lineColor = lineColor;
+        
+        AGSSymbol *symbol = self.lineGraphic.symbol;
+        if ([symbol isKindOfClass:NSClassFromString(@"AGSSimpleLineSymbol")])
+        {
+            AGSSimpleLineSymbol *lineSymbol = (AGSSimpleLineSymbol*)symbol;
+            lineSymbol.color = lineColor;
+        }
+    }
+}
+
+- (void)setLineWidth:(CGFloat)lineWidth
+{
+    if (_lineWidth != lineWidth)
+    {
+        _lineWidth = lineWidth;
+        
+        AGSSymbol *symbol = self.lineGraphic.symbol;
+        if ([symbol isKindOfClass:NSClassFromString(@"AGSSimpleLineSymbol")])
+        {
+            AGSSimpleLineSymbol *lineSymbol = (AGSSimpleLineSymbol*)symbol;
+            lineSymbol.width = _lineWidth;
+        }
+    }
 }
 
 @end
