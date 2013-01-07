@@ -43,7 +43,8 @@
 
     if ([object isKindOfClass:[self class]])
     {
-        return [self.mkAnnotation isEqual:[object annotation]];
+        MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)object;
+        return [self.mkAnnotation isEqual:adaptor.mkAnnotation];
     }
 
     return NO;
