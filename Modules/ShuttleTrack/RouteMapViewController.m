@@ -43,7 +43,7 @@
     
     if (self.mapView == nil)
     {
-        MITMapView *mapView = [[MITMapView alloc] initWithFrame:self.view.bounds];
+        MITMapView *mapView = [[[MITMapView alloc] initWithFrame:self.view.bounds] autorelease];
         mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                     UIViewAutoresizingFlexibleWidth);
         self.mapView = mapView;
