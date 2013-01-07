@@ -40,10 +40,23 @@
         
         if ((self.cachedImage == nil) || annotationLayer.needsDisplay)
         {
-            CGSize size = CGSizeMake(annotationView.frame.size.height, annotationView.frame.size.width);
+            self.xoffset = -annotationView.frame.origin.x;
+            self.yoffset = -annotationView.frame.origin.y;
+            CGSize size = CGSizeMake(annotationView.frame.size.width,
+                                     annotationView.frame.size.height);
+            
             UIGraphicsBeginImageContextWithOptions(size, NO, [[UIScreen mainScreen] scale]);
             CGContextRef context = UIGraphicsGetCurrentContext();
-            CGContextConcatCTM(context, annotationView.transform);
+            
+            // Center the context around the window's anchor point
+            CGContextTranslateCTM(context, [annotationView center].x, [annotationView center].y);
+            // Apply the window's transform about the anchor point
+            CGContextConcatCTM(context, [annotationView transform]);
+            // Offset by the portion of the bounds left of and above the anchor point
+            CGContextTranslateCTM(context,
+                                  -[annotationView bounds].size.width * [annotationLayer anchorPoint].x,
+                                  -[annotationView bounds].size.height * [annotationLayer anchorPoint].y);
+
             [annotationLayer renderInContext:context];
             self.cachedImage = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
