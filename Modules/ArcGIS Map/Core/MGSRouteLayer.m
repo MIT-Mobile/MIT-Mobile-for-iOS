@@ -55,9 +55,14 @@
         }
     }
     
+    AGSSimpleLineSymbol *symbol = [AGSSimpleLineSymbol simpleLineSymbolWithColor:[UIColor redColor]];
+    symbol.style = AGSSimpleLineSymbolStyleSolid;
+    symbol.width = 2.0f;
+    
+    NSLog(@"Adding polyline with %d points using symbol %@", [polyline numPointsInPath:0], symbol);
     AGSGraphic *pathGraphic = [AGSGraphic graphicWithGeometry:polyline
-                                                       symbol:[AGSSimpleLineSymbol simpleLineSymbolWithColor:[UIColor redColor] width:16.0]
-                                                   attributes:[NSMutableDictionary dictionary]
+                                                       symbol:symbol
+                                                   attributes:nil
                                          infoTemplateDelegate:nil];
     
     [layer addGraphic:pathGraphic];
