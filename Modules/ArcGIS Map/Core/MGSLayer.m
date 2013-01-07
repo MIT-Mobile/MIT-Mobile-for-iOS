@@ -353,20 +353,33 @@
     }
     [self.graphicsLayer addGraphics:graphics];
     
-    AGSSpatialReference *viewReference = self.graphicsView.mapView.spatialReference;
+    [self didReloadMapLayer];
 
+    
+    // Since a subclass may add graphics in the -didReloadMapLayer method,
+    // be sure to go through and re-project everything *after* the delegation
+    // call.
+    AGSSpatialReference *mapReference = self.graphicsView.mapView.spatialReference;
+    
+    if (mapReference == nil)
+    {
+        mapReference = [AGSSpatialReference wgs84SpatialReference];
+    }
+    
+    NSUInteger reprojectionCount = 0;
     for (AGSGraphic *graphic in self.graphicsLayer.graphics)
     {
+        DDLogVerbose(@"<%@> sref:\n\tMap: %@\n\tLayer: %@\n\tGraphic: %@",self.name, mapReference, self.graphicsLayer.spatialReference, graphic.geometry.spatialReference);
         // Only reproject on a spatial reference mismatch
-        if ([graphic.geometry.spatialReference isEqualToSpatialReference:viewReference] == NO)
+        if ([graphic.geometry.spatialReference isEqualToSpatialReference:mapReference] == NO)
         {
+            ++reprojectionCount;
             graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
-                                                                       toSpatialReference:viewReference];
+                                                                       toSpatialReference:mapReference];
         }
     }
     
-    [self didReloadMapLayer];
-
+    DDLogVerbose(@"\tReprojeted %lu graphics", (unsigned long)reprojectionCount);
     [self.graphicsLayer dataChanged];
 }
 
