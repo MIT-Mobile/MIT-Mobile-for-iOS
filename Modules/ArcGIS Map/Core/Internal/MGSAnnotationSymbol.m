@@ -31,35 +31,33 @@
     
     if (annotationView)
     {
-        CGRect frame = annotationView.frame;
-        frame.origin = CGPointZero;
-        annotationView.frame = frame;
-        
+        [annotationView sizeToFit];
         [annotationView layoutIfNeeded];
+        
         CALayer *annotationLayer = annotationView.layer;
+        annotationLayer.backgroundColor = [[UIColor blackColor] CGColor];
         
         if ((self.cachedImage == nil) || annotationLayer.needsDisplay)
         {
-            self.xoffset = -annotationView.frame.origin.x;
-            self.yoffset = -annotationView.frame.origin.y;
-            CGSize size = CGSizeMake(annotationView.frame.size.width,
-                                     annotationView.frame.size.height);
             
+            CGRect originalFrame = annotationView.frame;
+            CGRect newFrame = annotationView.frame;
+            newFrame.origin = CGPointZero;
+            annotationView.frame = newFrame;
+            
+            
+            self.xoffset = -CGRectGetMinX(originalFrame);
+            self.yoffset = -CGRectGetMinY(originalFrame);
+            CGSize size = CGSizeMake(CGRectGetWidth(originalFrame),
+                                     CGRectGetHeight(originalFrame));
             UIGraphicsBeginImageContextWithOptions(size, NO, [[UIScreen mainScreen] scale]);
             CGContextRef context = UIGraphicsGetCurrentContext();
             
-            // Center the context around the window's anchor point
-            CGContextTranslateCTM(context, [annotationView center].x, [annotationView center].y);
-            // Apply the window's transform about the anchor point
-            CGContextConcatCTM(context, [annotationView transform]);
-            // Offset by the portion of the bounds left of and above the anchor point
-            CGContextTranslateCTM(context,
-                                  -[annotationView bounds].size.width * [annotationLayer anchorPoint].x,
-                                  -[annotationView bounds].size.height * [annotationLayer anchorPoint].y);
-
             [annotationLayer renderInContext:context];
             self.cachedImage = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
+            
+            annotationView.frame = originalFrame;
         }
         
         return self.cachedImage;
