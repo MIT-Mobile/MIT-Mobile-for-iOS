@@ -40,7 +40,7 @@
         self.mapView = mapView;
         [self addSubview:mapView];
         
-        self.annotationLayer = [[MGSLayer alloc] init];
+        self.annotationLayer = [[MGSLayer alloc] initWithName:@"edu.mit.mobile.map.legacy.annotations"];
         self.annotationLayer.delegate = self;
         [self.mapView addLayer:self.annotationLayer
                 withIdentifier:@"edu.mit.mobile.map.annotations"];
