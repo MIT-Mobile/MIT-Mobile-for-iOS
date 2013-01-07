@@ -281,7 +281,6 @@
     if (_graphicsLayer == nil)
     {
         [self loadGraphicsLayer];
-        [self refreshLayer];
     }
     
     return _graphicsLayer;
