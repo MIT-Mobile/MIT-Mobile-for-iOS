@@ -236,7 +236,8 @@
     }
     
     [self.annotationLayer addAnnotations:addedAnnotations];
-    [self.annotationLayer refreshLayer];
+    
+    [self refreshLayers];
     
     self.annotationCache = nil;
 }
@@ -278,7 +279,7 @@
         self.showsUserLocation = NO;
     }
     
-    [self.annotationLayer refreshLayer];
+    [self refreshLayers];
     self.annotationCache = nil;
 }
 
@@ -341,7 +342,7 @@
     
     [self.mapView addLayer:layer
             withIdentifier:identifier];
-    [layer refreshLayer];
+    [self refreshLayers];
 }
 
 - (MKCoordinateRegion)regionForRoute:(id<MITMapRoute>)route
@@ -382,6 +383,8 @@
         }];
         
         [self.legacyRoutes removeObject:route];
+        
+        [self refreshLayers];
     }
 }
 
