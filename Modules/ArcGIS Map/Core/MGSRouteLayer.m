@@ -57,17 +57,24 @@
         }
     }
     
-    AGSSimpleLineSymbol *symbol = [AGSSimpleLineSymbol simpleLineSymbolWithColor:[UIColor redColor]];
-    symbol.style = AGSSimpleLineSymbolStyleSolid;
-    symbol.width = 2.0f;
-    
-    DDLogVerbose(@"[%@] adding route with %d points using symbol %@", self.name, [polyline numPointsInPath:0], symbol);
-    AGSGraphic *pathGraphic = [AGSGraphic graphicWithGeometry:polyline
-                                                       symbol:symbol
-                                                   attributes:nil
-                                         infoTemplateDelegate:nil];
-    
-    [layer addGraphic:pathGraphic];
+    if (self.lineGraphic)
+    {
+        self.lineGraphic.geometry = polyline;
+    }
+    else
+    {
+        AGSSimpleLineSymbol *symbol = [AGSSimpleLineSymbol simpleLineSymbol];
+        symbol.style = AGSSimpleLineSymbolStyleSolid;
+        symbol.width = self.lineWidth;
+        symbol.color = self.lineColor;
+        
+        DDLogVerbose(@"[%@] adding route with %d points using symbol %@", self.name, [polyline numPointsInPath:0], symbol);
+        AGSGraphic *pathGraphic = [AGSGraphic graphicWithGeometry:polyline
+                                                           symbol:symbol
+                                                       attributes:nil
+                                             infoTemplateDelegate:nil];
+        [layer addGraphic:pathGraphic];
+    }
     [layer dataChanged];
 }
 
