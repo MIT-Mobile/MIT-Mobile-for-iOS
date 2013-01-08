@@ -73,9 +73,9 @@
                                                            symbol:symbol
                                                        attributes:nil
                                              infoTemplateDelegate:nil];
+        self.lineGraphic = pathGraphic;
         [layer addGraphic:pathGraphic];
     }
-    [layer dataChanged];
 }
 
 - (void)setLineColor:(UIColor *)lineColor
