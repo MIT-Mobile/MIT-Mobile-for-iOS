@@ -342,8 +342,10 @@
     [self.legacyRoutes addObject:route];
     [self.routeLayers addObject:layer];
     
-    [self.mapView addLayer:layer
-            withIdentifier:identifier];
+    [self.mapView insertLayer:layer
+               withIdentifier:identifier
+                  behindLayer:self.annotationLayer];
+    
     [self refreshLayers];
 }
 

@@ -344,13 +344,32 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
   withIdentifier:(NSString*)layerIdentifier
 {
     [self insertLayer:layer
-              atIndex:[self.userLayers count]
-       withIdentifier:layerIdentifier];
+       withIdentifier:layerIdentifier
+              atIndex:[self.userLayers count]];
+}
+
+- (void)insertLayer:(MGSLayer *)layer
+     withIdentifier:(NSString *)layerIdentifier
+        behindLayer:(MGSLayer *)foregroundLayer
+{
+    NSUInteger index = [self.userLayerOrder indexOfObject:foregroundLayer];
+    
+    if (index == NSNotFound)
+    {
+        [self addLayer:layer
+        withIdentifier:layerIdentifier];
+    }
+    else
+    {
+        [self insertLayer:layer
+           withIdentifier:layerIdentifier
+                  atIndex:index];
+    }
 }
 
 - (void)insertLayer:(MGSLayer*)layer
-            atIndex:(NSUInteger)layerIndex
      withIdentifier:(NSString*)layerIdentifier
+            atIndex:(NSUInteger)layerIndex
 {
     if (self.coreLayersLoaded)
     {

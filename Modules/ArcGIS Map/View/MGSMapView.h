@@ -28,7 +28,9 @@
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)basemapIdentifier;
 
 - (void)addLayer:(MGSLayer*)layer withIdentifier:(NSString*)layerIdentifier;
-- (void)insertLayer:(MGSLayer*)layer atIndex:(NSUInteger)layerIndex withIdentifier:(NSString*)layerIdentifier; 
+- (void)insertLayer:(MGSLayer*)layer withIdentifier:(NSString*)layerIdentifier atIndex:(NSUInteger)layerIndex;
+- (void)insertLayer:(MGSLayer*)layer withIdentifier:(NSString*)layerIdentifier behindLayer:(MGSLayer*)foregroundLayer;
+
 - (MGSLayer*)layerWithIdentifier:(NSString*)layerIdentifier;
 - (BOOL)containsLayerWithIdentifier:(NSString*)layerIdentifier;
 - (void)removeLayerWithIdentifier:(NSString*)layerIdentifier;
