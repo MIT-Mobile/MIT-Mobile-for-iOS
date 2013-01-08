@@ -98,24 +98,24 @@
     return nil;
 }
 
-- (UIImage*)image
+- (UIImage*)calloutImage
 {
     if ([self.annotation respondsToSelector:_cmd])
     {
-        return [self.annotation image];
+        return [self.annotation calloutImage];
     }
     
     return nil;
 }
 
-- (UIView*)annotationView
+- (UIImage*)annotationMarker
 {
     if ([self.annotation respondsToSelector:_cmd])
     {
-        return [self.annotation annotationView];
+        return [self.annotation annotationMarker];
     }
     
-    return nil;
+    return [UIImage imageNamed:@"map/map_pin_complete"];
 }
 
 - (UIView*)calloutView

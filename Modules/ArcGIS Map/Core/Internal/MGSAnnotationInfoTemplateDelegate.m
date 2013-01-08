@@ -126,7 +126,7 @@
 {
     if ([annotation respondsToSelector:@selector(image)])
     {
-        return [annotation image];
+        return [annotation calloutImage];
     }
 
     return nil;

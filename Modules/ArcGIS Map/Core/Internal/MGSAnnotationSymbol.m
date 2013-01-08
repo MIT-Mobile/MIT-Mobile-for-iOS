@@ -27,6 +27,7 @@
 
 - (UIImage*)image
 {
+/*
     UIView *annotationView = self.annotation.annotationView;
     
     if (annotationView)
@@ -39,18 +40,16 @@
         
         if ((self.cachedImage == nil) || annotationLayer.needsDisplay)
         {
-            
             CGRect originalFrame = annotationView.frame;
-            CGRect newFrame = annotationView.frame;
-            newFrame.origin = CGPointZero;
-            annotationView.frame = newFrame;
+            CGRect originalBounds = annotationView.bounds;
             
+            annotationView.frame = originalBounds;
             
             self.xoffset = -CGRectGetMinX(originalFrame);
             self.yoffset = -CGRectGetMinY(originalFrame);
             CGSize size = CGSizeMake(CGRectGetWidth(originalFrame),
                                      CGRectGetHeight(originalFrame));
-            UIGraphicsBeginImageContextWithOptions(size, NO, [[UIScreen mainScreen] scale]);
+            UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
             CGContextRef context = UIGraphicsGetCurrentContext();
             
             [annotationLayer renderInContext:context];
@@ -62,9 +61,15 @@
         
         return self.cachedImage;
     }
-    
-    UIImage *image = [super image];
-    return image;
+*/
+    if ([self.annotation respondsToSelector:@selector(annotationMarker)])
+    {
+        return self.annotation.annotationMarker;
+    }
+    else
+    {
+        return [super image];
+    }
 }
 
 - (void)setAnnotation:(id<MGSAnnotation>)annotation

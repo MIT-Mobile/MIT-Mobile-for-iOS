@@ -10,9 +10,9 @@
 @property (nonatomic, assign) BOOL canShowCallout;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *detail;
-@property (nonatomic, strong) UIImage *image;
+@property (nonatomic, strong) UIImage *calloutImage;
+@property (nonatomic, strong) UIImage *annotationMarker;
 
-@property (nonatomic, strong) UIView *annotationView;
 @property (nonatomic, strong) UIView *calloutView;
 @property (nonatomic) MGSAnnotationType annotationType;
 

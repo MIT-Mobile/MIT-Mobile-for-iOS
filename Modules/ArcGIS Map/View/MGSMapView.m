@@ -526,9 +526,9 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         callout.detailLabel.text = [annotation detail];
     }
     
-    if ([annotation respondsToSelector:@selector(image)])
+    if ([annotation respondsToSelector:@selector(calloutImage)])
     {
-        callout.imageView.image = [annotation image];
+        callout.imageView.image = [annotation calloutImage];
     }
     
     [callout sizeToFit];
