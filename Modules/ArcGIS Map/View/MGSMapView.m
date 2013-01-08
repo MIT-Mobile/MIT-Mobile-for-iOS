@@ -248,20 +248,29 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         
         if (_coreLayersLoaded)
         {
-            for (NSDictionary *dict in self.pendingLayers)
-            {
-                NSString *identifier = dict[@"identifier"];
-                MGSLayer *layer = dict[@"layer"];
-                NSUInteger index = [dict[@"index"] unsignedIntegerValue];
+            [self.userLayers enumerateKeysAndObjectsUsingBlock:^(NSString *identifier, MGSLayer *layer, BOOL *stop) {
+                NSUInteger layerIndex = [self.userLayerOrder indexOfObject:layer];
                 
-                [self insertLayer:layer
-                          atIndex:index
-                   withIdentifier:identifier];
-                
-                [layer refreshLayer];
-            }
-            
-            [self.pendingLayers removeAllObjects];
+                if (layerIndex == NSNotFound)
+                {
+                    DDLogError(@"[critical] user layer tracking out of sync. prepare for unforseen consequences.");
+                }
+                else
+                {
+                    if (layer.graphicsView == nil)
+                    {
+                        NSUInteger agsIndex = [self.coreMapIdentifiers count] + layerIndex;
+                        DDLogVerbose(@"performing delayed load for '%@' @ [%lu,%lu]",identifier,(unsigned long)layerIndex,(unsigned long)agsIndex);
+                        AGSGraphicsLayer *agsLayer = layer.graphicsLayer;
+                        layer.graphicsView = [self.mapView insertMapLayer:agsLayer
+                                                                 withName:identifier
+                                                                  atIndex:agsIndex];
+                        layer.graphicsView.drawDuringPanning = YES;
+                        layer.graphicsView.drawDuringZooming = YES;
+                        [layer refreshLayer];
+                    }
+                }
+            }];
         }
     }
 }
@@ -371,19 +380,19 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
      withIdentifier:(NSString*)layerIdentifier
             atIndex:(NSUInteger)layerIndex
 {
-    if (self.coreLayersLoaded)
+    if (self.userLayers[layerIdentifier])
     {
-        if (self.userLayers[layerIdentifier])
+        DDLogError(@"layer identifier collision for '%@'", layerIdentifier);
+    }
+    else
+    {
+        NSUInteger index = [self.coreMapIdentifiers count] + layerIndex;
+        DDLogVerbose(@"adding layer '%@' at index %d (%d)", layerIdentifier, layerIndex, index);
+        
+        [self willAddLayer:layer];
+        
+        if (self.coreLayersLoaded)
         {
-            DDLogError(@"layer identifier collision for '%@'", layerIdentifier);
-        }
-        else
-        {
-            NSUInteger index = [self.coreMapIdentifiers count] + layerIndex;
-            DDLogVerbose(@"adding layer '%@' at index %d (%d)", layerIdentifier, layerIndex, index);
-            
-            [self willAddLayer:layer];
-            
             DDLogVerbose(@"\tbasemap has spatial reference [%d]", self.mapView.spatialReference.wkid);
             AGSGraphicsLayer *agsLayer = layer.graphicsLayer;
             layer.graphicsView = [self.mapView insertMapLayer:agsLayer
@@ -391,26 +400,20 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                                                       atIndex:index];
             layer.graphicsView.drawDuringPanning = YES;
             layer.graphicsView.drawDuringZooming = YES;
-            
-            layer.mapView = self;
-            
-            self.userLayers[layerIdentifier] = layer;
-            [self.userLayerOrder insertObject:layer
-                                      atIndex:layerIndex];
-            
-            if ([layerIdentifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
-            {
-                [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
-            }
-            
-            [self didAddLayer:layer];
         }
-    }
-    else
-    {
-        [self.pendingLayers addObject:@{@"identifier" : layerIdentifier,
-                                        @"layer" : layer,
-                                        @"index" : [NSNumber numberWithUnsignedInteger:layerIndex + [self.pendingLayers count]]}];
+        
+        layer.mapView = self;
+        
+        self.userLayers[layerIdentifier] = layer;
+        [self.userLayerOrder insertObject:layer
+                                  atIndex:layerIndex];
+        
+        if ([layerIdentifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
+        {
+            [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
+        }
+        
+        [self didAddLayer:layer];
     }
 }
 
