@@ -379,6 +379,15 @@
 {
     if ([self.legacyRoutes containsObject:route])
     {
+        
+        if ([self.legacyRoutes count] != [self.routeLayers count])
+        {
+            DDLogError(@"internal inconsistancy error: [%d] != [%d]",[self.legacyRoutes count], [self.routeLayers count]);
+            NSAssert(([self.legacyRoutes count] == [self.routeLayers count]),
+                     @"internal inconsistancy error, layer count mismatch <%d/%d>",
+                     [self.legacyRoutes count], [self.routeLayers count]);
+        }
+        
         [self.legacyRoutes enumerateObjectsUsingBlock:^(id<MITMapRoute> route, NSUInteger idx, BOOL *stop) {
             NSString *identifier = [NSString stringWithFormat:@"edu.mit.mobile.map.routes.%d",idx];
             
