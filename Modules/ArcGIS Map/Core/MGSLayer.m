@@ -378,7 +378,7 @@
         }
     }
     
-    DDLogVerbose(@"\tReprojeted %lu graphics", (unsigned long)reprojectionCount);
+    DDLogVerbose(@"\tReprojected %lu graphics", (unsigned long)reprojectionCount);
     [self.graphicsLayer dataChanged];
 }
 
