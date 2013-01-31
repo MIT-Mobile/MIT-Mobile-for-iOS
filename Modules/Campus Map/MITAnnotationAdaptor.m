@@ -36,33 +36,40 @@
     if (self.legacyAnnotationView)
     {
         UIView *annotationView = self.legacyAnnotationView;
-        CALayer *annotationLayer = annotationView.layer;
-        
-        CGRect rect = annotationView.frame;
-        rect.origin = CGPointZero;
-        annotationView.frame = rect;
-        [annotationView layoutIfNeeded];
         
         dispatch_sync(dispatch_get_main_queue(), ^{
-            annotationLayer.backgroundColor = [[UIColor blackColor] CGColor];
+            CGRect superRect = CGRectZero;
+            CGRect annotationRect = annotationView.frame;
+            superRect.size = annotationView.frame.size;
             
-            //CGSize size = CGSizeMake(CGRectGetWidth(annotationView.frame) - CGRectGetMinX(annotationView.frame),
-            //                         CGRectGetHeight(annotationView.frame) - CGRectGetMinY(annotationView.frame));
-            UIGraphicsBeginImageContextWithOptions(annotationView.bounds.size, YES, 0.0);
+            if (annotationView.frame.origin.x < 0)
+            {
+                superRect.size.width += fabs(annotationView.frame.origin.x);
+                annotationRect.origin.x = 0.0;
+            }
+            
+            if (annotationView.frame.origin.y < 0)
+            {
+                superRect.size.height += fabs(annotationView.frame.origin.y);
+                annotationRect.origin.y = 0.0;
+            }
+            
+            UIView *superView = [[UIView alloc] initWithFrame:superRect];
+            superView.backgroundColor = [UIColor blueColor];
+            annotationView.backgroundColor = [UIColor blackColor];
+            annotationView.frame = annotationRect;
+            
+            [superView addSubview:annotationView];
+            [superView layoutIfNeeded];
+            
+            UIGraphicsBeginImageContextWithOptions(CGSizeMake(superView.frame.size.height, superView.frame.size.width), YES, 0.0);
             CGContextRef context = UIGraphicsGetCurrentContext();
             
-            // Center the context around the view's anchor point
-            CGContextTranslateCTM(context, [annotationView center].x, [annotationView center].y);
-            // Apply the view's transform about the anchor point
-            CGContextConcatCTM(context, [annotationView transform]);
-            // Offset by the portion of the bounds left of and above the anchor point
-            CGContextTranslateCTM(context,
-                                  -[annotationView bounds].size.width * [annotationLayer anchorPoint].x,
-                                  -[annotationView bounds].size.height * [annotationLayer anchorPoint].y);
-            
-            [annotationLayer.presentationLayer renderInContext:context];
+            [superView.layer.presentationLayer renderInContext:context];
             image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
+            
+            [annotationView removeFromSuperview];
         });
     }
     
