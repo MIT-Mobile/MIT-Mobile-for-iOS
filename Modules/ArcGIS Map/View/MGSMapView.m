@@ -398,8 +398,6 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             [self.mapView insertMapLayer:agsLayer
                                 withName:layerIdentifier
                                  atIndex:index];
-            layer.graphicsView.drawDuringPanning = YES;
-            layer.graphicsView.drawDuringZooming = YES;
         }
         
         layer.mapView = self;
@@ -428,8 +426,8 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         [self.mapView removeMapLayerWithName:layerIdentifier];
         [self.userLayerOrder removeObject:layer];
         
-        layer.graphicsView = [self.mapView addMapLayer:agsLayer
-                                              withName:layerIdentifier];
+        [self.mapView addMapLayer:agsLayer
+                         withName:layerIdentifier];
         [self.userLayerOrder addObject:layer];
     }
 }
