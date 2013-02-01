@@ -453,7 +453,6 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         AGSLayer *graphicsLayer = layer.graphicsLayer;
         [self.mapView removeMapLayerWithName:graphicsLayer.name];
         
-        layer.graphicsView = nil;
         layer.graphicsLayer = nil;
         layer.mapView = nil;
         
@@ -463,14 +462,14 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (BOOL)isLayerHidden:(NSString*)layerIdentifier
 {
-    UIView<AGSLayerView> *view = [[self.mapView mapLayerViews] objectForKey:layerIdentifier];
-    return view.hidden;
+    MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
+    return layer.hidden;
 }
 
 - (void)setHidden:(BOOL)hidden forLayerIdentifier:(NSString*)layerIdentifier
 {
-    UIView<AGSLayerView> *view = [[self.mapView mapLayerViews] objectForKey:layerIdentifier];
-    view.hidden = hidden;
+    MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
+    layer.hidden = hidden;
 }
 
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
@@ -533,10 +532,9 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     [callout setNeedsLayout];
     
     self.mapView.callout.leaderPositionFlags = AGSCalloutLeaderPositionAny;
-    
-    [self.mapView showCalloutAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(annotation.coordinate,self.mapView.spatialReference)
-                          forGraphic:layerAnnotation.graphic
-                            animated:YES];
+    [self.mapView.callout showCalloutAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(annotation.coordinate,self.mapView.spatialReference)
+                                  forGraphic:layerAnnotation.graphic
+                                    animated:YES];
 }
 
 - (void)showCalloutWithView:(UIView*)view
