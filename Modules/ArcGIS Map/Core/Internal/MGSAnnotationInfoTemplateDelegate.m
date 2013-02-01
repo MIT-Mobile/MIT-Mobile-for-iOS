@@ -30,7 +30,7 @@
 
 - (NSString *)titleForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint
 {
-    MGSLayerAnnotation *layerAnnotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
+    MGSLayerAnnotation *layerAnnotation = [graphic attributeForKey:MGSAnnotationAttributeKey];
     
     NSString *title = [self titleForAnnotation:layerAnnotation.annotation];
     
@@ -46,7 +46,7 @@
 
 - (NSString *)detailForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint
 {
-    MGSLayerAnnotation *layerAnnotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
+    MGSLayerAnnotation *layerAnnotation = [graphic attributeForKey:MGSAnnotationAttributeKey];
     
     NSString *detail = [self detailForAnnotation:layerAnnotation.annotation];
     
@@ -54,7 +54,7 @@
     {
         return detail;
     }
-    else
+    else 
     {
         return @"";
     }
@@ -62,14 +62,14 @@
 
 -(UIImage*)imageForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint
 {
-    MGSLayerAnnotation *layerAnnotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
+    MGSLayerAnnotation *layerAnnotation = [graphic attributeForKey:MGSAnnotationAttributeKey];
     
     return [self imageForAnnotation:layerAnnotation.annotation];
 }
 
 - (UIView*)customViewForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint
 {
-    MGSLayerAnnotation *layerAnnotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
+    MGSLayerAnnotation *layerAnnotation = [graphic attributeForKey:MGSAnnotationAttributeKey];
     
     UIView *resultView = nil;
     

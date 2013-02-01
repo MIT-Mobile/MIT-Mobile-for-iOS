@@ -208,7 +208,7 @@
             
             [self.layerAnnotations removeObject:mapAnnotation];
             [self.graphicsLayer removeGraphic:mapAnnotation.graphic];
-            [mapAnnotation.graphic.attributes removeObjectForKey:MGSAnnotationAttributeKey];
+            [mapAnnotation.graphic removeAttributeForKey:MGSAnnotationAttributeKey];
         }
         
         [self didRemoveAnnotations:annotations];
@@ -313,7 +313,7 @@
     // any pre-existing graphics.
     for (AGSGraphic *graphic in self.agsGraphicsLayer.graphics)
     {
-        MGSLayerAnnotation *annotation = [graphic.attributes objectForKey:MGSAnnotationAttributeKey];
+        MGSLayerAnnotation *annotation = [graphic attributeForKey:MGSAnnotationAttributeKey];
         if (annotation == nil)
         {
             id<MGSAnnotation> annotation = [self loadAnnotationForGraphic:graphic];
@@ -346,8 +346,8 @@
                                             infoTemplateDelegate:[MGSAnnotationInfoTemplateDelegate sharedInfoTemplate]];
         }
         
-        [annotation.graphic.attributes setObject:annotation
-                                          forKey:MGSAnnotationAttributeKey];
+        [annotation.graphic setAttribute:annotation
+                                  forKey:MGSAnnotationAttributeKey];
         [graphics addObject:annotation.graphic];
     }
     [self.graphicsLayer addGraphics:graphics];
