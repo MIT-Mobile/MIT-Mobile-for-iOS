@@ -257,17 +257,17 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                 }
                 else
                 {
-                    if (layer.graphicsView == nil)
-                    {
-                        NSUInteger agsIndex = [self.coreMapIdentifiers count] + layerIndex;
-                        DDLogVerbose(@"performing delayed load for '%@' @ [%lu,%lu]",identifier,(unsigned long)layerIndex,(unsigned long)agsIndex);
-                        AGSGraphicsLayer *agsLayer = layer.graphicsLayer;
-                        layer.graphicsView = [self.mapView insertMapLayer:agsLayer
-                                                                 withName:identifier
-                                                                  atIndex:agsIndex];
-                        layer.graphicsView.drawDuringPanning = YES;
-                        layer.graphicsView.drawDuringZooming = YES;
-                        [layer refreshLayer];
+                    if ((layer.mapView == nil) || ([layer.mapView isEqual:self])) {
+                        AGSLayer *agsLayer = layer.graphicsLayer;
+                        
+                        if ([self.mapView.mapLayers containsObject:agsLayer] == NO) {
+                            NSUInteger agsIndex = [self.coreMapIdentifiers count] + layerIndex;
+                            DDLogVerbose(@"performing delayed load for '%@' @ [%lu,%lu]",identifier,(unsigned long)layerIndex,(unsigned long)agsIndex);
+                            [self.mapView insertMapLayer:agsLayer
+                                                withName:identifier
+                                                 atIndex:agsIndex];
+                            [layer refreshLayer];
+                        }
                     }
                 }
             }];
@@ -291,7 +291,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (BOOL)showUserLocation
 {
-    return [[self.mapView gps] enabled];
+    return self.mapView.locationDisplay.isDataSourceStarted;
 }
 
 - (MKCoordinateRegion)mapRegion
@@ -395,9 +395,9 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         {
             DDLogVerbose(@"\tbasemap has spatial reference [%d]", self.mapView.spatialReference.wkid);
             AGSGraphicsLayer *agsLayer = layer.graphicsLayer;
-            layer.graphicsView = [self.mapView insertMapLayer:agsLayer
-                                                     withName:layerIdentifier
-                                                      atIndex:index];
+            [self.mapView insertMapLayer:agsLayer
+                                withName:layerIdentifier
+                                 atIndex:index];
             layer.graphicsView.drawDuringPanning = YES;
             layer.graphicsView.drawDuringZooming = YES;
         }
