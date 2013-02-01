@@ -358,7 +358,12 @@
     // Since a subclass may add graphics in the -didReloadMapLayer method,
     // be sure to go through and re-project everything *after* the delegation
     // call.
-    AGSSpatialReference *mapReference = self.graphicsView.mapView.spatialReference;
+    AGSSpatialReference *mapReference = nil;
+    if (self.graphicsLayer.spatialReferenceStatusValid) {
+        mapReference = self.graphicsLayer.spatialReference;
+    } else {
+        mapReference = self.graphicsLayer.mapView.spatialReference;
+    }
     
     if (mapReference == nil)
     {
@@ -379,7 +384,7 @@
     }
     
     DDLogVerbose(@"\tReprojected %lu graphics", (unsigned long)reprojectionCount);
-    [self.graphicsLayer dataChanged];
+    [self.graphicsLayer refresh];
 }
 
 - (void)setHidden:(BOOL)hidden
@@ -387,7 +392,7 @@
     if (_hidden != hidden)
     {
         _hidden = hidden;
-        self.graphicsView.hidden = hidden;
+        self.graphicsLayer.visible = hidden;
     }
 }
 
