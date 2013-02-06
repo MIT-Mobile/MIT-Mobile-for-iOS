@@ -12,6 +12,11 @@ inline CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect)
     return normalizedRect;
 }
 
+inline BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation desiredOrientation,UIInterfaceOrientationMask orientationMask)
+{
+    return ((1 << desiredOrientation) & orientationMask) != 0;
+}
+
 NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 {
     switch (orientation) {
@@ -32,11 +37,6 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
         case UIImageOrientationRightMirrored:
             return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationRightMirrored", UIImageOrientationRightMirrored];
     }
-}
-
-BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterfaceOrientationMask supportedOrientations)
-{
-    return ((1 << orientation) & supportedOrientations) != 0;
 }
 
 

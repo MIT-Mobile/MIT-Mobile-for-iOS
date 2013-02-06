@@ -65,14 +65,13 @@
 	self.navigationItem.rightBarButtonItem = self.viewTypeButton;
 	
 	// add a search bar to our view
-	UISearchBar *searchBar = [[ UISearchBar alloc] initWithFrame:CGRectMake(0, 0, kSearchBarWidth, NAVIGATION_BAR_HEIGHT)];
-	searchBar.delegate = self;
-	searchBar.placeholder = NSLocalizedString(@"Search MIT Campus", nil);
-	searchBar.translucent = NO;
-	searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
-	searchBar.showsBookmarkButton = NO; // we'll be adding a custom bookmark button
-    self.searchBar = searchBar;
-	[self.view addSubview:searchBar];
+	_searchBar = [[ UISearchBar alloc] initWithFrame:CGRectMake(0, 0, kSearchBarWidth, NAVIGATION_BAR_HEIGHT)];
+	[_searchBar setDelegate:self];
+	_searchBar.placeholder = NSLocalizedString(@"Search MIT Campus", nil);
+	_searchBar.translucent = NO;
+    _searchBar.backgroundImage = [UIImage imageNamed:@"global/toolbar-background.png"];
+	_searchBar.showsBookmarkButton = NO; // we'll be adding a custom bookmark button
+	[self.view addSubview:_searchBar];
 		
 	// create the map view controller and its view to our view. 
 	self.mapView = [[MITMapView alloc] initWithFrame: CGRectMake(0, self.searchBar.frame.size.height, 320, self.view.frame.size.height - self.searchBar.frame.size.height)];

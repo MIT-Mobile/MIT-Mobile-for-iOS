@@ -78,9 +78,14 @@ typedef enum {
     screenRect.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
     
     UIView *mainView = [[[UIView alloc] initWithFrame:screenRect] autorelease];
+    mainView.autoresizesSubviews = YES;
     
     {
         MITTabView *tabView = [[[MITTabView alloc] init] autorelease];
+        tabView.autoresizesSubviews = YES;
+        tabView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                     UIViewAutoresizingFlexibleWidth |
+                                    UIViewAutoresizingFlexibleBottomMargin);
         tabView.frame = mainView.bounds;
         self.tabView = tabView;
         [mainView addSubview:tabView];

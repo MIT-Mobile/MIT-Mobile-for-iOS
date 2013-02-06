@@ -56,8 +56,6 @@
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
 		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
-		2C2C8A2816386352001A9CF7 /* GDataHTMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2C8A2516386352001A9CF7 /* GDataHTMLDocument.m */; };
-		2C2C8A2916386352001A9CF7 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2C8A2716386352001A9CF7 /* GDataXMLNode.m */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
 		2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348E162DCF2600BBB312 /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -82,6 +80,8 @@
 		2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6FE84813B2717700AFD8B8 /* FacilitiesContent.m */; };
 		2C74240E165A9583000020FC /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C742406165A9354000020FC /* libstdc++.dylib */; };
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
+		2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */; };
+		2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
 		2C8F3C20167FB853005BF07D /* MGSCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8F3C1F167FB853005BF07D /* MGSCalloutView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2C91944C1631CBA700ED97F6 /* NSData+MGTwitterBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C91944B1631CBA700ED97F6 /* NSData+MGTwitterBase64.m */; };
@@ -309,7 +309,7 @@
 		EB3294701166777500DEDC8A /* CalendarEventMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = EB32946E1166777500DEDC8A /* CalendarEventMapAnnotation.m */; };
 		EB3F0952118F0FFE00540B8A /* CalendarMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3F0950118F0FFE00540B8A /* CalendarMapView.m */; };
 		EB4C1E9B127723B700058748 /* ToursModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C1E99127723B700058748 /* ToursModule.m */; };
-		EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C215B1277786300058748 /* CampusTourHomeController.m */; };
+		EB4C215D1277786300058748 /* CampusTourHomeController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C215B1277786300058748 /* CampusTourHomeController.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		EB4C21DA12777C8D00058748 /* StartingLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C21D812777C8D00058748 /* StartingLocationViewController.m */; };
 		EB4C21DE127780EC00058748 /* ToursDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C21DC127780EC00058748 /* ToursDataManager.m */; };
 		EB4C225B1278962000058748 /* Tours.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EB4C225A1278962000058748 /* Tours.xcdatamodeld */; };
@@ -370,7 +370,7 @@
 		EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2867810E082010003BA01 /* MITLoadingActivityView.m */; };
 		EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB15C211BE970900D481B5 /* DatePickerViewController.m */; };
 		EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */; };
-		EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFABAE129461C3009AAEE0 /* ScrollFadeImageView.m */; };
+		EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFABAE129461C3009AAEE0 /* ScrollFadeImageView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFAF94129C2A23009AAEE0 /* TabViewControl.m */; };
 		EBBFB233129C7DED009AAEE0 /* TourSiteMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFB231129C7DED009AAEE0 /* TourSiteMapAnnotation.m */; };
 		EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */; };
@@ -485,10 +485,6 @@
 		2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRootViewController.h; sourceTree = "<group>"; };
 		2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRootViewController.m; sourceTree = "<group>"; };
 		2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesRootViewController.xib; sourceTree = "<group>"; };
-		2C2C8A2416386352001A9CF7 /* GDataHTMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataHTMLDocument.h; sourceTree = "<group>"; };
-		2C2C8A2516386352001A9CF7 /* GDataHTMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataHTMLDocument.m; sourceTree = "<group>"; };
-		2C2C8A2616386352001A9CF7 /* GDataXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
-		2C2C8A2716386352001A9CF7 /* GDataXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2C2E95401382F00200FA5557 /* FacilitiesConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesConstants.m; sourceTree = "<group>"; };
 		2C2E95411382F00200FA5557 /* FacilitiesConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesConstants.h; sourceTree = "<group>"; };
 		2C32BD24136F27D40015ACF6 /* FacilitiesLocations.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacilitiesLocations.xcdatamodel; sourceTree = "<group>"; };
@@ -526,6 +522,10 @@
 		2C742406165A9354000020FC /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		2C7661D21369C466000CA2B0 /* FacilitiesCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesCategory.h; sourceTree = "<group>"; };
 		2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesCategory.m; sourceTree = "<group>"; };
+		2C7EDD901656CD2E001684E1 /* GDataHTMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataHTMLDocument.h; sourceTree = "<group>"; };
+		2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataHTMLDocument.m; sourceTree = "<group>"; };
+		2C7EDD921656CD2E001684E1 /* GDataXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
+		2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
 		2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocation.h; sourceTree = "<group>"; };
 		2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocation.m; sourceTree = "<group>"; };
 		2C8F3C1E167FB853005BF07D /* MGSCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSCalloutView.h; sourceTree = "<group>"; };
@@ -648,6 +648,7 @@
 		2CFB87D61416B1AC0014E141 /* MITTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabView.m; sourceTree = "<group>"; };
 		2CFBF914138EC2610080883D /* FacilitiesSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesSubmitViewController.h; sourceTree = "<group>"; };
 		2CFBF915138EC2610080883D /* FacilitiesSubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesSubmitViewController.m; sourceTree = "<group>"; };
+		2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "MIT-Mobile-for-iPhone-Private"; path = "External/MIT-Mobile-for-iPhone-Private"; sourceTree = "<group>"; };
 		3A82707F103DAA0500BB4109 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		3A827080103DAA0500BB4109 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = ../../../../../System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SOURCE_ROOT; };
@@ -958,7 +959,7 @@
 		EB07B06612B89440005D6A4C /* NavScrollerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavScrollerView.m; sourceTree = "<group>"; };
 		EB07B06912B8971D005D6A4C /* calendar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = calendar; path = Resources/calendar; sourceTree = "<group>"; };
 		EB13860A12F1FC8E004DBB7C /* Secret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Secret.h; sourceTree = "<group>"; };
-		EB13860B12F1FC8E004DBB7C /* Secret.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Secret.m; sourceTree = "<group>"; };
+		EB13860B12F1FC8E004DBB7C /* Secret.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Secret.m; path = Common/Secret.m; sourceTree = SOURCE_ROOT; };
 		EB32946D1166777500DEDC8A /* CalendarEventMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarEventMapAnnotation.h; sourceTree = "<group>"; };
 		EB32946E1166777500DEDC8A /* CalendarEventMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarEventMapAnnotation.m; sourceTree = "<group>"; };
 		EB3F094F118F0FFE00540B8A /* CalendarMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarMapView.h; sourceTree = "<group>"; };
@@ -1404,18 +1405,6 @@
 			path = FacilitiesRoot;
 			sourceTree = "<group>";
 		};
-		2C2C8A23163862DC001A9CF7 /* GDataXML */ = {
-			isa = PBXGroup;
-			children = (
-				2C2C8A2416386352001A9CF7 /* GDataHTMLDocument.h */,
-				2C2C8A2516386352001A9CF7 /* GDataHTMLDocument.m */,
-				2C2C8A2616386352001A9CF7 /* GDataXMLNode.h */,
-				2C2C8A2716386352001A9CF7 /* GDataXMLNode.m */,
-			);
-			name = GDataXML;
-			path = External/GDataXML;
-			sourceTree = "<group>";
-		};
 		2C333496162DD2FA00BBB312 /* Facebook Connect */ = {
 			isa = PBXGroup;
 			children = (
@@ -1498,6 +1487,18 @@
 			);
 			name = "Touchstone Settings";
 			path = "Settings/Touchstone Settings";
+			sourceTree = "<group>";
+		};
+		2C7EDD8F1656CD2E001684E1 /* GDataXML */ = {
+			isa = PBXGroup;
+			children = (
+				2C7EDD901656CD2E001684E1 /* GDataHTMLDocument.h */,
+				2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */,
+				2C7EDD921656CD2E001684E1 /* GDataXMLNode.h */,
+				2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */,
+			);
+			name = GDataXML;
+			path = External/GDataXML;
 			sourceTree = "<group>";
 		};
 		2C642D1E1663B6BE0062B00A /* Internal */ = {
@@ -1893,10 +1894,11 @@
 			isa = PBXGroup;
 			children = (
 				2C101A9616540907000E40E3 /* ArcGIS */,
-				2C2C8A23163862DC001A9CF7 /* GDataXML */,
-				2CCF813F1636F69900DE273F /* Lumberjack */,
-				2CEBBF5C1635A68400441252 /* FacebookComposeViewController */,
 				2C333496162DD2FA00BBB312 /* Facebook Connect */,
+				2CEBBF5C1635A68400441252 /* FacebookComposeViewController */,
+				2C7EDD8F1656CD2E001684E1 /* GDataXML */,
+				2CCF813F1636F69900DE273F /* Lumberjack */,
+				2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */,
 				4B83721D157E5B5C004CBC49 /* ZBarSDK */,
 			);
 			name = External;
@@ -2689,7 +2691,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "if [[ ! -f \"Common/Secret.m\" ]]; then\n    cp \"Common/Secret.m.in\" \"Common/Secret.m\"\nfi\n\nif [[ ! -f \"Secret.xcconfig\" ]]; then\n    cp \"Secret.xcconfig.in\" \"Secret.xcconfig\"\nfi";
+			shellScript = "CONFIG_REPO_PATH=\"${PROJECT_DIR}/External/MIT-Mobile-for-iPhone-Private\"\nLOCAL_CONFIG_DIR=\"${PROJECT_DIR}/Common\"\n\nSECRET_IMPL=\"Secret.m\"\nSECRET_IMPL_TEMPLATE=\"Secret.m.in\"\n\nSECRET_CFG=\"Secret.xcconfig\"\nSECRET_CFG_TEMPLATE=\"Secret.xcconfig.in\"\n\nif [[ -d \"${CONFIG_REPO_PATH}\" ]]; then\n    echo \"using external configuration at ${CONFIG_REPO_PATH}\"\n    use_ext=1\nelse\n    echo \"using local configuration at ${LOCAL_CONFIG_DIR}\"\n    use_ext=0\nfi\n\nif [[ ! -f \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\" ]]; then\n    echo \"'${SECRET_IMPL}' is missing\"\n    if [[ $use_ext -eq 1 ]]; then\n        cp \"${CONFIG_REPO_PATH}/${SECRET_IMPL}\" \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\"\n    else\n        cp \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL_TEMPLATE}\" \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\"\n    fi\nfi\n\nif [[ ! -f \"${PROJECT_DIR}/${SECRET_CFG}\" ]]; then\n    echo \"'${SECRET_CFG}' is missing\"\n    if [[ $use_ext -eq 1 ]]; then\n        cp \"${CONFIG_REPO_PATH}/${SECRET_CFG}\" \"${PROJECT_DIR}/${SECRET_CFG}\"\n    else\n        cp \"${PROJECT_DIR}/${SECRET_CFG_TEMPLATE}\" \"${PROJECT_DIR}/${SECRET_CFG}\"\n    fi\nfi\n\nexit 0";
 			showEnvVarsInLog = 0;
 		};
 		DEE2B550104C17860037A4AB /* Run Script */ = {
@@ -2981,8 +2983,8 @@
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
 				2CCF81551636F69900DE273F /* ContextFilterLogFormatter.m in Sources */,
 				2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */,
-				2C2C8A2816386352001A9CF7 /* GDataHTMLDocument.m in Sources */,
-				2C2C8A2916386352001A9CF7 /* GDataXMLNode.m in Sources */,
+				2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */,
+				2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */,
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,
 				2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */,
 				2C101A831653F054000E40E3 /* MGSRouteOperation.m in Sources */,
