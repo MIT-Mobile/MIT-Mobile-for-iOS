@@ -23,8 +23,7 @@
 #pragma mark - Class Methods
 @dynamic agsGraphicsLayer;
 
-+ (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations
-{
++ (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations regionPadding:(MKCoordinateSpan)padding {
     NSMutableArray *latitudeCoordinates = [NSMutableArray array];
     NSMutableArray *longitudeCoordinates = [NSMutableArray array];
     
@@ -47,7 +46,16 @@
     
     MKCoordinateSpan span = MKCoordinateSpanMake((maxLat - minLat), (maxLon - minLon));
     CLLocationCoordinate2D center = CLLocationCoordinate2DMake(minLat + ((maxLat - minLat) / 2.0), minLon + ((maxLon - minLon) / 2.0));
+    
+    span.latitudeDelta += padding.latitudeDelta * 2.0f;
+    span.longitudeDelta += padding.latitudeDelta * 2.0f;
     return MKCoordinateRegionMake(center, span);
+}
+
++ (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations
+{
+    return [self regionForAnnotations:annotations
+                        regionPadding:MKCoordinateSpanMake(0.005, 0.005)];
 }
 
 - (id)init
