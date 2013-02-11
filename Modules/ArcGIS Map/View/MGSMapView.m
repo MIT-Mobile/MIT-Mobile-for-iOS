@@ -13,28 +13,27 @@
 
 static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Default";
 
-@interface MGSMapView () <AGSMapViewTouchDelegate,AGSMapViewLayerDelegate>
+@interface MGSMapView () <AGSMapViewTouchDelegate,AGSMapViewLayerDelegate,AGSLayerDelegate>
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
 
 #pragma mark - Basemap Management (Declaration)
-@property (nonatomic, assign) BOOL coreLayersLoaded;
-@property (nonatomic, strong) NSArray *coreMapIdentifiers;
-@property (nonatomic, strong) NSDictionary *coreMapSets;
+@property (assign) BOOL coreLayersLoaded;
+@property (strong) NSMutableDictionary *coreLayers;
+@property (strong) NSDictionary *coreMaps;
 #pragma mark -
 
 #pragma mark - User Layer Management (Declaration)
-@property (nonatomic, strong) NSMutableDictionary *userLayers;
-@property (nonatomic, strong) NSMutableArray *userLayerOrder;
-@property (nonatomic, strong) NSMutableArray *pendingLayers;
+@property (strong) NSMutableDictionary *userLayers;
+@property (strong) NSMutableArray *userLayerOrder;
+@property (strong) NSMutableArray *pendingLayers;
 #pragma mark -
 
 @property (strong) NSMutableDictionary *queryTasks;
 @property (nonatomic, assign) AGSMapView *mapView;
-@property (nonatomic, strong) MGSLayer *defaultLayer;
+@property (strong) MGSLayer *defaultLayer;
 
 - (void)initView;
 - (AGSLayer*)arcgisLayerWithIdentifier:(NSString*)identifier;
-- (UIView<AGSLayerView>*)arcgisViewWithIdentifier:(NSString*)identifier;
 @end
 
 @implementation MGSMapView
@@ -126,13 +125,13 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             else if ([content isKindOfClass:[NSDictionary class]])
             {
                 NSDictionary *response = (NSDictionary*)content;
-                self.coreMapSets = response[@"basemaps"];
+                self.coreMaps = response[@"basemaps"];
                 
                 NSString *defaultSetName = response[@"defaultBasemap"];
                 
                 if ([defaultSetName length] == 0)
                 {
-                    defaultSetName = [[self.coreMapSets allKeys] objectAtIndex:0];
+                    defaultSetName = [[self.coreMaps allKeys] objectAtIndex:0];
                 }
                 
                 self.activeMapSet = defaultSetName;
@@ -146,62 +145,48 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark - Basemap Management
 - (NSSet*)mapSets
 {
-    return [NSSet setWithArray:[self.coreMapSets allKeys]];
+    return [NSSet setWithArray:[self.coreMaps allKeys]];
 }
 
 - (NSString*)nameForMapSetWithIdentifier:(NSString *)mapSetIdentifier
 {
-    NSDictionary *layerInfo = self.coreMapSets[mapSetIdentifier];
+    NSDictionary *layerInfo = self.coreMaps[mapSetIdentifier];
     return layerInfo[@"displayName"];
 }
 
 - (void)setActiveMapSet:(NSString *)mapSetName
 {
-    if (self.coreMapSets[mapSetName])
+    if (self.coreMaps[mapSetName])
     {
-        BOOL replaceLayers = ([self.coreMapIdentifiers count] > 0);
-        NSMutableArray *layerIdentifiers = [NSMutableArray array];
-        NSMutableArray *arcgisLayers = [NSMutableArray array];
+        NSMutableDictionary *coreMapLayers = [NSMutableDictionary dictionary];
+        NSMutableArray *identifierOrder = [NSMutableArray array];
         
-        for (NSDictionary *layerInfo in self.coreMapSets[mapSetName])
+        for (NSDictionary *layerInfo in self.coreMaps[mapSetName])
         {
             NSString *displayName = layerInfo[@"displayName"];
             NSString *identifier = layerInfo[@"layerIdentifier"];
             NSURL *layerURL = [NSURL URLWithString:layerInfo[@"url"]];
             
-            DDLogVerbose(@"adding layer '%@' [%@]",displayName,identifier);
+            DDLogVerbose(@"adding core layer '%@' [%@]",displayName,identifier);
             
             AGSTiledMapServiceLayer *serviceLayer = [AGSTiledMapServiceLayer tiledMapServiceLayerWithURL:layerURL];
+            serviceLayer.delegate = self;
             
-            [layerIdentifiers addObject:identifier];
-            [arcgisLayers addObject:serviceLayer];
+            coreMapLayers[identifier] = serviceLayer;
+            [identifierOrder addObject:identifier];
         }
         
-        if (replaceLayers)
-        {
-            [self.coreMapIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, NSUInteger idx, BOOL *stop) {
-                [self.mapView removeMapLayerWithName:identifier];
-            }];
-            
-            [layerIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, NSUInteger idx, BOOL *stop) {
-                AGSLayer *layer = arcgisLayers[idx];
-                
-                [self.mapView insertMapLayer:layer
-                                    withName:identifier
-                                     atIndex:idx];
-            }];
-        }
-        else
-        {
-            [layerIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, NSUInteger idx, BOOL *stop) {
-                AGSLayer *layer = arcgisLayers[idx];
-                
-                [self.mapView addMapLayer:layer
-                                 withName:identifier];
-            }];
-        }
+        [self.coreLayers.allKeys enumerateObjectsUsingBlock:^(NSString *layerName, NSUInteger idx, BOOL *stop) {
+            [self.mapView removeMapLayerWithName:layerName];
+        }];
         
-        self.coreMapIdentifiers = layerIdentifiers;
+        [identifierOrder enumerateObjectsUsingBlock:^(NSString *layerName, NSUInteger idx, BOOL *stop) {
+            [self.mapView insertMapLayer:coreMapLayers[layerName]
+                                withName:layerName
+                                 atIndex:idx];
+        }];
+        
+        self.coreLayers = coreMapLayers;
         _activeMapSet = mapSetName;
     }
 }
@@ -221,18 +206,13 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     return layer;
 }
 
-- (UIView<AGSLayerView>*)arcgisViewWithIdentifier:(NSString*)identifier
-{
-    return (UIView<AGSLayerView>*)(self.mapView.mapLayerViews[identifier]);
-}
-
 - (MGSLayer*)defaultLayer
 {
     if (_defaultLayer == nil)
     {
-      self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
-      [self addLayer:_defaultLayer
-      withIdentifier:kMGSMapDefaultLayerIdentifier];
+        self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
+        [self addLayer:_defaultLayer
+        withIdentifier:kMGSMapDefaultLayerIdentifier];
     }
     
     return _defaultLayer;
@@ -240,53 +220,9 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark -
 
 #pragma mark - Dynamic Properties
-- (void)setCoreLayersLoaded:(BOOL)coreLayersLoaded
-{
-    if (_coreLayersLoaded != coreLayersLoaded)
-    {
-        _coreLayersLoaded = coreLayersLoaded;
-        
-        if (_coreLayersLoaded)
-        {
-            [self.userLayers enumerateKeysAndObjectsUsingBlock:^(NSString *identifier, MGSLayer *layer, BOOL *stop) {
-                NSUInteger layerIndex = [self.userLayerOrder indexOfObject:layer];
-                
-                if (layerIndex == NSNotFound)
-                {
-                    DDLogError(@"[critical] user layer tracking out of sync. prepare for unforseen consequences.");
-                }
-                else
-                {
-                    if ((layer.mapView == nil) || ([layer.mapView isEqual:self])) {
-                        AGSLayer *agsLayer = layer.graphicsLayer;
-                        
-                        if ([self.mapView.mapLayers containsObject:agsLayer] == NO) {
-                            NSUInteger agsIndex = [self.coreMapIdentifiers count] + layerIndex;
-                            DDLogVerbose(@"performing delayed load for '%@' @ [%lu,%lu]",identifier,(unsigned long)layerIndex,(unsigned long)agsIndex);
-                            [self.mapView insertMapLayer:agsLayer
-                                                withName:identifier
-                                                 atIndex:agsIndex];
-                            [layer refreshLayer];
-                        }
-                    }
-                }
-            }];
-        }
-    }
-}
-
 - (void)setShowUserLocation:(BOOL)showUserLocation
 {
-    AGSGPS *gps = [self.mapView gps];
-    if (showUserLocation && (gps.enabled == NO))
-    {
-        gps.autoPanMode = AGSGPSAutoPanModeOff;
-        [gps start];
-    }
-    else if ((showUserLocation == NO) && gps.enabled)
-    {
-        [gps stop];
-    }
+    
 }
 
 - (BOOL)showUserLocation
@@ -299,8 +235,8 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     AGSPolygon *polygon = [self.mapView visibleArea];
     
     AGSPolygon *polygonWgs84 = (AGSPolygon*)[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polygon
-                                                                       toSpatialReference:[AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84]];
-
+                                                                                    toSpatialReference:[AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84]];
+    
     
     return MKCoordinateRegionMake(CLLocationCoordinate2DMake(polygonWgs84.envelope.center.y, polygonWgs84.envelope.center.x),
                                   MKCoordinateSpanMake(polygonWgs84.envelope.height, polygonWgs84.envelope.height));
@@ -380,38 +316,44 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
      withIdentifier:(NSString*)layerIdentifier
             atIndex:(NSUInteger)layerIndex
 {
-    if (self.userLayers[layerIdentifier])
-    {
-        DDLogError(@"layer identifier collision for '%@'", layerIdentifier);
-    }
-    else
-    {
-        NSUInteger index = [self.coreMapIdentifiers count] + layerIndex;
-        DDLogVerbose(@"adding layer '%@' at index %d (%d)", layerIdentifier, layerIndex, index);
+    
+    NSString *identifier = [layerIdentifier copy];
+    dispatch_block_t insertBlock = ^{
+        MGSLayer *existingLayer = self.userLayers[identifier];
         
-        [self willAddLayer:layer];
-        
-        if (self.coreLayersLoaded)
-        {
-            DDLogVerbose(@"\tbasemap has spatial reference [%d]", self.mapView.spatialReference.wkid);
-            AGSGraphicsLayer *agsLayer = layer.graphicsLayer;
-            [self.mapView insertMapLayer:agsLayer
+        if ((existingLayer != nil) && ([existingLayer isEqual:[NSNull null]] == false)) {
+            DDLogError(@"identifier collision for '%@'", identifier);
+        } else {
+            NSUInteger index = [self.coreLayers count] + layerIndex;
+            DDLogVerbose(@"adding user layer '%@' at index %d (%d)", identifier, layerIndex, index);
+            
+            [self willAddLayer:layer];
+            layer.mapView = self;
+            
+            self.userLayers[identifier] = layer;
+            [self.userLayerOrder insertObject:layer
+                                      atIndex:layerIndex];
+            
+            [self.mapView insertMapLayer:layer.graphicsLayer
                                 withName:layerIdentifier
                                  atIndex:index];
+            
+            if ([identifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
+            {
+                [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
+            }
+            
+            [self didAddLayer:layer];
         }
-        
-        layer.mapView = self;
-        
-        self.userLayers[layerIdentifier] = layer;
-        [self.userLayerOrder insertObject:layer
-                                  atIndex:layerIndex];
-        
-        if ([layerIdentifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
-        {
-            [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
-        }
-        
-        [self didAddLayer:layer];
+    };
+    
+    if (self.coreLayersLoaded == NO) {
+        // Throw in an NSNull to indicate that the layer already had a load attempt but
+        // the core maps were not loaded yet.
+        self.userLayers[layerIdentifier] = [NSNull null];
+        [self.pendingLayers addObject:[insertBlock copy]];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), insertBlock);
     }
 }
 
@@ -550,10 +492,67 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 
+#pragma mark - AGSMapViewLayerDelegate (10.x)
+- (void)layerDidLoad:(AGSLayer *)loadedLayer {
+    
+}
+
+- (void)layer:(AGSLayer *)loadedLayer didInitializeSpatialReferenceStatus:(BOOL)srStatusValid {
+    if (srStatusValid) {
+        DDLogVerbose(@"initialized spatial reference for layer '%@' to %d", loadedLayer.name, [loadedLayer.spatialReference wkid]);
+    } else {
+        DDLogError(@"failed to initialize spatial reference for layer '%@'", loadedLayer.name);
+        [self.coreLayers removeObjectForKey:loadedLayer.name];
+        [self.mapView removeMapLayer:loadedLayer];
+    }
+    
+    // Perform the coreLayersLoaded checking here since we don't want to add any of the
+    // user layers until we actually have a spatial reference to work with.
+    if (self.coreLayers[loadedLayer.name] != nil) {
+        if (self.coreLayersLoaded == NO) {
+            __block BOOL layersLoaded = YES;
+            [self.coreLayers enumerateKeysAndObjectsUsingBlock:^(NSString *name, AGSLayer *layer, BOOL *stop) {
+                layersLoaded = (layersLoaded && layer.loaded);
+            }];
+            
+            
+            // Check again after we iterate through everything to make sure the state
+            // hasn't changed now that we have another layer loaded
+            if (layersLoaded) {
+                self.coreLayersLoaded = YES;
+                
+                // Looks like all the maps from the current basemap set is loaded
+                if ([self.pendingLayers count]) {
+                    NSArray *pendingLayers = [NSArray arrayWithArray:self.pendingLayers];
+                    [self.pendingLayers removeAllObjects];
+                    for (dispatch_block_t insertBlock in pendingLayers) {
+                        dispatch_async(dispatch_get_main_queue(), insertBlock);
+                    }
+                    
+                    // Dispatch this on the main queue so we are guaranteed
+                    // that it will run *after* all the the previous dispatches
+                    // are handled
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        for (MGSLayer *layer in [self.userLayers allValues]) {
+                            [layer refreshLayer];
+                        }
+                    });
+                }
+            }
+        }
+    }
+}
+
+- (void)layer:(AGSLayer *)layer didFailToLoadWithError:(NSError *)error {
+    DDLogError(@"failed to load layer '%@': %@",layer.name,[error localizedDescription]);
+    [self.coreLayers removeObjectForKey:layer.name];
+    [self.mapView removeMapLayer:layer];
+}
+
 #pragma mark - AGSMapViewLayerDelegate
 - (void)mapViewDidLoad:(AGSMapView *)mapView
 {
-    DDLogVerbose(@"Basemap loaded with WKID %d", mapView.spatialReference.wkid);
+    DDLogVerbose(@"basemap loaded with WKID %d", mapView.spatialReference.wkid);
     
     AGSEnvelope *maxEnvelope = [AGSEnvelope envelopeWithXmin:-7915909.671294
                                                         ymin:5212249.807534
@@ -566,60 +565,6 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     [mapView zoomToEnvelope:projectedEnvelope
                    animated:YES];
     [self didFinishLoadingMapView];
-}
-
-- (void)mapView:(AGSMapView *)mapView failedLoadingLayerForLayerView:(UIView<AGSLayerView> *)layerView baseLayer:(BOOL)baseLayer withError:(NSError *)error
-{
-    
-    NSString *identifier = layerView.agsLayer.name;
-    
-    if ([self.coreMapIdentifiers containsObject:identifier])
-    {
-        BOOL coreLayersLoaded = YES;
-        for (NSString *identifier in self.coreMapIdentifiers)
-        {
-            UIView<AGSLayerView> *layerView = mapView.mapLayerViews[identifier];
-            coreLayersLoaded = coreLayersLoaded && (layerView.agsLayer.isLoaded || layerView.agsLayer.error);
-        }
-        
-        if (coreLayersLoaded)
-        {
-            self.coreLayersLoaded = YES;
-            [self didFinishLoadingMapView];
-        }
-        
-        DDLogError(@"Layer '%@' [%d,%p] failed to load: %@", layerView.agsLayer.name, layerView.agsLayer.isLoaded, layerView.agsLayer.error, [error localizedDescription]);
-    }
-}
-
-- (void)mapView:(AGSMapView *)mapView didLoadLayerForLayerView:(UIView<AGSLayerView> *)layerView
-{
-    NSString *identifier = layerView.agsLayer.name;
-    
-    if ([self.coreMapIdentifiers containsObject:identifier])
-    {
-        DDLogVerbose(@"successfully loaded core layer '%@'", identifier);
-        
-        BOOL coreLayersLoaded = YES;
-        for (NSString *identifier in self.coreMapIdentifiers)
-        {
-            UIView<AGSLayerView> *layerView = mapView.mapLayerViews[identifier];
-            coreLayersLoaded = coreLayersLoaded && (layerView.agsLayer.isLoaded || layerView.agsLayer.error);
-        }
-        
-        if (coreLayersLoaded)
-        {
-            self.coreLayersLoaded = YES;
-            [self didFinishLoadingMapView];
-        }
-        
-    }
-    else
-    {
-        MGSLayer *layer = [self layerWithIdentifier:identifier];
-        layer.graphicsView = layerView;
-        DDLogVerbose(@"Successfully loaded layer %@", identifier);
-    }
 }
 
 #pragma mark - AGSMapViewTouchDelegate
