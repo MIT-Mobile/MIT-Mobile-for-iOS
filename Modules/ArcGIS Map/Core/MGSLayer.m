@@ -289,6 +289,12 @@
     if (_graphicsLayer == nil)
     {
         [self loadGraphicsLayer];
+        
+        if (_graphicsLayer == nil) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                           reason:@"graphics layer should not be nil after -[MGSLayer loadGraphicsLayer]"
+                                         userInfo:nil];
+        }
     }
     
     return _graphicsLayer;
@@ -313,6 +319,8 @@
         // create one here so just return.
         return;
     }
+    
+    _graphicsLayer.visible = NO;
     
     [self willReloadMapLayer];
     
@@ -349,7 +357,7 @@
         if (annotation.graphic == nil)
         {
             annotation.graphic = [AGSGraphic graphicWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
-                                                          symbol:[[MGSAnnotationSymbol alloc] initWithAnnotation:annotation]
+                                                          symbol:[AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"]
                                                       attributes:[NSMutableDictionary dictionary]
                                             infoTemplateDelegate:[MGSAnnotationInfoTemplateDelegate sharedInfoTemplate]];
         }
@@ -358,33 +366,41 @@
                                   forKey:MGSAnnotationAttributeKey];
         [graphics addObject:annotation.graphic];
     }
+    
     [self.graphicsLayer addGraphics:graphics];
     
     [self didReloadMapLayer];
 
+    NSArray *layerGraphics = [NSArray arrayWithArray:self.graphicsLayer.graphics];
+    [self.graphicsLayer removeAllGraphics];
     
     // Since a subclass may add graphics in the -didReloadMapLayer method,
     // be sure to go through and re-project everything *after* the delegation
     // call.
     AGSSpatialReference *mapReference = nil;
-    if (self.graphicsLayer.spatialReferenceStatusValid) {
+    if (self.graphicsLayer.spatialReference && self.graphicsLayer.spatialReferenceStatusValid) {
         mapReference = self.graphicsLayer.spatialReference;
-    } else {
+    } else if (self.graphicsLayer.mapView.spatialReference) {
         mapReference = self.graphicsLayer.mapView.spatialReference;
+    } else {
+        DDLogError(@"unable to find a suitable spatial reference");
+        return;
     }
     
-    if (mapReference == nil)
-    {
-        mapReference = [AGSSpatialReference wgs84SpatialReference];
-    }
+    DDLogVerbose(@"using spatial reference '%@', checking %d graphics", mapReference,[self.graphicsLayer.graphics count]);
     
     NSUInteger reprojectionCount = 0;
-    for (AGSGraphic *graphic in self.graphicsLayer.graphics)
+    for (AGSGraphic *graphic in layerGraphics)
     {
-        DDLogVerbose(@"<%@> sref:\n\tMap: %@\n\tLayer: %@\n\tGraphic: %@",self.name, mapReference, self.graphicsLayer.spatialReference, graphic.geometry.spatialReference);
         // Only reproject on a spatial reference mismatch
         if ([graphic.geometry.spatialReference isEqualToSpatialReference:mapReference] == NO)
         {
+            DDLogVerbose(@"<%@> sref:\n\tMap: %@\n\tLayer: %@\n\tGraphic: %@",
+                         self.name,
+                         mapReference,
+                         self.graphicsLayer.spatialReference,
+                         graphic.geometry.spatialReference);
+            
             ++reprojectionCount;
             graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
                                                                        toSpatialReference:mapReference];
@@ -392,7 +408,9 @@
     }
     
     DDLogVerbose(@"\tReprojected %lu graphics", (unsigned long)reprojectionCount);
-    [self.graphicsLayer refresh];
+    
+    [_graphicsLayer addGraphics:layerGraphics];
+    _graphicsLayer.visible = YES;
 }
 
 - (void)setHidden:(BOOL)hidden
