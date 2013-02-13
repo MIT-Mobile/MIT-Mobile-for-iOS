@@ -4,15 +4,31 @@
 #import "MGSLayer+Subclass.h"
 #import "MGSUtility.h"
 #import "CoreLocation+MITAdditions.h"
+#import "MGSSimpleAnnotation.h"
 
 @interface MGSRouteLayer ()
 @property (nonatomic,strong) NSArray *pathCoordinates;
 @property (nonatomic,strong) NSArray *stopAnnotations;
+@property (nonatomic,strong) id<MGSAnnotation> routePath;
 @property (nonatomic,weak) AGSMutablePolyline *polyline;
 @property (nonatomic,weak) AGSGraphic *lineGraphic;
 @end
 
 @implementation MGSRouteLayer
+- (id)initWithName:(NSString *)name withStops:(NSArray*)stopAnnotations {
+    self = [super initWithName:name];
+
+    if (self)
+    {
+        self.stopAnnotations = stopAnnotations;
+        self.pathCoordinates = nil;
+        self.lineColor = [UIColor redColor];
+        self.lineWidth = 4.0f;
+    }
+    
+    return self;
+}
+
 - (id)initWithName:(NSString*)name withStops:(NSArray*)stopAnnotations pathCoordinates:(NSArray*)pathCoordinates
 {
     self = [super initWithName:name];
@@ -28,53 +44,30 @@
     return self;
 }
 
+- (NSArray*)annotations {
+    NSMutableArray *annotations = [NSMutableArray arrayWithArray:[super annotations]];
+    [annotations removeObject:self.routePath];
+
+    return annotations;
+}
 
 - (void)willReloadMapLayer
 {
-    [super didReloadMapLayer];
-    
-    AGSGraphicsLayer *layer = self.graphicsLayer;
-    
-    AGSMutablePolyline *polyline = self.polyline;
-    if (self.polyline == nil)
-    {
-        polyline = [[AGSMutablePolyline alloc] initWithSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
+    [super willReloadMapLayer];
+
+    if ((self.routePath == nil) && [self.pathCoordinates count]) {
+        MGSSimpleAnnotation *annotation = [[MGSSimpleAnnotation alloc] init];
+        annotation.annotationType = MGSAnnotationPolyline;
+        annotation.points = self.pathCoordinates;
+        annotation.lineWidth = self.lineWidth;
+        annotation.strokeColor = self.lineColor;
+        self.routePath = annotation;
     }
     
-    if (polyline.numPaths > 0)
-    {
-        [polyline removePathAtIndex:0];
-    }
-    
-    [polyline addPathToPolyline];
-    
-    for (NSValue *value in self.pathCoordinates)
-    {
-        CLLocationCoordinate2D coordinate = [value MKCoordinateValue];
-        if (CLLocationCoordinate2DIsValid(coordinate))
-        {
-            [polyline addPointToPath:AGSPointFromCLLocationCoordinate(coordinate)];
-        }
-    }
-    
-    if (self.lineGraphic)
-    {
-        self.lineGraphic.geometry = polyline;
-    }
-    else
-    {
-        AGSSimpleLineSymbol *symbol = [AGSSimpleLineSymbol simpleLineSymbol];
-        symbol.style = AGSSimpleLineSymbolStyleSolid;
-        symbol.width = self.lineWidth;
-        symbol.color = self.lineColor;
-        
-        DDLogVerbose(@"[%@] adding route with %d points using symbol %@", self.name, [polyline numPointsInPath:0], symbol);
-        AGSGraphic *pathGraphic = [AGSGraphic graphicWithGeometry:polyline
-                                                           symbol:symbol
-                                                       attributes:nil
-                                             infoTemplateDelegate:nil];
-        self.lineGraphic = pathGraphic;
-        [layer addGraphic:pathGraphic];
+    if (self.routePath) {
+        // Make sure the route is *always* underneath everything else
+        [self insertAnnotation:self.routePath
+                       atIndex:0];
     }
 }
 
