@@ -227,20 +227,134 @@
 // implementation will just return nil. Graphics
 // can be pretty messy objects so we'll just leave it to any
 // subclasses to implement properly.
-- (AGSGraphic*)loadGraphicForAnnotation:(id<MGSAnnotation>)annotation
-{
-    return nil;
-}
+- (AGSGraphic *)loadGraphicForAnnotation:(id <MGSAnnotation>)annotation {
+    AGSGraphic *annotationGraphic = nil;
 
-// This method should return a MGSAnnotation object which wraps
-// the given graphic. This method is called when there exists a
-// graphic in the map view which does not already have a matching
-// MGSAnnotation object. Generally, this should only be the case
-// for server-side map layers. Like the loadGraphicForAnnotation:
-// method, the default implementation just returns nil
-- (id<MGSAnnotation>)loadAnnotationForGraphic:(AGSGraphic*)graphic
-{
-    return nil;
+    switch (annotation.annotationType) {
+        case MGSAnnotationMarker: {
+            UIImage *markerImage = nil;
+            if ([annotation respondsToSelector:@selector(markerImage)]) {
+                markerImage = [annotation markerImage];
+            }
+
+            AGSSymbol *markerSymbol = nil;
+            if (markerImage) {
+                markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:markerImage];
+            } else {
+                markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"];
+            }
+
+            annotationGraphic = [AGSGraphic graphicWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
+                                                         symbol:markerSymbol
+                                                     attributes:[NSMutableDictionary dictionary]
+                                           infoTemplateDelegate:nil];
+        }
+            break;
+
+        case MGSAnnotationPolyline: {
+            if ([annotation respondsToSelector:@selector(points)]) {
+                AGSMutablePolyline *polyline = [[AGSMutablePolyline alloc] init];
+                [polyline addPathToPolyline];
+
+                for (NSValue *pointValue : [annotation points]) {
+                    CLLocationCoordinate2D point = [pointValue MKCoordinateValue];
+
+                    if (CLLocationCoordinate2DIsValid(point)) {
+                        AGSPoint *agsPoint = AGSPointFromCLLocationCoordinate(point);
+                        [polyline addPointToPath:agsPoint];
+                    } else {
+                        DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
+                    }
+                }
+
+                UIColor *lineColor = nil;
+                CGFloat lineWidth = 0.0;
+
+                if ([annotation respondsToSelector:@selector(strokeColor)]) {
+                    lineColor = [annotation strokeColor];
+                }
+
+                if ([annotation respondsToSelector:@selector(lineWidth)]) {
+                    lineWidth = [annotation lineWidth];
+                }
+
+                AGSSimpleLineSymbol *lineSymbol = [AGSSimpleLineSymbol simpleLineSymbolWithColor:(lineColor ? lineColor : [UIColor greenColor])
+                                                                                           width:((lineWidth >= 0.5) ? lineWidth : 2.0)];
+
+                annotationGraphic = [AGSGraphic graphicWithGeometry:polyline
+                                                             symbol:lineSymbol
+                                                         attributes:[NSMutableDictionary dictionary]
+                                               infoTemplateDelegate:nil];
+            } else {
+                DDLogVerbose(@"unable to create polyline, object does not response to -[MGSAnnotation points]");
+            }
+        }
+            break;
+
+        case MGSAnnotationPolygon: {
+            if ([annotation respondsToSelector:@selector(points)]) {
+                AGSMutablePolygon *polygon = [[AGSMutablePolygon alloc] init];
+                [polygon addRingToPolygon];
+
+                for (NSValue *pointValue : [annotation points]) {
+                    CLLocationCoordinate2D point = [pointValue MKCoordinateValue];
+
+                    if (CLLocationCoordinate2DIsValid(point)) {
+                        AGSPoint *agsPoint = AGSPointFromCLLocationCoordinate(point);
+                        [polygon addPointToRing:agsPoint];
+                    } else {
+                        DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
+                    }
+                }
+
+                UIColor *strokeColor = nil;
+                UIColor *fillColor = nil;
+                CGFloat lineWidth = 0.0;
+
+                if ([annotation respondsToSelector:@selector(strokeColor)]) {
+                    strokeColor = [annotation strokeColor];
+                }
+
+                if ([annotation respondsToSelector:@selector(fillColor)]) {
+                    fillColor = [annotation fillColor];
+                }
+
+                if ([annotation respondsToSelector:@selector(lineWidth)]) {
+                    lineWidth = [annotation lineWidth];
+                }
+
+                AGSSimpleFillSymbol *fillSymbol = [AGSSimpleFillSymbol simpleFillSymbol];
+                fillSymbol.color = (fillColor ? fillSymbol : [UIColor colorWithWhite:0.0
+                                                                               alpha:0.5]);
+                fillSymbol.outline = [AGSSimpleLineSymbol simpleLineSymbolWithColor:(strokeColor ? strokeColor : [UIColor greenColor])
+                                                                              width:lineWidth];
+
+                annotationGraphic = [AGSGraphic graphicWithGeometry:polygon
+                                                             symbol:fillSymbol
+                                                         attributes:[NSMutableDictionary dictionary]
+                                               infoTemplateDelegate:nil];
+            } else {
+                DDLogVerbose(@"unable to create polyline, object does not response to -[MGSAnnotation points]");
+            }
+        }
+            break;
+
+        case MGSAnnotationPointOfInterest: {
+            // Not sure how we'll handle this one. For the time being,
+            // default to a nil graphic and, instead, ask the subclass to
+            // handle it.
+            if ([self respondsToSelector:@selector(graphicForAnnotation:)]) {
+                annotationGraphic = [self performSelector:@selector(graphicForAnnotation:)
+                                             withObject:annotation];
+            }
+        }
+            break;
+
+        default:
+            annotationGraphic = nil;
+    }
+
+    return annotationGraphic;
 }
 
 #pragma mark - ArcGIS Methods
