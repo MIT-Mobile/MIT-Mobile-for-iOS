@@ -7,7 +7,7 @@
 
 #import "MGSMapView.h"
 
-#import "MGSLayer+Protected.h"
+#import "MGSLayer+Subclass.h"
 #import "MGSUtility.h"
 #import "CoreLocation+MITAdditions.h"
 
