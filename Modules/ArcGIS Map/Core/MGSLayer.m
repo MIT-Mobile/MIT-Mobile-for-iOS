@@ -267,7 +267,8 @@
 // implementation will just return nil. Graphics
 // can be pretty messy objects so we'll just leave it to any
 // subclasses to implement properly.
-- (AGSGraphic *)loadGraphicForAnnotation:(id <MGSAnnotation>)annotation {
+- (AGSGraphic *)loadGraphicForAnnotation:(id <MGSAnnotation>)annotation
+                    withSpatialReference:(AGSSpatialReference*)reference {
     AGSGraphic *annotationGraphic = nil;
     
     switch (annotation.annotationType) {
@@ -294,6 +295,7 @@
         case MGSAnnotationPolyline: {
             if ([annotation respondsToSelector:@selector(points)]) {
                 AGSMutablePolyline *polyline = [[AGSMutablePolyline alloc] init];
+                polyline.spatialReference = [AGSSpatialReference wgs84SpatialReference];
                 [polyline addPathToPolyline];
                 
                 for (NSValue *pointValue in [annotation points]) {
@@ -446,13 +448,26 @@
     
     [self willReloadMapLayer];
     
+    // Since a subclass may add graphics in the -didReloadMapLayer method,
+    // be sure to go through and re-project everything *after* the delegation
+    // call.
+    AGSSpatialReference *spatialReference = nil;
+    if (self.graphicsLayer.spatialReference && self.graphicsLayer.spatialReferenceStatusValid) {
+        spatialReference = self.graphicsLayer.spatialReference;
+    } else if (self.graphicsLayer.mapView.spatialReference) {
+        spatialReference = self.graphicsLayer.mapView.spatialReference;
+    } else {
+        DDLogError(@"unable to find a suitable spatial reference");
+        spatialReference = [AGSSpatialReference wgs84SpatialReference];
+    }
+    
     // Sync our current annotations with the graphics. Updating
     // each graphic for possible annotation changes could be a pain in the
     // ass so just brute force it for now; this may need to be
     // optimized in the future.
     NSMutableArray *graphics = [NSMutableArray array];
     for (MGSLayerAnnotation *annotation in self.layerAnnotations) {
-        annotation.graphic = [self loadGraphicForAnnotation:annotation];
+        annotation.graphic = [self loadGraphicForAnnotation:annotation withSpatialReference:spatialReference];
         
         if (annotation.graphic) {
             [annotation.graphic setAttribute:annotation
@@ -463,34 +478,21 @@
     
     [self didReloadMapLayer];
     
-    // Since a subclass may add graphics in the -didReloadMapLayer method,
-    // be sure to go through and re-project everything *after* the delegation
-    // call.
-    AGSSpatialReference *mapReference = nil;
-    if (self.graphicsLayer.spatialReference && self.graphicsLayer.spatialReferenceStatusValid) {
-        mapReference = self.graphicsLayer.spatialReference;
-    } else if (self.graphicsLayer.mapView.spatialReference) {
-        mapReference = self.graphicsLayer.mapView.spatialReference;
-    } else {
-        DDLogError(@"unable to find a suitable spatial reference");
-        return;
-    }
-    
-    DDLogVerbose(@"using spatial reference '%@', checking %d graphics", mapReference, [self.graphicsLayer.graphics count]);
+    DDLogVerbose(@"using spatial reference '%@', checking %d graphics", spatialReference, [self.graphicsLayer.graphics count]);
     
     NSUInteger reprojectionCount = 0;
     for (AGSGraphic *graphic in graphics) {
         // Only reproject on a spatial reference mismatch
-        if ([graphic.geometry.spatialReference isEqualToSpatialReference:mapReference] == NO) {
+        if ([graphic.geometry.spatialReference isEqualToSpatialReference:spatialReference] == NO) {
             DDLogVerbose(@"<%@> sref:\n\tMap: %@\n\tLayer: %@\n\tGraphic: %@",
                          self.name,
-                         mapReference,
+                         spatialReference,
                          self.graphicsLayer.spatialReference,
                          graphic.geometry.spatialReference);
             
             ++reprojectionCount;
             graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
-                                                                       toSpatialReference:mapReference];
+                                                                       toSpatialReference:spatialReference];
         }
     }
     
