@@ -11,7 +11,7 @@
 @property (nonatomic,strong) UIColor *lineColor;
 
 @property (nonatomic,readonly,strong) NSArray *pathCoordinates;
-@property (nonatomic,readonly,strong) NSArray *stopAnnotations;
+@property (nonatomic,readonly,strong) id<MGSAnnotation> routePath;
 
 @property (nonatomic,assign) BOOL requireIdentification;
 @property (nonatomic,assign) BOOL requireHandicapAccess;

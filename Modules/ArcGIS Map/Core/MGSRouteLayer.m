@@ -29,7 +29,7 @@
 }
 
 
-- (void)didReloadMapLayer
+- (void)willReloadMapLayer
 {
     [super didReloadMapLayer];
     
