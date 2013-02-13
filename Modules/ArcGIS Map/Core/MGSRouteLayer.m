@@ -39,6 +39,8 @@
         self.pathCoordinates = pathCoordinates;
         self.lineColor = [UIColor redColor];
         self.lineWidth = 4.0f;
+        
+        [self addAnnotations:stopAnnotations];
     }
     
     return self;
