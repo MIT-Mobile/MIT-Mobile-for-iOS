@@ -5,7 +5,7 @@
 @class MGSLayerAnnotation;
 @protocol MGSAnnotation;
 
-@interface MGSLayer (Subclass)
+@interface MGSLayer ()
 @property (nonatomic,weak) MGSMapView *mapView;
 @property (nonatomic,strong) AGSGraphicsLayer *graphicsLayer;
 @property (nonatomic,readonly) BOOL hasGraphicsLayer;

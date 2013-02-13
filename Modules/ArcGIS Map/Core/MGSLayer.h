@@ -40,6 +40,7 @@
 
 - (void)addAnnotation:(id<MGSAnnotation>)annotation;
 - (void)addAnnotations:(NSArray *)objects;
+- (void)insertAnnotation:(id<MGSAnnotation>)annotation atIndex:(NSUInteger)index;
 - (void)deleteAnnotation:(id<MGSAnnotation>)annotation;
 - (void)deleteAnnotations:(NSArray*)annotation;
 - (void)deleteAllAnnotations;

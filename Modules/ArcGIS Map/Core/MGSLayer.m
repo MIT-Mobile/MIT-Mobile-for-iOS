@@ -11,7 +11,7 @@
 #import "MGSUtility.h"
 #import "CoreLocation+MITAdditions.h"
 
-@interface MGSLayer (Subclass) <AGSLayerDelegate>
+@interface MGSLayer () <AGSLayerDelegate>
 @property (nonatomic, strong) NSMutableArray *layerAnnotations;
 @end
 
@@ -24,31 +24,37 @@
 + (MKCoordinateRegion)regionForAnnotations:(NSSet *)annotations {
     NSMutableArray *latitudeCoordinates = [NSMutableArray array];
     NSMutableArray *longitudeCoordinates = [NSMutableArray array];
-
-    for (id <MGSAnnotation> annotation in annotations) {
-        CLLocationCoordinate2D coord = annotation.coordinate;
-        [latitudeCoordinates addObject:[NSNumber numberWithDouble:coord.latitude]];
-        [longitudeCoordinates addObject:[NSNumber numberWithDouble:coord.longitude]];
+    
+    if ([annotations count] == 1) {
+        // Special case for single annotations. If ArcGIS is handed a region with an
+        // extremely small (or zero) area, it will display a grey screen and crash
+        // on the next input event
+        id<MGSAnnotation> annotation = [annotations anyObject];
+        CLLocationCoordinate2D center = annotation.coordinate;
+        MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(center, 75, 75);
+        return region;
+    } else {
+        for (id <MGSAnnotation> annotation in annotations) {
+            CLLocationCoordinate2D coord = annotation.coordinate;
+            [latitudeCoordinates addObject:[NSNumber numberWithDouble:coord.latitude]];
+            [longitudeCoordinates addObject:[NSNumber numberWithDouble:coord.longitude]];
+        }
+        
+        NSArray *sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"doubleValue"
+                                                                    ascending:YES] ];
+        NSArray *sortedLat = [latitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
+        NSArray *sortedLon = [longitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
+        
+        CLLocationDegrees minLat = [[sortedLat objectAtIndex:0] doubleValue];
+        CLLocationDegrees maxLat = [[sortedLat lastObject] doubleValue];
+        CLLocationDegrees minLon = [[sortedLon objectAtIndex:0] doubleValue];
+        CLLocationDegrees maxLon = [[sortedLon lastObject] doubleValue];
+        
+        MKCoordinateSpan span = MKCoordinateSpanMake((maxLat - minLat), (maxLon - minLon));
+        CLLocationCoordinate2D center = CLLocationCoordinate2DMake(minLat + ((maxLat - minLat) / 2.0), minLon + ((maxLon - minLon) / 2.0));
+        
+        return MKCoordinateRegionMake(center, span);
     }
-
-    NSArray *sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"doubleValue"
-                                                                ascending:YES] ];
-    NSArray *sortedLat = [latitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
-    NSArray *sortedLon = [longitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
-
-    CLLocationDegrees minLat = [[sortedLat objectAtIndex:0] doubleValue];
-    CLLocationDegrees maxLat = [[sortedLat lastObject] doubleValue];
-    CLLocationDegrees minLon = [[sortedLon objectAtIndex:0] doubleValue];
-    CLLocationDegrees maxLon = [[sortedLon lastObject] doubleValue];
-
-    MKCoordinateSpan span = MKCoordinateSpanMake((maxLat - minLat), (maxLon - minLon));
-    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(minLat + ((maxLat - minLat) / 2.0), minLon + ((maxLon - minLon) / 2.0));
-
-    if ((span.latitudeDelta == 0.0) || (span.longitudeDelta == 0.0)) {
-
-    }
-
-    return MKCoordinateRegionMake(center, span);
 }
 
 - (id)init {
@@ -57,12 +63,12 @@
 
 - (id)initWithName:(NSString *)name {
     self = [super init];
-
+    
     if (self) {
         self.name = name;
         self.layerAnnotations = [NSMutableArray array];
     }
-
+    
     return self;
 }
 
@@ -79,7 +85,7 @@
     if (self.annotations) {
         [self deleteAllAnnotations];
     }
-
+    
     [self addAnnotations:annotations];
 }
 
@@ -88,7 +94,7 @@
     for (MGSLayerAnnotation *annotation in self.layerAnnotations) {
         [extAnnotations addObject:annotation.annotation];
     }
-
+    
     return extAnnotations;
 }
 
@@ -104,17 +110,17 @@
 - (void)addAnnotations:(NSArray *)annotations {
     NSMutableArray *newAnnotations = [NSMutableArray arrayWithArray:annotations];
     [newAnnotations removeObjectsInArray:self.annotations];
-
+    
     if ([newAnnotations count]) {
         [self willAddAnnotations:newAnnotations];
-
+        
         // Sort the add order of the annotations so they are added
         // top to bottom (prevents higher markers from being overlayed
         // on top of lower ones) and left to right
         NSArray *sortedAnnotations = [newAnnotations sortedArrayUsingComparator:^NSComparisonResult(id <MGSAnnotation> obj1, id <MGSAnnotation> obj2) {
             CLLocationCoordinate2D point1 = obj1.coordinate;
             CLLocationCoordinate2D point2 = obj2.coordinate;
-
+            
             if (point1.latitude > point2.latitude) {
                 return NSOrderedAscending;
             }
@@ -127,16 +133,16 @@
             else if (point1.longitude < point2.longitude) {
                 return NSOrderedDescending;
             }
-
+            
             return NSOrderedSame;
         }];
-
+        
         for (id <MGSAnnotation> annotation in sortedAnnotations) {
             MGSLayerAnnotation *mapAnnotation = nil;
-
+            
             if ([annotation isKindOfClass:[MGSLayerAnnotation class]]) {
                 mapAnnotation = (MGSLayerAnnotation *) annotation;
-
+                
                 // Make sure some other layer doesn't already have a claim on this
                 // annotation and, if one does, we need to create a new layer annotation
                 // which wraps the annotation we are working with
@@ -145,19 +151,53 @@
                                                                            graphic:nil];
                 }
             }
-
+            
             if (mapAnnotation == nil) {
                 mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
                                                                        graphic:nil];
             }
-
+            
             mapAnnotation.layer = self;
-
+            
             [self.layerAnnotations addObject:mapAnnotation];
         }
-
+        
         [self didAddAnnotations:newAnnotations];
     }
+}
+
+- (void)insertAnnotation:(id<MGSAnnotation>)annotation atIndex:(NSUInteger)index {
+    MGSLayerAnnotation *layerAnnotation = [self layerAnnotationForAnnotation:annotation];
+    if (layerAnnotation) {
+        [self.layerAnnotations removeObject:layerAnnotation];
+    } else {
+        [self willAddAnnotations:@[annotation]];
+        
+        if ([annotation isKindOfClass:[MGSLayerAnnotation class]]) {
+            MGSLayerAnnotation *existingAnnotation = (MGSLayerAnnotation *) annotation;
+            
+            // Make sure some other layer doesn't already have a claim on this
+            // annotation and, if one does, we need to create a new layer annotation
+            // which wraps the annotation we are working with
+            if ((existingAnnotation.layer != nil) && (existingAnnotation.layer != self)) {
+                layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:existingAnnotation.annotation
+                                                                       graphic:nil];
+            }
+        }
+        
+        if (layerAnnotation == nil) {
+            layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
+                                                                   graphic:nil];
+        }
+        
+        layerAnnotation.layer = self;
+        
+        [self didAddAnnotations:@[annotation]];
+    }
+    
+    [self.layerAnnotations insertObject:layerAnnotation
+                                atIndex:index];
+    
 }
 
 - (void)deleteAnnotation:(id <MGSAnnotation>)annotation {
@@ -165,7 +205,7 @@
         if ([self.mapView isPresentingCalloutForAnnotation:annotation]) {
             [self.mapView hideCallout];
         }
-
+        
         MGSLayerAnnotation *layerAnnotation = [self layerAnnotationForAnnotation:annotation];
         layerAnnotation.layer = nil;
         [self.graphicsLayer removeGraphic:layerAnnotation.graphic];
@@ -176,15 +216,15 @@
 - (void)deleteAnnotations:(NSArray *)annotations {
     if ([annotations count]) {
         [self willRemoveAnnotations:annotations];
-
+        
         for (id <MGSAnnotation> annotation in annotations) {
             MGSLayerAnnotation *mapAnnotation = [self layerAnnotationForAnnotation:annotation];
-
+            
             [self.layerAnnotations removeObject:mapAnnotation];
             [self.graphicsLayer removeGraphic:mapAnnotation.graphic];
             [mapAnnotation.graphic removeAttributeForKey:MGSAnnotationAttributeKey];
         }
-
+        
         [self didRemoveAnnotations:annotations];
     }
 }
@@ -206,7 +246,7 @@
 #pragma mark - Class Extension methods
 - (MGSLayerAnnotation *)layerAnnotationForAnnotation:(id <MGSAnnotation>)annotation {
     __block void *layerAnnotation = nil;
-
+    
     // Using OSAtomicCompareAndSwapPtrBarrier so we have atomic pointer
     // assignments since the array is going to be enumerated concurrently
     // and I'd rather not deal with odd race conditions since a standard
@@ -218,7 +258,7 @@
                                                     OSAtomicCompareAndSwapPtrBarrier(nil, (__bridge void *) (obj), &layerAnnotation);
                                                 }
                                             }];
-
+    
     return (__bridge MGSLayerAnnotation *) layerAnnotation;
 }
 
@@ -229,36 +269,36 @@
 // subclasses to implement properly.
 - (AGSGraphic *)loadGraphicForAnnotation:(id <MGSAnnotation>)annotation {
     AGSGraphic *annotationGraphic = nil;
-
+    
     switch (annotation.annotationType) {
         case MGSAnnotationMarker: {
             UIImage *markerImage = nil;
             if ([annotation respondsToSelector:@selector(markerImage)]) {
                 markerImage = [annotation markerImage];
             }
-
+            
             AGSSymbol *markerSymbol = nil;
             if (markerImage) {
                 markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:markerImage];
             } else {
                 markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"];
             }
-
+            
             annotationGraphic = [AGSGraphic graphicWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
                                                          symbol:markerSymbol
                                                      attributes:[NSMutableDictionary dictionary]
                                            infoTemplateDelegate:nil];
         }
             break;
-
+            
         case MGSAnnotationPolyline: {
             if ([annotation respondsToSelector:@selector(points)]) {
                 AGSMutablePolyline *polyline = [[AGSMutablePolyline alloc] init];
                 [polyline addPathToPolyline];
-
-                for (NSValue *pointValue : [annotation points]) {
+                
+                for (NSValue *pointValue in [annotation points]) {
                     CLLocationCoordinate2D point = [pointValue MKCoordinateValue];
-
+                    
                     if (CLLocationCoordinate2DIsValid(point)) {
                         AGSPoint *agsPoint = AGSPointFromCLLocationCoordinate(point);
                         [polyline addPointToPath:agsPoint];
@@ -266,21 +306,21 @@
                         DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
                     }
                 }
-
+                
                 UIColor *lineColor = nil;
                 CGFloat lineWidth = 0.0;
-
+                
                 if ([annotation respondsToSelector:@selector(strokeColor)]) {
                     lineColor = [annotation strokeColor];
                 }
-
+                
                 if ([annotation respondsToSelector:@selector(lineWidth)]) {
                     lineWidth = [annotation lineWidth];
                 }
-
+                
                 AGSSimpleLineSymbol *lineSymbol = [AGSSimpleLineSymbol simpleLineSymbolWithColor:(lineColor ? lineColor : [UIColor greenColor])
                                                                                            width:((lineWidth >= 0.5) ? lineWidth : 2.0)];
-
+                
                 annotationGraphic = [AGSGraphic graphicWithGeometry:polyline
                                                              symbol:lineSymbol
                                                          attributes:[NSMutableDictionary dictionary]
@@ -290,15 +330,15 @@
             }
         }
             break;
-
+            
         case MGSAnnotationPolygon: {
             if ([annotation respondsToSelector:@selector(points)]) {
                 AGSMutablePolygon *polygon = [[AGSMutablePolygon alloc] init];
                 [polygon addRingToPolygon];
-
-                for (NSValue *pointValue : [annotation points]) {
+                
+                for (NSValue *pointValue in [annotation points]) {
                     CLLocationCoordinate2D point = [pointValue MKCoordinateValue];
-
+                    
                     if (CLLocationCoordinate2DIsValid(point)) {
                         AGSPoint *agsPoint = AGSPointFromCLLocationCoordinate(point);
                         [polygon addPointToRing:agsPoint];
@@ -306,54 +346,63 @@
                         DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
                     }
                 }
-
+                
                 UIColor *strokeColor = nil;
                 UIColor *fillColor = nil;
                 CGFloat lineWidth = 0.0;
-
+                
                 if ([annotation respondsToSelector:@selector(strokeColor)]) {
-                    strokeColor = [annotation strokeColor];
+                    UIColor *aStrokeColor = [annotation strokeColor];
+                    
+                    if (aStrokeColor == nil) {
+                        strokeColor = [UIColor colorWithWhite:0.0
+                                                        alpha:0.5];
+                    } else {
+                        strokeColor = aStrokeColor;
+                    }
                 }
-
+                
                 if ([annotation respondsToSelector:@selector(fillColor)]) {
-                    fillColor = [annotation fillColor];
+                    UIColor *aFillColor = [annotation fillColor];
+                    
+                    if (aFillColor == nil) {
+                        fillColor = [UIColor colorWithWhite:0.0
+                                                      alpha:0.5];
+                    } else {
+                        fillColor = aFillColor;
+                    }
                 }
-
+                
                 if ([annotation respondsToSelector:@selector(lineWidth)]) {
                     lineWidth = [annotation lineWidth];
                 }
-
-                AGSSimpleFillSymbol *fillSymbol = [AGSSimpleFillSymbol simpleFillSymbol];
-                fillSymbol.color = (fillColor ? fillSymbol : [UIColor colorWithWhite:0.0
-                                                                               alpha:0.5]);
-                fillSymbol.outline = [AGSSimpleLineSymbol simpleLineSymbolWithColor:(strokeColor ? strokeColor : [UIColor greenColor])
-                                                                              width:lineWidth];
-
+                
+                AGSSimpleFillSymbol *fillSymbol = [AGSSimpleFillSymbol simpleFillSymbolWithColor:fillColor
+                                                                                    outlineColor:strokeColor];
+                fillSymbol.outline.width = lineWidth;
+                
                 annotationGraphic = [AGSGraphic graphicWithGeometry:polygon
                                                              symbol:fillSymbol
                                                          attributes:[NSMutableDictionary dictionary]
                                                infoTemplateDelegate:nil];
             } else {
-                DDLogVerbose(@"unable to create polyline, object does not response to -[MGSAnnotation points]");
+                DDLogVerbose(@"unable to create polygon, object does not response to -[MGSAnnotation points]");
             }
         }
             break;
-
+            
         case MGSAnnotationPointOfInterest: {
             // Not sure how we'll handle this one. For the time being,
             // default to a nil graphic and, instead, ask the subclass to
             // handle it.
-            if ([self respondsToSelector:@selector(graphicForAnnotation:)]) {
-                annotationGraphic = [self performSelector:@selector(graphicForAnnotation:)
-                                             withObject:annotation];
-            }
+            annotationGraphic = [self graphicForAnnotation:annotation];
         }
             break;
-
+            
         default:
             annotationGraphic = nil;
     }
-
+    
     return annotationGraphic;
 }
 
@@ -361,14 +410,16 @@
 - (AGSGraphicsLayer *)graphicsLayer {
     if (_graphicsLayer == nil) {
         [self loadGraphicsLayer];
-
+        
         if (_graphicsLayer == nil) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                            reason:@"graphics layer should not be nil after -[MGSLayer loadGraphicsLayer]"
                                          userInfo:nil];
+        } else {
+            _graphicsLayer.delegate = self;
         }
     }
-
+    
     return _graphicsLayer;
 }
 
@@ -386,35 +437,32 @@
         // No graphics layer and we don't want to forcefully
         // create one here so just return.
         return;
+    } else if (_graphicsLayer.spatialReferenceStatusValid == NO) {
+        return;
     }
-
+    
     _graphicsLayer.visible = NO;
-
+    [_graphicsLayer removeAllGraphics];
+    
     [self willReloadMapLayer];
-
+    
     // Sync our current annotations with the graphics. Updating
     // each graphic for possible annotation changes could be a pain in the
     // ass so just brute force it for now; this may need to be
     // optimized in the future.
     NSMutableArray *graphics = [NSMutableArray array];
     for (MGSLayerAnnotation *annotation in self.layerAnnotations) {
-        if (annotation.graphic) {
-            [self.graphicsLayer removeGraphic:annotation.graphic];
-        }
-
         annotation.graphic = [self loadGraphicForAnnotation:annotation];
-        [annotation.graphic setAttribute:annotation
-                                  forKey:MGSAnnotationAttributeKey];
-        [graphics addObject:annotation.graphic];
+        
+        if (annotation.graphic) {
+            [annotation.graphic setAttribute:annotation
+                                      forKey:MGSAnnotationAttributeKey];
+            [graphics addObject:annotation.graphic];
+        }
     }
-
-    [self.graphicsLayer addGraphics:graphics];
-
+    
     [self didReloadMapLayer];
-
-    NSArray *layerGraphics = [NSArray arrayWithArray:self.graphicsLayer.graphics];
-    [self.graphicsLayer removeAllGraphics];
-
+    
     // Since a subclass may add graphics in the -didReloadMapLayer method,
     // be sure to go through and re-project everything *after* the delegation
     // call.
@@ -427,28 +475,30 @@
         DDLogError(@"unable to find a suitable spatial reference");
         return;
     }
-
+    
     DDLogVerbose(@"using spatial reference '%@', checking %d graphics", mapReference, [self.graphicsLayer.graphics count]);
-
+    
     NSUInteger reprojectionCount = 0;
-    for (AGSGraphic *graphic in layerGraphics) {
+    for (AGSGraphic *graphic in graphics) {
         // Only reproject on a spatial reference mismatch
         if ([graphic.geometry.spatialReference isEqualToSpatialReference:mapReference] == NO) {
             DDLogVerbose(@"<%@> sref:\n\tMap: %@\n\tLayer: %@\n\tGraphic: %@",
-            self.name,
-            mapReference,
-            self.graphicsLayer.spatialReference,
-            graphic.geometry.spatialReference);
-
+                         self.name,
+                         mapReference,
+                         self.graphicsLayer.spatialReference,
+                         graphic.geometry.spatialReference);
+            
             ++reprojectionCount;
             graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
                                                                        toSpatialReference:mapReference];
         }
     }
-
-    DDLogVerbose(@"\tReprojected %lu graphics", (unsigned long) reprojectionCount);
-
-    [_graphicsLayer addGraphics:layerGraphics];
+    
+    if (reprojectionCount > 0) {
+        DDLogVerbose(@"\tReprojected %lu graphics", (unsigned long) reprojectionCount);
+    }
+    
+    [_graphicsLayer addGraphics:graphics];
     _graphicsLayer.visible = YES;
 }
 
@@ -519,7 +569,7 @@
         return [self.delegate mapLayer:self
      shouldDisplayCalloutForAnnotation:annotation];
     }
-
+    
     return YES;
 }
 
@@ -528,11 +578,32 @@
         return [self.delegate mapLayer:self
               calloutViewForAnnotation:annotation];
     }
+    
+    return nil;
+}
 
+- (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation {
+    /* Do nothing, leave it up to a subclass to implement this */
     return nil;
 }
 
 #pragma mark - AGSLayerDelegate Methods
+- (void)layer:(AGSLayer *)layer didFailToLoadWithError:(NSError *)error {
+    if (_graphicsLayer) {
+        [_graphicsLayer.mapView removeMapLayer:layer];
+        _graphicsLayer = nil;
+    }
+    
+    DDLogError(@"graphics layer failed to load for '%@' with error '%@'",self.name, [error localizedDescription]);
+}
 
+- (void)layer:(AGSLayer *)layer didInitializeSpatialReferenceStatus:(BOOL)srStatusValid {
+    DDLogInfo(@"initialized spatial reference for '%@' to %@", self.name, _graphicsLayer.spatialReference);
+    [self refreshLayer];
+}
+
+- (void)layerDidLoad:(AGSLayer *)layer {
+    DDLogInfo(@"successfully loaded graphics layer for '%@'",self.name);
+}
 
 @end
