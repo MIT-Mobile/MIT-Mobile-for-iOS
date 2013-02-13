@@ -202,11 +202,21 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 #pragma mark - Dynamic Properties
 - (void)setShowUserLocation:(BOOL)showUserLocation {
+    if (self.mapView.locationDisplay.dataSource == nil) {
+        self.mapView.locationDisplay.dataSource = [[AGSCLLocationManagerLocationDisplayDataSource alloc] init];
+    }
+    
+    if (showUserLocation) {
+        [self.mapView.locationDisplay.dataSource start];
+        self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
+    } else {
+        [self.mapView.locationDisplay.dataSource stop];
+    }
 
 }
 
 - (BOOL)showUserLocation {
-    return self.mapView.locationDisplay.isDataSourceStarted;
+    return self.mapView.locationDisplay.dataSource && self.mapView.locationDisplay.isDataSourceStarted;
 }
 
 - (MKCoordinateRegion)mapRegion {
