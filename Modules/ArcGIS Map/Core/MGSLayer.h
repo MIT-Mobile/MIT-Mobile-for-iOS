@@ -34,7 +34,6 @@
 @property (nonatomic,weak,readonly) MGSMapView *mapView;
 
 @property (nonatomic,strong) NSArray *annotations;
-@property (nonatomic,strong) MGSMarker *markerTemplate;
 @property (assign,nonatomic) BOOL hidden;
 
 + (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations;
@@ -62,7 +61,4 @@
 - (void)didRemoveAnnotations:(NSArray*)annotations;
 - (void)willReloadMapLayer;
 - (void)didReloadMapLayer;
-
-- (BOOL)shouldDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation;
-- (UIView*)calloutViewForAnnotation:(id<MGSAnnotation>)annotation;
 @end
