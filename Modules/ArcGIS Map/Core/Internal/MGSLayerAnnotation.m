@@ -158,4 +158,35 @@
     return CLLocationCoordinate2DMake(0,0);
 }
 
+- (NSArray*)points {
+    if ([self.annotation respondsToSelector:_cmd]) {
+        return [self.annotation points];
+    }
+    
+    return nil;
+}
+
+- (UIColor*)strokeColor {
+    if ([self.annotation respondsToSelector:_cmd]) {
+        return [self.annotation strokeColor];
+    }
+    
+    return nil;
+}
+
+- (UIColor*)fillColor {
+    if ([self.annotation respondsToSelector:_cmd]) {
+        return [self.annotation fillColor];
+    }
+    
+    return nil;
+}
+
+- (CGFloat)lineWidth {
+    if ([self.annotation respondsToSelector:_cmd]) {
+        return [self.annotation lineWidth];
+    }
+    
+    return 0.0;
+}
 @end
