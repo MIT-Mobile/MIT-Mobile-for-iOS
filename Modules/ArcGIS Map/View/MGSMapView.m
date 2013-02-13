@@ -2,38 +2,37 @@
 
 #import "MGSMapView.h"
 #import "MGSUtility.h"
-#import "MGSAnnotation.h"
 #import "MGSLayer.h"
 #import "MGSLayer+Protected.h"
 #import "MGSLayerAnnotation.h"
 #import "MGSCalloutView.h"
 
-#import "MITMobileServerConfiguration.h"
 #import "MobileRequestOperation.h"
 
-static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Default";
+static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Default";
 
-@interface MGSMapView () <AGSMapViewTouchDelegate,AGSMapViewLayerDelegate,AGSLayerDelegate>
-@property (nonatomic, strong) NSOperationQueue *operationQueue;
+@interface MGSMapView () <AGSMapViewTouchDelegate, AGSMapViewLayerDelegate, AGSLayerDelegate>
+@property(nonatomic, strong) NSOperationQueue *operationQueue;
 
 #pragma mark - Basemap Management (Declaration)
-@property (assign) BOOL coreLayersLoaded;
-@property (strong) NSMutableDictionary *coreLayers;
-@property (strong) NSDictionary *coreMaps;
+@property(assign) BOOL coreLayersLoaded;
+@property(strong) NSMutableDictionary *coreLayers;
+@property(strong) NSDictionary *coreMaps;
 #pragma mark -
 
 #pragma mark - User Layer Management (Declaration)
-@property (strong) NSMutableDictionary *userLayers;
-@property (strong) NSMutableArray *userLayerOrder;
-@property (strong) NSMutableArray *pendingLayers;
+@property(strong) NSMutableDictionary *userLayers;
+@property(strong) NSMutableArray *userLayerOrder;
+@property(strong) NSMutableArray *pendingLayers;
 #pragma mark -
 
-@property (strong) NSMutableDictionary *queryTasks;
-@property (nonatomic, assign) AGSMapView *mapView;
-@property (strong) MGSLayer *defaultLayer;
+@property(strong) NSMutableDictionary *queryTasks;
+@property(nonatomic, assign) AGSMapView *mapView;
+@property(strong) MGSLayer *defaultLayer;
 
 - (void)initView;
-- (AGSLayer*)arcgisLayerWithIdentifier:(NSString*)identifier;
+
+- (AGSLayer *)arcgisLayerWithIdentifier:(NSString *)identifier;
 @end
 
 @implementation MGSMapView
@@ -43,251 +42,225 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 @dynamic visibleLayers;
 @dynamic showUserLocation;
 
-- (id)init
-{
+- (id)init {
     return [self initWithFrame:CGRectZero];
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
+- (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
-    
-    if (self)
-    {
+
+    if (self) {
         [self commonInit];
     }
-    
+
     return self;
 }
 
-- (id)initWithFrame:(CGRect)frame
-{
+- (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
-    
-    if (self)
-    {
+
+    if (self) {
         [self commonInit];
     }
-    
+
     return self;
 }
 
-- (void)commonInit
-{
+- (void)commonInit {
     self.queryTasks = [NSMutableDictionary dictionary];
-    
+
     self.operationQueue = [[NSOperationQueue alloc] init];
     self.operationQueue.maxConcurrentOperationCount = 1;
-    
+
     self.pendingLayers = [NSMutableArray array];
-    
+
     self.coreLayersLoaded = NO;
-    
+
     self.userLayers = [NSMutableDictionary dictionary];
     self.userLayerOrder = [NSMutableArray array];
-    
+
     [self initView];
 }
 
-- (void)initView
-{
-    if (self.mapView == nil)
-    {
+- (void)initView {
+    if (self.mapView == nil) {
         self.backgroundColor = [UIColor lightGrayColor];
         CGRect mainBounds = self.bounds;
-        
+
         {
-            AGSMapView* view = [[AGSMapView alloc] initWithFrame:mainBounds];
+            AGSMapView *view = [[AGSMapView alloc] initWithFrame:mainBounds];
             view.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
-                                     UIViewAutoresizingFlexibleHeight);
+                    UIViewAutoresizingFlexibleHeight);
             view.touchDelegate = self;
             view.layerDelegate = self;
-            
+
             [self addSubview:view];
             self.mapView = view;
         }
-        
-        
+
+
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"map"
                                                                                 command:@"bootstrap"
                                                                              parameters:nil];
         [operation setCompleteBlock:^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-            if (error)
-            {
+            if (error) {
                 DDLogError(@"failed to load basemap definitions: %@", error);
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Map Error"
                                                                     message:@"Failed to initialize the map."
-                                                                   delegate:nil
-                                                          cancelButtonTitle:nil
-                                                          otherButtonTitles:nil];
+                                                                   delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
                 [alertView show];
             }
-            else if ([content isKindOfClass:[NSDictionary class]])
-            {
-                NSDictionary *response = (NSDictionary*)content;
+            else if ([content isKindOfClass:[NSDictionary class]]) {
+                NSDictionary *response = (NSDictionary *) content;
                 self.coreMaps = response[@"basemaps"];
-                
+
                 NSString *defaultSetName = response[@"defaultBasemap"];
-                
-                if ([defaultSetName length] == 0)
-                {
+
+                if ([defaultSetName length] == 0) {
                     defaultSetName = [[self.coreMaps allKeys] objectAtIndex:0];
                 }
-                
+
                 self.activeMapSet = defaultSetName;
             }
         }];
-        
+
         [[NSOperationQueue mainQueue] addOperation:operation];
     }
 }
 
 #pragma mark - Basemap Management
-- (NSSet*)mapSets
-{
+- (NSSet *)mapSets {
     return [NSSet setWithArray:[self.coreMaps allKeys]];
 }
 
-- (NSString*)nameForMapSetWithIdentifier:(NSString *)mapSetIdentifier
-{
+- (NSString *)nameForMapSetWithIdentifier:(NSString *)mapSetIdentifier {
     NSDictionary *layerInfo = self.coreMaps[mapSetIdentifier];
     return layerInfo[@"displayName"];
 }
 
-- (void)setActiveMapSet:(NSString *)mapSetName
-{
-    if (self.coreMaps[mapSetName])
-    {
+- (void)setActiveMapSet:(NSString *)mapSetName {
+    if (self.coreMaps[mapSetName]) {
         NSMutableDictionary *coreMapLayers = [NSMutableDictionary dictionary];
         NSMutableArray *identifierOrder = [NSMutableArray array];
-        
-        for (NSDictionary *layerInfo in self.coreMaps[mapSetName])
-        {
+
+        for (NSDictionary *layerInfo in self.coreMaps[mapSetName]) {
             NSString *displayName = layerInfo[@"displayName"];
             NSString *identifier = layerInfo[@"layerIdentifier"];
             NSURL *layerURL = [NSURL URLWithString:layerInfo[@"url"]];
-            
-            DDLogVerbose(@"adding core layer '%@' [%@]",displayName,identifier);
-            
+
+            DDLogVerbose(@"adding core layer '%@' [%@]", displayName, identifier);
+
             AGSTiledMapServiceLayer *serviceLayer = [AGSTiledMapServiceLayer tiledMapServiceLayerWithURL:layerURL];
             serviceLayer.delegate = self;
-            
+
             coreMapLayers[identifier] = serviceLayer;
             [identifierOrder addObject:identifier];
         }
-        
+
         [self.coreLayers.allKeys enumerateObjectsUsingBlock:^(NSString *layerName, NSUInteger idx, BOOL *stop) {
             [self.mapView removeMapLayerWithName:layerName];
         }];
-        
+
         [identifierOrder enumerateObjectsUsingBlock:^(NSString *layerName, NSUInteger idx, BOOL *stop) {
             [self.mapView insertMapLayer:coreMapLayers[layerName]
                                 withName:layerName
                                  atIndex:idx];
         }];
-        
+
         self.coreLayers = coreMapLayers;
         _activeMapSet = mapSetName;
     }
 }
 
-- (AGSLayer*)arcgisLayerWithIdentifier:(NSString*)identifier
-{
-    __block AGSLayer* layer = nil;
-    
+- (AGSLayer *)arcgisLayerWithIdentifier:(NSString *)identifier {
+    __block AGSLayer *layer = nil;
+
     [self.mapView.mapLayers enumerateObjectsUsingBlock:^(AGSLayer *obj, NSUInteger idx, BOOL *stop) {
-        if ([obj.name isEqualToString:identifier])
-        {
+        if ([obj.name isEqualToString:identifier]) {
             layer = obj;
             (*stop) = YES;
         }
     }];
-    
+
     return layer;
 }
 
-- (MGSLayer*)defaultLayer
-{
-    if (_defaultLayer == nil)
-    {
+- (MGSLayer *)defaultLayer {
+    if (_defaultLayer == nil) {
         self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
         [self addLayer:_defaultLayer
         withIdentifier:kMGSMapDefaultLayerIdentifier];
     }
-    
+
     return _defaultLayer;
 }
 #pragma mark -
 
 #pragma mark - Dynamic Properties
-- (void)setShowUserLocation:(BOOL)showUserLocation
-{
-    
+- (void)setShowUserLocation:(BOOL)showUserLocation {
+
 }
 
-- (BOOL)showUserLocation
-{
+- (BOOL)showUserLocation {
     return self.mapView.locationDisplay.isDataSourceStarted;
 }
 
-- (MKCoordinateRegion)mapRegion
-{
+- (MKCoordinateRegion)mapRegion {
     AGSPolygon *polygon = [self.mapView visibleArea];
-    
-    AGSPolygon *polygonWgs84 = (AGSPolygon*)[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polygon
-                                                                                    toSpatialReference:[AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84]];
-    
-    
+
+    AGSPolygon *polygonWgs84 = (AGSPolygon *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polygon
+                                                                                      toSpatialReference:[AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84]];
+
+
     return MKCoordinateRegionMake(CLLocationCoordinate2DMake(polygonWgs84.envelope.center.y, polygonWgs84.envelope.center.x),
                                   MKCoordinateSpanMake(polygonWgs84.envelope.height, polygonWgs84.envelope.height));
 }
 
-- (void)setMapRegion:(MKCoordinateRegion)mapRegion
-{
+- (void)setMapRegion:(MKCoordinateRegion)mapRegion {
     double offsetX = (mapRegion.span.longitudeDelta / 2.0);
     double offsetY = (mapRegion.span.latitudeDelta / 2.0);
     AGSSpatialReference *wgs84 = [AGSSpatialReference wgs84SpatialReference];
-    
+
     NSMutableArray *agsPoints = [NSMutableArray arrayWithCapacity:4];
-    
+
     [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude + offsetX)
                                             y:(mapRegion.center.latitude + offsetY)
                              spatialReference:wgs84]];
-    
+
     [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude + offsetX)
                                             y:(mapRegion.center.latitude - offsetY)
                              spatialReference:wgs84]];
-    
+
     [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude - offsetX)
                                             y:(mapRegion.center.latitude + offsetY)
                              spatialReference:wgs84]];
-    
+
     [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude - offsetX)
                                             y:(mapRegion.center.latitude - offsetY)
                              spatialReference:wgs84]];
-    
+
     AGSMutablePolygon *visibleArea = [[AGSMutablePolygon alloc] init];
     visibleArea.spatialReference = wgs84;
     [visibleArea addRingToPolygon];
-    
-    for (AGSPoint *point in agsPoints)
-    {
+
+    for (AGSPoint *point in agsPoints) {
         [visibleArea addPointToRing:point];
     }
-    
+
     [visibleArea closePolygon];
-    
-    AGSPolygon *projectedPolygon = (AGSPolygon*)[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:visibleArea
-                                                                                        toSpatialReference:self.mapView.spatialReference];
-    [self.mapView zoomToGeometry:projectedPolygon
-                     withPadding:20
-                        animated:YES];
+
+    if (self.mapView.spatialReference) {
+        AGSPolygon *projectedPolygon = (AGSPolygon *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:visibleArea
+                                                                                              toSpatialReference:self.mapView.spatialReference];
+        [self.mapView zoomToGeometry:projectedPolygon
+                         withPadding:20.0 // Minimum of 20px padding on each side
+                            animated:YES];
+    }
 }
 
 #pragma mark - Layer Management
-- (void)addLayer:(MGSLayer*)layer
-  withIdentifier:(NSString*)layerIdentifier
-{
+- (void)addLayer:(MGSLayer *)layer
+  withIdentifier:(NSString *)layerIdentifier {
     [self insertLayer:layer
        withIdentifier:layerIdentifier
               atIndex:[self.userLayers count]];
@@ -295,58 +268,53 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (void)insertLayer:(MGSLayer *)layer
      withIdentifier:(NSString *)layerIdentifier
-        behindLayer:(MGSLayer *)foregroundLayer
-{
+        behindLayer:(MGSLayer *)foregroundLayer {
     NSUInteger index = [self.userLayerOrder indexOfObject:foregroundLayer];
-    
-    if (index == NSNotFound)
-    {
+
+    if (index == NSNotFound) {
         [self addLayer:layer
         withIdentifier:layerIdentifier];
     }
-    else
-    {
+    else {
         [self insertLayer:layer
            withIdentifier:layerIdentifier
                   atIndex:index];
     }
 }
 
-- (void)insertLayer:(MGSLayer*)layer
-     withIdentifier:(NSString*)layerIdentifier
-            atIndex:(NSUInteger)layerIndex
-{
-    
+- (void)insertLayer:(MGSLayer *)layer
+     withIdentifier:(NSString *)layerIdentifier
+            atIndex:(NSUInteger)layerIndex {
+
     NSString *identifier = [layerIdentifier copy];
     dispatch_block_t insertBlock = ^{
         MGSLayer *existingLayer = self.userLayers[identifier];
-        
+
         if ((existingLayer != nil) && ([existingLayer isEqual:[NSNull null]] == false)) {
             DDLogError(@"identifier collision for '%@'", identifier);
         } else {
             NSUInteger index = [self.coreLayers count] + layerIndex;
             DDLogVerbose(@"adding user layer '%@' at index %d (%d)", identifier, layerIndex, index);
-            
+
             [self willAddLayer:layer];
             layer.mapView = self;
-            
+
             self.userLayers[identifier] = layer;
             [self.userLayerOrder insertObject:layer
                                       atIndex:layerIndex];
-            
+
             [self.mapView insertMapLayer:layer.graphicsLayer
                                 withName:layerIdentifier
                                  atIndex:index];
-            
-            if ([identifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO)
-            {
+
+            if ([identifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO) {
                 [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
             }
-            
+
             [self didAddLayer:layer];
         }
     };
-    
+
     if (self.coreLayersLoaded == NO) {
         // Throw in an NSNull to indicate that the layer already had a load attempt but
         // the core maps were not loaded yet.
@@ -357,144 +325,125 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     }
 }
 
-- (void)moveLayerToTop:(NSString*)layerIdentifier
-{
+- (void)moveLayerToTop:(NSString *)layerIdentifier {
     MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
-    
-    if (layer)
-    {
+
+    if (layer) {
         AGSGraphicsLayer *agsLayer = layer.graphicsLayer;
-        
+
         [self.mapView removeMapLayerWithName:layerIdentifier];
         [self.userLayerOrder removeObject:layer];
-        
+
         [self.mapView addMapLayer:agsLayer
                          withName:layerIdentifier];
         [self.userLayerOrder addObject:layer];
     }
 }
 
-- (MGSLayer*)layerWithIdentifier:(NSString*)layerIdentifier
-{
+- (MGSLayer *)layerWithIdentifier:(NSString *)layerIdentifier {
     return self.userLayers[layerIdentifier];
 }
 
-- (BOOL)containsLayerWithIdentifier:(NSString*)layerIdentifier
-{
+- (BOOL)containsLayerWithIdentifier:(NSString *)layerIdentifier {
     return ([self layerWithIdentifier:layerIdentifier] != nil);
 }
 
-- (void)removeLayerWithIdentifier:(NSString*)layerIdentifier
-{
+- (void)removeLayerWithIdentifier:(NSString *)layerIdentifier {
     MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
-    
-    if (layer)
-    {
+
+    if (layer) {
         [self willRemoveLayer:layer];
-        
+
         AGSLayer *graphicsLayer = layer.graphicsLayer;
         [self.mapView removeMapLayerWithName:graphicsLayer.name];
-        
+
         layer.graphicsLayer = nil;
         layer.mapView = nil;
-        
+
         [self didRemoveLayer:layer];
     }
 }
 
-- (BOOL)isLayerHidden:(NSString*)layerIdentifier
-{
+- (BOOL)isLayerHidden:(NSString *)layerIdentifier {
     MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
     return layer.hidden;
 }
 
-- (void)setHidden:(BOOL)hidden forLayerIdentifier:(NSString*)layerIdentifier
-{
+- (void)setHidden:(BOOL)hidden forLayerIdentifier:(NSString *)layerIdentifier {
     MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
     layer.hidden = hidden;
 }
 
-- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
-{
+- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate {
     [self centerAtCoordinate:coordinate
                     animated:NO];
 }
 
-- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated
-{
-    [self.mapView centerAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate,self.mapView.spatialReference)
+- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated {
+    [self.mapView centerAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate, self.mapView.spatialReference)
                        animated:animated];
 }
 
 
-- (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate
-{
-    return [self.mapView toScreenPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate,self.mapView.spatialReference)];
+- (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate {
+    return [self.mapView toScreenPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate, self.mapView.spatialReference)];
 }
 
 #pragma mark - Callouts
-- (void)showCalloutForAnnotation:(id<MGSAnnotation>)annotation
-{
+- (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation {
     __block MGSLayerAnnotation *layerAnnotation = nil;
-    
+
     [[self.userLayers allValues] enumerateObjectsUsingBlock:^(MGSLayer *layer, NSUInteger idx, BOOL *stop) {
         layerAnnotation = [layer layerAnnotationForAnnotation:annotation];
         (*stop) = (layerAnnotation != nil);
     }];
-    
-    if (layerAnnotation == nil)
-    {
+
+    if (layerAnnotation == nil) {
         return;
     }
-    
-    MGSCalloutView *callout = (MGSCalloutView*)self.mapView.callout.customView;
-    if ((callout == nil) || ([callout isKindOfClass:[MGSCalloutView class]] == NO))
-    {
+
+    MGSCalloutView *callout = (MGSCalloutView *) self.mapView.callout.customView;
+    if ((callout == nil) || ([callout isKindOfClass:[MGSCalloutView class]] == NO)) {
         callout = [[MGSCalloutView alloc] init];
         self.mapView.callout.customView = callout;
     }
-    else
-    {
-        callout = (MGSCalloutView*)self.mapView.callout.customView;
+    else {
+        callout = (MGSCalloutView *) self.mapView.callout.customView;
     }
-    
+
     callout.titleLabel.text = [annotation title];
-    
-    if ([annotation respondsToSelector:@selector(detail)])
-    {
+
+    if ([annotation respondsToSelector:@selector(detail)]) {
         callout.detailLabel.text = [annotation detail];
     }
-    
-    if ([annotation respondsToSelector:@selector(calloutImage)])
-    {
+
+    if ([annotation respondsToSelector:@selector(calloutImage)]) {
         callout.imageView.image = [annotation calloutImage];
     }
-    
+
     [callout sizeToFit];
     [callout setNeedsLayout];
-    
+
     self.mapView.callout.leaderPositionFlags = AGSCalloutLeaderPositionAny;
-    [self.mapView.callout showCalloutAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(annotation.coordinate,self.mapView.spatialReference)
+    [self.mapView.callout showCalloutAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(annotation.coordinate, self.mapView.spatialReference)
                                   forGraphic:layerAnnotation.graphic
                                     animated:YES];
 }
 
-- (void)showCalloutWithView:(UIView*)view
-              forAnnotation:(id<MGSAnnotation>)annotation
-{
+- (void)showCalloutWithView:(UIView *)view
+              forAnnotation:(id <MGSAnnotation>)annotation {
     self.mapView.callout.customView = view;
     [self showCalloutForAnnotation:annotation];
 }
 
-- (void)hideCallout
-{
+- (void)hideCallout {
     self.mapView.callout.hidden = YES;
 }
 
 
 #pragma mark - AGSMapViewLayerDelegate (10.x)
 - (void)layerDidLoad:(AGSLayer *)loadedLayer {
-    
+
 }
 
 - (void)layer:(AGSLayer *)loadedLayer didInitializeSpatialReferenceStatus:(BOOL)srStatusValid {
@@ -505,7 +454,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         [self.coreLayers removeObjectForKey:loadedLayer.name];
         [self.mapView removeMapLayer:loadedLayer];
     }
-    
+
     // Perform the coreLayersLoaded checking here since we don't want to add any of the
     // user layers until we actually have a spatial reference to work with.
     if (self.coreLayers[loadedLayer.name] != nil) {
@@ -514,13 +463,13 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             [self.coreLayers enumerateKeysAndObjectsUsingBlock:^(NSString *name, AGSLayer *layer, BOOL *stop) {
                 layersLoaded = (layersLoaded && layer.loaded);
             }];
-            
-            
+
+
             // Check again after we iterate through everything to make sure the state
             // hasn't changed now that we have another layer loaded
             if (layersLoaded) {
                 self.coreLayersLoaded = YES;
-                
+
                 // Looks like all the maps from the current basemap set is loaded
                 if ([self.pendingLayers count]) {
                     NSArray *pendingLayers = [NSArray arrayWithArray:self.pendingLayers];
@@ -528,7 +477,7 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                     for (dispatch_block_t insertBlock in pendingLayers) {
                         dispatch_async(dispatch_get_main_queue(), insertBlock);
                     }
-                    
+
                     // Dispatch this on the main queue so we are guaranteed
                     // that it will run *after* all the the previous dispatches
                     // are handled
@@ -544,23 +493,22 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 - (void)layer:(AGSLayer *)layer didFailToLoadWithError:(NSError *)error {
-    DDLogError(@"failed to load layer '%@': %@",layer.name,[error localizedDescription]);
+    DDLogError(@"failed to load layer '%@': %@", layer.name, [error localizedDescription]);
     [self.coreLayers removeObjectForKey:layer.name];
     [self.mapView removeMapLayer:layer];
 }
 
 #pragma mark - AGSMapViewLayerDelegate
-- (void)mapViewDidLoad:(AGSMapView *)mapView
-{
+- (void)mapViewDidLoad:(AGSMapView *)mapView {
     DDLogVerbose(@"basemap loaded with WKID %d", mapView.spatialReference.wkid);
-    
+
     AGSEnvelope *maxEnvelope = [AGSEnvelope envelopeWithXmin:-7915909.671294
                                                         ymin:5212249.807534
                                                         xmax:-7912606.241692
                                                         ymax:5216998.487588
                                             spatialReference:[AGSSpatialReference spatialReferenceWithWKID:102113]];
-    AGSEnvelope *projectedEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:maxEnvelope
-                                                                                            toSpatialReference:mapView.spatialReference];
+    AGSEnvelope *projectedEnvelope = (AGSEnvelope *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:maxEnvelope
+                                                                                             toSpatialReference:mapView.spatialReference];
     [mapView setMaxEnvelope:projectedEnvelope];
     [mapView zoomToEnvelope:projectedEnvelope
                    animated:YES];
@@ -568,79 +516,62 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 #pragma mark - AGSMapViewTouchDelegate
-- (void)mapView:(AGSMapView *)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics
-{
+- (void)mapView:(AGSMapView *)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics {
     DDLogVerbose(@"Got a tap, found %d graphics", [graphics count]);
 }
 
 
 #pragma mark - MGSMapView Delegate Forwarding
-- (void)didFinishLoadingMapView
-{
-    if ([self.mapViewDelegate respondsToSelector:@selector(didFinishLoadingMapView:)])
-    {
+- (void)didFinishLoadingMapView {
+    if ([self.mapViewDelegate respondsToSelector:@selector(didFinishLoadingMapView:)]) {
         [self.mapViewDelegate didFinishLoadingMapView:self];
     }
 }
 
-- (void)willShowCalloutForAnnotation:(id<MGSAnnotation>)annotation
-{
-    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:willShowCalloutForAnnotation:)])
-    {
+- (void)willShowCalloutForAnnotation:(id <MGSAnnotation>)annotation {
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:willShowCalloutForAnnotation:)]) {
         [self.mapViewDelegate mapView:self
          willShowCalloutForAnnotation:annotation];
     }
 }
 
-- (void)didShowCalloutForAnnotation:(id<MGSAnnotation>)annotation
-{
-    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:didShowCalloutForAnnotation:)])
-    {
+- (void)didShowCalloutForAnnotation:(id <MGSAnnotation>)annotation {
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:didShowCalloutForAnnotation:)]) {
         [self.mapViewDelegate mapView:self
           didShowCalloutForAnnotation:annotation];
     }
 }
 
-- (void)calloutAccessoryDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
-{
-    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:calloutAccessoryDidReceiveTapForAnnotation:)])
-    {
-        [self.mapViewDelegate mapView:self
+- (void)calloutAccessoryDidReceiveTapForAnnotation:(id <MGSAnnotation>)annotation {
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:calloutAccessoryDidReceiveTapForAnnotation:)]) {
+        [self.mapViewDelegate      mapView:self
 calloutAccessoryDidReceiveTapForAnnotation:annotation];
     }
 }
 
-- (void)willAddLayer:(MGSLayer*)layer
-{
-    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:willAddLayer:)])
-    {
+- (void)willAddLayer:(MGSLayer *)layer {
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:willAddLayer:)]) {
         [self.mapViewDelegate mapView:self
                          willAddLayer:layer];
     }
 }
 
-- (void)didAddLayer:(MGSLayer*)layer
-{
-    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:didAddLayer:)])
-    {
+- (void)didAddLayer:(MGSLayer *)layer {
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:didAddLayer:)]) {
         [self.mapViewDelegate mapView:self
                           didAddLayer:layer];
     }
 }
 
-- (void)willRemoveLayer:(MGSLayer*)layer
-{
-    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:willRemoveLayer:)])
-    {
+- (void)willRemoveLayer:(MGSLayer *)layer {
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:willRemoveLayer:)]) {
         [self.mapViewDelegate mapView:self
                       willRemoveLayer:layer];
     }
 }
 
-- (void)didRemoveLayer:(MGSLayer*)layer
-{
-    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:didRemoveLayer:)])
-    {
+- (void)didRemoveLayer:(MGSLayer *)layer {
+    if ([self.mapViewDelegate respondsToSelector:@selector(mapView:didRemoveLayer:)]) {
         [self.mapViewDelegate mapView:self
                        didRemoveLayer:layer];
     }
