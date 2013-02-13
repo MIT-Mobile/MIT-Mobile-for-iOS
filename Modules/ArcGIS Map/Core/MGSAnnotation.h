@@ -5,10 +5,10 @@
 
 typedef enum _MGSAnnotationType {
     // Indicates the annotation should place a marker on the map
-    // The maker will be the default pin unless the annotationMarker
+    // The maker will be the default pin unless the markerImage
     // image property returns a non-nil value. A marker is the only object
-    // that can pop up a callout. By default, markers will respond to taps
-    MGSAnnotationMarker = 0,
+    // that can pop up a callout. By default, markers will respond to taps.
+    MGSAnnotationMarker = 0x01,
     
     // Indicates that the annotation should draw a line to the map.
     // A polyline requires that the points property return an array of
@@ -17,12 +17,12 @@ typedef enum _MGSAnnotationType {
     // If the coordinate returns a valid CLLocationCoordinate2D point (verified
     // by CLLocationCoordinate2DIsValid), then the values in the 'points'
     // property are assumed to be relative offsets from the 'coordinate'
-    MGSAnnotationPolyline,
-    MGSAnnotationPolygon,
+    MGSAnnotationPolyline = 0x02,
+    MGSAnnotationPolygon = 0x04,
     
     // Indicates that the annotation is a marker for some sort of
     // pre-existing data on the layer. For example, if we were to 
-    MGSAnnotationPointOfInterest
+    MGSAnnotationPointOfInterest = 0x08
 } MGSAnnotationType;
 
 @protocol MGSAnnotation <NSObject>
@@ -33,7 +33,7 @@ typedef enum _MGSAnnotationType {
 @property (nonatomic, readonly, copy) NSString *title;
 @property (nonatomic, readonly, copy) NSString *detail;
 @property (nonatomic, readonly, strong) UIImage *calloutImage;
-@property (nonatomic, readonly, strong) UIImage *annotationMarker;
+@property (nonatomic, readonly, strong) UIImage *markerImage;
 
 @property (nonatomic, readonly, strong) UIView *calloutView;
 

@@ -62,9 +62,9 @@
         return self.cachedImage;
     }
 */
-    if ([self.annotation respondsToSelector:@selector(annotationMarker)])
+    if ([self.annotation respondsToSelector:@selector(markerImage)])
     {
-        return self.annotation.annotationMarker;
+        return self.annotation.markerImage;
     }
     else
     {

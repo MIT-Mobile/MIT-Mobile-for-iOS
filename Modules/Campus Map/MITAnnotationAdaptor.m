@@ -29,7 +29,7 @@
     return self.mkAnnotation.coordinate;
 }
 
-- (UIImage*)annotationMarker
+- (UIImage*)markerImage
 {
     __block UIImage *image = nil;
     

@@ -108,11 +108,11 @@
     return nil;
 }
 
-- (UIImage*)annotationMarker
+- (UIImage*)markerImage
 {
     if ([self.annotation respondsToSelector:_cmd])
     {
-        return [self.annotation annotationMarker];
+        return [self.annotation markerImage];
     }
     
     return [UIImage imageNamed:@"map/map_pin_complete"];
