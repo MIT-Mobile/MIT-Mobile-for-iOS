@@ -3,7 +3,7 @@
 #import "MGSMapView.h"
 #import "MGSUtility.h"
 #import "MGSLayer.h"
-#import "MGSLayer+Protected.h"
+#import "MGSLayer+Subclass.h"
 #import "MGSLayerAnnotation.h"
 #import "MGSCalloutView.h"
 
@@ -23,7 +23,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark - User Layer Management (Declaration)
 @property(strong) NSMutableDictionary *userLayers;
 @property(strong) NSMutableArray *userLayerOrder;
-@property(strong) NSMutableArray *pendingLayers;
+@property (nonatomic, strong) NSOperationQueue *userLayerQueue;
 #pragma mark -
 
 @property(strong) NSMutableDictionary *queryTasks;
@@ -72,12 +72,16 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     self.operationQueue = [[NSOperationQueue alloc] init];
     self.operationQueue.maxConcurrentOperationCount = 1;
 
-    self.pendingLayers = [NSMutableArray array];
+    self.userLayerQueue = [[NSOperationQueue alloc] init];
+    self.userLayerQueue.maxConcurrentOperationCount = 1;
+    self.userLayerQueue.suspended = YES;
 
     self.coreLayersLoaded = NO;
 
     self.userLayers = [NSMutableDictionary dictionary];
-    self.userLayerOrder = [NSMutableArray array];
+    
+    // Should be nil until all the core layers have been loaded
+    self.userLayerOrder = nil;
 
     [self initView];
 }
@@ -219,41 +223,39 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (void)setMapRegion:(MKCoordinateRegion)mapRegion {
     double offsetX = (mapRegion.span.longitudeDelta / 2.0);
     double offsetY = (mapRegion.span.latitudeDelta / 2.0);
-    AGSSpatialReference *wgs84 = [AGSSpatialReference wgs84SpatialReference];
-
-    NSMutableArray *agsPoints = [NSMutableArray arrayWithCapacity:4];
-
-    [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude + offsetX)
-                                            y:(mapRegion.center.latitude + offsetY)
-                             spatialReference:wgs84]];
-
-    [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude + offsetX)
-                                            y:(mapRegion.center.latitude - offsetY)
-                             spatialReference:wgs84]];
-
-    [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude - offsetX)
-                                            y:(mapRegion.center.latitude + offsetY)
-                             spatialReference:wgs84]];
-
-    [agsPoints addObject:[AGSPoint pointWithX:(mapRegion.center.longitude - offsetX)
-                                            y:(mapRegion.center.latitude - offsetY)
-                             spatialReference:wgs84]];
-
     AGSMutablePolygon *visibleArea = [[AGSMutablePolygon alloc] init];
-    visibleArea.spatialReference = wgs84;
+    visibleArea.spatialReference = [AGSSpatialReference wgs84SpatialReference];
     [visibleArea addRingToPolygon];
-
-    for (AGSPoint *point in agsPoints) {
-        [visibleArea addPointToRing:point];
-    }
+    
+    [visibleArea addPointToRing:[AGSPoint pointWithX:(mapRegion.center.longitude + offsetX)
+                                                   y:(mapRegion.center.latitude + offsetY)
+                                    spatialReference:nil]];
+    
+    [visibleArea addPointToRing:[AGSPoint pointWithX:(mapRegion.center.longitude + offsetX)
+                                                   y:(mapRegion.center.latitude - offsetY)
+                                    spatialReference:nil]];
+    
+    [visibleArea addPointToRing:[AGSPoint pointWithX:(mapRegion.center.longitude - offsetX)
+                                                   y:(mapRegion.center.latitude + offsetY)
+                                    spatialReference:nil]];
+    
+    [visibleArea addPointToRing:[AGSPoint pointWithX:(mapRegion.center.longitude - offsetX)
+                                                   y:(mapRegion.center.latitude - offsetY)
+                                    spatialReference:nil]];
 
     [visibleArea closePolygon];
 
     if (self.mapView.spatialReference) {
-        AGSPolygon *projectedPolygon = (AGSPolygon *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:visibleArea
-                                                                                              toSpatialReference:self.mapView.spatialReference];
-        [self.mapView zoomToGeometry:projectedPolygon
-                         withPadding:20.0 // Minimum of 20px padding on each side
+        AGSGeometry *geometry = visibleArea;
+        AGSGeometry *projectedGeometry = visibleArea;
+        
+        if ([geometry.spatialReference isEqualToSpatialReference:self.mapView.spatialReference] == NO) {
+            projectedGeometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:geometry
+                                                                        toSpatialReference:self.mapView.spatialReference];
+        }
+        
+        [self.mapView zoomToGeometry:projectedGeometry
+                         withPadding:10.0 // Minimum of 20px padding on each side
                             animated:YES];
     }
 }
@@ -269,17 +271,25 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (void)insertLayer:(MGSLayer *)layer
      withIdentifier:(NSString *)layerIdentifier
         behindLayer:(MGSLayer *)foregroundLayer {
-    NSUInteger index = [self.userLayerOrder indexOfObject:foregroundLayer];
+    
+    // Delay this until the core layers are loaded as well since userLayerOrder
+    // is not initialized yet and index will be set to NSNotFound (which is not
+    // necessarily true)
+    dispatch_block_t insertBlock = ^{
+        NSUInteger index = [self.userLayerOrder indexOfObject:foregroundLayer];
 
-    if (index == NSNotFound) {
-        [self addLayer:layer
-        withIdentifier:layerIdentifier];
-    }
-    else {
-        [self insertLayer:layer
-           withIdentifier:layerIdentifier
-                  atIndex:index];
-    }
+        if (index == NSNotFound) {
+            [self addLayer:layer
+            withIdentifier:layerIdentifier];
+        } else {
+            [self insertLayer:layer
+               withIdentifier:layerIdentifier
+                      atIndex:index];
+        }
+    };
+    
+    self.userLayers[layerIdentifier] = [NSNull null];
+    [self.userLayerQueue addOperationWithBlock:insertBlock];
 }
 
 - (void)insertLayer:(MGSLayer *)layer
@@ -289,6 +299,10 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     NSString *identifier = [layerIdentifier copy];
     dispatch_block_t insertBlock = ^{
         MGSLayer *existingLayer = self.userLayers[identifier];
+        
+        if (self.userLayerOrder == nil) {
+            self.userLayerOrder = [NSMutableArray array];
+        }
 
         if ((existingLayer != nil) && ([existingLayer isEqual:[NSNull null]] == false)) {
             DDLogError(@"identifier collision for '%@'", identifier);
@@ -303,9 +317,12 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             [self.userLayerOrder insertObject:layer
                                       atIndex:layerIndex];
 
-            [self.mapView insertMapLayer:layer.graphicsLayer
-                                withName:layerIdentifier
-                                 atIndex:index];
+            // Make sure we do this on the UI thread!
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.mapView insertMapLayer:layer.graphicsLayer
+                                    withName:layerIdentifier
+                                     atIndex:index];
+            });
 
             if ([identifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO) {
                 [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
@@ -314,15 +331,9 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             [self didAddLayer:layer];
         }
     };
-
-    if (self.coreLayersLoaded == NO) {
-        // Throw in an NSNull to indicate that the layer already had a load attempt but
-        // the core maps were not loaded yet.
-        self.userLayers[layerIdentifier] = [NSNull null];
-        [self.pendingLayers addObject:[insertBlock copy]];
-    } else {
-        dispatch_async(dispatch_get_main_queue(), insertBlock);
-    }
+    
+    self.userLayers[layerIdentifier] = [NSNull null];
+    [self.userLayerQueue addOperationWithBlock:insertBlock];
 }
 
 - (void)moveLayerToTop:(NSString *)layerIdentifier {
@@ -469,24 +480,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             // hasn't changed now that we have another layer loaded
             if (layersLoaded) {
                 self.coreLayersLoaded = YES;
-
-                // Looks like all the maps from the current basemap set is loaded
-                if ([self.pendingLayers count]) {
-                    NSArray *pendingLayers = [NSArray arrayWithArray:self.pendingLayers];
-                    [self.pendingLayers removeAllObjects];
-                    for (dispatch_block_t insertBlock in pendingLayers) {
-                        dispatch_async(dispatch_get_main_queue(), insertBlock);
-                    }
-
-                    // Dispatch this on the main queue so we are guaranteed
-                    // that it will run *after* all the the previous dispatches
-                    // are handled
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        for (MGSLayer *layer in [self.userLayers allValues]) {
-                            [layer refreshLayer];
-                        }
-                    });
-                }
+                self.userLayerQueue.suspended = NO;
             }
         }
     }
