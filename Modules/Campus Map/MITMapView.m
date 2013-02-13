@@ -67,6 +67,8 @@
         
         layer.lineColor = [route fillColor];
         layer.lineWidth = [route lineWidth];
+    
+        [layer refreshLayer];
     }];
 }
 
@@ -314,7 +316,6 @@
 {
     if ([self.legacyRoutes containsObject:route])
     {
-        
         return;
     }
     
