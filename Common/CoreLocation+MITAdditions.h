@@ -1,4 +1,5 @@
 #import <CoreLocation/CLLocation.h>
+#import <CoreLocation/CoreLocation.h>
 
 #define DEGREES_PER_RADIAN 180.0 / M_PI
 #define RADIANS_PER_DEGREE M_PI / 180.0
@@ -9,6 +10,10 @@
 // these are 1 and 2 miles respectively
 #define OUT_OF_BOUNDS_DISTANCE 1609
 #define WAY_OUT_OF_BOUNDS_DISTANCE 3218
+
+FOUNDATION_STATIC_INLINE inline NSString* NSStringFromCLLocationCoordinate2D(CLLocationCoordinate2D coordinate) {
+    return [NSString stringWithFormat:@"{ x: %lf, y: %lf }", coordinate.longitude, coordinate.latitude];
+}
 
 @interface CLLocation (MITAdditions)
 
