@@ -1,7 +1,7 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreLocation/CoreLocation.h>
 #import "MGSRouteLayer.h"
-#import "MGSLayer+Subclass.h"
+#import "MGSLayer+AGS.h""
 #import "MGSUtility.h"
 #import "CoreLocation+MITAdditions.h"
 #import "MGSSimpleAnnotation.h"

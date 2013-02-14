@@ -7,9 +7,10 @@
 
 #import "MGSMapView.h"
 
-#import "MGSLayer+Subclass.h"
+#import "MGSLayer+AGS.h"
 #import "MGSUtility.h"
 #import "CoreLocation+MITAdditions.h"
+#import "MGSCalloutView.h"
 
 @interface MGSLayer () <AGSLayerDelegate>
 @property (nonatomic, strong) NSMutableArray *layerAnnotations;

@@ -1,8 +1,8 @@
 #import "MGSLayer.h"
 #import <ArcGIS/ArcGIS.h>
+#import "MGSLayerAnnotation.h"
 
 @class MGSMapView;
-@class MGSLayerAnnotation;
 @protocol MGSAnnotation;
 
 @interface MGSLayer ()

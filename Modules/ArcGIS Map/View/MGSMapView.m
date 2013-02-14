@@ -5,6 +5,7 @@
 #import "MGSLayer.h"
 #import "MGSLayer+Subclass.h"
 #import "MGSLayerAnnotation.h"
+#import "MGSLayer+AGS.h"
 #import "MGSCalloutView.h"
 
 #import "MobileRequestOperation.h"
