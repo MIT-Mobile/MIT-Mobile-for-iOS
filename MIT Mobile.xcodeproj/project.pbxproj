@@ -35,6 +35,7 @@
 		29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */; };
 		29E308871176018C005211A7 /* MITModuleURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E308851176018C005211A7 /* MITModuleURL.m */; };
 		29EB610B10FE47220085D32B /* ShuttleSubscriptionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */; };
+		2C014A8B16CC828B00B4BB7D /* MGSSafeAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */; };
 		2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6CD137C4C2C0005F1FC /* FacilitiesCategoryViewController.m */; };
 		2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */; };
 		2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */; };
@@ -442,6 +443,8 @@
 		29E308851176018C005211A7 /* MITModuleURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITModuleURL.m; sourceTree = "<group>"; };
 		29EB610910FE47220085D32B /* ShuttleSubscriptionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleSubscriptionManager.h; sourceTree = "<group>"; };
 		29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleSubscriptionManager.m; sourceTree = "<group>"; };
+		2C014A8916CC828A00B4BB7D /* MGSSafeAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSSafeAnnotation.h; sourceTree = "<group>"; };
+		2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSSafeAnnotation.m; sourceTree = "<group>"; };
 		2C03C6CC137C4C2B0005F1FC /* FacilitiesCategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesCategoryViewController.h; sourceTree = "<group>"; };
 		2C03C6CD137C4C2C0005F1FC /* FacilitiesCategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesCategoryViewController.m; sourceTree = "<group>"; };
 		2C03C6CF137C5D470005F1FC /* FacilitiesLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocationViewController.h; sourceTree = "<group>"; };
@@ -1494,6 +1497,8 @@
 				2C8F3C1F167FB853005BF07D /* MGSCalloutView.m */,
 				2C0CE20A1663FFA80020E70D /* MGSLayerAnnotation.h */,
 				2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */,
+				2C014A8916CC828A00B4BB7D /* MGSSafeAnnotation.h */,
+				2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */,
 				2C3AFD2F166518CB00392AE3 /* MGSUtility.h */,
 				2C3AFD30166518CB00392AE3 /* MGSUtility.m */,
 			);
@@ -2989,6 +2994,7 @@
 				4431A8DABEAF34B5B5A061EB /* MITAnnotationAdaptor.m in Sources */,
 				2C8F3C20167FB853005BF07D /* MGSCalloutView.m in Sources */,
 				2CA010BE1694A7CC00B87CF0 /* MGSSimpleAnnotation.m in Sources */,
+				2C014A8B16CC828B00B4BB7D /* MGSSafeAnnotation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
