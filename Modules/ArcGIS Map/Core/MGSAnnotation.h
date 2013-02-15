@@ -35,9 +35,6 @@ typedef enum _MGSAnnotationType {
 @property (nonatomic, readonly, strong) UIImage *calloutImage;
 @property (nonatomic, readonly, strong) UIImage *markerImage;
 
-@property (nonatomic, readonly, strong) UIView *calloutView;
-
-
 @property (nonatomic, readonly) MGSAnnotationType annotationType;
 
 // Used only when annotationType is a polygon or polyline
