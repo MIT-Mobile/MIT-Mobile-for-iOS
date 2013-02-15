@@ -13,8 +13,6 @@
 @property (nonatomic,readonly, strong) UIImage *calloutImage;
 @property (nonatomic,readonly, strong) UIImage *markerImage;
 
-@property (nonatomic,readonly, strong) UIView *calloutView;
-
 
 @property (nonatomic,readonly,assign) MGSAnnotationType annotationType;
 

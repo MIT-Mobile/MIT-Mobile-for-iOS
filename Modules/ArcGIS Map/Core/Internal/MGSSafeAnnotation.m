@@ -93,16 +93,6 @@
     return [UIImage imageNamed:@"map/map_pin_complete"];
 }
 
-- (UIView*)calloutView
-{
-    if ([self.annotation respondsToSelector:_cmd])
-    {
-        return [self.annotation calloutView];
-    }
-    
-    return nil;
-}
-
 - (MGSAnnotationType)annotationType
 {
     if ([self.annotation respondsToSelector:_cmd])
