@@ -14,6 +14,7 @@
 #import "MapSelectionController.h"
 #import "CoreLocation+MITAdditions.h"
 #import "MITModuleURL.h"
+#import "MITMapAnnotationView.h"
 
 #define kSearchBarWidth 270
 #define kSearchBarCancelWidthDiff 28

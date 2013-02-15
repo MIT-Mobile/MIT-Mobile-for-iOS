@@ -7,6 +7,7 @@
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MapBookmarkManager.h"
+#import "MITMapAnnotationView.h"
 
 @interface MITMapDetailViewController(Private)
 

@@ -3,6 +3,7 @@
 #import "ShuttleStopViewController.h"
 #import "ShuttleStop.h"
 #import "ShuttleLocation.h"
+#import "MITMapAnnotationView.h"
 #import "UIKit+MITAdditions.h"
 
 #define DEGREES_TO_RADIANS(__ANGLE__) ((__ANGLE__) / 180.0 * M_PI)

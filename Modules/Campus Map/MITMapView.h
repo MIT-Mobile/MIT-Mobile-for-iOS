@@ -4,7 +4,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
-#import "MITMapAnnotationView.h"
 #import "MITMobileWebAPI.h"
 #import "MITMapRoute.h"
 
@@ -14,6 +13,7 @@
 @class MITMapSearchResultAnnotation;
 @class RouteView;
 @class MGSMapView;
+@class MITMapAnnotationView;
 
 @protocol MITMapViewDelegate<NSObject>
 

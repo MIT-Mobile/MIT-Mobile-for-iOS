@@ -17,6 +17,7 @@
 #import "Foundation+MITAdditions.h"
 #import "TourLink.h"
 #import "MobileRequestOperation.h"
+#import "MITMapAnnotationView.h"
 
 #define WEB_VIEW_TAG 646
 #define END_TOUR_ALERT_TAG 878

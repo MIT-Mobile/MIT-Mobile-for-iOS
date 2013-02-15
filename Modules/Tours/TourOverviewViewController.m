@@ -11,6 +11,7 @@
 #import "StartingLocationViewController.h"
 #import "CoreLocation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
+#import "MITMapAnnotationView.h"
 
 
 typedef enum {

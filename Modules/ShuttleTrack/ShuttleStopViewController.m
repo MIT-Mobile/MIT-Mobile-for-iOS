@@ -9,6 +9,7 @@
 #import "ShuttleDataManager.h"
 #import "RouteMapViewController.h"
 #import "ShuttleRouteViewController.h"
+#import "MITMapAnnotationView.h"
 
 #define NOTIFICATION_MINUTES 5
 #define MARGIN 10

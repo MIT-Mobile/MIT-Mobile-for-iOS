@@ -9,6 +9,7 @@
 #import "MITEventList.h"
 #import "CoreDataManager.h"
 #import "MobileRequestOperation.h"
+#import "MITMapAnnotationView.h"
 
 #define SCROLL_TAB_HORIZONTAL_PADDING 5.0
 #define SCROLL_TAB_HORIZONTAL_MARGIN  5.0
