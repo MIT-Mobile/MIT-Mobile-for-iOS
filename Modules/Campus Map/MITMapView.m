@@ -35,7 +35,7 @@
         MGSMapView *mapView = [[MGSMapView alloc] initWithFrame:self.bounds];
         mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                     UIViewAutoresizingFlexibleWidth);
-        mapView.mapViewDelegate = self;
+        mapView.delegate = self;
 
         self.mapView = mapView;
         [self addSubview:mapView];
@@ -446,15 +446,23 @@
     }
 }
 
+- (void)mapView:(MGSMapView *)mapView calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation {
+    
+}
 
-#pragma mark - MGSLayer Delegation Methods
-- (UIView*)mapLayer:(MGSLayer *)layer calloutViewForAnnotation:(id <MGSAnnotation>)annotation
-{
+- (UIView*)mapView:(MGSMapView *)mapView calloutViewForAnnotation:(id<MGSAnnotation>)annotation {
+    
     if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
     {
+        MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
         
+        if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)])
+        {
+            MITMapAnnotationView* annotationView = [self.delegate mapView:self
+                                                        viewForAnnotation:adaptor.mkAnnotation];
+        }
     }
-
+    
     return nil;
 }
 @end
