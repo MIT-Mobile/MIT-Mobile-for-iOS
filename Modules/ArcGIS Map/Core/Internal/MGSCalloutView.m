@@ -5,8 +5,6 @@
 @property (nonatomic,weak) UILabel *detailLabel;
 @property (nonatomic,weak) UIImageView *imageView;
 @property (nonatomic,weak) UIButton *accessoryButton;
-
-@property (nonatomic,assign) CGSize imageSize;
 @end
 
 @implementation MGSCalloutView
