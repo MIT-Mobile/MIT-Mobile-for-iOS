@@ -1,11 +1,11 @@
 #import <Foundation/Foundation.h>
-#import "MGSAnnotation.h"
+#import <ArcGIS/ArcGIS.h>
+#import "MGSSafeAnnotation.h"
 
 @class MGSLayer;
 @class AGSGraphic;
 
-@interface MGSLayerAnnotation : NSObject <MGSAnnotation>
-@property (nonatomic,strong,readonly) id<MGSAnnotation> annotation;
+@interface MGSLayerAnnotation : MGSSafeAnnotation <AGSInfoTemplateDelegate>
 @property (weak) MGSLayer *layer;
 
 @property (nonatomic,strong) AGSGraphic *graphic;
