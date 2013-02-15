@@ -182,13 +182,13 @@
             // which wraps the annotation we are working with
             if ((existingAnnotation.layer != nil) && (existingAnnotation.layer != self)) {
                 layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:existingAnnotation.annotation
-                                                                       graphic:nil];
+                                                                         graphic:nil];
             }
         }
         
         if (layerAnnotation == nil) {
             layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
-                                                                   graphic:nil];
+                                                                     graphic:nil];
         }
         
         layerAnnotation.layer = self;
@@ -467,13 +467,20 @@
     // ass so just brute force it for now; this may need to be
     // optimized in the future.
     NSMutableArray *graphics = [NSMutableArray array];
-    for (MGSLayerAnnotation *annotation in self.layerAnnotations) {
-        annotation.graphic = [self loadGraphicForAnnotation:annotation withSpatialReference:spatialReference];
+    for (MGSLayerAnnotation *layerAnnotation in self.layerAnnotations) {
+        layerAnnotation.graphic = [self loadGraphicForAnnotation:layerAnnotation.annotation
+                                            withSpatialReference:spatialReference];
         
-        if (annotation.graphic) {
-            [annotation.graphic setAttribute:annotation
-                                      forKey:MGSAnnotationAttributeKey];
-            [graphics addObject:annotation.graphic];
+        if ([layerAnnotation canShowCallout]) {
+            if (layerAnnotation.graphic.infoTemplateDelegate == nil) {
+                layerAnnotation.graphic.infoTemplateDelegate = layerAnnotation;
+            }
+        }
+        
+        if (layerAnnotation.graphic) {
+            [layerAnnotation.graphic setAttribute:layerAnnotation.annotation
+                                           forKey:MGSAnnotationAttributeKey];
+            [graphics addObject:layerAnnotation.graphic];
         }
     }
     
@@ -565,24 +572,6 @@
     if ([self.delegate respondsToSelector:@selector(didReloadMapLayer:)]) {
         [self.delegate willReloadMapLayer:self];
     }
-}
-
-- (BOOL)shouldDisplayCalloutForAnnotation:(id <MGSAnnotation>)annotation {
-    if ([self.delegate respondsToSelector:@selector(mapLayer:shouldDisplayCalloutForAnnotation:)]) {
-        return [self.delegate mapLayer:self
-     shouldDisplayCalloutForAnnotation:annotation];
-    }
-    
-    return YES;
-}
-
-- (UIView *)calloutViewForAnnotation:(id <MGSAnnotation>)annotation {
-    if ([self.delegate respondsToSelector:@selector(mapLayer:calloutViewForAnnotation:)]) {
-        return [self.delegate mapLayer:self
-              calloutViewForAnnotation:annotation];
-    }
-    
-    return nil;
 }
 
 - (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation {
