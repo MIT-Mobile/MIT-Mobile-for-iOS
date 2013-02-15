@@ -28,8 +28,6 @@
 @interface CampusMapViewController ()
 @property (nonatomic, strong) MITMapView* mapView;
 @property (nonatomic, strong) MITModuleURL* url;
-@property (nonatomic, strong) UISearchBar* searchBar;
-@property (nonatomic, strong) UIButton* bookmarkButton;
 
 @property (nonatomic, strong) CampusMapToolbar* toolBar;
 @property (nonatomic, strong) UITableView* categoryTableView;

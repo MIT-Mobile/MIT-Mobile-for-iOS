@@ -9,8 +9,6 @@
 #define LARGE_SHUTTLE_ANNOTATION_ZOOM 14.5
 
 @interface RouteMapViewController ()
-@property (nonatomic, retain) MITMapView *mapView;
-@property (nonatomic, retain) UIView *routeInfoView;
 
 // add the shuttles based on self.route.vehicleLocations
 -(void) addShuttles;

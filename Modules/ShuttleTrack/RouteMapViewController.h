@@ -52,8 +52,8 @@
 @property (nonatomic, retain) ShuttleRoute* routeInfo;
 @property (nonatomic, assign) UIViewController* parentViewController;
 
-@property (nonatomic, retain, readonly) IBOutlet MITMapView* mapView;
-@property (nonatomic, retain, readonly) IBOutlet UIView* routeInfoView;
+@property (nonatomic, retain) IBOutlet MITMapView* mapView;
+@property (nonatomic, retain) IBOutlet UIView* routeInfoView;
 
 @property (nonatomic, retain) MKPolyline * routeLine;
 @property (nonatomic, retain) MKPolylineView* routeLineView;

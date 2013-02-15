@@ -28,8 +28,8 @@
 @property (nonatomic, assign) BOOL displayingList;
 @property (nonatomic, readonly, strong) MITModuleURL* url;
 
-@property (nonatomic, readonly, strong) IBOutlet UISearchBar* searchBar;
-@property (nonatomic, readonly, strong) IBOutlet UIButton* bookmarkButton;
+@property (nonatomic, strong) IBOutlet UISearchBar* searchBar;
+@property (nonatomic, strong) IBOutlet UIButton* bookmarkButton;
 
 // execute a search
 -(void) search:(NSString*)searchText;
