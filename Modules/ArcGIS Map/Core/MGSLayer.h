@@ -23,9 +23,6 @@
 
 - (void)willReloadMapLayer:(MGSLayer*)mapLayer;
 - (void)didReloadMapLayer:(MGSLayer*)mapLayer;
-
-- (BOOL)mapLayer:(MGSLayer*)layer shouldDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation;
-- (UIView*)mapLayer:(MGSLayer*)layer calloutViewForAnnotation:(id<MGSAnnotation>)annotation;
 @end
 
 @interface MGSLayer : NSObject
@@ -50,10 +47,9 @@
 
 - (id)initWithName:(NSString*)name;
 - (void)refreshLayer;
+@end
 
-- (BOOL)shouldDisplayCalloutForAnnotation:(id<MGSAnnotation>)annotation;
-- (UIView*)calloutViewForAnnotation:(id<MGSAnnotation>)annotation;
-
+@interface MGSLayer (Subclassing)
 - (void)willMoveToMapView:(MGSMapView*)mapView;
 - (void)didMoveToMapView:(MGSMapView*)mapView;
 - (void)willAddAnnotations:(NSArray*)annotations;
