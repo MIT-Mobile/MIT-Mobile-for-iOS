@@ -16,11 +16,10 @@
 @property (nonatomic, strong) NSString *activeMapSet;
 @property (nonatomic, strong, readonly) NSSet *mapSets;
 
-@property (nonatomic, readonly) NSArray *allLayers;
-@property (nonatomic, readonly) NSArray *visibleLayers;
+@property (nonatomic, readonly) NSArray *layers;
 
 @property (nonatomic) BOOL showUserLocation;
-@property (nonatomic,assign) id<MGSMapViewDelegate> mapViewDelegate;
+@property (nonatomic,assign) id<MGSMapViewDelegate> delegate;
 @property (nonatomic,readonly,strong) MGSLayer *defaultLayer;
 @property (nonatomic) MKCoordinateRegion mapRegion;
 
@@ -31,6 +30,7 @@
 - (void)insertLayer:(MGSLayer*)layer withIdentifier:(NSString*)layerIdentifier atIndex:(NSUInteger)layerIndex;
 - (void)insertLayer:(MGSLayer*)layer withIdentifier:(NSString*)layerIdentifier behindLayer:(MGSLayer*)foregroundLayer;
 
+- (MGSLayer*)layerContainingAnnotation:(id<MGSAnnotation>)annotation;
 - (MGSLayer*)layerWithIdentifier:(NSString*)layerIdentifier;
 - (BOOL)containsLayerWithIdentifier:(NSString*)layerIdentifier;
 - (void)removeLayerWithIdentifier:(NSString*)layerIdentifier;
@@ -43,9 +43,7 @@
 - (void)setHidden:(BOOL)hidden forLayerIdentifier:(NSString*)layerIdentifier;
 
 #pragma mark - Callouts
-- (void)showCalloutForAnnotation:(id<MGSAnnotation>)annotation;
-- (void)showCalloutWithView:(UIView*)view
-              forAnnotation:(id<MGSAnnotation>)annotation;
+- (BOOL)showCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 - (void)hideCallout;
 - (BOOL)isPresentingCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 
