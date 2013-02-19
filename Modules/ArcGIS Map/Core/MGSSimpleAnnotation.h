@@ -8,8 +8,6 @@
 @interface MGSSimpleAnnotation : NSObject <MGSAnnotation>
 @property (nonatomic, assign) CLLocationCoordinate2D coordinate;
 
-
-@property (nonatomic, assign) BOOL canShowCallout;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *detail;
 @property (nonatomic, strong) UIImage *calloutImage;

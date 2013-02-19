@@ -29,7 +29,6 @@ typedef enum _MGSAnnotationType {
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
 @optional
-@property (nonatomic, readonly, assign) BOOL canShowCallout;
 @property (nonatomic, readonly, copy) NSString *title;
 @property (nonatomic, readonly, copy) NSString *detail;
 @property (nonatomic, readonly, strong) UIImage *calloutImage;
