@@ -1330,7 +1330,7 @@
 				2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */,
 				2C101A7B1653F054000E40E3 /* MGSRouteOperation.h */,
 				2C101A7C1653F054000E40E3 /* MGSRouteOperation.m */,
-				2C101A471653ECB4000E40E3 /* View */,
+				2C101A471653ECB4000E40E3 /* Map View */,
 				2C101A461653EBE2000E40E3 /* Core */,
 			);
 			name = "ArcGIS Map";
@@ -1351,13 +1351,14 @@
 			path = Core;
 			sourceTree = "<group>";
 		};
-		2C101A471653ECB4000E40E3 /* View */ = {
+		2C101A471653ECB4000E40E3 /* Map View */ = {
 			isa = PBXGroup;
 			children = (
 				2C101A881653F06C000E40E3 /* MGSMapView.h */,
 				2C101A891653F06C000E40E3 /* MGSMapView.m */,
 				2C101A8A1653F06C000E40E3 /* MGSMapViewDelegate.h */,
 			);
+			name = "Map View";
 			path = View;
 			sourceTree = "<group>";
 		};
