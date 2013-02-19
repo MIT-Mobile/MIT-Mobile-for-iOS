@@ -43,15 +43,7 @@ static const CGFloat kSubTitleFontSize = 12;
     self.annotationView = nil;
 	[super dealloc];
 }
-/*
-- (void)setOrigin:(CGPoint)origin
-{
-	CGRect frame = self.frame;
-	frame.origin.x = origin.x;
-	frame.origin.y = origin.y - frame.size.height / 2;
-	[self setNeedsDisplay];
-}
-*/
+
 - (void)setupSubviews
 {
     UIImage *calloutImage = [UIImage imageNamed:@"map/map_disclosure.png"];

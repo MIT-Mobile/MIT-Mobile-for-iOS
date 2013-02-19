@@ -426,9 +426,9 @@
     {
         MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
         
-        if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)])
-        {
-            if (adaptor.legacyAnnotationView) {
+        if (adaptor.legacyAnnotationView) {
+            if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)])
+            {
                 MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
                 [self.delegate mapView:self annotationViewCalloutAccessoryTapped:adaptor.legacyAnnotationView];
             }
@@ -440,18 +440,21 @@
     if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
     {
         MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
+        MITMapAnnotationView* annotationView = nil;
         
-        if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)])
-        {
-            MITMapAnnotationView* annotationView = [self.delegate mapView:self
-                                                        viewForAnnotation:adaptor.mkAnnotation];
-            
-            if (annotationView) {
-                adaptor.legacyAnnotationView = annotationView;
-                return [[MITMapAnnotationCalloutView alloc] initWithAnnotationView:annotationView
-                                                                           mapView:self];
-            }
+        if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)]) {
+            annotationView = [self.delegate mapView:self
+                                  viewForAnnotation:adaptor.mkAnnotation];
         }
+        
+        if (annotationView == nil) {
+            annotationView = [[MITPinAnnotationView alloc] initWithAnnotation:adaptor.mkAnnotation
+                                                              reuseIdentifier:nil];
+        }
+        
+        adaptor.legacyAnnotationView = annotationView;
+        return [[MITMapAnnotationCalloutView alloc] initWithAnnotationView:annotationView
+                                                                   mapView:self];
     }
     
     return nil;
