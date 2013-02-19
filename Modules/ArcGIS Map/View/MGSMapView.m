@@ -12,7 +12,7 @@
 
 static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Default";
 
-@interface MGSMapView () <AGSMapViewTouchDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate>
+@interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate>
 @property(nonatomic, strong) NSOperationQueue *operationQueue;
 
 #pragma mark - Basemap Management (Declaration)
@@ -428,6 +428,8 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         
         [self willShowCalloutForAnnotation:annotation];
         self.calloutAnnotation = annotation;
+        
+        self.mapView.callout.delegate = self;
         [self.mapView.callout showCalloutAtPoint:nil
                                       forGraphic:graphic
                                         animated:YES];
@@ -465,6 +467,21 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     
     return myLayer;
 }
+
+- (MGSLayer*)layerContainingGraphic:(AGSGraphic*)graphic {
+    __block MGSLayer *myLayer = nil;
+    [self.layers enumerateObjectsWithOptions:NSEnumerationReverse
+                                  usingBlock:^(NSString *identifier, NSUInteger idx, BOOL *stop) {
+                                      MGSLayer *layer = [self layerWithIdentifier:identifier];
+                                      
+                                      if ([layer annotationForGraphic:graphic]) {
+                                          myLayer = layer;
+                                          (*stop) = YES;
+                                      }
+                                  }];
+    
+    return myLayer;
+}
 @end
 
 #pragma mark -
@@ -488,7 +505,8 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark -
 @implementation MGSMapView (AGSMapViewCalloutDelegate)
 - (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForGraphic:(AGSGraphic *)graphic {
-    id<MGSAnnotation> annotation = [graphic attributeForKey:MGSAnnotationAttributeKey];
+    MGSLayer *myLayer = [self layerContainingGraphic:graphic];
+    id<MGSAnnotation> annotation = [myLayer annotationForGraphic:graphic];
     BOOL result = NO;
     
     result = [self shouldShowCalloutForAnnotation:annotation];
@@ -506,10 +524,12 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     }
     
     if (result) {
-        self.calloutAnnotation = annotation;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self showCalloutForAnnotation:annotation];
+        });
     }
     
-    return result;
+    return NO;
 }
 
 - (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForLocationDisplay:(AGSLocationDisplay *)ld {
@@ -552,6 +572,15 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (void)mapViewDidCancelTapAndHold:(AGSMapView *)mapView {
     
 }
+@end
+
+@implementation MGSMapView (AGSCalloutDelegate)
+- (void)didClickAccessoryButtonForCallout:(AGSCallout *)callout {
+    if (self.calloutAnnotation) {
+        [self calloutDidReceiveTapForAnnotation:self.calloutAnnotation];
+    }
+}
+
 @end
 
 #pragma mark -
@@ -597,7 +626,9 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 @implementation MGSMapView (DelegateHelpers)
 #pragma mark Callout Handling
 - (BOOL)shouldShowCalloutForAnnotation:(id<MGSAnnotation>)annotation {
-    BOOL showCallout = YES;
+    MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+    BOOL showCallout = ((safeAnnotation.annotationType == MGSAnnotationMarker) ||
+                        (safeAnnotation.annotationType == MGSAnnotationPointOfInterest));
     
     if ([self.delegate respondsToSelector:@selector(mapView:shouldShowCalloutForAnnotation:)]) {
         showCallout = [self.delegate mapView:self

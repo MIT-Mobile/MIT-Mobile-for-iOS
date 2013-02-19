@@ -34,6 +34,10 @@
 - (void)layer:(AGSLayer *)layer didFailToLoadWithError:(NSError *)error;
 @end
 
+@interface MGSMapView (AGSCalloutDelegate)
+- (void)didClickAccessoryButtonForCallout:(AGSCallout *)callout;
+@end
+
 @interface MGSMapView (DelegateForwarding)
 - (void)didFinishLoadingMapView;
 - (void)willAddLayer:(MGSLayer *)layer;
