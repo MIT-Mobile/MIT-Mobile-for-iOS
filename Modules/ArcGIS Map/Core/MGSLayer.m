@@ -225,7 +225,6 @@
             
             [self.layerAnnotations removeObject:mapAnnotation];
             [self.graphicsLayer removeGraphic:mapAnnotation.graphic];
-            [mapAnnotation.graphic removeAttributeForKey:MGSAnnotationAttributeKey];
         }
         
         [self didRemoveAnnotations:annotations];
@@ -271,7 +270,7 @@
 // can be pretty messy objects so we'll just leave it to any
 // subclasses to implement properly.
 - (AGSGraphic *)createGraphicForAnnotation:(id <MGSAnnotation>)annotation
-                    withSpatialReference:(AGSSpatialReference*)reference {
+                      withSpatialReference:(AGSSpatialReference*)reference {
     AGSGraphic *annotationGraphic = nil;
     
     switch (annotation.annotationType) {
@@ -288,10 +287,10 @@
                 markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"];
             }
             
-            annotationGraphic = [AGSGraphic graphicWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
-                                                         symbol:markerSymbol
-                                                     attributes:[NSMutableDictionary dictionary]
-                                           infoTemplateDelegate:nil];
+            annotationGraphic = [[AGSGraphic alloc] initWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
+                                                              symbol:markerSymbol
+                                                          attributes:[NSMutableDictionary dictionary]
+                                                infoTemplateDelegate:nil];
         }
             break;
             
@@ -326,10 +325,10 @@
                 AGSSimpleLineSymbol *lineSymbol = [AGSSimpleLineSymbol simpleLineSymbolWithColor:(lineColor ? lineColor : [UIColor greenColor])
                                                                                            width:((lineWidth >= 0.5) ? lineWidth : 2.0)];
                 
-                annotationGraphic = [AGSGraphic graphicWithGeometry:polyline
-                                                             symbol:lineSymbol
-                                                         attributes:[NSMutableDictionary dictionary]
-                                               infoTemplateDelegate:nil];
+                annotationGraphic = [[AGSGraphic alloc] initWithGeometry:polyline
+                                                                  symbol:lineSymbol
+                                                              attributes:[NSMutableDictionary dictionary]
+                                                    infoTemplateDelegate:nil];
             } else {
                 DDLogVerbose(@"unable to create polyline, object does not response to -[MGSAnnotation points]");
             }
@@ -386,10 +385,10 @@
                                                                                     outlineColor:strokeColor];
                 fillSymbol.outline.width = lineWidth;
                 
-                annotationGraphic = [AGSGraphic graphicWithGeometry:polygon
-                                                             symbol:fillSymbol
-                                                         attributes:[NSMutableDictionary dictionary]
-                                               infoTemplateDelegate:nil];
+                annotationGraphic = [[AGSGraphic alloc] initWithGeometry:polygon
+                                                                  symbol:fillSymbol
+                                                              attributes:[NSMutableDictionary dictionary]
+                                                    infoTemplateDelegate:nil];
             } else {
                 DDLogVerbose(@"unable to create polygon, object does not response to -[MGSAnnotation points]");
             }
@@ -415,6 +414,16 @@
 - (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation {
     MGSLayerAnnotation *layerAnnotation = [self layerAnnotationForAnnotation:annotation];
     return layerAnnotation.graphic;
+}
+
+- (id<MGSAnnotation>)annotationForGraphic:(AGSGraphic*)graphic {
+    for (MGSLayerAnnotation *layerAnnotation in self.layerAnnotations) {
+        if ([layerAnnotation.graphic isEqual:graphic]) {
+            return layerAnnotation.annotation;
+        }
+    }
+    
+    return nil;
 }
 
 - (AGSGraphicsLayer *)graphicsLayer {
@@ -476,15 +485,13 @@
     NSMutableArray *graphics = [NSMutableArray array];
     for (MGSLayerAnnotation *layerAnnotation in self.layerAnnotations) {
         layerAnnotation.graphic = [self createGraphicForAnnotation:layerAnnotation.annotation
-                                            withSpatialReference:spatialReference];
+                                              withSpatialReference:spatialReference];
         
         if (layerAnnotation.graphic.infoTemplateDelegate == nil) {
             layerAnnotation.graphic.infoTemplateDelegate = layerAnnotation;
         }
         
         if (layerAnnotation.graphic) {
-            [layerAnnotation.graphic setAttribute:layerAnnotation.annotation
-                                           forKey:MGSAnnotationAttributeKey];
             [graphics addObject:layerAnnotation.graphic];
         }
     }

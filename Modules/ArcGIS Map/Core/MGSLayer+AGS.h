@@ -25,4 +25,5 @@
 - (AGSGraphic*)loadGraphicForAnnotation:(id<MGSAnnotation>)annotation;
 
 - (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation;
+- (id<MGSAnnotation>)annotationForGraphic:(AGSGraphic*)graphic;
 @end
