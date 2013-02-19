@@ -1,5 +1,6 @@
 #import "MITMapAnnotationCalloutView.h"
 #import "MITMapView.h"
+#import "MITMapAnnotationView.h"
 
 // Corner radius for the callout bubble.
 static const CGFloat kCornerRadius = 10;
