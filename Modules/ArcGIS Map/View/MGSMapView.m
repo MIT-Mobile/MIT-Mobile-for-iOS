@@ -1,6 +1,8 @@
 #import <ArcGIS/ArcGIS.h>
 
 #import "MGSMapView.h"
+#import "MGSMapView+Delegation.h"
+
 #import "MGSUtility.h"
 #import "MGSLayer.h"
 #import "MGSLayer+AGS.h"
@@ -26,49 +28,11 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark -
 
 @property(strong) NSMutableDictionary *queryTasks;
-@property(nonatomic, assign) AGSMapView *mapView;
+@property(nonatomic, weak) AGSMapView *mapView;
 @property(strong) MGSLayer *defaultLayer;
+@property(nonatomic,strong) id<MGSAnnotation> calloutAnnotation;
 
 - (void)initView;
-@end
-
-@interface MGSMapView (AGSMapViewLayerDelegate)
-- (void)mapViewDidLoad:(AGSMapView *)mapView;
-@end
-
-@interface MGSMapView (AGSMapViewCalloutDelegate)
-- (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForGraphic:(AGSGraphic *)graphic;
-- (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForLocationDisplay:(AGSLocationDisplay *)ld;
-- (void)mapViewWillDismissCallout:(AGSMapView *)mapView;
-- (void)mapViewDidDismissCallout:(AGSMapView *)mapView;
-@end
-
-@interface MGSMapView (AGSLayerDelegate)
-- (void)layer:(AGSLayer *)loadedLayer didInitializeSpatialReferenceStatus:(BOOL)srStatusValid;
-- (void)layer:(AGSLayer *)layer didFailToLoadWithError:(NSError *)error;
-@end
-
-@interface MGSMapView (DelegateForwarding)
-- (void)didFinishLoadingMapView;
-- (void)willAddLayer:(MGSLayer *)layer;
-- (void)didAddLayer:(MGSLayer *)layer;
-- (void)willRemoveLayer:(MGSLayer *)layer;
-- (void)didRemoveLayer:(MGSLayer *)layer;
-@end
-
-@interface MGSMapView (DelegateHelpers)
-- (BOOL)shouldShowCalloutForAnnotation:(id<MGSAnnotation>)annotation;
-- (void)willShowCalloutForAnnotation:(id <MGSAnnotation>)annotation;
-- (UIView*)calloutViewForAnnotation:(id<MGSAnnotation>)annotation;
-- (void)calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation;
-- (void)didShowCalloutForAnnotation:(id <MGSAnnotation>)annotation;
-- (void)didDismissCalloutForAnnotation:(id<MGSAnnotation>)annotation;
-
-- (void)didFinishLoadingMapView;
-- (void)willAddLayer:(MGSLayer *)layer;
-- (void)didAddLayer:(MGSLayer *)layer;
-- (void)willRemoveLayer:(MGSLayer *)layer;
-- (void)didRemoveLayer:(MGSLayer *)layer;
 @end
 
 @implementation MGSMapView
@@ -129,9 +93,10 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             AGSMapView *view = [[AGSMapView alloc] initWithFrame:mainBounds];
             view.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                                      UIViewAutoresizingFlexibleHeight);
-            view.touchDelegate = self;
             view.layerDelegate = self;
+            view.touchDelegate = self;
             view.calloutDelegate = self;
+            
             
             [self addSubview:view];
             self.mapView = view;
@@ -443,15 +408,40 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 #pragma mark - Callouts
 - (BOOL)showCalloutForAnnotation:(id <MGSAnnotation>)annotation {
-    if ([self shouldShowCalloutForAnnotation:annotation]) {
-        self.mapView.callout.customView = [self calloutViewForAnnotation:annotation];
+    if (self.calloutAnnotation) {
+        [self hideCallout];
     }
+    
+    if ([self shouldShowCalloutForAnnotation:annotation]) {
+        MGSLayer *layer = [self layerContainingAnnotation:annotation];
+        AGSGraphic *graphic = [layer graphicForAnnotation:annotation];
+        UIView *customView = [self calloutViewForAnnotation:annotation];
+        
+        if (customView) {
+            self.mapView.callout.customView = customView;
+        } else if (graphic.infoTemplateDelegate == nil) {
+            MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+            self.mapView.callout.title = safeAnnotation.title;
+            self.mapView.callout.detail = safeAnnotation.detail;
+            self.mapView.callout.image = safeAnnotation.calloutImage;
+        }
+        
+        [self willShowCalloutForAnnotation:annotation];
+        self.calloutAnnotation = annotation;
+        [self.mapView.callout showCalloutAtPoint:nil
+                                      forGraphic:graphic
+                                        animated:YES];
+        [self didShowCalloutForAnnotation:annotation];
+    }
+    
     
     return NO;
 }
 
 - (void)hideCallout {
-    self.mapView.callout.hidden = YES;
+    [self.mapView.callout dismiss];
+    [self didDismissCalloutForAnnotation:self.calloutAnnotation];
+    self.calloutAnnotation = nil;
 }
 
 - (MGSLayer*)layerContainingAnnotation:(id<MGSAnnotation>)annotation {
@@ -501,14 +491,11 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     id<MGSAnnotation> annotation = [graphic attributeForKey:MGSAnnotationAttributeKey];
     BOOL result = NO;
     
-    if ([annotation respondsToSelector:@selector(canShowCallout)]) {
-        result = [annotation canShowCallout];
-    } else {
-        result = [self shouldShowCalloutForAnnotation:annotation];
-    }
+    result = [self shouldShowCalloutForAnnotation:annotation];
     
     if (result) {
         UIView *customView = [self calloutViewForAnnotation:annotation];
+        
         if (customView || graphic.infoTemplateDelegate) {
             [self willShowCalloutForAnnotation:annotation];
             
@@ -516,6 +503,10 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                 self.mapView.callout.customView = customView;
             }
         }
+    }
+    
+    if (result) {
+        self.calloutAnnotation = annotation;
     }
     
     return result;
@@ -526,10 +517,39 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 - (void)mapViewWillDismissCallout:(AGSMapView *)mapView {
-    
 }
 
 - (void)mapViewDidDismissCallout:(AGSMapView *)mapView {
+    if (self.calloutAnnotation) {
+        [self didDismissCalloutForAnnotation:self.calloutAnnotation];
+        self.calloutAnnotation = nil;
+    }
+}
+@end
+
+#pragma mark -
+@implementation MGSMapView (AGSMapViewTouchDelegate)
+- (BOOL)mapView:(AGSMapView*)mapView shouldProcessClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint {
+    return YES;
+}
+
+- (void)mapView:(AGSMapView *)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics {
+    
+}
+
+- (void)mapView:(AGSMapView *)mapView didTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics {
+    
+}
+
+- (void)mapView:(AGSMapView *)mapView didMoveTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics {
+    
+}
+
+- (void)mapView:(AGSMapView *)mapView didEndTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics {
+    
+}
+
+- (void)mapViewDidCancelTapAndHold:(AGSMapView *)mapView {
     
 }
 @end
@@ -575,7 +595,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 #pragma mark -
 @implementation MGSMapView (DelegateHelpers)
-#pragma mark - Callout Handling
+#pragma mark Callout Handling
 - (BOOL)shouldShowCalloutForAnnotation:(id<MGSAnnotation>)annotation {
     BOOL showCallout = YES;
     
@@ -598,8 +618,6 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
     
     if (annotation == nil) {
-        return nil;
-    } else if (!safeAnnotation.canShowCallout) {
         return nil;
     }
     
@@ -647,7 +665,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     }
 }
 
-#pragma mark -
+#pragma mark Layer Mutation
 - (void)didFinishLoadingMapView {
     if ([self.delegate respondsToSelector:@selector(didFinishLoadingMapView:)]) {
         [self.delegate didFinishLoadingMapView:self];
