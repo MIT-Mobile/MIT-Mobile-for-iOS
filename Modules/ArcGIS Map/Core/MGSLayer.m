@@ -14,6 +14,8 @@
 
 @interface MGSLayer () <AGSLayerDelegate>
 @property (nonatomic, strong) NSMutableArray *layerAnnotations;
+
+- (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation;
 @end
 
 @implementation MGSLayer
@@ -268,7 +270,7 @@
 // implementation will just return nil. Graphics
 // can be pretty messy objects so we'll just leave it to any
 // subclasses to implement properly.
-- (AGSGraphic *)loadGraphicForAnnotation:(id <MGSAnnotation>)annotation
+- (AGSGraphic *)createGraphicForAnnotation:(id <MGSAnnotation>)annotation
                     withSpatialReference:(AGSSpatialReference*)reference {
     AGSGraphic *annotationGraphic = nil;
     
@@ -398,7 +400,7 @@
             // Not sure how we'll handle this one. For the time being,
             // default to a nil graphic and, instead, ask the subclass to
             // handle it.
-            annotationGraphic = [self graphicForAnnotation:annotation];
+            annotationGraphic = [self loadGraphicForAnnotation:annotation];
         }
             break;
             
@@ -410,6 +412,11 @@
 }
 
 #pragma mark - ArcGIS Methods
+- (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation {
+    MGSLayerAnnotation *layerAnnotation = [self layerAnnotationForAnnotation:annotation];
+    return layerAnnotation.graphic;
+}
+
 - (AGSGraphicsLayer *)graphicsLayer {
     if (_graphicsLayer == nil) {
         [self loadGraphicsLayer];
@@ -468,13 +475,11 @@
     // optimized in the future.
     NSMutableArray *graphics = [NSMutableArray array];
     for (MGSLayerAnnotation *layerAnnotation in self.layerAnnotations) {
-        layerAnnotation.graphic = [self loadGraphicForAnnotation:layerAnnotation.annotation
+        layerAnnotation.graphic = [self createGraphicForAnnotation:layerAnnotation.annotation
                                             withSpatialReference:spatialReference];
         
-        if ([layerAnnotation canShowCallout]) {
-            if (layerAnnotation.graphic.infoTemplateDelegate == nil) {
-                layerAnnotation.graphic.infoTemplateDelegate = layerAnnotation;
-            }
+        if (layerAnnotation.graphic.infoTemplateDelegate == nil) {
+            layerAnnotation.graphic.infoTemplateDelegate = layerAnnotation;
         }
         
         if (layerAnnotation.graphic) {
@@ -574,7 +579,7 @@
     }
 }
 
-- (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation {
+- (AGSGraphic*)loadGraphicForAnnotation:(id<MGSAnnotation>)annotation {
     /* Do nothing, leave it up to a subclass to implement this */
     return nil;
 }

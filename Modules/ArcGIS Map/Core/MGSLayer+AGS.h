@@ -22,6 +22,7 @@
 // This should allow subclasses to tweak how the AGSGraphic objects
 // are created without having to poke at the internals of MGSLayer.
 // The default implementation
+- (AGSGraphic*)loadGraphicForAnnotation:(id<MGSAnnotation>)annotation;
+
 - (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation;
-- (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation;
 @end
