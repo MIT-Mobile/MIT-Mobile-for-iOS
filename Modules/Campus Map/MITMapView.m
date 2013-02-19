@@ -6,6 +6,7 @@
 #import "MGSAnnotation.h"
 #import "MITAnnotationAdaptor.h"
 #import "MGSRouteLayer.h"
+#import "MITMapAnnotationCalloutView.h"
 #import "CoreLocation+MITAdditions.h"
 
 @interface MITMapView () <MGSMapViewDelegate,MGSLayerDelegate>
@@ -230,12 +231,6 @@
     {
         MITAnnotationAdaptor *adaptor = [[MITAnnotationAdaptor alloc] initWithMKAnnotation:mkAnnotation];
         
-        if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)])
-        {
-            adaptor.legacyAnnotationView = [self.delegate mapView:self
-                                                viewForAnnotation:mkAnnotation];
-        }
-        
         [addedAnnotations addObject:adaptor];
     }
     
@@ -421,37 +416,27 @@
 }
 
 #pragma mark - MGSMapView Delegation Methods
-- (void)mapView:(MGSMapView *)mapView calloutAccessoryDidReceiveTapForAnnotation:(id <MGSAnnotation>)annotation
-{
-    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
-    {
-        if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)])
-        {
-            MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
-
-            [self.delegate mapView:self
-                    annotationViewCalloutAccessoryTapped:adaptor.legacyAnnotationView];
-        }
-    }
-}
-
 - (void)mapView:(MGSMapView *)mapView willShowCalloutForAnnotation:(id <MGSAnnotation>)annotation
 {
-    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
-    {
-        if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)])
-        {
-            
-        }
-    }
+
 }
 
 - (void)mapView:(MGSMapView *)mapView calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation {
-    
+    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
+    {
+        MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
+        
+        if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)])
+        {
+            if (adaptor.legacyAnnotationView) {
+                MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
+                [self.delegate mapView:self annotationViewCalloutAccessoryTapped:adaptor.legacyAnnotationView];
+            }
+        }
+    }
 }
 
 - (UIView*)mapView:(MGSMapView *)mapView calloutViewForAnnotation:(id<MGSAnnotation>)annotation {
-    
     if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
     {
         MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
@@ -460,6 +445,12 @@
         {
             MITMapAnnotationView* annotationView = [self.delegate mapView:self
                                                         viewForAnnotation:adaptor.mkAnnotation];
+            
+            if (annotationView) {
+                adaptor.legacyAnnotationView = annotationView;
+                return [[MITMapAnnotationCalloutView alloc] initWithAnnotationView:annotationView
+                                                                           mapView:self];
+            }
         }
     }
     
