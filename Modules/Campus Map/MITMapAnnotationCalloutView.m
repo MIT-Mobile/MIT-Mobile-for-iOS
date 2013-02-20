@@ -2,13 +2,6 @@
 #import "MITMapView.h"
 #import "MITMapAnnotationView.h"
 
-// Corner radius for the callout bubble.
-static const CGFloat kCornerRadius = 10;
-
-// Width and height of the chevron that points to the called-out location.
-static const CGFloat kChevronWidth = 28;
-static const CGFloat kChevronHeight = 14;
-
 static const CGFloat kCalloutWidth = 275;
 static const CGFloat kBuffer = 10;
 static const CGFloat kTitleFontSize = 16;
@@ -22,28 +15,35 @@ static const CGFloat kSubTitleFontSize = 12;
 
 
 @implementation MITMapAnnotationCalloutView
-
-@synthesize annotationView = _annotationView, mapView = _mapView;
+@synthesize annotationView = _annotationView;
+@synthesize mapView = _mapView;
 
 - (id)initWithAnnotationView:(MITMapAnnotationView *)annotationView mapView:(MITMapView*)mapView
 {
 	self = [super initWithFrame:CGRectMake(10, 150, 275, 125)];
 	if (self) {
-		_mapView = mapView;
+		self.mapView = mapView;
 		self.annotationView = annotationView;
-		self.opaque = NO;
-		[self setupSubviews];
+        
+        self.titleLabel.text = [self.annotationView.annotation title];
+        self.titleLabel.font = [UIFont boldSystemFontOfSize:kTitleFontSize];
+        self.titleLabel.numberOfLines = 0;
+        self.titleLabel.lineBreakMode = UILineBreakModeWordWrap;
+        self.titleLabel.textColor = [UIColor darkTextColor];
+        
+        self.detailLabel.text = [self.annotationView.annotation subtitle];
+        self.detailLabel.font = [UIFont systemFontOfSize:kSubTitleFontSize];
+        self.detailLabel.numberOfLines = 0;
+        self.detailLabel.lineBreakMode = UILineBreakModeWordWrap;
+        self.detailLabel.textColor = [UIColor lightGrayColor];
+        
+        [self sizeToFit];
 	}
 	
 	return self;
 }
 
-- (void)dealloc
-{
-    self.annotationView = nil;
-	[super dealloc];
-}
-
+/*
 - (void)setupSubviews
 {
     UIImage *calloutImage = [UIImage imageNamed:@"map/map_disclosure.png"];
@@ -68,113 +68,32 @@ static const CGFloat kSubTitleFontSize = 12;
         }
 	}
 	
-	// add the chevron height
-	size.height += kChevronHeight;
 	
 	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y,
 							size.width + kBuffer * 3 + calloutImage.size.width, size.height);
-	
-	UIButton *accessoryButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-	accessoryButton.exclusiveTouch = YES;
-	accessoryButton.enabled = YES;
-	[accessoryButton addTarget:self 
-						action:@selector(calloutAccessoryTapped:) 
-			  forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchCancel];
-	
-	accessoryButton.frame = CGRectMake(self.bounds.size.width - accessoryButton.frame.size.width - 10, 
-									   round((self.bounds.size.height - kChevronHeight - accessoryButton.frame.size.height) / 2.0), 
-									   accessoryButton.frame.size.width, 
-									   accessoryButton.frame.size.height);
+}*/
+
+/*
+- (CGSize)sizeThatFits:(CGSize)size {
+    size.height = MAX(size.height,125);
+    size.width = MAX(MIN(size.width,kCalloutWidth),kCalloutWidth);
     
-	[self addSubview:accessoryButton];
+    
+    NSString *title = @"";
+    NSString *detail = @"";
+    if (self.annotationView.annotation) {
+        id<MKAnnotation> annotation = self.annotationView.annotation;
+        title = [annotation title];
+        detail = [annotation subtitle];
+    }
+    
+    CGSize titleSize = [title sizeWithFont:[ constrainedToSize:<#(CGSize)#> lineBreakMode:<#(NSLineBreakMode)#>]
 }
 
 - (void)drawRect:(CGRect)rect
 {
 	CGContextRef context = UIGraphicsGetCurrentContext();
-	
-	// Account for the chevron before drawing our paths.
-	rect.size.height -= kChevronHeight;
-	
-	// Create a rounded rectangle to form the callout box.
-	CGMutablePathRef path = CGPathCreateMutable();
-	
-	// Begin at top left.
-	CGPathMoveToPoint(path, NULL, rect.origin.x, rect.origin.y + kCornerRadius);
-	
-	// Draw top right.
-	CGPathAddArcToPoint(
-		path, NULL,
-		rect.origin.x, rect.origin.y,
-		rect.origin.x + kCornerRadius, rect.origin.y,
-		kCornerRadius
-	);
-	CGPathAddLineToPoint(path, NULL, rect.origin.x + rect.size.width - kCornerRadius, rect.origin.y);
-	
-	// Draw lower right.
-	CGPathAddArcToPoint(
-		path, NULL,
-		rect.origin.x + rect.size.width, rect.origin.y,
-		rect.origin.x + rect.size.width, rect.origin.y + kCornerRadius,
-		kCornerRadius
-	);
-	
-	CGPathAddLineToPoint(path, NULL, rect.origin.x + rect.size.width, rect.origin.y + rect.size.height - kCornerRadius);
-	
-	// Draw lower right.
-	CGPathAddArcToPoint(
-						path, NULL,
-						rect.origin.x + rect.size.width, rect.origin.y + rect.size.height,
-						rect.origin.x + rect.size.width - kCornerRadius, rect.origin.y + rect.size.height,
-						kCornerRadius
-						);
-	
-	CGFloat midX = round((rect.origin.x + rect.size.width) / 2);
-	CGFloat halfChevWidth = round(kChevronWidth / 2);
-	CGPathAddLineToPoint(path, NULL, midX + halfChevWidth, rect.origin.y + rect.size.height);
-	CGPathAddLineToPoint(path, NULL, midX,                 rect.origin.y + rect.size.height + kChevronHeight);
-	CGPathAddLineToPoint(path, NULL, midX - halfChevWidth, rect.origin.y + rect.size.height);
-	CGPathAddLineToPoint(path, NULL, rect.origin.x + kCornerRadius, rect.origin.y + rect.size.height);
-	
-	// Finish with the bottom left.
-	CGPathAddArcToPoint(
-						path, NULL,
-						rect.origin.x, rect.origin.y + rect.size.height,
-						rect.origin.x, rect.origin.y + rect.size.height - kCornerRadius,
-						kCornerRadius
-						);
-	
-	// draw line back to upper left. 
-	CGPathAddLineToPoint(path, NULL, rect.origin.x, rect.origin.y + kCornerRadius);
 
-	// Create the gradient of the bubble.
-	CGFloat colors[8] = {
-		1.0,  1.0,  1.0,  0.83,  // #FFFFFF 83% alpha.
-		0.83, 0.83, 0.83, 0.83   // #D4D4D4 83% alpha.
-	};
-	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-	CGGradientRef gradient = CGGradientCreateWithColorComponents(colorSpace, colors, NULL, 2);
-	CGColorSpaceRelease(colorSpace);
-	
-	// Fill the new path with our gradient.
-	CGContextSaveGState(context);
-	CGContextAddPath(context, path);
-	CGContextClip(context);
-	CGContextDrawLinearGradient(context, gradient, CGPointMake(0, 0), CGPointMake(0, CGRectGetHeight(rect) + kChevronHeight), 0);
-	CGContextRestoreGState(context);
-	
-	// Set the stroke color.
-	CGContextAddPath(context, path);
-	CGFloat color[4] = { 0.6, 0.6, 0.6, 1.0 };  // #999999 100% alpha.
-	CGContextSetStrokeColor(context, color);
-	
-	// Stroke our path.
-	CGContextStrokePath(context);
-	
-	// Cleanup.
-	CGPathRelease(path);
-	CGGradientRelease(gradient);
-	
 	// Draw the title.
     UIImage *calloutImage = [UIImage imageNamed:@"map/map_disclosure.png"];
 
@@ -203,11 +122,6 @@ static const CGFloat kSubTitleFontSize = 12;
 	 }
 
 }
-
-
-- (void)calloutAccessoryTapped:(id)sender {
-    // _mapView.mapView is the MKMapView object attached to the MITMapView
-    [_mapView mapView:_mapView.mapView annotationView:self.annotationView calloutAccessoryControlTapped:sender];
-}
+*/
 
 @end

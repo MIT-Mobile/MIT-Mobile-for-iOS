@@ -97,7 +97,7 @@
 		2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CA91F9815CB03BB00C03732 /* MITScannerHelpViewController.xib */; };
 		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
-		2CBD6A0116D3C6FC002B482F /* MITMapAnnotationCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBD6A0016D3C6FC002B482F /* MITMapAnnotationCalloutView.m */; };
+		2CBD6A0116D3C6FC002B482F /* MITMapAnnotationCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBD6A0016D3C6FC002B482F /* MITMapAnnotationCalloutView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; };

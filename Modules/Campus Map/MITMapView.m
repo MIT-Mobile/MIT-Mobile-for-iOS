@@ -453,8 +453,17 @@
         }
         
         adaptor.legacyAnnotationView = annotationView;
-        return [[MITMapAnnotationCalloutView alloc] initWithAnnotationView:annotationView
-                                                                   mapView:self];
+        MITMapAnnotationCalloutView *view = [[MITMapAnnotationCalloutView alloc] initWithAnnotationView:annotationView
+                                                                                                mapView:self];
+        __weak MITMapView *weakSelf = self;
+        view.accessoryBlock = ^(id sender) {
+            if ([weakSelf.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)]) {
+                [weakSelf.delegate mapView:weakSelf
+      annotationViewCalloutAccessoryTapped:annotationView];
+            }
+        };
+        
+        return view;
     }
     
     return nil;
