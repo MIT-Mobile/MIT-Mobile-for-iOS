@@ -11,7 +11,9 @@
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *detail;
 @property (nonatomic, strong) UIImage *calloutImage;
+
 @property (nonatomic, strong) UIImage *markerImage;
+@property (nonatomic) MGSMarkerOptions markerOptions;
 
 @property (nonatomic) MGSAnnotationType annotationType;
 

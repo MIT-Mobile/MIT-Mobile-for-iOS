@@ -40,19 +40,6 @@
     return (NSUINTROTATE([self.annotation hash], NSUINT_BIT >> 1));
 }
 
-- (BOOL)canShowCallout
-{
-    BOOL result = NO;
-    
-    if ([self.annotation respondsToSelector:_cmd]) {
-        result = [self.annotation canShowCallout];
-    } else if ((self.annotationType == MGSAnnotationMarker) && (self.annotationType == MGSAnnotationPointOfInterest)) {
-        result = YES;
-    }
-    
-    return result;
-}
-
 - (NSString*)title
 {
     if ([self.annotation respondsToSelector:_cmd])
@@ -88,9 +75,17 @@
     if ([self.annotation respondsToSelector:_cmd])
     {
         return [self.annotation markerImage];
+    } else {
+        return nil;
+    }
+}
+
+- (MGSMarkerOptions)markerOptions {
+    if ([self.annotation respondsToSelector:_cmd]) {
+        return [self.annotation markerOptions];
     }
     
-    return [UIImage imageNamed:@"map/map_pin_complete"];
+    return MGSMarkerOptionsMake(CGPointMake(0, 0), CGPointMake(0, 0));
 }
 
 - (MGSAnnotationType)annotationType
@@ -120,7 +115,7 @@
         return [self.annotation coordinate];
     }
     
-    return CLLocationCoordinate2DMake(0,0);
+    return CLLocationCoordinate2DMake(CGFLOAT_MAX,CGFLOAT_MAX);
 }
 
 - (NSArray*)points {
