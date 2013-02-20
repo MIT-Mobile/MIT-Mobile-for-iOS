@@ -271,21 +271,25 @@
 // subclasses to implement properly.
 - (AGSGraphic *)createGraphicForAnnotation:(id <MGSAnnotation>)annotation
                       withSpatialReference:(AGSSpatialReference*)reference {
+    MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
     AGSGraphic *annotationGraphic = nil;
     
     switch (annotation.annotationType) {
         case MGSAnnotationMarker: {
-            UIImage *markerImage = nil;
-            if ([annotation respondsToSelector:@selector(markerImage)]) {
-                markerImage = [annotation markerImage];
-            }
+            UIImage *markerImage = safeAnnotation.markerImage;
+            MGSMarkerOptions options;
             
-            AGSSymbol *markerSymbol = nil;
+            AGSPictureMarkerSymbol *markerSymbol = nil;
             if (markerImage) {
                 markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:markerImage];
+                options = safeAnnotation.markerOptions;
             } else {
-                markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"];
+                markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:[UIImage imageNamed:@"map/map_pin_complete"]];
+                options = MGSMarkerOptionsMake(CGPointMake(0.0, 8.0), CGPointMake(0.0, 16.0));
             }
+            
+            markerSymbol.leaderPoint = options.hotspot;
+            markerSymbol.offset = options.offset;
             
             annotationGraphic = [[AGSGraphic alloc] initWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
                                                               symbol:markerSymbol
