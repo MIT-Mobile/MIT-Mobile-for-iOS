@@ -430,10 +430,6 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         self.calloutAnnotation = annotation;
         
         self.mapView.callout.delegate = self;
-        self.mapView.callout.color = [UIColor colorWithRed:0.85
-                                                     green:0.85
-                                                      blue:0.85
-                                                     alpha:0.95];
         [self.mapView.callout showCalloutAtPoint:nil
                                       forGraphic:graphic
                                         animated:YES];
