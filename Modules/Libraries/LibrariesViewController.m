@@ -8,7 +8,7 @@
 #import "MobileRequestOperation.h"
 
 // links expiration time 10 days
-#define LinksExpirationTime 864000   
+#define LinksExpirationTime 86400
 
 #define NUMBER_OF_SECTIONS 2
 #define TOP_SECTION 0
