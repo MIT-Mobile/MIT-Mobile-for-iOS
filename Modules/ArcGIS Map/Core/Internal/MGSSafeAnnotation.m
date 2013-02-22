@@ -26,8 +26,11 @@
 }
 
 - (BOOL)isEqual:(id)object {
-    if ([self isEqual:object]) {
+    if ([super isEqual:object]) {
         return true;
+    } else if ([object isKindOfClass:[MGSSafeAnnotation class]]) {
+        MGSSafeAnnotation *other = (MGSSafeAnnotation*)object;
+        return [self.annotation isEqual:other.annotation];
     } else {
         return false;
     }

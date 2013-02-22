@@ -25,8 +25,7 @@
 {
     BOOL result = NO;
     
-    if ([super isEqual:object])
-    {
+    if ([super isEqual:object]) {
         result = YES;
     } else if ([object isKindOfClass:[MGSLayerAnnotation class]]) {
         result = [self isEqualToLayerAnnotation:(MGSLayerAnnotation*)object];
