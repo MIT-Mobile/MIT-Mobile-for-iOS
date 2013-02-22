@@ -33,7 +33,7 @@
 {
     UIImage *image = nil;
     
-    if (self.legacyAnnotationView)
+    if (self.legacyAnnotationView && ([self.legacyAnnotationView isKindOfClass:[MITPinAnnotationView class]] == NO))
     {
         UIView *annotationView = self.legacyAnnotationView;
         
