@@ -28,30 +28,48 @@
 @dynamic scrollEnabled;
 @dynamic showsUserLocation;
 
+- (id)init {
+    return [self initWithFrame:CGRectZero];
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    
+    if (self) {
+        [self commonInit];
+    }
+    
+    return self;
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self)
     {
-        MGSMapView *mapView = [[MGSMapView alloc] initWithFrame:self.bounds];
-        mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                    UIViewAutoresizingFlexibleWidth);
-        mapView.delegate = self;
-
-        self.mapView = mapView;
-        [self addSubview:mapView];
-        
-        self.annotationLayer = [[MGSLayer alloc] initWithName:@"edu.mit.mobile.map.legacy.annotations"];
-        self.annotationLayer.delegate = self;
-        [self.mapView addLayer:self.annotationLayer];
-        
-        self.legacyRoutes = [NSMutableArray array];
-        self.routeLayers = [NSMutableArray array];
-        
-        [self setNeedsLayout];
+        [self commonInit];
     }
     
     return self;
+}
+
+- (void)commonInit {
+    MGSMapView *mapView = [[MGSMapView alloc] initWithFrame:self.bounds];
+    mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                UIViewAutoresizingFlexibleWidth);
+    mapView.delegate = self;
+    
+    self.mapView = mapView;
+    [self addSubview:mapView];
+    
+    self.annotationLayer = [[MGSLayer alloc] initWithName:@"edu.mit.mobile.map.legacy.annotations"];
+    self.annotationLayer.delegate = self;
+    [self.mapView addLayer:self.annotationLayer];
+    
+    self.legacyRoutes = [NSMutableArray array];
+    self.routeLayers = [NSMutableArray array];
+    
+    [self setNeedsLayout];
 }
 
 - (void)layoutSubviews
