@@ -64,18 +64,7 @@
 		[_bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on.png"] forState:UIControlStateNormal];
 		[_bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
 	}
-	
-	/*
-	NSString* docsFolder = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-	NSArray* bookmarks = [NSArray arrayWithContentsOfFile:[docsFolder stringByAppendingPathComponent:@"bookmarks.plist"]];
-	for (NSDictionary* bookmark in bookmarks) {
-		if ([[bookmark objectForKey:@"bldgnum"] isEqualToString:self.annotation.bldgnum]) {
-			[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on.png"] forState:UIControlStateNormal];
-			[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
-			break;
-		}
-	}
-	*/
+
 	
 	_mapView.delegate = self;
 
@@ -84,11 +73,6 @@
 	_mapView.layer.cornerRadius = 6.0;
 	_mapViewContainer.layer.cornerRadius = 8.0;
 	
-	// buffer the annotation by 5px so it fits in the map thumbnail window.
-	//CGPoint screenPoint = [_mapView unscaledScreenPointForCoordinate:self.annotation.coordinate];
-	//screenPoint.y -= 5;
-	//CLLocationCoordinate2D coordinate = [_mapView coordinateForScreenPoint:screenPoint];
-	//_mapView.centerCoordinate = coordinate;
 	[_mapView addAnnotation:self.annotation];
 	_mapView.centerCoordinate = self.annotation.coordinate;
 	[_mapView setRegion:MKCoordinateRegionMake(self.annotation.coordinate, MKCoordinateSpanMake(0.003, 0.003))];
