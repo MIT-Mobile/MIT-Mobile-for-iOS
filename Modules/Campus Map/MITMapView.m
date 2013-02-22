@@ -43,8 +43,7 @@
         
         self.annotationLayer = [[MGSLayer alloc] initWithName:@"edu.mit.mobile.map.legacy.annotations"];
         self.annotationLayer.delegate = self;
-        [self.mapView addLayer:self.annotationLayer
-                withIdentifier:@"edu.mit.mobile.map.annotations"];
+        [self.mapView addLayer:self.annotationLayer];
         
         self.legacyRoutes = [NSMutableArray array];
         self.routeLayers = [NSMutableArray array];
@@ -231,6 +230,11 @@
     {
         MITAnnotationAdaptor *adaptor = [[MITAnnotationAdaptor alloc] initWithMKAnnotation:mkAnnotation];
         
+        if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)]) {
+            adaptor.legacyAnnotationView = [self.delegate mapView:self
+                                                viewForAnnotation:adaptor.mkAnnotation];
+        }
+        
         [addedAnnotations addObject:adaptor];
     }
     
@@ -339,7 +343,6 @@
     [self.routeLayers addObject:layer];
     
     [self.mapView insertLayer:layer
-               withIdentifier:identifier
                   behindLayer:self.annotationLayer];
     
     [self refreshLayers];
@@ -364,18 +367,15 @@
     self.routeLayers = nil;
     
     [routes enumerateObjectsUsingBlock:^(MGSRouteLayer *layer, NSUInteger idx, BOOL *stop) {
-        NSString *identifier = [NSString stringWithFormat:@"edu.mit.mobile.map.routes.%d",idx];
-        
-        [self.mapView removeLayerWithIdentifier:identifier];
+        [self.mapView removeLayer:layer];
         [self.legacyRoutes removeObjectAtIndex:idx];
     }];
 }
 
-- (void)removeRoute:(id<MITMapRoute>) route
+- (void)removeRoute:(id<MITMapRoute>)aRoute
 {
-    if ([self.legacyRoutes containsObject:route])
+    if ([self.legacyRoutes containsObject:aRoute])
     {
-        
         if ([self.legacyRoutes count] != [self.routeLayers count])
         {
             DDLogError(@"internal inconsistancy error: [%d] != [%d]",[self.legacyRoutes count], [self.routeLayers count]);
@@ -384,15 +384,15 @@
                      [self.legacyRoutes count], [self.routeLayers count]);
         }
         
-        [self.legacyRoutes enumerateObjectsUsingBlock:^(id<MITMapRoute> route, NSUInteger idx, BOOL *stop) {
-            NSString *identifier = [NSString stringWithFormat:@"edu.mit.mobile.map.routes.%d",idx];
-            
-            [self.routeLayers removeObjectAtIndex:idx];
-            [self.mapView removeLayerWithIdentifier:identifier];
+        [self.legacyRoutes enumerateObjectsUsingBlock:^(id<MITMapRoute> blockRoute, NSUInteger idx, BOOL *stop) {
+            if ([aRoute isEqual:blockRoute]) {
+                [self.mapView removeLayer:self.routeLayers[idx]];
+                [self.routeLayers removeObjectAtIndex:idx];
+                (*stop) = YES;
+            }
         }];
         
-        [self.legacyRoutes removeObject:route];
-        
+        [self.legacyRoutes removeObject:aRoute];
         [self refreshLayers];
     }
 }
@@ -440,12 +440,8 @@
     if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
     {
         MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
-        MITMapAnnotationView* annotationView = nil;
+        MITMapAnnotationView *annotationView = adaptor.legacyAnnotationView;
         
-        if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)]) {
-            annotationView = [self.delegate mapView:self
-                                  viewForAnnotation:adaptor.mkAnnotation];
-        }
         
         if (annotationView == nil) {
             annotationView = [[MITPinAnnotationView alloc] initWithAnnotation:adaptor.mkAnnotation

@@ -16,7 +16,7 @@
 @property (nonatomic, strong) NSString *activeMapSet;
 @property (nonatomic, strong, readonly) NSSet *mapSets;
 
-@property (nonatomic, readonly) NSArray *layers;
+@property (nonatomic, readonly) NSArray *mapLayers;
 
 @property (nonatomic) BOOL showUserLocation;
 @property (nonatomic,assign) id<MGSMapViewDelegate> delegate;
@@ -26,21 +26,23 @@
 #pragma mark - Layer Management
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)basemapIdentifier;
 
-- (void)addLayer:(MGSLayer*)layer withIdentifier:(NSString*)layerIdentifier;
-- (void)insertLayer:(MGSLayer*)layer withIdentifier:(NSString*)layerIdentifier atIndex:(NSUInteger)layerIndex;
-- (void)insertLayer:(MGSLayer*)layer withIdentifier:(NSString*)layerIdentifier behindLayer:(MGSLayer*)foregroundLayer;
+- (void)addLayer:(MGSLayer*)layer;
+- (void)insertLayer:(MGSLayer*)layer
+            atIndex:(NSUInteger)layerIndex;
+
+- (void)insertLayer:(MGSLayer*)layer
+        behindLayer:(MGSLayer*)foregroundLayer;
 
 - (MGSLayer*)layerContainingAnnotation:(id<MGSAnnotation>)annotation;
-- (MGSLayer*)layerWithIdentifier:(NSString*)layerIdentifier;
-- (BOOL)containsLayerWithIdentifier:(NSString*)layerIdentifier;
-- (void)removeLayerWithIdentifier:(NSString*)layerIdentifier;
+- (BOOL)containsLayer:(MGSLayer*)layer;
+- (void)removeLayer:(MGSLayer*)layer;
 
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate;
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated;
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
 
 - (BOOL)isLayerHidden:(NSString*)layerIdentifier;
-- (void)setHidden:(BOOL)hidden forLayerIdentifier:(NSString*)layerIdentifier;
+- (void)setHidden:(BOOL)hidden forLayer:(MGSLayer*)layer;
 
 #pragma mark - Callouts
 - (BOOL)showCalloutForAnnotation:(id<MGSAnnotation>)annotation;

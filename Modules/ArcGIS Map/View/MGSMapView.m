@@ -22,9 +22,8 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark -
 
 #pragma mark - User Layer Management (Declaration)
-@property(strong) NSMutableDictionary *userLayers;
-@property(strong) NSMutableArray *userLayerOrder;
-@property (nonatomic, strong) NSOperationQueue *userLayerQueue;
+@property(strong) NSMutableArray *userLayers;
+@property(nonatomic, strong) NSOperationQueue *userLayerQueue;
 #pragma mark -
 
 @property(strong) NSMutableDictionary *queryTasks;
@@ -74,12 +73,12 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     self.userLayerQueue.maxConcurrentOperationCount = 1;
     self.userLayerQueue.suspended = YES;
     
+    self.userLayers = [NSMutableArray array];
+    
     self.coreLayersLoaded = NO;
     
-    self.userLayers = [NSMutableDictionary dictionary];
-    
-    // Should be nil until all the core layers have been loaded
-    self.userLayerOrder = nil;
+    self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
+    [self addLayer:self.defaultLayer];
     
     [self initView];
 }
@@ -175,16 +174,6 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         _activeMapSet = mapSetName;
     }
 }
-
-- (MGSLayer *)defaultLayer {
-    if (_defaultLayer == nil) {
-        self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
-        [self addLayer:_defaultLayer
-        withIdentifier:kMGSMapDefaultLayerIdentifier];
-    }
-    
-    return _defaultLayer;
-}
 #pragma mark -
 
 #pragma mark - Dynamic Properties
@@ -257,117 +246,159 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     }
 }
 
-- (NSArray*)layers {
-    return [NSArray arrayWithArray:self.userLayerOrder];
+- (NSArray*)mapLayers {
+    return [NSArray arrayWithArray:self.userLayers];
 }
 
 #pragma mark - Layer Management
-- (void)addLayer:(MGSLayer *)layer
-  withIdentifier:(NSString *)layerIdentifier {
-    [self insertLayer:layer
-       withIdentifier:layerIdentifier
-              atIndex:[self.userLayers count]];
-}
-
-- (void)insertLayer:(MGSLayer *)layer
-     withIdentifier:(NSString *)layerIdentifier
-        behindLayer:(MGSLayer *)foregroundLayer {
-    
-    // Delay this until the core layers are loaded as well since userLayerOrder
-    // is not initialized yet and index will be set to NSNotFound (which is not
-    // necessarily true)
-    dispatch_block_t insertBlock = ^{
-        [self.userLayers enumerateKeysAndObjectsUsingBlock:^(NSString *identifier, MGSLayer *layer, BOOL *stop) {
-            NSUInteger index = NSNotFound;
-            if ([layer isEqual:foregroundLayer]) {
-                index = [self.layers indexOfObject:layerIdentifier];
-            }
+- (void)addLayer:(MGSLayer*)newLayer {
+    if (newLayer.mapView != nil) {
+        DDLogError(@"attempting to add layer '%@' but it is already owned by a map view", newLayer.name);
+    } else {
+        [self.userLayerQueue addOperationWithBlock:^{
+            if ([self containsLayer:newLayer] == NO) {
+                if (newLayer.graphicsLayer == nil) {
+                    [newLayer loadGraphicsLayer];
+                }
+                
+                [self willAddLayer:newLayer];
             
-            if (index == NSNotFound) {
-                [self addLayer:layer
-                withIdentifier:layerIdentifier];
+                newLayer.mapView = self;
+                [self.userLayers addObject:newLayer];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.mapView addMapLayer:newLayer.graphicsLayer];
+                });
+                
+                [self didAddLayer:newLayer];
+                
+                [self moveLayer:self.defaultLayer
+                        toIndex:NSUIntegerMax];
             } else {
-                [self insertLayer:layer
-                   withIdentifier:layerIdentifier
-                          atIndex:index];
+                DDLogError(@"layer '%@' already exists in map view", newLayer.name);
             }
         }];
-    };
-    
-    self.userLayers[layerIdentifier] = [NSNull null];
-    [self.userLayerQueue addOperationWithBlock:insertBlock];
-}
-
-- (void)insertLayer:(MGSLayer *)layer
-     withIdentifier:(NSString *)layerIdentifier
-            atIndex:(NSUInteger)layerIndex {
-    
-    NSString *identifier = [layerIdentifier copy];
-    dispatch_block_t insertBlock = ^{
-        MGSLayer *existingLayer = self.userLayers[identifier];
-        
-        if (self.userLayerOrder == nil) {
-            self.userLayerOrder = [NSMutableArray array];
-        }
-        
-        if ((existingLayer != nil) && ([existingLayer isEqual:[NSNull null]] == false)) {
-            DDLogError(@"identifier collision for '%@'", identifier);
-        } else {
-            NSUInteger index = [self.coreLayers count] + layerIndex;
-            DDLogVerbose(@"adding user layer '%@' at index %d (%d)", identifier, layerIndex, index);
-            
-            [self willAddLayer:layer];
-            layer.mapView = self;
-            
-            self.userLayers[identifier] = layer;
-            [self.userLayerOrder insertObject:layerIdentifier
-                                      atIndex:layerIndex];
-            
-            // Make sure we do this on the UI thread!
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.mapView insertMapLayer:layer.graphicsLayer
-                                    withName:layerIdentifier
-                                     atIndex:index];
-            });
-            
-            if ([identifier isEqualToString:kMGSMapDefaultLayerIdentifier] == NO) {
-                [self moveLayerToTop:kMGSMapDefaultLayerIdentifier];
-            }
-            
-            [self didAddLayer:layer];
-        }
-    };
-    
-    self.userLayers[layerIdentifier] = [NSNull null];
-    [self.userLayerQueue addOperationWithBlock:insertBlock];
-}
-
-- (void)moveLayerToTop:(NSString *)layerIdentifier {
-    MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
-    
-    if (layer) {
-        AGSGraphicsLayer *agsLayer = layer.graphicsLayer;
-        
-        [self.mapView removeMapLayerWithName:layerIdentifier];
-        [self.userLayerOrder removeObject:layerIdentifier];
-        
-        [self.mapView addMapLayer:agsLayer
-                         withName:layerIdentifier];
-        [self.userLayerOrder addObject:layerIdentifier];
     }
 }
 
-- (MGSLayer *)layerWithIdentifier:(NSString *)layerIdentifier {
-    return self.userLayers[layerIdentifier];
+- (void)moveLayer:(MGSLayer*)aLayer
+          toIndex:(NSUInteger)newIndex {
+    if ([self containsLayer:aLayer] && (aLayer.mapView == self)) {
+        [self.userLayerQueue addOperationWithBlock:^{
+            NSUInteger currentIndex = [self.userLayers indexOfObject:aLayer];
+            
+            if (currentIndex == NSNotFound) {
+                DDLogError(@"attempting to move layer '%@' to illegal index NSNotFound", aLayer.name);
+            } else if (currentIndex != newIndex) {
+                
+                // Make sure we check to see if the index
+                // we are inserting at is still valid and
+                // apply any needed corrections.
+                NSUInteger insertIndex = newIndex;
+                
+                // If the index we are trying to insert at
+                // is out of bounds, assume that the user wants
+                // to move the layer to the top of the view
+                // hierarchy, not crash.
+                if (newIndex >= [self.userLayers count]) {
+                    insertIndex = [self.userLayers count];
+                } else if (currentIndex < newIndex) {
+                    // The new index will be shifted by 1 toward 0
+                    // since we are deleting the layer a few lines up
+                    --insertIndex;
+                }
+                
+                
+                [self.userLayers removeObject:aLayer];
+                [self.userLayers insertObject:aLayer
+                                      atIndex:insertIndex - 1];
+                
+                NSInteger agsIndex = ([self.coreLayers count] - 1) + insertIndex;
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [self.mapView removeMapLayer:aLayer.graphicsLayer];
+                    
+                    DDLogVerbose(@"moving layer '%@' to index %d (%d) from (%d)", aLayer.name, agsIndex, insertIndex, currentIndex);
+                    [self.mapView insertMapLayer:aLayer.graphicsLayer
+                                         atIndex:agsIndex];
+                });
+            }
+        }];
+    } else {
+        DDLogError(@"attempting to relocate layer '%@' but it is already owned by another map view", aLayer.name);
+    }
 }
 
-- (BOOL)containsLayerWithIdentifier:(NSString *)layerIdentifier {
-    return ([self layerWithIdentifier:layerIdentifier] != nil);
+- (void)insertLayer:(MGSLayer*)newLayer
+            atIndex:(NSUInteger)aIndex {
+    if (newLayer.mapView != nil) {
+        DDLogError(@"attempting to add layer '%@' but it is already owned by a map view", newLayer.name);
+    } else if (aIndex == NSNotFound) {
+        DDLogError(@"attempting to add layer '%@' to illegal index NSNotFound", newLayer.name);
+    } else {
+        [self.userLayerQueue addOperationWithBlock:^{
+            if ([self containsLayer:newLayer] == NO) {
+                // If the index we are trying to insert at
+                // is out of bounds, assume that the user wants
+                // to move the layer to the top of the view
+                // hierarchy, not crash.
+                NSUInteger insertIndex = aIndex;
+                if (aIndex > [self.userLayers count]) {
+                    insertIndex = [self.userLayers count];
+                }
+                
+                // Calculate the index used to insert the layer
+                // into the ArcGIS view. Since there could be 0 or more
+                // base layers
+                NSInteger agsIndex = ([self.coreLayers count] - 1) + insertIndex;
+                if (newLayer.graphicsLayer == nil) {
+                    [newLayer loadGraphicsLayer];
+                }
+                
+                [self willAddLayer:newLayer];
+                
+                newLayer.mapView = self;
+                [self.userLayers insertObject:newLayer
+                                      atIndex:insertIndex];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.mapView insertMapLayer:newLayer.graphicsLayer
+                                         atIndex:agsIndex];
+                });
+                
+                [self didAddLayer:newLayer];
+                
+                [self moveLayer:self.defaultLayer
+                        toIndex:NSUIntegerMax];
+            } else {
+                DDLogError(@"layer '%@' already exists in map view", newLayer.name);
+            }
+        }];
+    }
 }
 
-- (void)removeLayerWithIdentifier:(NSString *)layerIdentifier {
-    MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
-    
+
+- (void)insertLayer:(MGSLayer*)newLayer
+        behindLayer:(MGSLayer*)foregroundLayer {
+    if (newLayer.mapView != nil) {
+        DDLogError(@"attempting to add layer '%@' but it is already owned by another map view", newLayer.name);
+    } else {
+        [self.userLayerQueue addOperationWithBlock:^{
+            if (foregroundLayer && [self containsLayer:foregroundLayer] == NO) {
+                DDLogError(@"attempting to add layer '%@' behind an invalid layer (%@)",newLayer.name,foregroundLayer.name);
+            } else if ([self containsLayer:newLayer] == NO) {
+                NSUInteger fgIndex = [self.userLayers indexOfObject:foregroundLayer];
+                [self insertLayer:newLayer
+                          atIndex:fgIndex];
+            }
+        }];
+    }
+}
+
+- (BOOL)containsLayer:(MGSLayer *)layer {
+    return [self.userLayers containsObject:layer];
+}
+
+- (void)removeLayer:(MGSLayer *)layer {
     if (layer) {
         [self willRemoveLayer:layer];
         
@@ -381,14 +412,12 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     }
 }
 
-- (BOOL)isLayerHidden:(NSString *)layerIdentifier {
-    MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
-    return layer.hidden;
+- (BOOL)isLayerHidden:(MGSLayer*)layer {
+    return (layer.graphicsLayer.visible == NO);
 }
 
-- (void)setHidden:(BOOL)hidden forLayerIdentifier:(NSString *)layerIdentifier {
-    MGSLayer *layer = [self layerWithIdentifier:layerIdentifier];
-    layer.hidden = hidden;
+- (void)setHidden:(BOOL)hidden forLayer:(MGSLayer *)layer {
+     layer.graphicsLayer.visible = !hidden;
 }
 
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate {
@@ -455,9 +484,8 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     
     
     __block MGSLayer *myLayer = nil;
-    [self.layers enumerateObjectsWithOptions:NSEnumerationReverse
-                                  usingBlock:^(NSString *identifier, NSUInteger idx, BOOL *stop) {
-                                      MGSLayer *layer = [self layerWithIdentifier:identifier];
+    [self.mapLayers enumerateObjectsWithOptions:NSEnumerationReverse
+                                     usingBlock:^(MGSLayer *layer, NSUInteger idx, BOOL *stop) {
                                       
                                       if ([layer.annotations containsObject:theAnnotation]) {
                                           myLayer = layer;
@@ -470,9 +498,8 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (MGSLayer*)layerContainingGraphic:(AGSGraphic*)graphic {
     __block MGSLayer *myLayer = nil;
-    [self.layers enumerateObjectsWithOptions:NSEnumerationReverse
-                                  usingBlock:^(NSString *identifier, NSUInteger idx, BOOL *stop) {
-                                      MGSLayer *layer = [self layerWithIdentifier:identifier];
+    [self.mapLayers enumerateObjectsWithOptions:NSEnumerationReverse
+                                  usingBlock:^(MGSLayer *layer, NSUInteger idx, BOOL *stop) {
                                       
                                       if ([layer annotationForGraphic:graphic]) {
                                           myLayer = layer;
@@ -608,8 +635,8 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             // hasn't changed now that we have another layer loaded
             if (layersLoaded) {
                 self.coreLayersLoaded = YES;
-                self.userLayerQueue.suspended = NO;
                 [self didFinishLoadingMapView];
+                self.userLayerQueue.suspended = NO;
             }
         }
     }
@@ -730,4 +757,5 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                        didRemoveLayer:layer];
     }
 }
+
 @end
