@@ -331,6 +331,12 @@
         for (id<MKAnnotation> annotation in [route annotations])
         {
             MITAnnotationAdaptor *adaptor = [[MITAnnotationAdaptor alloc] initWithMKAnnotation:annotation];
+            
+            if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)]) {
+                adaptor.legacyAnnotationView = [self.delegate mapView:self
+                                                    viewForAnnotation:adaptor.mkAnnotation];
+            }
+            
             [stops addObject:adaptor];
         }
     }
