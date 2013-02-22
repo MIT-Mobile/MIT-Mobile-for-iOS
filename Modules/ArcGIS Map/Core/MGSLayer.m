@@ -101,10 +101,6 @@
     return extAnnotations;
 }
 
-- (AGSGraphicsLayer *)agsGraphicsLayer {
-    return _graphicsLayer;
-}
-
 #pragma mark - Public Methods
 - (void)addAnnotation:(id <MGSAnnotation>)annotation {
     [self addAnnotations:@[ annotation ]];
@@ -285,7 +281,7 @@
                 options = safeAnnotation.markerOptions;
             } else {
                 markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:[UIImage imageNamed:@"map/map_pin_complete"]];
-                options = MGSMarkerOptionsMake(CGPointMake(0.0, 8.0), CGPointMake(0.0, 16.0));
+                options = MGSMarkerOptionsMake(CGPointMake(0.0, 8.0), CGPointMake(2.0, 16.0));
             }
             
             markerSymbol.leaderPoint = options.hotspot;
@@ -430,20 +426,9 @@
     return nil;
 }
 
-- (AGSGraphicsLayer *)graphicsLayer {
-    if (_graphicsLayer == nil) {
-        [self loadGraphicsLayer];
-        
-        if (_graphicsLayer == nil) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                           reason:@"graphics layer should not be nil after -[MGSLayer loadGraphicsLayer]"
-                                         userInfo:nil];
-        } else {
-            _graphicsLayer.delegate = self;
-        }
-    }
-    
-    return _graphicsLayer;
+- (void)setGraphicsLayer:(AGSGraphicsLayer *)graphicsLayer {
+    graphicsLayer.delegate = self;
+    _graphicsLayer = graphicsLayer;
 }
 
 - (void)loadGraphicsLayer {
@@ -451,21 +436,19 @@
     [self setGraphicsLayer:graphicsLayer];
 }
 
-- (BOOL)hasGraphicsLayer {
-    return (_graphicsLayer != nil);
-}
-
 - (void)refreshLayer {
-    if (_graphicsLayer == nil) {
+    AGSGraphicsLayer *graphicsLayer = self.graphicsLayer;
+    
+    if (graphicsLayer == nil) {
         // No graphics layer and we don't want to forcefully
         // create one here so just return.
         return;
-    } else if (_graphicsLayer.spatialReferenceStatusValid == NO) {
+    } else if (graphicsLayer.spatialReferenceStatusValid == NO) {
         return;
     }
     
-    _graphicsLayer.visible = NO;
-    [_graphicsLayer removeAllGraphics];
+    graphicsLayer.visible = NO;
+    [graphicsLayer removeAllGraphics];
     
     [self willReloadMapLayer];
     
@@ -524,8 +507,8 @@
         DDLogVerbose(@"\tReprojected %lu graphics", (unsigned long) reprojectionCount);
     }
     
-    [_graphicsLayer addGraphics:graphics];
-    _graphicsLayer.visible = YES;
+    [graphicsLayer addGraphics:graphics];
+    graphicsLayer.visible = YES;
 }
 
 - (void)setHidden:(BOOL)hidden {
@@ -597,16 +580,16 @@
 
 #pragma mark - AGSLayerDelegate Methods
 - (void)layer:(AGSLayer *)layer didFailToLoadWithError:(NSError *)error {
-    if (_graphicsLayer) {
-        [_graphicsLayer.mapView removeMapLayer:layer];
-        _graphicsLayer = nil;
+    if (self.graphicsLayer) {
+        [self.graphicsLayer.mapView removeMapLayer:layer];
+        self.graphicsLayer = nil;
     }
     
     DDLogError(@"graphics layer failed to load for '%@' with error '%@'",self.name, [error localizedDescription]);
 }
 
 - (void)layer:(AGSLayer *)layer didInitializeSpatialReferenceStatus:(BOOL)srStatusValid {
-    DDLogInfo(@"initialized spatial reference for '%@' to %@", self.name, _graphicsLayer.spatialReference);
+    DDLogInfo(@"initialized spatial reference for '%@' to %@", self.name, self.graphicsLayer.spatialReference);
     [self refreshLayer];
 }
 
