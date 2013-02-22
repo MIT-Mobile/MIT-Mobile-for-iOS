@@ -24,6 +24,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark - User Layer Management (Declaration)
 @property(strong) NSMutableArray *userLayers;
 @property(nonatomic, strong) NSOperationQueue *userLayerQueue;
+@property(nonatomic) MKCoordinateRegion userMapRegion;
 #pragma mark -
 
 @property(strong) NSMutableDictionary *queryTasks;
@@ -79,6 +80,9 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     
     self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
     [self addLayer:self.defaultLayer];
+    
+    self.userMapRegion = MKCoordinateRegionMake(CLLocationCoordinate2DMake(CGFLOAT_MAX,CGFLOAT_MAX),
+                                                MKCoordinateSpanMake(0, 0));
     
     [self initView];
 }
@@ -207,6 +211,8 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 - (void)setMapRegion:(MKCoordinateRegion)mapRegion {
+    self.userMapRegion = mapRegion;
+    
     double offsetX = (mapRegion.span.longitudeDelta / 2.0);
     double offsetY = (mapRegion.span.latitudeDelta / 2.0);
     AGSMutablePolygon *visibleArea = [[AGSMutablePolygon alloc] init];
@@ -516,16 +522,20 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (void)mapViewDidLoad:(AGSMapView *)mapView {
     DDLogVerbose(@"basemap loaded with WKID %d", mapView.spatialReference.wkid);
     
-    AGSEnvelope *maxEnvelope = [AGSEnvelope envelopeWithXmin:-7915909.671294
-                                                        ymin:5212249.807534
-                                                        xmax:-7912606.241692
-                                                        ymax:5216998.487588
-                                            spatialReference:[AGSSpatialReference spatialReferenceWithWKID:102113]];
-    AGSEnvelope *projectedEnvelope = (AGSEnvelope *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:maxEnvelope
-                                                                                             toSpatialReference:mapView.spatialReference];
-    [mapView setMaxEnvelope:projectedEnvelope];
-    [mapView zoomToEnvelope:projectedEnvelope
-                   animated:YES];
+    if (CLLocationCoordinate2DIsValid(self.userMapRegion.center)) {
+        self.mapRegion = self.userMapRegion;
+    } else {
+        AGSEnvelope *maxEnvelope = [AGSEnvelope envelopeWithXmin:-7915909.671294
+                                                            ymin:5212249.807534
+                                                            xmax:-7912606.241692
+                                                            ymax:5216998.487588
+                                                spatialReference:[AGSSpatialReference spatialReferenceWithWKID:102113]];
+        AGSEnvelope *projectedEnvelope = (AGSEnvelope *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:maxEnvelope
+                                                                                                 toSpatialReference:mapView.spatialReference];
+        [mapView setMaxEnvelope:projectedEnvelope];
+        [mapView zoomToEnvelope:projectedEnvelope
+                       animated:YES];
+    }
 }
 @end
 
