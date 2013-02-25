@@ -74,8 +74,7 @@
 	_mapViewContainer.layer.cornerRadius = 8.0;
 	
 	[_mapView addAnnotation:self.annotation];
-	_mapView.centerCoordinate = self.annotation.coordinate;
-	[_mapView setRegion:MKCoordinateRegionMake(self.annotation.coordinate, MKCoordinateSpanMake(0.003, 0.003))];
+    [_mapView setRegion:[_mapView regionForAnnotations:@[self.annotation]]];
 	
 	
 	
