@@ -58,42 +58,6 @@
                                                  polygon.envelope.width);
     
     return MKCoordinateRegionMake(center, span);
-    
-/*
-    NSMutableArray *latitudeCoordinates = [NSMutableArray array];
-    NSMutableArray *longitudeCoordinates = [NSMutableArray array];
-    
-    if ([annotations count] == 1) {
-        // Special case for single annotations. If ArcGIS is handed a region with an
-        // extremely small (or zero) area, it will display a grey screen and crash
-        // on the next input event
-        id<MGSAnnotation> annotation = [annotations anyObject];
-        CLLocationCoordinate2D center = annotation.coordinate;
-        MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(center, 75, 75);
-        return region;
-    } else {
-        for (id <MGSAnnotation> annotation in annotations) {
-            CLLocationCoordinate2D coord = annotation.coordinate;
-            [latitudeCoordinates addObject:[NSNumber numberWithDouble:coord.latitude]];
-            [longitudeCoordinates addObject:[NSNumber numberWithDouble:coord.longitude]];
-        }
-        
-        NSArray *sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"doubleValue"
-                                                                    ascending:YES] ];
-        NSArray *sortedLat = [latitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
-        NSArray *sortedLon = [longitudeCoordinates sortedArrayUsingDescriptors:sortDescriptors];
-        
-        CLLocationDegrees minLat = [[sortedLat objectAtIndex:0] doubleValue];
-        CLLocationDegrees maxLat = [[sortedLat lastObject] doubleValue];
-        CLLocationDegrees minLon = [[sortedLon objectAtIndex:0] doubleValue];
-        CLLocationDegrees maxLon = [[sortedLon lastObject] doubleValue];
-        
-        MKCoordinateSpan span = MKCoordinateSpanMake((maxLat - minLat), (maxLon - minLon));
-        CLLocationCoordinate2D center = CLLocationCoordinate2DMake(minLat + ((maxLat - minLat) / 2.0), minLon + ((maxLon - minLon) / 2.0));
-        
-        return MKCoordinateRegionMake(center, span);
-    }
-    */
 }
 
 - (id)init {
@@ -237,7 +201,7 @@
 
 - (void)deleteAnnotation:(id <MGSAnnotation>)annotation {
     if (annotation && [self.layerAnnotations containsObject:annotation]) {
-        if ([self.mapView isPresentingCalloutForAnnotation:annotation]) {
+        if ([self.mapView.calloutAnnotation isEqual:annotation]) {
             [self.mapView hideCallout];
         }
         
