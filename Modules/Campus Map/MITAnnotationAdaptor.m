@@ -37,35 +37,22 @@
     {
         UIView *annotationView = self.legacyAnnotationView;
         
-        CGRect superRect = CGRectZero;
-        CGRect annotationRect = annotationView.frame;
-        superRect.size = annotationView.frame.size;
+        [annotationView sizeToFit];
+        CGRect annotationBounds = annotationView.bounds;
+        MGSMarkerOptions options = self.markerOptions;
+        CGPoint origin = annotationView.frame.origin;
+        origin.x = -origin.x;
+        origin.y = -origin.y;
+        options.offset = origin;
+        self.markerOptions = options;
         
-        if (annotationView.frame.origin.x < 0)
-        {
-            superRect.size.width += fabs(annotationView.frame.origin.x);
-            annotationRect.origin.x = 0.0;
-        }
+        annotationView.frame = annotationBounds;
         
-        if (annotationView.frame.origin.y < 0)
-        {
-            superRect.size.height += fabs(annotationView.frame.origin.y);
-            annotationRect.origin.y = 0.0;
-        }
-        
-        UIView *superView = [[UIView alloc] initWithFrame:superRect];
-        annotationView.frame = annotationRect;
-        
-        [superView addSubview:annotationView];
-        [superView layoutIfNeeded];
-        
-        UIGraphicsBeginImageContextWithOptions(CGSizeMake(superView.frame.size.width, superView.frame.size.height), NO, 0.0);
-        superView.layer.backgroundColor = [[UIColor clearColor] CGColor];
-        [superView.layer renderInContext:UIGraphicsGetCurrentContext()];
+        UIGraphicsBeginImageContextWithOptions(annotationBounds.size, NO, 0.0);
+        annotationView.layer.backgroundColor = [[UIColor clearColor] CGColor];
+        [annotationView.layer renderInContext:UIGraphicsGetCurrentContext()];
         image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
-        
-        [annotationView removeFromSuperview];
     }
     
     return image;
