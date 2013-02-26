@@ -374,21 +374,55 @@
 
 - (MKCoordinateRegion)regionForRoute:(id<MITMapRoute>)route
 {
-    if ([route respondsToSelector:@selector(annotations)])
-    {
-        if ([[route annotations] count])
-        {
-            return [MGSLayer regionForAnnotations:[NSSet setWithArray:[route annotations]]];
+    NSMutableArray *longitudes = [NSMutableArray array];
+    NSMutableArray *latitudes = [NSMutableArray array];
+    
+    for (CLLocation *location in [route pathLocations]) {
+        CLLocationCoordinate2D coordinate = location.coordinate;
+        
+        if (CLLocationCoordinate2DIsValid(coordinate)) {
+            [longitudes addObject:[NSNumber numberWithDouble:coordinate.longitude]];
+            [latitudes addObject:[NSNumber numberWithDouble:coordinate.latitude]];
         }
     }
     
-    return self.mapView.mapRegion;
+    if ([route respondsToSelector:@selector(annotations)]) {
+        for (id<MKAnnotation> annotation in [route annotations]) {
+            CLLocationCoordinate2D coordinate = [annotation coordinate];
+            
+            if (CLLocationCoordinate2DIsValid(coordinate)) {
+                [longitudes addObject:[NSNumber numberWithDouble:coordinate.longitude]];
+                [latitudes addObject:[NSNumber numberWithDouble:coordinate.latitude]];
+            }
+        }
+    }
+    
+    if (([longitudes count] > 1) && ([latitudes count] > 1)) {
+        [longitudes sortUsingSelector:@selector(compare:)];
+        [latitudes sortUsingSelector:@selector(compare:)];
+        
+        CLLocationDegrees maxLongitude = [longitudes[0] doubleValue];
+        CLLocationDegrees minLongitude = [[longitudes lastObject] doubleValue];
+        CLLocationDegrees maxLatitude = [latitudes[0] doubleValue];
+        CLLocationDegrees minLatitude = [[latitudes lastObject] doubleValue];
+        
+        CLLocationDegrees latitudeDelta = (maxLatitude - minLatitude);
+        CLLocationDegrees longitudeDelta = (maxLongitude - minLongitude);
+        
+        return MKCoordinateRegionMake(CLLocationCoordinate2DMake(minLatitude + (latitudeDelta / 2.0),
+                                                                 minLongitude + (longitudeDelta / 2.0)),
+                                      MKCoordinateSpanMake(latitudeDelta, longitudeDelta));
+    } else {
+        return MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake([[latitudes lastObject] doubleValue],
+                                                                             [[longitudes lastObject] doubleValue]),
+                                                  25.0, 25.0);
+    }
 }
 
 - (void)removeAllRoutes
 {
-    NSArray *routes = self.routeLayers;
-    self.routeLayers = nil;
+    NSArray *routes = [NSArray arrayWithArray:self.routeLayers];
+    [self.routeLayers removeAllObjects];
     
     [routes enumerateObjectsUsingBlock:^(MGSRouteLayer *layer, NSUInteger idx, BOOL *stop) {
         [self.mapView removeLayer:layer];
