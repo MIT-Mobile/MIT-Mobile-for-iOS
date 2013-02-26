@@ -405,17 +405,22 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 - (void)removeLayer:(MGSLayer *)layer {
-    if (layer) {
-        [self willRemoveLayer:layer];
-        
-        AGSLayer *graphicsLayer = layer.graphicsLayer;
-        [self.mapView removeMapLayerWithName:graphicsLayer.name];
-        
-        layer.graphicsLayer = nil;
-        layer.mapView = nil;
-        
-        [self didRemoveLayer:layer];
-    }
+    [self.userLayerQueue addOperationWithBlock:^{
+        if (layer && [self containsLayer:layer]) {
+            [self willRemoveLayer:layer];
+            
+            AGSLayer *graphicsLayer = layer.graphicsLayer;
+            if (graphicsLayer) {
+                [self.mapView removeMapLayer:graphicsLayer];
+            }
+            
+            layer.graphicsLayer = nil;
+            layer.mapView = nil;
+            [self.userLayers removeObject:layer];
+            
+            [self didRemoveLayer:layer];
+        }
+    }];
 }
 
 - (BOOL)isLayerHidden:(MGSLayer*)layer {
