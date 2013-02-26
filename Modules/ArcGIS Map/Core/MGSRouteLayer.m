@@ -1,7 +1,9 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreLocation/CoreLocation.h>
+
 #import "MGSRouteLayer.h"
-#import "MGSLayer+AGS.h"
+#import "MGSLayer+Subclass.h"
+
 #import "MGSUtility.h"
 #import "CoreLocation+MITAdditions.h"
 #import "MGSSimpleAnnotation.h"
@@ -10,7 +12,6 @@
 @property (nonatomic,strong) NSArray *pathCoordinates;
 @property (nonatomic,strong) NSArray *stopAnnotations;
 @property (nonatomic,strong) id<MGSAnnotation> routePath;
-@property (nonatomic,weak) AGSMutablePolyline *polyline;
 @property (nonatomic,weak) AGSGraphic *lineGraphic;
 @end
 
@@ -72,35 +73,4 @@
                        atIndex:0];
     }
 }
-
-- (void)setLineColor:(UIColor *)lineColor
-{
-    if (_lineColor != lineColor)
-    {
-        _lineColor = lineColor;
-        
-        AGSSymbol *symbol = self.lineGraphic.symbol;
-        if ([symbol isKindOfClass:NSClassFromString(@"AGSSimpleLineSymbol")])
-        {
-            AGSSimpleLineSymbol *lineSymbol = (AGSSimpleLineSymbol*)symbol;
-            lineSymbol.color = lineColor;
-        }
-    }
-}
-
-- (void)setLineWidth:(CGFloat)lineWidth
-{
-    if (_lineWidth != lineWidth)
-    {
-        _lineWidth = lineWidth;
-        
-        AGSSymbol *symbol = self.lineGraphic.symbol;
-        if ([symbol isKindOfClass:NSClassFromString(@"AGSSimpleLineSymbol")])
-        {
-            AGSSimpleLineSymbol *lineSymbol = (AGSSimpleLineSymbol*)symbol;
-            lineSymbol.width = _lineWidth;
-        }
-    }
-}
-
 @end
