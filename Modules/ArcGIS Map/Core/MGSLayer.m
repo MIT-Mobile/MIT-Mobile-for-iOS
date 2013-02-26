@@ -2,20 +2,19 @@
 #import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
 
+#import "MGSLayer+Subclass.h"
 #import "MGSLayer.h"
 #import "MGSLayerAnnotation.h"
 
 #import "MGSMapView.h"
 
-#import "MGSLayer+AGS.h"
 #import "MGSUtility.h"
 #import "CoreLocation+MITAdditions.h"
 #import "MGSCalloutView.h"
 
 @interface MGSLayer () <AGSLayerDelegate>
-@property (nonatomic, strong) NSMutableArray *layerAnnotations;
+@property (nonatomic,strong) NSMutableArray *layerAnnotations;
 
-- (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation;
 @end
 
 @implementation MGSLayer
@@ -516,6 +515,10 @@
         _hidden = hidden;
         self.graphicsLayer.visible = hidden;
     }
+}
+
+- (NSArray*)internalAnnotations {
+    return [NSArray arrayWithArray:self.layerAnnotations];
 }
 
 #pragma mark - Map Layer Delegation
