@@ -213,42 +213,38 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (void)setMapRegion:(MKCoordinateRegion)mapRegion {
     self.userMapRegion = mapRegion;
     
+    AGSMutableEnvelope *envelope = [[AGSMutableEnvelope alloc] initWithSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
+    
+    
     double offsetX = (mapRegion.span.longitudeDelta / 2.0);
     double offsetY = (mapRegion.span.latitudeDelta / 2.0);
-    AGSMutablePolygon *visibleArea = [[AGSMutablePolygon alloc] init];
-    visibleArea.spatialReference = [AGSSpatialReference wgs84SpatialReference];
-    [visibleArea addRingToPolygon];
     
-    [visibleArea addPointToRing:[AGSPoint pointWithX:(mapRegion.center.longitude + offsetX)
-                                                   y:(mapRegion.center.latitude + offsetY)
-                                    spatialReference:nil]];
-    
-    [visibleArea addPointToRing:[AGSPoint pointWithX:(mapRegion.center.longitude + offsetX)
-                                                   y:(mapRegion.center.latitude - offsetY)
-                                    spatialReference:nil]];
-    
-    [visibleArea addPointToRing:[AGSPoint pointWithX:(mapRegion.center.longitude - offsetX)
-                                                   y:(mapRegion.center.latitude + offsetY)
-                                    spatialReference:nil]];
-    
-    [visibleArea addPointToRing:[AGSPoint pointWithX:(mapRegion.center.longitude - offsetX)
-                                                   y:(mapRegion.center.latitude - offsetY)
-                                    spatialReference:nil]];
-    
-    [visibleArea closePolygon];
-    
-    if (self.mapView.spatialReference) {
-        AGSGeometry *geometry = visibleArea;
-        AGSGeometry *projectedGeometry = visibleArea;
+    [envelope updateWithXmin:mapRegion.center.longitude - offsetX
+                        ymin:mapRegion.center.latitude - offsetY
+                        xmax:mapRegion.center.longitude + offsetX
+                        ymax:mapRegion.center.latitude + offsetY];
         
-        if ([geometry.spatialReference isEqualToSpatialReference:self.mapView.spatialReference] == NO) {
-            projectedGeometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:geometry
-                                                                        toSpatialReference:self.mapView.spatialReference];
-        }
-        
+    AGSGeometry *projectedGeometry = envelope;
+    if ([envelope.spatialReference isEqualToSpatialReference:self.mapView.spatialReference] == NO) {
+        projectedGeometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:envelope
+                                                                    toSpatialReference:self.mapView.spatialReference];
+    }
+    
+    if ([projectedGeometry isValid] && ([projectedGeometry isEmpty] == NO)) {
         [self.mapView zoomToGeometry:projectedGeometry
                          withPadding:10.0 // Minimum of 20px padding on each side
                             animated:YES];
+    } else {
+        AGSEnvelope *maxEnvelope = [AGSEnvelope envelopeWithXmin:-7915909.671294
+                                                            ymin:5212249.807534
+                                                            xmax:-7912606.241692
+                                                            ymax:5216998.487588
+                                                spatialReference:[AGSSpatialReference spatialReferenceWithWKID:102113]];
+        if (maxEnvelope) {
+            [self.mapView zoomToGeometry:maxEnvelope
+                             withPadding:0.0
+                                animated:YES];
+        }
     }
 }
 
