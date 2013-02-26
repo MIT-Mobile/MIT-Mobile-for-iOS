@@ -22,6 +22,8 @@
 @property (nonatomic,assign) id<MGSMapViewDelegate> delegate;
 @property (nonatomic,readonly,strong) MGSLayer *defaultLayer;
 @property (nonatomic) MKCoordinateRegion mapRegion;
+@property (nonatomic,readonly) BOOL isPresentingCallout;
+@property (nonatomic,readonly) id<MGSAnnotation> calloutAnnotation;
 
 #pragma mark - Layer Management
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)basemapIdentifier;
@@ -47,6 +49,4 @@
 #pragma mark - Callouts
 - (BOOL)showCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 - (void)hideCallout;
-- (BOOL)isPresentingCalloutForAnnotation:(id<MGSAnnotation>)annotation;
-
 @end

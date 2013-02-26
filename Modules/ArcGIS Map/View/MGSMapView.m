@@ -252,6 +252,10 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     return [NSArray arrayWithArray:self.userLayers];
 }
 
+- (BOOL)isPresentingCallout {
+    return (self.calloutAnnotation != nil);
+}
+
 #pragma mark - Layer Management
 - (void)addLayer:(MGSLayer*)newLayer {
     if (newLayer.mapView != nil) {
