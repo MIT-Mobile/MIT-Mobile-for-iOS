@@ -1,5 +1,7 @@
 #import <QuartzCore/QuartzCore.h>
+#import <CoreGraphics/CoreGraphics.h>
 
+#import "MITMapView.h"
 #import "MITAnnotationAdaptor.h"
 
 @implementation MITAnnotationAdaptor
@@ -32,25 +34,34 @@
 - (UIImage*)markerImage
 {
     UIImage *image = nil;
+    MITMapAnnotationView *legacyAnnotationView = nil;
     
-    if (self.legacyAnnotationView && ([self.legacyAnnotationView isKindOfClass:[MITPinAnnotationView class]] == NO))
+    if (self.calloutAnnotationView) {
+        legacyAnnotationView = self.calloutAnnotationView;
+    } else if ([self.mapView.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)]) {
+        legacyAnnotationView = [self.mapView.delegate mapView:self.mapView
+                                            viewForAnnotation:self.mkAnnotation];
+    }
+    
+    if (legacyAnnotationView && ([legacyAnnotationView isKindOfClass:[MITPinAnnotationView class]] == NO))
     {
-        UIView *annotationView = self.legacyAnnotationView;
-        
-        [annotationView sizeToFit];
-        CGRect annotationBounds = annotationView.bounds;
+        [legacyAnnotationView sizeToFit];
+        CGRect annotationBounds = legacyAnnotationView.bounds;
         MGSMarkerOptions options = self.markerOptions;
-        CGPoint origin = annotationView.frame.origin;
-        origin.x = -origin.x;
-        origin.y = -origin.y;
-        options.offset = origin;
+        
+        // MKAnnotationView automatically centers its frame if an image
+        // is added so undo the centering then use the remainder for the offset
+        CGRect frame = legacyAnnotationView.frame;
+        CGFloat xOffset = frame.origin.y + (frame.size.height / 2.0);
+        CGFloat yOffset = frame.origin.x + (frame.size.width / 2.0);
+        options.offset = CGPointMake((CGFloat) round(xOffset), (CGFloat) round(yOffset));
         self.markerOptions = options;
         
-        annotationView.frame = annotationBounds;
+        legacyAnnotationView.frame = annotationBounds;
         
         UIGraphicsBeginImageContextWithOptions(annotationBounds.size, NO, 0.0);
-        annotationView.layer.backgroundColor = [[UIColor clearColor] CGColor];
-        [annotationView.layer renderInContext:UIGraphicsGetCurrentContext()];
+        legacyAnnotationView.layer.backgroundColor = [[UIColor clearColor] CGColor];
+        [legacyAnnotationView.layer renderInContext:UIGraphicsGetCurrentContext()];
         image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
     }

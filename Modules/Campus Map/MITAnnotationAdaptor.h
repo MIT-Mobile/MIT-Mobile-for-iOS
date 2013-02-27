@@ -4,10 +4,13 @@
 #import "MITMapAnnotationView.h"
 #import "MGSSimpleAnnotation.h"
 
+@class MITMapView;
+
 
 @interface MITAnnotationAdaptor : MGSSimpleAnnotation
 @property (nonatomic,strong) id<MKAnnotation> mkAnnotation;
-@property (nonatomic,strong) MITMapAnnotationView *legacyAnnotationView;
+@property (nonatomic,weak) MITMapView *mapView;
+@property (nonatomic,strong) MITMapAnnotationView *calloutAnnotationView;
 
 - (id)initWithMKAnnotation:(id<MKAnnotation>)annotation;
 @end
