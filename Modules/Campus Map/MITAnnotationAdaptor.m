@@ -53,7 +53,7 @@
                                CGRectIsInfinite(legacyAnnotationView.frame) ||
                                CGRectIsEmpty(legacyAnnotationView.frame));
         if (frameIsInvalid) {
-            DDLogWarning(@"handed an invalid frame rect, attempting to recover");
+            DDLogWarn(@"handed an invalid frame rect, attempting to recover");
             annotationFrame = legacyAnnotationView.bounds;
         } else {
             annotationFrame = legacyAnnotationView.frame;
