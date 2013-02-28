@@ -46,17 +46,27 @@
     if (legacyAnnotationView && ([legacyAnnotationView isKindOfClass:[MITPinAnnotationView class]] == NO))
     {
         [legacyAnnotationView sizeToFit];
-        CGRect annotationBounds = legacyAnnotationView.bounds;
         MGSMarkerOptions options = self.markerOptions;
+        
+        CGRect annotationFrame = CGRectZero;
+        BOOL frameIsInvalid = (CGRectIsNull(legacyAnnotationView.frame) ||
+                               CGRectIsInfinite(legacyAnnotationView.frame) ||
+                               CGRectIsEmpty(legacyAnnotationView.frame));
+        if (frameIsInvalid) {
+            DDLogWarning(@"handed an invalid frame rect, attempting to recover");
+            annotationFrame = legacyAnnotationView.bounds;
+        } else {
+            annotationFrame = legacyAnnotationView.frame;
+        }
         
         // MKAnnotationView automatically centers its frame if an image
         // is added so undo the centering then use the remainder for the offset
-        CGRect frame = legacyAnnotationView.frame;
-        CGFloat xOffset = frame.origin.y + (frame.size.height / 2.0);
-        CGFloat yOffset = frame.origin.x + (frame.size.width / 2.0);
+        CGFloat xOffset = annotationFrame.origin.y + (annotationFrame.size.height / 2.0);
+        CGFloat yOffset = annotationFrame.origin.x + (annotationFrame.size.width / 2.0);
         options.offset = CGPointMake((CGFloat) round(xOffset), (CGFloat) round(yOffset));
         self.markerOptions = options;
         
+        CGRect annotationBounds = legacyAnnotationView.bounds;
         legacyAnnotationView.frame = annotationBounds;
         
         UIGraphicsBeginImageContextWithOptions(annotationBounds.size, NO, 0.0);
