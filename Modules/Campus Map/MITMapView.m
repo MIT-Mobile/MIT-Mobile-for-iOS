@@ -1,4 +1,5 @@
 #import <CoreLocation/CoreLocation.h>
+#import "MapKit+MITAdditions.h"
 
 #import "MITMapView.h"
 #import "MGSMapView.h"
@@ -335,7 +336,7 @@
     NSMutableArray *pathCoordinates = [NSMutableArray array];
     for (CLLocation *location in [route pathLocations])
     {
-        NSValue *locationValue = [NSValue valueWithMKCoordinate:[location coordinate]];
+        NSValue *locationValue = [NSValue valueWithCLLocationCoordinate:[location coordinate]];
         [pathCoordinates addObject:locationValue];
     }
     
@@ -366,49 +367,19 @@
 
 - (MKCoordinateRegion)regionForRoute:(id<MITMapRoute>)route
 {
-    NSMutableArray *longitudes = [NSMutableArray array];
-    NSMutableArray *latitudes = [NSMutableArray array];
+    NSMutableSet *coordinates = [NSMutableSet set];
     
     for (CLLocation *location in [route pathLocations]) {
-        CLLocationCoordinate2D coordinate = location.coordinate;
-        
-        if (CLLocationCoordinate2DIsValid(coordinate)) {
-            [longitudes addObject:[NSNumber numberWithDouble:coordinate.longitude]];
-            [latitudes addObject:[NSNumber numberWithDouble:coordinate.latitude]];
-        }
+        [coordinates addObject:[NSValue valueWithCLLocationCoordinate:location.coordinate]];
     }
     
     if ([route respondsToSelector:@selector(annotations)]) {
         for (id<MKAnnotation> annotation in [route annotations]) {
-            CLLocationCoordinate2D coordinate = [annotation coordinate];
-            
-            if (CLLocationCoordinate2DIsValid(coordinate)) {
-                [longitudes addObject:[NSNumber numberWithDouble:coordinate.longitude]];
-                [latitudes addObject:[NSNumber numberWithDouble:coordinate.latitude]];
-            }
+            [coordinates addObject:[NSValue valueWithCLLocationCoordinate:[annotation coordinate]]];
         }
     }
-    
-    if (([longitudes count] > 1) && ([latitudes count] > 1)) {
-        [longitudes sortUsingSelector:@selector(compare:)];
-        [latitudes sortUsingSelector:@selector(compare:)];
-        
-        CLLocationDegrees maxLongitude = [longitudes[0] doubleValue];
-        CLLocationDegrees minLongitude = [[longitudes lastObject] doubleValue];
-        CLLocationDegrees maxLatitude = [latitudes[0] doubleValue];
-        CLLocationDegrees minLatitude = [[latitudes lastObject] doubleValue];
-        
-        CLLocationDegrees latitudeDelta = (maxLatitude - minLatitude);
-        CLLocationDegrees longitudeDelta = (maxLongitude - minLongitude);
-        
-        return MKCoordinateRegionMake(CLLocationCoordinate2DMake(minLatitude + (latitudeDelta / 2.0),
-                                                                 minLongitude + (longitudeDelta / 2.0)),
-                                      MKCoordinateSpanMake(latitudeDelta, longitudeDelta));
-    } else {
-        return MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake([[latitudes lastObject] doubleValue],
-                                                                             [[longitudes lastObject] doubleValue]),
-                                                  25.0, 25.0);
-    }
+
+    return MKCoordinateRegionForCoordinates(coordinates);
 }
 
 - (void)removeAllRoutes
