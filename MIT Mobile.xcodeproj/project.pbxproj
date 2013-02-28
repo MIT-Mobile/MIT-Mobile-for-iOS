@@ -117,6 +117,7 @@
 		2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */; };
 		2CDF301F134DF504007C6813 /* qrreader in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF301E134DF504007C6813 /* qrreader */; };
 		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; };
+		2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */; };
 		2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6513BDFB2C0043CFBE /* FacilitiesPropertyOwner.m */; };
 		2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */; };
@@ -594,6 +595,8 @@
 		2CDF301E134DF504007C6813 /* qrreader */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qrreader; path = Resources/qrreader; sourceTree = "<group>"; };
 		2CDF3020134E05ED007C6813 /* QRReaderHistoryData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderHistoryData.h; sourceTree = "<group>"; };
 		2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderHistoryData.m; sourceTree = "<group>"; };
+		2CE4431816DFAB54005A01B2 /* MapKit+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MapKit+MITAdditions.h"; path = "Categories/MapKit+MITAdditions.h"; sourceTree = "<group>"; };
+		2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MapKit+MITAdditions.m"; path = "Categories/MapKit+MITAdditions.m"; sourceTree = "<group>"; };
 		2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MFMailComposeViewController+RFC2368.h"; sourceTree = "<group>"; };
 		2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MFMailComposeViewController+RFC2368.m"; sourceTree = "<group>"; };
 		2CE6AC6413BDFB2C0043CFBE /* FacilitiesPropertyOwner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesPropertyOwner.h; sourceTree = "<group>"; };
@@ -1434,6 +1437,8 @@
 				EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */,
 				EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */,
 				EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */,
+				2CE4431816DFAB54005A01B2 /* MapKit+MITAdditions.h */,
+				2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */,
 				DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */,
 				DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */,
 				2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */,
@@ -3008,6 +3013,7 @@
 				2CA010BE1694A7CC00B87CF0 /* MGSSimpleAnnotation.m in Sources */,
 				2C014A8B16CC828B00B4BB7D /* MGSSafeAnnotation.m in Sources */,
 				2CBD6A0116D3C6FC002B482F /* MITMapAnnotationCalloutView.m in Sources */,
+				2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
