@@ -1,4 +1,3 @@
-#import <CoreLocation/CLLocation.h>
 #import <CoreLocation/CoreLocation.h>
 
 #define DEGREES_PER_RADIAN 180.0 / M_PI
@@ -11,7 +10,7 @@
 #define OUT_OF_BOUNDS_DISTANCE 1609
 #define WAY_OUT_OF_BOUNDS_DISTANCE 3218
 
-FOUNDATION_STATIC_INLINE inline NSString* NSStringFromCLLocationCoordinate2D(CLLocationCoordinate2D coordinate) {
+FOUNDATION_STATIC_INLINE NSString* NSStringFromCLLocationCoordinate2D(CLLocationCoordinate2D coordinate) {
     return [NSString stringWithFormat:@"{ x: %lf, y: %lf }", coordinate.longitude, coordinate.latitude];
 }
 
@@ -24,7 +23,6 @@ FOUNDATION_STATIC_INLINE inline NSString* NSStringFromCLLocationCoordinate2D(CLL
 @end
 
 @interface NSValue (CL_MITAdditions)
-+ (NSValue *)valueWithMKCoordinate:(CLLocationCoordinate2D)coordinate;
-- (CLLocationCoordinate2D)MKCoordinateValue;
-
++ (NSValue *)valueWithCLLocationCoordinate:(CLLocationCoordinate2D)coordinate;
+- (CLLocationCoordinate2D)CLLocationCoordinateValue;
 @end

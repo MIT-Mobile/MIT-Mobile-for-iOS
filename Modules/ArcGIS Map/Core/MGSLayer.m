@@ -10,6 +10,7 @@
 
 #import "MGSUtility.h"
 #import "CoreLocation+MITAdditions.h"
+#import "MapKit+MITAdditions.h"
 #import "MGSCalloutView.h"
 
 @interface MGSLayer () <AGSLayerDelegate>
@@ -40,7 +41,7 @@
             case MGSAnnotationPolygon:
             case MGSAnnotationPolyline: {
                 for (NSValue *value in safeAnnotation.points) {
-                    CLLocationCoordinate2D coordinate = [value MKCoordinateValue];
+                    CLLocationCoordinate2D coordinate = [value CLLocationCoordinateValue];
                     [polyline addPointToPath:AGSPointFromCLLocationCoordinate(coordinate)];
                 }
             }
@@ -58,6 +59,7 @@
                                                  polygon.envelope.width);
     
     return MKCoordinateRegionMake(center, span);
+     */
 }
 
 - (id)init {
@@ -301,7 +303,7 @@
                 [polyline addPathToPolyline];
                 
                 for (NSValue *pointValue in [annotation points]) {
-                    CLLocationCoordinate2D point = [pointValue MKCoordinateValue];
+                    CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
                     
                     if (CLLocationCoordinate2DIsValid(point)) {
                         AGSPoint *agsPoint = AGSPointFromCLLocationCoordinate(point);
@@ -341,7 +343,7 @@
                 [polygon addRingToPolygon];
                 
                 for (NSValue *pointValue in [annotation points]) {
-                    CLLocationCoordinate2D point = [pointValue MKCoordinateValue];
+                    CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
                     
                     if (CLLocationCoordinate2DIsValid(point)) {
                         AGSPoint *agsPoint = AGSPointFromCLLocationCoordinate(point);

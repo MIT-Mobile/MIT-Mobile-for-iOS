@@ -21,13 +21,13 @@
 
 
 @implementation NSValue (CL_MITAdditions)
-+ (NSValue *)valueWithMKCoordinate:(CLLocationCoordinate2D)coordinate
++ (NSValue *)valueWithCLLocationCoordinate:(CLLocationCoordinate2D)coordinate
 {
     return [NSValue valueWithBytes:(const void*)(&coordinate)
                           objCType:@encode(CLLocationCoordinate2D)];
 }
 
-- (CLLocationCoordinate2D)MKCoordinateValue
+- (CLLocationCoordinate2D)CLLocationCoordinateValue
 {
     if (strcmp([self objCType], @encode(CLLocationCoordinate2D)) == 0)
     {
