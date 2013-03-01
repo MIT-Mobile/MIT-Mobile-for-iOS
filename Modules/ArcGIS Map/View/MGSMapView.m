@@ -232,7 +232,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     
     if ([projectedGeometry isValid] && ([projectedGeometry isEmpty] == NO)) {
         [self.mapView zoomToGeometry:projectedGeometry
-                         withPadding:10.0 // Minimum of 20px padding on each side
+                         withPadding:10.0
                             animated:YES];
     } else {
         AGSEnvelope *maxEnvelope = [AGSEnvelope envelopeWithXmin:-7915909.671294
@@ -443,7 +443,13 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate {
-    return [self.mapView toScreenPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate, self.mapView.spatialReference)];
+    DDLogVerbose(@"Spatial Reference: %@", self.mapView.spatialReference);
+    
+    if (self.mapView.spatialReference) {
+        return [self.mapView toScreenPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate, self.mapView.spatialReference)];
+    } else {
+        return CGPointZero;
+    }
 }
 
 #pragma mark - Callouts
