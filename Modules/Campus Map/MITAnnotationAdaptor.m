@@ -49,7 +49,8 @@
         MGSMarkerOptions options = self.markerOptions;
         
         CGRect annotationFrame = CGRectZero;
-        BOOL frameIsInvalid = (CGRectIsNull(legacyAnnotationView.frame) ||
+        BOOL frameIsInvalid = ((CGAffineTransformEqualToTransform(legacyAnnotationView.transform, CGAffineTransformIdentity) == NO) ||
+                               CGRectIsNull(legacyAnnotationView.frame) ||
                                CGRectIsInfinite(legacyAnnotationView.frame) ||
                                CGRectIsEmpty(legacyAnnotationView.frame));
         if (frameIsInvalid) {
@@ -66,10 +67,11 @@
         options.offset = CGPointMake((CGFloat) round(xOffset), (CGFloat) round(yOffset));
         self.markerOptions = options;
         
-        CGRect annotationBounds = legacyAnnotationView.bounds;
-        legacyAnnotationView.frame = annotationBounds;
+        if (frameIsInvalid == NO) {
+            DDLogError(@"attempting to render view with an invalid frame");
+        }
         
-        UIGraphicsBeginImageContextWithOptions(annotationBounds.size, NO, 0.0);
+        UIGraphicsBeginImageContextWithOptions(legacyAnnotationView.bounds.size, NO, 0.0);
         legacyAnnotationView.layer.backgroundColor = [[UIColor clearColor] CGColor];
         [legacyAnnotationView.layer renderInContext:UIGraphicsGetCurrentContext()];
         image = UIGraphicsGetImageFromCurrentImageContext();
