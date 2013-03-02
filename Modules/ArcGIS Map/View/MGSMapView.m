@@ -213,6 +213,17 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (void)setMapRegion:(MKCoordinateRegion)mapRegion {
     self.userMapRegion = mapRegion;
     
+    BOOL mapRegionIsValid = ((CLLocationCoordinate2DIsValid(mapRegion.center)) &&
+                              (mapRegion.span.latitudeDelta > 0) &&
+                              (mapRegion.span.longitudeDelta > 0));
+                             
+    if (mapRegionIsValid == NO) {
+        // If the region is invalid, don't change anything
+#warning TODO: Make sure that doing nothing is a valid choice. Should we zoom to default instead?
+        DDLogError(@"attempting to set a empty or invalid region.");
+        return;
+    }
+    
     AGSMutableEnvelope *envelope = [[AGSMutableEnvelope alloc] initWithSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
     
     
