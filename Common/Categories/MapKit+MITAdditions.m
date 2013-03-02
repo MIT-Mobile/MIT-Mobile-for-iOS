@@ -12,6 +12,12 @@ MKCoordinateRegion MKCoordinateRegionForCoordinatesWithPadding(NSSet *coordinate
     NSMutableArray *longitudes = [NSMutableArray array];
     NSMutableArray *latitudes = [NSMutableArray array];
     
+    if ([coordinateValues count] == 0) {
+        DDLogCWarn(@"warning: attempting to create a map region for no coordinates");
+        return MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake(CGFLOAT_MAX,CGFLOAT_MAX),
+                                                  0,0);
+    }
+    
     // Ensure that the padding is bounded to [0,1]
     if (padding < 0.0) {
         padding = 0.0;
