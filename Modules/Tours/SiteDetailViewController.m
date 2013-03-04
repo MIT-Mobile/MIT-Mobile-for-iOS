@@ -465,7 +465,10 @@
             [_routeMapView addAnnotation:startAnnotation];
             [_routeMapView addAnnotation:endAnnotation];
             
-            _routeMapView.region = [_routeMapView regionForAnnotations:@[startAnnotation,endAnnotation]];
+            CLLocationCoordinate2D center = CLLocationCoordinate2DMake((startAnnotation.coordinate.latitude + endAnnotation.coordinate.latitude) / 2.0,
+                                                                       (startAnnotation.coordinate.longitude + endAnnotation.coordinate.longitude) / 2.0);
+            _routeMapView.zoomLevel = [self.siteOrRoute.zoom floatValue];
+            _routeMapView.centerCoordinate = center;
             
             newGraphic = _routeMapView;
             
