@@ -48,13 +48,13 @@ MKCoordinateRegion MKCoordinateRegionForCoordinatesWithPadding(NSSet *coordinate
     [longitudes sortUsingSelector:@selector(compare:)];
     [latitudes sortUsingSelector:@selector(compare:)];
     
-    CLLocationDegrees maxLongitude = [longitudes[0] doubleValue];
-    CLLocationDegrees minLongitude = [[longitudes lastObject] doubleValue];
-    CLLocationDegrees maxLatitude = [latitudes[0] doubleValue];
-    CLLocationDegrees minLatitude = [[latitudes lastObject] doubleValue];
+    CLLocationDegrees maxLongitude = [[longitudes lastObject] doubleValue];
+    CLLocationDegrees minLongitude = [longitudes[0] doubleValue];
+    CLLocationDegrees maxLatitude = [[latitudes lastObject] doubleValue];
+    CLLocationDegrees minLatitude = [latitudes[0] doubleValue];
     
-    CLLocationDegrees latitudeDelta = (maxLatitude - minLatitude);
-    CLLocationDegrees longitudeDelta = (maxLongitude - minLongitude);
+    CLLocationDegrees latitudeDelta = fabs(maxLatitude - minLatitude);
+    CLLocationDegrees longitudeDelta = fabs(maxLongitude - minLongitude);
     CLLocationCoordinate2D centerPoint = CLLocationCoordinate2DMake(minLatitude + (latitudeDelta / 2.0),
                                              minLongitude + (longitudeDelta / 2.0));
     
