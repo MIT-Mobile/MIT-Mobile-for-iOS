@@ -37,8 +37,8 @@
 @interface MITMapView : UIView
 @property (nonatomic, weak) id<MITMapViewDelegate> delegate;
 @property (nonatomic, readonly, weak) MGSMapView *mapView;
-@property BOOL stayCenteredOnUserLocation;
-@property CGFloat zoomLevel;
+@property (nonatomic) BOOL stayCenteredOnUserLocation;
+@property (nonatomic) CGFloat zoomLevel;
 
 #pragma mark MKMapView forwarding
 @property (nonatomic) CLLocationCoordinate2D centerCoordinate;
