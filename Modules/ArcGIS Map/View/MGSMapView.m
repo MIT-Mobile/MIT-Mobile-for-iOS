@@ -211,8 +211,6 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 - (void)setMapRegion:(MKCoordinateRegion)mapRegion {
-    self.userMapRegion = mapRegion;
-    
     BOOL mapRegionIsValid = ((CLLocationCoordinate2DIsValid(mapRegion.center)) &&
                               (mapRegion.span.latitudeDelta > 0) &&
                               (mapRegion.span.longitudeDelta > 0));
@@ -224,38 +222,42 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         return;
     }
     
-    AGSMutableEnvelope *envelope = [[AGSMutableEnvelope alloc] initWithSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
-    
-    
-    double offsetX = (mapRegion.span.longitudeDelta / 2.0);
-    double offsetY = (mapRegion.span.latitudeDelta / 2.0);
-    
-    [envelope updateWithXmin:mapRegion.center.longitude - offsetX
-                        ymin:mapRegion.center.latitude - offsetY
-                        xmax:mapRegion.center.longitude + offsetX
-                        ymax:mapRegion.center.latitude + offsetY];
+    if (self.coreLayersLoaded) {
+        AGSMutableEnvelope *envelope = [[AGSMutableEnvelope alloc] initWithSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
         
-    AGSGeometry *projectedGeometry = envelope;
-    if ([envelope.spatialReference isEqualToSpatialReference:self.mapView.spatialReference] == NO) {
-        projectedGeometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:envelope
-                                                                    toSpatialReference:self.mapView.spatialReference];
-    }
-    
-    if ([projectedGeometry isValid] && ([projectedGeometry isEmpty] == NO)) {
-        [self.mapView zoomToGeometry:projectedGeometry
-                         withPadding:10.0
-                            animated:YES];
-    } else {
-        AGSEnvelope *maxEnvelope = [AGSEnvelope envelopeWithXmin:-7915909.671294
-                                                            ymin:5212249.807534
-                                                            xmax:-7912606.241692
-                                                            ymax:5216998.487588
-                                                spatialReference:[AGSSpatialReference spatialReferenceWithWKID:102113]];
-        if (maxEnvelope) {
-            [self.mapView zoomToGeometry:maxEnvelope
+        
+        double offsetX = (mapRegion.span.longitudeDelta / 2.0);
+        double offsetY = (mapRegion.span.latitudeDelta / 2.0);
+        
+        [envelope updateWithXmin:mapRegion.center.longitude - offsetX
+                            ymin:mapRegion.center.latitude - offsetY
+                            xmax:mapRegion.center.longitude + offsetX
+                            ymax:mapRegion.center.latitude + offsetY];
+            
+        AGSGeometry *projectedGeometry = envelope;
+        if ([envelope.spatialReference isEqualToSpatialReference:self.mapView.spatialReference] == NO) {
+            projectedGeometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:envelope
+                                                                        toSpatialReference:self.mapView.spatialReference];
+        }
+        
+        if ([projectedGeometry isValid] && ([projectedGeometry isEmpty] == NO)) {
+            [self.mapView zoomToGeometry:projectedGeometry
                              withPadding:0.0
                                 animated:YES];
+        } else {
+            AGSEnvelope *maxEnvelope = [AGSEnvelope envelopeWithXmin:-7915909.671294
+                                                                ymin:5212249.807534
+                                                                xmax:-7912606.241692
+                                                                ymax:5216998.487588
+                                                    spatialReference:[AGSSpatialReference spatialReferenceWithWKID:102113]];
+            if (maxEnvelope) {
+                [self.mapView zoomToGeometry:maxEnvelope
+                                 withPadding:0.0
+                                    animated:YES];
+            }
         }
+    } else {
+        self.userMapRegion = mapRegion;
     }
 }
 
