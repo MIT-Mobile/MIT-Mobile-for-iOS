@@ -28,6 +28,9 @@
 - (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view;
 - (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views;
 
+- (void)mapViewRegionWillChange:(MITMapView*)mapView;
+- (void)mapViewRegionDidChange:(MITMapView*)mapView;
+
 // any touch on the map will invoke this.
 - (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch;
 

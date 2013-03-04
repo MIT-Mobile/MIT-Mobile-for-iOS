@@ -111,7 +111,9 @@
 
 - (void)setRegion:(MKCoordinateRegion)region
 {
+    [self mapViewRegionWillChange];
     self.mapView.mapRegion = region;
+    [self mapViewRegionDidChange];
 }
 
 - (BOOL)scrollEnabled
@@ -509,5 +511,18 @@
     }
     
     return nil;
+}
+     
+#pragma mark - Delegate Forwarding
+- (void)mapViewRegionWillChange {
+    if ([self.delegate respondsToSelector:@selector(mapViewRegionWillChange:)]) {
+        [self.delegate mapViewRegionWillChange:self];
+    }
+}
+
+- (void)mapViewRegionDidChange {
+    if ([self.delegate respondsToSelector:@selector(mapViewRegionDidChange:)]) {
+        [self.delegate mapViewRegionDidChange:self];
+    }
 }
 @end
