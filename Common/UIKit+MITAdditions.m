@@ -184,6 +184,34 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 @end
 
+@implementation UIViewController (MITUIAdditions)
+
+- (UIView*)defaultApplicationView {
+    CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
+    
+    if (self.navigationController)
+    {
+        if (self.navigationController.isNavigationBarHidden == NO)
+        {
+            mainFrame.origin.y += CGRectGetHeight(self.navigationController.navigationBar.frame);
+            mainFrame.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
+        }
+        
+        if (self.navigationController.isToolbarHidden == NO)
+        {
+            mainFrame.size.height -= CGRectGetHeight(self.navigationController.toolbar.frame);
+        }
+    }
+    
+    UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
+    mainView.autoresizesSubviews = YES;
+    mainView.backgroundColor = [UIColor clearColor];
+    
+    return mainView;
+}
+
+@end
+
 @implementation UITableViewCell (MITUIAdditions)
 
 - (void)applyStandardFonts {
