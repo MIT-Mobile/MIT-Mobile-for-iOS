@@ -88,6 +88,13 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     [self addLayer:self.defaultLayer];
     
     self.mapRegionWasSet = NO;
+
+    // Make sure that we don't do draw anything outside the bounds of the window.
+    // The ArcGIS SDK has a really annoying bug where it will happily draw a presented
+    // callout anywhere on the screen, even if the view isn't there. To see this, disable masksToBounds,
+    // create a map view shorter than the screen height, present a callout and then drag the map
+    // around. The callout will be drawn (and tracked!) even if it leaves the map view
+    self.layer.masksToBounds = YES;
     
     [self initView];
 }
