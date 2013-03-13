@@ -48,43 +48,6 @@
     }
     
     return MKCoordinateRegionForCoordinates([NSSet setWithArray:coordinates]);
-    
-    /*
-    AGSMutablePolyline *polyline = [[AGSMutablePolyline alloc] initWithSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
-    [polyline addPathToPolyline];
-    
-    for (id<MGSAnnotation> annotation in annotations) {
-        MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-        
-        switch (safeAnnotation.annotationType) {
-            case MGSAnnotationMarker:
-            case MGSAnnotationPointOfInterest: {
-                [polyline addPointToPath:AGSPointFromCLLocationCoordinate(safeAnnotation.coordinate)];
-            }
-                break;
-            
-            case MGSAnnotationPolygon:
-            case MGSAnnotationPolyline: {
-                for (NSValue *value in safeAnnotation.points) {
-                    CLLocationCoordinate2D coordinate = [value CLLocationCoordinateValue];
-                    [polyline addPointToPath:AGSPointFromCLLocationCoordinate(coordinate)];
-                }
-            }
-                break;
-        }
-    }
-
-    double distance = [[AGSSpatialReference wgs84SpatialReference] convertValue:50
-                                                                       fromUnit:AGSSRUnitMeter];
-    AGSMutablePolygon *polygon = [[AGSGeometryEngine defaultGeometryEngine] bufferGeometry:polyline
-                                                                                byDistance:distance];
-    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(polygon.envelope.center.y,
-                                                               polygon.envelope.center.x);
-    MKCoordinateSpan span = MKCoordinateSpanMake(polygon.envelope.height,
-                                                 polygon.envelope.width);
-    
-    return MKCoordinateRegionMake(center, span);
-     */
 }
 
 - (id)init {
