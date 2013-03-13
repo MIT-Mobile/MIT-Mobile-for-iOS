@@ -169,8 +169,9 @@
 
 - (void)loadView
 {
-	[super loadView];
-	
+    UIView *controllerView = [self defaultApplicationView];
+    self.view = controllerView;
+
 	theTableView = nil;
 	dateRangeDidChange = YES;
 	
