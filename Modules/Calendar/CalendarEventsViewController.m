@@ -437,8 +437,6 @@
 		: nil;
 		
 		[self.mapView removeFromSuperview];
-        self.mapView = nil;
-
 	} else {
 		
 		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"List"
@@ -451,11 +449,13 @@
             self.mapView.delegate = self;
         }
 
+        if (self.mapView.superview == nil) {
+            [self.view addSubview:self.mapView];
+        }
+
         if (!requestNeeded) {
             self.mapView.events = events;
         }
-
-        [self.view addSubview:self.mapView];
 	}
 	
 	if ([self shouldShowDatePicker:activeEventList]) {
