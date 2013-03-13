@@ -346,9 +346,6 @@
 	// see if we need a mapview
 	if (![self canShowMap:activeEventList]) {
 		showList = YES;
-	} else if (self.mapView == nil) {
-		self.mapView = [[[CalendarMapView alloc] initWithFrame:contentFrame] autorelease];
-		self.mapView.delegate = self;
 	}
 
 	if (dateRangeDidChange && [self shouldShowDatePicker:activeEventList]) {
@@ -437,6 +434,7 @@
 		: nil;
 		
 		[self.mapView removeFromSuperview];
+        self.mapView = nil;
 
 	} else {
 		
@@ -444,7 +442,12 @@
 																				   style:UIBarButtonItemStylePlain
 																				  target:self
 																				  action:@selector(listButtonToggled)] autorelease];
-		
+
+        if (self.mapView == nil) {
+            self.mapView = [[[CalendarMapView alloc] initWithFrame:contentFrame] autorelease];
+            self.mapView.delegate = self;
+        }
+
         if (!requestNeeded) {
             self.mapView.events = events;
         }
