@@ -332,17 +332,19 @@
         [self returnToToday];
 	}
 
-	CGFloat yOffset = showScroller ? navScrollView.frame.size.height : 0.0;
+	CGFloat yOffset = showScroller ? CGRectGetHeight(navScrollView.frame) : 0.0;
 	if ([self shouldShowDatePicker:activeEventList]) {
 		[self setupDatePicker];
-		yOffset += datePicker.frame.size.height - 4.0; // 4.0 is height of transparent shadow under image
+		yOffset += CGRectGetHeight(datePicker.frame) - 4.0; // 4.0 is height of transparent shadow under image
 	} else {
-		[datePicker removeFromSuperview];
+        [datePicker removeFromSuperview];
 	}
-	
-	CGRect contentFrame = CGRectMake(0, self.view.bounds.origin.y + yOffset, 
-									 self.view.bounds.size.width, 
-									 self.view.bounds.size.height - yOffset);
+
+    CGRect controllerBounds = self.view.bounds;
+    CGRect contentFrame = CGRectMake(CGRectGetMinX(controllerBounds),
+                                     CGRectGetMinY(controllerBounds) + yOffset,
+                                     CGRectGetWidth(controllerBounds),
+                                     CGRectGetHeight(controllerBounds) - yOffset);
 	
 	// see if we need a mapview
 	if (![self canShowMap:activeEventList]) {
