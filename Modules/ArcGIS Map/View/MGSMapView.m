@@ -39,12 +39,26 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 @property(nonatomic,strong) id<MGSAnnotation> calloutAnnotation;
 
 - (void)initView;
+- (void)coreLayersDidFinishLoading;
 @end
 
 @implementation MGSMapView
-
 @dynamic mapSets;
 @dynamic showUserLocation;
+
+
++ (MGSZoomLevel)zoomLevelForMKCoordinateSpan:(MKCoordinateSpan)span {
+	return log(360.0f / span.longitudeDelta) / log(2.0f) - 1;
+}
+
++ (MKCoordinateSpan)coordinateSpanForZoomLevel:(MGSZoomLevel)zoomLevel {
+    CGFloat longitudeDelta = 360.0f / pow(2.0f, zoomLevel + 1);
+    CGFloat latitudeDelta = longitudeDelta;
+    
+    MKCoordinateSpan span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta);
+    
+    return span;
+}
 
 - (id)init {
     return [self initWithFrame:CGRectZero];
@@ -193,6 +207,36 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark -
 
 #pragma mark - Dynamic Properties
+- (MGSZoomLevel)zoomLevel {
+    __block MGSZoomLevel result = -CGFLOAT_MAX;
+    NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
+        if (self.mapView.spatialReference) {
+            AGSEnvelope *envelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:self.mapView.visibleAreaEnvelope
+                                                                                           toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
+            
+            MKCoordinateSpan span = MKCoordinateSpanMake(envelope.ymax - envelope.ymin,
+                                                         envelope.xmax - envelope.xmin);
+            result = [MGSMapView zoomLevelForMKCoordinateSpan:span];
+        }
+    }];
+    
+    [self.userLayerQueue addOperations:@[operation]
+                     waitUntilFinished:YES];
+
+    
+    return result;
+}
+
+- (void)setZoomLevel:(MGSZoomLevel)zoomLevel {
+    if (self.mapView.spatialReference) {
+        MKCoordinateSpan span = [MGSMapView coordinateSpanForZoomLevel:zoomLevel];
+        AGSPoint *center = (AGSPoint*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:self.mapView.visibleAreaEnvelope.center
+                                                                               toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
+        self.mapRegion = MKCoordinateRegionMake(CLLocationCoordinate2DMake(center.y, center.x),
+                                                span);
+    }
+}
+
 - (void)setShowUserLocation:(BOOL)showUserLocation {
     if (self.mapView.locationDisplay.dataSource == nil) {
         self.mapView.locationDisplay.dataSource = [[AGSCLLocationManagerLocationDisplayDataSource alloc] init];
@@ -467,9 +511,12 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                     animated:NO];
 }
 
-- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated {
-    [self.mapView centerAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate, self.mapView.spatialReference)
-                       animated:animated];
+- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
+                  animated:(BOOL)animated {
+    if (self.mapView.spatialReference) {
+        [self.mapView centerAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate, self.mapView.spatialReference)
+                           animated:animated];
+    }
 }
 
 
@@ -556,6 +603,15 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                                   }];
     
     return myLayer;
+}
+
+- (void)coreLayersDidFinishLoading {
+    if (CLLocationCoordinate2DIsValid(self.userMapRegion.center)) {
+        self.mapRegion = self.userMapRegion;
+    }
+    
+    [self didFinishLoadingMapView];
+    self.userLayerQueue.suspended = NO;
 }
 @end
 
@@ -685,8 +741,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             // hasn't changed now that we have another layer loaded
             if (layersLoaded) {
                 self.coreLayersLoaded = YES;
-                [self didFinishLoadingMapView];
-                self.userLayerQueue.suspended = NO;
+                [self coreLayersDidFinishLoading];
             }
         }
     }

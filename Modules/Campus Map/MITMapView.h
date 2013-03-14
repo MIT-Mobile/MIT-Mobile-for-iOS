@@ -16,8 +16,8 @@
 @class MITMapAnnotationView;
 
 @protocol MITMapViewDelegate<NSObject>
-
 @optional
+- (void)mapViewDidFinishLoading:(MITMapView*)mapView;
 
 // MKMapView-like methods
 - (void)mapView:(MITMapView *)mapView annotationSelected:(id <MKAnnotation>)annotation;

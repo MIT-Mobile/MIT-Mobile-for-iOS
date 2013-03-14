@@ -11,6 +11,8 @@
 
 @protocol MGSAnnotation;
 
+typedef CGFloat MGSZoomLevel;
+
 @interface MGSMapView : UIView
 #pragma mark - Basemap Management
 @property (nonatomic, strong) NSString *activeMapSet;
@@ -24,6 +26,10 @@
 @property (nonatomic) MKCoordinateRegion mapRegion;
 @property (nonatomic,readonly) BOOL isPresentingCallout;
 @property (nonatomic,readonly) id<MGSAnnotation> calloutAnnotation;
+@property (nonatomic) CGFloat zoomLevel;
+
++ (MGSZoomLevel)zoomLevelForMKCoordinateSpan:(MKCoordinateSpan)span;
++ (MKCoordinateSpan)coordinateSpanForZoomLevel:(MGSZoomLevel)zoomLevel;
 
 #pragma mark - Layer Management
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)basemapIdentifier;
