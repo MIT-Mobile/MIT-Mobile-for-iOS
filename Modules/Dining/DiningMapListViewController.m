@@ -15,6 +15,8 @@
     IBOutlet UISegmentedControl * segmentControl;
     IBOutlet MITMapView * mapView;
     
+    BOOL isAnimating;
+    BOOL isShowingMap;
 }
 
 
@@ -44,13 +46,20 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+
+    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
     
     [segmentControl addTarget:listView action:@selector(reloadData) forControlEvents:UIControlEventValueChanged];
+    [self styleSegmentControl];
     
+    [self layoutListState];
+}
+
+- (void) styleSegmentControl
+{
     
 }
 
@@ -62,12 +71,56 @@
 
 - (void) toggleMapList:(id)sender
 {
-    NSLog(@"Toggle the Map List");
-    self.navigationItem.rightBarButtonItem.title = ([self.navigationItem.rightBarButtonItem.title isEqualToString:@"Map"])? @"List" : @"Map";
+    if (!isAnimating) {
+        NSLog(@"Toggle the Map List");
+        self.navigationItem.rightBarButtonItem.title = (isShowingMap)? @"List" : @"Map";
+        
+        if (isShowingMap) {
+            [UIView animateWithDuration:0.4f animations:^{
+                listView.alpha = 1;
+                mapView.alpha = 0;
+                [self layoutListState];
+                isAnimating = YES;
+            } completion:^(BOOL finished) {
+                isAnimating = NO;
+            }];
+            
+        } else {
+            mapView.alpha = 0;
+            [UIView animateWithDuration:0.4f animations:^{
+                listView.alpha = 0;
+                mapView.alpha = 1;
+                [self layoutMapState];
+                isAnimating = YES;
+            } completion:^(BOOL finished) {
+                isAnimating = NO;
+            }];
+        }
+        // toggle boolean flaggit 
+        isShowingMap = !isShowingMap;
+    }
 }
 
+#pragma mark - View layout
 
+- (void) layoutListState
+{
+    segmentControl.center = CGPointMake(self.view.center.x, 30);
+    
+    listView.hidden = NO;
+    listView.frame = CGRectMake(0, CGRectGetMaxY(segmentControl.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(segmentControl.frame));
+    
+    mapView.hidden = YES;
+}
 
+- (void) layoutMapState
+{
+    segmentControl.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 30);
+    listView.hidden = YES;
+    
+    mapView.hidden = NO;
+    mapView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+}
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
