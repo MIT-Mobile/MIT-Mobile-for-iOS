@@ -27,6 +27,7 @@ extern NSString * const MITInternalURLScheme;
 extern NSString * const CalendarTag;
 extern NSString * const EmergencyTag;
 extern NSString * const CampusMapTag;
+extern NSString * const DiningTag;
 extern NSString * const NewsOfficeTag;
 extern NSString * const DirectoryTag;
 extern NSString * const StellarTag;

@@ -193,6 +193,9 @@
 		44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */; };
 		44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A3CD11A33905000FD653 /* MapSelectionController.m */; };
 		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; };
+		48327CE016F74F19003A2F23 /* DiningModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48327CDF16F74F19003A2F23 /* DiningModule.m */; };
+		48327CE416F75017003A2F23 /* DiningMapListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48327CE216F75017003A2F23 /* DiningMapListViewController.m */; };
+		48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 48327CE316F75017003A2F23 /* DiningMapListViewController.xib */; };
 		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; };
 		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; };
@@ -719,6 +722,11 @@
 		44C1A3CD11A33905000FD653 /* MapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSelectionController.m; sourceTree = "<group>"; };
 		44C1A4C211A412E2000FD653 /* MapSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapSearch.h; sourceTree = "<group>"; };
 		44C1A4C311A412E2000FD653 /* MapSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSearch.m; sourceTree = "<group>"; };
+		48327CDE16F74F19003A2F23 /* DiningModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningModule.h; path = Dining/DiningModule.h; sourceTree = "<group>"; };
+		48327CDF16F74F19003A2F23 /* DiningModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningModule.m; path = Dining/DiningModule.m; sourceTree = "<group>"; };
+		48327CE116F75017003A2F23 /* DiningMapListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningMapListViewController.h; path = Dining/DiningMapListViewController.h; sourceTree = "<group>"; };
+		48327CE216F75017003A2F23 /* DiningMapListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningMapListViewController.m; path = Dining/DiningMapListViewController.m; sourceTree = "<group>"; };
+		48327CE316F75017003A2F23 /* DiningMapListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DiningMapListViewController.xib; path = Dining/DiningMapListViewController.xib; sourceTree = "<group>"; };
 		48B8129515E4295D00E791F9 /* LinksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksViewController.h; path = Links/LinksViewController.h; sourceTree = "<group>"; };
 		48B8129615E4295D00E791F9 /* LinksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LinksViewController.m; path = Links/LinksViewController.m; sourceTree = "<group>"; };
 		48B8129815E42B1700E791F9 /* LinksModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksModule.h; path = Links/LinksModule.h; sourceTree = "<group>"; };
@@ -1816,6 +1824,18 @@
 			name = Selection;
 			sourceTree = "<group>";
 		};
+		48327CDD16F74EA0003A2F23 /* Dining */ = {
+			isa = PBXGroup;
+			children = (
+				48327CDE16F74F19003A2F23 /* DiningModule.h */,
+				48327CDF16F74F19003A2F23 /* DiningModule.m */,
+				48327CE116F75017003A2F23 /* DiningMapListViewController.h */,
+				48327CE216F75017003A2F23 /* DiningMapListViewController.m */,
+				48327CE316F75017003A2F23 /* DiningMapListViewController.xib */,
+			);
+			name = Dining;
+			sourceTree = "<group>";
+		};
 		48B8129315E428DA00E791F9 /* Links */ = {
 			isa = PBXGroup;
 			children = (
@@ -2065,6 +2085,7 @@
 				DE81CF5E10C6BC390085573D /* About */,
 				EB86CA6C115D273800C8F3D1 /* Calendar */,
 				DE715446102FE468005E6111 /* Campus Map */,
+				48327CDD16F74EA0003A2F23 /* Dining */,
 				DE715447102FE468005E6111 /* Emergency */,
 				2C1A45E6135DD0A8006A2EE4 /* Facilities */,
 				DE81CF6310C6BC490085573D /* Mobile Web */,
@@ -2675,6 +2696,7 @@
 				2CEBBF9E1635A68500441252 /* NavBarLandscape@2x.png in Resources */,
 				2CCF81571636F69900DE273F /* README.txt in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
+				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3014,6 +3036,8 @@
 				2C014A8B16CC828B00B4BB7D /* MGSSafeAnnotation.m in Sources */,
 				2CBD6A0116D3C6FC002B482F /* MITMapAnnotationCalloutView.m in Sources */,
 				2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */,
+				48327CE016F74F19003A2F23 /* DiningModule.m in Sources */,
+				48327CE416F75017003A2F23 /* DiningMapListViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
