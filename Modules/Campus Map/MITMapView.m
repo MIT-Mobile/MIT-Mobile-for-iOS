@@ -141,17 +141,9 @@
 
 - (CGFloat)zoomLevel {
     return (CGFloat)self.mapView.zoomLevel;
-	//return log(360.0f / self.region.span.longitudeDelta) / log(2.0f) - 1;
 }
 
 - (void)setZoomLevel:(CGFloat)zoomLevel {
-    /*
-    CGFloat longitudeDelta = 360.0f / pow(2.0f, zoomLevel + 1);
-    CGFloat latitudeDelta = longitudeDelta;
-    MKCoordinateRegion region = self.region;
-    region.span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta);
-    self.region = region;
-     */
     self.mapView.zoomLevel = zoomLevel;
 }
 
