@@ -157,6 +157,23 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     }
 }
 
+
+- (AGSEnvelope*)defaultVisibleArea {
+    return [AGSEnvelope envelopeWithXmin:-7916712.379879861
+                                    ymin:5214115.052300519
+                                    xmax:-7911452.543710185
+                                    ymax:5217411.40739323
+                        spatialReference:[AGSSpatialReference webMercatorSpatialReference]];
+}
+
+- (AGSEnvelope*)defaultMaximumEnvelope {
+    return [AGSEnvelope envelopeWithXmin:-7920689.320999366
+                                    ymin:5211048.119330198
+                                    xmax:-7907475.602590679
+                                    ymax:5219026.033192276
+                        spatialReference:[AGSSpatialReference webMercatorSpatialReference]];
+}
+
 #pragma mark - Basemap Management
 - (NSSet *)mapSets {
     return [NSSet setWithArray:[self.coreMaps allKeys]];
@@ -204,18 +221,19 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 #pragma mark - Dynamic Properties
 - (MGSZoomLevel)zoomLevel {
-    MGSZoomLevel zoomLevel = -1;
-    MKCoordinateSpan span = MKCoordinateSpanMake(0, 0);
-    
-    // Return a sane (but useless) value if the map view
-    // has not been initialized yet
+    AGSEnvelope *visibleEnvelope = nil;
     if (self.mapView.spatialReference) {
-        AGSEnvelope *envelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:self.mapView.visibleAreaEnvelope
+        visibleEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:self.mapView.visibleAreaEnvelope
                                                                                        toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
     } else {
+        visibleEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultVisibleArea]
+                                                                                       toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
     }
     
-    return zoomLevel;
+    MKCoordinateSpan span = MKCoordinateSpanMake(visibleEnvelope.ymax - visibleEnvelope.ymin,
+                                                 visibleEnvelope.xmax - visibleEnvelope.xmin);
+    
+    return [MGSMapView zoomLevelForMKCoordinateSpan:span];
 }
 
 - (void)setZoomLevel:(MGSZoomLevel)zoomLevel {
@@ -606,17 +624,15 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 @implementation MGSMapView (AGSMapViewLayerDelegate)
 - (void)mapViewDidLoad:(AGSMapView *)mapView {
     DDLogVerbose(@"basemap loaded with WKID %d", mapView.spatialReference.wkid);
+    
+    AGSEnvelope *maxEnvelope = (AGSEnvelope *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultMaximumEnvelope]
+                                                                                       toSpatialReference:mapView.spatialReference];
+    mapView.maxEnvelope = maxEnvelope;
 
     if (self.mapRegionWasSet == NO) {
-        AGSEnvelope *maxEnvelope = [AGSEnvelope envelopeWithXmin:-7915909.671294
-                                                            ymin:5212249.807534
-                                                            xmax:-7912606.241692
-                                                            ymax:5216998.487588
-                                                spatialReference:[AGSSpatialReference spatialReferenceWithWKID:102113]];
-        AGSEnvelope *projectedEnvelope = (AGSEnvelope *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:maxEnvelope
-                                                                                                 toSpatialReference:mapView.spatialReference];
-        [mapView setMaxEnvelope:projectedEnvelope];
-        [mapView zoomToEnvelope:projectedEnvelope
+        AGSEnvelope *visibleEnvelope = (AGSEnvelope *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultVisibleArea]
+                                                                                           toSpatialReference:mapView.spatialReference];
+        [mapView zoomToEnvelope:visibleEnvelope
                        animated:YES];
     }
 }
