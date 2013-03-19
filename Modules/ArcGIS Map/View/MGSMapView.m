@@ -311,23 +311,20 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                 projectedGeometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:envelope
                                                                             toSpatialReference:self.mapView.spatialReference];
             }
-
-            if ([projectedGeometry isValid] && ([projectedGeometry isEmpty] == NO)) {
-                [self.mapView zoomToGeometry:projectedGeometry
-                                 withPadding:0.0
-                                    animated:YES];
-            } else {
-                AGSEnvelope *maxEnvelope = [AGSEnvelope envelopeWithXmin:-7915909.671294
-                                                                    ymin:5212249.807534
-                                                                    xmax:-7912606.241692
-                                                                    ymax:5216998.487588
-                                                        spatialReference:[AGSSpatialReference spatialReferenceWithWKID:102113]];
-                if (maxEnvelope) {
-                    [self.mapView zoomToGeometry:maxEnvelope
-                                     withPadding:0.0
-                                        animated:YES];
+            
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if ([projectedGeometry isValid] && ([projectedGeometry isEmpty] == NO)) {
+                        [self.mapView zoomToGeometry:projectedGeometry
+                                         withPadding:0.0
+                                            animated:YES];
+                } else {
+                    // We should never get here but, just in case, make sure we react
+                    // sanely if something went horribly wrong when re-projecting the envelope
+                    [self.mapView zoomToGeometry:[self defaultVisibleArea]
+                                         withPadding:0.0
+                                            animated:YES];
                 }
-            }
+            }];
         }];
     }
 }
@@ -356,9 +353,9 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                 newLayer.mapView = self;
                 [self.userLayers addObject:newLayer];
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self.mapView addMapLayer:newLayer.graphicsLayer];
-                });
+                }];
                 
                 [self didAddLayer:newLayer];
                 
@@ -404,13 +401,14 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                                       atIndex:insertIndex - 1];
                 
                 NSInteger agsIndex = ([self.coreLayers count] - 1) + insertIndex;
-                dispatch_sync(dispatch_get_main_queue(), ^{
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self.mapView removeMapLayer:aLayer.graphicsLayer];
                     
                     DDLogVerbose(@"moving layer '%@' to index %d (%d) from (%d)", aLayer.name, agsIndex, insertIndex, currentIndex);
                     [self.mapView insertMapLayer:aLayer.graphicsLayer
                                          atIndex:agsIndex];
-                });
+                }];
             }
         }];
     } else {
@@ -450,10 +448,10 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                 [self.userLayers insertObject:newLayer
                                       atIndex:insertIndex];
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     [self.mapView insertMapLayer:newLayer.graphicsLayer
                                          atIndex:agsIndex];
-                });
+                }];
                 
                 [self didAddLayer:newLayer];
                 
@@ -495,7 +493,9 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
             
             AGSLayer *graphicsLayer = layer.graphicsLayer;
             if (graphicsLayer) {
-                [self.mapView removeMapLayer:graphicsLayer];
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self.mapView removeMapLayer:graphicsLayer];
+                }];
             }
             
             layer.graphicsLayer = nil;
@@ -517,11 +517,13 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate {
     [self centerAtCoordinate:coordinate
-                    animated:NO];
+                    animated:YES];
 }
 
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
                   animated:(BOOL)animated {
+    
+    // Don't do anything if the map isn't loaded
     if (self.mapView.spatialReference) {
         [self.mapView centerAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate, self.mapView.spatialReference)
                            animated:animated];
