@@ -19,6 +19,7 @@
 @interface CalendarEventsViewController (Private)
 
 - (void)returnToToday;
+- (CGRect)contentFrame;
 
 // helper methods used in reloadView
 - (BOOL)canShowMap:(MITEventList *)listType;
@@ -259,6 +260,7 @@
     if (self.mapView) {
         self.mapView.events = events;
     }
+
     if ([self.tableView isKindOfClass:[EventListTableView class]]) {
         ((EventListTableView *)self.tableView).events = events;
     }
@@ -313,6 +315,23 @@
 }
 
 #pragma mark Redrawing logic and helper functions
+- (CGRect)contentFrame {
+	CGFloat yOffset = showScroller ? CGRectGetHeight(navScrollView.frame) : 0.0;
+	if ([self shouldShowDatePicker:activeEventList]) {
+		[self setupDatePicker];
+		yOffset += CGRectGetHeight(datePicker.frame) - 4.0; // 4.0 is height of transparent shadow under image
+	} else {
+        [datePicker removeFromSuperview];
+	}
+    
+    CGRect controllerBounds = self.view.bounds;
+    CGRect contentFrame = CGRectMake(CGRectGetMinX(controllerBounds),
+                                     CGRectGetMinY(controllerBounds) + yOffset,
+                                     CGRectGetWidth(controllerBounds),
+                                     CGRectGetHeight(controllerBounds) - yOffset);
+    
+    return contentFrame;
+}
 
 - (void)reloadView:(MITEventList *)listType {
 
@@ -332,19 +351,7 @@
         [self returnToToday];
 	}
 
-	CGFloat yOffset = showScroller ? CGRectGetHeight(navScrollView.frame) : 0.0;
-	if ([self shouldShowDatePicker:activeEventList]) {
-		[self setupDatePicker];
-		yOffset += CGRectGetHeight(datePicker.frame) - 4.0; // 4.0 is height of transparent shadow under image
-	} else {
-        [datePicker removeFromSuperview];
-	}
-
-    CGRect controllerBounds = self.view.bounds;
-    CGRect contentFrame = CGRectMake(CGRectGetMinX(controllerBounds),
-                                     CGRectGetMinY(controllerBounds) + yOffset,
-                                     CGRectGetWidth(controllerBounds),
-                                     CGRectGetHeight(controllerBounds) - yOffset);
+	CGRect contentFrame = [self contentFrame];
 	
 	// see if we need a mapview
 	if (![self canShowMap:activeEventList]) {
@@ -371,7 +378,6 @@
     }
 	
 	if (showList) {
-		
 		self.tableView = nil;
 		
 		if ([activeEventList.listID isEqualToString:@"categories"]) {
@@ -426,7 +432,7 @@
 		}
 		
 		self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-				
+
 		[self.view addSubview:self.tableView];
 		
 		self.navigationItem.rightBarButtonItem = [self canShowMap:activeEventList]
@@ -435,7 +441,7 @@
 										   target:self
 										   action:@selector(mapButtonToggled)] autorelease]
 		: nil;
-		
+
 		[self.mapView removeFromSuperview];
 	} else {
 		
