@@ -13,8 +13,6 @@
 static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Default";
 
 @interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate>
-@property(nonatomic, strong) NSOperationQueue *operationQueue;
-
 #pragma mark - Basemap Management (Declaration)
 @property(assign) BOOL coreLayersLoaded;
 @property(strong) NSMutableDictionary *coreLayers;
@@ -23,7 +21,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 #pragma mark - User Layer Management (Declaration)
 @property(strong) NSMutableArray *userLayers;
-@property(nonatomic, strong) NSOperationQueue *userLayerQueue;
+@property(nonatomic, strong) NSOperationQueue *mapOperationQueue;
 
 // Used when getting/setting the map region before the map layer loads
 // If the map is not loaded, the cached region will contain the last
@@ -40,19 +38,20 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (void)initView;
 - (void)coreLayersDidFinishLoading;
+- (AGSEnvelope*)defaultVisibleArea;
+- (AGSEnvelope*)defaultMaximumEnvelope;
 @end
 
 @implementation MGSMapView
 @dynamic mapSets;
 @dynamic showUserLocation;
 
-
 + (MGSZoomLevel)zoomLevelForMKCoordinateSpan:(MKCoordinateSpan)span {
-	return log(360.0f / span.longitudeDelta) / log(2.0f) - 1;
+	return log2(360.0f / span.longitudeDelta) - 1;
 }
 
 + (MKCoordinateSpan)coordinateSpanForZoomLevel:(MGSZoomLevel)zoomLevel {
-    CGFloat longitudeDelta = 360.0f / pow(2.0f, zoomLevel + 1);
+    CGFloat longitudeDelta = 360.0f / pow(2.0,zoomLevel + 1);
     CGFloat latitudeDelta = longitudeDelta;
     
     MKCoordinateSpan span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta);
@@ -87,12 +86,9 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (void)commonInit {
     self.queryTasks = [NSMutableDictionary dictionary];
     
-    self.operationQueue = [[NSOperationQueue alloc] init];
-    self.operationQueue.maxConcurrentOperationCount = 1;
-    
-    self.userLayerQueue = [[NSOperationQueue alloc] init];
-    self.userLayerQueue.maxConcurrentOperationCount = 1;
-    self.userLayerQueue.suspended = YES;
+    self.mapOperationQueue = [[NSOperationQueue alloc] init];
+    self.mapOperationQueue.maxConcurrentOperationCount = 1;
+    self.mapOperationQueue.suspended = YES;
     
     self.userLayers = [NSMutableArray array];
     
@@ -208,23 +204,18 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 #pragma mark - Dynamic Properties
 - (MGSZoomLevel)zoomLevel {
-    __block MGSZoomLevel result = -CGFLOAT_MAX;
-    NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
-        if (self.mapView.spatialReference) {
-            AGSEnvelope *envelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:self.mapView.visibleAreaEnvelope
-                                                                                           toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
-            
-            MKCoordinateSpan span = MKCoordinateSpanMake(envelope.ymax - envelope.ymin,
-                                                         envelope.xmax - envelope.xmin);
-            result = [MGSMapView zoomLevelForMKCoordinateSpan:span];
-        }
-    }];
+    MGSZoomLevel zoomLevel = -1;
+    MKCoordinateSpan span = MKCoordinateSpanMake(0, 0);
     
-    [self.userLayerQueue addOperations:@[operation]
-                     waitUntilFinished:YES];
-
+    // Return a sane (but useless) value if the map view
+    // has not been initialized yet
+    if (self.mapView.spatialReference) {
+        AGSEnvelope *envelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:self.mapView.visibleAreaEnvelope
+                                                                                       toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
+    } else {
+    }
     
-    return result;
+    return zoomLevel;
 }
 
 - (void)setZoomLevel:(MGSZoomLevel)zoomLevel {
@@ -285,7 +276,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         self.mapRegionWasSet = YES;
         self.cachedRegion = mapRegion;
 
-        [self.userLayerQueue addOperationWithBlock:^{
+        [self.mapOperationQueue addOperationWithBlock:^{
             AGSMutableEnvelope *envelope = [[AGSMutableEnvelope alloc] initWithSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
 
 
@@ -336,7 +327,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     if (newLayer.mapView != nil) {
         DDLogError(@"attempting to add layer '%@' but it is already owned by a map view", newLayer.name);
     } else {
-        [self.userLayerQueue addOperationWithBlock:^{
+        [self.mapOperationQueue addOperationWithBlock:^{
             if ([self containsLayer:newLayer] == NO) {
                 if (newLayer.graphicsLayer == nil) {
                     [newLayer loadGraphicsLayer];
@@ -365,7 +356,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (void)moveLayer:(MGSLayer*)aLayer
           toIndex:(NSUInteger)newIndex {
     if ([self containsLayer:aLayer] && (aLayer.mapView == self)) {
-        [self.userLayerQueue addOperationWithBlock:^{
+        [self.mapOperationQueue addOperationWithBlock:^{
             NSUInteger currentIndex = [self.userLayers indexOfObject:aLayer];
             
             if (currentIndex == NSNotFound) {
@@ -416,7 +407,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     } else if (aIndex == NSNotFound) {
         DDLogError(@"attempting to add layer '%@' to illegal index NSNotFound", newLayer.name);
     } else {
-        [self.userLayerQueue addOperationWithBlock:^{
+        [self.mapOperationQueue addOperationWithBlock:^{
             if ([self containsLayer:newLayer] == NO) {
                 // If the index we are trying to insert at
                 // is out of bounds, assume that the user wants
@@ -463,7 +454,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     if (newLayer.mapView != nil) {
         DDLogError(@"attempting to add layer '%@' but it is already owned by another map view", newLayer.name);
     } else {
-        [self.userLayerQueue addOperationWithBlock:^{
+        [self.mapOperationQueue addOperationWithBlock:^{
             if (foregroundLayer && [self containsLayer:foregroundLayer] == NO) {
                 DDLogError(@"attempting to add layer '%@' behind an invalid layer (%@)",newLayer.name,foregroundLayer.name);
             } else if ([self containsLayer:newLayer] == NO) {
@@ -480,7 +471,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 - (void)removeLayer:(MGSLayer *)layer {
-    [self.userLayerQueue addOperationWithBlock:^{
+    [self.mapOperationQueue addOperationWithBlock:^{
         if (layer && [self containsLayer:layer]) {
             [self willRemoveLayer:layer];
             
@@ -606,12 +597,8 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 - (void)coreLayersDidFinishLoading {
-    if (CLLocationCoordinate2DIsValid(self.userMapRegion.center)) {
-        self.mapRegion = self.userMapRegion;
-    }
-    
     [self didFinishLoadingMapView];
-    self.userLayerQueue.suspended = NO;
+    self.mapOperationQueue.suspended = NO;
 }
 @end
 
