@@ -722,7 +722,7 @@
 	CalendarMapView *calMapView = (CalendarMapView *)mapView;
 
 	for (event in calMapView.events) {
-		if (event.eventID == annotation.event.eventID) {
+		if ([event.eventID isEqualToNumber:annotation.event.eventID]) {
 			break;
 		}
 	}
