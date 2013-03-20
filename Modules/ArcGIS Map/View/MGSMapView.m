@@ -12,7 +12,7 @@
 
 static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Default";
 
-@interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate>
+@interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate>
 #pragma mark - Basemap Management (Declaration)
 @property(assign) BOOL coreLayersLoaded;
 @property(strong) NSMutableDictionary *coreLayers;
