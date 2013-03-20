@@ -231,21 +231,21 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     self.mapRegion = region;
 }
 
-- (void)setShowUserLocation:(BOOL)showUserLocation {
-    if (self.mapView.locationDisplay.dataSource == nil) {
-        self.mapView.locationDisplay.dataSource = [[AGSCLLocationManagerLocationDisplayDataSource alloc] init];
-    }
-    
+- (void)setShowUserLocation:(BOOL)showUserLocation
+{
     if (showUserLocation) {
-        [self.mapView.locationDisplay.dataSource start];
+        [self.mapView.locationDisplay startDataSource];
         self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
-    } else {
-        [self.mapView.locationDisplay.dataSource stop];
+        self.mapView.locationDisplay.dataSource.delegate = self;
     }
-    
+    else {
+        [self.mapView.locationDisplay stopDataSource];
+    }
+
 }
 
-- (BOOL)showUserLocation {
+- (BOOL)showUserLocation
+{
     return self.mapView.locationDisplay.dataSource && self.mapView.locationDisplay.isDataSourceStarted;
 }
 
@@ -867,4 +867,66 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     }
 }
 
+- (void)userLocationDidUpdate:(CLLocation*)location {
+    if ([self.delegate respondsToSelector:@selector(mapView:userLocationDidUpdate:)]) {
+        [self.delegate mapView:self
+         userLocationDidUpdate:location];
+    }
+}
+
+
+- (void)userLocationUpdateFailedWithError:(NSError*)error {
+    if ([self.delegate respondsToSelector:@selector(mapView:userLocationUpdateFailedWithError:)]) {
+        [self.delegate mapView:self
+        userLocationUpdateFailedWithError:error];
+    }
+}
+@end
+
+@implementation MGSMapView (AGSLocationDisplayDataSourceDelegate)
+- (void)locationDisplayDataSource:(id <AGSLocationDisplayDataSource>)dataSource
+                 didFailWithError:(NSError *)error
+{
+    DDLogVerbose(@"Failed to locate user: %@", error);
+    [self userLocationUpdateFailedWithError:error];
+
+    // Forward the notification to the location display because
+    // the SDK doesn't allow us to receive notifications from the
+    // location data source and still automatically display
+    // a marker on the map.
+    [self.mapView.locationDisplay locationDisplayDataSource:dataSource
+                                           didFailWithError:error];
+}
+
+- (void)locationDisplayDataSource:(id <AGSLocationDisplayDataSource>)dataSource
+             didUpdateWithHeading:(double)heading
+{
+    [self.mapView.locationDisplay locationDisplayDataSource:dataSource
+                                       didUpdateWithHeading:heading];
+}
+
+- (void)locationDisplayDataSource:(id <AGSLocationDisplayDataSource>)dataSource
+            didUpdateWithLocation:(AGSLocation *)location
+{
+    CLLocation *clLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinateFromAGSPoint(location.point)
+                                                           altitude:0.0
+                                                 horizontalAccuracy:location.accuracy
+                                                   verticalAccuracy:location.accuracy
+                                                             course:location.course
+                                                              speed:location.velocity
+                                                          timestamp:[NSDate date]];
+    [self userLocationDidUpdate:clLocation];
+    [self.mapView.locationDisplay locationDisplayDataSource:dataSource
+                                  didUpdateWithLocation:location];
+}
+
+- (void)locationDisplayDataSourceStarted:(id <AGSLocationDisplayDataSource>)dataSource
+{
+    [self.mapView.locationDisplay locationDisplayDataSourceStarted:dataSource];
+}
+
+- (void)locationDisplayDataSourceStopped:(id <AGSLocationDisplayDataSource>)dataSource
+{
+    [self.mapView.locationDisplay locationDisplayDataSourceStopped:dataSource];
+}
 @end
