@@ -70,6 +70,8 @@
     self.legacyRoutes = [NSMutableArray array];
     self.routeLayers = [NSMutableArray array];
     
+    self.minimumRegionSize = 100.0;
+    
     [self setNeedsLayout];
 }
 
@@ -198,6 +200,17 @@
     
 	double latDelta = maxLat - minLat;
 	double lonDelta = maxLon - minLon;
+    
+    MKCoordinateRegion minRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake(0, 0),
+                                                                    self.minimumRegionSize, self.minimumRegionSize);
+    
+    if (latDelta < minRegion.span.latitudeDelta) {
+        latDelta = minRegion.span.latitudeDelta;
+    }
+    
+    if (lonDelta < minRegion.span.longitudeDelta) {
+        lonDelta = minRegion.span.longitudeDelta;
+    }
     
 	MKCoordinateSpan span = MKCoordinateSpanMake(latDelta + latDelta / 4, lonDelta + lonDelta / 4);
 	MKCoordinateRegion region = MKCoordinateRegionMake(center, span);
@@ -426,6 +439,17 @@
     
 	double latDelta = maxLat - minLat;
 	double lonDelta = maxLon - minLon;
+    
+    MKCoordinateRegion minRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake(0, 0),
+                                                                      self.minimumRegionSize, self.minimumRegionSize);
+    
+    if (latDelta < minRegion.span.latitudeDelta) {
+        latDelta = minRegion.span.latitudeDelta;
+    }
+    
+    if (lonDelta < minRegion.span.longitudeDelta) {
+        lonDelta = minRegion.span.longitudeDelta;
+    }
     
 	MKCoordinateSpan span = MKCoordinateSpanMake(latDelta + latDelta / 4, lonDelta + lonDelta / 4);
 	MKCoordinateRegion region = MKCoordinateRegionMake(center, span);

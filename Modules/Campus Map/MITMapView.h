@@ -42,6 +42,7 @@
 @property (nonatomic, readonly, weak) MGSMapView *mapView;
 @property (nonatomic) BOOL stayCenteredOnUserLocation;
 @property (nonatomic) CGFloat zoomLevel;
+@property (nonatomic) CLLocationDistance minimumRegionSize;
 
 #pragma mark MKMapView forwarding
 @property (nonatomic) CLLocationCoordinate2D centerCoordinate;
