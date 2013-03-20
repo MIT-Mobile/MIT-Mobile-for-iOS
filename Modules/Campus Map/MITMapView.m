@@ -523,9 +523,7 @@
         MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
         
         if (adaptor.calloutAnnotationView) {
-            if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)])
-            {
-                MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
+            if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)]) {
                 [self.delegate mapView:self annotationViewCalloutAccessoryTapped:adaptor.calloutAnnotationView];
             }
         }
@@ -573,7 +571,20 @@
     
     return nil;
 }
-     
+
+- (void)mapView:(MGSMapView*)mapView userLocationDidUpdate:(CLLocation*)location {
+    if ([self.delegate respondsToSelector:@selector(mapView:didUpdateUserLocation:)]) {
+        [self.delegate mapView:self
+         didUpdateUserLocation:location];
+    }
+}
+
+- (void)mapView:(MGSMapView*)mapView userLocationUpdateFailedWithError:(NSError*)error {
+    if ([self.delegate respondsToSelector:@selector(locateUserFailed:)]) {
+        [self.delegate locateUserFailed:self];
+    }
+}
+
 #pragma mark - Delegate Forwarding
 - (void)mapViewRegionWillChange {
     if ([self.delegate respondsToSelector:@selector(mapViewRegionWillChange:)]) {
