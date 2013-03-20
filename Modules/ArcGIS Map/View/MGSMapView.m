@@ -221,29 +221,14 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 #pragma mark - Dynamic Properties
 - (MGSZoomLevel)zoomLevel {
-    AGSEnvelope *visibleEnvelope = nil;
-    if (self.mapView.spatialReference) {
-        visibleEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:self.mapView.visibleAreaEnvelope
-                                                                                       toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
-    } else {
-        visibleEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultVisibleArea]
-                                                                                       toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
-    }
-    
-    MKCoordinateSpan span = MKCoordinateSpanMake(visibleEnvelope.ymax - visibleEnvelope.ymin,
-                                                 visibleEnvelope.xmax - visibleEnvelope.xmin);
-    
-    return [MGSMapView zoomLevelForMKCoordinateSpan:span];
+    return [MGSMapView zoomLevelForMKCoordinateSpan:self.mapRegion.span];
 }
 
 - (void)setZoomLevel:(MGSZoomLevel)zoomLevel {
-    if (self.mapView.spatialReference) {
-        MKCoordinateSpan span = [MGSMapView coordinateSpanForZoomLevel:zoomLevel];
-        AGSPoint *center = (AGSPoint*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:self.mapView.visibleAreaEnvelope.center
-                                                                               toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
-        self.mapRegion = MKCoordinateRegionMake(CLLocationCoordinate2DMake(center.y, center.x),
-                                                span);
-    }
+    MKCoordinateRegion region = self.mapRegion;
+    region.span = [MGSMapView coordinateSpanForZoomLevel:zoomLevel];
+    
+    self.mapRegion = region;
 }
 
 - (void)setShowUserLocation:(BOOL)showUserLocation {
@@ -267,21 +252,36 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (MKCoordinateRegion)mapRegion {
     if (self.mapRegionWasSet) {
         return self.cachedRegion;
-    } else if(self.mapView.spatialReference != nil) {
-        AGSPolygon *polygon = [self.mapView visibleArea];
-    
-        AGSPolygon *polygonWgs84 = (AGSPolygon *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polygon
-                                                                                          toSpatialReference:[AGSSpatialReference spatialReferenceWithWKID:WKID_WGS84]];
-    
-    
-        return MKCoordinateRegionMake(CLLocationCoordinate2DMake(polygonWgs84.envelope.center.y, polygonWgs84.envelope.center.x),
-                                  MKCoordinateSpanMake(polygonWgs84.envelope.height, polygonWgs84.envelope.height));
-    } else {
-        return MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake(CGFLOAT_MAX, CGFLOAT_MAX), 0, 0);
     }
+
+    AGSEnvelope *regionEnvelope = nil;
+    
+    if(self.mapView.spatialReference != nil) {
+        regionEnvelope = [self.mapView visibleAreaEnvelope];
+        
+        if ([regionEnvelope isEmpty] || ([regionEnvelope isValid] == NO)) {
+            regionEnvelope = [self defaultVisibleArea];
+        }
+    } else {
+        regionEnvelope = [self defaultVisibleArea];
+    }
+    
+    regionEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:regionEnvelope
+                                                           toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
+    
+    MKCoordinateSpan span = MKCoordinateSpanMake(fabs(regionEnvelope.ymax - regionEnvelope.ymin),
+                                                 fabs(regionEnvelope.xmax - regionEnvelope.xmin));
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(regionEnvelope.center.y, regionEnvelope.center.x);
+    
+    return MKCoordinateRegionMake(center, span);
 }
 
 - (void)setMapRegion:(MKCoordinateRegion)mapRegion {
+    [self setMapRegion:mapRegion
+              animated:NO];
+}
+
+- (void)setMapRegion:(MKCoordinateRegion)mapRegion animated:(BOOL)animated {
     BOOL mapRegionIsValid = ((CLLocationCoordinate2DIsValid(mapRegion.center)) &&
                               (mapRegion.span.latitudeDelta > 0) &&
                               (mapRegion.span.longitudeDelta > 0));
@@ -316,13 +316,13 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                 if ([projectedGeometry isValid] && ([projectedGeometry isEmpty] == NO)) {
                         [self.mapView zoomToGeometry:projectedGeometry
                                          withPadding:0.0
-                                            animated:YES];
+                                            animated:animated];
                 } else {
                     // We should never get here but, just in case, make sure we react
                     // sanely if something went horribly wrong when re-projecting the envelope
                     [self.mapView zoomToGeometry:[self defaultVisibleArea]
                                          withPadding:0.0
-                                            animated:YES];
+                                            animated:animated];
                 }
             }];
         }];
@@ -521,13 +521,12 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
-                  animated:(BOOL)animated {
+                  animated:(BOOL)animated
+{
+    MKCoordinateSpan span = [MGSMapView coordinateSpanForZoomLevel:self.zoomLevel];
     
-    // Don't do anything if the map isn't loaded
-    if (self.mapView.spatialReference) {
-        [self.mapView centerAtPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate, self.mapView.spatialReference)
-                           animated:animated];
-    }
+    [self setMapRegion:MKCoordinateRegionMake(coordinate, span)
+              animated:animated];
 }
 
 

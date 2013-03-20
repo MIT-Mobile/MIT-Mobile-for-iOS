@@ -51,6 +51,7 @@ typedef CGFloat MGSZoomLevel;
 
 - (BOOL)isLayerHidden:(NSString*)layerIdentifier;
 - (void)setHidden:(BOOL)hidden forLayer:(MGSLayer*)layer;
+- (void)setMapRegion:(MKCoordinateRegion)mapRegion animated:(BOOL)animated;
 
 #pragma mark - Callouts
 - (BOOL)showCalloutForAnnotation:(id<MGSAnnotation>)annotation;
