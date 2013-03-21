@@ -543,40 +543,43 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 }
 
 #pragma mark - Callouts
-- (BOOL)showCalloutForAnnotation:(id <MGSAnnotation>)annotation {
-    if (self.calloutAnnotation) {
-        [self hideCallout];
-    }
-    
-    if ([self shouldShowCalloutForAnnotation:annotation]) {
-        MGSLayer *layer = [self layerContainingAnnotation:annotation];
-        AGSGraphic *graphic = [layer graphicForAnnotation:annotation];
-        UIView *customView = [self calloutViewForAnnotation:annotation];
-        
-        if (customView) {
-            self.mapView.callout.customView = customView;
-        } else if (graphic.infoTemplateDelegate == nil) {
-            MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-            self.mapView.callout.title = safeAnnotation.title;
-            self.mapView.callout.detail = safeAnnotation.detail;
-            self.mapView.callout.image = safeAnnotation.calloutImage;
+- (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
+{
+    [self.mapOperationQueue addOperationWithBlock:^{
+        if (self.calloutAnnotation) {
+            [self hideCallout];
         }
         
-        [self willShowCalloutForAnnotation:annotation];
-        self.calloutAnnotation = annotation;
-        
-        self.mapView.callout.delegate = self;
-        [self.mapView.callout showCalloutAtPoint:nil
-                                      forGraphic:graphic
-                                        animated:YES];
-        [self didShowCalloutForAnnotation:annotation];
-    }
-    
-    
-    return NO;
+        if ([self shouldShowCalloutForAnnotation:annotation]) {
+            MGSLayer *layer = [self layerContainingAnnotation:annotation];
+            AGSGraphic *graphic = [layer graphicForAnnotation:annotation];
+            UIView *customView = [self calloutViewForAnnotation:annotation];
+            
+            if (customView) {
+                self.mapView.callout.customView = customView;
+            } else if (graphic.infoTemplateDelegate == nil) {
+                MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+                self.mapView.callout.title = safeAnnotation.title;
+                self.mapView.callout.detail = safeAnnotation.detail;
+                self.mapView.callout.image = safeAnnotation.calloutImage;
+            }
+            
+            self.calloutAnnotation = annotation;
+            
+            self.mapView.callout.delegate = self;
+            
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self willShowCalloutForAnnotation:annotation];
+                [self.mapView.callout showCalloutAtPoint:nil forGraphic:graphic
+                                                animated:YES];
+                [self didShowCalloutForAnnotation:annotation];
+            }];
+        }
+    }];
 }
 
-- (void)hideCallout {
+- (void)hideCallout
+{
     [self.mapView.callout dismiss];
     [self didDismissCalloutForAnnotation:self.calloutAnnotation];
     self.calloutAnnotation = nil;

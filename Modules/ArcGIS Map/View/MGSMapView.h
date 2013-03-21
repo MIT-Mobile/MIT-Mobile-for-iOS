@@ -54,6 +54,6 @@ typedef CGFloat MGSZoomLevel;
 - (void)setMapRegion:(MKCoordinateRegion)mapRegion animated:(BOOL)animated;
 
 #pragma mark - Callouts
-- (BOOL)showCalloutForAnnotation:(id<MGSAnnotation>)annotation;
+- (void)showCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 - (void)hideCallout;
 @end
