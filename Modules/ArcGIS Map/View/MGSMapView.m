@@ -290,7 +290,9 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         // If the region is invalid, don't change anything
 #warning TODO: Make sure that doing nothing is a valid choice. Should we zoom to default instead?
         DDLogError(@"attempting to set a empty or invalid region.");
-    } else {
+    }
+    else {
+        animated = self.coreLayersLoaded && animated;
         self.mapRegionWasSet = YES;
         self.cachedRegion = mapRegion;
 
