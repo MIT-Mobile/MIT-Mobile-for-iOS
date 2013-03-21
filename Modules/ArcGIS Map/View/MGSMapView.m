@@ -637,9 +637,13 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
     if (self.mapRegionWasSet == NO) {
         AGSEnvelope *visibleEnvelope = (AGSEnvelope *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultVisibleArea]
-                                                                                           toSpatialReference:mapView.spatialReference];
-        [mapView zoomToEnvelope:visibleEnvelope
-                       animated:YES];
+                                                                                               toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
+        
+        MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinateFromAGSPoint(visibleEnvelope.center),
+                                                           MKCoordinateSpanMake(fabs(visibleEnvelope.ymax - visibleEnvelope.ymin),
+                                                                                fabs(visibleEnvelope.xmax - visibleEnvelope.xmin)));
+        [self setMapRegion:region
+                  animated:NO];
     }
 }
 @end
