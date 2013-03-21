@@ -68,6 +68,7 @@
 		2C3676B513C5F6B1003CB7A4 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */; };
 		2C3676B813C5F854003CB7A4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */; };
 		2C3AFD31166518CB00392AE3 /* MGSUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3AFD30166518CB00392AE3 /* MGSUtility.m */; };
+		2C4D799F16FB4B0F001AAC81 /* MGSLayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C4D799E16FB4B0F001AAC81 /* MGSLayerManager.m */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -501,6 +502,8 @@
 		2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		2C3AFD2F166518CB00392AE3 /* MGSUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSUtility.h; sourceTree = "<group>"; };
 		2C3AFD30166518CB00392AE3 /* MGSUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSUtility.m; sourceTree = "<group>"; };
+		2C4D799D16FB4B0F001AAC81 /* MGSLayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSLayerManager.h; sourceTree = "<group>"; };
+		2C4D799E16FB4B0F001AAC81 /* MGSLayerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSLayerManager.m; sourceTree = "<group>"; };
 		2C544B9B1358A24400685545 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
 		2C544B9C1358A24400685545 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		2C5B30461371D54500870E6D /* FacilitiesUserLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesUserLocationViewController.h; sourceTree = "<group>"; };
@@ -1355,6 +1358,8 @@
 				2CB25D0B16DBE4A20039E811 /* MGSLayer+Subclass.h */,
 				2C101A741653F054000E40E3 /* MGSLayer.h */,
 				2C101A751653F054000E40E3 /* MGSLayer.m */,
+				2C4D799D16FB4B0F001AAC81 /* MGSLayerManager.h */,
+				2C4D799E16FB4B0F001AAC81 /* MGSLayerManager.m */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -3014,6 +3019,7 @@
 				2C014A8B16CC828B00B4BB7D /* MGSSafeAnnotation.m in Sources */,
 				2CBD6A0116D3C6FC002B482F /* MITMapAnnotationCalloutView.m in Sources */,
 				2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */,
+				2C4D799F16FB4B0F001AAC81 /* MGSLayerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
