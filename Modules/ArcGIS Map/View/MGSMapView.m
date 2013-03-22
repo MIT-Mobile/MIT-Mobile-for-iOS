@@ -143,8 +143,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                                                                     message:@"Failed to initialize the map."
                                                                    delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
                 [alertView show];
-            }
-            else if ([content isKindOfClass:[NSDictionary class]]) {
+            } else if ([content isKindOfClass:[NSDictionary class]]) {
                 NSDictionary *response = (NSDictionary *) content;
                 self.coreMaps = response[@"basemaps"];
 
@@ -401,8 +400,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
             if (currentIndex == NSNotFound) {
                 DDLogError(@"attempting to move layer '%@' to illegal index NSNotFound", aLayer.name);
-            }
-            else if (currentIndex != newIndex) {
+            } else if (currentIndex != newIndex) {
 
                 // Make sure we check to see if the index
                 // we are inserting at is still valid and
@@ -415,8 +413,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
                 // hierarchy, not crash.
                 if (newIndex >= [self.userLayers count]) {
                     insertIndex = [self.userLayers count];
-                }
-                else if (currentIndex < newIndex) {
+                } else if (currentIndex < newIndex) {
                     // The new index will be shifted by 1 toward 0
                     // since we are deleting the layer a few lines up
                     --insertIndex;
@@ -449,8 +446,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 {
     if (newLayer.mapView != nil) {
         DDLogError(@"attempting to add layer '%@' but it is already owned by a map view", newLayer.name);
-    }
-    else if (aIndex == NSNotFound) {
+    } else if (aIndex == NSNotFound) {
         DDLogError(@"attempting to add layer '%@' to illegal index NSNotFound", newLayer.name);
     }
     else {
@@ -507,8 +503,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         [self.mapOperationQueue addOperationWithBlock:^{
             if (foregroundLayer && [self containsLayer:foregroundLayer] == NO) {
                 DDLogError(@"attempting to add layer '%@' behind an invalid layer (%@)", newLayer.name, foregroundLayer.name);
-            }
-            else if ([self containsLayer:newLayer] == NO) {
+            } else if ([self containsLayer:newLayer] == NO) {
                 NSUInteger fgIndex = [self.userLayers indexOfObject:foregroundLayer];
                 [self insertLayer:newLayer
                           atIndex:fgIndex];
