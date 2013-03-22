@@ -575,9 +575,8 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     DDLogVerbose(@"Spatial Reference: %@", self.mapView.spatialReference);
 
     if (self.mapView.spatialReference) {
-        return [self.mapView toScreenPoint:AGSPointWithReferenceFromCLLocationCoordinate(coordinate, self.mapView.spatialReference)];
-    }
-    else {
+        return [self.mapView toScreenPoint:AGSPointFromCLLocationCoordinate2DInSpatialReference(coordinate, self.mapView.spatialReference)];
+    } else {
         return CGPointZero;
     }
 }
@@ -686,7 +685,7 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
         AGSEnvelope *visibleEnvelope = (AGSEnvelope *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultVisibleArea]
                                                                                                toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
 
-        MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinateFromAGSPoint(visibleEnvelope.center),
+        MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DFromAGSPoint(visibleEnvelope.center),
                                                            MKCoordinateSpanMake(fabs(visibleEnvelope.ymax - visibleEnvelope.ymin),
                                                                                 fabs(visibleEnvelope.xmax - visibleEnvelope.xmin)));
         [self setMapRegion:region
@@ -990,7 +989,7 @@ userLocationUpdateFailedWithError:error];
 - (void)locationDisplayDataSource:(id <AGSLocationDisplayDataSource>)dataSource
             didUpdateWithLocation:(AGSLocation *)location
 {
-    CLLocation *clLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinateFromAGSPoint(location.point)
+    CLLocation *clLocation = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DFromAGSPoint(location.point)
                                                            altitude:0.0
                                                  horizontalAccuracy:location.accuracy
                                                    verticalAccuracy:location.accuracy
