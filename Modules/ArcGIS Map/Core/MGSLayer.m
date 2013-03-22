@@ -273,11 +273,11 @@
                 markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:[UIImage imageNamed:@"map/map_pin_complete"]];
                 options = MGSMarkerOptionsMake(CGPointMake(0.0, 8.0), CGPointMake(2.0, 16.0));
             }
-            
+
             markerSymbol.leaderPoint = options.hotspot;
             markerSymbol.offset = options.offset;
             
-            annotationGraphic = [[AGSGraphic alloc] initWithGeometry:AGSPointFromCLLocationCoordinate(annotation.coordinate)
+            annotationGraphic = [[AGSGraphic alloc] initWithGeometry:AGSPointFromCLLocationCoordinate2DInSpatialReference(annotation.coordinate, reference)
                                                               symbol:markerSymbol
                                                           attributes:[NSMutableDictionary dictionary]
                                                 infoTemplateDelegate:nil];
@@ -294,7 +294,7 @@
                     CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
                     
                     if (CLLocationCoordinate2DIsValid(point)) {
-                        AGSPoint *agsPoint = AGSPointFromCLLocationCoordinate(point);
+                        AGSPoint *agsPoint = AGSPointFromCLLocationCoordinate2D(point);
                         [polyline addPointToPath:agsPoint];
                     } else {
                         DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
@@ -314,7 +314,12 @@
                 
                 AGSSimpleLineSymbol *lineSymbol = [AGSSimpleLineSymbol simpleLineSymbolWithColor:(lineColor ? lineColor : [UIColor greenColor])
                                                                                            width:((lineWidth >= 0.5) ? lineWidth : 2.0)];
-                
+
+                if (reference != nil) {
+                    polyline = (AGSMutablePolyline *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polyline
+                                                                                              toSpatialReference:reference];
+                }
+
                 annotationGraphic = [[AGSGraphic alloc] initWithGeometry:polyline
                                                                   symbol:lineSymbol
                                                               attributes:[NSMutableDictionary dictionary]
@@ -328,13 +333,14 @@
         case MGSAnnotationPolygon: {
             if ([annotation respondsToSelector:@selector(points)]) {
                 AGSMutablePolygon *polygon = [[AGSMutablePolygon alloc] init];
+                polygon.spatialReference = [AGSSpatialReference wgs84SpatialReference];
                 [polygon addRingToPolygon];
                 
                 for (NSValue *pointValue in [annotation points]) {
                     CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
                     
                     if (CLLocationCoordinate2DIsValid(point)) {
-                        AGSPoint *agsPoint = AGSPointFromCLLocationCoordinate(point);
+                        AGSPoint *agsPoint = AGSPointFromCLLocationCoordinate2D(point);
                         [polygon addPointToRing:agsPoint];
                     } else {
                         DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
@@ -374,6 +380,11 @@
                 AGSSimpleFillSymbol *fillSymbol = [AGSSimpleFillSymbol simpleFillSymbolWithColor:fillColor
                                                                                     outlineColor:strokeColor];
                 fillSymbol.outline.width = lineWidth;
+
+                if (reference != nil) {
+                    polygon = (AGSMutablePolygon *) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polygon
+                                                                                            toSpatialReference:reference];
+                }
                 
                 annotationGraphic = [[AGSGraphic alloc] initWithGeometry:polygon
                                                                   symbol:fillSymbol
@@ -475,7 +486,7 @@
     
     [self didReloadMapLayer];
     
-    DDLogVerbose(@"using spatial reference '%@', checking %d graphics", spatialReference, [self.graphicsLayer.graphics count]);
+    DDLogVerbose(@"using spatial reference '%@', checking %d graphics", spatialReference, [graphics count]);
     
     NSUInteger reprojectionCount = 0;
     for (AGSGraphic *graphic in graphics) {
