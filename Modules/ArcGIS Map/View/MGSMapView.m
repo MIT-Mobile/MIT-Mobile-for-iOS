@@ -586,36 +586,38 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
 {
     [self.mapOperationQueue addOperationWithBlock:^{
-        if (self.calloutAnnotation) {
-            [self hideCallout];
-        }
-
-        if ([self shouldShowCalloutForAnnotation:annotation]) {
-            MGSLayer *layer = [self layerContainingAnnotation:annotation];
-            AGSGraphic *graphic = [layer graphicForAnnotation:annotation];
-            UIView *customView = [self calloutViewForAnnotation:annotation];
-
-            if (customView) {
-                self.mapView.callout.customView = customView;
-            }
-            else if (graphic.infoTemplateDelegate == nil) {
-                MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-                self.mapView.callout.title = safeAnnotation.title;
-                self.mapView.callout.detail = safeAnnotation.detail;
-                self.mapView.callout.image = safeAnnotation.calloutImage;
+        // The outer block is to make sure the map is in a consistent state.
+        // The inner block is requried since we are touching UI elements
+        // and that cannot be safely done on a background thread;
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (self.calloutAnnotation) {
+                [self hideCallout];
             }
 
-            self.calloutAnnotation = annotation;
+            if ([self shouldShowCalloutForAnnotation:annotation]) {
+                MGSLayer *layer = [self layerContainingAnnotation:annotation];
+                AGSGraphic *graphic = [layer graphicForAnnotation:annotation];
+                UIView *customView = [self calloutViewForAnnotation:annotation];
 
-            self.mapView.callout.delegate = self;
+                if (customView) {
+                    self.mapView.callout.customView = customView;
+                } else if (graphic.infoTemplateDelegate == nil) {
+                    MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+                    self.mapView.callout.title = safeAnnotation.title;
+                    self.mapView.callout.detail = safeAnnotation.detail;
+                    self.mapView.callout.image = safeAnnotation.calloutImage;
+                }
 
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                self.calloutAnnotation = annotation;
+
+                self.mapView.callout.delegate = self;
+
                 [self willShowCalloutForAnnotation:annotation];
                 [self.mapView.callout showCalloutAtPoint:nil forGraphic:graphic
                                                 animated:YES];
                 [self didShowCalloutForAnnotation:annotation];
-            }];
-        }
+            }
+        }];
     }];
 }
 
@@ -852,34 +854,35 @@ static NSString *const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 
 - (UIView *)calloutViewForAnnotation:(id <MGSAnnotation>)annotation
 {
+    if ([[NSThread currentThread] isMainThread] == NO) {
+        DDLogError(@"attempting to perform UI actions on background thread, expect failure");
+    }
+
     UIView *view = nil;
     MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
 
-    if (annotation == nil) {
-        return nil;
+    if (annotation) {
+        if ([self.delegate respondsToSelector:@selector(mapView:calloutViewForAnnotation:)]) {
+            view = [self.delegate mapView:self calloutViewForAnnotation:annotation];
+        }
+
+        // If the view is still nil, create a default one!
+        if (view == nil) {
+            MGSCalloutView *calloutView = [[MGSCalloutView alloc] init];
+
+            calloutView.titleLabel.text = safeAnnotation.title;
+            calloutView.detailLabel.text = safeAnnotation.detail;
+            calloutView.imageView.image = safeAnnotation.calloutImage;
+
+            // This view could potentially be hanging around for a long time,
+            // we don't want strong references to the layer or the annotation
+            __weak MGSMapView *weakSelf = self;
+            __weak id <MGSAnnotation> weakAnnotation = annotation;
+            calloutView.accessoryBlock = ^(id sender) {
+                [weakSelf calloutDidReceiveTapForAnnotation:weakAnnotation];
+            };
+        }
     }
-
-    if ([self.delegate respondsToSelector:@selector(mapView:calloutViewForAnnotation:)]) {
-        view = [self.delegate mapView:self calloutViewForAnnotation:annotation];
-    }
-
-    // If the view is still nil, create a default one!
-    if (view == nil) {
-        MGSCalloutView *calloutView = [[MGSCalloutView alloc] init];
-
-        calloutView.titleLabel.text = safeAnnotation.title;
-        calloutView.detailLabel.text = safeAnnotation.detail;
-        calloutView.imageView.image = safeAnnotation.calloutImage;
-
-        // This view could potentially be hanging around for a long time,
-        // we don't want strong references to the layer or the annotation
-        __weak MGSMapView *weakSelf = self;
-        __weak id <MGSAnnotation> weakAnnotation = annotation;
-        calloutView.accessoryBlock = ^(id sender) {
-            [weakSelf calloutDidReceiveTapForAnnotation:weakAnnotation];
-        };
-    }
-
     return view;
 }
 
