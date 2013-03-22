@@ -49,7 +49,7 @@ typedef CGFloat MGSZoomLevel;
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated;
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
 
-- (BOOL)isLayerHidden:(NSString*)layerIdentifier;
+- (BOOL)isLayerHidden:(MGSLayer*)layerIdentifier;
 - (void)setHidden:(BOOL)hidden forLayer:(MGSLayer*)layer;
 - (void)setMapRegion:(MKCoordinateRegion)mapRegion animated:(BOOL)animated;
 
