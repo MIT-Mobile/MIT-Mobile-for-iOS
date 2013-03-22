@@ -2,7 +2,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "MGSAnnotation.h"
 
-@interface MGSSafeAnnotation : NSObject <MGSAnnotation>
+@interface MGSSafeAnnotation : NSObject <MGSAnnotation, NSCopying>
 @property (nonatomic,readonly,strong) id<MGSAnnotation> annotation;
 
 @property (nonatomic,readonly) CLLocationCoordinate2D coordinate;
