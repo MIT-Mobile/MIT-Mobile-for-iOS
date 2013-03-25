@@ -11,6 +11,6 @@ typedef enum _MGSGraphicType {
     MGSGraphicStop
 } MGSGraphicType;
 
-FOUNDATION_EXPORT AGSPoint* AGSPointFromCLLocationCoordinate(CLLocationCoordinate2D coord);
-FOUNDATION_EXPORT AGSPoint* AGSPointWithReferenceFromCLLocationCoordinate(CLLocationCoordinate2D coord, AGSSpatialReference *targetReference);
-FOUNDATION_EXPORT CLLocationCoordinate2D CLLocationCoordinateFromAGSPoint(AGSPoint *point);
+FOUNDATION_EXPORT AGSPoint* AGSPointFromCLLocationCoordinate2D(CLLocationCoordinate2D coord);
+FOUNDATION_EXPORT AGSPoint* AGSPointFromCLLocationCoordinate2DInSpatialReference(CLLocationCoordinate2D coord, AGSSpatialReference *targetReference);
+FOUNDATION_EXPORT CLLocationCoordinate2D CLLocationCoordinate2DFromAGSPoint(AGSPoint *point);
