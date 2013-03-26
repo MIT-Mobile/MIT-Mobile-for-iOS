@@ -8,14 +8,18 @@
 @interface MGSLayerManager ()
 @property(nonatomic, strong) MGSLayer* layer;
 @property(nonatomic, strong) AGSGraphicsLayer* graphicsLayer;
-@property(nonatomic, strong) NSSet *cachedAnnotations;
-@property(nonatomic, readonly) AGSSpatialReference *spatialReference;
+@property(nonatomic, strong) NSMutableSet *cachedAnnotations;
 
-// Tracks any added MGSAnnotation objects and their 
+@property(nonatomic, readonly) AGSSpatialReference *spatialReference;
 @property(nonatomic, strong) NSMutableDictionary *annotationMap;
+
+// Tracks the annotations which are created from pre-existing graphics
+// in the graphics layer. An example of this would be a feature layer
+@property(nonatomic, strong) NSMutableSet *featureGraphics;
 
 - (AGSGraphicsLayer*)createGraphicsLayer;
 - (AGSGraphic*)createGraphicForAnnotation:(id <MGSAnnotation>)annotation;
+- (BOOL)isFeatureGraphic:(id)graphic;
 @end
 
 @implementation MGSLayerManager
@@ -28,6 +32,7 @@
     if (self) {
         self.layer = layer;
         self.annotationMap = [NSMutableDictionary dictionary];
+        self.featureGraphics = [NSMutableSet set];
     }
 
     return self;
@@ -68,22 +73,61 @@
         [self.graphicsLayer removeGraphic:graphic];
         [self.annotationMap removeObjectForKey:annotation];
     }
+    
+    if (annotation) {
+        MGSSafeAnnotation *guardedAnnotation = nil;
+        if ([annotation isKindOfClass:[MGSSafeAnnotation class]]) {
+            guardedAnnotation = (MGSSafeAnnotation*) annotation;
+        } else {
+            guardedAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+        }
+        
+        if (graphic) {
+            self.annotationMap[guardedAnnotation] = graphic;
+        } else {
+            [self.annotationMap removeObjectForKey:guardedAnnotation];
+        }
+    }
 }
 
 - (AGSGraphic*)graphicForAnnotation:(id <MGSAnnotation>)annotation
 {
-
-}
-
-
-- (void)setAnnotation:(id<MGSAnnotation>)annotation forGraphic:(AGSGraphic*)graphic
-{
+    AGSGraphic *graphic = nil;
     
+    if (annotation) {
+        graphic = self.annotationMap[annotation];
+    }
+    
+    return graphic;
 }
 
 - (id <MGSAnnotation>)annotationForGraphic:(AGSGraphic*)graphic
 {
+    NSArray *values = nil;
+    
+    if (graphic) {
+        values = [self.annotationMap allKeysForObject:graphic];
+    }
+    
+    if ([values count]) {
+        return values[0];
+    } else {
+        return nil;
+    }
+}
 
+- (BOOL)isFeatureGraphic:(id)graphicOrAnnotation {
+    AGSGraphic *testGraphic = nil;
+    
+    if ([graphicOrAnnotation isKindOfClass:[AGSGraphic class]]) {
+        testGraphic = (AGSGraphic*) graphicOrAnnotation;
+    } else if ([graphicOrAnnotation conformsToProtocol:@protocol(MGSAnnotation)]) {
+        id<MGSAnnotation> annotation = (id<MGSAnnotation>) graphicOrAnnotation;
+        testGraphic = self.annotationMap[annotation];
+    }
+    
+    
+    return (testGraphic && [self.featureGraphics containsObject:testGraphic]);
 }
 
 - (void)syncAnnotations {
@@ -92,17 +136,39 @@
     }
 
     NSSet *currentAnnotations = [NSSet setWithArray:self.layer.annotations];
+    NSSet *cachedAnnotations = [self.cachedAnnotations count] ? self.cachedAnnotations : [NSSet set];
     
-    NSMutableSet *deletedAnnotations = [NSMutableSet setWithSet:self.cachedAnnotations];
+    // Handle deleted annotations
+    NSMutableSet *deletedGraphics = [NSMutableSet set];
+    NSMutableSet *deletedAnnotations = [NSMutableSet setWithSet:cachedAnnotations];
     [deletedAnnotations minusSet:currentAnnotations];
     
     for (id<MGSAnnotation> annotation in deletedAnnotations) {
+        AGSGraphic *graphic = self.annotationMap[annotation];
         
+        if (graphic) {
+            [deletedGraphics addObject:graphic];
+            [self.annotationMap removeObjectForKey:annotation];
+        }
     }
     
-    
     NSMutableSet *addedAnnotations = [NSMutableSet setWithSet:currentAnnotations];
-    [addedAnnotations minusSet:self.cachedAnnotations];
+    [addedAnnotations minusSet:cachedAnnotations];
+    NSMutableSet *addedGraphics = [NSMutableSet set];
+    for (id<MGSAnnotation> annotation in addedAnnotations) {
+        AGSGraphic *graphic = [self createGraphicForAnnotation:annotation];
+        if (graphic) {
+            MGSSafeAnnotation *wrappedAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+            self.annotationMap[wrappedAnnotation] = graphic;
+            [addedGraphics addObject:graphic];
+        }
+    }
+    
+    [self.graphicsLayer removeGraphics:[deletedGraphics allObjects]];
+    [self.graphicsLayer addGraphics:[addedGraphics allObjects]];
+    [self.graphicsLayer refresh];
+    
+    [self.cachedAnnotations setSet:currentAnnotations];
 }
 
 - (AGSGraphicsLayer*)createGraphicsLayer
@@ -111,7 +177,7 @@
         return [self.delegate layerManager:self
                      graphicsLayerForLayer:self.layer];
     } else {
-
+        return [[AGSGraphicsLayer alloc] init];
     }
 }
 
