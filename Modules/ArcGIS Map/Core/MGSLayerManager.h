@@ -35,6 +35,8 @@
 @property (nonatomic,weak) id<MGSLayerManagerDelegate> delegate;
 
 - (id)initWithLayer:(MGSLayer*)layer;
+
+- (void)syncAnnotations;
 - (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation;
 - (id<MGSAnnotation>)annotationForGraphic:(AGSGraphic*)graphic;
 @end
