@@ -26,7 +26,7 @@
 
 - (void) loadModuleHomeController
 {
-    DiningMapListViewController *controller = [[[DiningMapListViewController alloc] init] autorelease];
+    DiningMapListViewController *controller = [[DiningMapListViewController alloc] init];
     self.moduleHomeController = controller;
 }
 

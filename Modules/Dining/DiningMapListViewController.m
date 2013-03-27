@@ -7,18 +7,17 @@
 //
 
 #import "DiningMapListViewController.h"
-#import "MITSegmentControl.h"
-#import "MITMapView.h"
 
-@interface DiningMapListViewController ()<UITableViewDataSource, UITableViewDelegate> {
-    IBOutlet UITableView * listView;
-    IBOutlet UISegmentedControl * segmentControl;
-    IBOutlet MITMapView * mapView;
-    
-    BOOL isAnimating;
-    BOOL isShowingMap;
-}
 
+#import "DiningMenuCompareViewController.h"
+
+@interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate>
+
+@property (nonatomic, strong) IBOutlet UITableView * listView;
+@property (nonatomic, strong) IBOutlet UISegmentedControl * segmentControl;
+@property (nonatomic, strong) IBOutlet MITMapView *mapView;
+@property (nonatomic, assign) BOOL isAnimating;
+@property (nonatomic, assign) BOOL isShowingMap;
 
 @end
 
@@ -52,10 +51,26 @@
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
     
-    [segmentControl addTarget:listView action:@selector(reloadData) forControlEvents:UIControlEventValueChanged];
+    [_segmentControl addTarget:_listView action:@selector(reloadData) forControlEvents:UIControlEventValueChanged];
     [self styleSegmentControl];
     
     [self layoutListState];
+}
+
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation
+{
+    if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeLeft) {
+        return YES;
+    }
+    return NO;
+}
+
+- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration
+{
+    DiningMenuCompareViewController *vc = [[DiningMenuCompareViewController alloc] init];
+    vc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    
+    [self presentViewController:vc animated:YES completion:NULL];
 }
 
 - (void) styleSegmentControl
@@ -71,33 +86,33 @@
 
 - (void) toggleMapList:(id)sender
 {
-    if (!isAnimating) {
+    if (!_isAnimating) {
         NSLog(@"Toggle the Map List");
-        self.navigationItem.rightBarButtonItem.title = (isShowingMap)? @"List" : @"Map";
+        self.navigationItem.rightBarButtonItem.title = (_isShowingMap)? @"List" : @"Map";
         
-        if (isShowingMap) {
+        if (_isShowingMap) {
             [UIView animateWithDuration:0.4f animations:^{
-                listView.alpha = 1;
-                mapView.alpha = 0;
+                _listView.alpha = 1;
+                _mapView.alpha = 0;
                 [self layoutListState];
-                isAnimating = YES;
+                _isAnimating = YES;
             } completion:^(BOOL finished) {
-                isAnimating = NO;
+                _isAnimating = NO;
             }];
             
         } else {
-            mapView.alpha = 0;
+            _mapView.alpha = 0;
             [UIView animateWithDuration:0.4f animations:^{
-                listView.alpha = 0;
-                mapView.alpha = 1;
+                _listView.alpha = 0;
+                _mapView.alpha = 1;
                 [self layoutMapState];
-                isAnimating = YES;
+                _isAnimating = YES;
             } completion:^(BOOL finished) {
-                isAnimating = NO;
+                _isAnimating = NO;
             }];
         }
         // toggle boolean flaggit 
-        isShowingMap = !isShowingMap;
+        _isShowingMap = !_isShowingMap;
     }
 }
 
@@ -105,27 +120,27 @@
 
 - (void) layoutListState
 {
-    segmentControl.center = CGPointMake(self.view.center.x, 30);
+    _segmentControl.center = CGPointMake(self.view.center.x, 30);
     
-    listView.hidden = NO;
-    listView.frame = CGRectMake(0, CGRectGetMaxY(segmentControl.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(segmentControl.frame));
+    _listView.hidden = NO;
+    _listView.frame = CGRectMake(0, CGRectGetMaxY(_segmentControl.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(_segmentControl.frame));
     
-    mapView.hidden = YES;
+    _mapView.hidden = YES;
 }
 
 - (void) layoutMapState
 {
-    segmentControl.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 30);
-    listView.hidden = YES;
+    _segmentControl.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 30);
+    _listView.hidden = YES;
     
-    mapView.hidden = NO;
-    mapView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+    _mapView.hidden = NO;
+    _mapView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
 }
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSArray *data = ([segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
+    NSArray *data = ([_segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
     
     return [data count];
 }
@@ -137,7 +152,7 @@
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"reuseIdentifier"] autorelease];
     }
     
-    NSArray *data = ([segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
+    NSArray *data = ([_segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
     cell.textLabel.text = [data objectAtIndex:indexPath.row];
     
     return cell;
