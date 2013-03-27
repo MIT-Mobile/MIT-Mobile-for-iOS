@@ -267,7 +267,7 @@
 {
     if ([self.currentAnnotation isEqual:annotation])
     {
-        [self.mapView hideCallout];
+        [self.mapView dismissCallout];
         self.currentAnnotation = nil;
     }
 }

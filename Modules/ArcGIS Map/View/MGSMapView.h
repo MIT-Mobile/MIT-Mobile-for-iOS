@@ -58,5 +58,5 @@ typedef CGFloat MGSZoomLevel;
 
 #pragma mark - Callouts
 - (void)showCalloutForAnnotation:(id<MGSAnnotation>)annotation;
-- (void)hideCallout;
+- (void)dismissCallout;
 @end

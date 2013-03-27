@@ -192,7 +192,7 @@
 - (void)deleteAnnotation:(id <MGSAnnotation>)annotation {
     if (annotation && [self.layerAnnotations containsObject:annotation]) {
         if ([self.mapView.calloutAnnotation isEqual:annotation]) {
-            [self.mapView hideCallout];
+            [self.mapView dismissCallout];
         }
         
         MGSLayerAnnotation *layerAnnotation = [self layerAnnotationForAnnotation:annotation];
@@ -376,7 +376,7 @@
                 if ([annotation respondsToSelector:@selector(lineWidth)]) {
                     lineWidth = [annotation lineWidth];
                 }
-                
+
                 AGSSimpleFillSymbol *fillSymbol = [AGSSimpleFillSymbol simpleFillSymbolWithColor:fillColor
                                                                                     outlineColor:strokeColor];
                 fillSymbol.outline.width = lineWidth;
