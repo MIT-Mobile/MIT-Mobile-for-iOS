@@ -46,11 +46,14 @@ typedef CGFloat MGSZoomLevel;
 - (void)removeLayer:(MGSLayer*)layer;
 
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate;
-- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate animated:(BOOL)animated;
+- (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
+                  animated:(BOOL)animated;
+
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
 
 - (BOOL)isLayerHidden:(MGSLayer*)layerIdentifier;
-- (void)setHidden:(BOOL)hidden forLayer:(MGSLayer*)layer;
+- (void)setHidden:(BOOL)hidden
+         forLayer:(MGSLayer*)layer;
 - (void)setMapRegion:(MKCoordinateRegion)mapRegion animated:(BOOL)animated;
 
 #pragma mark - Callouts
