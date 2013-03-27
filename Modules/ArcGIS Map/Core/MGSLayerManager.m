@@ -9,8 +9,6 @@
 @property(nonatomic, strong) MGSLayer* layer;
 @property(nonatomic, strong) AGSGraphicsLayer* graphicsLayer;
 @property(nonatomic, strong) NSMutableSet *cachedAnnotations;
-
-@property(nonatomic, readonly) AGSSpatialReference *spatialReference;
 @property(nonatomic, strong) NSMutableDictionary *annotationMap;
 
 // Tracks the annotations which are created from pre-existing graphics
@@ -41,17 +39,33 @@
 #pragma mark - Dynamic Properties
 - (AGSSpatialReference*)spatialReference
 {
-    AGSSpatialReference *reference = [AGSSpatialReference webMercatorSpatialReference];
+    AGSSpatialReference *reference = nil;
     
-    if (self.graphicsLayer.spatialReferenceStatusValid == NO) {
-        if (self.defaultSpatialReference) {
-            reference = self.defaultSpatialReference;
-        }
-    } else {
+    if ([self.graphicsLayer spatialReferenceStatusValid]) {
         reference = self.graphicsLayer.spatialReference;
     }
     
     return reference;
+}
+
+- (BOOL)loadGraphicsLayerWithSpatialReference:(AGSSpatialReference*)spatialReference
+{
+    AGSGraphicsLayer *layer = nil;
+
+    if (spatialReference == nil) {
+        return false;
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(layerManager:graphicsLayerForLayer:withSpatialReference:)]) {
+        layer = [self.delegate layerManager:self
+                     graphicsLayerForLayer:self.layer
+                      withSpatialReference:spatialReference];
+    } else {
+        layer = [[AGSGraphicsLayer alloc] init];
+    }
+    
+    self.graphicsLayer = layer;
+    return (layer != nil);
 }
 
 - (AGSGraphicsLayer*)graphicsLayer
@@ -69,8 +83,8 @@
 - (void)setGraphic:(AGSGraphic*)graphic forAnnotation:(id<MGSAnnotation>)annotation
 {
     if (self.annotationMap[annotation]) {
-        AGSGraphic *graphic = self.annotationMap[annotation];
-        [self.graphicsLayer removeGraphic:graphic];
+        AGSGraphic *existingGraphic = self.annotationMap[annotation];
+        [self.graphicsLayer removeGraphic:existingGraphic];
         [self.annotationMap removeObjectForKey:annotation];
     }
     
@@ -122,8 +136,7 @@
     if ([graphicOrAnnotation isKindOfClass:[AGSGraphic class]]) {
         testGraphic = (AGSGraphic*) graphicOrAnnotation;
     } else if ([graphicOrAnnotation conformsToProtocol:@protocol(MGSAnnotation)]) {
-        id<MGSAnnotation> annotation = (id<MGSAnnotation>) graphicOrAnnotation;
-        testGraphic = self.annotationMap[annotation];
+        testGraphic = [self graphicForAnnotation:(id<MGSAnnotation>)graphicOrAnnotation];
     }
     
     
@@ -169,16 +182,6 @@
     [self.graphicsLayer refresh];
     
     [self.cachedAnnotations setSet:currentAnnotations];
-}
-
-- (AGSGraphicsLayer*)createGraphicsLayer
-{
-    if ([self.delegate respondsToSelector:@selector(layerManager:graphicsLayerForLayer:)]) {
-        return [self.delegate layerManager:self
-                     graphicsLayerForLayer:self.layer];
-    } else {
-        return [[AGSGraphicsLayer alloc] init];
-    }
 }
 
 - (AGSGraphic*)createGraphicForAnnotation:(id <MGSAnnotation>)annotation
