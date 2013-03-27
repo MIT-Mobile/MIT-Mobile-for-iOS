@@ -7,21 +7,19 @@
 #import "MITMobileWebAPI.h"
 #import "MITMapRoute.h"
 
-@class MapLevel;
-@class MITMapUserLocation;
 @class MITMapView;
 @class MITMapSearchResultAnnotation;
-@class RouteView;
 @class MGSMapView;
 @class MITMapAnnotationView;
 
 @protocol MITMapViewDelegate<NSObject>
-
 @optional
+- (void)mapViewDidFinishLoading:(MITMapView*)mapView;
 
 // MKMapView-like methods
 - (void)mapView:(MITMapView *)mapView annotationSelected:(id <MKAnnotation>)annotation;
 - (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)location;
+- (void)locateUserFailed:(MITMapView *)mapView;
 
 // MKMapViewDelegate forwarding
 - (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation;
@@ -33,7 +31,6 @@
 
 // any touch on the map will invoke this.
 - (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch;
-
 @end
 
 
@@ -42,6 +39,7 @@
 @property (nonatomic, readonly, weak) MGSMapView *mapView;
 @property (nonatomic) BOOL stayCenteredOnUserLocation;
 @property (nonatomic) CGFloat zoomLevel;
+@property (nonatomic) CLLocationDistance minimumRegionSize;
 
 #pragma mark MKMapView forwarding
 @property (nonatomic) CLLocationCoordinate2D centerCoordinate;

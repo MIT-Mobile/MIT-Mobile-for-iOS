@@ -30,9 +30,5 @@
     self.moduleHomeController = controller;
 }
 
-- (void)dealloc {
-    [super dealloc];
-}
-
 
 @end

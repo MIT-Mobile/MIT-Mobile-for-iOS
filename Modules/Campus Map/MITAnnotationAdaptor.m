@@ -12,7 +12,7 @@
     {
         self.mkAnnotation = annotation;
     }
-    
+
     return self;
 }
 
@@ -48,7 +48,7 @@
         [legacyAnnotationView sizeToFit];
         MGSMarkerOptions options = self.markerOptions;
         
-        CGRect annotationFrame = CGRectZero;
+        CGRect annotationFrame;
         BOOL frameIsInvalid = ((CGAffineTransformEqualToTransform(legacyAnnotationView.transform, CGAffineTransformIdentity) == NO) ||
                                CGRectIsNull(legacyAnnotationView.frame) ||
                                CGRectIsInfinite(legacyAnnotationView.frame) ||
@@ -66,7 +66,7 @@
         CGFloat yOffset = annotationFrame.origin.x + (annotationFrame.size.width / 2.0);
         options.offset = CGPointMake((CGFloat) round(xOffset), (CGFloat) round(yOffset));
         self.markerOptions = options;
-        
+
         if (frameIsInvalid == NO) {
             DDLogError(@"attempting to render view with an invalid frame");
         }

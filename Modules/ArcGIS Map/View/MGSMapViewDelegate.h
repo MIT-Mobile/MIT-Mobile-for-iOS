@@ -21,4 +21,7 @@
 
 - (void)mapView:(MGSMapView*)mapView willRemoveLayer:(MGSLayer*)layer;
 - (void)mapView:(MGSMapView*)mapView didRemoveLayer:(MGSLayer*)layer;
+
+- (void)mapView:(MGSMapView*)mapView userLocationDidUpdate:(CLLocation*)location;
+- (void)mapView:(MGSMapView*)mapView userLocationUpdateFailedWithError:(NSError*)error;
 @end

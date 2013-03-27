@@ -70,6 +70,8 @@
     self.legacyRoutes = [NSMutableArray array];
     self.routeLayers = [NSMutableArray array];
     
+    self.minimumRegionSize = 100.0;
+    
     [self setNeedsLayout];
 }
 
@@ -140,15 +142,11 @@
 }
 
 - (CGFloat)zoomLevel {
-	return log(360.0f / self.region.span.longitudeDelta) / log(2.0f) - 1;
+    return (CGFloat)self.mapView.zoomLevel;
 }
 
 - (void)setZoomLevel:(CGFloat)zoomLevel {
-    CGFloat longitudeDelta = 360.0f / pow(2.0f, zoomLevel + 1);
-    CGFloat latitudeDelta = longitudeDelta;
-    MKCoordinateRegion region = self.region;
-    region.span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta);
-    self.region = region;
+    self.mapView.zoomLevel = zoomLevel;
 }
 
 #pragma mark - MKMapView Forwarding Stubs
@@ -175,16 +173,49 @@
 
 - (MKCoordinateRegion)regionForAnnotations:(NSArray *)annotations
 {
-    NSMutableSet *regionAnnotations = [NSMutableSet set];
-    for (MITAnnotationAdaptor *adaptor in self.annotationLayer.annotations)
-    {
-        if ([annotations containsObject:adaptor.mkAnnotation])
-        {
-            [regionAnnotations addObject:adaptor];
-        }
+	double minLat = 90;
+	double maxLat = -90;
+	double minLon = 180;
+	double maxLon = -180;
+    
+    for (id<MKAnnotation> anAnnotation in annotations) {
+        CLLocationCoordinate2D coordinate = anAnnotation.coordinate;
+		if (coordinate.latitude < minLat) {
+			minLat = coordinate.latitude;
+		}
+		if (coordinate.latitude > maxLat) {
+			maxLat = coordinate.latitude;
+		}
+		if(coordinate.longitude < minLon) {
+			minLon = coordinate.longitude;
+		}
+		if (coordinate.longitude > maxLon) {
+			maxLon = coordinate.longitude;
+		}
     }
     
-    return [MGSLayer regionForAnnotations:regionAnnotations];
+	CLLocationCoordinate2D center;
+	center.latitude = minLat + (maxLat - minLat) / 2;
+	center.longitude = minLon + (maxLon - minLon) / 2;
+    
+	double latDelta = maxLat - minLat;
+	double lonDelta = maxLon - minLon;
+    
+    MKCoordinateRegion minRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake(0, 0),
+                                                                    self.minimumRegionSize, self.minimumRegionSize);
+    
+    if (latDelta < minRegion.span.latitudeDelta) {
+        latDelta = minRegion.span.latitudeDelta;
+    }
+    
+    if (lonDelta < minRegion.span.longitudeDelta) {
+        lonDelta = minRegion.span.longitudeDelta;
+    }
+    
+	MKCoordinateSpan span = MKCoordinateSpanMake(latDelta + latDelta / 4, lonDelta + lonDelta / 4);
+	MKCoordinateRegion region = MKCoordinateRegionMake(center, span);
+    
+	return region;
 }
 
 - (void)selectAnnotation:(id<MKAnnotation>)annotation
@@ -381,19 +412,49 @@
 
 - (MKCoordinateRegion)regionForRoute:(id<MITMapRoute>)route
 {
-    NSMutableSet *coordinates = [NSMutableSet set];
+    double minLat = 90;
+	double maxLat = -90;
+	double minLon = 180;
+	double maxLon = -180;
     
-    for (CLLocation *location in [route pathLocations]) {
-        [coordinates addObject:[NSValue valueWithCLLocationCoordinate:location.coordinate]];
+    for (CLLocation *aLocation in route.pathLocations) {
+        CLLocationCoordinate2D coordinate = aLocation.coordinate;
+		if (coordinate.latitude < minLat) {
+			minLat = coordinate.latitude;
+		}
+		if (coordinate.latitude > maxLat) {
+			maxLat = coordinate.latitude;
+		}
+		if(coordinate.longitude < minLon) {
+			minLon = coordinate.longitude;
+		}
+		if (coordinate.longitude > maxLon) {
+			maxLon = coordinate.longitude;
+		}
     }
     
-    if ([route respondsToSelector:@selector(annotations)]) {
-        for (id<MKAnnotation> annotation in [route annotations]) {
-            [coordinates addObject:[NSValue valueWithCLLocationCoordinate:[annotation coordinate]]];
-        }
+	CLLocationCoordinate2D center;
+	center.latitude = minLat + (maxLat - minLat) / 2;
+	center.longitude = minLon + (maxLon - minLon) / 2;
+    
+	double latDelta = maxLat - minLat;
+	double lonDelta = maxLon - minLon;
+    
+    MKCoordinateRegion minRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake(0, 0),
+                                                                      self.minimumRegionSize, self.minimumRegionSize);
+    
+    if (latDelta < minRegion.span.latitudeDelta) {
+        latDelta = minRegion.span.latitudeDelta;
     }
-
-    return MKCoordinateRegionForCoordinates(coordinates);
+    
+    if (lonDelta < minRegion.span.longitudeDelta) {
+        lonDelta = minRegion.span.longitudeDelta;
+    }
+    
+	MKCoordinateSpan span = MKCoordinateSpanMake(latDelta + latDelta / 4, lonDelta + lonDelta / 4);
+	MKCoordinateRegion region = MKCoordinateRegionMake(center, span);
+    
+	return region;
 }
 
 - (void)removeAllRoutes
@@ -462,9 +523,7 @@
         MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
         
         if (adaptor.calloutAnnotationView) {
-            if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)])
-            {
-                MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
+            if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)]) {
                 [self.delegate mapView:self annotationViewCalloutAccessoryTapped:adaptor.calloutAnnotationView];
             }
         }
@@ -512,7 +571,20 @@
     
     return nil;
 }
-     
+
+- (void)mapView:(MGSMapView*)mapView userLocationDidUpdate:(CLLocation*)location {
+    if ([self.delegate respondsToSelector:@selector(mapView:didUpdateUserLocation:)]) {
+        [self.delegate mapView:self
+         didUpdateUserLocation:location];
+    }
+}
+
+- (void)mapView:(MGSMapView*)mapView userLocationUpdateFailedWithError:(NSError*)error {
+    if ([self.delegate respondsToSelector:@selector(locateUserFailed:)]) {
+        [self.delegate locateUserFailed:self];
+    }
+}
+
 #pragma mark - Delegate Forwarding
 - (void)mapViewRegionWillChange {
     if ([self.delegate respondsToSelector:@selector(mapViewRegionWillChange:)]) {

@@ -528,6 +528,8 @@
 }
 
 - (void)willAddAnnotations:(NSArray *)annotations {
+    [self willChangeValueForKey:@"annotations"];
+    
     if ([self.delegate respondsToSelector:@selector(mapLayer:willAddAnnotations:)]) {
         [self.delegate mapLayer:self
              willAddAnnotations:annotations];
@@ -535,6 +537,8 @@
 }
 
 - (void)didAddAnnotations:(NSArray *)annotations {
+    [self didChangeValueForKey:@"annotations"];
+    
     if ([self.delegate respondsToSelector:@selector(mapLayer:didAddAnnotations:)]) {
         [self.delegate mapLayer:self
               didAddAnnotations:annotations];
@@ -542,6 +546,8 @@
 }
 
 - (void)willRemoveAnnotations:(NSArray *)annotations {
+    [self willChangeValueForKey:@"annotations"];
+    
     if ([self.delegate respondsToSelector:@selector(mapLayer:willRemoveAnnotations:)]) {
         [self.delegate mapLayer:self
           willRemoveAnnotations:annotations];
@@ -549,6 +555,8 @@
 }
 
 - (void)didRemoveAnnotations:(NSArray *)annotations {
+    [self didChangeValueForKey:@"annotations"];
+    
     if ([self.delegate respondsToSelector:@selector(mapLayer:didRemoveAnnotations:)]) {
         [self.delegate mapLayer:self
            didRemoveAnnotations:annotations];

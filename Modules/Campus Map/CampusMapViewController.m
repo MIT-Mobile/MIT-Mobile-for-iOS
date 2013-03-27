@@ -412,12 +412,12 @@
 
 -(void) geoLocationTouched:(id)sender
 {
-    if (self.userLocation) {
+    if ((self.userLocation == nil) && (self.mapView.showsUserLocation == NO)) {
+        self.mapView.showsUserLocation = YES;
+    } else if (self.userLocation) {
         CLLocationCoordinate2D center = self.userLocation.coordinate;
         self.mapView.region = MKCoordinateRegionMake(center, DEFAULT_MAP_SPAN);
-    }
-    
-    else {
+    } else {
         // messages to be shown when user taps locate me button off campus
         NSString *message = nil;
         if (arc4random() & 1) {
@@ -775,9 +775,14 @@
 }
 
 - (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)userLocation {
+    CLLocation *oldLocation = self.userLocation;
 
     if ([userLocation isNearCampus]) {
         self.userLocation = userLocation;
+    }
+
+    if (oldLocation == nil) {
+        [self geoLocationTouched:nil];
     }
 }
 

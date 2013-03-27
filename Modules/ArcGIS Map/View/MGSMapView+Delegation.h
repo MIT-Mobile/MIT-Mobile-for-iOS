@@ -8,7 +8,6 @@
 
 @protocol MGSAnnotation;
 
-
 @interface MGSMapView (AGSMapViewCalloutDelegate)
 - (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForGraphic:(AGSGraphic *)graphic;
 - (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForLocationDisplay:(AGSLocationDisplay *)ld;
@@ -38,12 +37,15 @@
 - (void)didClickAccessoryButtonForCallout:(AGSCallout *)callout;
 @end
 
-@interface MGSMapView (DelegateForwarding)
-- (void)didFinishLoadingMapView;
-- (void)willAddLayer:(MGSLayer *)layer;
-- (void)didAddLayer:(MGSLayer *)layer;
-- (void)willRemoveLayer:(MGSLayer *)layer;
-- (void)didRemoveLayer:(MGSLayer *)layer;
+@interface MGSMapView (AGSLocationDisplayDataSourceDelegate)
+- (void)locationDisplayDataSource:(id<AGSLocationDisplayDataSource>)dataSource
+                 didFailWithError:(NSError*)error;
+- (void)locationDisplayDataSource:(id<AGSLocationDisplayDataSource>)dataSource
+             didUpdateWithHeading:(double)heading;
+- (void)locationDisplayDataSource:(id<AGSLocationDisplayDataSource>)dataSource
+            didUpdateWithLocation:(AGSLocation*)location;
+- (void)locationDisplayDataSourceStarted:(id<AGSLocationDisplayDataSource>)dataSource;
+- (void)locationDisplayDataSourceStopped:(id<AGSLocationDisplayDataSource>)dataSource;
 @end
 
 @interface MGSMapView (DelegateHelpers)
@@ -59,4 +61,7 @@
 - (void)didAddLayer:(MGSLayer *)layer;
 - (void)willRemoveLayer:(MGSLayer *)layer;
 - (void)didRemoveLayer:(MGSLayer *)layer;
+
+- (void)userLocationDidUpdate:(CLLocation*)location;
+- (void)userLocationUpdateFailedWithError:(NSError*)error;
 @end
