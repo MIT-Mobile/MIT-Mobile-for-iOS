@@ -35,26 +35,25 @@ typedef CGFloat MGSZoomLevel;
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)basemapIdentifier;
 
 - (void)addLayer:(MGSLayer*)layer;
-- (void)insertLayer:(MGSLayer*)layer
-            atIndex:(NSUInteger)layerIndex;
-
+- (void)removeLayer:(MGSLayer*)layer;
 - (void)insertLayer:(MGSLayer*)layer
         behindLayer:(MGSLayer*)foregroundLayer;
 
 - (MGSLayer*)layerContainingAnnotation:(id<MGSAnnotation>)annotation;
 - (BOOL)containsLayer:(MGSLayer*)layer;
-- (void)removeLayer:(MGSLayer*)layer;
+- (void)refreshLayer:(MGSLayer*)layer;
 
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate;
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
                   animated:(BOOL)animated;
+- (void)setMapRegion:(MKCoordinateRegion)mapRegion
+            animated:(BOOL)animated;
 
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
 
 - (BOOL)isLayerHidden:(MGSLayer*)layerIdentifier;
 - (void)setHidden:(BOOL)hidden
          forLayer:(MGSLayer*)layer;
-- (void)setMapRegion:(MKCoordinateRegion)mapRegion animated:(BOOL)animated;
 
 #pragma mark - Callouts
 - (void)showCalloutForAnnotation:(id<MGSAnnotation>)annotation;

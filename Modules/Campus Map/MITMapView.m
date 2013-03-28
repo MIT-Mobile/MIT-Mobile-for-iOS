@@ -82,15 +82,7 @@
 
 - (void)refreshLayers
 {
-    [self.annotationLayer refreshLayer];
-    [self.routeLayers enumerateObjectsUsingBlock:^(MGSRouteLayer *layer, NSUInteger idx, BOOL *stop) {
-        id<MITMapRoute> route = self.legacyRoutes[idx];
-        
-        layer.lineColor = [route fillColor];
-        layer.lineWidth = [route lineWidth];
-    
-        [layer refreshLayer];
-    }];
+    [self.mapView refreshLayer:self.annotationLayer];
 }
 
 #pragma mark - Dynamic Properties

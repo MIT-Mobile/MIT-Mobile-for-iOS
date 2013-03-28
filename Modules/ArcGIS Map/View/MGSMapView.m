@@ -504,6 +504,9 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
     manager.graphicsLayer.visible = !hidden;
 }
 
+- (void)refreshLayer:(MGSLayer*)layer {
+    
+}
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     [self centerAtCoordinate:coordinate
