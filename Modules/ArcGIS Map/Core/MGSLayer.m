@@ -10,14 +10,17 @@
 
 
 @interface MGSLayer () <AGSLayerDelegate>
-@property (nonatomic,strong) NSMutableArray *layerAnnotations;
+@property (nonatomic,strong) NSMutableOrderedSet *layerAnnotations;
 
 - (void)insertAnnotation:(id<MGSAnnotation>)annotation atIndex:(NSUInteger)index;
+- (void)deleteAnnotations:(NSOrderedSet *)annotations
+     shouldNotifyDelegate:(BOOL)notifyDelegate;
+- (void)addAnnotations:(NSOrderedSet *)annotations
+  shouldNotifyDelegate:(BOOL)notifyDelegate;
 @end
 
 @implementation MGSLayer
 @dynamic annotations;
-@dynamic hasGraphicsLayer;
 
 #pragma mark - Class Methods
 
@@ -56,7 +59,7 @@
     
     if (self) {
         self.name = name;
-        self.layerAnnotations = [NSMutableArray array];
+        self.layerAnnotations = [[NSMutableOrderedSet alloc] init];
     }
     
     return self;
@@ -71,172 +74,90 @@
     [self addAnnotations:annotations];
 }
 
-- (NSArray *)annotations {
-    NSMutableArray *extAnnotations = [NSMutableArray array];
-    for (MGSLayerAnnotation *annotation in self.layerAnnotations) {
-        [extAnnotations addObject:annotation.annotation];
-    }
-    
-    return extAnnotations;
+- (NSOrderedSet *)annotations {
+    return [NSOrderedSet orderedSetWithOrderedSet:self.layerAnnotations];
 }
 
 #pragma mark - Public Methods
 - (void)addAnnotation:(id <MGSAnnotation>)annotation {
-    [self addAnnotations:@[ annotation ]];
+    [self addAnnotations:[NSOrderedSet orderedSetWithObject:annotation]
+    shouldNotifyDelegate:YES];
 }
 
 - (void)addAnnotations:(NSArray *)annotations {
-    NSMutableArray *newAnnotations = [NSMutableArray arrayWithArray:annotations];
-    [newAnnotations removeObjectsInArray:self.annotations];
-    
-    if ([newAnnotations count]) {
-        [self willAddAnnotations:newAnnotations];
-        
-        // Sort the add order of the annotations so they are added
-        // top to bottom (prevents higher markers from being overlayed
-        // on top of lower ones) and left to right
-        NSArray *sortedAnnotations = [newAnnotations sortedArrayUsingComparator:^NSComparisonResult(id <MGSAnnotation> obj1, id <MGSAnnotation> obj2) {
-            CLLocationCoordinate2D point1 = obj1.coordinate;
-            CLLocationCoordinate2D point2 = obj2.coordinate;
-            
-            if (point1.latitude > point2.latitude) {
-                return NSOrderedAscending;
-            }
-            else if (point1.latitude < point2.latitude) {
-                return NSOrderedDescending;
-            }
-            else if (point1.longitude > point2.longitude) {
-                return NSOrderedDescending;
-            }
-            else if (point1.longitude < point2.longitude) {
-                return NSOrderedDescending;
-            }
-            
-            return NSOrderedSame;
-        }];
-        
-        for (id <MGSAnnotation> annotation in sortedAnnotations) {
-            MGSLayerAnnotation *mapAnnotation = nil;
-            
-            if ([annotation isKindOfClass:[MGSLayerAnnotation class]]) {
-                mapAnnotation = (MGSLayerAnnotation *) annotation;
-                
-                // Make sure some other layer doesn't already have a claim on this
-                // annotation and, if one does, we need to create a new layer annotation
-                // which wraps the annotation we are working with
-                if ((mapAnnotation.layer != nil) && (mapAnnotation.layer != self)) {
-                    mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:mapAnnotation.annotation
-                                                                           graphic:nil];
-                }
-            }
-            
-            if (mapAnnotation == nil) {
-                mapAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
-                                                                       graphic:nil];
-            }
-            
-            mapAnnotation.layer = self;
-            
-            [self.layerAnnotations addObject:mapAnnotation];
-        }
-        
-        [self didAddAnnotations:newAnnotations];
-    }
+    [self addAnnotations:[NSOrderedSet orderedSetWithArray:annotations]
+    shouldNotifyDelegate:YES];
 }
 
-- (void)insertAnnotation:(id<MGSAnnotation>)annotation atIndex:(NSUInteger)index {
-    MGSLayerAnnotation *layerAnnotation = [self layerAnnotationForAnnotation:annotation];
-    if (layerAnnotation) {
-        [self.layerAnnotations removeObject:layerAnnotation];
-    } else {
-        [self willAddAnnotations:@[annotation]];
-        
-        if ([annotation isKindOfClass:[MGSLayerAnnotation class]]) {
-            MGSLayerAnnotation *existingAnnotation = (MGSLayerAnnotation *) annotation;
-            
-            // Make sure some other layer doesn't already have a claim on this
-            // annotation and, if one does, we need to create a new layer annotation
-            // which wraps the annotation we are working with
-            if ((existingAnnotation.layer != nil) && (existingAnnotation.layer != self)) {
-                layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:existingAnnotation.annotation
-                                                                         graphic:nil];
-            }
-        }
-        
-        if (layerAnnotation == nil) {
-            layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
-                                                                     graphic:nil];
-        }
-        
-        layerAnnotation.layer = self;
-        
-        [self didAddAnnotations:@[annotation]];
-    }
-    
-    [self.layerAnnotations insertObject:layerAnnotation
-                                atIndex:index];
-    
-}
-
-- (void)deleteAnnotation:(id <MGSAnnotation>)annotation {
-    if (annotation && [self.layerAnnotations containsObject:annotation]) {
-        if ([self.mapView.calloutAnnotation isEqual:annotation]) {
-            [self.mapView dismissCallout];
-        }
-        
-        MGSLayerAnnotation *layerAnnotation = [self layerAnnotationForAnnotation:annotation];
-        layerAnnotation.layer = nil;
-        [self.graphicsLayer removeGraphic:layerAnnotation.graphic];
-        [self.layerAnnotations removeObject:layerAnnotation];
-    }
-}
-
-- (void)deleteAnnotations:(NSArray *)annotations {
+- (void)addAnnotations:(NSOrderedSet *)annotations
+  shouldNotifyDelegate:(BOOL)notifyDelegate
+{
     if ([annotations count]) {
-        [self willRemoveAnnotations:annotations];
-        
-        for (id <MGSAnnotation> annotation in annotations) {
-            MGSLayerAnnotation *mapAnnotation = [self layerAnnotationForAnnotation:annotation];
-            
-            [self.layerAnnotations removeObject:mapAnnotation];
-            [self.graphicsLayer removeGraphic:mapAnnotation.graphic];
+
+        // Check out current annotations and delete any which
+        // are in the array of annotations we are adding.
+        // The logic here is that we are assuming that attempting
+        // to re-add an existing annotation will result in a
+        // refresh of that annotation
+        NSMutableOrderedSet* refreshedAnnotations = [self.layerAnnotations mutableCopy];
+        [refreshedAnnotations intersectSet:[annotations set]];
+
+        [self deleteAnnotations:refreshedAnnotations
+           shouldNotifyDelegate:NO];
+
+        if (notifyDelegate) {
+            [self willAddAnnotations:[annotations array]];
         }
-        
-        [self didRemoveAnnotations:annotations];
+
+        [self willChangeValueForKey:@"annotations"];
+        [self.layerAnnotations addObjectsFromArray:annotations];
+        [self didChangeValueForKey:@"annotations"];
+
+        if (notifyDelegate) {
+            [self didAddAnnotations:[annotations array]];
+        }
     }
 }
 
 - (void)deleteAllAnnotations {
-    [self deleteAnnotations:self.annotations];
+    [self deleteAnnotations:self.layerAnnotations
+       shouldNotifyDelegate:YES];
 }
 
-- (void)centerOnAnnotation:(id <MGSAnnotation>)annotation {
-    if ([self.annotations containsObject:annotation]) {
-        [self.mapView centerAtCoordinate:annotation.coordinate];
+- (void)deleteAnnotation:(id <MGSAnnotation>)annotation {
+    [self deleteAnnotations:[NSOrderedSet orderedSetWithObject:annotation]
+       shouldNotifyDelegate:YES];
+}
+
+- (void)deleteAnnotations:(NSArray *)annotations
+{
+    [self deleteAnnotations:[NSOrderedSet orderedSetWithArray:annotations]
+       shouldNotifyDelegate:YES];
+}
+
+- (void)deleteAnnotations:(NSOrderedSet *)annotations
+     shouldNotifyDelegate:(BOOL)notifyDelegate
+{
+    if ([annotations count]) {
+        NSMutableOrderedSet *deletedAnnotations = [annotations mutableCopy];
+        [deletedAnnotations intersectSet:[self.layerAnnotations set]];
+
+        if (notifyDelegate) {
+            [self willRemoveAnnotations:[deletedAnnotations array]];
+        }
+
+        [self willChangeValueForKey:@"annotations"];
+        [self.layerAnnotations minusOrderedSet:deletedAnnotations];
+        [self didChangeValueForKey:@"annotations"];
+
+        if (notifyDelegate) {
+            [self didRemoveAnnotations:[deletedAnnotations array]];
+        }
     }
 }
 
 - (MKCoordinateRegion)regionForAnnotations {
-    return [MGSLayer regionForAnnotations:[NSSet setWithArray:self.layerAnnotations]];
-}
-
-#pragma mark - Class Extension methods
-- (MGSLayerAnnotation *)layerAnnotationForAnnotation:(id <MGSAnnotation>)annotation {
-    __block void *layerAnnotation = nil;
-    
-    // Using OSAtomicCompareAndSwapPtrBarrier so we have atomic pointer
-    // assignments since the array is going to be enumerated concurrently
-    // and I'd rather not deal with odd race conditions since a standard
-    // if-nil-else is not atomic.
-    [self.layerAnnotations enumerateObjectsWithOptions:NSEnumerationConcurrent
-                                            usingBlock:^(MGSLayerAnnotation *obj, NSUInteger idx, BOOL *stop) {
-                                                if ([obj.annotation isEqual:annotation]) {
-                                                    (*stop) = YES;
-                                                    OSAtomicCompareAndSwapPtrBarrier(nil, (__bridge void *) (obj), &layerAnnotation);
-                                                }
-                                            }];
-    
-    return (__bridge MGSLayerAnnotation *) layerAnnotation;
+    return [MGSLayer regionForAnnotations:[self.layerAnnotations set]];
 }
 
 #pragma mark - Map Layer Delegation
@@ -250,7 +171,6 @@
 }
 
 - (void)didAddAnnotations:(NSArray *)annotations {
-    [self didChangeValueForKey:@"annotations"];
     
     if ([self.delegate respondsToSelector:@selector(mapLayer:didAddAnnotations:)]) {
         [self.delegate mapLayer:self
