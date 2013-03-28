@@ -3,6 +3,7 @@
 
 @class MGSLayer;
 @class MGSLayerManager;
+@class MGSLayerAnnotation;
 @protocol MGSAnnotation;
 
 @protocol MGSLayerManagerDelegate <NSObject>
@@ -15,18 +16,18 @@
 @end
 
 @interface MGSLayerManager : NSObject
-
 @property (nonatomic,readonly,strong) MGSLayer *layer;
-
-
+@property (nonatomic,readonly) NSSet *allAnnotations;
 @property (nonatomic,readonly,strong) AGSGraphicsLayer *graphicsLayer;
-@property (nonatomic,strong) NSArray *graphics;
 @property (nonatomic,readonly) AGSSpatialReference *spatialReference;
 @property (nonatomic,weak) id<MGSLayerManagerDelegate> delegate;
 
 - (id)initWithLayer:(MGSLayer*)layer;
 - (void)syncAnnotations;
 - (BOOL)loadGraphicsLayerWithSpatialReference:(AGSSpatialReference*)spatialReference;
-- (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation;
-- (id<MGSAnnotation>)annotationForGraphic:(AGSGraphic*)graphic;
+
+- (MGSLayerAnnotation*)layerAnnotationForGraphic:(AGSGraphic*)graphic;
+- (NSSet*)layerAnnotationsForGraphics:(NSSet*)graphics;
+- (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation;
+- (NSSet*)layerAnnotationsForAnnotations:(NSSet*)annotations;
 @end
