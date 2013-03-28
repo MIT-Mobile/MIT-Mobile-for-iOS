@@ -463,7 +463,6 @@
 		2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSLayerAnnotation.m; sourceTree = "<group>"; };
 		2C101A741653F054000E40E3 /* MGSLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSLayer.h; sourceTree = "<group>"; };
 		2C101A751653F054000E40E3 /* MGSLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSLayer.m; sourceTree = "<group>"; };
-		2C101A761653F054000E40E3 /* MGSLayer+AGS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MGSLayer+AGS.h"; sourceTree = "<group>"; };
 		2C101A791653F054000E40E3 /* MGSRouteLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSRouteLayer.h; path = Core/MGSRouteLayer.h; sourceTree = "<group>"; };
 		2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGSRouteLayer.m; path = Core/MGSRouteLayer.m; sourceTree = "<group>"; };
 		2C101A7B1653F054000E40E3 /* MGSRouteOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSRouteOperation.h; path = Core/MGSRouteOperation.h; sourceTree = "<group>"; };
@@ -1354,7 +1353,6 @@
 				2C642D1F1663D0A10062B00A /* MGSAnnotation.h */,
 				2CA010BC1694A7CC00B87CF0 /* MGSSimpleAnnotation.h */,
 				2CA010BD1694A7CC00B87CF0 /* MGSSimpleAnnotation.m */,
-				2C101A761653F054000E40E3 /* MGSLayer+AGS.h */,
 				2CB25D0B16DBE4A20039E811 /* MGSLayer+Subclass.h */,
 				2C101A741653F054000E40E3 /* MGSLayer.h */,
 				2C101A751653F054000E40E3 /* MGSLayer.m */,
