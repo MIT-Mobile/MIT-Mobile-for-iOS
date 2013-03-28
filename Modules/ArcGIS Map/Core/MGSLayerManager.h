@@ -5,7 +5,7 @@
 @class MGSLayerManager;
 @protocol MGSAnnotation;
 
-@protocol MGSLayerManagerDelegate
+@protocol MGSLayerManagerDelegate <NSObject>
 - (AGSGraphicsLayer*)layerManager:(MGSLayerManager*)layerManager graphicsLayerForLayer:(MGSLayer*)layer;
 - (AGSGraphic*)layerManager:(MGSLayerManager*)layerManager graphicForAnnotation:(id<MGSAnnotation>)annotation;
 @end
@@ -14,7 +14,7 @@
 @property (nonatomic,readonly,strong) MGSLayer *layer;
 @property (nonatomic,strong) NSArray *graphics;
 @property (nonatomic,readonly,strong) AGSGraphicsLayer *graphicsLayer;
-@property (nonatomic,weak) id<MGSLayerManagerDelegate, NSObject> delegate;
+@property (nonatomic,weak) id<MGSLayerManagerDelegate> delegate;
 
 - (id)initWithLayer:(MGSLayer*)layer;
 - (AGSGraphic*)graphicForAnnotation:(id<MGSAnnotation>)annotation;
