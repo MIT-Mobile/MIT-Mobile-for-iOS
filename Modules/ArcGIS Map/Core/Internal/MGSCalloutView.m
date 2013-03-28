@@ -41,7 +41,7 @@
         titleLabel.textColor = [UIColor whiteColor];
         titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
         titleLabel.numberOfLines = 0;
-        titleLabel.lineBreakMode = UILineBreakModeWordWrap;
+        titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         titleLabel.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                        UIViewAutoresizingFlexibleWidth |
                                        UIViewAutoresizingFlexibleBottomMargin |
@@ -57,7 +57,7 @@
         detailLabel.textColor = [UIColor lightGrayColor];
         detailLabel.backgroundColor = [UIColor clearColor];
         detailLabel.numberOfLines = 0;
-        detailLabel.lineBreakMode = UILineBreakModeWordWrap;
+        detailLabel.lineBreakMode = NSLineBreakByWordWrapping;
         detailLabel.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                        UIViewAutoresizingFlexibleWidth |
                                        UIViewAutoresizingFlexibleBottomMargin |
@@ -167,7 +167,7 @@
         imageHeight = CGRectGetHeight(self.imageView.frame);
     }
     
-    newHeight = MAX(CGRectGetHeight(self.imageView.frame),
+    newHeight = MAX(imageHeight,
                     MAX(CGRectGetHeight(self.accessoryButton.frame),
                         titleSize.height + detailSize.height));
     
