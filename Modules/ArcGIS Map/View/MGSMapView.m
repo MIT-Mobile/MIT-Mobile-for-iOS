@@ -11,9 +11,6 @@
 #import "MGSLayerManager.h"
 #import "MGSSafeAnnotation.h"
 
-
-static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Default";
-
 @interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate>
 #pragma mark - Basemap Management (Declaration)
 @property(assign) BOOL coreLayersLoaded;
@@ -228,19 +225,6 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 #pragma mark -
 
 #pragma mark - Dynamic Properties
-- (MGSZoomLevel)zoomLevel
-{
-    return [MGSMapView zoomLevelForMKCoordinateSpan:self.mapRegion.span];
-}
-
-- (void)setZoomLevel:(MGSZoomLevel)zoomLevel
-{
-    MKCoordinateRegion region = self.mapRegion;
-    region.span = [MGSMapView coordinateSpanForZoomLevel:zoomLevel];
-
-    self.mapRegion = region;
-}
-
 - (void)setShowUserLocation:(BOOL)showUserLocation
 {
     if (showUserLocation) {
@@ -257,6 +241,189 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
 - (BOOL)showUserLocation
 {
     return self.mapView.locationDisplay.dataSource && self.mapView.locationDisplay.isDataSourceStarted;
+}
+
+- (NSArray*)mapLayers
+{
+    return [NSArray arrayWithArray:self.externalLayers];
+}
+
+- (BOOL)isPresentingCallout
+{
+    return (self.calloutAnnotation != nil);
+}
+
+#pragma mark - Layer Management (Internal)
+- (MGSLayerManager*)managerForLayer:(MGSLayer*)layer
+{
+    for (MGSLayerManager* manager in self.externalLayerManagers) {
+        if ([manager.layer isEqual:layer]) {
+            return manager;
+        }
+    }
+
+    return nil;
+}
+
+#pragma mark - Add/Insert Layers
+- (void)addLayer:(MGSLayer*)newLayer
+{
+    [self insertLayer:newLayer
+              atIndex:[self.externalLayers count]
+ shouldNotifyDelegate:YES];
+}
+
+- (void)insertLayer:(MGSLayer*)layer
+        behindLayer:(MGSLayer*)foregroundLayer
+{
+    NSUInteger layerIndex = [self.externalLayers indexOfObject:foregroundLayer];
+
+    if (layerIndex != NSNotFound) {
+        [self insertLayer:layer
+                  atIndex:layerIndex];
+    }
+}
+
+- (void)insertLayer:(MGSLayer*)newLayer
+            atIndex:(NSUInteger)index
+{
+    [self insertLayer:newLayer
+              atIndex:index
+ shouldNotifyDelegate:YES];
+}
+
+- (void)insertLayer:(MGSLayer*)newLayer
+             atIndex:(NSUInteger)index
+shouldNotifyDelegate:(BOOL)notifyDelegate
+{
+    MGSLayerManager* layerManager = [self managerForLayer:newLayer];
+
+    if ([self.externalLayers containsObject:newLayer] == NO) {
+        // If we actually get a manager back for this layer, something went
+        // horribly wrong. Get out of here, FAST!
+        if (layerManager) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                           reason:@"fatal error: external layers out of sync"
+                                         userInfo:nil];
+        }
+
+        layerManager = [[MGSLayerManager alloc] initWithLayer:newLayer];
+
+        if (notifyDelegate) {
+            [self willAddLayer:newLayer];
+        }
+
+        // The map view will only have a spatial reference once it has been
+        if (self.mapView.spatialReference) {
+            NSUInteger agsIndex = [self.coreLayers count] + index;
+            [layerManager loadGraphicsLayerWithSpatialReference:self.mapView.spatialReference];
+            [self.mapView insertMapLayer:layerManager.graphicsLayer
+                                 atIndex:agsIndex];
+        }
+
+        [self.externalLayerManagers addObject:layerManager];
+        [self.externalLayers insertObject:newLayer
+                                  atIndex:index];
+
+        if (notifyDelegate) {
+            [self didAddLayer:newLayer];
+        }
+
+        [self moveLayer:self.defaultLayer
+                toIndex:[self.externalLayers count]];
+    }
+
+    if (layerManager.graphicsLayer) {
+        [layerManager syncAnnotations];
+    }
+}
+
+#pragma mark - Remove Layers
+- (void)removeLayer:(MGSLayer*)layer
+{
+    [self removeLayer:layer
+  shoulNotifyDelegate:YES];
+}
+
+- (void)removeLayer:(MGSLayer*)layer
+shoulNotifyDelegate:(BOOL)notifyDelegate
+{
+    MGSLayerManager* layerManager = [self managerForLayer:layer];
+
+    if (layerManager == nil) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:@"fatal error: external layers out of sync"
+                                     userInfo:nil];
+    } else if (layer) {
+        if (notifyDelegate) {
+            [self willRemoveLayer:layer];
+        }
+
+        [self.externalLayers removeObject:layer];
+        [self.externalLayerManagers removeObject:layerManager];
+
+        if (layerManager.graphicsLayer) {
+            [self.mapView removeMapLayer:layerManager.graphicsLayer];
+        }
+
+        if (notifyDelegate) {
+            [self didRemoveLayer:layer];
+        }
+
+        [self moveLayer:self.defaultLayer
+                toIndex:[self.externalLayers count]];
+    }
+}
+
+#pragma mark - Layer Visibility/Reorganization
+- (void)moveLayer:(MGSLayer*)layer
+          toIndex:(NSUInteger)newIndex
+{
+    NSUInteger layerIndex = [self.externalLayers indexOfObject:layer];
+
+    // Subtract 1 from the new index because we need to remove
+    // the layer before moving it.
+    newIndex -= 1;
+
+    if (layerIndex != NSNotFound) {
+        [self removeLayer:layer
+      shoulNotifyDelegate:NO];
+
+        [self insertLayer:layer
+                  atIndex:newIndex
+     shouldNotifyDelegate:NO];
+    }
+}
+
+- (BOOL)isLayerHidden:(MGSLayer*)layer
+{
+    MGSLayerManager* manager = [self managerForLayer:layer];
+    return (manager.graphicsLayer.isVisible);
+}
+
+- (void)setHidden:(BOOL)hidden
+         forLayer:(MGSLayer*)layer
+{
+    MGSLayerManager* manager = [self managerForLayer:layer];
+    manager.graphicsLayer.visible = !hidden;
+}
+
+- (void)refreshLayer:(MGSLayer*)layer {
+    
+}
+#pragma mark -
+#pragma mark - Map Region Mutators
+- (MGSZoomLevel)zoomLevel
+{
+    return [MGSMapView zoomLevelForMKCoordinateSpan:self.mapRegion.span];
+}
+
+- (void)setZoomLevel:(MGSZoomLevel)zoomLevel
+{
+    MKCoordinateRegion region = self.mapRegion;
+    region.span = [MGSMapView coordinateSpanForZoomLevel:zoomLevel];
+
+    self.mapRegion = region;
 }
 
 - (MKCoordinateRegion)mapRegion
@@ -333,180 +500,6 @@ static NSString* const kMGSMapDefaultLayerIdentifier = @"edu.mit.mobile.map.Defa
     }
 }
 
-- (NSArray*)mapLayers
-{
-    return [NSArray arrayWithArray:self.externalLayers];
-}
-
-- (BOOL)isPresentingCallout
-{
-    return (self.calloutAnnotation != nil);
-}
-
-#pragma mark - Layer Management (Internal)
-- (MGSLayerManager*)managerForLayer:(MGSLayer*)layer
-{
-    for (MGSLayerManager* manager in self.externalLayerManagers) {
-        if ([manager.layer isEqual:layer]) {
-            return manager;
-        }
-    }
-}
-
-#pragma mark - Add/Insert Layers
-- (void)addLayer:(MGSLayer*)newLayer
-{
-    [self insertLayer:newLayer
-              atIndex:[self.externalLayers count]
- shouldNotifyDelegate:YES];
-}
-
-- (void)insertLayer:(MGSLayer*)newLayer
-            atIndex:(NSUInteger)index
-{
-    [self insertLayer:newLayer
-              atIndex:index
- shouldNotifyDelegate:YES];
-}
-
-- (void)insertLayer:(MGSLayer*)newLayer
-             atIndex:(NSUInteger)index
-shouldNotifyDelegate:(BOOL)notifyDelegate
-{
-    MGSLayerManager* layerManager = [self managerForLayer:newLayer];
-
-    if ([self.externalLayers containsObject:newLayer] == NO) {
-        // If we actually get a manager back for this layer, something went
-        // horribly wrong. Get out of here, FAST!
-        if (layerManager) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                           reason:@"fatal error: external layers out of sync"
-                                         userInfo:nil];
-        }
-
-        layerManager = [[MGSLayerManager alloc] initWithLayer:newLayer];
-
-        [self willAddLayer:newLayer];
-
-        // The map view will only have a spatial reference once it has been
-        if (self.mapView.spatialReference) {
-            NSUInteger agsIndex = [self.coreLayers count] + index;
-            [layerManager loadGraphicsLayerWithSpatialReference:self.mapView.spatialReference];
-            [self.mapView insertMapLayer:layerManager.graphicsLayer
-                                 atIndex:agsIndex];
-        }
-
-        [self.externalLayerManagers addObject:layerManager];
-        [self.externalLayers insertObject:newLayer
-                                  atIndex:index];
-        [self didAddLayer:newLayer];
-
-        [self moveLayer:self.defaultLayer
-                toIndex:[self.externalLayers count]];
-    }
-
-    if (layerManager.graphicsLayer) {
-        [layerManager syncAnnotations];
-    }
-}
-
-- (void)insertLayer:(MGSLayer*)layer behindLayer:(MGSLayer*)foregroundLayer
-{
-    NSUInteger layerIndex = [self.externalLayers indexOfObject:foregroundLayer];
-
-    if (layerIndex != NSNotFound) {
-        [self insertLayer:layer
-                  atIndex:layerIndex];
-    }
-}
-
-#pragma mark - Remove Layers
-- (void)removeLayer:(MGSLayer*)layer
-{
-    NSUInteger index = [self.externalLayers indexOfObject:layer];
-    [self removeLayerAtIndex:index
-         shoulNotifyDelegate:YES];
-}
-
-- (void)removeLayerAtIndex:(NSUInteger)index
-{
-    [self removeLayerAtIndex:index
-         shoulNotifyDelegate:YES];
-}
-
-- (void)removeLayerAtIndex:(NSUInteger)index
-       shoulNotifyDelegate:(BOOL)notifyDelegate
-{
-    MGSLayer* layer = self.externalLayers[index];
-    MGSLayerManager* layerManager = [self managerForLayer:layer];
-
-    if (layerManager == nil) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"fatal error: external layers out of sync"
-                                     userInfo:nil];
-    } else if (layer) {
-        if (notifyDelegate) {
-            [self willRemoveLayer:layer];
-        }
-
-        [self.externalLayers removeObject:layer];
-        [self.externalLayerManagers removeObject:layerManager];
-
-        if (layerManager.graphicsLayer) {
-            [self.mapView removeMapLayer:layerManager.graphicsLayer];
-        }
-
-        if (notifyDelegate) {
-            [self didRemoveLayer:layer];
-        }
-
-        [self moveLayer:self.defaultLayer
-                toIndex:[self.externalLayers count]];
-    }
-}
-
-- (void)moveLayer:(MGSLayer*)layer
-          toIndex:(NSUInteger)newIndex
-{
-    NSUInteger layerIndex = [self.externalLayers indexOfObject:layer];
-
-    // Subtract 1 from the new index because we need to remove
-    // the layer before moving it.
-    newIndex -= 1;
-
-    if (layerIndex != NSNotFound) {
-        [self.externalLayers removeObject:layer];
-        [self.externalLayers insertObject:layer
-                                  atIndex:newIndex];
-
-        if (self.mapView.spatialReference) {
-            MGSLayerManager* layerManager = [self managerForLayer:layer];
-            NSUInteger agsIndex = ([self.coreLayers count] + newIndex);
-
-            [self.mapView removeMapLayer:layerManager.graphicsLayer];
-            [self.mapView insertMapLayer:layerManager.graphicsLayer
-                                 atIndex:agsIndex];
-        }
-    }
-}
-
-
-- (BOOL)isLayerHidden:(MGSLayer*)layer
-{
-    MGSLayerManager* manager = [self managerForLayer:layer];
-    return (manager.graphicsLayer.isVisible);
-}
-
-- (void)setHidden:(BOOL)hidden
-         forLayer:(MGSLayer*)layer
-{
-    MGSLayerManager* manager = [self managerForLayer:layer];
-    manager.graphicsLayer.visible = !hidden;
-}
-
-- (void)refreshLayer:(MGSLayer*)layer {
-    
-}
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     [self centerAtCoordinate:coordinate
@@ -523,6 +516,7 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
 }
 
 
+#pragma mark -
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate
 {
     DDLogVerbose(@"Spatial Reference: %@", self.mapView.spatialReference);
