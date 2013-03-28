@@ -2,16 +2,12 @@
 #import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
 
-#import "MGSLayer+Subclass.h"
 #import "MGSLayer.h"
-#import "MGSLayerAnnotation.h"
-
-#import "MGSMapView.h"
-
 #import "MGSUtility.h"
 #import "CoreLocation+MITAdditions.h"
 #import "MapKit+MITAdditions.h"
-#import "MGSCalloutView.h"
+#import "MGSSafeAnnotation.h"
+
 
 @interface MGSLayer () <AGSLayerDelegate>
 @property (nonatomic,strong) NSMutableArray *layerAnnotations;

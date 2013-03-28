@@ -2,11 +2,7 @@
 #import <CoreLocation/CoreLocation.h>
 
 #import "MGSRouteLayer.h"
-#import "MGSLayer+Subclass.h"
-
 #import "MGSUtility.h"
-#import "CoreLocation+MITAdditions.h"
-#import "MGSSimpleAnnotation.h"
 
 @interface MGSRouteLayer ()
 @property (nonatomic,strong) NSArray *pathCoordinates;
