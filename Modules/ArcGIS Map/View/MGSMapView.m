@@ -231,8 +231,7 @@
         [self.mapView.locationDisplay startDataSource];
         self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
         self.mapView.locationDisplay.dataSource.delegate = self;
-    }
-    else {
+    } else {
         [self.mapView.locationDisplay stopDataSource];
     }
 
@@ -409,7 +408,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 }
 
 - (void)refreshLayer:(MGSLayer*)layer {
-    
+
 }
 #pragma mark -
 #pragma mark - Map Region Mutators
