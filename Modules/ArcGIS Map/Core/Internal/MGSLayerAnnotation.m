@@ -1,37 +1,58 @@
 #import "MGSLayerAnnotation.h"
 #import "MGSAnnotation.h"
+#import "MGSLayer.h"
 
-@interface MGSLayerAnnotation (AGSInfoTemplateDelegate)
-- (NSString*)titleForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint;
-- (NSString*)detailForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint;
-- (AGSImage*)imageForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint;
+
+@interface MGSLayerAnnotation ()
+@property (nonatomic,strong) AGSGraphic *graphic;
+@property (nonatomic,strong) id<MGSAnnotation> annotation;
+
+- (UIView*)customViewForGraphic:(AGSGraphic*)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint*)mapPoint;
 @end
 
 @implementation MGSLayerAnnotation
+@dynamic wrappedAnnotation;
+
+- (id)initWithLayerAnnotation:(MGSLayerAnnotation*)layerAnnotation
+{
+    self = [super init];
+
+    if (self) {
+        self.graphic = layerAnnotation.graphic;
+        self.annotation = layerAnnotation.annotation;
+    }
+
+    return self;
+}
+
 - (id)initWithAnnotation:(id<MGSAnnotation>)annotation
                  graphic:(AGSGraphic*)graphic
 {
-    self = [super initWithAnnotation:annotation];
+    self = [super init];
     
     if (self)
     {
         self.graphic = graphic;
+        self.annotation = annotation;
     }
     
     return self;
 }
 
+- (MGSSafeAnnotation*)wrappedAnnotation
+{
+    return [[MGSSafeAnnotation alloc] initWithAnnotation:self.annotation];
+}
+
 - (BOOL)isEqual:(id)object
 {
-    BOOL result = NO;
-    
     if ([super isEqual:object]) {
-        result = YES;
+        return YES;
     } else if ([object isKindOfClass:[MGSLayerAnnotation class]]) {
-        result = [self isEqualToLayerAnnotation:(MGSLayerAnnotation*)object];
+        return [self isEqualToLayerAnnotation:(MGSLayerAnnotation*)object];
     }
-    
-    return result;
+
+    return NO;
 }
 
 - (BOOL)isEqualToLayerAnnotation:(MGSLayerAnnotation*)annotation
@@ -39,32 +60,15 @@
     return ([self.annotation isEqual:annotation.annotation] &&
             [self.graphic isEqual:annotation.graphic]);
 }
-@end
 
-@implementation MGSLayerAnnotation (AGSInfoTemplateDelegate)
-- (NSString*)titleForGraphic:(AGSGraphic *)graphic
-                 screenPoint:(CGPoint)screen
-                    mapPoint:(AGSPoint *)mapPoint {
-    if ([self.graphic isEqual:graphic]) {
-        return self.title;
-    }
-    
-    return nil;
+- (id)copyWithZone:(NSZone*)zone
+{
+    return [[[self class] allocWithZone:zone] initWithAnnotation:self.annotation
+                                                         graphic:self.graphic];
 }
 
-- (NSString*)detailForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint {
-    if ([self.graphic isEqual:graphic]) {
-        return self.detail;
-    }
-    
-    return nil;
-}
-
-- (AGSImage*)imageForGraphic:(AGSGraphic *)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint *)mapPoint {
-    if ([self.graphic isEqual:graphic]) {
-        return self.calloutImage;
-    }
-
+- (UIView*)customViewForGraphic:(AGSGraphic*)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint*)mapPoint
+{
     return nil;
 }
 @end

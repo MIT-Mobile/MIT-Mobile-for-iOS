@@ -5,12 +5,12 @@
 @class MGSLayer;
 @class AGSGraphic;
 
-@interface MGSLayerAnnotation : MGSSafeAnnotation <AGSInfoTemplateDelegate>
-@property (weak) MGSLayer *layer;
+@interface MGSLayerAnnotation : NSObject <AGSInfoTemplateDelegate,NSCopying>
+@property (nonatomic,readonly,strong) AGSGraphic *graphic;
+@property (nonatomic,readonly,strong) id<MGSAnnotation> annotation;
+@property (nonatomic,readonly) MGSSafeAnnotation* wrappedAnnotation;
 
-@property (nonatomic,strong) AGSGraphic *graphic;
-@property (strong) NSDictionary *attributes;
-
+- (id)initWithLayerAnnotation:(MGSLayerAnnotation*)layerAnnotation;
 - (id)initWithAnnotation:(id<MGSAnnotation>)annotation
                  graphic:(AGSGraphic*)graphic;
 @end
