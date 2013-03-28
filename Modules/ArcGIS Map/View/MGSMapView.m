@@ -10,6 +10,8 @@
 #import "MobileRequestOperation.h"
 #import "MGSLayerManager.h"
 #import "MGSSafeAnnotation.h"
+#import "MGSLayerAnnotation.h"
+
 
 @interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate>
 #pragma mark - Basemap Management (Declaration)
@@ -538,10 +540,12 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         if ([self shouldShowCalloutForAnnotation:annotation]) {
             MGSLayer* layer = [self layerContainingAnnotation:annotation];
             MGSLayerManager* manager = [self managerForLayer:layer];
-            AGSGraphic* graphic = [manager graphicForAnnotation:annotation];
+            AGSGraphic* graphic = [[manager layerAnnotationForAnnotation:annotation] graphic];
             UIView* customView = [self calloutViewForAnnotation:annotation];
 
-            if (customView) {
+            if (graphic == nil) {
+                return;
+            } else if (customView) {
                 self.mapView.callout.customView = customView;
             } else if (graphic.infoTemplateDelegate == nil) {
                 MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
@@ -555,7 +559,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             self.mapView.callout.delegate = self;
 
             [self willShowCalloutForAnnotation:annotation];
-            [self.mapView.callout showCalloutAtPoint:nil forGraphic:graphic
+            [self.mapView.callout showCalloutAtPoint:nil
+                                          forGraphic:graphic
                                             animated:YES];
             [self didShowCalloutForAnnotation:annotation];
         }
@@ -603,7 +608,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     [self.mapLayers enumerateObjectsWithOptions:NSEnumerationReverse
                                      usingBlock:^(MGSLayer* layer, NSUInteger idx, BOOL* stop) {
                                          MGSLayerManager* manager = [self managerForLayer:layer];
-                                         if ([manager annotationForGraphic:graphic]) {
+                                         if ([manager layerAnnotationForGraphic:graphic]) {
                                              myLayer = layer;
                                              (*stop) = YES;
                                          }
@@ -657,7 +662,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 {
     MGSLayer* myLayer = [self layerContainingGraphic:graphic];
     MGSLayerManager* manager = [self managerForLayer:myLayer];
-    id <MGSAnnotation> annotation = [manager annotationForGraphic:graphic];
+    id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
     BOOL result = [self shouldShowCalloutForAnnotation:annotation];
 
     if (result) {
