@@ -19,6 +19,10 @@
 @property (nonatomic,readonly,strong) MGSLayer *layer;
 @property (nonatomic,readonly) NSSet *allAnnotations;
 @property (nonatomic,readonly,strong) AGSGraphicsLayer *graphicsLayer;
+
+// The behavior for this property is a bit odd. If the graphics layer
+// has a valid spatial reference, it will be returned by the spatialReference getter,
+// otherwise, this property behaves like a normal R/W property
 @property (nonatomic,strong) AGSSpatialReference *spatialReference;
 @property (nonatomic,weak) id<MGSLayerManagerDelegate> delegate;
 
