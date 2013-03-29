@@ -50,10 +50,12 @@
 #pragma mark - Dynamic Properties
 - (AGSSpatialReference*)spatialReference
 {
-    if ([self.graphicsLayer spatialReferenceStatusValid]) {
+    // Use a direct ivar access here so we don't trigger the
+    // lazy creation of a graphics layer if it doesn't exist
+    if (_graphicsLayer && self.graphicsLayer.spatialReference) {
         return self.graphicsLayer.spatialReference;
     } else {
-        return nil;
+        return _spatialReference;
     }
 }
 
