@@ -318,15 +318,10 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
     MGSLayerManager* layerManager = [self managerForLayer:newLayer];
 
     if ([self.externalLayers containsObject:newLayer] == NO) {
-        // If we actually get a manager back for this layer, something went
-        // horribly wrong. Get out of here, FAST!
-        if (layerManager) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                           reason:@"fatal error: external layers out of sync"
-                                         userInfo:nil];
+        if (layerManager == nil) {
+            layerManager = [[MGSLayerManager alloc] initWithLayer:newLayer];
+            [self.externalLayerManagers addObject:layerManager];
         }
-
-        layerManager = [[MGSLayerManager alloc] initWithLayer:newLayer];
 
         if (notifyDelegate) {
             [self willAddLayer:newLayer];
