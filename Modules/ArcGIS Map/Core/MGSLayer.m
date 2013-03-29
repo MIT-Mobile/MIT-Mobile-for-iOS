@@ -216,4 +216,25 @@
     }
 }
 
+
+- (void)willAddLayerToMapView:(MGSMapView*)mapView
+{
+    /* Do nothing, let a subclass override this */
+}
+
+- (void)didAddLayerToMapView:(MGSMapView*)mapView
+{
+    /* Do nothing, let a subclass override this */
+}
+
+- (void)willRemoveLayerFromMapView:(MGSMapView*)mapView
+{
+    /* Do nothing, let a subclass override this */
+}
+
+- (void)didRemoveLayerFromMapView:(MGSMapView*)mapView
+{
+    /* Do nothing, let a subclass override this */
+}
+
 @end

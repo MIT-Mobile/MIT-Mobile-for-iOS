@@ -940,6 +940,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             [self.delegate mapView:self
                       willAddLayer:layer];
         }
+        
+        [layer willAddLayerToMapView:self];
     }];
 }
 
@@ -950,6 +952,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             [self.delegate mapView:self
                        didAddLayer:layer];
         }
+        
+        [layer didAddLayerToMapView:self];
     }];
 }
 
@@ -960,6 +964,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             [self.delegate mapView:self
                    willRemoveLayer:layer];
         }
+        
+        [layer willRemoveLayerFromMapView:self];
     }];
 }
 
@@ -970,6 +976,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             [self.delegate mapView:self
                     didRemoveLayer:layer];
         }
+        
+        [layer didRemoveLayerFromMapView:self];
     }];
 }
 
