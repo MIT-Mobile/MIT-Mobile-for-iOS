@@ -227,6 +227,24 @@
 #pragma mark -
 
 #pragma mark - Dynamic Properties
+- (NSMutableSet*)externalLayerManagers
+{
+    if (_externalLayerManagers == nil) {
+        self.externalLayerManagers = [NSMutableSet set];
+    }
+    
+    return _externalLayerManagers;
+}
+
+- (NSMutableArray*)externalLayers
+{
+    if (_externalLayers == nil) {
+        self.externalLayers = [NSMutableArray array];
+    }
+    
+    return _externalLayers;
+}
+
 - (void)setShowUserLocation:(BOOL)showUserLocation
 {
     if (showUserLocation) {
