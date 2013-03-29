@@ -31,7 +31,7 @@ DEPRECATED_ATTRIBUTE
 - (void)mapViewRegionDidChange:(MITMapView*)mapView;
 
 // any touch on the map will invoke this.
-- (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch;
+- (void)mapView:(MITMapView *)mapView wasTouched:(CGPoint)screenPoint;
 @end
 
 

@@ -504,6 +504,16 @@
 }
 
 #pragma mark - MGSMapView Delegation Methods
+- (void)mapView:(MGSMapView *)mapView
+didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
+    screenPoint:(CGPoint)screenPoint
+{
+    if ([self.delegate respondsToSelector:@selector(mapView:wasTouched:)]) {
+        [self.delegate mapView:self
+                    wasTouched:screenPoint];
+    }
+}
+
 - (void)mapView:(MGSMapView *)mapView willShowCalloutForAnnotation:(id <MGSAnnotation>)annotation
 {
 
