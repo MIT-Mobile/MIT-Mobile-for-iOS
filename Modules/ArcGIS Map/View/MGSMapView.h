@@ -4,6 +4,7 @@
 #import "MGSMapViewDelegate.h"
 
 @class MGSMapCoordinate;
+@class MGSLayerManager;
 @class MGSMapAnnotation;
 @class MGSMapQuery;
 @class MGSLayer;
@@ -38,6 +39,7 @@ typedef CGFloat MGSZoomLevel;
 - (void)removeLayer:(MGSLayer*)layer;
 - (void)insertLayer:(MGSLayer*)layer
         behindLayer:(MGSLayer*)foregroundLayer;
+- (MGSLayerManager*)layerManagerForLayer:(MGSLayer*)layer;
 
 - (MGSLayer*)layerContainingAnnotation:(id<MGSAnnotation>)annotation;
 - (BOOL)containsLayer:(MGSLayer*)layer;

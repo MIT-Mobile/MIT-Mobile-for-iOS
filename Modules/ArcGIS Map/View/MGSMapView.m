@@ -271,8 +271,8 @@
     return (self.calloutAnnotation != nil);
 }
 
-#pragma mark - Layer Management (Internal)
-- (MGSLayerManager*)managerForLayer:(MGSLayer*)layer
+#pragma mark - Layer Management
+- (MGSLayerManager*)layerManagerForLayer:(MGSLayer*)layer
 {
     for (MGSLayerManager* manager in self.externalLayerManagers) {
         if ([manager.layer isEqual:layer]) {
