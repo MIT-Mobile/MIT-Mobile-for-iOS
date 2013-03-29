@@ -630,6 +630,29 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     return myLayer;
 }
 
+- (void)syncLayers:(NSArray*)layers {
+    [self.externalLayers enumerateObjectsUsingBlock:^(MGSLayer *layer, NSUInteger idx, BOOL *stop) {
+        if ([layers containsObject:layer]) {
+            MGSLayerManager *manager = [self managerForLayer:layer];
+            
+            if (manager && self.mapView.spatialReference) {
+                if ([self.mapView.mapLayers containsObject:manager.graphicsLayer] == NO) {
+                    NSUInteger layerIdx = [self.externalLayers indexOfObject:layer];
+                
+                    if (layerIdx != NSNotFound) {
+                        manager.spatialReference = self.mapView.spatialReference;
+                        
+                        NSUInteger agsIndex = [self.coreLayers count] + layerIdx;
+                        AGSGraphicsLayer *gfxLayer = manager.graphicsLayer;
+                        [self.mapView insertMapLayer:gfxLayer
+                                             atIndex:agsIndex];
+                    }
+                }
+            }
+        }
+    }];
+}
+
 - (void)coreLayersDidFinishLoading
 {
     if (self.calloutAnnotation) {
