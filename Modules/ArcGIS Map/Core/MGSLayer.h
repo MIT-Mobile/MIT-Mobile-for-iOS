@@ -2,9 +2,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
 
-@class MGSMapAnnotation;
-@class MGSMapCoordinate;
-@class MGSMarker;
 @class MGSMapView;
 @class MGSLayer;
 
@@ -22,10 +19,11 @@
 @interface MGSLayer : NSObject
 @property (nonatomic,weak) id<MGSLayerDelegate> delegate;
 @property (nonatomic,strong) NSString *name;
-@property (nonatomic,strong) NSArray *annotations;
+@property (nonatomic,strong) NSOrderedSet *annotations;
 
 + (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations;
 
+- (void)setAnnotationWithArray:(NSArray*)annotations;
 - (void)addAnnotation:(id<MGSAnnotation>)annotation;
 - (void)addAnnotations:(NSArray *)objects;
 - (void)deleteAnnotation:(id<MGSAnnotation>)annotation;

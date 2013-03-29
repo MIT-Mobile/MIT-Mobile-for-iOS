@@ -12,17 +12,30 @@
 @interface MGSLayer () <AGSLayerDelegate>
 @property (nonatomic,strong) NSMutableOrderedSet *layerAnnotations;
 
-- (void)insertAnnotation:(id<MGSAnnotation>)annotation atIndex:(NSUInteger)index;
-- (void)deleteAnnotations:(NSOrderedSet *)annotations
-     shouldNotifyDelegate:(BOOL)notifyDelegate;
 - (void)addAnnotations:(NSOrderedSet *)annotations
   shouldNotifyDelegate:(BOOL)notifyDelegate;
+
+- (void)deleteAnnotations:(NSSet *)annotations
+     shouldNotifyDelegate:(BOOL)notifyDelegate;
 @end
 
 @implementation MGSLayer
 @dynamic annotations;
 
 #pragma mark - Class Methods
+
++ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)theKey {
+    BOOL automatic;
+    NSSet *manualKeys = [NSSet setWithArray:@[@"annotations"]];
+
+    if ([manualKeys containsObject:theKey]) {
+        automatic = NO;
+    } else {
+        automatic = [super automaticallyNotifiesObserversForKey:theKey];
+    }
+
+    return automatic;
+}
 
 + (MKCoordinateRegion)regionForAnnotations:(NSSet *)annotations {
     NSMutableArray *coordinates = [NSMutableArray array];
@@ -66,12 +79,18 @@
 }
 
 #pragma mark - Property Accessor/Mutators
-- (void)setAnnotations:(NSArray *)annotations {
+- (void)setAnnotationWithArray:(NSArray*)annotations
+{
+    [self setAnnotations:[NSOrderedSet orderedSetWithArray:annotations]];
+}
+
+- (void)setAnnotations:(NSOrderedSet *)annotations {
     if (self.annotations) {
         [self deleteAllAnnotations];
     }
     
-    [self addAnnotations:annotations];
+    [self addAnnotations:annotations
+    shouldNotifyDelegate:YES];
 }
 
 - (NSOrderedSet *)annotations {
@@ -79,6 +98,14 @@
 }
 
 #pragma mark - Public Methods
+- (void)insertAnnotation:(id<MGSAnnotation>)annotation
+                 atIndex:(NSUInteger)index
+{
+    if ([self.layerAnnotations containsObject:annotation] == NO) {
+        [self willChangeValueForKey:@""];
+    }
+}
+
 - (void)addAnnotation:(id <MGSAnnotation>)annotation {
     [self addAnnotations:[NSOrderedSet orderedSetWithObject:annotation]
     shouldNotifyDelegate:YES];
@@ -93,7 +120,6 @@
   shouldNotifyDelegate:(BOOL)notifyDelegate
 {
     if ([annotations count]) {
-
         // Check out current annotations and delete any which
         // are in the array of annotations we are adding.
         // The logic here is that we are assuming that attempting
@@ -102,7 +128,7 @@
         NSMutableOrderedSet* refreshedAnnotations = [self.layerAnnotations mutableCopy];
         [refreshedAnnotations intersectSet:[annotations set]];
 
-        [self deleteAnnotations:refreshedAnnotations
+        [self deleteAnnotations:[refreshedAnnotations set]
            shouldNotifyDelegate:NO];
 
         if (notifyDelegate) {
@@ -110,7 +136,7 @@
         }
 
         [self willChangeValueForKey:@"annotations"];
-        [self.layerAnnotations addObjectsFromArray:annotations];
+        [self.layerAnnotations addObjectsFromArray:[annotations array]];
         [self didChangeValueForKey:@"annotations"];
 
         if (notifyDelegate) {
@@ -120,38 +146,38 @@
 }
 
 - (void)deleteAllAnnotations {
-    [self deleteAnnotations:self.layerAnnotations
+    [self deleteAnnotations:[self.layerAnnotations set]
        shouldNotifyDelegate:YES];
 }
 
 - (void)deleteAnnotation:(id <MGSAnnotation>)annotation {
-    [self deleteAnnotations:[NSOrderedSet orderedSetWithObject:annotation]
+    [self deleteAnnotations:[NSSet setWithObject:annotation]
        shouldNotifyDelegate:YES];
 }
 
 - (void)deleteAnnotations:(NSArray *)annotations
 {
-    [self deleteAnnotations:[NSOrderedSet orderedSetWithArray:annotations]
+    [self deleteAnnotations:[NSSet setWithArray:annotations]
        shouldNotifyDelegate:YES];
 }
 
-- (void)deleteAnnotations:(NSOrderedSet *)annotations
+- (void)deleteAnnotations:(NSSet*)annotations
      shouldNotifyDelegate:(BOOL)notifyDelegate
 {
     if ([annotations count]) {
-        NSMutableOrderedSet *deletedAnnotations = [annotations mutableCopy];
+        NSMutableSet *deletedAnnotations = [annotations mutableCopy];
         [deletedAnnotations intersectSet:[self.layerAnnotations set]];
 
         if (notifyDelegate) {
-            [self willRemoveAnnotations:[deletedAnnotations array]];
+            [self willRemoveAnnotations:[deletedAnnotations allObjects]];
         }
 
         [self willChangeValueForKey:@"annotations"];
-        [self.layerAnnotations minusOrderedSet:deletedAnnotations];
+        [self.layerAnnotations minusSet:deletedAnnotations];
         [self didChangeValueForKey:@"annotations"];
 
         if (notifyDelegate) {
-            [self didRemoveAnnotations:[deletedAnnotations array]];
+            [self didRemoveAnnotations:[deletedAnnotations allObjects]];
         }
     }
 }
@@ -162,8 +188,6 @@
 
 #pragma mark - Map Layer Delegation
 - (void)willAddAnnotations:(NSArray *)annotations {
-    [self willChangeValueForKey:@"annotations"];
-    
     if ([self.delegate respondsToSelector:@selector(mapLayer:willAddAnnotations:)]) {
         [self.delegate mapLayer:self
              willAddAnnotations:annotations];
@@ -179,8 +203,6 @@
 }
 
 - (void)willRemoveAnnotations:(NSArray *)annotations {
-    [self willChangeValueForKey:@"annotations"];
-    
     if ([self.delegate respondsToSelector:@selector(mapLayer:willRemoveAnnotations:)]) {
         [self.delegate mapLayer:self
           willRemoveAnnotations:annotations];
@@ -188,8 +210,6 @@
 }
 
 - (void)didRemoveAnnotations:(NSArray *)annotations {
-    [self didChangeValueForKey:@"annotations"];
-    
     if ([self.delegate respondsToSelector:@selector(mapLayer:didRemoveAnnotations:)]) {
         [self.delegate mapLayer:self
            didRemoveAnnotations:annotations];
