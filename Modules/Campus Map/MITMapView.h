@@ -12,7 +12,8 @@
 @class MGSMapView;
 @class MITMapAnnotationView;
 
-@protocol MITMapViewDelegate<NSObject>
+DEPRECATED_ATTRIBUTE
+@protocol MITMapViewDelegate <NSObject>
 @optional
 - (void)mapViewDidFinishLoading:(MITMapView*)mapView;
 
@@ -34,6 +35,7 @@
 @end
 
 
+DEPRECATED_ATTRIBUTE
 @interface MITMapView : UIView
 @property (nonatomic, weak) id<MITMapViewDelegate> delegate;
 @property (nonatomic, readonly, weak) MGSMapView *mapView;
