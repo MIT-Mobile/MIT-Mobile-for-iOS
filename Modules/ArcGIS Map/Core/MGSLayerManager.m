@@ -31,6 +31,7 @@
         self.layer = layer;
         self.layerAnnotations = [NSMutableSet set];
         self.featureGraphics = [NSMutableSet set];
+        self.cachedAnnotations = [NSMutableSet set];
 
         [self.layer addObserver:self
                      forKeyPath:@"annotations"
@@ -102,20 +103,20 @@
 
 - (NSSet*)layerAnnotationsForGraphics:(NSSet*)graphics
 {
-    NSMutableSet *annotations = nil;
+    NSMutableSet *layerAnnotations = nil;
     if ([self.layerAnnotations count]) {
-        annotations = [NSMutableSet set];
+        layerAnnotations = [NSMutableSet set];
 
         [self.layerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation *layerAnnotation, BOOL* stop) {
             if ([graphics containsObject:layerAnnotation.graphic]) {
-                [annotations addObject:layerAnnotation];
+                [layerAnnotations addObject:layerAnnotation];
             }
 
-            (*stop) = ([annotations count] == [graphics count]);
+            (*stop) = ([layerAnnotations count] == [graphics count]);
         }];
     }
 
-    return annotations;
+    return layerAnnotations;
 }
 
 - (MGSLayerAnnotation*)layerAnnotationForAnnotation:(id<MGSAnnotation>)annotation
@@ -126,20 +127,20 @@
 
 - (NSSet*)layerAnnotationsForAnnotations:(NSSet*)annotations
 {
-    NSMutableSet *graphics = nil;
+    NSMutableSet *layerAnnotations = nil;
     if ([self.layerAnnotations count]) {
-        graphics = [NSMutableSet set];
+        layerAnnotations = [NSMutableSet set];
 
         [self.layerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation *layerAnnotation, BOOL* stop) {
             if ([annotations containsObject:layerAnnotation.graphic]) {
-                [graphics addObject:layerAnnotation];
+                [layerAnnotations addObject:layerAnnotation];
             }
 
-            (*stop) = ([graphics count] == [annotations count]);
+            (*stop) = ([layerAnnotations count] == [annotations count]);
         }];
     }
 
-    return annotations;
+    return layerAnnotations;
 }
 
 - (BOOL)isFeatureGraphic:(id)graphicOrAnnotation {
@@ -158,53 +159,57 @@
 
 // TODO: Optimize this if needed, just brute forcing it for now
 - (void)syncAnnotations {
+    DDLogVerbose(@"Synchronizing annotations in layer '%@'", self.layer.name);
+    
     if (!(self.layer && self.graphicsLayer)) {
         return;
     }
 
-    NSSet *currentAnnotations = [NSSet setWithArray:self.layer.annotations];
-    NSSet *cachedAnnotations = [self.cachedAnnotations count] ? self.cachedAnnotations : [NSSet set];
-
+    NSSet *currentAnnotations = [self.layer.annotations set];
+    NSSet *cachedAnnotations = (self.cachedAnnotations != nil) ? self.cachedAnnotations : [NSSet set];
     NSSet *deletedGraphics;
     NSSet *deletedLayerAnnotations;
-    {
-        NSMutableSet *graphicsSet = [NSMutableSet set];
-        NSMutableSet *annotationSet = [NSMutableSet setWithSet:cachedAnnotations];
-        [annotationSet minusSet:currentAnnotations];
-
-        deletedLayerAnnotations = [self layerAnnotationsForAnnotations:annotationSet];
-        [deletedLayerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation* layerAnnotation, BOOL* stop) {
-            if (layerAnnotation.graphic) {
-                [graphicsSet addObject:layerAnnotation.graphic];
-            }
-        }];
-
-        deletedGraphics = graphicsSet;
-    }
-
-    // Handle deleted annotations
     NSSet *addedGraphics;
     NSSet *addedLayerAnnotations;
-    {
-        NSMutableSet *graphicsSet = [NSMutableSet set];
-        NSMutableSet *annotationSet = [NSMutableSet setWithSet:currentAnnotations];
-        [annotationSet minusSet:cachedAnnotations];
+    
+    if ([currentAnnotations count] || [cachedAnnotations count]) {
+        // Handle deleted annotations
+        {
+            NSMutableSet *graphicsSet = [NSMutableSet set];
+            NSMutableSet *annotationSet = [NSMutableSet setWithSet:cachedAnnotations];
+            [annotationSet minusSet:currentAnnotations];
 
-        NSMutableSet *layerAnnotations = [NSMutableSet set];
-        [annotationSet enumerateObjectsUsingBlock:^(id<MGSAnnotation> annotation, BOOL* stop) {
-            AGSGraphic *graphic = [self createGraphicForAnnotation:annotation];
+            deletedLayerAnnotations = [self layerAnnotationsForAnnotations:annotationSet];
+            [deletedLayerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation* layerAnnotation, BOOL* stop) {
+                if (layerAnnotation.graphic) {
+                    [graphicsSet addObject:layerAnnotation.graphic];
+                }
+            }];
 
-            MGSLayerAnnotation *layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
-                                                                                         graphic:graphic];
-            [layerAnnotations addObject:layerAnnotation];
+            deletedGraphics = graphicsSet;
+        }
 
-            if (graphic) {
-                [graphicsSet addObject:layerAnnotation.graphic];
-            }
-        }];
+        {
+            NSMutableSet *graphicsSet = [NSMutableSet set];
+            NSMutableSet *annotationSet = [NSMutableSet setWithSet:currentAnnotations];
+            [annotationSet minusSet:cachedAnnotations];
 
-        addedLayerAnnotations = layerAnnotations;
-        addedGraphics = graphicsSet;
+            NSMutableSet *layerAnnotations = [NSMutableSet set];
+            [annotationSet enumerateObjectsUsingBlock:^(id<MGSAnnotation> annotation, BOOL* stop) {
+                AGSGraphic *graphic = [self createGraphicForAnnotation:annotation];
+
+                MGSLayerAnnotation *layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
+                                                                                             graphic:graphic];
+                [layerAnnotations addObject:layerAnnotation];
+
+                if (graphic) {
+                    [graphicsSet addObject:layerAnnotation.graphic];
+                }
+            }];
+
+            addedLayerAnnotations = layerAnnotations;
+            addedGraphics = graphicsSet;
+        }
     }
 
     NSMutableSet *existingGraphics = [NSMutableSet setWithArray:self.graphicsLayer.graphics];
@@ -213,8 +218,9 @@
 
     // Make sure everything is in the correct spatial reference!
     [existingGraphics enumerateObjectsUsingBlock:^(AGSGraphic* graphic, BOOL* stop) {
-            graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
-                                                                       toSpatialReference:self.spatialReference];
+        // Reproject all the things!
+        graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
+                                                                   toSpatialReference:self.spatialReference];
     }];
 
     // Sort the add order of the annotations so they are added
@@ -272,7 +278,7 @@
                     markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:markerImage];
                     options = safeAnnotation.markerOptions;
                 } else {
-                    markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:[UIImage imageNamed:@"map/map_pin_complete"]];
+                    markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"];
                     options = MGSMarkerOptionsMake(CGPointMake(0.0, 8.0), CGPointMake(2.0, 16.0));
                 }
 
@@ -398,6 +404,21 @@
         }
 
         return annotationGraphic;
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+    if ([object isEqual:self.layer] && [keyPath isEqualToString:@"annotations"]) {
+        [self syncAnnotations];
+    } else {
+        [super observeValueForKeyPath:keyPath
+                             ofObject:object
+                               change:change
+                              context:context];
     }
 }
 @end
