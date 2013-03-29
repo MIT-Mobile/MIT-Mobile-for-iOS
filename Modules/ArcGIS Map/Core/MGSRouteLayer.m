@@ -43,8 +43,8 @@
     return self;
 }
 
-- (NSArray*)annotations {
-    NSMutableArray *annotations = [NSMutableArray arrayWithArray:[super annotations]];
+- (NSOrderedSet*)annotations {
+    NSMutableOrderedSet *annotations = [[super annotations] mutableCopy];
     [annotations removeObject:self.routePath];
 
     return annotations;
