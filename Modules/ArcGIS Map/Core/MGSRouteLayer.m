@@ -49,24 +49,4 @@
 
     return annotations;
 }
-
-- (void)willReloadMapLayer
-{
-    [super willReloadMapLayer];
-
-    if ((self.routePath == nil) && [self.pathCoordinates count]) {
-        MGSSimpleAnnotation *annotation = [[MGSSimpleAnnotation alloc] init];
-        annotation.annotationType = MGSAnnotationPolyline;
-        annotation.points = self.pathCoordinates;
-        annotation.lineWidth = self.lineWidth;
-        annotation.strokeColor = self.lineColor;
-        self.routePath = annotation;
-    }
-    
-    if (self.routePath) {
-        // Make sure the route is *always* underneath everything else
-        [self insertAnnotation:self.routePath
-                       atIndex:0];
-    }
-}
 @end
