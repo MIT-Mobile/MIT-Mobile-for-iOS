@@ -41,7 +41,6 @@
 - (AGSEnvelope*)defaultVisibleArea;
 - (AGSEnvelope*)defaultMaximumEnvelope;
 - (MGSLayerManager*)managerForLayer:(MGSLayer*)layer;
-- (void)setManager:(MGSLayerManager*)manager forLayer:(MGSLayer*)layer;
 @end
 
 @implementation MGSMapView
@@ -327,15 +326,11 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
             [self willAddLayer:newLayer];
         }
 
-        // The map view will only have a spatial reference once it has been
+        // The map view will only have a spatial reference once it has been loaded
         if (self.mapView.spatialReference) {
-            NSUInteger agsIndex = [self.coreLayers count] + index;
-            [layerManager loadGraphicsLayerWithSpatialReference:self.mapView.spatialReference];
-            [self.mapView insertMapLayer:layerManager.graphicsLayer
-                                 atIndex:agsIndex];
+            [self syncLayers:@[newLayer]];
         }
 
-        [self.externalLayerManagers addObject:layerManager];
         [self.externalLayers insertObject:newLayer
                                   atIndex:index];
 
@@ -347,9 +342,7 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
                 toIndex:[self.externalLayers count]];
     }
 
-    if (layerManager.graphicsLayer) {
-        [layerManager syncAnnotations];
-    }
+    [layerManager syncAnnotations];
 }
 
 #pragma mark - Remove Layers
@@ -365,10 +358,10 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     MGSLayerManager* layerManager = [self managerForLayer:layer];
 
     if (layerManager == nil) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"fatal error: external layers out of sync"
-                                     userInfo:nil];
-    } else if (layer) {
+        DDLogError(@"external layers out of sync during removal of '%@'", layer.name);
+    }
+
+    if (layer) {
         if (notifyDelegate) {
             [self willRemoveLayer:layer];
         }
@@ -395,11 +388,13 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 {
     NSUInteger layerIndex = [self.externalLayers indexOfObject:layer];
 
-    // Subtract 1 from the new index because we need to remove
-    // the layer before moving it.
-    newIndex -= 1;
+    if (newIndex > layerIndex) {
+        // Subtract 1 from the new index because we need to remove
+        // the layer before moving it.
+        newIndex -= 1;
+    }
 
-    if (layerIndex != NSNotFound) {
+    if ((layerIndex != NSNotFound) && (layerIndex != newIndex)) {
         [self removeLayer:layer
       shoulNotifyDelegate:NO];
 
@@ -661,6 +656,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [self showCalloutForAnnotation:annotation];
     }
 
+    [self syncLayers:self.externalLayers];
     [self didFinishLoadingMapView];
 }
 

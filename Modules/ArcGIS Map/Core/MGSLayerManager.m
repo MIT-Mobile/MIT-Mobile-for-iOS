@@ -21,7 +21,6 @@
 @end
 
 @implementation MGSLayerManager
-@dynamic spatialReference;
 @dynamic allAnnotations;
 
 - (id)initWithLayer:(MGSLayer*)layer

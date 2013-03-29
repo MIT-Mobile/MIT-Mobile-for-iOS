@@ -19,7 +19,7 @@
 @property (nonatomic,readonly,strong) MGSLayer *layer;
 @property (nonatomic,readonly) NSSet *allAnnotations;
 @property (nonatomic,readonly,strong) AGSGraphicsLayer *graphicsLayer;
-@property (nonatomic,readonly) AGSSpatialReference *spatialReference;
+@property (nonatomic,strong) AGSSpatialReference *spatialReference;
 @property (nonatomic,weak) id<MGSLayerManagerDelegate> delegate;
 
 - (id)initWithLayer:(MGSLayer*)layer;
