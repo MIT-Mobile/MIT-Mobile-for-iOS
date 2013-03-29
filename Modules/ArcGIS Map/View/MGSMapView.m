@@ -743,7 +743,11 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)mapView:(AGSMapView*)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
 {
-
+    if ([self.delegate respondsToSelector:@selector(mapView:didReceiveTapAtCoordinate:screenPoint:)]) {
+        [self.delegate mapView:self
+     didReceiveTapAtCoordinate:CLLocationCoordinate2DFromAGSPoint(mappoint)
+                   screenPoint:screen];
+    }
 }
 
 - (void)mapView:(AGSMapView*)mapView didTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
