@@ -40,7 +40,6 @@
 - (void)coreLayersDidFinishLoading;
 - (AGSEnvelope*)defaultVisibleArea;
 - (AGSEnvelope*)defaultMaximumEnvelope;
-- (MGSLayerManager*)layerManagerForLayer:(MGSLayer*)layer;
 @end
 
 @implementation MGSMapView
@@ -941,7 +940,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                       willAddLayer:layer];
         }
         
-        [layer willAddLayerToMapView:self];
+        [layer willAddToMapView:self];
     }];
 }
 
@@ -953,7 +952,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                        didAddLayer:layer];
         }
         
-        [layer didAddLayerToMapView:self];
+        [layer didAddToMapView:self];
     }];
 }
 
@@ -965,7 +964,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                    willRemoveLayer:layer];
         }
         
-        [layer willRemoveLayerFromMapView:self];
+        [layer willRemoveFromMapView:self];
     }];
 }
 
@@ -977,7 +976,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                     didRemoveLayer:layer];
         }
         
-        [layer didRemoveLayerFromMapView:self];
+        [layer didRemoveFromMapView:self];
     }];
 }
 
