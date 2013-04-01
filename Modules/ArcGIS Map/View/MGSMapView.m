@@ -40,6 +40,23 @@
 - (void)coreLayersDidFinishLoading;
 - (AGSEnvelope*)defaultVisibleArea;
 - (AGSEnvelope*)defaultMaximumEnvelope;
+
+#pragma mark Delegation Helpers
+- (BOOL)shouldShowCalloutForAnnotation:(id<MGSAnnotation>)annotation;
+- (void)willShowCalloutForAnnotation:(id <MGSAnnotation>)annotation;
+- (UIView*)calloutViewForAnnotation:(id<MGSAnnotation>)annotation;
+- (void)calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation;
+- (void)didShowCalloutForAnnotation:(id <MGSAnnotation>)annotation;
+- (void)didDismissCalloutForAnnotation:(id<MGSAnnotation>)annotation;
+
+- (void)didFinishLoadingMapView;
+- (void)willAddLayer:(MGSLayer *)layer;
+- (void)didAddLayer:(MGSLayer *)layer;
+- (void)willRemoveLayer:(MGSLayer *)layer;
+- (void)didRemoveLayer:(MGSLayer *)layer;
+
+- (void)userLocationDidUpdate:(CLLocation*)location;
+- (void)userLocationUpdateFailedWithError:(NSError*)error;
 @end
 
 @implementation MGSMapView
@@ -659,182 +676,19 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     [self didFinishLoadingMapView];
 }
 
-@end
 
-#pragma mark -
-@implementation MGSMapView (AGSMapViewLayerDelegate)
-- (void)mapViewDidLoad:(AGSMapView*)mapView
-{
-    DDLogVerbose(@"basemap loaded with WKID %d", mapView.spatialReference.wkid);
-
-    AGSEnvelope* maxEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultMaximumEnvelope]
-                                                                                      toSpatialReference:mapView.spatialReference];
-    mapView.maxEnvelope = maxEnvelope;
-
-    if (self.initialMapRegionWasSet) {
-        [self setMapRegion:self.initialRegion
-                  animated:NO];
-    } else {
-        AGSEnvelope* visibleEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultVisibleArea]
-                                                                                              toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
-
-        MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DFromAGSPoint(visibleEnvelope.center),
-                                                           MKCoordinateSpanMake(fabs(visibleEnvelope.ymax - visibleEnvelope.ymin),
-                                                                                fabs(visibleEnvelope.xmax - visibleEnvelope.xmin)));
-        [self setMapRegion:region
-                  animated:NO];
-    }
-}
-@end
-
-#pragma mark -
-@implementation MGSMapView (AGSMapViewCalloutDelegate)
-- (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForGraphic:(AGSGraphic*)graphic
-{
-    MGSLayer* myLayer = [self layerContainingGraphic:graphic];
-    MGSLayerManager* manager = [self layerManagerForLayer:myLayer];
-    id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
-    BOOL result = [self shouldShowCalloutForAnnotation:annotation];
-
-    if (result) {
-        UIView* customView = [self calloutViewForAnnotation:annotation];
-
-        if (customView || graphic.infoTemplateDelegate) {
-            [self willShowCalloutForAnnotation:annotation];
-
-            if (customView) {
-                self.mapView.callout.customView = customView;
-            }
-        }
-    }
-
-    if (result) {
-        [self showCalloutForAnnotation:annotation];
-    }
-
-    return NO;
-}
-
-- (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForLocationDisplay:(AGSLocationDisplay*)ld
-{
-    return NO;
-}
-
-- (void)mapViewWillDismissCallout:(AGSMapView*)mapView
-{
-}
-
-- (void)mapViewDidDismissCallout:(AGSMapView*)mapView
-{
-    if (self.calloutAnnotation) {
-        [self didDismissCalloutForAnnotation:self.calloutAnnotation];
-        self.calloutAnnotation = nil;
-    }
-}
-@end
-
-#pragma mark -
-@implementation MGSMapView (AGSMapViewTouchDelegate)
-- (BOOL)mapView:(AGSMapView*)mapView shouldProcessClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint
-{
-    return YES;
-}
-
-- (void)mapView:(AGSMapView*)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
-{
-    if ([self.delegate respondsToSelector:@selector(mapView:didReceiveTapAtCoordinate:screenPoint:)]) {
-        [self.delegate mapView:self
-     didReceiveTapAtCoordinate:CLLocationCoordinate2DFromAGSPoint(mappoint)
-                   screenPoint:screen];
-    }
-}
-
-- (void)mapView:(AGSMapView*)mapView didTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
-{
-
-}
-
-- (void)mapView:(AGSMapView*)mapView didMoveTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
-{
-
-}
-
-- (void)mapView:(AGSMapView*)mapView didEndTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
-{
-
-}
-
-- (void)mapViewDidCancelTapAndHold:(AGSMapView*)mapView
-{
-
-}
-@end
-
-@implementation MGSMapView (AGSCalloutDelegate)
-- (void)didClickAccessoryButtonForCallout:(AGSCallout*)callout
-{
-    if (self.calloutAnnotation) {
-        [self calloutDidReceiveTapForAnnotation:self.calloutAnnotation];
-    }
-}
-
-@end
-
-#pragma mark -
-@implementation MGSMapView (AGSLayerDelegate)
-- (void)layer:(AGSLayer*)loadedLayer didInitializeSpatialReferenceStatus:(BOOL)srStatusValid
-{
-    if (srStatusValid) {
-        DDLogVerbose(@"initialized spatial reference for layer '%@' to %d", loadedLayer.name, [loadedLayer.spatialReference wkid]);
-    }
-    else {
-        DDLogError(@"failed to initialize spatial reference for layer '%@'", loadedLayer.name);
-        [self.coreLayers removeObjectForKey:loadedLayer.name];
-        [self.mapView removeMapLayer:loadedLayer];
-    }
-
-    // Perform the coreLayersLoaded checking here since we don't want to add any of the
-    // user layers until we actually have a spatial reference to work with.
-    if (self.coreLayers[loadedLayer.name] != nil) {
-        if (self.coreLayersLoaded == NO) {
-            __block BOOL layersLoaded = YES;
-            [self.coreLayers enumerateKeysAndObjectsUsingBlock:^(NSString* name, AGSLayer* layer, BOOL* stop) {
-                layersLoaded = (layersLoaded && layer.loaded);
-            }];
-
-
-            // Check again after we iterate through everything to make sure the state
-            // hasn't changed now that we have another layer loaded
-            if (layersLoaded) {
-                self.coreLayersLoaded = YES;
-                [self coreLayersDidFinishLoading];
-            }
-        }
-    }
-}
-
-- (void)layer:(AGSLayer*)layer didFailToLoadWithError:(NSError*)error
-{
-    DDLogError(@"failed to load layer '%@': %@", layer.name, [error localizedDescription]);
-    [self.coreLayers removeObjectForKey:layer.name];
-    [self.mapView removeMapLayer:layer];
-}
-@end
-
-#pragma mark -
-@implementation MGSMapView (DelegateHelpers)
-#pragma mark Callout Handling
+#pragma mark Delegation Helpers
 - (BOOL)shouldShowCalloutForAnnotation:(id <MGSAnnotation>)annotation
 {
     MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
     BOOL showCallout = ((safeAnnotation.annotationType == MGSAnnotationMarker) ||
                         (safeAnnotation.annotationType == MGSAnnotationPointOfInterest));
-
+    
     if ([self.delegate respondsToSelector:@selector(mapView:shouldShowCalloutForAnnotation:)]) {
         showCallout = [self.delegate mapView:self
               shouldShowCalloutForAnnotation:annotation];
     }
-
+    
     return showCallout;
 }
 
@@ -852,46 +706,34 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     if ([[NSThread currentThread] isMainThread] == NO) {
         DDLogError(@"attempting to perform UI actions on background thread, expect failure");
     }
-
+    
     __block UIView* view = nil;
-    NSBlockOperation* operation = [NSBlockOperation blockOperationWithBlock:^{
-        if (annotation) {
-            MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-
-            if ([self.delegate respondsToSelector:@selector(mapView:calloutViewForAnnotation:)]) {
-                view = [self.delegate mapView:self
-                     calloutViewForAnnotation:annotation];
-            }
-
-            // If the view is still nil, create a default one!
-            if (view == nil) {
-                MGSCalloutView* calloutView = [[MGSCalloutView alloc] init];
-
-                calloutView.titleLabel.text = safeAnnotation.title;
-                calloutView.detailLabel.text = safeAnnotation.detail;
-                calloutView.imageView.image = safeAnnotation.calloutImage;
-
-                // This view could potentially be hanging around for a long time,
-                // we don't want strong references to the layer or the annotation
-                __weak MGSMapView* weakSelf = self;
-                __weak id <MGSAnnotation> weakAnnotation = annotation;
-                calloutView.accessoryBlock = ^(id sender) {
-                    [weakSelf calloutDidReceiveTapForAnnotation:weakAnnotation];
-                };
-            }
+    if (annotation) {
+        MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+        
+        if ([self.delegate respondsToSelector:@selector(mapView:calloutViewForAnnotation:)]) {
+            view = [self.delegate mapView:self
+                 calloutViewForAnnotation:annotation];
         }
-    }];
-
-
-    if ([[NSThread currentThread] isMainThread]) {
-        [[NSOperationQueue currentQueue] addOperations:@[operation]
-                                     waitUntilFinished:YES];
-    } else {
-        [[NSOperationQueue mainQueue] addOperations:@[operation]
-                                  waitUntilFinished:YES];
+        
+        // If the view is still nil, create a default one!
+        if (view == nil) {
+            MGSCalloutView* calloutView = [[MGSCalloutView alloc] init];
+            
+            calloutView.titleLabel.text = safeAnnotation.title;
+            calloutView.detailLabel.text = safeAnnotation.detail;
+            calloutView.imageView.image = safeAnnotation.calloutImage;
+            
+            // This view could potentially be hanging around for a long time,
+            // we don't want strong references to the layer or the annotation
+            __weak MGSMapView* weakSelf = self;
+            __weak id <MGSAnnotation> weakAnnotation = annotation;
+            calloutView.accessoryBlock = ^(id sender) {
+                [weakSelf calloutDidReceiveTapForAnnotation:weakAnnotation];
+            };
+        }
     }
-
-
+    
     return view;
 }
 
@@ -1002,13 +844,159 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 }
 @end
 
-@implementation MGSMapView (AGSLocationDisplayDataSourceDelegate)
+#pragma mark - AGSDelegation
+@implementation MGSMapView (AGSDelegation)
+- (void)mapViewDidLoad:(AGSMapView*)mapView
+{
+    DDLogVerbose(@"basemap loaded with WKID %d", mapView.spatialReference.wkid);
+
+    AGSEnvelope* maxEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultMaximumEnvelope]
+                                                                                      toSpatialReference:mapView.spatialReference];
+    mapView.maxEnvelope = maxEnvelope;
+
+    if (self.initialMapRegionWasSet) {
+        [self setMapRegion:self.initialRegion
+                  animated:NO];
+    } else {
+        AGSEnvelope* visibleEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultVisibleArea]
+                                                                                              toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
+
+        MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DFromAGSPoint(visibleEnvelope.center),
+                                                           MKCoordinateSpanMake(fabs(visibleEnvelope.ymax - visibleEnvelope.ymin),
+                                                                                fabs(visibleEnvelope.xmax - visibleEnvelope.xmin)));
+        [self setMapRegion:region
+                  animated:NO];
+    }
+}
+
+- (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForGraphic:(AGSGraphic*)graphic
+{
+    MGSLayer* myLayer = [self layerContainingGraphic:graphic];
+    MGSLayerManager* manager = [self layerManagerForLayer:myLayer];
+    id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
+    BOOL result = [self shouldShowCalloutForAnnotation:annotation];
+
+    if (result) {
+        UIView* customView = [self calloutViewForAnnotation:annotation];
+
+        if (customView || graphic.infoTemplateDelegate) {
+            [self willShowCalloutForAnnotation:annotation];
+
+            if (customView) {
+                self.mapView.callout.customView = customView;
+            }
+        }
+    }
+
+    if (result) {
+        [self showCalloutForAnnotation:annotation];
+    }
+
+    return NO;
+}
+
+- (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForLocationDisplay:(AGSLocationDisplay*)ld
+{
+    return NO;
+}
+
+- (void)mapViewWillDismissCallout:(AGSMapView*)mapView
+{
+}
+
+- (void)mapViewDidDismissCallout:(AGSMapView*)mapView
+{
+    if (self.calloutAnnotation) {
+        [self didDismissCalloutForAnnotation:self.calloutAnnotation];
+        self.calloutAnnotation = nil;
+    }
+}
+
+- (BOOL)mapView:(AGSMapView*)mapView shouldProcessClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint
+{
+    return YES;
+}
+
+- (void)mapView:(AGSMapView*)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
+{
+    if ([self.delegate respondsToSelector:@selector(mapView:didReceiveTapAtCoordinate:screenPoint:)]) {
+        [self.delegate mapView:self
+     didReceiveTapAtCoordinate:CLLocationCoordinate2DFromAGSPoint(mappoint)
+                   screenPoint:screen];
+    }
+}
+
+- (void)mapView:(AGSMapView*)mapView didTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
+{
+
+}
+
+- (void)mapView:(AGSMapView*)mapView didMoveTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
+{
+
+}
+
+- (void)mapView:(AGSMapView*)mapView didEndTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
+{
+
+}
+
+- (void)mapViewDidCancelTapAndHold:(AGSMapView*)mapView
+{
+
+}
+
+- (void)didClickAccessoryButtonForCallout:(AGSCallout*)callout
+{
+    if (self.calloutAnnotation) {
+        [self calloutDidReceiveTapForAnnotation:self.calloutAnnotation];
+    }
+}
+
+- (void)layer:(AGSLayer*)loadedLayer didInitializeSpatialReferenceStatus:(BOOL)srStatusValid
+{
+    if (srStatusValid) {
+        DDLogVerbose(@"initialized spatial reference for layer '%@' to %d", loadedLayer.name, [loadedLayer.spatialReference wkid]);
+    }
+    else {
+        DDLogError(@"failed to initialize spatial reference for layer '%@'", loadedLayer.name);
+        [self.coreLayers removeObjectForKey:loadedLayer.name];
+        [self.mapView removeMapLayer:loadedLayer];
+    }
+
+    // Perform the coreLayersLoaded checking here since we don't want to add any of the
+    // user layers until we actually have a spatial reference to work with.
+    if (self.coreLayers[loadedLayer.name] != nil) {
+        if (self.coreLayersLoaded == NO) {
+            __block BOOL layersLoaded = YES;
+            [self.coreLayers enumerateKeysAndObjectsUsingBlock:^(NSString* name, AGSLayer* layer, BOOL* stop) {
+                layersLoaded = (layersLoaded && layer.loaded);
+            }];
+
+
+            // Check again after we iterate through everything to make sure the state
+            // hasn't changed now that we have another layer loaded
+            if (layersLoaded) {
+                self.coreLayersLoaded = YES;
+                [self coreLayersDidFinishLoading];
+            }
+        }
+    }
+}
+
+- (void)layer:(AGSLayer*)layer didFailToLoadWithError:(NSError*)error
+{
+    DDLogError(@"failed to load layer '%@': %@", layer.name, [error localizedDescription]);
+    [self.coreLayers removeObjectForKey:layer.name];
+    [self.mapView removeMapLayer:layer];
+}
+
 - (void)locationDisplayDataSource:(id <AGSLocationDisplayDataSource>)dataSource
                  didFailWithError:(NSError*)error
 {
     DDLogVerbose(@"Failed to locate user: %@", error);
     [self userLocationUpdateFailedWithError:error];
-
+    
     // Forward the notification to the location display because
     // the SDK doesn't allow us to receive notifications from the
     // location data source and still automatically display
