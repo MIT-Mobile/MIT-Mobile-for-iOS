@@ -41,10 +41,10 @@
 // multiple times! Since a layer may be safely added to
 // several map view, it will receive notifications for
 // each map view it is added/removed from
-- (void)willAddToMapView:(MGSMapView*)mapView;
-- (void)didAddToMapView:(MGSMapView*)mapView;
-- (void)willRemoveFromMapView:(MGSMapView*)mapView;
-- (void)didRemoveFromMapView:(MGSMapView*)mapView;
+- (void)willAddLayerToMapView:(MGSMapView*)mapView;
+- (void)didAddLayerToMapView:(MGSMapView*)mapView;
+- (void)willRemoveLayerFromMapView:(MGSMapView*)mapView;
+- (void)didRemoveLayerFromMapView:(MGSMapView*)mapView;
 
 - (void)willAddAnnotations:(NSArray*)annotations;
 - (void)didAddAnnotations:(NSArray*)annotations;

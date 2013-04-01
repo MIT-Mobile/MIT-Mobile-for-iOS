@@ -40,6 +40,7 @@
 - (void)coreLayersDidFinishLoading;
 - (AGSEnvelope*)defaultVisibleArea;
 - (AGSEnvelope*)defaultMaximumEnvelope;
+- (MGSLayerManager*)layerManagerForLayer:(MGSLayer*)layer;
 
 #pragma mark Delegation Helpers
 - (BOOL)shouldShowCalloutForAnnotation:(id<MGSAnnotation>)annotation;
@@ -782,7 +783,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                       willAddLayer:layer];
         }
         
-        [layer willAddToMapView:self];
+        [layer willAddLayerToMapView:self];
     }];
 }
 
@@ -794,7 +795,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                        didAddLayer:layer];
         }
         
-        [layer didAddToMapView:self];
+        [layer didAddLayerToMapView:self];
     }];
 }
 
@@ -806,7 +807,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                    willRemoveLayer:layer];
         }
         
-        [layer willRemoveFromMapView:self];
+        [layer willRemoveLayerFromMapView:self];
     }];
 }
 
@@ -818,7 +819,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                     didRemoveLayer:layer];
         }
         
-        [layer didRemoveFromMapView:self];
+        [layer didRemoveLayerFromMapView:self];
     }];
 }
 
