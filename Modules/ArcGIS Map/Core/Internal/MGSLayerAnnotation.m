@@ -6,12 +6,9 @@
 @interface MGSLayerAnnotation ()
 @property (nonatomic,strong) AGSGraphic *graphic;
 @property (nonatomic,strong) id<MGSAnnotation> annotation;
-
-- (UIView*)customViewForGraphic:(AGSGraphic*)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint*)mapPoint;
 @end
 
 @implementation MGSLayerAnnotation
-@dynamic wrappedAnnotation;
 
 - (id)initWithLayerAnnotation:(MGSLayerAnnotation*)layerAnnotation
 {
@@ -39,11 +36,6 @@
     return self;
 }
 
-- (MGSSafeAnnotation*)wrappedAnnotation
-{
-    return [[MGSSafeAnnotation alloc] initWithAnnotation:self.annotation];
-}
-
 - (BOOL)isEqual:(id)object
 {
     if ([super isEqual:object]) {
@@ -65,10 +57,5 @@
 {
     return [[[self class] allocWithZone:zone] initWithAnnotation:self.annotation
                                                          graphic:self.graphic];
-}
-
-- (UIView*)customViewForGraphic:(AGSGraphic*)graphic screenPoint:(CGPoint)screen mapPoint:(AGSPoint*)mapPoint
-{
-    return nil;
 }
 @end

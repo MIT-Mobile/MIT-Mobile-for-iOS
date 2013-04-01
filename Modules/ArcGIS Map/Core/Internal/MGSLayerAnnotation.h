@@ -5,10 +5,9 @@
 @class MGSLayer;
 @class AGSGraphic;
 
-@interface MGSLayerAnnotation : NSObject <AGSInfoTemplateDelegate,NSCopying>
+@interface MGSLayerAnnotation : NSObject <NSCopying>
 @property (nonatomic,readonly,strong) AGSGraphic *graphic;
 @property (nonatomic,readonly,strong) id<MGSAnnotation> annotation;
-@property (nonatomic,readonly) MGSSafeAnnotation* wrappedAnnotation;
 
 - (id)initWithLayerAnnotation:(MGSLayerAnnotation*)layerAnnotation;
 - (id)initWithAnnotation:(id<MGSAnnotation>)annotation
