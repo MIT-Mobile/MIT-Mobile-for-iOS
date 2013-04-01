@@ -4,6 +4,7 @@
 @class MGSLayer;
 @class MGSLayerManager;
 @class MGSLayerAnnotation;
+@class MGSMapView;
 @protocol MGSAnnotation;
 
 @protocol MGSLayerManagerDelegate <NSObject>
@@ -17,8 +18,9 @@
 
 @interface MGSLayerManager : NSObject
 @property (nonatomic,readonly,strong) MGSLayer *layer;
+@property (nonatomic,weak) MGSMapView *mapView;
+@property (nonatomic,readonly,weak) AGSGraphicsLayer *graphicsLayer;
 @property (nonatomic,readonly) NSSet *allAnnotations;
-@property (nonatomic,readonly,strong) AGSGraphicsLayer *graphicsLayer;
 
 // The behavior for this property is a bit odd. If the graphics layer
 // has a valid spatial reference, it will be returned by the spatialReference getter,
