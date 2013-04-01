@@ -126,6 +126,7 @@
             view.layerDelegate = self;
             view.touchDelegate = self;
             view.calloutDelegate = self;
+            view.maxEnvelope = [self defaultMaximumEnvelope];
 
 
             [self addSubview:view];
@@ -226,7 +227,6 @@
         _activeMapSet = mapSetName;
     }
 }
-#pragma mark -
 
 #pragma mark - Dynamic Properties
 - (NSMutableSet*)externalLayerManagers
@@ -324,7 +324,7 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
             layerManager = [[MGSLayerManager alloc] initWithLayer:newLayer];
             [self.externalLayerManagers addObject:layerManager];
         }
-
+        
         if (notifyDelegate) {
             [self willAddLayer:newLayer];
         }
@@ -690,11 +690,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (UIView*)calloutViewForAnnotation:(id <MGSAnnotation>)annotation
 {
-    if ([[NSThread currentThread] isMainThread] == NO) {
-        DDLogError(@"attempting to perform UI actions on background thread, expect failure");
-    }
-    
-    __block UIView* view = nil;
+    UIView* view = nil;
     if (annotation) {
         MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
         
@@ -861,25 +857,12 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     MGSLayer* myLayer = [self layerContainingGraphic:graphic];
     MGSLayerManager* manager = [self layerManagerForLayer:myLayer];
     id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
-    BOOL result = [self shouldShowCalloutForAnnotation:annotation];
-
-    if (result) {
-        UIView* customView = [self calloutViewForAnnotation:annotation];
-
-        if (customView || graphic.infoTemplateDelegate) {
-            [self willShowCalloutForAnnotation:annotation];
-
-            if (customView) {
-                self.mapView.callout.customView = customView;
-            }
-        }
+    
+    if (graphic.infoTemplateDelegate == nil) {
+        graphic.infoTemplateDelegate = self;
     }
-
-    if (result) {
-        [self showCalloutForAnnotation:annotation];
-    }
-
-    return NO;
+    
+    return [self shouldShowCalloutForAnnotation:annotation];
 }
 
 - (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForLocationDisplay:(AGSLocationDisplay*)ld
@@ -906,6 +889,50 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)mapView:(AGSMapView*)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
 {
+    CGPoint viewPoint = [self.mapView convertPoint:screen
+                                          fromView:nil];
+    
+    if (self.isPresentingCallout) {
+        if (CGRectContainsPoint(self.mapView.callout.frame, viewPoint) == NO) {
+            [self dismissCallout];
+        }
+    }
+    
+    NSMutableArray *tappedGraphics = [NSMutableArray array];
+    [graphics enumerateKeysAndObjectsUsingBlock:^(id key, NSArray *layerGraphics, BOOL *stop) {
+        [tappedGraphics addObjectsFromArray:layerGraphics];
+    }];
+    
+    if ([tappedGraphics count]) {
+        [tappedGraphics sortUsingComparator:^NSComparisonResult(AGSGraphic *graphic1, AGSGraphic *graphic2) {
+            MGSLayer *layer1 = [self layerContainingGraphic:graphic1];
+            NSUInteger index1 = [self.externalLayers indexOfObject:layer1];
+            
+            MGSLayer *layer2 = [self layerContainingGraphic:graphic2];
+            NSUInteger index2 = [self.externalLayers indexOfObject:layer2];
+            
+            if (index1 < index2) {
+                return NSOrderedDescending;
+            } else if (index1 > index2) {
+                return NSOrderedAscending;
+            } else {
+                return NSOrderedSame;
+            }
+        }];
+        
+        [tappedGraphics enumerateObjectsUsingBlock:^(AGSGraphic *graphic, NSUInteger idx, BOOL *stop) {
+            BOOL showCallout = [self mapView:mapView
+                 shouldShowCalloutForGraphic:graphic];
+            
+            if (showCallout) {
+                (*stop) = YES;
+                [self.mapView.callout showCalloutAtPoint:nil
+                                              forGraphic:graphic
+                                                animated:YES];
+            }
+        }];
+    }
+    
     if ([self.delegate respondsToSelector:@selector(mapView:didReceiveTapAtCoordinate:screenPoint:)]) {
         [self.delegate mapView:self
      didReceiveTapAtCoordinate:CLLocationCoordinate2DFromAGSPoint(mappoint)
@@ -1022,5 +1049,17 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)locationDisplayDataSourceStopped:(id <AGSLocationDisplayDataSource>)dataSource
 {
     [self.mapView.locationDisplay locationDisplayDataSourceStopped:dataSource];
+}
+
+#pragma mark AGSInfoTemplateDelegate
+- (UIView*)customViewForGraphic:(AGSGraphic *)graphic
+                    screenPoint:(CGPoint)screen
+                       mapPoint:(AGSPoint *)mapPoint
+{
+    MGSLayer* myLayer = [self layerContainingGraphic:graphic];
+    MGSLayerManager* manager = [self layerManagerForLayer:myLayer];
+    id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
+    
+    return [self calloutViewForAnnotation:annotation];
 }
 @end
