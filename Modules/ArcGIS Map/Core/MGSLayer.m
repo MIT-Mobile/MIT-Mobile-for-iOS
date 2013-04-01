@@ -3,7 +3,7 @@
 #import <CoreLocation/CoreLocation.h>
 
 #import "MGSLayer.h"
-#import "MGSUtility.h"
+#import "MGSGeometry.h"
 #import "CoreLocation+MITAdditions.h"
 #import "MapKit+MITAdditions.h"
 #import "MGSSafeAnnotation.h"
@@ -35,32 +35,6 @@
     }
 
     return automatic;
-}
-
-+ (MKCoordinateRegion)regionForAnnotations:(NSSet *)annotations {
-    NSMutableArray *coordinates = [NSMutableArray array];
-    
-    for (id<MGSAnnotation> annotation in annotations) {
-        MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-        
-        switch (safeAnnotation.annotationType) {
-            case MGSAnnotationMarker:
-            case MGSAnnotationPointOfInterest: {
-                [coordinates addObject:[NSValue valueWithCLLocationCoordinate:safeAnnotation.coordinate]];
-            }
-                break;
-                
-            case MGSAnnotationPolygon:
-            case MGSAnnotationPolyline: {
-                if ([safeAnnotation.points count]) {
-                    [coordinates addObjectsFromArray:safeAnnotation.points];
-                }
-            }
-                break;
-        }
-    }
-    
-    return MKCoordinateRegionForCoordinates([NSSet setWithArray:coordinates]);
 }
 
 - (id)init {
@@ -183,7 +157,7 @@
 }
 
 - (MKCoordinateRegion)regionForAnnotations {
-    return [MGSLayer regionForAnnotations:[self.layerAnnotations set]];
+    return MKCoordinateRegionForMGSAnnotations([self.layerAnnotations set]);
 }
 
 #pragma mark - Map Layer Delegation

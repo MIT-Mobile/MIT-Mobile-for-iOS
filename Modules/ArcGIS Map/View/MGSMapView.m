@@ -4,6 +4,7 @@
 #import "MGSMapView+Delegation.h"
 
 #import "MGSUtility.h"
+#import "MGSGeometry.h"
 #import "MGSLayer.h"
 #import "MGSCalloutView.h"
 
@@ -13,7 +14,7 @@
 #import "MGSLayerAnnotation.h"
 
 
-@interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate>
+@interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate, AGSInfoTemplateDelegate>
 #pragma mark - Basemap Management (Declaration)
 @property(assign) BOOL coreLayersLoaded;
 @property(strong) NSMutableDictionary* coreLayers;
@@ -63,21 +64,6 @@
 @implementation MGSMapView
 @dynamic mapSets;
 @dynamic showUserLocation;
-
-+ (MGSZoomLevel)zoomLevelForMKCoordinateSpan:(MKCoordinateSpan)span
-{
-    return (MGSZoomLevel) (log2(360.0f / span.longitudeDelta) - 1.0);
-}
-
-+ (MKCoordinateSpan)coordinateSpanForZoomLevel:(MGSZoomLevel)zoomLevel
-{
-    CGFloat longitudeDelta = (CGFloat) (360.0f / pow(2.0, zoomLevel + 1.0));
-    CGFloat latitudeDelta = longitudeDelta;
-
-    MKCoordinateSpan span = MKCoordinateSpanMake(latitudeDelta, longitudeDelta);
-
-    return span;
-}
 
 - (id)init
 {
@@ -441,13 +427,13 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 #pragma mark - Map Region Mutators
 - (MGSZoomLevel)zoomLevel
 {
-    return [MGSMapView zoomLevelForMKCoordinateSpan:self.mapRegion.span];
+    return MGSZoomLevelForMKCoordinateSpan(self.mapRegion.span);
 }
 
 - (void)setZoomLevel:(MGSZoomLevel)zoomLevel
 {
     MKCoordinateRegion region = self.mapRegion;
-    region.span = [MGSMapView coordinateSpanForZoomLevel:zoomLevel];
+    region.span = MKCoordinateSpanForMGSZoomLevel(zoomLevel);
 
     self.mapRegion = region;
 }
@@ -535,7 +521,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate
                   animated:(BOOL)animated
 {
-    MKCoordinateSpan span = [MGSMapView coordinateSpanForZoomLevel:self.zoomLevel];
+    MKCoordinateSpan span = MKCoordinateSpanForMGSZoomLevel(self.zoomLevel);
 
     [self setMapRegion:MKCoordinateRegionMake(coordinate, span)
               animated:animated];

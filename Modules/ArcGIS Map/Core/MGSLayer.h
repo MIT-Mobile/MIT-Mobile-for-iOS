@@ -21,8 +21,6 @@
 @property (nonatomic,strong) NSString *name;
 @property (nonatomic,strong) NSOrderedSet *annotations;
 
-+ (MKCoordinateRegion)regionForAnnotations:(NSSet*)annotations;
-
 - (void)setAnnotationWithArray:(NSArray*)annotations;
 - (void)addAnnotation:(id<MGSAnnotation>)annotation;
 - (void)addAnnotations:(NSArray *)objects;

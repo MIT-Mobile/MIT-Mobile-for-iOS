@@ -112,6 +112,7 @@
 		2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF814E1636F69900DE273F /* DispatchQueueLogFormatter.m */; };
 		2CCF81571636F69900DE273F /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2CCF814F1636F69900DE273F /* README.txt */; };
 		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
+		2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD27AAA1709D3EF002E220E /* MGSGeometry.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
 		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -586,6 +587,8 @@
 		2CCF814E1636F69900DE273F /* DispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DispatchQueueLogFormatter.m; sourceTree = "<group>"; };
 		2CCF814F1636F69900DE273F /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		2CD12D4E1360584F00A73ACA /* facilities */ = {isa = PBXFileReference; lastKnownFileType = folder; name = facilities; path = Resources/facilities; sourceTree = "<group>"; };
+		2CD27AA91709D3EF002E220E /* MGSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSGeometry.h; sourceTree = "<group>"; };
+		2CD27AAA1709D3EF002E220E /* MGSGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSGeometry.m; sourceTree = "<group>"; };
 		2CD8FEED13565E8B00B00B28 /* QRReaderResult.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QRReaderResult.xcdatamodel; sourceTree = "<group>"; };
 		2CDB024C15D0403500436B59 /* QRReaderResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderResult.h; sourceTree = "<group>"; };
 		2CDB024D15D0403500436B59 /* QRReaderResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResult.m; sourceTree = "<group>"; };
@@ -1354,6 +1357,8 @@
 				2CA010BD1694A7CC00B87CF0 /* MGSSimpleAnnotation.m */,
 				2C101A741653F054000E40E3 /* MGSLayer.h */,
 				2C101A751653F054000E40E3 /* MGSLayer.m */,
+				2CD27AA91709D3EF002E220E /* MGSGeometry.h */,
+				2CD27AAA1709D3EF002E220E /* MGSGeometry.m */,
 				2C4D799D16FB4B0F001AAC81 /* MGSLayerManager.h */,
 				2C4D799E16FB4B0F001AAC81 /* MGSLayerManager.m */,
 			);
@@ -3016,6 +3021,7 @@
 				2CBD6A0116D3C6FC002B482F /* MITMapAnnotationCalloutView.m in Sources */,
 				2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */,
 				2C4D799F16FB4B0F001AAC81 /* MGSLayerManager.m in Sources */,
+				2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -2,6 +2,7 @@
 #import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import "MGSMapViewDelegate.h"
+#import "MGSGeometry.h"
 
 @class MGSMapCoordinate;
 @class MGSLayerManager;
@@ -11,8 +12,6 @@
 @class MGSQueryLayer;
 
 @protocol MGSAnnotation;
-
-typedef CGFloat MGSZoomLevel;
 
 @interface MGSMapView : UIView
 #pragma mark - Basemap Management
@@ -27,10 +26,7 @@ typedef CGFloat MGSZoomLevel;
 @property (nonatomic) MKCoordinateRegion mapRegion;
 @property (nonatomic,readonly) BOOL isPresentingCallout;
 @property (nonatomic,readonly) id<MGSAnnotation> calloutAnnotation;
-@property (nonatomic) CGFloat zoomLevel;
-
-+ (MGSZoomLevel)zoomLevelForMKCoordinateSpan:(MKCoordinateSpan)span;
-+ (MKCoordinateSpan)coordinateSpanForZoomLevel:(MGSZoomLevel)zoomLevel;
+@property (nonatomic) MGSZoomLevel zoomLevel;
 
 #pragma mark - Layer Management
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)basemapIdentifier;
@@ -42,7 +38,7 @@ typedef CGFloat MGSZoomLevel;
 - (MGSLayerManager*)layerManagerForLayer:(MGSLayer*)layer;
 
 - (MGSLayer*)layerContainingAnnotation:(id<MGSAnnotation>)annotation;
-- (BOOL)containsLayer:(MGSLayer*)layer;
+
 - (void)refreshLayer:(MGSLayer*)layer;
 
 - (void)centerAtCoordinate:(CLLocationCoordinate2D)coordinate;
