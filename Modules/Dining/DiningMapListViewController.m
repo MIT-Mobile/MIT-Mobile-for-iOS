@@ -51,7 +51,7 @@
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
     
-    [_segmentControl addTarget:_listView action:@selector(reloadData) forControlEvents:UIControlEventValueChanged];
+    [self.segmentControl addTarget:self.listView action:@selector(reloadData) forControlEvents:UIControlEventValueChanged];
     [self styleSegmentControl];
     
     [self layoutListState];
@@ -86,33 +86,33 @@
 
 - (void) toggleMapList:(id)sender
 {
-    if (!_isAnimating) {
+    if (!self.isAnimating) {
         NSLog(@"Toggle the Map List");
-        self.navigationItem.rightBarButtonItem.title = (_isShowingMap)? @"List" : @"Map";
+        self.navigationItem.rightBarButtonItem.title = (self.isShowingMap)? @"List" : @"Map";
         
-        if (_isShowingMap) {
+        if (self.isShowingMap) {
             [UIView animateWithDuration:0.4f animations:^{
-                _listView.alpha = 1;
-                _mapView.alpha = 0;
+                self.listView.alpha = 1;
+                self.mapView.alpha = 0;
                 [self layoutListState];
-                _isAnimating = YES;
+                self.isAnimating = YES;
             } completion:^(BOOL finished) {
-                _isAnimating = NO;
+                self.isAnimating = NO;
             }];
             
         } else {
-            _mapView.alpha = 0;
+            self.mapView.alpha = 0;
             [UIView animateWithDuration:0.4f animations:^{
-                _listView.alpha = 0;
-                _mapView.alpha = 1;
+                self.listView.alpha = 0;
+                self.mapView.alpha = 1;
                 [self layoutMapState];
-                _isAnimating = YES;
+                self.isAnimating = YES;
             } completion:^(BOOL finished) {
-                _isAnimating = NO;
+                self.isAnimating = NO;
             }];
         }
         // toggle boolean flaggit 
-        _isShowingMap = !_isShowingMap;
+        self.isShowingMap = !self.isShowingMap;
     }
 }
 
@@ -120,27 +120,27 @@
 
 - (void) layoutListState
 {
-    _segmentControl.center = CGPointMake(self.view.center.x, 30);
+    self.segmentControl.center = CGPointMake(self.view.center.x, 30);
     
-    _listView.hidden = NO;
-    _listView.frame = CGRectMake(0, CGRectGetMaxY(_segmentControl.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(_segmentControl.frame));
+    self.listView.hidden = NO;
+    self.listView.frame = CGRectMake(0, CGRectGetMaxY(self.segmentControl.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(self.segmentControl.frame));
     
-    _mapView.hidden = YES;
+    self.mapView.hidden = YES;
 }
 
 - (void) layoutMapState
 {
-    _segmentControl.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 30);
-    _listView.hidden = YES;
+    self.segmentControl.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 30);
+    self.listView.hidden = YES;
     
-    _mapView.hidden = NO;
-    _mapView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+    self.mapView.hidden = NO;
+    self.mapView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
 }
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSArray *data = ([_segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
+    NSArray *data = ([self.segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
     
     return [data count];
 }
@@ -152,7 +152,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"reuseIdentifier"];
     }
     
-    NSArray *data = ([_segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
+    NSArray *data = ([self.segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
     cell.textLabel.text = [data objectAtIndex:indexPath.row];
     
     return cell;

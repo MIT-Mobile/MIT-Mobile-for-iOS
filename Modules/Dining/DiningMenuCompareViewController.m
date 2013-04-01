@@ -38,14 +38,14 @@
     
     PSTCollectionViewFlowLayout *layout = [[PSTCollectionViewFlowLayout alloc] init];
     layout.scrollDirection = PSTCollectionViewScrollDirectionHorizontal;
-    _collectionView = [[PSTCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:layout];
-    _collectionView.dataSource = self;
-    _collectionView.delegate = self;
+    self.collectionView = [[PSTCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:layout];
+    self.collectionView.dataSource = self;
+    self.collectionView.delegate = self;
     
-    _collectionView.backgroundColor = [UIColor whiteColor];
-    _collectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [_collectionView registerClass:[PSTCollectionViewCell class] forCellWithReuseIdentifier:@"cell-reuse"];
-    [self.view addSubview:_collectionView];
+    self.collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.collectionView registerClass:[PSTCollectionViewCell class] forCellWithReuseIdentifier:@"cell-reuse"];
+    [self.view addSubview:self.collectionView];
     
 }
 
