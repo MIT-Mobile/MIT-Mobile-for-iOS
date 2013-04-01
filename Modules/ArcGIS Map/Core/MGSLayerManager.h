@@ -9,8 +9,7 @@
 
 @protocol MGSLayerManagerDelegate <NSObject>
 - (AGSGraphicsLayer*)layerManager:(MGSLayerManager*)layerManager
-            graphicsLayerForLayer:(MGSLayer*)layer
-             withSpatialReference:(AGSSpatialReference*)spatialReference;
+            graphicsLayerForLayer:(MGSLayer*)layer;
 
 - (AGSGraphic*)layerManager:(MGSLayerManager*)layerManager
        graphicForAnnotation:(id<MGSAnnotation>)annotation;
@@ -30,7 +29,6 @@
 
 - (id)initWithLayer:(MGSLayer*)layer;
 - (void)syncAnnotations;
-- (BOOL)loadGraphicsLayerWithSpatialReference:(AGSSpatialReference*)spatialReference;
 
 - (MGSLayerAnnotation*)layerAnnotationForGraphic:(AGSGraphic*)graphic;
 - (NSSet*)layerAnnotationsForGraphics:(NSSet*)graphics;

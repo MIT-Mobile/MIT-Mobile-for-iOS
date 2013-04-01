@@ -8,7 +8,7 @@
 
 @interface MGSLayerManager ()
 @property(nonatomic, strong) MGSLayer* layer;
-@property(nonatomic, strong) AGSGraphicsLayer* graphicsLayer;
+@property(nonatomic, weak) AGSGraphicsLayer* graphicsLayer;
 @property(nonatomic, strong) NSMutableSet *layerAnnotations;
 @property(nonatomic, strong) NSMutableSet *cachedAnnotations;
 
@@ -65,33 +65,29 @@
     return [NSSet setWithSet:self.layerAnnotations];
 }
 
-- (BOOL)loadGraphicsLayerWithSpatialReference:(AGSSpatialReference*)spatialReference
-{
-    AGSGraphicsLayer *layer = nil;
-
-    if (spatialReference == nil) {
-        return false;
-    }
-    
-    if ([self.delegate respondsToSelector:@selector(layerManager:graphicsLayerForLayer:withSpatialReference:)]) {
-        layer = [self.delegate layerManager:self
-                     graphicsLayerForLayer:self.layer
-                      withSpatialReference:spatialReference];
-    } else {
-        layer = [[AGSGraphicsLayer alloc] init];
-    }
-    
-    self.graphicsLayer = layer;
-    return (layer != nil);
-}
-
 - (AGSGraphicsLayer*)graphicsLayer
 {
-    if ((_graphicsLayer == nil) && self.spatialReference) {
-        [self loadGraphicsLayerWithSpatialReference:self.spatialReference];
-        [self syncAnnotations];
+    AGSGraphicsLayer *layer = nil;
+    
+    if (_graphicsLayer == nil) {
+        if ([self.delegate respondsToSelector:@selector(layerManager:graphicsLayerForLayer:)]) {
+            layer = [self.delegate layerManager:self
+                          graphicsLayerForLayer:self.layer];
+        }
+        
+        if (layer == nil) {
+            layer = [[AGSGraphicsLayer alloc] init];
+        }
     }
 
+    if (layer) {
+        self.graphicsLayer = layer;
+        
+        if ([self.layerAnnotations count]) {
+            [self syncAnnotations];
+        }
+    }
+    
     return _graphicsLayer;
 }
 #pragma mark -
