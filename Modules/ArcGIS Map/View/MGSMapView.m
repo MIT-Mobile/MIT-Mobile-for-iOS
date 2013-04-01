@@ -16,9 +16,9 @@
 
 @interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate, AGSInfoTemplateDelegate>
 #pragma mark - Basemap Management (Declaration)
-@property(assign) BOOL coreLayersLoaded;
-@property(strong) NSMutableDictionary* coreLayers;
-@property(strong) NSDictionary* coreMaps;
+@property(nonatomic,assign) BOOL baseLayersLoaded;
+@property(nonatomic,strong) NSMutableDictionary* baseLayers;
+@property(nonatomic,strong) NSDictionary* baseMapGroups;
 #pragma mark -
 
 #pragma mark - User Layer Management (Declaration)
@@ -96,7 +96,7 @@
 {
     self.externalLayers = [NSMutableArray array];
 
-    self.coreLayersLoaded = NO;
+    self.baseLayersLoaded = NO;
 
     self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
     [self addLayer:self.defaultLayer];
@@ -146,12 +146,12 @@
                 [alertView show];
             } else if ([content isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* response = (NSDictionary*) content;
-                self.coreMaps = response[@"basemaps"];
+                self.baseMapGroups = response[@"basemaps"];
 
                 NSString* defaultSetName = response[@"defaultBasemap"];
 
                 if ([defaultSetName length] == 0) {
-                    defaultSetName = [[self.coreMaps allKeys] objectAtIndex:0];
+                    defaultSetName = [[self.baseMapGroups allKeys] objectAtIndex:0];
                 }
 
                 self.activeMapSet = defaultSetName;
@@ -161,7 +161,6 @@
         [[NSOperationQueue mainQueue] addOperation:operation];
     }
 }
-
 
 - (AGSEnvelope*)defaultVisibleArea
 {
@@ -184,22 +183,22 @@
 #pragma mark - Basemap Management
 - (NSSet*)mapSets
 {
-    return [NSSet setWithArray:[self.coreMaps allKeys]];
+    return [NSSet setWithArray:[self.baseMapGroups allKeys]];
 }
 
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)mapSetIdentifier
 {
-    NSDictionary* layerInfo = self.coreMaps[mapSetIdentifier];
+    NSDictionary* layerInfo = self.baseMapGroups[mapSetIdentifier];
     return layerInfo[@"displayName"];
 }
 
 - (void)setActiveMapSet:(NSString*)mapSetName
 {
-    if (self.coreMaps[mapSetName]) {
+    if (self.baseMapGroups[mapSetName]) {
         NSMutableDictionary* coreMapLayers = [NSMutableDictionary dictionary];
         NSMutableArray* identifierOrder = [NSMutableArray array];
 
-        for (NSDictionary* layerInfo in self.coreMaps[mapSetName]) {
+        for (NSDictionary* layerInfo in self.baseMapGroups[mapSetName]) {
             NSString* displayName = layerInfo[@"displayName"];
             NSString* identifier = layerInfo[@"layerIdentifier"];
             NSURL* layerURL = [NSURL URLWithString:layerInfo[@"url"]];
@@ -213,7 +212,7 @@
             [identifierOrder addObject:identifier];
         }
 
-        [self.coreLayers.allKeys enumerateObjectsUsingBlock:^(NSString* layerName, NSUInteger idx, BOOL* stop) {
+        [self.baseLayers.allKeys enumerateObjectsUsingBlock:^(NSString* layerName, NSUInteger idx, BOOL* stop) {
             [self.mapView removeMapLayerWithName:layerName];
         }];
 
@@ -223,7 +222,7 @@
                                  atIndex:idx];
         }];
 
-        self.coreLayers = coreMapLayers;
+        self.baseLayers = coreMapLayers;
         _activeMapSet = mapSetName;
     }
 }
@@ -502,7 +501,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             }
         }
 
-        animated = self.coreLayersLoaded && animated;
+        animated = self.baseLayersLoaded && animated;
         [self.mapView zoomToGeometry:projectedGeometry
                          withPadding:0.0
                             animated:animated];
@@ -640,7 +639,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                     if (layerIdx != NSNotFound) {
                         manager.spatialReference = self.mapView.spatialReference;
                         
-                        NSUInteger agsIndex = [self.coreLayers count] + layerIdx;
+                        NSUInteger agsIndex = [self.baseLayers count] + layerIdx;
                         AGSGraphicsLayer *gfxLayer = manager.graphicsLayer;
                         [self.mapView insertMapLayer:gfxLayer
                                              atIndex:agsIndex];
@@ -974,16 +973,16 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     }
     else {
         DDLogError(@"failed to initialize spatial reference for layer '%@'", loadedLayer.name);
-        [self.coreLayers removeObjectForKey:loadedLayer.name];
+        [self.baseLayers removeObjectForKey:loadedLayer.name];
         [self.mapView removeMapLayer:loadedLayer];
     }
 
     // Perform the coreLayersLoaded checking here since we don't want to add any of the
     // user layers until we actually have a spatial reference to work with.
-    if (self.coreLayers[loadedLayer.name] != nil) {
-        if (self.coreLayersLoaded == NO) {
+    if (self.baseLayers[loadedLayer.name] != nil) {
+        if (self.baseLayersLoaded == NO) {
             __block BOOL layersLoaded = YES;
-            [self.coreLayers enumerateKeysAndObjectsUsingBlock:^(NSString* name, AGSLayer* layer, BOOL* stop) {
+            [self.baseLayers enumerateKeysAndObjectsUsingBlock:^(NSString* name, AGSLayer* layer, BOOL* stop) {
                 layersLoaded = (layersLoaded && layer.loaded);
             }];
 
@@ -991,7 +990,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             // Check again after we iterate through everything to make sure the state
             // hasn't changed now that we have another layer loaded
             if (layersLoaded) {
-                self.coreLayersLoaded = YES;
+                self.baseLayersLoaded = YES;
                 [self coreLayersDidFinishLoading];
             }
         }
@@ -1001,7 +1000,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)layer:(AGSLayer*)layer didFailToLoadWithError:(NSError*)error
 {
     DDLogError(@"failed to load layer '%@': %@", layer.name, [error localizedDescription]);
-    [self.coreLayers removeObjectForKey:layer.name];
+    [self.baseLayers removeObjectForKey:layer.name];
     [self.mapView removeMapLayer:layer];
 }
 
