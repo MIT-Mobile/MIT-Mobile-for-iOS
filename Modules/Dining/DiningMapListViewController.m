@@ -7,9 +7,7 @@
 //
 
 #import "DiningMapListViewController.h"
-
-
-#import "DiningMenuCompareViewController.h"
+#import "DiningHallDetailViewController.h"
 
 @interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate>
 
@@ -31,6 +29,12 @@
 - (NSArray *) debugRetailDiningData
 {
     return [NSArray arrayWithObjects:@"Anna's Taqueria", @"Cafe Spice", @"Cambridge Grill", @"Dunkin Donuts", @"LaVerde's Market", nil];
+}
+
+- (NSArray *) currentDiningData
+{
+    NSArray *data = ([self.segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
+    return data;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -57,25 +61,14 @@
     [self layoutListState];
 }
 
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation
-{
-    if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeLeft) {
-        return YES;
-    }
-    return NO;
-}
-
-- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration
-{
-    DiningMenuCompareViewController *vc = [[DiningMenuCompareViewController alloc] init];
-    vc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    
-    [self presentViewController:vc animated:YES completion:NULL];
-}
-
 - (void) styleSegmentControl
 {
     
+}
+
+- (BOOL) shouldAutorotate
+{
+    return NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -151,8 +144,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"reuseIdentifier"];
     }
     
-    NSArray *data = ([self.segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
-    cell.textLabel.text = [data objectAtIndex:indexPath.row];
+    cell.textLabel.text = [[self currentDiningData] objectAtIndex:indexPath.row];
     
     return cell;
 }
@@ -161,6 +153,10 @@
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    DiningHallDetailViewController *detailVC = [[DiningHallDetailViewController alloc] init];
+    detailVC.title = [self currentDiningData][indexPath.row];
+    [self.navigationController pushViewController:detailVC animated:YES];
+    
 }
 
 @end

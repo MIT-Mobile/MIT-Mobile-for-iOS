@@ -192,8 +192,8 @@
 		44BF602011050AC000E150D5 /* ShuttleStopCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BF601F11050AC000E150D5 /* ShuttleStopCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		44BF602211050ACE00E150D5 /* ShuttleStopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */; };
 		44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */; };
-		44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A3CD11A33905000FD653 /* MapSelectionController.m */; };
-		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; };
+		44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A3CD11A33905000FD653 /* MapSelectionController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		48327CE016F74F19003A2F23 /* DiningModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48327CDF16F74F19003A2F23 /* DiningModule.m */; };
 		48327CE416F75017003A2F23 /* DiningMapListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48327CE216F75017003A2F23 /* DiningMapListViewController.m */; };
 		48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 48327CE316F75017003A2F23 /* DiningMapListViewController.xib */; };
@@ -211,17 +211,7 @@
 		4869CE5917037F8600A3662B /* PSTGridLayoutRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDBC17037F8500A3662B /* PSTGridLayoutRow.m */; };
 		4869CE5A17037F8600A3662B /* PSTGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDBE17037F8500A3662B /* PSTGridLayoutSection.m */; };
 		4869CE77170380D800A3662B /* DiningMenuCompareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */; };
-		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; };
-		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; };
-		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; };
-		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; };
-		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; };
-		4B33EA16141AC9D900B30312 /* LibrariesAppointmentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA15141AC9D900B30312 /* LibrariesAppointmentViewController.m */; };
-		4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */; };
-		4B53F2AD1354F6460081EA38 /* TourMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2AC1354F6460081EA38 /* TourMapAnnotation.m */; };
-		4B667063140330A000714C6A /* LibrariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667061140330A000714C6A /* LibrariesViewController.m */; };
-		44C1A3CF11A33905000FD653 /* MapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A3CD11A33905000FD653 /* MapSelectionController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MapSearch.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		48A6E4D7170B89C2004DED46 /* DiningHallDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4D6170B89C2004DED46 /* DiningHallDetailViewController.m */; };
 		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -785,6 +775,8 @@
 		4869CDBE17037F8500A3662B /* PSTGridLayoutSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTGridLayoutSection.m; sourceTree = "<group>"; };
 		4869CE75170380D800A3662B /* DiningMenuCompareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningMenuCompareViewController.h; path = Dining/DiningMenuCompareViewController.h; sourceTree = "<group>"; };
 		4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningMenuCompareViewController.m; path = Dining/DiningMenuCompareViewController.m; sourceTree = "<group>"; };
+		48A6E4D5170B89C2004DED46 /* DiningHallDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallDetailViewController.h; path = Dining/DiningHallDetailViewController.h; sourceTree = "<group>"; };
+		48A6E4D6170B89C2004DED46 /* DiningHallDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallDetailViewController.m; path = Dining/DiningHallDetailViewController.m; sourceTree = "<group>"; };
 		48B8129515E4295D00E791F9 /* LinksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksViewController.h; path = Links/LinksViewController.h; sourceTree = "<group>"; };
 		48B8129615E4295D00E791F9 /* LinksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LinksViewController.m; path = Links/LinksViewController.m; sourceTree = "<group>"; };
 		48B8129815E42B1700E791F9 /* LinksModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksModule.h; path = Links/LinksModule.h; sourceTree = "<group>"; };
@@ -1894,6 +1886,8 @@
 				48327CE316F75017003A2F23 /* DiningMapListViewController.xib */,
 				4869CE75170380D800A3662B /* DiningMenuCompareViewController.h */,
 				4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */,
+				48A6E4D5170B89C2004DED46 /* DiningHallDetailViewController.h */,
+				48A6E4D6170B89C2004DED46 /* DiningHallDetailViewController.m */,
 			);
 			name = Dining;
 			sourceTree = "<group>";
@@ -3152,6 +3146,7 @@
 				4869CE5A17037F8600A3662B /* PSTGridLayoutSection.m in Sources */,
 				4869CE77170380D800A3662B /* DiningMenuCompareViewController.m in Sources */,
 				2C4D799F16FB4B0F001AAC81 /* MGSLayerManager.m in Sources */,
+				48A6E4D7170B89C2004DED46 /* DiningHallDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3222,8 +3217,8 @@
 			baseConfigurationReference = 2CEBBFA21635C50400441252 /* Secret.xcconfig */;
 			buildSettings = {
 				ARCHS = armv7;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
@@ -3251,8 +3246,8 @@
 			baseConfigurationReference = 2CEBBFA21635C50400441252 /* Secret.xcconfig */;
 			buildSettings = {
 				ARCHS = armv7;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
@@ -3278,9 +3273,8 @@
 			baseConfigurationReference = 2CEBBFA21635C50400441252 /* Secret.xcconfig */;
 			buildSettings = {
 				ARCHS = armv7;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Massachusetts Institute of Technology";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
