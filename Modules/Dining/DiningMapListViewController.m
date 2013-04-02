@@ -88,11 +88,12 @@
 {
     if (!self.isAnimating) {
         NSLog(@"Toggle the Map List");
-        self.navigationItem.rightBarButtonItem.title = (self.isShowingMap)? @"List" : @"Map";
+        self.navigationItem.rightBarButtonItem.title = (self.isShowingMap)? @"Map" : @"List";
         
         if (self.isShowingMap) {
+            // animate to the list
+            self.listView.center = CGPointMake(self.view.center.x, self.view.center.y + CGRectGetHeight(self.view.bounds));
             [UIView animateWithDuration:0.4f animations:^{
-                self.listView.alpha = 1;
                 self.mapView.alpha = 0;
                 [self layoutListState];
                 self.isAnimating = YES;
@@ -101,9 +102,9 @@
             }];
             
         } else {
+            // animate to the map
             self.mapView.alpha = 0;
             [UIView animateWithDuration:0.4f animations:^{
-                self.listView.alpha = 0;
                 self.mapView.alpha = 1;
                 [self layoutMapState];
                 self.isAnimating = YES;
@@ -111,7 +112,7 @@
                 self.isAnimating = NO;
             }];
         }
-        // toggle boolean flaggit 
+        // toggle boolean flag 
         self.isShowingMap = !self.isShowingMap;
     }
 }
@@ -122,16 +123,14 @@
 {
     self.segmentControl.center = CGPointMake(self.view.center.x, 30);
     
-    self.listView.hidden = NO;
     self.listView.frame = CGRectMake(0, CGRectGetMaxY(self.segmentControl.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(self.segmentControl.frame));
     
-    self.mapView.hidden = YES;
 }
 
 - (void) layoutMapState
 {
     self.segmentControl.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 30);
-    self.listView.hidden = YES;
+    self.listView.center = CGPointMake(self.listView.center.x, self.listView.center.y + CGRectGetHeight(self.listView.bounds));
     
     self.mapView.hidden = NO;
     self.mapView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
