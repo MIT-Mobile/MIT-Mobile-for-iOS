@@ -7,7 +7,7 @@
 //
 
 #import "DiningMapListViewController.h"
-#import "DiningHallDetailViewController.h"
+#import "DiningHallMenuViewController.h"
 
 @interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate>
 
@@ -153,7 +153,7 @@
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    DiningHallDetailViewController *detailVC = [[DiningHallDetailViewController alloc] init];
+    DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
     detailVC.title = [self currentDiningData][indexPath.row];
     [self.navigationController pushViewController:detailVC animated:YES];
     

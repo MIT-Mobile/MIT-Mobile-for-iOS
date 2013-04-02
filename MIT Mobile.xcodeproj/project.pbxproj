@@ -211,7 +211,8 @@
 		4869CE5917037F8600A3662B /* PSTGridLayoutRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDBC17037F8500A3662B /* PSTGridLayoutRow.m */; };
 		4869CE5A17037F8600A3662B /* PSTGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDBE17037F8500A3662B /* PSTGridLayoutSection.m */; };
 		4869CE77170380D800A3662B /* DiningMenuCompareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */; };
-		48A6E4D7170B89C2004DED46 /* DiningHallDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4D6170B89C2004DED46 /* DiningHallDetailViewController.m */; };
+		48A6E4D7170B89C2004DED46 /* DiningHallMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */; };
+		48A6E4DB170B9423004DED46 /* DiningHallMenuHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4DA170B9423004DED46 /* DiningHallMenuHeaderView.m */; };
 		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -775,8 +776,10 @@
 		4869CDBE17037F8500A3662B /* PSTGridLayoutSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTGridLayoutSection.m; sourceTree = "<group>"; };
 		4869CE75170380D800A3662B /* DiningMenuCompareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningMenuCompareViewController.h; path = Dining/DiningMenuCompareViewController.h; sourceTree = "<group>"; };
 		4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningMenuCompareViewController.m; path = Dining/DiningMenuCompareViewController.m; sourceTree = "<group>"; };
-		48A6E4D5170B89C2004DED46 /* DiningHallDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallDetailViewController.h; path = Dining/DiningHallDetailViewController.h; sourceTree = "<group>"; };
-		48A6E4D6170B89C2004DED46 /* DiningHallDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallDetailViewController.m; path = Dining/DiningHallDetailViewController.m; sourceTree = "<group>"; };
+		48A6E4D5170B89C2004DED46 /* DiningHallMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuViewController.h; path = Dining/DiningHallMenuViewController.h; sourceTree = "<group>"; };
+		48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuViewController.m; path = Dining/DiningHallMenuViewController.m; sourceTree = "<group>"; };
+		48A6E4D9170B9423004DED46 /* DiningHallMenuHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuHeaderView.h; path = Dining/DiningHallMenuHeaderView.h; sourceTree = "<group>"; };
+		48A6E4DA170B9423004DED46 /* DiningHallMenuHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuHeaderView.m; path = Dining/DiningHallMenuHeaderView.m; sourceTree = "<group>"; };
 		48B8129515E4295D00E791F9 /* LinksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksViewController.h; path = Links/LinksViewController.h; sourceTree = "<group>"; };
 		48B8129615E4295D00E791F9 /* LinksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LinksViewController.m; path = Links/LinksViewController.m; sourceTree = "<group>"; };
 		48B8129815E42B1700E791F9 /* LinksModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksModule.h; path = Links/LinksModule.h; sourceTree = "<group>"; };
@@ -1879,6 +1882,7 @@
 		48327CDD16F74EA0003A2F23 /* Dining */ = {
 			isa = PBXGroup;
 			children = (
+				48A6E4D8170B91E9004DED46 /* Views */,
 				48327CDE16F74F19003A2F23 /* DiningModule.h */,
 				48327CDF16F74F19003A2F23 /* DiningModule.m */,
 				48327CE116F75017003A2F23 /* DiningMapListViewController.h */,
@@ -1886,8 +1890,8 @@
 				48327CE316F75017003A2F23 /* DiningMapListViewController.xib */,
 				4869CE75170380D800A3662B /* DiningMenuCompareViewController.h */,
 				4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */,
-				48A6E4D5170B89C2004DED46 /* DiningHallDetailViewController.h */,
-				48A6E4D6170B89C2004DED46 /* DiningHallDetailViewController.m */,
+				48A6E4D5170B89C2004DED46 /* DiningHallMenuViewController.h */,
+				48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */,
 			);
 			name = Dining;
 			sourceTree = "<group>";
@@ -1926,6 +1930,15 @@
 			);
 			name = PSTCollectionView;
 			path = External/PSTCollectionView/PSTCollectionView;
+			sourceTree = "<group>";
+		};
+		48A6E4D8170B91E9004DED46 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				48A6E4D9170B9423004DED46 /* DiningHallMenuHeaderView.h */,
+				48A6E4DA170B9423004DED46 /* DiningHallMenuHeaderView.m */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 		48B8129315E428DA00E791F9 /* Links */ = {
@@ -3146,7 +3159,8 @@
 				4869CE5A17037F8600A3662B /* PSTGridLayoutSection.m in Sources */,
 				4869CE77170380D800A3662B /* DiningMenuCompareViewController.m in Sources */,
 				2C4D799F16FB4B0F001AAC81 /* MGSLayerManager.m in Sources */,
-				48A6E4D7170B89C2004DED46 /* DiningHallDetailViewController.m in Sources */,
+				48A6E4D7170B89C2004DED46 /* DiningHallMenuViewController.m in Sources */,
+				48A6E4DB170B9423004DED46 /* DiningHallMenuHeaderView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

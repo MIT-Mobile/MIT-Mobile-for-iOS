@@ -6,14 +6,15 @@
 //
 //
 
-#import "DiningHallDetailViewController.h"
+#import "DiningHallMenuViewController.h"
 #import "DiningMenuCompareViewController.h"
+#import "DiningHallMenuHeaderView.h"
 
-@interface DiningHallDetailViewController ()
+@interface DiningHallMenuViewController ()
 
 @end
 
-@implementation DiningHallDetailViewController
+@implementation DiningHallMenuViewController
 
 - (NSArray *) debugData
 {
@@ -36,6 +37,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    DiningHallMenuHeaderView *headerView = [[DiningHallMenuHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
+    self.tableView.tableHeaderView = headerView;
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;

@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DiningHallDetailViewController : UITableViewController
+@interface DiningHallMenuViewController : UITableViewController
 
 @end
