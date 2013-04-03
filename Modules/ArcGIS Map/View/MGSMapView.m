@@ -9,12 +9,12 @@
 #import "MGSCalloutView.h"
 
 #import "MobileRequestOperation.h"
-#import "MGSLayerManager.h"
+#import "MGSLayerController.h"
 #import "MGSSafeAnnotation.h"
 #import "MGSLayerAnnotation.h"
 
 
-@interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate, AGSInfoTemplateDelegate, MGSLayerManagerDelegate>
+@interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate, AGSInfoTemplateDelegate, MGSLayerControllerDelegate>
 #pragma mark - Basemap Management (Declaration)
 @property(nonatomic,assign) BOOL baseLayersLoaded;
 @property(nonatomic,strong) NSMutableDictionary* baseLayers;
@@ -41,7 +41,7 @@
 - (void)baseLayersDidFinishLoading;
 - (AGSEnvelope*)defaultVisibleArea;
 - (AGSEnvelope*)defaultMaximumEnvelope;
-- (MGSLayerManager*)layerManagerForLayer:(MGSLayer*)layer;
+- (MGSLayerController*)layerManagerForLayer:(MGSLayer*)layer;
 
 #pragma mark Delegation Helpers
 - (BOOL)shouldShowCalloutForAnnotation:(id<MGSAnnotation>)annotation;
@@ -251,11 +251,11 @@
 }
 
 #pragma mark - Layer Management
-- (MGSLayerManager*)layerManagerForLayer:(MGSLayer*)layer
+- (MGSLayerController*)layerManagerForLayer:(MGSLayer*)layer
 {
-    MGSLayerManager *layerManager = nil;
+    MGSLayerController *layerManager = nil;
     
-    for (MGSLayerManager* manager in self.externalLayerManagers) {
+    for (MGSLayerController* manager in self.externalLayerManagers) {
         if ([manager.layer isEqual:layer]) {
             layerManager = manager;
         }
@@ -295,11 +295,11 @@
              atIndex:(NSUInteger)index
 shouldNotifyDelegate:(BOOL)notifyDelegate
 {
-    MGSLayerManager* layerManager = [self layerManagerForLayer:newLayer];
+    MGSLayerController* layerManager = [self layerManagerForLayer:newLayer];
 
     if ([self.externalLayers containsObject:newLayer] == NO) {
         if (layerManager == nil) {
-            layerManager = [[MGSLayerManager alloc] initWithLayer:newLayer];
+            layerManager = [[MGSLayerController alloc] initWithLayer:newLayer];
             layerManager.delegate = self;
             [self.externalLayerManagers addObject:layerManager];
         }
@@ -335,7 +335,7 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
 - (void)removeLayer:(MGSLayer*)layer
 shoulNotifyDelegate:(BOOL)notifyDelegate
 {
-    MGSLayerManager* layerManager = [self layerManagerForLayer:layer];
+    MGSLayerController* layerManager = [self layerManagerForLayer:layer];
 
     if (layerManager == nil) {
         DDLogError(@"external layers out of sync during removal of '%@'", layer.name);
@@ -386,14 +386,14 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (BOOL)isLayerHidden:(MGSLayer*)layer
 {
-    MGSLayerManager* manager = [self layerManagerForLayer:layer];
+    MGSLayerController* manager = [self layerManagerForLayer:layer];
     return (manager.graphicsLayer.isVisible);
 }
 
 - (void)setHidden:(BOOL)hidden
          forLayer:(MGSLayer*)layer
 {
-    MGSLayerManager* manager = [self layerManagerForLayer:layer];
+    MGSLayerController* manager = [self layerManagerForLayer:layer];
     manager.graphicsLayer.visible = !hidden;
 }
 
@@ -527,7 +527,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
         if ([self shouldShowCalloutForAnnotation:annotation]) {
             MGSLayer* layer = [self layerContainingAnnotation:annotation];
-            MGSLayerManager* manager = [self layerManagerForLayer:layer];
+            MGSLayerController* manager = [self layerManagerForLayer:layer];
             AGSGraphic* graphic = [[manager layerAnnotationForAnnotation:annotation] graphic];
             UIView* customView = [self calloutViewForAnnotation:annotation];
 
@@ -597,7 +597,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     __block MGSLayer* myLayer = nil;
     [self.mapLayers enumerateObjectsWithOptions:NSEnumerationReverse
                                      usingBlock:^(MGSLayer* layer, NSUInteger idx, BOOL* stop) {
-                                         MGSLayerManager* manager = [self layerManagerForLayer:layer];
+                                         MGSLayerController* manager = [self layerManagerForLayer:layer];
                                          if ([manager layerAnnotationForGraphic:graphic]) {
                                              myLayer = layer;
                                              (*stop) = YES;
@@ -626,7 +626,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             NSUInteger layerIndex = [self.externalLayers indexOfObject:layer];
             
             if (layerIndex != NSNotFound) {
-                MGSLayerManager *manager = [self layerManagerForLayer:layer];
+                MGSLayerController *manager = [self layerManagerForLayer:layer];
                 manager.spatialReference = self.mapView.spatialReference;
                 
                 AGSGraphicsLayer *graphicsLayer = manager.graphicsLayer;
@@ -849,7 +849,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForGraphic:(AGSGraphic*)graphic
 {
     MGSLayer* myLayer = [self layerContainingGraphic:graphic];
-    MGSLayerManager* manager = [self layerManagerForLayer:myLayer];
+    MGSLayerController* manager = [self layerManagerForLayer:myLayer];
     id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
     
     if (graphic.infoTemplateDelegate == nil) {
@@ -920,7 +920,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             
             if (showCallout) {
                 MGSLayer *layer = [self layerContainingGraphic:graphic];
-                MGSLayerManager *layerManager = [self layerManagerForLayer:layer];
+                MGSLayerController *layerManager = [self layerManagerForLayer:layer];
                 id<MGSAnnotation> annotation = [layerManager layerAnnotationForGraphic:graphic].annotation;
                 
                 [self showCalloutForAnnotation:annotation];
@@ -1063,14 +1063,14 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                        mapPoint:(AGSPoint *)mapPoint
 {
     MGSLayer* myLayer = [self layerContainingGraphic:graphic];
-    MGSLayerManager* manager = [self layerManagerForLayer:myLayer];
+    MGSLayerController* manager = [self layerManagerForLayer:myLayer];
     id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
     
     return [self calloutViewForAnnotation:annotation];
 }
 
 #pragma mark MGSLayerManagerDelegate
-- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerManager*)layerManager
+- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager
 {
     if (self.pendingCalloutAnnotation) {
         if ([layerManager.layer.annotations containsObject:self.pendingCalloutAnnotation]) {

@@ -2,24 +2,24 @@
 #import <ArcGIS/ArcGIS.h>
 
 @class MGSLayer;
-@class MGSLayerManager;
+@class MGSLayerController;
 @class MGSLayerAnnotation;
 @class MGSMapView;
 @protocol MGSAnnotation;
 
-@protocol MGSLayerManagerDelegate <NSObject>
+@protocol MGSLayerControllerDelegate <NSObject>
 @optional
-- (AGSGraphicsLayer*)layerManager:(MGSLayerManager*)layerManager
+- (AGSGraphicsLayer*)layerManager:(MGSLayerController*)layerManager
             graphicsLayerForLayer:(MGSLayer*)layer;
 
-- (AGSGraphic*)layerManager:(MGSLayerManager*)layerManager
+- (AGSGraphic*)layerManager:(MGSLayerController*)layerManager
        graphicForAnnotation:(id<MGSAnnotation>)annotation;
 
-- (void)layerManagerWillSynchronizeAnnotations:(MGSLayerManager*)layerManager;
-- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerManager*)layerManager;
+- (void)layerManagerWillSynchronizeAnnotations:(MGSLayerController*)layerManager;
+- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager;
 @end
 
-@interface MGSLayerManager : NSObject
+@interface MGSLayerController : NSObject
 @property (nonatomic,readonly,strong) MGSLayer *layer;
 @property (nonatomic,weak) MGSMapView *mapView;
 @property (nonatomic,readonly,weak) AGSGraphicsLayer *graphicsLayer;
@@ -29,7 +29,7 @@
 // has a valid spatial reference, it will be returned by the spatialReference getter,
 // otherwise, this property behaves like a normal R/W property
 @property (nonatomic,strong) AGSSpatialReference *spatialReference;
-@property (nonatomic,weak) id<MGSLayerManagerDelegate> delegate;
+@property (nonatomic,weak) id<MGSLayerControllerDelegate> delegate;
 
 - (id)initWithLayer:(MGSLayer*)layer;
 - (void)syncAnnotations;

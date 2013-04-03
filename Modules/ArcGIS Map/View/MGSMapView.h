@@ -5,7 +5,7 @@
 #import "MGSGeometry.h"
 
 @class MGSMapCoordinate;
-@class MGSLayerManager;
+@class MGSLayerController;
 @class MGSMapAnnotation;
 @class MGSMapQuery;
 @class MGSLayer;

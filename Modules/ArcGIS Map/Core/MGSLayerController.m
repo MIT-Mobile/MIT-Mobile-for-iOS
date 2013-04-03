@@ -1,4 +1,4 @@
-#import "MGSLayerManager.h"
+#import "MGSLayerController.h"
 #import "MGSSafeAnnotation.h"
 #import "MGSUtility.h"
 #import "CoreLocation+MITAdditions.h"
@@ -6,7 +6,7 @@
 #import "MGSLayerAnnotation.h"
 
 
-@interface MGSLayerManager ()
+@interface MGSLayerController ()
 @property(nonatomic, strong) MGSLayer* layer;
 @property(nonatomic, weak) AGSGraphicsLayer* graphicsLayer;
 @property(nonatomic, strong) NSMutableSet *layerAnnotations;
@@ -20,7 +20,7 @@
 - (BOOL)isFeatureGraphic:(id)graphic;
 @end
 
-@implementation MGSLayerManager
+@implementation MGSLayerController
 @dynamic allAnnotations;
 
 - (id)initWithLayer:(MGSLayer*)layer

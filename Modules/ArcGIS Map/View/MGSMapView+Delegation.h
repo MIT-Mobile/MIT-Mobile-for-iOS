@@ -44,5 +44,5 @@
 - (void)locationDisplayDataSourceStopped:(id<AGSLocationDisplayDataSource>)dataSource;
 
 #pragma mark MGSLayerManagerDelegate
-- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerManager*)layerManager;
+- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager;
 @end
