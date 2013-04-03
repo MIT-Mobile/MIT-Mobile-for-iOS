@@ -14,6 +14,9 @@
 
 - (AGSGraphic*)layerManager:(MGSLayerManager*)layerManager
        graphicForAnnotation:(id<MGSAnnotation>)annotation;
+
+- (void)layerManagerWillSynchronizeAnnotations:(MGSLayerManager*)layerManager;
+- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerManager*)layerManager;
 @end
 
 @interface MGSLayerManager : NSObject
