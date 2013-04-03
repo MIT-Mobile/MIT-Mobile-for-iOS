@@ -8,6 +8,7 @@
 @protocol MGSAnnotation;
 
 @protocol MGSLayerManagerDelegate <NSObject>
+@optional
 - (AGSGraphicsLayer*)layerManager:(MGSLayerManager*)layerManager
             graphicsLayerForLayer:(MGSLayer*)layer;
 
