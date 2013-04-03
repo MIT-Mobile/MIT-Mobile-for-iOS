@@ -35,7 +35,7 @@
 		29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		29E308871176018C005211A7 /* MITModuleURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E308851176018C005211A7 /* MITModuleURL.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		29EB610B10FE47220085D32B /* ShuttleSubscriptionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2C014A8B16CC828B00B4BB7D /* MGSSafeAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2C014A8B16CC828B00B4BB7D /* MGSSafeAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */; };
 		2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6CD137C4C2C0005F1FC /* FacilitiesCategoryViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -463,8 +463,8 @@
 		2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSLayerAnnotation.m; sourceTree = "<group>"; };
 		2C101A741653F054000E40E3 /* MGSLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSLayer.h; sourceTree = "<group>"; };
 		2C101A751653F054000E40E3 /* MGSLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSLayer.m; sourceTree = "<group>"; };
-		2C101A791653F054000E40E3 /* MGSRouteLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSRouteLayer.h; path = Core/MGSRouteLayer.h; sourceTree = "<group>"; };
-		2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGSRouteLayer.m; path = Core/MGSRouteLayer.m; sourceTree = "<group>"; };
+		2C101A791653F054000E40E3 /* MGSRouteLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSRouteLayer.h; sourceTree = "<group>"; };
+		2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSRouteLayer.m; sourceTree = "<group>"; };
 		2C101A881653F06C000E40E3 /* MGSMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMapView.h; sourceTree = "<group>"; };
 		2C101A891653F06C000E40E3 /* MGSMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSMapView.m; sourceTree = "<group>"; };
 		2C101A8A1653F06C000E40E3 /* MGSMapViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSMapViewDelegate.h; sourceTree = "<group>"; };
@@ -499,8 +499,8 @@
 		2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		2C3AFD2F166518CB00392AE3 /* MGSUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSUtility.h; sourceTree = "<group>"; };
 		2C3AFD30166518CB00392AE3 /* MGSUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSUtility.m; sourceTree = "<group>"; };
-		2C4D799D16FB4B0F001AAC81 /* MGSLayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSLayerController.h; path = ../MGSLayerController.h; sourceTree = "<group>"; };
-		2C4D799E16FB4B0F001AAC81 /* MGSLayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGSLayerController.m; path = ../MGSLayerController.m; sourceTree = "<group>"; };
+		2C4D799D16FB4B0F001AAC81 /* MGSLayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSLayerController.h; sourceTree = "<group>"; };
+		2C4D799E16FB4B0F001AAC81 /* MGSLayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSLayerController.m; sourceTree = "<group>"; };
 		2C544B9B1358A24400685545 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
 		2C544B9C1358A24400685545 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		2C5B30461371D54500870E6D /* FacilitiesUserLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesUserLocationViewController.h; sourceTree = "<group>"; };
@@ -1164,6 +1164,7 @@
 		080E96DDFE201D6D7F000001 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				2C101A451653E931000E40E3 /* MapCore */,
 				2C3C9D7314CDC0B2005646F7 /* Categories */,
 				3AA21C481039DDBA00DB7637 /* Connection */,
 				DE952E691629BF59007E7356 /* Container Views */,
@@ -1330,44 +1331,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		2C101A451653E931000E40E3 /* ArcGIS Map */ = {
-			isa = PBXGroup;
-			children = (
-				2C101A791653F054000E40E3 /* MGSRouteLayer.h */,
-				2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */,
-				2C101A471653ECB4000E40E3 /* Map View */,
-				2C101A461653EBE2000E40E3 /* Core */,
-			);
-			name = "ArcGIS Map";
-			path = "../ArcGIS Map";
-			sourceTree = "<group>";
-		};
-		2C101A461653EBE2000E40E3 /* Core */ = {
+		2C101A451653E931000E40E3 /* MapCore */ = {
 			isa = PBXGroup;
 			children = (
 				2C642D1E1663B6BE0062B00A /* Internal */,
-				2C868B0616D52D81000B2414 /* MGSAnnotationTypes.h */,
+				2C32D33A170CB78000F9FD44 /* Layers */,
 				2C642D1F1663D0A10062B00A /* MGSAnnotation.h */,
-				2CA010BC1694A7CC00B87CF0 /* MGSSimpleAnnotation.h */,
-				2CA010BD1694A7CC00B87CF0 /* MGSSimpleAnnotation.m */,
-				2C101A741653F054000E40E3 /* MGSLayer.h */,
-				2C101A751653F054000E40E3 /* MGSLayer.m */,
+				2C868B0616D52D81000B2414 /* MGSAnnotationTypes.h */,
 				2CD27AA91709D3EF002E220E /* MGSGeometry.h */,
 				2CD27AAA1709D3EF002E220E /* MGSGeometry.m */,
-			);
-			path = Core;
-			sourceTree = "<group>";
-		};
-		2C101A471653ECB4000E40E3 /* Map View */ = {
-			isa = PBXGroup;
-			children = (
-				2CBD6A0216D3CE6D002B482F /* MGSMapView+Delegation.h */,
 				2C101A881653F06C000E40E3 /* MGSMapView.h */,
 				2C101A891653F06C000E40E3 /* MGSMapView.m */,
 				2C101A8A1653F06C000E40E3 /* MGSMapViewDelegate.h */,
+				2CA010BC1694A7CC00B87CF0 /* MGSSimpleAnnotation.h */,
+				2CA010BD1694A7CC00B87CF0 /* MGSSimpleAnnotation.m */,
 			);
-			name = "Map View";
-			path = View;
+			path = MapCore;
 			sourceTree = "<group>";
 		};
 		2C101A9616540907000E40E3 /* ArcGIS */ = {
@@ -1416,6 +1395,17 @@
 				2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */,
 			);
 			path = FacilitiesRoot;
+			sourceTree = "<group>";
+		};
+		2C32D33A170CB78000F9FD44 /* Layers */ = {
+			isa = PBXGroup;
+			children = (
+				2C101A741653F054000E40E3 /* MGSLayer.h */,
+				2C101A751653F054000E40E3 /* MGSLayer.m */,
+				2C101A791653F054000E40E3 /* MGSRouteLayer.h */,
+				2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */,
+			);
+			path = Layers;
 			sourceTree = "<group>";
 		};
 		2C333496162DD2FA00BBB312 /* Facebook Connect */ = {
@@ -1513,6 +1503,7 @@
 				2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */,
 				2C4D799D16FB4B0F001AAC81 /* MGSLayerController.h */,
 				2C4D799E16FB4B0F001AAC81 /* MGSLayerController.m */,
+				2CBD6A0216D3CE6D002B482F /* MGSMapView+Delegation.h */,
 				2C014A8916CC828A00B4BB7D /* MGSSafeAnnotation.h */,
 				2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */,
 				2C3AFD2F166518CB00392AE3 /* MGSUtility.h */,
@@ -2083,7 +2074,6 @@
 		DE715446102FE468005E6111 /* Campus Map */ = {
 			isa = PBXGroup;
 			children = (
-				2C101A451653E931000E40E3 /* ArcGIS Map */,
 				44C1A26011A2E865000FD653 /* Model */,
 				44C1A3C511A3388A000FD653 /* Selection */,
 				4463CC8710D6F4A50048CA83 /* CMModule.h */,

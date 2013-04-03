@@ -17,14 +17,6 @@ FOUNDATION_STATIC_INLINE MKCoordinateSpan MKCoordinateSpanForMGSZoomLevel(MGSZoo
     return MKCoordinateSpanMake(delta, delta);
 }
 
-FOUNDATION_STATIC_INLINE BOOL MKCoordinateRegionIsValid(MKCoordinateRegion region) {
-    return (CLLocationCoordinate2DIsValid(region.center) &&
-            (region.span.latitudeDelta > 0.0) &&
-            (region.span.latitudeDelta <= 90.0) &&
-            (region.span.longitudeDelta > 0.0) &&
-            (region.span.longitudeDelta <= 180.0));
-}
-
 FOUNDATION_STATIC_INLINE BOOL CGRectIsValid(CGRect rect) {
     CGRect normalizedRect = CGRectStandardize(rect);
     return !(CGRectIsEmpty(normalizedRect) ||
