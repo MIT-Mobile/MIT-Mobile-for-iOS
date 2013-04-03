@@ -6,13 +6,13 @@
 
 @interface MGSRouteLayer ()
 @property (nonatomic,strong) NSArray *pathCoordinates;
-@property (nonatomic,strong) NSArray *stopAnnotations;
+@property (nonatomic,strong) NSOrderedSet *stopAnnotations;
 @property (nonatomic,strong) id<MGSAnnotation> routePath;
 @property (nonatomic,weak) AGSGraphic *lineGraphic;
 @end
 
 @implementation MGSRouteLayer
-- (id)initWithName:(NSString *)name withStops:(NSArray*)stopAnnotations {
+- (id)initWithName:(NSString *)name withStops:(NSOrderedSet*)stopAnnotations {
     self = [super initWithName:name];
 
     if (self)
@@ -26,7 +26,7 @@
     return self;
 }
 
-- (id)initWithName:(NSString*)name withStops:(NSArray*)stopAnnotations pathCoordinates:(NSArray*)pathCoordinates
+- (id)initWithName:(NSString*)name withStops:(NSOrderedSet*)stopAnnotations pathCoordinates:(NSArray*)pathCoordinates
 {
     self = [super initWithName:name];
     

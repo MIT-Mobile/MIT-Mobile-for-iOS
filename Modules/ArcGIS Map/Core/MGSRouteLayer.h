@@ -16,6 +16,6 @@
 @property (nonatomic,assign) BOOL requireIdentification;
 @property (nonatomic,assign) BOOL requireHandicapAccess;
 
-- (id)initWithName:(NSString*)name withStops:(NSArray*)stopAnnotations pathCoordinates:(NSArray*)coordinates;
-- (id)initWithName:(NSString*)name withStops:(NSArray*)stopAnnotations;
+- (id)initWithName:(NSString*)name withStops:(NSOrderedSet*)stopAnnotations pathCoordinates:(NSArray*)coordinates;
+- (id)initWithName:(NSString*)name withStops:(NSOrderedSet*)stopAnnotations;
 @end

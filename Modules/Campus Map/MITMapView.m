@@ -391,7 +391,7 @@
     
     NSString *identifier = [NSString stringWithFormat:@"edu.mit.mobile.map.routes.%d",[self.routeLayers count]];
     MGSRouteLayer *layer = [[MGSRouteLayer alloc] initWithName:identifier
-                                                     withStops:stops
+                                                     withStops:[NSOrderedSet orderedSetWithArray:stops]
                                                pathCoordinates:pathCoordinates];
     [self.legacyRoutes addObject:route];
     [self.routeLayers addObject:layer];
