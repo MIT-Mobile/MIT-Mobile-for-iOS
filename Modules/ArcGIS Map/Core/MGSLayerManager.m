@@ -126,12 +126,12 @@
     NSMutableSet *layerAnnotations = nil;
     if ([self.layerAnnotations count]) {
         layerAnnotations = [NSMutableSet set];
-
+        
         [self.layerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation *layerAnnotation, BOOL* stop) {
-            if ([annotations containsObject:layerAnnotation.graphic]) {
+            if ([annotations containsObject:layerAnnotation.annotation]) {
                 [layerAnnotations addObject:layerAnnotation];
             }
-
+            
             (*stop) = ([layerAnnotations count] == [annotations count]);
         }];
     }
