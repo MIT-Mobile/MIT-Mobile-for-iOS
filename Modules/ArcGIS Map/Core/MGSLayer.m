@@ -90,6 +90,12 @@
     shouldNotifyDelegate:YES];
 }
 
+- (void)addAnnotationsFromOrderedSet:(NSOrderedSet*)annotations
+{
+    [self addAnnotations:annotations
+    shouldNotifyDelegate:YES];
+}
+
 - (void)addAnnotations:(NSOrderedSet *)annotations
   shouldNotifyDelegate:(BOOL)notifyDelegate
 {
@@ -132,6 +138,12 @@
 - (void)deleteAnnotations:(NSArray *)annotations
 {
     [self deleteAnnotations:[NSSet setWithArray:annotations]
+       shouldNotifyDelegate:YES];
+}
+
+- (void)deleteAnnotationsFromSet:(NSSet*)annotations
+{
+    [self deleteAnnotations:annotations
        shouldNotifyDelegate:YES];
 }
 

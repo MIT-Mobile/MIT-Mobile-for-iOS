@@ -23,9 +23,11 @@
 
 - (void)setAnnotationWithArray:(NSArray*)annotations;
 - (void)addAnnotation:(id<MGSAnnotation>)annotation;
-- (void)addAnnotations:(NSArray *)objects;
+- (void)addAnnotations:(NSArray*)annotations;
+- (void)addAnnotationsFromOrderedSet:(NSOrderedSet*)annotations;
 - (void)deleteAnnotation:(id<MGSAnnotation>)annotation;
 - (void)deleteAnnotations:(NSArray*)annotation;
+- (void)deleteAnnotationsFromSet:(NSSet*)annotations;
 - (void)deleteAllAnnotations;
 
 - (MKCoordinateRegion)regionForAnnotations;
