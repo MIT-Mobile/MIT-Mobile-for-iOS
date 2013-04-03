@@ -2,6 +2,11 @@
 
 @implementation MGSSimpleAnnotation
 - (id)init {
+    return [self initWithAnnotationType:MGSAnnotationMarker];
+}
+
+- (id)initWithAnnotationType:(MGSAnnotationType)type
+{
     self = [super init];
     
     if (self) {

@@ -20,4 +20,8 @@
 @property (nonatomic) CGFloat lineWidth;
 
 @property (nonatomic, strong) id<NSObject> userData;
+
+- (id)init;
+- (id)initWithAnnotationType:(MGSAnnotationType)type;
+
 @end
