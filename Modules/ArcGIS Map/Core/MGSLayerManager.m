@@ -26,19 +26,19 @@
 - (id)initWithLayer:(MGSLayer*)layer
 {
     self = [super init];
-
+    
     if (self) {
         self.layer = layer;
         self.layerAnnotations = [NSMutableSet set];
         self.featureGraphics = [NSMutableSet set];
         self.cachedAnnotations = [NSMutableSet set];
-
+        
         [self.layer addObserver:self
                      forKeyPath:@"annotations"
                         options:(NSKeyValueObservingOptions)0 //Typecast so the compiler stops complaining that the NSKeyValueObservingOptions enum doesn't have a value for 0
                         context:nil];
     }
-
+    
     return self;
 }
 
@@ -79,7 +79,7 @@
             layer = [[AGSGraphicsLayer alloc] init];
         }
     }
-
+    
     if (layer) {
         self.graphicsLayer = layer;
         
@@ -102,16 +102,16 @@
     NSMutableSet *layerAnnotations = nil;
     if ([self.layerAnnotations count]) {
         layerAnnotations = [NSMutableSet set];
-
+        
         [self.layerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation *layerAnnotation, BOOL* stop) {
             if ([graphics containsObject:layerAnnotation.graphic]) {
                 [layerAnnotations addObject:layerAnnotation];
             }
-
+            
             (*stop) = ([layerAnnotations count] == [graphics count]);
         }];
     }
-
+    
     return layerAnnotations;
 }
 
@@ -135,7 +135,7 @@
             (*stop) = ([layerAnnotations count] == [annotations count]);
         }];
     }
-
+    
     return layerAnnotations;
 }
 
@@ -281,12 +281,12 @@
         AGSSpatialReference *reference = self.spatialReference ? self.spatialReference : [AGSSpatialReference wgs84SpatialReference];
         MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
         AGSGraphic* annotationGraphic = nil;
-
+        
         switch (annotation.annotationType) {
             case MGSAnnotationMarker: {
                 UIImage* markerImage = safeAnnotation.markerImage;
                 MGSMarkerOptions options;
-
+                
                 AGSPictureMarkerSymbol* markerSymbol = nil;
                 if (markerImage) {
                     markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:markerImage];
@@ -295,26 +295,26 @@
                     markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"];
                     options = MGSMarkerOptionsMake(CGPointMake(0.0, 8.0), CGPointMake(2.0, 16.0));
                 }
-
+                
                 markerSymbol.leaderPoint = options.hotspot;
                 markerSymbol.offset = options.offset;
-
+                
                 annotationGraphic = [[AGSGraphic alloc] initWithGeometry:AGSPointFromCLLocationCoordinate2DInSpatialReference(safeAnnotation.coordinate,reference)
                                                                   symbol:markerSymbol
                                                               attributes:[NSMutableDictionary dictionary]
                                                     infoTemplateDelegate:nil];
             }
                 break;
-
+                
             case MGSAnnotationPolyline: {
                 if ([annotation respondsToSelector:@selector(points)]) {
                     AGSMutablePolyline* polyline = [[AGSMutablePolyline alloc] init];
                     polyline.spatialReference = [AGSSpatialReference wgs84SpatialReference];
                     [polyline addPathToPolyline];
-
+                    
                     for (NSValue* pointValue in [annotation points]) {
                         CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
-
+                        
                         if (CLLocationCoordinate2DIsValid(point)) {
                             AGSPoint* agsPoint = AGSPointFromCLLocationCoordinate2D(point);
                             [polyline addPointToPath:agsPoint];
@@ -322,18 +322,18 @@
                             DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
                         }
                     }
-
+                    
                     UIColor* lineColor = nil;
                     CGFloat lineWidth = 0.0;
-
+                    
                     if ([annotation respondsToSelector:@selector(strokeColor)]) {
                         lineColor = [annotation strokeColor];
                     }
-
+                    
                     if ([annotation respondsToSelector:@selector(lineWidth)]) {
                         lineWidth = [annotation lineWidth];
                     }
-
+                    
                     AGSSimpleLineSymbol* lineSymbol = [AGSSimpleLineSymbol simpleLineSymbolWithColor:(lineColor ? lineColor : [UIColor greenColor])
                                                                                                width:((lineWidth >= 0.5) ? lineWidth : 2.0)];
                     
@@ -347,16 +347,16 @@
                 }
             }
                 break;
-
+                
             case MGSAnnotationPolygon: {
                 if ([annotation respondsToSelector:@selector(points)]) {
                     AGSMutablePolygon* polygon = [[AGSMutablePolygon alloc] init];
                     polygon.spatialReference = [AGSSpatialReference wgs84SpatialReference];
                     [polygon addRingToPolygon];
-
+                    
                     for (NSValue* pointValue in [annotation points]) {
                         CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
-
+                        
                         if (CLLocationCoordinate2DIsValid(point)) {
                             AGSPoint* agsPoint = AGSPointFromCLLocationCoordinate2D(point);
                             [polygon addPointToRing:agsPoint];
@@ -364,14 +364,14 @@
                             DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
                         }
                     }
-
+                    
                     UIColor* strokeColor = nil;
                     UIColor* fillColor = nil;
                     CGFloat lineWidth = 0.0;
-
+                    
                     if ([annotation respondsToSelector:@selector(strokeColor)]) {
                         UIColor* aStrokeColor = [annotation strokeColor];
-
+                        
                         if (aStrokeColor == nil) {
                             strokeColor = [UIColor colorWithWhite:0.0
                                                             alpha:0.5];
@@ -379,10 +379,10 @@
                             strokeColor = aStrokeColor;
                         }
                     }
-
+                    
                     if ([annotation respondsToSelector:@selector(fillColor)]) {
                         UIColor* aFillColor = [annotation fillColor];
-
+                        
                         if (aFillColor == nil) {
                             fillColor = [UIColor colorWithWhite:0.0
                                                           alpha:0.5];
@@ -390,15 +390,15 @@
                             fillColor = aFillColor;
                         }
                     }
-
+                    
                     if ([annotation respondsToSelector:@selector(lineWidth)]) {
                         lineWidth = [annotation lineWidth];
                     }
-
+                    
                     AGSSimpleFillSymbol* fillSymbol = [AGSSimpleFillSymbol simpleFillSymbolWithColor:fillColor
                                                                                         outlineColor:strokeColor];
                     fillSymbol.outline.width = lineWidth;
-
+                    
                     annotationGraphic = [[AGSGraphic alloc] initWithGeometry:[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polygon
                                                                                                                      toSpatialReference:reference]
                                                                       symbol:fillSymbol
@@ -409,14 +409,14 @@
                 }
             }
                 break;
-
+                
             case MGSAnnotationPointOfInterest:
                 // Not sure how we'll handle this one. For the time being,
                 // default to a nil graphic
             default:
                 annotationGraphic = nil;
         }
-
+        
         return annotationGraphic;
     }
 }
