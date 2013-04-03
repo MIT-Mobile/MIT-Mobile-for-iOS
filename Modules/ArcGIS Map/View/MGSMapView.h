@@ -35,7 +35,6 @@
 - (void)removeLayer:(MGSLayer*)layer;
 - (void)insertLayer:(MGSLayer*)layer
         behindLayer:(MGSLayer*)foregroundLayer;
-- (MGSLayerManager*)layerManagerForLayer:(MGSLayer*)layer;
 
 - (MGSLayer*)layerContainingAnnotation:(id<MGSAnnotation>)annotation;
 
