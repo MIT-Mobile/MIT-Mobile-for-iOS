@@ -8,7 +8,7 @@
 
 @protocol MGSAnnotation;
 
-@interface MGSMapView (AGSDelegation)
+@interface MGSMapView (Delegation)
 #pragma mark AGSMapViewCalloutDelegate
 - (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForGraphic:(AGSGraphic *)graphic;
 - (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForLocationDisplay:(AGSLocationDisplay *)ld;
@@ -42,4 +42,7 @@
             didUpdateWithLocation:(AGSLocation*)location;
 - (void)locationDisplayDataSourceStarted:(id<AGSLocationDisplayDataSource>)dataSource;
 - (void)locationDisplayDataSourceStopped:(id<AGSLocationDisplayDataSource>)dataSource;
+
+#pragma mark MGSLayerManagerDelegate
+- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerManager*)layerManager;
 @end
