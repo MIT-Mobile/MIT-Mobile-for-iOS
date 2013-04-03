@@ -12,7 +12,8 @@
 @class MGSMapView;
 @class MITMapAnnotationView;
 
-@protocol MITMapViewDelegate<NSObject>
+DEPRECATED_ATTRIBUTE
+@protocol MITMapViewDelegate <NSObject>
 @optional
 - (void)mapViewDidFinishLoading:(MITMapView*)mapView;
 
@@ -30,10 +31,11 @@
 - (void)mapViewRegionDidChange:(MITMapView*)mapView;
 
 // any touch on the map will invoke this.
-- (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch;
+- (void)mapView:(MITMapView *)mapView wasTouched:(CGPoint)screenPoint;
 @end
 
 
+DEPRECATED_ATTRIBUTE
 @interface MITMapView : UIView
 @property (nonatomic, weak) id<MITMapViewDelegate> delegate;
 @property (nonatomic, readonly, weak) MGSMapView *mapView;

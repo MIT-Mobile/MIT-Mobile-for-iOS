@@ -25,6 +25,10 @@
     return self;
 }
 
+- (id)copyWithZone:(NSZone *)zone {
+    return [[[self class] allocWithZone:zone] initWithAnnotation:self.annotation];
+}
+
 - (BOOL)isEqual:(id)object {
     if ([super isEqual:object]) {
         return true;

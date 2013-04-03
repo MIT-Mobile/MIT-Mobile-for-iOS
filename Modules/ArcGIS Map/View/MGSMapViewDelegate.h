@@ -16,6 +16,9 @@
 - (void)mapView:(MGSMapView*)mapView didShowCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 - (void)mapView:(MGSMapView*)mapView didDismissCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 
+- (void)mapView:(MGSMapView*)mapView didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
+    screenPoint:(CGPoint)screenPoint;
+
 - (void)mapView:(MGSMapView*)mapView willAddLayer:(MGSLayer*)layer;
 - (void)mapView:(MGSMapView*)mapView didAddLayer:(MGSLayer*)layer;
 

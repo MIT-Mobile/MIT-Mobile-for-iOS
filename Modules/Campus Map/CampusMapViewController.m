@@ -746,7 +746,7 @@
 	[self pushAnnotationDetails:view.annotation animated:YES];
 }
 
-- (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch
+- (void)mapView:(MITMapView *)mapView wasTouched:(CGPoint)screenPoint
 {
 	[self.searchBar resignFirstResponder];
 }

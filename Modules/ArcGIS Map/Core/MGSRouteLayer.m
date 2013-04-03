@@ -2,21 +2,18 @@
 #import <CoreLocation/CoreLocation.h>
 
 #import "MGSRouteLayer.h"
-#import "MGSLayer+Subclass.h"
-
-#import "MGSUtility.h"
-#import "CoreLocation+MITAdditions.h"
 #import "MGSSimpleAnnotation.h"
+#import "MGSUtility.h"
 
 @interface MGSRouteLayer ()
 @property (nonatomic,strong) NSArray *pathCoordinates;
-@property (nonatomic,strong) NSArray *stopAnnotations;
+@property (nonatomic,strong) NSOrderedSet *stopAnnotations;
 @property (nonatomic,strong) id<MGSAnnotation> routePath;
 @property (nonatomic,weak) AGSGraphic *lineGraphic;
 @end
 
 @implementation MGSRouteLayer
-- (id)initWithName:(NSString *)name withStops:(NSArray*)stopAnnotations {
+- (id)initWithName:(NSString *)name withStops:(NSOrderedSet*)stopAnnotations {
     self = [super initWithName:name];
 
     if (self)
@@ -30,7 +27,7 @@
     return self;
 }
 
-- (id)initWithName:(NSString*)name withStops:(NSArray*)stopAnnotations pathCoordinates:(NSArray*)pathCoordinates
+- (id)initWithName:(NSString*)name withStops:(NSOrderedSet*)stopAnnotations pathCoordinates:(NSArray*)pathCoordinates
 {
     self = [super initWithName:name];
     
@@ -41,36 +38,42 @@
         self.lineColor = [UIColor redColor];
         self.lineWidth = 4.0f;
         
-        [self addAnnotations:stopAnnotations];
+        NSMutableArray *annotations = [[stopAnnotations array] mutableCopy];
+        [annotations insertObject:self.routePath
+                          atIndex:0];
+        [self addAnnotations:annotations];
     }
     
     return self;
 }
 
-- (NSArray*)annotations {
-    NSMutableArray *annotations = [NSMutableArray arrayWithArray:[super annotations]];
-    [annotations removeObject:self.routePath];
+- (NSOrderedSet*)annotations {
+    NSMutableOrderedSet *annotations = [[super annotations] mutableCopy];
+    
+    if ([annotations containsObject:self.routePath]) {
+        if ([annotations count]) {
+            [annotations moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:[annotations indexOfObject:self.routePath]]
+                                      toIndex:0];
+        }
+    }
+    
 
     return annotations;
 }
 
-- (void)willReloadMapLayer
+- (id<MGSAnnotation>)routePath
 {
-    [super willReloadMapLayer];
-
-    if ((self.routePath == nil) && [self.pathCoordinates count]) {
-        MGSSimpleAnnotation *annotation = [[MGSSimpleAnnotation alloc] init];
-        annotation.annotationType = MGSAnnotationPolyline;
-        annotation.points = self.pathCoordinates;
-        annotation.lineWidth = self.lineWidth;
-        annotation.strokeColor = self.lineColor;
-        self.routePath = annotation;
+    if (_routePath == nil) {
+        MGSSimpleAnnotation *routeAnnotation = [[MGSSimpleAnnotation alloc] init];
+        routeAnnotation.annotationType = MGSAnnotationPolyline;
+        routeAnnotation.strokeColor = self.lineColor;
+        routeAnnotation.lineWidth = self.lineWidth;
+        routeAnnotation.points = self.pathCoordinates;
+        
+        _routePath = routeAnnotation;
     }
     
-    if (self.routePath) {
-        // Make sure the route is *always* underneath everything else
-        [self insertAnnotation:self.routePath
-                       atIndex:0];
-    }
+    return _routePath;
 }
+
 @end
