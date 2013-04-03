@@ -2,6 +2,7 @@
 #import <CoreLocation/CoreLocation.h>
 
 #import "MGSRouteLayer.h"
+#import "MGSSimpleAnnotation.h"
 #import "MGSUtility.h"
 
 @interface MGSRouteLayer ()
@@ -37,7 +38,10 @@
         self.lineColor = [UIColor redColor];
         self.lineWidth = 4.0f;
         
-        [self addAnnotations:stopAnnotations];
+        NSMutableArray *annotations = [[stopAnnotations array] mutableCopy];
+        [annotations insertObject:self.routePath
+                          atIndex:0];
+        [self addAnnotations:annotations];
     }
     
     return self;
@@ -45,8 +49,31 @@
 
 - (NSOrderedSet*)annotations {
     NSMutableOrderedSet *annotations = [[super annotations] mutableCopy];
-    [annotations removeObject:self.routePath];
+    
+    if ([annotations containsObject:self.routePath]) {
+        if ([annotations count]) {
+            [annotations moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:[annotations indexOfObject:self.routePath]]
+                                      toIndex:0];
+        }
+    }
+    
 
     return annotations;
 }
+
+- (id<MGSAnnotation>)routePath
+{
+    if (_routePath == nil) {
+        MGSSimpleAnnotation *routeAnnotation = [[MGSSimpleAnnotation alloc] init];
+        routeAnnotation.annotationType = MGSAnnotationPolyline;
+        routeAnnotation.strokeColor = self.lineColor;
+        routeAnnotation.lineWidth = self.lineWidth;
+        routeAnnotation.points = self.pathCoordinates;
+        
+        _routePath = routeAnnotation;
+    }
+    
+    return _routePath;
+}
+
 @end
