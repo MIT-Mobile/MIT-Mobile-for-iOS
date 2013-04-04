@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MITMapView.h"
+#import "MGSMapView.h"
 
 @interface DiningMapListViewController : UIViewController
 
 @property (nonatomic, readonly, strong) IBOutlet UITableView * listView;
 @property (nonatomic, readonly, strong) IBOutlet UISegmentedControl * segmentControl;
-@property (nonatomic, readonly, strong) IBOutlet MITMapView *mapView;
+@property (nonatomic, readonly, strong) IBOutlet MGSMapView *mapView;
 @property (nonatomic, readonly, assign) BOOL isAnimating;
 @property (nonatomic, readonly, assign) BOOL isShowingMap;
 

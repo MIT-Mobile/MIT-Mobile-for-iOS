@@ -9,6 +9,7 @@
 #import "DiningHallMenuViewController.h"
 #import "DiningMenuCompareViewController.h"
 #import "DiningHallMenuHeaderView.h"
+#import "DiningHallMenuFooterView.h"
 
 @interface DiningHallMenuViewController ()
 
@@ -40,18 +41,18 @@
     
     DiningHallMenuHeaderView *headerView = [[DiningHallMenuHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
     self.tableView.tableHeaderView = headerView;
+    
+    DiningHallMenuFooterView *footerView = [[DiningHallMenuFooterView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 54)];
+    self.tableView.tableFooterView = footerView;
+    
+    UIBarButtonItem *filterItem = [[UIBarButtonItem alloc] initWithTitle:@"Filter" style:UIBarButtonItemStylePlain target:self action:@selector(filterMenu:)];
+    self.navigationItem.rightBarButtonItem = filterItem;
 
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation
@@ -68,6 +69,12 @@
     vc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     
     [self presentViewController:vc animated:YES completion:NULL];
+}
+
+#pragma mark - Filter
+- (void) filterMenu:(id)sender
+{
+
 }
 
 #pragma mark - Table view data source

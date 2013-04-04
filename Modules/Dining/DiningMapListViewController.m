@@ -13,7 +13,7 @@
 
 @property (nonatomic, strong) IBOutlet UITableView * listView;
 @property (nonatomic, strong) IBOutlet UISegmentedControl * segmentControl;
-@property (nonatomic, strong) IBOutlet MITMapView *mapView;
+@property (nonatomic, strong) IBOutlet MGSMapView *mapView;
 @property (nonatomic, assign) BOOL isAnimating;
 @property (nonatomic, assign) BOOL isShowingMap;
 
