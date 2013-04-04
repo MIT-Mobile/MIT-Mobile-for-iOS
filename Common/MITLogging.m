@@ -1,4 +1,5 @@
 #import "MITLogging.h"
+#import "MITLogFormatter.h"
 
 void mit_logger_init( void )
 {
@@ -6,14 +7,14 @@ void mit_logger_init( void )
     dispatch_once(&onceToken, ^{
         {
             DDASLLogger *logger = [DDASLLogger sharedInstance];
-            logger.logFormatter = [[DispatchQueueLogFormatter alloc] init];
+            logger.logFormatter = [[MITLogFormatter alloc] init];
             [DDLog addLogger:logger];
         }
         
 #if defined(DEBUG)
         {
             DDTTYLogger *logger = [DDTTYLogger sharedInstance];
-            logger.logFormatter = [[DispatchQueueLogFormatter alloc] init];
+            logger.logFormatter = [[MITLogFormatter alloc] init];
             [DDLog addLogger:logger];
         }
 #endif //DEBUG
