@@ -563,7 +563,7 @@
 		2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderModule.m; sourceTree = "<group>"; };
 		2CBD69FF16D3C6FC002B482F /* MITMapAnnotationCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapAnnotationCalloutView.h; sourceTree = "<group>"; };
 		2CBD6A0016D3C6FC002B482F /* MITMapAnnotationCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapAnnotationCalloutView.m; sourceTree = "<group>"; };
-		2CBD6A0216D3CE6D002B482F /* MGSMapView+Delegation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MGSMapView+Delegation.h"; sourceTree = "<group>"; };
+		2CBD6A0216D3CE6D002B482F /* MGSMapView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MGSMapView+Private.h"; sourceTree = "<group>"; };
 		2CBDBDE515CC1F1F0092F76F /* QRReaderResult v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "QRReaderResult v2.xcdatamodel"; sourceTree = "<group>"; };
 		2CC2E9CA144DC9B000151C71 /* MITTabHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabHeaderView.h; sourceTree = "<group>"; };
 		2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabHeaderView.m; sourceTree = "<group>"; };
@@ -1513,7 +1513,7 @@
 				2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */,
 				2C4D799D16FB4B0F001AAC81 /* MGSLayerController.h */,
 				2C4D799E16FB4B0F001AAC81 /* MGSLayerController.m */,
-				2CBD6A0216D3CE6D002B482F /* MGSMapView+Delegation.h */,
+				2CBD6A0216D3CE6D002B482F /* MGSMapView+Private.h */,
 				2C014A8916CC828A00B4BB7D /* MGSSafeAnnotation.h */,
 				2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */,
 				2C3AFD2F166518CB00392AE3 /* MGSUtility.h */,

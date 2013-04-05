@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "MGSMapView.h"
+#import "MGSLayerController.h"
 
 @class AGSMapView;
 @class AGSGraphic;
@@ -8,7 +9,34 @@
 
 @protocol MGSAnnotation;
 
-@interface MGSMapView (Delegation)
+@interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate, AGSInfoTemplateDelegate, MGSLayerControllerDelegate>
+#pragma mark Properties
+@property(nonatomic,weak) AGSMapView* mapView;
+
+@property(nonatomic,assign,getter=isBaseLayersLoaded) BOOL baseLayersLoaded;
+@property(nonatomic,strong) NSMutableDictionary* baseLayers;
+@property(nonatomic,strong) NSDictionary* baseMapGroups;
+
+@property(nonatomic,strong) NSMutableArray* externalLayers;
+@property(nonatomic,strong) NSMutableSet* externalLayerManagers;
+@property(nonatomic,strong) MGSLayer* defaultLayer;
+
+@property(nonatomic, strong) id <MGSAnnotation> pendingCalloutAnnotation;
+@property(nonatomic, strong) id <MGSAnnotation> calloutAnnotation;
+
+#pragma mark Initialization
+- (void)commonInit;
+- (void)baseLayersDidFinishLoading;
+
+#pragma mark Property Getters
+- (AGSEnvelope*)defaultVisibleArea;
+- (AGSEnvelope*)defaultMaximumEnvelope;
+
+#pragma mark Lookup Methods
+- (MGSLayerController*)layerManagerForLayer:(MGSLayer*)layer;
+- (MGSLayer*)layerContainingAnnotation:(id <MGSAnnotation>)annotation;
+- (MGSLayer*)layerContainingGraphic:(AGSGraphic*)graphic;
+
 #pragma mark AGSMapViewCalloutDelegate
 - (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForGraphic:(AGSGraphic *)graphic;
 - (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForLocationDisplay:(AGSLocationDisplay *)ld;
