@@ -46,6 +46,8 @@
 @property (nonatomic, assign) SEL searchFilter;
 @property (nonatomic, assign) BOOL displayShuttles;
 
+@property (nonatomic) BOOL wasShowingUserLocation;
+
 - (void)updateMapListButton;
 - (void)addAnnotationsForShuttleStops:(NSArray*)shuttleStops;
 - (void)noSearchResultsAlert;
@@ -136,14 +138,15 @@
 
 -(void) viewWillAppear:(BOOL)animated {
     [self.mapView addTileOverlay];
-    //self.mapView.showsUserLocation = YES;
+    self.mapView.showsUserLocation = self.wasShowingUserLocation;
     
     [self updateMapListButton];
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
     [self.mapView removeTileOverlay];
-    //self.mapView.showsUserLocation = NO;
+    self.wasShowingUserLocation = self.mapView.showsUserLocation;
+    self.mapView.showsUserLocation = NO;
 }
 
 -(void) viewDidAppear:(BOOL)animated
@@ -746,7 +749,7 @@
 	[self pushAnnotationDetails:view.annotation animated:YES];
 }
 
-- (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch
+- (void)mapView:(MITMapView *)mapView wasTouched:(CGPoint)screenPoint
 {
 	[self.searchBar resignFirstResponder];
 }

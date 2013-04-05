@@ -262,6 +262,19 @@
     [self setupContentAreaForward:YES];
 }
 
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    _routeMapView.showsUserLocation = YES;
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    _routeMapView.showsUserLocation = NO;
+}
+
 #pragma mark View setup
 
 - (void)setupBottomToolBar {

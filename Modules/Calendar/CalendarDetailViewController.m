@@ -58,7 +58,7 @@
         [mainView addSubview:tableView];
     }
     
-    self.view = mainView;
+    self.view = [mainView autorelease];
 }
 
 - (void)viewDidLoad {

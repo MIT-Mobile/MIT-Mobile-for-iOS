@@ -82,15 +82,7 @@
 
 - (void)refreshLayers
 {
-    [self.annotationLayer refreshLayer];
-    [self.routeLayers enumerateObjectsUsingBlock:^(MGSRouteLayer *layer, NSUInteger idx, BOOL *stop) {
-        id<MITMapRoute> route = self.legacyRoutes[idx];
-        
-        layer.lineColor = [route fillColor];
-        layer.lineWidth = [route lineWidth];
-    
-        [layer refreshLayer];
-    }];
+    [self.mapView refreshLayer:self.annotationLayer];
 }
 
 #pragma mark - Dynamic Properties
@@ -267,7 +259,7 @@
 {
     if ([self.currentAnnotation isEqual:annotation])
     {
-        [self.mapView hideCallout];
+        [self.mapView dismissCallout];
         self.currentAnnotation = nil;
     }
 }
@@ -399,7 +391,7 @@
     
     NSString *identifier = [NSString stringWithFormat:@"edu.mit.mobile.map.routes.%d",[self.routeLayers count]];
     MGSRouteLayer *layer = [[MGSRouteLayer alloc] initWithName:identifier
-                                                     withStops:stops
+                                                     withStops:[NSOrderedSet orderedSetWithArray:stops]
                                                pathCoordinates:pathCoordinates];
     [self.legacyRoutes addObject:route];
     [self.routeLayers addObject:layer];
@@ -512,6 +504,16 @@
 }
 
 #pragma mark - MGSMapView Delegation Methods
+- (void)mapView:(MGSMapView *)mapView
+didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
+    screenPoint:(CGPoint)screenPoint
+{
+    if ([self.delegate respondsToSelector:@selector(mapView:wasTouched:)]) {
+        [self.delegate mapView:self
+                    wasTouched:screenPoint];
+    }
+}
+
 - (void)mapView:(MGSMapView *)mapView willShowCalloutForAnnotation:(id <MGSAnnotation>)annotation
 {
 

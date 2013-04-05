@@ -16,12 +16,13 @@
 @property (retain) QRReaderResult *scanResult;
 
 #pragma mark - Public IBOutlets
-@property (assign) UIImageView *qrImageView;
-@property (assign) UIImageView *backgroundImageView;
-@property (assign) UILabel *textTitleLabel;
-@property (assign) UILabel *textView;
-@property (assign) UILabel *dateLabel;
-@property (assign) UITableView *scanActionTable;
+@property (assign) IBOutlet UIScrollView *scrollView;
+@property (assign) IBOutlet UIImageView *qrImageView;
+@property (assign) IBOutlet UIImageView *backgroundImageView;
+@property (assign) IBOutlet UILabel *textTitleLabel;
+@property (assign) IBOutlet UILabel *textView;
+@property (assign) IBOutlet UILabel *dateLabel;
+@property (assign) IBOutlet UITableView *scanActionTable;
 @property (strong) NSMutableArray *scanActions;
 @property (strong) NSDictionary *scanShareDetails;
 @property (strong) NSString *scanType;

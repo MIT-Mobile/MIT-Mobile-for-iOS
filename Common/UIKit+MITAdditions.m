@@ -207,7 +207,7 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
     mainView.autoresizesSubviews = YES;
     mainView.backgroundColor = [UIColor clearColor];
     
-    return mainView;
+    return [mainView autorelease];
 }
 
 @end
