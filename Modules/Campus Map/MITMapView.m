@@ -88,14 +88,14 @@
 #pragma mark - Dynamic Properties
 - (void)setCenterCoordinate:(CLLocationCoordinate2D)coord
 {
-    [self setCenterCoordinate:coord
-                     animated:NO];
+    self.mapView.centerCoordinate = coord;
 }
 
-- (void)setCenterCoordinate:(CLLocationCoordinate2D)coord animated:(BOOL)animated
+- (void)setCenterCoordinate:(CLLocationCoordinate2D)coord
+                   animated:(BOOL)animated
 {
-    [self.mapView centerAtCoordinate:coord
-                            animated:animated];
+    [self.mapView setCenterCoordinate:coord
+                             animated:animated];
 }
 
 - (MKCoordinateRegion)region
@@ -239,7 +239,8 @@
     {
         if (recenter)
         {
-            [self.mapView centerAtCoordinate:mapAnnotation.coordinate];
+            [self.mapView setCenterCoordinate:mapAnnotation.coordinate
+                                     animated:animated];
         }
         
         [self.mapView showCalloutForAnnotation:mapAnnotation];
