@@ -4,6 +4,9 @@
 
 typedef double MGSZoomLevel;
 
+FOUNDATION_EXTERN const CLLocationCoordinate2D CLLocationCoordinate2DInvalid;
+FOUNDATION_EXTERN const MKCoordinateRegion MKCoordinateRegionInvalid;
+
 FOUNDATION_EXPORT MKCoordinateRegion MKCoordinateRegionForMGSAnnotations(NSSet *annotations);
 
 FOUNDATION_STATIC_INLINE MGSZoomLevel MGSZoomLevelForMKCoordinateSpan(MKCoordinateSpan span)
