@@ -291,7 +291,7 @@
         [addedAnnotations addObject:adaptor];
     }
     
-    [self.annotationLayer addAnnotations:addedAnnotations];
+    [self.annotationLayer addAnnotationsFromArray:addedAnnotations];
     
     [self refreshLayers];
     
@@ -322,7 +322,7 @@
         }
     }];
     
-    [self.annotationLayer deleteAnnotations:mgsAnnotations];
+    [self.annotationLayer deleteAnnotationsFromArray:mgsAnnotations];
     self.annotationCache = nil;
 }
 
