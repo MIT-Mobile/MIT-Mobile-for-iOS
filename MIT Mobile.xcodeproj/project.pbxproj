@@ -216,6 +216,7 @@
 		48A372ED170F47B800C95573 /* MGSLayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C4D799E16FB4B0F001AAC81 /* MGSLayerController.m */; };
 		48A6E4D7170B89C2004DED46 /* DiningHallMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */; };
 		48A6E4DB170B9423004DED46 /* DiningHallMenuHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4DA170B9423004DED46 /* DiningHallMenuHeaderView.m */; };
+		48B4ADE41713572300EF426F /* DiningHallMenuCompareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B4ADE31713572300EF426F /* DiningHallMenuCompareView.m */; };
 		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -787,6 +788,8 @@
 		48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuViewController.m; path = Dining/DiningHallMenuViewController.m; sourceTree = "<group>"; };
 		48A6E4D9170B9423004DED46 /* DiningHallMenuHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuHeaderView.h; path = Dining/DiningHallMenuHeaderView.h; sourceTree = "<group>"; };
 		48A6E4DA170B9423004DED46 /* DiningHallMenuHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuHeaderView.m; path = Dining/DiningHallMenuHeaderView.m; sourceTree = "<group>"; };
+		48B4ADE21713572300EF426F /* DiningHallMenuCompareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuCompareView.h; path = Dining/DiningHallMenuCompareView.h; sourceTree = "<group>"; };
+		48B4ADE31713572300EF426F /* DiningHallMenuCompareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuCompareView.m; path = Dining/DiningHallMenuCompareView.m; sourceTree = "<group>"; };
 		48B8129515E4295D00E791F9 /* LinksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksViewController.h; path = Links/LinksViewController.h; sourceTree = "<group>"; };
 		48B8129615E4295D00E791F9 /* LinksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LinksViewController.m; path = Links/LinksViewController.m; sourceTree = "<group>"; };
 		48B8129815E42B1700E791F9 /* LinksModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksModule.h; path = Links/LinksModule.h; sourceTree = "<group>"; };
@@ -1939,6 +1942,8 @@
 				48A6E4DA170B9423004DED46 /* DiningHallMenuHeaderView.m */,
 				486B1E6E170E24C900A75563 /* DiningHallMenuFooterView.h */,
 				486B1E6F170E24C900A75563 /* DiningHallMenuFooterView.m */,
+				48B4ADE21713572300EF426F /* DiningHallMenuCompareView.h */,
+				48B4ADE31713572300EF426F /* DiningHallMenuCompareView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -3165,6 +3170,7 @@
 				2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */,
 				2C70B81E170DBFFA00746EB9 /* MITLogFormatter.m in Sources */,
 				2C70B821170E0F9500746EB9 /* MGSBootstrapper.m in Sources */,
+				48B4ADE41713572300EF426F /* DiningHallMenuCompareView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

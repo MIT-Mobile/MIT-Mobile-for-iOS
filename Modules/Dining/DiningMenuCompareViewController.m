@@ -7,52 +7,69 @@
 //
 
 #import "DiningMenuCompareViewController.h"
-#import "PSTCollectionView.h"
+#import "DiningHallMenuCompareView.h"
 
-@interface DiningMenuCompareViewController () <PSTCollectionViewDataSource, PSTCollectionViewDelegateFlowLayout>
+#define SECONDS_IN_DAY 86400
 
-@property (nonatomic, strong) PSTCollectionView *collectionView;
+@interface DiningMenuCompareViewController () <UIScrollViewDelegate>
+
+@property (nonatomic, strong) UIScrollView *scrollView;
+
+@property (nonatomic, strong) NSDate *datePointer;
+
+@property (nonatomic, strong) DiningHallMenuCompareView * previous;     // on left
+@property (nonatomic, strong) DiningHallMenuCompareView * current;      // center
+@property (nonatomic, strong) DiningHallMenuCompareView * next;         // on right
 
 @end
 
 @implementation DiningMenuCompareViewController
 
-- (NSArray *) debugHouseDiningData
-{
-    return [NSArray arrayWithObjects:@"Baker", @"The Howard Dining Hall", @"McCormick", @"Next", @"Simmons", nil];
-}
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        
     }
     return self;
 }
 
 - (void)viewDidLoad
 {
+    int viewPadding = 10;
+    
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    self.view.autoresizesSubviews = YES;
     
-    PSTCollectionViewFlowLayout *layout = [[PSTCollectionViewFlowLayout alloc] init];
-    layout.scrollDirection = PSTCollectionViewScrollDirectionHorizontal;
-    self.collectionView = [[PSTCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:layout];
-    self.collectionView.dataSource = self;
-    self.collectionView.delegate = self;
+    self.scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
+    self.scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    self.scrollView.delegate = self;
+    self.scrollView.contentSize = CGSizeMake((viewPadding * 2) + (CGRectGetHeight(self.view.bounds) * 3), CGRectGetWidth(self.view.bounds));
+    self.scrollView.pagingEnabled = YES;
     
-    self.collectionView.backgroundColor = [UIColor whiteColor];
-    self.collectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.collectionView registerClass:[PSTCollectionViewCell class] forCellWithReuseIdentifier:@"cell-reuse"];
-    [self.view addSubview:self.collectionView];
+    [self.view addSubview:self.scrollView];
+    
+	self.previous = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
+    self.previous.date = [NSDate dateWithTimeIntervalSinceNow:-SECONDS_IN_DAY];
+    
+    self.current = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.previous.bounds) + viewPadding, 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
+    self.current.date = [NSDate dateWithTimeIntervalSinceNow:0];
+    
+    self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + viewPadding, 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
+    self.next.date = [NSDate dateWithTimeIntervalSinceNow:+SECONDS_IN_DAY];
+    
+    [self.scrollView setContentOffset:self.current.frame.origin animated:NO];
+    
+    [self.scrollView addSubview:self.previous];
+    [self.scrollView addSubview:self.current];
+    [self.scrollView addSubview:self.next];
     
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 
@@ -63,68 +80,6 @@
         [self dismissModalViewControllerAnimated:YES];
     }
 }
-
-#pragma mark - PSTCollectionViewDatasource
-
-- (NSInteger)numberOfSectionsInCollectionView:(PSTCollectionView *)collectionView
-{
-    return [[self debugHouseDiningData] count];
-}
-
-- (NSInteger)collectionView:(PSTCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    return 3;
-}
-
-// The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
-- (PSTCollectionViewCell *)collectionView:(PSTCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    PSTCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell-reuse" forIndexPath:indexPath];
-    if (!cell) {
-        cell = [[PSTCollectionViewCell alloc] init];
-    }
-    cell.backgroundColor = [UIColor greenColor];
-    
-    return cell;
-}
-
-
-#pragma mark - PSTCollectionViewDelegateFlowLayout
-
-- (CGSize)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    return CGSizeMake(120, 50);
-}
-
-- (UIEdgeInsets)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)sectio{
-    return UIEdgeInsetsMake(1, 1, 1, 1);
-}
-
-- (CGFloat)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
-{
-    return 2;
-}
-
-- (CGFloat)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-{
-    return 1;
-}
-
-- (CGSize)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
-{
-    return CGSizeZero;
-}
-
-- (CGSize)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
-{
-    return CGSizeZero;
-}
-
-- (PSTCollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
-    return nil;
-}
-
 
 
 

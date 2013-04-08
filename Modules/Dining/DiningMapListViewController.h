@@ -11,9 +11,9 @@
 
 @interface DiningMapListViewController : UIViewController
 
-@property (nonatomic, readonly, strong) IBOutlet UITableView * listView;
-@property (nonatomic, readonly, strong) IBOutlet UISegmentedControl * segmentControl;
-@property (nonatomic, readonly, strong) IBOutlet MGSMapView *mapView;
+@property (nonatomic, readonly, strong) UITableView * listView;
+@property (nonatomic, readonly, strong) UISegmentedControl * segmentControl;
+@property (nonatomic, readonly, strong) MGSMapView *mapView;
 @property (nonatomic, readonly, assign) BOOL isAnimating;
 @property (nonatomic, readonly, assign) BOOL isShowingMap;
 
