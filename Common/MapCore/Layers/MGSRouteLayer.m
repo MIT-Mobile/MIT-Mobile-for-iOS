@@ -40,8 +40,12 @@
         
         NSMutableOrderedSet *annotations = [NSMutableOrderedSet orderedSet];
         [annotations unionOrderedSet:stopAnnotations];
-        [annotations insertObject:self.routePath
-                          atIndex:0];
+        
+        if (self.routePath) {
+            [annotations insertObject:self.routePath
+                              atIndex:0];
+        }
+        
         [self addAnnotations:annotations];
     }
     
