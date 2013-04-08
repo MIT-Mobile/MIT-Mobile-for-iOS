@@ -4,6 +4,11 @@
 #define MITMK_DEFAULT_REGION_PADDING (0.1)
 #define MITMK_MINIMUM_REGION_METERS (25)
 
+const MKCoordinateRegion MKCoordinateRegionInvalid = {{.longitude = CGFLOAT_MAX,
+    .latitude = CGFLOAT_MAX},
+    {.latitudeDelta = CGFLOAT_MAX,
+        .longitudeDelta = CGFLOAT_MAX}};
+
 MKCoordinateRegion MKCoordinateRegionForCoordinates(NSSet *coordinateValues) {
     return MKCoordinateRegionForCoordinatesWithPadding(coordinateValues, MITMK_DEFAULT_REGION_PADDING);
 }

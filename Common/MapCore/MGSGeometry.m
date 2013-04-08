@@ -3,11 +3,6 @@
 #import "CoreLocation+MITAdditions.h"
 #import "MapKit+MITAdditions.h"
 
-const CLLocationCoordinate2D CLLocationCoordinate2DInvalid = {.longitude = CGFLOAT_MAX, .latitude = CGFLOAT_MAX};
-const MKCoordinateRegion MKCoordinateRegionInvalid = {{.longitude = CGFLOAT_MAX,
-                                                        .latitude = CGFLOAT_MAX},
-                                                      {.latitudeDelta = CGFLOAT_MAX,
-                                                        .longitudeDelta = CGFLOAT_MAX}};
 
 FOUNDATION_EXPORT MKCoordinateRegion MKCoordinateRegionForMGSAnnotations(NSSet *annotations)
 {
