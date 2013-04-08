@@ -38,7 +38,8 @@
         self.lineColor = [UIColor redColor];
         self.lineWidth = 4.0f;
         
-        NSMutableArray *annotations = [[stopAnnotations array] mutableCopy];
+        NSMutableOrderedSet *annotations = [NSMutableOrderedSet orderedSet];
+        [annotations unionOrderedSet:stopAnnotations];
         [annotations insertObject:self.routePath
                           atIndex:0];
         [self addAnnotations:annotations];
@@ -47,23 +48,24 @@
     return self;
 }
 
-- (NSOrderedSet*)annotations {
-    NSMutableOrderedSet *annotations = [[super annotations] mutableCopy];
-    
-    if ([annotations containsObject:self.routePath]) {
-        if ([annotations count]) {
-            [annotations moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:[annotations indexOfObject:self.routePath]]
-                                      toIndex:0];
-        }
+- (void)setAnnotations:(NSOrderedSet *)annotations
+{
+    if (self.routePath) {
+        NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
+        [newAnnotations unionOrderedSet:annotations];
+        [newAnnotations insertObject:self.routePath
+                             atIndex:0];
+        [super setAnnotations:newAnnotations];
+    } else {
+        [super setAnnotations:annotations];
     }
-    
-
-    return annotations;
 }
+        
+        
 
 - (id<MGSAnnotation>)routePath
 {
-    if (_routePath == nil) {
+    if ((_routePath == nil) && [self.pathCoordinates count]) {
         MGSSimpleAnnotation *routeAnnotation = [[MGSSimpleAnnotation alloc] init];
         routeAnnotation.annotationType = MGSAnnotationPolyline;
         routeAnnotation.strokeColor = self.lineColor;

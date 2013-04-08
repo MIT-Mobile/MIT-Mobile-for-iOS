@@ -9,18 +9,7 @@
 #import "MGSSafeAnnotation.h"
 
 
-@interface MGSLayer () <AGSLayerDelegate>
-@property (nonatomic,strong) NSMutableOrderedSet *layerAnnotations;
-
-- (void)addAnnotations:(NSOrderedSet *)annotations
-  shouldNotifyDelegate:(BOOL)notifyDelegate;
-
-- (void)deleteAnnotations:(NSSet *)annotations
-     shouldNotifyDelegate:(BOOL)notifyDelegate;
-@end
-
 @implementation MGSLayer
-@dynamic annotations;
 
 #pragma mark - Class Methods
 
@@ -46,141 +35,115 @@
     
     if (self) {
         self.name = name;
-        self.layerAnnotations = [[NSMutableOrderedSet alloc] init];
     }
     
     return self;
 }
 
 #pragma mark - Property Accessor/Mutators
-- (void)setAnnotationWithArray:(NSArray*)annotations
+- (void)setAnnotations:(NSOrderedSet *)aAnnotations
 {
-    [self setAnnotations:[NSOrderedSet orderedSetWithArray:annotations]];
-}
-
-- (void)setAnnotations:(NSOrderedSet *)annotations {
-    if (self.annotations) {
-        [self deleteAllAnnotations];
+    if ([_annotations isEqual:aAnnotations] == NO) {
+        NSMutableOrderedSet *addedAnnotations = [aAnnotations mutableCopy];
+        [addedAnnotations minusOrderedSet:_annotations];
+        
+        NSMutableOrderedSet *deletedAnnotations = [_annotations mutableCopy];
+        [deletedAnnotations minusOrderedSet:aAnnotations];
+        
+        
+        [self willAddAnnotations:addedAnnotations];
+        [self willChangeValueForKey:@"annotations"];
+        
+        _annotations = aAnnotations;
+        
+        [self didChangeValueForKey:@"annotations"];
+        [self willAddAnnotations:deletedAnnotations];
     }
-    
-    [self addAnnotations:annotations
-    shouldNotifyDelegate:YES];
-}
-
-- (NSOrderedSet *)annotations {
-    return [NSOrderedSet orderedSetWithOrderedSet:self.layerAnnotations];
 }
 
 #pragma mark - Public Methods
 - (void)insertAnnotation:(id<MGSAnnotation>)annotation
                  atIndex:(NSUInteger)index
 {
-    if ([self.layerAnnotations containsObject:annotation] == NO) {
-        [self willChangeValueForKey:@""];
-    }
+    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
+    [newAnnotations unionOrderedSet:self.annotations];
+    [newAnnotations insertObject:annotation
+                         atIndex:index];
+    self.annotations = newAnnotations;
 }
 
-- (void)addAnnotation:(id <MGSAnnotation>)annotation {
-    [self addAnnotations:[NSOrderedSet orderedSetWithObject:annotation]
-    shouldNotifyDelegate:YES];
-}
-
-- (void)addAnnotations:(NSArray *)annotations {
-    [self addAnnotations:[NSOrderedSet orderedSetWithArray:annotations]
-    shouldNotifyDelegate:YES];
-}
-
-- (void)addAnnotationsFromOrderedSet:(NSOrderedSet*)annotations
+- (void)addAnnotation:(id <MGSAnnotation>)aAnnotation
 {
-    [self addAnnotations:annotations
-    shouldNotifyDelegate:YES];
+    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
+    [newAnnotations unionOrderedSet:self.annotations];
+    [newAnnotations addObject:aAnnotation];
+    self.annotations = newAnnotations;
 }
 
-- (void)addAnnotations:(NSOrderedSet *)annotations
-  shouldNotifyDelegate:(BOOL)notifyDelegate
+- (void)addAnnotationsFromArray:(NSArray*)aAnnotations
 {
-    if ([annotations count]) {
-        // Check out current annotations and delete any which
-        // are in the array of annotations we are adding.
-        // The logic here is that we are assuming that attempting
-        // to re-add an existing annotation will result in a
-        // refresh of that annotation
-        NSMutableOrderedSet* refreshedAnnotations = [self.layerAnnotations mutableCopy];
-        [refreshedAnnotations intersectSet:[annotations set]];
+    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
+    [newAnnotations unionOrderedSet:self.annotations];
+    [newAnnotations addObjectsFromArray:aAnnotations];
+    self.annotations = newAnnotations;
+}
 
-        [self deleteAnnotations:[refreshedAnnotations set]
-           shouldNotifyDelegate:NO];
-
-        if (notifyDelegate) {
-            [self willAddAnnotations:[annotations array]];
-        }
-
-        [self willChangeValueForKey:@"annotations"];
-        [self.layerAnnotations addObjectsFromArray:[annotations array]];
-        [self didChangeValueForKey:@"annotations"];
-
-        if (notifyDelegate) {
-            [self didAddAnnotations:[annotations array]];
-        }
-    }
+- (void)addAnnotations:(NSOrderedSet *)aAnnotations
+{
+    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
+    [newAnnotations unionOrderedSet:self.annotations];
+    [newAnnotations unionOrderedSet:newAnnotations];
+    self.annotations = newAnnotations;
 }
 
 - (void)deleteAllAnnotations {
-    [self deleteAnnotations:[self.layerAnnotations set]
-       shouldNotifyDelegate:YES];
+    self.annotations = nil;
 }
 
 - (void)deleteAnnotation:(id <MGSAnnotation>)annotation {
-    [self deleteAnnotations:[NSSet setWithObject:annotation]
-       shouldNotifyDelegate:YES];
+    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
+    [newAnnotations unionOrderedSet:self.annotations];
+    [newAnnotations removeObject:annotation];
+    self.annotations = newAnnotations;
 }
 
-- (void)deleteAnnotations:(NSArray *)annotations
+- (void)deleteAnnotationsFromArray:(NSArray *)annotations
 {
-    [self deleteAnnotations:[NSSet setWithArray:annotations]
-       shouldNotifyDelegate:YES];
+    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
+    [newAnnotations unionOrderedSet:self.annotations];
+    [newAnnotations minusOrderedSet:[NSOrderedSet orderedSetWithArray:annotations]];
+    self.annotations = newAnnotations;
 }
 
 - (void)deleteAnnotationsFromSet:(NSSet*)annotations
 {
-    [self deleteAnnotations:annotations
-       shouldNotifyDelegate:YES];
+    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
+    [newAnnotations unionOrderedSet:self.annotations];
+    [newAnnotations minusSet:annotations];
+    self.annotations = newAnnotations;
 }
 
-- (void)deleteAnnotations:(NSSet*)annotations
-     shouldNotifyDelegate:(BOOL)notifyDelegate
+- (void)deleteAnnotations:(NSOrderedSet *)annotations
 {
-    if ([annotations count]) {
-        NSMutableSet *deletedAnnotations = [annotations mutableCopy];
-        [deletedAnnotations intersectSet:[self.layerAnnotations set]];
-
-        if (notifyDelegate) {
-            [self willRemoveAnnotations:[deletedAnnotations allObjects]];
-        }
-
-        [self willChangeValueForKey:@"annotations"];
-        [self.layerAnnotations minusSet:deletedAnnotations];
-        [self didChangeValueForKey:@"annotations"];
-
-        if (notifyDelegate) {
-            [self didRemoveAnnotations:[deletedAnnotations allObjects]];
-        }
-    }
+    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
+    [newAnnotations unionOrderedSet:self.annotations];
+    [newAnnotations minusOrderedSet:annotations];
+    self.annotations = newAnnotations;
 }
 
 - (MKCoordinateRegion)regionForAnnotations {
-    return MKCoordinateRegionForMGSAnnotations([self.layerAnnotations set]);
+    return MKCoordinateRegionForMGSAnnotations([self.annotations set]);
 }
 
 #pragma mark - Map Layer Delegation
-- (void)willAddAnnotations:(NSArray *)annotations {
+- (void)willAddAnnotations:(NSOrderedSet *)annotations {
     if ([self.delegate respondsToSelector:@selector(mapLayer:willAddAnnotations:)]) {
         [self.delegate mapLayer:self
              willAddAnnotations:annotations];
     }
 }
 
-- (void)didAddAnnotations:(NSArray *)annotations {
+- (void)didAddAnnotations:(NSOrderedSet *)annotations {
     
     if ([self.delegate respondsToSelector:@selector(mapLayer:didAddAnnotations:)]) {
         [self.delegate mapLayer:self
@@ -188,14 +151,14 @@
     }
 }
 
-- (void)willRemoveAnnotations:(NSArray *)annotations {
+- (void)willRemoveAnnotations:(NSOrderedSet *)annotations {
     if ([self.delegate respondsToSelector:@selector(mapLayer:willRemoveAnnotations:)]) {
         [self.delegate mapLayer:self
           willRemoveAnnotations:annotations];
     }
 }
 
-- (void)didRemoveAnnotations:(NSArray *)annotations {
+- (void)didRemoveAnnotations:(NSOrderedSet *)annotations {
     if ([self.delegate respondsToSelector:@selector(mapLayer:didRemoveAnnotations:)]) {
         [self.delegate mapLayer:self
            didRemoveAnnotations:annotations];

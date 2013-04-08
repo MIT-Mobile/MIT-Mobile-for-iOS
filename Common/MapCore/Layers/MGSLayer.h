@@ -9,11 +9,11 @@
 
 @protocol MGSLayerDelegate <NSObject>
 @optional
-- (void)mapLayer:(MGSLayer*)layer willAddAnnotations:(NSArray*)annotations;
-- (void)mapLayer:(MGSLayer*)layer didAddAnnotations:(NSArray*)annotations;
+- (void)mapLayer:(MGSLayer*)layer willAddAnnotations:(NSOrderedSet*)annotations;
+- (void)mapLayer:(MGSLayer*)layer didAddAnnotations:(NSOrderedSet*)annotations;
 
-- (void)mapLayer:(MGSLayer*)layer willRemoveAnnotations:(NSArray*)annotations;
-- (void)mapLayer:(MGSLayer*)layer didRemoveAnnotations:(NSArray*)annotations;
+- (void)mapLayer:(MGSLayer*)layer willRemoveAnnotations:(NSOrderedSet*)annotations;
+- (void)mapLayer:(MGSLayer*)layer didRemoveAnnotations:(NSOrderedSet*)annotations;
 @end
 
 @interface MGSLayer : NSObject
@@ -21,18 +21,21 @@
 @property (nonatomic,strong) NSString *name;
 @property (nonatomic,strong) NSOrderedSet *annotations;
 
-- (void)setAnnotationWithArray:(NSArray*)annotations;
+- (id)init;
+- (id)initWithName:(NSString*)name;
+
+- (void)addAnnotations:(NSOrderedSet*)annotations;
 - (void)addAnnotation:(id<MGSAnnotation>)annotation;
-- (void)addAnnotations:(NSArray*)annotations;
-- (void)addAnnotationsFromOrderedSet:(NSOrderedSet*)annotations;
-- (void)deleteAnnotation:(id<MGSAnnotation>)annotation;
-- (void)deleteAnnotations:(NSArray*)annotation;
+- (void)addAnnotationsFromArray:(NSArray*)annotations;
+
+- (void)deleteAnnotations:(NSOrderedSet *)annotations;
+- (void)deleteAnnotation:(id <MGSAnnotation>)annotation;
+- (void)deleteAnnotationsFromArray:(NSArray *)annotations;
 - (void)deleteAnnotationsFromSet:(NSSet*)annotations;
+
 - (void)deleteAllAnnotations;
 
 - (MKCoordinateRegion)regionForAnnotations;
-
-- (id)initWithName:(NSString*)name;
 @end
 
 @interface MGSLayer (Subclassing)
@@ -46,8 +49,8 @@
 - (void)willRemoveLayerFromMapView:(MGSMapView*)mapView;
 - (void)didRemoveLayerFromMapView:(MGSMapView*)mapView;
 
-- (void)willAddAnnotations:(NSArray*)annotations;
-- (void)didAddAnnotations:(NSArray*)annotations;
-- (void)willRemoveAnnotations:(NSArray*)annotations;
-- (void)didRemoveAnnotations:(NSArray*)annotations;
+- (void)willAddAnnotations:(NSOrderedSet*)annotations;
+- (void)didAddAnnotations:(NSOrderedSet*)annotations;
+- (void)willRemoveAnnotations:(NSOrderedSet*)annotations;
+- (void)didRemoveAnnotations:(NSOrderedSet*)annotations;
 @end
