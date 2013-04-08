@@ -9,8 +9,7 @@
 @interface MGSLayerController ()
 @property(nonatomic, strong) MGSLayer* layer;
 @property(weak) AGSGraphicsLayer* graphicsLayer;
-@property(assign) dispatch_semaphore_t updateSemaphore;
-@property(strong) NSMutableSet *layerAnnotations;
+@property(strong) NSSet *layerAnnotations;
 @property(nonatomic, strong) NSSet *cachedAnnotations;
 @property(nonatomic, strong) NSOperationQueue *layerUpdateQueue;
 
@@ -30,9 +29,8 @@
     self = [super init];
     
     if (self) {
-        self.updateSemaphore = dispatch_semaphore_create(1);
         self.layer = layer;
-        self.layerAnnotations = [NSMutableSet set];
+        self.layerAnnotations = nil;
         self.featureGraphics = [NSMutableSet set];
         self.cachedAnnotations = [NSMutableSet set];
         self.layerUpdateQueue = [[NSOperationQueue alloc] init];
@@ -49,10 +47,6 @@
 
 - (void)dealloc
 {
-    if (self.updateSemaphore) {
-        dispatch_release(self.updateSemaphore);
-    }
-    
     [self.layer removeObserver:self
                     forKeyPath:@"annotations"];
 }
@@ -105,13 +99,13 @@
 
 - (NSSet*)layerAnnotationsForGraphics:(NSSet*)graphics
 {
-    dispatch_semaphore_wait(self.updateSemaphore, -1);
+    NSSet *allLayerAnnotations = [NSSet setWithSet:self.layerAnnotations];
     
     NSMutableSet *layerAnnotations = nil;
-    if ([self.layerAnnotations count]) {
+    if ([allLayerAnnotations count]) {
         layerAnnotations = [NSMutableSet set];
         
-        [self.layerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation *layerAnnotation, BOOL* stop) {
+        [allLayerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation *layerAnnotation, BOOL* stop) {
             if ([graphics containsObject:layerAnnotation.graphic]) {
                 [layerAnnotations addObject:layerAnnotation];
             }
@@ -119,8 +113,6 @@
             (*stop) = ([layerAnnotations count] == [graphics count]);
         }];
     }
-    
-    dispatch_semaphore_signal(self.updateSemaphore);
     return layerAnnotations;
 }
 
@@ -132,13 +124,13 @@
 
 - (NSSet*)layerAnnotationsForAnnotations:(NSSet*)annotations
 {
-    dispatch_semaphore_wait(self.updateSemaphore, -1);
+    NSSet *allLayerAnnotations = [NSSet setWithSet:self.layerAnnotations];
     
     NSMutableSet *layerAnnotations = nil;
-    if ([self.layerAnnotations count]) {
+    if ([allLayerAnnotations count]) {
         layerAnnotations = [NSMutableSet set];
         
-        [self.layerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation *layerAnnotation, BOOL* stop) {
+        [allLayerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation *layerAnnotation, BOOL* stop) {
             if ([annotations containsObject:layerAnnotation.annotation]) {
                 [layerAnnotations addObject:layerAnnotation];
             }
@@ -147,7 +139,6 @@
         }];
     }
     
-    dispatch_semaphore_signal(self.updateSemaphore);
     return layerAnnotations;
 }
 
@@ -171,115 +162,141 @@
         return;
     }
     
-    [self.layerUpdateQueue addOperationWithBlock:^{
+    [self.layerUpdateQueue cancelAllOperations];
+    
+    NSBlockOperation *blockOperation = nil;
+    blockOperation = [NSBlockOperation blockOperationWithBlock:^{
         NSSet *displayedAnnotations = (self.cachedAnnotations != nil) ? self.cachedAnnotations : [NSSet set];
         NSSet *updatedAnnotations = [self.layer.annotations set];
         self.cachedAnnotations = updatedAnnotations;
         
-        if ([displayedAnnotations isEqualToSet:updatedAnnotations] == NO) {
+        BOOL performSync = (([displayedAnnotations isEqualToSet:updatedAnnotations] == NO) &&
+                            ([displayedAnnotations count] ||
+                             [updatedAnnotations count]));
+        
+        if (performSync) {
             // Looks like an update is needed!
-            DDLogVerbose(@"Synchronizing layer '%@' [O:%lu-N:%lu]",
+            DDLogVerbose(@"Beginning layer sync: '%@' [%lu -> %lu]",
                          self.layer.name,
                          (unsigned long)[displayedAnnotations count],
                          (unsigned long)[updatedAnnotations count]);
             
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_sync(dispatch_get_main_queue(), ^{
                 if ([self.delegate respondsToSelector:@selector(layerManagerWillSynchronizeAnnotations:)]) {
                     [self.delegate layerManagerWillSynchronizeAnnotations:self];
                 }
             });
-
             
             
             NSMutableArray *agsGraphics = [NSMutableArray arrayWithArray:self.graphicsLayer.graphics];
+            NSMutableArray *sortableGraphics = [NSMutableArray array];
             NSMutableArray *deletedLayerAnnotations = [NSMutableArray array];
-            {
-                NSMutableSet *deletedAnnotations = [displayedAnnotations mutableCopy];
-                [deletedAnnotations minusSet:updatedAnnotations];
-                NSSet *layerAnnotations = [self layerAnnotationsForAnnotations:deletedAnnotations];
-                [deletedLayerAnnotations addObjectsFromArray:[layerAnnotations allObjects]];
-                
-                [layerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation* layerAnnotation, BOOL* stop) {
-                    if (layerAnnotation.graphic) {
-                        [agsGraphics removeObject:layerAnnotation.graphic];
-                    }
-                }];
-            }
-            
-            
             NSMutableArray *addedLayerAnnotations = [NSMutableArray array];
-            {
-                NSMutableSet *addedAnnotations = [updatedAnnotations mutableCopy];
-                [addedAnnotations minusSet:displayedAnnotations];
+            
+            if ([blockOperation isCancelled] == NO) {
+                {
+                    NSMutableSet *deletedAnnotations = [displayedAnnotations mutableCopy];
+                    [deletedAnnotations minusSet:updatedAnnotations];
+                    NSSet *layerAnnotations = [self layerAnnotationsForAnnotations:deletedAnnotations];
+                    [deletedLayerAnnotations addObjectsFromArray:[layerAnnotations allObjects]];
+                    
+                    [layerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation* layerAnnotation, BOOL* stop) {
+                        if (layerAnnotation.graphic) {
+                            [agsGraphics removeObject:layerAnnotation.graphic];
+                        }
+                    }];
+                }
+            
+                {
+                    NSMutableSet *addedAnnotations = [updatedAnnotations mutableCopy];
+                    [addedAnnotations minusSet:displayedAnnotations];
+                    
+                    [addedAnnotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> annotation, BOOL* stop) {
+                        AGSGraphic *graphic = [self createGraphicForAnnotation:annotation];
+                        
+                        MGSLayerAnnotation *layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
+                                                                                                     graphic:graphic];
+                        [addedLayerAnnotations addObject:layerAnnotation];
+                        
+                        if (graphic) {
+                            MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+                            BOOL needsSorting = ((safeAnnotation.annotationType == MGSAnnotationMarker) ||
+                                                 (safeAnnotation.annotationType == MGSAnnotationPointOfInterest));
+                            if (needsSorting) {
+                                if ([agsGraphics containsObject:graphic]) {
+                                    [agsGraphics removeObject:graphic];
+                                }
+                                
+                                [sortableGraphics addObject:graphic];
+                            } else {
+                                [agsGraphics addObject:graphic];
+                            }
+                        }
+                    }];
+                }
+            }
+            
+            
+            if ([blockOperation isCancelled] == NO) {
+                [sortableGraphics sortUsingComparator:^(AGSGraphic* graphic1, AGSGraphic* graphic2) {
+                    AGSPoint *point1 = graphic1.geometry.envelope.center;
+                    AGSPoint *point2 = graphic2.geometry.envelope.center;
+                    
+                    if (point1.y > point2.y) {
+                        return NSOrderedAscending;
+                    }
+                    else if (point1.y < point2.y) {
+                        return NSOrderedDescending;
+                    }
+                    else if (point1.x > point2.x) {
+                        return NSOrderedDescending;
+                    }
+                    else if (point1.x < point2.x) {
+                        return NSOrderedDescending;
+                    }
+                    
+                    return NSOrderedSame;
+                }];
                 
-                [addedAnnotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> annotation, BOOL* stop) {
-                    AGSGraphic *graphic = [self createGraphicForAnnotation:annotation];
-                    
-                    MGSLayerAnnotation *layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
-                                                                                                 graphic:graphic];
-                    [addedLayerAnnotations addObject:layerAnnotation];
-                    
-                    if (graphic) {
-                        [agsGraphics addObject:graphic];
+                [agsGraphics addObjectsFromArray:sortableGraphics];
+                
+                // Make sure everything is in the correct spatial reference!
+                [agsGraphics enumerateObjectsUsingBlock:^(AGSGraphic* graphic, NSUInteger index, BOOL* stop) {
+                    // Reproject all the things!
+                    BOOL shouldReproject = (graphic.geometry &&
+                                            ([graphic.geometry.spatialReference isEqualToSpatialReference:self.spatialReference] == NO));
+                    if (shouldReproject) {
+                        graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
+                                                                                   toSpatialReference:self.spatialReference];
                     }
                 }];
             }
             
-            // Make sure everything is in the correct spatial reference!
-            [agsGraphics enumerateObjectsUsingBlock:^(AGSGraphic* graphic, NSUInteger index, BOOL* stop) {
-                // Reproject all the things!
-                BOOL shouldReproject = (graphic.geometry &&
-                                        ([graphic.geometry.spatialReference isEqualToSpatialReference:self.spatialReference] == NO));
-                if (shouldReproject) {
-                    graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
-                                                                               toSpatialReference:self.spatialReference];
-                }
-            }];
             
-            [agsGraphics sortUsingComparator:^(AGSGraphic* graphic1, AGSGraphic* graphic2) {
-                AGSPoint *point1 = graphic1.geometry.envelope.center;
-                AGSPoint *point2 = graphic2.geometry.envelope.center;
-                
-                if (point1.y > point2.y) {
-                    return NSOrderedAscending;
-                }
-                else if (point1.y < point2.y) {
-                    return NSOrderedDescending;
-                }
-                else if (point1.x > point2.x) {
-                    return NSOrderedDescending;
-                }
-                else if (point1.x < point2.x) {
-                    return NSOrderedDescending;
-                }
-                
-                return NSOrderedSame;
-            }];
+            if ([blockOperation isCancelled] == NO) {
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    self.cachedAnnotations = updatedAnnotations;
+                    NSMutableSet *layerAnnotations = [NSMutableSet setWithSet:self.layerAnnotations];
+                    
+                    [layerAnnotations minusSet:[NSSet setWithArray:deletedLayerAnnotations]];
+                    [layerAnnotations unionSet:[NSSet setWithArray:addedLayerAnnotations]];
+                    self.layerAnnotations = layerAnnotations;
+                    
+                    [self.graphicsLayer removeGraphics:self.graphicsLayer.graphics];
+                    [self.graphicsLayer addGraphics:agsGraphics];
+                    [self.graphicsLayer refresh];
+                });
+            }
             
             dispatch_sync(dispatch_get_main_queue(), ^{
-                DDLogVerbose(@"Syncing UI of layer '%@'", self.layer.name);
-                
-                dispatch_semaphore_wait(self.updateSemaphore, -1);
-                self.cachedAnnotations = updatedAnnotations;
-                [self.layerAnnotations minusSet:[NSSet setWithArray:deletedLayerAnnotations]];
-                [self.layerAnnotations unionSet:[NSSet setWithArray:addedLayerAnnotations]];
-                
-                [self.graphicsLayer removeGraphics:self.graphicsLayer.graphics];
-                [self.graphicsLayer addGraphics:agsGraphics];
-                [self.graphicsLayer refresh];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([self.delegate respondsToSelector:@selector(layerManagerDidSynchronizeAnnotations:)]) {
-                        [self.delegate layerManagerDidSynchronizeAnnotations:self];
-                    }
-                });
-                
-                dispatch_semaphore_signal(self.updateSemaphore);
+                if ([self.delegate respondsToSelector:@selector(layerManagerDidSynchronizeAnnotations:)]) {
+                    [self.delegate layerManagerDidSynchronizeAnnotations:self];
+                }
             });
-
         }
-        
     }];
+    
+    [self.layerUpdateQueue addOperation:blockOperation];
 }
 
 - (AGSGraphic*)createGraphicForAnnotation:(id <MGSAnnotation>)annotation
