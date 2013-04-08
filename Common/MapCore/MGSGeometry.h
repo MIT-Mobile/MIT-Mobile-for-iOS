@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
+#import "CoreLocation+MITAdditions.h"
+#import "MapKit+MITAdditions.h"
 
 typedef double MGSZoomLevel;
 
