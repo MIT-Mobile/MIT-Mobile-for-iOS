@@ -10,6 +10,7 @@
 #import "DiningHallMenuCompareView.h"
 
 #define SECONDS_IN_DAY 86400
+#define DAY_VIEW_PADDING 5      // padding on each side of day view. doubled when two views are adjacent
 
 @interface DiningMenuCompareViewController () <UIScrollViewDelegate>
 
@@ -36,35 +37,35 @@
 
 - (void)viewDidLoad
 {
-    int viewPadding = 10;
-    
     [super viewDidLoad];
+    
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     self.view.autoresizesSubviews = YES;
     
-    CGRect frame = CGRectMake(-viewPadding, 0, CGRectGetWidth(self.view.bounds) + (viewPadding * 2), CGRectGetHeight(self.view.bounds));
+    // The scrollview has a frame that is just larger than the viewcontrollers view bounds so that padding can be seen between scrollable pages.
+    // Frames are also inverted (height => width, width => height) because when the view loads the rotation has not yet occurred.
+    CGRect frame = CGRectMake(-DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds) + (DAY_VIEW_PADDING * 2), CGRectGetWidth(self.view.bounds));
     
-    self.scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-    self.scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    self.scrollView = [[UIScrollView alloc] initWithFrame:frame];
     self.scrollView.delegate = self;
-    self.scrollView.contentSize = CGSizeMake((viewPadding * 2) + (CGRectGetHeight(self.view.bounds) * 3), CGRectGetWidth(self.view.bounds));
+    self.scrollView.contentSize = CGSizeMake((DAY_VIEW_PADDING * 6) + (CGRectGetHeight(self.view.bounds) * 3), CGRectGetWidth(self.view.bounds));
     self.scrollView.pagingEnabled = YES;
     
     [self.view addSubview:self.scrollView];
     
     self.datePointer = [NSDate dateWithTimeIntervalSinceNow:0];
     
-	self.previous = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
-    self.current = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.previous.bounds) + viewPadding, 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
-    self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + viewPadding, 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
+	self.previous = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
+    self.current = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.previous.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
+    self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
+                                                                        // (viewPadding * 2) is used because each view has own padding, so there are 2 padded spaces to account for
     [self updateDateHeaders];
     
-    [self.scrollView setContentOffset:self.current.frame.origin animated:NO];
+    [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
     
     [self.scrollView addSubview:self.previous];
     [self.scrollView addSubview:self.current];
     [self.scrollView addSubview:self.next];
-    
 }
 
 - (void) updateDateHeaders
@@ -72,7 +73,6 @@
     self.previous.date = [NSDate dateWithTimeInterval:-SECONDS_IN_DAY sinceDate:self.datePointer];
     self.current.date = self.datePointer;
     self.next.date = [NSDate dateWithTimeInterval:SECONDS_IN_DAY sinceDate:self.datePointer];
-    
 }
 
 - (void)didReceiveMemoryWarning
@@ -102,8 +102,7 @@
     [self updateDateHeaders];
     // TODO: need to refresh comparison views with date's data
     
-    [scrollView scrollRectToVisible:self.current.frame animated:NO]; // always recenter on center view
-    
+    [scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO]; // always return to center view
 }
 
 
