@@ -10,6 +10,7 @@
 #import "DiningMenuCompareViewController.h"
 #import "DiningHallMenuHeaderView.h"
 #import "DiningHallMenuFooterView.h"
+#import "DiningHallMenuItemTableCell.h"
 
 @interface DiningHallMenuViewController ()
 
@@ -19,9 +20,9 @@
 
 - (NSArray *) debugData
 {
-    NSDictionary *item1 = @{@"type": @"kosher", @"title" : @"kosher dinner", @"subtitle" : @"lemon chicken with pasta, green beans, yellow squash, tossed salad, fruit salad, stir fried tofu with spicy orange sauce", @"filters" : @"1, 2, 3, 4"};
-    NSDictionary *item2 = @{@"type": @"whirl wind", @"title" : @"thai curry", @"subtitle" : @"a spicy green thai curry sauce with snow peas, shiitake mushrooms, onions, red peppers, broccoli, and scallions", @"filters" : @"3, 4"};
-    NSDictionary *item3 = @{@"type": @"deli +", @"title" : @"baked potato bar", @"subtitle" : @"butter, sour cream, cheese sauce, veggie chili, chili, jalapenos, broccoli, and more", @"filters" : @"1, 3, 4"};
+    NSDictionary *item1 = @{@"type": @"kosher", @"title" : @"kosher dinner", @"subtitle" : @"lemon chicken with pasta, green beans, yellow squash, tossed salad, fruit salad, stir fried tofu with spicy orange sauce", @"filters" : @[@1, @2, @3, @4]};
+    NSDictionary *item2 = @{@"type": @"whirl wind", @"title" : @"thai curry", @"subtitle" : @"a spicy green thai curry sauce with snow peas, shiitake mushrooms, onions, red peppers, broccoli, and scallions", @"filters" : @[@3, @4]};
+    NSDictionary *item3 = @{@"type": @"deli +", @"title" : @"baked potato bar", @"subtitle" : @"butter, sour cream, cheese sauce, veggie chili, chili, jalapenos, broccoli, and more", @"filters" : @[@1, @3, @4]};
     
     return @[item1, item2, item3];
 }
@@ -47,6 +48,8 @@
     
     UIBarButtonItem *filterItem = [[UIBarButtonItem alloc] initWithTitle:@"Filter" style:UIBarButtonItemStylePlain target:self action:@selector(filterMenu:)];
     self.navigationItem.rightBarButtonItem = filterItem;
+    
+    self.tableView.allowsSelection = NO;
 
 }
 
@@ -89,17 +92,25 @@
     return [[self debugData] count];
 }
 
+- (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSDictionary *itemDict  = [self debugData][indexPath.row];
+    return [DiningHallMenuItemTableCell cellHeightForCellWithStation:itemDict[@"type"] title:itemDict[@"title"] description:itemDict[@"subtitle"]];
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    DiningHallMenuItemTableCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        cell = [[DiningHallMenuItemTableCell alloc] initWithReuseIdentifier:CellIdentifier];
     }
     
-    NSDictionary *itemDict = [self debugData][indexPath.row];
-    cell.textLabel.text = itemDict[@"title"];
-    cell.detailTextLabel.text = itemDict[@"subtitle"];
+    NSDictionary *itemDict  = [self debugData][indexPath.row];
+    cell.station.text       = itemDict[@"type"];
+    cell.title.text         = itemDict[@"title"];
+    cell.description.text   = itemDict[@"subtitle"];
+    cell.dietaryTypes       = itemDict[@"filters"];
     
     return cell;
 }
