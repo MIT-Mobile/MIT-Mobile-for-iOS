@@ -204,15 +204,18 @@
             });
             
             NSArray *annotations = [newAnnotations sortedArrayUsingComparator:^NSComparisonResult(id<MGSAnnotation> obj1, id<MGSAnnotation> obj2) {
-                BOOL obj1_isMarker = (([obj1 annotationType] == MGSAnnotationMarker) ||
-                                      ([obj1 annotationType] == MGSAnnotationPointOfInterest));
+                MGSSafeAnnotation *annotation1 = [[MGSSafeAnnotation alloc] initWithAnnotation:obj1];
+                MGSSafeAnnotation *annotation2 = [[MGSSafeAnnotation alloc] initWithAnnotation:obj2];
                 
-                BOOL obj2_isMarker = (([obj2 annotationType] == MGSAnnotationMarker) ||
-                                      ([obj2 annotationType] == MGSAnnotationPointOfInterest));
+                BOOL obj1_isMarker = (([annotation1 annotationType] == MGSAnnotationMarker) ||
+                                      ([annotation1 annotationType] == MGSAnnotationPointOfInterest));
+                
+                BOOL obj2_isMarker = (([annotation2 annotationType] == MGSAnnotationMarker) ||
+                                      ([annotation2 annotationType] == MGSAnnotationPointOfInterest));
                 
                 if (obj1_isMarker && obj2_isMarker) {
-                    CLLocationCoordinate2D coordinate1 = [obj1 coordinate];
-                    CLLocationCoordinate2D coordinate2 = [obj2 coordinate];
+                    CLLocationCoordinate2D coordinate1 = [annotation1 coordinate];
+                    CLLocationCoordinate2D coordinate2 = [annotation2 coordinate];
                     
                     if (coordinate1.latitude > coordinate2.latitude) {
                         return NSOrderedAscending;
@@ -234,7 +237,6 @@
                     return NSOrderedDescending;
                 }
             }];
-            
             
             NSMutableSet *layerAnnotations = [NSMutableSet set];
             NSMutableArray *graphics = [NSMutableArray array];
