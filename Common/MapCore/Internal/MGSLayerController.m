@@ -183,6 +183,7 @@
     BOOL canSynchronize = (self.layer &&
                            _nativeLayer &&
                            [_nativeLayer isKindOfClass:[AGSGraphicsLayer class]] &&
+                           self.spatialReference &&
                            ([newAnnotations count] ||
                             [oldAnnotations count]));
     
@@ -243,6 +244,12 @@
             
             for (id<MGSAnnotation> annotation in annotations) {
                 AGSGraphic *annotationGraphic = [self createGraphicForAnnotation:annotation];
+                
+                if ([self.spatialReference isEqualToSpatialReference:annotationGraphic.geometry.spatialReference] == NO) {
+                    annotationGraphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:annotationGraphic.geometry
+                                                                                         toSpatialReference:self.spatialReference];
+                }
+                
                 MGSLayerAnnotation *layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
                                                                                              graphic:annotationGraphic];
                 [layerAnnotations addObject:layerAnnotation];
