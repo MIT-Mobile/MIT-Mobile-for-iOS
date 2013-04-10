@@ -7,11 +7,10 @@
 
 
 @interface MGSLayerController ()
-@property(nonatomic, strong) MGSLayer* layer;
-@property(weak) AGSGraphicsLayer* graphicsLayer;
+@property(nonatomic,strong) MGSLayer* layer;
+@property(nonatomic,strong) AGSLayer* nativeLayer;
 @property(strong) NSSet *layerAnnotations;
-@property(nonatomic, strong) NSSet *cachedAnnotations;
-@property(nonatomic, strong) NSOperationQueue *layerUpdateQueue;
+@property(nonatomic,strong) NSOperationQueue *layerUpdateQueue;
 
 // Tracks the annotations which are created from pre-existing graphics
 // in the graphics layer. An example of this would be a feature layer
@@ -22,24 +21,42 @@
 @end
 
 @implementation MGSLayerController
-@dynamic allAnnotations;
+
+- (id)init
+{
+    return [self initWithLayer:nil];
+}
 
 - (id)initWithLayer:(MGSLayer*)layer
 {
     self = [super init];
     
     if (self) {
-        self.layer = layer;
         self.layerAnnotations = nil;
-        self.featureGraphics = [NSMutableSet set];
-        self.cachedAnnotations = [NSMutableSet set];
+        self.featureGraphics = [NSSet set];
         self.layerUpdateQueue = [[NSOperationQueue alloc] init];
         self.layerUpdateQueue.maxConcurrentOperationCount = 1;
         
-        [self.layer addObserver:self
-                     forKeyPath:@"annotations"
-                        options:(NSKeyValueObservingOptions)0 //Typecast so the compiler stops complaining that the NSKeyValueObservingOptions enum doesn't have a value for 0
-                        context:nil];
+        self.layer = layer;
+        if (layer) {
+            [self.layer addObserver:self
+                         forKeyPath:@"annotations"
+                            options:(NSKeyValueObservingOptionInitial |
+                                     NSKeyValueObservingOptionNew |
+                                     NSKeyValueObservingOptionOld)
+                            context:nil];
+        }
+    }
+    
+    return self;
+}
+
+- (id)initWithNativeLayer:(AGSLayer*)nativeLayer
+{
+    self = [self initWithLayer:nil];
+    
+    if (self) {
+        self.nativeLayer = nativeLayer;
     }
     
     return self;
@@ -51,28 +68,24 @@
                     forKeyPath:@"annotations"];
 }
 
+
 #pragma mark - Dynamic Properties
 - (AGSSpatialReference*)spatialReference
 {
     // Use a direct ivar access here so we don't trigger the
     // lazy creation of a graphics layer if it doesn't exist
-    if (_graphicsLayer && self.graphicsLayer.spatialReference) {
-        return self.graphicsLayer.spatialReference;
+    if (_nativeLayer && self.nativeLayer.spatialReference) {
+        return self.nativeLayer.spatialReference;
     } else {
         return _spatialReference;
     }
 }
 
-- (NSSet*)allAnnotations
-{
-    return [NSSet setWithSet:self.layerAnnotations];
-}
-
-- (AGSGraphicsLayer*)graphicsLayer
+- (AGSLayer*)nativeLayer
 {
     AGSGraphicsLayer *layer = nil;
     
-    if (_graphicsLayer == nil) {
+    if (_nativeLayer == nil) {
         if ([self.delegate respondsToSelector:@selector(layerManager:graphicsLayerForLayer:)]) {
             layer = [self.delegate layerManager:self
                           graphicsLayerForLayer:self.layer];
@@ -84,12 +97,13 @@
     }
     
     if (layer) {
-        self.graphicsLayer = layer;
-        [self syncAnnotations];
+        self.nativeLayer = layer;
+        [self refresh];
     }
     
-    return _graphicsLayer;
+    return _nativeLayer;
 }
+
 #pragma mark -
 - (MGSLayerAnnotation*)layerAnnotationForGraphic:(AGSGraphic*)graphic
 {
@@ -156,30 +170,32 @@
     return (testGraphic && [self.featureGraphics containsObject:testGraphic]);
 }
 
+- (void)refresh
+{
+    [self synchronizeNativeLayerWithAnnotations:self.layer.annotations
+                                            old:nil];
+}
+
 // TODO: Optimize this if needed, just brute forcing it for now
-- (void)syncAnnotations {
-    if (!(self.layer && _graphicsLayer)) {
-        return;
-    }
+- (void)synchronizeNativeLayerWithAnnotations:(NSOrderedSet*)newAnnotations
+                                          old:(NSOrderedSet*)oldAnnotations
+{
+    BOOL canSynchronize = (self.layer &&
+                           _nativeLayer &&
+                           [_nativeLayer isKindOfClass:[AGSGraphicsLayer class]] &&
+                           ([newAnnotations count] ||
+                            [oldAnnotations count]));
     
-    [self.layerUpdateQueue cancelAllOperations];
-    
-    NSBlockOperation *blockOperation = nil;
-    blockOperation = [NSBlockOperation blockOperationWithBlock:^{
-        NSSet *displayedAnnotations = (self.cachedAnnotations != nil) ? self.cachedAnnotations : [NSSet set];
-        NSSet *updatedAnnotations = [self.layer.annotations set];
-        self.cachedAnnotations = updatedAnnotations;
+    if (canSynchronize)
+    {
+        __weak AGSGraphicsLayer *graphicsLayer = (AGSGraphicsLayer*)self.nativeLayer;
         
-        BOOL performSync = (([displayedAnnotations isEqualToSet:updatedAnnotations] == NO) &&
-                            ([displayedAnnotations count] ||
-                             [updatedAnnotations count]));
-        
-        if (performSync) {
-            // Looks like an update is needed!
-            DDLogVerbose(@"Beginning layer sync: '%@' [%lu -> %lu]",
+        NSBlockOperation *blockOperation = nil;
+        blockOperation = [NSBlockOperation blockOperationWithBlock:^{
+            DDLogVerbose(@"Beginning layer sync: '%@' [New:%lu,Old:%lu]",
                          self.layer.name,
-                         (unsigned long)[displayedAnnotations count],
-                         (unsigned long)[updatedAnnotations count]);
+                         (unsigned long)[newAnnotations count],
+                         (unsigned long)[oldAnnotations count]);
             
             dispatch_sync(dispatch_get_main_queue(), ^{
                 if ([self.delegate respondsToSelector:@selector(layerManagerWillSynchronizeAnnotations:)]) {
@@ -187,116 +203,65 @@
                 }
             });
             
-            
-            NSMutableArray *agsGraphics = [NSMutableArray arrayWithArray:self.graphicsLayer.graphics];
-            NSMutableArray *sortableGraphics = [NSMutableArray array];
-            NSMutableArray *deletedLayerAnnotations = [NSMutableArray array];
-            NSMutableArray *addedLayerAnnotations = [NSMutableArray array];
-            
-            if ([blockOperation isCancelled] == NO) {
-                {
-                    NSMutableSet *deletedAnnotations = [displayedAnnotations mutableCopy];
-                    [deletedAnnotations minusSet:updatedAnnotations];
-                    NSSet *layerAnnotations = [self layerAnnotationsForAnnotations:deletedAnnotations];
-                    [deletedLayerAnnotations addObjectsFromArray:[layerAnnotations allObjects]];
+            NSArray *annotations = [newAnnotations sortedArrayUsingComparator:^NSComparisonResult(id<MGSAnnotation> obj1, id<MGSAnnotation> obj2) {
+                BOOL obj1_isMarker = (([obj1 annotationType] == MGSAnnotationMarker) ||
+                                      ([obj1 annotationType] == MGSAnnotationPointOfInterest));
+                
+                BOOL obj2_isMarker = (([obj2 annotationType] == MGSAnnotationMarker) ||
+                                      ([obj2 annotationType] == MGSAnnotationPointOfInterest));
+                
+                if (obj1_isMarker && obj2_isMarker) {
+                    CLLocationCoordinate2D coordinate1 = [obj1 coordinate];
+                    CLLocationCoordinate2D coordinate2 = [obj2 coordinate];
                     
-                    [layerAnnotations enumerateObjectsUsingBlock:^(MGSLayerAnnotation* layerAnnotation, BOOL* stop) {
-                        if (layerAnnotation.graphic) {
-                            [agsGraphics removeObject:layerAnnotation.graphic];
-                        }
-                    }];
-                }
-            
-                {
-                    NSMutableSet *addedAnnotations = [updatedAnnotations mutableCopy];
-                    [addedAnnotations minusSet:displayedAnnotations];
-                    
-                    [addedAnnotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> annotation, BOOL* stop) {
-                        AGSGraphic *graphic = [self createGraphicForAnnotation:annotation];
-                        
-                        MGSLayerAnnotation *layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
-                                                                                                     graphic:graphic];
-                        [addedLayerAnnotations addObject:layerAnnotation];
-                        
-                        if (graphic) {
-                            MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-                            BOOL needsSorting = ((safeAnnotation.annotationType == MGSAnnotationMarker) ||
-                                                 (safeAnnotation.annotationType == MGSAnnotationPointOfInterest));
-                            if (needsSorting) {
-                                if ([agsGraphics containsObject:graphic]) {
-                                    [agsGraphics removeObject:graphic];
-                                }
-                                
-                                [sortableGraphics addObject:graphic];
-                            } else {
-                                [agsGraphics addObject:graphic];
-                            }
-                        }
-                    }];
-                }
-            }
-            
-            
-            if ([blockOperation isCancelled] == NO) {
-                [sortableGraphics sortUsingComparator:^(AGSGraphic* graphic1, AGSGraphic* graphic2) {
-                    AGSPoint *point1 = graphic1.geometry.envelope.center;
-                    AGSPoint *point2 = graphic2.geometry.envelope.center;
-                    
-                    if (point1.y > point2.y) {
+                    if (coordinate1.latitude > coordinate2.latitude) {
                         return NSOrderedAscending;
                     }
-                    else if (point1.y < point2.y) {
+                    else if (coordinate1.latitude < coordinate2.latitude) {
                         return NSOrderedDescending;
                     }
-                    else if (point1.x > point2.x) {
+                    else if (coordinate1.longitude > coordinate2.longitude) {
                         return NSOrderedDescending;
                     }
-                    else if (point1.x < point2.x) {
+                    else if (coordinate1.longitude > coordinate2.longitude) {
                         return NSOrderedDescending;
                     }
                     
                     return NSOrderedSame;
-                }];
-                
-                [agsGraphics addObjectsFromArray:sortableGraphics];
-                
-                // Make sure everything is in the correct spatial reference!
-                [agsGraphics enumerateObjectsUsingBlock:^(AGSGraphic* graphic, NSUInteger index, BOOL* stop) {
-                    // Reproject all the things!
-                    BOOL shouldReproject = (graphic.geometry &&
-                                            ([graphic.geometry.spatialReference isEqualToSpatialReference:self.spatialReference] == NO));
-                    if (shouldReproject) {
-                        graphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:graphic.geometry
-                                                                                   toSpatialReference:self.spatialReference];
-                    }
-                }];
-            }
+                } else if (obj1_isMarker) {
+                    return NSOrderedAscending;
+                } else {
+                    return NSOrderedDescending;
+                }
+            }];
             
             
-            if ([blockOperation isCancelled] == NO) {
-                dispatch_sync(dispatch_get_main_queue(), ^{
-                    self.cachedAnnotations = updatedAnnotations;
-                    NSMutableSet *layerAnnotations = [NSMutableSet setWithSet:self.layerAnnotations];
-                    
-                    [layerAnnotations minusSet:[NSSet setWithArray:deletedLayerAnnotations]];
-                    [layerAnnotations unionSet:[NSSet setWithArray:addedLayerAnnotations]];
-                    self.layerAnnotations = layerAnnotations;
-                    
-                    [self.graphicsLayer removeGraphics:self.graphicsLayer.graphics];
-                    [self.graphicsLayer addGraphics:agsGraphics];
-                    [self.graphicsLayer refresh];
-                });
+            NSMutableSet *layerAnnotations = [NSMutableSet set];
+            NSMutableArray *graphics = [NSMutableArray array];
+            
+            for (id<MGSAnnotation> annotation in annotations) {
+                AGSGraphic *annotationGraphic = [self createGraphicForAnnotation:annotation];
+                MGSLayerAnnotation *layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
+                                                                                             graphic:annotationGraphic];
+                [layerAnnotations addObject:layerAnnotation];
+                [graphics addObject:annotationGraphic];
             }
             
             dispatch_sync(dispatch_get_main_queue(), ^{
+                self.layerAnnotations = layerAnnotations;
+                
+                [graphicsLayer removeAllGraphics];
+                [graphicsLayer addGraphics:graphics];
+                [graphicsLayer refresh];
+                
                 if ([self.delegate respondsToSelector:@selector(layerManagerDidSynchronizeAnnotations:)]) {
                     [self.delegate layerManagerDidSynchronizeAnnotations:self];
                 }
             });
-        }
-    }];
-    
-    [self.layerUpdateQueue addOperation:blockOperation];
+        }];
+        
+        [self.layerUpdateQueue addOperation:blockOperation];
+    }
 }
 
 - (AGSGraphic*)createGraphicForAnnotation:(id <MGSAnnotation>)annotation
@@ -457,7 +422,7 @@
                        context:(void *)context
 {
     if ([object isEqual:self.layer] && [keyPath isEqualToString:@"annotations"]) {
-        [self syncAnnotations];
+        [self refresh];
     } else {
         [super observeValueForKeyPath:keyPath
                              ofObject:object

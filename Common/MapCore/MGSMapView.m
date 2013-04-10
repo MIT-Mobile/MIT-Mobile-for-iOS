@@ -303,17 +303,17 @@
                 MGSLayerController *manager = [self layerManagerForLayer:layer];
                 manager.spatialReference = self.mapView.spatialReference;
                 
-                AGSGraphicsLayer *graphicsLayer = manager.graphicsLayer;
+                AGSLayer *arcgisLayer = manager.nativeLayer;
                 NSUInteger agsLayerIndex = [self.baseLayers count] + layerIndex;
                 
-                if ([self.mapView.mapLayers containsObject:graphicsLayer] == NO) {
-                    graphicsLayer.delegate = self;
-                    [self.mapView insertMapLayer:graphicsLayer
+                if ([self.mapView.mapLayers containsObject:arcgisLayer] == NO) {
+                    arcgisLayer.delegate = self;
+                    [self.mapView insertMapLayer:arcgisLayer
                                         withName:layer.name
                                          atIndex:agsLayerIndex];
                 }
                 
-                [manager syncAnnotations];
+                [manager refresh];
             }
         }];
     }
@@ -322,14 +322,14 @@
 - (BOOL)isLayerHidden:(MGSLayer*)layer
 {
     MGSLayerController* manager = [self layerManagerForLayer:layer];
-    return (manager.graphicsLayer.isVisible);
+    return (manager.nativeLayer.isVisible);
 }
 
 - (void)setHidden:(BOOL)hidden
          forLayer:(MGSLayer*)layer
 {
     MGSLayerController* manager = [self layerManagerForLayer:layer];
-    manager.graphicsLayer.visible = !hidden;
+    manager.nativeLayer.visible = !hidden;
 }
 
 
@@ -418,8 +418,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [self.externalLayers removeObject:layer];
         [self.externalLayerManagers removeObject:layerManager];
         
-        if (layerManager.graphicsLayer) {
-            [self.mapView removeMapLayer:layerManager.graphicsLayer];
+        if (layerManager.nativeLayer) {
+            [self.mapView removeMapLayer:layerManager.nativeLayer];
         }
         
         if (notifyDelegate) {

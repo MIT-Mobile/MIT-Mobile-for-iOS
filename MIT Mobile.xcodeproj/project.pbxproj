@@ -1506,9 +1506,9 @@
 			isa = PBXGroup;
 			children = (
 				2C8F3C1E167FB853005BF07D /* MGSCalloutView.h */,
+				2C8F3C1F167FB853005BF07D /* MGSCalloutView.m */,
 				2C70B81F170E0F9400746EB9 /* MGSBootstrapper.h */,
 				2C70B820170E0F9400746EB9 /* MGSBootstrapper.m */,
-				2C8F3C1F167FB853005BF07D /* MGSCalloutView.m */,
 				2C0CE20A1663FFA80020E70D /* MGSLayerAnnotation.h */,
 				2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */,
 				2C4D799D16FB4B0F001AAC81 /* MGSLayerController.h */,
