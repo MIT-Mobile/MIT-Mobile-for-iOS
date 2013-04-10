@@ -73,6 +73,9 @@
 }
 
 
+
+// TODO: This code could be grealy simplified if we don't care if there
+// are multiple requests
 - (void)requestBootstrap:(void (^)(NSDictionary*,NSError*))resultBlock
 {
     void (^requestResultBlock)(NSDictionary*,NSError*) = [resultBlock copy];
@@ -83,7 +86,14 @@
                             (self.cachedResponse == nil) ||
                             (self.cachedError));
         
-        if (needsUpdate && (self.requestInFlight == NO)) {
+        if (!(needsUpdate && (self.requestInFlight == NO))) {
+            DDLogVerbose(@"Using bootstrap retreived at %@", self.lastRetrieved);
+            if (requestResultBlock) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                        requestResultBlock(self.cachedResponse,self.cachedError);
+                });
+            }
+        } else {
             DDLogVerbose(@"Requesting fresh copy of the bootstrap");
             MobileRequestOperation* operation = [MobileRequestOperation operationWithModule:@"map"
                                                                                     command:@"bootstrap"
@@ -115,16 +125,7 @@
             }];
             
             self.requestInFlight = YES;
-            [self.requestQueue addOperation:operation];
-        } else {
-            DDLogVerbose(@"Using bootstrap retreived at %@", self.lastRetrieved);
-            [self.requestQueue addOperationWithBlock:^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (requestResultBlock) {
-                        requestResultBlock(self.cachedResponse,self.cachedError);
-                    }
-                });
-            }];
+            [[NSOperationQueue currentQueue] addOperation:operation];
         }
     }];
 }
