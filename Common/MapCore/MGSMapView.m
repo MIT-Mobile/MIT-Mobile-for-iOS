@@ -469,6 +469,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         }
         
         if ([self shouldShowCalloutForAnnotation:annotation]) {
+            [self willShowCalloutForAnnotation:annotation];
+            
             MGSLayer* layer = [self layerContainingAnnotation:annotation];
             MGSLayerController* manager = [self layerManagerForLayer:layer];
             AGSGraphic* graphic = [[manager layerAnnotationForAnnotation:annotation] graphic];
@@ -488,13 +490,15 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             self.calloutAnnotation = annotation;
             
             [self willShowCalloutForAnnotation:annotation];
+            self.mapView.callout.delegate = self;
+                        
             [self.mapView centerAtPoint:graphic.geometry.envelope.center
                                animated:YES];
-            
-            self.mapView.callout.delegate = self;
+                                 
             [self.mapView.callout showCalloutAtPoint:nil
                                           forGraphic:graphic
                                             animated:YES];
+            
             [self didShowCalloutForAnnotation:annotation];
         }
     }
