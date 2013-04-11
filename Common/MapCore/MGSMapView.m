@@ -906,26 +906,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     }
 }
 
-- (void)mapView:(AGSMapView*)mapView didTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
-{
-    /* No Implementation */
-}
-
-- (void)mapView:(AGSMapView*)mapView didMoveTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
-{
-    /* No Implementation */
-}
-
-- (void)mapView:(AGSMapView*)mapView didEndTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
-{
-    /* No Implementation */
-}
-
-- (void)mapViewDidCancelTapAndHold:(AGSMapView*)mapView
-{
-    /* No Implementation */
-}
-
 - (void)didClickAccessoryButtonForCallout:(AGSCallout*)callout
 {
     if (self.calloutAnnotation) {
