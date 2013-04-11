@@ -226,6 +226,7 @@
 		48EDC97117175B4000376BCF /* PDFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96D17175B4000376BCF /* PDFView.m */; };
 		48EDC97217175B4000376BCF /* UIView+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96F17175B4000376BCF /* UIView+Image.m */; };
 		48EDC97417175C3100376BCF /* dining in Resources */ = {isa = PBXBuildFile; fileRef = 48EDC97317175C3100376BCF /* dining */; };
+		48EDC995171764BD00376BCF /* DiningMenuFilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC994171764BD00376BCF /* DiningMenuFilterViewController.m */; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -813,6 +814,8 @@
 		48EDC96E17175B4000376BCF /* UIView+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Image.h"; sourceTree = "<group>"; };
 		48EDC96F17175B4000376BCF /* UIView+Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Image.m"; sourceTree = "<group>"; };
 		48EDC97317175C3100376BCF /* dining */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dining; path = Resources/dining; sourceTree = "<group>"; };
+		48EDC993171764BD00376BCF /* DiningMenuFilterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningMenuFilterViewController.h; path = Dining/DiningMenuFilterViewController.h; sourceTree = "<group>"; };
+		48EDC994171764BD00376BCF /* DiningMenuFilterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningMenuFilterViewController.m; path = Dining/DiningMenuFilterViewController.m; sourceTree = "<group>"; };
 		4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAskUsViewController.h; sourceTree = "<group>"; };
 		4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAskUsViewController.m; sourceTree = "<group>"; };
 		4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryEmailFormViewController.h; sourceTree = "<group>"; };
@@ -1915,6 +1918,8 @@
 				4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */,
 				48A6E4D5170B89C2004DED46 /* DiningHallMenuViewController.h */,
 				48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */,
+				48EDC993171764BD00376BCF /* DiningMenuFilterViewController.h */,
+				48EDC994171764BD00376BCF /* DiningMenuFilterViewController.m */,
 			);
 			name = Dining;
 			sourceTree = "<group>";
@@ -3218,6 +3223,7 @@
 				48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */,
 				48EDC97117175B4000376BCF /* PDFView.m in Sources */,
 				48EDC97217175B4000376BCF /* UIView+Image.m in Sources */,
+				48EDC995171764BD00376BCF /* DiningMenuFilterViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

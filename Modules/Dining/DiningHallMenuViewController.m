@@ -8,6 +8,7 @@
 
 #import "DiningHallMenuViewController.h"
 #import "DiningMenuCompareViewController.h"
+#import "DiningMenuFilterViewController.h"
 #import "DiningHallMenuHeaderView.h"
 #import "DiningHallMenuFooterView.h"
 #import "DiningHallMenuItemTableCell.h"
@@ -77,7 +78,12 @@
 #pragma mark - Filter
 - (void) filterMenu:(id)sender
 {
-
+    DiningMenuFilterViewController *filterVC = [[DiningMenuFilterViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:filterVC];
+    navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    
+    [self presentViewController:navController animated:YES completion:NULL];
 }
 
 #pragma mark - Table view data source
