@@ -243,7 +243,6 @@
                                      animated:animated];
         }
         
-        [self.mapView showCalloutForAnnotation:mapAnnotation];
         self.currentAnnotation = annotation;
 
 
