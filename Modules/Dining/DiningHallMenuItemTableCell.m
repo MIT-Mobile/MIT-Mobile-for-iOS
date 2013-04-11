@@ -1,6 +1,7 @@
 
 #import "DiningHallMenuItemTableCell.h"
 #import "UIKit+MITAdditions.h"
+#import "UIImage+PDF.h"
 
 #define TITLE_DESCRIPTION_PADDING 4
 
@@ -30,7 +31,6 @@
         [self formatLabel:self.description withFont:[[self class] secondaryFont]];
         
         self.typeContainer  = [[UIView alloc] initWithFrame:CGRectMake(265, 15, 45, 20)];   // if more than 2 this view will need to resize
-        self.typeContainer.backgroundColor = [UIColor lightGrayColor];
         
         [self.contentView addSubview:self.station];
         [self.contentView addSubview:self.title];
@@ -64,7 +64,37 @@
     if ([self.dietaryTypes count] > 2) {
         self.typeContainer.frame = CGRectMake(265, 15, 45, 45);
     }
+    [self layoutDietaryTypes];
     
+}
+
+- (void) layoutDietaryTypes
+{
+    CGSize iconSize = CGSizeMake(20, 20);
+    int maxIcons = 4;
+    NSMutableArray *icons = [NSMutableArray arrayWithCapacity:maxIcons];
+    for (NSNumber *type in self.dietaryTypes) {
+        UIImage *image;
+        if ([type intValue] == 1) {
+            image = [UIImage imageWithPDFNamed:@"dining/farm_to_fork.pdf" fitSize:iconSize];
+        } else if ([type intValue] == 2) {
+            image = [UIImage imageWithPDFNamed:@"dining/gluten_free.pdf" fitSize:iconSize];
+        } else if ([type intValue] == 3) {
+            image = [UIImage imageWithPDFNamed:@"dining/halal.pdf" fitSize:iconSize];
+        } else if ([type intValue] == 4) {
+            image = [UIImage imageWithPDFNamed:@"dining/humane.pdf" fitSize:iconSize];
+        }
+        if (image != nil) {
+            [icons addObject:image];
+        }
+    }
+    
+    for (int i = 0; i < [icons count]; i++) {
+        UIImageView *iconView = [[UIImageView alloc] initWithImage:icons[i]];
+                                            // there can only be a maximum of four icons, they are aligned like so :    1 0
+        iconView.center = CGPointMake(35 - 25 * (i % 2), 10 + 25 * (i >= 2));   //                                      3 2
+        [self.typeContainer addSubview:iconView];                               // full layout description can be found in the spec: https://jira.mit.edu/jira/secure/attachment/26097/house+menu.pdf
+    }
 }
 
 - (void) adjustSizeForLabel:(UILabel *)label
