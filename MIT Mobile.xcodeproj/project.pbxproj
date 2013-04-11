@@ -220,6 +220,12 @@
 		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		48DF79E21714A14E00BCF59F /* DiningHallMenuItemTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48DF79E11714A14E00BCF59F /* DiningHallMenuItemTableCell.m */; };
+		48EDC96817175AF400376BCF /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 48EDC96517175AF400376BCF /* LICENSE.txt */; };
+		48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96717175AF400376BCF /* UIImage+PDF.m */; };
+		48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96B17175B4000376BCF /* NSString+MD5.m */; };
+		48EDC97117175B4000376BCF /* PDFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96D17175B4000376BCF /* PDFView.m */; };
+		48EDC97217175B4000376BCF /* UIView+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96F17175B4000376BCF /* UIView+Image.m */; };
+		48EDC97417175C3100376BCF /* dining in Resources */ = {isa = PBXBuildFile; fileRef = 48EDC97317175C3100376BCF /* dining */; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -797,6 +803,16 @@
 		48B8129915E42B1700E791F9 /* LinksModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LinksModule.m; path = Links/LinksModule.m; sourceTree = "<group>"; };
 		48DF79E01714A14E00BCF59F /* DiningHallMenuItemTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuItemTableCell.h; path = Dining/DiningHallMenuItemTableCell.h; sourceTree = "<group>"; };
 		48DF79E11714A14E00BCF59F /* DiningHallMenuItemTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuItemTableCell.m; path = Dining/DiningHallMenuItemTableCell.m; sourceTree = "<group>"; };
+		48EDC96517175AF400376BCF /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		48EDC96617175AF400376BCF /* UIImage+PDF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+PDF.h"; sourceTree = "<group>"; };
+		48EDC96717175AF400376BCF /* UIImage+PDF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+PDF.m"; sourceTree = "<group>"; };
+		48EDC96A17175B4000376BCF /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
+		48EDC96B17175B4000376BCF /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
+		48EDC96C17175B4000376BCF /* PDFView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDFView.h; sourceTree = "<group>"; };
+		48EDC96D17175B4000376BCF /* PDFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDFView.m; sourceTree = "<group>"; };
+		48EDC96E17175B4000376BCF /* UIView+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Image.h"; sourceTree = "<group>"; };
+		48EDC96F17175B4000376BCF /* UIView+Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Image.m"; sourceTree = "<group>"; };
+		48EDC97317175C3100376BCF /* dining */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dining; path = Resources/dining; sourceTree = "<group>"; };
 		4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAskUsViewController.h; sourceTree = "<group>"; };
 		4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAskUsViewController.m; sourceTree = "<group>"; };
 		4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryEmailFormViewController.h; sourceTree = "<group>"; };
@@ -1342,6 +1358,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				48EDC97317175C3100376BCF /* dining */,
 				2CD12D4E1360584F00A73ACA /* facilities */,
 				2CDF301E134DF504007C6813 /* qrreader */,
 				EB07B06912B8971D005D6A4C /* calendar */,
@@ -1964,6 +1981,23 @@
 			name = Links;
 			sourceTree = "<group>";
 		};
+		48EDC96417175AF400376BCF /* UIImage+PDF */ = {
+			isa = PBXGroup;
+			children = (
+				48EDC96A17175B4000376BCF /* NSString+MD5.h */,
+				48EDC96B17175B4000376BCF /* NSString+MD5.m */,
+				48EDC96C17175B4000376BCF /* PDFView.h */,
+				48EDC96D17175B4000376BCF /* PDFView.m */,
+				48EDC96E17175B4000376BCF /* UIView+Image.h */,
+				48EDC96F17175B4000376BCF /* UIView+Image.m */,
+				48EDC96517175AF400376BCF /* LICENSE.txt */,
+				48EDC96617175AF400376BCF /* UIImage+PDF.h */,
+				48EDC96717175AF400376BCF /* UIImage+PDF.m */,
+			);
+			name = "UIImage+PDF";
+			path = "External/UIImage+PDF";
+			sourceTree = "<group>";
+		};
 		4B0D8A55142CF8430083AC66 /* WorldCatSearch */ = {
 			isa = PBXGroup;
 			children = (
@@ -2044,6 +2078,7 @@
 		4B83721C157E5B19004CBC49 /* External */ = {
 			isa = PBXGroup;
 			children = (
+				48EDC96417175AF400376BCF /* UIImage+PDF */,
 				4869CDA217037F8500A3662B /* PSTCollectionView */,
 				2C101A9616540907000E40E3 /* ArcGIS */,
 				2C333496162DD2FA00BBB312 /* Facebook Connect */,
@@ -2814,6 +2849,8 @@
 				2CCF81571636F69900DE273F /* README.txt in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,
+				48EDC96817175AF400376BCF /* LICENSE.txt in Resources */,
+				48EDC97417175C3100376BCF /* dining in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3177,6 +3214,10 @@
 				2C70B821170E0F9500746EB9 /* MGSBootstrapper.m in Sources */,
 				48B4ADE41713572300EF426F /* DiningHallMenuCompareView.m in Sources */,
 				48DF79E21714A14E00BCF59F /* DiningHallMenuItemTableCell.m in Sources */,
+				48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */,
+				48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */,
+				48EDC97117175B4000376BCF /* PDFView.m in Sources */,
+				48EDC97217175B4000376BCF /* UIView+Image.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
