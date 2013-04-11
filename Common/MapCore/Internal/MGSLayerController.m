@@ -10,6 +10,7 @@
 @property(nonatomic,strong) MGSLayer* layer;
 @property(nonatomic,strong) AGSLayer* nativeLayer;
 @property(strong) NSSet *layerAnnotations;
+@property(copy) NSOrderedSet *currentAnnotations;
 @property(nonatomic,strong) NSOperationQueue *layerUpdateQueue;
 
 // Tracks the annotations which are created from pre-existing graphics
@@ -173,30 +174,41 @@
 - (void)refresh
 {
     [self synchronizeNativeLayerWithAnnotations:self.layer.annotations
-                                            old:nil];
+                                            old:self.currentAnnotations];
 }
 
 // TODO: Optimize this if needed, just brute forcing it for now
 - (void)synchronizeNativeLayerWithAnnotations:(NSOrderedSet*)newAnnotations
                                           old:(NSOrderedSet*)oldAnnotations
 {
-    BOOL canSynchronize = (self.layer &&
-                           _nativeLayer &&
-                           [_nativeLayer isKindOfClass:[AGSGraphicsLayer class]] &&
-                           self.spatialReference &&
-                           ([newAnnotations count] ||
-                            [oldAnnotations count]));
+    BOOL hasValidNativeLayer = (self.layer &&
+                                _nativeLayer &&
+                                [_nativeLayer isKindOfClass:[AGSGraphicsLayer class]] &&
+                                self.spatialReference);
     
-    if (canSynchronize)
+    BOOL annotationsUpdated = (([newAnnotations count] ||
+                                [oldAnnotations count]) &&
+                               ([newAnnotations isEqual:oldAnnotations] == NO));
+    
+    if (hasValidNativeLayer && annotationsUpdated)
     {
         __weak AGSGraphicsLayer *graphicsLayer = (AGSGraphicsLayer*)self.nativeLayer;
         
         NSBlockOperation *blockOperation = nil;
         blockOperation = [NSBlockOperation blockOperationWithBlock:^{
+            if ([self.currentAnnotations isEqual:newAnnotations]) {
+                // Sanity check to make sure that an updated didn't slip by
+                // after the block was already submitted to the queue. If the new
+                // and cached already match, we are already updated and there's
+                // nothing to do.
+                return;
+            }
+            
             DDLogVerbose(@"Beginning layer sync: '%@' [New:%lu,Old:%lu]",
                          self.layer.name,
                          (unsigned long)[newAnnotations count],
                          (unsigned long)[oldAnnotations count]);
+            
             
             dispatch_sync(dispatch_get_main_queue(), ^{
                 if ([self.delegate respondsToSelector:@selector(layerManagerWillSynchronizeAnnotations:)]) {
@@ -431,7 +443,9 @@
                        context:(void *)context
 {
     if ([object isEqual:self.layer] && [keyPath isEqualToString:@"annotations"]) {
-        [self refresh];
+        if ([change[NSKeyValueChangeNewKey] isEqual:change[NSKeyValueChangeOldKey]] == NO) {
+            [self refresh];
+        }
     } else {
         [super observeValueForKeyPath:keyPath
                              ofObject:object
