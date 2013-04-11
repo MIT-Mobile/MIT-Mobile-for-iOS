@@ -29,8 +29,8 @@
 - (void)baseLayersDidFinishLoading;
 
 #pragma mark Property Getters
-- (AGSEnvelope*)defaultVisibleArea;
-- (AGSEnvelope*)defaultMaximumEnvelope;
+- (MKCoordinateRegion)defaultVisibleArea;
+- (MKCoordinateRegion)defaultMaximumEnvelope;
 
 #pragma mark Lookup Methods
 - (MGSLayerController*)layerManagerForLayer:(MGSLayer*)layer;

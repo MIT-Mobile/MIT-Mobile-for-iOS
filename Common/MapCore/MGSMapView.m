@@ -18,9 +18,9 @@
 
 @implementation MGSMapView
 {
+    // Defined an ivar since the mapRegion property is marked
+    // as dynamic and clang won't create one for us
     MKCoordinateRegion _mapRegion;
-    CLLocationCoordinate2D _centerCoordinate;
-    MGSZoomLevel _zoomLevel;
 }
 
 @dynamic mapSets;
@@ -110,30 +110,17 @@
 #pragma mark Visible Region
 - (MKCoordinateRegion)mapRegion
 {
-    if (self.mapView.spatialReference == nil) {
-        return _mapRegion;
-    } else {
-        AGSEnvelope* regionEnvelope = nil;
-        
-        if (self.isBaseLayersLoaded) {
-            regionEnvelope = [self.mapView visibleAreaEnvelope];
-            
-            if ([regionEnvelope isEmpty] || ([regionEnvelope isValid] == NO)) {
-                regionEnvelope = [self defaultVisibleArea];
-            }
-        } else {
-            regionEnvelope = [self defaultVisibleArea];
-        }
-        
-        regionEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:regionEnvelope
-                                                                                toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
-        
-        MKCoordinateSpan span = MKCoordinateSpanMake(fabs(regionEnvelope.ymax - regionEnvelope.ymin),
-                                                     fabs(regionEnvelope.xmax - regionEnvelope.xmin));
-        CLLocationCoordinate2D center = CLLocationCoordinate2DMake(regionEnvelope.center.y, regionEnvelope.center.x);
-        
-        return MKCoordinateRegionMake(center, span);
+    MKCoordinateRegion region = _mapRegion;
+    
+    if (self.mapView.spatialReference) {
+        region = MKCoordinateRegionFromAGSEnvelope(self.mapView.visibleAreaEnvelope);
     }
+    
+    if (MKCoordinateRegionIsValid(region) == NO) {
+        region = [self defaultVisibleArea];
+    }
+    
+    return region;
 }
 
 - (void)setMapRegion:(MKCoordinateRegion)mapRegion
@@ -147,40 +134,26 @@
 {
     if (MKCoordinateRegionIsValid(mapRegion) == NO) {
         DDLogError(@"attempted to set a empty or invalid region");
-        return;
-    }
-    
-    _mapRegion = mapRegion;
-    
-    // Checking for a spatial reference here instead of using
-    // isBaseLayersLoaded so we can start modifying the region
-    // as soon as a valid spatial reference is established.
-    // Hopefully, this is before the map is initially drawn
-    if (self.mapView.spatialReference) {
-        AGSMutableEnvelope* envelope = [[AGSMutableEnvelope alloc] initWithSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
+    } else {
+        _mapRegion = mapRegion;
         
-        double offsetX = (mapRegion.span.longitudeDelta / 2.0);
-        double offsetY = (mapRegion.span.latitudeDelta / 2.0);
-        
-        [envelope updateWithXmin:mapRegion.center.longitude - offsetX
-                            ymin:mapRegion.center.latitude - offsetY
-                            xmax:mapRegion.center.longitude + offsetX
-                            ymax:mapRegion.center.latitude + offsetY];
-        
-        AGSGeometry* projectedGeometry = envelope;
-        if ([envelope.spatialReference isEqualToSpatialReference:self.mapView.spatialReference] == NO) {
-            projectedGeometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:envelope
-                                                                        toSpatialReference:self.mapView.spatialReference];
+        // Checking for a spatial reference here instead of using
+        // isBaseLayersLoaded so we can start modifying the region
+        // as soon as a valid spatial reference is established.
+        // Hopefully, this is before the map is initially drawn
+        if (self.isBaseLayersLoaded) {
+            AGSEnvelope *regionEnvelope = AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(mapRegion,
+                                                                                                self.mapView.spatialReference);
             
-            if ([projectedGeometry isEmpty] || ([projectedGeometry isValid] == NO)) {
-                projectedGeometry = [self defaultVisibleArea];
+            if (regionEnvelope == nil) {
+                DDLogError(@"**critical** envelope returned is invalid but the requested region was valid. Falling back to defaults");
+                regionEnvelope = AGSEnvelopeFromMKCoordinateRegionWithSpatialReference([self defaultVisibleArea],
+                                                                                       self.mapView.spatialReference);
             }
+            
+            [self.mapView zoomToEnvelope:regionEnvelope
+                                animated:animated];
         }
-        
-        animated = self.baseLayersLoaded && animated;
-        [self.mapView zoomToGeometry:projectedGeometry
-                         withPadding:0.0
-                            animated:animated];
     }
 }
 
@@ -191,29 +164,22 @@
 
 - (void)setZoomLevel:(MGSZoomLevel)zoomLevel
 {
-    if (self.isBaseLayersLoaded) {
-        
-    } else {
-        _zoomLevel = zoomLevel;
-    }
-    
+    [self setZoomLevel:zoomLevel
+              animated:NO];
+}
+
+- (void)setZoomLevel:(MGSZoomLevel)zoomLevel
+            animated:(BOOL)animated
+{
     MKCoordinateRegion region = self.mapRegion;
     region.span = MKCoordinateSpanForMGSZoomLevel(zoomLevel);
-    
-    self.mapRegion = region;
+    [self setMapRegion:region
+              animated:animated];
 }
 
 - (CLLocationCoordinate2D)centerCoordinate
 {
-    AGSEnvelope *visibleArea = nil;
-    
-    if (self.mapView.spatialReference) {
-        visibleArea = self.mapView.visibleAreaEnvelope;
-    } else {
-        visibleArea = [self defaultVisibleArea];
-    }
-    
-    return CLLocationCoordinate2DFromAGSPoint(visibleArea.center);
+    return self.mapRegion.center;
 }
 
 - (void)setCenterCoordinate:(CLLocationCoordinate2D)coordinate
@@ -225,19 +191,10 @@
 - (void)setCenterCoordinate:(CLLocationCoordinate2D)coordinate
                    animated:(BOOL)animated
 {
-    // Old code
-    /*
-     MKCoordinateSpan span = MKCoordinateSpanForMGSZoomLevel(self.zoomLevel);
-     
-     [self setMapRegion:MKCoordinateRegionMake(coordinate, span)
-     animated:animated];
-     */
-    if (CLLocationCoordinate2DIsValid(coordinate)) {
-        MKCoordinateRegion mapRegion = self.mapRegion;
-        mapRegion.center = coordinate;
-        [self setMapRegion:mapRegion
-                  animated:animated];
-    }
+    MKCoordinateRegion mapRegion = self.mapRegion;
+    mapRegion.center = coordinate;
+    [self setMapRegion:mapRegion
+              animated:animated];
 }
 
 
@@ -461,13 +418,16 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
 {
+    [self showCalloutForAnnotation:annotation
+                          recenter:NO];
+}
+
+- (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
+                        recenter:(BOOL)recenter
+{
     if (self.isBaseLayersLoaded == NO) {
         self.pendingCalloutAnnotation = annotation;
     } else {
-        if (self.calloutAnnotation) {
-            [self dismissCallout];
-        }
-        
         if ([self shouldShowCalloutForAnnotation:annotation]) {
             [self willShowCalloutForAnnotation:annotation];
             
@@ -491,10 +451,12 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             
             [self willShowCalloutForAnnotation:annotation];
             self.mapView.callout.delegate = self;
-                        
-            [self.mapView centerAtPoint:graphic.geometry.envelope.center
-                               animated:YES];
-                                 
+            
+            if (recenter) {
+                [self.mapView centerAtPoint:graphic.geometry.envelope.center
+                                   animated:YES];
+            }
+            
             [self.mapView.callout showCalloutAtPoint:nil
                                           forGraphic:graphic
                                             animated:YES];
@@ -595,9 +557,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             [self.delegate mapView:self willShowCalloutForAnnotation:annotation];
         }
     }];
-    
-    [self.mapView centerAtPoint:self.mapView.callout.mapLocation
-                       animated:YES];
 }
 
 - (void)didShowCalloutForAnnotation:(id <MGSAnnotation>)annotation
@@ -652,6 +611,10 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)calloutDidReceiveTapForAnnotation:(id <MGSAnnotation>)annotation
 {
+    if ([self.calloutAnnotation isEqual:annotation]) {
+        [self dismissCallout];
+    }
+    
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if ([self.delegate respondsToSelector:@selector(mapView:calloutDidReceiveTapForAnnotation:)]) {
             [self.delegate mapView:self calloutDidReceiveTapForAnnotation:annotation];
@@ -689,8 +652,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 #pragma mark Initialization
 - (void)commonInit
 {
-    self.centerCoordinate = CLLocationCoordinate2DInvalid;
-    self.mapRegion = MKCoordinateRegionInvalid;
+    // Use direct ivar access so we don't call the mutator
+    self->_mapRegion = MKCoordinateRegionInvalid;
     
     self.baseLayersLoaded = NO;
     self.externalLayers = [NSMutableArray array];
@@ -714,8 +677,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             view.layerDelegate = self;
             view.touchDelegate = self;
             view.calloutDelegate = self;
-            view.maxEnvelope = [self defaultMaximumEnvelope];
-            
             
             [self addSubview:view];
             self.mapView = view;
@@ -755,26 +716,40 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     //  when we go to display the callout, the graphic will be
     //  nil and the callout will not display!
     [self refreshLayers:[NSSet setWithArray:self.externalLayers]];
+    
+    if (MKCoordinateRegionIsValid(self->_mapRegion)) {
+        [self setMapRegion:_mapRegion
+                  animated:NO];
+    }
+    
     [self didFinishLoadingMapView];
 }
 
 #pragma mark Property Getters
-- (AGSEnvelope*)defaultVisibleArea
+// TODO: Add the default visible envelope to the
+//  maps bootstrap file.
+- (MKCoordinateRegion)defaultVisibleArea
 {
-    return [AGSEnvelope envelopeWithXmin:-7916712.379879861
-                                    ymin:5214115.052300519
-                                    xmax:-7911452.543710185
-                                    ymax:5217411.40739323
-                        spatialReference:[AGSSpatialReference webMercatorSpatialReference]];
+    AGSEnvelope *envelope = [AGSEnvelope envelopeWithXmin: -7916712.379879861
+                                                     ymin: 5214115.052300519
+                                                     xmax: -7911452.543710185
+                                                     ymax: 5217411.40739323
+                                         spatialReference:[AGSSpatialReference spatialReferenceWithWKID:102100]];
+    
+    return MKCoordinateRegionFromAGSEnvelope(envelope);
 }
 
-- (AGSEnvelope*)defaultMaximumEnvelope
+// TODO: Add the default maximum envelope to the
+//  maps bootstrap file.
+- (MKCoordinateRegion)defaultMaximumEnvelope
 {
-    return [AGSEnvelope envelopeWithXmin:-7920689.320999366
-                                    ymin:5211048.119330198
-                                    xmax:-7907475.602590679
-                                    ymax:5219026.033192276
-                        spatialReference:[AGSSpatialReference webMercatorSpatialReference]];
+    AGSEnvelope *envelope = [AGSEnvelope envelopeWithXmin: -7920689.320999366
+                                                     ymin: 5211048.119330198
+                                                     xmax: -7907475.602590679
+                                                     ymax: 5219026.033192276
+                                         spatialReference:[AGSSpatialReference spatialReferenceWithWKID:102100]];
+    
+    return MKCoordinateRegionFromAGSEnvelope(envelope);
 }
 
 
@@ -834,24 +809,11 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)mapViewDidLoad:(AGSMapView*)mapView
 {
     DDLogVerbose(@"basemap loaded with WKID %d", mapView.spatialReference.wkid);
+    mapView.maxEnvelope = AGSEnvelopeFromMKCoordinateRegionWithSpatialReference([self defaultMaximumEnvelope], mapView.spatialReference);
 
-    AGSEnvelope* maxEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultMaximumEnvelope]
-                                                                                      toSpatialReference:mapView.spatialReference];
-    mapView.maxEnvelope = maxEnvelope;
-
-    if (MKCoordinateRegionIsValid(self->_mapRegion)) {
-        [self setMapRegion:self->_mapRegion
-                  animated:NO];
-    } else {
-        AGSEnvelope* visibleEnvelope = (AGSEnvelope*) [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:[self defaultVisibleArea]
-                                                                                              toSpatialReference:[AGSSpatialReference wgs84SpatialReference]];
-
-        MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DFromAGSPoint(visibleEnvelope.center),
-                                                           MKCoordinateSpanMake(fabs(visibleEnvelope.ymax - visibleEnvelope.ymin),
-                                                                                fabs(visibleEnvelope.xmax - visibleEnvelope.xmin)));
-        [self setMapRegion:region
-                  animated:NO];
-    }
+    MKCoordinateRegion visibleRegion = [self defaultVisibleArea];
+    [mapView zoomToEnvelope:AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(visibleRegion, mapView.spatialReference)
+                   animated:NO];
 }
 
 - (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForGraphic:(AGSGraphic*)graphic
