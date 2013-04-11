@@ -112,12 +112,12 @@
 {
     MKCoordinateRegion region = _mapRegion;
     
-    if (self.mapView.spatialReference) {
-        region = MKCoordinateRegionFromAGSEnvelope(self.mapView.visibleAreaEnvelope);
-    }
-    
     if (MKCoordinateRegionIsValid(region) == NO) {
-        region = [self defaultVisibleArea];
+        if (self.isBaseLayersLoaded) {
+            region = MKCoordinateRegionFromAGSEnvelope(self.mapView.visibleAreaEnvelope);
+        } else {
+            region = [self defaultVisibleArea];
+        }
     }
     
     return region;
@@ -137,16 +137,12 @@
     } else {
         _mapRegion = mapRegion;
         
-        // Checking for a spatial reference here instead of using
-        // isBaseLayersLoaded so we can start modifying the region
-        // as soon as a valid spatial reference is established.
-        // Hopefully, this is before the map is initially drawn
         if (self.isBaseLayersLoaded) {
             AGSEnvelope *regionEnvelope = AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(mapRegion,
                                                                                                 self.mapView.spatialReference);
             
             if (regionEnvelope == nil) {
-                DDLogError(@"**critical** envelope returned is invalid but the requested region was valid. Falling back to defaults");
+                MITLogFatal(@"**critical** envelope returned is invalid but the requested region was valid. Falling back to defaults");
                 regionEnvelope = AGSEnvelopeFromMKCoordinateRegionWithSpatialReference([self defaultVisibleArea],
                                                                                        self.mapView.spatialReference);
             }
@@ -419,11 +415,13 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
 {
     [self showCalloutForAnnotation:annotation
-                          recenter:NO];
+                          recenter:YES
+                          animated:YES];
 }
 
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
                         recenter:(BOOL)recenter
+                        animated:(BOOL)animated
 {
     if (self.isBaseLayersLoaded == NO) {
         self.pendingCalloutAnnotation = annotation;
@@ -452,16 +450,29 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             [self willShowCalloutForAnnotation:annotation];
             self.mapView.callout.delegate = self;
             
-            if (recenter) {
-                [self.mapView centerAtPoint:graphic.geometry.envelope.center
-                                   animated:YES];
-            }
+            [UIView animateWithDuration:0.5
+                                  delay:0
+                                options:(UIViewAnimationOptionOverrideInheritedCurve |
+                                         UIViewAnimationOptionOverrideInheritedDuration |
+                                         UIViewAnimationOptionAllowAnimatedContent |
+                                         UIViewAnimationOptionBeginFromCurrentState)
+                             animations:^{
+                                 if (recenter) {
+                                     [self.mapView centerAtPoint:graphic.geometry.envelope.center
+                                                        animated:animated];
+                                 }
+                             }
+             
+                             completion:^(BOOL finished) {
+                                 if (finished) {
+                                     [self.mapView.callout showCalloutAtPoint:graphic.geometry.envelope.center
+                                                                   forGraphic:graphic
+                                                                     animated:animated];
+                                     [self didShowCalloutForAnnotation:annotation];
+                                 }
+                             }]; 
             
-            [self.mapView.callout showCalloutAtPoint:nil
-                                          forGraphic:graphic
-                                            animated:YES];
             
-            [self didShowCalloutForAnnotation:annotation];
         }
     }
 }
@@ -712,15 +723,21 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)baseLayersDidFinishLoading
 {
+    self.baseLayersLoaded = YES;
+    
     // Make sure the layers are synced first otherwise,
     //  when we go to display the callout, the graphic will be
     //  nil and the callout will not display!
     [self refreshLayers:[NSSet setWithArray:self.externalLayers]];
-    
     if (MKCoordinateRegionIsValid(self->_mapRegion)) {
-        [self setMapRegion:_mapRegion
-                  animated:NO];
+        [self.mapView zoomToEnvelope:AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(self->_mapRegion, self.mapView.spatialReference)
+                            animated:NO];
+        
+        // Invalidate this after everything we need is loaded since
+        // we should no longer be using it.
+        self->_mapRegion = MKCoordinateRegionInvalid;
     }
+    
     
     [self didFinishLoadingMapView];
 }
@@ -836,6 +853,12 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)mapViewWillDismissCallout:(AGSMapView*)mapView
 {
+    /* This space intentially left blank.
+     Well, not blank but you get the idea.
+     Seriously, there's nothing here.
+     Stop it.
+     Reading more isn't going to change anything.
+     */
 }
 
 - (void)mapViewDidDismissCallout:(AGSMapView*)mapView
@@ -936,7 +959,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             // Check again after we iterate through everything to make sure the state
             // hasn't changed now that we have another layer loaded
             if (layersLoaded) {
-                self.baseLayersLoaded = YES;
                 [self baseLayersDidFinishLoading];
             }
         }
