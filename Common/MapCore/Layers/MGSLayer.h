@@ -27,6 +27,8 @@
 - (void)addAnnotations:(NSOrderedSet*)annotations;
 - (void)addAnnotation:(id<MGSAnnotation>)annotation;
 - (void)addAnnotationsFromArray:(NSArray*)annotations;
+- (void)insertAnnotation:(id<MGSAnnotation>)annotation
+                 atIndex:(NSUInteger)index;
 
 - (void)deleteAnnotations:(NSOrderedSet *)annotations;
 - (void)deleteAnnotation:(id <MGSAnnotation>)annotation;

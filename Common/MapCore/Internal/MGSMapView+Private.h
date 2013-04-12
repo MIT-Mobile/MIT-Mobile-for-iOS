@@ -29,8 +29,8 @@
 - (void)baseLayersDidFinishLoading;
 
 #pragma mark Property Getters
-- (AGSEnvelope*)defaultVisibleArea;
-- (AGSEnvelope*)defaultMaximumEnvelope;
+- (MKCoordinateRegion)defaultVisibleArea;
+- (MKCoordinateRegion)defaultMaximumEnvelope;
 
 #pragma mark Lookup Methods
 - (MGSLayerController*)layerManagerForLayer:(MGSLayer*)layer;
@@ -49,10 +49,6 @@
 #pragma mark AGSMapViewTouchDelegate
 - (BOOL)mapView:(AGSMapView*)mapView shouldProcessClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint;
 - (void)mapView:(AGSMapView *)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics;
-- (void)mapView:(AGSMapView *)mapView didTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics;
-- (void)mapView:(AGSMapView *)mapView didMoveTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics;
-- (void)mapView:(AGSMapView *)mapView didEndTapAndHoldAtPoint:(CGPoint)screen mapPoint:(AGSPoint *)mappoint graphics:(NSDictionary *)graphics;
-- (void)mapViewDidCancelTapAndHold:(AGSMapView *)mapView;
 
 #pragma mark AGSLayerDelegate
 - (void)layer:(AGSLayer *)loadedLayer didInitializeSpatialReferenceStatus:(BOOL)srStatusValid;

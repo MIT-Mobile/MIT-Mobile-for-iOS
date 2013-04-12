@@ -25,8 +25,6 @@
 #pragma mark -
 #pragma mark Application lifecycle
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    mit_logger_init();
-    
     DDLogInfo(@"Setting default app id to '%@'", FacebookAppId);
     [FBSession setDefaultAppID:FacebookAppId];
     

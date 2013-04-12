@@ -1,11 +1,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
+#import "CoreLocation+MITAdditions.h"
+#import "MapKit+MITAdditions.h"
 
 typedef double MGSZoomLevel;
-
-FOUNDATION_EXTERN const CLLocationCoordinate2D CLLocationCoordinate2DInvalid;
-FOUNDATION_EXTERN const MKCoordinateRegion MKCoordinateRegionInvalid;
 
 FOUNDATION_EXPORT MKCoordinateRegion MKCoordinateRegionForMGSAnnotations(NSSet *annotations);
 

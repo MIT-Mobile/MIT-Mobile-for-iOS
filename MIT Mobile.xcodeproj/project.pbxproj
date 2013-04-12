@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
@@ -276,7 +276,6 @@
 		BD9FA7EE1047A05E00BC3C0A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */; };
 		DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DE12901A134B748E00BEBDA2 /* MITLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = DE129019134B748E00BEBDA2 /* MITLogging.m */; };
 		DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DE18F9ED10F19105009A69B9 /* News.xcdatamodeld */; };
 		DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1B4D7110CE17B30073BABC /* MITJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4AB0B310ED5148007476D9 /* NewsStory.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -925,7 +924,6 @@
 		DE0F6B3311109BC500F064D6 /* AboutMITVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutMITVC.m; sourceTree = "<group>"; };
 		DE10571411985D4B0090A505 /* News 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "News 2.xcdatamodel"; sourceTree = "<group>"; };
 		DE129018134B748E00BEBDA2 /* MITLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLogging.h; sourceTree = "<group>"; };
-		DE129019134B748E00BEBDA2 /* MITLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLogging.m; sourceTree = "<group>"; };
 		DE1348F910FFC2CC006FFF33 /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
 		DE1348FA10FFC2CC006FFF33 /* 10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10.png; sourceTree = "<group>"; };
 		DE1348FB10FFC2CC006FFF33 /* 11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 11.png; sourceTree = "<group>"; };
@@ -1279,7 +1277,6 @@
 				2C70B81C170DBFFA00746EB9 /* MITLogFormatter.h */,
 				2C70B81D170DBFFA00746EB9 /* MITLogFormatter.m */,
 				DE129018134B748E00BEBDA2 /* MITLogging.h */,
-				DE129019134B748E00BEBDA2 /* MITLogging.m */,
 				EBF8B37112B581AC00D39AE6 /* MITMailComposeController.h */,
 				EBF8B37212B581AC00D39AE6 /* MITMailComposeController.m */,
 				2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */,
@@ -1592,9 +1589,9 @@
 		2C642D1E1663B6BE0062B00A /* Internal */ = {
 			isa = PBXGroup;
 			children = (
-				2C8F3C1E167FB853005BF07D /* MGSCalloutView.h */,
 				2C70B81F170E0F9400746EB9 /* MGSBootstrapper.h */,
 				2C70B820170E0F9400746EB9 /* MGSBootstrapper.m */,
+				2C8F3C1E167FB853005BF07D /* MGSCalloutView.h */,
 				2C8F3C1F167FB853005BF07D /* MGSCalloutView.m */,
 				2C0CE20A1663FFA80020E70D /* MGSLayerAnnotation.h */,
 				2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */,
@@ -2975,7 +2972,6 @@
 				EB07AD9812B886DF005D6A4C /* MITEventList.m in Sources */,
 				DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */,
 				EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */,
-				DE12901A134B748E00BEBDA2 /* MITLogging.m in Sources */,
 				EBF8B37412B581AC00D39AE6 /* MITMailComposeController.m in Sources */,
 				4463CC9C10D6F4A50048CA83 /* MITMapAnnotationView.m in Sources */,
 				4463D09410D92CB00048CA83 /* MITMapDetailViewController.m in Sources */,

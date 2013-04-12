@@ -21,9 +21,8 @@
 
 @interface MGSLayerController : NSObject
 @property (nonatomic,readonly,strong) MGSLayer *layer;
-@property (nonatomic,weak) MGSMapView *mapView;
-@property (nonatomic,readonly,weak) AGSGraphicsLayer *graphicsLayer;
-@property (nonatomic,readonly) NSSet *allAnnotations;
+@property (nonatomic,readonly,strong) AGSLayer *nativeLayer;
+@property (nonatomic,readonly) NSSet *layerAnnotations;
 
 // The behavior for this property is a bit odd. If the graphics layer
 // has a valid spatial reference, it will be returned by the spatialReference getter,
@@ -32,7 +31,7 @@
 @property (nonatomic,weak) id<MGSLayerControllerDelegate> delegate;
 
 - (id)initWithLayer:(MGSLayer*)layer;
-- (void)syncAnnotations;
+- (void)refresh;
 
 - (MGSLayerAnnotation*)layerAnnotationForGraphic:(AGSGraphic*)graphic;
 - (NSSet*)layerAnnotationsForGraphics:(NSSet*)graphics;

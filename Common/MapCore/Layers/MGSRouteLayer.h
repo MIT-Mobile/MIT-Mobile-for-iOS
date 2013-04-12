@@ -7,11 +7,8 @@
 @property (nonatomic,readonly,weak) id<MGSAnnotation> nextStop;
 @property (nonatomic,readonly,weak) id<MGSAnnotation> previousStop;
 
-@property (nonatomic,assign) CGFloat lineWidth;
-@property (nonatomic,strong) UIColor *lineColor;
-
 @property (nonatomic,readonly,strong) NSArray *pathCoordinates;
-@property (nonatomic,readonly,strong) id<MGSAnnotation> routePath;
+@property (nonatomic,readonly,strong) NSOrderedSet *stops;
 
 @property (nonatomic,assign) BOOL requireIdentification;
 @property (nonatomic,assign) BOOL requireHandicapAccess;

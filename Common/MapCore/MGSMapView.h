@@ -52,10 +52,12 @@
 
 
 #pragma mark Visible Region
-- (void)setMapRegion:(MKCoordinateRegion)mapRegion
-            animated:(BOOL)animated;
 - (void)setCenterCoordinate:(CLLocationCoordinate2D)coordinate
                    animated:(BOOL)animated;
+- (void)setMapRegion:(MKCoordinateRegion)mapRegion
+            animated:(BOOL)animated;
+- (void)setZoomLevel:(MGSZoomLevel)zoomLevel
+            animated:(BOOL)animated;
 
 #pragma mark Misc
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;

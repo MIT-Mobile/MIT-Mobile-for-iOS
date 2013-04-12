@@ -112,9 +112,9 @@
 
 - (BOOL)scrollEnabled
 {
-    // Always NO
+    // Always YES
     // Zoom & Pan disable not currently supported by ArcGIS SDK
-    return NO;
+    return YES;
 }
 
 - (void)setScrollEnabled:(BOOL)scrollEnabled
@@ -243,7 +243,6 @@
                                      animated:animated];
         }
         
-        [self.mapView showCalloutForAnnotation:mapAnnotation];
         self.currentAnnotation = annotation;
 
 

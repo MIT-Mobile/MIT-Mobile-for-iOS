@@ -1,5 +1,7 @@
 #import "CoreLocation+MITAdditions.h"
 
+const CLLocationCoordinate2D CLLocationCoordinate2DInvalid = {.longitude = CGFLOAT_MAX, .latitude = CGFLOAT_MAX};
+
 @implementation CLLocation (MITAdditions)
 
 - (CLLocationDistance)distanceFromCenterOfCampus {
@@ -21,6 +23,7 @@
 
 
 @implementation NSValue (CL_MITAdditions)
+
 + (NSValue *)valueWithCLLocationCoordinate:(CLLocationCoordinate2D)coordinate
 {
     return [NSValue valueWithBytes:(const void*)(&coordinate)
@@ -37,6 +40,7 @@
         return coordinate;
     }
     
-    return CLLocationCoordinate2DMake(CGFLOAT_MAX, CGFLOAT_MAX);
+    return CLLocationCoordinate2DInvalid;
 }
+
 @end
