@@ -47,6 +47,12 @@
     [self dismissModalViewControllerAnimated:YES];
 }
 
+- (void) commitChanges:(id)sender
+{
+    [self dismissModalViewControllerAnimated:YES];
+    NSLog(@"Here are the selected filters :: %@", self.selectedIndexPaths);
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -54,6 +60,7 @@
     self.tableView.rowHeight = 44;
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelPressed:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(commitChanges:)];
 
     if (!self.selectedIndexPaths) {
         self.selectedIndexPaths = [[NSMutableArray alloc] init];
@@ -85,15 +92,19 @@
     
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-        cell.accessoryView.frame = CGRectMake(0, 0, cell.accessoryView.bounds.size.width, cell.accessoryView.bounds.size.height);
-        cell.contentView.frame = CGRectMake(CGRectGetMaxX(cell.accessoryView.frame), 0, cell.contentView.bounds.size.width, cell.contentView.bounds.size.height);
     }
     
     NSDictionary *filterItem = [[self debugData] objectAtIndex:indexPath.row];
     NSString *resourcePath = [NSString stringWithFormat:@"dining/%@", filterItem[@"icon"]];
     UIImage *filterImage = [UIImage imageWithPDFNamed:resourcePath fitSize:CGSizeMake(20, 20)];
     
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    
+    if ([self.selectedIndexPaths containsObject:indexPath]) {
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    } else {
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
+    
     cell.textLabel.text = filterItem[@"title"];
     cell.imageView.image = filterImage;
     
@@ -104,7 +115,13 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if ([self.selectedIndexPaths containsObject:indexPath]) {
+        [self.selectedIndexPaths removeObject:indexPath];
+    } else {
+        [self.selectedIndexPaths addObject:indexPath];
+    }
+    [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 @end
