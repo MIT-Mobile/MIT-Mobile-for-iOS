@@ -7,11 +7,12 @@
 //
 
 #import "DiningMenuFilterViewController.h"
+#import "DiningHallMenuViewController.h"
 #import "UIImage+PDF.h"
 
 @interface DiningMenuFilterViewController ()
 
-@property (nonatomic, strong) NSMutableArray * selectedIndexPaths;
+@property (nonatomic, strong) NSMutableArray * selectedFilters;
 
 @end
 
@@ -19,17 +20,17 @@
 
 - (NSArray *) debugData
 {
-    return @[@{@"icon": @"farm_to_fork.pdf",    @"title" : @"Farm to Fork"},
-             @{@"icon": @"well_being.pdf",      @"title" : @"For Your Well-Being"},
-             @{@"icon": @"gluten_free.pdf",     @"title" : @"Gluten Free"},
-             @{@"icon": @"halal.pdf",           @"title" : @"Halal"},
-             @{@"icon": @"humane.pdf",          @"title" : @"Humane"},
-             @{@"icon": @"in_balance.pdf",      @"title" : @"In Balance"},
-             @{@"icon": @"kosher.pdf",          @"title" : @"Kosher"},
-             @{@"icon": @"organic.pdf",         @"title" : @"Organic"},
-             @{@"icon": @"seafood_watch.pdf",   @"title" : @"Seafood Watch"},
-             @{@"icon": @"vegan.pdf",           @"title" : @"Vegan"},
-             @{@"icon": @"vegetarian.pdf",      @"title" : @"Vegetarian"}];
+    return @[@{@"id": @"farm_to_fork",    @"title" : @"Farm to Fork"},
+             @{@"id": @"well_being",      @"title" : @"For Your Well-Being"},
+             @{@"id": @"gluten_free",     @"title" : @"Gluten Free"},
+             @{@"id": @"halal",           @"title" : @"Halal"},
+             @{@"id": @"humane",          @"title" : @"Humane"},
+             @{@"id": @"in_balance",      @"title" : @"In Balance"},
+             @{@"id": @"kosher",          @"title" : @"Kosher"},
+             @{@"id": @"organic",         @"title" : @"Organic"},
+             @{@"id": @"seafood_watch",   @"title" : @"Seafood Watch"},
+             @{@"id": @"vegan",           @"title" : @"Vegan"},
+             @{@"id": @"vegetarian",      @"title" : @"Vegetarian"}];
 }
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -42,6 +43,11 @@
     return self;
 }
 
+- (void) setFilters:(NSArray *)filters
+{
+    self.selectedFilters = [filters mutableCopy];
+}
+
 -(void) cancelPressed:(id)sender
 {
     [self dismissModalViewControllerAnimated:YES];
@@ -49,22 +55,28 @@
 
 - (void) commitChanges:(id)sender
 {
+    if ([self.delegate respondsToSelector:@selector(applyFilters:)]) {
+        [self.delegate applyFilters:self.selectedFilters];
+    }
+    
     [self dismissModalViewControllerAnimated:YES];
-    NSLog(@"Here are the selected filters :: %@", self.selectedIndexPaths);
+    NSLog(@"Here are the selected filters :: %@", self.selectedFilters);
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
+    self.title = @"Filters";
     self.tableView.rowHeight = 44;
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelPressed:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(commitChanges:)];
 
-    if (!self.selectedIndexPaths) {
-        self.selectedIndexPaths = [[NSMutableArray alloc] init];
+    if (!self.selectedFilters) {
+        self.selectedFilters = [[NSMutableArray alloc] init];
     }
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -95,11 +107,11 @@
     }
     
     NSDictionary *filterItem = [[self debugData] objectAtIndex:indexPath.row];
-    NSString *resourcePath = [NSString stringWithFormat:@"dining/%@", filterItem[@"icon"]];
+    NSString *resourcePath = [NSString stringWithFormat:@"dining/%@.pdf", filterItem[@"id"]];
     UIImage *filterImage = [UIImage imageWithPDFNamed:resourcePath fitSize:CGSizeMake(20, 20)];
     
     
-    if ([self.selectedIndexPaths containsObject:indexPath]) {
+    if ([self.selectedFilters containsObject:filterItem[@"id"]]) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -116,10 +128,11 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if ([self.selectedIndexPaths containsObject:indexPath]) {
-        [self.selectedIndexPaths removeObject:indexPath];
+    NSDictionary *filterItem = [[self debugData] objectAtIndex:indexPath.row];
+    if ([self.selectedFilters containsObject:filterItem[@"id"]]) {
+        [self.selectedFilters removeObject:filterItem[@"id"]];
     } else {
-        [self.selectedIndexPaths addObject:indexPath];
+        [self.selectedFilters addObject:filterItem[@"id"]];
     }
     [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
 }

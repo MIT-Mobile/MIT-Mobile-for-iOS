@@ -13,7 +13,7 @@
 
 @property (nonatomic, strong) UIView * datePickerView;
 @property (nonatomic, strong) UIView * filterView;
-@property (nonatomic, strong) UIView * dateTimeView;
+@property (nonatomic, strong) UIView * mealTimeView;
 
 @end
 
@@ -53,10 +53,10 @@
         self.meal = [self debugMeal];
         
         self.datePickerView = [self viewForDateAndArrows];
-        self.dateTimeView = [self viewForMealTime];
+        self.mealTimeView = [self viewForMealTime];
         
         [self addSubview:self.datePickerView];
-        [self addSubview:self.dateTimeView];
+        [self addSubview:self.mealTimeView];
         
     }
     return self;
@@ -66,16 +66,47 @@
 {
     _currentFilters = currentFilters;
     [self.filterView removeFromSuperview];
-    self.filterView = [self viewForEnabledFilters];
-    [self addSubview:self.filterView];
+    if ([self.currentFilters count]) {
+        self.filterView = [self viewForEnabledFilters];
+        [self addSubview:self.filterView];
+    }
 }
 
 
 
 - (UIView *) viewForDateAndArrows
 {
+    CGFloat rowHeight = 30;
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), rowHeight)];
+    view.backgroundColor = [UIColor darkGrayColor];
     
-    return nil;
+    UIImage *arrow = [UIImage imageNamed:@"global/action-arrow-white.png"];
+    
+    UIButton * leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    leftButton.imageView.transform = CGAffineTransformMakeRotation(M_PI); // flip the image view
+    [leftButton setImage:arrow forState:UIControlStateNormal];
+    leftButton.frame = CGRectMake(0, 0, 40, 50);
+    leftButton.center = CGPointMake(20, rowHeight * 0.5);
+    
+    
+    UIButton * rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [rightButton setImage:arrow forState:UIControlStateNormal];
+    rightButton.frame = CGRectMake(0, 0, 40, 50);
+    rightButton.center = CGPointMake(CGRectGetWidth(view.bounds) - 20, rowHeight * 0.5);
+    
+    CGFloat hPadding = 28.0;
+    UILabel * label = [[UILabel alloc] initWithFrame:CGRectMake(hPadding, 9, CGRectGetWidth(view.bounds) - (2 * hPadding), 12)];
+    label.text = @"Today's Dinner, March 1";
+    label.textAlignment = NSTextAlignmentCenter;
+    label.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+    label.textColor = [UIColor whiteColor];
+    label.backgroundColor = [UIColor clearColor];
+    
+    [view addSubview:label];
+    [view addSubview:leftButton];
+    [view addSubview:rightButton];
+    
+    return view;
 }
 
 - (UIView *) viewForEnabledFilters
@@ -137,16 +168,20 @@
     // need to re-align stack of views
     //      datePickerview
     //      filterView
-    //      meal view
-    
-//    self.datePickerView setFrame:
-    CGRect frame = self.filterView.frame;
+    //      meal/time view
+
+    CGRect frame = self.datePickerView.frame;
     frame.origin = CGPointMake(0, 0);
+    self.datePickerView.frame = frame;
+    
+    
+    frame = self.filterView.frame;
+    frame.origin = CGPointMake(0, CGRectGetMaxY(self.datePickerView.frame));
     self.filterView.frame=frame;
     
-    frame = self.dateTimeView.frame;
-    frame.origin = CGPointMake(0, CGRectGetMaxY(self.filterView.frame));
-    self.dateTimeView.frame = frame;
+    frame = self.mealTimeView.frame;
+    frame.origin = ([self.currentFilters count]) ? CGPointMake(0, CGRectGetMaxY(self.filterView.frame)) : CGPointMake(0, CGRectGetMaxY(self.datePickerView.frame)); //if there are no filters have only two bars
+    self.mealTimeView.frame = frame;
     
 }
 

@@ -16,6 +16,8 @@
 
 @interface DiningHallMenuViewController ()
 
+@property (nonatomic, strong) NSArray * filtersApplied;
+
 @end
 
 @implementation DiningHallMenuViewController
@@ -80,11 +82,20 @@
 - (void) filterMenu:(id)sender
 {
     DiningMenuFilterViewController *filterVC = [[DiningMenuFilterViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    [filterVC setFilters:self.filtersApplied];
+    filterVC.delegate = self;
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:filterVC];
     navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    navController.navigationBar.barStyle = UIBarStyleBlack;
     
     [self presentViewController:navController animated:YES completion:NULL];
+}
+
+- (void) applyFilters:(NSArray *)filters
+{
+    self.filtersApplied = filters;
+    [self.tableView reloadData];
 }
 
 #pragma mark - Table view data source
@@ -126,7 +137,7 @@
 {
     if (section == 0) {
         DiningHallMenuSectionHeaderView *header = [[DiningHallMenuSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 56)];
-        header.currentFilters = @[@"vegan", @"farm_to_fork", @"kosher", @"halal"];
+        header.currentFilters = self.filtersApplied;
         return header;
     }
     return nil;
@@ -135,7 +146,12 @@
 -(CGFloat)tableView:(UITableView *) tableView heightForHeaderInSection:(NSInteger)section
 {
     if (section == 0) {
-        return 56;
+        CGFloat height = 56;
+        if ([self.filtersApplied count] > 0) {
+            height+=30;
+        }
+        
+        return height;
     }
     return 0;
 }
