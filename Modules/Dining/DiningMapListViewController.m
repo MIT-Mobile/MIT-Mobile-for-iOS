@@ -21,6 +21,12 @@
 
 @implementation DiningMapListViewController
 
+- (NSString *) debugAnnouncement
+{
+//    return nil;
+    return @"ENROLL in the spring 2013 Meal Plan Program today! Or else you should be worried.";
+}
+
 - (NSArray *) debugHouseDiningData
 {
     return [NSArray arrayWithObjects:@"Baker", @"The Howard Dining Hall", @"McCormick", @"Next", @"Simmons", nil];
@@ -31,11 +37,22 @@
     return [NSArray arrayWithObjects:@"Anna's Taqueria", @"Cafe Spice", @"Cambridge Grill", @"Dunkin Donuts", @"LaVerde's Market", nil];
 }
 
+- (NSArray *) debugResourceData
+{
+    return @[@"Meal Plan Balance", @"Comments for MIT Dining", @"Food to Go", @"Full MIT Dining Website"];
+}
+
 - (NSArray *) currentDiningData
 {
     NSArray *data = ([self.segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
     return data;
 }
+
+- (UIView *) chevronAccessoryView
+{
+    return [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow.png"]];
+}
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -57,6 +74,8 @@
     
     [self.segmentControl addTarget:self.listView action:@selector(reloadData) forControlEvents:UIControlEventValueChanged];
     [self styleSegmentControl];
+    
+    self.listView.backgroundView = nil;
     
     [self layoutListState];
 }
@@ -132,9 +151,23 @@
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSArray *data = ([self.segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
-    
-    return [data count];
+    NSString *announcement = [self debugAnnouncement];
+    if (announcement && section == 0) {
+        return 1;
+    } else if((!announcement && section == 0) || (announcement && section == 1)) {
+        return [[self currentDiningData] count];
+    } else if ((!announcement && section == 1)|| section == 2) {
+        return [[self debugResourceData] count];
+    }
+    return 0;   
+}
+
+- (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
+{
+    if ([self debugAnnouncement]) {
+        return 3;
+    }
+    return 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -144,18 +177,49 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"reuseIdentifier"];
     }
     
-    cell.textLabel.text = [[self currentDiningData] objectAtIndex:indexPath.row];
+    NSString *announcement = [self debugAnnouncement];
+    if (announcement && indexPath.section == 0) {
+        cell.textLabel.text = announcement;
+        cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
+        cell.accessoryView = [self chevronAccessoryView];
+    } else if((!announcement && indexPath.section == 0) || (announcement && indexPath.section == 1)) {
+        cell.textLabel.text = [[self currentDiningData] objectAtIndex:indexPath.row];
+    } else if ((!announcement && indexPath.section == 1)|| indexPath.section == 2) {
+        cell.textLabel.text = [[self debugResourceData] objectAtIndex:indexPath.row];
+    }
     
     return cell;
+}
+
+- (NSString *) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSString *announcement = [self debugAnnouncement];
+    if (announcement && section == 0) {
+        return nil;
+    } else if((!announcement && section == 0) || (announcement && section == 1)) {
+        return [self.segmentControl titleForSegmentAtIndex:self.segmentControl.selectedSegmentIndex];
+    } else if ((!announcement && section == 1)|| section == 2) {
+        return @"Resources";
+    }
+    
+    return nil;
 }
 
 #pragma mark - UITableViewDelegate
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
-    detailVC.title = [self currentDiningData][indexPath.row];
-    [self.navigationController pushViewController:detailVC animated:YES];
+
+    NSString *announcement = [self debugAnnouncement];
+    if (announcement && indexPath.section == 0) {
+        
+    } else if((!announcement && indexPath.section == 0) || (announcement && indexPath.section == 1)) {
+        DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
+        detailVC.title = [self currentDiningData][indexPath.row];
+        [self.navigationController pushViewController:detailVC animated:YES];
+    } else if ((!announcement && indexPath.section == 1)|| indexPath.section == 2) {
+        
+    }
     
 }
 
