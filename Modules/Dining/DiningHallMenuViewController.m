@@ -12,6 +12,7 @@
 #import "DiningHallMenuHeaderView.h"
 #import "DiningHallMenuFooterView.h"
 #import "DiningHallMenuItemTableCell.h"
+#import "DiningHallMenuSectionHeaderView.h"
 
 @interface DiningHallMenuViewController ()
 
@@ -119,6 +120,24 @@
     cell.dietaryTypes       = itemDict[@"filters"];
     
     return cell;
+}
+
+- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    if (section == 0) {
+        DiningHallMenuSectionHeaderView *header = [[DiningHallMenuSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 56)];
+        header.currentFilters = @[@"vegan", @"farm_to_fork", @"kosher", @"halal"];
+        return header;
+    }
+    return nil;
+}
+
+-(CGFloat)tableView:(UITableView *) tableView heightForHeaderInSection:(NSInteger)section
+{
+    if (section == 0) {
+        return 56;
+    }
+    return 0;
 }
 
 #pragma mark - Table view delegate

@@ -227,6 +227,7 @@
 		48EDC97217175B4000376BCF /* UIView+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96F17175B4000376BCF /* UIView+Image.m */; };
 		48EDC97417175C3100376BCF /* dining in Resources */ = {isa = PBXBuildFile; fileRef = 48EDC97317175C3100376BCF /* dining */; };
 		48EDC995171764BD00376BCF /* DiningMenuFilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC994171764BD00376BCF /* DiningMenuFilterViewController.m */; };
+		48EDC99B1718652900376BCF /* DiningHallMenuSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC99A1718652800376BCF /* DiningHallMenuSectionHeaderView.m */; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -815,6 +816,8 @@
 		48EDC97317175C3100376BCF /* dining */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dining; path = Resources/dining; sourceTree = "<group>"; };
 		48EDC993171764BD00376BCF /* DiningMenuFilterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningMenuFilterViewController.h; path = Dining/DiningMenuFilterViewController.h; sourceTree = "<group>"; };
 		48EDC994171764BD00376BCF /* DiningMenuFilterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningMenuFilterViewController.m; path = Dining/DiningMenuFilterViewController.m; sourceTree = "<group>"; };
+		48EDC9991718652800376BCF /* DiningHallMenuSectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuSectionHeaderView.h; path = Dining/DiningHallMenuSectionHeaderView.h; sourceTree = "<group>"; };
+		48EDC99A1718652800376BCF /* DiningHallMenuSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuSectionHeaderView.m; path = Dining/DiningHallMenuSectionHeaderView.m; sourceTree = "<group>"; };
 		4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAskUsViewController.h; sourceTree = "<group>"; };
 		4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAskUsViewController.m; sourceTree = "<group>"; };
 		4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryEmailFormViewController.h; sourceTree = "<group>"; };
@@ -1962,6 +1965,8 @@
 			children = (
 				48A6E4D9170B9423004DED46 /* DiningHallMenuHeaderView.h */,
 				48A6E4DA170B9423004DED46 /* DiningHallMenuHeaderView.m */,
+				48EDC9991718652800376BCF /* DiningHallMenuSectionHeaderView.h */,
+				48EDC99A1718652800376BCF /* DiningHallMenuSectionHeaderView.m */,
 				486B1E6E170E24C900A75563 /* DiningHallMenuFooterView.h */,
 				486B1E6F170E24C900A75563 /* DiningHallMenuFooterView.m */,
 				48B4ADE21713572300EF426F /* DiningHallMenuCompareView.h */,
@@ -3220,6 +3225,7 @@
 				48EDC97117175B4000376BCF /* PDFView.m in Sources */,
 				48EDC97217175B4000376BCF /* UIView+Image.m in Sources */,
 				48EDC995171764BD00376BCF /* DiningMenuFilterViewController.m in Sources */,
+				48EDC99B1718652900376BCF /* DiningHallMenuSectionHeaderView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
