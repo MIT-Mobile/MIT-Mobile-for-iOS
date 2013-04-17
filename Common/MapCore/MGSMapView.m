@@ -409,7 +409,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 #pragma mark Callout Handling
 - (BOOL)isPresentingCallout
 {
-    return (self.calloutAnnotation && self.mapView.callout.representedObject);
+    return (self.calloutAnnotation != nil);
 }
 
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
@@ -432,12 +432,9 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             MGSLayer* layer = [self layerContainingAnnotation:annotation];
             MGSLayerController* manager = [self layerManagerForLayer:layer];
             AGSGraphic* graphic = [[manager layerAnnotationForAnnotation:annotation] graphic];
-            UIView* customView = [self calloutViewForAnnotation:annotation];
             
             if (graphic == nil) {
                 return;
-            } else if (customView) {
-                self.mapView.callout.customView = customView;
             } else if (graphic.infoTemplateDelegate == nil) {
                 MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
                 self.mapView.callout.title = safeAnnotation.title;
@@ -449,30 +446,19 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             
             [self willShowCalloutForAnnotation:annotation];
             self.mapView.callout.delegate = self;
+
+            [self.mapView centerAtPoint:graphic.geometry.envelope.center
+                               animated:animated];
             
-            [UIView animateWithDuration:0.5
-                                  delay:0
-                                options:(UIViewAnimationOptionOverrideInheritedCurve |
-                                         UIViewAnimationOptionOverrideInheritedDuration |
-                                         UIViewAnimationOptionAllowAnimatedContent |
-                                         UIViewAnimationOptionBeginFromCurrentState)
-                             animations:^{
-                                 if (recenter) {
-                                     [self.mapView centerAtPoint:graphic.geometry.envelope.center
-                                                        animated:animated];
-                                 }
-                             }
-             
-                             completion:^(BOOL finished) {
-                                 if (finished) {
-                                     [self.mapView.callout showCalloutAtPoint:graphic.geometry.envelope.center
-                                                                   forGraphic:graphic
-                                                                     animated:animated];
-                                     [self didShowCalloutForAnnotation:annotation];
-                                 }
-                             }]; 
+            while (self.mapView.animating) {
+                [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
+            }
             
-            
+            [self.mapView.callout showCalloutAtPoint:graphic.geometry.envelope.center
+                                          forGraphic:graphic
+                                            animated:animated];
+            [self didShowCalloutForAnnotation:annotation];
+                            
         }
     }
 }
@@ -916,6 +902,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                 MGSLayerController *layerManager = [self layerManagerForLayer:layer];
                 id<MGSAnnotation> annotation = [layerManager layerAnnotationForGraphic:graphic].annotation;
                 
+                [self.mapView centerAtPoint:graphic.geometry.envelope.center
+                                   animated:YES];
                 [self showCalloutForAnnotation:annotation];
                 (*stop) = YES;
             }
@@ -1027,13 +1015,15 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     MGSLayerController* manager = [self layerManagerForLayer:myLayer];
     id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
     
-    return [self calloutViewForAnnotation:annotation];
+    UIView *customView = [self calloutViewForAnnotation:annotation];
+    [customView sizeToFit];
+    return customView;
 }
 
 #pragma mark --MGSLayerManagerDelegate
 - (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager
 {
-    if (self.pendingCalloutAnnotation) {
+    if (self.baseLayersLoaded && self.pendingCalloutAnnotation) {
         if ([layerManager.layer.annotations containsObject:self.pendingCalloutAnnotation]) {
             [self showCalloutForAnnotation:self.pendingCalloutAnnotation];
             self.pendingCalloutAnnotation = nil;

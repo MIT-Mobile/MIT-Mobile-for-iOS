@@ -20,7 +20,8 @@ static const CGFloat kSubTitleFontSize = 12;
 
 - (id)initWithAnnotationView:(MITMapAnnotationView *)annotationView mapView:(MITMapView*)mapView
 {
-	self = [super initWithFrame:CGRectMake(10, 150, 275, 125)];
+	self = [super init];
+    
 	if (self) {
 		self.mapView = mapView;
 		self.annotationView = annotationView;
