@@ -236,7 +236,7 @@
 
 - (void)refreshLayers:(NSSet*)layers
 {
-    if (self.mapView.spatialReference) {
+    if (self.isBaseLayersLoaded) {
         NSArray *sortedArrays = [[layers allObjects] sortedArrayUsingComparator:^NSComparisonResult(MGSLayer *layer1, MGSLayer *layer2) {
             NSUInteger index1 = [self.externalLayers indexOfObject:layer1];
             NSUInteger index2 = [self.externalLayers indexOfObject:layer2];
@@ -424,8 +424,22 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                         recenter:(BOOL)recenter
                         animated:(BOOL)animated
 {
-    self.pendingCalloutAnnotation = annotation;
-    [self refreshLayer:[self layerContainingAnnotation:annotation]];
+    
+    self.pendingCalloutLayer = [self layerContainingAnnotation:annotation];
+    
+    __weak MGSMapView *w_self = self;
+    if (self.pendingCalloutLayer) {
+        self.pendingCalloutBlock = ^{
+            [w_self showPendingCalloutForAnnotation:annotation
+                                       withRecenter:recenter
+                                           animated:animated];
+            
+            w_self.pendingCalloutBlock = nil;
+            w_self.pendingCalloutLayer = nil;
+        };
+        
+        [self refreshLayer:self.pendingCalloutLayer];
+    }
 }
 
 - (void)dismissCallout
@@ -718,6 +732,49 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     return MKCoordinateRegionFromAGSEnvelope(envelope);
 }
 
+#pragma mark ArcGIS Callout
+- (void)showPendingCalloutForAnnotation:(id<MGSAnnotation>)annotation
+                           withRecenter:(BOOL)recenter
+                               animated:(BOOL)animated
+{
+    if ([self shouldShowCalloutForAnnotation:annotation]) {
+        [self willShowCalloutForAnnotation:annotation];
+        
+        MGSLayer* layer = [self layerContainingAnnotation:annotation];
+        MGSLayerController* manager = [self layerManagerForLayer:layer];
+        AGSGraphic* graphic = [[manager layerAnnotationForAnnotation:annotation] graphic];
+        
+        if (graphic == nil) {
+            return;
+        } else if (graphic.infoTemplateDelegate == nil) {
+            UIView *view = [self calloutViewForAnnotation:annotation];
+            
+            if (view == nil) {
+                MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+                self.mapView.callout.title = safeAnnotation.title;
+                self.mapView.callout.detail = safeAnnotation.detail;
+                self.mapView.callout.image = safeAnnotation.calloutImage;
+            }
+            
+            [view sizeToFit];
+            self.mapView.callout.customView = view;
+        }
+        
+        self.calloutAnnotation = annotation;
+        
+        [self willShowCalloutForAnnotation:annotation];
+        self.mapView.callout.delegate = self;
+        
+        
+        [self.mapView.callout showCalloutAtPoint:nil
+                                      forGraphic:graphic
+                                        animated:animated];
+        
+        [self.mapView centerAtPoint:graphic.geometry.envelope.center
+                           animated:animated];
+        [self didShowCalloutForAnnotation:annotation];
+    }
+}
 
 #pragma mark Lookup Methods
 - (MGSLayerController*)layerManagerForLayer:(MGSLayer*)layer
@@ -908,8 +965,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             // Check again after we iterate through everything to make sure the state
             // hasn't changed now that we have another layer loaded
             if (layersLoaded) {
-                [self baseLayersDidFinishLoading];
                 self.baseLayersLoaded = YES;
+                [self baseLayersDidFinishLoading];
             }
         }
     }
@@ -985,53 +1042,9 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 #pragma mark --MGSLayerManagerDelegate
 - (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager
 {
-    if (self.isBaseLayersLoaded && self.pendingCalloutAnnotation) {
-        id<MGSAnnotation> annotation = self.pendingCalloutAnnotation;
-        MGSLayer* layer = [self layerContainingAnnotation:annotation];
-        
-        if ([layerManager.layer isEqual:layer]) {
-            if (self.isPresentingCallout) {
-                [self dismissCallout];
-            }
-            
-            if ([self shouldShowCalloutForAnnotation:annotation]) {
-                [self willShowCalloutForAnnotation:annotation];
-                
-                AGSGraphic* graphic = [[layerManager layerAnnotationForAnnotation:annotation] graphic];
-                
-                if (graphic == nil) {
-                    return;
-                } else if (graphic.infoTemplateDelegate == nil) {
-                    UIView *view = [self calloutViewForAnnotation:annotation];
-                    
-                    if (view == nil) {
-                        MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-                        self.mapView.callout.title = safeAnnotation.title;
-                        self.mapView.callout.detail = safeAnnotation.detail;
-                        self.mapView.callout.image = safeAnnotation.calloutImage;
-                    }
-                    
-                    [view sizeToFit];
-                    self.mapView.callout.customView = view;
-                }
-                
-                self.calloutAnnotation = annotation;
-                self.pendingCalloutAnnotation = nil;
-                
-                [self willShowCalloutForAnnotation:annotation];
-                self.mapView.callout.delegate = self;
-                
-                
-                
-                [self.mapView centerAtPoint:graphic.geometry.envelope.center
-                                   animated:YES];
-                
-                [self.mapView.callout showCalloutAtPoint:nil
-                                              forGraphic:graphic
-                                                animated:YES];
-                
-                [self didShowCalloutForAnnotation:annotation];
-            }
+    if (self.isBaseLayersLoaded && self.pendingCalloutBlock) {
+        if ([self.pendingCalloutLayer isEqual:layerManager.layer]) {
+            self.pendingCalloutBlock();
         }
     }
 }

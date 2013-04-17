@@ -23,7 +23,8 @@
 @property(nonatomic,strong) NSMutableSet* externalLayerManagers;
 @property(nonatomic,strong) MGSLayer* defaultLayer;
 
-@property(nonatomic, strong) id <MGSAnnotation> pendingCalloutAnnotation;
+@property(nonatomic, copy) dispatch_block_t pendingCalloutBlock;
+@property(nonatomic, weak) MGSLayer* pendingCalloutLayer;
 @property(nonatomic, strong) id <MGSAnnotation> calloutAnnotation;
 
 #pragma mark Initialization

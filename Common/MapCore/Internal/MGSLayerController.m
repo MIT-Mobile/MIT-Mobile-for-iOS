@@ -12,6 +12,8 @@
 @property(strong) NSSet *layerAnnotations;
 @property(copy) NSOrderedSet *currentAnnotations;
 @property BOOL layerNeedsRefresh;
+
+@property dispatch_queue_t refreshQueue;
 @property dispatch_semaphore_t refreshSemaphore;
 
 // Tracks the annotations which are created from pre-existing graphics
@@ -39,6 +41,8 @@
         
         self.layer = layer;
         self.refreshSemaphore = dispatch_semaphore_create(1);
+        self.refreshQueue = dispatch_queue_create(NULL, NULL);
+        
         if (layer) {
             [self.layer addObserver:self
                          forKeyPath:@"annotations"
@@ -52,22 +56,16 @@
     return self;
 }
 
-- (id)initWithNativeLayer:(AGSLayer*)nativeLayer
-{
-    self = [self initWithLayer:nil];
-    
-    if (self) {
-        self.nativeLayer = nativeLayer;
-    }
-    
-    return self;
-}
-
 - (void)dealloc
 {
     if (self.refreshSemaphore) {
         dispatch_release(self.refreshSemaphore);
         self.refreshSemaphore = NULL;
+    }
+    
+    if (self.refreshQueue) {
+        dispatch_release(self.refreshQueue);
+        self.refreshQueue = NULL;
     }
     
     [self.layer removeObserver:self
@@ -198,13 +196,7 @@
             __weak AGSGraphicsLayer *graphicsLayer = (AGSGraphicsLayer*)self.nativeLayer;
             self.layerNeedsRefresh = NO;
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                DDLogVerbose(@"Beginning layer sync: '%@' [New:%lu,Old:%lu]",
-                             self.layer.name,
-                             (unsigned long)[newAnnotations count],
-                             (unsigned long)[oldAnnotations count]);
-                
-                
+            dispatch_async(self.refreshQueue, ^{
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     if ([self.delegate respondsToSelector:@selector(layerManagerWillSynchronizeAnnotations:)]) {
                         [self.delegate layerManagerWillSynchronizeAnnotations:self];
@@ -216,6 +208,11 @@
                                            ([newAnnotations isEqual:oldAnnotations] == NO));
                 
                 if (annotationsUpdated) {
+                    DDLogVerbose(@"Beginning layer sync: '%@' [New:%lu,Old:%lu]",
+                                 self.layer.name,
+                                 (unsigned long)[newAnnotations count],
+                                 (unsigned long)[oldAnnotations count]);
+                    
                     NSArray *annotations = [newAnnotations sortedArrayUsingComparator:^NSComparisonResult(id<MGSAnnotation> obj1, id<MGSAnnotation> obj2) {
                         MGSSafeAnnotation *annotation1 = [[MGSSafeAnnotation alloc] initWithAnnotation:obj1];
                         MGSSafeAnnotation *annotation2 = [[MGSSafeAnnotation alloc] initWithAnnotation:obj2];
