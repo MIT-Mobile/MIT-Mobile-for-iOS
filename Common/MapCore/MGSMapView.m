@@ -14,6 +14,7 @@
 #import "MGSSafeAnnotation.h"
 #import "MGSLayerAnnotation.h"
 #import "MGSBootstrapper.h"
+#import "MGSErrorView.h"
 
 
 @implementation MGSMapView
@@ -42,7 +43,7 @@
     self = [super initWithCoder:aDecoder];
     
     if (self) {
-        [self commonInit];
+        [self _init];
     }
     
     return self;
@@ -53,7 +54,7 @@
     self = [super initWithFrame:frame];
     
     if (self) {
-        [self commonInit];
+        [self _init];
     }
     
     return self;
@@ -648,7 +649,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 #pragma mark Properties
 
 #pragma mark Initialization
-- (void)commonInit
+- (void)_init
 {
     // Use direct ivar access so we don't call the mutator
     self->_mapRegion = MKCoordinateRegionInvalid;
@@ -680,14 +681,17 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             self.mapView = view;
         }
         
+        {
+            MGSErrorView *loadingView = [[MGSErrorView alloc] initWithFrame:mainBounds];
+            [self addSubview:loadingView];
+            self.loadingView = loadingView;
+        }
+        
         MGSBootstrapper *bootstrapper = [MGSBootstrapper sharedBootstrapper];
         [bootstrapper requestBootstrap:^(NSDictionary *content, NSError *error) {
             if (error) {
                 DDLogError(@"failed to load basemap definitions: %@", error);
-                UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Map Error"
-                                                                    message:@"Failed to initialize the map."
-                                                                   delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
-                [alertView show];
+                self.loadingView.error = error;
             } else if ([content isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* response = (NSDictionary*) content;
                 self.baseMapGroups = response[@"basemaps"];
@@ -818,6 +822,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     MKCoordinateRegion visibleRegion = [self defaultVisibleArea];
     [mapView zoomToEnvelope:AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(visibleRegion, mapView.spatialReference)
                    animated:NO];
+    
+    [self.loadingView removeFromSuperview];
 }
 
 - (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForGraphic:(AGSGraphic*)graphic

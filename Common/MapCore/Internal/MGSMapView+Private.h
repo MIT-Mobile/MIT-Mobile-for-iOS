@@ -6,11 +6,13 @@
 @class AGSGraphic;
 @class AGSLocationDisplay;
 @class MGSLayer;
+@class MGSErrorView;
 
 @protocol MGSAnnotation;
 
 @interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate, AGSInfoTemplateDelegate, MGSLayerControllerDelegate>
 #pragma mark Properties
+@property(nonatomic,weak) MGSErrorView* loadingView;
 @property(nonatomic,weak) AGSMapView* mapView;
 
 @property(nonatomic,assign,getter=isBaseLayersLoaded) BOOL baseLayersLoaded;
@@ -25,7 +27,7 @@
 @property(nonatomic, strong) id <MGSAnnotation> calloutAnnotation;
 
 #pragma mark Initialization
-- (void)commonInit;
+- (void)_init;
 - (void)baseLayersDidFinishLoading;
 
 #pragma mark Property Getters
