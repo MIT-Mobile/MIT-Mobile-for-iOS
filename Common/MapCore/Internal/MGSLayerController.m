@@ -12,7 +12,7 @@
 @property(strong) NSSet *layerAnnotations;
 @property(copy) NSOrderedSet *currentAnnotations;
 @property BOOL layerNeedsRefresh;
-@property(getter=isSynchronizing) BOOL synchronizing;
+@property dispatch_semaphore_t refreshSemaphore;
 
 // Tracks the annotations which are created from pre-existing graphics
 // in the graphics layer. An example of this would be a feature layer
@@ -38,7 +38,7 @@
         self.featureGraphics = [NSSet set];
         
         self.layer = layer;
-        self.layerNeedsRefresh = YES;
+        self.refreshSemaphore = dispatch_semaphore_create(1);
         if (layer) {
             [self.layer addObserver:self
                          forKeyPath:@"annotations"
@@ -58,7 +58,6 @@
     
     if (self) {
         self.nativeLayer = nativeLayer;
-        self.layerNeedsRefresh = YES;
     }
     
     return self;
@@ -66,6 +65,11 @@
 
 - (void)dealloc
 {
+    if (self.refreshSemaphore) {
+        dispatch_release(self.refreshSemaphore);
+        self.refreshSemaphore = NULL;
+    }
+    
     [self.layer removeObserver:self
                     forKeyPath:@"annotations"];
 }
@@ -196,12 +200,11 @@
     } else if (!annotationsUpdated) {
         return;
     } else {
-        if (!(self.isSynchronizing)) {
-            self.synchronizing = YES;
+        if (!dispatch_semaphore_wait(self.refreshSemaphore, DISPATCH_TIME_NOW)) {
             __weak AGSGraphicsLayer *graphicsLayer = (AGSGraphicsLayer*)self.nativeLayer;
-                
+            self.layerNeedsRefresh = NO;
+            
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                self.layerNeedsRefresh = NO;
                 DDLogVerbose(@"Beginning layer sync: '%@' [New:%lu,Old:%lu]",
                              self.layer.name,
                              (unsigned long)[newAnnotations count],
@@ -276,8 +279,10 @@
                     if ([self.delegate respondsToSelector:@selector(layerManagerDidSynchronizeAnnotations:)]) {
                         [self.delegate layerManagerDidSynchronizeAnnotations:self];
                     }
-                    
-                    self.synchronizing = NO;
+                });
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    dispatch_semaphore_signal(self.refreshSemaphore);
                     if (self.layerNeedsRefresh) {
                         [self refresh];
                     }
