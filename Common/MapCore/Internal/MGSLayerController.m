@@ -205,7 +205,7 @@
                 
                 BOOL annotationsUpdated = (([newAnnotations count] ||
                                             [oldAnnotations count]) &&
-                                           ([newAnnotations isEqual:oldAnnotations] == NO));
+                                           ([[oldAnnotations set] isEqualToSet:[newAnnotations set]] == NO));
                 
                 if (annotationsUpdated) {
                     DDLogVerbose(@"Beginning layer sync: '%@' [New:%lu,Old:%lu]",
@@ -266,19 +266,20 @@
                     }
                     
                     dispatch_sync(dispatch_get_main_queue(), ^{
+                        self.currentAnnotations = newAnnotations;
                         self.layerAnnotations = layerAnnotations;
                         
                         [graphicsLayer removeAllGraphics];
                         [graphicsLayer addGraphics:graphics];
                         [graphicsLayer refresh];
-                        
-                        if ([self.delegate respondsToSelector:@selector(layerManagerDidSynchronizeAnnotations:)]) {
-                            [self.delegate layerManagerDidSynchronizeAnnotations:self];
-                        }
                     });
                 }
                 
                 dispatch_sync(dispatch_get_main_queue(), ^{
+                    if ([self.delegate respondsToSelector:@selector(layerManagerDidSynchronizeAnnotations:)]) {
+                        [self.delegate layerManagerDidSynchronizeAnnotations:self];
+                    }
+                    
                     dispatch_semaphore_signal(self.refreshSemaphore);
                     if (self.layerNeedsRefresh) {
                         [self refresh];
