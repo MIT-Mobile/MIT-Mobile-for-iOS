@@ -436,10 +436,17 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             if (graphic == nil) {
                 return;
             } else if (graphic.infoTemplateDelegate == nil) {
-                MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-                self.mapView.callout.title = safeAnnotation.title;
-                self.mapView.callout.detail = safeAnnotation.detail;
-                self.mapView.callout.image = safeAnnotation.calloutImage;
+                UIView *view = [self calloutViewForAnnotation:annotation];
+                
+                if (view == nil) {
+                    MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+                    self.mapView.callout.title = safeAnnotation.title;
+                    self.mapView.callout.detail = safeAnnotation.detail;
+                    self.mapView.callout.image = safeAnnotation.calloutImage;
+                }
+                
+                [view sizeToFit];
+                self.mapView.callout.customView = view;
             }
             
             self.calloutAnnotation = annotation;
@@ -447,16 +454,13 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             [self willShowCalloutForAnnotation:annotation];
             self.mapView.callout.delegate = self;
 
-            [self.mapView centerAtPoint:graphic.geometry.envelope.center
-                               animated:animated];
             
-            while (self.mapView.animating) {
-                [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
-            }
-            
-            [self.mapView.callout showCalloutAtPoint:graphic.geometry.envelope.center
+            [self.mapView.callout showCalloutAtPoint:nil
                                           forGraphic:graphic
                                             animated:animated];
+            
+            [self.mapView centerAtPoint:graphic.geometry.envelope.center
+                               animated:animated];
             [self didShowCalloutForAnnotation:annotation];
                             
         }
@@ -465,9 +469,11 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)dismissCallout
 {
-    [self.mapView.callout dismiss];
-    [self didDismissCalloutForAnnotation:self.calloutAnnotation];
-    self.calloutAnnotation = nil;
+    if (self.calloutAnnotation) {
+        [self.mapView.callout dismiss];
+        [self didDismissCalloutForAnnotation:self.calloutAnnotation];
+        self.calloutAnnotation = nil;
+    }
 }
 
 
@@ -578,8 +584,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 {
     UIView* view = nil;
     if (annotation) {
-        MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-        
         if ([self.delegate respondsToSelector:@selector(mapView:calloutViewForAnnotation:)]) {
             view = [self.delegate mapView:self
                  calloutViewForAnnotation:annotation];
@@ -587,6 +591,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         
         // If the view is still nil, create a default one!
         if (view == nil) {
+            MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
             MGSCalloutView* calloutView = [[MGSCalloutView alloc] init];
             
             calloutView.title = safeAnnotation.title;
@@ -608,10 +613,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)calloutDidReceiveTapForAnnotation:(id <MGSAnnotation>)annotation
 {
-    if ([self.calloutAnnotation isEqual:annotation]) {
-        [self dismissCallout];
-    }
-    
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if ([self.delegate respondsToSelector:@selector(mapView:calloutDidReceiveTapForAnnotation:)]) {
             [self.delegate mapView:self calloutDidReceiveTapForAnnotation:annotation];
@@ -849,10 +850,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)mapViewDidDismissCallout:(AGSMapView*)mapView
 {
-    if (self.calloutAnnotation) {
-        [self didDismissCalloutForAnnotation:self.calloutAnnotation];
-        self.calloutAnnotation = nil;
-    }
+    [self dismissCallout];
 }
 
 - (BOOL)mapView:(AGSMapView*)mapView shouldProcessClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint
