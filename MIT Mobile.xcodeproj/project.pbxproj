@@ -1425,25 +1425,25 @@
 		2C3C9D7314CDC0B2005646F7 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
-				2C91944A1631CBA700ED97F6 /* NSData+MGTwitterBase64.h */,
-				2C91944B1631CBA700ED97F6 /* NSData+MGTwitterBase64.m */,
-				EF3B3B15103F072400E8AA14 /* NSMutableAttributedString+MITAdditions.h */,
-				EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */,
 				EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */,
 				EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */,
-				2CE4431816DFAB54005A01B2 /* MapKit+MITAdditions.h */,
-				2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */,
 				DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */,
 				DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */,
+				2CE4431816DFAB54005A01B2 /* MapKit+MITAdditions.h */,
+				2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */,
 				2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */,
 				2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */,
+				2CC2F6BC164971AE00838337 /* MITAdditions.h */,
+				2C91944A1631CBA700ED97F6 /* NSData+MGTwitterBase64.h */,
+				2C91944B1631CBA700ED97F6 /* NSData+MGTwitterBase64.m */,
 				2C6AB73E13564F74003B174A /* NSDateFormatter+RelativeString.h */,
 				2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */,
-				DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */,
-				DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */,
+				EF3B3B15103F072400E8AA14 /* NSMutableAttributedString+MITAdditions.h */,
+				EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */,
 				2C544B9B1358A24400685545 /* UIImage+Resize.h */,
 				2C544B9C1358A24400685545 /* UIImage+Resize.m */,
-				2CC2F6BC164971AE00838337 /* MITAdditions.h */,
+				DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */,
+				DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
