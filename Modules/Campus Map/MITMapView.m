@@ -237,11 +237,9 @@
     
     if (mapAnnotation)
     {
-        if (recenter)
-        {
-            [self.mapView setCenterCoordinate:mapAnnotation.coordinate
-                                     animated:animated];
-        }
+        [self.mapView showCalloutForAnnotation:mapAnnotation
+                                      recenter:recenter
+                                      animated:animated];
         
         self.currentAnnotation = annotation;
 
