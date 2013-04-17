@@ -561,7 +561,7 @@ didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         MITMapAnnotationCalloutView *view = [[MITMapAnnotationCalloutView alloc] initWithAnnotationView:annotationView
                                                                                                 mapView:self];
         __weak MITMapView *weakSelf = self;
-        view.accessoryBlock = ^(id sender) {
+        view.accessoryActionBlock = ^(id sender) {
             if ([weakSelf.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)]) {
                 [weakSelf.delegate mapView:weakSelf
       annotationViewCalloutAccessoryTapped:annotationView];

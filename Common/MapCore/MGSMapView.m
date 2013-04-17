@@ -603,15 +603,15 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         if (view == nil) {
             MGSCalloutView* calloutView = [[MGSCalloutView alloc] init];
             
-            calloutView.titleLabel.text = safeAnnotation.title;
-            calloutView.detailLabel.text = safeAnnotation.detail;
-            calloutView.imageView.image = safeAnnotation.calloutImage;
+            calloutView.title = safeAnnotation.title;
+            calloutView.detail = safeAnnotation.detail;
+            calloutView.image = safeAnnotation.calloutImage;
             
             // This view could potentially be hanging around for a long time,
             // we don't want strong references to the layer or the annotation
             __weak MGSMapView* weakSelf = self;
             __weak id <MGSAnnotation> weakAnnotation = annotation;
-            calloutView.accessoryBlock = ^(id sender) {
+            calloutView.accessoryActionBlock = ^(id sender) {
                 [weakSelf calloutDidReceiveTapForAnnotation:weakAnnotation];
             };
         }
