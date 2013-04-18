@@ -448,6 +448,9 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [self.mapView.callout dismiss];
         [self didDismissCalloutForAnnotation:self.calloutAnnotation];
         self.calloutAnnotation = nil;
+    } else if (self.pendingCalloutBlock) {
+        self.pendingCalloutBlock = nil;
+        self.pendingCalloutLayer = nil;
     }
 }
 
