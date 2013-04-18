@@ -34,8 +34,9 @@
         self.layerAnnotations = nil;
         
         self.layer = layer;
+        
         self.refreshSemaphore = dispatch_semaphore_create(1);
-        self.refreshQueue = dispatch_queue_create(NULL, NULL);
+        self.refreshQueue = dispatch_get_main_queue();
         
         if (layer) {
             [self.layer addObserver:self
@@ -57,7 +58,7 @@
         self.refreshSemaphore = NULL;
     }
     
-    if (self.refreshQueue) {
+    if (self.refreshQueue && (self.refreshQueue != dispatch_get_main_queue())) {
         dispatch_release(self.refreshQueue);
         self.refreshQueue = NULL;
     }
@@ -168,7 +169,7 @@
                                 _nativeLayer &&
                                 [_nativeLayer isKindOfClass:[AGSGraphicsLayer class]] &&
                                 self.spatialReference);
-
+    
     if (!hasValidNativeLayer) {
         return;
     } else {
@@ -177,11 +178,17 @@
             self.layerNeedsRefresh = NO;
             
             dispatch_async(self.refreshQueue, ^{
-                dispatch_sync(dispatch_get_main_queue(), ^{
+                dispatch_block_t willSynchronizeBlock = ^{
                     if ([self.delegate respondsToSelector:@selector(layerManagerWillSynchronizeAnnotations:)]) {
                         [self.delegate layerManagerWillSynchronizeAnnotations:self];
                     }
-                });
+                };
+                
+                if (dispatch_get_current_queue() == dispatch_get_main_queue()) {
+                    willSynchronizeBlock();
+                } else {
+                    dispatch_sync(dispatch_get_main_queue(), willSynchronizeBlock);
+                }
                 
                 BOOL annotationsUpdated = (([newAnnotations count] ||
                                             [oldAnnotations count]) &&
@@ -245,17 +252,23 @@
                         [graphics addObject:annotationGraphic];
                     }
                     
-                    dispatch_sync(dispatch_get_main_queue(), ^{
+                    dispatch_block_t updateStateBlock = ^{
                         self.currentAnnotations = newAnnotations;
                         self.layerAnnotations = layerAnnotations;
                         
                         [graphicsLayer removeAllGraphics];
                         [graphicsLayer addGraphics:graphics];
                         [graphicsLayer refresh];
-                    });
+                    };
+                    
+                    if (dispatch_get_current_queue() == dispatch_get_main_queue()) {
+                        updateStateBlock();
+                    } else {
+                        dispatch_sync(dispatch_get_main_queue(), updateStateBlock);
+                    }
                 }
                 
-                dispatch_sync(dispatch_get_main_queue(), ^{
+                dispatch_block_t didSynchronizeBlock = ^{
                     if ([self.delegate respondsToSelector:@selector(layerManagerDidSynchronizeAnnotations:)]) {
                         [self.delegate layerManagerDidSynchronizeAnnotations:self];
                     }
@@ -264,7 +277,13 @@
                     if (self.layerNeedsRefresh) {
                         [self refresh];
                     }
-                });
+                };
+                
+                if (dispatch_get_current_queue() == dispatch_get_main_queue()) {
+                    didSynchronizeBlock();
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), didSynchronizeBlock);
+                }
             });
         } else {
             self.layerNeedsRefresh = YES;
