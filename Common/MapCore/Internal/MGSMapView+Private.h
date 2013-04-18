@@ -26,6 +26,7 @@
 @property(nonatomic, copy) dispatch_block_t pendingCalloutBlock;
 @property(nonatomic, weak) MGSLayer* pendingCalloutLayer;
 @property(nonatomic, strong) id <MGSAnnotation> calloutAnnotation;
+@property(nonatomic,strong) id zoomNotificationObject;
 
 #pragma mark Initialization
 - (void)_init;

@@ -60,6 +60,13 @@
     return self;
 }
 
+- (void)dealloc
+{
+    if (self.zoomNotificationObject) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self.zoomNotificationObject];
+    }
+}
+
 #pragma mark Base Map Set Management
 - (NSSet*)mapSets
 {
@@ -231,10 +238,18 @@
 
 - (void)refreshLayer:(MGSLayer*)layer
 {
-    [self refreshLayers:[NSSet setWithObject:layer]];
+    [self refreshLayers:[NSSet setWithObject:layer]
+            forceReload:NO];
 }
 
 - (void)refreshLayers:(NSSet*)layers
+{
+    [self refreshLayers:layers
+            forceReload:NO];
+}
+
+- (void)refreshLayers:(NSSet*)layers
+          forceReload:(BOOL)forceReload
 {
     if (self.isBaseLayersLoaded) {
         NSArray *sortedArrays = [[layers allObjects] sortedArrayUsingComparator:^NSComparisonResult(MGSLayer *layer1, MGSLayer *layer2) {
@@ -267,7 +282,11 @@
                                          atIndex:agsLayerIndex];
                 }
                 
-                [manager refresh];
+                if (forceReload) {
+                    [manager reload];
+                } else {
+                    [manager refresh];
+                }
             }
         }];
     }
@@ -691,11 +710,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)baseLayersDidFinishLoading
 {
-    // Make sure the layers are synced first otherwise,
-    //  when we go to display the callout, the graphic will be
-    //  nil and the callout will not display!
-    [self refreshLayers:[NSSet setWithArray:self.externalLayers]];
-    
     if (MKCoordinateRegionIsValid(self->_mapRegion)) {
         [self.mapView zoomToEnvelope:AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(self->_mapRegion, self.mapView.spatialReference)
                             animated:NO];
@@ -705,6 +719,13 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         self->_mapRegion = MKCoordinateRegionInvalid;
     }
     
+    [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
+                                                      object:self.mapView
+                                                       queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:^(NSNotification *note) {
+                                                      [self refreshLayers:[NSSet setWithArray:self.externalLayers]
+                                                              forceReload:YES];
+                                                  }];
     [self didFinishLoadingMapView];
 }
 
