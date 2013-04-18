@@ -229,9 +229,9 @@
                             
                             return NSOrderedSame;
                         } else if (obj1_isMarker) {
-                            return NSOrderedAscending;
-                        } else {
                             return NSOrderedDescending;
+                        } else {
+                            return NSOrderedAscending;
                         }
                     }];
                     
