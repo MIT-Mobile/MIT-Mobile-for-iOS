@@ -16,12 +16,7 @@
 @property dispatch_queue_t refreshQueue;
 @property dispatch_semaphore_t refreshSemaphore;
 
-// Tracks the annotations which are created from pre-existing graphics
-// in the graphics layer. An example of this would be a feature layer
-@property(nonatomic, strong) NSMutableSet *featureGraphics;
-
 - (AGSGraphic*)createGraphicForAnnotation:(id <MGSAnnotation>)annotation;
-- (BOOL)isFeatureGraphic:(id)graphic;
 @end
 
 @implementation MGSLayerController
@@ -37,7 +32,6 @@
     
     if (self) {
         self.layerAnnotations = nil;
-        self.featureGraphics = [NSSet set];
         
         self.layer = layer;
         self.refreshSemaphore = dispatch_semaphore_create(1);
@@ -158,20 +152,6 @@
     }
     
     return layerAnnotations;
-}
-
-- (BOOL)isFeatureGraphic:(id)graphicOrAnnotation {
-    AGSGraphic *testGraphic = nil;
-    
-    if ([graphicOrAnnotation isKindOfClass:[AGSGraphic class]]) {
-        testGraphic = (AGSGraphic*) graphicOrAnnotation;
-    } else if ([graphicOrAnnotation conformsToProtocol:@protocol(MGSAnnotation)]) {
-        MGSLayerAnnotation* layerAnnotation = [self layerAnnotationForAnnotation:((id<MGSAnnotation>)graphicOrAnnotation)];
-        testGraphic = layerAnnotation.graphic;
-    }
-    
-    
-    return (testGraphic && [self.featureGraphics containsObject:testGraphic]);
 }
 
 - (void)refresh
