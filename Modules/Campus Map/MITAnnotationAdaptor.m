@@ -45,28 +45,30 @@
     
     if (legacyAnnotationView && ([legacyAnnotationView isKindOfClass:[MITPinAnnotationView class]] == NO))
     {
-        [legacyAnnotationView sizeToFit];
         MGSMarkerOptions options = self.markerOptions;
         
-        CGRect annotationFrame;
         BOOL frameIsInvalid = ((CGAffineTransformEqualToTransform(legacyAnnotationView.transform, CGAffineTransformIdentity) == NO) ||
                                CGRectIsNull(legacyAnnotationView.frame) ||
                                CGRectIsInfinite(legacyAnnotationView.frame) ||
                                CGRectIsEmpty(legacyAnnotationView.frame));
+        CGRect frame;
+        CGRect bounds = legacyAnnotationView.bounds;
         if (frameIsInvalid) {
-            annotationFrame = legacyAnnotationView.bounds;
+            frame = legacyAnnotationView.bounds;
         } else {
-            annotationFrame = legacyAnnotationView.frame;
+            frame = legacyAnnotationView.frame;
+            
+            // MKAnnotationView automatically centers its frame if an image
+            // is added so undo the centering then use the remainder for the offset
+            CGFloat xOffset = -(CGRectGetMinX(frame) + (CGRectGetWidth(bounds) / 2.0));
+            CGFloat yOffset = -(CGRectGetMinY(frame) + (CGRectGetHeight(bounds) / 2.0));
+            options.offset = CGPointMake((CGFloat) round(xOffset), (CGFloat) round(yOffset));
+            self.markerOptions = options;
+            
+            legacyAnnotationView.frame = bounds;
         }
         
-        // MKAnnotationView automatically centers its frame if an image
-        // is added so undo the centering then use the remainder for the offset
-        CGFloat xOffset = CGRectGetMinX(annotationFrame) + (CGRectGetHeight(annotationFrame) / 2.0);
-        CGFloat yOffset = CGRectGetMinY(annotationFrame) + (CGRectGetWidth(annotationFrame) / 2.0);
-        options.offset = CGPointMake((CGFloat) round(xOffset), (CGFloat) round(yOffset));
-        self.markerOptions = options;
-        
-        UIGraphicsBeginImageContextWithOptions(legacyAnnotationView.bounds.size, NO, 0.0);
+        UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0.0);
         legacyAnnotationView.layer.backgroundColor = [[UIColor clearColor] CGColor];
         [legacyAnnotationView.layer renderInContext:UIGraphicsGetCurrentContext()];
         image = UIGraphicsGetImageFromCurrentImageContext();
