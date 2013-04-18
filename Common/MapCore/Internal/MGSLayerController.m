@@ -157,13 +157,21 @@
 
 - (void)refresh
 {
-    [self synchronizeNativeLayerWithAnnotations:self.layer.annotations];
+    [self synchronizeNativeLayerWithAnnotations:self.layer.annotations
+                                    forceReload:NO];
+}
+
+- (void)reload
+{
+    [self synchronizeNativeLayerWithAnnotations:self.layer.annotations
+                                    forceReload:YES];
 }
 
 // TODO: Optimize this if needed, just brute forcing it for now
 - (void)synchronizeNativeLayerWithAnnotations:(NSOrderedSet*)newAnnotations
+                                  forceReload:(BOOL)forceReload
 {
-    NSOrderedSet *oldAnnotations = self.currentAnnotations;
+    NSOrderedSet *oldAnnotations = forceReload ? [NSOrderedSet orderedSet] : self.currentAnnotations;
     
     BOOL hasValidNativeLayer = (self.layer &&
                                 _nativeLayer &&
@@ -275,7 +283,11 @@
                     
                     dispatch_semaphore_signal(self.refreshSemaphore);
                     if (self.layerNeedsRefresh) {
-                        [self refresh];
+                        if (forceReload) {
+                            [self reload];
+                        } else {
+                            [self refresh];
+                        }
                     }
                 };
                 
@@ -450,7 +462,8 @@
 {
     if ([object isEqual:self.layer] && [keyPath isEqualToString:@"annotations"]) {
         MGSLayer *layer = (MGSLayer*)object;
-        [self synchronizeNativeLayerWithAnnotations:layer.annotations];
+        [self synchronizeNativeLayerWithAnnotations:layer.annotations
+                                        forceReload:NO];
     } else {
         [super observeValueForKeyPath:keyPath
                              ofObject:object
