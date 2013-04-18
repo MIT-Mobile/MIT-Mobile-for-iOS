@@ -46,7 +46,7 @@
     }
 }
 
-- (void)validateResponse:(id)content
+- (BOOL)validateResponse:(id)content
                    error:(NSError**)error
 {
     NSString* contentClass = @"NSDictionary";
@@ -68,17 +68,23 @@
                 }
             }];
         } else {
-            (*error) = [NSError errorWithDomain:NSURLErrorDomain
-                                           code:NSURLErrorBadServerResponse
-                                       userInfo:@{ NSLocalizedDescriptionKey : @"missing or malformed 'basemaps' key" }];
+            if (error) {
+                (*error) = [NSError errorWithDomain:NSURLErrorDomain
+                                               code:NSURLErrorBadServerResponse
+                                           userInfo:@{ NSLocalizedDescriptionKey : @"missing or malformed 'basemaps' key" }];
+            }
         }
     } else {
         NSString *errorDescription = [NSString stringWithFormat:@"invalid content type, expected %@, received %@",
                                       contentClass, NSStringFromClass([content class])];
-        (*error) = [NSError errorWithDomain:NSURLErrorDomain
-                                       code:NSURLErrorBadServerResponse
-                                   userInfo:@{ NSLocalizedDescriptionKey : errorDescription }];
+        if (error) {
+            (*error) = [NSError errorWithDomain:NSURLErrorDomain
+                                           code:NSURLErrorBadServerResponse
+                                       userInfo:@{ NSLocalizedDescriptionKey : errorDescription }];
+        }
     }
+    
+    return (error == nil);
 }
 
 
@@ -97,14 +103,13 @@
                                                                                 command:@"bootstrap"
                                                                              parameters:nil];
         [operation setCompleteBlock:^(MobileRequestOperation* blockOperation, id content, NSString* contentType, NSError* error) {
-            NSError *localError = error;
-            if (localError == nil) {
-                [self validateResponse:content
-                                 error:&localError];
-            }
-            
-            if (localError) {
+            NSError *validationError = nil;
+            if (error) {
                 self.cachedError = error;
+                self.cachedResponse = nil;
+            } else if ([self validateResponse:content
+                                        error:&validationError]) {
+                self.cachedError = validationError;
                 self.cachedResponse = nil;
             } else {
                 self.cachedResponse = content;
