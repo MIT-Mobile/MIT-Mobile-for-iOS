@@ -53,14 +53,17 @@
                                CGRectIsEmpty(legacyAnnotationView.frame));
         CGRect frame;
         CGRect bounds = legacyAnnotationView.bounds;
-        if (!frameIsInvalid) {
+        if (frameIsInvalid) {
+            frame = legacyAnnotationView.bounds;
+        } else {
             frame = legacyAnnotationView.frame;
             
             // MKAnnotationView automatically centers its frame if an image
             // is added so undo the centering then use the remainder for the offset
-            CGFloat xOffset = -(CGRectGetMinX(frame) + (CGRectGetWidth(bounds) / 2.0));
-            CGFloat yOffset = -(CGRectGetMinY(frame) + (CGRectGetHeight(bounds) / 2.0));
-            options.offset = CGPointMake((CGFloat) round(xOffset), (CGFloat) round(yOffset));
+            frame.origin.x += (CGRectGetWidth(bounds) / 2.0);
+            frame.origin.y += (CGRectGetHeight(bounds) / 2.0);
+            
+            options.offset = CGPointMake(-frame.origin.x,-frame.origin.y);
             self.markerOptions = options;
             
             legacyAnnotationView.frame = bounds;
