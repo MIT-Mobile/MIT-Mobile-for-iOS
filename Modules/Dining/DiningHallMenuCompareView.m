@@ -10,6 +10,7 @@
 #import "PSTCollectionView.h"
 #import "UIKit+MITAdditions.h"
 #import "DiningHallMenuCompareLayout.h"
+#import "DiningHallMenuComparisonSectionHeaderView.h"
 
 @interface DiningHallMenuCompareView () <PSTCollectionViewDataSource, CollectionViewDelegateMenuCompareLayout>
 
@@ -20,6 +21,7 @@
 @end
 
 #define HEADER_VIEW_HEIGHT 24
+static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 
 @implementation DiningHallMenuCompareView
 
@@ -43,6 +45,7 @@
         self.collectionView.dataSource = self;
         self.collectionView.delegate = self;
         [self.collectionView registerClass:[PSTCollectionViewCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];
+        [self.collectionView registerClass:[DiningHallMenuComparisonSectionHeaderView class] forSupplementaryViewOfKind:MITDiningMenuComparisonSectionHeaderKind withReuseIdentifier:SectionHeaderIdentifier];
         
         [self addSubview:self.headerView];
         [self addSubview:self.collectionView];
@@ -78,23 +81,19 @@
     return 3 + (section % 4);
 }
 
-//- (PSTCollectionReusableView *)collectionView:(PSTCollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-//{
-//    if ([kind isEqualToString:@"sectionHeader"]) {
-//        PSTCollectionReusableView *reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"sectionHeader" forIndexPath:indexPath];
-//        
-//        
-//        return reusableView;
-//    }
-//}
+- (PSTCollectionReusableView *)collectionView:(PSTCollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    DiningHallMenuComparisonSectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:SectionHeaderIdentifier forIndexPath:indexPath];
+    headerView.titleLabel.text = [self debugHouseDiningData][indexPath.section];
+    headerView.timeLabel.text = @"11am - 3pm";
+    
+    return headerView;
+}
 
 // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
 - (PSTCollectionViewCell *)collectionView:(PSTCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     PSTCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DiningMenuCell" forIndexPath:indexPath];
-    if (!cell) {
-        cell = [[PSTCollectionViewCell alloc] init];
-    }
     
     cell.backgroundColor = [UIColor whiteColor];
     cell.layer.borderWidth = 1;

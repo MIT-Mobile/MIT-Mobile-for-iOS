@@ -9,7 +9,8 @@
 #import "DiningHallMenuCompareLayout.h"
 #import "PSTCollectionView.h"
 
-static NSString * const MITDiningMenuCompareCellKind = @"DiningMenuCell";
+NSString * const MITDiningMenuComparisonCellKind = @"DiningMenuCell";
+NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionHeader";
 
 @interface DiningHallMenuCompareLayout ()
 
@@ -17,6 +18,7 @@ static NSString * const MITDiningMenuCompareCellKind = @"DiningMenuCell";
 @property (nonatomic) CGSize itemSize;
 @property (nonatomic) CGFloat interItemSpacingY;
 @property (nonatomic) NSInteger numberOfColumns;
+@property (nonatomic) CGFloat heightOfSectionHeader;
 
 @property (nonatomic, strong) NSDictionary *layoutInfo;
 
@@ -31,6 +33,7 @@ static NSString * const MITDiningMenuCompareCellKind = @"DiningMenuCell";
     self.itemSize = CGSizeMake(60, 40);
     self.interItemSpacingY = 5;
     self.numberOfColumns = 5;
+    self.heightOfSectionHeader = 48;
 }
 
 - (id) init
@@ -51,10 +54,17 @@ static NSString * const MITDiningMenuCompareCellKind = @"DiningMenuCell";
     return self;
 }
 
+- (id<CollectionViewDelegateMenuCompareLayout>) layoutDelegate
+{
+    // Helper method to get delegate
+    return (id<CollectionViewDelegateMenuCompareLayout>)self.collectionView.delegate;
+}
+
 - (void) prepareLayout
 {
     NSMutableDictionary *newLayoutInfo = [NSMutableDictionary dictionary];
     NSMutableDictionary *cellLayoutInfo = [NSMutableDictionary dictionary];
+    NSMutableDictionary *headerLayoutInfo = [NSMutableDictionary dictionary];
     
     NSInteger sectionCount = [self.collectionView numberOfSections];
     NSIndexPath *indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
@@ -63,13 +73,22 @@ static NSString * const MITDiningMenuCompareCellKind = @"DiningMenuCell";
         NSInteger itemCount = [self.collectionView numberOfItemsInSection:section];
         
         for (NSInteger item = 0; item < itemCount; item++) {
-            indexPath = [NSIndexPath indexPathForItem:item inSection:section];
+            indexPath = [NSIndexPath indexPathForRow:item inSection:section];
             
             PSTCollectionViewLayoutAttributes *itemAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
             itemAttributes.frame = [self frameForMenuItemAtIndexPath:indexPath inLayoutSet:newLayoutInfo];
             
             cellLayoutInfo[indexPath] = itemAttributes;
-            newLayoutInfo[MITDiningMenuCompareCellKind] = cellLayoutInfo;
+            
+            if (indexPath.row == 0) {
+                PSTCollectionViewLayoutAttributes *headerAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITDiningMenuComparisonSectionHeaderKind withIndexPath:indexPath];
+                headerAttributes.frame = [self frameForHeaderAtIndexPath:indexPath];
+                
+                headerLayoutInfo[indexPath] = headerAttributes;
+                newLayoutInfo[MITDiningMenuComparisonSectionHeaderKind] = headerLayoutInfo;
+            }
+            
+            newLayoutInfo[MITDiningMenuComparisonCellKind] = cellLayoutInfo;
         }
     }
     
@@ -78,19 +97,15 @@ static NSString * const MITDiningMenuCompareCellKind = @"DiningMenuCell";
 
 - (CGRect) frameForMenuItemAtIndexPath:(NSIndexPath *)indexPath inLayoutSet:(NSDictionary *)layoutDictionary
 {
-//    CGFloat itemHeight;
-//    if ([self.collectionView.delegate respondsToSelector:@selector(collectionView:layout:heightForItemAtIndexPath:)]) {
-//        itemHeight = [self.collectionView.delegate collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath];
-//    }
-    id delegate = (id<CollectionViewDelegateMenuCompareLayout>)self.collectionView.delegate;
-    CGFloat itemHeight = [delegate collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath];
+
+    CGFloat itemHeight = [[self layoutDelegate] collectionView:self.collectionView layout:self heightForItemAtIndexPath:indexPath];
     
     if (indexPath.row == 0) {
-        // first item in section. should be placed at top
-        return CGRectMake(self.columnWidth * indexPath.section, 0, self.columnWidth, itemHeight);
+        // first item in section. should be placed at top, just under sectionHeader
+        return CGRectMake(self.columnWidth * indexPath.section, self.heightOfSectionHeader, self.columnWidth, itemHeight);
     } else {
         // not first item in section. need to look back and place directly below previous frame
-        NSDictionary *cellLayoutInfo = layoutDictionary[MITDiningMenuCompareCellKind];
+        NSDictionary *cellLayoutInfo = layoutDictionary[MITDiningMenuComparisonCellKind];
         NSIndexPath *previousIndexPath = [NSIndexPath indexPathForItem:indexPath.row - 1 inSection:indexPath.section];
         PSTCollectionViewLayoutAttributes *previousItemAttributes = cellLayoutInfo[previousIndexPath];
         CGRect previousFrame = previousItemAttributes.frame;
@@ -99,6 +114,12 @@ static NSString * const MITDiningMenuCompareCellKind = @"DiningMenuCell";
     }
     
     return CGRectZero;
+}
+
+- (CGRect) frameForHeaderAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGRect frame = CGRectMake(self.columnWidth * indexPath.section, 0, self.columnWidth, self.heightOfSectionHeader);
+    return frame;
 }
 
 - (NSArray *) layoutAttributesForElementsInRect:(CGRect)rect
@@ -119,7 +140,12 @@ static NSString * const MITDiningMenuCompareCellKind = @"DiningMenuCell";
 
 - (PSTCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return self.layoutInfo[MITDiningMenuCompareCellKind][indexPath];
+    return self.layoutInfo[MITDiningMenuComparisonCellKind][indexPath];
+}
+
+- (PSTCollectionViewLayoutAttributes *) layoutAttributesForSupplementaryViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    return self.layoutInfo[MITDiningMenuComparisonSectionHeaderKind][indexPath];
 }
 
 - (CGSize) collectionViewContentSize

@@ -8,6 +8,9 @@
 
 #import "PSTCollectionViewLayout.h"
 
+extern NSString * const MITDiningMenuComparisonCellKind;
+extern NSString * const MITDiningMenuComparisonSectionHeaderKind;
+
 @protocol CollectionViewDelegateMenuCompareLayout <PSTCollectionViewDelegate>
 @required
 - (CGFloat)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout heightForItemAtIndexPath:(NSIndexPath *)indexPath;
