@@ -151,18 +151,19 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
 - (CGSize) collectionViewContentSize
 {
     __block CGFloat height = 0;
+    __block CGFloat width = 0;
     
     // get max Y for the tallest column. return collectionView width and calculated height
     [self.layoutInfo enumerateKeysAndObjectsUsingBlock:^(NSString *elementsIdentifier, NSDictionary *elementsInfo, BOOL *stop) {
         [elementsInfo enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *indexPath, PSTCollectionViewLayoutAttributes *attributes, BOOL *innerstop) {
             CGFloat tempHeight = CGRectGetMaxY(attributes.frame);
-            if (tempHeight > height) {
-                height = tempHeight;
-            }
+            CGFloat tempWidth = CGRectGetMaxX(attributes.frame);
+            height = (tempHeight > height) ? tempHeight : height;   // if tempHeight is greater update height
+            width = (tempWidth > width) ? tempWidth : width;        // if tempWidth is greater update width
         }];
     }];
     
-    return CGSizeMake(CGRectGetWidth(self.collectionView.bounds), height);
+    return CGSizeMake(width, height);
 }
 
 

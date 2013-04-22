@@ -13,4 +13,6 @@
 @property (nonatomic, readonly, strong) UILabel * headerView;
 @property (nonatomic, strong) NSDate *date;
 
+- (void) resetScrollOffset;
+
 @end

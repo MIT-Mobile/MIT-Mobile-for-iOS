@@ -38,7 +38,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         [self.dateFormatter setDateFormat:@"MMMM dd"];
         
         DiningHallMenuCompareLayout *layout = [[DiningHallMenuCompareLayout alloc] init];
-        layout.columnWidth = ceil(CGRectGetWidth(self.bounds) / 5);
+        layout.columnWidth = 200;
         
         CGFloat headerHeight = CGRectGetHeight(self.headerView.frame);
         self.collectionView = [[PSTCollectionView alloc] initWithFrame:CGRectMake(0, headerHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - headerHeight) collectionViewLayout:layout];
@@ -56,6 +56,11 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 - (NSArray *) debugHouseDiningData
 {
     return [NSArray arrayWithObjects:@"Baker", @"The Howard Dining Hall", @"McCormick", @"Next", @"Simmons", nil];
+}
+
+- (void) resetScrollOffset
+{
+    [self.collectionView setContentOffset:CGPointZero animated:NO];
 }
 
 #pragma mark Setter Override

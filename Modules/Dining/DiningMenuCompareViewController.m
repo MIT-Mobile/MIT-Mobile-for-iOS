@@ -95,14 +95,17 @@
     if (scrollView.contentOffset.x > scrollView.frame.size.width) {
         // scroll to the right
         self.datePointer = [NSDate dateWithTimeInterval:SECONDS_IN_DAY sinceDate:self.datePointer];
+        [self.current resetScrollOffset]; // need to reset scroll offset so user always starts at (0,0) in collectionView
     } else if (scrollView.contentOffset.x < scrollView.frame.size.width) {
         // scroll to the left
         self.datePointer = [NSDate dateWithTimeInterval:-SECONDS_IN_DAY sinceDate:self.datePointer];
+        [self.current resetScrollOffset];
     }
     [self updateDateHeaders];
     // TODO: need to refresh comparison views with date's data
     
     [scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO]; // always return to center view
+    
 }
 
 
