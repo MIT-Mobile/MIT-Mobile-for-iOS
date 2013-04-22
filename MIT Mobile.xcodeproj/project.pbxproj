@@ -13,7 +13,6 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
-		296F086610CDDF07004B02E4 /* MITMobileWebAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
 		296FC55610CF4E8D00EA7FF7 /* StellarDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 296FC55510CF4E8D00EA7FF7 /* StellarDetailViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2970ABE610E053F700C543D7 /* StellarClassTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2970ABE510E053F700C543D7 /* StellarClassTableCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -404,7 +403,6 @@
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		296F086410CDDF07004B02E4 /* MITMobileWebAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileWebAPI.h; sourceTree = "<group>"; };
-		296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileWebAPI.m; sourceTree = "<group>"; };
 		296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
 		296FC55410CF4E8D00EA7FF7 /* StellarDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StellarDetailViewController.h; sourceTree = "<group>"; };
 		296FC55510CF4E8D00EA7FF7 /* StellarDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StellarDetailViewController.m; sourceTree = "<group>"; };
@@ -1199,7 +1197,6 @@
 				2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */,
 				2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */,
 				296F086410CDDF07004B02E4 /* MITMobileWebAPI.h */,
-				296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */,
 				2C96FD93143CA3C500A2E798 /* MITModule+Protected.h */,
 				DE715347102FC897005E6111 /* MITModule.h */,
 				DE715348102FC897005E6111 /* MITModule.m */,
@@ -2805,7 +2802,6 @@
 				44293C3510DAE88500273119 /* MITMapSearchResultsVC.m in Sources */,
 				4463CC9A10D6F4A50048CA83 /* MITMapUserLocation.m in Sources */,
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
-				296F086610CDDF07004B02E4 /* MITMobileWebAPI.m in Sources */,
 				DE715349102FC897005E6111 /* MITModule.m in Sources */,
 				DE71537C102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m in Sources */,
 				29E308871176018C005211A7 /* MITModuleURL.m in Sources */,
