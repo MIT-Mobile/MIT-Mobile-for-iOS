@@ -113,5 +113,11 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
     return 60;
 }
 
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    // necessary for sticky headers. 
+    [self.collectionView.collectionViewLayout invalidateLayout];
+}
+
 
 @end

@@ -118,7 +118,8 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
 
 - (CGRect) frameForHeaderAtIndexPath:(NSIndexPath *)indexPath
 {
-    CGRect frame = CGRectMake(self.columnWidth * indexPath.section, 0, self.columnWidth, self.heightOfSectionHeader);
+    CGPoint contentOffset = self.collectionView.contentOffset;
+    CGRect frame = CGRectMake(self.columnWidth * indexPath.section, MAX(contentOffset.y, 0), self.columnWidth, self.heightOfSectionHeader);
     return frame;
 }
 
@@ -130,6 +131,10 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
         
         [elementsInfo enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *indexPath, PSTCollectionViewLayoutAttributes *attributes, BOOL *innerstop) {
             if (CGRectIntersectsRect(rect, attributes.frame)) {
+                if ([attributes.representedElementKind isEqualToString:MITDiningMenuComparisonSectionHeaderKind]) {
+                    attributes.frame = [self frameForHeaderAtIndexPath:indexPath];
+                    attributes.zIndex = 1024;
+                }
                 [allAttributes addObject:attributes];
             }
         }];
@@ -165,7 +170,6 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
     
     return CGSizeMake(width, height);
 }
-
 
 
 
