@@ -7,6 +7,7 @@
 //
 
 #import "DiningHallMenuFooterView.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface DiningHallMenuFooterView ()
 
@@ -24,7 +25,12 @@
         view.userInteractionEnabled = NO;
         view.frame = CGRectInset(self.frame, 20, 0);
         
-        [view setImage:[UIImage imageNamed:@"icons/home-about"] forState:UIControlStateNormal];
+        UIImage *rotateImage = [UIImage imageNamed:@"dining/rotate_device"];
+        CGFloat spacing = 10;
+        view.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, spacing);
+        view.titleEdgeInsets = UIEdgeInsetsMake(0, spacing, 0, 0);
+        
+        [view setImage:rotateImage forState:UIControlStateNormal];
         [view setTitle:@"Rotate device to compare venues" forState:UIControlStateNormal];
         view.titleLabel.font = [UIFont systemFontOfSize:13.0];
         view.titleLabel.textColor = [UIColor darkTextColor];

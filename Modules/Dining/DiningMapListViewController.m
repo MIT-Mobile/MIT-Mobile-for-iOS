@@ -8,6 +8,8 @@
 
 #import "DiningMapListViewController.h"
 #import "DiningHallMenuViewController.h"
+#import "DiningLocationCell.h"
+#import "UIKit+MITAdditions.h"
 
 @interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate>
 
@@ -29,12 +31,17 @@
 
 - (NSArray *) debugHouseDiningData
 {
-    return [NSArray arrayWithObjects:@"Baker", @"The Howard Dining Hall", @"McCormick", @"Next", @"Simmons", nil];
+    return [NSArray arrayWithObjects:@"Baker", @"The Howard Dining Hall at Maseeh", @"McCormick", @"Next", @"Simmons", nil];
 }
 
 - (NSArray *) debugRetailDiningData
 {
     return [NSArray arrayWithObjects:@"Anna's Taqueria", @"Cafe Spice", @"Cambridge Grill", @"Dunkin Donuts", @"LaVerde's Market", nil];
+}
+
+- (NSArray *) debugSubtitleData
+{
+    return @[@"12pm - 4pm", @"8pm - 4am, 9am - 12pm", @"10am - 2pm, 4pm - 7pm", @"8am - 2pm", @"7am - 9am, 2pm - 8pm, 5pm - 9pm"];
 }
 
 - (NSArray *) debugResourceData
@@ -66,18 +73,24 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.title = @"Dining";
 
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
     
-    [self.segmentControl addTarget:self.listView action:@selector(reloadData) forControlEvents:UIControlEventValueChanged];
+    [self.segmentControl addTarget:self action:@selector(segmentedControlDidChange) forControlEvents:UIControlEventValueChanged];
     [self styleSegmentControl];
     
     self.listView.backgroundView = nil;
     
     [self layoutListState];
+}
+
+- (void) segmentedControlDidChange
+{
+    [self.listView reloadData];
 }
 
 - (void) styleSegmentControl
@@ -183,10 +196,32 @@
         cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
         cell.accessoryView = [self chevronAccessoryView];
     } else if((!announcement && indexPath.section == 0) || (announcement && indexPath.section == 1)) {
-        cell.textLabel.text = [[self currentDiningData] objectAtIndex:indexPath.row];
+        return [self tableView:tableView diningLocationCellForRowAtIndexPath:indexPath];
     } else if ((!announcement && indexPath.section == 1)|| indexPath.section == 2) {
+        if (indexPath.row == 0) {
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
+        } else {
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+        }
         cell.textLabel.text = [[self debugResourceData] objectAtIndex:indexPath.row];
     }
+    
+    return cell;
+}
+
+#pragma mark Configure dining Cell
+- (UITableViewCell *) tableView:(UITableView *)tableView diningLocationCellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    DiningLocationCell *cell = [tableView dequeueReusableCellWithIdentifier:@"locationCell"];
+    if (!cell) {
+        cell = [[DiningLocationCell alloc] initWithReuseIdentifier:@"locationCell"];
+    }
+    
+    cell.titleLabel.text = [self currentDiningData][indexPath.row];
+    cell.subtitleLabel.text = [self debugSubtitleData][indexPath.row];
+    cell.statusOpen = indexPath.row % 2 == 0;
+    cell.accessoryView = [self chevronAccessoryView];
+    cell.imageView.image = [UIImage imageNamed:@"icons/home-about.png"];
     
     return cell;
 }
@@ -221,6 +256,19 @@
         
     }
     
+}
+
+- (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *announcement = [self debugAnnouncement];
+    if (announcement && indexPath.section == 0) {
+        return 44;
+    } else if((!announcement && indexPath.section == 0) || (announcement && indexPath.section == 1)) {
+        return [DiningLocationCell heightForRowWithTitle:[self currentDiningData][indexPath.row] subtitle:[self debugSubtitleData][indexPath.row]];
+    } else if ((!announcement && indexPath.section == 1)|| indexPath.section == 2) {
+        return 44;
+    }
+    return 44;
 }
 
 @end
