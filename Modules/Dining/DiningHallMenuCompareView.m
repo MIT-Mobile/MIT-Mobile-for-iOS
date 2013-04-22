@@ -8,8 +8,10 @@
 
 #import "DiningHallMenuCompareView.h"
 #import "PSTCollectionView.h"
+#import "UIKit+MITAdditions.h"
+#import "DiningHallMenuCompareLayout.h"
 
-@interface DiningHallMenuCompareView () <PSTCollectionViewDataSource, PSTCollectionViewDelegateFlowLayout>
+@interface DiningHallMenuCompareView () <PSTCollectionViewDataSource, CollectionViewDelegateMenuCompareLayout>
 
 @property (nonatomic, strong) UILabel * headerView;
 @property (nonatomic, strong) PSTCollectionView * collectionView;
@@ -33,7 +35,17 @@
         self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setDateFormat:@"MMMM dd"];
         
+        DiningHallMenuCompareLayout *layout = [[DiningHallMenuCompareLayout alloc] init];
+        layout.columnWidth = ceil(CGRectGetWidth(self.bounds) / 5);
+        
+        CGFloat headerHeight = CGRectGetHeight(self.headerView.frame);
+        self.collectionView = [[PSTCollectionView alloc] initWithFrame:CGRectMake(0, headerHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - headerHeight) collectionViewLayout:layout];
+        self.collectionView.dataSource = self;
+        self.collectionView.delegate = self;
+        [self.collectionView registerClass:[PSTCollectionViewCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];
+        
         [self addSubview:self.headerView];
+        [self addSubview:self.collectionView];
     }
     return self;
 }
@@ -63,56 +75,38 @@
 
 - (NSInteger)collectionView:(PSTCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 3;
+    return 3 + (section % 4);
 }
+
+//- (PSTCollectionReusableView *)collectionView:(PSTCollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+//{
+//    if ([kind isEqualToString:@"sectionHeader"]) {
+//        PSTCollectionReusableView *reusableView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"sectionHeader" forIndexPath:indexPath];
+//        
+//        
+//        return reusableView;
+//    }
+//}
 
 // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
 - (PSTCollectionViewCell *)collectionView:(PSTCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    PSTCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell-reuse" forIndexPath:indexPath];
+    PSTCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DiningMenuCell" forIndexPath:indexPath];
     if (!cell) {
         cell = [[PSTCollectionViewCell alloc] init];
     }
-    cell.backgroundColor = [UIColor greenColor];
+    
+    cell.backgroundColor = [UIColor whiteColor];
+    cell.layer.borderWidth = 1;
+    cell.layer.borderColor = [UIColor blackColor].CGColor;
     
     return cell;
 }
 
-
-#pragma mark - PSTCollectionViewDelegateFlowLayout
-
-- (CGSize)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark - CollectionViewDelegateMenuCompareLayout
+- (CGFloat)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout heightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return CGSizeMake(120, 50);
-}
-
-- (UIEdgeInsets)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)sectio{
-    return UIEdgeInsetsMake(1, 1, 1, 1);
-}
-
-- (CGFloat)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
-{
-    return 2;
-}
-
-- (CGFloat)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-{
-    return 1;
-}
-
-- (CGSize)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
-{
-    return CGSizeZero;
-}
-
-- (CGSize)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
-{
-    return CGSizeZero;
-}
-
-- (PSTCollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
-    return nil;
+    return 60;
 }
 
 
