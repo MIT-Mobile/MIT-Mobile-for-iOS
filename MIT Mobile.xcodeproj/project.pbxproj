@@ -13,7 +13,6 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
-		296F086610CDDF07004B02E4 /* MITMobileWebAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
 		296FC55610CF4E8D00EA7FF7 /* StellarDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 296FC55510CF4E8D00EA7FF7 /* StellarDetailViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2970ABE610E053F700C543D7 /* StellarClassTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2970ABE510E053F700C543D7 /* StellarClassTableCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -69,6 +68,7 @@
 		2C3AFD31166518CB00392AE3 /* MGSUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3AFD30166518CB00392AE3 /* MGSUtility.m */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2C5C0BEE171EE27400AEB7A9 /* MGSErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5C0BED171EE27400AEB7A9 /* MGSErrorView.m */; };
 		2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5DECD613E9BABB00F9C089 /* MobileRequestLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCC13E9BABB00F9C089 /* MobileRequestLoginViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */; };
@@ -259,7 +259,6 @@
 		4BE4D2F714115C7600E723F0 /* LibrariesLocationsHoursTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F614115C7600E723F0 /* LibrariesLocationsHoursTerm.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F914115CF900E723F0 /* LibrariesLocationsHours.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4BE4D2FF14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4BE4D2FD14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib */; };
 		4BE4D3011416EB4D00E723F0 /* libraries in Resources */ = {isa = PBXBuildFile; fileRef = 4BE4D3001416EB4D00E723F0 /* libraries */; };
 		569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3381282ADAB00BA0794 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33C1282ADBC00BA0794 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33B1282ADBC00BA0794 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -436,7 +435,6 @@
 		29366C19118E401C009D6863 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		29366C1D118E4151009D6863 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		296F086410CDDF07004B02E4 /* MITMobileWebAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileWebAPI.h; sourceTree = "<group>"; };
-		296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileWebAPI.m; sourceTree = "<group>"; };
 		296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
 		296FC55410CF4E8D00EA7FF7 /* StellarDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StellarDetailViewController.h; sourceTree = "<group>"; };
 		296FC55510CF4E8D00EA7FF7 /* StellarDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StellarDetailViewController.m; sourceTree = "<group>"; };
@@ -539,6 +537,8 @@
 		2C544B9C1358A24400685545 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		2C5B30461371D54500870E6D /* FacilitiesUserLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesUserLocationViewController.h; sourceTree = "<group>"; };
 		2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesUserLocationViewController.m; sourceTree = "<group>"; };
+		2C5C0BEC171EE27400AEB7A9 /* MGSErrorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSErrorView.h; sourceTree = "<group>"; };
+		2C5C0BED171EE27400AEB7A9 /* MGSErrorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSErrorView.m; sourceTree = "<group>"; };
 		2C5DECC913E9BABB00F9C089 /* MobileKeychainServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileKeychainServices.h; sourceTree = "<group>"; };
 		2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileKeychainServices.m; sourceTree = "<group>"; };
 		2C5DECCB13E9BABB00F9C089 /* MobileRequestLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestLoginViewController.h; sourceTree = "<group>"; };
@@ -899,7 +899,6 @@
 		4BE4D2F914115CF900E723F0 /* LibrariesLocationsHours.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHours.m; path = LocationsHours/LibrariesLocationsHours.m; sourceTree = "<group>"; };
 		4BE4D2FB14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursDetailViewController.h; path = LocationsHours/LibrariesLocationsHoursDetailViewController.h; sourceTree = "<group>"; };
 		4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursDetailViewController.m; path = LocationsHours/LibrariesLocationsHoursDetailViewController.m; sourceTree = "<group>"; };
-		4BE4D2FD14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = LibrariesLocationsHoursDetailViewController.xib; path = LocationsHours/LibrariesLocationsHoursDetailViewController.xib; sourceTree = "<group>"; };
 		4BE4D3001416EB4D00E723F0 /* libraries */ = {isa = PBXFileReference; lastKnownFileType = folder; name = libraries; path = Resources/libraries; sourceTree = "<group>"; };
 		569DC3381282ADAB00BA0794 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = iphoneos4.0/System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		569DC33B1282ADBC00BA0794 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = iphoneos4.0/System/Library/Frameworks/CoreMedia.framework; sourceTree = "<group>"; };
@@ -1294,7 +1293,6 @@
 				2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */,
 				2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */,
 				296F086410CDDF07004B02E4 /* MITMobileWebAPI.h */,
-				296F086510CDDF07004B02E4 /* MITMobileWebAPI.m */,
 				2C96FD93143CA3C500A2E798 /* MITModule+Protected.h */,
 				DE715347102FC897005E6111 /* MITModule.h */,
 				DE715348102FC897005E6111 /* MITModule.m */,
@@ -1524,25 +1522,25 @@
 		2C3C9D7314CDC0B2005646F7 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
-				2C91944A1631CBA700ED97F6 /* NSData+MGTwitterBase64.h */,
-				2C91944B1631CBA700ED97F6 /* NSData+MGTwitterBase64.m */,
-				EF3B3B15103F072400E8AA14 /* NSMutableAttributedString+MITAdditions.h */,
-				EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */,
 				EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */,
 				EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */,
-				2CE4431816DFAB54005A01B2 /* MapKit+MITAdditions.h */,
-				2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */,
 				DE6AFDC510D99C4D00B48BA7 /* Foundation+MITAdditions.h */,
 				DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */,
+				2CE4431816DFAB54005A01B2 /* MapKit+MITAdditions.h */,
+				2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */,
 				2CE6631C13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.h */,
 				2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */,
+				2CC2F6BC164971AE00838337 /* MITAdditions.h */,
+				2C91944A1631CBA700ED97F6 /* NSData+MGTwitterBase64.h */,
+				2C91944B1631CBA700ED97F6 /* NSData+MGTwitterBase64.m */,
 				2C6AB73E13564F74003B174A /* NSDateFormatter+RelativeString.h */,
 				2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */,
-				DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */,
-				DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */,
+				EF3B3B15103F072400E8AA14 /* NSMutableAttributedString+MITAdditions.h */,
+				EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */,
 				2C544B9B1358A24400685545 /* UIImage+Resize.h */,
 				2C544B9C1358A24400685545 /* UIImage+Resize.m */,
-				2CC2F6BC164971AE00838337 /* MITAdditions.h */,
+				DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */,
+				DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -1614,6 +1612,8 @@
 				2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */,
 				2C3AFD2F166518CB00392AE3 /* MGSUtility.h */,
 				2C3AFD30166518CB00392AE3 /* MGSUtility.m */,
+				2C5C0BEC171EE27400AEB7A9 /* MGSErrorView.h */,
+				2C5C0BED171EE27400AEB7A9 /* MGSErrorView.m */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -2092,7 +2092,6 @@
 				4BE4D2F314115B9600E723F0 /* LibrariesLocationsHoursTermHours.m */,
 				4BE4D2FB14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.h */,
 				4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */,
-				4BE4D2FD14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib */,
 			);
 			name = LocationsHours;
 			sourceTree = "<group>";
@@ -2832,7 +2831,6 @@
 				DEE6AF201117477E0037F03C /* credits.html in Resources */,
 				DE5E99D31124B57C00498760 /* emergency_template.html in Resources */,
 				4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */,
-				4BE4D2FF14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib in Resources */,
 				4BE4D3011416EB4D00E723F0 /* libraries in Resources */,
 				4B83723C157E5B5C004CBC49 /* zbar-back.png in Resources */,
 				4B83723D157E5B5C004CBC49 /* zbar-help.html in Resources */,
@@ -3000,7 +2998,6 @@
 				44293C3510DAE88500273119 /* MITMapSearchResultsVC.m in Sources */,
 				4463CC9A10D6F4A50048CA83 /* MITMapUserLocation.m in Sources */,
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
-				296F086610CDDF07004B02E4 /* MITMobileWebAPI.m in Sources */,
 				DE715349102FC897005E6111 /* MITModule.m in Sources */,
 				DE71537C102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m in Sources */,
 				29E308871176018C005211A7 /* MITModuleURL.m in Sources */,
@@ -3244,6 +3241,7 @@
 				483C866017209F9500A054F1 /* DiningLocationCell.m in Sources */,
 				483C86631725956A00A054F1 /* DiningHallMenuCompareLayout.m in Sources */,
 				483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */,
+				2C5C0BEE171EE27400AEB7A9 /* MGSErrorView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,10 +1,14 @@
 
 #import "MGSCalloutView.h"
 @interface MGSCalloutView ()
+@property (nonatomic,weak) UIView *containerView;
 @property (nonatomic,weak) UILabel *titleLabel;
 @property (nonatomic,weak) UILabel *detailLabel;
-@property (nonatomic,weak) UIImageView *imageView;
+@property (nonatomic,strong) UIImageView *imageView;
 @property (nonatomic,weak) UIButton *accessoryButton;
+@property (nonatomic) CGFloat maximumWidth;
+
+- (void)_init;
 @end
 
 @implementation MGSCalloutView
@@ -16,59 +20,107 @@
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
+    
     if (self) {
-        self.imageSize = CGSizeMake(64.0, 64.0);
-        
-        [self initSubviews];
+        [self _init];
+        [self setNeedsLayout];
     }
+    
     return self;
 }
 
-- (void)initSubviews
+- (id)initWithCoder:(NSCoder *)aDecoder
 {
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self _init];
+        [self setNeedsLayout];
+    }
+    
+    return self;
+}
+
+#pragma mark Mutators
+- (void)setImage:(UIImage *)image
+{
+    _image = image;
+    self.imageView.image = image;
+    if (image == nil) {
+        [self.imageView removeFromSuperview];
+    } else {
+        self.imageView.frame = CGRectMake(0,0,48,48);
+        [self addSubview:self.imageView];
+    }
+
+    [self setNeedsLayout];
+}
+
+- (void)setTitle:(NSString *)title
+{
+    _title = title;
+    self.titleLabel.text = _title;
+    [self setNeedsLayout];
+}
+
+- (void)setDetail:(NSString *)detail
+{
+    _detail = detail;
+    self.detailLabel.text = _detail;
+    [self setNeedsLayout];
+}
+#pragma mark -
+
+- (void)_init
+{
+    // Layout for 160x48, no image
     {
-        UIImageView *imageView = [[UIImageView alloc] init];
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0,0,48,48)];
         imageView.backgroundColor = [UIColor clearColor];
         imageView.autoresizingMask = UIViewAutoresizingNone;
-        
-        [self addSubview:imageView];
+        imageView.contentMode = UIViewContentModeScaleAspectFill;
         self.imageView = imageView;
     }
     
     {
-        UILabel *titleLabel = [[UILabel alloc] init];
-        titleLabel.backgroundColor = [UIColor clearColor];
-        titleLabel.textColor = [UIColor whiteColor];
-        titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
-        titleLabel.numberOfLines = 0;
-        titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        titleLabel.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                       UIViewAutoresizingFlexibleWidth |
-                                       UIViewAutoresizingFlexibleBottomMargin |
-                                       UIViewAutoresizingFlexibleRightMargin);
+            UILabel *titleLabel = [[UILabel alloc] init];
+            titleLabel.backgroundColor = [UIColor clearColor];
+            titleLabel.textColor = [UIColor whiteColor];
+            titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
+            titleLabel.numberOfLines = 0;
+            titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+            titleLabel.frame = CGRectMake(0, 0, 123, 24);
+            titleLabel.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                           UIViewAutoresizingFlexibleWidth |
+                                           UIViewAutoresizingFlexibleTopMargin);
+            
+            [self addSubview:titleLabel];
+            self.titleLabel = titleLabel;
+        }
         
-        [self addSubview:titleLabel];
-        self.titleLabel = titleLabel;
-    }
-    
-    {
-        UILabel *detailLabel = [[UILabel alloc] init];
-        detailLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
-        detailLabel.textColor = [UIColor lightGrayColor];
-        detailLabel.backgroundColor = [UIColor clearColor];
-        detailLabel.numberOfLines = 0;
-        detailLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        detailLabel.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                       UIViewAutoresizingFlexibleWidth |
-                                       UIViewAutoresizingFlexibleBottomMargin |
-                                       UIViewAutoresizingFlexibleRightMargin);
-        
-        [self addSubview:detailLabel];
-        self.detailLabel = detailLabel;
-    }
+        {
+            UILabel *detailLabel = [[UILabel alloc] init];
+            detailLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
+            detailLabel.textColor = [UIColor lightGrayColor];
+            detailLabel.backgroundColor = [UIColor clearColor];
+            detailLabel.numberOfLines = 0;
+            detailLabel.lineBreakMode = NSLineBreakByWordWrapping;
+            detailLabel.frame = CGRectMake(0, 24, 123, 24);
+            detailLabel.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                           UIViewAutoresizingFlexibleWidth |
+                                           UIViewAutoresizingFlexibleBottomMargin);
+            
+            [self addSubview:detailLabel];
+            self.detailLabel = detailLabel;
+        }
     
     {
         UIButton *accessoryButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        
+        CGRect frame = accessoryButton.frame;
+        frame.origin = CGPointMake(131, 9);
+        accessoryButton.frame = frame;
+        accessoryButton.autoresizingMask = UIViewAutoresizingNone;
+        
         [accessoryButton addTarget:self
                             action:@selector(accessoryTouched:)
                   forControlEvents:UIControlEventTouchUpInside];
@@ -76,111 +128,97 @@
         [self addSubview:accessoryButton];
         self.accessoryButton = accessoryButton;
     }
-    
-    [self setNeedsLayout];
 }
-
 
 - (void)layoutSubviews
 {
+    [super layoutSubviews];
+
     CGRect bounds = self.bounds;
     
-    bounds.size.width -= CGRectGetWidth(self.accessoryButton.frame) + 10;
-    
-    if (self.imageView.image)
-    {
-        self.imageView.frame = CGRectMake(CGRectGetMinX(bounds) + 10,
-                                           ((CGRectGetHeight(bounds) - CGRectGetMinY(bounds)) - self.imageSize.height) / 2.0,
-                                           self.imageSize.width,
-                                           self.imageSize.height);
-        
-        bounds.origin.x += CGRectGetMaxX(self.imageView.frame) + 10;
-    }
-
-    {
-        CGSize titleSize = [self.titleLabel.text sizeWithFont:self.titleLabel.font
-                                            constrainedToSize:CGSizeMake(CGRectGetWidth(bounds) - CGRectGetMinX(bounds),
-                                                                         CGRectGetHeight(bounds) - CGRectGetMinY(bounds))
-                                                lineBreakMode:self.titleLabel.lineBreakMode];
-        
-        CGRect titleRect = CGRectMake(CGRectGetMinX(bounds),
-                                      CGRectGetMinY(bounds),
-                                      titleSize.width,
-                                      titleSize.height);
-        
-        self.titleLabel.frame = titleRect;
-        bounds.origin.y += CGRectGetHeight(titleRect);
+    CGRect imageFrame = CGRectZero;
+    if (self.image) {
+        imageFrame.size = CGSizeMake(48.0, 48.0);
+        self.imageView.frame = imageFrame;
+    } else {
+        self.imageView.frame = CGRectZero;
     }
     
-    if ([self.detailLabel.text length])
+    
+    CGRect accessoryFrame = self.accessoryButton.frame;
     {
-        CGSize detailSize = [self.detailLabel.text sizeWithFont:self.detailLabel.font
-                                             constrainedToSize:CGSizeMake(CGRectGetWidth(bounds) - CGRectGetMinX(bounds),
-                                                                          CGRectGetHeight(bounds) - CGRectGetMinY(bounds))
-                                                 lineBreakMode:self.detailLabel.lineBreakMode];
-        
-        CGRect detailRect = CGRectMake(CGRectGetMinX(bounds),
-                                      CGRectGetMinY(bounds),
-                                      detailSize.width,
-                                      detailSize.height);
-        
-        self.detailLabel.frame = detailRect;
+        accessoryFrame.origin = CGPointMake(CGRectGetMaxX(bounds) - CGRectGetWidth(accessoryFrame),
+                                            (CGRectGetHeight(bounds) - CGRectGetHeight(accessoryFrame)) / 2.0);
+        self.accessoryButton.frame = accessoryFrame;
     }
     
-    CGRect buttonFrame = self.accessoryButton.frame;
-    buttonFrame.origin.x = bounds.size.width + 10;
-    buttonFrame.origin.y = ((CGRectGetHeight(self.bounds) - CGRectGetMinY(self.bounds)) - CGRectGetHeight(self.accessoryButton.frame)) / 2.0;
     
-    self.accessoryButton.frame = buttonFrame;
+    {
+        CGFloat originX = CGRectGetMaxX(imageFrame);
+        if (self.image) {
+            originX += 8.0;
+        }
+        
+        
+        CGFloat textWidth = CGRectGetMinX(accessoryFrame) - CGRectGetMaxX(imageFrame) - 8.0;
+        CGSize detailTextSize = [self.detail sizeWithFont:self.detailLabel.font
+                                        constrainedToSize:CGSizeMake(textWidth,CGRectGetHeight(bounds) / 2.0)
+                                            lineBreakMode:self.detailLabel.lineBreakMode];
+        
+        CGSize titleTextSize = [self.title sizeWithFont:self.titleLabel.font
+                                      constrainedToSize:CGSizeMake(textWidth,CGRectGetHeight(bounds) - detailTextSize.height)
+                                          lineBreakMode:self.titleLabel.lineBreakMode];
+        
+        self.titleLabel.frame = CGRectMake(originX, 0, textWidth, titleTextSize.height);
+        
+        self.detailLabel.frame = CGRectMake(originX,
+                                            CGRectGetHeight(bounds) - detailTextSize.height,
+                                            textWidth,
+                                            detailTextSize.height);
+    }
 }
+
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-    CGFloat otherWidth = CGRectGetWidth(self.accessoryButton.frame) + 10;
-    if (self.imageView.image)
-    {
-        otherWidth += CGRectGetMaxX(self.imageView.frame) + 10;
+    CGSize newSize = CGSizeZero;
+    
+    if (self.image) {
+        CGFloat imageSize = 48.0;
+        newSize.width = imageSize + 8.0; // Image: Maximum of 48px square with 8px padding on the right
+        newSize.height = imageSize;
     }
     
-    CGFloat width = size.width - otherWidth;
-    
-    if (width <= 64.0)
-    {
-        width = ([[UIScreen mainScreen] applicationFrame].size.width * 0.75) - otherWidth;
+    newSize.width += 8.0 + CGRectGetWidth(self.accessoryButton.frame); // 8px padding on the left of the accessory button
+
+    CGFloat maxTextWidth = 0.0;
+    if (self.superview) {
+        maxTextWidth = (CGRectGetWidth(self.superview.bounds) * 0.75) - newSize.width;
+    } else {
+        // 320px * 0.75
+        maxTextWidth = 240 - newSize.width;
     }
     
-    CGSize titleSize = [self.titleLabel.text sizeWithFont:self.titleLabel.font
-                                        constrainedToSize:CGSizeMake(width,
-                                                                     CGFLOAT_MAX)
-                                            lineBreakMode:self.titleLabel.lineBreakMode];
+    CGSize titleSize = [self.title sizeWithFont:self.titleLabel.font
+                              constrainedToSize:CGSizeMake(maxTextWidth, CGFLOAT_MAX)
+                                  lineBreakMode:self.titleLabel.lineBreakMode];
     
-    CGSize detailSize = [self.detailLabel.text sizeWithFont:self.detailLabel.font
-                                          constrainedToSize:CGSizeMake(width,
-                                                                     CGFLOAT_MAX)
-                                              lineBreakMode:self.detailLabel.lineBreakMode];
+    CGSize detailSize = [self.detail sizeWithFont:self.detailLabel.font
+                                constrainedToSize:CGSizeMake(maxTextWidth, CGFLOAT_MAX)
+                                    lineBreakMode:self.detailLabel.lineBreakMode];
+    CGFloat textHeight = titleSize.height + detailSize.height;
     
-    CGFloat textWidth = MAX(titleSize.width, detailSize.width);
-    CGFloat newHeight = 0;
-    CGFloat imageHeight = 0;
-    if (self.imageView.image)
-    {
-        imageHeight = CGRectGetHeight(self.imageView.frame);
-    }
-    
-    newHeight = MAX(imageHeight,
-                    MAX(CGRectGetHeight(self.accessoryButton.frame),
-                        titleSize.height + detailSize.height));
-    
-    CGSize newSize = CGSizeMake(MIN(width,textWidth) + otherWidth,newHeight);
+    newSize.height = MIN(MAX(newSize.height,textHeight), 48);
+    newSize.width += MAX(CGRectGetHeight(self.accessoryButton.frame),MAX(titleSize.width,detailSize.width));
     
     return newSize;
 }
 
 - (IBAction)accessoryTouched:(id)sender
 {
-    if (self.accessoryBlock)
+    if (self.accessoryActionBlock)
     {
-        self.accessoryBlock(sender);
+        self.accessoryActionBlock(sender);
     }
 }
 @end

@@ -6,11 +6,13 @@
 @class AGSGraphic;
 @class AGSLocationDisplay;
 @class MGSLayer;
+@class MGSErrorView;
 
 @protocol MGSAnnotation;
 
 @interface MGSMapView () <AGSMapViewTouchDelegate, AGSCalloutDelegate, AGSMapViewLayerDelegate, AGSMapViewCalloutDelegate, AGSLayerDelegate, AGSLocationDisplayDataSourceDelegate, AGSInfoTemplateDelegate, MGSLayerControllerDelegate>
 #pragma mark Properties
+@property(nonatomic,weak) MGSErrorView* loadingView;
 @property(nonatomic,weak) AGSMapView* mapView;
 
 @property(nonatomic,assign,getter=isBaseLayersLoaded) BOOL baseLayersLoaded;
@@ -21,11 +23,13 @@
 @property(nonatomic,strong) NSMutableSet* externalLayerManagers;
 @property(nonatomic,strong) MGSLayer* defaultLayer;
 
-@property(nonatomic, strong) id <MGSAnnotation> pendingCalloutAnnotation;
+@property(nonatomic, copy) dispatch_block_t pendingCalloutBlock;
+@property(nonatomic, weak) MGSLayer* pendingCalloutLayer;
 @property(nonatomic, strong) id <MGSAnnotation> calloutAnnotation;
+@property(nonatomic,strong) id zoomNotificationObject;
 
 #pragma mark Initialization
-- (void)commonInit;
+- (void)_init;
 - (void)baseLayersDidFinishLoading;
 
 #pragma mark Property Getters

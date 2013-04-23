@@ -2,12 +2,13 @@
 #import "MobileRequestOperation.h"
 
 @interface MGSBootstrapper ()
-@property (strong) NSOperationQueue *requestQueue;
+@property (nonatomic) dispatch_semaphore_t requestSemaphore;
+@property (nonatomic,strong) NSOperationQueue *requestQueue;
+
 @property (strong) NSDictionary *cachedResponse;
 @property (strong) NSError *cachedError;
 @property (strong) NSDate *lastRetrieved;
 @property (assign) NSTimeInterval cacheExpiryInterval;
-@property (assign,getter=isRequestInFlight) BOOL requestInFlight;
 @end
 
 @implementation MGSBootstrapper
@@ -27,6 +28,7 @@
 {
     self = [super init];
     if (self) {
+        self.requestSemaphore = dispatch_semaphore_create(1);
         self.requestQueue = [[NSOperationQueue alloc] init];
         self.requestQueue.maxConcurrentOperationCount = 1;
         self.cachedResponse = nil;
@@ -37,7 +39,14 @@
     return self;
 }
 
-- (void)validateResponse:(id)content
+- (void)dealloc
+{
+    if (self.requestSemaphore) {
+        dispatch_release(self.requestSemaphore);
+    }
+}
+
+- (BOOL)validateResponse:(id)content
                    error:(NSError**)error
 {
     NSString* contentClass = @"NSDictionary";
@@ -59,75 +68,76 @@
                 }
             }];
         } else {
-            (*error) = [NSError errorWithDomain:NSURLErrorDomain
-                                           code:NSURLErrorBadServerResponse
-                                       userInfo:@{ NSLocalizedDescriptionKey : @"missing or malformed 'basemaps' key" }];
+            if (error) {
+                (*error) = [NSError errorWithDomain:NSURLErrorDomain
+                                               code:NSURLErrorBadServerResponse
+                                           userInfo:@{ NSLocalizedDescriptionKey : @"missing or malformed 'basemaps' key" }];
+            }
         }
     } else {
         NSString *errorDescription = [NSString stringWithFormat:@"invalid content type, expected %@, received %@",
                                       contentClass, NSStringFromClass([content class])];
-        (*error) = [NSError errorWithDomain:NSURLErrorDomain
-                                       code:NSURLErrorBadServerResponse
-                                   userInfo:@{ NSLocalizedDescriptionKey : errorDescription }];
+        if (error) {
+            (*error) = [NSError errorWithDomain:NSURLErrorDomain
+                                           code:NSURLErrorBadServerResponse
+                                       userInfo:@{ NSLocalizedDescriptionKey : errorDescription }];
+        }
     }
+    
+    return (error == nil);
 }
 
 
-
-// TODO: This code could be grealy simplified if we don't care if there
-// are multiple requests
 - (void)requestBootstrap:(void (^)(NSDictionary*,NSError*))resultBlock
 {
     void (^requestResultBlock)(NSDictionary*,NSError*) = [resultBlock copy];
     
-    [self.requestQueue addOperationWithBlock:^{
-        NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:self.lastRetrieved];
-        BOOL needsUpdate = ((interval > self.cacheExpiryInterval) ||
-                            (self.cachedResponse == nil) ||
-                            (self.cachedError));
+    NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:self.lastRetrieved];
+    BOOL needsUpdate = ((interval > self.cacheExpiryInterval) ||
+                        (self.cachedResponse == nil) ||
+                        (self.cachedError));
+    
+    if (needsUpdate && !dispatch_semaphore_wait(self.requestSemaphore, DISPATCH_TIME_NOW)) {
+        DDLogVerbose(@"Semaphore control obtained, initiating new request");
+        MobileRequestOperation* operation = [MobileRequestOperation operationWithModule:@"map"
+                                                                                command:@"bootstrap"
+                                                                             parameters:nil];
+        [operation setCompleteBlock:^(MobileRequestOperation* blockOperation, id content, NSString* contentType, NSError* error) {
+            NSError *validationError = nil;
+            if (error) {
+                self.cachedError = error;
+                self.cachedResponse = nil;
+            } else if ([self validateResponse:content
+                                        error:&validationError]) {
+                self.cachedError = validationError;
+                self.cachedResponse = nil;
+            } else {
+                self.cachedResponse = content;
+                self.cachedError = nil;
+            }
+            
+            self.lastRetrieved = [NSDate date];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (requestResultBlock) {
+                    requestResultBlock(self.cachedResponse,self.cachedError);
+                }
+            });
+            
+            dispatch_semaphore_signal(self.requestSemaphore);
+        }];
         
-        if (!(needsUpdate && (self.requestInFlight == NO))) {
+        [self.requestQueue addOperation:operation];
+    } else  {
+        [self.requestQueue addOperationWithBlock:^{
             DDLogVerbose(@"Using bootstrap retreived at %@", self.lastRetrieved);
             if (requestResultBlock) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                        requestResultBlock(self.cachedResponse,self.cachedError);
+                    requestResultBlock(self.cachedResponse,self.cachedError);
                 });
             }
-        } else {
-            DDLogVerbose(@"Requesting fresh copy of the bootstrap");
-            MobileRequestOperation* operation = [MobileRequestOperation operationWithModule:@"map"
-                                                                                    command:@"bootstrap"
-                                                                                 parameters:nil];
-            [operation setCompleteBlock:^(MobileRequestOperation* blockOperation, id content, NSString* contentType, NSError* error) {
-                NSError *localError = error;
-                if (localError == nil) {
-                    [self validateResponse:content
-                                     error:&localError];
-                }
-                
-                
-                if (localError) {
-                    self.cachedError = error;
-                    self.cachedResponse = nil;
-                } else {
-                    self.cachedResponse = content;
-                    self.cachedError = nil;
-                }
-                
-                self.lastRetrieved = [NSDate date];
-                self.requestInFlight = NO;
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (requestResultBlock) {
-                        requestResultBlock(self.cachedResponse,self.cachedError);
-                    }
-                });
-            }];
-            
-            self.requestInFlight = YES;
-            [[NSOperationQueue currentQueue] addOperation:operation];
-        }
-    }];
+        }];
+    }
 }
 
 @end

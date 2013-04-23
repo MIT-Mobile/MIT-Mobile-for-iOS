@@ -3,7 +3,6 @@
 #import "ShuttleRoute.h"
 #import "MITDeviceRegistration.h"
 #import "MobileRequestOperation.h"
-#import "MITMobileWebAPI.h"
 #import "MITUIConstants.h"
 
 @implementation ShuttleSubscriptionManager

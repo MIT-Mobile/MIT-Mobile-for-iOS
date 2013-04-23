@@ -1,5 +1,8 @@
 
 #import "MITMapSearchResultAnnotation.h"
+#import "MITMobileWebAPI.h"
+#import "UIKit+MITAdditions.h"
+#import "MobileRequestOperation.h"
 
 
 @implementation MITMapSearchResultAnnotation
@@ -20,10 +23,50 @@
 @synthesize bookmark = _bookmark;
 
 +(void) executeServerSearchWithQuery:(NSString *)query jsonDelegate:(id<JSONLoadedDelegate>)delegate object:(id)object {
-	MITMobileWebAPI *apiRequest = [MITMobileWebAPI jsonLoadedDelegate:delegate];
-	apiRequest.userData = object;
-	[apiRequest requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"search", @"command", query, @"q", nil]
-				pathExtension:@"map/"];
+    MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithModule:@"map"
+                                                                                command:@"search"
+                                                                             parameters:@{ @"q":query }];
+    apiRequest.userData = object;
+	
+    apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
+        if (delegate) {
+            if (error) {
+                if ([delegate respondsToSelector:@selector(handleConnectionFailureForRequest:)]) {
+                    [delegate handleConnectionFailureForRequest:operation];
+                }
+                
+                BOOL showAlert = NO;
+                if ([delegate respondsToSelector:@selector(request:shouldDisplayStandardAlertForError:)]) {
+                    showAlert = [delegate request:operation
+               shouldDisplayStandardAlertForError:error];
+                }
+                
+                if (showAlert) {
+                    NSString *header = nil;
+                    id<UIAlertViewDelegate> alertViewDelegate = nil;
+                    
+                    if ([delegate respondsToSelector:@selector(request:displayHeaderForError:)]) {
+                        header = [delegate request:operation
+                         displayHeaderForError:error];
+                    }
+                    
+                    if ([delegate respondsToSelector:@selector(request:alertViewDelegateForError:)]) {
+                        alertViewDelegate = [delegate request:operation
+                                    alertViewDelegateForError:error];
+                    }
+                    
+                    [[UIAlertView alertViewForError:error
+                                          withTitle:header
+                                  alertViewDelegate:alertViewDelegate] show];
+                }
+            } else {
+                [delegate request:operation
+                       jsonLoaded:content];
+            }
+        }
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:apiRequest];
 }
 
 -(void) dealloc

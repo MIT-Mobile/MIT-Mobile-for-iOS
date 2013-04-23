@@ -20,22 +20,14 @@ static const CGFloat kSubTitleFontSize = 12;
 
 - (id)initWithAnnotationView:(MITMapAnnotationView *)annotationView mapView:(MITMapView*)mapView
 {
-	self = [super initWithFrame:CGRectMake(10, 150, 275, 125)];
+	self = [super init];
+    
 	if (self) {
 		self.mapView = mapView;
 		self.annotationView = annotationView;
         
-        self.titleLabel.text = [self.annotationView.annotation title];
-        self.titleLabel.font = [UIFont boldSystemFontOfSize:kTitleFontSize];
-        self.titleLabel.numberOfLines = 0;
-        self.titleLabel.lineBreakMode = UILineBreakModeWordWrap;
-        
-        self.detailLabel.text = [self.annotationView.annotation subtitle];
-        self.detailLabel.font = [UIFont systemFontOfSize:kSubTitleFontSize];
-        self.detailLabel.numberOfLines = 0;
-        self.detailLabel.lineBreakMode = UILineBreakModeWordWrap;
-        
-        [self sizeToFit];
+        self.title = [self.annotationView.annotation title];
+        self.detail = [self.annotationView.annotation subtitle];
 	}
 	
 	return self;

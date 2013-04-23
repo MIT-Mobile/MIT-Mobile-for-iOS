@@ -799,7 +799,7 @@
 	
 		if ([searchType isEqualToString:kAPISearch])
 		{
-			self.lastSearchText = [request.params objectForKey:@"q"];
+			self.lastSearchText = [request.parameters objectForKey:@"q"];
 		
 			[self receivedNewSearchResults:searchResults forQuery:self.lastSearchText];
 		
@@ -858,7 +858,9 @@
 	}
 	else
 	{		
-		[MITMapSearchResultAnnotation executeServerSearchWithQuery:searchText jsonDelegate:self object:kAPISearch];
+		[MITMapSearchResultAnnotation executeServerSearchWithQuery:searchText
+                                                      jsonDelegate:self
+                                                            object:kAPISearch];
 	}
 	if (self.displayingList)
 		[self.url setPath:@"list" query:searchText];

@@ -1,10 +1,13 @@
 #import <UIKit/UIKit.h>
 
 @interface MGSCalloutView : UIView
-@property (nonatomic,assign) CGSize imageSize;
-@property (nonatomic,readonly,weak) UILabel *titleLabel;
-@property (nonatomic,readonly,weak) UILabel *detailLabel;
-@property (nonatomic,readonly,weak) UIImageView *imageView;
+@property (nonatomic,strong) NSString *title;
+@property (nonatomic,strong) NSString *detail;
+@property (nonatomic,strong) UIImage *image;
 
-@property (nonatomic,copy) void (^accessoryBlock)(id sender);
+@property (nonatomic,copy) void (^accessoryActionBlock)(id sender);
+
+- (id)init;
+- (id)initWithFrame:(CGRect)frame;
+- (id)initWithCoder:(NSCoder *)aDecoder;
 @end

@@ -6,10 +6,10 @@
 
 FOUNDATION_EXTERN NSString* const MGSAnnotationAttributeKey;
 
-typedef enum _MGSGraphicType {
+typedef NS_ENUM(NSUInteger,MGSGraphicType) {
     MGSGraphicDefault = 0,
     MGSGraphicStop
-} MGSGraphicType;
+};
 
 FOUNDATION_EXPORT AGSPoint* AGSPointFromCLLocationCoordinate2D(CLLocationCoordinate2D coord);
 FOUNDATION_EXPORT AGSPoint* AGSPointFromCLLocationCoordinate2DInSpatialReference(CLLocationCoordinate2D coord, AGSSpatialReference *targetReference);

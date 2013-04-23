@@ -2,50 +2,21 @@
 #import "CoreDataManager.h"
 
 @implementation PeopleRecentsData
-
 @synthesize recents;
 
-static PeopleRecentsData *sharedData = nil;
 
 #pragma mark Singleton Boilerplate
-
 + (PeopleRecentsData *)sharedData
 {
-	if (sharedData == nil) {
-		sharedData = [[super allocWithZone:NULL] init];
-	}
+    static PeopleRecentsData *sharedData = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedData = [[self alloc] init];
+    });
+    
 	return sharedData;
 }
 
-+ (id)allocWithZone:(NSZone *)zone
-{
-    return [[self sharedData] retain];	
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    return self;
-}
-
-- (id)retain
-{
-    return self;	
-}
-
-- (NSUInteger)retainCount
-{
-    return NSUIntegerMax;  //denotes an object that cannot be released	
-}
-
-- (oneway void)release
-{
-    //do nothing	
-}
-
-- (id)autorelease
-{
-    return self;	
-}
 
 #pragma mark -
 #pragma mark Core data interface

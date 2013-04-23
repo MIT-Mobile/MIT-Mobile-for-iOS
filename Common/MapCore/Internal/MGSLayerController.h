@@ -32,6 +32,7 @@
 
 - (id)initWithLayer:(MGSLayer*)layer;
 - (void)refresh;
+- (void)reload;
 
 - (MGSLayerAnnotation*)layerAnnotationForGraphic:(AGSGraphic*)graphic;
 - (NSSet*)layerAnnotationsForGraphics:(NSSet*)graphics;

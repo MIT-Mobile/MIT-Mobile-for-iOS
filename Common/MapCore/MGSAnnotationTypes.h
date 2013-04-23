@@ -1,7 +1,7 @@
 #ifndef _MGSAnnotationTypes_h
 #define _MGSAnnotationTypes_h
 
-typedef enum _MGSAnnotationType {
+typedef NS_ENUM(NSUInteger,MGSAnnotationType) {
     // Indicates the annotation should place a marker on the map
     // The maker will be the default pin unless the markerImage
     // image property returns a non-nil value. A marker is the only object
@@ -21,7 +21,7 @@ typedef enum _MGSAnnotationType {
     // Indicates that the annotation is a marker for some sort of
     // pre-existing data on the layer. For example, if we were to
     MGSAnnotationPointOfInterest = 0x04
-} MGSAnnotationType;
+};
 
 
 typedef struct _MGSMarkerOptions {

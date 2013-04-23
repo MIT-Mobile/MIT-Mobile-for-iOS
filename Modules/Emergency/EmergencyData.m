@@ -17,41 +17,16 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 #pragma mark -
 #pragma mark Singleton Boilerplate
 
-static EmergencyData *sharedEmergencyData = nil;
 
 + (EmergencyData *)sharedData {
-    @synchronized(self) {
-        if (sharedEmergencyData == nil) {
-            sharedEmergencyData = [[super allocWithZone:NULL] init]; // assignment not done here
-        }
-    }
+    static EmergencyData *sharedEmergencyData = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedEmergencyData = [[self alloc] init];
+    });
+
     return sharedEmergencyData;
 }
-
-+ (id)allocWithZone:(NSZone *)zone {
-    return [[self sharedData] retain];
-}
-
-- (id)copyWithZone:(NSZone *)zone {
-    return self;
-}
-
-- (id)retain {
-    return self;
-}
-
-- (unsigned)retainCount {
-    return UINT_MAX;  //denotes an object that cannot be released
-}
-
-- (oneway void)release {
-    //do nothing
-}
-
-- (id)autorelease {
-    return self;
-}
-
 #pragma mark -
 #pragma mark Initialization
 

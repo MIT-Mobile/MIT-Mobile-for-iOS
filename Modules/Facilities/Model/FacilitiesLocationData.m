@@ -21,8 +21,6 @@ NSString * const FacilitiesRepairTypesKey = @"problemtype";
 
 static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
-static FacilitiesLocationData *_sharedData = nil;
-
 @interface FacilitiesLocationData ()
 @property (nonatomic,retain) NSOperationQueue* requestQueue;
 @property (nonatomic,retain) NSMutableDictionary* notificationBlocks;
@@ -658,38 +656,12 @@ static FacilitiesLocationData *_sharedData = nil;
 
 
 #pragma mark - Singleton Implementation
-+ (void)initialize {
-    if (_sharedData == nil) {
-        _sharedData = [[super allocWithZone:NULL] init];
-    }
-}
-
 + (FacilitiesLocationData*)sharedData {
+    static FacilitiesLocationData *_sharedData = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedData = [[self alloc] init];
+    });
     return _sharedData;
 }
-
-+ (id)allocWithZone:(NSZone *)zone {
-    return [[self sharedData] retain];
-}
-
-- (id)copyWithZone:(NSZone*)zone {
-    return self;
-}
-
-- (id)retain {
-    return self;
-}
-
-- (NSUInteger)retainCount {
-    return NSUIntegerMax;
-}
-
-- (oneway void)release {
-    return;
-}
-
-- (id)autorelease {
-    return self;
-}
-
 @end

@@ -11,7 +11,6 @@
 #import "MITConstants.h"
 #import "SettingsTouchstoneViewController.h"
 #import "MobileRequestOperation.h"
-#import "MITMobileWebAPI.h"
 
 NSString * const SettingsTitleString = @"Notifications";
 NSString * const SettingsSubtitleString = @"Turn off Notifications to disable alerts for that module.";
