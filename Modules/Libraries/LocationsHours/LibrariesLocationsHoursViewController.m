@@ -186,7 +186,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    LibrariesLocationsHoursDetailViewController *detailController = [[LibrariesLocationsHoursDetailViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    LibrariesLocationsHoursDetailViewController *detailController = [[LibrariesLocationsHoursDetailViewController alloc] init];
     detailController.library = [self.libraries objectAtIndex:indexPath.row];
     [self.navigationController pushViewController:detailController animated:YES];
     [detailController release];
