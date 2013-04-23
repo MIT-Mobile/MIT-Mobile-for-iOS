@@ -26,7 +26,7 @@
         
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(frame), halfHeight)];
         self.titleLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
-        self.titleLabel.backgroundColor = [UIColor clearColor];
+        self.titleLabel.backgroundColor = [UIColor lightGrayColor];
         self.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
         self.titleLabel.textAlignment = NSTextAlignmentCenter;
         
@@ -35,6 +35,7 @@
         self.timeLabel.backgroundColor = [UIColor darkGrayColor];
         self.timeLabel.font = [UIFont fontWithName:@"Helvetica" size:10];
         self.timeLabel.textAlignment = NSTextAlignmentCenter;
+        self.timeLabel.textColor = [UIColor whiteColor];
         
         
         [self addSubview:self.titleLabel];

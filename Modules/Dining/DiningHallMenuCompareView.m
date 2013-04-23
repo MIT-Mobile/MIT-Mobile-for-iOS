@@ -11,6 +11,7 @@
 #import "UIKit+MITAdditions.h"
 #import "DiningHallMenuCompareLayout.h"
 #import "DiningHallMenuComparisonSectionHeaderView.h"
+#import "DiningHallMenuComparisonCell.h"
 
 @interface DiningHallMenuCompareView () <PSTCollectionViewDataSource, CollectionViewDelegateMenuCompareLayout>
 
@@ -21,6 +22,7 @@
 @end
 
 #define HEADER_VIEW_HEIGHT 24
+#define COLUMN_WIDTH 113.6
 static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 
 @implementation DiningHallMenuCompareView
@@ -38,7 +40,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         [self.dateFormatter setDateFormat:@"MMMM dd"];
         
         DiningHallMenuCompareLayout *layout = [[DiningHallMenuCompareLayout alloc] init];
-        layout.columnWidth = 180;
+        layout.columnWidth = COLUMN_WIDTH;
         
         CGFloat headerHeight = CGRectGetHeight(self.headerView.frame);
         self.collectionView = [[PSTCollectionView alloc] initWithFrame:CGRectMake(0, headerHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - headerHeight) collectionViewLayout:layout];
@@ -47,7 +49,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         self.collectionView.directionalLockEnabled = YES;
         self.collectionView.showsHorizontalScrollIndicator = NO;
         self.collectionView.showsVerticalScrollIndicator = NO;
-        [self.collectionView registerClass:[PSTCollectionViewCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];
+        [self.collectionView registerClass:[DiningHallMenuComparisonCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];
         [self.collectionView registerClass:[DiningHallMenuComparisonSectionHeaderView class] forSupplementaryViewOfKind:MITDiningMenuComparisonSectionHeaderKind withReuseIdentifier:SectionHeaderIdentifier];
         
         [self addSubview:self.headerView];
@@ -101,11 +103,11 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
 - (PSTCollectionViewCell *)collectionView:(PSTCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    PSTCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DiningMenuCell" forIndexPath:indexPath];
+    DiningHallMenuComparisonCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DiningMenuCell" forIndexPath:indexPath];
+    cell.primaryLabel.text = @"Old fashioned hamburgers and hotdogs";
+    cell.secondaryLabel.text = @"served with fries and shakes";
     
-    cell.backgroundColor = [UIColor whiteColor];
-    cell.layer.borderWidth = 1;
-    cell.layer.borderColor = [UIColor blackColor].CGColor;
+    cell.dietaryTypes = @[@"farm_to_fork", @"organic"/*, @"seafood_watch", @"well_being"*/];
     
     return cell;
 }
@@ -113,7 +115,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 #pragma mark - CollectionViewDelegateMenuCompareLayout
 - (CGFloat)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout heightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 60;
+    return [DiningHallMenuComparisonCell heightForComparisonCellOfWidth:COLUMN_WIDTH withPrimaryText:@"Old fashioned hamburgers and hotdogs" secondaryText:@"served with fries and shakes" numDietaryTypes:2];
 }
 
 - (void) scrollViewDidScroll:(UIScrollView *)scrollView

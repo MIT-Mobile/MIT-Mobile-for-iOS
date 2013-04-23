@@ -216,6 +216,7 @@
 		4869CE5A17037F8600A3662B /* PSTGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDBE17037F8500A3662B /* PSTGridLayoutSection.m */; };
 		4869CE77170380D800A3662B /* DiningMenuCompareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */; };
 		486B1E70170E24C900A75563 /* DiningHallMenuFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 486B1E6F170E24C900A75563 /* DiningHallMenuFooterView.m */; };
+		48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48873E561727159A009C22F3 /* DiningHallMenuComparisonCell.m */; };
 		48A372ED170F47B800C95573 /* MGSLayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C4D799E16FB4B0F001AAC81 /* MGSLayerController.m */; };
 		48A6E4D7170B89C2004DED46 /* DiningHallMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */; };
 		48A6E4DB170B9423004DED46 /* DiningHallDetailHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4DA170B9423004DED46 /* DiningHallDetailHeaderView.m */; };
@@ -801,6 +802,8 @@
 		4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningMenuCompareViewController.m; path = Dining/DiningMenuCompareViewController.m; sourceTree = "<group>"; };
 		486B1E6E170E24C900A75563 /* DiningHallMenuFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuFooterView.h; path = Dining/DiningHallMenuFooterView.h; sourceTree = "<group>"; };
 		486B1E6F170E24C900A75563 /* DiningHallMenuFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuFooterView.m; path = Dining/DiningHallMenuFooterView.m; sourceTree = "<group>"; };
+		48873E551727159A009C22F3 /* DiningHallMenuComparisonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuComparisonCell.h; path = Dining/DiningHallMenuComparisonCell.h; sourceTree = "<group>"; };
+		48873E561727159A009C22F3 /* DiningHallMenuComparisonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuComparisonCell.m; path = Dining/DiningHallMenuComparisonCell.m; sourceTree = "<group>"; };
 		48A6E4D5170B89C2004DED46 /* DiningHallMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuViewController.h; path = Dining/DiningHallMenuViewController.h; sourceTree = "<group>"; };
 		48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuViewController.m; path = Dining/DiningHallMenuViewController.m; sourceTree = "<group>"; };
 		48A6E4D9170B9423004DED46 /* DiningHallDetailHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallDetailHeaderView.h; path = Dining/DiningHallDetailHeaderView.h; sourceTree = "<group>"; };
@@ -1988,6 +1991,8 @@
 				483C86621725956A00A054F1 /* DiningHallMenuCompareLayout.m */,
 				483C86641725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.h */,
 				483C86651725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m */,
+				48873E551727159A009C22F3 /* DiningHallMenuComparisonCell.h */,
+				48873E561727159A009C22F3 /* DiningHallMenuComparisonCell.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -3242,6 +3247,7 @@
 				483C86631725956A00A054F1 /* DiningHallMenuCompareLayout.m in Sources */,
 				483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */,
 				2C5C0BEE171EE27400AEB7A9 /* MGSErrorView.m in Sources */,
+				48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
