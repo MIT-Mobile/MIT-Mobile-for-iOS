@@ -9,7 +9,7 @@
 #import "DiningHallMenuViewController.h"
 #import "DiningMenuCompareViewController.h"
 #import "DiningMenuFilterViewController.h"
-#import "DiningHallMenuHeaderView.h"
+#import "DiningHallDetailHeaderView.h"
 #import "DiningHallMenuFooterView.h"
 #import "DiningHallMenuItemTableCell.h"
 #import "DiningHallMenuSectionHeaderView.h"
@@ -44,7 +44,7 @@
 {
     [super viewDidLoad];
     
-    DiningHallMenuHeaderView *headerView = [[DiningHallMenuHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
+    DiningHallDetailHeaderView *headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
     self.tableView.tableHeaderView = headerView;
     
     DiningHallMenuFooterView *footerView = [[DiningHallMenuFooterView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 54)];

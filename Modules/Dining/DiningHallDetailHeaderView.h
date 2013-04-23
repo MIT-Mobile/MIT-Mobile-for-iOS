@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DiningHallMenuHeaderView : UIView
+@interface DiningHallDetailHeaderView : UIView
 
 @property (nonatomic, readonly, retain) UIImageView   * icon;
 @property (nonatomic, readonly, retain) UILabel       * titleLabel;

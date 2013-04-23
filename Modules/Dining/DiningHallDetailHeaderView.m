@@ -6,9 +6,9 @@
 //
 //
 
-#import "DiningHallMenuHeaderView.h"
+#import "DiningHallDetailHeaderView.h"
 
-@interface DiningHallMenuHeaderView ()
+@interface DiningHallDetailHeaderView ()
 
 @property (nonatomic, retain) UIImageView   * icon;
 @property (nonatomic, retain) UILabel       * titleLabel;
@@ -18,7 +18,7 @@
 @end
 
 
-@implementation DiningHallMenuHeaderView
+@implementation DiningHallDetailHeaderView
 
 - (id)initWithFrame:(CGRect)frame
 {
