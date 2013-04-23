@@ -38,12 +38,15 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         [self.dateFormatter setDateFormat:@"MMMM dd"];
         
         DiningHallMenuCompareLayout *layout = [[DiningHallMenuCompareLayout alloc] init];
-        layout.columnWidth = 200;
+        layout.columnWidth = 180;
         
         CGFloat headerHeight = CGRectGetHeight(self.headerView.frame);
         self.collectionView = [[PSTCollectionView alloc] initWithFrame:CGRectMake(0, headerHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - headerHeight) collectionViewLayout:layout];
         self.collectionView.dataSource = self;
         self.collectionView.delegate = self;
+        self.collectionView.directionalLockEnabled = YES;
+        self.collectionView.showsHorizontalScrollIndicator = NO;
+        self.collectionView.showsVerticalScrollIndicator = NO;
         [self.collectionView registerClass:[PSTCollectionViewCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];
         [self.collectionView registerClass:[DiningHallMenuComparisonSectionHeaderView class] forSupplementaryViewOfKind:MITDiningMenuComparisonSectionHeaderKind withReuseIdentifier:SectionHeaderIdentifier];
         
