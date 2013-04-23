@@ -226,7 +226,6 @@
 		4BE4D2F714115C7600E723F0 /* LibrariesLocationsHoursTerm.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F614115C7600E723F0 /* LibrariesLocationsHoursTerm.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4BE4D2FA14115CF900E723F0 /* LibrariesLocationsHours.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F914115CF900E723F0 /* LibrariesLocationsHours.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4BE4D2FE14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4BE4D2FF14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4BE4D2FD14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib */; };
 		4BE4D3011416EB4D00E723F0 /* libraries in Resources */ = {isa = PBXBuildFile; fileRef = 4BE4D3001416EB4D00E723F0 /* libraries */; };
 		569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3381282ADAB00BA0794 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33C1282ADBC00BA0794 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33B1282ADBC00BA0794 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -802,7 +801,6 @@
 		4BE4D2F914115CF900E723F0 /* LibrariesLocationsHours.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHours.m; path = LocationsHours/LibrariesLocationsHours.m; sourceTree = "<group>"; };
 		4BE4D2FB14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesLocationsHoursDetailViewController.h; path = LocationsHours/LibrariesLocationsHoursDetailViewController.h; sourceTree = "<group>"; };
 		4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesLocationsHoursDetailViewController.m; path = LocationsHours/LibrariesLocationsHoursDetailViewController.m; sourceTree = "<group>"; };
-		4BE4D2FD14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = LibrariesLocationsHoursDetailViewController.xib; path = LocationsHours/LibrariesLocationsHoursDetailViewController.xib; sourceTree = "<group>"; };
 		4BE4D3001416EB4D00E723F0 /* libraries */ = {isa = PBXFileReference; lastKnownFileType = folder; name = libraries; path = Resources/libraries; sourceTree = "<group>"; };
 		569DC3381282ADAB00BA0794 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = iphoneos4.0/System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		569DC33B1282ADBC00BA0794 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = iphoneos4.0/System/Library/Frameworks/CoreMedia.framework; sourceTree = "<group>"; };
@@ -1900,7 +1898,6 @@
 				4BE4D2F314115B9600E723F0 /* LibrariesLocationsHoursTermHours.m */,
 				4BE4D2FB14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.h */,
 				4BE4D2FC14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.m */,
-				4BE4D2FD14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib */,
 			);
 			name = LocationsHours;
 			sourceTree = "<group>";
@@ -2637,7 +2634,6 @@
 				DEE6AF201117477E0037F03C /* credits.html in Resources */,
 				DE5E99D31124B57C00498760 /* emergency_template.html in Resources */,
 				4B667064140330A000714C6A /* LibrariesViewController.xib in Resources */,
-				4BE4D2FF14115DD200E723F0 /* LibrariesLocationsHoursDetailViewController.xib in Resources */,
 				4BE4D3011416EB4D00E723F0 /* libraries in Resources */,
 				4B83723C157E5B5C004CBC49 /* zbar-back.png in Resources */,
 				4B83723D157E5B5C004CBC49 /* zbar-help.html in Resources */,

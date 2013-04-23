@@ -7,10 +7,11 @@ typedef enum {
     LibrariesDetailStatusLoadingFailed
 } LibrariesDetailStatus;
 
-@interface LibrariesLocationsHoursDetailViewController : UITableViewController <UIWebViewDelegate> {
+@interface LibrariesLocationsHoursDetailViewController : UIViewController <UIWebViewDelegate> {
     
 }
 
+@property (nonatomic, strong) UITableView *tableView;
 @property (retain, nonatomic) LibrariesLocationsHours *library;
 @property (nonatomic) LibrariesDetailStatus librariesDetailStatus;
 @property (nonatomic) CGFloat contentRowHeight;

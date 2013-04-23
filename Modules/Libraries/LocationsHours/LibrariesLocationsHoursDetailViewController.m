@@ -22,7 +22,7 @@ LocationsHoursTableRows;
 #define PADDING 11
 #define TITLE_WIDTH 278
 
-@interface LibrariesLocationsHoursDetailViewController (Private)
+@interface LibrariesLocationsHoursDetailViewController () <UITableViewDataSource, UITableViewDelegate>
 - (NSString *)contentHtml;
 @end
 
@@ -32,8 +32,9 @@ LocationsHoursTableRows;
 @synthesize contentRowHeight;
 @synthesize contentWebView;
 
-- (id)initWithStyle:(UITableViewStyle)style {
-    self = [super initWithStyle:style];
+- (id)init {
+    self = [super initWithNibName:nil
+                           bundle:nil];
     if (self) {
         self.contentRowHeight = 0;
     }
@@ -57,11 +58,23 @@ LocationsHoursTableRows;
 }
 
 #pragma mark - View lifecycle
+- (void)loadView {
+    UIView *myView = [self defaultApplicationView];
+    
+    UITableView *tableView = [[UITableView alloc] initWithFrame:myView.bounds
+                                                          style:UITableViewStyleGrouped];
+    tableView.delegate = self;
+    tableView.dataSource = self;
+    [tableView applyStandardColors];
+    self.tableView = tableView;
+    
+    [myView addSubview:tableView];
+    self.view = myView;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.tableView applyStandardColors];
     
     self.title = @"Detail";
 
@@ -93,6 +106,7 @@ LocationsHoursTableRows;
 {
     self.contentWebView.delegate = nil;
     self.contentWebView = nil;
+    self.tableView = nil;
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
