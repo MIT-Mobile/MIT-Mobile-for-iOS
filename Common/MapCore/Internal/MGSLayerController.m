@@ -92,6 +92,7 @@
         
         if (layer == nil) {
             layer = [[AGSGraphicsLayer alloc] init];
+            layer.renderNativeResolution = YES;
         }
     }
     

@@ -94,6 +94,7 @@
             
             AGSTiledMapServiceLayer* serviceLayer = [AGSTiledMapServiceLayer tiledMapServiceLayerWithURL:layerURL];
             serviceLayer.delegate = self;
+            serviceLayer.renderNativeResolution = YES;
             
             coreMapLayers[identifier] = serviceLayer;
             [identifierOrder addObject:identifier];
