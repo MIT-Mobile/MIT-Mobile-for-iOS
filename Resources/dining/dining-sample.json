@@ -1,0 +1,134 @@
+{
+  "uri": "http://m.mit.edu/apis/dining/",
+  "announcements_html": "<ul><li><a href=\"https://odysseyhms-web.mit.edu/hmswebstudent/\">ENROLL in the Spring Meal Plan Program today!</a></li><li><a href=\"/sites/default/files/u185/April_2013_Calendar_MIT.pdf\">Check out the House Dining events that are happening in APRIL!</a></li><li>Discover MIT's Farmer's Market in the Gates Lobby in Stata - Tuesdays from 10am-4pm.</li><li>DID YOU KNOW...</li><li>You can reserve the R&amp;D Pub for your event? Call Ashley at 617-253-2735 for more information!</li></ul>",
+  "venues": {
+    "house": [
+      {
+        "id": "next",
+        "uri": "http://m.mit.edu/apis/dining/venues/house/next",
+        "name": "Next",
+        "location": {
+          "description": "W71 - Next House",
+          "latitude": "42.3556715",
+          "longitude": "-71.1019165",
+          "street": "500 Memorial Drive",
+          "city": "Cambridge",
+          "state": "MA",
+          "zipcode": "02139"
+        },
+        "meals_by_day": [
+          {
+            "date": "2013-04-08",
+            "message": "Closed due to Institute holiday"
+          },
+          {
+            "date": "2013-04-09",
+            "meals": [
+              {
+                "name": "Breakfast",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
+                "items": [
+                  {
+                    "station": "market grill",
+                    "name": "vegan burger",
+                    "description": "served with fries",
+                    "dietary_flags": [
+                      "vegan"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Lunch",
+                "message": "No lunch today"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "retail": [
+      {
+        "id": "annas-taqueria",
+        "uri": "http://m.mit.edu/apis/dining/venues/retail/annas-taqueria",
+        "name": "Anna's Taqueria",
+        "description_html": "<p>The R&amp;D, like all of Stata Center, is a creative space offering a relaxed atmosphere for the MIT. Located on 4th floor, the Pub offers ample seating for impromptu gatherings with friends and colleagues, including a mezzanine with soft seating. Order everything from crudité and fruit and cheese, to sushi and personal pan pizzas. Beverages include beer and wine, along with soft drinks, tea, and coffee. <strong>21+ only please.</strong></p><p>Please contact Ashley Griset, 617-253-2735, if you would like to reserve the R&amp;D Pub for your special event!</p>",
+        "location": {
+          "description": "W20-100",
+          "latitude": "42.3556715",
+          "longitude": "-71.1019165",
+          "street": "84 Massachusetts Ave",
+          "city": "Cambridge",
+          "state": "MA",
+          "zipcode": "02139"
+        },
+        "menu_url": "http://annastaqueria.com/menu.htm",
+        "homepage_url": "http://annastaqueria.com/",
+        "hours": [
+          {
+            "day": "monday",
+            "start_time": "07:00:00",
+            "end_time": "23:30:00"
+          }
+        ],
+        "cuisine": [
+          "Breakfast Foods",
+          "Mexican Foods",
+          "Vegetarian",
+          "Other"
+        ],
+        "payment": [
+          "Cash",
+          "Credit",
+          "Debit",
+          "TechCASH"
+        ]
+      },
+      {
+        "id": "rd-pub",
+        "uri": "http://m.mit.edu/apis/dining/venues/retail/rd-pub",
+        "name": "R&D Pub",
+        "description_html": "<p>The R&amp;D, like all of Stata Center, is a creative space offering a relaxed atmosphere for the MIT. Located on 4th floor, the Pub offers ample seating for impromptu gatherings with friends and colleagues, including a mezzanine with soft seating. Order everything from crudité and fruit and cheese, to sushi and personal pan pizzas. Beverages include beer and wine, along with soft drinks, tea, and coffee. <strong>21+ only please.</strong></p><p>Please contact Ashley Griset, 617-253-2735, if you would like to reserve the R&amp;D Pub for your special event!</p>",
+        "location": {
+          "description": "Stata Center's 4th Floor",
+          "latitude": "42.3556715",
+          "longitude": "-71.1019165",
+          "street": "84 Massachusetts Ave",
+          "city": "Cambridge",
+          "state": "MA",
+          "zipcode": "02139"
+        },
+        "menu_html": "<p><span><strong>Menu options:<br></strong></span></p> <h2><span><strong>Appetizers</strong></span></h2> <ul> <li><u>R&amp; D Nachos</u>- Crisp Nachos smothered with melted cheddar cheese, jalapenos, diced tomatoes, topped off with salsa, sour cream and guzcomole.</li> <li><u>Chicken Quesadilla</u> – Grilled Tortilla, stuffed with marinated chicken, salsa, cheddar cheese, tomatoes and scallions. Sour cream served on the side.</li> <li><u>Roasted Potato Wedges</u> – Basket of Roasted Potato Wedges served with zesty Garlic Aioli.</li> <li><u>Pita chips with dip</u> – Pita triangles seasoned and baked served with garlic hum...",
+        "homepage_url": "http://web.mit.edu/dining/catering/techcatering/index.html",
+        "hours": [
+          {
+            "day": "monday",
+            "message": "By Reservation"
+          },
+          {
+            "day": "tuesday",
+            "message": "By Reservation"
+          },
+          {
+            "day": "wednesday",
+            "start_time": "16:00",
+            "end_time": "21:00"
+          }
+        ],
+        "cuisine": [
+          "Breakfast Foods",
+          "Mexican Foods",
+          "Vegetarian",
+          "Other"
+        ],
+        "payment": [
+          "Cash",
+          "Credit",
+          "Debit",
+          "TechCASH"
+        ]
+      }
+    ]
+  }
+}

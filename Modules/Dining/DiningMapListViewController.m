@@ -21,6 +21,8 @@
 @property (nonatomic, assign) BOOL isAnimating;
 @property (nonatomic, assign) BOOL isShowingMap;
 
+@property (nonatomic, strong) NSDictionary * sampleData;
+
 @end
 
 @implementation DiningMapListViewController
@@ -68,6 +70,15 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        
+        NSString *filePath = [[NSBundle mainBundle] pathForResource:@"dining-sample" ofType:@"json" inDirectory:@"dining"];
+        NSData *jsonData = [NSData dataWithContentsOfFile:filePath];
+        NSError *error = nil;
+        self.sampleData = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
+        
+        if (error) {
+            NSLog(@"Houston we have a problem");
+        }
     }
     return self;
 }
@@ -82,8 +93,7 @@
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
     
-    [self.tabBar addTarget:self action:@selector(segmentedControlDidChange) forControlEvents:UIControlEventValueChanged];
-    [self styleSegmentControl];
+    [self.tabBar addTarget:self action:@selector(tabBarDidChange) forControlEvents:UIControlEventValueChanged];
     
     
     [self addTabWithTitle:@"House Dining"];
@@ -103,14 +113,9 @@
     
 }
 
-- (void) segmentedControlDidChange
+- (void) tabBarDidChange
 {
     [self.listView reloadData];
-}
-
-- (void) styleSegmentControl
-{
-    
 }
 
 - (BOOL) shouldAutorotate
@@ -155,6 +160,11 @@
         // toggle boolean flag 
         self.isShowingMap = !self.isShowingMap;
     }
+}
+
+- (BOOL) showingHouseDining
+{
+    return (self.tabBar.selectedSegmentIndex == 0);
 }
 
 #pragma mark - View layout
@@ -248,8 +258,10 @@
     if (announcement && section == 0) {
         return nil;
     } else if((!announcement && section == 0) || (announcement && section == 1)) {
-        UITabBarItem *item = [self.tabBar.items objectAtIndex:self.tabBar.selectedSegmentIndex];
-        return  item.title;
+        if ([self showingHouseDining]) {
+            return @"Venues";
+        }
+        return @"Retail";
     } else if ((!announcement && section == 1)|| section == 2) {
         return @"Resources";
     }
