@@ -10,11 +10,13 @@
 #import "DiningHallMenuViewController.h"
 #import "DiningLocationCell.h"
 #import "UIKit+MITAdditions.h"
+#import "MITTabBar.h"
 
 @interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) IBOutlet UITableView * listView;
-@property (nonatomic, strong) IBOutlet UISegmentedControl * segmentControl;
+@property (nonatomic, strong) IBOutlet UIView * tabContainerView;
+@property (nonatomic, strong) IBOutlet MITTabBar * tabBar;
 @property (nonatomic, strong) IBOutlet MGSMapView *mapView;
 @property (nonatomic, assign) BOOL isAnimating;
 @property (nonatomic, assign) BOOL isShowingMap;
@@ -51,7 +53,7 @@
 
 - (NSArray *) currentDiningData
 {
-    NSArray *data = ([self.segmentControl selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
+    NSArray *data = ([self.tabBar selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
     return data;
 }
 
@@ -80,12 +82,25 @@
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
     
-    [self.segmentControl addTarget:self action:@selector(segmentedControlDidChange) forControlEvents:UIControlEventValueChanged];
+    [self.tabBar addTarget:self action:@selector(segmentedControlDidChange) forControlEvents:UIControlEventValueChanged];
     [self styleSegmentControl];
+    
+    
+    [self addTabWithTitle:@"House Dining"];
+    [self addTabWithTitle:@"Retail"];
+    self.tabBar.selectedSegmentIndex = 0;
     
     self.listView.backgroundView = nil;
     
     [self layoutListState];
+}
+
+- (void) addTabWithTitle:(NSString *)title
+{
+    NSInteger index = [self.tabBar.items count];
+    UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:title image:nil tag:index];
+    [self.tabBar insertSegmentWithItem:item atIndex:index animated:NO];
+    
 }
 
 - (void) segmentedControlDidChange
@@ -146,15 +161,16 @@
 
 - (void) layoutListState
 {
-    self.segmentControl.center = CGPointMake(self.view.center.x, 30);
+    self.tabContainerView.center = CGPointMake(self.view.center.x, 25);
     
-    self.listView.frame = CGRectMake(0, CGRectGetMaxY(self.segmentControl.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(self.segmentControl.frame));
+    self.listView.frame = CGRectMake(0, CGRectGetMaxY(self.tabContainerView.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(self.tabContainerView.frame));
     
 }
 
 - (void) layoutMapState
 {
-    self.segmentControl.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 30);
+    self.tabContainerView.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 25);
+    
     self.listView.center = CGPointMake(self.listView.center.x, self.listView.center.y + CGRectGetHeight(self.listView.bounds));
     
     self.mapView.hidden = NO;
@@ -232,7 +248,8 @@
     if (announcement && section == 0) {
         return nil;
     } else if((!announcement && section == 0) || (announcement && section == 1)) {
-        return [self.segmentControl titleForSegmentAtIndex:self.segmentControl.selectedSegmentIndex];
+        UITabBarItem *item = [self.tabBar.items objectAtIndex:self.tabBar.selectedSegmentIndex];
+        return  item.title;
     } else if ((!announcement && section == 1)|| section == 2) {
         return @"Resources";
     }
