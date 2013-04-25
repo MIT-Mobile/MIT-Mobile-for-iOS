@@ -55,6 +55,7 @@
         "name": "Anna's Taqueria",
         "description_html": "<p>The R&amp;D, like all of Stata Center, is a creative space offering a relaxed atmosphere for the MIT. Located on 4th floor, the Pub offers ample seating for impromptu gatherings with friends and colleagues, including a mezzanine with soft seating. Order everything from crudité and fruit and cheese, to sushi and personal pan pizzas. Beverages include beer and wine, along with soft drinks, tea, and coffee. <strong>21+ only please.</strong></p><p>Please contact Ashley Griset, 617-253-2735, if you would like to reserve the R&amp;D Pub for your special event!</p>",
         "location": {
+          "mit_building" : "W20",
           "description": "W20-100",
           "latitude": "42.3556715",
           "longitude": "-71.1019165",
@@ -91,6 +92,7 @@
         "name": "R&D Pub",
         "description_html": "<p>The R&amp;D, like all of Stata Center, is a creative space offering a relaxed atmosphere for the MIT. Located on 4th floor, the Pub offers ample seating for impromptu gatherings with friends and colleagues, including a mezzanine with soft seating. Order everything from crudité and fruit and cheese, to sushi and personal pan pizzas. Beverages include beer and wine, along with soft drinks, tea, and coffee. <strong>21+ only please.</strong></p><p>Please contact Ashley Griset, 617-253-2735, if you would like to reserve the R&amp;D Pub for your special event!</p>",
         "location": {
+          "mit_building" : "32",
           "description": "Stata Center's 4th Floor",
           "latitude": "42.3556715",
           "longitude": "-71.1019165",

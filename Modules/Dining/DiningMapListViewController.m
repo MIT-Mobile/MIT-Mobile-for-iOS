@@ -11,6 +11,7 @@
 #import "DiningLocationCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITTabBar.h"
+#import "FacilitiesLocationData.h"
 
 @interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate>
 
@@ -20,6 +21,8 @@
 @property (nonatomic, strong) IBOutlet MGSMapView *mapView;
 @property (nonatomic, assign) BOOL isAnimating;
 @property (nonatomic, assign) BOOL isShowingMap;
+
+@property (nonatomic, strong) NSDictionary * retailVenues;
 
 @property (nonatomic, strong) NSDictionary * sampleData;
 
@@ -75,13 +78,59 @@
         NSData *jsonData = [NSData dataWithContentsOfFile:filePath];
         NSError *error = nil;
         self.sampleData = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
-        
         if (error) {
-            NSLog(@"Houston we have a problem");
+            NSLog(@"Houston we have a problem. Sample Data not initialized from local file.");
         }
+        
+        [self deriveRetailSections];
     }
     return self;
 }
+
+- (void) deriveRetailSections
+{
+    // Uses data from FacilitiesLocationData to get formal building names
+    
+    NSArray * buildingLocations = [[FacilitiesLocationData sharedData] locationsInCategory:@"building"];
+    
+    NSArray * retailLocations = self.sampleData[@"venues"][@"retail"];
+    NSMutableDictionary *tempBuildings = [NSMutableDictionary dictionary];
+    for (NSDictionary *venue in retailLocations) {
+        NSString *buildingNumber = venue[@"location"][@"mit_building"];
+        NSArray * results = [buildingLocations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"number == %@", buildingNumber]];
+       
+        // derive the section header name
+        NSString * sectionKey;
+        if ([results count] == 1) {
+            NSString * buildingName = [[results lastObject] name];
+            sectionKey = [NSString stringWithFormat:@"%@ - %@", buildingNumber, buildingName];
+
+        } else if ([results count] == 0) {
+            // need to handle if building is not found
+            
+        }
+        
+        // insert venue into correct section array
+        if (tempBuildings[sectionKey]) {
+            // either at end of section array
+            NSMutableArray *venueArray = [tempBuildings[sectionKey] mutableCopy];
+            [venueArray addObject:venue];
+            tempBuildings[sectionKey] = venueArray;
+            
+        } else {
+            // or in new section array
+            tempBuildings[sectionKey] = @[venue];
+        }
+        
+        
+    }
+    
+    self.retailVenues = tempBuildings;
+    
+    
+    
+}
+
 
 - (void)viewDidLoad
 {
@@ -190,11 +239,16 @@
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if (![self showingHouseDining]) {
+        NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:section];
+        return [self.retailVenues[sectionKey] count];
+    }
+    
     NSString *announcement = [self debugAnnouncement];
     if (announcement && section == 0) {
         return 1;
     } else if((!announcement && section == 0) || (announcement && section == 1)) {
-        return [[self currentDiningData] count];
+            return [[self currentDiningData] count];
     } else if ((!announcement && section == 1)|| section == 2) {
         return [[self debugResourceData] count];
     }
@@ -203,6 +257,10 @@
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if (![self showingHouseDining]) {
+        return [[self.retailVenues allKeys] count];
+    }
+    
     if ([self debugAnnouncement]) {
         return 3;
     }
@@ -216,13 +274,18 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"reuseIdentifier"];
     }
     
+    if (![self showingHouseDining]) {
+        // showing Retail locations
+        return [self tableView:tableView retailDiningLocationCellForRowAtIndexPath:indexPath];
+    }
+    
     NSString *announcement = [self debugAnnouncement];
     if (announcement && indexPath.section == 0) {
         cell.textLabel.text = announcement;
         cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
         cell.accessoryView = [self chevronAccessoryView];
     } else if((!announcement && indexPath.section == 0) || (announcement && indexPath.section == 1)) {
-        return [self tableView:tableView diningLocationCellForRowAtIndexPath:indexPath];
+        return [self tableView:tableView houseDiningLocationCellForRowAtIndexPath:indexPath];
     } else if ((!announcement && indexPath.section == 1)|| indexPath.section == 2) {
         if (indexPath.row == 0) {
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
@@ -235,8 +298,8 @@
     return cell;
 }
 
-#pragma mark Configure dining Cell
-- (UITableViewCell *) tableView:(UITableView *)tableView diningLocationCellForRowAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark Configure House Dining Cell
+- (UITableViewCell *) tableView:(UITableView *)tableView houseDiningLocationCellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     DiningLocationCell *cell = [tableView dequeueReusableCellWithIdentifier:@"locationCell"];
     if (!cell) {
@@ -252,16 +315,41 @@
     return cell;
 }
 
+#pragma mark Configure Retail Cell
+- (UITableViewCell *) tableView:(UITableView *)tableView retailDiningLocationCellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    DiningLocationCell *cell = [tableView dequeueReusableCellWithIdentifier:@"locationCell"];
+    if (!cell) {
+        cell = [[DiningLocationCell alloc] initWithReuseIdentifier:@"locationCell"];
+    }
+    
+    
+    
+    NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:indexPath.section];
+    NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
+    
+    cell.titleLabel.text = venueData[@"name"];
+    cell.subtitleLabel.text = [self debugSubtitleData][indexPath.row];
+    cell.statusOpen = indexPath.row % 2 == 0;
+    cell.accessoryView = [self chevronAccessoryView];
+    cell.imageView.image = [UIImage imageNamed:@"icons/home-map.png"];
+    
+    
+    return cell;
+}
+
+
 - (NSString *) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
+    if (![self showingHouseDining]) {
+        return [[self.retailVenues allKeys] objectAtIndex:section];
+    }
+    
     NSString *announcement = [self debugAnnouncement];
     if (announcement && section == 0) {
         return nil;
     } else if((!announcement && section == 0) || (announcement && section == 1)) {
-        if ([self showingHouseDining]) {
             return @"Venues";
-        }
-        return @"Retail";
     } else if ((!announcement && section == 1)|| section == 2) {
         return @"Resources";
     }
@@ -273,6 +361,17 @@
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (![self showingHouseDining]) {
+        NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:indexPath.section];
+        NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
+        
+        DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
+        detailVC.title = venueData[@"name"];
+        [self.navigationController pushViewController:detailVC animated:YES];
+        return;
+    }
+    
 
     NSString *announcement = [self debugAnnouncement];
     if (announcement && indexPath.section == 0) {
@@ -282,6 +381,7 @@
         detailVC.title = [self currentDiningData][indexPath.row];
         [self.navigationController pushViewController:detailVC animated:YES];
     } else if ((!announcement && indexPath.section == 1)|| indexPath.section == 2) {
+        // handle static links
         
     }
     
@@ -289,6 +389,13 @@
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (![self showingHouseDining]) {
+        NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:indexPath.section];
+        NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
+        return [DiningLocationCell heightForRowWithTitle:venueData[@"name"] subtitle:[self debugSubtitleData][indexPath.row]];
+    }
+    
+    
     NSString *announcement = [self debugAnnouncement];
     if (announcement && indexPath.section == 0) {
         return 44;
@@ -301,3 +408,4 @@
 }
 
 @end
+
