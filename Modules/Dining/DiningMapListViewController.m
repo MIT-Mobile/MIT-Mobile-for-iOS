@@ -188,7 +188,6 @@
             // animate to the list
             self.listView.center = CGPointMake(self.view.center.x, self.view.center.y + CGRectGetHeight(self.view.bounds));
             [UIView animateWithDuration:0.4f animations:^{
-                self.mapView.alpha = 0;
                 [self layoutListState];
                 self.isAnimating = YES;
             } completion:^(BOOL finished) {
@@ -197,9 +196,7 @@
             
         } else {
             // animate to the map
-            self.mapView.alpha = 0;
             [UIView animateWithDuration:0.4f animations:^{
-                self.mapView.alpha = 1;
                 [self layoutMapState];
                 self.isAnimating = YES;
             } completion:^(BOOL finished) {
@@ -221,7 +218,8 @@
 - (void) layoutListState
 {
     self.tabContainerView.center = CGPointMake(self.view.center.x, 25);
-    
+    self.mapView.userInteractionEnabled = NO;
+    self.mapView.alpha = 0;
     self.listView.frame = CGRectMake(0, CGRectGetMaxY(self.tabContainerView.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(self.tabContainerView.frame));
     
 }
@@ -232,6 +230,8 @@
     
     self.listView.center = CGPointMake(self.listView.center.x, self.listView.center.y + CGRectGetHeight(self.listView.bounds));
     
+    self.mapView.alpha = 1;
+    self.mapView.userInteractionEnabled = YES;
     self.mapView.hidden = NO;
     self.mapView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
 }
@@ -273,6 +273,7 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"reuseIdentifier"];
     }
+    cell.backgroundColor = [UIColor whiteColor];
     
     if (![self showingHouseDining]) {
         // showing Retail locations
@@ -284,9 +285,12 @@
         cell.textLabel.text = announcement;
         cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
         cell.accessoryView = [self chevronAccessoryView];
+        
     } else if((!announcement && indexPath.section == 0) || (announcement && indexPath.section == 1)) {
         return [self tableView:tableView houseDiningLocationCellForRowAtIndexPath:indexPath];
+        
     } else if ((!announcement && indexPath.section == 1)|| indexPath.section == 2) {
+        [cell applyStandardFonts];
         if (indexPath.row == 0) {
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
         } else {
@@ -296,6 +300,14 @@
     }
     
     return cell;
+}
+
+- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([self showingHouseDining] && [self debugAnnouncement] && indexPath.section == 0) {
+        // set announcement background color to yellow color
+        cell.backgroundColor = [UIColor colorWithHexString:@"#FFEF8A"];
+    }
 }
 
 #pragma mark Configure House Dining Cell
@@ -336,25 +348,6 @@
     
     
     return cell;
-}
-
-
-- (NSString *) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    if (![self showingHouseDining]) {
-        return [[self.retailVenues allKeys] objectAtIndex:section];
-    }
-    
-    NSString *announcement = [self debugAnnouncement];
-    if (announcement && section == 0) {
-        return nil;
-    } else if((!announcement && section == 0) || (announcement && section == 1)) {
-            return @"Venues";
-    } else if ((!announcement && section == 1)|| section == 2) {
-        return @"Resources";
-    }
-    
-    return nil;
 }
 
 #pragma mark - UITableViewDelegate
@@ -406,6 +399,60 @@
     }
     return 44;
 }
+
+- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIColor *bc = [UIColor colorWithHexString:@"#718fb1"];
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.listView.bounds), 25)];
+    view.backgroundColor = bc;
+    
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, CGRectGetWidth(view.bounds) - 10 , 25)];
+    label.backgroundColor = bc;
+    label.textColor = [UIColor whiteColor];
+    label.font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
+    
+    label.text = [self titleForHeaderInSection:section];
+    
+    [view addSubview:label];
+    
+    return view;
+}
+
+- (NSString *) titleForHeaderInSection:(NSInteger)section // not the UITableViewDataSource method.
+{
+    if (![self showingHouseDining]) {
+        return [[self.retailVenues allKeys] objectAtIndex:section];
+    }
+    
+    NSString *announcement = [self debugAnnouncement];
+    if (announcement && section == 0) {
+        return nil;
+    } else if((!announcement && section == 0) || (announcement && section == 1)) {
+        return @"Venues";
+    } else if ((!announcement && section == 1)|| section == 2) {
+        return @"Resources";
+    }
+    
+    return nil;
+}
+
+
+
+- (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if ([self showingHouseDining] && [self debugAnnouncement] && section == 0) {
+        return 0;
+    }
+    
+    return 25;
+}
+
+
+
+#pragma mark - MapView Methods
+
 
 @end
 
