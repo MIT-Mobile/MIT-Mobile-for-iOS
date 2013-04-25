@@ -8,6 +8,7 @@
 
 #import "DiningMapListViewController.h"
 #import "DiningHallMenuViewController.h"
+#import "DiningRetailInfoViewController.h"
 #import "DiningLocationCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITTabBar.h"
@@ -359,8 +360,8 @@
         NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:indexPath.section];
         NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
         
-        DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
-        detailVC.title = venueData[@"name"];
+        DiningRetailInfoViewController *detailVC = [[DiningRetailInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        detailVC.venueData = venueData;
         [self.navigationController pushViewController:detailVC animated:YES];
         return;
     }

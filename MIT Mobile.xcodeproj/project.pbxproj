@@ -223,6 +223,7 @@
 		48B4ADE41713572300EF426F /* DiningHallMenuCompareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B4ADE31713572300EF426F /* DiningHallMenuCompareView.m */; };
 		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C2D2881729D41900F39DB5 /* DiningRetailInfoViewController.m */; };
 		48DF79E21714A14E00BCF59F /* DiningHallMenuItemTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48DF79E11714A14E00BCF59F /* DiningHallMenuItemTableCell.m */; };
 		48EDC96817175AF400376BCF /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 48EDC96517175AF400376BCF /* LICENSE.txt */; };
 		48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96717175AF400376BCF /* UIImage+PDF.m */; };
@@ -814,6 +815,8 @@
 		48B8129615E4295D00E791F9 /* LinksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LinksViewController.m; path = Links/LinksViewController.m; sourceTree = "<group>"; };
 		48B8129815E42B1700E791F9 /* LinksModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksModule.h; path = Links/LinksModule.h; sourceTree = "<group>"; };
 		48B8129915E42B1700E791F9 /* LinksModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LinksModule.m; path = Links/LinksModule.m; sourceTree = "<group>"; };
+		48C2D2871729D41900F39DB5 /* DiningRetailInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningRetailInfoViewController.h; path = Dining/DiningRetailInfoViewController.h; sourceTree = "<group>"; };
+		48C2D2881729D41900F39DB5 /* DiningRetailInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningRetailInfoViewController.m; path = Dining/DiningRetailInfoViewController.m; sourceTree = "<group>"; };
 		48DF79E01714A14E00BCF59F /* DiningHallMenuItemTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuItemTableCell.h; path = Dining/DiningHallMenuItemTableCell.h; sourceTree = "<group>"; };
 		48DF79E11714A14E00BCF59F /* DiningHallMenuItemTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuItemTableCell.m; path = Dining/DiningHallMenuItemTableCell.m; sourceTree = "<group>"; };
 		48EDC96517175AF400376BCF /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -1932,6 +1935,8 @@
 				48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */,
 				48EDC993171764BD00376BCF /* DiningMenuFilterViewController.h */,
 				48EDC994171764BD00376BCF /* DiningMenuFilterViewController.m */,
+				48C2D2871729D41900F39DB5 /* DiningRetailInfoViewController.h */,
+				48C2D2881729D41900F39DB5 /* DiningRetailInfoViewController.m */,
 			);
 			name = Dining;
 			sourceTree = "<group>";
@@ -3248,6 +3253,7 @@
 				483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */,
 				2C5C0BEE171EE27400AEB7A9 /* MGSErrorView.m in Sources */,
 				48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */,
+				48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

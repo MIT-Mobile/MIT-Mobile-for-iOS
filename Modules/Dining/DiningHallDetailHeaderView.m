@@ -13,7 +13,7 @@
 @property (nonatomic, retain) UIImageView   * icon;
 @property (nonatomic, retain) UILabel       * titleLabel;
 @property (nonatomic, retain) UILabel       * timeLabel;
-@property (nonatomic, retain) UIButton      * infoButton;
+@property (nonatomic, retain) UIButton      * accessoryButton;
 
 @end
 
@@ -28,8 +28,8 @@
         self.icon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 44, 44)];
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(64, 10, frame.size.width - 114, 44)];
         self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 64, frame.size.width - 60, 13)];
-        self.infoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.infoButton.frame = CGRectMake(frame.size.width - 40, 0, 40, frame.size.height);
+        self.accessoryButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.accessoryButton.frame = CGRectMake(frame.size.width - 40, 0, 40, frame.size.height);
         
         [self styleSubviews];
         [self debugInfo];
@@ -37,7 +37,7 @@
         [self addSubview:self.icon];
         [self addSubview:self.titleLabel];
         [self addSubview:self.timeLabel];
-        [self addSubview:self.infoButton];
+        [self addSubview:self.accessoryButton];
     }
     return self;
 }
@@ -50,8 +50,13 @@
     self.timeLabel.backgroundColor = [UIColor clearColor];
     self.timeLabel.font = [UIFont fontWithName:@"Helvetica" size:13];
     
-    [self.infoButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
-    self.infoButton.imageEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 10);
+    [self.accessoryButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
+    
+}
+
+- (void) layoutSubviews
+{
+    [super layoutSubviews];
     
 }
 
@@ -62,7 +67,8 @@
     self.titleLabel.text = @"Some Dining Hall";
     self.timeLabel.text = @"Opens never";
     self.icon.image = [UIImage imageNamed:@"icons/home-map.png"];
-    [self.infoButton setImage:[UIImage imageNamed:@"icons/tab-about.png"] forState:UIControlStateNormal];
+    [self.accessoryButton setImage:[UIImage imageNamed:@"icons/tab-about.png"] forState:UIControlStateNormal];
+    self.accessoryButton.imageEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 10);
 }
 
 @end
