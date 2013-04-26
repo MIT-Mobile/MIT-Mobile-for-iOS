@@ -53,9 +53,7 @@
                                CGRectIsEmpty(legacyAnnotationView.frame));
         CGRect frame;
         CGRect bounds = legacyAnnotationView.bounds;
-        if (frameIsInvalid) {
-            frame = legacyAnnotationView.bounds;
-        } else {
+        if (!frameIsInvalid) {
             frame = legacyAnnotationView.frame;
             
             // MKAnnotationView automatically centers its frame if an image
