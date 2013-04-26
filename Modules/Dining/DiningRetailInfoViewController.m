@@ -10,9 +10,12 @@
 #import "DiningHallDetailHeaderView.h"
 #import "UIKit+MITAdditions.h"
 
-@interface DiningRetailInfoViewController ()
+@interface DiningRetailInfoViewController () <UIWebViewDelegate>
 
 @property (nonatomic, strong) DiningHallDetailHeaderView * headerView;
+@property (nonatomic, strong) NSString * descriptionHtmlFormatString;
+@property (nonatomic, assign) CGFloat descriptionHeight;
+
 @end
 
 @implementation DiningRetailInfoViewController
@@ -51,13 +54,20 @@
     NSString * scheduleString = scheduleDict[@"text"];
     self.headerView.timeLabel.text = scheduleString;
     
-    self.tableView.tableHeaderView = self.headerView;
+    self.descriptionHtmlFormatString = @"<html>"
+                                        "<head>"
+                                        "<style type=\"text/css\" media=\"screen\">"
+                                        "body { margin: 0; padding: 0; font-family: Helvetica; font-size: 13px; } "
+                                        "</style>"
+                                        "</head>"
+                                        "<body id=\"content\">"
+                                        "%@"
+                                        "</body>"
+                                        "</html>";
+    self.descriptionHeight = 44;
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.tableView.tableHeaderView = self.headerView;
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -68,6 +78,7 @@
 
 - (void) bookmarkPressed:(UIButton *)button
 {
+    
     button.selected = !button.selected;
     
 }
@@ -174,6 +185,17 @@
     return 1;
 }
 
+enum RetailSection : NSInteger {
+    RetailSectionDescription = 0,
+    RetailSectionMenu,
+    RetailSectionHours,
+    RetailSectionCuisine,
+    RetailSectionPayment,
+    RetailSectionLocation,
+    RetailSectionUrl
+};
+
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
@@ -182,51 +204,51 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    // Configure the cell...
+    switch (indexPath.section) {
+        case RetailSectionDescription:
+        {
+            cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:13];
+            cell.textLabel.numberOfLines = 0;
+//            cell.textLabel.text = self.venueData[@"description_html"];
+            
+            UIWebView *existingWebView = (UIWebView *)[cell.contentView viewWithTag:42];
+            if (!existingWebView) {
+                existingWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, CGRectGetHeight(cell.bounds))];
+                existingWebView.delegate = self;
+                existingWebView.tag = 42;
+                existingWebView.dataDetectorTypes = UIDataDetectorTypeAll;
+                [cell.contentView addSubview:existingWebView];
+            }
+            existingWebView.frame = CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, CGRectGetHeight(cell.bounds));
+            [existingWebView loadHTMLString:[NSString stringWithFormat:self.descriptionHtmlFormatString, self.venueData[@"description_html"]] baseURL:nil];
+            existingWebView.backgroundColor = [UIColor clearColor];
+            existingWebView.opaque = NO;
+            
+            break;
+        }
+        default:
+            break;
+    }
     
     return cell;
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
+#pragma mark - UITableViewDelegate
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+- (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+    switch (indexPath.section) {
+        case RetailSectionDescription:
+        {
+            return self.descriptionHeight;
+            break;
+        }
+        default:
+            return 44;
+            break;
+    }
+    return 44;
 }
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-#pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -238,5 +260,21 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
 }
+
+#pragma mark - WebViewDelegate
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+	// calculate webView height, if it change we need to reload table
+	CGFloat newDescriptionHeight = [[webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"content\").scrollHeight;"] floatValue] + 20; // 20 is for 10 pixel vertical padding
+    CGRect frame = webView.frame;
+    frame.size.height = newDescriptionHeight;
+    webView.frame = frame;
+    
+	if(newDescriptionHeight != self.descriptionHeight) {
+		self.descriptionHeight = newDescriptionHeight;
+		[self.tableView reloadData];
+    }
+}
+
 
 @end
