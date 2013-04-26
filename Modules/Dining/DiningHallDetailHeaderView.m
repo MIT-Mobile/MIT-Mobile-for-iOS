@@ -68,7 +68,7 @@
     self.timeLabel.text = @"Opens never";
     self.icon.image = [UIImage imageNamed:@"icons/home-map.png"];
     [self.accessoryButton setImage:[UIImage imageNamed:@"icons/tab-about.png"] forState:UIControlStateNormal];
-    self.accessoryButton.imageEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 10);
+//    self.accessoryButton.imageEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 10);
 }
 
 @end

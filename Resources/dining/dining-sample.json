@@ -68,9 +68,9 @@
         "homepage_url": "http://annastaqueria.com/",
         "hours": [
           {
-            "day": "monday",
-            "start_time": "07:00:00",
-            "end_time": "23:30:00"
+            "day": "friday",
+            "start_time": "07:00",
+            "end_time": "14:30"
           }
         ],
         "cuisine": [
@@ -109,11 +109,11 @@
             "message": "By Reservation"
           },
           {
-            "day": "tuesday",
+            "day": "friday",
             "message": "By Reservation"
           },
           {
-            "day": "wednesday",
+            "day": "saturday",
             "start_time": "16:00",
             "end_time": "21:00"
           }

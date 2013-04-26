@@ -8,6 +8,7 @@
 
 #import "DiningRetailInfoViewController.h"
 #import "DiningHallDetailHeaderView.h"
+#import "UIKit+MITAdditions.h"
 
 @interface DiningRetailInfoViewController ()
 
@@ -40,6 +41,16 @@
     [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"global/bookmark_on"] forState:UIControlStateSelected];
     [self.headerView.accessoryButton addTarget:self action:@selector(bookmarkPressed:) forControlEvents:UIControlEventTouchUpInside];
     
+    NSDictionary *scheduleDict = [self dayScheduleFromHours:self.venueData[@"hours"]];
+    if ([scheduleDict[@"isOpen"] boolValue]) {
+        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
+    } else {
+        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
+    }
+    
+    NSString * scheduleString = scheduleDict[@"text"];
+    self.headerView.timeLabel.text = scheduleString;
+    
     self.tableView.tableHeaderView = self.headerView;
     
     // Uncomment the following line to preserve selection between presentations.
@@ -59,6 +70,96 @@
 {
     button.selected = !button.selected;
     
+}
+
+- (NSDictionary *) dayScheduleFromHours:(NSArray *) hours
+{
+    NSDate *rightNow = [NSDate date];
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"EEEE"];
+    NSString *dateString = [dateFormat stringFromDate:rightNow];
+    
+    NSString * dateKey = [dateString lowercaseString];
+    
+    NSDictionary *todaysHours;
+    for (NSDictionary *day in hours) {
+        if ([day[@"day"] isEqualToString:dateKey]) {
+            todaysHours = day;
+        }
+    }
+    
+    if (!todaysHours) {
+        // closed with no hours today
+        return @{@"isOpen": @NO,
+                 @"text" : @"Closed for the day"};
+    }
+    
+    if (todaysHours[@"message"]) {
+        return @{@"isOpen": @YES,
+          @"text" : todaysHours[@"message"]};
+    }
+    
+    if (todaysHours[@"start_time"] && todaysHours[@"end_time"]) {
+        // need to calculate if the current time is before opening, before closing, or after closing
+        [dateFormat setDateFormat:@"HH:mm"];
+        NSString * openString   = todaysHours[@"start_time"];
+        NSString * closeString    = todaysHours[@"end_time"];
+        
+        NSDate *openDate = [self dateForTodayFromTimeString:openString];
+        NSDate *closeDate = [self dateForTodayFromTimeString:closeString];
+        
+        NSLog(@"%@", openDate);
+        NSLog(@"%@", closeDate);
+        NSLog(@"%@", rightNow);
+        
+        BOOL willOpen       = ([openDate compare:rightNow] == NSOrderedDescending); // openDate > rightNow , before the open hours for the day
+        BOOL currentlyOpen  = ([openDate compare:rightNow] == NSOrderedAscending && [rightNow compare:closeDate] == NSOrderedAscending);  // openDate < rightNow < closeDate , within the open hours
+        BOOL hasClosed      = ([rightNow compare:closeDate] == NSOrderedDescending); // rightNow > closeDate , after the closing time for the day
+        
+        [dateFormat setDateFormat:@"h:mm a"];  // adjust format for pretty printing
+        
+        if (willOpen) {
+            NSString *closedStringFormatted = [dateFormat stringFromDate:openDate];
+            return @{@"isOpen": @NO,
+                     @"text" : [NSString stringWithFormat:@"Opens at %@", closedStringFormatted]};
+
+        } else if (currentlyOpen) {
+            NSString *openStringFormatted = [dateFormat stringFromDate:closeDate];
+            return @{@"isOpen": @YES,
+                     @"text" : [NSString stringWithFormat:@"Open until %@", openStringFormatted]};
+        } else if (hasClosed) {
+            return @{@"isOpen": @NO,
+                     @"text" : @"Closed for the day"};
+        }   
+    }
+    
+    // the just in case
+    return @{@"isOpen": @NO,
+             @"text" : @"Closed for the day"};
+}
+
+- (NSDate *) dateForTodayFromTimeString:(NSString *)time
+{
+    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *comp = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSTimeZoneCalendarUnit fromDate:[NSDate date]];
+    
+    NSArray *timeComponents = [time componentsSeparatedByString:@":"];
+    comp.hour = [[timeComponents objectAtIndex:0] integerValue];
+    comp.minute = [[timeComponents objectAtIndex:1] integerValue];
+    
+    return [cal dateFromComponents:comp];
+}
+
+- (NSDate *) convertDateFromGMT:(NSDate *)gmtDate
+{
+    NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+    NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
+    
+    NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:gmtDate];
+    NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:gmtDate];
+    NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
+    
+    return [[NSDate alloc] initWithTimeInterval:interval sinceDate:gmtDate];
 }
 
 #pragma mark - Table view data source
