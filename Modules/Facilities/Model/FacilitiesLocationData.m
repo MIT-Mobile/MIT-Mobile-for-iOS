@@ -27,7 +27,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
 // Keeps track of any pending blocks which should be fired off
 // once the data is updated (if needed).
-@property (nonatomic,strong) NSMutableArray *updateNotifications;
+@property (strong) NSArray *updateNotifications;
 
 - (BOOL)shouldUpdateDataWithRequest:(MobileRequestOperation*)request;
 
@@ -466,6 +466,13 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
             dispatch_async(dispatch_get_main_queue(),^{ block(notificationName,updated,userData); } );
         }
     });
+    
+    NSArray *notificationObjects = self.updateNotifications;
+    self.updateNotifications = nil;
+    
+    for (dispatch_block_t block in notificationObjects) {
+        dispatch_async(dispatch_get_main_queue(), block);
+    }
 }
 
 
