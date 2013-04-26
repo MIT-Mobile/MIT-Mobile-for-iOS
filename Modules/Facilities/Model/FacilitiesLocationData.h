@@ -16,7 +16,6 @@ typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id user
 + (FacilitiesLocationData*)sharedData;
 
 - (id)init;
-- (void)dealloc;
 
 - (NSArray*)allCategories;
 

@@ -103,7 +103,7 @@
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2CCB85F91361F44E0024E474 /* FacilitiesLocationData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2CCB85F91361F44E0024E474 /* FacilitiesLocationData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */; };
 		2CCF81501636F69900DE273F /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81411636F69900DE273F /* DDAbstractDatabaseLogger.m */; };
 		2CCF81511636F69900DE273F /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81431636F69900DE273F /* DDASLLogger.m */; };
 		2CCF81521636F69900DE273F /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81451636F69900DE273F /* DDFileLogger.m */; };
@@ -1370,7 +1370,7 @@
 			path = FacilitiesType;
 			sourceTree = "<group>";
 		};
-		2C1A45E6135DD0A8006A2EE4 /* Facilities */ = {
+		2C1A45E6135DD0A8006A2EE4 /* Building Services */ = {
 			isa = PBXGroup;
 			children = (
 				2CCB85F61361D9790024E474 /* Model */,
@@ -1386,7 +1386,7 @@
 				2C2E95411382F00200FA5557 /* FacilitiesConstants.h */,
 				2C2E95401382F00200FA5557 /* FacilitiesConstants.m */,
 			);
-			name = Facilities;
+			name = "Building Services";
 			path = Modules/Facilities;
 			sourceTree = SOURCE_ROOT;
 		};
@@ -2064,7 +2064,7 @@
 				EB86CA6C115D273800C8F3D1 /* Calendar */,
 				DE715446102FE468005E6111 /* Campus Map */,
 				DE715447102FE468005E6111 /* Emergency */,
-				2C1A45E6135DD0A8006A2EE4 /* Facilities */,
+				2C1A45E6135DD0A8006A2EE4 /* Building Services */,
 				DE81CF6310C6BC490085573D /* Mobile Web */,
 				DE81CF5F10C6BC390085573D /* News */,
 				EB7F326610CD6C5B00188BCD /* People */,

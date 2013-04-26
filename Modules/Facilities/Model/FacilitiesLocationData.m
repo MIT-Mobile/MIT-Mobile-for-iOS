@@ -22,8 +22,9 @@ NSString * const FacilitiesRepairTypesKey = @"problemtype";
 static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
 @interface FacilitiesLocationData ()
-@property (nonatomic,retain) NSOperationQueue* requestQueue;
-@property (nonatomic,retain) NSMutableDictionary* notificationBlocks;
+@property (nonatomic,strong) NSOperationQueue* requestQueue;
+@property (nonatomic,strong) NSMutableDictionary* notificationBlocks;
+
 
 - (BOOL)shouldUpdateDataWithRequest:(MobileRequestOperation*)request;
 
@@ -58,19 +59,13 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     self = [super init]; 
     
     if (self) {
-        self.requestQueue = [[[NSOperationQueue alloc] init] autorelease];
+        self.requestQueue = [[NSOperationQueue alloc] init];
         self.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
         
         self.notificationBlocks = [NSMutableDictionary dictionary];
     }
     
     return self;
-}
-
-- (void)dealloc {
-    self.requestQueue = nil;
-    self.notificationBlocks = nil;
-    [super dealloc];
 }
 
 
@@ -107,8 +102,8 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     }
     
     for (FacilitiesLocation *loc in locations) {
-        CLLocation *bldgLocation = [[[CLLocation alloc] initWithLatitude:[loc.latitude doubleValue]
-                                                               longitude:[loc.longitude doubleValue]] autorelease];
+        CLLocation *bldgLocation = [[CLLocation alloc] initWithLatitude:[loc.latitude doubleValue]
+                                                               longitude:[loc.longitude doubleValue]];
         if ([bldgLocation distanceFromLocation:location] <= radiusInMeters) {
             if ((categoryId == nil) || [loc.categories containsObject:categoryId]) {
                 [local addObject:loc];
@@ -119,10 +114,10 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     NSArray *sortedArray = [local sortedArrayUsingComparator:^(id obj1, id obj2) {
         FacilitiesLocation *b1 = (FacilitiesLocation*)obj1;
         FacilitiesLocation *b2 = (FacilitiesLocation*)obj2;
-        CLLocation *loc1 = [[[CLLocation alloc] initWithLatitude:[b1.latitude doubleValue]
-                                                       longitude:[b1.longitude doubleValue]] autorelease];
-        CLLocation *loc2 = [[[CLLocation alloc] initWithLatitude:[b2.latitude doubleValue]
-                                                       longitude:[b2.longitude doubleValue]] autorelease];
+        CLLocation *loc1 = [[CLLocation alloc] initWithLatitude:[b1.latitude doubleValue]
+                                                       longitude:[b1.longitude doubleValue]];
+        CLLocation *loc2 = [[CLLocation alloc] initWithLatitude:[b2.latitude doubleValue]
+                                                       longitude:[b2.longitude doubleValue]];
         CLLocationDistance d1 = [loc1 distanceFromLocation:location];
         CLLocationDistance d2 = [loc2 distanceFromLocation:location];
 
@@ -293,9 +288,9 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 }
 
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"facilities"
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"facilities"
                                                                               command:command
-                                                                           parameters:params] autorelease];
+                                                                           parameters:params];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         NSString *blkCommand = operation.command;
