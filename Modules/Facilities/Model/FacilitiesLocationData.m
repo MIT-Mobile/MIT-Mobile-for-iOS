@@ -25,6 +25,9 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 @property (nonatomic,strong) NSOperationQueue* requestQueue;
 @property (nonatomic,strong) NSMutableDictionary* notificationBlocks;
 
+// Keeps track of any pending blocks which should be fired off
+// once the data is updated (if needed).
+@property (nonatomic,strong) NSMutableArray *updateNotifications;
 
 - (BOOL)shouldUpdateDataWithRequest:(MobileRequestOperation*)request;
 
@@ -154,6 +157,61 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
                                                          matchingPredicate:predicate];
     
     return ([results count] > 0) ? [results objectAtIndex:0] : nil;
+}
+
+
+- (NSArray*)locationsWithNumber:(NSString*)locationNumber
+                        updated:(void (^) (NSArray *results))updatedBlock
+{
+    NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] init];
+    moc.parentContext = [[CoreDataManager coreDataManager] managedObjectContext];
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"FacilitiesLocation"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"number like[cd] %@",locationNumber];
+    
+    NSError *error = nil;
+    NSArray *results = [moc executeFetchRequest:fetchRequest
+                                          error:&error];
+    
+    if (updatedBlock) {
+        void (^copiedBlock)(NSArray*) = [updatedBlock copy];
+        dispatch_block_t delayedBlock = ^{
+            NSArray *updatedResults = [self locationsWithNumber:locationNumber
+                                                        updated:nil];
+            copiedBlock(updatedResults);
+        };
+        
+        [self.updateNotifications addObject:delayedBlock];
+    }
+    
+    return results;
+}
+
+- (NSArray*)locationsWithName:(NSString*)locationName
+                      updated:(void (^) (NSArray *results))updatedBlock
+{
+    NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] init];
+    moc.parentContext = [[CoreDataManager coreDataManager] managedObjectContext];
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"FacilitiesLocation"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name like[cd] %@",locationName];
+    
+    NSError *error = nil;
+    NSArray *results = [moc executeFetchRequest:fetchRequest
+                                          error:&error];
+    
+    if (updatedBlock) {
+        void (^copiedBlock)(NSArray*) = [updatedBlock copy];
+        dispatch_block_t delayedBlock = ^{
+            NSArray *updatedResults = [self locationsWithNumber:locationName
+                                                        updated:nil];
+            copiedBlock(updatedResults);
+        };
+        
+        [self.updateNotifications addObject:delayedBlock];
+    }
+    
+    return results;
 }
 
 - (NSArray*)allRepairTypes {

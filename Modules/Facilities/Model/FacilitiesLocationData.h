@@ -25,6 +25,12 @@ typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id user
                        ofLocation:(CLLocation*)location
                      withCategory:(NSString*)categoryId;
 
+- (NSArray*)locationsWithNumber:(NSString*)locationNumber
+                        updated:(void (^) (NSArray *results))updatedBlock;
+
+- (NSArray*)locationsWithName:(NSString*)locationName
+                      updated:(void (^) (NSArray *results))updatedBlock;
+
 - (NSArray*)roomsForBuilding:(NSString*)bldgnum;
 - (NSArray*)roomsMatchingPredicate:(NSPredicate*)predicate;
 
