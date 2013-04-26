@@ -164,7 +164,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
                         updated:(void (^) (NSArray *results))updatedBlock
 {
     NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] init];
-    moc.parentContext = [[CoreDataManager coreDataManager] managedObjectContext];
+    moc.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
     
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"FacilitiesLocation"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"number like[cd] %@",locationNumber];
@@ -173,7 +173,9 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     NSArray *results = [moc executeFetchRequest:fetchRequest
                                           error:&error];
     
-    if (updatedBlock) {
+    if (error) {
+        DDLogError(@"query for locations with number '%@' failed: %@",locationNumber,error);
+    } else if (updatedBlock) {
         void (^copiedBlock)(NSArray*) = [updatedBlock copy];
         dispatch_block_t delayedBlock = ^{
             NSArray *updatedResults = [self locationsWithNumber:locationNumber
@@ -181,7 +183,11 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
             copiedBlock(updatedResults);
         };
         
-        [self.updateNotifications addObject:delayedBlock];
+        NSMutableArray *array = [NSMutableArray arrayWithArray:self.updateNotifications];
+        [array addObject:[delayedBlock copy]];
+        self.updateNotifications = array;
+        
+        [self updateLocationData];
     }
     
     return results;
@@ -191,7 +197,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
                       updated:(void (^) (NSArray *results))updatedBlock
 {
     NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] init];
-    moc.parentContext = [[CoreDataManager coreDataManager] managedObjectContext];
+    moc.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
     
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"FacilitiesLocation"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name like[cd] %@",locationName];
@@ -200,15 +206,22 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     NSArray *results = [moc executeFetchRequest:fetchRequest
                                           error:&error];
     
-    if (updatedBlock) {
+    if (error) {
+        DDLogError(@"query for locations with name '%@' failed: %@",locationName,error);
+    } else if (updatedBlock) {
         void (^copiedBlock)(NSArray*) = [updatedBlock copy];
         dispatch_block_t delayedBlock = ^{
-            NSArray *updatedResults = [self locationsWithNumber:locationName
-                                                        updated:nil];
+            NSArray *updatedResults = [self locationsWithName:locationName
+                                                      updated:nil];
             copiedBlock(updatedResults);
         };
         
-        [self.updateNotifications addObject:delayedBlock];
+        
+        NSMutableArray *array = [NSMutableArray arrayWithArray:self.updateNotifications];
+        [array addObject:[delayedBlock copy]];
+        self.updateNotifications = array;
+        
+        [self updateLocationData];
     }
     
     return results;
