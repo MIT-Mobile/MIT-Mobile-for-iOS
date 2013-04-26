@@ -17,6 +17,8 @@
 
 @interface FacilitiesCategoryViewController ()
 @property (nonatomic,retain) FacilitiesLocationSearch *searchHelper;
+@property (nonatomic,strong) id observerToken;
+
 - (BOOL)shouldShowLocationSection;
 - (NSArray*)dataForMainTableView;
 - (void)configureMainTableCell:(UITableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
@@ -155,31 +157,34 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [self.locationData addObserver:self
-                         withBlock:^(NSString *notification, BOOL updated, id userData) {
-                             if ([userData isEqualToString:FacilitiesCategoriesKey]) {
-                                 if ([self.loadingView superview]) {
-                                     [self.loadingView removeFromSuperview];
-                                     self.loadingView = nil;
-                                     self.tableView.hidden = NO;
+    if (self.observerToken == nil) {
+        self.observerToken = [self.locationData addUpdateObserver:^(NSString *notification, BOOL updated, id userData) {
+                                 if ([userData isEqualToString:FacilitiesCategoriesKey]) {
+                                     if ([self.loadingView superview]) {
+                                         [self.loadingView removeFromSuperview];
+                                         self.loadingView = nil;
+                                         self.tableView.hidden = NO;
+                                     }
+                                     
+                                     if ((self.cachedData == nil) || updated) {
+                                         self.cachedData = nil;
+                                         [self.tableView reloadData];
+                                     }
+                                 } else if ([userData isEqualToString:FacilitiesLocationsKey]) {
+                                     if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
+                                         self.filteredData = nil;
+                                         [self.searchDisplayController.searchResultsTableView reloadData];
+                                     }
                                  }
-                                 
-                                 if ((self.cachedData == nil) || updated) {
-                                     self.cachedData = nil;
-                                     [self.tableView reloadData];
-                                 }
-                             } else if ([userData isEqualToString:FacilitiesLocationsKey]) {
-                                 if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
-                                     self.filteredData = nil;
-                                     [self.searchDisplayController.searchResultsTableView reloadData];
-                                 }
-                             }
-                         }];
+                             }];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self.locationData removeObserver:self];
+    if (self.observerToken) {
+        [self.locationData removeUpdateObserver:self.observerToken];
+    }
 }
 
 // Override to allow orientations other than the default portrait orientation.

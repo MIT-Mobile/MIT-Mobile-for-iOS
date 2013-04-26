@@ -234,13 +234,20 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 }
 
 
-- (void)addObserver:(id)observer withBlock:(FacilitiesDidLoadBlock)block {
-    [self.notificationBlocks setObject:[[block copy] autorelease]
-                                forKey:[observer description]];
+- (id)addUpdateObserver:(FacilitiesDidLoadBlock)block
+{
+    CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
+    NSString *uuidString = (NSString*) CFBridgingRelease(CFUUIDCreateString(kCFAllocatorDefault,uuid));
+    [self.notificationBlocks setObject:[block copy]
+                                forKey:uuidString];
+    
+    CFRelease(uuid);
+    return uuidString;
 }
 
-- (void)removeObserver:(id)observer {
-    [self.notificationBlocks removeObjectForKey:[observer description]];
+- (void)removeUpdateObserver:(id)observer
+{
+    [self.notificationBlocks removeObjectForKey:observer];
 }
 
 

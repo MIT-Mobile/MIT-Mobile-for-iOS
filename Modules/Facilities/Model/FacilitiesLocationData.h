@@ -39,6 +39,6 @@ typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id user
 
 - (NSArray*)allRepairTypes;
 
-- (void)addObserver:(id)observer withBlock:(FacilitiesDidLoadBlock)block;
-- (void)removeObserver:(id)observer;
+- (id)addUpdateObserver:(FacilitiesDidLoadBlock)block;
+- (void)removeUpdateObserver:(id)observer;
 @end

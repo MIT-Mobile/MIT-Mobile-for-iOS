@@ -14,6 +14,7 @@
 
 @interface FacilitiesLocationViewController ()
 @property (nonatomic,retain) FacilitiesLocationSearch *searchHelper;
+@property (nonatomic,strong) id observerToken;
 @end
 
 @implementation FacilitiesLocationViewController
@@ -152,30 +153,35 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [self.locationData addObserver:self
-                         withBlock:^(NSString *notification, BOOL updated, id userData) {
-                             BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey]);
-                             if (commandMatch) {
-                                 [self.loadingView removeFromSuperview];
-                                 self.loadingView = nil;
-                                 self.tableView.hidden = NO;
-                                 
-                                 if ((self.cachedData == nil) || updated) {
-                                     self.cachedData = nil;
-                                     [self.tableView reloadData];
+    if (self.observerToken == nil) {
+        self.observerToken = [self.locationData addUpdateObserver:^(NSString *notification, BOOL updated, id userData) {
+                                 BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey]);
+                                 if (commandMatch) {
+                                     [self.loadingView removeFromSuperview];
+                                     self.loadingView = nil;
+                                     self.tableView.hidden = NO;
+                                     
+                                     if ((self.cachedData == nil) || updated) {
+                                         self.cachedData = nil;
+                                         [self.tableView reloadData];
+                                     }
+                                     
+                                     if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
+                                         self.filteredData = nil;
+                                         [self.searchDisplayController.searchResultsTableView reloadData];
+                                     }
                                  }
-                                 
-                                 if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
-                                     self.filteredData = nil;
-                                     [self.searchDisplayController.searchResultsTableView reloadData];
-                                 }
-                             }
-                         }];
+                             }];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self.locationData removeObserver:self];
+    
+    if (self.observerToken) {
+        [[FacilitiesLocationData sharedData] removeUpdateObserver:self.observerToken];
+        self.observerToken = nil;
+    }
 }
 
 // Override to allow orientations other than the default portrait orientation.
