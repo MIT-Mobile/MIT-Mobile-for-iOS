@@ -213,7 +213,7 @@
 - (void)selectAnnotation:(id<MKAnnotation>)annotation
 {
     [self selectAnnotation:annotation
-                  animated:NO
+                  animated:YES
               withRecenter:YES];
 }
 
