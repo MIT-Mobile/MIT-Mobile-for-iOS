@@ -7,6 +7,7 @@
 //
 
 #import "DiningHallDetailHeaderView.h"
+#import "UIKit+MITAdditions.h"
 
 @interface DiningHallDetailHeaderView ()
 
@@ -26,11 +27,11 @@
     if (self) {
         // dimensions derived from https://jira.mit.edu/jira/secure/attachment/26097/house+menu.pdf
         self.icon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 44, 44)];
-        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(64, 10, frame.size.width - 114, 44)];
+        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(64, 10, frame.size.width - 124, 44)];
         self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 64, frame.size.width - 60, 13)];
         self.accessoryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.accessoryButton.frame = CGRectMake(frame.size.width - 40, 0, 40, frame.size.height);
-        
+        self.accessoryButton.frame = CGRectMake(frame.size.width - 60, 0, 60, frame.size.height);
+
         [self styleSubviews];
         [self debugInfo];
         
@@ -46,12 +47,17 @@
 {
     self.titleLabel.backgroundColor = [UIColor clearColor];
     self.titleLabel.font = [UIFont boldSystemFontOfSize:17];
+    self.titleLabel.shadowColor = [UIColor whiteColor];
+    self.titleLabel.shadowOffset = CGSizeMake(0, 1);
     
     self.timeLabel.backgroundColor = [UIColor clearColor];
     self.timeLabel.font = [UIFont fontWithName:@"Helvetica" size:13];
+    self.timeLabel.shadowColor = [UIColor whiteColor];
+    self.timeLabel.shadowOffset = CGSizeMake(0, 1);
     
-    [self.accessoryButton.imageView setContentMode:UIViewContentModeScaleAspectFit];
-    
+    self.accessoryButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    [self.accessoryButton setImage:[UIImage imageNamed:@"dining/info.png"] forState:UIControlStateNormal];
+    [self.accessoryButton setImage:[UIImage imageNamed:@"dining/info-pressed.png"] forState:UIControlStateHighlighted];
 }
 
 - (void) layoutSubviews
@@ -62,13 +68,11 @@
 
 - (void) debugInfo
 {
-    self.backgroundColor = [UIColor lightGrayColor];
+    self.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
     
     self.titleLabel.text = @"Some Dining Hall";
     self.timeLabel.text = @"Opens never";
     self.icon.image = [UIImage imageNamed:@"icons/home-map.png"];
-    [self.accessoryButton setImage:[UIImage imageNamed:@"icons/tab-about.png"] forState:UIControlStateNormal];
-//    self.accessoryButton.imageEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 10);
 }
 
 @end
