@@ -101,7 +101,7 @@
         NSArray * results = [buildingLocations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"number == %@", buildingNumber]];
        
         // derive the section header name
-        NSString * sectionKey;
+        NSString * sectionKey = @"Other";
         if ([results count] == 1) {
             NSString * buildingName = [[results lastObject] name];
             sectionKey = [NSString stringWithFormat:@"%@ - %@", buildingNumber, buildingName];
