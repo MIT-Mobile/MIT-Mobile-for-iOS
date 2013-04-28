@@ -19,7 +19,7 @@
         self.tag        = DiningTag;
         self.shortName  = @"Dining";
         self.longName   = @"Dining";
-        self.iconName   = @"news";
+        self.iconName   = @"dining";
     }
     return self;
 }
