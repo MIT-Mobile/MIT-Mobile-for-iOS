@@ -673,6 +673,10 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             view.touchDelegate = self;
             view.calloutDelegate = self;
             
+            view.gridLineColor = [UIColor lightGrayColor];
+            view.gridLineWidth = 1.0;
+            view.gridSize = 32.0;
+            
             [self addSubview:view];
             self.mapView = view;
         }
@@ -681,6 +685,10 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [bootstrapper requestBootstrap:^(NSDictionary *content, NSError *error) {
             if (error) {
                 DDLogError(@"failed to load basemap definitions: %@", error);
+                if ([self.delegate respondsToSelector:@selector(mapView:didFailWithError:)]) {
+                    [self.delegate mapView:self
+                          didFailWithError:error];
+                }
             } else if ([content isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* response = (NSDictionary*) content;
                 self.baseMapGroups = response[@"basemaps"];
@@ -987,6 +995,12 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     DDLogError(@"failed to load layer '%@': %@", layer.name, [error localizedDescription]);
     [self.baseLayers removeObjectForKey:layer.name];
     [self.mapView removeMapLayer:layer];
+    
+    
+    if ([self.delegate respondsToSelector:@selector(mapView:didFailWithError:)]) {
+        [self.delegate mapView:self
+              didFailWithError:error];
+    }
 }
 
 - (void)locationDisplayDataSource:(id <AGSLocationDisplayDataSource>)dataSource
