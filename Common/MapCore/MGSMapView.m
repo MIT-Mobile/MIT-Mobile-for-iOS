@@ -14,7 +14,6 @@
 #import "MGSSafeAnnotation.h"
 #import "MGSLayerAnnotation.h"
 #import "MGSBootstrapper.h"
-#import "MGSErrorView.h"
 
 
 @implementation MGSMapView
@@ -678,17 +677,10 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             self.mapView = view;
         }
         
-        {
-            MGSErrorView *loadingView = [[MGSErrorView alloc] initWithFrame:mainBounds];
-            [self addSubview:loadingView];
-            self.loadingView = loadingView;
-        }
-        
         MGSBootstrapper *bootstrapper = [MGSBootstrapper sharedBootstrapper];
         [bootstrapper requestBootstrap:^(NSDictionary *content, NSError *error) {
             if (error) {
                 DDLogError(@"failed to load basemap definitions: %@", error);
-                self.loadingView.error = error;
             } else if ([content isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* response = (NSDictionary*) content;
                 self.baseMapGroups = response[@"basemaps"];
@@ -863,8 +855,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     MKCoordinateRegion visibleRegion = [self defaultVisibleArea];
     [mapView zoomToEnvelope:AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(visibleRegion, mapView.spatialReference)
                    animated:NO];
-    
-    [self.loadingView removeFromSuperview];
 }
 
 - (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForGraphic:(AGSGraphic*)graphic
@@ -887,12 +877,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)mapViewWillDismissCallout:(AGSMapView*)mapView
 {
-    /* This space intentially left blank.
-     Well, not blank but you get the idea.
-     Seriously, there's nothing here.
-     Stop it.
-     Reading more isn't going to change anything.
-     */
+    /* This space intentially left blank. */
 }
 
 - (void)mapViewDidDismissCallout:(AGSMapView*)mapView
