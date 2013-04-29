@@ -63,12 +63,6 @@
     return data;
 }
 
-- (UIView *) chevronAccessoryView
-{
-    return [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow.png"]];
-}
-
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -275,6 +269,8 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"reuseIdentifier"];
     }
     cell.backgroundColor = [UIColor whiteColor];
+    cell.accessoryView = nil;
+    cell.accessoryType = UITableViewCellAccessoryNone;
     
     if (![self showingHouseDining]) {
         // showing Retail locations
@@ -285,7 +281,7 @@
     if (announcement && indexPath.section == 0) {
         cell.textLabel.text = announcement;
         cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
-        cell.accessoryView = [self chevronAccessoryView];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
     } else if((!announcement && indexPath.section == 0) || (announcement && indexPath.section == 1)) {
         return [self tableView:tableView houseDiningLocationCellForRowAtIndexPath:indexPath];
@@ -322,7 +318,7 @@
     cell.titleLabel.text = [self currentDiningData][indexPath.row];
     cell.subtitleLabel.text = [self debugSubtitleData][indexPath.row];
     cell.statusOpen = indexPath.row % 2 == 0;
-    cell.accessoryView = [self chevronAccessoryView];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.imageView.image = [UIImage imageNamed:@"icons/home-about.png"];
     
     return cell;
@@ -344,7 +340,7 @@
     cell.titleLabel.text = venueData[@"name"];
     cell.subtitleLabel.text = [self debugSubtitleData][indexPath.row];
     cell.statusOpen = indexPath.row % 2 == 0;
-    cell.accessoryView = [self chevronAccessoryView];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.imageView.image = [UIImage imageNamed:@"icons/home-map.png"];
     
     

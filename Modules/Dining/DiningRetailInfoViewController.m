@@ -16,6 +16,8 @@
 @property (nonatomic, strong) NSString * descriptionHtmlFormatString;
 @property (nonatomic, assign) CGFloat descriptionHeight;
 
+@property (nonatomic, strong) NSArray * sectionData;
+
 @end
 
 @implementation DiningRetailInfoViewController
@@ -29,11 +31,30 @@
     return self;
 }
 
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return NO;
+}
+
+- (BOOL) shouldAutorotate
+{
+    return NO;
+}
+
+- (void) setVenueData:(NSDictionary *)venueData
+{
+    _venueData = venueData;
+    [self parseVenueDataIntoSections];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     if (!self.venueData) {
         return;
+    }
+    if (!self.sectionData) {
+        [self parseVenueDataIntoSections];
     }
     
     self.title = self.venueData[@"name"];
@@ -68,6 +89,24 @@
     
     self.tableView.tableHeaderView = self.headerView;
 
+}
+
+static const NSString * sectionIdKey = @"section_id";
+static const NSString * sectionDataKey = @"section_data";
+
+- (void) parseVenueDataIntoSections
+{
+    NSArray *whiteKeys = @[@"description_html", @"menu_html", @"menu_url", @"hours", @"cuisine", @"payment", @"location", @"homepage_url"];     // whitelist of dictionary keys that will correspond to order in table
+    NSMutableArray * sections = [NSMutableArray array];
+    
+    for (NSString *key in whiteKeys) {
+        if (self.venueData[key]) {
+            NSDictionary * sectionData = @{sectionIdKey : key, sectionDataKey : self.venueData[key]};
+            
+            [sections addObject:sectionData];
+        }
+    }
+    self.sectionData = sections;
 }
 
 - (void)didReceiveMemoryWarning
@@ -177,57 +216,94 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    return [self.sectionData count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    NSDictionary *sectionDict = self.sectionData[section];
+    if ([sectionDict[sectionIdKey] isEqualToString:@"hours"]) {
+        return [sectionDict[sectionDataKey] count];
+    }
     return 1;
 }
-
-enum RetailSection : NSInteger {
-    RetailSectionDescription = 0,
-    RetailSectionMenu,
-    RetailSectionHours,
-    RetailSectionCuisine,
-    RetailSectionPayment,
-    RetailSectionLocation,
-    RetailSectionUrl
-};
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:CellIdentifier];
     }
+    // reuse prevention
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    cell.accessoryView = nil;
+    cell.textLabel.text = nil;
+    cell.detailTextLabel.text = nil;
     
-    switch (indexPath.section) {
-        case RetailSectionDescription:
-        {
-            cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:13];
-            cell.textLabel.numberOfLines = 0;
-//            cell.textLabel.text = self.venueData[@"description_html"];
-            
-            UIWebView *existingWebView = (UIWebView *)[cell.contentView viewWithTag:42];
-            if (!existingWebView) {
-                existingWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, CGRectGetHeight(cell.bounds))];
-                existingWebView.delegate = self;
-                existingWebView.tag = 42;
-                existingWebView.dataDetectorTypes = UIDataDetectorTypeAll;
-                [cell.contentView addSubview:existingWebView];
-            }
-            existingWebView.frame = CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, CGRectGetHeight(cell.bounds));
-            [existingWebView loadHTMLString:[NSString stringWithFormat:self.descriptionHtmlFormatString, self.venueData[@"description_html"]] baseURL:nil];
-            existingWebView.backgroundColor = [UIColor clearColor];
-            existingWebView.opaque = NO;
-            
-            break;
+    // configure cells style for everything but description cell (which is handled in css)
+    cell.textLabel.textColor = [UIColor darkTextColor];
+    cell.textLabel.font   = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    
+    cell.detailTextLabel.font = [UIFont fontWithName:@"Helvetica" size:13];
+    cell.detailTextLabel.numberOfLines = 0;
+    
+    NSDictionary *sectionData = self.sectionData[indexPath.section];
+    if ([sectionData[sectionIdKey] isEqualToString:@"description_html"]) {
+        // cell contents are rendered in a webview
+        static NSString *DescriptionCellIdentifier = @"DescriptionCell";
+        cell = [tableView dequeueReusableCellWithIdentifier:DescriptionCellIdentifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:DescriptionCellIdentifier];
         }
-        default:
-            break;
+        
+        UIWebView *existingWebView = (UIWebView *)[cell.contentView viewWithTag:42];
+        if (!existingWebView) {
+            existingWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, CGRectGetHeight(cell.bounds))];
+            existingWebView.delegate = self;
+            existingWebView.tag = 42;
+            existingWebView.dataDetectorTypes = UIDataDetectorTypeAll;
+            [cell.contentView addSubview:existingWebView];
+        }
+        existingWebView.frame = CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, CGRectGetHeight(cell.bounds));
+        [existingWebView loadHTMLString:[NSString stringWithFormat:self.descriptionHtmlFormatString, sectionData[sectionDataKey]] baseURL:nil];
+        existingWebView.backgroundColor = [UIColor clearColor];
+        existingWebView.opaque = NO;
+    } else if ([sectionData[sectionIdKey] isEqualToString:@"menu_html"]) {
+        cell.textLabel.text = @"menu";
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
+    } else if ([sectionData[sectionIdKey] isEqualToString:@"menu_url"]) {
+        cell.textLabel.text = @"menu";
+        cell.detailTextLabel.text = sectionData[sectionDataKey];
+        cell.detailTextLabel.numberOfLines = 1;
+        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+        
+    } else if ([sectionData[sectionIdKey] isEqualToString:@"hours"]) {
+        NSLog(@"%@", sectionData);
+        NSDictionary *hoursRow = sectionData[sectionDataKey][indexPath.row];
+        cell.textLabel.text = hoursRow[@"day"];
+        if (hoursRow[@"message"]) {
+            cell.detailTextLabel.text = hoursRow[@"message"];
+        } else {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ - %@", hoursRow[@"start_time"], hoursRow[@"end_time"]];
+        }
+        
+    } else if ([sectionData[sectionIdKey] isEqualToString:@"location"]) {
+         NSLog(@"%@", sectionData);
+    }else if ([sectionData[sectionIdKey] isEqualToString:@"homepage_url"]) {
+        cell.textLabel.text = @"homepage";
+        cell.detailTextLabel.numberOfLines = 1;
+        cell.detailTextLabel.text = sectionData[sectionDataKey];
+        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+                                     
+    } else if ([sectionData[sectionIdKey] isEqualToString:@"cuisine"] || [sectionData[sectionIdKey] isEqualToString:@"payment"]) {
+        cell.textLabel.text = sectionData[sectionIdKey];
+        if ([sectionData[sectionDataKey] isKindOfClass:[NSArray class]]) {
+            cell.detailTextLabel.text = [sectionData[sectionDataKey] componentsJoinedByString:@", "];
+        } else {
+            cell.detailTextLabel.text = sectionData[sectionDataKey];
+        }
     }
     
     return cell;
@@ -237,21 +313,37 @@ enum RetailSection : NSInteger {
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    switch (indexPath.section) {
-        case RetailSectionDescription:
-        {
-            return self.descriptionHeight;
-            break;
-        }
-        default:
-            return 44;
-            break;
+    
+    NSDictionary *section = self.sectionData[indexPath.section];
+    if ([section[sectionIdKey] isEqualToString:@"description_html"]) {
+        return self.descriptionHeight;
     }
+    
     return 44;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    NSDictionary *sectionData = self.sectionData[indexPath.section];
+    if ([sectionData[sectionIdKey] isEqualToString:@"menu_html"]) {
+        // show menu view controller
+        
+    } else if ([sectionData[sectionIdKey] isEqualToString:@"menu_url"]) {
+        // external url
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:sectionData[sectionDataKey]]];
+    } else if ([sectionData[sectionIdKey] isEqualToString:@"location"]) {
+        // link to map view
+        
+    } else if ([sectionData[sectionIdKey] isEqualToString:@"homepage_url"]) {
+        // external url
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:sectionData[sectionDataKey]]];
+    } else {
+        // nothing
+        
+    }
+    
     // Navigation logic may go here. Create and push another view controller.
     /*
      <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
