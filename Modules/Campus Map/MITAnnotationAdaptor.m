@@ -47,23 +47,19 @@
     {
         MGSMarkerOptions options = self.markerOptions;
         
-        BOOL frameIsInvalid = ((CGAffineTransformEqualToTransform(legacyAnnotationView.transform, CGAffineTransformIdentity) == NO) ||
+        BOOL frameIsValid = !((CGAffineTransformEqualToTransform(legacyAnnotationView.transform, CGAffineTransformIdentity) == NO) ||
                                CGRectIsNull(legacyAnnotationView.frame) ||
                                CGRectIsInfinite(legacyAnnotationView.frame) ||
                                CGRectIsEmpty(legacyAnnotationView.frame));
         CGRect frame;
         CGRect bounds = legacyAnnotationView.bounds;
-        if (frameIsInvalid) {
-            frame = legacyAnnotationView.bounds;
-        } else {
+        if (frameIsValid) {
             frame = legacyAnnotationView.frame;
             
-            // MKAnnotationView automatically centers its frame if an image
-            // is added so undo the centering then use the remainder for the offset
-            frame.origin.x += (CGRectGetWidth(bounds) / 2.0);
-            frame.origin.y += (CGRectGetHeight(bounds) / 2.0);
+            CGRect stdFrame = CGRectStandardize(frame);
+            stdFrame = CGRectOffset(stdFrame, (CGRectGetWidth(stdFrame) / 2.0), (CGRectGetHeight(stdFrame) / 2.0));
             
-            options.offset = CGPointMake(-frame.origin.x,-frame.origin.y);
+            options.offset = CGPointMake(stdFrame.origin.x,-stdFrame.origin.y);
             self.markerOptions = options;
             
             legacyAnnotationView.frame = bounds;

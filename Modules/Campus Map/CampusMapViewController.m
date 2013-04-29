@@ -761,7 +761,9 @@
 		// if the annotation is not fully loaded, try to load it
 		if (!searchAnnotation.dataPopulated) 
 		{	
-			[MITMapSearchResultAnnotation executeServerSearchWithQuery:searchAnnotation.bldgnum jsonDelegate:self object:annotation];	
+			[MITMapSearchResultAnnotation executeServerSearchWithQuery:searchAnnotation.bldgnum
+                                                          jsonDelegate:self
+                                                                object:annotation];
 		}
 		[self.url setPath:[NSString stringWithFormat:@"search/%@", searchAnnotation.uniqueID] query:self.lastSearchText];
 		[self.url setAsModulePath];
