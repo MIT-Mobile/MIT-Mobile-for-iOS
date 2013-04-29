@@ -237,6 +237,7 @@ static const NSString * sectionDataKey = @"section_data";
     }
     // reuse prevention
     cell.accessoryType = UITableViewCellAccessoryNone;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.accessoryView = nil;
     cell.textLabel.text = nil;
     cell.detailTextLabel.text = nil;
@@ -272,12 +273,14 @@ static const NSString * sectionDataKey = @"section_data";
     } else if ([sectionData[sectionIdKey] isEqualToString:@"menu_html"]) {
         cell.textLabel.text = @"menu";
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         
     } else if ([sectionData[sectionIdKey] isEqualToString:@"menu_url"]) {
         cell.textLabel.text = @"menu";
         cell.detailTextLabel.text = sectionData[sectionDataKey];
         cell.detailTextLabel.numberOfLines = 1;
         cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         
     } else if ([sectionData[sectionIdKey] isEqualToString:@"hours"]) {
         NSLog(@"%@", sectionData);
@@ -291,11 +294,13 @@ static const NSString * sectionDataKey = @"section_data";
         
     } else if ([sectionData[sectionIdKey] isEqualToString:@"location"]) {
          NSLog(@"%@", sectionData);
+        cell.textLabel.text = sectionData[sectionIdKey];
     }else if ([sectionData[sectionIdKey] isEqualToString:@"homepage_url"]) {
         cell.textLabel.text = @"homepage";
         cell.detailTextLabel.numberOfLines = 1;
         cell.detailTextLabel.text = sectionData[sectionDataKey];
         cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
                                      
     } else if ([sectionData[sectionIdKey] isEqualToString:@"cuisine"] || [sectionData[sectionIdKey] isEqualToString:@"payment"]) {
         cell.textLabel.text = sectionData[sectionIdKey];
@@ -339,25 +344,14 @@ static const NSString * sectionDataKey = @"section_data";
     } else if ([sectionData[sectionIdKey] isEqualToString:@"homepage_url"]) {
         // external url
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:sectionData[sectionDataKey]]];
-    } else {
-        // nothing
-        
     }
-    
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
 }
 
 #pragma mark - WebViewDelegate
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
 	// calculate webView height, if it change we need to reload table
-	CGFloat newDescriptionHeight = [[webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"content\").scrollHeight;"] floatValue] + 20; // 20 is for 10 pixel vertical padding
+	CGFloat newDescriptionHeight = [[webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"content\").scrollHeight;"] floatValue];
     CGRect frame = webView.frame;
     frame.size.height = newDescriptionHeight;
     webView.frame = frame;
