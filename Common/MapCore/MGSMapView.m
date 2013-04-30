@@ -993,8 +993,29 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)layer:(AGSLayer*)layer didFailToLoadWithError:(NSError*)error
 {
     DDLogError(@"failed to load layer '%@': %@", layer.name, [error localizedDescription]);
-    [self.baseLayers removeObjectForKey:layer.name];
-    [self.mapView removeMapLayer:layer];
+    
+    // Perform the coreLayersLoaded checking here since we don't want to add any of the
+    // user layers until we actually have a spatial reference to work with.
+    if (self.baseLayers[layer.name]) {
+        [self.baseLayers removeObjectForKey:layer.name];
+        [self.mapView removeMapLayer:layer];
+        
+        if (self.isBaseLayersLoaded == NO) {
+            __block BOOL layersLoaded = YES;
+            [self.baseLayers enumerateKeysAndObjectsUsingBlock:^(NSString* name, AGSLayer* layer, BOOL* stop) {
+                layersLoaded = (layersLoaded && layer.spatialReference);
+            }];
+            
+            
+            // Check again after we iterate through everything to make sure the state
+            // hasn't changed now that we have another layer loaded
+            if (layersLoaded) {
+                self.baseLayersLoaded = YES;
+                [self baseLayersDidFinishLoading];
+            }
+        }
+        
+    }
     
     
     if ([self.delegate respondsToSelector:@selector(mapView:didFailWithError:)]) {
