@@ -145,10 +145,6 @@
 
 
 - (void)dealloc {
-	[_smallStopImage release];
-	[_smallUpcomingStopImage release];
-	[_largeStopImage release];
-	[_largeUpcomingStopImage release];
 	_mapView.delegate = nil;
 	[_mapView release];
 	[_routeStops release];
@@ -333,12 +329,23 @@
         
         // determine which image to use for this annotation. If our map is above 2.0, use the big one
         if (_mapView.zoomLevel >= LARGE_SHUTTLE_ANNOTATION_ZOOM) {
-            annotationView.image = stopAnnotation.shuttleStop.upcoming ? _largeUpcomingStopImage : _largeStopImage;
-            annotationView.layer.anchorPoint = CGPointMake(0.5, 1.0);
+            if (stopAnnotation.shuttleStop.upcoming) {
+                annotationView.image = [UIImage imageNamed:@"shuttle/pin_shuttle_stop_complete_next.png"];
+            } else {
+                annotationView.image = [UIImage imageNamed:@"shuttle/map_pin_shuttle_stop_complete.png"];
+            }
+            
+            annotationView.centerOffset = CGPointMake(0, -(annotationView.image.size.height / 2.0));
         } else {
-            annotationView.layer.anchorPoint = CGPointMake(0.5, 0.5);
+            if (stopAnnotation.shuttleStop.upcoming) {
+                annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"];
+            } else {
+                annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot.png"];
+            }
+            
             annotationView.image = stopAnnotation.shuttleStop.upcoming ? _smallUpcomingStopImage : _smallStopImage;
         }
+        
 		annotationView.canShowCallout = NO;
 		annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
         
@@ -360,12 +367,16 @@
 		arrowImageView.layer.anchorPoint = CGPointMake(0.5, verticalAnchor);
 		arrowImageView.transform = cgCTM;
 		
+		[annotationView addSubview:imageView];
+		[annotationView addSubview:arrowImageView];
+        
 		annotationView.frame = imageView.frame;
 		annotationView.canShowCallout = NO;
         annotationView.showsCustomCallout = NO;
-        annotationView.layer.anchorPoint = CGPointMake(0.5, 1.0);
-		[annotationView addSubview:imageView];
-		[annotationView addSubview:arrowImageView];
+        annotationView.centerOffset = CGPointMake(0, -(pin.size.height / 2.0) - 3.0); // Subtracting 3px because there
+                                                                                      // is a 3px transparent border
+                                                                                      // around the image.
+        
 		
 		annotationView.backgroundColor = [UIColor clearColor];
 		//annotationView.alreadyOnMap = YES;
