@@ -117,6 +117,7 @@ static const NSString * sectionDataKey = @"section_data";
 
 - (void) parseHoursDataIntoFormat:(NSArray *)rawData
 {
+    NSArray *weekDays = @[@"monday", @"tuesday", @"wednesday", @"thursday", @"friday", @"saturday", @"sunday"];
     NSMutableArray *hoursArray = [NSMutableArray arrayWithCapacity:[rawData count]];
     NSInteger arrComparisonIndex = 0;  // used to compare items against objects in hoursArray
     for (NSDictionary *item in rawData) {
@@ -130,8 +131,8 @@ static const NSString * sectionDataKey = @"section_data";
             
             if ([hoursArray count] == 0) {
                 // base case, no hour yet in hoursArray, no need to increment comparison pointer because want to compare against index 0 next time through
-                NSDictionary * formatItem = @{@"timeSpan": timeFormat, @"daySpan" : @[day]};
-                [hoursArray addObject:formatItem];
+                NSDictionary * newFormatItem = @{@"timeSpan": timeFormat, @"daySpan" : @[day]};
+                [hoursArray addObject:newFormatItem];
                 continue;
             }
             
@@ -139,15 +140,21 @@ static const NSString * sectionDataKey = @"section_data";
             if (formatItem && [formatItem[@"timeSpan"] isEqualToString:timeFormat]) {
                 // adding day to time format array, update is in placem no need to increment arrHead pointer
                 NSMutableArray *daySpan = (formatItem[@"daySpan"]) ? [formatItem[@"daySpan"] mutableCopy] : [NSMutableArray arrayWithCapacity:[rawData count]]; // if exists, get it; if not, make it
-                [daySpan addObject:day];
-                formatItem[@"daySpan"] = daySpan;
-                hoursArray[arrComparisonIndex] = formatItem;
-            } else {
-                // does not match previous time format, need to add new object to hoursArray, and increment the comparison pointer
-                NSDictionary * formatItem = @{@"timeSpan": timeFormat, @"daySpan" : @[day]};
-                [hoursArray addObject:formatItem];
-                arrComparisonIndex = [hoursArray count] - 1;
+                NSString * lastDay = [daySpan lastObject];
+                if (lastDay && [weekDays indexOfObject:day] - [weekDays indexOfObject:lastDay] == 1) {
+                    [daySpan addObject:day];
+                    formatItem[@"daySpan"] = daySpan;
+                    hoursArray[arrComparisonIndex] = formatItem;
+                    continue;
+                }
+                
+                
             }
+            
+            // does not match previous time format, need to add new object to hoursArray, and increment the comparison pointer
+            NSDictionary * newFormatItem = @{@"timeSpan": timeFormat, @"daySpan" : @[day]};
+            [hoursArray addObject:newFormatItem];
+            arrComparisonIndex = [hoursArray count] - 1;
             
         } else {
             // will need to handle order correctly
