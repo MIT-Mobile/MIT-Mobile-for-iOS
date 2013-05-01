@@ -275,16 +275,16 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 			SecondaryGroupedTableViewCell *cell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:secondaryCellID];
 			if (cell == nil) {
 				cell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:secondaryCellID] autorelease];
-
-				if (indexPath.row == 0) {
-					cell.textLabel.text = @"Phone Directory";
-					cell.secondaryTextLabel.text = @"(617.253.1000)";
-					cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-				} else {
-					cell.textLabel.text = @"Emergency Contacts";
-					cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmergency];
-				}
 			}
+            
+            if (indexPath.row == 0) {
+                cell.textLabel.text = @"Phone Directory";
+                cell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",[self.directoryPhoneURL host]];
+                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+            } else {
+                cell.textLabel.text = @"Emergency Contacts";
+                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmergency];
+            }
 			
 			return cell;
 		
@@ -485,9 +485,8 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 
 - (void)phoneIconTapped
 {
-	NSURL *externURL = [NSURL URLWithString:@"tel://6172531000"];
-	if ([[UIApplication sharedApplication] canOpenURL:externURL])
-		[[UIApplication sharedApplication] openURL:externURL];
+	if ([[UIApplication sharedApplication] canOpenURL:self.directoryPhoneURL])
+		[[UIApplication sharedApplication] openURL:self.directoryPhoneURL];
 }
 
 
