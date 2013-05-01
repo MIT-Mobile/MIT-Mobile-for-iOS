@@ -68,9 +68,29 @@
         "homepage_url": "http://annastaqueria.com/",
         "hours": [
           {
+            "day": "tuesday",
+            "start_time": "07:00",
+            "end_time": "14:30"
+          },
+          {
+            "day": "wednesday",
+            "start_time": "07:00",
+            "end_time": "14:30"
+          },
+          {
+            "day": "thursday",
+            "start_time": "07:00",
+            "end_time": "14:30"
+          },
+          {
             "day": "friday",
             "start_time": "07:00",
             "end_time": "14:30"
+          },
+          {
+            "day": "saturday",
+            "start_time": "08:00",
+            "end_time": "13:30"
           }
         ],
         "cuisine": [

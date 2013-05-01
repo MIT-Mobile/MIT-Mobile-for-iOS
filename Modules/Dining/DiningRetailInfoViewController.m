@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong) NSArray * sectionData;
 
+@property (nonatomic, strong) NSArray * formattedHoursData;
+
 @end
 
 @implementation DiningRetailInfoViewController
@@ -101,12 +103,86 @@ static const NSString * sectionDataKey = @"section_data";
     
     for (NSString *key in whiteKeys) {
         if (self.venueData[key]) {
-            NSDictionary * sectionData = @{sectionIdKey : key, sectionDataKey : self.venueData[key]};
+            if ([key isEqualToString:@"hours"]) {
+                // hours data is treated differently because raw data is too ugly to show the user.
+                [self parseHoursDataIntoFormat:self.venueData[key]];
+            }
             
+            NSDictionary * sectionData = @{sectionIdKey : key, sectionDataKey : self.venueData[key]};
             [sections addObject:sectionData];
         }
     }
     self.sectionData = sections;
+}
+
+- (void) parseHoursDataIntoFormat:(NSArray *)rawData
+{
+    NSMutableArray *hoursArray = [NSMutableArray arrayWithCapacity:[rawData count]];
+    NSInteger arrComparisonIndex = 0;  // used to compare items against objects in hoursArray
+    for (NSDictionary *item in rawData) {
+        if (item[@"start_time"] && item[@"end_time"]) {  // only parse hours that have start time and end time
+            
+            NSString *day = item[@"day"];
+            NSString *startTime = item[@"start_time"];
+            NSString * endTime = item[@"end_time"];
+        
+            NSString *timeFormat = [NSString stringWithFormat:@"%@ - %@", [self formatHourString:startTime], [self formatHourString:endTime]]; // this is the time format we want. need to group days based on this format
+            
+            if ([hoursArray count] == 0) {
+                // base case, no hour yet in hoursArray, no need to increment comparison pointer because want to compare against index 0 next time through
+                NSDictionary * formatItem = @{@"timeSpan": timeFormat, @"daySpan" : @[day]};
+                [hoursArray addObject:formatItem];
+                continue;
+            }
+            
+            NSMutableDictionary *formatItem = [hoursArray[arrComparisonIndex] mutableCopy];
+            if (formatItem && [formatItem[@"timeSpan"] isEqualToString:timeFormat]) {
+                // adding day to time format array, update is in placem no need to increment arrHead pointer
+                NSMutableArray *daySpan = (formatItem[@"daySpan"]) ? [formatItem[@"daySpan"] mutableCopy] : [NSMutableArray arrayWithCapacity:[rawData count]]; // if exists, get it; if not, make it
+                [daySpan addObject:day];
+                formatItem[@"daySpan"] = daySpan;
+                hoursArray[arrComparisonIndex] = formatItem;
+            } else {
+                // does not match previous time format, need to add new object to hoursArray, and increment the comparison pointer
+                NSDictionary * formatItem = @{@"timeSpan": timeFormat, @"daySpan" : @[day]};
+                [hoursArray addObject:formatItem];
+                arrComparisonIndex = [hoursArray count] - 1;
+            }
+            
+        } else {
+            // will need to handle order correctly
+            if (item[@"message"]) {
+                NSDictionary * formatItem = @{@"timeSpan": item[@"message"], @"daySpan" : @[item[@"day"]]};
+                [hoursArray addObject:formatItem];
+                arrComparisonIndex = [hoursArray count] - 1;
+            }
+
+        }
+    }
+    
+    self.formattedHoursData = hoursArray;
+}
+
+- (NSString *) formatHourString:(NSString *) rawString
+{   // takes 24 hour time string and formats it into h:mma
+    
+    NSArray * components = [rawString componentsSeparatedByString:@":"];
+    NSInteger hour = [components[0] integerValue];
+    NSInteger minute = [components[1] integerValue];
+    
+    BOOL isPM = NO;
+    if (hour >= 12) {
+        hour = (hour - 12 == 0)? 12 : hour - 12;
+        isPM = YES;
+    }
+    
+    if (minute == 0) {
+        // no minutes, truncate from string
+        return [NSString stringWithFormat:@"%i%@", hour, (isPM)? @"pm":@"am"];
+    } else {
+        return [NSString stringWithFormat:@"%i:%i%@", hour, minute, (isPM)? @"pm":@"am"];
+    }
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -145,7 +221,7 @@ static const NSString * sectionDataKey = @"section_data";
     }
     
     if (todaysHours[@"message"]) {
-        return @{@"isOpen": @YES,
+        return @{@"isOpen": @NO,
           @"text" : todaysHours[@"message"]};
     }
     
@@ -157,10 +233,6 @@ static const NSString * sectionDataKey = @"section_data";
         
         NSDate *openDate = [self dateForTodayFromTimeString:openString];
         NSDate *closeDate = [self dateForTodayFromTimeString:closeString];
-        
-        NSLog(@"%@", openDate);
-        NSLog(@"%@", closeDate);
-        NSLog(@"%@", rightNow);
         
         BOOL willOpen       = ([openDate compare:rightNow] == NSOrderedDescending); // openDate > rightNow , before the open hours for the day
         BOOL currentlyOpen  = ([openDate compare:rightNow] == NSOrderedAscending && [rightNow compare:closeDate] == NSOrderedAscending);  // openDate < rightNow < closeDate , within the open hours
@@ -223,7 +295,7 @@ static const NSString * sectionDataKey = @"section_data";
 {
     NSDictionary *sectionDict = self.sectionData[section];
     if ([sectionDict[sectionIdKey] isEqualToString:@"hours"]) {
-        return [sectionDict[sectionDataKey] count];
+        return [self.formattedHoursData count];
     }
     return 1;
 }
@@ -284,12 +356,22 @@ static const NSString * sectionDataKey = @"section_data";
         
     } else if ([sectionData[sectionIdKey] isEqualToString:@"hours"]) {
         NSLog(@"%@", sectionData);
-        NSDictionary *hoursRow = sectionData[sectionDataKey][indexPath.row];
-        cell.textLabel.text = hoursRow[@"day"];
+        NSDictionary *hoursRow = self.formattedHoursData[indexPath.row];
+        NSArray * days = hoursRow[@"daySpan"];
+        NSString *dayText;
+        if ([days count] > 1) {
+            NSString * head = days[0];
+            NSString * tail = [days lastObject];
+            dayText = [NSString stringWithFormat:@"%@ - %@",[head substringToIndex:3], [tail substringToIndex:3]]; // abbreviates days
+        } else {
+            dayText = days[0];
+        }
+        
+        cell.textLabel.text = dayText;
         if (hoursRow[@"message"]) {
             cell.detailTextLabel.text = hoursRow[@"message"];
         } else {
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ - %@", hoursRow[@"start_time"], hoursRow[@"end_time"]];
+            cell.detailTextLabel.text = hoursRow[@"timeSpan"];
         }
         
     } else if ([sectionData[sectionIdKey] isEqualToString:@"location"]) {
