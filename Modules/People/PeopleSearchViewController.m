@@ -14,13 +14,29 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
+@interface PeopleSearchViewController ()
+@property (nonatomic,strong) NSURL *directoryPhoneURL;
+@end
 
 @implementation PeopleSearchViewController
 
 @synthesize searchTerms, searchTokens, searchResults, searchController,
-loadingView, searchBar = theSearchBar, tableView = theTableView;;
+loadingView, searchBar = theSearchBar, tableView = theTableView;
 
 #pragma mark - View
+
+- (id)initWithNibName:(NSString *)nibNameOrNil
+               bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nil
+                           bundle:nil];
+    
+    if (self) {
+        self.directoryPhoneURL = [NSURL URLWithString:@"telprompt://617.253.1000"];
+    }
+    
+    return self;
+}
 
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
