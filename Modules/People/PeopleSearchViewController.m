@@ -283,6 +283,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
             } else {
                 cell.textLabel.text = @"Emergency Contacts";
+                cell.secondaryTextLabel.text = nil;
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmergency];
             }
 			
