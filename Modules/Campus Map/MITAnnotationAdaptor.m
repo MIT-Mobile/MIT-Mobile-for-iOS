@@ -87,6 +87,8 @@
             [legacyAnnotationView.layer renderInContext:context];
             image = UIGraphicsGetImageFromCurrentImageContext();
             UIGraphicsEndImageContext();
+        } else {
+            MITLogFatal(@"Failed to create image context for annotation '%@'",self.title);
         }
         
         if (frameIsValid) {
