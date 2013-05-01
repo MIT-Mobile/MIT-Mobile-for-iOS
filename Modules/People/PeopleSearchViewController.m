@@ -14,16 +14,6 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
-// this function puts longer strings first
-NSInteger strLenSort(NSString *str1, NSString *str2, void *context)
-{
-    if ([str1 length] > [str2 length])
-        return NSOrderedAscending;
-    else if ([str1 length] < [str2 length])
-        return NSOrderedDescending;
-    else
-        return NSOrderedSame;
-}
 
 @implementation PeopleSearchViewController
 
@@ -185,7 +175,15 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 {
 	// save search tokens for drawing table cells
 	NSMutableArray *tempTokens = [NSMutableArray arrayWithArray:[[self.searchTerms lowercaseString] componentsSeparatedByString:@" "]];
-	[tempTokens sortUsingFunction:strLenSort context:NULL]; // match longer tokens first
+	[tempTokens sortUsingComparator:^NSComparisonResult(NSString *string1, NSString *string2) {
+        if ([string2 length] > [string2 length])
+            return NSOrderedAscending;
+        else if ([string2 length] < [string2 length])
+            return NSOrderedDescending;
+        else
+            return NSOrderedSame;
+    }];
+    
 	self.searchTokens = [NSArray arrayWithArray:tempTokens];
 
     NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:self.searchTerms, @"q", nil];
