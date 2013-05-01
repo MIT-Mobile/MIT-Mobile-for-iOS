@@ -4,6 +4,7 @@
 #import "UIImage+PDF.h"
 
 #define TITLE_DESCRIPTION_PADDING 4
+#define TYPE_ICON_SIZE 24
 
 @interface DiningHallMenuItemTableCell()
 
@@ -30,7 +31,7 @@
         [self formatLabel:self.title withFont:[[self class] primaryFont]];
         [self formatLabel:self.description withFont:[[self class] secondaryFont]];
         
-        self.typeContainer  = [[UIView alloc] initWithFrame:CGRectMake(265, 15, 45, 20)];   // if more than 2 this view will need to resize
+        self.typeContainer  = [[UIView alloc] initWithFrame:CGRectMake(265, 15, (TYPE_ICON_SIZE * 2) + 5, TYPE_ICON_SIZE)];   // if more than 2 this view will need to resize
         
         [self.contentView addSubview:self.station];
         [self.contentView addSubview:self.title];
@@ -70,7 +71,7 @@
 
 - (void) layoutDietaryTypes
 {
-    CGSize iconSize = CGSizeMake(20, 20);
+    CGSize iconSize = CGSizeMake(TYPE_ICON_SIZE, TYPE_ICON_SIZE);
     int maxIcons = 4;
     NSMutableArray *icons = [NSMutableArray arrayWithCapacity:maxIcons];
     for (NSNumber *type in self.dietaryTypes) {
@@ -91,9 +92,11 @@
     
     for (int i = 0; i < [icons count]; i++) {
         UIImageView *iconView = [[UIImageView alloc] initWithImage:icons[i]];
-                                            // there can only be a maximum of four icons, they are aligned like so :    1 0
-        iconView.center = CGPointMake(35 - 25 * (i % 2), 10 + 25 * (i >= 2));   //                                      3 2
-        [self.typeContainer addSubview:iconView];                               // full layout description can be found in the spec: https://jira.mit.edu/jira/secure/attachment/26097/house+menu.pdf
+        // there can only be a maximum of four icons, they are aligned like so :    1 0
+        //                                                                          3 2
+        // full layout description can be found in the spec: https://jira.mit.edu/jira/secure/attachment/26097/house+menu.pdf
+        iconView.center = CGPointMake(35 - (iconSize.width + 5) * (i % 2), 10 + (iconSize.height + 5) * (i >= 2));
+        [self.typeContainer addSubview:iconView];
     }
 }
 
