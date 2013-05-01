@@ -43,6 +43,14 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
     return UIInterfaceOrientationMaskPortrait;
 }
 
+- (void)loadView
+{
+    UIView *view = [self defaultApplicationView];
+    view.backgroundColor = [UIColor clearColor];
+    
+    self.view = view;
+}
+
 - (void)viewDidLoad {
 	[super viewDidLoad];
     self.title = @"People Directory";
