@@ -108,7 +108,7 @@
     
     NSDictionary *filterItem = [[self debugData] objectAtIndex:indexPath.row];
     NSString *resourcePath = [NSString stringWithFormat:@"dining/%@.pdf", filterItem[@"id"]];
-    UIImage *filterImage = [UIImage imageWithPDFNamed:resourcePath fitSize:CGSizeMake(20, 20)];
+    UIImage *filterImage = [UIImage imageWithPDFNamed:resourcePath fitSize:CGSizeMake(24, 24)];
     
     
     if ([self.selectedFilters containsObject:filterItem[@"id"]]) {
