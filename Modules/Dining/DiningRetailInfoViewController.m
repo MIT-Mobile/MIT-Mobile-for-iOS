@@ -260,13 +260,13 @@ static const NSString * sectionDataKey = @"section_data";
         
         UIWebView *existingWebView = (UIWebView *)[cell.contentView viewWithTag:42];
         if (!existingWebView) {
-            existingWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, CGRectGetHeight(cell.bounds))];
+            existingWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, self.descriptionHeight)];
             existingWebView.delegate = self;
             existingWebView.tag = 42;
             existingWebView.dataDetectorTypes = UIDataDetectorTypeAll;
             [cell.contentView addSubview:existingWebView];
         }
-        existingWebView.frame = CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, CGRectGetHeight(cell.bounds));
+        existingWebView.frame = CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, self.descriptionHeight);
         [existingWebView loadHTMLString:[NSString stringWithFormat:self.descriptionHtmlFormatString, sectionData[sectionDataKey]] baseURL:nil];
         existingWebView.backgroundColor = [UIColor clearColor];
         existingWebView.opaque = NO;
@@ -321,7 +321,7 @@ static const NSString * sectionDataKey = @"section_data";
     
     NSDictionary *section = self.sectionData[indexPath.section];
     if ([section[sectionIdKey] isEqualToString:@"description_html"]) {
-        return self.descriptionHeight;
+        return self.descriptionHeight + 10; // add some bottom padding
     }
     
     return 44;
