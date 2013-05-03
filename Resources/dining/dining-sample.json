@@ -3197,105 +3197,1660 @@
     ],
     "retail": [
       {
-        "id": "annas-taqueria",
-        "url": "http://m.mit.edu/apis/dining/venues/retail/annas-taqueria",
         "name": "Anna's Taqueria",
-        "description_html": "<p>The R&amp;D, like all of Stata Center, is a creative space offering a relaxed atmosphere for the MIT. Located on 4th floor, the Pub offers ample seating for impromptu gatherings with friends and colleagues, including a mezzanine with soft seating. Order everything from crudité and fruit and cheese, to sushi and personal pan pizzas. Beverages include beer and wine, along with soft drinks, tea, and coffee. <strong>21+ only please.</strong></p><p>Please contact Ashley Griset, 617-253-2735, if you would like to reserve the R&amp;D Pub for your special event!</p>",
-        "location": {
-          "mit_building": "W20",
-          "description": "W20-100",
-          "latitude": "42.3556715",
-          "longitude": "-71.1019165",
-          "street": "84 Massachusetts Ave",
-          "city": "Cambridge",
-          "state": "MA",
-          "zipcode": "02139"
-        },
-        "menu_url": "http://annastaqueria.com/menu.htm",
+        "short_name": "Anna's Taqueria",
+        "description_html": " </p> Anna's Taqueria at MIT serves tacos, SUPER burritos, quesadillas, chips, salsa, fresh guacamole...and more authentic mexican cuisines! Anna's also offers catering options.</p> </p>",
+        "id": "annas-taqueria",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/annas-taqueria",
+        "icon_url": "http://dining.mit.edu/sites/default/files/annastaqueria.jpg",
         "homepage_url": "http://annastaqueria.com/",
-        "hours": [
-          {
-            "day": "tuesday",
-            "start_time": "07:00",
-            "end_time": "14:30"
-          },
-          {
-            "day": "wednesday",
-            "start_time": "07:00",
-            "end_time": "14:30"
-          },
-          {
-            "day": "thursday",
-            "start_time": "07:00",
-            "end_time": "14:30"
-          },
-          {
-            "day": "friday",
-            "start_time": "07:00",
-            "end_time": "14:30"
-          },
-          {
-            "day": "saturday",
-            "start_time": "08:00",
-            "end_time": "13:30"
-          }
-        ],
         "cuisine": [
+          "Breakfast Foods",
+          "Mexican Foods",
+          "Vegetarian",
+          "Other",
           "Breakfast Foods",
           "Mexican Foods",
           "Vegetarian",
           "Other"
         ],
         "payment": [
-          "Cash",
-          "Credit",
-          "Debit",
           "TechCASH"
+        ],
+        "location": {
+          "street": "84 Massachusetts Avenue",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "annastaqueria.com/menu.htm",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "07:00:00",
+            "end_time": "23:30:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "07:00:00",
+            "end_time": "23:30:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "07:00:00",
+            "end_time": "23:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "07:00:00",
+            "end_time": "01:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "07:00:00",
+            "end_time": "01:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "start_time": "07:00:00",
+            "end_time": "01:00:00"
+          },
+          {
+            "date": "2013-05-05",
+            "start_time": "07:00:00",
+            "end_time": "23:30:00"
+          }
         ]
       },
       {
-        "id": "rd-pub",
-        "url": "http://m.mit.edu/apis/dining/venues/retail/rd-pub",
-        "name": "R&D Pub",
-        "description_html": "<p>The R&amp;D, like all of Stata Center, is a creative space offering a relaxed atmosphere for the MIT. Located on 4th floor, the Pub offers ample seating for impromptu gatherings with friends and colleagues, including a mezzanine with soft seating. Order everything from crudité and fruit and cheese, to sushi and personal pan pizzas. Beverages include beer and wine, along with soft drinks, tea, and coffee. <strong>21+ only please.</strong></p><p>Please contact Ashley Griset, 617-253-2735, if you would like to reserve the R&amp;D Pub for your special event!</p>",
+        "name": "Koch Café",
+        "short_name": "Koch Café",
+        "description_html": " </p> The new Koch Cafe, is conveniently located on the ground floor of the new Koch Institute for Integrative Cancer Research. Entree specials change daily and are complimented by, artisan flat bread pizza, made-to-order deli and panini sandwiches, soup du jour (2), prepared salads, sandwiches, sushi and a variety of sweet and savory snacks and bakery items. Breakfast pastries are all made fresh in-house and Peet's Coffee is the featured brew.</p>",
+        "id": "koch",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/koch",
+        "icon_url": "http://dining.mit.edu/sites/default/files/100koch.jpg",
+        "homepage_url": "http://web.mit.edu/kochcafe/",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Breakfast Foods",
+          "Italian Foods/Pizza",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other",
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Breakfast Foods",
+          "Italian Foods/Pizza",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
         "location": {
-          "mit_building": "32",
-          "description": "Stata Center's 4th Floor",
-          "latitude": "42.3556715",
-          "longitude": "-71.1019165",
-          "street": "84 Massachusetts Ave",
+          "description": "Building 76",
+          "street": "500 Main Street",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139"
         },
-        "menu_html": "<p><span><strong>Menu options:<br></strong></span></p> <h2><span><strong>Appetizers</strong></span></h2> <ul> <li><u>R&amp; D Nachos</u>- Crisp Nachos smothered with melted cheddar cheese, jalapenos, diced tomatoes, topped off with salsa, sour cream and guzcomole.</li> <li><u>Chicken Quesadilla</u> – Grilled Tortilla, stuffed with marinated chicken, salsa, cheddar cheese, tomatoes and scallions. Sour cream served on the side.</li> <li><u>Roasted Potato Wedges</u> – Basket of Roasted Potato Wedges served with zesty Garlic Aioli.</li> <li><u>Pita chips with dip</u> – Pita triangles seasoned and baked served with garlic hum...",
-        "homepage_url": "http://web.mit.edu/dining/catering/techcatering/index.html",
+        "menu_url": "http://web.mit.edu/kochcafe/menu.html",
         "hours": [
           {
-            "day": "monday",
-            "message": "By Reservation"
+            "date": "2013-04-29",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
           },
           {
-            "day": "friday",
-            "message": "By Reservation"
+            "date": "2013-04-30",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
           },
           {
-            "day": "saturday",
-            "start_time": "16:00",
-            "end_time": "21:00"
+            "date": "2013-05-01",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
           }
-        ],
+        ]
+      },
+      {
+        "name": "Bosworth's Café",
+        "short_name": "Bosworth's Café",
+        "description_html": "Designed for MIT by MIT, this café features fresh-brewed Peet’s Coffees, hot and iced specialty drinks and gourmet teas, plus fabulous pastries and desserts by renowned Boston bakeries. Bosworth’s is a coffee drinker’s favorite and is not to be missed!Menu options:</strong>Assorted Peet's Coffee BeveragesHot Coffee, Iced Beverages, LattesAssorted Bottled JuiceOdwalla/ Tropicana / Bottled WaterAssorted Pastries, Muffins, and BagelsAssorted Cakes, Bundt Cakes, Biscotti and CookiesWhole FruitBiscotti</p>",
+        "id": "bosworths",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/bosworths",
+        "icon_url": "http://dining.mit.edu/sites/default/files/bosworths.jpg",
+        "homepage_url": "http://www.sodexodiningmit.com/",
         "cuisine": [
           "Breakfast Foods",
-          "Mexican Foods",
+          "Vegetarian",
+          "Other",
+          "Breakfast Foods",
           "Vegetarian",
           "Other"
         ],
         "payment": [
-          "Cash",
           "Credit",
-          "Debit",
           "TechCASH"
+        ],
+        "location": {
+          "street": "77 Massachusetts Avenue",
+          "mit_room_number": "Lobby 7",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "100 Main Marketplace",
+        "short_name": "100 Main Marketplace",
+        "description_html": " </p> Located in the new Sloan School of Management building, 100 Main Marketplace is MIT's most comprehensive food service establishment.</p> Serving breakfast, lunch and early evening meals, menus include a full hot breakfast, made to order panini sandwiches and saute and stir fry items. 100 Main Marketplace also offers a full grill menu featuring burgers, grilled chicken and other favorites...not to mention their huge salad bar. </p>",
+        "id": "100main",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/100main",
+        "icon_url": "http://dining.mit.edu/sites/default/files/100mainmarketplace.jpg",
+        "homepage_url": "http://web.mit.edu/100main/",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Breakfast Foods",
+          "Salad Bar",
+          "Italian Foods/Pizza",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other",
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Breakfast Foods",
+          "Salad Bar",
+          "Italian Foods/Pizza",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
+        "location": {
+          "street": "100 Main Street",
+          "mit_room_number": "Kendall Square",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "http://web.mit.edu/100main/menu.html",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "07:30:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "Clover Food Truck",
+        "short_name": "Clover Food Truck",
+        "description_html": "An entirely vegetarian/vegan menu created from locally-sourced ingredients. The menu includes breakfast items, coffee, salads, soups, sandwiches and other dishes including special creations by Clover's Chef.</p> </p>",
+        "id": "clover",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/clover",
+        "icon_url": "http://dining.mit.edu/sites/default/files/cloverfoodtruck.jpg",
+        "homepage_url": "http://www.cloverfoodlab.com/",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Breakfast Foods",
+          "Vegetarian",
+          "Vegan",
+          "Comfort Foods/Traditional Entrees",
+          "Other",
+          "Soup/Salad/Sandwich",
+          "Breakfast Foods",
+          "Vegetarian",
+          "Vegan",
+          "Comfort Foods/Traditional Entrees",
+          "Other"
+        ],
+        "location": {
+          "street": "Carleton Street",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "www.cloverfastfood.com",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "08:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "08:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "08:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "08:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "08:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "Asian Bistro Food Truck",
+        "short_name": "Asian Bistro Food Truck",
+        "description_html": "Asian Bistro Food Truck (Momogoose) serves Pan-Asian & Pacific Rim, Vietnamese dishes, all served over white rice with a side of vegetables (unless otherwise indicated).</p>Menu Options:</strong></span></p>White rice may be substituted for egg noodles at no additional charge. Brown rice or basil fried rice substitution is an additional $.50 charge</p> (*) denotes slightly spicy items.</p> Meat Entrees</h2> Hawaiian Chicken * Chicken breast meat in slightly spicy sweet &sour sauce with pineapples & bell peppers</p> Sweet & Sour Pork Chinese style boneless pork loin covered in a sweet & sour glaze</p> Coconut Curry Chicken Chicken breast cooked in a rich and creamy Thai coconut sauce</p> Spicy Jamaican Chicken Chicken breasts cooked with Jamaican spices with red beans, green beans, and mangos</p> Beef w/ Broccoli Sliced beef sauteed with broccoli</p> Beef Curry Tender beef stewed Vietnamese style with potatoes & carrots in a red curry sauce</p> Mango Chicken Curry Chicken breast cooked with a mango sauce</p> Cambodian Seafood Shrimps, scallops, & crabmeat and ground pork cooked in a coconut sauce</p> Ginger & Scallion Chicken Chicken breasts cooked with ginger</p> Grilled Pork Lemongrass Ribs Marinated pork ribs covered with our tangy, lemongrass sauce</p> Steamed Salmon w/ Black Bean Sauce Fresh steamed salmon steamed with a light black bean sauce</p> Korean Style Chicken w/ Black Beans Chicken breast sauteed with black beans</p> Viet Stir-Fry with Seasonal Vegetables Chicken breast quickly stir fried in our house garlic brown sauce</p> Kung Pao Chicken * Chicken breast cooked in a spicy Chinese sauce with bell peppers & roasted chili peppers</p> Bulgogi Chicken Korean style chicken cooked with red wine and seasonal vegetables</p> Vegetarian Entrees</h2> Massaman Tofu * Thai style fried tofu in a slightly spicy sauce with potatoes</p> Vindaloo Tofu Soft tofu cooked in a delectable Indian tamarind flavored yellow garam vindaloo curry sauce with mixed vegetables</p> Tofu w/ Thai Peanut Sauce * Thai style fried tofu in a spicy peanut sauce</p> Masala Tofu Soft tofu cooked in a spicy Indian masala curry with diced roma tomatoes</p> Korean Tofu Fried tofu cooked with black beans and green beans</p> Punjabi Tofu Fried tofu cooked with chick peas, carrots, and potatoes with Indian spices</p> Vegetarian Lo-Mein Egg noodles sauteed with cellophane noodles, mushrooms, carrots, and sliced tofu. No side of rice.</p> Spinach Salad Sauteed spinach and shredded carrots dressed with a ginger-soy sauce and sprinkled with sesame</p> Japanese Seaweed Salad Sliced seaweed over lettuce and cucumber dressed with soy-sesame sauce and sprinkled with sesame</p> Miso Soup Soft tofu in miso broth</p> Fruit Cocktail 5 different fruits such as cantaloupe, watermelon, honeydew, orange, strawberry, apple, mango</p> Drinks</h2> Soy Milk Old Fashioned Pink Lemonade Vietnamese Ice Coffee Arizona Ice Tea Snapple Soda Can Small Juice 10oz Large Juice 16oz</p> Soup &Amp; Appetizer</h2> Hot & Sour Soup Vegetarian, spicy</p> Asparagus & Crabmeat Soup Chicken Wonton Noodle Soup Goi Cuon (vegetarian) Fresh salad roll w/ herbs & tofu</p> Spring Roll-fried Vegetarian or Chicken</p> Indian Samosa (veg.) Triangle of potato, peas, slightly spicy</p> Banh Mi Sandwich Grilled chicken, cucumber, pickled veg., cilantro</p> Thai Sesame Salad Egg noodle, shredded chicken, spicy peanut sauce, salad</p> Mango Salad Mango, cabbage, carrots, basil, cilantro, onions, peanuts, rice, Chicken or Tofu</p> Chicken Lo-Mein Egg noodle, beansprout, carrot</p> General Gau's Crispy chicken w/ ginger sauce</p> Orange Chicken Crispy boneless chicken</p> Sweet & Sour Chicken Crispy chicken w/ pineapple sauce</p> Bangkok Garpao Ground chicken, basil, mint</p> Chicken Chow-Foon Rice noodle, mixed vegetables</p> Spicy Thai Chicken Tomato, ginger, onion</p> Viet Hon Chicken Lemongrass, yellow curry, potato</p> Roast Pork With Char Siu Sauce</p> Ma Po Tofu Soft tofu braised w/ ground pork, celery, bell pepper, Teriyaki Pork, Soy-ginger flavor</p> Caramel Pork Sliced pork in thick sauce</p> Viet Combo Baked haddock & caramel pork</p> Fried Salmon With ginger sauce</p> Fried Fish White fish with ginger sauce</p> Coconut Curry Fish Coconut-yellow curry</p> Spicy Thai Bass Tomato, ginger sauce</p> Spicy Thai Salmon Tomato, ginger sauce</p> Teriyaki Salmon Soy-ginger marinade</p> Vegetarian</h2> Tofu with Mix Vegetables Fried tofu</p> Szechuan Tofu Steamed tofu, bell pepper, celery, slightly spicy</p> Spicy Thai Tofu Fried tofu, tomato, ginger</p> Veggie Pad Thai Fried tofu, rice noodle, peanut, beansprouts, and tamarind sauce</p> Viet Curry Tofu Yellow curry, fried tofu, potatoes, carrots</p> Noodles with Peanut Sauce Egg noodle, beansprouts, salad</p> Thai Peanut Chicken Slightly spicy</p> Seegoo Chicken Lemon-peppered breast meat</p> Thai BBQ Chicken Ginger BBQ Sauce</p> Teriyaki Chicken Soy-Ginger sauce</p> Viet Curry Chicken Yellow curry, potato, carrot</p> Indian Curry Chicken Red curry, potato, carrot, spicy</p> Chicken Pad Thai Rice noodles, tamarind sauce</p> Stir-fry Chicken with mixed vegetables</p>",
+        "id": "goosebearys",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/goosebearys",
+        "icon_url": "http://dining.mit.edu/sites/default/files/asianbistrofoodtruck.jpg",
+        "homepage_url": "http://momogoose.com/",
+        "cuisine": [
+          "Chinese Foods",
+          "Vegetarian",
+          "Other",
+          "Chinese Foods",
+          "Vegetarian",
+          "Other"
+        ],
+        "payment": [
+          "TechCASH"
+        ],
+        "location": {
+          "street": "70 Carleton Street & Corner of Ames Street",
+          "mit_room_number": "Nesr Main Street",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "10:30:00",
+            "end_time": "16:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "10:30:00",
+            "end_time": "16:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "10:30:00",
+            "end_time": "16:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "10:30:00",
+            "end_time": "16:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "10:30:00",
+            "end_time": "16:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "Jerusalem Café Food Truck",
+        "short_name": "Jerusalem Café Food Truck",
+        "description_html": " </p>From Baklava to Babaganush, Jerusalem Cafe features all your favorite Middle-Eastern dishes. Choose from a variety of lunch specials including lamb shawarmas, BBQ chicken, goat curry and pistachio salad.</p>Menu options:</strong></span></p>Soups</p>Lentil soup</li></ul>Sandwiches</div>(Rolled up in large Syrian bread)</div>Beef, lamb, or chicken kebab</li>Chicken shawarma</li>Lamb shawarma</li>Falafel sandwich</li>Hommus sandwich</li>Falafel and hommus</li>Tabuli sandwich</li>Grape leaves sandwich</li>Babaganush sandwich</li>Weggie sandwich</li>Greeksalad sandwich</li></ul>Lunch Specials</div>(Served with rice and vegetables)</div>Lamb, beef, chicken kebab</li>B.B.Q. chicken or beef</li>Lamb, chicken, or goat curry</li>Vegetable curry</li>Chicken mustard</li>Chicken dijonnaise</li>Mujadaro</li></ul>Salads</div>(served with Syrian bread and fine herb dressing)</div>Cairo, pistachio, or cashew</li>Chicken salad</li>Charcoal chicken salad</li>Garden vegetable salad</li>Greek salad</li>Spinach salad</li></ul>Beverages</div>Spring water</li>Juice</li>Iced tea</li>Soda</li></ul>Desserts</div>Baklava</li></ul> </p>",
+        "id": "jerusalem",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/jerusalem",
+        "icon_url": "http://dining.mit.edu/sites/default/files/jerusalemsfoodtruck.jpg",
+        "homepage_url": "",
+        "cuisine": [
+          "Middle Eastern Food",
+          "Vegetarian",
+          "Other",
+          "Middle Eastern Food",
+          "Vegetarian",
+          "Other"
+        ],
+        "location": {
+          "street": "Carleton Street",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "10:00:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "10:00:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "10:00:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "10:00:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "10:00:00",
+            "end_time": "17:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "start_time": "10:00:00",
+            "end_time": "16:00:00"
+          },
+          {
+            "date": "2013-05-05",
+            "start_time": "10:00:00",
+            "end_time": "16:00:00"
+          }
+        ]
+      },
+      {
+        "name": "Jose's Mexican Food Truck",
+        "short_name": "Jose's Mexican Food Truck",
+        "description_html": " </p>From tacos to enchiladas to the \"Super Burrito\" wrap, José's serves all your Southwest and Tex-Mex favorites. Looking for something a little lighter? Try Jose's homemade black bean soup or fajita salad.</p>",
+        "id": "joses",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/joses",
+        "icon_url": "http://dining.mit.edu/sites/default/files/josesfoodtruck.jpg",
+        "homepage_url": "",
+        "cuisine": [
+          "Mexican Foods",
+          "Vegetarian",
+          "Other",
+          "Mexican Foods",
+          "Vegetarian",
+          "Other"
+        ],
+        "location": {
+          "street": "Carleton Street",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "11:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "11:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "11:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "11:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "11:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "MIT Market, Produce Stand",
+        "short_name": "MIT Market, Produce Stand",
+        "description_html": " </p>The MIT Produce Market offers affordable, high-quality fruits and vegetables to the MIT community.  Located in the Gates Lobby in the Stata Center (Building 32), the MIT Produce Market is open every Tuesday from 11:00 a.m. - 5:00 p.m. The MIT Produce Market is operated by Russo's</a>, a family-run company in that has been serving the Boston area for over 75 years.</p> </p>",
+        "id": "mitmarket",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/mitmarket",
+        "icon_url": "http://dining.mit.edu/sites/default/files/market2.jpg",
+        "homepage_url": "http://russos.com/",
+        "cuisine": [
+          "Other",
+          "Other"
+        ],
+        "location": {
+          "description": "Gates Lobby",
+          "street": "32 Vassar St.",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "message": "Closed"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "10:00:00",
+            "end_time": "16:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "message": "Closed"
+          },
+          {
+            "date": "2013-05-02",
+            "message": "Closed"
+          },
+          {
+            "date": "2013-05-03",
+            "message": "Closed"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "Closed"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "Closed"
+          }
+        ]
+      },
+      {
+        "name": "Muddy Charles Pub",
+        "short_name": "Muddy Charles Pub",
+        "description_html": " </p> The Muddy Charles Pub has been on the MIT campus since 1968. It has welcomed Nobel Laureates, played host to entrepreneurs and their start-ups, and enjoyed global exposure. Most of the patrons are MIT graduate students and prices are kept affordable for them. Food can be ordered in from local restaurants (menus available at the bar). There is not a kitchen on site. The Pub is only open to MIT affiliates. This includes friends, family, etc. of students, faculty, staff, and alumni. Be sure to bring a MIT ID and a government-issued ID (21+ only).</p> </p>",
+        "id": "muddycharles",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/muddycharles",
+        "icon_url": "http://dining.mit.edu/sites/default/files/muddycharlespub.jpg",
+        "homepage_url": "http://web.mit.edu/muddy/",
+        "cuisine": [
+          "Other",
+          "Other"
+        ],
+        "location": {
+          "street": "142 Memorial Drive",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "http://web.mit.edu/muddy/food.html",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "14:00:00",
+            "end_time": "23:30:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "14:00:00",
+            "end_time": "23:30:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "14:00:00",
+            "end_time": "23:30:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "14:00:00",
+            "end_time": "23:30:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "12:00:00",
+            "end_time": "23:30:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "Closed"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "Closed"
+          }
+        ]
+      },
+      {
+        "name": "Cambridge Grill (Alpine Bagel)",
+        "short_name": "Cambridge Grill (Alpine Bagel)",
+        "description_html": "Dunkin' Donuts and the Cambridge Grill are both operated by Alpine Bagel. Enjoy all of your favorites at Dunkin' and BYOB - that's 'Build Your Own Burger' - at The Cambridge Grill. Enjoy hot-off-the-grill specialties, stone-oven pizzas, salads and more.View their Menu:</strong></span>Cambridge Pizzeria</p> Pizza by the SliceCheese only w/ Toppings</p> Speciality Pizza and Calzone10” Cheese only16” Cheese only10” w/ Toppings16” w/Toppings</p> Fab Four</strong></em> - garlic, green pepper, mushroom, onionDynamic Duo</strong></em> - pepperoni, sausageMargherita</strong></em> - plum tomato and basilGreek</strong></em> - feta cheese, spinach, red peppersFenway Park </em></strong>- sausage, green peppers, onionsBBQ</strong></em> or Buffalo Chicken</strong></em>Hawaiian</strong></em> - ham, pineappleCreate your own!</em></strong>Pepperoni, sausage, ham, chicken, onion, basil, mushrooms, plum tomato, feta cheese, red pepper, spinach, pineapple, garlic, black olives, green peppers</p> Hot Off The Grill</h2> 100% Ground Beef Char-Grilled BurgersSingle Double Triple (Grand Slam!) Grilled Chicken Sandwich</p> Add cheese; American, Cheddar or Swiss.</p> Sandwiches are topped with crisp lettuce, Ripe tomato & red onion slices and served with our seasoned home-style fries.Substitute Cheesy Fries, Small Salad or Onion Rings</p> Gourmet Toppings!Pile it on for $.50 per topping:Sautéed Shrooms, Grilled Onions, Onion Rings, Blue Cheese Crumbles, Chili, Cheese Sauce, Jalapenos, Avocado, Bacon,Roasted Red Pepper, BBQ Sauce</p> More From The Grill</h2> Ultimate Grilled CheeseAll Beef Jumbo Hot DogHot Ham & Cheese Grill Reuben SandwichFish & Chips Fish Sandwich Crispy Chicken Tenders Buffalo Chicken Tenders Home-style Seasoned Fries</p> Served with seasoned home-style fries. Substitute Cheesy Fries or Onion Rings</p> (Add Chili and/or Cheese Sauce!)</p>  </p>",
+        "id": "cambridge-grill",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/cambridge-grill",
+        "icon_url": "http://dining.mit.edu/sites/default/files/cambridgegrill.jpg",
+        "homepage_url": "http://www.alpinebagels.com/",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Italian Foods/Pizza",
+          "Vegetarian",
+          "Other",
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Italian Foods/Pizza",
+          "Vegetarian",
+          "Other"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
+        "location": {
+          "street": "84 Massachusetts Avenue",
+          "mit_room_number": "W20-101",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "11:00:00",
+            "end_time": "21:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "11:00:00",
+            "end_time": "21:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "11:00:00",
+            "end_time": "21:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "11:00:00",
+            "end_time": "21:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "11:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "start_time": "11:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-05",
+            "start_time": "11:00:00",
+            "end_time": "20:00:00"
+          }
+        ]
+      },
+      {
+        "name": "Dunkin' Donuts",
+        "short_name": "Dunkin' Donuts",
+        "description_html": "Dunkin' Donuts and the Cambridge Grill share space on the first floor of the Stratton Student center. Enjoy all your Dunkin' favorites including, of course, Boston's favorite coffee!</p> Menu options:</strong></span></p> Donuts/Munchkins</li> Breakfast Sandwiches</li> Muffins</li> Cookies</li> Beverages; Coffee (hot/iced), Lattes, Tea, Juices, Hot Chocolate</li></ul>",
+        "id": "dunkin-donuts",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/dunkin-donuts",
+        "icon_url": "http://dining.mit.edu/sites/default/files/dunkindonuts.jpg",
+        "homepage_url": "http://www.dunkindonuts.com/",
+        "cuisine": [
+          "Breakfast Foods",
+          "Vegetarian",
+          "Other",
+          "Breakfast Foods",
+          "Vegetarian",
+          "Other"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
+        "location": {
+          "street": "84 Massachusetts Ave",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "07:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "07:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "07:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "07:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "07:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "start_time": "07:00:00",
+            "end_time": "19:00:00"
+          },
+          {
+            "date": "2013-05-05",
+            "start_time": "07:00:00",
+            "end_time": "19:00:00"
+          }
+        ]
+      },
+      {
+        "name": "LaVerde's Market",
+        "short_name": "LaVerde's Market",
+        "description_html": " </p> La Verde's combines the level of choice you expect from a supermarket with the easy access of a convenience store. Shop for items ranging from basic ingredients to fully prepared meals, as well as household staples and beauty items. With La Verde's, you can stay well stocked without leaving campus.</p> From the fresh salad bar to their new upscale cappuccino latte machine, you can tell this campus grocery is far from ordinary. And they're there for you 24/7, whether you’re hungry for great take-out, out of toothpaste, or down to your last few international phone minutes.</p> Store offerings:</strong></span></p> Muffins, bagels, croissants and other baked goods</p> Wide assortment of iced and hot coffee and tea, frozen drinks, cappuccino, and hot chocolate</li> Salad bar</li> 4 fresh, delicious soup choices every day</li> Made-to-order sandwiches, Panini’s, Calzones, Pizza</li> Hot, made-to-order breakfast sandwiches</li> Large selection of groceries, including cereal, cookies and crackers, pasta, frozen entrees, pizza, and ice cream</li> Fresh fruits and veggies</li> Freshly made packaged sandwiches</li> Macro vegan meals</li> Fresh sushi</li> Huge assortment of bottled beverages</li> Candy by the pound</li> Health and beauty items</li> Cleaning and paper supplies</li> School and office supplies</li> Greeting cards</li> Phone cards</li> Magazines</li></ul>  </p>",
+        "id": "laverdes",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/laverdes",
+        "icon_url": "http://dining.mit.edu/sites/default/files/100laverdes.jpg",
+        "homepage_url": "http://www.laverdes.com",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Breakfast Foods",
+          "Salad Bar",
+          "Italian Foods/Pizza",
+          "Mexican Foods",
+          "Chinese Foods",
+          "Japanese Foods (including Sushi)",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other",
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Breakfast Foods",
+          "Salad Bar",
+          "Italian Foods/Pizza",
+          "Mexican Foods",
+          "Chinese Foods",
+          "Japanese Foods (including Sushi)",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
+        "location": {
+          "description": "Stratton Student Center",
+          "street": "84 Massachusetts Ave",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "message": "Open 24 Hours"
+          },
+          {
+            "date": "2013-04-30",
+            "message": "Open 24 Hours"
+          },
+          {
+            "date": "2013-05-01",
+            "message": "Open 24 Hours"
+          },
+          {
+            "date": "2013-05-02",
+            "message": "Open 24 Hours"
+          },
+          {
+            "date": "2013-05-03",
+            "message": "Open 24 Hours"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "Open 24 Hours"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "Open 24 Hours"
+          }
+        ]
+      },
+      {
+        "name": "MacGregor Convenience Store",
+        "short_name": "MacGregor Convenience Store",
+        "description_html": " </p>Whether you live in a residence hall or apartment, this convenient west campus location has all the essentials of daily life, from fresh sushi to laundry detergent to brownie mix. And we’re open until the wee hours for late-night munchies or last-minute birthday cards.</p> </p>Store offerings:</strong></span></div>Cereal, cookies and crackers, pasta, cake and brownie mix, frozen entrees, pizza, and ice cream</li>Huge assortment of bottled beverages</li>Fresh fruits and veggies</li>Freshly made sandwiches</li>Macro vegan meals</li>Fresh sushi</li>Yogurt and hummus</li>Health and beauty items</li>Cleaning and paper supplies</li>School and office supplies</li>Phone cards</li>Magazines</li></ul> </p>",
+        "id": "macgregor-convenience",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/macgregor-convenience",
+        "icon_url": "http://dining.mit.edu/sites/default/files/campusconvenience.jpg",
+        "homepage_url": "http://www.laverdes.com/locations-hours/campus-convenience/",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Breakfast Foods",
+          "Chinese Foods",
+          "Japanese Foods (including Sushi)",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other",
+          "Soup/Salad/Sandwich",
+          "Breakfast Foods",
+          "Chinese Foods",
+          "Japanese Foods (including Sushi)",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other"
+        ],
+        "payment": [
+          "TechCASH"
+        ],
+        "location": {
+          "street": "450 Memorial Drive",
+          "mit_room_number": "Cambridge",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "09:00:00",
+            "end_time": "02:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "09:00:00",
+            "end_time": "02:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "09:00:00",
+            "end_time": "02:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "09:00:00",
+            "end_time": "02:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "09:00:00",
+            "end_time": "03:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "start_time": "09:00:00",
+            "end_time": "03:00:00"
+          },
+          {
+            "date": "2013-05-05",
+            "start_time": "09:00:00",
+            "end_time": "02:00:00"
+          }
+        ]
+      },
+      {
+        "name": "Shawarma Shack",
+        "short_name": "Shawarma Shack",
+        "description_html": " </p>Shawarma Shack is coming soon...</p>",
+        "id": "shawarmashack",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/shawarmashack",
+        "icon_url": "http://dining.mit.edu/sites/default/files/Coming Soon…_10.png",
+        "homepage_url": "",
+        "cuisine": [
+          "",
+          ""
+        ],
+        "payment": [
+          "TechCASH"
+        ],
+        "location": {
+          "description": "Stratton Student Center",
+          "street": "84 Massachusetts Ave",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-04-30",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-01",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-02",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-03",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "Shinkansen",
+        "short_name": "Shinkansen",
+        "description_html": " </p> Shinkansen is located in the Lobdell Food Court (W20, Second Floor) and offers favorites from Japanese Cuisine.</p> Menu options:</strong></span></p> Sushi</li> Hibachi Chicken, Beef, Vegetable Dishes*</li> Teriyaki Chicken, Beef, Vegetable Dishes*</li> Bubble Tea</li></ul>  </p> *Dishes are also available with brown rice</sup></p>",
+        "id": "shinkansen",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/shinkansen",
+        "icon_url": "http://dining.mit.edu/sites/default/files/shinkansen_0.jpg",
+        "homepage_url": "",
+        "cuisine": [
+          "Japanese Foods (including Sushi)",
+          "Vegetarian",
+          "Other",
+          "Japanese Foods (including Sushi)",
+          "Vegetarian",
+          "Other"
+        ],
+        "payment": [
+          "TechCASH"
+        ],
+        "location": {
+          "description": "Stratton Student Center",
+          "street": "84 Massachusetts Ave",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "11:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "11:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "11:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "11:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "11:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "start_time": "11:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "Closed"
+          }
+        ]
+      },
+      {
+        "name": "Subway",
+        "short_name": "Subway",
+        "description_html": " </p> With a mixture of fresh ingredients, a whole lot of customer service, and a dash of innovation, the SUBWAY® brand continues to be the leader of providing nutritious and delicious sandwiches the whole family will love.</p> Whatever you're in the mood for, SUBWAY® has a wide variety of Subs, salads, and sides to choose from. Every one of our Subs is made fresh in front of you, exactly the way you want it</p> Simply choose the sandwich your taste buds have a hankerin’ for, then build it just the way you like with your favorite freshly baked bread, crisp veggies and sauces. We’ll even toast it to hot and tasty perfection if that suits your fancy.</p> </p>",
+        "id": "subway",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/subway",
+        "icon_url": "http://dining.mit.edu/sites/default/files/subway.jpg",
+        "homepage_url": "http://www.subway.com/subwayroot/default.aspx",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Breakfast Foods",
+          "Vegetarian",
+          "Other",
+          "Soup/Salad/Sandwich",
+          "Breakfast Foods",
+          "Vegetarian",
+          "Other"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
+        "location": {
+          "description": "Second Floor",
+          "street": "84 Massachusetts Avenue",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "http://www.subway.com/menu/default.aspx",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "07:00:00",
+            "end_time": "23:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "07:00:00",
+            "end_time": "23:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "07:00:00",
+            "end_time": "23:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "07:00:00",
+            "end_time": "23:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "07:00:00",
+            "end_time": "23:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "start_time": "08:00:00",
+            "end_time": "23:00:00"
+          },
+          {
+            "date": "2013-05-05",
+            "start_time": "08:00:00",
+            "end_time": "23:00:00"
+          }
+        ]
+      },
+      {
+        "name": "R&D Pub",
+        "short_name": "R&D Pub",
+        "description_html": " </p> The R&D, like all of Stata Center, is a creative space offering a relaxed atmosphere for the MIT. Located on 4th floor, the Pub offers ample seating for impromptu gatherings with friends and colleagues, including a mezzanine with soft seating. Order everything from crudité and fruit and cheese, to sushi and personal pan pizzas. Beverages include beer and wine, along with soft drinks, tea, and coffee. 21+ only please.</strong></p>Please contact Ashley Griset, 617-253-2735, if you would like to reserve the R&D Pub for your special event!</p> Menu options:</strong></span></p> Appetizers</strong></span></h2> R& D Nachos</u>- Crisp Nachos smothered with melted cheddar cheese, jalapenos, diced tomatoes, topped off with salsa, sour cream and guzcomole.</li> Chicken Quesadilla</u> – Grilled Tortilla, stuffed with marinated chicken, salsa, cheddar cheese, tomatoes and scallions. Sour cream served on the side.</li> Roasted Potato Wedges</u> – Basket of Roasted Potato Wedges served with zesty Garlic Aioli.</li> Pita chips with dip</u> – Pita triangles seasoned and baked served with garlic hummus for dipping.</li> Thai Chicken</u> </strong>– Skewered strips of marinated Chicken served with peanut dipping sauce.</li> Spiced Pecans</u> – Bowl of hot & sweet toasted Pecan halves.</li> Sliders</u> </strong>- BBQ Beef Brisket, Pulled Pork or Buffalo Chicken on a toasted roll.</li> Personal Pizzas</u> - Cheese or create your own by adding toppings, choose from pepperoni, sausage, onion, mushrooms, and peppers.</em></li></ul> Wine and Beer List</strong></span></h2> White Wine</h3> Hogue cellars Riesling</em></li> Oyster Bay Sauvignon Blanca</em></li> Hogue Cellars Chardonnay</em></li> Hess Chardonnay </em></li> Di Lenardo Pinot Grigio</em></li></ul> Red Wine</h3> Palacio Glorioso Rioja </em></li> Morande Pinot Noir</em></li> De Loache Russian River </em></li> Cabrnet Sauvignon </em></li> Reynolds Shiraz </em></li> Luis Fellipe Merlot</em></li></ul> Specialty Brewed Beers</h3> Cambridge Tall Tale Pale Ale</em></li> Smuttynose India Pale Ale</em></li> Allagash White</em></li> Stella Artois </em></li> Brooklyn Brown </em></li> Guinness </em></li> Bottled Beer</li> Budweiser</em></li> Bud Light </em></li> Pabst Blue Ribbon </em></li> Corona </em></li> Heineken </em></li> Amstel Light </em></li> Sam Adams </em></li> O’Doul’s non alcoholic</em></li> Smirnoff Twist </em></li></ul>  </p> For information on event reservations and Hors d'Oeuvres menus please e-mail techcatering@mit.edu</a> or visit the Tech Catering Web site</a>.</em></p>",
+        "id": "r-and-d",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/r-and-d",
+        "icon_url": "http://dining.mit.edu/sites/default/files/rANDdpub.jpg",
+        "homepage_url": "",
+        "cuisine": [
+          "Vegetarian",
+          "Other",
+          "Vegetarian",
+          "Other"
+        ],
+        "location": {
+          "description": "Stata Center's 4th Floor",
+          "street": "32 Vassar St.",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "message": "By Reservation"
+          },
+          {
+            "date": "2013-04-30",
+            "message": "By Reservation"
+          },
+          {
+            "date": "2013-05-01",
+            "message": "By Reservation"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "16:00:00",
+            "end_time": "21:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "16:00:00",
+            "end_time": "21:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "By Reservation"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "By Reservation"
+          }
+        ]
+      },
+      {
+        "name": "The Thirsty Ear Pub",
+        "short_name": "The Thirsty Ear Pub",
+        "description_html": " </p> Looking for something different on campus? The Thirsty Ear Pub offers a selection of food matched only in quality by the most popular bars across Cambridge. So come on by, sample what our kitchen’s cookin’ up, and let us know what you think! The pub is open to those age 21+, only.</p>",
+        "id": "thirsty-ear",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/thirsty-ear",
+        "icon_url": "http://dining.mit.edu/sites/default/files/thirstyearlogo.jpg",
+        "homepage_url": "http://thirsty-ear.mit.edu/",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Italian Foods/Pizza",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other",
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Italian Foods/Pizza",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other"
+        ],
+        "location": {
+          "street": "235 Albany St",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "http://thirsty-ear.mit.edu/wp-content/uploads/2011/08/Fall-2011-Thirsty-menu.pdf",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "19:30:00",
+            "end_time": "01:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "19:30:00",
+            "end_time": "01:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "19:30:00",
+            "end_time": "01:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "19:30:00",
+            "end_time": "01:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "MIT Faculty Dining",
+        "short_name": "MIT Faculty Dining",
+        "description_html": " </p>  </p> MIT Faculty Dining offers lunch service for MIT Faculty Members and their invited guests only. To make reservations at MIT Faculty Dining, contact Denise Cuilla at 617-253-7373  or Kerri Donnelly at 617-253-6494.</span></p> </p>",
+        "id": "mit-faculty-dining",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/mit-faculty-dining",
+        "icon_url": "http://dining.mit.edu/sites/default/files/mitfacultydiningsq.jpg",
+        "homepage_url": "http://www.sodexodiningmit.com/dining/faculty.html",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Breakfast Foods",
+          "Salad Bar",
+          "Italian Foods/Pizza",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other",
+          "Soup/Salad/Sandwich",
+          "Grill Foods (Americana)",
+          "Breakfast Foods",
+          "Salad Bar",
+          "Italian Foods/Pizza",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Other"
+        ],
+        "payment": [
+          "TechCASH"
+        ],
+        "location": {
+          "description": "Building 32",
+          "street": "32 Vassar St.",
+          "mit_room_number": "4th Floor",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "http://www.sodexodiningmit.com/dining/faculty.html",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "11:30:00",
+            "end_time": "13:30:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "11:30:00",
+            "end_time": "13:30:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "11:30:00",
+            "end_time": "13:30:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "11:30:00",
+            "end_time": "13:30:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "11:30:00",
+            "end_time": "13:30:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "Café Spice",
+        "short_name": "Café Spice",
+        "description_html": "Café Spice Express serves Indian Cuisine favorites. The newly renovated operation serves an expanded menu of appetizers and Kathi rolls, as well as favorites like Chicken Tikka Masala and Chicken Vindaloo.</p>  </p>",
+        "id": "cafespice",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/cafespice",
+        "icon_url": "http://dining.mit.edu/sites/default/files/cafespice.jpg",
+        "homepage_url": "http://www.cafespice.com/index.htm",
+        "cuisine": [
+          "Indian Food",
+          "Vegetarian",
+          "Other",
+          "Indian Food",
+          "Vegetarian",
+          "Other"
+        ],
+        "payment": [
+          "TechCASH"
+        ],
+        "location": {
+          "street": "84 Massachusetts Avenue",
+          "mit_room_number": "Lobdell Food Court in the Stratton Student Center (W20)",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "http://www.cafespice.com/food-service.htm",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "10:30:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "10:30:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "10:30:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "10:30:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "10:30:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "start_time": "10:30:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-05",
+            "start_time": "10:30:00",
+            "end_time": "20:00:00"
+          }
+        ]
+      },
+      {
+        "name": "Café Four",
+        "short_name": "Café Four",
+        "description_html": " </div> In the heart of the “infinite corridor,” Building 4 Café is MIT's busiest location per square foot!</div>  </div> It is perfect for a quick cup of freshly brewed Green Mountain Coffee Roasters coffee and a bagel in the morning, or soup and a sandwich for your afternoon or early evening meal on the run.</div>  </div> The café also offers Good-to-Go salads, sandwiches and specialty items, including a wide variety of sushi prepared daily.</div>",
+        "id": "cafe-four",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/cafe-four",
+        "icon_url": "http://dining.mit.edu/sites/default/files/cafe4.jpg",
+        "homepage_url": "http://www.sodexodiningmit.com/dining/index.html",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Soup/Salad/Sandwich"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
+        "location": {
+          "description": "Building 4",
+          "street": "77 Massachusetts Ave.",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "http://www.sodexodiningmit.com/dining/index.html",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "08:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "08:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "08:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "08:00:00",
+            "end_time": "20:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "08:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "Steam Café",
+        "short_name": "Steam Café",
+        "description_html": "Steam Cafe is a collaborative project developed jointly by The School of Architecture and Planning (students and administration), MIT Dining and Sodexo Campus Dining Services.</div>  </div> Delicious, simple and substantial food from around the world will be served here every day with an emphasis on diversity, nutrition and community interaction.</div>",
+        "id": "steam-cafe",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/steam-cafe",
+        "icon_url": "http://dining.mit.edu/sites/default/files/steamcafe.jpg",
+        "homepage_url": "",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Comfort Foods/Traditional Entrees",
+          "Soup/Salad/Sandwich",
+          "Comfort Foods/Traditional Entrees"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
+        "location": {
+          "description": "Building 7",
+          "street": "77 Massachusetts Ave.",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "http://www.sodexodiningmit.com/dining/",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "09:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "09:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "09:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "09:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "09:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "Forbes Family Café",
+        "short_name": "Forbes Family Café",
+        "description_html": " </p> MIT's Ray and Maria Stata Center for Computer Information and Intelligence Sciences features a 220-seat dining facility that serves continental breakfast and an extensive lunch menu. Forbes Café proudly serves Starbucks Coffee, as well as pizza, baked pasta and toasted sandwiches, hot entrees, made-to-order specials as well as grab-n-go sandwiches and salads. The facility will be open extended hours for café items such as coffee, snacks and to-go meals.</span></p> </p>",
+        "id": "forbes-family-cafe",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/forbes-family-cafe",
+        "icon_url": "http://dining.mit.edu/sites/default/files/forbesfamilycafe.jpg",
+        "homepage_url": "http://www.sodexodiningmit.com/index.html",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees",
+          "Soup/Salad/Sandwich",
+          "Vegetarian",
+          "Comfort Foods/Traditional Entrees"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
+        "location": {
+          "street": "32 Vassar St.",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "http://www.sodexodiningmit.com/index.html",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "07:30:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "07:30:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "07:30:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "07:30:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "07:30:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "Pacific Street Café",
+        "short_name": "Pacific Street Café",
+        "description_html": " </p>Pacific Street Cafe requires the highest standards of food handling from its employees and vendors. The management strives to assure quality food and on time delivery. In addition we offer assistance to our clients to have a worry-free event by planning each step with them. Our mission is \"great food at competitive price\".</p> </p>",
+        "id": "pacific-st-cafe",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/pacific-st-cafe",
+        "icon_url": "http://dining.mit.edu/sites/default/files/pacificstcafe.jpg",
+        "homepage_url": "http://www.pacificstreetcafe.com/",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Italian Foods/Pizza",
+          "Comfort Foods/Traditional Entrees",
+          "Soup/Salad/Sandwich",
+          "Italian Foods/Pizza",
+          "Comfort Foods/Traditional Entrees"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
+        "location": {
+          "street": "70 Pacific St",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "02139"
+        },
+        "menu_url": "http://www.pacificstreetcafe.com/",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "07:00:00",
+            "end_time": "18:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "07:00:00",
+            "end_time": "18:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "07:00:00",
+            "end_time": "18:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "07:00:00",
+            "end_time": "18:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "07:00:00",
+            "end_time": "18:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
+        ]
+      },
+      {
+        "name": "Zigo Café",
+        "short_name": "Zigo Café",
+        "description_html": " </div> Zigo started with love of people, of fun, and especially good food. Like most of us who work long hours, our lives were full but our refrigerators were not. We filled our evening hunger with pizza, cereal, frozen dinners, and many restaurants. “Where was the love in this?” our taste buds, waistlines, and wallets cried? </div>  </div> With zigo we put delicious, healthful meals back into the hands of busy people. With one stop on your way home, you have a meal that is simple to prepare and yummy to eat. </div>  </div> With the ever-changing zigo menu, we bring the most delectable foods from around the world to your table. Each of our recipes has been taste-tested again and again. Our meals use only the finest and freshest ingredients. That means crispy not mushy, seasoned not salted, flaky not chewy. </div>",
+        "id": "zigo-cafe",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/zigo-cafe",
+        "icon_url": "http://dining.mit.edu/sites/default/files/zigocafe.jpg",
+        "homepage_url": "http://www.zigo.biz/",
+        "cuisine": [
+          "Soup/Salad/Sandwich",
+          "Breakfast Foods",
+          "Comfort Foods/Traditional Entrees",
+          "Soup/Salad/Sandwich",
+          "Breakfast Foods",
+          "Comfort Foods/Traditional Entrees"
+        ],
+        "payment": [
+          "Credit",
+          "TechCASH"
+        ],
+        "location": {
+          "street": "600 Memorial Drive",
+          "city": "Cambridge",
+          "state": "MA",
+          "zip_code": "021425"
+        },
+        "menu_url": "http://www.zigo.biz/pdfs/zigo_catering_menu.pdf",
+        "hours": [
+          {
+            "date": "2013-04-29",
+            "start_time": "08:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-04-30",
+            "start_time": "08:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-01",
+            "start_time": "08:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-02",
+            "start_time": "08:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-03",
+            "start_time": "08:00:00",
+            "end_time": "15:00:00"
+          },
+          {
+            "date": "2013-05-04",
+            "message": "CLOSED"
+          },
+          {
+            "date": "2013-05-05",
+            "message": "CLOSED"
+          }
         ]
       }
     ]
