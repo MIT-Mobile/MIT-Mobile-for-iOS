@@ -55,7 +55,11 @@ NSString * const MITRetailDayDateFormatterKey = @"RetailDay.MITRetailDayDateForm
     
     if (dict[@"end_time"]) {
         NSDate *date = [timeFormatter dateFromString:dict[@"end_time"]];
-        day.endTime = [day.date dateWithTimeOfDayFromDate:date];;
+        day.endTime = [day.date dateWithTimeOfDayFromDate:date];
+        if ([day.endTime compare:day.startTime] == NSOrderedAscending) {
+            // if endTime is before startTime it occurs on the next day
+            day.endTime = [[day.date dayAfter] dateWithTimeOfDayFromDate:date];
+        }
     }
     
     return day;
