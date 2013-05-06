@@ -7,6 +7,9 @@
 @property (nonatomic, strong) UIView * filterView;
 @property (nonatomic, strong) UIView * mealTimeView;
 
+@property (nonatomic, strong) UIButton * leftButton;
+@property (nonatomic, strong) UIButton * rightButton;
+
 @end
 
 @implementation DiningHallMenuSectionHeaderView
@@ -74,17 +77,17 @@
     
     UIImage *arrow = [UIImage imageNamed:@"global/action-arrow-white.png"];
     
-    UIButton * leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    leftButton.imageView.transform = CGAffineTransformMakeRotation(M_PI); // flip the image view
-    [leftButton setImage:arrow forState:UIControlStateNormal];
-    leftButton.frame = CGRectMake(0, 0, 40, 50);
-    leftButton.center = CGPointMake(20, rowHeight * 0.5);
+    self.leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.leftButton.imageView.transform = CGAffineTransformMakeRotation(M_PI); // flip the image view
+    [self.leftButton setImage:arrow forState:UIControlStateNormal];
+    self.leftButton.frame = CGRectMake(0, 0, 40, 50);
+    self.leftButton.center = CGPointMake(20, rowHeight * 0.5);
     
     
-    UIButton * rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [rightButton setImage:arrow forState:UIControlStateNormal];
-    rightButton.frame = CGRectMake(0, 0, 40, 50);
-    rightButton.center = CGPointMake(CGRectGetWidth(view.bounds) - 20, rowHeight * 0.5);
+    self.rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.rightButton setImage:arrow forState:UIControlStateNormal];
+    self.rightButton.frame = CGRectMake(0, 0, 40, 50);
+    self.rightButton.center = CGPointMake(CGRectGetWidth(view.bounds) - 20, rowHeight * 0.5);
     
     CGFloat hPadding = 28.0;
     UILabel * label = [[UILabel alloc] initWithFrame:CGRectMake(hPadding, 9, CGRectGetWidth(view.bounds) - (2 * hPadding), 12)];
@@ -95,8 +98,8 @@
     label.backgroundColor = [UIColor clearColor];
     
     [view addSubview:label];
-    [view addSubview:leftButton];
-    [view addSubview:rightButton];
+    [view addSubview:self.leftButton];
+    [view addSubview:self.rightButton];
     
     return view;
 }

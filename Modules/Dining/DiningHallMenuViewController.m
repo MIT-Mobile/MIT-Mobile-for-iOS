@@ -186,6 +186,8 @@
 {
     if (section == 0) {
         DiningHallMenuSectionHeaderView *header = [[DiningHallMenuSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 56)];
+        [header.leftButton addTarget:self action:@selector(pageLeft) forControlEvents:UIControlEventTouchUpInside];
+        [header.rightButton addTarget:self action:@selector(pageRight) forControlEvents:UIControlEventTouchUpInside];
         header.currentFilters = self.filtersApplied;
         return header;
     }
@@ -211,6 +213,19 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
+
+
+#pragma mark - Paging between meals
+- (void) pageLeft
+{
+    NSLog(@"Page Left");
+}
+
+- (void) pageRight
+{
+    NSLog(@"Page Right");
+}
+
 
 
 @end
