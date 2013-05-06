@@ -1,11 +1,3 @@
-//
-//  DiningHallMenuCompareLayout.h
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/22/13.
-//
-//
-
 #import "PSTCollectionViewLayout.h"
 
 extern NSString * const MITDiningMenuComparisonCellKind;

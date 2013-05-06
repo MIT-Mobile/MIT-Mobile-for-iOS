@@ -1,11 +1,3 @@
-//
-//  DiningLocationCell.h
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/18/13.
-//
-//
-
 #import <UIKit/UIKit.h>
 
 @interface DiningLocationCell : UITableViewCell

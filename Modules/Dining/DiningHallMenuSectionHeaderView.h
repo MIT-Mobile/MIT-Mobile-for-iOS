@@ -1,11 +1,3 @@
-//
-//  DiningHallMenuSectionHeaderView.h
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/12/13.
-//
-//
-
 #import <UIKit/UIKit.h>
 
 @interface DiningHallMenuSectionHeaderView : UIView

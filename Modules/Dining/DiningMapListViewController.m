@@ -1,11 +1,3 @@
-//
-//  DiningMapListViewController.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 3/18/13.
-//
-//
-
 #import "DiningMapListViewController.h"
 #import "DiningHallMenuViewController.h"
 #import "DiningRetailInfoViewController.h"

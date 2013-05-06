@@ -1,11 +1,3 @@
-//
-//  DiningDetailHeaderView.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/2/13.
-//
-//
-
 #import "DiningHallDetailHeaderView.h"
 #import "UIKit+MITAdditions.h"
 

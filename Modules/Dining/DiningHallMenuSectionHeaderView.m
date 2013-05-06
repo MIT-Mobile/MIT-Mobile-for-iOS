@@ -1,11 +1,3 @@
-//
-//  DiningHallMenuSectionHeaderView.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/12/13.
-//
-//
-
 #import "DiningHallMenuSectionHeaderView.h"
 #import "UIImage+PDF.h"
 

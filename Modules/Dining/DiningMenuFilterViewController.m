@@ -1,11 +1,3 @@
-//
-//  DiningMenuFilterViewController.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/11/13.
-//
-//
-
 #import "DiningMenuFilterViewController.h"
 #import "DiningHallMenuViewController.h"
 #import "UIImage+PDF.h"

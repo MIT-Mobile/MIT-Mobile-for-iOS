@@ -1,11 +1,3 @@
-//
-//  DiningMenuCompareViewController.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 3/27/13.
-//
-//
-
 #import "DiningMenuCompareViewController.h"
 #import "DiningHallMenuCompareView.h"
 
