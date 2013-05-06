@@ -1,7 +1,12 @@
 #import "DiningHallMenuSectionHeaderView.h"
 #import "UIImage+PDF.h"
+#import "Foundation+MITAdditions.h"
 
 @interface DiningHallMenuSectionHeaderView ()
+
+@property (nonatomic, strong) UILabel       * mainLabel;
+@property (nonatomic, strong) UILabel       * mealLabel;
+@property (nonatomic, strong) UILabel       * timeLabel;
 
 @property (nonatomic, strong) UIView * datePickerView;
 @property (nonatomic, strong) UIView * filterView;
@@ -29,11 +34,6 @@
              @{@"icon": @"vegetarian.pdf",      @"title" : @"Vegetarian"}];
 }
 
-- (NSDictionary *) debugMeal
-{
-    return @{@"title": @"Dinner", @"time":@"5:30pm - 8:30pm"};
-}
-
 - (NSArray *) debugEnabledFilters
 {
     return @[@1,@2,@5,@7,@9];
@@ -45,7 +45,6 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        self.meal = [self debugMeal];
         
         self.datePickerView = [self viewForDateAndArrows];
         self.mealTimeView = [self viewForMealTime];
@@ -90,14 +89,14 @@
     self.rightButton.center = CGPointMake(CGRectGetWidth(view.bounds) - 20, rowHeight * 0.5);
     
     CGFloat hPadding = 28.0;
-    UILabel * label = [[UILabel alloc] initWithFrame:CGRectMake(hPadding, 9, CGRectGetWidth(view.bounds) - (2 * hPadding), 12)];
-    label.text = @"Today's Dinner, March 1";
-    label.textAlignment = NSTextAlignmentCenter;
-    label.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
-    label.textColor = [UIColor whiteColor];
-    label.backgroundColor = [UIColor clearColor];
+    self.mainLabel = [[UILabel alloc] initWithFrame:CGRectMake(hPadding, 9, CGRectGetWidth(view.bounds) - (2 * hPadding), 12)];
+    self.mainLabel.text = @"Today's Dinner, March 1";
+    self.mainLabel.textAlignment = NSTextAlignmentCenter;
+    self.mainLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+    self.mainLabel.textColor = [UIColor whiteColor];
+    self.mainLabel.backgroundColor = [UIColor clearColor];
     
-    [view addSubview:label];
+    [view addSubview:self.mainLabel];
     [view addSubview:self.leftButton];
     [view addSubview:self.rightButton];
     
@@ -135,22 +134,20 @@
     UIView * view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), 26)];
     view.backgroundColor = [UIColor darkTextColor];
     
-    UILabel *mealLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 7, CGRectGetWidth(view.bounds) - 20, 12)]; // 7px vertical padding, width is arbitrary, height matches font size
-    mealLabel.text = [self debugMeal][@"title"];
-    mealLabel.textAlignment = NSTextAlignmentLeft;
-    mealLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
-    mealLabel.textColor = [UIColor whiteColor];
-    mealLabel.backgroundColor = [UIColor clearColor];
+    self.mealLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 7, CGRectGetWidth(view.bounds) - 20, 12)]; // 7px vertical padding, width is arbitrary, height matches font size
+    self.mealLabel.textAlignment = NSTextAlignmentLeft;
+    self.mealLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+    self.mealLabel.textColor = [UIColor whiteColor];
+    self.mealLabel.backgroundColor = [UIColor clearColor];
     
-    UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 7, CGRectGetWidth(view.bounds) - 20, 12)]; // 7px vertical padding, width is arbitrary, height matches font size
-    timeLabel.text = [self debugMeal][@"time"];
-    timeLabel.textAlignment = NSTextAlignmentRight;
-    timeLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
-    timeLabel.textColor = [UIColor whiteColor];
-    timeLabel.backgroundColor = [UIColor clearColor];
+    self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 7, CGRectGetWidth(view.bounds) - 20, 12)]; // 7px vertical padding, width is arbitrary, height matches font size
+    self.timeLabel.textAlignment = NSTextAlignmentRight;
+    self.timeLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+    self.timeLabel.textColor = [UIColor whiteColor];
+    self.timeLabel.backgroundColor = [UIColor clearColor];
     
-    [view addSubview:mealLabel];
-    [view addSubview:timeLabel];
+    [view addSubview:self.mealLabel];
+    [view addSubview:self.timeLabel];
     
     return view;
 }
@@ -177,6 +174,38 @@
     frame = self.mealTimeView.frame;
     frame.origin = ([self.currentFilters count]) ? CGPointMake(0, CGRectGetMaxY(self.filterView.frame)) : CGPointMake(0, CGRectGetMaxY(self.datePickerView.frame)); //if there are no filters have only two bars
     self.mealTimeView.frame = frame;
+    
+}
+
+
++ (NSString *) stringForMeal:(NSDictionary *) meal onDate:(NSString *)dateString
+{
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    NSDate *date = [dateFormatter dateFromString:dateString];
+    
+    
+    NSString *dayString;
+    if ([date isToday]) {
+        dayString = @"Today";
+    } else if ([date isTomorrow]) {
+        dayString = @"Tomorrow";
+    } else if ([date isYesterday]) {
+        dayString = @"Yesterday";
+    } else {
+        [dateFormatter setDateFormat:@"%A"];
+        dayString = [dateFormatter stringFromDate:date];
+    }
+    
+    [dateFormatter setDateFormat:@"MMM d"];
+    NSString *fullDate = [dateFormatter stringFromDate:date];
+    
+    if (meal) {
+        NSString * mealString = [meal[@"name"] capitalizedString];
+        return [NSString stringWithFormat:@"%@'s %@, %@", dayString, mealString, fullDate];
+    } else {
+        return [NSString stringWithFormat:@"%@, %@", dayString, fullDate];
+    }
     
 }
 

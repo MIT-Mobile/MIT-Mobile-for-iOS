@@ -119,9 +119,9 @@
 - (NSString *) timeSpanStringForMeal:(NSDictionary *) meal
 {
     // returns meal start time and end time formatted
-    //      hh:mma - hh:mma
+    //      h:mma - h:mma
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"hh:mma"];
+    [dateFormatter setDateFormat:@"h:mma"];
     NSDate *startDate = [NSDate dateForTodayFromTimeString:meal[@"start_time"]];
     NSDate *endDate = [NSDate dateForTodayFromTimeString:meal[@"end_time"]];
     
@@ -257,6 +257,12 @@
 {
     if (section == 0) {
         DiningHallMenuSectionHeaderView *header = [[DiningHallMenuSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 56)];
+        
+        NSString * mealString = [self.currentMeal[@"name"] capitalizedString];
+        header.mainLabel.text = [DiningHallMenuSectionHeaderView stringForMeal:self.currentMeal onDate:self.currentDateString];
+        header.mealLabel.text = mealString;
+        header.timeLabel.text = [self timeSpanStringForMeal:self.currentMeal];
+        
         [header.leftButton addTarget:self action:@selector(pageLeft) forControlEvents:UIControlEventTouchUpInside];
         [header.rightButton addTarget:self action:@selector(pageRight) forControlEvents:UIControlEventTouchUpInside];
         header.currentFilters = self.filtersApplied;

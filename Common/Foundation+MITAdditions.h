@@ -38,5 +38,9 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 
 @interface NSDate (MITAdditions)
 + (NSDate *) dateForTodayFromTimeString:(NSString *)time;
+- (BOOL) isEqualToDateIgnoringTime: (NSDate *) aDate;
+- (BOOL) isToday;
+- (BOOL) isTomorrow;
+- (BOOL) isYesterday;
 
 @end

@@ -343,4 +343,35 @@ typedef struct {
     return [cal dateFromComponents:comp];
 }
 
+#pragma mark Comparing Dates
+
+#define DATE_COMPONENTS (NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit | NSWeekCalendarUnit |  NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit | NSWeekdayCalendarUnit | NSWeekdayOrdinalCalendarUnit)
+#define SECONDS_PER_DAY 24 * 60 * 60
+- (BOOL) isEqualToDateIgnoringTime: (NSDate *) aDate
+{
+	NSDateComponents *components1 = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:self];
+	NSDateComponents *components2 = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:aDate];
+	return ((components1.year == components2.year) &&
+			(components1.month == components2.month) &&
+			(components1.day == components2.day));
+}
+
+- (BOOL) isToday
+{
+	return [self isEqualToDateIgnoringTime:[NSDate date]];
+}
+
+- (BOOL) isTomorrow
+{
+    NSDate *tomorrow = [[NSDate alloc] initWithTimeIntervalSinceNow:SECONDS_PER_DAY];
+    return [self isEqualToDateIgnoringTime:tomorrow];
+}
+
+
+- (BOOL) isYesterday
+{
+    NSDate *yesterday = [[NSDate alloc] initWithTimeIntervalSinceNow:-SECONDS_PER_DAY];
+    return [self isEqualToDateIgnoringTime:yesterday];
+}
+
 @end

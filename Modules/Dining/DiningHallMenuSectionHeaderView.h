@@ -2,11 +2,14 @@
 
 @interface DiningHallMenuSectionHeaderView : UIView
 
-@property (nonatomic, strong) NSDate        * date;
+@property (nonatomic, readonly, strong) UILabel       * mainLabel;
+@property (nonatomic, readonly, strong) UILabel       * mealLabel;
+@property (nonatomic, readonly, strong) UILabel       * timeLabel;
 @property (nonatomic, strong) NSArray       * currentFilters;
-@property (nonatomic, strong) NSDictionary  * meal;
 
 @property (nonatomic, readonly, strong) UIButton * leftButton;
 @property (nonatomic, readonly, strong) UIButton * rightButton;
+
++ (NSString *) stringForMeal:(NSDictionary *) meal onDate:(NSString *)dateString;
 
 @end
