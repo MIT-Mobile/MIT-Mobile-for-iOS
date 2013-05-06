@@ -13,6 +13,7 @@
 #import "UIKit+MITAdditions.h"
 #import "MITTabBar.h"
 #import "FacilitiesLocationData.h"
+#import "DiningModule.h"
 
 @interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate>
 
@@ -23,6 +24,7 @@
 @property (nonatomic, assign) BOOL isAnimating;
 @property (nonatomic, assign) BOOL isShowingMap;
 
+@property (nonatomic, strong) NSArray      * houseVenues;
 @property (nonatomic, strong) NSDictionary * retailVenues;
 
 @property (nonatomic, strong) NSDictionary * sampleData;
@@ -69,13 +71,10 @@
     if (self) {
         // Custom initialization
         
-        NSString *filePath = [[NSBundle mainBundle] pathForResource:@"dining-sample" ofType:@"json" inDirectory:@"dining"];
-        NSData *jsonData = [NSData dataWithContentsOfFile:filePath];
-        NSError *error = nil;
-        self.sampleData = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
-        if (error) {
-            NSLog(@"Houston we have a problem. Sample Data not initialized from local file.");
-        }
+        NSDictionary * allData = [DiningModule loadSampleDataFromFile];
+        self.houseVenues = allData[@"venues"][@"house"];
+        
+        self.sampleData = [DiningModule loadSampleDataFromFile];
         
         [self deriveRetailSections];
     }
@@ -116,14 +115,9 @@
             // or in new section array
             tempBuildings[sectionKey] = @[venue];
         }
-        
-        
     }
     
     self.retailVenues = tempBuildings;
-    
-    
-    
 }
 
 
@@ -315,7 +309,8 @@
         cell = [[DiningLocationCell alloc] initWithReuseIdentifier:@"locationCell"];
     }
     
-    cell.titleLabel.text = [self currentDiningData][indexPath.row];
+    NSDictionary *hallData = self.houseVenues[indexPath.row];
+    cell.titleLabel.text = hallData[@"name"];
     cell.subtitleLabel.text = [self debugSubtitleData][indexPath.row];
     cell.statusOpen = indexPath.row % 2 == 0;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -338,7 +333,7 @@
     NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
     
     cell.titleLabel.text = venueData[@"name"];
-    cell.subtitleLabel.text = [self debugSubtitleData][indexPath.row];
+    cell.subtitleLabel.text = [self debugSubtitleData][indexPath.row%[[self debugSubtitleData] count]];
     cell.statusOpen = indexPath.row % 2 == 0;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.imageView.image = [UIImage imageNamed:@"icons/home-map.png"];
@@ -362,19 +357,17 @@
         return;
     }
     
-
     NSString *announcement = [self debugAnnouncement];
     if (announcement && indexPath.section == 0) {
         
     } else if((!announcement && indexPath.section == 0) || (announcement && indexPath.section == 1)) {
         DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
-        detailVC.title = [self currentDiningData][indexPath.row];
+        detailVC.hallData = self.houseVenues[indexPath.row];
         [self.navigationController pushViewController:detailVC animated:YES];
     } else if ((!announcement && indexPath.section == 1)|| indexPath.section == 2) {
         // handle static links
         
     }
-    
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -382,7 +375,7 @@
     if (![self showingHouseDining]) {
         NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:indexPath.section];
         NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
-        return [DiningLocationCell heightForRowWithTitle:venueData[@"name"] subtitle:[self debugSubtitleData][indexPath.row]];
+        return [DiningLocationCell heightForRowWithTitle:venueData[@"name"] subtitle:[self debugSubtitleData][indexPath.row%[[self debugSubtitleData] count]]];
     }
     
     
