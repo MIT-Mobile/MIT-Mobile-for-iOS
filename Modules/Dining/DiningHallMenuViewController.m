@@ -224,13 +224,15 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [[self debugData] count];
+    NSArray *mealItems = self.currentMeal[@"items"];
+    return [mealItems count];
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSDictionary *itemDict  = [self debugData][indexPath.row];
-    return [DiningHallMenuItemTableCell cellHeightForCellWithStation:itemDict[@"type"] title:itemDict[@"title"] description:itemDict[@"subtitle"]];
+    NSArray *mealItems = self.currentMeal[@"items"];
+    NSDictionary *itemDict  = mealItems[indexPath.row];
+    return [DiningHallMenuItemTableCell cellHeightForCellWithStation:itemDict[@"station"] title:itemDict[@"name"] description:itemDict[@"description"]];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -241,11 +243,12 @@
         cell = [[DiningHallMenuItemTableCell alloc] initWithReuseIdentifier:CellIdentifier];
     }
     
-    NSDictionary *itemDict  = [self debugData][indexPath.row];
-    cell.station.text       = itemDict[@"type"];
-    cell.title.text         = itemDict[@"title"];
-    cell.description.text   = itemDict[@"subtitle"];
-    cell.dietaryTypes       = itemDict[@"filters"];
+    NSArray *mealItems = self.currentMeal[@"items"];
+    NSDictionary *itemDict  = mealItems[indexPath.row];
+    cell.station.text       = itemDict[@"station"];
+    cell.title.text         = itemDict[@"name"];
+    cell.description.text   = itemDict[@"description"];
+    cell.dietaryTypes       = itemDict[@"dietary_flags"];
     
     return cell;
 }

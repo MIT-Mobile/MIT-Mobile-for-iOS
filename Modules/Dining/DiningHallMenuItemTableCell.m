@@ -74,17 +74,10 @@
     CGSize iconSize = CGSizeMake(TYPE_ICON_SIZE, TYPE_ICON_SIZE);
     int maxIcons = 4;
     NSMutableArray *icons = [NSMutableArray arrayWithCapacity:maxIcons];
-    for (NSNumber *type in self.dietaryTypes) {
-        UIImage *image;
-        if ([type intValue] == 1) {
-            image = [UIImage imageWithPDFNamed:@"dining/farm_to_fork.pdf" fitSize:iconSize];
-        } else if ([type intValue] == 2) {
-            image = [UIImage imageWithPDFNamed:@"dining/gluten_free.pdf" fitSize:iconSize];
-        } else if ([type intValue] == 3) {
-            image = [UIImage imageWithPDFNamed:@"dining/halal.pdf" fitSize:iconSize];
-        } else if ([type intValue] == 4) {
-            image = [UIImage imageWithPDFNamed:@"dining/humane.pdf" fitSize:iconSize];
-        }
+    for (NSString *type in self.dietaryTypes) {
+        NSString *imagePath = [NSString stringWithFormat:@"dining/%@.pdf", type];       // TODO: make sure dietary types coming from server match up with filename
+        UIImage *image = [UIImage imageWithPDFNamed:imagePath fitSize:iconSize];
+
         if (image != nil) {
             [icons addObject:image];
         }
