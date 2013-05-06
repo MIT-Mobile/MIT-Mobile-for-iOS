@@ -35,3 +35,8 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 - (NSString*)sysInfoByName:(NSString*)typeSpecifier;
 - (NSString*)cpuType;
 @end
+
+@interface NSDate (MITAdditions)
++ (NSDate *) dateForTodayFromTimeString:(NSString *)time;
+
+@end

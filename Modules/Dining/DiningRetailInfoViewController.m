@@ -9,6 +9,7 @@
 #import "DiningRetailInfoViewController.h"
 #import "DiningHallDetailHeaderView.h"
 #import "UIKit+MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 
 @interface DiningRetailInfoViewController () <UIWebViewDelegate>
 
@@ -238,8 +239,8 @@ static const NSString * sectionDataKey = @"section_data";
         NSString * openString   = todaysHours[@"start_time"];
         NSString * closeString    = todaysHours[@"end_time"];
         
-        NSDate *openDate = [self dateForTodayFromTimeString:openString];
-        NSDate *closeDate = [self dateForTodayFromTimeString:closeString];
+        NSDate *openDate = [NSDate dateForTodayFromTimeString:openString];
+        NSDate *closeDate = [NSDate dateForTodayFromTimeString:closeString];
         
         BOOL willOpen       = ([openDate compare:rightNow] == NSOrderedDescending); // openDate > rightNow , before the open hours for the day
         BOOL currentlyOpen  = ([openDate compare:rightNow] == NSOrderedAscending && [rightNow compare:closeDate] == NSOrderedAscending);  // openDate < rightNow < closeDate , within the open hours
@@ -265,30 +266,6 @@ static const NSString * sectionDataKey = @"section_data";
     // the just in case
     return @{@"isOpen": @NO,
              @"text" : @"Closed for the day"};
-}
-
-- (NSDate *) dateForTodayFromTimeString:(NSString *)time
-{
-    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-    NSDateComponents *comp = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSTimeZoneCalendarUnit fromDate:[NSDate date]];
-    
-    NSArray *timeComponents = [time componentsSeparatedByString:@":"];
-    comp.hour = [[timeComponents objectAtIndex:0] integerValue];
-    comp.minute = [[timeComponents objectAtIndex:1] integerValue];
-    
-    return [cal dateFromComponents:comp];
-}
-
-- (NSDate *) convertDateFromGMT:(NSDate *)gmtDate
-{
-    NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-    NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
-    
-    NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:gmtDate];
-    NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:gmtDate];
-    NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
-    
-    return [[NSDate alloc] initWithTimeInterval:interval sinceDate:gmtDate];
 }
 
 #pragma mark - Table view data source

@@ -13,10 +13,16 @@
 #import "DiningHallMenuFooterView.h"
 #import "DiningHallMenuItemTableCell.h"
 #import "DiningHallMenuSectionHeaderView.h"
+#import "DiningModule.h"
+#import "UIKit+MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 
 @interface DiningHallMenuViewController ()
 
 @property (nonatomic, strong) NSArray * filtersApplied;
+@property (nonatomic, strong) NSArray * mealItems;
+
+@property (nonatomic, strong) NSDictionary * currentMeal;
 
 @end
 
@@ -45,6 +51,18 @@
     [super viewDidLoad];
     
     DiningHallDetailHeaderView *headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
+    headerView.titleLabel.text = self.hallData[@"name"];
+    
+    NSDictionary *meal = [self getMealOfInterest];
+    
+//    NSDictionary *timeData = [DiningModule dayScheduleFromHours:self.hallData[@"hours"]];
+//    if ([timeData[@"isOpen"] boolValue]) {
+//        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
+//    } else {
+//        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
+//    }
+//    headerView.timeLabel.text = timeData[@"text"];
+    
     self.tableView.tableHeaderView = headerView;
     
     DiningHallMenuFooterView *footerView = [[DiningHallMenuFooterView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 54)];
@@ -54,7 +72,46 @@
     self.navigationItem.rightBarButtonItem = filterItem;
     
     self.tableView.allowsSelection = NO;
+}
 
+- (NSDictionary *) getMealOfInterest
+{
+    // finds the current meal or upcoming meal
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    NSDate *currentDate = [NSDate date];
+    NSString *dateString = [dateFormatter stringFromDate:currentDate];
+    for (NSDictionary *day in self.hallData[@"meals_by_day"]) {
+        if ([day[@"date"] isEqualToString:dateString]) {
+            // may want to cache today's meal data
+            NSDictionary *lastMeal;
+            for (NSDictionary * meal in day[@"meals"]) {
+                lastMeal = meal;
+                NSDate *startDate = [NSDate dateForTodayFromTimeString:meal[@"start_time"]];
+                NSDate *endDate = [NSDate dateForTodayFromTimeString:meal[@"end_time"]];
+                if ([startDate compare:currentDate] == NSOrderedAscending && [currentDate compare:endDate] == NSOrderedAscending) {
+                    // current meal
+                    return meal;
+                }
+            }
+            return lastMeal; // last meal in day
+        }
+    }
+    
+    return nil;
+}
+
+- (NSString *) timeSpanStringForMeal:(NSDictionary *) meal
+{
+    // returns meal start time and end time formatted
+    //      hh:mma - hh:mma
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"hh:mma"];
+    NSDate *startDate = [NSDate dateForTodayFromTimeString:meal[@"start_time"]];
+    NSDate *endDate = [NSDate dateForTodayFromTimeString:meal[@"end_time"]];
+    
+    return [NSString stringWithFormat:@"%@ - %@", [dateFormatter stringFromDate:startDate], [dateFormatter stringFromDate:endDate]];
 }
 
 - (void)didReceiveMemoryWarning

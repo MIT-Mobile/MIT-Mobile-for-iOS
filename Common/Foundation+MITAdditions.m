@@ -325,3 +325,22 @@ typedef struct {
     }
 }
 @end
+
+
+@implementation NSDate (MITAdditions)
+
++ (NSDate *) dateForTodayFromTimeString:(NSString *)time
+{
+    // takes date string of format hh:mm and returns an NSDate with today's date at the specified time.
+    
+    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *comp = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSTimeZoneCalendarUnit fromDate:[NSDate date]];
+    
+    NSArray *timeComponents = [time componentsSeparatedByString:@":"];
+    comp.hour = [[timeComponents objectAtIndex:0] integerValue];
+    comp.minute = [[timeComponents objectAtIndex:1] integerValue];
+    
+    return [cal dateFromComponents:comp];
+}
+
+@end

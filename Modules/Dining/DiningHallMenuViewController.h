@@ -11,4 +11,6 @@
 
 @interface DiningHallMenuViewController : UITableViewController <DiningMenuFilterDelegate>
 
+@property (nonatomic, strong) NSDictionary * hallData;
+
 @end
