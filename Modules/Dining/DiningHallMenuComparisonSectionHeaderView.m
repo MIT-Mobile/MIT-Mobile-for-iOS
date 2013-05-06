@@ -1,11 +1,3 @@
-//
-//  DiningHallMenuComparisonSectionHeaderView.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/22/13.
-//
-//
-
 #import "DiningHallMenuComparisonSectionHeaderView.h"
 
 @interface DiningHallMenuComparisonSectionHeaderView ()

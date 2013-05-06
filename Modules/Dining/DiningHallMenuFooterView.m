@@ -1,11 +1,3 @@
-//
-//  DiningHallMenuFooterView.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/4/13.
-//
-//
-
 #import "DiningHallMenuFooterView.h"
 #import <QuartzCore/QuartzCore.h>
 

@@ -1,11 +1,3 @@
-//
-//  DiningHallMenuComparisonCell.h
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/23/13.
-//
-//
-
 #import "PSTCollectionViewCell.h"
 
 @interface DiningHallMenuComparisonCell : PSTCollectionViewCell

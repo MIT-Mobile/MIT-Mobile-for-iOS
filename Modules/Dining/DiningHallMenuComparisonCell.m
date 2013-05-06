@@ -1,11 +1,3 @@
-//
-//  DiningHallMenuComparisonCell.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/23/13.
-//
-//
-
 #import "DiningHallMenuComparisonCell.h"
 #import "UIImage+PDF.h"
 #import "UIKit+MITAdditions.h"

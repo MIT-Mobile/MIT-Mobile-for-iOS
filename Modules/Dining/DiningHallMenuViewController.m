@@ -1,11 +1,3 @@
-//
-//  DiningHallDetailViewController.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/2/13.
-//
-//
-
 #import "DiningHallMenuViewController.h"
 #import "DiningMenuCompareViewController.h"
 #import "DiningMenuFilterViewController.h"

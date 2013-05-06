@@ -1,11 +1,3 @@
-//
-//  DiningRetailInfoViewController.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/25/13.
-//
-//
-
 #import "DiningRetailInfoViewController.h"
 #import "DiningHallDetailHeaderView.h"
 #import "UIKit+MITAdditions.h"

@@ -1,11 +1,3 @@
-//
-//  DiningModule.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 3/18/13.
-//
-//
-
 #import "DiningModule.h"
 #import "DiningMapListViewController.h"
 

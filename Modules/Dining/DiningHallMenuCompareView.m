@@ -1,11 +1,3 @@
-//
-//  DiningHallMenuCompareView.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/8/13.
-//
-//
-
 #import "DiningHallMenuCompareView.h"
 #import "PSTCollectionView.h"
 #import "UIKit+MITAdditions.h"

@@ -1,11 +1,3 @@
-//
-//  DiningLocationCell.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 4/18/13.
-//
-//
-
 #import "DiningLocationCell.h"
 #import "UIKit+MITAdditions.h"
 
