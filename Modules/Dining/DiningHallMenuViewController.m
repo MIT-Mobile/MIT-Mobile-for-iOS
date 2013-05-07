@@ -11,6 +11,7 @@
 
 @interface DiningHallMenuViewController ()
 
+@property (nonatomic, strong) UIBarButtonItem *filterBarButton;
 @property (nonatomic, strong) NSArray * filtersApplied;
 @property (nonatomic, strong) NSArray * mealItems;
 
@@ -66,8 +67,8 @@
     DiningHallMenuFooterView *footerView = [[DiningHallMenuFooterView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 54)];
     self.tableView.tableFooterView = footerView;
     
-    UIBarButtonItem *filterItem = [[UIBarButtonItem alloc] initWithTitle:@"Filter" style:UIBarButtonItemStylePlain target:self action:@selector(filterMenu:)];
-    self.navigationItem.rightBarButtonItem = filterItem;
+    self.filterBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Filter" style:UIBarButtonItemStylePlain target:self action:@selector(filterMenu:)];
+    self.navigationItem.rightBarButtonItem = self.filterBarButton;
     
     self.tableView.allowsSelection = NO;
 }
@@ -225,38 +226,60 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSArray *mealItems = self.currentMeal[@"items"];
-    return [mealItems count];
+    if ([mealItems count]) {
+        return [mealItems count];
+    }
+    return 1;       // will be used to show 'No meals this day'
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSArray *mealItems = self.currentMeal[@"items"];
-    NSDictionary *itemDict  = mealItems[indexPath.row];
-    return [DiningHallMenuItemTableCell cellHeightForCellWithStation:itemDict[@"station"] title:itemDict[@"name"] description:itemDict[@"description"]];
+    if ([mealItems count]) {
+        NSDictionary *itemDict  = mealItems[indexPath.row];
+        return [DiningHallMenuItemTableCell cellHeightForCellWithStation:itemDict[@"station"] title:itemDict[@"name"] description:itemDict[@"description"]];
+    }
+    
+    return 54;  // 'No meals' cells are static 54px
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    DiningHallMenuItemTableCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (!cell) {
-        cell = [[DiningHallMenuItemTableCell alloc] initWithReuseIdentifier:CellIdentifier];
-    }
-    
     NSArray *mealItems = self.currentMeal[@"items"];
-    NSDictionary *itemDict  = mealItems[indexPath.row];
-    cell.station.text       = itemDict[@"station"];
-    cell.title.text         = itemDict[@"name"];
-    cell.description.text   = itemDict[@"description"];
-    cell.dietaryTypes       = itemDict[@"dietary_flags"];
-    
-    return cell;
+    if ([mealItems count]) {
+        static NSString *CellIdentifier = @"Cell";
+        DiningHallMenuItemTableCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        if (!cell) {
+            cell = [[DiningHallMenuItemTableCell alloc] initWithReuseIdentifier:CellIdentifier];
+        }
+        
+        NSArray *mealItems = self.currentMeal[@"items"];
+        NSDictionary *itemDict  = mealItems[indexPath.row];
+        cell.station.text       = itemDict[@"station"];
+        cell.title.text         = itemDict[@"name"];
+        cell.description.text   = itemDict[@"description"];
+        cell.dietaryTypes       = itemDict[@"dietary_flags"];
+        
+        return cell;
+    } else {
+        static NSString *EmptyCellIdentifier = @"ListEmptyCell";
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:EmptyCellIdentifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:EmptyCellIdentifier];
+        }
+        
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:17];
+        cell.textLabel.text = @"No meals this day";
+        
+        return cell;
+    }
 }
 
 - (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if (section == 0) {
-        DiningHallMenuSectionHeaderView *header = [[DiningHallMenuSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 56)];
+        DiningHallMenuSectionHeaderView *header = [[DiningHallMenuSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 56)]; // height does not matter here, calculated in heightForHeaderInSection: delegate
         
         NSString * mealString = [self.currentMeal[@"name"] capitalizedString];
         header.mainLabel.text = [DiningHallMenuSectionHeaderView stringForMeal:self.currentMeal onDate:self.currentDateString];
@@ -266,6 +289,12 @@
         [header.leftButton addTarget:self action:@selector(pageLeft) forControlEvents:UIControlEventTouchUpInside];
         [header.rightButton addTarget:self action:@selector(pageRight) forControlEvents:UIControlEventTouchUpInside];
         header.currentFilters = self.filtersApplied;
+        
+        NSArray *mealItems = self.currentMeal[@"items"];
+        if (![mealItems count]) {
+            header.showMealBar = NO;
+        }
+        
         return header;
     }
     return nil;
@@ -274,9 +303,14 @@
 -(CGFloat)tableView:(UITableView *) tableView heightForHeaderInSection:(NSInteger)section
 {
     if (section == 0) {
-        CGFloat height = 56;
+        CGFloat height = [DiningHallMenuSectionHeaderView heightForPagerBar];
         if ([self.filtersApplied count] > 0) {
-            height+=30;
+            height+=[DiningHallMenuSectionHeaderView heightForFilterBar];
+        }
+        
+        NSArray *mealItems = self.currentMeal[@"items"];
+        if ([mealItems count]) {
+            height+=[DiningHallMenuSectionHeaderView heightForMealBar];
         }
         
         return height;

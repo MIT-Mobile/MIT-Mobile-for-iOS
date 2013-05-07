@@ -3246,7 +3246,6 @@
 				483C866017209F9500A054F1 /* DiningLocationCell.m in Sources */,
 				483C86631725956A00A054F1 /* DiningHallMenuCompareLayout.m in Sources */,
 				483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */,
-				2C5C0BEE171EE27400AEB7A9 /* MGSErrorView.m in Sources */,
 				48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */,
 				48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */,
 			);
@@ -3259,7 +3258,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Austin Emmons (327BM5894C)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3281,7 +3280,7 @@
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "5610B532-A0E4-4DE1-82D3-3BE61CBAB525";
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Debug;
@@ -3290,7 +3289,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Austin Emmons (327BM5894C)";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3310,7 +3309,7 @@
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "5610B532-A0E4-4DE1-82D3-3BE61CBAB525";
 			};
 			name = Release;
 		};
@@ -3405,7 +3404,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Austin Emmons (327BM5894C)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3426,7 +3425,7 @@
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "5610B532-A0E4-4DE1-82D3-3BE61CBAB525";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 			};
 			name = "Distribution - App Store";
@@ -3466,7 +3465,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Austin Emmons (327BM5894C)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3487,7 +3486,7 @@
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "5610B532-A0E4-4DE1-82D3-3BE61CBAB525";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 			};
 			name = "Distribution - Ad Hoc";

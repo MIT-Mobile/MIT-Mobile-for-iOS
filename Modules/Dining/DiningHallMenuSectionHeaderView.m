@@ -34,11 +34,16 @@
              @{@"icon": @"vegetarian.pdf",      @"title" : @"Vegetarian"}];
 }
 
-- (NSArray *) debugEnabledFilters
-{
-    return @[@1,@2,@5,@7,@9];
-}
 
+- (void) setShowMealBar:(BOOL)showMealBar
+{
+    _showMealBar = showMealBar;
+    if (showMealBar) {
+        self.mealTimeView.hidden = NO;
+    } else {
+        self.mealTimeView.hidden = YES;
+    }
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -105,7 +110,7 @@
 
 - (UIView *) viewForEnabledFilters
 {
-    CGFloat rowHeight = 30;
+    CGFloat rowHeight = [[self class] heightForFilterBar];
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), rowHeight)];
     view.backgroundColor = [UIColor whiteColor];
     
@@ -131,7 +136,7 @@
 
 - (UIView *) viewForMealTime
 {
-    UIView * view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), 26)];
+    UIView * view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), [[self class] heightForMealBar])];
     view.backgroundColor = [UIColor darkTextColor];
     
     self.mealLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 7, CGRectGetWidth(view.bounds) - 20, 12)]; // 7px vertical padding, width is arbitrary, height matches font size
@@ -207,6 +212,21 @@
         return [NSString stringWithFormat:@"%@, %@", dayString, fullDate];
     }
     
+}
+
++ (CGFloat) heightForPagerBar
+{
+    return 30;
+}
+
++ (CGFloat) heightForFilterBar
+{
+    return 30;
+}
+
++ (CGFloat) heightForMealBar
+{
+    return 26;
 }
 
 /*
