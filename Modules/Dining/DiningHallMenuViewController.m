@@ -110,6 +110,7 @@
     fetchRequest.entity = entity;
     // TODO: include filters in predicate if they are set
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"meal = %@", meal];
+    // use the inherent sort order of meals (NSOrderedSet)
     fetchRequest.sortDescriptors = @[];
         
     NSFetchedResultsController *fetchedResultsController =
@@ -284,7 +285,7 @@
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     DiningMealItem *item = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    return [DiningHallMenuItemTableCell cellHeightForCellWithStation:item.station title:item.name description:item.subtitle];
+    return [DiningHallMenuItemTableCell cellHeightForCellWithStation:item.station title:item.name subtitle:item.subtitle];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -298,8 +299,12 @@
     DiningMealItem *item = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.station.text       = item.station;
     cell.title.text         = item.name;
-    cell.description.text   = item.subtitle;
-    cell.dietaryTypes       = nil; // item.dietaryFlags;
+    cell.subtitle.text      = item.subtitle;
+    
+    NSArray *imagePaths = [[item.dietaryFlags mapObjectsUsingBlock:^id(id obj) {
+        return ((DiningDietaryFlag *)obj).pdfPath;
+    }] allObjects];
+    cell.dietaryImagePaths  = [imagePaths sortedArrayUsingSelector:@selector(compare:)];
     
     return cell;
 }

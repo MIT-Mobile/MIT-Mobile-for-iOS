@@ -5,8 +5,11 @@
 
 @interface DiningDietaryFlag : NSManagedObject
 
-@property (nonatomic, retain) NSString * name;
+@property (nonatomic, retain) NSString *name;
 @property (nonatomic, retain) NSSet *items;
+@property (nonatomic, readonly, strong) NSString *pdfPath;
+@property (nonatomic, readonly, strong) NSString *displayName;
+
 @end
 
 @interface DiningDietaryFlag (CoreDataGeneratedAccessors)

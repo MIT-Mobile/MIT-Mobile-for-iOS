@@ -1,4 +1,3 @@
-
 #import "DiningHallMenuItemTableCell.h"
 #import "UIKit+MITAdditions.h"
 #import "UIImage+PDF.h"
@@ -10,7 +9,7 @@
 
 @property (nonatomic, strong) UILabel * station;
 @property (nonatomic, strong) UILabel * title;
-@property (nonatomic, strong) UILabel * description;
+@property (nonatomic, strong) UILabel * subtitle;
 
 @property (nonatomic, strong) UIView * typeContainer;
 
@@ -25,17 +24,17 @@
                                                                             // heights are initialized to be minimum allowed. Height will vary
         self.station        = [[UILabel alloc] initWithFrame:CGRectMake(10, 15, 60, 14)];
         self.title          = [[UILabel alloc] initWithFrame:CGRectMake(90, 15, 160, 14)];
-        self.description    = [[UILabel alloc] initWithFrame:CGRectMake(90, 41, 160, 12)];
+        self.subtitle       = [[UILabel alloc] initWithFrame:CGRectMake(90, 41, 160, 12)];
         
         [self formatLabel:self.station withFont:[[self class] primaryFont]];
         [self formatLabel:self.title withFont:[[self class] primaryFont]];
-        [self formatLabel:self.description withFont:[[self class] secondaryFont]];
+        [self formatLabel:self.subtitle withFont:[[self class] secondaryFont]];
         
         self.typeContainer  = [[UIView alloc] initWithFrame:CGRectMake(265, 15, (TYPE_ICON_SIZE * 2) + 5, TYPE_ICON_SIZE)];   // if more than 2 this view will need to resize
         
         [self.contentView addSubview:self.station];
         [self.contentView addSubview:self.title];
-        [self.contentView addSubview:self.description];
+        [self.contentView addSubview:self.subtitle];
         [self.contentView addSubview:self.typeContainer];
     }
     return self;
@@ -54,15 +53,15 @@
     
     [self adjustSizeForLabel:self.station];
     [self adjustSizeForLabel:self.title];
-    [self adjustSizeForLabel:self.description];
+    [self adjustSizeForLabel:self.subtitle];
     
     // sizes have beeen adjusted, need to layout origin
-    // description origin should be the only dynamic origin
-    CGRect frame = self.description.frame;
+    // subtitle origin should be the only dynamic origin
+    CGRect frame = self.subtitle.frame;
     frame.origin = CGPointMake(frame.origin.x, CGRectGetMaxY(self.title.frame) + TITLE_DESCRIPTION_PADDING);
-    self.description.frame = frame;
+    self.subtitle.frame = frame;
     
-    if ([self.dietaryTypes count] > 2) {
+    if ([self.dietaryImagePaths count] > 2) {
         self.typeContainer.frame = CGRectMake(265, 15, 45, 45);
     }
     [self layoutDietaryTypes];
@@ -74,8 +73,7 @@
     CGSize iconSize = CGSizeMake(TYPE_ICON_SIZE, TYPE_ICON_SIZE);
     int maxIcons = 4;
     NSMutableArray *icons = [NSMutableArray arrayWithCapacity:maxIcons];
-    for (NSString *type in self.dietaryTypes) {
-        NSString *imagePath = [NSString stringWithFormat:@"dining/%@.pdf", type];       // TODO: make sure dietary types coming from server match up with filename
+    for (NSString *imagePath in self.dietaryImagePaths) {
         UIImage *image = [UIImage imageWithPDFNamed:imagePath fitSize:iconSize];
 
         if (image != nil) {
@@ -87,7 +85,7 @@
         UIImageView *iconView = [[UIImageView alloc] initWithImage:icons[i]];
         // there can only be a maximum of four icons, they are aligned like so :    1 0
         //                                                                          3 2
-        // full layout description can be found in the spec: https://jira.mit.edu/jira/secure/attachment/26097/house+menu.pdf
+        // full layout subtitle can be found in the spec: https://jira.mit.edu/jira/secure/attachment/26097/house+menu.pdf
         iconView.center = CGPointMake(35 - (iconSize.width + 5) * (i % 2), 10 + (iconSize.height + 5) * (i >= 2));
         [self.typeContainer addSubview:iconView];
     }
@@ -109,31 +107,31 @@
 
 + (UIFont *) primaryFont
 {
-    return [UIFont fontWithName:@"Helvetica-Bold" size:14];
+    return [UIFont boldSystemFontOfSize:14];
 }
 
 + (UIFont *) secondaryFont
 {
-    return [UIFont fontWithName:@"Helvetica" size:12];
+    return [UIFont systemFontOfSize:12];
 }
 
 #pragma mark - Class Methods
-+ (CGFloat) cellHeightForCellWithStation:(NSString *)station title:(NSString *) title description:(NSString *)description
++ (CGFloat) cellHeightForCellWithStation:(NSString *)station title:(NSString *) title subtitle:(NSString *)subtitle
 {
     CGFloat stationWidth        = 60;
     CGFloat titleWidth          = 160;
-    CGFloat descriptionWidth    = 160;
+    CGFloat subtitleWidth    = 160;
     
     CGSize maximumStationSize       = CGSizeMake(stationWidth, CGFLOAT_MAX);
     CGSize maximumTitleSize         = CGSizeMake(titleWidth, CGFLOAT_MAX);
-    CGSize maximumDescriptionSize   = CGSizeMake(descriptionWidth, CGFLOAT_MAX);
+    CGSize maximumSubtitleSize   = CGSizeMake(subtitleWidth, CGFLOAT_MAX);
     
     CGSize necessaryStationLabelSize        = [station sizeWithFont:[self primaryFont] constrainedToSize:maximumStationSize lineBreakMode:UILineBreakModeWordWrap];
     CGSize necessaryTitleLabelSize          = [title sizeWithFont:[self primaryFont] constrainedToSize:maximumTitleSize lineBreakMode:UILineBreakModeWordWrap];
-    CGSize necessaryDescriptionLabelSize    = [description sizeWithFont:[self secondaryFont] constrainedToSize:maximumDescriptionSize lineBreakMode:UILineBreakModeWordWrap];
+    CGSize necessarySubtitleLabelSize    = [subtitle sizeWithFont:[self secondaryFont] constrainedToSize:maximumSubtitleSize lineBreakMode:UILineBreakModeWordWrap];
     
     CGFloat stationHeight   = 30 + necessaryStationLabelSize.height;
-    CGFloat dataHeight      = 30 + necessaryTitleLabelSize.height + TITLE_DESCRIPTION_PADDING + necessaryDescriptionLabelSize.height;
+    CGFloat dataHeight      = 30 + necessaryTitleLabelSize.height + TITLE_DESCRIPTION_PADDING + necessarySubtitleLabelSize.height;
     
     CGFloat maxHeight = MAX(stationHeight, dataHeight);
     
