@@ -337,6 +337,14 @@
 		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6A110F8F71D009FAE35 /* NewsImage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DECBF6B610F8F91B009FAE35 /* NewsImageRep.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6B510F8F91B009FAE35 /* NewsImageRep.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DED41FD517381D180048376F /* Dining.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DED41FD317381D180048376F /* Dining.xcdatamodeld */; };
+		DED41FD8173849500048376F /* DiningData.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FD7173849500048376F /* DiningData.m */; };
+		DED41FDB173850960048376F /* HouseVenue.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FDA173850960048376F /* HouseVenue.m */; };
+		DED41FDE173858BA0048376F /* VenueLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FDD173858BA0048376F /* VenueLocation.m */; };
+		DED41FE117385A730048376F /* DiningDay.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FE017385A730048376F /* DiningDay.m */; };
+		DED41FE417385A850048376F /* DiningMealItem.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FE317385A840048376F /* DiningMealItem.m */; };
+		DED41FE717385A860048376F /* DiningDietaryFlag.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FE617385A850048376F /* DiningDietaryFlag.m */; };
+		DED41FEA17385A860048376F /* DiningMeal.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FE917385A860048376F /* DiningMeal.m */; };
 		DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */; };
 		DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEE6AF201117477E0037F03C /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = DEE6AF1F1117477E0037F03C /* credits.html */; };
@@ -1064,6 +1072,21 @@
 		DECBF6A110F8F71D009FAE35 /* NewsImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsImage.m; sourceTree = "<group>"; };
 		DECBF6B410F8F91B009FAE35 /* NewsImageRep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsImageRep.h; sourceTree = "<group>"; };
 		DECBF6B510F8F91B009FAE35 /* NewsImageRep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsImageRep.m; sourceTree = "<group>"; };
+		DED41FD417381D180048376F /* Dining.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Dining.xcdatamodel; sourceTree = "<group>"; };
+		DED41FD6173849500048376F /* DiningData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningData.h; path = Dining/Model/DiningData.h; sourceTree = "<group>"; };
+		DED41FD7173849500048376F /* DiningData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningData.m; path = Dining/Model/DiningData.m; sourceTree = "<group>"; };
+		DED41FD9173850960048376F /* HouseVenue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HouseVenue.h; path = Dining/Model/HouseVenue.h; sourceTree = "<group>"; };
+		DED41FDA173850960048376F /* HouseVenue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HouseVenue.m; path = Dining/Model/HouseVenue.m; sourceTree = "<group>"; };
+		DED41FDC173858BA0048376F /* VenueLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VenueLocation.h; path = Dining/Model/VenueLocation.h; sourceTree = "<group>"; };
+		DED41FDD173858BA0048376F /* VenueLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VenueLocation.m; path = Dining/Model/VenueLocation.m; sourceTree = "<group>"; };
+		DED41FDF17385A730048376F /* DiningDay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningDay.h; path = Dining/Model/DiningDay.h; sourceTree = "<group>"; };
+		DED41FE017385A730048376F /* DiningDay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningDay.m; path = Dining/Model/DiningDay.m; sourceTree = "<group>"; };
+		DED41FE217385A840048376F /* DiningMealItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningMealItem.h; path = Dining/Model/DiningMealItem.h; sourceTree = "<group>"; };
+		DED41FE317385A840048376F /* DiningMealItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningMealItem.m; path = Dining/Model/DiningMealItem.m; sourceTree = "<group>"; };
+		DED41FE517385A850048376F /* DiningDietaryFlag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningDietaryFlag.h; path = Dining/Model/DiningDietaryFlag.h; sourceTree = "<group>"; };
+		DED41FE617385A850048376F /* DiningDietaryFlag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningDietaryFlag.m; path = Dining/Model/DiningDietaryFlag.m; sourceTree = "<group>"; };
+		DED41FE817385A860048376F /* DiningMeal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningMeal.h; path = Dining/Model/DiningMeal.h; sourceTree = "<group>"; };
+		DED41FE917385A860048376F /* DiningMeal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningMeal.m; path = Dining/Model/DiningMeal.m; sourceTree = "<group>"; };
 		DEE283E910F5109000B39531 /* Emergency.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = Emergency.xcdatamodel; sourceTree = "<group>"; };
 		DEE6AECD111740BF0037F03C /* AboutCreditsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutCreditsVC.h; sourceTree = "<group>"; };
 		DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutCreditsVC.m; sourceTree = "<group>"; };
@@ -1923,6 +1946,7 @@
 		48327CDD16F74EA0003A2F23 /* Dining */ = {
 			isa = PBXGroup;
 			children = (
+				DED41FD217381CDE0048376F /* Model */,
 				48A6E4D8170B91E9004DED46 /* Views */,
 				48327CDE16F74F19003A2F23 /* DiningModule.h */,
 				48327CDF16F74F19003A2F23 /* DiningModule.m */,
@@ -2568,6 +2592,28 @@
 				DEBF5FD714886F1A00B5719A /* LibrariesRenewResultViewController.m */,
 			);
 			path = "Renew Results View Controller";
+			sourceTree = "<group>";
+		};
+		DED41FD217381CDE0048376F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DED41FD317381D180048376F /* Dining.xcdatamodeld */,
+				DED41FE817385A860048376F /* DiningMeal.h */,
+				DED41FE917385A860048376F /* DiningMeal.m */,
+				DED41FE517385A850048376F /* DiningDietaryFlag.h */,
+				DED41FE617385A850048376F /* DiningDietaryFlag.m */,
+				DED41FE217385A840048376F /* DiningMealItem.h */,
+				DED41FE317385A840048376F /* DiningMealItem.m */,
+				DED41FDF17385A730048376F /* DiningDay.h */,
+				DED41FE017385A730048376F /* DiningDay.m */,
+				DED41FDC173858BA0048376F /* VenueLocation.h */,
+				DED41FDD173858BA0048376F /* VenueLocation.m */,
+				DED41FD9173850960048376F /* HouseVenue.h */,
+				DED41FDA173850960048376F /* HouseVenue.m */,
+				DED41FD6173849500048376F /* DiningData.h */,
+				DED41FD7173849500048376F /* DiningData.m */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 		EB4C1E97127723B700058748 /* Tours */ = {
@@ -3254,6 +3300,14 @@
 				2C5C0BEE171EE27400AEB7A9 /* MGSErrorView.m in Sources */,
 				48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */,
 				48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */,
+				DED41FD517381D180048376F /* Dining.xcdatamodeld in Sources */,
+				DED41FD8173849500048376F /* DiningData.m in Sources */,
+				DED41FDB173850960048376F /* HouseVenue.m in Sources */,
+				DED41FDE173858BA0048376F /* VenueLocation.m in Sources */,
+				DED41FE117385A730048376F /* DiningDay.m in Sources */,
+				DED41FE417385A850048376F /* DiningMealItem.m in Sources */,
+				DED41FE717385A860048376F /* DiningDietaryFlag.m in Sources */,
+				DED41FEA17385A860048376F /* DiningMeal.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3264,7 +3318,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3286,7 +3339,6 @@
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Debug;
@@ -3575,6 +3627,17 @@
 			);
 			currentVersion = DE10571411985D4B0090A505 /* News 2.xcdatamodel */;
 			path = News.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		DED41FD317381D180048376F /* Dining.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				DED41FD417381D180048376F /* Dining.xcdatamodel */,
+			);
+			currentVersion = DED41FD417381D180048376F /* Dining.xcdatamodel */;
+			name = Dining.xcdatamodeld;
+			path = Dining/Model/Dining.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
