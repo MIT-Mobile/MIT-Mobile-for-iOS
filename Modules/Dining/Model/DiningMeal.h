@@ -13,6 +13,7 @@
 @property (nonatomic, retain) NSOrderedSet *items;
 
 + (DiningMeal *)newMealWithDictionary:(NSDictionary* )dict;
+- (NSString *)hoursSummary;
 
 @end
 

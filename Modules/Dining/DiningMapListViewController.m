@@ -398,8 +398,8 @@
     HouseVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     cell.titleLabel.text = venue.name;
-    cell.subtitleLabel.text = venue.location.roomNumber;
-    cell.statusOpen = indexPath.row % 2 == 0;
+    cell.subtitleLabel.text = [venue hoursToday];
+    cell.statusOpen = [venue isOpenNow];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.imageView.image = [UIImage imageNamed:@"icons/home-about.png"];
 }
@@ -480,7 +480,7 @@
     if (indexPath.section == _venuesSectionIndex) {
         indexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:0];
         HouseVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        return [DiningLocationCell heightForRowWithTitle:venue.name subtitle:venue.location.roomNumber];
+        return [DiningLocationCell heightForRowWithTitle:venue.name subtitle:[venue hoursToday]];
     }
     
     return 44;

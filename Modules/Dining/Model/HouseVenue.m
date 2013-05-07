@@ -1,6 +1,7 @@
 #import "HouseVenue.h"
 #import "VenueLocation.h"
 #import "DiningDay.h"
+#import "DiningMeal.h"
 #import "CoreDataManager.h"
 
 @implementation HouseVenue
@@ -41,12 +42,25 @@
 }
 
 - (BOOL)isOpenNow {
-    // [NSDate date] compared to days and startTime/endTime time ranges
-    return true;
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterShortStyle];
+    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
+    components.hour = 13;
+    components.year = 2013;
+    components.month = 5;
+    components.day = 3;
+    
+    NSDate *date = [calendar dateFromComponents:components];
+    DiningDay *today = [self dayForDate:date];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startTime <= %@ AND endTime >= %@", date, date];
+    
+    return ([[[today.meals set] filteredSetUsingPredicate:predicate] count] > 0);
 }
 
 - (NSString *)hoursNow {
-    // current startTime/endTime time range
+    // TODO: current startTime/endTime time range
     return @"Open until 11am";
     // next time range
     // return @"Closed until 5pm";
@@ -57,9 +71,23 @@
 }
 
 - (NSString *)hoursToday {
-    return @"8am - 11am, 11am - 1pm, 5pm - 9pm";
-    // or closed with a message
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterShortStyle];
+    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
+    DiningDay *today = [self dayForDate:[formatter dateFromString:@"5/3/2013"]];
+    return today.allHoursSummary;
+    // TODO: or closed with a message
     // return @"Closed for renovations"
+}
+
+- (DiningDay *)dayForDate:(NSDate *)date {
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:date];
+    NSDate *dayDate = [calendar dateFromComponents:components];
+    
+    NSSet *matchingDays = [self.menuDays filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"date == %@", dayDate]];
+    
+    return [matchingDays anyObject];
 }
 
 - (NSString *)description {

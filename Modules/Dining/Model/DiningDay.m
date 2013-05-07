@@ -24,8 +24,44 @@
     }
     
     for (NSDictionary *mealDict in dict[@"meals"]) {
-        [day addMealsObject:[DiningMeal newMealWithDictionary:mealDict]];
+        DiningMeal *meal = [DiningMeal newMealWithDictionary:mealDict];
+        [day addMealsObject:meal];
+        
+        // adjust all of the start and end times to be complete dates and times to make querying easier
+        
+        if (meal.startTime && meal.endTime) {
+            NSDate *dayDate = day.date;
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            NSDateComponents *dayComponents = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:dayDate];
+            NSDateComponents *timeComponents = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:meal.startTime];
+            timeComponents.year = dayComponents.year;
+            timeComponents.month = dayComponents.month;
+            timeComponents.day = dayComponents.day;
+
+            meal.startTime = [calendar dateFromComponents:timeComponents];
+
+            timeComponents = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:meal.endTime];
+            timeComponents.year = dayComponents.year;
+            timeComponents.month = dayComponents.month;
+            timeComponents.day = dayComponents.day;
+            
+            meal.endTime = [calendar dateFromComponents:timeComponents];
+
+//            NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:meal.startTime toDate:dayDate options:0];
+//            components.day += 1;
+//            meal.startTime = [calendar dateByAddingComponents:components toDate:meal.startTime options:0];
+//            components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit |  NSDayCalendarUnit) fromDate:meal.endTime toDate:dayDate options:0];
+//            components.day += 1;
+//            meal.endTime = [calendar dateByAddingComponents:components toDate:meal.endTime options:0];
+//            
+//            NSLog(@"%@ %@ %@", dayDate, meal.startTime, meal.endTime);
+
+        }
     }
+    
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:YES];
+    NSArray *sortedMeals = [[day.meals array] sortedArrayUsingDescriptors:@[sort]];
+    [day setMeals:[NSOrderedSet orderedSetWithArray:sortedMeals]];
     
     return day;
 }
@@ -37,16 +73,15 @@
     self.meals = tempSet;
 }
 
-- (NSDate *) dateForTodayFromTimeString:(NSString *)time
-{
-    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-    NSDateComponents *comp = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSTimeZoneCalendarUnit fromDate:[NSDate date]];
-    
-    NSArray *timeComponents = [time componentsSeparatedByString:@":"];
-    comp.hour = [[timeComponents objectAtIndex:0] integerValue];
-    comp.minute = [[timeComponents objectAtIndex:1] integerValue];
-    
-    return [cal dateFromComponents:comp];
+- (NSString *)allHoursSummary {
+    NSMutableArray *summaries = [NSMutableArray array];
+    for (DiningMeal *meal in self.meals) {
+        NSString *summary = [meal hoursSummary];
+        if (summary) {
+            [summaries addObject:summary];
+        }
+    }
+    return [summaries componentsJoinedByString:@", "];
 }
 
 @end

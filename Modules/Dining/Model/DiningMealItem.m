@@ -21,8 +21,6 @@
         [item addDietaryFlagsObject:[DiningDietaryFlag flagWithName:name]];
     }
     
-    NSLog(@"%@", [item.dietaryFlags valueForKey:@"name"]);
-    
     return item;
 }
 

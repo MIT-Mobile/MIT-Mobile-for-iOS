@@ -52,7 +52,6 @@
         for (NSDictionary *venueDict in parsedJSON[@"venues"][@"house"]) {
             [venues addObject:[HouseVenue newVenueWithDictionary:venueDict]];
         }
-        NSLog(@"%@", venues);
     } else {
         DDLogError(@"Dining JSON is not a dictionary.");
     }

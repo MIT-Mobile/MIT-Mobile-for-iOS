@@ -15,6 +15,8 @@
 @property (nonatomic, retain) VenueLocation *location;
 
 + (HouseVenue *)newVenueWithDictionary:(NSDictionary *)dict;
+- (BOOL)isOpenNow;
+- (NSString *)hoursToday;
 
 @end
 
