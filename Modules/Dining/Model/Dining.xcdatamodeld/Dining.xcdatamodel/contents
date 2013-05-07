@@ -20,6 +20,7 @@
     </entity>
     <entity name="DiningMealItem" representedClassName="DiningMealItem" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="ordinality" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="station" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="subtitle" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="dietaryFlags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DiningDietaryFlag" inverseName="items" inverseEntity="DiningDietaryFlag" syncable="YES"/>
@@ -35,7 +36,9 @@
         <relationship name="location" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="VenueLocation" inverseName="houseVenue" inverseEntity="VenueLocation" syncable="YES"/>
         <relationship name="menuDays" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DiningDay" inverseName="houseVenue" inverseEntity="DiningDay" syncable="YES"/>
     </entity>
-    <entity name="RetailVenue" syncable="YES"/>
+    <entity name="RetailVenue" syncable="YES">
+        <relationship name="location" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="VenueLocation" inverseName="retailVenue" inverseEntity="VenueLocation" syncable="YES"/>
+    </entity>
     <entity name="VenueLocation" representedClassName="VenueLocation" syncable="YES">
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="displayDescription" optional="YES" attributeType="String" syncable="YES"/>
@@ -46,15 +49,15 @@
         <attribute name="street" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="zipcode" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="houseVenue" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="HouseVenue" inverseName="location" inverseEntity="HouseVenue" syncable="YES"/>
-        <relationship name="retailVenue" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="RetailVenue" syncable="YES"/>
+        <relationship name="retailVenue" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="RetailVenue" inverseName="location" inverseEntity="RetailVenue" syncable="YES"/>
     </entity>
     <elements>
-        <element name="HouseVenue" positionX="-434" positionY="-234" width="128" height="163"/>
-        <element name="RetailVenue" positionX="322" positionY="-225" width="128" height="45"/>
-        <element name="VenueLocation" positionX="-225" positionY="-265" width="128" height="193"/>
         <element name="DiningDay" positionX="-225" positionY="-54" width="128" height="103"/>
-        <element name="DiningMeal" positionX="-45" positionY="-54" width="128" height="133"/>
-        <element name="DiningMealItem" positionX="142" positionY="-54" width="128" height="118"/>
         <element name="DiningDietaryFlag" positionX="331" positionY="-24" width="128" height="73"/>
+        <element name="DiningMeal" positionX="-45" positionY="-54" width="128" height="133"/>
+        <element name="DiningMealItem" positionX="142" positionY="-54" width="128" height="135"/>
+        <element name="HouseVenue" positionX="-434" positionY="-234" width="128" height="163"/>
+        <element name="RetailVenue" positionX="322" positionY="-225" width="128" height="60"/>
+        <element name="VenueLocation" positionX="-225" positionY="-265" width="128" height="195"/>
     </elements>
 </model>

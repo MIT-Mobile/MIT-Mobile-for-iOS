@@ -37,8 +37,12 @@
         meal.endTime = date;
     }
     
-    for (NSDictionary *item in dict[@"items"]) {
-        [meal addItemsObject:[DiningMealItem newItemWithDictionary:item]];
+    NSInteger i = 0;
+    for (NSDictionary *itemDict in dict[@"items"]) {
+        DiningMealItem *item = [DiningMealItem newItemWithDictionary:itemDict];
+        item.ordinality = @(i);
+        i++;
+        [meal addItemsObject:item];
     }
 
     return meal;

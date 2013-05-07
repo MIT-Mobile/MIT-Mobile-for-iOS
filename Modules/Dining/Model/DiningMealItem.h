@@ -9,6 +9,7 @@
 @property (nonatomic, retain) NSString * station;
 @property (nonatomic, retain) NSManagedObject *meal;
 @property (nonatomic, retain) NSSet *dietaryFlags;
+@property (nonatomic, retain) NSNumber *ordinality;
 
 + (DiningMealItem *)newItemWithDictionary:(NSDictionary *)dict;
 
