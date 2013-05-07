@@ -68,7 +68,6 @@
 		2C3AFD31166518CB00392AE3 /* MGSUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3AFD30166518CB00392AE3 /* MGSUtility.m */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2C5C0BEE171EE27400AEB7A9 /* MGSErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5C0BED171EE27400AEB7A9 /* MGSErrorView.m */; };
 		2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5DECD613E9BABB00F9C089 /* MobileRequestLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCC13E9BABB00F9C089 /* MobileRequestLoginViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */; };
@@ -547,8 +546,6 @@
 		2C544B9C1358A24400685545 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		2C5B30461371D54500870E6D /* FacilitiesUserLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesUserLocationViewController.h; sourceTree = "<group>"; };
 		2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesUserLocationViewController.m; sourceTree = "<group>"; };
-		2C5C0BEC171EE27400AEB7A9 /* MGSErrorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSErrorView.h; sourceTree = "<group>"; };
-		2C5C0BED171EE27400AEB7A9 /* MGSErrorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSErrorView.m; sourceTree = "<group>"; };
 		2C5DECC913E9BABB00F9C089 /* MobileKeychainServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileKeychainServices.h; sourceTree = "<group>"; };
 		2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileKeychainServices.m; sourceTree = "<group>"; };
 		2C5DECCB13E9BABB00F9C089 /* MobileRequestLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestLoginViewController.h; sourceTree = "<group>"; };
@@ -1641,8 +1638,6 @@
 				2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */,
 				2C3AFD2F166518CB00392AE3 /* MGSUtility.h */,
 				2C3AFD30166518CB00392AE3 /* MGSUtility.m */,
-				2C5C0BEC171EE27400AEB7A9 /* MGSErrorView.h */,
-				2C5C0BED171EE27400AEB7A9 /* MGSErrorView.m */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -3297,7 +3292,6 @@
 				483C866017209F9500A054F1 /* DiningLocationCell.m in Sources */,
 				483C86631725956A00A054F1 /* DiningHallMenuCompareLayout.m in Sources */,
 				483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */,
-				2C5C0BEE171EE27400AEB7A9 /* MGSErrorView.m in Sources */,
 				48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */,
 				48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */,
 				DED41FD517381D180048376F /* Dining.xcdatamodeld in Sources */,
@@ -3347,7 +3341,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Austin Emmons (327BM5894C)";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3367,7 +3361,7 @@
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "5610B532-A0E4-4DE1-82D3-3BE61CBAB525";
 			};
 			name = Release;
 		};
@@ -3462,7 +3456,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Austin Emmons (327BM5894C)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3483,7 +3477,7 @@
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "5610B532-A0E4-4DE1-82D3-3BE61CBAB525";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 			};
 			name = "Distribution - App Store";
@@ -3523,7 +3517,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Austin Emmons (327BM5894C)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3544,7 +3538,7 @@
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "5610B532-A0E4-4DE1-82D3-3BE61CBAB525";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 			};
 			name = "Distribution - Ad Hoc";

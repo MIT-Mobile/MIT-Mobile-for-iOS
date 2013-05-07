@@ -14,7 +14,6 @@
 #import "MGSSafeAnnotation.h"
 #import "MGSLayerAnnotation.h"
 #import "MGSBootstrapper.h"
-#import "MGSErrorView.h"
 
 
 @implementation MGSMapView
@@ -674,21 +673,22 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             view.touchDelegate = self;
             view.calloutDelegate = self;
             
+            view.gridLineColor = [UIColor lightGrayColor];
+            view.gridLineWidth = 1.0;
+            view.gridSize = 32.0;
+            
             [self addSubview:view];
             self.mapView = view;
-        }
-        
-        {
-            MGSErrorView *loadingView = [[MGSErrorView alloc] initWithFrame:mainBounds];
-            [self addSubview:loadingView];
-            self.loadingView = loadingView;
         }
         
         MGSBootstrapper *bootstrapper = [MGSBootstrapper sharedBootstrapper];
         [bootstrapper requestBootstrap:^(NSDictionary *content, NSError *error) {
             if (error) {
                 DDLogError(@"failed to load basemap definitions: %@", error);
-                self.loadingView.error = error;
+                if ([self.delegate respondsToSelector:@selector(mapView:didFailWithError:)]) {
+                    [self.delegate mapView:self
+                          didFailWithError:error];
+                }
             } else if ([content isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* response = (NSDictionary*) content;
                 self.baseMapGroups = response[@"basemaps"];
@@ -863,8 +863,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     MKCoordinateRegion visibleRegion = [self defaultVisibleArea];
     [mapView zoomToEnvelope:AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(visibleRegion, mapView.spatialReference)
                    animated:NO];
-    
-    [self.loadingView removeFromSuperview];
 }
 
 - (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForGraphic:(AGSGraphic*)graphic
@@ -887,12 +885,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)mapViewWillDismissCallout:(AGSMapView*)mapView
 {
-    /* This space intentially left blank.
-     Well, not blank but you get the idea.
-     Seriously, there's nothing here.
-     Stop it.
-     Reading more isn't going to change anything.
-     */
+    /* This space intentially left blank. */
 }
 
 - (void)mapViewDidDismissCallout:(AGSMapView*)mapView
@@ -1000,8 +993,35 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)layer:(AGSLayer*)layer didFailToLoadWithError:(NSError*)error
 {
     DDLogError(@"failed to load layer '%@': %@", layer.name, [error localizedDescription]);
-    [self.baseLayers removeObjectForKey:layer.name];
-    [self.mapView removeMapLayer:layer];
+    
+    // Perform the coreLayersLoaded checking here since we don't want to add any of the
+    // user layers until we actually have a spatial reference to work with.
+    if (self.baseLayers[layer.name]) {
+        [self.baseLayers removeObjectForKey:layer.name];
+        [self.mapView removeMapLayer:layer];
+        
+        if (self.isBaseLayersLoaded == NO) {
+            __block BOOL layersLoaded = YES;
+            [self.baseLayers enumerateKeysAndObjectsUsingBlock:^(NSString* name, AGSLayer* layer, BOOL* stop) {
+                layersLoaded = (layersLoaded && layer.spatialReference);
+            }];
+            
+            
+            // Check again after we iterate through everything to make sure the state
+            // hasn't changed now that we have another layer loaded
+            if (layersLoaded) {
+                self.baseLayersLoaded = YES;
+                [self baseLayersDidFinishLoading];
+            }
+        }
+        
+    }
+    
+    
+    if ([self.delegate respondsToSelector:@selector(mapView:didFailWithError:)]) {
+        [self.delegate mapView:self
+              didFailWithError:error];
+    }
 }
 
 - (void)locationDisplayDataSource:(id <AGSLocationDisplayDataSource>)dataSource

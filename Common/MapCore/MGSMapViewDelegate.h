@@ -8,6 +8,7 @@
 @protocol MGSMapViewDelegate <NSObject>
 @optional
 - (void)didFinishLoadingMapView:(MGSMapView*)mapView;
+- (void)mapView:(MGSMapView*)mapView didFailWithError:(NSError*)error;
 
 - (BOOL)mapView:(MGSMapView*)mapView shouldShowCalloutForAnnotation:(id<MGSAnnotation>)annotation;
 - (void)mapView:(MGSMapView*)mapView willShowCalloutForAnnotation:(id<MGSAnnotation>)annotation;

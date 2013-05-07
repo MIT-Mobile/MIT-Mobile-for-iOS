@@ -69,6 +69,8 @@ DEPRECATED_ATTRIBUTE
 - (void)removeAnnotation:(id<MKAnnotation>)annotation;
 - (void)removeAllAnnotations:(BOOL)includeUserLocation;
 
+- (MITMapAnnotationView*)viewForAnnotation:(id<MKAnnotation>)annotation;
+
 @property (nonatomic, readonly) NSArray *annotations;
 @property (nonatomic, readonly, weak) id<MKAnnotation> currentAnnotation;
 

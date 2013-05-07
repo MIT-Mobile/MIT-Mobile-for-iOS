@@ -16,7 +16,6 @@
 
 @property (nonatomic, strong) MGSLayer *annotationLayer;
 
-@property (nonatomic, strong) NSArray *annotationCache;
 @property (nonatomic, strong) NSMutableArray *legacyRoutes;
 @property (nonatomic, strong) NSMutableArray *routeLayers;
 
@@ -221,23 +220,12 @@
                 animated:(BOOL)animated
             withRecenter:(BOOL)recenter
 {
-    __block id<MGSAnnotation> mapAnnotation = nil;
+    MITAnnotationAdaptor *adaptor = [self adaptorForAnnotation:annotation
+                                                        create:NO];
     
-    [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
-        if ([obj isKindOfClass:[MITAnnotationAdaptor class]])
-        {
-            MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)obj;
-            if ([adaptor.mkAnnotation isEqual:annotation])
-            {
-                mapAnnotation = obj;
-                (*stop) = YES;
-            }
-        }
-    }];
-    
-    if (mapAnnotation)
+    if (adaptor)
     {
-        [self.mapView showCalloutForAnnotation:mapAnnotation
+        [self.mapView showCalloutForAnnotation:adaptor
                                       recenter:recenter
                                       animated:animated];
         
@@ -282,7 +270,7 @@
     NSMutableArray *addedAnnotations = [NSMutableArray array];
     for (id<MKAnnotation> mkAnnotation in newAnnotations)
     {
-        MITAnnotationAdaptor *adaptor = [[MITAnnotationAdaptor alloc] initWithMKAnnotation:mkAnnotation];
+        MITAnnotationAdaptor *adaptor = [self adaptorForAnnotation:mkAnnotation];
         adaptor.mapView = self;
         
         [addedAnnotations addObject:adaptor];
@@ -291,8 +279,6 @@
     [self.annotationLayer addAnnotationsFromArray:addedAnnotations];
     
     [self refreshLayers];
-    
-    self.annotationCache = nil;
 }
 
 - (void)removeAnnotation:(id<MKAnnotation>)annotation
@@ -308,19 +294,16 @@
     }
     
     NSMutableArray *mgsAnnotations = [NSMutableArray array];
-    [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
-        if ([obj isKindOfClass:[MITAnnotationAdaptor class]])
-        {
-            MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)obj;
-            if ([annotations containsObject:adaptor.mkAnnotation])
-            {
-                [mgsAnnotations addObject:adaptor];
-            }
+    [self.annotations enumerateObjectsUsingBlock:^(id<MKAnnotation> obj, NSUInteger idx, BOOL *stop) {
+        MITAnnotationAdaptor *adaptor = [self adaptorForAnnotation:obj
+                                                            create:NO];
+        
+        if (adaptor) {
+            [mgsAnnotations addObject:adaptor];
         }
     }];
     
     [self.annotationLayer deleteAnnotationsFromArray:mgsAnnotations];
-    self.annotationCache = nil;
 }
 
 - (void)removeAllAnnotations:(BOOL)includeUserLocation
@@ -333,26 +316,20 @@
     }
     
     [self refreshLayers];
-    self.annotationCache = nil;
 }
 
 - (NSArray*)annotations
 {
-    if (self.annotationCache == nil)
-    {
-        NSMutableArray *mkAnnotations = [NSMutableArray array];
-        [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
-            if ([obj isKindOfClass:[MITAnnotationAdaptor class]])
-            {
-                MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)obj;
-                [mkAnnotations addObject:adaptor.mkAnnotation];
-            }
-        }];
-        
-        self.annotationCache = mkAnnotations;
-    }
-    
-    return self.annotationCache;
+    NSMutableArray *mkAnnotations = [NSMutableArray array];
+    [self.annotationLayer.annotations enumerateObjectsUsingBlock:^(id<MGSAnnotation> obj, NSUInteger idx, BOOL *stop) {
+        if ([obj isKindOfClass:[MITAnnotationAdaptor class]])
+        {
+            MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)obj;
+            [mkAnnotations addObject:adaptor.mkAnnotation];
+        }
+    }];
+
+    return mkAnnotations;
 }
 
 #pragma mark - Route Handling
@@ -542,20 +519,7 @@ didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
     {
         MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
-        MITMapAnnotationView *annotationView = nil;
-        
-        if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)]) {
-            annotationView = [self.delegate mapView:self
-                                  viewForAnnotation:adaptor.mkAnnotation];
-        }
-        
-        
-        if (annotationView == nil) {
-            annotationView = [[MITPinAnnotationView alloc] initWithAnnotation:adaptor.mkAnnotation
-                                                              reuseIdentifier:nil];
-        }
-        
-        adaptor.calloutAnnotationView = annotationView;
+        MITMapAnnotationView *annotationView = adaptor.calloutAnnotationView;
         MITMapAnnotationCalloutView *view = [[MITMapAnnotationCalloutView alloc] initWithAnnotationView:annotationView
                                                                                                 mapView:self];
         __weak MITMapView *weakSelf = self;
@@ -597,4 +561,63 @@ didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         [self.delegate mapViewRegionDidChange:self];
     }
 }
+
+- (MITAnnotationAdaptor*)adaptorForAnnotation:(id<MKAnnotation>)annotation
+{
+    return [self adaptorForAnnotation:annotation
+                               create:YES];
+}
+
+- (MITAnnotationAdaptor*)adaptorForAnnotation:(id<MKAnnotation>)annotation
+                                       create:(BOOL)shouldCreate
+{
+    NSMutableSet *annotations = [NSMutableSet setWithSet:[self.annotationLayer.annotations set]];
+    
+    for (MGSRouteLayer *routeLayer in self.routeLayers) {
+        [annotations unionSet:[routeLayer.stops set]];
+    }
+    
+    __block MITAnnotationAdaptor *adaptor = nil;
+    [annotations enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+        if ([obj isKindOfClass:[MITAnnotationAdaptor class]]) {
+            MITAnnotationAdaptor *objAdaptor = (MITAnnotationAdaptor*)obj;
+            
+            if ([objAdaptor.mkAnnotation isEqual:annotation]) {
+                adaptor = objAdaptor;
+                (*stop) = YES;
+            }
+        }
+    }];
+    
+    if (adaptor == nil && shouldCreate) {
+        adaptor = [[MITAnnotationAdaptor alloc] initWithMKAnnotation:annotation];
+    }
+    
+    return adaptor;
+}
+
+- (MITMapAnnotationView*)viewForAnnotation:(id<MKAnnotation>)annotation
+{
+    MITAnnotationAdaptor *adaptor = [self adaptorForAnnotation:annotation
+                                                        create:NO];
+    
+    if (adaptor == nil) {
+        return nil;
+    }
+    
+    MITMapAnnotationView *annotationView = nil;
+    if ([self.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)]) {
+        annotationView = [self.delegate mapView:self
+                            viewForAnnotation:annotation];
+    }
+    
+    if (annotationView == nil) {
+        annotationView = [[MITPinAnnotationView alloc] initWithAnnotation:annotation
+                                                          reuseIdentifier:@"SimplePin"];
+    }
+    
+    adaptor.calloutAnnotationView = annotationView;
+    return annotationView;
+}
+
 @end
