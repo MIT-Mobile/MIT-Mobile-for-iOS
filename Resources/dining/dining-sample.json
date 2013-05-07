@@ -2711,7 +2711,7 @@
         "id": "mccormick",
         "url": "http://m.mit.edu/apis/dining/venues/house/mccormick",
         "name": "McCormick",
-        "short_name": "mccormick",
+        "short_name": "McCormick",
         "icon_url": "http://dining.mit.edu/sites/default/files/mccormick.png",
         "location": {
           "mit_room_number": "W4-122",
@@ -4854,5 +4854,19 @@
         ]
       }
     ]
-  }
+  },
+  "links": [
+    {
+      "name": "Comments for MIT Dining",
+      "url": "http://dining.mit.edu/feedback/form"
+    },
+    {
+      "name": "Food to Go",
+      "url": "http://www.cafebonappetit.com/menu/your-cafe/mit/food-to-go/"
+    },
+    {
+      "name": "Full MIT Dining Website",
+      "url": "http://dining.mit.edu"
+    }
+  ]
 }
