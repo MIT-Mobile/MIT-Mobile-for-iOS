@@ -42,21 +42,11 @@
 }
 
 - (BOOL)isOpenNow {
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateStyle:NSDateFormatterShortStyle];
-    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
-    components.hour = 13;
-    components.year = 2013;
-    components.month = 5;
-    components.day = 3;
-    
-    NSDate *date = [calendar dateFromComponents:components];
+    NSDate *date = [HouseVenue fakeDate];
     DiningDay *today = [self dayForDate:date];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startTime <= %@ AND endTime >= %@", date, date];
-    
-    return ([[[today.meals set] filteredSetUsingPredicate:predicate] count] > 0);
+    DiningMeal *meal = [today mealForDate:date];
+
+    return (meal != nil);
 }
 
 - (NSString *)hoursNow {
@@ -71,10 +61,7 @@
 }
 
 - (NSString *)hoursToday {
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateStyle:NSDateFormatterShortStyle];
-    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
-    DiningDay *today = [self dayForDate:[formatter dateFromString:@"5/3/2013"]];
+    DiningDay *today = [self dayForDate:[HouseVenue fakeDate]];
     return today.allHoursSummary;
     // TODO: or closed with a message
     // return @"Closed for renovations"
@@ -88,6 +75,26 @@
     NSSet *matchingDays = [self.menuDays filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"date == %@", dayDate]];
     
     return [matchingDays anyObject];
+}
+
+- (DiningMeal *)bestMealForDate:(NSDate *)date {
+
+    return [[self dayForDate:date] bestMealForDate:date];
+
+}
+
++ (NSDate *)fakeDate {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterShortStyle];
+    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
+    components.hour = 13;
+    components.year = 2013;
+    components.month = 5;
+    components.day = 3;
+    
+    return [calendar dateFromComponents:components];
 }
 
 - (NSString *)description {

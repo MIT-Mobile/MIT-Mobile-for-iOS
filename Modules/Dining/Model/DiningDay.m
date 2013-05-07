@@ -84,4 +84,23 @@
     return [summaries componentsJoinedByString:@", "];
 }
 
+- (DiningMeal *)mealForDate:(NSDate *)date {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startTime <= %@ AND endTime >= %@", date, date];
+    
+    return [[[self.meals set] filteredSetUsingPredicate:predicate] anyObject];
+}
+
+- (DiningMeal *)bestMealForDate:(NSDate *)date {
+    
+    // This needs better logic. Right now it's returning the meal happening right now or just the last meal of the day, but it should really be returning the meal right now or the next meal closest to right now unless there are no more meals today, then show the last meal of today.
+    
+    DiningMeal *meal = [self mealForDate:date];
+    
+    if (!meal) {
+        meal = [self.meals lastObject];
+    }
+    return meal;
+}
+
+
 @end

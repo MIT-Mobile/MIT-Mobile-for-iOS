@@ -1,8 +1,11 @@
 #import <UIKit/UIKit.h>
 #import "DiningMenuFilterViewController.h"
+#import "CoreDataManager.h"
 
-@interface DiningHallMenuViewController : UITableViewController <DiningMenuFilterDelegate>
+@class HouseVenue;
 
-@property (nonatomic, strong) NSDictionary * hallData;
+@interface DiningHallMenuViewController : UITableViewController <DiningMenuFilterDelegate, NSFetchedResultsControllerDelegate>
+
+@property (nonatomic, strong) HouseVenue * venue;
 
 @end

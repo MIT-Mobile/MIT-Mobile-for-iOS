@@ -458,7 +458,7 @@
         HouseVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
         DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
-        detailVC.hallData = venue;
+        detailVC.venue = venue;
         [self.navigationController pushViewController:detailVC animated:YES];
     } else if (indexPath.section == _resourcesSectionIndex) {
         if (indexPath.row == 0) {

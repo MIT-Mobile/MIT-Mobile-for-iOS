@@ -6,6 +6,11 @@
 #import "DiningHallMenuItemTableCell.h"
 #import "DiningHallMenuSectionHeaderView.h"
 #import "DiningModule.h"
+#import "HouseVenue.h"
+#import "DiningDay.h"
+#import "DiningMeal.h"
+#import "DiningMealItem.h"
+#import "DiningDietaryFlag.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 
@@ -14,8 +19,11 @@
 @property (nonatomic, strong) NSArray * filtersApplied;
 @property (nonatomic, strong) NSArray * mealItems;
 
-@property (nonatomic, strong) NSDictionary * currentMeal;
+@property (nonatomic, strong) DiningMeal * currentMeal;
 @property (nonatomic, strong) NSString * currentDateString;
+
+@property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
+@property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
 @end
 
@@ -48,19 +56,26 @@
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     self.currentDateString = [dateFormatter stringFromDate:[NSDate date]];
     
+    NSDate *fakeDate = [HouseVenue fakeDate];
+    
     // set current meal
-    self.currentMeal = [self mealOfInterestForCurrentDay];
+    self.currentMeal = [self.venue bestMealForDate:fakeDate];
+    
+    self.fetchedResultsController = [self fetchedResultsControllerForMeal:self.currentMeal filters:nil];
+    self.fetchedResultsController.delegate = self;
+    
+    [self.fetchedResultsController performFetch:nil];
     
     DiningHallDetailHeaderView *headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
-    headerView.titleLabel.text = self.hallData[@"name"];
+    headerView.titleLabel.text = self.venue.name;
     
-    NSDictionary *timeData = [self hallStatusStringForMeal:self.currentMeal];
-    if ([timeData[@"isOpen"] boolValue]) {
+//    NSDictionary *timeData = [self hallStatusStringForMeal:self.currentMeal];
+//    if ([timeData[@"isOpen"] boolValue]) {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
-    } else {
-        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
-    }
-    headerView.timeLabel.text = timeData[@"text"];
+//    } else {
+//        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
+//    }
+    headerView.timeLabel.text = @"Open until 5pm"; // timeData[@"text"];
     self.tableView.tableHeaderView = headerView;
     
     DiningHallMenuFooterView *footerView = [[DiningHallMenuFooterView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 54)];
@@ -70,6 +85,40 @@
     self.navigationItem.rightBarButtonItem = filterItem;
     
     self.tableView.allowsSelection = NO;
+}
+
+- (NSManagedObjectContext *)managedObjectContext {
+    if (_managedObjectContext != nil) {
+        return _managedObjectContext;
+    }
+    
+    _managedObjectContext = [[NSManagedObjectContext alloc] init];
+    _managedObjectContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+    _managedObjectContext.undoManager = nil;
+    _managedObjectContext.stalenessInterval = 0;
+    
+    return _managedObjectContext;
+}
+
+- (NSFetchedResultsController *)fetchedResultsControllerForMeal:(DiningMeal *)meal filters:(NSSet *)dietaryFilters {
+    
+    self.fetchedResultsController = nil;
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"DiningMealItem"
+                                              inManagedObjectContext:self.managedObjectContext];
+    fetchRequest.entity = entity;
+    // TODO: include filters in predicate if they are set
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"meal = %@", meal];
+    fetchRequest.sortDescriptors = @[];
+        
+    NSFetchedResultsController *fetchedResultsController =
+    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                        managedObjectContext:self.managedObjectContext
+                                          sectionNameKeyPath:nil
+                                                   cacheName:nil];
+    
+    return fetchedResultsController;
 }
 
 - (NSDictionary *) mealOfInterestForCurrentDay
@@ -107,11 +156,11 @@
     // method returns array or nil if day does not have any meals or matching day cannot be found
     
     // date string must be in the yyyy-MM-dd format to match data
-    for (NSDictionary *day in self.hallData[@"meals_by_day"]) {
-        if ([day[@"date"] isEqualToString:dateString]) {
-            // we have found our day, return meals
-            return day[@"meals"];
-        }
+    for (DiningDay *day in self.venue.menuDays) {
+//        if ([day.date isEqualToString:dateString]) {
+//            // we have found our day, return meals
+//            return day[@"meals"];
+//        }
     }
     return nil;
 }
@@ -224,15 +273,18 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSArray *mealItems = self.currentMeal[@"items"];
-    return [mealItems count];
+    NSArray *sections = [self.fetchedResultsController sections];
+    if ([sections count] > 0) {
+        id<NSFetchedResultsSectionInfo> sectionInfo = [sections objectAtIndex:0];
+        return [sectionInfo numberOfObjects];
+    }
+    return 0;
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSArray *mealItems = self.currentMeal[@"items"];
-    NSDictionary *itemDict  = mealItems[indexPath.row];
-    return [DiningHallMenuItemTableCell cellHeightForCellWithStation:itemDict[@"station"] title:itemDict[@"name"] description:itemDict[@"description"]];
+    DiningMealItem *item = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    return [DiningHallMenuItemTableCell cellHeightForCellWithStation:item.station title:item.name description:item.subtitle];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -243,12 +295,11 @@
         cell = [[DiningHallMenuItemTableCell alloc] initWithReuseIdentifier:CellIdentifier];
     }
     
-    NSArray *mealItems = self.currentMeal[@"items"];
-    NSDictionary *itemDict  = mealItems[indexPath.row];
-    cell.station.text       = itemDict[@"station"];
-    cell.title.text         = itemDict[@"name"];
-    cell.description.text   = itemDict[@"description"];
-    cell.dietaryTypes       = itemDict[@"dietary_flags"];
+    DiningMealItem *item = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    cell.station.text       = item.station;
+    cell.title.text         = item.name;
+    cell.description.text   = item.subtitle;
+    cell.dietaryTypes       = nil; // item.dietaryFlags;
     
     return cell;
 }
@@ -258,10 +309,10 @@
     if (section == 0) {
         DiningHallMenuSectionHeaderView *header = [[DiningHallMenuSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 56)];
         
-        NSString * mealString = [self.currentMeal[@"name"] capitalizedString];
-        header.mainLabel.text = [DiningHallMenuSectionHeaderView stringForMeal:self.currentMeal onDate:self.currentDateString];
+        NSString * mealString = [self.currentMeal.name capitalizedString];
+        header.mainLabel.text = // [DiningHallMenuSectionHeaderView stringForMeal:self.currentMeal onDate:self.currentDateString];
         header.mealLabel.text = mealString;
-        header.timeLabel.text = [self timeSpanStringForMeal:self.currentMeal];
+        header.timeLabel.text = [self.currentMeal hoursSummary];
         
         [header.leftButton addTarget:self action:@selector(pageLeft) forControlEvents:UIControlEventTouchUpInside];
         [header.rightButton addTarget:self action:@selector(pageRight) forControlEvents:UIControlEventTouchUpInside];

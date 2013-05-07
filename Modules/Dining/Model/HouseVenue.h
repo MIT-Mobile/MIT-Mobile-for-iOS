@@ -2,6 +2,8 @@
 #import <CoreData/CoreData.h>
 
 @class VenueLocation;
+@class DiningDay;
+@class DiningMeal;
 
 @interface HouseVenue : NSManagedObject
 
@@ -17,6 +19,9 @@
 + (HouseVenue *)newVenueWithDictionary:(NSDictionary *)dict;
 - (BOOL)isOpenNow;
 - (NSString *)hoursToday;
+- (DiningDay *)dayForDate:(NSDate *)date;
++ (NSDate *)fakeDate;
+- (DiningMeal *)bestMealForDate:(NSDate *)date;
 
 @end
 
