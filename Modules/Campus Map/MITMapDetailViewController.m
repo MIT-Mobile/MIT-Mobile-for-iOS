@@ -489,7 +489,7 @@
 		annotationView.showsCustomCallout = NO;
 		[annotationView addSubview:imageView];
 		annotationView.backgroundColor = [UIColor clearColor];
-		annotationView.centeredVertically = YES;
+        annotationView.centerOffset = CGPointMake(0, -(pin.size.height / 2.0));
 	}
 	
 	return annotationView;

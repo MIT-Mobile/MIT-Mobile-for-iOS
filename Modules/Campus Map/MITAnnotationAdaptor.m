@@ -34,42 +34,66 @@
 - (UIImage*)markerImage
 {
     UIImage *image = nil;
-    MITMapAnnotationView *legacyAnnotationView = nil;
+    MITMapAnnotationView *legacyAnnotationView = [self.mapView viewForAnnotation:self.mkAnnotation];
     
-    if (self.calloutAnnotationView) {
-        legacyAnnotationView = self.calloutAnnotationView;
-    } else if ([self.mapView.delegate respondsToSelector:@selector(mapView:viewForAnnotation:)]) {
-        legacyAnnotationView = [self.mapView.delegate mapView:self.mapView
-                                            viewForAnnotation:self.mkAnnotation];
-    }
-    
-    if (legacyAnnotationView && ([legacyAnnotationView isKindOfClass:[MITPinAnnotationView class]] == NO))
+    if (legacyAnnotationView)
     {
+        [legacyAnnotationView prepareForReuse];
+        
         MGSMarkerOptions options = self.markerOptions;
         
         BOOL frameIsValid = !((CGAffineTransformEqualToTransform(legacyAnnotationView.transform, CGAffineTransformIdentity) == NO) ||
                                CGRectIsNull(legacyAnnotationView.frame) ||
                                CGRectIsInfinite(legacyAnnotationView.frame) ||
                                CGRectIsEmpty(legacyAnnotationView.frame));
-        CGRect frame;
-        CGRect bounds = legacyAnnotationView.bounds;
+        
+        CGRect originalFrame = legacyAnnotationView.bounds;
+        CGRect drawingFrame = originalFrame;
         if (frameIsValid) {
-            frame = legacyAnnotationView.frame;
+            drawingFrame = originalFrame = legacyAnnotationView.frame;
             
-            CGRect stdFrame = CGRectStandardize(frame);
-            stdFrame = CGRectOffset(stdFrame, (CGRectGetWidth(stdFrame) / 2.0), (CGRectGetHeight(stdFrame) / 2.0));
+            CGRect stdFrame = CGRectStandardize(legacyAnnotationView.frame);
             
-            options.offset = CGPointMake(stdFrame.origin.x,-stdFrame.origin.y);
-            self.markerOptions = options;
+            // Assume that any non-zero frame is centered by MKAnnotationView
+            // and undo the centering
+            if (!CGPointEqualToPoint(stdFrame.origin, CGPointZero)) {
+                stdFrame = CGRectOffset(stdFrame, (CGRectGetWidth(originalFrame) / 2.0), (CGRectGetHeight(originalFrame) / 2.0));
+            }
             
-            legacyAnnotationView.frame = bounds;
+            drawingFrame = stdFrame;
+        }
+    
+    
+        if (!CGPointEqualToPoint(legacyAnnotationView.centerOffset, CGPointZero)) {
+            drawingFrame = CGRectOffset(drawingFrame, legacyAnnotationView.centerOffset.x, legacyAnnotationView.centerOffset.y);
+        }
+    
+    
+        /* X:
+         *  <0 -> Left on iOS, Left on ArcGIS
+         *  >0 -> Right on iOS, right on ArcGIS
+         * Y:
+         *  <0 -> Up on iOS, Down on ArcGIS
+         *  >0 -> Down on iOS, up on ArcGIS
+         */
+        options.offset = CGPointMake(CGRectGetMinX(drawingFrame),-CGRectGetMinY(drawingFrame));
+        self.markerOptions = options;
+    
+        UIGraphicsBeginImageContextWithOptions(legacyAnnotationView.bounds.size, NO, 0.0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        
+        if (context) {
+            legacyAnnotationView.layer.backgroundColor = [[UIColor clearColor] CGColor];
+            [legacyAnnotationView.layer renderInContext:context];
+            image = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+        } else {
+            MITLogFatal(@"Failed to create image context for annotation '%@'",self.title);
         }
         
-        UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0.0);
-        legacyAnnotationView.layer.backgroundColor = [[UIColor clearColor] CGColor];
-        [legacyAnnotationView.layer renderInContext:UIGraphicsGetCurrentContext()];
-        image = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
+        if (frameIsValid) {
+            legacyAnnotationView.frame = originalFrame;
+        }
     }
     
     return image;
