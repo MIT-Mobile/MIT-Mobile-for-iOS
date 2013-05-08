@@ -30,15 +30,6 @@
 
 @implementation DiningHallMenuViewController
 
-- (NSArray *) debugData
-{
-    NSDictionary *item1 = @{@"type": @"kosher", @"title" : @"kosher dinner", @"subtitle" : @"lemon chicken with pasta, green beans, yellow squash, tossed salad, fruit salad, stir fried tofu with spicy orange sauce", @"filters" : @[@1, @2, @3, @4]};
-    NSDictionary *item2 = @{@"type": @"whirl wind", @"title" : @"thai curry", @"subtitle" : @"a spicy green thai curry sauce with snow peas, shiitake mushrooms, onions, red peppers, broccoli, and scallions", @"filters" : @[@3, @4]};
-    NSDictionary *item3 = @{@"type": @"deli +", @"title" : @"baked potato bar", @"subtitle" : @"butter, sour cream, cheese sauce, veggie chili, chili, jalapenos, broccoli, and more", @"filters" : @[@1, @3, @4]};
-    
-    return @[item1, item2, item3];
-}
-
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -70,13 +61,13 @@
     DiningHallDetailHeaderView *headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
     headerView.titleLabel.text = self.venue.name;
     
-//    NSDictionary *timeData = [self hallStatusStringForMeal:self.currentMeal];
-//    if ([timeData[@"isOpen"] boolValue]) {
+    NSDictionary *timeData = [self hallStatusStringForMeal:self.currentMeal];
+    if ([timeData[@"isOpen"] boolValue]) {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
-//    } else {
-//        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
-//    }
-    headerView.timeLabel.text = @"Open until 5pm"; // timeData[@"text"];
+    } else {
+        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
+    }
+    headerView.timeLabel.text = timeData[@"text"];
     self.tableView.tableHeaderView = headerView;
     
     DiningHallMenuFooterView *footerView = [[DiningHallMenuFooterView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 54)];
@@ -179,8 +170,17 @@
     return [NSString stringWithFormat:@"%@ - %@", [dateFormatter stringFromDate:startDate], [dateFormatter stringFromDate:endDate]];
 }
 
-- (NSDictionary *) hallStatusStringForMeal:(NSDictionary *) meal
+- (NSDictionary *) hallStatusStringForMeal:(DiningMeal *) meal
 {
+//      Returns hall status relative to the curent time of day.
+//      Return value is a dictionary with the structure
+//          isOpen : YES/NO
+//          text : @"User Facing String"
+// Example return strings
+//          - Closed for the day
+//          - Opens at 5:30pm
+//          - Open until 4:00pm
+
     NSDate *rightNow = [NSDate date];
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     
@@ -190,28 +190,22 @@
                  @"text" : @"Closed for the day"};
     }
     
-    if (meal[@"start_time"] && meal[@"end_time"]) {
+    if (meal.startTime && meal.endTime) {
         // need to calculate if the current time is before opening, before closing, or after closing
-        [dateFormat setDateFormat:@"HH:mm"];
-        NSString * openString   = meal[@"start_time"];
-        NSString * closeString    = meal[@"end_time"];
         
-        NSDate *openDate = [NSDate dateForTodayFromTimeString:openString];
-        NSDate *closeDate = [NSDate dateForTodayFromTimeString:closeString];
-        
-        BOOL willOpen       = ([openDate compare:rightNow] == NSOrderedDescending); // openDate > rightNow , before the open hours for the day
-        BOOL currentlyOpen  = ([openDate compare:rightNow] == NSOrderedAscending && [rightNow compare:closeDate] == NSOrderedAscending);  // openDate < rightNow < closeDate , within the open hours
-        BOOL hasClosed      = ([rightNow compare:closeDate] == NSOrderedDescending); // rightNow > closeDate , after the closing time for the day
+        BOOL willOpen       = ([meal.startTime compare:rightNow] == NSOrderedDescending); // openDate > rightNow , before the open hours for the day
+        BOOL currentlyOpen  = ([meal.startTime compare:rightNow] == NSOrderedAscending && [rightNow compare:meal.endTime] == NSOrderedAscending);  // openDate < rightNow < closeDate , within the open hours
+        BOOL hasClosed      = ([rightNow compare:meal.endTime] == NSOrderedDescending); // rightNow > closeDate , after the closing time for the day
         
         [dateFormat setDateFormat:@"h:mm a"];  // adjust format for pretty printing
         
         if (willOpen) {
-            NSString *closedStringFormatted = [dateFormat stringFromDate:openDate];
+            NSString *closedStringFormatted = [dateFormat stringFromDate:meal.startTime];
             return @{@"isOpen": @NO,
                      @"text" : [NSString stringWithFormat:@"Opens at %@", closedStringFormatted]};
             
         } else if (currentlyOpen) {
-            NSString *openStringFormatted = [dateFormat stringFromDate:closeDate];
+            NSString *openStringFormatted = [dateFormat stringFromDate:meal.endTime];
             return @{@"isOpen": @YES,
                      @"text" : [NSString stringWithFormat:@"Open until %@", openStringFormatted]};
         } else if (hasClosed) {

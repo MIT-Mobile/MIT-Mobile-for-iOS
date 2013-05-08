@@ -14,7 +14,7 @@
 @end
 
 #define HEADER_VIEW_HEIGHT 24
-#define COLUMN_WIDTH 113.6
+#define COLUMN_WIDTH 180
 static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 
 @implementation DiningHallMenuCompareView
