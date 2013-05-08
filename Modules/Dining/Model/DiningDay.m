@@ -92,13 +92,24 @@
 
 - (DiningMeal *)bestMealForDate:(NSDate *)date {
     
-    // This needs better logic. Right now it's returning the meal happening right now or just the last meal of the day, but it should really be returning the meal right now or the next meal closest to right now unless there are no more meals today, then show the last meal of today.
-    
+    // get current meal if one is occurring now
     DiningMeal *meal = [self mealForDate:date];
     
     if (!meal) {
+        // get next meal to begin
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startTime >= %@", date];
+        // array keeps order intact, could also use sortdescriptor
+        NSArray *meals = [[self.meals array] filteredArrayUsingPredicate:predicate];
+        if ([meals count]) {
+            meal = meals[0];
+        }
+    }
+    
+    if (!meal) {
+        // get last meal of the day
         meal = [self.meals lastObject];
     }
+    
     return meal;
 }
 
