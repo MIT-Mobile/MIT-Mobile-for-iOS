@@ -2,6 +2,7 @@
 #import "MIT_MobileAppDelegate.h"
 #import "CoreDataManager.h"
 #import "NewsImageRep.h"
+#import "MobileRequestOperation.h"
 
 @implementation StoryImageView
 
@@ -10,7 +11,6 @@
 - (id) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self != nil) {
-        connection = nil;
         imageRep = nil;
         imageData = nil;
         loadingView = nil;
@@ -27,11 +27,6 @@
         imageRep = [newImageRep retain];
         imageView.image = nil;
         imageView.hidden = YES;
-        if ([connection isConnected]) {
-            [connection cancel];
-            MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-            [appDelegate hideNetworkActivityIndicator];
-        }
         if (self.loadingView) {
             [self.loadingView stopAnimating];
             self.loadingView.hidden = YES;
@@ -95,17 +90,23 @@
         return;
     }
     
-    if ([connection isConnected]) {
-        return;
-    }
+    NSString *imageURLString = imageRep.url;
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:imageURLString] parameters:nil] autorelease];
     
-    if (!connection) {
-        connection = [[ConnectionWrapper alloc] initWithDelegate:self];
-    }
-    [connection requestDataFromURL:[NSURL URLWithString:imageRep.url] allowCachedResponse:YES];
-    
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate showNetworkActivityIndicator];
+    request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
+        if ([self.imageRep.url isEqualToString:imageURLString]) {
+            if (error) {
+                self.imageData = nil;
+            } else {
+                self.imageData = data;
+                BOOL validImage = [self displayImage];
+                if (validImage) {
+                    imageRep.data = data;
+                    [CoreDataManager saveDataWithTemporaryMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+                }
+            }
+        }
+    };
     
     self.imageData = nil;
     
@@ -117,26 +118,11 @@
     imageView.hidden = YES;
     loadingView.hidden = NO;
     [loadingView startAnimating];
-}
-
-// ConnectionWrapper delegate
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    // TODO: If memory usage becomes a concern, convert images to PNG using UIImagePNGRepresentation(). PNGs use considerably less RAM.
-    self.imageData = data;
-    BOOL validImage = [self displayImage];
-    if (validImage) {
-        imageRep.data = data;
-        [CoreDataManager saveData];
-    }
     
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate hideNetworkActivityIndicator];
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 - (void)dealloc {
-	[connection cancel];
-    [connection release];
-    connection = nil;
     [imageData release];
     imageData = nil;
     [loadingView release];

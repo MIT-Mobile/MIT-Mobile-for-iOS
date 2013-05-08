@@ -31,7 +31,6 @@ NSString * const DirectoryTag  = @"people";
 NSString * const StellarTag    = @"stellar";
 NSString * const ShuttleTag    = @"shuttletrack";
 NSString * const ToursTag      = @"tours";
-NSString * const AnniversaryTag = @"mit150";
 NSString * const MobileWebTag  = @"mobileweb";
 NSString * const SettingsTag   = @"settings";
 NSString * const AboutTag      = @"about";

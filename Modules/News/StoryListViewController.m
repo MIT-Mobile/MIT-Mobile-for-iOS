@@ -206,6 +206,17 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     activityView = nil;
 }
 
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -319,7 +330,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
             }
             
             [savedArticles enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-                NSLog(@"Category %@ has %d articles after pruning", key, [obj count]);
+                DDLogVerbose(@"Category %@ has %d articles after pruning", key, [obj count]);
             }];
         }
         
@@ -328,7 +339,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         
         if (error)
         {
-            ELog(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
+            DDLogError(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
         }
         
         [context unlock];
@@ -742,7 +753,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    DLog(@"make sure search bar is first responder right now");
+    DDLogVerbose(@"make sure search bar is first responder right now");
 }
 
 - (void)loadSearchResultsFromServer:(BOOL)loadMore forQuery:(NSString *)query
@@ -792,17 +803,16 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         // TODO: communicate download failure to user
         if ([error code] == NSURLErrorNotConnectedToInternet)
         {
-            ELog(@"News download failed because there's no net connection");
+            DDLogError(@"News download failed because there's no net connection");
         }
         else
         {
-            ELog(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
+            DDLogError(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
         }
         [self setStatusText:@"Update failed"];
 
-        [MITMobileWebAPI showErrorWithHeader:@"News"];
-        if ([self.stories count] > 0)
-        {
+        [UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
+        if ([self.stories count] > 0) {
             [storyTable deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0] animated:YES];
         }
     }
@@ -814,9 +824,8 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     {
         // TODO: communicate parse failure to user
         [self setStatusText:@"Update failed"];
-        [MITMobileWebAPI showErrorWithHeader:@"News"];
-        if ([self.stories count] > 0)
-        {
+		[UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
+        if ([self.stories count] > 0) {
             [storyTable deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0] animated:YES];
         }
     }
@@ -897,6 +906,14 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     updatedLabel.hidden = YES;
     progressBar.progress = value;
 }
+
+#pragma mark -
+#pragma mark UIViewController
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
 
 #pragma mark -
 #pragma mark UITableViewDataSource and UITableViewDelegate
@@ -1113,7 +1130,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
             }
             else
             {
-                ELog(@"%@ attempted to show non-existent row (%d) with actual count of %d", NSStringFromSelector(_cmd), indexPath.row, self.stories.count);
+                DDLogError(@"%@ attempted to show non-existent row (%d) with actual count of %d", NSStringFromSelector(_cmd), indexPath.row, self.stories.count);
             }
         }
             break;

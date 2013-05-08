@@ -56,12 +56,21 @@
 	
 	if (_topLevel) {
 		_headerText = @"Browse map by:";
-		MITMobileWebAPI *apiRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-		apiRequest.userData = @"CategoryTitles";
-		[apiRequest requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"categorytitles", @"command", nil]
-					pathExtension:@"map/"];
-		
-		if (!_loadingView) 
+        
+        MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"map"
+                                                                                command:@"categorytitles"
+                                                                             parameters:nil];
+        operation.userData = @"CategoryTitles";
+        operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mime, NSError *error) {
+            [self operation:operation
+       didFinishWithContent:content
+                   mimeType:mime
+                      error:error];
+        };
+        
+        [[NSOperationQueue mainQueue] addOperation:operation];
+
+		if (!_loadingView)
 		{
 			self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 			_loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame]
@@ -84,34 +93,16 @@
 	[self setToolbarItems:self.mapSelectionController.toolbarButtonItems];
 }
 
-
-/*
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-*/
-/*
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-}
-*/
-/*
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-}
-*/
-/*
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-}
-*/
-/*
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
-*/
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 
 #pragma mark -
@@ -321,7 +312,7 @@
 		[_loadingView removeFromSuperview];
 		[_loadingView release];
 		_loadingView = nil;
-	}	
+	}
 }
 
 - (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
@@ -334,10 +325,51 @@
 
 -(void) executeServerCategoryRequestWithQuery:(NSString *)query 
 {
-	MITMobileWebAPI *apiRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-	apiRequest.userData = @"Category";
-	[apiRequest requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"category", @"command", query, @"id", nil]
-				pathExtension:@"map/"];
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"map"
+                                                                            command:@"category"
+                                                                         parameters:@{@"id":query}];
+    operation.userData = @"Category";
+    operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mime, NSError *error) {
+        [self operation:operation
+   didFinishWithContent:content
+               mimeType:mime
+                  error:error];
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:operation];
+}
+
+- (void)operation:(MobileRequestOperation*)operation didFinishWithContent:(id)content
+         mimeType:(NSString*)mime
+            error:(NSError*)error {
+    if ([content isKindOfClass:[NSArray class]]) {
+        NSArray *categoryResults = (NSArray*)content;
+        
+        self.itemsInTable = [NSMutableArray arrayWithArray:categoryResults];
+        
+        if (_loadingView) {
+            self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+            [_loadingView removeFromSuperview];
+            [_loadingView release];
+            _loadingView = nil;
+            
+            if(_leafLevel)
+                self.tableView.backgroundColor = [UIColor whiteColor];
+            
+        }
+        
+        [self.tableView reloadData];
+    } else {
+        if (_loadingView) {
+            [_loadingView removeFromSuperview];
+            [_loadingView release];
+            _loadingView = nil;
+        }
+        
+        [[UIAlertView alertViewForError:error
+                              withTitle:@"Map"
+                      alertViewDelegate:nil] show];
+    }
 }
 
 

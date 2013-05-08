@@ -4,7 +4,6 @@
 #import "LibrariesBookDetailViewController.h"
 #import "MobileRequestOperation.h"
 #import "MITLoadingActivityView.h"
-#import "MITMobileWebAPI.h"
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
 
@@ -83,28 +82,28 @@ typedef enum {
     
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"search" parameters:parameters] autorelease];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         UIView *loadingView = [self.searchResultsTableView viewWithTag:LOADING_ACTIVITY_TAG];
         [loadingView removeFromSuperview];
         
         self.lastSearchAttempt = [[NSDate date] timeIntervalSince1970];
         if (error) {
-            DLog(@"Request failed with error: %@",[error localizedDescription]);
+            DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]);
             [self showSearchError];
             self.searchingStatus = BooksSearchingStatusFailed;
             [self.searchResultsTableView reloadData];
         } else {
-            self.nextIndex = [self getNumberFromDict:jsonResult forKey:@"nextIndex" required:NO];
-            self.totalResultsCount = [self getNumberFromDict:jsonResult forKey:@"totalResultsCount" required:YES];
+            self.nextIndex = [self getNumberFromDict:content forKey:@"nextIndex" required:NO];
+            self.totalResultsCount = [self getNumberFromDict:content forKey:@"totalResultsCount" required:YES];
             if (self.parseError) {
-                WLog(@"World cat parse error parsing nextIndex or totalResultsCount");
+                DDLogWarn(@"World cat parse error parsing nextIndex or totalResultsCount");
                 self.searchingStatus = BooksSearchingStatusFailed;
                 [self.searchResultsTableView reloadData];
                 [self showSearchError];
                 return;
             }
             
-            id items = [jsonResult objectForKey:@"items"];
+            id items = [content objectForKey:@"items"];
             if ([items isKindOfClass:[NSArray class]]) {
                 NSMutableArray *temporarySearchResults = [NSMutableArray array];
                 for (NSDictionary *dict in items) {
@@ -124,7 +123,7 @@ typedef enum {
                 [self.searchResults addObjectsFromArray:temporarySearchResults];                
                 [self.searchResultsTableView reloadData];
             } else {
-                WLog(@"World cat result not an array");
+                DDLogWarn(@"World cat result not an array");
                 self.searchingStatus = BooksSearchingStatusFailed;
                 [self.searchResultsTableView reloadData];
                 [self showSearchError];
@@ -147,7 +146,7 @@ typedef enum {
 - (void)showSearchError {
     // only show errors for fresh searches not for a load more search
     if (!self.nextIndex) {
-        [MITMobileWebAPI showErrorWithHeader:@"WorldCat Search"];
+        [UIAlertView alertViewForError:nil withTitle:@"WorldCat Search" alertViewDelegate:nil];
     }
 }
 

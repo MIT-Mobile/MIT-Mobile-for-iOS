@@ -5,20 +5,22 @@
 #import "DummyRotatingViewController.h"
 #import "ScrollFadeImageView.h"
 #import "MITMobileServerConfiguration.h"
+#import "MobileRequestOperation.h"
 
 @interface MITSpringboard ()
+@property (nonatomic, retain) NSMutableDictionary *bannerInfo;
+
 - (void)internalInit;
 - (void)showModuleForIcon:(id)sender;
 - (void)showModuleForBanner;
 - (void)checkForFeaturedModule;
 - (void)displayBannerImage;
-
 @end
 
 #define BANNER_CONTROL_TAG 9966
 
 @implementation MITSpringboard
-@synthesize grid, primaryModules, delegate, connection;
+@synthesize grid, primaryModules, delegate;
 
 - (id)init
 {
@@ -53,7 +55,7 @@
 }
 
 - (void)showModuleForBanner {
-    NSString *bannerURL = [bannerInfo objectForKey:@"url"];
+    NSString *bannerURL = [self.bannerInfo objectForKey:@"url"];
 	if (bannerURL) {
 		NSURL *url = [NSURL URLWithString:bannerURL];
 		if ([[UIApplication sharedApplication] canOpenURL:url]) {
@@ -63,8 +65,83 @@
 }
 
 - (void)checkForFeaturedModule {
-	MITMobileWebAPI *api = [MITMobileWebAPI jsonLoadedDelegate:self];
-	[api requestObjectFromModule:@"features" command:@"banner" parameters:nil];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"features" command:@"banner" parameters:nil] autorelease];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        
+        if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
+            
+            NSNumber *showBanner = [jsonResult objectForKey:@"showBanner"];
+            if (!showBanner || ![showBanner boolValue]) {
+                
+                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                NSString *documentPath = [paths objectAtIndex:0];
+                
+                NSString *bannerURLFile = [documentPath stringByAppendingPathComponent:@"bannerInfo.plist"];
+                NSString *bannerFile = [documentPath stringByAppendingPathComponent:@"banner"];
+                
+                NSError *error = nil;
+                [[NSFileManager defaultManager] removeItemAtPath:bannerURLFile error:&error];
+                [[NSFileManager defaultManager] removeItemAtPath:bannerFile error:&error];
+                
+                UIControl *control = (UIControl *)[self.view viewWithTag:BANNER_CONTROL_TAG];
+                if (control)
+                    [control removeFromSuperview];
+                
+                return;
+            }
+            
+            NSDictionary *dimensions = [jsonResult objectForKey:@"dimensions"];
+            if (dimensions) {
+                NSNumber *width = [dimensions objectForKey:@"width"];
+                if (width) [self.bannerInfo setObject:width forKey:@"width"];
+                NSNumber *height = [dimensions objectForKey:@"height"];
+                if (height) [self.bannerInfo setObject:height forKey:@"height"];
+            }
+            
+            NSString *url = [jsonResult objectForKey:@"url"];
+            if (url) [self.bannerInfo setObject:url forKey:@"url"];
+            
+            NSString *photoURL = [jsonResult objectForKey:@"photo-url"];
+            if (photoURL) {
+                NSString *oldPhotoURL = [[[self.bannerInfo objectForKey:@"photo-url"] retain] autorelease];
+                [self.bannerInfo setObject:photoURL forKey:@"photo-url"];
+
+                if (![oldPhotoURL isEqualToString:photoURL] // new image
+                    || ![self.view viewWithTag:BANNER_CONTROL_TAG]) // or we haven't displayed the image
+                {
+                    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:photoURL] parameters:nil] autorelease];
+                    request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
+                        if (error) {
+                            
+                        } else {
+                            UIImage *image = [UIImage imageWithData:data];
+                            if (image) {
+                                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                                NSString *documentPath = [paths objectAtIndex:0];
+                                NSString *bannerFile = [documentPath stringByAppendingPathComponent:@"banner"];
+                                DDLogVerbose(@"writing to %@", bannerFile);
+                                NSError *error = nil;
+                                if (![data writeToFile:bannerFile options:NSDataWritingAtomic error:&error]) {
+                                    DDLogError(@"%@", [error description]);
+                                }
+                            }
+                            
+                            [self displayBannerImage];
+                        }
+                    };
+                    [[NSOperationQueue mainQueue] addOperation:request];
+                } else { // redraw the image anyway, in case they changed something other than the photoURL
+                    [self displayBannerImage];
+                }
+            }
+            
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *documentPath = [paths objectAtIndex:0];
+            NSString *bannerInfoFile = [documentPath stringByAppendingPathComponent:@"bannerInfo.plist"];
+            [self.bannerInfo writeToFile:bannerInfoFile atomically:YES];
+        }
+    };
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 - (void)displayBannerImage {
@@ -76,9 +153,9 @@
 		UIImage *image = [[UIImage imageWithContentsOfFile:bannerFile] stretchableImageWithLeftCapWidth:0.0 topCapHeight:0.0];
         if (!image) return;
         
-        CGFloat bannerWidth = [[bannerInfo objectForKey:@"width"] floatValue];
+        CGFloat bannerWidth = [[self.bannerInfo objectForKey:@"width"] floatValue];
         if (!bannerWidth)  bannerWidth = self.view.frame.size.width;
-        CGFloat bannerHeight = [[bannerInfo objectForKey:@"height"] floatValue];
+        CGFloat bannerHeight = [[self.bannerInfo objectForKey:@"height"] floatValue];
         if (!bannerHeight) bannerHeight = 72;
         
 		UIButton *bannerButton = (UIButton *)[self.view viewWithTag:BANNER_CONTROL_TAG];
@@ -133,103 +210,6 @@
     }
 }
 
-#pragma mark JSONLoadedDelegate
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
-	if (JSONObject && [JSONObject isKindOfClass:[NSDictionary class]]) {
-		
-		NSNumber *showBanner = [JSONObject objectForKey:@"showBanner"];
-		if (!showBanner || ![showBanner boolValue]) {
-			
-			NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-			NSString *documentPath = [paths objectAtIndex:0];
-			
-			NSString *bannerURLFile = [documentPath stringByAppendingPathComponent:@"bannerInfo.plist"];
-			NSString *bannerFile = [documentPath stringByAppendingPathComponent:@"banner"];
-			
-			NSError *error = nil;
-			[[NSFileManager defaultManager] removeItemAtPath:bannerURLFile error:&error];
-			[[NSFileManager defaultManager] removeItemAtPath:bannerFile error:&error];
-			
-			UIControl *control = (UIControl *)[self.view viewWithTag:BANNER_CONTROL_TAG];
-			if (control)
-				[control removeFromSuperview];
-			
-			return;
-		}
-		
-		NSDictionary *dimensions = [JSONObject objectForKey:@"dimensions"];
-		if (dimensions) {
-            NSNumber *width = [dimensions objectForKey:@"width"];
-            if (width) [bannerInfo setObject:width forKey:@"width"];
-            NSNumber *height = [dimensions objectForKey:@"height"];
-            if (height) [bannerInfo setObject:height forKey:@"height"];
-		}
-
-        NSString *url = [JSONObject objectForKey:@"url"];
-        if (url) [bannerInfo setObject:url forKey:@"url"];
-        
-		NSString *photoURL = [JSONObject objectForKey:@"photo-url"];
-        if (photoURL) {
-
-            NSString *oldPhotoURL = [[bannerInfo objectForKey:@"photo-url"] retain];
-            [bannerInfo setObject:photoURL forKey:@"photo-url"];
-
-            if (![oldPhotoURL isEqualToString:photoURL] // new image
-                || ![self.view viewWithTag:BANNER_CONTROL_TAG]) // or we haven't displayed the image
-            {
-                [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
-                
-                self.connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-                [self.connection requestDataFromURL:[NSURL URLWithString:photoURL] allowCachedResponse:YES];
-
-            } else { // redraw the image anyway, in case they changed something other than the photoURL
-                [self displayBannerImage];
-            }
-            [oldPhotoURL release];
-        }
-		
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentPath = [paths objectAtIndex:0];
-        NSString *bannerInfoFile = [documentPath stringByAppendingPathComponent:@"bannerInfo.plist"];
-        [bannerInfo writeToFile:bannerInfoFile atomically:YES];
-	}
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError: (NSError *)error {
-	return NO;
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	DLog(@"request failed, using cache");
-}
-
-#pragma mark ConnectionWrapper
-
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    UIImage *image = [UIImage imageWithData:data];
-    if (image) {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentPath = [paths objectAtIndex:0];
-        NSString *bannerFile = [documentPath stringByAppendingPathComponent:@"banner"];
-        DLog(@"writing to %@", bannerFile);
-        NSError *error = nil;
-        if (![data writeToFile:bannerFile options:NSDataWritingAtomic error:&error]) {
-            ELog(@"%@", [error description]);
-        }
-    }
-    
-    [self displayBannerImage];
-    
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    self.connection = nil;
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    self.connection = nil;
-}
-
 #pragma mark UINavigationControllerDelegate
 
 - (void)navigationController:(UINavigationController *)navigationController
@@ -248,6 +228,12 @@
                     animated:(BOOL)animated
 {
     
+}
+
+#pragma mark UIViewController
+
+- (BOOL)shouldAutorotate {
+    return NO;
 }
 
 #pragma mark -
@@ -297,10 +283,10 @@
     NSString *documentPath = [paths objectAtIndex:0];
     NSString *bannerInfoFile = [documentPath stringByAppendingPathComponent:@"bannerInfo.plist"];
     if ([[NSFileManager defaultManager] fileExistsAtPath:bannerInfoFile]) {
-        bannerInfo = [[NSDictionary dictionaryWithContentsOfFile:bannerInfoFile] retain];
+        self.bannerInfo = [NSDictionary dictionaryWithContentsOfFile:bannerInfoFile];
     }
-    if (!bannerInfo) {
-        bannerInfo = [[NSMutableDictionary alloc] init];
+    if (!self.bannerInfo) {
+        self.bannerInfo = [[[NSMutableDictionary alloc] init] autorelease];
     }
     
     [self displayBannerImage];
@@ -313,31 +299,11 @@
 														repeats:YES] retain];
 }
 
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-
-    // force the visible viewController to reload its view.
-    // without this, all modules except Stellar (still trying to find out why)
-    // drop their view without reloading again until going back in the nav stack.
-    UIViewController *viewController = nil;
-    if (self.navigationController.visibleViewController != self) {
-        viewController = [self.navigationController popViewControllerAnimated:NO];
-        [self.navigationController pushViewController:viewController animated:NO];
-    }
-}
-
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 
 - (void)dealloc {
 	self.primaryModules = nil;
 	[checkBannerTimer release];
-	[bannerInfo release];
+    self.bannerInfo = nil;
     [super dealloc];
 }
 
@@ -366,7 +332,8 @@
         
         if (!badgeView) {
             UIImage *image = [UIImage imageNamed:@"global/icon-badge.png"];
-            UIImage *stretchableImage = [image stretchableImageWithLeftCapWidth:floor(image.size.width / 2) - 1 topCapHeight:0];
+            UIImage *stretchableImage = [image stretchableImageWithLeftCapWidth:(NSUInteger)(floor(image.size.width / 2) - 1)
+                                                                   topCapHeight:0];
             
             badgeView = [[[UIImageView alloc] initWithImage:stretchableImage] autorelease];
             badgeView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
@@ -376,7 +343,7 @@
             badgeLabel.backgroundColor = [UIColor clearColor];
             badgeLabel.textColor = [UIColor whiteColor];
             badgeLabel.font = labelFont;
-            badgeLabel.textAlignment = UITextAlignmentCenter;
+            badgeLabel.textAlignment = NSTextAlignmentCenter;
             badgeLabel.tag = BADGE_LABEL_TAG;
             [badgeView addSubview:badgeLabel];
         }

@@ -3,11 +3,13 @@
 #import "ShuttleStopViewController.h"
 #import "ShuttleStop.h"
 #import "ShuttleLocation.h"
+#import "MITMapAnnotationView.h"
+#import "UIKit+MITAdditions.h"
 
 #define DEGREES_TO_RADIANS(__ANGLE__) ((__ANGLE__) / 180.0 * M_PI)
 #define LARGE_SHUTTLE_ANNOTATION_ZOOM 14.5
 
-@interface RouteMapViewController(Private)
+@interface RouteMapViewController ()
 
 // add the shuttles based on self.route.vehicleLocations
 -(void) addShuttles;
@@ -37,6 +39,16 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
+    
+    if (self.mapView == nil)
+    {
+        MITMapView *mapView = [[[MITMapView alloc] initWithFrame:self.view.bounds] autorelease];
+        mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                    UIViewAutoresizingFlexibleWidth);
+        self.mapView = mapView;
+        [self.view insertSubview:mapView
+                    belowSubview:self.routeInfoView];
+    }
     
     [_scrim setImage:[UIImage imageNamed:@"shuttle/shuttle-secondary-scrim.png"]];
     [_resetButton setImage:[UIImage imageNamed:@"shuttle/button-icon-reset-zoom.png"] forState:UIControlStateNormal];
@@ -91,6 +103,17 @@
 													 repeats:YES] retain];
 }
 
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 -(void) viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	[self becomeFirstResponder];
@@ -122,10 +145,6 @@
 
 
 - (void)dealloc {
-	[_smallStopImage release];
-	[_smallUpcomingStopImage release];
-	[_largeStopImage release];
-	[_largeUpcomingStopImage release];
 	_mapView.delegate = nil;
 	[_mapView release];
 	[_routeStops release];
@@ -310,12 +329,23 @@
         
         // determine which image to use for this annotation. If our map is above 2.0, use the big one
         if (_mapView.zoomLevel >= LARGE_SHUTTLE_ANNOTATION_ZOOM) {
-            annotationView.image = stopAnnotation.shuttleStop.upcoming ? _largeUpcomingStopImage : _largeStopImage;
-            annotationView.layer.anchorPoint = CGPointMake(0.5, 1.0);
+            if (stopAnnotation.shuttleStop.upcoming) {
+                annotationView.image = [UIImage imageNamed:@"shuttle/pin_shuttle_stop_complete_next.png"];
+            } else {
+                annotationView.image = [UIImage imageNamed:@"shuttle/map_pin_shuttle_stop_complete.png"];
+            }
+            
+            annotationView.centerOffset = CGPointMake(0, -(annotationView.image.size.height / 2.0));
         } else {
-            annotationView.layer.anchorPoint = CGPointMake(0.5, 0.5);
+            if (stopAnnotation.shuttleStop.upcoming) {
+                annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"];
+            } else {
+                annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot.png"];
+            }
+            
             annotationView.image = stopAnnotation.shuttleStop.upcoming ? _smallUpcomingStopImage : _smallStopImage;
         }
+        
 		annotationView.canShowCallout = NO;
 		annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
         
@@ -337,12 +367,16 @@
 		arrowImageView.layer.anchorPoint = CGPointMake(0.5, verticalAnchor);
 		arrowImageView.transform = cgCTM;
 		
+		[annotationView addSubview:imageView];
+		[annotationView addSubview:arrowImageView];
+        
 		annotationView.frame = imageView.frame;
 		annotationView.canShowCallout = NO;
         annotationView.showsCustomCallout = NO;
-        annotationView.layer.anchorPoint = CGPointMake(0.5, 1.0);
-		[annotationView addSubview:imageView];
-		[annotationView addSubview:arrowImageView];
+        annotationView.centerOffset = CGPointMake(0, -(pin.size.height / 2.0) - 3.0); // Subtracting 3px because there
+                                                                                      // is a 3px transparent border
+                                                                                      // around the image.
+        
 		
 		annotationView.backgroundColor = [UIColor clearColor];
 		//annotationView.alreadyOnMap = YES;
@@ -365,22 +399,6 @@
 -(void) showSelectedStop:(id)sender
 {
 	[self.navigationController popViewControllerAnimated:YES];
-}
-
-// any touch on the map will invoke this.  
-- (void)mapView:(MITMapView *)mapView wasTouched:(UITouch*)touch
-{
-    /* Do Nothing! */
-}
-
--(void)mapView:(MITMapView *)mapView annotationSelected:(id<MKAnnotation>)annotation {
-    /* Do Nothing! */
-}
-
--(void) annotationCalloutDidDisappear:(MITMapView *)mapView {
-	MITModuleURL *url = ((id<MITModuleURLContainer>)self.parentViewController).url;
-	[url setPath:[NSString stringWithFormat:@"route-map/%@", _route.routeID] query:nil];
-	[url setAsModulePath];
 }
 
 #pragma mark ShuttleDataManagerDelegate

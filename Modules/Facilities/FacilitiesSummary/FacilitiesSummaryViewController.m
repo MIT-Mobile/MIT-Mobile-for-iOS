@@ -65,7 +65,22 @@
     self.submitButton = nil;
     self.shiftingContainingView = nil;
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIKeyboardWillShowNotification
+                                                  object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIKeyboardWillHideNotification
+                                                  object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UITextFieldTextDidChangeNotification
+                                                  object:self.emailField];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UITextViewTextDidChangeNotification
+                                                  object:self.descriptionTextView];
+
     [super dealloc];
 }
 
@@ -216,9 +231,15 @@
     self.emailField = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
 {
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)setAttachedImage:(UIImage *)image {
@@ -499,7 +520,7 @@
                                   updateBlock(image,asset.defaultRepresentation.metadata);
                               }
                              failureBlock:^(NSError *error) {
-                                 WLog(@"Failed to load image metadata: %@", [error localizedDescription]);
+                                 DDLogWarn(@"Failed to load image metadata: %@", [error localizedDescription]);
                              }];
             }
         } else {

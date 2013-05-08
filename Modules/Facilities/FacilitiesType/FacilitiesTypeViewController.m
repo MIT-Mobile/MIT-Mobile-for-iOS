@@ -6,6 +6,10 @@
 #import "FacilitiesRepairType.h"
 #import <QuartzCore/QuartzCore.h>
 
+@interface FacilitiesTypeViewController ()
+@property (nonatomic,retain) id observerToken;
+@end
+
 @implementation FacilitiesTypeViewController
 @synthesize userData = _userData;
 @synthesize tableView = _tableView;
@@ -86,30 +90,42 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [[FacilitiesLocationData sharedData] addObserver:self
-                                           withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
-                                               if ([userData isEqualToString:FacilitiesRepairTypesKey]) {
-                                                   [self.loadingView removeFromSuperview];
-                                                   self.loadingView = nil;
-                                                   self.tableView.hidden = NO;
-                                                   
-                                                   if (dataUpdated) {
-                                                       [self.tableView reloadData];
+    if (self.observerToken != nil) {
+        self.observerToken = [[FacilitiesLocationData sharedData] addUpdateObserver:^(NSString *name, BOOL dataUpdated, id userData) {
+                                                   if ([userData isEqualToString:FacilitiesRepairTypesKey]) {
+                                                       [self.loadingView removeFromSuperview];
+                                                       self.loadingView = nil;
+                                                       self.tableView.hidden = NO;
+                                                       
+                                                       if (dataUpdated) {
+                                                           [self.tableView reloadData];
+                                                       }
                                                    }
-                                               }
-                                           }];
+                                               }];
+    }
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
+    
+    if (self.observerToken) {
+        [[FacilitiesLocationData sharedData] removeUpdateObserver:self.observerToken];
+        self.observerToken = nil;
+    }
+    
     self.tableView = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - UITableViewDataSource

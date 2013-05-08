@@ -67,21 +67,32 @@ typedef enum {
     // e.g. self.myOutlet = nil;
 }
 
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 - (void)loadBookDetails {
     NSDictionary *parameters = [NSDictionary dictionaryWithObject:self.book.identifier forKey:@"id"];
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"detail" parameters:parameters] autorelease];
     
     self.loadingStatus = BookLoadingStatusPartial;
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         [self.activityView removeFromSuperview];
         
         if (error) {
-            [MITMobileWebAPI showErrorWithHeader:@"WorldCat Book Details"];
+            [UIAlertView alertViewForError:error withTitle:@"WorldCat Book Details" alertViewDelegate:nil];
             self.loadingStatus = BookLoadingStatusFailed;
 
         } else {
-            [self.book updateDetailsWithDictionary:jsonResult];
+            [self.book updateDetailsWithDictionary:content];
             
             NSMutableArray *bookAttribs = [NSMutableArray array];
             

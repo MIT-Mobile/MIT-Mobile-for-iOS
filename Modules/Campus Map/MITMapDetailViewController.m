@@ -7,6 +7,7 @@
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MapBookmarkManager.h"
+#import "MITMapAnnotationView.h"
 
 @interface MITMapDetailViewController(Private)
 
@@ -63,18 +64,7 @@
 		[_bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on.png"] forState:UIControlStateNormal];
 		[_bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
 	}
-	
-	/*
-	NSString* docsFolder = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-	NSArray* bookmarks = [NSArray arrayWithContentsOfFile:[docsFolder stringByAppendingPathComponent:@"bookmarks.plist"]];
-	for (NSDictionary* bookmark in bookmarks) {
-		if ([[bookmark objectForKey:@"bldgnum"] isEqualToString:self.annotation.bldgnum]) {
-			[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on.png"] forState:UIControlStateNormal];
-			[_bookmarkButton setImage:[UIImage imageNamed:@"bookmark_on_pressed.png"] forState:UIControlStateHighlighted];
-			break;
-		}
-	}
-	*/
+
 	
 	_mapView.delegate = self;
 
@@ -83,14 +73,8 @@
 	_mapView.layer.cornerRadius = 6.0;
 	_mapViewContainer.layer.cornerRadius = 8.0;
 	
-	// buffer the annotation by 5px so it fits in the map thumbnail window.
-	//CGPoint screenPoint = [_mapView unscaledScreenPointForCoordinate:self.annotation.coordinate];
-	//screenPoint.y -= 5;
-	//CLLocationCoordinate2D coordinate = [_mapView coordinateForScreenPoint:screenPoint];
-	//_mapView.centerCoordinate = coordinate;
 	[_mapView addAnnotation:self.annotation];
-	_mapView.centerCoordinate = self.annotation.coordinate;
-	[_mapView setRegion:MKCoordinateRegionMake(self.annotation.coordinate, MKCoordinateSpanMake(0.003, 0.003))];
+    [_mapView setRegion:[_mapView regionForAnnotations:@[self.annotation]]];
 	
 	
 	
@@ -339,13 +323,17 @@
 	}
 	
 }
-/*
+
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
-*/
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -501,8 +489,7 @@
 		annotationView.showsCustomCallout = NO;
 		[annotationView addSubview:imageView];
 		annotationView.backgroundColor = [UIColor clearColor];
-		annotationView.centeredVertically = YES;
-		//annotationView.alreadyOnMap = YES;
+        annotationView.centerOffset = CGPointMake(0, -(pin.size.height / 2.0));
 	}
 	
 	return annotationView;

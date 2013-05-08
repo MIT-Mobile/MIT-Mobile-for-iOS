@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "MITMobileWebAPI.h"
 #import "MITMapView.h"
 #import "EventCategoriesTableView.h"
 #import "OpenHouseTableView.h"
@@ -17,7 +16,7 @@
 @class MITEventList;
 
 @interface CalendarEventsViewController : UIViewController <UIScrollViewDelegate, UISearchBarDelegate,
-MITMapViewDelegate, MITSearchDisplayDelegate, JSONLoadedDelegate, NavScrollerDelegate,
+MITMapViewDelegate, MITSearchDisplayDelegate, NavScrollerDelegate,
 DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 
 	//CalendarEventListType activeEventList; // today, browse, acad, holidays...
@@ -50,13 +49,6 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 	BOOL showScroller;
 	BOOL dateRangeDidChange;
 	
-	MITMobileWebAPI *apiRequest;
-	BOOL requestDispatched;
-
-    MITMobileWebAPI *categoriesRequest;
-	BOOL categoriesRequestDispatched;
-	BOOL openHouseCategoriesRequestDispatched;
-	
 	NSInteger loadingIndicatorCount;
     
     NSString *queuedButton;
@@ -66,6 +58,8 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
     // the stack (onlu used by can handle url functionality)
     UIViewController *childViewController;
 }
+
+@property (nonatomic, retain) NSString *lastSearchTerm;
 
 @property (nonatomic, assign) BOOL showScroller;
 @property (nonatomic, assign) BOOL showList;
@@ -83,7 +77,6 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 @property (nonatomic, retain) NSArray *events;
 
 
-- (void)abortEventListRequest;
 - (void)makeRequest;
 - (void)makeSearchRequest:(NSString *)searchTerms;
 - (void)makeCategoriesRequest;

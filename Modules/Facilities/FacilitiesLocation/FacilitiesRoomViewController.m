@@ -10,6 +10,10 @@
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
 
+@interface FacilitiesRoomViewController ()
+@property (nonatomic,strong) id observerToken;
+@end
+
 @implementation FacilitiesRoomViewController
 @synthesize tableView = _tableView;
 @synthesize loadingView = _loadingView;
@@ -133,37 +137,46 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [self.locationData addObserver:self
-                         withBlock:^(NSString *notification, BOOL updated, id userData) {
-                             if ((notification == nil) || [userData isEqualToString:FacilitiesRoomsKey]) {
-                                 [self.loadingView removeFromSuperview];
-                                 self.loadingView = nil;
-                                 self.tableView.hidden = NO;
-                                 
-                                 if ((self.cachedData == nil) || updated) {
-                                     self.cachedData = nil;
-                                     [self.tableView reloadData];
+    if (self.observerToken == nil) {
+        self.observerToken = [self.locationData addUpdateObserver:^(NSString *notification, BOOL updated, id userData) {
+                                 if ((notification == nil) || [userData isEqualToString:FacilitiesRoomsKey]) {
+                                     [self.loadingView removeFromSuperview];
+                                     self.loadingView = nil;
+                                     self.tableView.hidden = NO;
+                                     
+                                     if ((self.cachedData == nil) || updated) {
+                                         self.cachedData = nil;
+                                         [self.tableView reloadData];
+                                     }
+                                     
+                                     if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
+                                         self.filteredData = nil;
+                                         [self.searchDisplayController.searchResultsTableView reloadData];
+                                     }
                                  }
-                                 
-                                 if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
-                                     self.filteredData = nil;
-                                     [self.searchDisplayController.searchResultsTableView reloadData];
-                                 }
-                             }
-                         }];
+                             }];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self.locationData removeObserver:self];
+    
+    if (self.observerToken) {
+        [[FacilitiesLocationData sharedData] removeUpdateObserver:self.observerToken];
+        self.observerToken = nil;
+    }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
 
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 #pragma mark - Public Methods
 - (NSArray*)dataForMainTableView {

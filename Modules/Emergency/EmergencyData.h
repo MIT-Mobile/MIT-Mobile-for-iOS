@@ -1,19 +1,12 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-//#import "ConnectionWrapper.h"
-#import "MITMobileWebAPI.h"
 
-@interface EmergencyData : NSObject </*ConnectionWrapperDelegate*/JSONLoadedDelegate> {
+@interface EmergencyData : NSObject {
     NSManagedObject *info;
     NSArray *contacts;
     
     NSArray *primaryPhoneNumbers;
     NSArray *allPhoneNumbers;
-    
-    MITMobileWebAPI *infoRequest;
-    MITMobileWebAPI *contactsRequest;
-    //ConnectionWrapper *infoConnection;
-    //ConnectionWrapper *contactsConnection;
 }
 
 + (EmergencyData *)sharedData;
@@ -33,7 +26,5 @@
 @property (nonatomic, retain) NSDate *lastRead;
 @property (nonatomic, readonly) NSArray *primaryPhoneNumbers;
 @property (nonatomic, readonly) NSArray *allPhoneNumbers;
-@property (retain) ConnectionWrapper *infoConnection;
-@property (retain) ConnectionWrapper *contactsConnection;
 
 @end

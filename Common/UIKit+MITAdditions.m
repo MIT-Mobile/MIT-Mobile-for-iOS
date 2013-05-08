@@ -2,7 +2,7 @@
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
 
-CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect)
+inline CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect)
 {
     CGRect normalizedRect = CGRectMake(subRect.origin.x / CGRectGetMaxX(parentRect),
                                        subRect.origin.y / CGRectGetMaxY(parentRect),
@@ -10,6 +10,11 @@ CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect)
                                        subRect.size.height / CGRectGetHeight(parentRect));
     
     return normalizedRect;
+}
+
+inline BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation desiredOrientation,UIInterfaceOrientationMask orientationMask)
+{
+    return ((1 << desiredOrientation) & orientationMask) != 0;
 }
 
 NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
@@ -179,6 +184,34 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 @end
 
+@implementation UIViewController (MITUIAdditions)
+
+- (UIView*)defaultApplicationView {
+    CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
+    
+    if (self.navigationController)
+    {
+        if (self.navigationController.isNavigationBarHidden == NO)
+        {
+            mainFrame.origin.y += CGRectGetHeight(self.navigationController.navigationBar.frame);
+            mainFrame.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
+        }
+        
+        if (self.navigationController.isToolbarHidden == NO)
+        {
+            mainFrame.size.height -= CGRectGetHeight(self.navigationController.toolbar.frame);
+        }
+    }
+    
+    UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
+    mainView.autoresizesSubviews = YES;
+    mainView.backgroundColor = [UIColor clearColor];
+    
+    return [mainView autorelease];
+}
+
+@end
+
 @implementation UITableViewCell (MITUIAdditions)
 
 - (void)applyStandardFonts {
@@ -203,6 +236,8 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 @implementation UITableView (MITUIAdditions)
 
 - (void)applyStandardColors {
+    self.backgroundView = nil;
+    self.opaque = NO;
 	self.backgroundColor = [UIColor clearColor]; // allows background to show through
 	self.separatorColor = TABLE_SEPARATOR_COLOR;
 }
@@ -260,4 +295,30 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 }
 @end
 
+
+#define JSON_ERROR_CODE -2
+@implementation UIAlertView (MITUIAdditions)
++ (UIAlertView*)alertViewForError:(NSError*)error withTitle:(NSString*)title alertViewDelegate:(id<UIAlertViewDelegate>)delegate
+{
+	// Generic message
+	NSString *message = @"Connection Failure. Please try again later.";
+    
+	// if the error can be classifed we will use a more specific error message
+	if(error) {
+		if ([[error domain] isEqualToString:@"NSURLErrorDomain"] && ([error code] == NSURLErrorTimedOut)) {
+			message = @"Connection Timed Out. Please try again later.";
+		} else if ([[error domain] isEqualToString:@"MITMobileWebAPI"] && ([error code] == JSON_ERROR_CODE)) {
+			message = @"Server Failure. Please try again later.";
+		}
+	}
+    
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+														message:message
+													   delegate:delegate
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:nil];
+    
+    return [alertView autorelease];
+}
+@end
 

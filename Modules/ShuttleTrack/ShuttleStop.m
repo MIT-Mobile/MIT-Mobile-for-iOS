@@ -171,13 +171,13 @@
 		NSArray *routeStops = [CoreDataManager objectsForEntity:ShuttleRouteStopEntityName matchingPredicate:pred];
 		
 		if ([routeStops count] == 0) {
-			//NSLog(@"inserting new routeStop for stop %@ on route %@", self.stopID, routeID);
+			
 			self.routeStop = (ShuttleRouteStop *)[CoreDataManager insertNewObjectForEntityForName:ShuttleRouteStopEntityName];
 			self.routeStop.route = (NSManagedObject *)[ShuttleDataManager shuttleRouteWithID:routeID].cache;
 			self.routeStop.stopLocation = _stopLocation;
             [CoreDataManager saveData];
 		} else {
-			//NSLog(@"fetching cached routeStop for stop %@ on route %@", self.stopID, routeID);
+			
 			self.routeStop = [routeStops lastObject];
 		}
 	}

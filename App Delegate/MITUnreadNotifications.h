@@ -1,6 +1,4 @@
-
 #import <Foundation/Foundation.h>
-#import "MITMobileWebAPI.h"
 #import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MITDeviceRegistration.h"
 
@@ -55,7 +53,3 @@
 
 @end
 
-
-@interface SynchronizeUnreadNotificationsDelegate : NSObject <JSONLoadedDelegate> { }
-
-@end

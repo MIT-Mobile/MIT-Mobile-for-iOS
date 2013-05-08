@@ -16,6 +16,8 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "TourLink.h"
+#import "MobileRequestOperation.h"
+#import "MITMapAnnotationView.h"
 
 #define WEB_VIEW_TAG 646
 #define END_TOUR_ALERT_TAG 878
@@ -42,13 +44,15 @@
 
 - (void)hideProgressView;
 
+
+- (CLLocationDegrees)euclideanHeadingFromCoordinate:(CLLocationCoordinate2D)start toCoordinate:(CLLocationCoordinate2D)end;
 @end
 
 @implementation SiteDetailViewController
 
 #pragma mark Actions
 
-@synthesize siteOrRoute = _siteOrRoute, sideTrip = _sideTrip, sites = _sites, connection, showingConclusionScreen;
+@synthesize siteOrRoute = _siteOrRoute, sideTrip = _sideTrip, sites = _sites, showingConclusionScreen;
 
 - (void)feedbackButtonPressed:(id)sender {
     NSString *email = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"];
@@ -155,17 +159,63 @@
         
         TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
         
-        [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
-        self.connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
         NSURL *audioURL = [NSURL URLWithString:component.audioURL];
-        [self.connection requestDataFromURL:audioURL];
         
+        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:audioURL parameters:nil] autorelease];
+        request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
+            TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
+
+            if (error) {
+                UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:@"Connection Failed"
+                                                                     message:@"Audio could not be loaded"
+                                                                    delegate:self
+                                                           cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
+                alertView.tag = CONNECTION_FAILED_TAG;
+                [alertView show];
+
+            } else {
+
+                if ([[audioURL absoluteString] isEqualToString:component.audioURL]) {
+    
+        [data writeToFile:component.audioFile atomically:YES];
+        
+        NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
+        
+        NSError *error;
+        audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
+        [audioPlayer prepareToPlay];
+        if (!audioPlayer) {
+            DDLogError(@"%@", [error description]);
+        }
+        
+        progressView.progress = 1.0;
+        [UIView beginAnimations:@"fadeProgressView" context:nil];
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDelay:0.3];
+        [UIView setAnimationDuration:0.5];
+        if (audioPlayer) {
+            [UIView setAnimationDidStopSelector:@selector(playAudio)];
+        }
+        progressView.alpha = 0.0;
+        [UIView commitAnimations];
+    }
+}
+        };
+
+        request.progressBlock = ^(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger expectedBytesWritten) {
+            if (progressView) {
+                progressView.progress = 0.1 + 0.9 * totalBytesWritten / totalBytesWritten;
+            }
+        };
+    
         progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
         progressView.frame = CGRectMake(200, 0, 120, 20);
         [self.view addSubview:progressView];
+        
+        [[NSOperationQueue mainQueue] addOperation:request];
     }
 }
-
+    
 - (void)pauseAudio {
     [audioPlayer pause];
     [self enablePlayButton];
@@ -182,110 +232,17 @@
     audioPlayer = nil;
 }
 
-#pragma mark ConnectionWrapper delegate
-
-- (void)connectionDidReceiveResponse:(ConnectionWrapper *)wrapper {
-    if (progressView)
-        progressView.progress = 0.1;
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper madeProgress:(CGFloat)progress {
-    if (progressView)
-        progressView.progress = 0.1 + 0.9 * progress;
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
-
-    if ([[wrapper.theURL absoluteString] isEqualToString:component.audioURL]) {
-
-        [data writeToFile:component.audioFile atomically:YES];
-        
-        NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
-        
-        NSError *error;
-        audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
-        [audioPlayer prepareToPlay];
-        if (!audioPlayer) {
-            ELog(@"%@", [error description]);
-        }
-        
-        progressView.progress = 1.0;
-        [UIView beginAnimations:@"fadeProgressView" context:nil];
-        [UIView setAnimationDelegate:self];
-        [UIView setAnimationDelay:0.3];
-        [UIView setAnimationDuration:0.5];
-        if (audioPlayer) {
-            [UIView setAnimationDidStopSelector:@selector(playAudio)];
-        }
-        progressView.alpha = 0.0;
-        [UIView commitAnimations];
-    } else if ([[wrapper.theURL absoluteString] isEqualToString:component.photoURL]) {
-        [data writeToFile:component.photoFile atomically:YES];
-        NSString *js = [NSString stringWithFormat:@"var img = document.getElementById(\"directionsphoto\");\n"
-                        "img.src = \"%@\";\n", component.photoFile];
-        UIWebView *webView = (UIWebView *)[newSlidingView viewWithTag:WEB_VIEW_TAG];
-        [webView stringByEvaluatingJavaScriptFromString:js];
-    }
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    self.connection = nil;
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
-    TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
-    
-    if ([[wrapper.theURL absoluteString] isEqualToString:component.audioURL]) {
-        UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:@"Connection Failed"
-                                                             message:@"Audio could not be loaded"
-                                                            delegate:self
-                                                   cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
-        alertView.tag = CONNECTION_FAILED_TAG;
-        [alertView show];
-    }
-    
-    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    self.connection = nil;
-}
-
 #pragma mark UIViewController
-/*
+// Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    if (appDelegate.appModalHolder.modalViewController) {
-        return [appDelegate.appModalHolder.modalViewController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-    }
-    return UIInterfaceOrientationIsPortrait(interfaceOrientation);
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    if (appDelegate.appModalHolder.modalViewController) {
-        [appDelegate.appModalHolder.modalViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    }
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    if (appDelegate.appModalHolder.modalViewController) {
-        [appDelegate.appModalHolder.modalViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    }
-}
-*/
-/*
- // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
-        // Custom initialization
-    }
-    return self;
-}
-*/
-
-/*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
-}
-*/
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
@@ -303,6 +260,19 @@
     fakeToolbarHeightFromNIB = fakeToolbar.frame.size.height;
     [self setupBottomToolBar];    
     [self setupContentAreaForward:YES];
+}
+
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    _routeMapView.showsUserLocation = YES;
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    _routeMapView.showsUserLocation = NO;
 }
 
 #pragma mark View setup
@@ -477,30 +447,24 @@
             
             NSArray *pathLocations = [self.siteOrRoute pathAsArray];
             if ([pathLocations count] > 1) {
-                CGPoint srcPoint = [_routeMapView convertCoordinate:startAnnotation.coordinate toPointToView:newSlidingView];
+                // This code calculates the heading we'll need to make sure the arrows
+                // are pointing the correct way
+                CLLocationCoordinate2D startCoordinate = startAnnotation.coordinate;
+                CLLocationCoordinate2D firstPathCoordinate = [(CLLocation*)pathLocations[1] coordinate];
+                CLLocationDegrees startHeading = [self euclideanHeadingFromCoordinate:startCoordinate
+                                                                         toCoordinate:firstPathCoordinate];
+                startAnnotation.transform = CGAffineTransformMakeRotation(startHeading * (M_PI / 180.0));
                 
-                CLLocation *firstPointOffSite = [pathLocations objectAtIndex:1];
-                CLLocationCoordinate2D firstCoordOffSite = firstPointOffSite.coordinate;
-                CGPoint destPoint = [_routeMapView convertCoordinate:firstCoordOffSite toPointToView:newSlidingView];
+                CLLocationCoordinate2D endCoordinate = endAnnotation.coordinate;
                 
-                CGFloat dy = destPoint.y - srcPoint.y;
-                CGFloat dx = destPoint.x - srcPoint.x;
-                CGFloat norm = sqrt(dx * dx + dy * dy);
-                CGAffineTransform transform = CGAffineTransformMake(dx/norm, dy/norm, -dy/norm, dx/norm, 0, 0);
-                startAnnotation.transform = transform;
-                startAnnotation.hasTransform = YES;
-                
-                CLLocation *lastPointOffDest = [pathLocations objectAtIndex:[pathLocations count] - 2];
-                CLLocationCoordinate2D lastCoordOffDest = lastPointOffDest.coordinate;
-                srcPoint = [_routeMapView convertCoordinate:lastCoordOffDest toPointToView:newSlidingView];
-                destPoint = [_routeMapView convertCoordinate:endAnnotation.coordinate toPointToView:newSlidingView];
-                
-                dy = destPoint.y - srcPoint.y;
-                dx = destPoint.x - srcPoint.x;
-                norm = sqrt(dx * dx + dy * dy);
-                transform = CGAffineTransformMake(dx/norm, dy/norm, -dy/norm, dx/norm, 0, 0);
-                endAnnotation.transform = transform;
-                endAnnotation.hasTransform = YES;
+                // This should be the index of the last path coordinate
+                // that is *not* the annotation (the paths extend all the
+                // way through the visible annotations)
+                NSUInteger lastPathIndex = [pathLocations count] - 2;
+                CLLocationCoordinate2D lastPathCoordinate = [(CLLocation*)pathLocations[lastPathIndex] coordinate];
+                CLLocationDegrees endHeading = [self euclideanHeadingFromCoordinate:lastPathCoordinate
+                                                                       toCoordinate:endCoordinate];
+                endAnnotation.transform = CGAffineTransformMakeRotation(endHeading * (M_PI / 180.0));
                 
                 directionsRoute = [[MITGenericMapRoute alloc] init];
                 directionsRoute.lineWidth = 6;
@@ -514,8 +478,8 @@
             [_routeMapView addAnnotation:startAnnotation];
             [_routeMapView addAnnotation:endAnnotation];
             
-            CLLocationCoordinate2D center = CLLocationCoordinate2DMake((startAnnotation.coordinate.latitude + endAnnotation.coordinate.latitude) / 2,
-                                                                       (startAnnotation.coordinate.longitude + endAnnotation.coordinate.longitude) / 2);
+            CLLocationCoordinate2D center = CLLocationCoordinate2DMake((startAnnotation.coordinate.latitude + endAnnotation.coordinate.latitude) / 2.0,
+                                                                       (startAnnotation.coordinate.longitude + endAnnotation.coordinate.longitude) / 2.0);
             _routeMapView.zoomLevel = [self.siteOrRoute.zoom floatValue];
             _routeMapView.centerCoordinate = center;
             
@@ -527,9 +491,20 @@
                 NSInteger imageHeight = 100;
                 if (![[NSFileManager defaultManager] fileExistsAtPath:photoFile]) {
                     photoFile = @"tours/tour_photo_loading_animation.gif";
-                    [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
-                    self.connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-                    [self.connection requestDataFromURL:[NSURL URLWithString:component.photoURL]];
+
+                    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:component.photoURL] parameters:nil] autorelease];
+                    request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
+                        if (error) {
+                            
+                        } else {
+                            [data writeToFile:component.photoFile atomically:YES];
+                            NSString *js = [NSString stringWithFormat:@"var img = document.getElementById(\"directionsphoto\");\n"
+                                            "img.src = \"%@\";\n", component.photoFile];
+                            UIWebView *webView = (UIWebView *)[newSlidingView viewWithTag:WEB_VIEW_TAG];
+                            [webView stringByEvaluatingJavaScriptFromString:js];
+                }
+                    };
+                    [[NSOperationQueue mainQueue] addOperation:request];
                 }
                 
                 TourSiteOrRoute *nextComponent = self.siteOrRoute.nextComponent;
@@ -726,8 +701,6 @@
         audioPlayer = nil;
     }
     [self hideProgressView]; // also releases progress view
-    self.connection.delegate = nil;
-    self.connection = nil;
 }
 
 - (void)viewDidUnload {
@@ -751,8 +724,6 @@
         [audioPlayer release];
     }
     [self hideProgressView]; // also releases progress view
-    self.connection.delegate = nil;
-    self.connection = nil;
     self.siteOrRoute = nil;
     self.sideTrip = nil;
     self.sites = nil;
@@ -833,18 +804,34 @@
     
     TourSiteOrRoute *site = tourAnnotation.site;
     TourSiteOrRoute *upcomingSite = self.siteOrRoute.nextComponent;
-    UIImage *marker;
+    UIImageView *markerView;
     if (upcomingSite == site) {
-        marker = [UIImage imageNamed:@"tours/map_ending_arrow.png"];
+        markerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/map_ending_arrow"]];
     } else {
-        marker = [UIImage imageNamed:@"tours/map_starting_arrow.png"];
+        markerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/map_starting_arrow"]];
     }
-    annotationView.image = marker;
-    annotationView.showsCustomCallout = NO;
     
-    if (tourAnnotation.hasTransform) {
-        annotationView.transform = tourAnnotation.transform;
+    
+    // Create and apply a rotation to the marker view in order to
+    // have it appear properly (the start should be coming from the current annotation
+    // and end should be pointing at the next stop). Since all rotations
+    // start from (0,0), not the center of the image, we need to
+    // translate the view so that the image is centered around (0,0),
+    // then do the rotation, then translate the result back
+    CGFloat deltaX = -CGRectGetWidth(markerView.bounds) / 2.0;
+    CGFloat deltaY = -CGRectGetHeight(markerView.bounds) / 2.0;
+    
+    if (CGAffineTransformEqualToTransform(CGAffineTransformIdentity,tourAnnotation.transform) == NO) {
+        CGAffineTransform transform = CGAffineTransformMakeTranslation(deltaX, deltaY);
+        transform = CGAffineTransformConcat(transform, tourAnnotation.transform);
+        transform = CGAffineTransformTranslate(transform, -deltaX, -deltaY);
+        markerView.transform = transform;
     }
+    
+    [annotationView addSubview:markerView];
+    annotationView.frame = CGRectOffset(markerView.bounds, deltaX, deltaY);
+    annotationView.showsCustomCallout = NO;
+
     
     return annotationView;
 }
@@ -936,6 +923,16 @@
 			[self.navigationController popToViewController:theController animated:YES];
 		}
 	}
+}
+
+- (CLLocationDegrees)euclideanHeadingFromCoordinate:(CLLocationCoordinate2D)start toCoordinate:(CLLocationCoordinate2D)end {
+    MKMapPoint startPoint = MKMapPointForCoordinate(start);
+    MKMapPoint endPoint = MKMapPointForCoordinate(end);
+    
+    double deltaX = endPoint.x - startPoint.x;
+    double deltaY = endPoint.y - startPoint.y;
+    
+    return atan2(deltaY,deltaX) * 180 / M_PI;
 }
 
 @end

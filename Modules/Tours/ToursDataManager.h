@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "MITMobileWebAPI.h"
 
 typedef enum {
     TourSiteVisited,
@@ -14,7 +13,7 @@ extern NSString * const TourDetailsFailedToLoadNotification;
 
 @class CampusTour, TourSiteOrRoute, MITGenericMapRoute, CampusTourSideTrip;
 
-@interface ToursDataManager : NSObject <JSONLoadedDelegate> {
+@interface ToursDataManager : NSObject {
     NSMutableDictionary *_tours;
     
     CampusTour *_activeTour;

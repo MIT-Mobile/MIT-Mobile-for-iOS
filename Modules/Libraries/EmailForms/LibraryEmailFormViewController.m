@@ -133,7 +133,7 @@ static const NSInteger kLibraryEmailFormTextView = 0x382;
 - (void)setValue:(NSString *)value {
     NSInteger index = [self.options indexOfObject:value];
     if (index == NSNotFound) {
-        ELog(@"Unable to set field to \"%@\" as it does not exist among possible options: %@", value, self.options);
+        DDLogError(@"Unable to set field to \"%@\" as it does not exist among possible options: %@", value, self.options);
     } else {
         self.currentOptionIndex = index;
     }
@@ -548,16 +548,16 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
                                                                            parameters:[NSDictionary dictionary]] autorelease];
     
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         [self.loadingView removeFromSuperview];
         
         if (error && (error.code != NSUserCancelledError)) {
-            DLog(@"Request failed with error: %@",[error localizedDescription]); 
-            [MITMobileWebAPI showError:nil header:@"Login" alertViewDelegate:self];
-        } else if (!jsonResult) {
+            DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]); 
+            [UIAlertView alertViewForError:nil withTitle:@"Login" alertViewDelegate:self];
+        } else if (!content) {
             [self.navigationController popViewControllerAnimated:YES];    
         } else {
-            NSNumber *isMITIdentity = [(NSDictionary *)jsonResult objectForKey:@"is_mit_identity"];
+            NSNumber *isMITIdentity = [(NSDictionary *)content objectForKey:@"is_mit_identity"];
             if ([isMITIdentity boolValue]) {
                 [loginLoadingView removeFromSuperview];
                 identityVerified = YES;
@@ -728,7 +728,6 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     formInputAccessoryView = nil;
     [self setFormGroups:nil];
     self.currentTextView = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)dealloc {
@@ -736,15 +735,23 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     [self setFormGroups:nil];
     [formInputAccessoryView release];
     formInputAccessoryView = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextFieldTextDidBeginEditingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextViewTextDidBeginEditingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextFieldTextDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextViewTextDidChangeNotification object:nil];
     self.currentTextView = nil;
     [super dealloc];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (NSArray *)formGroups {
@@ -918,11 +925,11 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     [self.navigationController pushViewController:thanksController animated:NO];
     [thanksController release];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
-        NSDictionary *jsonDict = jsonResult;
+    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
+        NSDictionary *jsonDict = content;
         BOOL success = [(NSNumber *)[jsonDict objectForKey:@"success"] boolValue];
         if (error || !success) {
-            DLog(@"Request failed with error: %@",[error localizedDescription]);
+            DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]);
             [self.navigationController popViewControllerAnimated:NO];
             [self showErrorSubmittingForm];
         } else {

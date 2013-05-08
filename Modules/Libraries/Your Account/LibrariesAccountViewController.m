@@ -3,6 +3,7 @@
 #import "LibrariesHoldsTabController.h"
 #import "LibrariesLoanTabController.h"
 #import "UIKit+MITAdditions.h"
+#import "MITLogging.h"
 
 // keep this order in sync with view instantiation in loadView below
 typedef enum {
@@ -77,9 +78,14 @@ typedef enum {
     screenRect.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
     
     UIView *mainView = [[[UIView alloc] initWithFrame:screenRect] autorelease];
+    mainView.autoresizesSubviews = YES;
     
     {
         MITTabView *tabView = [[[MITTabView alloc] init] autorelease];
+        tabView.autoresizesSubviews = YES;
+        tabView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                     UIViewAutoresizingFlexibleWidth |
+                                    UIViewAutoresizingFlexibleBottomMargin);
         tabView.frame = mainView.bounds;
         self.tabView = tabView;
         [mainView addSubview:tabView];
@@ -189,10 +195,15 @@ typedef enum {
     }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - MITTabViewDelegate Methods
@@ -287,7 +298,7 @@ typedef enum {
         return;
     }
     
-    DLog(@"Tab <%@> encountered an error: %@", [[self.barItems objectAtIndex:type] title], [error localizedDescription]);
+    DDLogVerbose(@"Tab <%@> encountered an error: %@", [[self.barItems objectAtIndex:type] title], [error localizedDescription]);
     
     if ((self.alertIsActive == NO) && (self.activeTabIndex == type))
     {

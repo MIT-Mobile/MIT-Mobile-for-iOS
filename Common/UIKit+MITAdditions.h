@@ -3,7 +3,10 @@
 
 #pragma mark - UIKit Additon Function Prototypes
 CGRect CGRectNormalizeRectInRect(CGRect subRect, CGRect parentRect);
+BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation desiredOrientation,UIInterfaceOrientationMask orientationMask);
+
 NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation);
+BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterfaceOrientationMask supportedOrientations);
 
 #pragma mark - Category Definitions
 @interface NSString (MITUIAdditions)
@@ -31,6 +34,10 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation);
 
 @end
 
+@interface UIViewController (MITUIAdditions)
+- (UIView*)defaultApplicationView;
+@end
+
 @interface UITableViewCell (MITUIAdditions)
 
 - (void)applyStandardFonts;
@@ -51,4 +58,8 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation);
 
 - (void)showFromAppDelegate; // i don't like this name but can't think of a better one
 
+@end
+
+@interface UIAlertView (MITUIAdditions)
++ (UIAlertView*)alertViewForError:(NSError*)error withTitle:(NSString*)title alertViewDelegate:(id<UIAlertViewDelegate>)delegate;
 @end

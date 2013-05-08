@@ -64,7 +64,7 @@
     [scanner setCaseSensitive:NO];
     
     if (![scanner scanString:@"mailto:" intoString:NULL]) {
-        WLog(@"URL '%@' is malformed", [url absoluteString]);
+        DDLogWarn(@"URL '%@' is malformed", [url absoluteString]);
         fields = nil;
     } else if (![scanner isAtEnd]) {
         // Don't care if this fails. Some malformed mailto urls
@@ -93,7 +93,7 @@
     self = [super init];
     
     if (self) {
-        DLog(@"Processing URL: %@",[mailtoUrl absoluteString]);
+        DDLogVerbose(@"Processing URL: %@",[mailtoUrl absoluteString]);
         NSDictionary *fields = [self scanURL:mailtoUrl];
         
         if ([fields objectForKey:@"to"]) {

@@ -4,6 +4,11 @@
 #include <mach/machine.h>
 #import "Foundation+MITAdditions.h"
 
+inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
+{
+    return (fabs(((double)f0) - ((double)f1)) <= epsilon);
+}
+
 @implementation NSURL (MITAdditions)
 
 + (NSURL *)internalURLWithModuleTag:(NSString *)tag path:(NSString *)path {
@@ -37,7 +42,6 @@
 @end
 
 @implementation NSString (MITAdditions)
-
 - (NSString *)substringToMaxIndex:(NSUInteger)to {
 	NSUInteger maxLength = [self length] - 1;
 	return [self substringToIndex:(to > maxLength) ? maxLength : to];
@@ -50,7 +54,6 @@
     
     return (substringRange.location != NSNotFound);
 }
-
 @end
 
 
@@ -209,7 +212,7 @@ typedef struct {
                                                                range:NSMakeRange(0, [replString length])];
         
         if (entities > 0) {
-            DLog(@"Replaced %lu of %s -> %s", (unsigned long)entities, entity->entityName, entity->entityCode);
+            DDLogVerbose(@"Replaced %lu of %s -> %s", (unsigned long)entities, entity->entityName, entity->entityCode);
         }
         
         ++entity;
@@ -257,7 +260,7 @@ typedef struct {
     int status = sysctlbyname(typeString, NULL, &size, NULL, 0);
 
     if (status) {
-        ELog(@"sysctl '%@' failed: %s", typeSpecifier, strerror(status));
+        DDLogError(@"sysctl '%@' failed: %s", typeSpecifier, strerror(status));
         return nil;
     }
     
@@ -265,7 +268,7 @@ typedef struct {
     memset(result, 0, size);
     status = sysctlbyname(typeString, result, &size, NULL, 0);
     if (status) {
-        ELog(@"sysctl '%@' failed: %s", typeSpecifier, (const char*)strerror(status));
+        DDLogError(@"sysctl '%@' failed: %s", typeSpecifier, (const char*)strerror(status));
         free(result);
         return nil;
     }

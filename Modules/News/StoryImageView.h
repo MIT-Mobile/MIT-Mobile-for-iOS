@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "ConnectionWrapper.h"
 
 @class NewsImageRep;
 @class StoryImageView;
@@ -10,10 +9,9 @@
 @end
 
 
-@interface StoryImageView : UIView <ConnectionWrapperDelegate> {
+@interface StoryImageView : UIView {
     id <StoryImageViewDelegate> delegate;
     NewsImageRep *imageRep;
-	ConnectionWrapper *connection;
 	NSData *imageData;
     UIActivityIndicatorView *loadingView;
     UIImageView *imageView;

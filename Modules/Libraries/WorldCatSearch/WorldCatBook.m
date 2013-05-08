@@ -208,7 +208,7 @@ static NSString * const WCHoldingAvailableKey = @"available";
         NSArray *array = object;
         for (id item in array) {
             if (![item isKindOfClass:[NSString class]]) {
-                WLog(@"key %@ has invalid data format",key);
+                DDLogWarn(@"key %@ has invalid data format",key);
                 self.parseFailure = YES;
                 return nil;
             }
@@ -220,7 +220,7 @@ static NSString * const WCHoldingAvailableKey = @"available";
 - (NSString *)stringFromDict:(NSDictionary *)dict key:(NSString *)key {
     id object = [dict objectForKey:key];
     if (![object isKindOfClass:[NSString class]]) {
-        WLog(@"key %@ key not string", key);
+        DDLogWarn(@"key %@ key not string", key);
         self.parseFailure = YES;
         return nil;
     }
@@ -253,7 +253,7 @@ static NSString * const WCHoldingAvailableKey = @"available";
     NSArray *rawAddresses = self.addresses;
     NSArray *output = rawPublishers;
     if ([rawPublishers count] != [rawAddresses count]) {
-        WLog(@"%@ mismatch between number of publishers and addresses for OCLC ID %@", NSStringFromSelector(_cmd), self.identifier);
+        DDLogWarn(@"%@ mismatch between number of publishers and addresses for OCLC ID %@", NSStringFromSelector(_cmd), self.identifier);
     } else {
         NSMutableArray *composedPublishers = [NSMutableArray array];
         for (NSInteger i = 0; i < [rawPublishers count]; i++) {

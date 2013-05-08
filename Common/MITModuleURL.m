@@ -46,7 +46,7 @@
     if (parentURL) {
         [self setPath:[NSString stringWithFormat:@"%@/%@", parentURL.path, extension] query:nil];
     } else {
-        ELog(@"Attempting to load nil path");
+        DDLogError(@"Attempting to load nil path");
     }
 }
 	
@@ -54,7 +54,7 @@
 	MITModule *module = [MIT_MobileAppDelegate moduleForTag:moduleTag];
 	module.currentPath = path;
 	module.currentQuery = query;
-	//NSLog(@"Just saved module state: %@, %@  for module: %@", module.currentPath, module.currentQuery, module);
+	DDLogVerbose(@"Just saved module state: %@, %@  for module: %@", module.currentPath, module.currentQuery, module);
 }
 
 @end

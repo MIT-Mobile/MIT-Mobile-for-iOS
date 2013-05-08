@@ -5,6 +5,7 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "MITUIConstants.h"
+#import "MobileRequestOperation.h"
 
 typedef enum 
 {
@@ -21,19 +22,19 @@ LocationsHoursTableRows;
 #define PADDING 11
 #define TITLE_WIDTH 278
 
-@interface LibrariesLocationsHoursDetailViewController (Private)
+@interface LibrariesLocationsHoursDetailViewController () <UITableViewDataSource, UITableViewDelegate>
 - (NSString *)contentHtml;
 @end
 
 @implementation LibrariesLocationsHoursDetailViewController
 @synthesize library;
 @synthesize librariesDetailStatus;
-@synthesize request;
 @synthesize contentRowHeight;
 @synthesize contentWebView;
 
-- (id)initWithStyle:(UITableViewStyle)style {
-    self = [super initWithStyle:style];
+- (id)init {
+    self = [super initWithNibName:nil
+                           bundle:nil];
     if (self) {
         self.contentRowHeight = 0;
     }
@@ -42,7 +43,6 @@ LocationsHoursTableRows;
 
 - (void)dealloc
 {
-    self.request = nil;
     self.library = nil;
     self.contentWebView.delegate = nil;
     self.contentWebView = nil;
@@ -58,11 +58,23 @@ LocationsHoursTableRows;
 }
 
 #pragma mark - View lifecycle
+- (void)loadView {
+    UIView *myView = [self defaultApplicationView];
+    
+    UITableView *tableView = [[UITableView alloc] initWithFrame:myView.bounds
+                                                          style:UITableViewStyleGrouped];
+    tableView.delegate = self;
+    tableView.dataSource = self;
+    [tableView applyStandardColors];
+    self.tableView = tableView;
+    
+    [myView addSubview:tableView];
+    self.view = myView;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.tableView applyStandardColors];
     
     self.title = @"Detail";
 
@@ -70,9 +82,21 @@ LocationsHoursTableRows;
         self.librariesDetailStatus = LibrariesDetailStatusLoading;
         
         NSDictionary *params = [NSDictionary dictionaryWithObject:self.library.title forKey:@"library"];
-        self.request = [[[MITMobileWebAPI alloc] initWithModule:@"libraries" command:@"locationDetail" parameters:params] autorelease];
-        self.request.jsonDelegate = self;
-        [self.request start];
+        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locationDetail" parameters:params] autorelease];
+        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+            if (error) {
+                self.librariesDetailStatus = LibrariesDetailStatusLoadingFailed;
+                [self.tableView reloadData];
+            } else {
+                [self.library updateDetailsWithDict:jsonResult];
+                [CoreDataManager saveData];
+                self.librariesDetailStatus = LibrariesDetailStatusLoaded;
+                [self.tableView reloadData];
+            }
+        };
+        
+        [[NSOperationQueue mainQueue] addOperation:request];
+        
     } else {
         self.librariesDetailStatus = LibrariesDetailStatusLoaded;
     }
@@ -82,6 +106,7 @@ LocationsHoursTableRows;
 {
     self.contentWebView.delegate = nil;
     self.contentWebView = nil;
+    self.tableView = nil;
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -107,10 +132,15 @@ LocationsHoursTableRows;
     [super viewDidDisappear:animated];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - Table view data source
@@ -248,24 +278,6 @@ LocationsHoursTableRows;
     }
 }
 
-#pragma mark - JSONLoaded delegate methods
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
-    [self.library updateDetailsWithDict:JSONObject];
-    [CoreDataManager saveData];
-    self.librariesDetailStatus = LibrariesDetailStatusLoaded;
-    [self.tableView reloadData];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    return NO;
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-    self.librariesDetailStatus = LibrariesDetailStatusLoadingFailed;
-    [self.tableView reloadData];
-}
-
 #pragma mark - UIWebView delegate 
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
@@ -308,7 +320,7 @@ LocationsHoursTableRows;
     NSError *error;
     NSMutableString *target = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
     if (!target) {
-        ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
+        DDLogError(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
     }
     
     LibrariesLocationsHoursTerm *term = [[self.library.terms filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder = %d", 0]] anyObject];

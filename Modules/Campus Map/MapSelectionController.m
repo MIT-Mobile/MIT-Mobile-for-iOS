@@ -2,6 +2,7 @@
 #import "BookmarksTableViewController.h"
 #import "RecentSearchesViewController.h"
 #import "CategoriesTableViewController.h"
+#import "UIKit+MITAdditions.h"
 
 @implementation MapSelectionController
 @synthesize toolbarButtonItems = _toolbarButtonItems;
@@ -65,6 +66,17 @@
 
 	return self;
 	
+}
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 -(void) dealloc

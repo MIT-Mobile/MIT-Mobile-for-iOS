@@ -8,6 +8,7 @@
 #import "TourStartLocation.h"
 #import "MIT_MobileAppDelegate.h"
 #import "CampusTour.h"
+#import "UIKit+MITAdditions.h"
 
 #define START_LOCATION_ROW_HEIGHT 100.0f
 
@@ -21,7 +22,16 @@
 
 #pragma mark -
 #pragma mark View lifecycle
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
 
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -40,7 +50,7 @@
     NSError *error = nil;
     NSMutableString *htmlString = [[[NSMutableString alloc] initWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error] autorelease];
     if (!htmlString) {
-        ELog(@"failed to load template: %@", [error description]);
+        DDLogError(@"failed to load template: %@", [error description]);
     }
     
     NSString *header = [[ToursDataManager sharedManager] activeTour].startLocationHeader;

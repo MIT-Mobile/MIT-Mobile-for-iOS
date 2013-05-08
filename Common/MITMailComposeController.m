@@ -1,63 +1,84 @@
 #import "MITMailComposeController.h"
 #import "MIT_MobileAppDelegate.h"
+#import "MITLogging.h"
+
+@interface MITMailComposeController ()
+@property (nonatomic, weak) id<MFMailComposeViewControllerDelegate> mailComposeDelegate;
+@end
 
 @implementation MITMailComposeController
-
 @synthesize completionBlock = _completionBlock;
 
-+ (void)presentMailControllerWithRecipient:(NSString *)email subject:(NSString *)subject body:(NSString *)body {
-    [self presentMailControllerWithRecipient:email subject:subject body:body completionBlock:nil];
++ (void)presentMailControllerWithRecipient:(NSString *)email subject:(NSString *)subject body:(NSString *)body
+{
+    [self presentMailControllerWithRecipient:email
+                                     subject:subject
+                                        body:body
+                             completionBlock:nil];
 }
 
-+ (void)presentMailControllerWithRecipient:(NSString *)email subject:(NSString *)subject body:(NSString *)body completionBlock:(CompletionBlock)completionBlock {
++ (void)presentMailControllerWithRecipient:(NSString *)email subject:(NSString *)subject body:(NSString *)body completionBlock:(MITMailComposeCompleteBlock)completionBlock
+{
     if ([MFMailComposeViewController canSendMail]) {
-        MFMailComposeViewController *mfViewController = [[MFMailComposeViewController alloc] init];
-        MITMailComposeController *mitController = [[MITMailComposeController alloc] init];
-		mfViewController.mailComposeDelegate = mitController; // releases self when dismissed
+        MITMailComposeController *mailViewController = [[MITMailComposeController alloc] init];
+        mailViewController.completionBlock = completionBlock;
         
-		if (email != nil) {
-            NSArray *toRecipient = [NSArray arrayWithObject:email]; 
-            [mfViewController setToRecipients:toRecipient];
+        if ([email length])
+        [mailViewController setToRecipients:@[email]];
+         
+        if ([subject length]) {
+            [mailViewController setSubject:subject];
         }
-        if (subject != nil) {
-            [mfViewController setSubject:subject];
-        }
-        if (body != nil) {
-            [mfViewController setMessageBody:body isHTML:NO];
-        }
-        
-        // Use the completionBlock if it's there. Just dismiss the modal view otherwise. Release the MITMailComposeViewController regardless.
-        if (completionBlock) {
-            mitController.completionBlock = ^(MFMailComposeViewController *controller, MFMailComposeResult result, NSError *error) {
-                completionBlock(controller, result, error);
-                [mitController release];
-            };
-        } else {
-            mitController.completionBlock = ^(MFMailComposeViewController *controller, MFMailComposeResult result, NSError *error) {
-                MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-                [appDelegate dismissAppModalViewControllerAnimated:YES];
-                
-                [mitController release];
-            };
+        if ([body length]) {
+            [mailViewController setMessageBody:body
+                                        isHTML:NO];
         }
 		
 		MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-		[appDelegate presentAppModalViewController:mfViewController animated:YES];
-        [mfViewController release];
+		[appDelegate presentAppModalViewController:mailViewController
+                                          animated:YES];
     }
 }
 
-// Dismisses the email composition interface when users tap Cancel or Send. Proceeds to update the message field with the result of the operation.
-- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
-    if ([controller.mailComposeDelegate respondsToSelector:@selector(completionBlock)]) {
-        MITMailComposeController *mitController = controller.mailComposeDelegate;
-        CompletionBlock completionBlock = mitController.completionBlock;
-        if (completionBlock) {
-            completionBlock(controller, result, error);
-        }
-    } else {
-        ELog(@"No handler set for the mailComposeDelegate.");
+- (id)init
+{
+    self = [super init];
+    
+    if (self)
+    {
+        [self _setMailComposeDelegate:self];
     }
+    
+    return self;
+}
+
+- (void)_setMailComposeDelegate:(id<MFMailComposeViewControllerDelegate>)mailComposeDelegate
+{
+    [super setMailComposeDelegate:mailComposeDelegate];
+}
+
+- (void)setMailComposeDelegate:(id<MFMailComposeViewControllerDelegate>)mailComposeDelegate
+{
+    return;
+}
+
+// Dismisses the email composition interface when users tap Cancel or Send. Proceeds to update the message field with the result of the operation.
+- (void)mailComposeController:(MFMailComposeViewController *)controller
+          didFinishWithResult:(MFMailComposeResult)result
+                        error:(NSError *)error
+{
+    if ([controller isKindOfClass:[MITMailComposeController class]])
+    {
+        MITMailComposeController *mitController = (MITMailComposeController*)controller;
+        if (mitController.completionBlock)
+        {
+            mitController.completionBlock(mitController, result, error);
+        } else {
+            DDLogError(@"No handler set for the mailComposeDelegate.");
+        }
+    }
+    
+    [controller dismissModalViewControllerAnimated:YES];
 }
 
 @end

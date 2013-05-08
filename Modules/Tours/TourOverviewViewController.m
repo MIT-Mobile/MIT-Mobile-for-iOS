@@ -11,6 +11,7 @@
 #import "StartingLocationViewController.h"
 #import "CoreLocation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
+#import "MITMapAnnotationView.h"
 
 
 typedef enum {
@@ -29,7 +30,6 @@ TourOverviewTags;
 
 
 - (NSString *)distanceTextForLocation:(id<TourGeoLocation>)location;
-- (void)requestImageForComponent:(TourComponent *)component;
 - (NSString *)textForDistance:(CLLocationDistance)meters;
 - (void)selectAnnotationClosestTo:(CLLocation *)location;
 - (void)showStartSuggestions:(id)sender;
@@ -71,11 +71,16 @@ enum {
     return self;
 }
 
-/*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
-*/
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 - (void)viewWillAppear:(BOOL)animated {
     self.mapView.showsUserLocation = YES;
@@ -142,10 +147,6 @@ enum {
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
-    self.mapView.delegate = nil;
-    self.userLocation = nil;
-    self.selectedAnnotation = nil;
 }
 
 - (void)viewDidUnload {
@@ -685,7 +686,7 @@ enum {
         [self selectTourComponent:component];
     }
     else {
-        VLog(@"Could not find TourSiteOrRoute for selected row!");
+        DDLogVerbose(@"Could not find TourSiteOrRoute for selected row!");
     }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -740,33 +741,6 @@ enum {
     [self.components addObjectsFromArray:allSites];
 }
 
-#pragma mark connection
-
-- (void)requestImageForComponent:(TourComponent *)component {
-    ConnectionWrapper *connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-    [connection requestDataFromURL:[NSURL URLWithString:component.photoURL] 
-               allowCachedResponse:YES];
-    
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate showNetworkActivityIndicator];
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleData:(NSData *)data {
-    for (int i = 0; i < self.components.count; i++) {
-        TourSiteOrRoute *aSite = [self.components objectAtIndex:i];
-        if ([aSite.photoURL isEqualToString:[wrapper.theURL absoluteString]]) {
-            aSite.photo = data;
-            break;
-        }
-    }
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate hideNetworkActivityIndicator];
-}
-
-- (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
-    MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate hideNetworkActivityIndicator];
-}
 
 #pragma mark MITMapViewDelegate
 
@@ -987,7 +961,6 @@ enum {
 
 - (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views {
     if (selectedAnnotation) {
-        //[self.mapView selectAnnotation:selectedAnnotation animated:YES withRecenter:YES];
         self.selectedAnnotation = nil;
     }
 }

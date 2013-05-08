@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "MITMapView.h"
 #import "MITThumbnailView.h"
-#import "ConnectionWrapper.h"
 #import "ToursDataManager.h"
 #import "TourComponent.h"
 #import "TourGeoLocation.h"
@@ -12,7 +11,7 @@
 
 
 @interface TourOverviewViewController : UIViewController <UITableViewDataSource, 
-UITableViewDelegate, MITMapViewDelegate, UIAlertViewDelegate, ConnectionWrapperDelegate> {
+UITableViewDelegate, MITMapViewDelegate, UIAlertViewDelegate> {
     
     UITableView *_tableView;
     MITMapView *_mapView;

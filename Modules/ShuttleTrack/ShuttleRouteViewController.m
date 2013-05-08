@@ -3,6 +3,7 @@
 #import "ShuttleStopMapAnnotation.h"
 #import "ShuttleStopCell.h"
 #import "ShuttleStopViewController.h"
+#import "MITUIConstants.h"
 
 @interface ShuttleRouteViewController(Private)
 
@@ -20,6 +21,17 @@
 @synthesize route = _route;
 @synthesize tableView = _tableView;
 @synthesize routeMapViewController = _routeMapViewController;
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 - (void)dealloc {
 	[_viewTypeButton release];
@@ -286,7 +298,7 @@
 		if (!_shownError) {
 			_shownError = YES;
 			
-			[MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
+            [UIAlertView alertViewForError:nil withTitle:@"Shuttles" alertViewDelegate:nil];
 			
 			if([routeID isEqualToString:self.route.routeID]) {
 				self.route.liveStatusFailed = YES;

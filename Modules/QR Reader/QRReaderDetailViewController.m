@@ -5,6 +5,7 @@
 #import "MobileRequestOperation.h"
 #import "MITLoadingActivityView.h"
 #import "NSDateFormatter+RelativeString.h"
+#import "UIKit+MITAdditions.h"
 
 @interface QRReaderDetailViewController () <ShareItemDelegate,UITableViewDataSource,UITableViewDelegate>
 @property (retain) NSString *resultText;
@@ -15,12 +16,13 @@
 @property (retain) QRReaderResult *scanResult;
 
 #pragma mark - Public IBOutlets
-@property (assign) UIImageView *qrImageView;
-@property (assign) UIImageView *backgroundImageView;
-@property (assign) UILabel *textTitleLabel;
-@property (assign) UILabel *textView;
-@property (assign) UILabel *dateLabel;
-@property (assign) UITableView *scanActionTable;
+@property (assign) IBOutlet UIScrollView *scrollView;
+@property (assign) IBOutlet UIImageView *qrImageView;
+@property (assign) IBOutlet UIImageView *backgroundImageView;
+@property (assign) IBOutlet UILabel *textTitleLabel;
+@property (assign) IBOutlet UILabel *textView;
+@property (assign) IBOutlet UILabel *dateLabel;
+@property (assign) IBOutlet UITableView *scanActionTable;
 @property (strong) NSMutableArray *scanActions;
 @property (strong) NSDictionary *scanShareDetails;
 @property (strong) NSString *scanType;
@@ -122,7 +124,7 @@
                                                                                 command:nil
                                                                              parameters:params];
         
-        operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSError *error)
+        operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSString *contentType, NSError *error)
         {
             [self handleScanInfoResponse:codeInfo
                                    error:error];
@@ -138,10 +140,15 @@
     [self.urlMappingOperation cancel];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)handleScanInfoResponse:(NSDictionary*)codeInfo error:(NSError*)error
@@ -178,7 +185,7 @@
     
     if (validResponse == NO)
     {
-        DLog(@"Did not recieve a valid action response from the server for code '%@'", self.scanResult.text);
+        DDLogVerbose(@"Did not recieve a valid action response from the server for code '%@'", self.scanResult.text);
         
         [self.scanActions removeAllObjects];
         NSURL *url = [NSURL URLWithString:self.scanResult.text];

@@ -1,5 +1,8 @@
 #import <Foundation/Foundation.h>
 
+#define kFPDefaultEpsilon (0.001)
+BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
+
 @interface NSURL (MITAdditions)
 
 + (NSURL *)internalURLWithModuleTag:(NSString *)tag path:(NSString *)path;
@@ -14,10 +17,8 @@
 @end
 
 @interface NSString (MITAdditions)
-
 - (NSString *)substringToMaxIndex:(NSUInteger)to;
 - (BOOL)containsSubstring:(NSString*)string options:(NSStringCompareOptions)mask;
-
 @end
 
 @interface NSString (MITAdditions_URLEncoding)
@@ -29,7 +30,6 @@
 @interface NSString (MITAdditions_HTMLEntity)
 - (NSString *)stringByDecodingXMLEntities;
 @end
-
 
 @interface UIDevice (MITAdditions)
 - (NSString*)sysInfoByName:(NSString*)typeSpecifier;

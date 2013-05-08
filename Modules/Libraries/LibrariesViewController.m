@@ -5,7 +5,7 @@
 #import "LibrariesAccountViewController.h"
 #import "LibrariesAskUsTableViewController.h"
 #import "LibrariesTellUsViewController.h"
-
+#import "MobileRequestOperation.h"
 
 // links expiration time 10 days
 #define LinksExpirationTime 864000   
@@ -29,7 +29,6 @@
 @implementation LibrariesViewController
 @synthesize tableView;
 @synthesize searchBar;
-@synthesize linksRequest;
 @synthesize links;
 @synthesize linksStatus;
 @synthesize searchController;
@@ -45,7 +44,6 @@
 
 - (void)dealloc
 {
-    self.linksRequest = nil;
     self.links = nil;
     self.tableView = nil;
     self.searchController.navigationController = nil;
@@ -80,7 +78,6 @@
         [self loadLinksFromServer];
     }
     
-    self.linksRequest = [[[MITMobileWebAPI alloc] initWithModule:@"libraries" command:@"links" parameters:nil] autorelease];
     self.searchController = [[[WorldCatSearchController alloc] init] autorelease];
     self.searchController.navigationController = self.navigationController;
 }
@@ -99,10 +96,15 @@
     // e.g. self.myOutlet = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (CGFloat)heightForLinkTitle:(NSString *)aTitle {
@@ -289,55 +291,49 @@
 }
 
 - (void)loadLinksFromServer {
-    self.linksRequest = [[[MITMobileWebAPI alloc] initWithModule:@"libraries" command:@"links" parameters:nil] autorelease];
-    self.linksRequest.jsonDelegate = self;
-    [self.linksRequest start];
+    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"links" parameters:nil] autorelease];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        if (error) {
+            // look for old cached version of links
+            if ([[NSUserDefaults standardUserDefaults] objectForKey:LibrariesLinksKey]) {
+                self.linksStatus = LinksStatusLoaded;
+                self.links = [[NSUserDefaults standardUserDefaults] objectForKey:LibrariesLinksKey];
+                [self.tableView reloadData];
+            } else {
+                [self showLinksLoadingFailure];
+            }
+        } else {
+            // quick sanity check
+            NSArray *linksArray = jsonResult;
+            for (NSDictionary *linkDict in linksArray) {
+                if (![[linkDict objectForKey:@"title"] isKindOfClass:[NSString class]]) {
+                    [self showLinksLoadingFailure];
+                    return;
+                }
+                if (![[linkDict objectForKey:@"url"] isKindOfClass:[NSString class]]) {
+                    [self showLinksLoadingFailure];
+                    return;
+                }
+            }
+            
+            // sanity checked passed
+            [[NSUserDefaults standardUserDefaults] setObject:jsonResult forKey:LibrariesLinksKey];
+            [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:LibrariesLinksUpdatedKey];
+            self.linksStatus = LinksStatusLoaded;
+            self.links = jsonResult;
+            [self.tableView reloadData];
+        }
+    };
+    [[NSOperationQueue mainQueue] addOperation:request];
+
     self.linksStatus = LinksStatusLoading;
 }
 
 - (void)showLinksLoadingFailure {
-    [MITMobileWebAPI showErrorWithHeader:@"Libraries"];
+    [UIAlertView alertViewForError:nil withTitle:@"Libraries" alertViewDelegate:nil];
     self.linksStatus = LinksStatusFailed;
     [self.tableView reloadData];
-}
-
-#pragma mark - MITMobileWeb delegate
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
-    // quick sanity check
-    NSArray *linksArray = JSONObject;
-    for (NSDictionary *linkDict in linksArray) {
-        if (![[linkDict objectForKey:@"title"] isKindOfClass:[NSString class]]) {
-            [self showLinksLoadingFailure];
-            return;
-        }
-        if (![[linkDict objectForKey:@"url"] isKindOfClass:[NSString class]]) {
-            [self showLinksLoadingFailure];
-            return;
-        }
-    }
-    
-    // sanity checked passed
-    [[NSUserDefaults standardUserDefaults] setObject:JSONObject forKey:LibrariesLinksKey];
-    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:LibrariesLinksUpdatedKey];
-    self.linksStatus = LinksStatusLoaded;
-    self.links = JSONObject;
-    [self.tableView reloadData];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    return NO;
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-    // look for old cached version of links
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:LibrariesLinksKey]) {
-        self.linksStatus = LinksStatusLoaded;
-        self.links = [[NSUserDefaults standardUserDefaults] objectForKey:LibrariesLinksKey];
-        [self.tableView reloadData];
-    } else {
-        [self showLinksLoadingFailure];
-    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)aSearchBar {

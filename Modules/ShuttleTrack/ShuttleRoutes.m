@@ -1,10 +1,11 @@
 #import "ShuttleRoutes.h"
+#import "ShuttleRoute.h"
 #import "ShuttleRouteViewController.h"
-#import "RouteMapViewController.h"
 #import "SecondaryGroupedTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate+ModuleList.h"
+
 
 @implementation ShuttleRoutes
 
@@ -365,7 +366,7 @@
 	self.shuttleRoutes = routes;
 	
 	if (nil == routes) {
-		[MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
+        [UIAlertView alertViewForError:nil withTitle:@"Shuttles" alertViewDelegate:nil];
 		self.shuttleRoutes = oldRoutes;
 	}
 }

@@ -8,6 +8,7 @@
 #import "InfoDataSource.h"
 #import "StaffDataSource.h"
 #import "MITUIConstants.h"
+#import "MobileRequestOperation.h"
 
 #define leftMargin 10.0
 #define verticalPadding 10.0
@@ -47,7 +48,7 @@ NSString * termText(NSString *termCode) {
 
 @implementation StellarDetailViewController
 @synthesize stellarClass;
-@synthesize currentClassInfoLoader, myStellarStatusDelegate;
+@synthesize currentClassInfoLoader;
 @synthesize news, instructors, tas, times;
 @synthesize titleView, termView;
 @synthesize myStellarButton;
@@ -92,10 +93,8 @@ NSString * termText(NSString *termCode) {
 	[url release];
 	
 	currentClassInfoLoader.viewController = nil;
-	myStellarStatusDelegate.viewController = nil;
 	
 	[currentClassInfoLoader release];
-	[myStellarStatusDelegate release];
 	
 	[stellarClass release];
 	
@@ -111,6 +110,17 @@ NSString * termText(NSString *termCode) {
 	[dataSources release];
 	
 	[super dealloc];
+}
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void) viewDidLoad {
@@ -190,12 +200,37 @@ NSString * termText(NSString *termCode) {
 		[parameters setObject:action forKey:@"action"];
 		[parameters setObject:stellarClass.masterSubjectId forKey:@"subject"];
 		[parameters setObject:stellarClass.term forKey:@"term"];
-	
-		self.myStellarStatusDelegate = [[[MyStellarStatusDelegate alloc] initWithClass:stellarClass status:newMyStellarStatus viewController:self] autorelease];
-		[[MITMobileWebAPI jsonLoadedDelegate:myStellarStatusDelegate]
-			requestObjectFromModule:StellarTag command:@"myStellar" parameters:parameters];
 
+        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"stellar"
+                                                                                  command:@"myStellar"
+                                                                               parameters:parameters] autorelease];
+        
+        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+            if (error) {
+                self.myStellarButton.selected = [stellarClass.isFavorited boolValue];
+                
+                NSString *message = [NSString stringWithFormat:@"Could not update your myStellar account for %@", stellarClass.masterSubjectId];
+                UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Connection failed"
+                                                                 message:message
+                                                                delegate:nil
+                                                       cancelButtonTitle:@"OK" 
+                                                       otherButtonTitles:nil] autorelease];
+                
+                [alert show];
+
+            } else {
+                if (newMyStellarStatus) {
+                    [StellarModel saveClassToFavorites:stellarClass];
+                } else {
+                    [StellarModel removeClassFromFavorites:stellarClass];
+                }
+            }
+        };
+        
 		myStellarButton.selected = !(myStellarButton.selected);
+
+        [[NSOperationQueue mainQueue] addOperation:request];
+
 	} else {
 		NSString *message;
 		if([[UIApplication sharedApplication] enabledRemoteNotificationTypes] == UIRemoteNotificationTypeNone) {
@@ -447,53 +482,6 @@ NSString * termText(NSString *termCode) {
 	StellarDetailViewControllerComponent *component = [self new];
 	component.viewController = controller;
 	return [component autorelease];
-}
-
-@end
-
-@implementation MyStellarStatusDelegate
-@synthesize viewController;
-- (id) initWithClass: (StellarClass *)class status: (BOOL)newStatus viewController: (StellarDetailViewController *)controller {
-	self = [super init];
-	if (self) {
-		viewController = controller;
-		status = newStatus;
-		stellarClass = [class retain];
-	}
-	return self;
-}
-
-- (void) dealloc {
-	[stellarClass release];
-	[super dealloc];
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded: (id)JSONObject {
-	if(status) {
-		[StellarModel saveClassToFavorites:stellarClass];
-	} else {
-		[StellarModel removeClassFromFavorites:stellarClass];
-	}
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-	if(viewController.myStellarStatusDelegate == self) {
-		viewController.myStellarButton.selected = [stellarClass.isFavorited boolValue];
-	}
-	
-	UIAlertView *alert = [[UIAlertView alloc] 
-		initWithTitle:@"Connection failed"
-		message:[NSString stringWithFormat:@"Could not update your myStellar account for %@", stellarClass.masterSubjectId]
-		delegate:nil
-		cancelButtonTitle:@"OK" 
-		otherButtonTitles:nil];
-	
-	[alert show];
-    [alert release];
-}		
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return NO;
 }
 
 @end

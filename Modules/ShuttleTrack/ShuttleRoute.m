@@ -150,7 +150,6 @@
         NSArray *newPath = [stopInfo objectForKey:@"path"];
         if (newPath == nil) { newPath = [NSArray array]; }
         if ([shuttleStop.path isEqualToArray: newPath] == NO) {
-            // NSLog(@"Arrays are different: %@ vs %@", newPath, shuttleStop.path);
             pathChanged = YES;
         }
 		[shuttleStop updateInfo:stopInfo];
@@ -168,7 +167,7 @@
 		// prune cached stops no longer on the route
 		self.cache.stops = newRouteStops;
 		[oldRouteStops minusSet:newRouteStops];
-        DLog(@"deleting route stops: %@", [oldRouteStops description]);
+        DDLogVerbose(@"deleting route stops: %@", [oldRouteStops description]);
 		[CoreDataManager deleteObjects:[oldRouteStops allObjects]];
 		
 		pathShouldUpdate = YES;
@@ -266,7 +265,7 @@
 		if (shuttleStop == nil) {
 			shuttleStop = [[[ShuttleStop alloc] initWithRouteStop:routeStop] autorelease];
 		}
-		//NSLog(@"initialized stop %@ while initializing route %@", [shuttleStop description], self.routeID);
+		
 		[_stops addObject:shuttleStop];
 
 		ShuttleStopMapAnnotation* annotation = [[[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop] autorelease];

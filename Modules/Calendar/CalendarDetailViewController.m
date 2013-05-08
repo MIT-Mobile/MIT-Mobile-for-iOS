@@ -7,41 +7,76 @@
 #import "URLShortener.h"
 #import "CalendarDataManager.h"
 #import <EventKit/EventKit.h>
+#import "MobileRequestOperation.h"
 
 #define WEB_VIEW_PADDING 10.0
 #define BUTTON_PADDING 10.0
 #define kCategoriesWebViewTag 521
 #define kDescriptionWebViewTag 516
 
-@implementation CalendarDetailViewController
+@interface CalendarDetailViewController ()
+@property (nonatomic, retain) UISegmentedControl *eventPager;
+@end
 
-@synthesize event, events, tableView = _tableView;
+@implementation CalendarDetailViewController
+@synthesize event, events;
+
+- (void)loadView
+{
+    CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
+    
+    if (self.navigationController && (self.navigationController.navigationBarHidden == NO))
+    {
+        CGFloat navBarHeight = CGRectGetHeight(self.navigationController.navigationBar.frame);
+        mainFrame.origin.y += navBarHeight;
+        mainFrame.size.height -= navBarHeight;
+    }
+    
+    if (self.navigationController && (self.navigationController.toolbarHidden == NO))
+    {
+        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.frame);
+        mainFrame.size.height -= toolbarHeight;
+    }
+    
+    UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
+    CGRect mainBounds = mainView.bounds;
+    
+    {
+        CGRect tableViewFrame = CGRectMake(CGRectGetMinX(mainBounds),
+                                           CGRectGetMinY(mainBounds),
+                                           CGRectGetWidth(mainBounds),
+                                           CGRectGetHeight(mainBounds));
+        
+        UITableView *tableView = [[UITableView alloc] initWithFrame:tableViewFrame
+                                                              style:UITableViewStylePlain];
+        tableView.delegate = self;
+        tableView.dataSource = self;
+        tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                      UIViewAutoresizingFlexibleWidth);
+        
+        self.tableView = [tableView autorelease];
+        [mainView addSubview:tableView];
+    }
+    
+    self.view = [mainView autorelease];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 	
 	self.shareDelegate = self;
 	
-	// setup table view
-	self.tableView = [[[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height)
-												  style:UITableViewStylePlain] autorelease];
-	self.tableView.delegate = self;
-	self.tableView.dataSource = self;
-	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-
-	[self.view addSubview:_tableView];
-	
 	// setup nav bar
 	if (self.events.count > 1) {
-		eventPager = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:
+		_eventPager = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:
                                                                 [UIImage imageNamed:MITImageNameUpArrow],
                                                                 [UIImage imageNamed:MITImageNameDownArrow], nil]];
-		[eventPager setMomentary:YES];
-		[eventPager addTarget:self action:@selector(showNextEvent:) forControlEvents:UIControlEventValueChanged];
-		eventPager.segmentedControlStyle = UISegmentedControlStyleBar;
-		eventPager.frame = CGRectMake(0, 0, 80.0, eventPager.frame.size.height);
+		[_eventPager setMomentary:YES];
+		[_eventPager addTarget:self action:@selector(showNextEvent:) forControlEvents:UIControlEventValueChanged];
+		_eventPager.segmentedControlStyle = UISegmentedControlStyleBar;
+		_eventPager.frame = CGRectMake(0, 0, 80.0, _eventPager.frame.size.height);
 		
-        UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:eventPager];
+        UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:_eventPager];
 		self.navigationItem.rightBarButtonItem = segmentBarItem;
 		[segmentBarItem release];
 	}
@@ -61,7 +96,7 @@
 - (void)showNextEvent:(id)sender
 {
 	if ([sender isKindOfClass:[UISegmentedControl class]]) {
-        NSInteger i = eventPager.selectedSegmentIndex;
+        NSInteger i = _eventPager.selectedSegmentIndex;
 		NSInteger currentEventIndex = [self.events indexOfObject:self.event];
 		if (i == 0) { // previous
             if (currentEventIndex > 0) {
@@ -84,17 +119,31 @@
 - (void)requestEventDetails
 {
     if (isLoading) {
-        [apiRequest abortRequest];
-        isLoading = NO;
+        return;
     }
-    
-	apiRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-	NSString *eventID = [NSString stringWithFormat:@"%d", [self.event.eventID intValue]];
-	
-	[apiRequest requestObjectFromModule:@"calendar" 
-								command:@"detail" 
-							 parameters:[NSDictionary dictionaryWithObjectsAndKeys:eventID, @"id", nil]];
+
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:[self.event.eventID description], @"id", nil];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
+                                                                              command:@"detail"
+                                                                           parameters:params] autorelease];
+
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        isLoading = NO;
+        
+        if (error) {
+
+        } else {
+            if ([jsonResult isKindOfClass:[NSDictionary class]]
+                && [[jsonResult objectForKey:@"id"] integerValue] == [self.event.eventID integerValue])
+            {
+                [self.event updateWithDict:jsonResult];
+                [self reloadEvent];
+            }
+        }
+    };
+
     isLoading = YES;
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 - (void)reloadEvent
@@ -107,8 +156,8 @@
     
     if ([self.events count] > 1) {
         NSInteger currentEventIndex = [self.events indexOfObject:self.event];
-        [eventPager setEnabled:(currentEventIndex > 0) forSegmentAtIndex:0];
-        [eventPager setEnabled:(currentEventIndex < [self.events count] - 1) forSegmentAtIndex:1];
+        [_eventPager setEnabled:(currentEventIndex > 0) forSegmentAtIndex:0];
+        [_eventPager setEnabled:(currentEventIndex < [self.events count] - 1) forSegmentAtIndex:1];
     }
 	
 	if (numRows > 0) {
@@ -233,13 +282,16 @@
 	[titleView release];
 }
 
-/*
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
-*/
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -389,7 +441,7 @@
 	NSError *error;
 	NSMutableString *target = [NSMutableString stringWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
 	if (!target) {
-		ELog(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
+		DDLogError(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
 	}
 
     NSString *maxWidth = [NSString stringWithFormat:@"%.0f", self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING];
@@ -559,36 +611,17 @@
 
 #pragma mark JSONLoadedDelegate for background refreshing of events
 
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
-    isLoading = NO;
-	if (result && [result isKindOfClass:[NSDictionary class]]) {
-        // make sure the event that the server returns is the one being viewed
-        if ([[result objectForKey:@"id"] intValue] == [self.event.eventID intValue]) {
-            [self.event updateWithDict:result];
-            [self reloadEvent];
-        }
-	}
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    isLoading = NO;
-	return NO;
-}
-
 - (void)dealloc {
-    if (isLoading) {
-        [apiRequest abortRequest];
-    }
-    
     self.event = nil;
     self.events = nil;
 	free(rowTypes);
 
-    [eventPager release];
 	[shareButton release];
     [categoriesString release];
     [descriptionString release];
-    [_tableView release];
+    
+    self.eventPager = nil;
+    self.tableView = nil;
     [super dealloc];
 }
 

@@ -1,10 +1,9 @@
 #import <UIKit/UIKit.h>
-#import "MITMobileWebAPI.h"
 #import "MITSearchDisplayController.h"
 
 NSInteger strLenSort(NSString *str1, NSString *str2, void *context);
 
-@interface PeopleSearchViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MITSearchDisplayDelegate, JSONLoadedDelegate, UIAlertViewDelegate, UIActionSheetDelegate> {
+@interface PeopleSearchViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MITSearchDisplayDelegate, UIAlertViewDelegate, UIActionSheetDelegate> {
 	
     MITSearchDisplayController *searchController;
     UITableView *theTableView;
@@ -14,15 +13,13 @@ NSInteger strLenSort(NSString *str1, NSString *str2, void *context);
 	NSArray *searchTokens;
 	UIView *loadingView;
 	UISearchBar *theSearchBar;
-	BOOL requestWasDispatched;
-	MITMobileWebAPI *api;
+	BOOL _searchCancelled;
 	UIView *recentlyViewedHeader;
 }
 
 - (void)beginExternalSearch:(NSString *)externalSearchTerms;
 - (void)performSearch;
 - (void)showLoadingView;
-- (void)cleanUpConnection;
 - (void)phoneIconTapped;
 - (void)showActionSheet;
 

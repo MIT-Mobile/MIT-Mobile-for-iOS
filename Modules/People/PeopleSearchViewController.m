@@ -5,6 +5,7 @@
 #import "PartialHighlightTableViewCell.h"
 #import "MIT_MobileAppDelegate.h"
 #import "ConnectionDetector.h"
+#import "MobileRequestOperation.h"
 // common UI elements
 #import "MITLoadingActivityView.h"
 #import "SecondaryGroupedTableViewCell.h"
@@ -13,30 +14,53 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
-// this function puts longer strings first
-NSInteger strLenSort(NSString *str1, NSString *str2, void *context)
-{
-    if ([str1 length] > [str2 length])
-        return NSOrderedAscending;
-    else if ([str1 length] < [str2 length])
-        return NSOrderedDescending;
-    else
-        return NSOrderedSame;
-}
+@interface PeopleSearchViewController ()
+@property (nonatomic,strong) NSURL *directoryPhoneURL;
+@end
 
 @implementation PeopleSearchViewController
 
 @synthesize searchTerms, searchTokens, searchResults, searchController,
-loadingView, searchBar = theSearchBar, tableView = theTableView;;
+loadingView, searchBar = theSearchBar, tableView = theTableView;
 
-#pragma mark view
+#pragma mark - View
+
+- (id)initWithNibName:(NSString *)nibNameOrNil
+               bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nil
+                           bundle:nil];
+    
+    if (self) {
+        self.directoryPhoneURL = [NSURL URLWithString:@"telprompt://617.253.1000"];
+    }
+    
+    return self;
+}
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)loadView
+{
+    UIView *view = [self defaultApplicationView];
+    view.backgroundColor = [UIColor clearColor];
+    
+    self.view = view;
+}
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
     self.title = @"People Directory";
     
-	requestWasDispatched = NO;
-	
 	// set up search bar
 	theSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, NAVIGATION_BAR_HEIGHT)];
     theSearchBar.tintColor = SEARCH_BAR_TINT_COLOR;
@@ -154,11 +178,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
 	self.searchResults = nil;
-	// if they cancelled while waiting for loading
-	if (requestWasDispatched) {
-		[api abortRequest];
-		[self cleanUpConnection];
-	}
+    _searchCancelled = YES;
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -171,15 +191,45 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 {
 	// save search tokens for drawing table cells
 	NSMutableArray *tempTokens = [NSMutableArray arrayWithArray:[[self.searchTerms lowercaseString] componentsSeparatedByString:@" "]];
-	[tempTokens sortUsingFunction:strLenSort context:NULL]; // match longer tokens first
+	[tempTokens sortUsingComparator:^NSComparisonResult(NSString *string1, NSString *string2) {
+        if ([string2 length] > [string2 length])
+            return NSOrderedAscending;
+        else if ([string2 length] < [string2 length])
+            return NSOrderedDescending;
+        else
+            return NSOrderedSame;
+    }];
+    
 	self.searchTokens = [NSArray arrayWithArray:tempTokens];
-	
-	api = [MITMobileWebAPI jsonLoadedDelegate:self];
-	requestWasDispatched = [api requestObject:[NSDictionary dictionaryWithObjectsAndKeys:@"people", @"module", self.searchTerms, @"q", nil]];
-	
-    if (requestWasDispatched) {
-		[self showLoadingView];
-    }
+
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:self.searchTerms, @"q", nil];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"people"
+                                                                              command:nil
+                                                                           parameters:params] autorelease];
+
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        if (_searchCancelled) {
+            return;
+        }
+        
+        [self.loadingView removeFromSuperview];	
+        if (!error) {
+            if ([jsonResult isKindOfClass:[NSArray class]]) {
+                self.searchResults = jsonResult;
+            } else {
+                self.searchResults = nil;
+            }
+            
+            self.searchController.searchResultsTableView.frame = self.tableView.frame;
+            [self.view addSubview:self.searchController.searchResultsTableView];
+            [self.searchController.searchResultsTableView reloadData];    
+        }
+    };
+
+    [self showLoadingView];
+
+	_searchCancelled = NO;
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 #pragma mark -
@@ -225,16 +275,17 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 			SecondaryGroupedTableViewCell *cell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:secondaryCellID];
 			if (cell == nil) {
 				cell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:secondaryCellID] autorelease];
-
-				if (indexPath.row == 0) {
-					cell.textLabel.text = @"Phone Directory";
-					cell.secondaryTextLabel.text = @"(617.253.1000)";
-					cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-				} else {
-					cell.textLabel.text = @"Emergency Contacts";
-					cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmergency];
-				}
 			}
+            
+            if (indexPath.row == 0) {
+                cell.textLabel.text = @"Phone Directory";
+                cell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",[self.directoryPhoneURL host]];
+                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+            } else {
+                cell.textLabel.text = @"Emergency Contacts";
+                cell.secondaryTextLabel.text = nil;
+                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmergency];
+            }
 			
 			return cell;
 		
@@ -340,10 +391,6 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 	UIView *titleView = nil;
 	
 	if (section == 1) {
-        if (requestWasDispatched) {
-            return nil;
-        }
-        
 		if (recentlyViewedHeader == nil) {
 			recentlyViewedHeader = [[UITableView groupedSectionHeaderWithTitle:@"Recently Viewed"] retain];
 		}
@@ -413,38 +460,6 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 	[self.view addSubview:self.loadingView];
 }
 
-- (void)cleanUpConnection {
-	requestWasDispatched = NO;
-	[self.loadingView removeFromSuperview];	
-}
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
-    [self cleanUpConnection];
-	
-	if (result && [result isKindOfClass:[NSArray class]]) {
-		self.searchResults = result;
-	} else {
-		self.searchResults = nil;
-	}
-
-    self.searchController.searchResultsTableView.frame = self.tableView.frame;
-    [self.view addSubview:self.searchController.searchResultsTableView];
-	[self.searchController.searchResultsTableView reloadData];
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
-{
-	[self cleanUpConnection];
-}
-
-- (BOOL) request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return YES;
-}
-
-- (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError:(NSError *)error {
-	return @"Directory";
-}
-
 #pragma mark -
 #pragma mark Action sheet methods
 
@@ -471,9 +486,8 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;;
 
 - (void)phoneIconTapped
 {
-	NSURL *externURL = [NSURL URLWithString:@"tel://6172531000"];
-	if ([[UIApplication sharedApplication] canOpenURL:externURL])
-		[[UIApplication sharedApplication] openURL:externURL];
+	if ([[UIApplication sharedApplication] canOpenURL:self.directoryPhoneURL])
+		[[UIApplication sharedApplication] openURL:self.directoryPhoneURL];
 }
 
 
