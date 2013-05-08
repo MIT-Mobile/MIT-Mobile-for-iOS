@@ -13,6 +13,7 @@
 
 + (DiningDay *)newDayWithDictionary:(NSDictionary *)dict;
 - (NSString *)allHoursSummary;
+- (DiningMeal *)mealWithName:(NSString *)name;
 - (DiningMeal *)mealForDate:(NSDate *)date;
 - (DiningMeal *)bestMealForDate:(NSDate *)date;
 

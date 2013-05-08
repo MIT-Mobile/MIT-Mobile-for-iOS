@@ -21,6 +21,7 @@
 @property (nonatomic, strong) NSArray * mealItems;
 
 @property (nonatomic, strong) DiningMeal * currentMeal;
+@property (nonatomic, strong) DiningDay * currentDay;
 @property (nonatomic, strong) NSString * currentDateString;
 
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
@@ -52,6 +53,7 @@
     
     // set current meal
     self.currentMeal = [self.venue bestMealForDate:fakeDate];
+    self.currentDay = [self.venue dayForDate:fakeDate];
     
     self.fetchedResultsController = [self fetchedResultsControllerForMeal:self.currentMeal filters:nil];
     self.fetchedResultsController.delegate = self;
@@ -112,6 +114,13 @@
                                                    cacheName:nil];
     
     return fetchedResultsController;
+}
+
+- (void) fetchItemsForMeal:(DiningMeal *) meal withFilters:(NSSet *)dietaryFilters
+{
+    self.fetchedResultsController.fetchRequest.predicate = [NSPredicate predicateWithFormat:@"meal = %@", meal];
+    //TODO:: need to add dietary filters to predicate
+    [self.fetchedResultsController performFetch:nil];
 }
 
 - (NSDictionary *) mealOfInterestForCurrentDay
@@ -371,14 +380,47 @@
 
 
 #pragma mark - Paging between meals
+
+#define MEAL_ORDER @[@"breakfast", @"brunch", @"lunch", @"dinner"]
+
 - (void) pageLeft
 {
     NSLog(@"Page Left");
+    NSInteger mealIndex = [MEAL_ORDER indexOfObject:self.currentMeal.name];
+    if (mealIndex == 0 || [self.currentDay.meals count] == 1) {
+        // need to get last meal of previous day, or nil if previous day has no meals
+        
+    } else {
+        DiningMeal * meal = nil;
+        NSInteger offset = 1;
+        while (!meal && mealIndex - offset >= 0) {
+            meal = [self.currentDay mealWithName:MEAL_ORDER[mealIndex - offset]];
+            offset++;
+        }
+        self.currentMeal = meal;
+        [self fetchItemsForMeal:self.currentMeal withFilters:nil];
+        [self.tableView reloadData];
+    }
 }
 
 - (void) pageRight
 {
     NSLog(@"Page Right");
+    NSInteger mealIndex = [MEAL_ORDER indexOfObject:self.currentMeal.name];
+    if (mealIndex == [MEAL_ORDER count] - 1 || [self.currentDay.meals count] == 1) {
+        // need to get last meal of next day, or nil if next day has no meals
+        
+    } else {
+        DiningMeal * meal = nil;
+        NSInteger offset = 1;
+        while (!meal && mealIndex + offset < [MEAL_ORDER count]) {
+            meal = [self.currentDay mealWithName:MEAL_ORDER[mealIndex + offset]];
+            offset++;
+        }
+        self.currentMeal = meal;
+        [self fetchItemsForMeal:self.currentMeal withFilters:nil];
+        [self.tableView reloadData];
+    }
 }
 
 

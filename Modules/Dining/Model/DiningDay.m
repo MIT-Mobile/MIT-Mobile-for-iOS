@@ -84,6 +84,12 @@
     return [summaries componentsJoinedByString:@", "];
 }
 
+- (DiningMeal *)mealWithName:(NSString *)name
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name == %@", name];
+    return [[[self.meals set] filteredSetUsingPredicate:predicate] anyObject];
+}
+
 - (DiningMeal *)mealForDate:(NSDate *)date {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startTime <= %@ AND endTime >= %@", date, date];
     
