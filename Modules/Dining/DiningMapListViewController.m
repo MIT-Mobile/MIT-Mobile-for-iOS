@@ -10,15 +10,19 @@
 #import "CoreDataManager.h"
 #import "HouseVenue.h"
 #import "VenueLocation.h"
+#import "UIImage+PDF.h"
 
 @interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) IBOutlet UITableView * listView;
 @property (nonatomic, strong) IBOutlet UIView * tabContainerView;
+@property (nonatomic, strong) IBOutlet UIButton * houseButton;
+@property (nonatomic, strong) IBOutlet UIButton * retailButton;
 @property (nonatomic, strong) IBOutlet MITTabBar * tabBar;
 @property (nonatomic, strong) IBOutlet MGSMapView *mapView;
 @property (nonatomic, assign) BOOL isAnimating;
 @property (nonatomic, assign) BOOL isShowingMap;
+@property (nonatomic, assign) BOOL isShowingHouseDining;
 
 @property (nonatomic, assign) NSInteger announcementSectionIndex;
 @property (nonatomic, assign) NSInteger venuesSectionIndex;
@@ -187,7 +191,20 @@
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
     
-    [self.tabBar addTarget:self action:@selector(tabBarDidChange) forControlEvents:UIControlEventValueChanged];
+//    [self.tabBar addTarget:self action:@selector(tabBarDidChange) forControlEvents:UIControlEventValueChanged];
+    
+    {
+        CGSize pdfSize = CGSizeMake(160, 55);
+        [self.houseButton addTarget:self action:@selector(tabBarDidChange:) forControlEvents:UIControlEventTouchUpInside];
+        [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
+        [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
+        [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
+        
+        [self.retailButton addTarget:self action:@selector(tabBarDidChange:) forControlEvents:UIControlEventTouchUpInside];
+        [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
+        [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
+        [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
+    }
     
     
     [self addTabWithTitle:@"House Dining"];
@@ -207,8 +224,17 @@
     
 }
 
-- (void) tabBarDidChange
+- (void) tabBarDidChange:(UIButton *) sender
 {
+    if ([sender isEqual:self.houseButton]) {
+        self.isShowingHouseDining = YES;
+        self.retailButton.selected = NO;
+    } else {
+        self.isShowingHouseDining = NO;
+        self.houseButton.selected = NO;
+    }
+    sender.selected = YES;
+    
     [self.listView reloadData];
 }
 
@@ -255,7 +281,7 @@
 
 - (BOOL) showingHouseDining
 {
-    return (self.tabBar.selectedSegmentIndex == 0);
+    return self.isShowingHouseDining;
 }
 
 #pragma mark - View layout
