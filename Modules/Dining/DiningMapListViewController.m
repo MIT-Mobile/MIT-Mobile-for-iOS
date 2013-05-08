@@ -199,6 +199,7 @@
         [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
         [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
         [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
+        [self.houseButton sendActionsForControlEvents:UIControlEventTouchUpInside]; // press this button initially
         
         [self.retailButton addTarget:self action:@selector(tabBarDidChange:) forControlEvents:UIControlEventTouchUpInside];
         [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
