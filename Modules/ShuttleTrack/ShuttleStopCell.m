@@ -35,7 +35,7 @@
 	NSDateFormatter *formatter = [[[NSDateFormatter alloc] init] autorelease];
 	[formatter setDateFormat:@"h:mm a"];
 	
-	_shuttleTimeLabel.text = [formatter stringFromDate:shuttleStop.nextScheduledDate];
+	_shuttleTimeLabel.text = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:shuttleStop.next]];
 
 	if (shuttleStop.upcoming) 
 	{

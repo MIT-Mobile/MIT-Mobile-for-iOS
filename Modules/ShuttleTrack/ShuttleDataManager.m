@@ -28,7 +28,8 @@ static ShuttleDataManager* s_dataManager = nil;
 @synthesize stopLocations = _stopLocations;
 @synthesize stopLocationsByID = _stopLocationsByID;
 
-NSString * const shuttlePathExtension = @"shuttles/";
+NSString * const shuttlePathExtension = @"/shuttles/routes";
+NSString * const shuttleStopPath = @"/stops/";
 
 + (ShuttleDataManager *)sharedDataManager {
     @synchronized(self) {
@@ -296,17 +297,19 @@ NSString * const shuttlePathExtension = @"shuttles/";
 #pragma mark JSONLoadedDelegate
 
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result
-{	
-	if ([[request.params valueForKey:@"command"] isEqualToString:@"routes"] && [result isKindOfClass:[NSArray class]]) {
-
+{
+	if ([[request.params valueForKey:@"command"] isEqualToString:@"routes"]) {// && [result isKindOfClass:[NSArray class]]) {
+        
 		BOOL routesChanged = NO;
 		
+        result = [result objectForKey:@"routes"];
+        
 		NSMutableArray *routeIDs = [[NSMutableArray alloc] initWithCapacity:[result count]];
         NSInteger sortOrder = 0;
 		
 		for (NSDictionary *routeInfo in result) {
 
-			NSString *routeID = [routeInfo objectForKey:@"route_id"];
+			NSString *routeID = [routeInfo objectForKey:@"id"];
 
 			[routeIDs addObject:routeID];
 			
@@ -367,7 +370,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
                 if (!next) {
                     next = [routeAtStop objectForKey:@"nextScheduled"];
                 }
-                stop.nextScheduled = [next doubleValue];
+                stop.next = [next doubleValue];
                 NSNumber* now = [result objectForKey:@"now"];
                 stop.now = [now doubleValue];
                 

@@ -18,15 +18,29 @@
 @synthesize cache = _cache;
 
 // cached properties
-@dynamic title;
+//@dynamic title;
 @dynamic summary;
-@dynamic interval;
+//@dynamic interval;
 @dynamic isSafeRide;
-@dynamic stops;
-@dynamic routeID;
+//@dynamic stops;
+//@dynamic routeID;
 @dynamic sortOrder;
 
 @dynamic fullSummary;
+
+
+// NEW API
+@synthesize routeID = _routeID;
+@synthesize group = _group;
+@synthesize url = _url;
+@synthesize title = _title;
+@synthesize description = _description;
+@synthesize active = _active;
+@synthesize predictable = _predictable;
+@synthesize interval = _interval;
+@synthesize stops = _stops;
+@synthesize vehicles = _vehicles;
+//@dynamic path;
 
 
 #pragma mark Getters and setters
@@ -110,12 +124,7 @@
 		ShuttleStop *shuttleStop = nil;
 		BOOL isOldStop = NO;
 		
-		NSString *stopID = [stopInfo objectForKey:@"stop_id"];
-		if (stopID == nil) {
-			stopID = [stopInfo objectForKey:@"id"];
-			//NSLog(@"using 'id' for stopID for %@", stopID); // should clean up this inconsistency in the API
-		}
-		//else { NSLog(@"using 'stop_id' for stopID for %@", stopID); }
+		NSString *stopID = [stopInfo objectForKey:@"id"];
 		
 		for (ShuttleStop *stop in _stops) {
 			if ([stop.stopID isEqualToString:stopID]) {
@@ -196,23 +205,29 @@
 
 - (void)updateInfo:(NSDictionary *)routeInfo
 {
+    self.routeID = [routeInfo objectForKey:@"id"];
 	self.title = [routeInfo objectForKey:@"title"];
-	self.summary = [routeInfo objectForKey:@"summary"];
+    self.url = [routeInfo objectForKey:@"url"];
+    self.description = [routeInfo objectForKey:@"description"];
+    self.group = [routeInfo objectForKey:@"group"];
+    self.active = [[routeInfo objectForKey:@"active"] boolValue];
+    self.predictable = [[routeInfo objectForKey:@"predictable"] boolValue];
 	self.interval = [[routeInfo objectForKey:@"interval"] intValue];
-	self.isSafeRide = [[routeInfo objectForKey:@"isSafeRide"] boolValue];
 	
-	self.tag = [routeInfo objectForKey:@"tag"];
-	self.gpsActive = [[routeInfo objectForKey:@"gpsActive"] boolValue];
-	self.isRunning = [[routeInfo objectForKey:@"isRunning"] boolValue];
-	
+//    NSLog(@"routeInfo: %@, %@, %@, %@, %@, %d, %d, %d", self.routeID, self.title, self.url,
+//          self.description, self.group, self.active, self.predictable, self.interval);
+    
+    
 	NSArray *stops = [routeInfo objectForKey:@"stops"];
 	if (stops) {
+        NSLog(@"STOPS: \n\n%@", stops);
 		self.stops = (NSMutableArray *)stops;
-        for (ShuttleStop *aStop in self.stops) {
-            aStop.now = [[routeInfo objectForKey:@"now"] doubleValue];
-        }
+//        for (ShuttleStop *aStop in self.stops) {
+//            aStop.now = [[routeInfo objectForKey:@"now"] doubleValue];
+//        }
 	}
 	
+    /*
 	NSArray* vehicleLocations = [routeInfo objectForKey:@"vehicleLocations"];
 	if (vehicleLocations && ![[NSNull null] isEqual:vehicleLocations])
 	{
@@ -226,6 +241,7 @@
 		self.vehicleLocations = formattedVehicleLocations;
 		[formattedVehicleLocations release];
 	}
+     */
 }
 
 - (void)getStopsFromCache
@@ -286,7 +302,7 @@
 {
     self = [super init];
     if (self != nil) {
-		self.routeID = [dict objectForKey:@"route_id"];
+		self.routeID = [dict objectForKey:@"id"];
 		_vehicleLocations = nil;
 		_pathLocations = nil;
 		_stopAnnotations = nil;
@@ -340,7 +356,7 @@
 	}
 	
 	ShuttleStop *aStop = [self.stops lastObject];
-	if (aStop.nextScheduled) { // we have something from the server
+	if (aStop.next) { // we have something from the server
 		if (self.vehicleLocations && self.vehicleLocations.count > 0) {
 			summaryString = @"Real time bus tracking online.";
 		} else if (self.isRunning) {

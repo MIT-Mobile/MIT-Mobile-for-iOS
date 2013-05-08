@@ -256,7 +256,7 @@
 		ShuttleStop* schedule = [self.shuttleStopSchedules objectAtIndex:section];
 		
         // if nextScheduled is not defined, the first row will be negative
-		return (schedule.nextScheduled != 0) ? schedule.predictions.count + 1 : 0;
+		return (schedule.next != 0) ? schedule.predictions.count + 1 : 0;
         
 	}
 	

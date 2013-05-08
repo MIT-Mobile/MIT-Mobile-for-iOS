@@ -125,7 +125,11 @@
 
 
 + (NSURL *)buildURL:(NSDictionary *)dict queryBase:(NSString *)base {
-	NSString *urlString = [NSString stringWithFormat:@"%@?%@", base, [MITMobileWebAPI buildQuery:dict]];
+    NSString *urlString = base;
+//    if (dict != nil && [dict count] > 0) {
+//        urlString = [NSString stringWithFormat:@"%@?%@", base, [MITMobileWebAPI buildQuery:dict]];
+//    }
+//	NSString *urlString = [NSString stringWithFormat:@"%@?%@", base, [MITMobileWebAPI buildQuery:dict]];
 	NSURL *url = [NSURL URLWithString:urlString];
 	return url;
 }
@@ -242,12 +246,12 @@
 - (NSURL*)requestURL {
     NSString *requestBase = [MITMobileWebGetCurrentServerURL() absoluteString];
     
-    if ([requestBase hasSuffix:@"/"] == NO) {
-        requestBase = [requestBase stringByAppendingString:@"/"];
-    }
+//    if ([requestBase hasSuffix:@"/"] == NO) {
+//        requestBase = [requestBase stringByAppendingString:@"/"];
+//    }
     
     if (self.pathExtension) {
-        requestBase = [requestBase stringByAppendingFormat:@"%@/",self.pathExtension];
+        requestBase = [requestBase stringByAppendingFormat:@"%@",self.pathExtension];
     }
     
     NSURL *reqURL = [MITMobileWebAPI buildURL:self.params

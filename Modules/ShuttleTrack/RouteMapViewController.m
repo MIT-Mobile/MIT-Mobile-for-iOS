@@ -165,7 +165,7 @@
 		ShuttleStop* stop = [_routeStops objectForKey:annotation.shuttleStop.stopID];
 		if(nil != stop)
 		{
-			NSDate* nextScheduled = [NSDate dateWithTimeIntervalSince1970:stop.nextScheduled];
+			NSDate* nextScheduled = [NSDate dateWithTimeIntervalSince1970:stop.next];
 			NSTimeInterval intervalTillStop = [nextScheduled timeIntervalSinceDate:[NSDate date]];
 			
 			if (intervalTillStop > 0) {

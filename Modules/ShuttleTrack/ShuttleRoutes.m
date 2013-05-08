@@ -199,7 +199,7 @@
 					[aView removeFromSuperview];
 				}
 			}
-			cell.imageView.image = route.isRunning ? _shuttleRunningImage : _shuttleNotRunningImage;
+			cell.imageView.image = route.active ? _shuttleRunningImage : _shuttleNotRunningImage;
 		}
 
 		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -308,11 +308,17 @@
 	NSMutableArray* nonSaferideRoutes = [NSMutableArray arrayWithCapacity:self.shuttleRoutes.count];
 	
 	for (ShuttleRoute* route in self.shuttleRoutes) {
-		if (route.isSafeRide) {
-			[saferideRoutes addObject:route];
-		} else {
-			[nonSaferideRoutes addObject: route];
-		}
+//		if (route.isSafeRide) {
+//			[saferideRoutes addObject:route];
+//		} else {
+//			[nonSaferideRoutes addObject: route];
+//		}
+        
+        if ([route.group isEqualToString:DAYTIME_SHUTTLES]) {
+            [nonSaferideRoutes addObject:route];
+        } else {
+            [saferideRoutes addObject:route];
+        }
 		
 	}
 	
