@@ -11,8 +11,12 @@
 #import "HouseVenue.h"
 #import "VenueLocation.h"
 #import "UIImage+PDF.h"
+#import "MGSMapView.h"
+#import "MGSLayer.h"
+#import "MGSAnnotation.h"
+#import "MGSSimpleAnnotation.h"
 
-@interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
+@interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, MGSMapViewDelegate, MGSLayerDelegate>
 
 @property (nonatomic, strong) IBOutlet UITableView * listView;
 @property (nonatomic, strong) IBOutlet UIView * tabContainerView;
@@ -213,6 +217,8 @@
     self.tabBar.selectedSegmentIndex = 0;
     
     self.listView.backgroundView = nil;
+    
+    [self annotateHouseVenues];
     
     [self layoutListState];
 }
@@ -562,9 +568,31 @@
     return 25;
 }
 
-
-
 #pragma mark - MapView Methods
+
+- (void) annotateHouseVenues
+{
+    NSArray *venues = [self.fetchedResultsController fetchedObjects];
+    
+    NSMutableArray * annotations = [NSMutableArray array];
+    for (HouseVenue *venue in venues) {
+        VenueLocation *loc = venue.location;
+        MGSSimpleAnnotation *annotation = [[MGSSimpleAnnotation alloc] initWithAnnotationType:MGSAnnotationPointOfInterest];
+        annotation.coordinate = CLLocationCoordinate2DMake([loc.latitude doubleValue], [loc.longitude doubleValue]);
+        annotation.title = venue.name;
+        annotation.detail = loc.displayDescription;
+        
+        [annotations addObject:annotation];
+    }
+    
+    MGSLayer * houseLayer = [[MGSLayer alloc] initWithName:@"house.layer"];
+    houseLayer.delegate = self;
+    [houseLayer addAnnotationsFromArray:annotations];        // this doesn't seem to do anything
+    
+    [self.mapView addLayer:houseLayer];
+    [self.mapView setNeedsDisplay];
+    
+}
 
 
 @end
