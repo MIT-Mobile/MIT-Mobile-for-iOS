@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import "DiningMeal.h"
 
 @interface DiningHallMenuSectionHeaderView : UIView
 
@@ -12,7 +13,7 @@
 @property (nonatomic, readonly, strong) UIButton * leftButton;
 @property (nonatomic, readonly, strong) UIButton * rightButton;
 
-+ (NSString *) stringForMeal:(NSDictionary *)meal;
++ (NSString *) stringForMeal:(DiningMeal *)meal;
 
 + (CGFloat) heightForPagerBar;
 + (CGFloat) heightForFilterBar;

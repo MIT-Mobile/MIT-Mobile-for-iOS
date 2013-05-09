@@ -1,7 +1,6 @@
 #import "DiningHallMenuSectionHeaderView.h"
 #import "UIImage+PDF.h"
 #import "Foundation+MITAdditions.h"
-#import "DiningMeal.h"
 
 @interface DiningHallMenuSectionHeaderView ()
 
