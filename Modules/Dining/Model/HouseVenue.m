@@ -68,6 +68,9 @@
 }
 
 - (DiningDay *)dayForDate:(NSDate *)date {
+    if (!date) {
+        return nil;
+    }
     NSCalendar *calendar = [NSCalendar currentCalendar];
     NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:date];
     NSDate *dayDate = [calendar dateFromComponents:components];

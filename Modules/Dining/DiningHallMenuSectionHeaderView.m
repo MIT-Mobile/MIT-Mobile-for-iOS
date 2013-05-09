@@ -183,10 +183,12 @@
 }
 
 
-+ (NSString *) stringForMeal:(DiningMeal *) meal
++ (NSString *) stringForMeal:(DiningMeal *) meal onDate:(NSDate *)date
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    NSDate *date = meal.startTime;
+    if (!date) {
+        date = meal.startTime;
+    }
     
     NSString *dayString;
     if ([date isToday]) {

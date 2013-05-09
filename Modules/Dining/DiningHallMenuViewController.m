@@ -22,6 +22,7 @@
 
 @property (nonatomic, strong) DiningMeal * currentMeal;
 @property (nonatomic, strong) DiningDay * currentDay;
+@property (nonatomic, strong) NSDate * currentDate;
 @property (nonatomic, strong) NSString * currentDateString;
 
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
@@ -49,11 +50,11 @@
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     self.currentDateString = [dateFormatter stringFromDate:[NSDate date]];
     
-    NSDate *fakeDate = [HouseVenue fakeDate];
+    self.currentDate = [HouseVenue fakeDate];
     
     // set current meal
-    self.currentMeal = [self.venue bestMealForDate:fakeDate];
-    self.currentDay = [self.venue dayForDate:fakeDate];
+    self.currentMeal = [self.venue bestMealForDate:self.currentDate];
+    self.currentDay = [self.venue dayForDate:self.currentDate];
     
     self.fetchedResultsController = [self fetchedResultsControllerForMeal:self.currentMeal filters:nil];
     self.fetchedResultsController.delegate = self;
@@ -281,42 +282,33 @@
     NSArray *sections = [self.fetchedResultsController sections];
     if ([sections count] > 0) {
         id<NSFetchedResultsSectionInfo> sectionInfo = [sections objectAtIndex:0];
-        return [sectionInfo numberOfObjects];
+        if ([sectionInfo numberOfObjects]) {
+            return [sectionInfo numberOfObjects];
+        } else {
+            return 1;       // will be used to show 'No meals this day'
+        }
     }
     return 0;
-    // return 1;       // will be used to show 'No meals this day'
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    id<NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:0];
+    if ([sectionInfo numberOfObjects] == 0) {
+        return 54;  // 'List empty' cells are static 54px
+    }
+    
     DiningMealItem *item = [self.fetchedResultsController objectAtIndexPath:indexPath];
     if (item) {
         return [DiningHallMenuItemTableCell cellHeightForCellWithStation:item.station title:item.name subtitle:item.subtitle];
     }
-    return 54;  // 'No meals' cells are static 54px
+    return 54;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    DiningMealItem *item = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    if (item) {
-        static NSString *CellIdentifier = @"Cell";
-        DiningHallMenuItemTableCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        if (!cell) {
-            cell = [[DiningHallMenuItemTableCell alloc] initWithReuseIdentifier:CellIdentifier];
-        }
-        
-        cell.station.text       = item.station;
-        cell.title.text         = item.name;
-        cell.subtitle.text      = item.subtitle;
-        
-        NSArray *imagePaths = [[item.dietaryFlags mapObjectsUsingBlock:^id(id obj) {
-            return ((DiningDietaryFlag *)obj).pdfPath;
-        }] allObjects];
-        cell.dietaryImagePaths  = [imagePaths sortedArrayUsingSelector:@selector(compare:)];
-        
-        return cell;
-    } else {
+    id<NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:0];
+    if ([sectionInfo numberOfObjects] == 0) {
         static NSString *EmptyCellIdentifier = @"ListEmptyCell";
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:EmptyCellIdentifier];
         if (!cell) {
@@ -328,7 +320,28 @@
         cell.textLabel.text = @"No meals this day";
         
         return cell;
+    } else {
+        DiningMealItem *item = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        if (item) {
+            static NSString *CellIdentifier = @"Cell";
+            DiningHallMenuItemTableCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+            if (!cell) {
+                cell = [[DiningHallMenuItemTableCell alloc] initWithReuseIdentifier:CellIdentifier];
+            }
+            
+            cell.station.text       = item.station;
+            cell.title.text         = item.name;
+            cell.subtitle.text      = item.subtitle;
+            
+            NSArray *imagePaths = [[item.dietaryFlags mapObjectsUsingBlock:^id(id obj) {
+                return ((DiningDietaryFlag *)obj).pdfPath;
+            }] allObjects];
+            cell.dietaryImagePaths  = [imagePaths sortedArrayUsingSelector:@selector(compare:)];
+            
+            return cell;
+        }
     }
+    return nil;
 }
 
 - (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
@@ -337,7 +350,7 @@
         DiningHallMenuSectionHeaderView *header = [[DiningHallMenuSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 56)]; // height does not matter here, calculated in heightForHeaderInSection: delegate
         
         NSString * mealString = [self.currentMeal.name capitalizedString];
-        header.mainLabel.text = [DiningHallMenuSectionHeaderView stringForMeal:self.currentMeal];
+        header.mainLabel.text = [DiningHallMenuSectionHeaderView stringForMeal:self.currentMeal onDate:self.currentDate];
         header.mealLabel.text = mealString;
         header.timeLabel.text = [self.currentMeal hoursSummary];
         
@@ -349,7 +362,7 @@
         
         header.currentFilters = self.filtersApplied;
         
-        if ([self.fetchedResultsController.fetchedObjects count] == 0) {
+        if (!self.currentMeal) {
             header.showMealBar = NO;
         }
         
@@ -394,13 +407,17 @@
     NSInteger mealIndex = (self.currentMeal) ? [self.currentDay.meals indexOfObject:self.currentMeal] : 0;
     if (orderIndex == 0 || [self.currentDay.meals count] == 1 || mealIndex == 0) {
         // need to get last meal of previous day, or nil if previous day has no meals
-        NSDate *dayBefore = [self.currentDay.date dayBefore];
-        self.currentDay = [DiningDay dayForDate:dayBefore forVenue:self.venue];
+        NSDate *dayBefore = (self.currentDay) ? [self.currentDay.date dayBefore] : [self.currentDate dayBefore];
+        self.currentDay = [self.venue dayForDate:dayBefore];
+        self.currentDate = dayBefore;
         self.currentMeal = nil;
         if (self.currentDay) {
             if ([self.currentDay.meals count]) {
                 self.currentMeal = [self.currentDay.meals lastObject];  // get last meal in day
             }
+        } else {
+            // day not found, need to show no meals for day
+            
         }
     } else {
         // need to get previous meal in same day
@@ -413,9 +430,9 @@
         self.currentMeal = meal;
     }
     
-    if (self.currentMeal) {
+//    if (self.currentMeal) {
         [self fetchItemsForMeal:self.currentMeal withFilters:nil];
-    }
+//    }
     [self.tableView reloadData];
 }
 
@@ -426,13 +443,17 @@
     NSInteger mealIndex = (self.currentMeal) ? [self.currentDay.meals indexOfObject:self.currentMeal] : 0;
     if (orderIndex == [MEAL_ORDER count] - 1 || [self.currentDay.meals count] == 1 || mealIndex == [self.currentDay.meals count] - 1) {
         // need to get first meal of next day, or nil if next day has no meals
-        NSDate *dayAfter = [self.currentDay.date dayAfter];
-        self.currentDay = [DiningDay dayForDate:dayAfter forVenue:self.venue];
+        NSDate *dayAfter = (self.currentDay) ? [self.currentDay.date dayAfter] : [self.currentDate dayAfter];
+        self.currentDay = [self.venue dayForDate:dayAfter];
+        self.currentDate = dayAfter;
         self.currentMeal = nil;
         if (self.currentDay) {
             if ([self.currentDay.meals count]) {
                 self.currentMeal = self.currentDay.meals[0];  // get last meal in day
             }
+        } else {
+            // day not found, need to show no meals for day
+            
         }
     } else {
         DiningMeal * meal = nil;
@@ -444,30 +465,33 @@
         self.currentMeal = meal;
     }
     
-    if (self.currentMeal) {
+//    if (self.currentMeal) {
         [self fetchItemsForMeal:self.currentMeal withFilters:nil];
-    }
+//    }
     [self.tableView reloadData];
-}
-
-- (BOOL) canPageRight
-{
-    NSDate * dayAfter = [self.currentDay.date dayAfter];
-    DiningDay *nextDay = [DiningDay dayForDate:dayAfter forVenue:self.venue];
-    if (nextDay) {
-        return YES;
-    }
-    return NO;
 }
 
 - (BOOL) canPageLeft
 {
-    NSDate * dayBefore = [self.currentDay.date dayBefore];
-    DiningDay *previousDay = [DiningDay dayForDate:dayBefore forVenue:self.venue];
-    if (previousDay) {
-        return YES;
+    NSArray * days = [[self.venue.menuDays allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]]];
+    NSInteger mealIndex = [self.currentDay.meals indexOfObject:self.currentMeal];
+    
+    if ([days indexOfObject:self.currentDay] == 0 && mealIndex == 0) {
+        return NO;
     }
-    return NO;
+    return YES;
+}
+
+- (BOOL) canPageRight
+{
+    NSArray * days = [[self.venue.menuDays allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
+    NSInteger mealIndex = [self.currentDay.meals indexOfObject:self.currentMeal];
+    
+    if ([days indexOfObject:self.currentDay] == 0 && mealIndex == [self.currentDay.meals count] - 1) {
+        return NO;
+    }
+    
+    return YES;
 }
 
 
