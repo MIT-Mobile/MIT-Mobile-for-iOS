@@ -54,5 +54,8 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 - (BOOL) isToday;
 - (BOOL) isTomorrow;
 - (BOOL) isYesterday;
+- (NSDate *) dayBefore;
+- (NSDate *) dayAfter;
+
 
 @end

@@ -12,6 +12,7 @@
 @property (nonatomic, retain) HouseVenue *houseVenue;
 
 + (DiningDay *)newDayWithDictionary:(NSDictionary *)dict;
++ (DiningDay *)dayForDate:(NSDate *)date forVenue:(HouseVenue *)venue;
 - (NSString *)allHoursSummary;
 - (DiningMeal *)mealWithName:(NSString *)name;
 - (DiningMeal *)mealForDate:(NSDate *)date;

@@ -343,6 +343,10 @@
         
         [header.leftButton addTarget:self action:@selector(pageLeft) forControlEvents:UIControlEventTouchUpInside];
         [header.rightButton addTarget:self action:@selector(pageRight) forControlEvents:UIControlEventTouchUpInside];
+        header.leftButton.enabled = [self canPageLeft];
+        header.rightButton.enabled = [self canPageRight];
+
+        
         header.currentFilters = self.filtersApplied;
         
         if ([self.fetchedResultsController.fetchedObjects count] == 0) {
@@ -386,41 +390,84 @@
 - (void) pageLeft
 {
     NSLog(@"Page Left");
-    NSInteger mealIndex = [MEAL_ORDER indexOfObject:self.currentMeal.name];
-    if (mealIndex == 0 || [self.currentDay.meals count] == 1) {
+    NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:self.currentMeal.name] : 0;   // if currentMeal is null, pretend we are first meal of day
+    NSInteger mealIndex = (self.currentMeal) ? [self.currentDay.meals indexOfObject:self.currentMeal] : 0;
+    if (orderIndex == 0 || [self.currentDay.meals count] == 1 || mealIndex == 0) {
         // need to get last meal of previous day, or nil if previous day has no meals
-        
+        NSDate *dayBefore = [self.currentDay.date dayBefore];
+        self.currentDay = [DiningDay dayForDate:dayBefore forVenue:self.venue];
+        self.currentMeal = nil;
+        if (self.currentDay) {
+            if ([self.currentDay.meals count]) {
+                self.currentMeal = [self.currentDay.meals lastObject];  // get last meal in day
+            }
+        }
     } else {
+        // need to get previous meal in same day
         DiningMeal * meal = nil;
         NSInteger offset = 1;
-        while (!meal && mealIndex - offset >= 0) {
-            meal = [self.currentDay mealWithName:MEAL_ORDER[mealIndex - offset]];
+        while (!meal && orderIndex - offset >= 0) {
+            meal = [self.currentDay mealWithName:MEAL_ORDER[orderIndex - offset]];
             offset++;
         }
         self.currentMeal = meal;
-        [self fetchItemsForMeal:self.currentMeal withFilters:nil];
-        [self.tableView reloadData];
     }
+    
+    if (self.currentMeal) {
+        [self fetchItemsForMeal:self.currentMeal withFilters:nil];
+    }
+    [self.tableView reloadData];
 }
 
 - (void) pageRight
 {
     NSLog(@"Page Right");
-    NSInteger mealIndex = [MEAL_ORDER indexOfObject:self.currentMeal.name];
-    if (mealIndex == [MEAL_ORDER count] - 1 || [self.currentDay.meals count] == 1) {
-        // need to get last meal of next day, or nil if next day has no meals
-        
+    NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:self.currentMeal.name] : [MEAL_ORDER count] - 1; // if currentMeal is null, pretend we are last meal of day
+    NSInteger mealIndex = (self.currentMeal) ? [self.currentDay.meals indexOfObject:self.currentMeal] : 0;
+    if (orderIndex == [MEAL_ORDER count] - 1 || [self.currentDay.meals count] == 1 || mealIndex == [self.currentDay.meals count] - 1) {
+        // need to get first meal of next day, or nil if next day has no meals
+        NSDate *dayAfter = [self.currentDay.date dayAfter];
+        self.currentDay = [DiningDay dayForDate:dayAfter forVenue:self.venue];
+        self.currentMeal = nil;
+        if (self.currentDay) {
+            if ([self.currentDay.meals count]) {
+                self.currentMeal = self.currentDay.meals[0];  // get last meal in day
+            }
+        }
     } else {
         DiningMeal * meal = nil;
         NSInteger offset = 1;
-        while (!meal && mealIndex + offset < [MEAL_ORDER count]) {
-            meal = [self.currentDay mealWithName:MEAL_ORDER[mealIndex + offset]];
+        while (!meal && orderIndex + offset < [MEAL_ORDER count]) {
+            meal = [self.currentDay mealWithName:MEAL_ORDER[orderIndex + offset]];
             offset++;
         }
         self.currentMeal = meal;
-        [self fetchItemsForMeal:self.currentMeal withFilters:nil];
-        [self.tableView reloadData];
     }
+    
+    if (self.currentMeal) {
+        [self fetchItemsForMeal:self.currentMeal withFilters:nil];
+    }
+    [self.tableView reloadData];
+}
+
+- (BOOL) canPageRight
+{
+    NSDate * dayAfter = [self.currentDay.date dayAfter];
+    DiningDay *nextDay = [DiningDay dayForDate:dayAfter forVenue:self.venue];
+    if (nextDay) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL) canPageLeft
+{
+    NSDate * dayBefore = [self.currentDay.date dayBefore];
+    DiningDay *previousDay = [DiningDay dayForDate:dayBefore forVenue:self.venue];
+    if (previousDay) {
+        return YES;
+    }
+    return NO;
 }
 
 

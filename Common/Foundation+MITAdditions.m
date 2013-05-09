@@ -398,4 +398,14 @@ typedef struct {
     return [self isEqualToDateIgnoringTime:yesterday];
 }
 
+- (NSDate *) dayBefore
+{
+    return [self dateByAddingTimeInterval:-SECONDS_PER_DAY];
+}
+
+- (NSDate *) dayAfter
+{
+    return [self dateByAddingTimeInterval:SECONDS_PER_DAY];
+}
+
 @end
