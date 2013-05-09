@@ -1,6 +1,7 @@
 #import "DiningMapListViewController.h"
 #import "DiningHallMenuViewController.h"
 #import "DiningRetailInfoViewController.h"
+#import "MITSingleWebViewCellTableViewController.h"
 #import "DiningLocationCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITTabBar.h"
@@ -47,7 +48,7 @@
 - (NSString *) debugAnnouncement
 {
 //    return nil;
-    return @"ENROLL in the spring 2013 Meal Plan Program today! Or else you should be worried.";
+    return @"ENROLL in the spring 2013 Meal Plan Program today! Or else you should be worried. <a href=\"http://m.mit.edu\"> Check it out! </a>";
 }
 
 - (NSArray *) debugHouseDiningData
@@ -499,6 +500,13 @@
         } else {
             // handle links
         }
+    } else if (indexPath.section == _announcementSectionIndex) {
+        MITSingleWebViewCellTableViewController *vc = [[MITSingleWebViewCellTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        vc.webViewInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+        vc.htmlContent = [self debugAnnouncement];
+        
+        [self.navigationController pushViewController:vc animated:YES];
+        
     }
 }
 

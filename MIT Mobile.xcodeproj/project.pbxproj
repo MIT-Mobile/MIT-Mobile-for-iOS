@@ -200,6 +200,7 @@
 		483C866017209F9500A054F1 /* DiningLocationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 483C865F17209F9500A054F1 /* DiningLocationCell.m */; };
 		483C86631725956A00A054F1 /* DiningHallMenuCompareLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 483C86621725956A00A054F1 /* DiningHallMenuCompareLayout.m */; };
 		483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 483C86651725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m */; };
+		484748BF173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 484748BE173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.m */; };
 		4869CE4E17037F8600A3662B /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDA417037F8500A3662B /* NSIndexPath+PSTCollectionViewAdditions.m */; };
 		4869CE4F17037F8600A3662B /* PSTCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDA617037F8500A3662B /* PSTCollectionView.m */; };
 		4869CE5017037F8600A3662B /* PSTCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDA817037F8500A3662B /* PSTCollectionViewCell.m */; };
@@ -776,6 +777,8 @@
 		483C86621725956A00A054F1 /* DiningHallMenuCompareLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuCompareLayout.m; path = Dining/DiningHallMenuCompareLayout.m; sourceTree = "<group>"; };
 		483C86641725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuComparisonSectionHeaderView.h; path = Dining/DiningHallMenuComparisonSectionHeaderView.h; sourceTree = "<group>"; };
 		483C86651725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuComparisonSectionHeaderView.m; path = Dining/DiningHallMenuComparisonSectionHeaderView.m; sourceTree = "<group>"; };
+		484748BD173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITSingleWebViewCellTableViewController.h; sourceTree = "<group>"; };
+		484748BE173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITSingleWebViewCellTableViewController.m; sourceTree = "<group>"; };
 		4869CDA317037F8500A3662B /* NSIndexPath+PSTCollectionViewAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexPath+PSTCollectionViewAdditions.h"; sourceTree = "<group>"; };
 		4869CDA417037F8500A3662B /* NSIndexPath+PSTCollectionViewAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexPath+PSTCollectionViewAdditions.m"; sourceTree = "<group>"; };
 		4869CDA517037F8500A3662B /* PSTCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionView.h; sourceTree = "<group>"; };
@@ -1326,6 +1329,8 @@
 				29E308851176018C005211A7 /* MITModuleURL.m */,
 				EBAB163F11BEC3E800D481B5 /* MITSearchDisplayController.h */,
 				EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */,
+				484748BD173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.h */,
+				484748BE173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.m */,
 				EB4C2522127A0E8F00058748 /* MITThumbnailView.h */,
 				EB4C2523127A0E8F00058748 /* MITThumbnailView.m */,
 				EB6F2B6910E9023300A29A2A /* MITUIConstants.h */,
@@ -3302,6 +3307,7 @@
 				DED41FE417385A850048376F /* DiningMealItem.m in Sources */,
 				DED41FE717385A860048376F /* DiningDietaryFlag.m in Sources */,
 				DED41FEA17385A860048376F /* DiningMeal.m in Sources */,
+				484748BF173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
