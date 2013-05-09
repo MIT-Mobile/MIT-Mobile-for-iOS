@@ -12,7 +12,7 @@
 @property (nonatomic, readonly, strong) UIButton * leftButton;
 @property (nonatomic, readonly, strong) UIButton * rightButton;
 
-+ (NSString *) stringForMeal:(NSDictionary *)meal onDate:(NSString *)dateString;
++ (NSString *) stringForMeal:(NSDictionary *)meal;
 
 + (CGFloat) heightForPagerBar;
 + (CGFloat) heightForFilterBar;

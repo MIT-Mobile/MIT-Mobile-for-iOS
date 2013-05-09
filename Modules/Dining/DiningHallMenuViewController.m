@@ -337,7 +337,7 @@
         DiningHallMenuSectionHeaderView *header = [[DiningHallMenuSectionHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 56)]; // height does not matter here, calculated in heightForHeaderInSection: delegate
         
         NSString * mealString = [self.currentMeal.name capitalizedString];
-        header.mainLabel.text = // [DiningHallMenuSectionHeaderView stringForMeal:self.currentMeal onDate:self.currentDateString];
+        header.mainLabel.text = [DiningHallMenuSectionHeaderView stringForMeal:self.currentMeal];
         header.mealLabel.text = mealString;
         header.timeLabel.text = [self.currentMeal hoursSummary];
         

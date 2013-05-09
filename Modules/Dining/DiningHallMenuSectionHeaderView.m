@@ -1,6 +1,7 @@
 #import "DiningHallMenuSectionHeaderView.h"
 #import "UIImage+PDF.h"
 #import "Foundation+MITAdditions.h"
+#import "DiningMeal.h"
 
 @interface DiningHallMenuSectionHeaderView ()
 
@@ -183,12 +184,10 @@
 }
 
 
-+ (NSString *) stringForMeal:(NSDictionary *) meal onDate:(NSString *)dateString
++ (NSString *) stringForMeal:(DiningMeal *) meal
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-    NSDate *date = [dateFormatter dateFromString:dateString];
-    
+    NSDate *date = meal.startTime;
     
     NSString *dayString;
     if ([date isToday]) {
@@ -198,7 +197,7 @@
     } else if ([date isYesterday]) {
         dayString = @"Yesterday";
     } else {
-        [dateFormatter setDateFormat:@"%A"];
+        [dateFormatter setDateFormat:@"EEEE"];
         dayString = [dateFormatter stringFromDate:date];
     }
     
@@ -206,7 +205,7 @@
     NSString *fullDate = [dateFormatter stringFromDate:date];
     
     if (meal) {
-        NSString * mealString = [meal[@"name"] capitalizedString];
+        NSString * mealString = [meal.name capitalizedString];
         return [NSString stringWithFormat:@"%@'s %@, %@", dayString, mealString, fullDate];
     } else {
         return [NSString stringWithFormat:@"%@, %@", dayString, fullDate];
