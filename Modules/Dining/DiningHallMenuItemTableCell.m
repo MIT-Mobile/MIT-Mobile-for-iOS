@@ -98,7 +98,7 @@
     CGSize necessaryLabelSize = [[label text] sizeWithFont:label.font constrainedToSize:maximumLabelSize lineBreakMode:label.lineBreakMode];
     
     CGRect newFrame = label.frame;
-    newFrame.size   = necessaryLabelSize;
+    newFrame.size   = CGSizeMake(maximumLabelSize.width, necessaryLabelSize.height);    // only ever change the height
     label.frame     = newFrame;
 }
 
