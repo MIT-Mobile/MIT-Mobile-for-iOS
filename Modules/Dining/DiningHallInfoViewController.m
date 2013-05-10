@@ -1,11 +1,16 @@
 
 #import "DiningHallInfoViewController.h"
 #import "DiningHallDetailHeaderView.h"
+#import "VenueLocation.h"
 
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 
 @interface DiningHallInfoViewController ()
+
+@property (nonatomic, assign) NSInteger locationSectionIndex;
+@property (nonatomic, assign) NSInteger paymentSectionIndex;
+@property (nonatomic, assign) NSInteger scheduleSectionIndex;
 
 @end
 
@@ -35,7 +40,10 @@
     }
     headerView.timeLabel.text = timeData[@"text"];
     self.tableView.tableHeaderView = headerView;
-
+    
+    _locationSectionIndex   = 0;
+    _paymentSectionIndex    = 1;
+    _scheduleSectionIndex   = 2;
     
 }
 
@@ -62,10 +70,27 @@
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:CellIdentifier];
     }
     
-    // Configure the cell...
+    cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+    cell.textLabel.textColor = [UIColor darkTextColor];
+    cell.detailTextLabel.font = [UIFont fontWithName:@"Helvetica" size:13];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    if (indexPath.section == _locationSectionIndex) {
+        cell.textLabel.text = @"location";
+        cell.detailTextLabel.text = self.venue.location.displayDescription;
+        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+    } else if (indexPath.section == _paymentSectionIndex) {
+        cell.textLabel.text = @"payment";
+        cell.detailTextLabel.text = [[self.venue.paymentMethods allObjects] componentsJoinedByString:@", "];
+        
+    } else {
+        // schedule
+        
+    }
     
     return cell;
 }
@@ -74,13 +99,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (indexPath.section == _locationSectionIndex) {
+        
+    }
 }
 
 @end
