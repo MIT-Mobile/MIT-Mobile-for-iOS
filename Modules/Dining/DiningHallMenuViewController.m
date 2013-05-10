@@ -1,5 +1,6 @@
 #import "DiningHallMenuViewController.h"
 #import "DiningMenuCompareViewController.h"
+#import "DiningHallInfoViewController.h"
 #import "DiningMenuFilterViewController.h"
 #import "DiningHallDetailHeaderView.h"
 #import "DiningHallMenuFooterView.h"
@@ -19,6 +20,7 @@
 @property (nonatomic, strong) UIBarButtonItem *filterBarButton;
 @property (nonatomic, strong) NSArray * filtersApplied;
 @property (nonatomic, strong) NSArray * mealItems;
+@property (nonatomic, strong) NSDictionary * hallStatus;
 
 @property (nonatomic, strong) DiningMeal * currentMeal;
 @property (nonatomic, strong) DiningDay * currentDay;
@@ -64,13 +66,18 @@
     DiningHallDetailHeaderView *headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
     headerView.titleLabel.text = self.venue.name;
     
-    NSDictionary *timeData = [self hallStatusStringForMeal:self.currentMeal];
-    if ([timeData[@"isOpen"] boolValue]) {
+    self.hallStatus = [self hallStatusStringForMeal:self.currentMeal];
+    if ([self.hallStatus[@"isOpen"] boolValue]) {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
     } else {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
     }
-    headerView.timeLabel.text = timeData[@"text"];
+    headerView.timeLabel.text = self.hallStatus[@"text"];
+    
+    [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info.png"] forState:UIControlStateNormal];
+    [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info-pressed.png"] forState:UIControlStateHighlighted];
+    [headerView.accessoryButton addTarget:self action:@selector(infoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    
     self.tableView.tableHeaderView = headerView;
     
     DiningHallMenuFooterView *footerView = [[DiningHallMenuFooterView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 54)];
@@ -80,6 +87,15 @@
     self.navigationItem.rightBarButtonItem = self.filterBarButton;
     
     self.tableView.allowsSelection = NO;
+}
+
+- (void) infoButtonPressed:(id) sender
+{
+    DiningHallInfoViewController *infoVC = [[DiningHallInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    infoVC.venue = self.venue;
+    infoVC.hallStatus = self.hallStatus;
+    
+    [self.navigationController pushViewController:infoVC animated:YES];
 }
 
 - (NSManagedObjectContext *)managedObjectContext {

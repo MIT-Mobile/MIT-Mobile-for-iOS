@@ -48,8 +48,6 @@
     self.timeLabel.shadowOffset = CGSizeMake(0, 1);
     
     self.accessoryButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-    [self.accessoryButton setImage:[UIImage imageNamed:@"dining/info.png"] forState:UIControlStateNormal];
-    [self.accessoryButton setImage:[UIImage imageNamed:@"dining/info-pressed.png"] forState:UIControlStateHighlighted];
 }
 
 - (void) layoutSubviews
