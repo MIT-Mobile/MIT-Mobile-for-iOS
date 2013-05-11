@@ -225,6 +225,11 @@
     [self layoutListState];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    NSIndexPath *selectedIndexPath = [self.listView indexPathForSelectedRow];
+    [self.listView deselectRowAtIndexPath:selectedIndexPath animated:animated];
+}
+
 - (void) addTabWithTitle:(NSString *)title
 {
     NSInteger index = [self.tabBar.items count];
@@ -480,8 +485,6 @@
 #pragma mark - UITableViewDelegate
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
     if (![self showingHouseDining]) {
         NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:indexPath.section];
         NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
@@ -500,6 +503,7 @@
         detailVC.venue = venue;
         [self.navigationController pushViewController:detailVC animated:YES];
     } else if (indexPath.section == _resourcesSectionIndex) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
         if (indexPath.row == 0) {
             // do meal plan balance (log in to Touchstone if not logged in, do nothing otherwise)
         } else {
