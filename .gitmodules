@@ -7,3 +7,6 @@
 [submodule "External/PSTCollectionView"]
 	path = External/PSTCollectionView
 	url = git://github.com/MIT-Mobile/PSTCollectionView.git
+[submodule "External/SDWebImage"]
+	path = External/SDWebImage
+	url = git@github.com:rs/SDWebImage.git
