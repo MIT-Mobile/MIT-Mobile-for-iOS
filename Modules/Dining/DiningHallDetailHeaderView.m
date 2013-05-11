@@ -21,10 +21,11 @@
         self.iconView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 44, 44)];
         self.iconView.contentMode = UIViewContentModeScaleAspectFit;
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(64, 10, frame.size.width - 124, 44)];
-        self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 64, frame.size.width - 60, 13)];
+        self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 64, frame.size.width - 50, 13)];
         self.accessoryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.accessoryButton.frame = CGRectMake(frame.size.width - 60, 0, 60, frame.size.height);
-
+        self.accessoryButton.frame = CGRectMake(frame.size.width - 50, 0, 50, 67);
+        self.accessoryButton.imageEdgeInsets = UIEdgeInsetsMake(0, 0, -20, 0);
+        
         [self styleSubviews];
         [self debugInfo];
         
