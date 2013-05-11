@@ -12,6 +12,7 @@
 #import "HouseVenue.h"
 #import "VenueLocation.h"
 #import "UIImage+PDF.h"
+#import "UIImageView+WebCache.h"
 #import "MGSMapView.h"
 #import "MGSLayer.h"
 #import "MGSAnnotation.h"
@@ -435,7 +436,11 @@
     cell.subtitleLabel.text = [venue hoursToday];
     cell.statusOpen = [venue isOpenNow];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    cell.imageView.image = [UIImage imageNamed:@"icons/home-about.png"];
+    __weak DiningLocationCell *weakCell = cell;
+    [cell.imageView setImageWithURL:[NSURL URLWithString:venue.iconURL] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+        [weakCell layoutSubviews];
+    }];
+    cell.imageView.frame = CGRectMake(10, 10, 34, 34);
 }
 
 - (void)configureRetailVenueCell:(DiningLocationCell *)cell atIndexPath:(NSIndexPath *)indexPath {

@@ -1408,7 +1408,7 @@
         "url": "http://m.mit.edu/apis/dining/venues/house/baker",
         "name": "Baker",
         "short_name": "Baker",
-        "icon_url": "http://dining.mit.edu/sites/default/files/baker.png",
+        "icon_url": "http://dining.mit.edu/sites/default/files/baker-new.png",
         "location": {
           "mit_room_number": "W7-026",
           "description": "W7 - Baker House",
@@ -2036,7 +2036,7 @@
         "url": "http://m.mit.edu/apis/dining/venues/house/simmons",
         "name": "Simmons",
         "short_name": "Simmons",
-        "icon_url": "http://dining.mit.edu/sites/default/files/simmons.png",
+        "icon_url": "http://dining.mit.edu/sites/default/files/simmons-new.png",
         "location": {
           "mit_room_number": "W79-145",
           "description": "W79 - Simmons Hall",

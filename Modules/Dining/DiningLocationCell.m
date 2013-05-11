@@ -22,8 +22,6 @@ static CGFloat textWidth = 180;
         self.statusLabel.textAlignment = NSTextAlignmentRight;
         [self.contentView addSubview:self.statusLabel];
         
-        self.imageView.frame = CGRectMake(10, 10, 34, 34);
-        
         self.titleLabel = [[UILabel alloc] initWithFrame: CGRectMake(54, 10, textWidth, 17)]; // length is calculated, height is for single line of text
         self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.titleLabel.numberOfLines = 0;
@@ -73,36 +71,47 @@ static CGFloat textWidth = 180;
     
     CGRect imageFrame = CGRectMake(10, 10, 34, 34);
     self.imageView.frame = imageFrame;
+    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     
     CGRect titleFrame = self.titleLabel.frame;
-    titleFrame.origin = CGPointMake(CGRectGetMaxX(self.imageView.frame) + 10, 10);
-    self.titleLabel.frame = titleFrame;
+    CGFloat titleOffset = floor(self.titleLabel.font.lineHeight - self.titleLabel.font.ascender); // Offset the labels by the whitespace between their tops and where their text actually begins.
+    
+    titleFrame.origin = CGPointMake(CGRectGetMaxX(self.imageView.frame) + 10, 10 - titleOffset);
+    self.titleLabel.frame = CGRectIntegral(titleFrame);
     
     CGRect frame = self.subtitleLabel.frame;
-    frame.origin = CGPointMake(titleFrame.origin.x, CGRectGetMaxY(self.titleLabel.frame) + 10);
-    self.subtitleLabel.frame = frame;
+    CGFloat subtitleOffset = floor(self.subtitleLabel.font.lineHeight - self.subtitleLabel.font.ascender) + 3; // Add 3 to make the subtitle's baseline align with the bottom of the 34pt icon.
+
+    frame.origin = CGPointMake(titleFrame.origin.x, CGRectGetMaxY(self.titleLabel.frame) + 10 - subtitleOffset);
+    self.subtitleLabel.frame = CGRectIntegral(frame);
+    
     
     self.statusLabel.center = CGPointMake(CGRectGetWidth(self.bounds) - (55), CGRectGetHeight(self.bounds) * 0.5);
+
+    self.statusLabel.frame = CGRectIntegral(self.statusLabel.frame);
 }
 
 + (UIFont *) fontForPrimaryText
 {
-    return [UIFont fontWithName:@"Helvetica-Bold" size:17];
+    return [UIFont boldSystemFontOfSize:17];
 }
 
 + (UIFont *) fontForSecondaryText
 {
-    return [UIFont fontWithName:@"Helvetica" size:13];
+    return [UIFont systemFontOfSize:13];
 }
 
-+ (CGFloat) heightForRowWithTitle:(NSString *)title subtitle:(NSString *) subtitle
++ (CGFloat) heightForRowWithTitle:(NSString *)title subtitle:(NSString *)subtitle
 {
     CGSize maximumLabelSize = CGSizeMake(textWidth, CGFLOAT_MAX);
     
     CGSize titleLabelSizeThatFits = [title sizeWithFont:[self fontForPrimaryText] constrainedToSize:maximumLabelSize lineBreakMode:NSLineBreakByWordWrapping];
     CGSize subtitleLabelSizeThatFits = [subtitle sizeWithFont:[self fontForSecondaryText] constrainedToSize:maximumLabelSize lineBreakMode:NSLineBreakByWordWrapping];
     
-    CGFloat height = titleLabelSizeThatFits.height + subtitleLabelSizeThatFits.height + (3 * 10); // 30 is padding between text and top and bottom edges
+    CGFloat titleOffset = round([self fontForPrimaryText].lineHeight - [self fontForPrimaryText].ascender);
+    CGFloat subtitleOffset = floor([self fontForSecondaryText].lineHeight - [self fontForSecondaryText].ascender) + 3; // Add 3 to make the subtitle's baseline align with the bottom of the 34pt icon.
+    
+    CGFloat height = titleLabelSizeThatFits.height + subtitleLabelSizeThatFits.height - titleOffset - subtitleOffset + (3 * 10); // 30 is padding between text and top and bottom edges
     
     return MAX(54, height);
 }
