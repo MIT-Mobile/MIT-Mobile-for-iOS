@@ -1,10 +1,10 @@
-
 #import "DiningHallInfoViewController.h"
 #import "DiningHallDetailHeaderView.h"
 #import "VenueLocation.h"
 
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
+#import "UIImageView+WebCache.h"
 
 @interface DiningHallInfoViewController ()
 
@@ -29,8 +29,16 @@
 {
     [super viewDidLoad];
     
+    self.title = [NSString stringWithFormat:@"%@ Info", self.venue.shortName];
+    
     DiningHallDetailHeaderView *headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
     headerView.titleLabel.text = self.venue.name;
+    
+    __weak DiningHallDetailHeaderView *weakHeaderView = headerView;
+    [headerView.iconView setImageWithURL:[NSURL URLWithString:self.venue.iconURL]
+                               completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+        [weakHeaderView setNeedsLayout];
+    }];
     
     NSDictionary *timeData = self.hallStatus;
     if ([timeData[@"isOpen"] boolValue]) {

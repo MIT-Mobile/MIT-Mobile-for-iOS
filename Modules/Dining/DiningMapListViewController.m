@@ -443,7 +443,7 @@
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     __weak DiningLocationCell *weakCell = cell;
     [cell.imageView setImageWithURL:[NSURL URLWithString:venue.iconURL] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-        [weakCell layoutSubviews];
+        [weakCell setNeedsLayout];
     }];
     cell.imageView.frame = CGRectMake(10, 10, 34, 34);
 }

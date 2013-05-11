@@ -48,6 +48,8 @@
 {
     [super viewDidLoad];
     
+    self.title = self.venue.shortName;
+    
     // set current date string
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
