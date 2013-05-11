@@ -65,8 +65,7 @@
 - (void)insertAnnotation:(id<MGSAnnotation>)annotation
                  atIndex:(NSUInteger)index
 {
-    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
-    [newAnnotations unionOrderedSet:self.annotations];
+    NSMutableOrderedSet *newAnnotations = [self.annotations mutableCopy];
     [newAnnotations insertObject:annotation
                          atIndex:index];
     self.annotations = newAnnotations;
@@ -74,25 +73,22 @@
 
 - (void)addAnnotation:(id <MGSAnnotation>)aAnnotation
 {
-    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
-    [newAnnotations unionOrderedSet:self.annotations];
+    NSMutableOrderedSet *newAnnotations = [self.annotations mutableCopy];
     [newAnnotations addObject:aAnnotation];
     self.annotations = newAnnotations;
 }
 
 - (void)addAnnotationsFromArray:(NSArray*)aAnnotations
 {
-    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
-    [newAnnotations unionOrderedSet:self.annotations];
+    NSMutableOrderedSet *newAnnotations = [self.annotations mutableCopy];
     [newAnnotations addObjectsFromArray:aAnnotations];
     self.annotations = newAnnotations;
 }
 
 - (void)addAnnotations:(NSOrderedSet *)aAnnotations
 {
-    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
-    [newAnnotations unionOrderedSet:self.annotations];
-    [newAnnotations unionOrderedSet:newAnnotations];
+    NSMutableOrderedSet *newAnnotations = [self.annotations mutableCopy];
+    [newAnnotations unionOrderedSet:aAnnotations];
     self.annotations = newAnnotations;
 }
 
@@ -101,32 +97,28 @@
 }
 
 - (void)deleteAnnotation:(id <MGSAnnotation>)annotation {
-    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
-    [newAnnotations unionOrderedSet:self.annotations];
+    NSMutableOrderedSet *newAnnotations = [self.annotations mutableCopy];
     [newAnnotations removeObject:annotation];
     self.annotations = newAnnotations;
 }
 
 - (void)deleteAnnotationsFromArray:(NSArray *)annotations
 {
-    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
-    [newAnnotations unionOrderedSet:self.annotations];
+    NSMutableOrderedSet *newAnnotations = [self.annotations mutableCopy];
     [newAnnotations minusOrderedSet:[NSOrderedSet orderedSetWithArray:annotations]];
     self.annotations = newAnnotations;
 }
 
 - (void)deleteAnnotationsFromSet:(NSSet*)annotations
 {
-    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
-    [newAnnotations unionOrderedSet:self.annotations];
+    NSMutableOrderedSet *newAnnotations = [self.annotations mutableCopy];
     [newAnnotations minusSet:annotations];
     self.annotations = newAnnotations;
 }
 
 - (void)deleteAnnotations:(NSOrderedSet *)annotations
 {
-    NSMutableOrderedSet *newAnnotations = [NSMutableOrderedSet orderedSet];
-    [newAnnotations unionOrderedSet:self.annotations];
+    NSMutableOrderedSet *newAnnotations = [self.annotations mutableCopy];
     [newAnnotations minusOrderedSet:annotations];
     self.annotations = newAnnotations;
 }
