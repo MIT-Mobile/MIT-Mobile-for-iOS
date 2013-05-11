@@ -9,6 +9,7 @@
 @dynamic station;
 @dynamic meal;
 @dynamic dietaryFlags;
+@dynamic ordinality;
 
 + (DiningMealItem *)newItemWithDictionary:(NSDictionary *)dict {
     DiningMealItem *item = [CoreDataManager insertNewObjectForEntityForName:@"DiningMealItem"];
