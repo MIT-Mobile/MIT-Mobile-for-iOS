@@ -87,7 +87,6 @@ static CGFloat textWidth = 180;
     
     
     self.statusLabel.center = CGPointMake(CGRectGetWidth(self.bounds) - (55), CGRectGetHeight(self.bounds) * 0.5);
-
     self.statusLabel.frame = CGRectIntegral(self.statusLabel.frame);
 }
 

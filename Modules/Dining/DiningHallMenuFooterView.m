@@ -27,7 +27,8 @@
         view.titleLabel.font = [UIFont systemFontOfSize:13.0];
         view.titleLabel.textColor = [UIColor darkTextColor];
         
-        view.center = CGPointMake(floor(CGRectGetWidth(self.bounds) * 0.5), floor(CGRectGetHeight(self.bounds) * 0.5));
+        view.center = CGPointMake(CGRectGetWidth(self.bounds) * 0.5, CGRectGetHeight(self.bounds) * 0.5);
+        view.frame = CGRectIntegral(view.frame);
         
         [self addSubview:view];
     }
