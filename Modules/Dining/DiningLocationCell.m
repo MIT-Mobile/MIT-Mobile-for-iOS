@@ -18,17 +18,20 @@ static CGFloat textWidth = 180;
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if (self) {
         self.statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 12)]; // height from font spec
-        self.statusLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
+        self.statusLabel.highlightedTextColor = [UIColor whiteColor];
+        self.statusLabel.font = [UIFont systemFontOfSize:12];
         self.statusLabel.textAlignment = NSTextAlignmentRight;
         [self.contentView addSubview:self.statusLabel];
         
         self.titleLabel = [[UILabel alloc] initWithFrame: CGRectMake(54, 10, textWidth, 17)]; // length is calculated, height is for single line of text
+        self.titleLabel.highlightedTextColor = [UIColor whiteColor];
         self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.font = [DiningLocationCell fontForPrimaryText];
         [self.contentView addSubview:self.titleLabel];
         
         self.subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(54, CGRectGetMaxY(self.titleLabel.frame) + 10, textWidth, 13)];
+        self.subtitleLabel.highlightedTextColor = [UIColor whiteColor];
         self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.subtitleLabel.numberOfLines = 0;
         self.subtitleLabel.font = [DiningLocationCell fontForSecondaryText];
