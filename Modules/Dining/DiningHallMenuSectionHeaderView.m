@@ -51,12 +51,33 @@
     if (self) {
         // Initialization code
         
+        self.clipsToBounds = NO;
         self.datePickerView = [self viewForDateAndArrows];
         self.mealTimeView = [self viewForMealTime];
         
-        [self addSubview:self.datePickerView];
         [self addSubview:self.mealTimeView];
+        [self addSubview:self.datePickerView];
         
+        UIImage *arrow = [UIImage imageNamed:@"global/action-arrow-white.png"];
+        
+        self.leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.leftButton.imageView.transform = CGAffineTransformMakeRotation(M_PI); // flip the image view
+        [self.leftButton setImage:arrow forState:UIControlStateNormal];
+        self.leftButton.frame = CGRectMake(0, 0, 50, 50);
+        self.leftButton.center = CGPointMake(25, CGRectGetHeight(self.datePickerView.frame) * 0.5);
+        self.leftButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        self.leftButton.imageEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 0);
+        self.clipsToBounds = NO;
+        
+        self.rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [self.rightButton setImage:arrow forState:UIControlStateNormal];
+        self.rightButton.frame = CGRectMake(0, 0, 50, 50);
+        self.rightButton.center = CGPointMake(CGRectGetWidth(self.datePickerView.frame) - 25, CGRectGetHeight(self.datePickerView.frame) * 0.5);
+        self.rightButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+        self.rightButton.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 4);
+        
+        [self addSubview:self.leftButton];
+        [self addSubview:self.rightButton];
     }
     return self;
 }
@@ -79,31 +100,16 @@
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), rowHeight)];
     view.backgroundColor = [UIColor darkGrayColor];
     
-    UIImage *arrow = [UIImage imageNamed:@"global/action-arrow-white.png"];
-    
-    self.leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.leftButton.imageView.transform = CGAffineTransformMakeRotation(M_PI); // flip the image view
-    [self.leftButton setImage:arrow forState:UIControlStateNormal];
-    self.leftButton.frame = CGRectMake(0, 0, 40, 50);
-    self.leftButton.center = CGPointMake(20, rowHeight * 0.5);
-    
-    
-    self.rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.rightButton setImage:arrow forState:UIControlStateNormal];
-    self.rightButton.frame = CGRectMake(0, 0, 40, 50);
-    self.rightButton.center = CGPointMake(CGRectGetWidth(view.bounds) - 20, rowHeight * 0.5);
     
     CGFloat hPadding = 28.0;
     self.mainLabel = [[UILabel alloc] initWithFrame:CGRectMake(hPadding, 9, CGRectGetWidth(view.bounds) - (2 * hPadding), 12)];
     self.mainLabel.text = @"Today's Dinner, March 1";
     self.mainLabel.textAlignment = NSTextAlignmentCenter;
-    self.mainLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+    self.mainLabel.font = [UIFont boldSystemFontOfSize:12];
     self.mainLabel.textColor = [UIColor whiteColor];
     self.mainLabel.backgroundColor = [UIColor clearColor];
     
     [view addSubview:self.mainLabel];
-    [view addSubview:self.leftButton];
-    [view addSubview:self.rightButton];
     
     return view;
 }
@@ -116,7 +122,7 @@
     
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 9, 35, 12)]; // width is arbitrary, height matches font size
     label.text = @"Filters";
-    label.font = [UIFont fontWithName:@"Helvetica" size:12];
+    label.font = [UIFont systemFontOfSize:12];
     label.textColor = [UIColor darkTextColor];
     label.backgroundColor = [UIColor clearColor];
     
@@ -141,13 +147,13 @@
     
     self.mealLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 7, CGRectGetWidth(view.bounds) - 20, 12)]; // 7px vertical padding, width is arbitrary, height matches font size
     self.mealLabel.textAlignment = NSTextAlignmentLeft;
-    self.mealLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+    self.mealLabel.font = [UIFont boldSystemFontOfSize:12];
     self.mealLabel.textColor = [UIColor whiteColor];
     self.mealLabel.backgroundColor = [UIColor clearColor];
     
     self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 7, CGRectGetWidth(view.bounds) - 20, 12)]; // 7px vertical padding, width is arbitrary, height matches font size
     self.timeLabel.textAlignment = NSTextAlignmentRight;
-    self.timeLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+    self.timeLabel.font = [UIFont boldSystemFontOfSize:12];
     self.timeLabel.textColor = [UIColor whiteColor];
     self.timeLabel.backgroundColor = [UIColor clearColor];
     
@@ -180,6 +186,16 @@
     frame.origin = ([self.currentFilters count]) ? CGPointMake(0, CGRectGetMaxY(self.filterView.frame)) : CGPointMake(0, CGRectGetMaxY(self.datePickerView.frame)); //if there are no filters have only two bars
     self.mealTimeView.frame = frame;
     
+}
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
+{
+    if (CGRectContainsPoint(self.frame, point) ||
+        CGRectContainsPoint(self.leftButton.frame, point) ||
+        CGRectContainsPoint(self.rightButton.frame, point)) {
+        return YES;
+    }
+    return NO;
 }
 
 
