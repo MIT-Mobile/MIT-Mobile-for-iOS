@@ -57,7 +57,7 @@
         _annotations = aAnnotations;
         
         [self didChangeValueForKey:@"annotations"];
-        [self willAddAnnotations:deletedAnnotations];
+        [self didAddAnnotations:deletedAnnotations];
     }
 }
 
