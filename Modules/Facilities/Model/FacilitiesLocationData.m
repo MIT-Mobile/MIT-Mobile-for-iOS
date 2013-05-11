@@ -21,11 +21,13 @@ NSString * const FacilitiesRepairTypesKey = @"problemtype";
 
 static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
-static FacilitiesLocationData *_sharedData = nil;
-
 @interface FacilitiesLocationData ()
-@property (nonatomic,retain) NSOperationQueue* requestQueue;
-@property (nonatomic,retain) NSMutableDictionary* notificationBlocks;
+@property (nonatomic,strong) NSOperationQueue* requestQueue;
+@property (nonatomic,strong) NSMutableDictionary* notificationBlocks;
+
+// Keeps track of any pending blocks which should be fired off
+// once the data is updated (if needed).
+@property (strong) NSArray *updateNotifications;
 
 - (BOOL)shouldUpdateDataWithRequest:(MobileRequestOperation*)request;
 
@@ -60,19 +62,13 @@ static FacilitiesLocationData *_sharedData = nil;
     self = [super init]; 
     
     if (self) {
-        self.requestQueue = [[[NSOperationQueue alloc] init] autorelease];
+        self.requestQueue = [[NSOperationQueue alloc] init];
         self.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
         
         self.notificationBlocks = [NSMutableDictionary dictionary];
     }
     
     return self;
-}
-
-- (void)dealloc {
-    self.requestQueue = nil;
-    self.notificationBlocks = nil;
-    [super dealloc];
 }
 
 
@@ -109,8 +105,8 @@ static FacilitiesLocationData *_sharedData = nil;
     }
     
     for (FacilitiesLocation *loc in locations) {
-        CLLocation *bldgLocation = [[[CLLocation alloc] initWithLatitude:[loc.latitude doubleValue]
-                                                               longitude:[loc.longitude doubleValue]] autorelease];
+        CLLocation *bldgLocation = [[CLLocation alloc] initWithLatitude:[loc.latitude doubleValue]
+                                                               longitude:[loc.longitude doubleValue]];
         if ([bldgLocation distanceFromLocation:location] <= radiusInMeters) {
             if ((categoryId == nil) || [loc.categories containsObject:categoryId]) {
                 [local addObject:loc];
@@ -121,10 +117,10 @@ static FacilitiesLocationData *_sharedData = nil;
     NSArray *sortedArray = [local sortedArrayUsingComparator:^(id obj1, id obj2) {
         FacilitiesLocation *b1 = (FacilitiesLocation*)obj1;
         FacilitiesLocation *b2 = (FacilitiesLocation*)obj2;
-        CLLocation *loc1 = [[[CLLocation alloc] initWithLatitude:[b1.latitude doubleValue]
-                                                       longitude:[b1.longitude doubleValue]] autorelease];
-        CLLocation *loc2 = [[[CLLocation alloc] initWithLatitude:[b2.latitude doubleValue]
-                                                       longitude:[b2.longitude doubleValue]] autorelease];
+        CLLocation *loc1 = [[CLLocation alloc] initWithLatitude:[b1.latitude doubleValue]
+                                                       longitude:[b1.longitude doubleValue]];
+        CLLocation *loc2 = [[CLLocation alloc] initWithLatitude:[b2.latitude doubleValue]
+                                                       longitude:[b2.longitude doubleValue]];
         CLLocationDistance d1 = [loc1 distanceFromLocation:location];
         CLLocationDistance d2 = [loc2 distanceFromLocation:location];
 
@@ -163,6 +159,74 @@ static FacilitiesLocationData *_sharedData = nil;
     return ([results count] > 0) ? [results objectAtIndex:0] : nil;
 }
 
+
+- (NSArray*)locationsWithNumber:(NSString*)locationNumber
+                        updated:(void (^) (NSArray *results))updatedBlock
+{
+    NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] init];
+    moc.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"FacilitiesLocation"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"number like[cd] %@",locationNumber];
+    
+    NSError *error = nil;
+    NSArray *results = [moc executeFetchRequest:fetchRequest
+                                          error:&error];
+    
+    if (error) {
+        DDLogError(@"query for locations with number '%@' failed: %@",locationNumber,error);
+    } else if (updatedBlock) {
+        void (^copiedBlock)(NSArray*) = [updatedBlock copy];
+        dispatch_block_t delayedBlock = ^{
+            NSArray *updatedResults = [self locationsWithNumber:locationNumber
+                                                        updated:nil];
+            copiedBlock(updatedResults);
+        };
+        
+        NSMutableArray *array = [NSMutableArray arrayWithArray:self.updateNotifications];
+        [array addObject:[delayedBlock copy]];
+        self.updateNotifications = array;
+        
+        [self updateLocationData];
+    }
+    
+    return results;
+}
+
+- (NSArray*)locationsWithName:(NSString*)locationName
+                      updated:(void (^) (NSArray *results))updatedBlock
+{
+    NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] init];
+    moc.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"FacilitiesLocation"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name like[cd] %@",locationName];
+    
+    NSError *error = nil;
+    NSArray *results = [moc executeFetchRequest:fetchRequest
+                                          error:&error];
+    
+    if (error) {
+        DDLogError(@"query for locations with name '%@' failed: %@",locationName,error);
+    } else if (updatedBlock) {
+        void (^copiedBlock)(NSArray*) = [updatedBlock copy];
+        dispatch_block_t delayedBlock = ^{
+            NSArray *updatedResults = [self locationsWithName:locationName
+                                                      updated:nil];
+            copiedBlock(updatedResults);
+        };
+        
+        
+        NSMutableArray *array = [NSMutableArray arrayWithArray:self.updateNotifications];
+        [array addObject:[delayedBlock copy]];
+        self.updateNotifications = array;
+        
+        [self updateLocationData];
+    }
+    
+    return results;
+}
+
 - (NSArray*)allRepairTypes {
     [self updateRepairTypeData];
     NSArray *types = [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesRepairType"
@@ -183,13 +247,20 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 
-- (void)addObserver:(id)observer withBlock:(FacilitiesDidLoadBlock)block {
-    [self.notificationBlocks setObject:[[block copy] autorelease]
-                                forKey:[observer description]];
+- (id)addUpdateObserver:(FacilitiesDidLoadBlock)block
+{
+    CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
+    NSString *uuidString = (NSString*) CFBridgingRelease(CFUUIDCreateString(kCFAllocatorDefault,uuid));
+    [self.notificationBlocks setObject:[block copy]
+                                forKey:uuidString];
+    
+    CFRelease(uuid);
+    return uuidString;
 }
 
-- (void)removeObserver:(id)observer {
-    [self.notificationBlocks removeObjectForKey:[observer description]];
+- (void)removeUpdateObserver:(id)observer
+{
+    [self.notificationBlocks removeObjectForKey:observer];
 }
 
 
@@ -295,9 +366,9 @@ static FacilitiesLocationData *_sharedData = nil;
 }
 
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"facilities"
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"facilities"
                                                                               command:command
-                                                                           parameters:params] autorelease];
+                                                                           parameters:params];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         NSString *blkCommand = operation.command;
@@ -408,6 +479,13 @@ static FacilitiesLocationData *_sharedData = nil;
             dispatch_async(dispatch_get_main_queue(),^{ block(notificationName,updated,userData); } );
         }
     });
+    
+    NSArray *notificationObjects = self.updateNotifications;
+    self.updateNotifications = nil;
+    
+    for (dispatch_block_t block in notificationObjects) {
+        dispatch_async(dispatch_get_main_queue(), block);
+    }
 }
 
 
@@ -658,38 +736,12 @@ static FacilitiesLocationData *_sharedData = nil;
 
 
 #pragma mark - Singleton Implementation
-+ (void)initialize {
-    if (_sharedData == nil) {
-        _sharedData = [[super allocWithZone:NULL] init];
-    }
-}
-
 + (FacilitiesLocationData*)sharedData {
+    static FacilitiesLocationData *_sharedData = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedData = [[self alloc] init];
+    });
     return _sharedData;
 }
-
-+ (id)allocWithZone:(NSZone *)zone {
-    return [[self sharedData] retain];
-}
-
-- (id)copyWithZone:(NSZone*)zone {
-    return self;
-}
-
-- (id)retain {
-    return self;
-}
-
-- (NSUInteger)retainCount {
-    return NSUIntegerMax;
-}
-
-- (oneway void)release {
-    return;
-}
-
-- (id)autorelease {
-    return self;
-}
-
 @end

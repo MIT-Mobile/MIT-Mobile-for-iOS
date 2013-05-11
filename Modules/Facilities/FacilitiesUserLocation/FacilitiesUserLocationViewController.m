@@ -14,6 +14,8 @@ static const NSUInteger kMaxResultCount = 10;
 @property (nonatomic,retain) NSArray* filteredData;
 @property (nonatomic,retain) CLLocation *currentLocation;
 @property (nonatomic,retain) NSTimer *locationTimeout;
+@property (nonatomic,retain) id observerToken;
+
 - (void)displayTableForCurrentLocation;
 - (void)startUpdatingLocation;
 - (void)stopUpdatingLocation;
@@ -114,14 +116,15 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [[FacilitiesLocationData sharedData] addObserver:self
-                                           withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
-                                               BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey]);
-                                               if (commandMatch && dataUpdated) {
-                                                   self.filteredData = nil;
-                                                   [self displayTableForCurrentLocation];
-                                               }
-                                           }];
+    if (self.observerToken == nil) {
+        self.observerToken = [[FacilitiesLocationData sharedData] addUpdateObserver:^(NSString *name, BOOL dataUpdated, id userData) {
+                                                   BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey]);
+                                                   if (commandMatch && dataUpdated) {
+                                                       self.filteredData = nil;
+                                                       [self displayTableForCurrentLocation];
+                                                   }
+                                               }];
+    }
     
     [self startUpdatingLocation];
 }
@@ -129,7 +132,11 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    [[FacilitiesLocationData sharedData] removeObserver:self];
+    if (self.observerToken) {
+        [[FacilitiesLocationData sharedData] removeUpdateObserver:self.observerToken];
+        self.observerToken = nil;
+    }
+    
     [self stopUpdatingLocation];
 }
 

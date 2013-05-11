@@ -9,6 +9,7 @@
 #import "ShuttleDataManager.h"
 #import "RouteMapViewController.h"
 #import "ShuttleRouteViewController.h"
+#import "MITMapAnnotationView.h"
 
 #define NOTIFICATION_MINUTES 5
 #define MARGIN 10
@@ -489,9 +490,8 @@
         annotationView.image = [UIImage imageNamed:@"shuttle/map_pin_shuttle_stop_complete.png"];
 		annotationView.showsCustomCallout = NO;
 		annotationView.backgroundColor = [UIColor clearColor];
-		annotationView.centeredVertically = YES;
-		//annotationView.alreadyOnMap = YES;
-		//annotationView.layer.anchorPoint = CGPointMake(0.5, 0.5);
+        annotationView.centerOffset = CGPointMake(0,-(annotationView.image.size.height / 2.0));
+        
 	}
 	
 	return annotationView;

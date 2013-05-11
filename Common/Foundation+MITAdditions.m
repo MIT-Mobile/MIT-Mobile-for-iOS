@@ -4,6 +4,11 @@
 #include <mach/machine.h>
 #import "Foundation+MITAdditions.h"
 
+inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
+{
+    return (fabs(((double)f0) - ((double)f1)) <= epsilon);
+}
+
 @implementation NSURL (MITAdditions)
 
 + (NSURL *)internalURLWithModuleTag:(NSString *)tag path:(NSString *)path {

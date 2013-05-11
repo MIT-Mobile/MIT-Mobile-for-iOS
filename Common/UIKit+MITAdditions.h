@@ -34,6 +34,10 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 
 @end
 
+@interface UIViewController (MITUIAdditions)
+- (UIView*)defaultApplicationView;
+@end
+
 @interface UITableViewCell (MITUIAdditions)
 
 - (void)applyStandardFonts;

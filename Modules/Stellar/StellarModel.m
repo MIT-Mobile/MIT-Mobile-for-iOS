@@ -5,7 +5,6 @@
 #import "StellarCache.h"
 #import "CoreDataManager.h"
 #import "MobileRequestOperation.h"
-#import "MITMobileWebAPI.h"
 #import "MITUIConstants.h"
 
 #define DAY 24 * 60 * 60

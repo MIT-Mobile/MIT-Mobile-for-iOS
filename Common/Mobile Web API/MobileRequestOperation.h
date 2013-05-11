@@ -11,6 +11,7 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 @property (nonatomic,readonly,strong) NSString *module;
 @property (nonatomic,readonly,strong) NSString *command;
 @property (nonatomic,readonly,copy) NSDictionary *parameters;
+@property (nonatomic,strong) id userData;
 @property (nonatomic) BOOL usePOST;
 
 + (BOOL)isAuthenticationCookie:(NSHTTPCookie*)cookie;
@@ -48,6 +49,8 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 - (BOOL)isEqual:(NSObject*)object;
 - (BOOL)isEqualToOperation:(MobileRequestOperation*)operation;
 - (NSUInteger)hash;
+
+- (void)setCompleteBlock:(MobileRequestCompleteBlock)completionBlock;
 
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse;
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response;

@@ -17,6 +17,7 @@
 #import "Foundation+MITAdditions.h"
 #import "TourLink.h"
 #import "MobileRequestOperation.h"
+#import "MITMapAnnotationView.h"
 
 #define WEB_VIEW_TAG 646
 #define END_TOUR_ALERT_TAG 878
@@ -43,6 +44,8 @@
 
 - (void)hideProgressView;
 
+
+- (CLLocationDegrees)euclideanHeadingFromCoordinate:(CLLocationCoordinate2D)start toCoordinate:(CLLocationCoordinate2D)end;
 @end
 
 @implementation SiteDetailViewController
@@ -259,6 +262,19 @@
     [self setupContentAreaForward:YES];
 }
 
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    _routeMapView.showsUserLocation = YES;
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    _routeMapView.showsUserLocation = NO;
+}
+
 #pragma mark View setup
 
 - (void)setupBottomToolBar {
@@ -431,30 +447,24 @@
             
             NSArray *pathLocations = [self.siteOrRoute pathAsArray];
             if ([pathLocations count] > 1) {
-                CGPoint srcPoint = [_routeMapView convertCoordinate:startAnnotation.coordinate toPointToView:newSlidingView];
+                // This code calculates the heading we'll need to make sure the arrows
+                // are pointing the correct way
+                CLLocationCoordinate2D startCoordinate = startAnnotation.coordinate;
+                CLLocationCoordinate2D firstPathCoordinate = [(CLLocation*)pathLocations[1] coordinate];
+                CLLocationDegrees startHeading = [self euclideanHeadingFromCoordinate:startCoordinate
+                                                                         toCoordinate:firstPathCoordinate];
+                startAnnotation.transform = CGAffineTransformMakeRotation(startHeading * (M_PI / 180.0));
                 
-                CLLocation *firstPointOffSite = [pathLocations objectAtIndex:1];
-                CLLocationCoordinate2D firstCoordOffSite = firstPointOffSite.coordinate;
-                CGPoint destPoint = [_routeMapView convertCoordinate:firstCoordOffSite toPointToView:newSlidingView];
+                CLLocationCoordinate2D endCoordinate = endAnnotation.coordinate;
                 
-                CGFloat dy = destPoint.y - srcPoint.y;
-                CGFloat dx = destPoint.x - srcPoint.x;
-                CGFloat norm = sqrt(dx * dx + dy * dy);
-                CGAffineTransform transform = CGAffineTransformMake(dx/norm, dy/norm, -dy/norm, dx/norm, 0, 0);
-                startAnnotation.transform = transform;
-                startAnnotation.hasTransform = YES;
-                
-                CLLocation *lastPointOffDest = [pathLocations objectAtIndex:[pathLocations count] - 2];
-                CLLocationCoordinate2D lastCoordOffDest = lastPointOffDest.coordinate;
-                srcPoint = [_routeMapView convertCoordinate:lastCoordOffDest toPointToView:newSlidingView];
-                destPoint = [_routeMapView convertCoordinate:endAnnotation.coordinate toPointToView:newSlidingView];
-                
-                dy = destPoint.y - srcPoint.y;
-                dx = destPoint.x - srcPoint.x;
-                norm = sqrt(dx * dx + dy * dy);
-                transform = CGAffineTransformMake(dx/norm, dy/norm, -dy/norm, dx/norm, 0, 0);
-                endAnnotation.transform = transform;
-                endAnnotation.hasTransform = YES;
+                // This should be the index of the last path coordinate
+                // that is *not* the annotation (the paths extend all the
+                // way through the visible annotations)
+                NSUInteger lastPathIndex = [pathLocations count] - 2;
+                CLLocationCoordinate2D lastPathCoordinate = [(CLLocation*)pathLocations[lastPathIndex] coordinate];
+                CLLocationDegrees endHeading = [self euclideanHeadingFromCoordinate:lastPathCoordinate
+                                                                       toCoordinate:endCoordinate];
+                endAnnotation.transform = CGAffineTransformMakeRotation(endHeading * (M_PI / 180.0));
                 
                 directionsRoute = [[MITGenericMapRoute alloc] init];
                 directionsRoute.lineWidth = 6;
@@ -468,8 +478,8 @@
             [_routeMapView addAnnotation:startAnnotation];
             [_routeMapView addAnnotation:endAnnotation];
             
-            CLLocationCoordinate2D center = CLLocationCoordinate2DMake((startAnnotation.coordinate.latitude + endAnnotation.coordinate.latitude) / 2,
-                                                                       (startAnnotation.coordinate.longitude + endAnnotation.coordinate.longitude) / 2);
+            CLLocationCoordinate2D center = CLLocationCoordinate2DMake((startAnnotation.coordinate.latitude + endAnnotation.coordinate.latitude) / 2.0,
+                                                                       (startAnnotation.coordinate.longitude + endAnnotation.coordinate.longitude) / 2.0);
             _routeMapView.zoomLevel = [self.siteOrRoute.zoom floatValue];
             _routeMapView.centerCoordinate = center;
             
@@ -794,18 +804,34 @@
     
     TourSiteOrRoute *site = tourAnnotation.site;
     TourSiteOrRoute *upcomingSite = self.siteOrRoute.nextComponent;
-    UIImage *marker;
+    UIImageView *markerView;
     if (upcomingSite == site) {
-        marker = [UIImage imageNamed:@"tours/map_ending_arrow.png"];
+        markerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/map_ending_arrow"]];
     } else {
-        marker = [UIImage imageNamed:@"tours/map_starting_arrow.png"];
+        markerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/map_starting_arrow"]];
     }
-    annotationView.image = marker;
-    annotationView.showsCustomCallout = NO;
     
-    if (tourAnnotation.hasTransform) {
-        annotationView.transform = tourAnnotation.transform;
+    
+    // Create and apply a rotation to the marker view in order to
+    // have it appear properly (the start should be coming from the current annotation
+    // and end should be pointing at the next stop). Since all rotations
+    // start from (0,0), not the center of the image, we need to
+    // translate the view so that the image is centered around (0,0),
+    // then do the rotation, then translate the result back
+    CGFloat deltaX = -CGRectGetWidth(markerView.bounds) / 2.0;
+    CGFloat deltaY = -CGRectGetHeight(markerView.bounds) / 2.0;
+    
+    if (CGAffineTransformEqualToTransform(CGAffineTransformIdentity,tourAnnotation.transform) == NO) {
+        CGAffineTransform transform = CGAffineTransformMakeTranslation(deltaX, deltaY);
+        transform = CGAffineTransformConcat(transform, tourAnnotation.transform);
+        transform = CGAffineTransformTranslate(transform, -deltaX, -deltaY);
+        markerView.transform = transform;
     }
+    
+    [annotationView addSubview:markerView];
+    annotationView.frame = CGRectOffset(markerView.bounds, deltaX, deltaY);
+    annotationView.showsCustomCallout = NO;
+
     
     return annotationView;
 }
@@ -897,6 +923,16 @@
 			[self.navigationController popToViewController:theController animated:YES];
 		}
 	}
+}
+
+- (CLLocationDegrees)euclideanHeadingFromCoordinate:(CLLocationCoordinate2D)start toCoordinate:(CLLocationCoordinate2D)end {
+    MKMapPoint startPoint = MKMapPointForCoordinate(start);
+    MKMapPoint endPoint = MKMapPointForCoordinate(end);
+    
+    double deltaX = endPoint.x - startPoint.x;
+    double deltaY = endPoint.y - startPoint.y;
+    
+    return atan2(deltaY,deltaX) * 180 / M_PI;
 }
 
 @end

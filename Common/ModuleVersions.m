@@ -1,8 +1,6 @@
 #import "ModuleVersions.h"
 #import "MobileRequestOperation.h"
 
-static ModuleVersions *_sharedVersions = nil;
-
 @interface ModuleVersions ()
 @property (nonatomic,retain) NSDictionary *moduleDates;
 @end
@@ -75,38 +73,13 @@ static ModuleVersions *_sharedVersions = nil;
 }
 
 #pragma mark - Singleton Implementation
-+ (void)initialize {
-    if (_sharedVersions == nil) {
-        _sharedVersions = [[super allocWithZone:NULL] init];
-    }
-}
-
 + (ModuleVersions*)sharedVersions {
+    static ModuleVersions *_sharedVersions = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedVersions = [[self alloc] init];
+    });
+    
     return _sharedVersions;
 }
-
-+ (id)allocWithZone:(NSZone *)zone {
-    return [[self sharedVersions] retain];
-}
-
-- (id)copyWithZone:(NSZone*)zone {
-    return self;
-}
-
-- (id)retain {
-    return self;
-}
-
-- (NSUInteger)retainCount {
-    return NSUIntegerMax;
-}
-
-- (oneway void)release {
-    return;
-}
-
-- (id)autorelease {
-    return self;
-}
-
 @end

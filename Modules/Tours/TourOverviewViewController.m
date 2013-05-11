@@ -11,6 +11,7 @@
 #import "StartingLocationViewController.h"
 #import "CoreLocation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
+#import "MITMapAnnotationView.h"
 
 
 typedef enum {
@@ -960,7 +961,6 @@ enum {
 
 - (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views {
     if (selectedAnnotation) {
-        //[self.mapView selectAnnotation:selectedAnnotation animated:YES withRecenter:YES];
         self.selectedAnnotation = nil;
     }
 }

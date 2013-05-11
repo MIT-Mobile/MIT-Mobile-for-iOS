@@ -9,6 +9,7 @@
 #import "MITEventList.h"
 #import "CoreDataManager.h"
 #import "MobileRequestOperation.h"
+#import "MITMapAnnotationView.h"
 
 #define SCROLL_TAB_HORIZONTAL_PADDING 5.0
 #define SCROLL_TAB_HORIZONTAL_MARGIN  5.0
@@ -18,6 +19,7 @@
 @interface CalendarEventsViewController (Private)
 
 - (void)returnToToday;
+- (CGRect)contentFrame;
 
 // helper methods used in reloadView
 - (BOOL)canShowMap:(MITEventList *)listType;
@@ -168,8 +170,9 @@
 
 - (void)loadView
 {
-	[super loadView];
-	
+    UIView *controllerView = [self defaultApplicationView];
+    self.view = controllerView;
+
 	theTableView = nil;
 	dateRangeDidChange = YES;
 	
@@ -257,6 +260,7 @@
     if (self.mapView) {
         self.mapView.events = events;
     }
+
     if ([self.tableView isKindOfClass:[EventListTableView class]]) {
         ((EventListTableView *)self.tableView).events = events;
     }
@@ -311,6 +315,23 @@
 }
 
 #pragma mark Redrawing logic and helper functions
+- (CGRect)contentFrame {
+	CGFloat yOffset = showScroller ? CGRectGetHeight(navScrollView.frame) : 0.0;
+	if ([self shouldShowDatePicker:activeEventList]) {
+		[self setupDatePicker];
+		yOffset += CGRectGetHeight(datePicker.frame) - 4.0; // 4.0 is height of transparent shadow under image
+	} else {
+        [datePicker removeFromSuperview];
+	}
+    
+    CGRect controllerBounds = self.view.bounds;
+    CGRect contentFrame = CGRectMake(CGRectGetMinX(controllerBounds),
+                                     CGRectGetMinY(controllerBounds) + yOffset,
+                                     CGRectGetWidth(controllerBounds),
+                                     CGRectGetHeight(controllerBounds) - yOffset);
+    
+    return contentFrame;
+}
 
 - (void)reloadView:(MITEventList *)listType {
 
@@ -330,24 +351,11 @@
         [self returnToToday];
 	}
 
-	CGFloat yOffset = showScroller ? navScrollView.frame.size.height : 0.0;
-	if ([self shouldShowDatePicker:activeEventList]) {
-		[self setupDatePicker];
-		yOffset += datePicker.frame.size.height - 4.0; // 4.0 is height of transparent shadow under image
-	} else {
-		[datePicker removeFromSuperview];
-	}
-	
-	CGRect contentFrame = CGRectMake(0, self.view.bounds.origin.y + yOffset, 
-									 self.view.bounds.size.width, 
-									 self.view.bounds.size.height - yOffset);
+	CGRect contentFrame = [self contentFrame];
 	
 	// see if we need a mapview
 	if (![self canShowMap:activeEventList]) {
 		showList = YES;
-	} else if (self.mapView == nil) {
-		self.mapView = [[[CalendarMapView alloc] initWithFrame:contentFrame] autorelease];
-		self.mapView.delegate = self;
 	}
 
 	if (dateRangeDidChange && [self shouldShowDatePicker:activeEventList]) {
@@ -370,7 +378,6 @@
     }
 	
 	if (showList) {
-		
 		self.tableView = nil;
 		
 		if ([activeEventList.listID isEqualToString:@"categories"]) {
@@ -425,7 +432,7 @@
 		}
 		
 		self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-				
+
 		[self.view addSubview:self.tableView];
 		
 		self.navigationItem.rightBarButtonItem = [self canShowMap:activeEventList]
@@ -434,21 +441,27 @@
 										   target:self
 										   action:@selector(mapButtonToggled)] autorelease]
 		: nil;
-		
-		[self.mapView removeFromSuperview];
 
+		[self.mapView removeFromSuperview];
 	} else {
 		
 		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"List"
 																				   style:UIBarButtonItemStylePlain
 																				  target:self
 																				  action:@selector(listButtonToggled)] autorelease];
-		
+
+        if (self.mapView == nil) {
+            self.mapView = [[[CalendarMapView alloc] initWithFrame:contentFrame] autorelease];
+            self.mapView.delegate = self;
+        }
+
+        if (self.mapView.superview == nil) {
+            [self.view addSubview:self.mapView];
+        }
+
         if (!requestNeeded) {
             self.mapView.events = events;
         }
-
-        [self.view addSubview:self.mapView];
 	}
 	
 	if ([self shouldShowDatePicker:activeEventList]) {
@@ -709,7 +722,7 @@
 	CalendarMapView *calMapView = (CalendarMapView *)mapView;
 
 	for (event in calMapView.events) {
-		if (event.eventID == annotation.event.eventID) {
+		if ([event.eventID isEqualToNumber:annotation.event.eventID]) {
 			break;
 		}
 	}

@@ -4,7 +4,6 @@
 #import "LibrariesBookDetailViewController.h"
 #import "MobileRequestOperation.h"
 #import "MITLoadingActivityView.h"
-#import "MITMobileWebAPI.h"
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
 
