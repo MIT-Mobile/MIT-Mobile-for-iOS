@@ -64,6 +64,8 @@
     if ([self.dietaryImagePaths count] > 2) {
         self.typeContainer.frame = CGRectMake(265, 15, 45, 45);
     }
+    
+    [self.typeContainer removeAllSubviews];     // start with blank slate every time so reuse does not get corrupt
     [self layoutDietaryTypes];
     
 }
