@@ -7,6 +7,21 @@
 @dynamic name;
 @dynamic items;
 
++ (void) createDietaryFlagsInStore
+{
+    [self flagWithName:@"farm to fork"];
+    [self flagWithName:@"organic"];
+    [self flagWithName:@"seafood watch"];
+    [self flagWithName:@"vegan"];
+    [self flagWithName:@"vegetarian"];
+    [self flagWithName:@"for your well-being"];
+    [self flagWithName:@"made without gluten"];
+    [self flagWithName:@"halal"];
+    [self flagWithName:@"kosher"];
+    [self flagWithName:@"humane"];
+    [self flagWithName:@"in balance"];
+}
+
 + (DiningDietaryFlag *)flagWithName:(NSString *)name {
     DiningDietaryFlag *flag = [CoreDataManager getObjectForEntity:@"DiningDietaryFlag" attribute:@"name" value:name];
     if (!flag) {

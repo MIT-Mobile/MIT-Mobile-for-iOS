@@ -19,6 +19,7 @@
 - (void)addItems:(NSSet *)values;
 - (void)removeItems:(NSSet *)values;
 
++ (void) createDietaryFlagsInStore;
 + (DiningDietaryFlag *)flagWithName:(NSString *)name;
 
 @end

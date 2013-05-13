@@ -1,5 +1,6 @@
 #import "DiningModule.h"
 #import "DiningMapListViewController.h"
+#import "DiningDietaryFlag.h"
 
 #import "MITModule+Protected.h"
 
@@ -12,6 +13,7 @@
         self.shortName  = @"Dining";
         self.longName   = @"Dining";
         self.iconName   = @"dining";
+        [DiningDietaryFlag createDietaryFlagsInStore];
     }
     return self;
 }

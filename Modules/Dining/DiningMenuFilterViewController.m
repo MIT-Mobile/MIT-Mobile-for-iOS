@@ -98,7 +98,7 @@
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     
-    cell.textLabel.text = [filterItem.name capitalizedString];
+    cell.textLabel.text = filterItem.displayName;
     cell.imageView.image = filterImage;
     
     return cell;
