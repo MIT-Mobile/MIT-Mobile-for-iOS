@@ -424,17 +424,4 @@
 	
 }
 
-#pragma mark Shake functionality
-- (BOOL)canBecomeFirstResponder {
-	return YES;
-}
-
-
--(void) motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
-{
-	if (motion == UIEventSubtypeMotionShake) {
-		[self pollShuttleLocations];
-	}
-}
-
 @end
