@@ -1,4 +1,5 @@
 #import "DiningHallMenuSectionHeaderView.h"
+#import "DiningDietaryFlag.h"
 #import "UIImage+PDF.h"
 #import "Foundation+MITAdditions.h"
 
@@ -131,8 +132,8 @@
     CGSize iconSize = CGSizeMake(16, 16);
     CGFloat offset = CGRectGetMaxX(label.frame) + 10 + 8;   //  
     for (int i = 0; i < [self.currentFilters count]; i++) {
-        NSString *iconPath = [NSString stringWithFormat:@"dining/%@.pdf", self.currentFilters[i]];
-        UIImageView *icon = [[UIImageView alloc] initWithImage:[UIImage imageWithPDFNamed:iconPath atSize:iconSize]];
+        DiningDietaryFlag *filter = self.currentFilters[i];
+        UIImageView *icon = [[UIImageView alloc] initWithImage:[UIImage imageWithPDFNamed:filter.pdfPath atSize:iconSize]];
         icon.center = CGPointMake(offset + (23 * i), 15);
         [view addSubview:icon];
     }

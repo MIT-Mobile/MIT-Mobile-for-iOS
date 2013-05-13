@@ -401,7 +401,6 @@
 
 - (void) pageLeft
 {
-    NSLog(@"Page Left");
     NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:self.currentMeal.name] : 0;   // if currentMeal is null, pretend we are first meal of day
     NSInteger mealIndex = (self.currentMeal) ? [self.currentDay.meals indexOfObject:self.currentMeal] : 0;
     if (orderIndex == 0 || [self.currentDay.meals count] == 1 || mealIndex == 0) {
@@ -414,9 +413,6 @@
             if ([self.currentDay.meals count]) {
                 self.currentMeal = [self.currentDay.meals lastObject];  // get last meal in day
             }
-        } else {
-            // day not found, need to show no meals for day
-            
         }
     } else {
         // need to get previous meal in same day
@@ -436,7 +432,6 @@
 
 - (void) pageRight
 {
-    NSLog(@"Page Right");
     NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:self.currentMeal.name] : [MEAL_ORDER count] - 1; // if currentMeal is null, pretend we are last meal of day
     NSInteger mealIndex = (self.currentMeal) ? [self.currentDay.meals indexOfObject:self.currentMeal] : 0;
     if (orderIndex == [MEAL_ORDER count] - 1 || [self.currentDay.meals count] == 1 || mealIndex == [self.currentDay.meals count] - 1) {
@@ -449,9 +444,6 @@
             if ([self.currentDay.meals count]) {
                 self.currentMeal = self.currentDay.meals[0];  // get last meal in day
             }
-        } else {
-            // day not found, need to show no meals for day
-            
         }
     } else {
         DiningMeal * meal = nil;

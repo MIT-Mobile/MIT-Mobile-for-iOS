@@ -1,29 +1,17 @@
 #import "DiningMenuFilterViewController.h"
 #import "DiningHallMenuViewController.h"
+#import "DiningDietaryFlag.h"
+#import "CoreDataManager.h"
 #import "UIImage+PDF.h"
 
 @interface DiningMenuFilterViewController ()
 
 @property (nonatomic, strong) NSMutableSet * selectedFilters;
+@property (nonatomic, strong) NSArray * allFilters;
 
 @end
 
 @implementation DiningMenuFilterViewController
-
-- (NSArray *) debugData
-{
-    return @[@{@"id": @"farm_to_fork",    @"title" : @"Farm to Fork"},
-             @{@"id": @"well_being",      @"title" : @"For Your Well-Being"},
-             @{@"id": @"gluten_free",     @"title" : @"Gluten Free"},
-             @{@"id": @"halal",           @"title" : @"Halal"},
-             @{@"id": @"humane",          @"title" : @"Humane"},
-             @{@"id": @"in_balance",      @"title" : @"In Balance"},
-             @{@"id": @"kosher",          @"title" : @"Kosher"},
-             @{@"id": @"organic",         @"title" : @"Organic"},
-             @{@"id": @"seafood_watch",   @"title" : @"Seafood Watch"},
-             @{@"id": @"vegan",           @"title" : @"Vegan"},
-             @{@"id": @"vegetarian",      @"title" : @"Vegetarian"}];
-}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -52,7 +40,6 @@
     }
     
     [self dismissModalViewControllerAnimated:YES];
-    NSLog(@"Here are the selected filters :: %@", self.selectedFilters);
 }
 
 - (void)viewDidLoad
@@ -64,6 +51,9 @@
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelPressed:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(commitChanges:)];
+    
+    NSSortDescriptor *alphabetical = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
+    self.allFilters = [[CoreDataManager coreDataManager] objectsForEntity:@"DiningDietaryFlag" matchingPredicate:nil sortDescriptors:@[alphabetical]];
 
     if (!self.selectedFilters) {
         self.selectedFilters = [[NSMutableSet alloc] init];
@@ -86,7 +76,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [[self debugData] count];
+    return [self.allFilters count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -98,18 +88,17 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
     
-    NSDictionary *filterItem = [[self debugData] objectAtIndex:indexPath.row];
-    NSString *resourcePath = [NSString stringWithFormat:@"dining/%@.pdf", filterItem[@"id"]];
-    UIImage *filterImage = [UIImage imageWithPDFNamed:resourcePath fitSize:CGSizeMake(24, 24)];
+    DiningDietaryFlag *filterItem = self.allFilters[indexPath.row];
+    UIImage *filterImage = [UIImage imageWithPDFNamed:filterItem.pdfPath fitSize:CGSizeMake(24, 24)];
     
     
-    if ([self.selectedFilters containsObject:filterItem[@"id"]]) {
+    if ([self.selectedFilters containsObject:filterItem]) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     
-    cell.textLabel.text = filterItem[@"title"];
+    cell.textLabel.text = [filterItem.name capitalizedString];
     cell.imageView.image = filterImage;
     
     return cell;
@@ -120,11 +109,11 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    NSDictionary *filterItem = [[self debugData] objectAtIndex:indexPath.row];
-    if ([self.selectedFilters containsObject:filterItem[@"id"]]) {
-        [self.selectedFilters removeObject:filterItem[@"id"]];
+    DiningDietaryFlag *filterItem = self.allFilters[indexPath.row];
+    if ([self.selectedFilters containsObject:filterItem]) {
+        [self.selectedFilters removeObject:filterItem];
     } else {
-        [self.selectedFilters addObject:filterItem[@"id"]];
+        [self.selectedFilters addObject:filterItem];
     }
     [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
 }
