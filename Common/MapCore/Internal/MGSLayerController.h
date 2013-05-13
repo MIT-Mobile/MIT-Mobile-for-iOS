@@ -31,8 +31,7 @@
 @property (nonatomic,weak) id<MGSLayerControllerDelegate> delegate;
 
 - (id)initWithLayer:(MGSLayer*)layer;
-- (void)refresh;
-- (void)reload;
+- (void)refresh:(void(^)(void))refreshBlock;
 
 - (MGSLayerAnnotation*)layerAnnotationForGraphic:(AGSGraphic*)graphic;
 - (NSSet*)layerAnnotationsForGraphics:(NSSet*)graphics;
