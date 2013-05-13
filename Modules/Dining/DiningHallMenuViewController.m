@@ -128,7 +128,6 @@
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"DiningMealItem"
                                               inManagedObjectContext:self.managedObjectContext];
     fetchRequest.entity = entity;
-    // TODO: include filters in predicate if they are set
     fetchRequest.predicate = [self predicateForMeal:meal filteredBy:dietaryFilters];
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"ordinality" ascending:YES];
     fetchRequest.sortDescriptors = @[sort];
@@ -145,7 +144,6 @@
 - (void) fetchItemsForMeal:(DiningMeal *) meal withFilters:(NSSet *)dietaryFilters
 {
     self.fetchedResultsController.fetchRequest.predicate = [self predicateForMeal:meal filteredBy:dietaryFilters];
-    //TODO:: need to add dietary filters to predicate
     [self.fetchedResultsController performFetch:nil];
 }
 
@@ -153,7 +151,7 @@
 {
     // predicate is used in fetch request for DiningMealItems
     if (![dietaryFilters count]) {
-        // no filters, predicate can be simple
+        // no filters, predicate can be simple, also solves issue that no filters should be treated the same as all filters
         return [NSPredicate predicateWithFormat:@"meal = %@", meal];
     } else {
         return [NSPredicate predicateWithFormat:@"meal = %@ AND ANY dietaryFlags IN %@", meal, dietaryFilters];
