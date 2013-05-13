@@ -15,7 +15,7 @@
 @property(nonatomic,weak) MGSErrorView* loadingView;
 @property(nonatomic,weak) AGSMapView* mapView;
 
-@property(nonatomic,assign,getter=isBaseLayersLoaded) BOOL baseLayersLoaded;
+@property(nonatomic,assign,getter=areBaseLayersLoaded) BOOL baseLayersLoaded;
 @property(nonatomic,strong) NSMutableDictionary* baseLayers;
 @property(nonatomic,strong) NSDictionary* baseMapGroups;
 
@@ -37,7 +37,7 @@
 - (MKCoordinateRegion)defaultMaximumEnvelope;
 
 #pragma mark Lookup Methods
-- (MGSLayerController*)layerManagerForLayer:(MGSLayer*)layer;
+- (MGSLayerController*)layerControllerForLayer:(MGSLayer*)layer;
 - (MGSLayer*)layerContainingAnnotation:(id <MGSAnnotation>)annotation;
 - (MGSLayer*)layerContainingGraphic:(AGSGraphic*)graphic;
 

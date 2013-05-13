@@ -121,7 +121,7 @@
     MKCoordinateRegion region = _mapRegion;
     
     if (MKCoordinateRegionIsValid(region) == NO) {
-        if (self.isBaseLayersLoaded) {
+        if (self.areBaseLayersLoaded) {
             region = MKCoordinateRegionFromAGSEnvelope(self.mapView.visibleAreaEnvelope);
         } else {
             region = [self defaultVisibleArea];
@@ -145,7 +145,7 @@
     } else {
         _mapRegion = mapRegion;
         
-        if (self.isBaseLayersLoaded) {
+        if (self.areBaseLayersLoaded) {
             AGSEnvelope *regionEnvelope = AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(mapRegion,
                                                                                                 self.mapView.spatialReference);
             
@@ -205,7 +205,7 @@
 #pragma mark Misc
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    if (self.isBaseLayersLoaded) {
+    if (self.areBaseLayersLoaded) {
         AGSPoint *mapPoint = AGSPointFromCLLocationCoordinate2DInSpatialReference(coordinate, self.mapView.spatialReference);
         return [self.mapView toScreenPoint:mapPoint];
     } else {
@@ -216,7 +216,7 @@
 - (BOOL)showUserLocation {
     return (self.mapView.locationDisplay.dataSource &&
             self.mapView.locationDisplay.isDataSourceStarted);
-
+    
 }
 
 - (void)setShowUserLocation:(BOOL)showUserLocation {
@@ -251,7 +251,7 @@
 - (void)refreshLayers:(NSSet*)layers
           forceReload:(BOOL)forceReload
 {
-    if (self.isBaseLayersLoaded) {
+    if (self.areBaseLayersLoaded) {
         NSArray *sortedArrays = [[layers allObjects] sortedArrayUsingComparator:^NSComparisonResult(MGSLayer *layer1, MGSLayer *layer2) {
             NSUInteger index1 = [self.externalLayers indexOfObject:layer1];
             NSUInteger index2 = [self.externalLayers indexOfObject:layer2];
@@ -269,7 +269,7 @@
             NSUInteger layerIndex = [self.externalLayers indexOfObject:layer];
             
             if (layerIndex != NSNotFound) {
-                MGSLayerController *manager = [self layerManagerForLayer:layer];
+                MGSLayerController *manager = [self layerControllerForLayer:layer];
                 manager.spatialReference = self.mapView.spatialReference;
                 
                 AGSLayer *arcgisLayer = manager.nativeLayer;
@@ -294,14 +294,14 @@
 
 - (BOOL)isLayerHidden:(MGSLayer*)layer
 {
-    MGSLayerController* manager = [self layerManagerForLayer:layer];
+    MGSLayerController* manager = [self layerControllerForLayer:layer];
     return (manager.nativeLayer.isVisible);
 }
 
 - (void)setHidden:(BOOL)hidden
          forLayer:(MGSLayer*)layer
 {
-    MGSLayerController* manager = [self layerManagerForLayer:layer];
+    MGSLayerController* manager = [self layerControllerForLayer:layer];
     manager.nativeLayer.visible = !hidden;
 }
 
@@ -337,7 +337,7 @@
             atIndex:(NSUInteger)index
 shouldNotifyDelegate:(BOOL)notifyDelegate
 {
-    MGSLayerController* layerManager = [self layerManagerForLayer:newLayer];
+    MGSLayerController* layerManager = [self layerControllerForLayer:newLayer];
     
     if ([self.externalLayers containsObject:newLayer] == NO) {
         if (layerManager == nil) {
@@ -362,7 +362,7 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
     }
     
     // The map view will only have a spatial reference once it has been loaded
-    if (self.isBaseLayersLoaded) {
+    if (self.areBaseLayersLoaded) {
         [self refreshLayer:newLayer];
     }
 }
@@ -377,7 +377,7 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
 - (void)removeLayer:(MGSLayer*)layer
 shoulNotifyDelegate:(BOOL)notifyDelegate
 {
-    MGSLayerController* layerManager = [self layerManagerForLayer:layer];
+    MGSLayerController* layerManager = [self layerControllerForLayer:layer];
     
     if (layerManager == nil) {
         DDLogError(@"external layers out of sync during removal of '%@'", layer.name);
@@ -435,29 +435,93 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
 {
     [self showCalloutForAnnotation:annotation
-                          recenter:YES
                           animated:YES];
 }
 
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
-                        recenter:(BOOL)recenter
                         animated:(BOOL)animated
 {
-    
-    self.pendingCalloutLayer = [self layerContainingAnnotation:annotation];
-    
-    __weak MGSMapView *w_self = self;
-    if (self.pendingCalloutLayer) {
-        self.pendingCalloutBlock = ^{
-            [w_self showPendingCalloutForAnnotation:annotation
-                                       withRecenter:recenter
-                                           animated:animated];
-            
-            w_self.pendingCalloutBlock = nil;
-            w_self.pendingCalloutLayer = nil;
-        };
+    if (self.areBaseLayersLoaded == NO) {
+        self.calloutAnnotation = annotation;
         
-        [self refreshLayer:self.pendingCalloutLayer];
+        if (annotation) {
+            void (^calloutPresentBlock)(id<MGSAnnotation>) = ^ (id<MGSAnnotation> annotation) {
+                if ([annotation isEqual:self.calloutAnnotation]) {
+                    [self showCalloutForAnnotation:annotation
+                                      animated:animated];
+                }
+            };
+        }
+    } else {
+        if (annotation) {
+            MGSLayer *layer = [self layerContainingAnnotation:annotation];
+            MGSLayerController *controller = [self layerControllerForLayer:layer];
+            
+            [controller refresh];
+            /*[controller refresh:^{
+                if ([self.calloutAnnotation isEqual:annotation]) {
+                    AGSGraphic *graphic = [controller nativeAnnotationForAnnotation:annotation];
+                    AGSEnvelope *graphicEnvelope = graphic.geometry.envelope;
+                    AGSEnvelope *envelope = [self.mapView visibleAreaEnvelope];
+                    
+                    // 10% padding on each size of the envelope
+                    double horizontalPadding = fabs(envelope.xmax - envelope.xmin) * 0.1;
+                    double verticalPadding = fabs(envelope.ymax - envelope.ymin) * 0.1;
+                    
+                    AGSEnvelope *paddedEnvelope = [AGSEnvelope envelopeWithXmin:envelope.xmin + horizontalPadding
+                                                                           ymin:envelope.ymin + verticalPadding
+                                                                           xmax:envelope.xmax - horizontalPadding
+                                                                           ymax:envelope.ymax - verticalPadding
+                                                               spatialReference:envelope.spatialReference];
+                    
+                    if ([paddedEnvelope containsEnvelope:graphicEnvelope]) {
+                        [self willPresentCalloutForAnnotation:annotation];
+                        
+                        if (view) {
+                            [view sizeToFit];
+                            self.mapView.callout.customView = view;
+                        } else {
+                            MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+                            self.mapView.callout.title = [safeAnnotation title];
+                            self.mapView.callout.detail = [safeAnnotation detail];
+                            self.mapView.callout.image = [safeAnnotation calloutImage];
+                        }
+                        
+                        [self.mapView.callout showCalloutAtPoint:nil
+                                                      forGraphic:graphic
+                                                        animated:animated];
+                        
+                        [self didPresentCalloutForAnnotation:annotation];
+                    } else {
+                        double xmin = envelope.xmin;
+                        double xmax = envelope.xmax;
+                        double ymin = envelope.ymin;
+                        double ymax = envelope.ymax;
+                        
+                        if (graphicEnvelope.xmax <= (envelope.xmin + horizontalPadding)) {
+                            xmin = graphicEnvelope.xmin - horizontalPadding;
+                        } else if (graphicEnvelope.xmin >= (envelope.xmax - horizontalPadding)) {
+                            xmax = graphicEnvelope.xmax + horizontalPadding;
+                        }
+                        
+                        if (graphicEnvelope.ymax <= (envelope.ymin + verticalPadding)) {
+                            ymin = graphicEnvelope.ymin - verticalPadding;
+                        } else if (graphicEnvelope.ymin >= (envelope.ymax - verticalPadding)) {
+                            ymax = graphicEnvelope.ymax + verticalPadding;
+                        }
+                        
+                        AGSEnvelope *newEnvelope = [AGSEnvelope envelopeWithXmin:xmin
+                                                                            ymin:ymin
+                                                                            xmax:xmax
+                                                                            ymax:ymax
+                                                                spatialReference:envelope.spatialReference];
+                        
+                        self.calloutRequested = YES;
+                        self.mapRegion = MKCoordinateRegionFromAGSEnvelope(newEnvelope);
+                    }
+                }
+            }]; */
+        }
     }
 }
 
@@ -704,7 +768,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         }];
         
     }
-
+    
     self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
     [self addLayer:self.defaultLayer];
 }
@@ -766,7 +830,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [self willShowCalloutForAnnotation:annotation];
         
         MGSLayer* layer = [self layerContainingAnnotation:annotation];
-        MGSLayerController* manager = [self layerManagerForLayer:layer];
+        MGSLayerController* manager = [self layerControllerForLayer:layer];
         AGSGraphic* graphic = [[manager layerAnnotationForAnnotation:annotation] graphic];
         
         if (graphic == nil) {
@@ -802,7 +866,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 }
 
 #pragma mark Lookup Methods
-- (MGSLayerController*)layerManagerForLayer:(MGSLayer*)layer
+- (MGSLayerController*)layerControllerForLayer:(MGSLayer*)layer
 {
     MGSLayerController *layerManager = nil;
     
@@ -842,7 +906,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     __block MGSLayer* myLayer = nil;
     [self.mapLayers enumerateObjectsWithOptions:NSEnumerationReverse
                                      usingBlock:^(MGSLayer* layer, NSUInteger idx, BOOL* stop) {
-                                         MGSLayerController* manager = [self layerManagerForLayer:layer];
+                                         MGSLayerController* manager = [self layerControllerForLayer:layer];
                                          if ([manager layerAnnotationForGraphic:graphic]) {
                                              myLayer = layer;
                                              (*stop) = YES;
@@ -857,9 +921,9 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)mapViewDidLoad:(AGSMapView*)mapView
 {
     DDLogVerbose(@"basemap loaded with WKID %d", mapView.spatialReference.wkid);
-
+    
     mapView.maxEnvelope = AGSEnvelopeFromMKCoordinateRegionWithSpatialReference([self defaultMaximumEnvelope], mapView.spatialReference);
-
+    
     MKCoordinateRegion visibleRegion = [self defaultVisibleArea];
     [mapView zoomToEnvelope:AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(visibleRegion, mapView.spatialReference)
                    animated:NO];
@@ -868,7 +932,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForGraphic:(AGSGraphic*)graphic
 {
     MGSLayer* myLayer = [self layerContainingGraphic:graphic];
-    MGSLayerController* manager = [self layerManagerForLayer:myLayer];
+    MGSLayerController* manager = [self layerControllerForLayer:myLayer];
     id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
     
     if (graphic.infoTemplateDelegate == nil) {
@@ -903,7 +967,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     CGPoint viewPoint = [self.mapView convertPoint:screen
                                           fromView:nil];
     
-     if (self.isPresentingCallout) {
+    if (self.isPresentingCallout) {
         if (CGRectContainsPoint(self.mapView.callout.frame, viewPoint) == NO) {
             [self dismissCallout];
         }
@@ -937,9 +1001,9 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             
             if (showCallout) {
                 MGSLayer *layer = [self layerContainingGraphic:graphic];
-                MGSLayerController *layerManager = [self layerManagerForLayer:layer];
+                MGSLayerController *layerManager = [self layerControllerForLayer:layer];
                 id<MGSAnnotation> annotation = [layerManager layerAnnotationForGraphic:graphic].annotation;
-
+                
                 [self showCalloutForAnnotation:annotation];
                 (*stop) = YES;
             }
@@ -969,17 +1033,17 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [self.baseLayers removeObjectForKey:loadedLayer.name];
         [self.mapView removeMapLayer:loadedLayer];
     }
-
+    
     // Perform the coreLayersLoaded checking here since we don't want to add any of the
     // user layers until we actually have a spatial reference to work with.
     if (self.baseLayers[loadedLayer.name]) {
-        if (self.isBaseLayersLoaded == NO) {
+        if (self.areBaseLayersLoaded == NO) {
             __block BOOL layersLoaded = YES;
             [self.baseLayers enumerateKeysAndObjectsUsingBlock:^(NSString* name, AGSLayer* layer, BOOL* stop) {
                 layersLoaded = (layersLoaded && layer.spatialReference);
             }];
-
-
+            
+            
             // Check again after we iterate through everything to make sure the state
             // hasn't changed now that we have another layer loaded
             if (layersLoaded) {
@@ -1000,7 +1064,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [self.baseLayers removeObjectForKey:layer.name];
         [self.mapView removeMapLayer:layer];
         
-        if (self.isBaseLayersLoaded == NO) {
+        if (self.areBaseLayersLoaded == NO) {
             __block BOOL layersLoaded = YES;
             [self.baseLayers enumerateKeysAndObjectsUsingBlock:^(NSString* name, AGSLayer* layer, BOOL* stop) {
                 layersLoaded = (layersLoaded && layer.spatialReference);
@@ -1076,7 +1140,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                        mapPoint:(AGSPoint *)mapPoint
 {
     MGSLayer* myLayer = [self layerContainingGraphic:graphic];
-    MGSLayerController* manager = [self layerManagerForLayer:myLayer];
+    MGSLayerController* manager = [self layerControllerForLayer:myLayer];
     id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
     
     UIView *customView = [self calloutViewForAnnotation:annotation];
@@ -1087,7 +1151,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 #pragma mark --MGSLayerManagerDelegate
 - (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager
 {
-    if (self.isBaseLayersLoaded && self.pendingCalloutBlock) {
+    if (self.areBaseLayersLoaded && self.pendingCalloutBlock) {
         if ([self.pendingCalloutLayer isEqual:layerManager.layer]) {
             self.pendingCalloutBlock();
         }
