@@ -226,7 +226,6 @@
     if (adaptor)
     {
         [self.mapView showCalloutForAnnotation:adaptor
-                                      recenter:recenter
                                       animated:animated];
         
         self.currentAnnotation = annotation;
