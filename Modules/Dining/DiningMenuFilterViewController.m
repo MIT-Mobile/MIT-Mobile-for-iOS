@@ -4,7 +4,7 @@
 
 @interface DiningMenuFilterViewController ()
 
-@property (nonatomic, strong) NSMutableArray * selectedFilters;
+@property (nonatomic, strong) NSMutableSet * selectedFilters;
 
 @end
 
@@ -66,7 +66,7 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(commitChanges:)];
 
     if (!self.selectedFilters) {
-        self.selectedFilters = [[NSMutableArray alloc] init];
+        self.selectedFilters = [[NSMutableSet alloc] init];
     }
     
 }

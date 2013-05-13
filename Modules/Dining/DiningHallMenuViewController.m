@@ -19,7 +19,7 @@
 @interface DiningHallMenuViewController ()
 
 @property (nonatomic, strong) UIBarButtonItem *filterBarButton;
-@property (nonatomic, strong) NSArray * filtersApplied;
+@property (nonatomic, strong) NSSet * filtersApplied;
 @property (nonatomic, strong) NSArray * mealItems;
 @property (nonatomic, strong) NSDictionary * hallStatus;
 
@@ -129,7 +129,7 @@
                                               inManagedObjectContext:self.managedObjectContext];
     fetchRequest.entity = entity;
     // TODO: include filters in predicate if they are set
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"meal = %@", meal];
+    fetchRequest.predicate = [self predicateForMeal:meal filteredBy:dietaryFilters];
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"ordinality" ascending:YES];
     fetchRequest.sortDescriptors = @[sort];
         
@@ -144,53 +144,20 @@
 
 - (void) fetchItemsForMeal:(DiningMeal *) meal withFilters:(NSSet *)dietaryFilters
 {
-    self.fetchedResultsController.fetchRequest.predicate = [NSPredicate predicateWithFormat:@"meal = %@", meal];
+    self.fetchedResultsController.fetchRequest.predicate = [self predicateForMeal:meal filteredBy:dietaryFilters];
     //TODO:: need to add dietary filters to predicate
     [self.fetchedResultsController performFetch:nil];
 }
 
-- (NSDictionary *) mealOfInterestForCurrentDay
+- (NSPredicate *) predicateForMeal:(DiningMeal *) meal filteredBy:(NSSet *) dietaryFilters
 {
-    // gets current meal the closest meal
-    NSDate *currentDate = [NSDate date];
-    
-    NSArray *meals = [self mealsForDay:self.currentDateString];
-    if (meals) {
-        for (int i = 0; i < [meals count]; i++) {
-            NSDictionary * meal = meals[i];
-            NSDate *startDate = [NSDate dateForTodayFromTimeString:meal[@"start_time"]];
-            NSDate *endDate = [NSDate dateForTodayFromTimeString:meal[@"end_time"]];
-            if ([startDate compare:currentDate] == NSOrderedAscending && [currentDate compare:endDate] == NSOrderedAscending) {
-                // current meal. current time is within meal time
-                return meal;
-            } else if ([currentDate compare:startDate] == NSOrderedAscending) {
-                // current time is before start time
-                return meal;
-            } else if ([endDate compare:currentDate] == NSOrderedAscending) {
-                // current time is after meal's end time. see if meal is last in day
-                if (i == [meals count] - 1) {
-                    // return this meal only if it is the last in the day
-                    return meal;
-                }
-            }
-        }
+    // predicate is used in fetch request for DiningMealItems
+    if (![dietaryFilters count]) {
+        // no filters, predicate can be simple
+        return [NSPredicate predicateWithFormat:@"meal = %@", meal];
+    } else {
+        return [NSPredicate predicateWithFormat:@"meal = %@ AND ANY dietaryFlags IN %@", meal, dietaryFilters];
     }
-    return nil;
-}
-
-
-- (NSArray *) mealsForDay:(NSString *) dateString
-{
-    // method returns array or nil if day does not have any meals or matching day cannot be found
-    
-    // date string must be in the yyyy-MM-dd format to match data
-    for (DiningDay *day in self.venue.menuDays) {
-//        if ([day.date isEqualToString:dateString]) {
-//            // we have found our day, return meals
-//            return day[@"meals"];
-//        }
-    }
-    return nil;
 }
 
 - (NSString *) timeSpanStringForMeal:(NSDictionary *) meal
@@ -289,9 +256,12 @@
     [self presentViewController:navController animated:YES completion:NULL];
 }
 
-- (void) applyFilters:(NSArray *)filters
+- (void) applyFilters:(NSSet *)filters
 {
     self.filtersApplied = filters;
+    
+    [self fetchItemsForMeal:self.currentMeal withFilters:self.filtersApplied];
+    
     [self.tableView reloadData];
 }
 
@@ -342,7 +312,11 @@
         
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.textLabel.font = [UIFont systemFontOfSize:17];
-        cell.textLabel.text = @"No meals this day";
+        if (self.currentMeal && [self.filtersApplied count] > 0) {
+            cell.textLabel.text = @"No matching items";
+        } else {
+            cell.textLabel.text = @"No meals this day";
+        }
         
         return cell;
     } else {
@@ -385,7 +359,7 @@
         header.rightButton.enabled = [self canPageRight];
 
         
-        header.currentFilters = self.filtersApplied;
+        header.currentFilters = [self.filtersApplied allObjects];
         
         if (!self.currentMeal) {
             header.showMealBar = NO;
@@ -404,7 +378,7 @@
             height+=[DiningHallMenuSectionHeaderView heightForFilterBar];
         }
         
-        if ([self.fetchedResultsController.fetchedObjects count] > 0) {
+        if (self.currentMeal) {
             height+=[DiningHallMenuSectionHeaderView heightForMealBar];
         }
         
@@ -455,9 +429,8 @@
         self.currentMeal = meal;
     }
     
-//    if (self.currentMeal) {
-        [self fetchItemsForMeal:self.currentMeal withFilters:nil];
-//    }
+    [self fetchItemsForMeal:self.currentMeal withFilters:nil];
+    self.filterBarButton.enabled = (self.currentMeal) ? YES : NO;       // enable/disable filter button if meal is valid
     [self.tableView reloadData];
 }
 
@@ -490,9 +463,9 @@
         self.currentMeal = meal;
     }
     
-//    if (self.currentMeal) {
-        [self fetchItemsForMeal:self.currentMeal withFilters:nil];
-//    }
+        
+    [self fetchItemsForMeal:self.currentMeal withFilters:nil];
+    self.filterBarButton.enabled = (self.currentMeal) ? YES : NO;       // enable/disable filter button if meal is valid
     [self.tableView reloadData];
 }
 

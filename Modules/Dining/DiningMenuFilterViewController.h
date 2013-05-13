@@ -2,7 +2,7 @@
 
 @protocol DiningMenuFilterDelegate <NSObject>
 
-- (void) applyFilters:(NSArray *) filters;
+- (void) applyFilters:(NSSet *) filters;
 
 @end
 
@@ -10,6 +10,6 @@
 
 @property (nonatomic) id<DiningMenuFilterDelegate> delegate;
 
-- (void) setFilters:(NSArray *)filters;
+- (void) setFilters:(NSSet *)filters;
 
 @end
