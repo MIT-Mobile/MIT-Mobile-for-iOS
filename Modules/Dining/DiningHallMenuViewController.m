@@ -423,7 +423,7 @@
         self.currentMeal = meal;
     }
     
-    [self fetchItemsForMeal:self.currentMeal withFilters:nil];
+    [self fetchItemsForMeal:self.currentMeal withFilters:self.filtersApplied];
     self.filterBarButton.enabled = (self.currentMeal) ? YES : NO;       // enable/disable filter button if meal is valid
     [self.tableView reloadData];
 }
@@ -454,7 +454,7 @@
     }
     
         
-    [self fetchItemsForMeal:self.currentMeal withFilters:nil];
+    [self fetchItemsForMeal:self.currentMeal withFilters:self.filtersApplied];
     self.filterBarButton.enabled = (self.currentMeal) ? YES : NO;       // enable/disable filter button if meal is valid
     [self.tableView reloadData];
 }
