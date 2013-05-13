@@ -282,11 +282,7 @@
                                          atIndex:agsLayerIndex];
                 }
                 
-                if (forceReload) {
-                    [manager reload];
-                } else {
-                    [manager refresh];
-                }
+                [manager refresh:nil];
             }
         }];
     }
@@ -441,26 +437,30 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
                         animated:(BOOL)animated
 {
+    if ([self.calloutAnnotation isEqual:annotation] == NO) {
+        [self dismissCallout];
+    }
+    
+    self.calloutAnnotation = annotation;
+    
     if (self.areBaseLayersLoaded == NO) {
-        self.calloutAnnotation = annotation;
-        
         if (annotation) {
-            void (^calloutPresentBlock)(id<MGSAnnotation>) = ^ (id<MGSAnnotation> annotation) {
-                if ([annotation isEqual:self.calloutAnnotation]) {
-                    [self showCalloutForAnnotation:annotation
-                                      animated:animated];
+            __weak MGSMapView *weak_self = self;
+            self.pendingCalloutBlock = ^ {
+                if ([annotation isEqual:weak_self.calloutAnnotation]) {
+                    [weak_self showCalloutForAnnotation:annotation
+                                               animated:animated];
                 }
             };
         }
     } else {
-        if (annotation) {
+        if (annotation && [self shouldShowCalloutForAnnotation:annotation]) {
             MGSLayer *layer = [self layerContainingAnnotation:annotation];
             MGSLayerController *controller = [self layerControllerForLayer:layer];
             
-            [controller refresh];
-            /*[controller refresh:^{
+            [controller refresh:^{
                 if ([self.calloutAnnotation isEqual:annotation]) {
-                    AGSGraphic *graphic = [controller nativeAnnotationForAnnotation:annotation];
+                    AGSGraphic *graphic = [controller layerAnnotationForAnnotation:annotation].graphic;
                     AGSEnvelope *graphicEnvelope = graphic.geometry.envelope;
                     AGSEnvelope *envelope = [self.mapView visibleAreaEnvelope];
                     
@@ -475,11 +475,12 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                                                                spatialReference:envelope.spatialReference];
                     
                     if ([paddedEnvelope containsEnvelope:graphicEnvelope]) {
-                        [self willPresentCalloutForAnnotation:annotation];
+                        [self willShowCalloutForAnnotation:annotation];
+                        UIView *annotationView = [self calloutViewForAnnotation:annotation];
                         
-                        if (view) {
-                            [view sizeToFit];
-                            self.mapView.callout.customView = view;
+                        if (annotationView) {
+                            [annotationView sizeToFit];
+                            self.mapView.callout.customView = annotationView;
                         } else {
                             MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
                             self.mapView.callout.title = [safeAnnotation title];
@@ -491,7 +492,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                                                       forGraphic:graphic
                                                         animated:animated];
                         
-                        [self didPresentCalloutForAnnotation:annotation];
+                        [self didShowCalloutForAnnotation:annotation];
                     } else {
                         double xmin = envelope.xmin;
                         double xmax = envelope.xmax;
@@ -516,11 +517,18 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                                                                             ymax:ymax
                                                                 spatialReference:envelope.spatialReference];
                         
-                        self.calloutRequested = YES;
+                        __weak MGSMapView *weak_self = self;
+                        self.pendingCalloutBlock = ^ {
+                            if ([annotation isEqual:weak_self.calloutAnnotation]) {
+                                [weak_self showCalloutForAnnotation:annotation
+                                                           animated:animated];
+                            }
+                        };
+                        
                         self.mapRegion = MKCoordinateRegionFromAGSEnvelope(newEnvelope);
                     }
                 }
-            }]; */
+            }];
         }
     }
 }
@@ -531,9 +539,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [self.mapView.callout dismiss];
         [self didDismissCalloutForAnnotation:self.calloutAnnotation];
         self.calloutAnnotation = nil;
-    } else if (self.pendingCalloutBlock) {
         self.pendingCalloutBlock = nil;
-        self.pendingCalloutLayer = nil;
     }
 }
 
@@ -775,6 +781,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)baseLayersDidFinishLoading
 {
+    [self refreshLayers:[NSSet setWithArray:self.externalLayers]];
+    
     if (MKCoordinateRegionIsValid(self->_mapRegion)) {
         [self.mapView zoomToEnvelope:AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(self->_mapRegion, self.mapView.spatialReference)
                             animated:NO];
@@ -784,13 +792,24 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         self->_mapRegion = MKCoordinateRegionInvalid;
     }
     
+    void (^notificationBlock)(NSNotification*) = ^(NSNotification *note) {
+        if (self.mapView.lastChangeFromInteraction == NO) {
+            if (self.pendingCalloutBlock) {
+                self.pendingCalloutBlock();
+                self.pendingCalloutBlock = nil;
+            }
+        }
+    };
+    
     [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
                                                       object:self.mapView
                                                        queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification *note) {
-                                                      [self refreshLayers:[NSSet setWithArray:self.externalLayers]
-                                                              forceReload:YES];
-                                                  }];
+                                                  usingBlock:notificationBlock];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
+                                                      object:self.mapView
+                                                       queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:notificationBlock];
     [self didFinishLoadingMapView];
 }
 
@@ -936,7 +955,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
     
     if (graphic.infoTemplateDelegate == nil) {
-        graphic.infoTemplateDelegate = self;
+        // graphic.infoTemplateDelegate = self;
     }
     
     return [self shouldShowCalloutForAnnotation:annotation];
@@ -995,18 +1014,22 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             }
         }];
         
-        [tappedGraphics enumerateObjectsUsingBlock:^(AGSGraphic *graphic, NSUInteger idx, BOOL *stop) {
-            BOOL showCallout = [self mapView:mapView
-                 shouldShowCalloutForGraphic:graphic];
-            
-            if (showCallout) {
-                MGSLayer *layer = [self layerContainingGraphic:graphic];
-                MGSLayerController *layerManager = [self layerControllerForLayer:layer];
-                id<MGSAnnotation> annotation = [layerManager layerAnnotationForGraphic:graphic].annotation;
-                
-                [self showCalloutForAnnotation:annotation];
-                (*stop) = YES;
-            }
+        [tappedGraphics enumerateObjectsUsingBlock:^(AGSGraphic *graphic, NSUInteger idx, BOOL *outerStop) {
+            [self.externalLayers enumerateObjectsWithOptions:NSEnumerationReverse
+                                                  usingBlock:^(MGSLayer *layer, NSUInteger idx, BOOL *stop) {
+                                                      MGSLayerController *layerManager = [self layerControllerForLayer:layer];
+                                                      
+                                                      if ([graphic.layer isEqual:layerManager.nativeLayer]) {
+                                                          id<MGSAnnotation> annotation = [layerManager layerAnnotationForGraphic:graphic].annotation;
+                                                          
+                                                          if ([self shouldShowCalloutForAnnotation:annotation]) {
+                                                              [self showCalloutForAnnotation:annotation];
+                                                              
+                                                              (*stop) = YES;
+                                                              (*outerStop) = YES;
+                                                          }
+                                                      }
+                                                  }];
         }];
     }
     
@@ -1146,15 +1169,5 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     UIView *customView = [self calloutViewForAnnotation:annotation];
     [customView sizeToFit];
     return customView;
-}
-
-#pragma mark --MGSLayerManagerDelegate
-- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager
-{
-    if (self.areBaseLayersLoaded && self.pendingCalloutBlock) {
-        if ([self.pendingCalloutLayer isEqual:layerManager.layer]) {
-            self.pendingCalloutBlock();
-        }
-    }
 }
 @end

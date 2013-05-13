@@ -24,7 +24,6 @@
 @property(nonatomic,strong) MGSLayer* defaultLayer;
 
 @property(nonatomic, copy) dispatch_block_t pendingCalloutBlock;
-@property(nonatomic, weak) MGSLayer* pendingCalloutLayer;
 @property(nonatomic, strong) id <MGSAnnotation> calloutAnnotation;
 @property(nonatomic,strong) id zoomNotificationObject;
 
@@ -70,7 +69,4 @@
             didUpdateWithLocation:(AGSLocation*)location;
 - (void)locationDisplayDataSourceStarted:(id<AGSLocationDisplayDataSource>)dataSource;
 - (void)locationDisplayDataSourceStopped:(id<AGSLocationDisplayDataSource>)dataSource;
-
-#pragma mark MGSLayerManagerDelegate
-- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager;
 @end
