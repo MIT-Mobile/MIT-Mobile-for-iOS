@@ -48,6 +48,12 @@
     return self;
 }
 
+- (void) setDietaryTypes:(NSArray *)dietaryTypes
+{
+    _dietaryTypes = dietaryTypes;
+    [self setNeedsLayout];
+}
+
 - (void) prepareForReuse
 {
     self.primaryLabel.text = @"";
