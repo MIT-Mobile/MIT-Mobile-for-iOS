@@ -235,6 +235,7 @@
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration
 {
     DiningMenuCompareViewController *vc = [[DiningMenuCompareViewController alloc] init];
+    vc.filtersApplied = self.filtersApplied;
     vc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     
     [self presentViewController:vc animated:YES completion:NULL];

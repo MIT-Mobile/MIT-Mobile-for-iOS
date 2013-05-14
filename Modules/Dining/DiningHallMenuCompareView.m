@@ -32,10 +32,10 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         [self.dateFormatter setDateFormat:@"MMMM dd"];
         
         DiningHallMenuCompareLayout *layout = [[DiningHallMenuCompareLayout alloc] init];
-        self.columnWidth = DEFAULT_COLUMN_WIDTH;
         
         CGFloat headerHeight = CGRectGetHeight(self.headerView.frame);
         self.collectionView = [[PSTCollectionView alloc] initWithFrame:CGRectMake(0, headerHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - headerHeight) collectionViewLayout:layout];
+        self.columnWidth = DEFAULT_COLUMN_WIDTH;
         self.collectionView.dataSource = self;
         self.collectionView.delegate = self;
         self.collectionView.directionalLockEnabled = YES;

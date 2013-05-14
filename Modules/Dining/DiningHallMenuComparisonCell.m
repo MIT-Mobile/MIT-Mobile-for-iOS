@@ -73,6 +73,7 @@
 {
     [super layoutSubviews];
     
+    [self.typeContainer removeAllSubviews];
     [self layoutDietaryTypes];
     
     // reclaim the space if there are no dietary types
