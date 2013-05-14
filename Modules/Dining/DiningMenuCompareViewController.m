@@ -50,6 +50,8 @@
 @property (nonatomic, strong) DiningHallMenuCompareView * current;      // center
 @property (nonatomic, strong) DiningHallMenuCompareView * next;         // on right
 
+@property (nonatomic, strong) NSArray * houseVenueSections; // array of houseVenueSection titles, needed because fetchedResultsController will not return empty sections
+
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong) NSFetchedResultsController *previousFRC;
 @property (nonatomic, strong) NSFetchedResultsController *currentFRC;
@@ -75,6 +77,10 @@
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     self.view.autoresizesSubviews = YES;
     
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"shortName" ascending:YES];
+    NSArray *houseVenues = [CoreDataManager objectsForEntity:@"HouseVenue" matchingPredicate:nil sortDescriptors:@[sort]];
+    self.houseVenueSections = [houseVenues valueForKey:@"shortName"];
+    
     // The scrollview has a frame that is just larger than the viewcontrollers view bounds so that padding can be seen between scrollable pages.
     // Frames are also inverted (height => width, width => height) because when the view loads the rotation has not yet occurred.
     CGRect frame = CGRectMake(-DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds) + (DAY_VIEW_PADDING * 2), CGRectGetWidth(self.view.bounds));
@@ -97,8 +103,6 @@
     self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
                                                                         // (viewPadding * 2) is used because each view has own padding, so there are 2 padded spaces to account for
     
-    [self updateDateHeaders];
-    
     [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
     
     self.previous.delegate = self;
@@ -111,13 +115,6 @@
     
     [self loadData];
     [self reloadAllComparisonViews];
-}
-
-- (void) updateDateHeaders
-{
-    self.previous.date = [self.datePointer dayBefore];
-    self.current.date = self.datePointer;
-    self.next.date = [self.datePointer dayAfter];
 }
 
 - (void)didReceiveMemoryWarning
@@ -139,7 +136,10 @@
 - (void) loadData
 {
     NSDate *date = [HouseVenue fakeDate];
-    self.currentFRC = [self fetchedResultsControllerForMealNamed:@"dinner" onDate:date];
+    NSLog(@"Fake Date :: %@", date);
+    
+    NSString *mealName = [self bestMealForDate:date];
+    self.currentFRC = [self fetchedResultsControllerForMealNamed:mealName onDate:date];
     [self.currentFRC performFetch:nil];
 }
 
@@ -180,6 +180,7 @@
 {
     
     
+    
 }
 
 - (NSPredicate *) predicateForMealNamed:(NSString *)mealName onDate:(NSDate *)date
@@ -203,29 +204,69 @@
         
     } else if (scrollView.contentOffset.x < scrollView.frame.size.width) {
         // have scrolled to the left
-        [self didPageLeft];
+        [self didPageLeft];         
     }
-    [self updateDateHeaders];
-    // TODO: need to refresh comparison views with date's data
     
+    // TODO :: should only reset to center if we can page left and we can page right
+    // Also should not update data when we reach edge
     [scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO]; // always return to center view
-    
 }
 
 - (void) didPageRight
 {
     self.datePointer = [self.datePointer dayAfter];
+    
+    self.previousFRC = self.currentFRC;
+    self.currentFRC = self.nextFRC;
+    // Need to set nextFRC with new predicate
+    
     [self.current resetScrollOffset]; // need to reset scroll offset so user always starts at (0,0) in collectionView
+    // TODO fetch all data  
     [self reloadAllComparisonViews];
 }
 
 - (void) didPageLeft
 {
     self.datePointer = [self.datePointer dayBefore];
+    
+    self.nextFRC = self.currentFRC;
+    self.currentFRC = self.previousFRC;
+    // Need to set previousFRC with new predicate for previousMeal
+        
     [self.current resetScrollOffset];
+    // TODO fetch all data
     [self reloadAllComparisonViews];
 }
 
+- (NSString *) bestMealForDate:(NSDate *) date
+{
+    NSString *mealEntity = @"DiningMeal";
+    DiningMeal *meal = nil;
+    NSSortDescriptor *startTimeAscending = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:YES];
+    
+    NSPredicate *inProgress = [NSPredicate predicateWithFormat:@"startTime <= %@ AND endTime >= %@", date, date];               // date is between a startTime and endTime
+    NSArray *results = [CoreDataManager objectsForEntity:mealEntity matchingPredicate:inProgress sortDescriptors:@[startTimeAscending]];
+    if ([results count]) {
+        meal = results[0];
+        return meal.name;
+    }
+    
+    NSPredicate *isUpcoming = [NSPredicate predicateWithFormat:@"startTime > %@ AND startTime < %@", date, [date endOfDay]];    // meal starts after date but starts before the end of the date's day
+    results = [CoreDataManager objectsForEntity:mealEntity matchingPredicate:isUpcoming sortDescriptors:@[startTimeAscending]];
+    if ([results count]) {
+        meal = results[0];
+        return meal.name;
+    }
+    
+    NSPredicate *lastOfDay = [NSPredicate predicateWithFormat:@"startTime >= %@ AND endTime <= %@", [date startOfDay], [date endOfDay]];
+    results = [CoreDataManager objectsForEntity:mealEntity matchingPredicate:lastOfDay sortDescriptors:@[startTimeAscending]];
+    meal = [results lastObject];
+    return meal.name;
+}
+
+
+
+#pragma mark - DiningCompareView Helper Methods
 - (void) reloadAllComparisonViews
 {
     [self.previous reloadData];
@@ -233,8 +274,6 @@
     [self.next reloadData];
 }
 
-
-#pragma mark - DiningCompareView Helper Methods
 - (NSFetchedResultsController *) resultsControllerForCompareView:(DiningHallMenuCompareView *)compareView
 {
     if (compareView == self.previous) {
@@ -261,9 +300,7 @@
 
 - (NSString *) compareView:(DiningHallMenuCompareView *)compareView titleForSection:(NSInteger)section
 {
-    NSFetchedResultsController *controller = [self resultsControllerForCompareView:compareView];
-    id<NSFetchedResultsSectionInfo> sectionInfo = [controller sections][section];
-    return [sectionInfo name];
+    return self.houseVenueSections[section];
     
 }
 
@@ -295,7 +332,7 @@
     NSFetchedResultsController *controller = [self resultsControllerForCompareView:compareView];
     NSArray *sections = [controller sections];
     if (section >= [sections count]) {
-        return 0;
+        return 1;       // necessary to show section header
     }
     id<NSFetchedResultsSectionInfo> sectionInfo = [controller sections][section];
     if ([sectionInfo numberOfObjects]) {
@@ -308,8 +345,15 @@
 - (DiningHallMenuComparisonCell *) compareView:(DiningHallMenuCompareView *)compareView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSFetchedResultsController *controller = [self resultsControllerForCompareView:compareView];
-    id<NSFetchedResultsSectionInfo> sectionInfo = [controller sections][indexPath.section];
-    DiningMealItem *item = [sectionInfo objects][indexPath.row];
+    NSArray *sections = [controller sections];
+    DiningMealItem *item = nil;
+    if (indexPath.section >= [sections count]) {
+        item = nil;
+    } else {
+        id<NSFetchedResultsSectionInfo> sectionInfo = [controller sections][indexPath.section];
+        item = [sectionInfo objects][indexPath.row];
+    }
+    
     
     if (item) {
         DiningHallMenuComparisonCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuCell" forIndexPath:indexPath];
@@ -317,6 +361,11 @@
         cell.secondaryLabel.text = item.subtitle;
         
         cell.dietaryTypes = [item.dietaryFlags allObjects];
+        if (indexPath.row == 0) {
+            NSLog(@"dietaryTypes :: %@", cell.dietaryTypes);
+            NSLog(@"item :: %@", item);
+        }
+        
         
         return cell;
     } else {
@@ -330,6 +379,10 @@
 - (CGFloat) compareView:(DiningHallMenuCompareView *)compareView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSFetchedResultsController *controller = [self resultsControllerForCompareView:compareView];
+    NSArray *sections = [controller sections];
+    if (indexPath.section >= [sections count]) {
+        return 30;       // necessary to show section header
+    }
     id<NSFetchedResultsSectionInfo> sectionInfo = [controller sections][indexPath.section];
     DiningMealItem *item = [sectionInfo objects][indexPath.row];
     
@@ -339,8 +392,6 @@
         // TODO :: need to distinguish height of no meals cell
         return 30;
     }
-    
-    
 }
 
 

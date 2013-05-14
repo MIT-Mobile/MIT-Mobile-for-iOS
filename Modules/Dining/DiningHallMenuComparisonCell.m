@@ -21,7 +21,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code
+
         self.backgroundColor = [UIColor whiteColor];
         
         NSInteger labelWidth = CGRectGetWidth(frame) - 27;
@@ -48,6 +48,14 @@
     return self;
 }
 
+- (void) prepareForReuse
+{
+    self.primaryLabel.text = @"";
+    self.secondaryLabel.text = @"";
+    self.dietaryTypes = nil;
+    [self.typeContainer removeAllSubviews];
+}
+
 + (UIFont *) fontForPrimaryLabel
 {
     return [UIFont fontWithName:@"Helvetica-Bold" size:10];
@@ -72,12 +80,11 @@
 - (void) layoutSubviews
 {
     [super layoutSubviews];
-    
-    [self.typeContainer removeAllSubviews];
+
     [self layoutDietaryTypes];
     
     // reclaim the space if there are no dietary types
-    CGFloat maxWidth = ([self.typeContainer superview]) ? CGRectGetMinX(self.typeContainer.frame) - 5 : CGRectGetWidth(self.frame);
+    CGFloat maxWidth = ([self.dietaryTypes count]) ? CGRectGetMinX(self.typeContainer.frame) - 5 : CGRectGetWidth(self.frame);
     
     CGSize constrainingSize = CGSizeMake(maxWidth - (2 * STANDARD_PADDING), CGFLOAT_MAX);
     self.primaryLabel.frame = [self frameForLabel:self.primaryLabel constrainedToSize:constrainingSize];
@@ -89,8 +96,8 @@
 
 - (void) layoutDietaryTypes
 {
-    if ([self.dietaryTypes count] == 0) {
-        [self.typeContainer removeFromSuperview];
+    if ((!self.dietaryTypes || [self.dietaryTypes count] == 0) && [self.typeContainer subviews]) {
+        [self.typeContainer removeAllSubviews];
         return;
     }
     CGFloat iconSquare  = ICON_SQUARE;
@@ -118,7 +125,7 @@
     // calculates size of primary and secondary labels and calculates and compares against the required dietary type height
     CGFloat iconHeight = (numDietaryTypes * ICON_SQUARE) + ((numDietaryTypes - 1) * ICON_PADDING);
     
-    CGFloat dietaryWidth = STANDARD_PADDING + ICON_SQUARE + 5;
+    CGFloat dietaryWidth = ICON_SQUARE + 5;
     CGFloat maxWidth = (numDietaryTypes) ? cellWidth - dietaryWidth : cellWidth;
     CGSize constrainingSize = CGSizeMake(maxWidth - (2 * STANDARD_PADDING), CGFLOAT_MAX);
     
