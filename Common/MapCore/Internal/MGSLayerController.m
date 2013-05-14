@@ -55,6 +55,11 @@
                     forKeyPath:@"annotations"];
 }
 
+- (void)setNeedsRefresh
+{
+    self.needsRefresh = YES;
+}
+
 
 #pragma mark - Dynamic Properties
 - (AGSSpatialReference*)spatialReference
