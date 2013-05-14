@@ -81,7 +81,7 @@
 
 - (void)refreshLayers
 {
-    [self.mapView refreshLayer:self.annotationLayer];
+    [self.mapView refreshLayers:[NSSet setWithObject:self.annotationLayer]];
 }
 
 #pragma mark - Dynamic Properties

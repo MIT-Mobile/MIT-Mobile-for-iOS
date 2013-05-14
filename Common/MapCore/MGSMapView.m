@@ -236,20 +236,7 @@
     return [NSArray arrayWithArray:self.externalLayers];
 }
 
-- (void)refreshLayer:(MGSLayer*)layer
-{
-    [self refreshLayers:[NSSet setWithObject:layer]
-            forceReload:NO];
-}
-
 - (void)refreshLayers:(NSSet*)layers
-{
-    [self refreshLayers:layers
-            forceReload:NO];
-}
-
-- (void)refreshLayers:(NSSet*)layers
-          forceReload:(BOOL)forceReload
 {
     if (self.areBaseLayersLoaded) {
         NSArray *sortedArrays = [[layers allObjects] sortedArrayUsingComparator:^NSComparisonResult(MGSLayer *layer1, MGSLayer *layer2) {
@@ -359,7 +346,7 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
     
     // The map view will only have a spatial reference once it has been loaded
     if (self.areBaseLayersLoaded) {
-        [self refreshLayer:newLayer];
+        [self refreshLayers:[NSSet setWithObject:newLayer]];
     }
 }
 

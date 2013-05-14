@@ -66,7 +66,6 @@
 
 #pragma mark Layer Management
 - (NSArray*)mapLayers;
-- (void)refreshLayer:(MGSLayer*)layer;
 - (void)refreshLayers:(NSSet*)layers;
 
 - (BOOL)isLayerHidden:(MGSLayer*)layer;
