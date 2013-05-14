@@ -36,6 +36,7 @@
 
 #pragma mark Location Updates
 @property (nonatomic) BOOL showUserLocation;
+@property (nonatomic) BOOL trackUserLocation;
 
 
 #pragma mark - Methods
@@ -61,8 +62,6 @@
 
 #pragma mark Misc
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
-- (BOOL)showUserLocation;
-- (void)setShowUserLocation:(BOOL)showUserLocation;
 
 #pragma mark Layer Management
 - (NSArray*)mapLayers;

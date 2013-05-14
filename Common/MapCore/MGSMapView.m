@@ -213,6 +213,18 @@
     }
 }
 
+- (BOOL)tracksUserLocation {
+    return (self.mapView.locationDisplay.autoPanMode == AGSLocationDisplayAutoPanModeDefault);
+}
+
+- (void)setTracksUserLocation:(BOOL)tracksUserLocation {
+    if (tracksUserLocation) {
+        self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeDefault;
+    } else {
+        self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
+    }
+}
+
 - (BOOL)showUserLocation {
     return (self.mapView.locationDisplay.dataSource &&
             self.mapView.locationDisplay.isDataSourceStarted);
