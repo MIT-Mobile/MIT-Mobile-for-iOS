@@ -61,9 +61,9 @@
 
 - (void)dealloc
 {
-    if (self.zoomNotificationObject) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self.zoomNotificationObject];
-    }
+    [self.observerTokens enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        [[NSNotificationCenter defaultCenter] removeObserver:obj];
+    }];
 }
 
 #pragma mark Base Map Set Management
@@ -723,6 +723,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     self.baseLayersLoaded = NO;
     self.externalLayers = [NSMutableArray array];
     self.externalLayerManagers = [NSMutableSet set];
+    self.observerTokens = [NSMutableDictionary dictionary];
     
     // Make sure that we don't do draw anything outside the bounds of the window.
     // The ArcGIS SDK has a really annoying bug where it will happily draw a presented
@@ -793,6 +794,14 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     }
     
     void (^notificationBlock)(NSNotification*) = ^(NSNotification *note) {
+        if ([note.name isEqualToString:AGSMapViewDidEndZoomingNotification]) {
+            [self.externalLayerManagers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+                MGSLayerController *controller = (MGSLayerController*) obj;
+                [controller setNeedsRefresh];
+                [controller refresh:nil];
+            }];
+        }
+        
         if (self.mapView.lastChangeFromInteraction == NO) {
             if (self.pendingCalloutBlock) {
                 self.pendingCalloutBlock();
@@ -801,15 +810,15 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         }
     };
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
-                                                      object:self.mapView
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:notificationBlock];
+    self.observerTokens[AGSMapViewDidEndZoomingNotification] = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
+                                                                                                                      object:self.mapView
+                                                                                                                       queue:[NSOperationQueue mainQueue]
+                                                                                                                  usingBlock:notificationBlock];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
-                                                      object:self.mapView
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:notificationBlock];
+    self.observerTokens[AGSMapViewDidEndPanningNotification] = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndPanningNotification
+                                                                                                                      object:self.mapView
+                                                                                                                       queue:[NSOperationQueue mainQueue]
+                                                                                                                  usingBlock:notificationBlock];
     [self didFinishLoadingMapView];
 }
 

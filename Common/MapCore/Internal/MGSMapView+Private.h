@@ -25,7 +25,7 @@
 
 @property(nonatomic, copy) dispatch_block_t pendingCalloutBlock;
 @property(nonatomic, strong) id <MGSAnnotation> calloutAnnotation;
-@property(nonatomic,strong) id zoomNotificationObject;
+@property(nonatomic,strong) NSMutableDictionary *observerTokens;
 
 #pragma mark Initialization
 - (void)_init;
