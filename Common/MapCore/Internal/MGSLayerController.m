@@ -549,8 +549,7 @@
                        context:(void *)context
 {
     if ([object isEqual:self.layer] && [keyPath isEqualToString:@"annotations"]) {
-        MGSLayer *layer = (MGSLayer*)object;
-        self.needsRefresh = YES;
+        [self setNeedsRefresh];
         [self refresh:nil];
     } else {
         [super observeValueForKeyPath:keyPath
