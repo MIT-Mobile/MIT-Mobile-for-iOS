@@ -2,4 +2,6 @@
 
 @interface DiningMenuCompareViewController : UIViewController
 
+@property (nonatomic, retain) NSSet * filtersApplied;
+
 @end

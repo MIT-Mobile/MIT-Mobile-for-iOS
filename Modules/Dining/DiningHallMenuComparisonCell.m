@@ -1,6 +1,7 @@
 #import "DiningHallMenuComparisonCell.h"
 #import "UIImage+PDF.h"
 #import "UIKit+MITAdditions.h"
+#import "DiningDietaryFlag.h"
 
 @interface DiningHallMenuComparisonCell ()
 
@@ -99,9 +100,8 @@
     
     CGSize iconSize = CGSizeMake(12, 12);
     int i = 0;
-    for (NSString *type in self.dietaryTypes) {
-        NSString *pathName = [NSString stringWithFormat:@"dining/%@.pdf", type];
-        UIImage *icon = [UIImage imageWithPDFNamed:pathName atSize:iconSize];
+    for (DiningDietaryFlag *type in self.dietaryTypes) {
+        UIImage *icon = [UIImage imageWithPDFNamed:type.pdfPath atSize:iconSize];
         UIImageView *imgView = [[UIImageView alloc] initWithImage:icon];
         
         imgView.center = CGPointMake(6, 6 + ((12 + iconPadding) * i));
