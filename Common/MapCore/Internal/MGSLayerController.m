@@ -10,11 +10,11 @@
 @property(nonatomic,strong) MGSLayer* layer;
 @property(nonatomic,strong) AGSLayer* nativeLayer;
 @property(strong) NSSet *layerAnnotations;
-@property(copy) NSOrderedSet *currentAnnotations;
-@property BOOL layerNeedsRefresh;
+@property(copy) NSSet *synchronizedAnnotations;
+@property (nonatomic,strong) NSMutableSet *notificationBlocks;
+@property BOOL needsRefresh;
 
-@property dispatch_queue_t refreshQueue;
-@property dispatch_semaphore_t refreshSemaphore;
+@property NSOperationQueue *queue;
 
 - (AGSGraphic*)createGraphicForAnnotation:(id <MGSAnnotation>)annotation;
 @end
@@ -31,12 +31,10 @@
     self = [super init];
     
     if (self) {
-        self.layerAnnotations = nil;
-        
         self.layer = layer;
-        
-        self.refreshSemaphore = dispatch_semaphore_create(1);
-        self.refreshQueue = dispatch_get_main_queue();
+        self.notificationBlocks = [[NSMutableSet alloc] init];
+        self.queue = [[NSOperationQueue alloc] init];
+        [self.queue setMaxConcurrentOperationCount:1];
         
         if (layer) {
             [self.layer addObserver:self
@@ -53,16 +51,6 @@
 
 - (void)dealloc
 {
-    if (self.refreshSemaphore) {
-        dispatch_release(self.refreshSemaphore);
-        self.refreshSemaphore = NULL;
-    }
-    
-    if (self.refreshQueue && (self.refreshQueue != dispatch_get_main_queue())) {
-        dispatch_release(self.refreshQueue);
-        self.refreshQueue = NULL;
-    }
-    
     [self.layer removeObserver:self
                     forKeyPath:@"annotations"];
 }
@@ -98,7 +86,7 @@
     
     if (layer) {
         self.nativeLayer = layer;
-        [self refresh];
+        [self refresh:nil];
     }
     
     return _nativeLayer;
@@ -156,18 +144,112 @@
     return layerAnnotations;
 }
 
-- (void)refresh
-{
-    [self synchronizeNativeLayerWithAnnotations:self.layer.annotations
-                                    forceReload:NO];
+- (void)refresh:(void (^)(void))completedBlock {
+    dispatch_block_t localBlock = [completedBlock copy];
+    [self.queue addOperationWithBlock:^{
+        NSMutableSet *pendingNotifications = nil;
+        
+        // Check for more than 1 pending operation.
+        // The operation 0 will be this block but if there are more behind it,
+        // we want to merge all the notification block together and only refresh
+        // once.
+        if ((self.spatialReference == nil) || ([self.queue operationCount] > 1)) {
+            if (localBlock) {
+                [self.notificationBlocks addObject:localBlock];
+            }
+        } else {
+            if (self.needsRefresh) {
+                AGSSpatialReference *spatialReference = self.spatialReference;
+                NSOrderedSet *orderedAnnotations = [NSOrderedSet orderedSetWithOrderedSet:self.layer.annotations];
+                
+                DDLogVerbose(@"Refreshing '%@' - %lu annotations",
+                             [[self.layer.name componentsSeparatedByString:@"."] lastObject],
+                             (unsigned long) [orderedAnnotations count]);
+                
+                NSArray *annotations = [orderedAnnotations sortedArrayUsingComparator:^NSComparisonResult(id <MGSAnnotation> obj1, id <MGSAnnotation> obj2) {
+                    MGSSafeAnnotation *annotation1 = [[MGSSafeAnnotation alloc] initWithAnnotation:obj1];
+                    MGSSafeAnnotation *annotation2 = [[MGSSafeAnnotation alloc] initWithAnnotation:obj2];
+                    
+                    BOOL obj1_isMarker = (([annotation1 annotationType] == MGSAnnotationMarker) ||
+                                          ([annotation1 annotationType] == MGSAnnotationPointOfInterest));
+                    
+                    BOOL obj2_isMarker = (([annotation2 annotationType] == MGSAnnotationMarker) ||
+                                          ([annotation2 annotationType] == MGSAnnotationPointOfInterest));
+                    
+                    if (obj1_isMarker && obj2_isMarker) {
+                        CLLocationCoordinate2D coordinate1 = [annotation1 coordinate];
+                        CLLocationCoordinate2D coordinate2 = [annotation2 coordinate];
+                        
+                        if (coordinate1.latitude > coordinate2.latitude) {
+                            return NSOrderedAscending;
+                        }
+                        else if (coordinate1.latitude < coordinate2.latitude) {
+                            return NSOrderedDescending;
+                        }
+                        else if (coordinate1.longitude > coordinate2.longitude) {
+                            return NSOrderedDescending;
+                        }
+                        else if (coordinate1.longitude > coordinate2.longitude) {
+                            return NSOrderedDescending;
+                        }
+                        
+                        return NSOrderedSame;
+                    } else if (obj1_isMarker) {
+                        return NSOrderedDescending;
+                    } else {
+                        return NSOrderedAscending;
+                    }
+                }];
+                
+                NSMutableSet *layerAnnotations = [NSMutableSet set];
+                NSMutableArray *graphics = [NSMutableArray array];
+                
+                for (id <MGSAnnotation> annotation in annotations) {
+                    AGSGraphic *annotationGraphic = [self createGraphicForAnnotation:annotation];
+                    
+                    if ([spatialReference isEqualToSpatialReference:annotationGraphic.geometry.spatialReference] == NO) {
+                        annotationGraphic.geometry = [[AGSGeometryEngine defaultGeometryEngine] projectGeometry:annotationGraphic.geometry
+                                                                                             toSpatialReference:spatialReference];
+                    }
+                    
+                    MGSLayerAnnotation *layerAnnotation = [[MGSLayerAnnotation alloc] initWithAnnotation:annotation
+                                                                                                 graphic:annotationGraphic];
+                    [layerAnnotations addObject:layerAnnotation];
+                    [graphics addObject:annotationGraphic];
+                }
+                
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    self.synchronizedAnnotations = [orderedAnnotations set];
+                    self.layerAnnotations = layerAnnotations;
+                    
+                    if ([self.nativeLayer isKindOfClass:[AGSGraphicsLayer class]]) {
+                        AGSGraphicsLayer *graphicsLayer = (AGSGraphicsLayer *) self.nativeLayer;
+                        [graphicsLayer removeAllGraphics];
+                        [graphicsLayer addGraphics:graphics];
+                        [graphicsLayer refresh];
+                    }
+                });
+            }
+            
+            pendingNotifications = [NSMutableSet setWithSet:self.notificationBlocks];
+            [self.notificationBlocks removeAllObjects];
+            
+            if (localBlock) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    localBlock();
+                });
+            }
+            
+            [pendingNotifications enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+                dispatch_block_t block = (dispatch_block_t) obj;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    block();
+                });
+            }];
+        }
+    }];
 }
-
-- (void)reload
-{
-    [self synchronizeNativeLayerWithAnnotations:self.layer.annotations
-                                    forceReload:YES];
-}
-
+/*
 // TODO: Optimize this if needed, just brute forcing it for now
 - (void)synchronizeNativeLayerWithAnnotations:(NSOrderedSet*)newAnnotations
                                   forceReload:(BOOL)forceReload
@@ -302,7 +384,7 @@
             self.layerNeedsRefresh = YES;
         }
     }
-}
+}*/
 
 - (AGSGraphic*)createGraphicForAnnotation:(id <MGSAnnotation>)annotation
 {
@@ -463,8 +545,8 @@
 {
     if ([object isEqual:self.layer] && [keyPath isEqualToString:@"annotations"]) {
         MGSLayer *layer = (MGSLayer*)object;
-        [self synchronizeNativeLayerWithAnnotations:layer.annotations
-                                        forceReload:NO];
+        self.needsRefresh = YES;
+        [self refresh:nil];
     } else {
         [super observeValueForKeyPath:keyPath
                              ofObject:object

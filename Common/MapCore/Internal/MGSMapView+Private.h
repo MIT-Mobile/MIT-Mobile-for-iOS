@@ -15,7 +15,7 @@
 @property(nonatomic,weak) MGSErrorView* loadingView;
 @property(nonatomic,weak) AGSMapView* mapView;
 
-@property(nonatomic,assign,getter=isBaseLayersLoaded) BOOL baseLayersLoaded;
+@property(nonatomic,assign,getter=areBaseLayersLoaded) BOOL baseLayersLoaded;
 @property(nonatomic,strong) NSMutableDictionary* baseLayers;
 @property(nonatomic,strong) NSDictionary* baseMapGroups;
 
@@ -24,7 +24,6 @@
 @property(nonatomic,strong) MGSLayer* defaultLayer;
 
 @property(nonatomic, copy) dispatch_block_t pendingCalloutBlock;
-@property(nonatomic, weak) MGSLayer* pendingCalloutLayer;
 @property(nonatomic, strong) id <MGSAnnotation> calloutAnnotation;
 @property(nonatomic,strong) id zoomNotificationObject;
 
@@ -37,7 +36,7 @@
 - (MKCoordinateRegion)defaultMaximumEnvelope;
 
 #pragma mark Lookup Methods
-- (MGSLayerController*)layerManagerForLayer:(MGSLayer*)layer;
+- (MGSLayerController*)layerControllerForLayer:(MGSLayer*)layer;
 - (MGSLayer*)layerContainingAnnotation:(id <MGSAnnotation>)annotation;
 - (MGSLayer*)layerContainingGraphic:(AGSGraphic*)graphic;
 
@@ -70,7 +69,4 @@
             didUpdateWithLocation:(AGSLocation*)location;
 - (void)locationDisplayDataSourceStarted:(id<AGSLocationDisplayDataSource>)dataSource;
 - (void)locationDisplayDataSourceStopped:(id<AGSLocationDisplayDataSource>)dataSource;
-
-#pragma mark MGSLayerManagerDelegate
-- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager;
 @end

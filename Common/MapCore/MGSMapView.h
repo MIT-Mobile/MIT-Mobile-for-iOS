@@ -97,7 +97,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate;
 - (BOOL)isPresentingCallout;
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation;
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
-                        recenter:(BOOL)recenter
                         animated:(BOOL)animated;
 - (void)dismissCallout;
 
