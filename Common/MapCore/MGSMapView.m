@@ -466,14 +466,13 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                     // 10% padding on each size of the envelope
                     double horizontalPadding = fabs(envelope.xmax - envelope.xmin) * 0.1;
                     double verticalPadding = fabs(envelope.ymax - envelope.ymin) * 0.1;
-                    
-                    AGSEnvelope *paddedEnvelope = [AGSEnvelope envelopeWithXmin:envelope.xmin + horizontalPadding
+                    AGSEnvelope *shrunkEnvelope = [AGSEnvelope envelopeWithXmin:envelope.xmin + horizontalPadding
                                                                            ymin:envelope.ymin + verticalPadding
                                                                            xmax:envelope.xmax - horizontalPadding
                                                                            ymax:envelope.ymax - verticalPadding
                                                                spatialReference:envelope.spatialReference];
                     
-                    if ([paddedEnvelope containsEnvelope:graphicEnvelope]) {
+                    if ([shrunkEnvelope containsEnvelope:graphicEnvelope]) {
                         [self willShowCalloutForAnnotation:annotation];
                         UIView *annotationView = [self calloutViewForAnnotation:annotation];
                         
@@ -495,19 +494,26 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                     } else {
                         double xmin = envelope.xmin;
                         double xmax = envelope.xmax;
+                        double width = fabs(xmax - xmin) - horizontalPadding;
+                        
                         double ymin = envelope.ymin;
                         double ymax = envelope.ymax;
+                        double height = fabs(ymax - ymin);
                         
-                        if (graphicEnvelope.xmax <= (envelope.xmin + horizontalPadding)) {
+                        if (graphicEnvelope.xmin <= (envelope.xmin + horizontalPadding)) {
                             xmin = graphicEnvelope.xmin - horizontalPadding;
-                        } else if (graphicEnvelope.xmin >= (envelope.xmax - horizontalPadding)) {
+                            xmax = xmin + width;
+                        } else if (graphicEnvelope.xmax >= (envelope.xmax - horizontalPadding)) {
                             xmax = graphicEnvelope.xmax + horizontalPadding;
+                            xmin = xmax - width;
                         }
                         
-                        if (graphicEnvelope.ymax <= (envelope.ymin + verticalPadding)) {
+                        if (graphicEnvelope.ymin <= (envelope.ymin + verticalPadding)) {
                             ymin = graphicEnvelope.ymin - verticalPadding;
-                        } else if (graphicEnvelope.ymin >= (envelope.ymax - verticalPadding)) {
+                            ymax = ymin + height;
+                        } else if (graphicEnvelope.ymax >= (envelope.ymax - verticalPadding)) {
                             ymax = graphicEnvelope.ymax + verticalPadding;
+                            ymin = ymax - height;
                         }
                         
                         AGSEnvelope *newEnvelope = [AGSEnvelope envelopeWithXmin:xmin
