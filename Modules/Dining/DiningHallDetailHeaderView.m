@@ -17,6 +17,8 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        self.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
+        
         // dimensions derived from https://jira.mit.edu/jira/secure/attachment/26097/house+menu.pdf
         self.iconView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 44, 44)];
         self.iconView.contentMode = UIViewContentModeScaleAspectFit;
@@ -60,8 +62,6 @@
 
 - (void) debugInfo
 {
-    self.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
-    
     self.titleLabel.text = @"Some Dining Hall";
     self.timeLabel.text = @"Opens never";
     self.iconView.image = [UIImage imageNamed:@"icons/home-map.png"];
