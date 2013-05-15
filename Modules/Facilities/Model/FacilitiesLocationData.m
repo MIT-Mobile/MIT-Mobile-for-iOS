@@ -163,8 +163,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 - (NSArray*)locationsWithNumber:(NSString*)locationNumber
                         updated:(void (^) (NSArray *results))updatedBlock
 {
-    NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] init];
-    moc.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+    NSManagedObjectContext *moc = [CoreDataManager managedObjectContext];
     
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"FacilitiesLocation"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"number like[cd] %@",locationNumber];
@@ -196,8 +195,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 - (NSArray*)locationsWithName:(NSString*)locationName
                       updated:(void (^) (NSArray *results))updatedBlock
 {
-    NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] init];
-    moc.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+    NSManagedObjectContext *moc = [CoreDataManager managedObjectContext];
     
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"FacilitiesLocation"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name like[cd] %@",locationName];
