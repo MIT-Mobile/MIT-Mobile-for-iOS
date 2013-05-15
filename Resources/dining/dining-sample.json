@@ -3218,6 +3218,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "W20",
           "street": "84 Massachusetts Avenue",
           "city": "Cambridge",
           "state": "MA",
@@ -3291,6 +3292,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "76",
           "description": "Building 76",
           "street": "500 Main Street",
           "city": "Cambridge",
@@ -3356,7 +3358,7 @@
         ],
         "location": {
           "street": "77 Massachusetts Avenue",
-          "mit_room_number": "Lobby 7",
+          "mit_room_number": "7",
           "city": "Cambridge",
           "state": "MA",
           "zipcode": "02139"
@@ -3729,6 +3731,7 @@
           "Other"
         ],
         "location": {
+          "mit_room_number": "32",
           "description": "Gates Lobby",
           "street": "32 Vassar St.",
           "city": "Cambridge",
@@ -3912,6 +3915,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "W20",
           "street": "84 Massachusetts Ave",
           "city": "Cambridge",
           "state": "MA",
@@ -3992,6 +3996,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "W20",
           "description": "Stratton Student Center",
           "street": "84 Massachusetts Ave",
           "city": "Cambridge",
@@ -4117,6 +4122,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "W20",
           "description": "Stratton Student Center",
           "street": "84 Massachusetts Ave",
           "city": "Cambridge",
@@ -4174,6 +4180,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "W20",
           "description": "Stratton Student Center",
           "street": "84 Massachusetts Ave",
           "city": "Cambridge",
@@ -4240,6 +4247,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "W20",
           "description": "Second Floor",
           "street": "84 Massachusetts Avenue",
           "city": "Cambridge",
@@ -4300,6 +4308,7 @@
           "Other"
         ],
         "location": {
+          "mit_room_number": "32",
           "description": "Stata Center's 4th Floor",
           "street": "32 Vassar St.",
           "city": "Cambridge",
@@ -4433,6 +4442,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "32",
           "description": "Building 32",
           "street": "32 Vassar St.",
           "mit_room_number": "4th Floor",
@@ -4497,6 +4507,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "W20",
           "street": "84 Massachusetts Avenue",
           "mit_room_number": "Lobdell Food Court in the Stratton Student Center (W20)",
           "city": "Cambridge",
@@ -4559,6 +4570,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "4",
           "description": "Building 4",
           "street": "77 Massachusetts Ave.",
           "city": "Cambridge",
@@ -4621,6 +4633,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "7",
           "description": "Building 7",
           "street": "77 Massachusetts Ave.",
           "city": "Cambridge",
@@ -4685,6 +4698,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "32",
           "street": "32 Vassar St.",
           "city": "Cambridge",
           "state": "MA",
@@ -4811,6 +4825,7 @@
           "TechCASH"
         ],
         "location": {
+          "mit_room_number": "W98",
           "street": "600 Memorial Drive",
           "city": "Cambridge",
           "state": "MA",
