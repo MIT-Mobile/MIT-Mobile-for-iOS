@@ -398,6 +398,24 @@ typedef struct {
     return [self isEqualToDateIgnoringTime:yesterday];
 }
 
+- (NSDate *) startOfDay
+{
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:self];
+    components.hour = 0;
+    components.minute = 0;
+    components.second = 0;
+    return [[NSCalendar currentCalendar] dateFromComponents:components];
+}
+
+- (NSDate *) endOfDay
+{
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:self];
+    components.hour = 23;
+    components.minute = 59;
+    components.second = 59;
+    return [[NSCalendar currentCalendar] dateFromComponents:components];
+}
+
 - (NSDate *) dayBefore
 {
     return [self dateByAddingTimeInterval:-SECONDS_PER_DAY];
