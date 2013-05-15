@@ -6,10 +6,12 @@
 #import "UIKit+MITAdditions.h"
 #import "MITTabBar.h"
 #import "FacilitiesLocationData.h"
+#import "FacilitiesLocation.h"
 #import "DiningModule.h"
 #import "DiningData.h"
 #import "CoreDataManager.h"
 #import "HouseVenue.h"
+#import "RetailVenue.h"
 #import "VenueLocation.h"
 #import "UIImage+PDF.h"
 #import "UIImageView+WebCache.h"
@@ -98,53 +100,11 @@
             _houseSectionCount = 2;
         }
         
-        [self.fetchedResultsController performFetch:nil];
-        
-        
         self.sampleData = [DiningModule loadSampleDataFromFile];
         
         [self deriveRetailSections];
     }
     return self;
-}
-
-- (NSManagedObjectContext *)managedObjectContext {
-    if (_managedObjectContext != nil) {
-        return _managedObjectContext;
-    }
-
-    _managedObjectContext = [[NSManagedObjectContext alloc] init];
-    _managedObjectContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-    _managedObjectContext.undoManager = nil;
-    _managedObjectContext.stalenessInterval = 0;
-    
-    return _managedObjectContext;
-}
-
-- (NSFetchedResultsController *)fetchedResultsController {
-    
-    if (_fetchedResultsController != nil) {
-        return _fetchedResultsController;
-    }
-    
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"HouseVenue"
-                                              inManagedObjectContext:self.managedObjectContext];
-    [fetchRequest setEntity:entity];
-    
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"shortName"
-                                                                   ascending:YES];
-    [fetchRequest setSortDescriptors:@[sortDescriptor]];
-    
-    NSFetchedResultsController *fetchedResultsController =
-    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                        managedObjectContext:self.managedObjectContext
-                                          sectionNameKeyPath:nil
-                                                   cacheName:nil];
-    self.fetchedResultsController = fetchedResultsController;
-    _fetchedResultsController.delegate = self;
-    
-    return _fetchedResultsController;
 }
 
 - (void) deriveRetailSections
@@ -241,9 +201,11 @@
 - (void) tabBarDidChange:(UIButton *) sender
 {
     if ([sender isEqual:self.houseButton]) {
+        [self fetchHouseResults];
         self.isShowingHouseDining = YES;
         self.retailButton.selected = NO;
     } else {
+        [self fetchRetailResults];
         self.isShowingHouseDining = NO;
         self.houseButton.selected = NO;
     }
@@ -321,13 +283,71 @@
     self.mapView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
 }
 
+#pragma mark - Core Data
+
+- (NSManagedObjectContext *)managedObjectContext {
+    if (_managedObjectContext != nil) {
+        return _managedObjectContext;
+    }
+    
+    _managedObjectContext = [[NSManagedObjectContext alloc] init];
+    _managedObjectContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+    _managedObjectContext.undoManager = nil;
+    _managedObjectContext.stalenessInterval = 0;
+    
+    return _managedObjectContext;
+}
+
+- (void)fetchHouseResults {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"HouseVenue"
+                                              inManagedObjectContext:self.managedObjectContext];
+    [fetchRequest setEntity:entity];
+    
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"shortName"
+                                                                   ascending:YES];
+    [fetchRequest setSortDescriptors:@[sortDescriptor]];
+    
+    NSFetchedResultsController *fetchedResultsController =
+    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                        managedObjectContext:self.managedObjectContext
+                                          sectionNameKeyPath:nil
+                                                   cacheName:nil];
+    self.fetchedResultsController = fetchedResultsController;
+    _fetchedResultsController.delegate = self;
+    
+    [self.fetchedResultsController performFetch:nil];
+}
+
+- (void)fetchRetailResults {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RetailVenue"
+                                              inManagedObjectContext:self.managedObjectContext];
+    [fetchRequest setEntity:entity];
+    
+    NSSortDescriptor *groupDescriptor = [[NSSortDescriptor alloc] initWithKey:@"sortableBuilding"
+                                                                   ascending:YES];
+    NSSortDescriptor *nameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"shortName"
+                                                                   ascending:YES];
+    [fetchRequest setSortDescriptors:@[groupDescriptor, nameDescriptor]];
+    
+    NSFetchedResultsController *fetchedResultsController =
+    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                        managedObjectContext:self.managedObjectContext
+                                          sectionNameKeyPath:@"sortableBuilding"
+                                                   cacheName:nil];
+    self.fetchedResultsController = fetchedResultsController;
+    _fetchedResultsController.delegate = self;
+    
+    [self.fetchedResultsController performFetch:nil];
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (![self showingHouseDining]) {
-        NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:section];
-        return [self.retailVenues[sectionKey] count];
+        return [[self.fetchedResultsController sections][section] numberOfObjects];
     }
     
     if (section == _announcementSectionIndex) {
@@ -346,12 +366,11 @@
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if (![self showingHouseDining]) {
-//        return [[self.fetchedResultsController sections] count] + extraHouseSections;
-        return [[self.retailVenues allKeys] count];
+    if ([self showingHouseDining]) {
+        return _houseSectionCount;
+    } else {
+        return [[self.fetchedResultsController sections] count];
     }
-
-    return _houseSectionCount;
 }
 
 - (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath
@@ -445,18 +464,20 @@
     [cell.imageView setImageWithURL:[NSURL URLWithString:venue.iconURL] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
         [weakCell setNeedsLayout];
     }];
-    cell.imageView.frame = CGRectMake(10, 10, 34, 34);
 }
 
 - (void)configureRetailVenueCell:(DiningLocationCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:indexPath.section];
-    NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
     
-    cell.titleLabel.text = venueData[@"name"];
-    cell.subtitleLabel.text = [self debugSubtitleData][indexPath.row%[[self debugSubtitleData] count]];
-//    cell.statusOpen = indexPath.row % 2 == 0;
+    RetailVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    
+    cell.titleLabel.text = venue.name;
+    cell.subtitleLabel.text = @"9am - 5pm";
+    cell.statusOpen = YES;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    cell.imageView.image = [UIImage imageNamed:@"icons/home-map.png"];
+    __weak DiningLocationCell *weakCell = cell;
+    [cell.imageView setImageWithURL:[NSURL URLWithString:venue.iconURL] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+        [weakCell setNeedsLayout];
+    }];
 }
 
 #pragma mark Configure Retail Cell
@@ -522,9 +543,8 @@
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (![self showingHouseDining]) {
-        NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:indexPath.section];
-        NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
-        return [DiningLocationCell heightForRowWithTitle:venueData[@"name"] subtitle:[self debugSubtitleData][indexPath.row%[[self debugSubtitleData] count]]];
+        RetailVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        return [DiningLocationCell heightForRowWithTitle:venue.name subtitle:@"9am - 5pm"];
     }
     
     if (indexPath.section == _venuesSectionIndex) {
@@ -547,7 +567,7 @@
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, CGRectGetWidth(view.bounds) - 10 , 25)];
     label.backgroundColor = bc;
     label.textColor = [UIColor whiteColor];
-    label.font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
+    label.font = [UIFont boldSystemFontOfSize:14];
     
     label.text = [self titleForHeaderInSection:section];
     
@@ -559,7 +579,15 @@
 - (NSString *) titleForHeaderInSection:(NSInteger)section // not the UITableViewDataSource method.
 {
     if (![self showingHouseDining]) {
-        return [[self.retailVenues allKeys] objectAtIndex:section];
+        id<NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController sections][section];
+        RetailVenue *venue = [sectionInfo objects][0];
+        NSString *building = venue.building;
+        // This may need to have an `updated` block in case locations aren't actually loaded yet.
+        NSArray *matches = [[FacilitiesLocationData sharedData] locationsWithNumber:building updated:nil];
+        if ([matches count] > 0) {
+            building = [building stringByAppendingFormat:@" - %@", ((FacilitiesLocation *)matches[0]).name];
+        }
+        return building;
     }
     
     NSString *announcement = [self debugAnnouncement];

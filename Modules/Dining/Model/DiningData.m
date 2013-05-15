@@ -1,6 +1,7 @@
 #import "DiningData.h"
 
 #import "HouseVenue.h"
+#import "RetailVenue.h"
 #import "CoreDataManager.h"
 #import "MITMobileServerConfiguration.h"
 #import "ConnectionDetector.h"
@@ -40,6 +41,7 @@
         NSLog(@"Houston we have a problem. Sample Data not initialized from local file.");
     } else {
         [CoreDataManager clearDataForAttribute:@"HouseVenue"];
+        [CoreDataManager clearDataForAttribute:@"RetailVenue"];
         [CoreDataManager saveData];
         [self importData:sampleData];
         [CoreDataManager saveData];
@@ -51,6 +53,10 @@
         NSMutableArray *venues = [NSMutableArray array];
         for (NSDictionary *venueDict in parsedJSON[@"venues"][@"house"]) {
             [venues addObject:[HouseVenue newVenueWithDictionary:venueDict]];
+        }
+        venues = [NSMutableArray array];
+        for (NSDictionary *venueDict in parsedJSON[@"venues"][@"retail"]) {
+            [venues addObject:[RetailVenue newVenueWithDictionary:venueDict]];
         }
     } else {
         DDLogError(@"Dining JSON is not a dictionary.");
