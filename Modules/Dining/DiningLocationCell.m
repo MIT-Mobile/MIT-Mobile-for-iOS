@@ -72,7 +72,7 @@ static CGFloat textWidth = 180;
     [self adjustSizeForLabel:self.titleLabel];
     [self adjustSizeForLabel:self.subtitleLabel];
     
-    CGRect imageFrame = CGRectMake(10, 10, 34, 34);
+    CGRect imageFrame = CGRectMake(5, 5, 44, 44);
     self.imageView.frame = imageFrame;
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     
