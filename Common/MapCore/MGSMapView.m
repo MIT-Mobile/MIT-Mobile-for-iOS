@@ -984,34 +984,42 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     self.calloutAnnotation = nil;
 }
 
-- (BOOL)mapView:(AGSMapView*)mapView shouldProcessClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint
-{
-    return YES;
-}
 
-- (void)mapView:(AGSMapView*)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
+#pragma mark -- AGSMapViewTouchDelegate
+- (BOOL)mapView:(AGSMapView*)mapView
+shouldProcessClickAtPoint:(CGPoint)screen
+       mapPoint:(AGSPoint*)mappoint
 {
     CGPoint viewPoint = [self.mapView convertPoint:screen
                                           fromView:nil];
-    
-    if (self.isPresentingCallout) {
-        if (CGRectContainsPoint(self.mapView.callout.frame, viewPoint) == NO) {
+    if (self.calloutAnnotation) {
+        if ((self.mapView.callout.hidden == NO) && CGRectContainsPoint(self.mapView.callout.frame, viewPoint)) {
+            return NO;
+        } else {
             [self dismissCallout];
         }
     }
     
-    NSMutableArray *tappedGraphics = [NSMutableArray array];
-    [graphics enumerateKeysAndObjectsUsingBlock:^(id key, NSArray *layerGraphics, BOOL *stop) {
+    return YES;
+}
+
+- (void)mapView:(AGSMapView*)mapView
+didClickAtPoint:(CGPoint)screen
+       mapPoint:(AGSPoint*)mappoint
+       graphics:(NSDictionary*)graphics
+{
+    NSMutableArray* tappedGraphics = [NSMutableArray array];
+    [graphics enumerateKeysAndObjectsUsingBlock:^(id key, NSArray* layerGraphics, BOOL* stop) {
         [tappedGraphics addObjectsFromArray:layerGraphics];
     }];
     
     if ([tappedGraphics count]) {
-        [tappedGraphics sortUsingComparator:^NSComparisonResult(AGSGraphic *graphic1, AGSGraphic *graphic2) {
-            MGSLayer *layer1 = [self layerContainingGraphic:graphic1];
-            NSUInteger index1 = [self.externalLayers indexOfObject:layer1];
-            
-            MGSLayer *layer2 = [self layerContainingGraphic:graphic2];
-            NSUInteger index2 = [self.externalLayers indexOfObject:layer2];
+        [tappedGraphics sortUsingComparator:^NSComparisonResult(AGSGraphic* graphic1, AGSGraphic* graphic2) {
+            NSRange layerRange = NSMakeRange([self.baseLayers count], [self.mapView.mapLayers count] - [self.baseLayers count]);
+            NSUInteger index1 = [self.mapView.mapLayers indexOfObject:graphic1.layer
+                                                              inRange:layerRange];
+            NSUInteger index2 = [self.mapView.mapLayers indexOfObject:graphic2.layer
+                                                              inRange:layerRange];
             
             if (index1 < index2) {
                 return NSOrderedDescending;
@@ -1020,25 +1028,30 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             } else {
                 return NSOrderedSame;
             }
+            
         }];
         
-        [tappedGraphics enumerateObjectsUsingBlock:^(AGSGraphic *graphic, NSUInteger idx, BOOL *outerStop) {
-            [self.externalLayers enumerateObjectsWithOptions:NSEnumerationReverse
-                                                  usingBlock:^(MGSLayer *layer, NSUInteger idx, BOOL *stop) {
-                                                      MGSLayerController *layerManager = [self layerControllerForLayer:layer];
-                                                      
-                                                      if ([graphic.layer isEqual:layerManager.nativeLayer]) {
-                                                          id<MGSAnnotation> annotation = [layerManager layerAnnotationForGraphic:graphic].annotation;
-                                                          
-                                                          if ([self shouldShowCalloutForAnnotation:annotation]) {
-                                                              [self showCalloutForAnnotation:annotation];
-                                                              
-                                                              (*stop) = YES;
-                                                              (*outerStop) = YES;
-                                                          }
-                                                      }
-                                                  }];
-        }];
+        for (AGSGraphic *graphic in tappedGraphics) {
+            __block BOOL foundCallout = NO;
+            
+            [self.externalLayerManagers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+                MGSLayerController *controller = (MGSLayerController*)obj;
+                MGSLayerAnnotation *layerAnnotation = [controller layerAnnotationForGraphic:graphic];
+                id<MGSAnnotation> annotation = layerAnnotation.annotation;
+                
+                if (annotation) {
+                    if ([self shouldShowCalloutForAnnotation:annotation]) {
+                        [self showCalloutForAnnotation:annotation];
+                        foundCallout = YES;
+                        (*stop) = YES;
+                    }
+                }
+            }];
+            
+            if (foundCallout) {
+                break;
+            }
+        }
     }
     
     if ([self.delegate respondsToSelector:@selector(mapView:didReceiveTapAtCoordinate:screenPoint:)]) {
