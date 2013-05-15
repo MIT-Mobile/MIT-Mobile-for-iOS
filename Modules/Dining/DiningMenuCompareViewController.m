@@ -61,6 +61,14 @@
 
 @implementation DiningMenuCompareViewController
 
+typedef enum {
+    // used in paging logic
+    kPageDirectionForward = 1,
+    kPageDirectionNone = 0,
+    kPageDirectionBackward = -1
+} MealPageDirection;
+
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -139,10 +147,23 @@
     NSLog(@"Fake Date :: %@", date);
     self.datePointer = date;
     
+    // load data for current collection view, set meal pointers
     NSString *mealName = [self bestMealForDate:date];
     self.mealPointer = mealName;
     self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
     [self.currentFRC performFetch:nil];
+    
+    // loadData for left collectionView
+    NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionBackward ofMealNamed:self.mealPointer onDate:self.datePointer];
+    self.previousFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
+    [self.previousFRC performFetch:nil];
+    
+    // load data for right collectionView
+    mealInfo = [self mealInfoForMealInDirection:kPageDirectionForward ofMealNamed:self.mealPointer onDate:self.datePointer];
+    self.nextFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
+    [self.nextFRC performFetch:nil];
+    
+    
 }
 
 - (NSManagedObjectContext *)managedObjectContext {
@@ -207,20 +228,20 @@
     [scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO]; // always return to center view
 }
 
-
-#define PAGE_DIRECTION_FORWARD 1
-#define PAGE_DIRECTION_BACKWARD -1
-
 - (void) didPageRight
 {
-    [self pagePointersInDirection:PAGE_DIRECTION_FORWARD];
+    [self pagePointersInDirection:kPageDirectionForward];
     
-//    self.previousFRC = self.currentFRC;
+    self.previousFRC = self.currentFRC;
 //    self.currentFRC = self.nextFRC;
     
     self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
     [self.currentFRC performFetch:nil];
     // Need to set nextFRC with new predicate
+    
+    NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionForward ofMealNamed:self.mealPointer onDate:self.datePointer];
+    self.nextFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
+    [self.nextFRC performFetch:nil];
     
     [self.current resetScrollOffset]; // need to reset scroll offset so user always starts at (0,0) in collectionView
     // TODO fetch all data  
@@ -229,48 +250,63 @@
 
 - (void) didPageLeft
 {
-    [self pagePointersInDirection:PAGE_DIRECTION_BACKWARD];
+    [self pagePointersInDirection:kPageDirectionBackward];
     
-//    self.nextFRC = self.currentFRC;
+    self.nextFRC = self.currentFRC;
 //    self.currentFRC = self.previousFRC;
     // Need to set previousFRC with new predicate for previousMeal
     self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
     [self.currentFRC performFetch:nil];
-        
+    
+    NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionBackward ofMealNamed:self.mealPointer onDate:self.datePointer];
+    self.previousFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
+    [self.previousFRC performFetch:nil];
+    
     [self.current resetScrollOffset];
     // TODO fetch all data
     [self reloadAllComparisonViews];
 }
 
-- (void) pagePointersInDirection:(NSInteger) direction
+- (void) pagePointersInDirection:(MealPageDirection) direction
 {
     // when paging right, will find next meal in day and update meal pointer
     // if at last meal in day will update date pointer to next day and meal pointer to first meal in next day
     
-    NSString *newMealPointer = self.mealPointer;
-    NSDate * newDatePointer = self.datePointer;
+    NSDictionary *mealInfo = [self mealInfoForMealInDirection:direction ofMealNamed:self.mealPointer onDate:self.datePointer];
+    
+    self.mealPointer = mealInfo[@"mealName"];
+    self.datePointer = mealInfo[@"mealDate"];
+}
+
+- (NSDictionary *) mealInfoForMealInDirection:(MealPageDirection)direction ofMealNamed:(NSString *)mealName onDate:(NSDate *)date
+{
+    NSString *newMealPointer = mealName;
+    NSDate * newDatePointer = date;
     
     NSArray *queryResults = nil;
+    BOOL emptyDate = NO;
     
-    while (queryResults == nil) {
+    while (![queryResults count] || emptyDate) {
         // need to find next meal name that has meals available
         NSInteger pointerIndex = [MEAL_ORDER indexOfObject:newMealPointer];
-        NSInteger nextMealIndex = (pointerIndex + direction) % [MEAL_ORDER count];
-        if (nextMealIndex == 0) {
-            newDatePointer = [self.datePointer dayAfter];
+        if ((pointerIndex + direction) >= [MEAL_ORDER count] || (pointerIndex + direction) < 0) {
+            // newIndex is out of range, update day
+            newDatePointer = (direction == kPageDirectionForward) ? [newDatePointer dayAfter] : [newDatePointer dayBefore];
+            // TODO :: check for empty day by seeing if initial date and newPointerDate are more than a day apart
+            if (abs([newDatePointer timeIntervalSinceDate:date]) >= (SECONDS_IN_DAY * 2)) {
+                emptyDate = YES;
+                break;
+            }
         }
+        
+        NSInteger nextMealIndex = (pointerIndex + direction) % [MEAL_ORDER count];
         newMealPointer = MEAL_ORDER[nextMealIndex];
         
         queryResults = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:[NSPredicate predicateWithFormat:@"name == %@ AND startTime >= %@ AND startTime <= %@", newMealPointer, [newDatePointer startOfDay], [newDatePointer endOfDay]]];
     }
     
-    self.mealPointer = newMealPointer;
-    self.datePointer = newDatePointer;
-}
-
-- (void) pagePointerBackward
-{
-    
+    return @{@"mealName": newMealPointer,
+             @"mealDate" : newDatePointer};
 }
 
 - (NSString *) bestMealForDate:(NSDate *) date
@@ -333,7 +369,19 @@
 #pragma mark - DiningCompareViewDelegate
 - (NSString *) titleForCompareView:(DiningHallMenuCompareView *)compareView
 {
-    return [DiningHallMenuCompareView stringForMeal:self.mealPointer onDate:self.datePointer];
+    NSDictionary *mealInfo;
+    MealPageDirection direction = kPageDirectionNone;
+    if (compareView == self.previous) {
+        direction = kPageDirectionBackward;
+        
+    } else if (compareView == self.current) {
+        return [DiningHallMenuCompareView stringForMeal:self.mealPointer onDate:self.datePointer];
+    } else if (compareView == self.next) {
+        direction = kPageDirectionForward;
+    }
+    
+    mealInfo = [self mealInfoForMealInDirection:direction ofMealNamed:self.mealPointer onDate:self.datePointer];
+    return [DiningHallMenuCompareView stringForMeal:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
 }
 
 - (NSInteger) numberOfSectionsInCompareView:(DiningHallMenuCompareView *)compareView
