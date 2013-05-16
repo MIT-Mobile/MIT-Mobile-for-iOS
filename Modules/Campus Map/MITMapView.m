@@ -478,6 +478,16 @@
 }
 
 #pragma mark - MGSMapView Delegation Methods
+- (BOOL)mapView:(MGSMapView *)mapView shouldShowCalloutForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]]) {
+        MITAnnotationAdaptor *mgsAnnotation = (MITAnnotationAdaptor*) annotation;
+        return mgsAnnotation.calloutAnnotationView.enabled;
+    }
+    
+    return NO;
+}
+
 - (void)mapView:(MGSMapView *)mapView
 didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     screenPoint:(CGPoint)screenPoint
