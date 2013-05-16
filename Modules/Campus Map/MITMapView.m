@@ -233,7 +233,7 @@
     MITAnnotationAdaptor *adaptor = [self adaptorForAnnotation:annotation
                                                         create:NO];
     
-    if (adaptor)
+    if (adaptor && ([self.currentAnnotation isEqual:annotation] == NO))
     {
         [self.mapView showCalloutForAnnotation:adaptor
                                       animated:animated];
