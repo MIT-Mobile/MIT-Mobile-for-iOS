@@ -530,7 +530,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                             }
                         };
                         
-                        self.mapRegion = MKCoordinateRegionFromAGSEnvelope(newEnvelope);
+                        [self setMapRegion:MKCoordinateRegionFromAGSEnvelope(newEnvelope)
+                                  animated:YES];
                     }
                 }
             }];
