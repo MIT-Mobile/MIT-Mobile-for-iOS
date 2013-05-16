@@ -2,6 +2,7 @@
 #import "DiningHallMenuCompareView.h"
 #import "PSTCollectionView.h"
 #import "UIKit+MITAdditions.h"
+#import "Foundation+MITAdditions.h"
 #import "DiningHallMenuCompareLayout.h"
 #import "DiningHallMenuComparisonSectionHeaderView.h"
 
@@ -113,6 +114,35 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 {
     // necessary for sticky headers. 
     [self.collectionView.collectionViewLayout invalidateLayout];
+}
+
+#pragma mark Class Methods
++ (NSString *) stringForMeal:(NSString *)mealName onDate:(NSDate *)date
+{
+    // Formats string for compareView Header
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    
+    NSString *dayString;
+    if ([date isToday]) {
+        dayString = @"Today";
+    } else if ([date isTomorrow]) {
+        dayString = @"Tomorrow";
+    } else if ([date isYesterday]) {
+        dayString = @"Yesterday";
+    } else {
+        [dateFormatter setDateFormat:@"EEEE"];
+        dayString = [dateFormatter stringFromDate:date];
+    }
+    
+    [dateFormatter setDateFormat:@"MMM d"];
+    NSString *fullDate = [dateFormatter stringFromDate:date];
+    
+    if (mealName) {
+        NSString * mealString = [mealName capitalizedString];
+        return [NSString stringWithFormat:@"%@'s %@, %@", dayString, mealString, fullDate];
+    } else {
+        return [NSString stringWithFormat:@"%@, %@", dayString, fullDate];
+    }
 }
 
 

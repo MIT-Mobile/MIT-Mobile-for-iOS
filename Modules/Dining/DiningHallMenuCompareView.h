@@ -30,6 +30,6 @@
 
 - (id)dequeueReusableCellWithReuseIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath;
 
-
++ (NSString *) stringForMeal:(NSString *)mealName onDate:(NSDate *)date;
 
 @end
