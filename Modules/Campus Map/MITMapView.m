@@ -132,6 +132,16 @@
     self.mapView.showUserLocation = showsUserLocation;
 }
 
+- (BOOL)stayCenteredOnUserLocation
+{
+    return self.mapView.trackUserLocation;
+}
+
+- (void)setStayCenteredOnUserLocation:(BOOL)stayCenteredOnUserLocation
+{
+    self.mapView.trackUserLocation = stayCenteredOnUserLocation;
+}
+
 - (CGFloat)zoomLevel {
     return (CGFloat)self.mapView.zoomLevel;
 }
