@@ -201,7 +201,7 @@ typedef enum {
 
 - (NSPredicate *) predicateForMealNamed:(NSString *)mealName onDate:(NSDate *)date
 {
-    if (!self.filtersApplied) {
+    if (![self.filtersApplied count]) {
         return [NSPredicate predicateWithFormat:@"self.meal.name = %@ AND self.meal.day.date >= %@ AND self.meal.day.date <= %@", mealName, [date startOfDay], [date endOfDay]];
     } else {
         return [NSPredicate predicateWithFormat:@"self.meal.name = %@ AND ANY dietaryFlags IN %@ AND self.meal.day.date >= %@ AND self.meal.day.date <= %@", mealName, self.filtersApplied, [date startOfDay], [date endOfDay]];
@@ -233,18 +233,17 @@ typedef enum {
     [self pagePointersInDirection:kPageDirectionForward];
     
     self.previousFRC = self.currentFRC;
-//    self.currentFRC = self.nextFRC;
+    self.currentFRC = self.nextFRC;
     
-    self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
-    [self.currentFRC performFetch:nil];
-    // Need to set nextFRC with new predicate
+//    self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
+//    [self.currentFRC performFetch:nil];
     
     NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionForward ofMealNamed:self.mealPointer onDate:self.datePointer];
     self.nextFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
     [self.nextFRC performFetch:nil];
     
     [self.current resetScrollOffset]; // need to reset scroll offset so user always starts at (0,0) in collectionView
-    // TODO fetch all data  
+
     [self reloadAllComparisonViews];
 }
 
@@ -253,17 +252,17 @@ typedef enum {
     [self pagePointersInDirection:kPageDirectionBackward];
     
     self.nextFRC = self.currentFRC;
-//    self.currentFRC = self.previousFRC;
-    // Need to set previousFRC with new predicate for previousMeal
-    self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
-    [self.currentFRC performFetch:nil];
+    self.currentFRC = self.previousFRC;
+
+//    self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
+//    [self.currentFRC performFetch:nil];
     
     NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionBackward ofMealNamed:self.mealPointer onDate:self.datePointer];
     self.previousFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
     [self.previousFRC performFetch:nil];
     
     [self.current resetScrollOffset];
-    // TODO fetch all data
+
     [self reloadAllComparisonViews];
 }
 
