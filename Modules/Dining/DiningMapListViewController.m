@@ -617,7 +617,11 @@
 #pragma mark -MGSMapView Delegate
 - (void)mapView:(MGSMapView*)mapView calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
 {
-    NSLog(@"%@", annotation);
+    if ([annotation isKindOfClass:[HouseVenue class]]) {
+        DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
+        detailVC.venue = (HouseVenue *)annotation;
+        [self.navigationController pushViewController:detailVC animated:YES];
+    }
     
 }
 
