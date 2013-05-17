@@ -277,7 +277,6 @@
                 if ([self.mapView.mapLayers containsObject:arcgisLayer] == NO) {
                     arcgisLayer.delegate = self;
                     [self.mapView insertMapLayer:arcgisLayer
-                                        withName:layer.name
                                          atIndex:agsLayerIndex];
                 }
                 
