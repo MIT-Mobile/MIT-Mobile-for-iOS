@@ -83,6 +83,8 @@ shouldNotifyDelegate:(BOOL)notifyDelegate;
 
 
 #pragma mark --Removing Layers
+- (void)removeAllLayers;
+- (void)removeLayers:(NSSet*)layers;
 - (void)removeLayer:(MGSLayer*)layer;
 
 #pragma mark --Layer Reorganization

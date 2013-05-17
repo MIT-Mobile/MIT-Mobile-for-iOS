@@ -363,6 +363,28 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
 }
 
 #pragma mark Removing Layers
+- (void)removeAllLayers
+{
+    [self removeLayers:[NSSet setWithArray:self.externalLayers]];
+}
+
+- (void)removeLayers:(NSSet*)layers
+{
+    NSArray *sortedLayers = [[layers allObjects] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSUInteger index1 = [self.externalLayers indexOfObject:obj1];
+        NSUInteger index2 = [self.externalLayers indexOfObject:obj2];
+        
+        return [@(index1) compare:@(index2)];
+    }];
+    
+    [sortedLayers enumerateObjectsWithOptions:NSEnumerationReverse
+                                   usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                                       if ([obj isEqual:self.defaultLayer] == NO) {
+                                           [self removeLayer:(MGSLayer*) obj];
+                                       }
+                                   }];
+}
+
 - (void)removeLayer:(MGSLayer*)layer
 {
     [self removeLayer:layer
