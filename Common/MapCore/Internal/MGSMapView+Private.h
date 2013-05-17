@@ -39,6 +39,8 @@
 - (MGSLayerController*)layerControllerForLayer:(MGSLayer*)layer;
 - (MGSLayer*)layerContainingAnnotation:(id <MGSAnnotation>)annotation;
 - (MGSLayer*)layerContainingGraphic:(AGSGraphic*)graphic;
+- (void)removeLayer:(MGSLayer*)layer
+shoulNotifyDelegate:(BOOL)notifyDelegate;
 
 #pragma mark AGSMapViewCalloutDelegate
 - (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForGraphic:(AGSGraphic *)graphic;

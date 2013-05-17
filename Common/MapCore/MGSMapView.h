@@ -84,8 +84,6 @@ shouldNotifyDelegate:(BOOL)notifyDelegate;
 
 #pragma mark --Removing Layers
 - (void)removeLayer:(MGSLayer*)layer;
-- (void)removeLayer:(MGSLayer*)layer
-shoulNotifyDelegate:(BOOL)notifyDelegate;
 
 #pragma mark --Layer Reorganization
 - (void)moveLayer:(MGSLayer*)layer
