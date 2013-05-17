@@ -13,7 +13,6 @@
 #define MEAL_ORDER @[@"breakfast", @"brunch", @"lunch", @"dinner"]
 
 
-
 @interface NSFetchedResultsController (DiningComparisonAdditions)
 
 - (void) fetchItemsForPredicate:(NSPredicate *)predicate;
@@ -152,16 +151,19 @@ typedef enum {
     self.mealPointer = mealName;
     self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
     [self.currentFRC performFetch:nil];
+    self.current.date = date;
     
     // loadData for left collectionView
     NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionBackward ofMealNamed:self.mealPointer onDate:self.datePointer];
     self.previousFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
     [self.previousFRC performFetch:nil];
+    self.previous.date = mealInfo[@"mealDate"];
     
     // load data for right collectionView
     mealInfo = [self mealInfoForMealInDirection:kPageDirectionForward ofMealNamed:self.mealPointer onDate:self.datePointer];
     self.nextFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
     [self.nextFRC performFetch:nil];
+    self.next.date = mealInfo[@"mealDate"];
     
     
 }
@@ -213,55 +215,89 @@ typedef enum {
 #pragma mark - UIScrollview Delegate
 - (void) scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+    BOOL shouldCenter = YES;
+    
     // Handle infinite scroll between 3 views. Returns to center view so there is always a view on the left and right
     if (scrollView.contentOffset.x > scrollView.frame.size.width) {
         // have scrolled to the right
-        [self didPageRight];
+        if ([self didReachEdgeInDirection:kPageDirectionForward]) {
+            shouldCenter = NO;
+        } else {
+            [self pagePointersRight];
+        }
         
     } else if (scrollView.contentOffset.x < scrollView.frame.size.width) {
         // have scrolled to the left
-        [self didPageLeft];         
+        if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
+            shouldCenter = NO;
+        } else {
+            [self pagePointersLeft];
+        }
     }
     
     // TODO :: should only reset to center if we can page left and we can page right
     // Also should not update data when we reach edge
-    [scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO]; // always return to center view
+    if (shouldCenter) {
+        [scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO]; // return to center view to give illusion of infinite scroll
+    }
+    
 }
 
-- (void) didPageRight
+- (BOOL) didReachEdgeInDirection:(MealPageDirection)direction
+{
+    
+    NSDictionary *mealInfo = [self mealInfoForMealInDirection:direction ofMealNamed:self.mealPointer onDate:self.datePointer];
+    NSPredicate *pred;
+    if (direction == kPageDirectionForward) {
+        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime > %@", mealInfo[@"mealName"], mealInfo[@"mealDate"]];
+    } else {
+        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime < %@", mealInfo[@"mealName"], mealInfo[@"mealDate"]];
+    }
+    
+    NSArray * meals = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred];
+    if ([meals count]) {
+        return NO;
+    }
+    return YES;
+}
+
+
+- (void) pagePointersRight
 {
     [self pagePointersInDirection:kPageDirectionForward];
     
     self.previousFRC = self.currentFRC;
-    self.currentFRC = self.nextFRC;
+    self.previous.date = self.current.date;
     
-//    self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
-//    [self.currentFRC performFetch:nil];
+    self.currentFRC = self.nextFRC;
+    self.current.date = self.next.date;
     
     NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionForward ofMealNamed:self.mealPointer onDate:self.datePointer];
     self.nextFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
     [self.nextFRC performFetch:nil];
     
     [self.current resetScrollOffset]; // need to reset scroll offset so user always starts at (0,0) in collectionView
+    self.next.date = mealInfo[@"mealDate"];
 
     [self reloadAllComparisonViews];
 }
 
-- (void) didPageLeft
+- (void) pagePointersLeft
 {
     [self pagePointersInDirection:kPageDirectionBackward];
     
     self.nextFRC = self.currentFRC;
+    self.next.date = self.current.date;
+    
     self.currentFRC = self.previousFRC;
-
-//    self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
-//    [self.currentFRC performFetch:nil];
+    self.current.date = self.previous.date;
     
     NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionBackward ofMealNamed:self.mealPointer onDate:self.datePointer];
     self.previousFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
     [self.previousFRC performFetch:nil];
     
     [self.current resetScrollOffset];
+    self.previous.date = mealInfo[@"mealDate"];
 
     [self reloadAllComparisonViews];
 }
@@ -279,11 +315,12 @@ typedef enum {
 
 - (NSDictionary *) mealInfoForMealInDirection:(MealPageDirection)direction ofMealNamed:(NSString *)mealName onDate:(NSDate *)date
 {
+    // get meal information for meal before or after meal info parameters
+    
     NSString *newMealPointer = mealName;
     NSDate * newDatePointer = date;
     
     NSArray *queryResults = nil;
-    BOOL emptyDate = NO;
     
     while (![queryResults count] ) {
         // need to find next meal name that has meals available
@@ -291,9 +328,10 @@ typedef enum {
         if ((pointerIndex + direction) >= [MEAL_ORDER count] || (pointerIndex + direction) < 0) {
             // newIndex is out of range, update day
             newDatePointer = (direction == kPageDirectionForward) ? [newDatePointer dayAfter] : [newDatePointer dayBefore];
-            // TODO :: check for empty day by seeing if initial date and newPointerDate are more than a day apart
+
             if (abs([newDatePointer timeIntervalSinceDate:date]) >= (SECONDS_IN_DAY * 2)) {
-                emptyDate = YES;
+                // TODO :: Need to handle holes in dining data by returning flag value here
+                // compare view should stop on day if there are no meals but there are meals further in direction
                 break;
             }
         }
@@ -457,14 +495,7 @@ typedef enum {
         cell.primaryLabel.text = item.name;
         cell.primaryLabel.textAlignment = NSTextAlignmentLeft;
         cell.secondaryLabel.text = item.subtitle;
-        
         cell.dietaryTypes = [item.dietaryFlags allObjects];
-        if (indexPath.row == 0) {
-            NSLog(@"dietaryTypes :: %@", cell.dietaryTypes);
-            NSLog(@"item :: %@", item);
-        }
-        
-        
         return cell;
     } else {
         // TODO :: need to create a 'No Meals' cell
