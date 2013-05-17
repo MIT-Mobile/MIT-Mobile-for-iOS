@@ -699,6 +699,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             calloutView.accessoryActionBlock = ^(id sender) {
                 [weakSelf calloutDidReceiveTapForAnnotation:weakAnnotation];
             };
+            
+            view = calloutView;
         }
     }
     
