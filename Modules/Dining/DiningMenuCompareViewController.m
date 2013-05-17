@@ -286,7 +286,7 @@ typedef enum {
     NSArray *queryResults = nil;
     BOOL emptyDate = NO;
     
-    while (![queryResults count] || emptyDate) {
+    while (![queryResults count] ) {
         // need to find next meal name that has meals available
         NSInteger pointerIndex = [MEAL_ORDER indexOfObject:newMealPointer];
         if ((pointerIndex + direction) >= [MEAL_ORDER count] || (pointerIndex + direction) < 0) {

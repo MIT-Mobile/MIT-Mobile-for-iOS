@@ -52,7 +52,7 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelPressed:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(commitChanges:)];
     
-    NSSortDescriptor *alphabetical = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
+    NSSortDescriptor *alphabetical = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:NO];
     self.allFilters = [[CoreDataManager coreDataManager] objectsForEntity:@"DiningDietaryFlag" matchingPredicate:nil sortDescriptors:@[alphabetical]];
 
     if (!self.selectedFilters) {
