@@ -31,11 +31,6 @@
 	NSTimer* _pollingTimer;
 	
 	CGFloat _lastZoomLevel;
-
-	UIImage* _smallStopImage;
-	UIImage* _smallUpcomingStopImage;
-	UIImage* _largeStopImage;
-	UIImage* _largeUpcomingStopImage;
 	UIViewController* _MITParentViewController;
 	
 	// the data representing the route points for overlay 

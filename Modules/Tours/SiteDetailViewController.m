@@ -829,6 +829,8 @@
     }
     
     [annotationView addSubview:markerView];
+    [markerView release];
+    
     annotationView.frame = CGRectOffset(markerView.bounds, deltaX, deltaY);
     annotationView.showsCustomCallout = NO;
 

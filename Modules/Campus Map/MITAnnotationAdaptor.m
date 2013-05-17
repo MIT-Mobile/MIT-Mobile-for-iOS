@@ -48,9 +48,9 @@
                                CGRectIsEmpty(legacyAnnotationView.frame));
         
         CGRect originalFrame = legacyAnnotationView.bounds;
-        CGRect drawingFrame = originalFrame;
+        CGRect drawingFrame = CGRectZero;
         if (frameIsValid) {
-            drawingFrame = originalFrame = legacyAnnotationView.frame;
+            originalFrame = legacyAnnotationView.frame;
             
             CGRect stdFrame = CGRectStandardize(legacyAnnotationView.frame);
             
