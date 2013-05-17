@@ -3218,11 +3218,13 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "W20",
           "street": "84 Massachusetts Avenue",
+          "mit_room_number": "W20-100",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.358897",
+          "longitude": "-71.094638"
         },
         "menu_url": "annastaqueria.com/menu.htm",
         "hours": [
@@ -3292,12 +3294,14 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "76",
           "description": "Building 76",
           "street": "500 Main Street",
+          "mit_room_number": "76-150",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.362270",
+          "longitude": "-71.089236"
         },
         "menu_url": "http://web.mit.edu/kochcafe/menu.html",
         "hours": [
@@ -3357,11 +3361,14 @@
           "TechCASH"
         ],
         "location": {
+          "description": "Lobby 7",
           "street": "77 Massachusetts Avenue",
-          "mit_room_number": "7",
+          "mit_room_number": "7-111",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zipcode": "02139",
+          "latitude": "42.359117",
+          "longitude": "-71.093101"
         },
         "hours": [
           {
@@ -3430,11 +3437,14 @@
           "TechCASH"
         ],
         "location": {
+          "description": "Kendall Square",
           "street": "100 Main Street",
-          "mit_room_number": "Kendall Square",
+          "mit_room_number": "E62",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.361382",
+          "longitude": "-71.082501"
         },
         "menu_url": "http://web.mit.edu/100main/menu.html",
         "hours": [
@@ -3499,7 +3509,9 @@
           "street": "Carleton Street",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.361120",
+          "longitude": "-71.086253"
         },
         "menu_url": "www.cloverfastfood.com",
         "hours": [
@@ -3562,7 +3574,9 @@
           "mit_room_number": "Nesr Main Street",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.361751",
+          "longitude": "-71.086172"
         },
         "hours": [
           {
@@ -3606,7 +3620,6 @@
         "description_html": " </p>From Baklava to Babaganush, Jerusalem Cafe features all your favorite Middle-Eastern dishes. Choose from a variety of lunch specials including lamb shawarmas, BBQ chicken, goat curry and pistachio salad.</p>Menu options:</strong></span></p>Soups</p>Lentil soup</li></ul>Sandwiches</div>(Rolled up in large Syrian bread)</div>Beef, lamb, or chicken kebab</li>Chicken shawarma</li>Lamb shawarma</li>Falafel sandwich</li>Hommus sandwich</li>Falafel and hommus</li>Tabuli sandwich</li>Grape leaves sandwich</li>Babaganush sandwich</li>Weggie sandwich</li>Greeksalad sandwich</li></ul>Lunch Specials</div>(Served with rice and vegetables)</div>Lamb, beef, chicken kebab</li>B.B.Q. chicken or beef</li>Lamb, chicken, or goat curry</li>Vegetable curry</li>Chicken mustard</li>Chicken dijonnaise</li>Mujadaro</li></ul>Salads</div>(served with Syrian bread and fine herb dressing)</div>Cairo, pistachio, or cashew</li>Chicken salad</li>Charcoal chicken salad</li>Garden vegetable salad</li>Greek salad</li>Spinach salad</li></ul>Beverages</div>Spring water</li>Juice</li>Iced tea</li>Soda</li></ul>Desserts</div>Baklava</li></ul> </p>",
         "id": "jerusalem",
         "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/jerusalem",
-        "icon_url": "http://dining.mit.edu/sites/default/files/jerusalemsfoodtruck.jpg",
         "homepage_url": "",
         "cuisine": [
           "Middle Eastern Food",
@@ -3620,7 +3633,9 @@
           "street": "Carleton Street",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.361412",
+          "longitude": "-71.086229"
         },
         "hours": [
           {
@@ -3680,7 +3695,9 @@
           "street": "Carleton Street",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.361303",
+          "longitude": "-71.086245"
         },
         "hours": [
           {
@@ -3731,12 +3748,14 @@
           "Other"
         ],
         "location": {
-          "mit_room_number": "32",
           "description": "Gates Lobby",
           "street": "32 Vassar St.",
+          "mit_room_number": "32-100LB",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.361937",
+          "longitude": "-71.090303"
         },
         "hours": [
           {
@@ -3783,10 +3802,14 @@
           "Other"
         ],
         "location": {
+          "description": "Walker Memorial",
           "street": "142 Memorial Drive",
+          "mit_room_number": "50-100LB",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.359598",
+          "longitude": "-71.088297"
         },
         "menu_url": "http://web.mit.edu/muddy/food.html",
         "hours": [
@@ -3854,7 +3877,9 @@
           "mit_room_number": "W20-101",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.358885",
+          "longitude": "-71.095045"
         },
         "hours": [
           {
@@ -3915,11 +3940,13 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "W20",
           "street": "84 Massachusetts Ave",
+          "mit_room_number": "W20-101",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.358911",
+          "longitude": "-71.094981"
         },
         "hours": [
           {
@@ -3996,12 +4023,14 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "W20",
           "description": "Stratton Student Center",
           "street": "84 Massachusetts Ave",
+          "mit_room_number": "W20-105",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.359177",
+          "longitude": "-71.094455"
         },
         "hours": [
           {
@@ -4063,10 +4092,12 @@
         ],
         "location": {
           "street": "450 Memorial Drive",
-          "mit_room_number": "Cambridge",
+          "mit_room_number": "W61-027",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.355446",
+          "longitude": "-71.099761"
         },
         "hours": [
           {
@@ -4122,12 +4153,14 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "W20",
           "description": "Stratton Student Center",
           "street": "84 Massachusetts Ave",
+          "mit_room_number": "W20-206",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.359199",
+          "longitude": "-71.094705"
         },
         "hours": [
           {
@@ -4180,12 +4213,14 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "W20",
           "description": "Stratton Student Center",
           "street": "84 Massachusetts Ave",
+          "mit_room_number": "W20-206",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.359250",
+          "longitude": "-71.094756"
         },
         "hours": [
           {
@@ -4247,12 +4282,14 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "W20",
           "description": "Second Floor",
           "street": "84 Massachusetts Avenue",
+          "mit_room_number": "W20-203",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.359111",
+          "longitude": "-71.094973"
         },
         "menu_url": "http://www.subway.com/menu/default.aspx",
         "hours": [
@@ -4308,12 +4345,14 @@
           "Other"
         ],
         "location": {
-          "mit_room_number": "32",
           "description": "Stata Center's 4th Floor",
           "street": "32 Vassar St.",
+          "mit_room_number": "32-G410",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.361991",
+          "longitude": "-71.090673"
         },
         "hours": [
           {
@@ -4372,9 +4411,12 @@
         ],
         "location": {
           "street": "235 Albany St",
+          "mit_room_number": "NW35",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.358687",
+          "longitude": "-71.101284"
         },
         "menu_url": "http://thirsty-ear.mit.edu/wp-content/uploads/2011/08/Fall-2011-Thirsty-menu.pdf",
         "hours": [
@@ -4442,13 +4484,14 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "32",
-          "description": "Building 32",
+          "description": "Building 32 4th Floor",
           "street": "32 Vassar St.",
-          "mit_room_number": "4th Floor",
+          "mit_room_number": "32-G401",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.361729",
+          "longitude": "-71.090544"
         },
         "menu_url": "http://www.sodexodiningmit.com/dining/faculty.html",
         "hours": [
@@ -4494,7 +4537,7 @@
         "id": "cafespice",
         "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/cafespice",
         "icon_url": "http://dining.mit.edu/sites/default/files/cafespice.jpg",
-        "homepage_url": "http://www.cafespice.com/index.htm",
+        "homepage_url": "http://www.cafespice.com/",
         "cuisine": [
           "Indian Food",
           "Vegetarian",
@@ -4507,12 +4550,14 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "W20",
+          "description": "Lobdell Food Court in the Stratton Student Center (W20)",
           "street": "84 Massachusetts Avenue",
-          "mit_room_number": "Lobdell Food Court in the Stratton Student Center (W20)",
+          "mit_room_number": "W20-206",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.359208",
+          "longitude": "-71.094904"
         },
         "menu_url": "http://www.cafespice.com/food-service.htm",
         "hours": [
@@ -4570,12 +4615,14 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "4",
           "description": "Building 4",
           "street": "77 Massachusetts Ave.",
+          "mit_room_number": "4-115",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.359814",
+          "longitude": "-71.091317"
         },
         "menu_url": "http://www.sodexodiningmit.com/dining/index.html",
         "hours": [
@@ -4633,12 +4680,14 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "7",
           "description": "Building 7",
           "street": "77 Massachusetts Ave.",
+          "mit_room_number": "7-407",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.359189",
+          "longitude": "-71.092930"
         },
         "menu_url": "http://www.sodexodiningmit.com/dining/",
         "hours": [
@@ -4698,11 +4747,13 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "32",
           "street": "32 Vassar St.",
+          "mit_room_number": "32-164",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.361669",
+          "longitude": "-71.090035"
         },
         "menu_url": "http://www.sodexodiningmit.com/index.html",
         "hours": [
@@ -4745,8 +4796,8 @@
         "name": "Pacific Street Café",
         "short_name": "Pacific Street Café",
         "description_html": " </p>Pacific Street Cafe requires the highest standards of food handling from its employees and vendors. The management strives to assure quality food and on time delivery. In addition we offer assistance to our clients to have a worry-free event by planning each step with them. Our mission is \"great food at competitive price\".</p> </p>",
-        "id": "pacific-st-cafe",
-        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/pacific-st-cafe",
+        "id": "pacific-street-cafe",
+        "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/pacific-street-cafe",
         "icon_url": "http://dining.mit.edu/sites/default/files/pacificstcafe.jpg",
         "homepage_url": "http://www.pacificstreetcafe.com/",
         "cuisine": [
@@ -4765,7 +4816,9 @@
           "street": "70 Pacific St",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "02139"
+          "zip_code": "02139",
+          "latitude": "42.359989",
+          "longitude": "-71.102054"
         },
         "menu_url": "http://www.pacificstreetcafe.com/",
         "hours": [
@@ -4807,7 +4860,7 @@
       {
         "name": "Zigo Café",
         "short_name": "Zigo Café",
-        "description_html": " </div> Zigo started with love of people, of fun, and especially good food. Like most of us who work long hours, our lives were full but our refrigerators were not. We filled our evening hunger with pizza, cereal, frozen dinners, and many restaurants. “Where was the love in this?” our taste buds, waistlines, and wallets cried? </div>  </div> With zigo we put delicious, healthful meals back into the hands of busy people. With one stop on your way home, you have a meal that is simple to prepare and yummy to eat. </div>  </div> With the ever-changing zigo menu, we bring the most delectable foods from around the world to your table. Each of our recipes has been taste-tested again and again. Our meals use only the finest and freshest ingredients. That means crispy not mushy, seasoned not salted, flaky not chewy. </div>",
+        "description_html": " </div> Zigo started with love of people, of fun, and especially good food. Like most of us who work long hours, our lives were full but our refrigerators were not. We filled our evening hunger with pizza, cereal, frozen dinners, and many restaurants. “Where was the love in this?” our taste buds, waistlines, and wallets cried? </div>  </div> With zigo we put delicious, healthful meals back into the hands of busy people. With one stop on your way home, you have a meal that is simple to prepare and yummy to eat. </div>  </div> With the ever-changing zigo menu, we bring the most delectable foods from around the world to your table. Each of our recipes has been taste-tested again and again. Our meals use only the finest and freshest ingredients. That means crispy not mushy, seasoned not salted, flaky not chewy.</div>",
         "id": "zigo-cafe",
         "url": "http://mobile-dev.mit.edu/apis/dining/venues/retail/zigo-cafe",
         "icon_url": "http://dining.mit.edu/sites/default/files/zigocafe.jpg",
@@ -4825,11 +4878,13 @@
           "TechCASH"
         ],
         "location": {
-          "mit_room_number": "W98",
           "street": "600 Memorial Drive",
+          "mit_room_number": "W98-124",
           "city": "Cambridge",
           "state": "MA",
-          "zipcode": "021425"
+          "zip_code": "021425",
+          "latitude": "42.354017",
+          "longitude": "-71.106576"
         },
         "menu_url": "http://www.zigo.biz/pdfs/zigo_catering_menu.pdf",
         "hours": [
