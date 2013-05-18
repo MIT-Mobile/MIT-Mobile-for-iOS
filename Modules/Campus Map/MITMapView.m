@@ -81,7 +81,7 @@
 
 - (void)refreshLayers
 {
-    [self.mapView refreshLayer:self.annotationLayer];
+    [self.mapView refreshLayers:[NSSet setWithObject:self.annotationLayer]];
 }
 
 #pragma mark - Dynamic Properties
@@ -130,6 +130,16 @@
 - (void)setShowsUserLocation:(BOOL)showsUserLocation
 {
     self.mapView.showUserLocation = showsUserLocation;
+}
+
+- (BOOL)stayCenteredOnUserLocation
+{
+    return self.mapView.trackUserLocation;
+}
+
+- (void)setStayCenteredOnUserLocation:(BOOL)stayCenteredOnUserLocation
+{
+    self.mapView.trackUserLocation = stayCenteredOnUserLocation;
 }
 
 - (CGFloat)zoomLevel {
@@ -223,7 +233,7 @@
     MITAnnotationAdaptor *adaptor = [self adaptorForAnnotation:annotation
                                                         create:NO];
     
-    if (adaptor)
+    if (adaptor && ([self.currentAnnotation isEqual:annotation] == NO))
     {
         [self.mapView showCalloutForAnnotation:adaptor
                                       animated:animated];
@@ -478,6 +488,16 @@
 }
 
 #pragma mark - MGSMapView Delegation Methods
+- (BOOL)mapView:(MGSMapView *)mapView shouldShowCalloutForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]]) {
+        MITAnnotationAdaptor *mgsAnnotation = (MITAnnotationAdaptor*) annotation;
+        return mgsAnnotation.calloutAnnotationView.enabled;
+    }
+    
+    return NO;
+}
+
 - (void)mapView:(MGSMapView *)mapView
 didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     screenPoint:(CGPoint)screenPoint

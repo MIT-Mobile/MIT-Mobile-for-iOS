@@ -25,7 +25,7 @@
 
 @property(nonatomic, copy) dispatch_block_t pendingCalloutBlock;
 @property(nonatomic, strong) id <MGSAnnotation> calloutAnnotation;
-@property(nonatomic,strong) id zoomNotificationObject;
+@property(nonatomic,strong) NSMutableDictionary *observerTokens;
 
 #pragma mark Initialization
 - (void)_init;
@@ -39,6 +39,8 @@
 - (MGSLayerController*)layerControllerForLayer:(MGSLayer*)layer;
 - (MGSLayer*)layerContainingAnnotation:(id <MGSAnnotation>)annotation;
 - (MGSLayer*)layerContainingGraphic:(AGSGraphic*)graphic;
+- (void)removeLayer:(MGSLayer*)layer
+shoulNotifyDelegate:(BOOL)notifyDelegate;
 
 #pragma mark AGSMapViewCalloutDelegate
 - (BOOL)mapView:(AGSMapView *)mapView shouldShowCalloutForGraphic:(AGSGraphic *)graphic;

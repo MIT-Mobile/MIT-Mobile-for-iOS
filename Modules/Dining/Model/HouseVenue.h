@@ -1,11 +1,12 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "MGSAnnotation.h"
 
 @class VenueLocation;
 @class DiningDay;
 @class DiningMeal;
 
-@interface HouseVenue : NSManagedObject
+@interface HouseVenue : NSManagedObject <MGSAnnotation>
 
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSString * shortName;

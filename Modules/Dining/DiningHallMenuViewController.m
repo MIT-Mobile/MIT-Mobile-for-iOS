@@ -33,6 +33,9 @@
 
 @end
 
+
+static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
+
 @implementation DiningHallMenuViewController
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -48,6 +51,10 @@
 {
     [super viewDidLoad];
     
+    NSArray *defaultFilterNames = [[NSUserDefaults standardUserDefaults] objectForKey:DiningFiltersUserDefaultKey];
+    self.filtersApplied = [DiningDietaryFlag flagsFromNames:defaultFilterNames];
+    
+    
     self.title = self.venue.shortName;
     
     // set current date string
@@ -61,7 +68,7 @@
     self.currentMeal = [self.venue bestMealForDate:self.currentDate];
     self.currentDay = [self.venue dayForDate:self.currentDate];
     
-    self.fetchedResultsController = [self fetchedResultsControllerForMeal:self.currentMeal filters:nil];
+    self.fetchedResultsController = [self fetchedResultsControllerForMeal:self.currentMeal filters:self.filtersApplied];
     self.fetchedResultsController.delegate = self;
     
     [self.fetchedResultsController performFetch:nil];
@@ -258,8 +265,11 @@
 - (void) applyFilters:(NSSet *)filters
 {
     self.filtersApplied = filters;
-    
     [self fetchItemsForMeal:self.currentMeal withFilters:self.filtersApplied];
+    
+    NSArray *filterNames = [[self.filtersApplied valueForKey:@"name"] allObjects];
+    [[NSUserDefaults standardUserDefaults] setObject:filterNames forKey:DiningFiltersUserDefaultKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     
     [self.tableView reloadData];
 }

@@ -31,6 +31,12 @@
     return flag;
 }
 
++ (NSSet *) flagsFromNames:(NSArray *)flagNames
+{
+    NSArray *results = [CoreDataManager objectsForEntity:@"DiningDietaryFlag" matchingPredicate:[NSPredicate predicateWithFormat:@"name In %@", flagNames]];
+    return [NSSet setWithArray:results];
+}
+
 + (NSDictionary *)detailsForName:(NSString *)name {
     NSDictionary *flagDetails = @{
             @"farm to fork": @{ 

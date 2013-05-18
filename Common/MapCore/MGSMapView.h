@@ -36,6 +36,7 @@
 
 #pragma mark Location Updates
 @property (nonatomic) BOOL showUserLocation;
+@property (nonatomic) BOOL trackUserLocation;
 
 
 #pragma mark - Methods
@@ -61,12 +62,9 @@
 
 #pragma mark Misc
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
-- (BOOL)showUserLocation;
-- (void)setShowUserLocation:(BOOL)showUserLocation;
 
 #pragma mark Layer Management
 - (NSArray*)mapLayers;
-- (void)refreshLayer:(MGSLayer*)layer;
 - (void)refreshLayers:(NSSet*)layers;
 
 - (BOOL)isLayerHidden:(MGSLayer*)layer;
@@ -85,9 +83,9 @@ shouldNotifyDelegate:(BOOL)notifyDelegate;
 
 
 #pragma mark --Removing Layers
+- (void)removeAllLayers;
+- (void)removeLayers:(NSSet*)layers;
 - (void)removeLayer:(MGSLayer*)layer;
-- (void)removeLayer:(MGSLayer*)layer
-shoulNotifyDelegate:(BOOL)notifyDelegate;
 
 #pragma mark --Layer Reorganization
 - (void)moveLayer:(MGSLayer*)layer

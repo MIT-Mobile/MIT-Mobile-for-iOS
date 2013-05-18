@@ -27,7 +27,8 @@
 @property (nonatomic, strong) IBOutlet UIButton * houseButton;
 @property (nonatomic, strong) IBOutlet UIButton * retailButton;
 @property (nonatomic, strong) IBOutlet MITTabBar * tabBar;
-@property (nonatomic, strong) IBOutlet MGSMapView *mapView;
+@property (nonatomic, strong) IBOutlet UIView *mapContainer;
+@property (nonatomic, strong) MGSMapView *mapView;
 @property (nonatomic, assign) BOOL isAnimating;
 @property (nonatomic, assign) BOOL isShowingMap;
 @property (nonatomic, assign) BOOL isShowingHouseDining;
@@ -157,8 +158,6 @@
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
     
-//    [self.tabBar addTarget:self action:@selector(tabBarDidChange) forControlEvents:UIControlEventValueChanged];
-    
     {
         CGSize pdfSize = CGSizeMake(160, 55);
         [self.houseButton addTarget:self action:@selector(tabBarDidChange:) forControlEvents:UIControlEventTouchUpInside];
@@ -179,8 +178,6 @@
     self.tabBar.selectedSegmentIndex = 0;
     
     self.listView.backgroundView = nil;
-    
-    [self annotateHouseVenues];
     
     [self layoutListState];
 }
@@ -223,6 +220,10 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+    if (!self.isShowingMap && self.mapView) {
+        [self.mapView removeFromSuperview];
+        self.mapView = nil;
+    }
 }
 
 - (void) toggleMapList:(id)sender
@@ -265,8 +266,8 @@
 - (void) layoutListState
 {
     self.tabContainerView.center = CGPointMake(self.view.center.x, 25);
-    self.mapView.userInteractionEnabled = NO;
-    self.mapView.alpha = 0;
+    self.mapContainer.userInteractionEnabled = NO;
+    self.mapContainer.alpha = 0;
     self.listView.frame = CGRectMake(0, CGRectGetMaxY(self.tabContainerView.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(self.tabContainerView.frame));
     
 }
@@ -277,10 +278,22 @@
     
     self.listView.center = CGPointMake(self.listView.center.x, self.listView.center.y + CGRectGetHeight(self.listView.bounds));
     
-    self.mapView.alpha = 1;
-    self.mapView.userInteractionEnabled = YES;
-    self.mapView.hidden = NO;
-    self.mapView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+    self.mapContainer.alpha = 1;
+    self.mapContainer.userInteractionEnabled = YES;
+    self.mapContainer.hidden = NO;
+    self.mapContainer.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+    if (!self.mapView) {
+        self.mapView = [[MGSMapView alloc] initWithFrame:self.mapContainer.bounds];
+        self.mapView.delegate = self;
+        [self.mapContainer addSubview:self.mapView];
+    }
+    
+    if ([self isShowingHouseDining]) {
+        [self annotateHouseVenues];
+    }
+    
+    
+    
 }
 
 #pragma mark - Core Data
@@ -619,23 +632,24 @@
 {
     NSArray *venues = [self.fetchedResultsController fetchedObjects];
     
-    NSMutableArray * annotations = [NSMutableArray array];
-    for (HouseVenue *venue in venues) {
-        VenueLocation *loc = venue.location;
-        MGSSimpleAnnotation *annotation = [[MGSSimpleAnnotation alloc] initWithAnnotationType:MGSAnnotationPointOfInterest];
-        annotation.coordinate = CLLocationCoordinate2DMake([loc.latitude doubleValue], [loc.longitude doubleValue]);
-        annotation.title = venue.name;
-        annotation.detail = loc.displayDescription;
-        
-        [annotations addObject:annotation];
-    }
-    
+    [self.mapView removeLayer:[[self.mapView mapLayers] lastObject]]; // need to remove previously added layer before adding anything new or else will cause crash
     MGSLayer * houseLayer = [[MGSLayer alloc] initWithName:@"house.layer"];
     houseLayer.delegate = self;
-    [houseLayer addAnnotationsFromArray:annotations];        // this doesn't seem to do anything
+    [houseLayer addAnnotationsFromArray:venues];
     
     [self.mapView addLayer:houseLayer];
     [self.mapView setNeedsDisplay];
+    
+}
+
+#pragma mark -MGSMapView Delegate
+- (void)mapView:(MGSMapView*)mapView calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[HouseVenue class]]) {
+        DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
+        detailVC.venue = (HouseVenue *)annotation;
+        [self.navigationController pushViewController:detailVC animated:YES];
+    }
     
 }
 

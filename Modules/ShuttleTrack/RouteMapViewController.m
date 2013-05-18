@@ -57,11 +57,6 @@
     [_gpsButton setBackgroundImage:[UIImage imageNamed:@"shuttle/scrim-button-background.png"] forState:UIControlStateNormal];
 
 	self.mapView.delegate = self;
-	
-	_largeStopImage = [[UIImage imageNamed:@"shuttle/map_pin_shuttle_stop_complete.png"] retain];
-	_largeUpcomingStopImage = [[UIImage imageNamed:@"shuttle/pin_shuttle_stop_complete_next.png"] retain];
-	_smallStopImage = [[UIImage imageNamed:@"shuttle/shuttle-stop-dot.png"] retain];
-	_smallUpcomingStopImage = [[UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"] retain];
 
 	[self refreshRouteTitleInfo];
 	self.title = NSLocalizedString(@"Route", nil);	
@@ -342,8 +337,6 @@
             } else {
                 annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot.png"];
             }
-            
-            annotationView.image = stopAnnotation.shuttleStop.upcoming ? _smallUpcomingStopImage : _smallStopImage;
         }
         
 		annotationView.canShowCallout = NO;
