@@ -28,11 +28,10 @@
         self.accessoryButton.imageEdgeInsets = UIEdgeInsetsMake(0, 0, -20, 0);
         
         [self styleSubviews];
-        [self debugInfo];
         
         [self addSubview:self.iconView];
         [self addSubview:self.titleLabel];
-        [self addSubview:self.timeLabel];
+        [self addSubview:self.timeLabel]; 
         [self addSubview:self.accessoryButton];
     }
     return self;
@@ -57,15 +56,6 @@
 {
     [super layoutSubviews];
     
-}
-
-- (void) debugInfo
-{
-    self.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
-    
-    self.titleLabel.text = @"Some Dining Hall";
-    self.timeLabel.text = @"Opens never";
-    self.iconView.image = [UIImage imageNamed:@"icons/home-map.png"];
 }
 
 @end

@@ -53,16 +53,6 @@
     return @"ENROLL in the spring 2013 Meal Plan Program today! Or else you should be worried. <a href=\"http://m.mit.edu\"> Check it out! </a>";
 }
 
-- (NSArray *) debugHouseDiningData
-{
-    return [NSArray arrayWithObjects:@"Baker", @"The Howard Dining Hall at Maseeh", @"McCormick", @"Next", @"Simmons", nil];
-}
-
-- (NSArray *) debugRetailDiningData
-{
-    return [NSArray arrayWithObjects:@"Anna's Taqueria", @"Cafe Spice", @"Cambridge Grill", @"Dunkin Donuts", @"LaVerde's Market", nil];
-}
-
 - (NSArray *) debugSubtitleData
 {
     return @[@"12pm - 4pm", @"8pm - 4am, 9am - 12pm", @"10am - 2pm, 4pm - 7pm", @"8am - 2pm", @"7am - 9am, 2pm - 8pm, 5pm - 9pm"];
@@ -71,12 +61,6 @@
 - (NSArray *) debugResourceData
 {
     return @[@"Comments for MIT Dining", @"Food to Go", @"Full MIT Dining Website"];
-}
-
-- (NSArray *) currentDiningData
-{
-    NSArray *data = ([self.tabBar selectedSegmentIndex] == 0)? [self debugHouseDiningData ]: [self debugRetailDiningData];
-    return data;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
