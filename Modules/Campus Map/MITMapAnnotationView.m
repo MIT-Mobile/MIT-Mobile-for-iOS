@@ -45,6 +45,7 @@
         self.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
         self.image = [UIImage imageNamed:@"map/map_pin_complete.png"];
         self.centerOffset = CGPointMake(0, -(self.image.size.height / 2.0));
+        self.calloutOffset = CGPointMake(0, (self.image.size.height / 4.0));
     }
     return self;
 }

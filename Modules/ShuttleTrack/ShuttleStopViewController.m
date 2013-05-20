@@ -491,6 +491,7 @@
 		annotationView.showsCustomCallout = NO;
 		annotationView.backgroundColor = [UIColor clearColor];
         annotationView.centerOffset = CGPointMake(0,-(annotationView.image.size.height / 2.0));
+        annotationView.canShowCallout = NO;
         
 	}
 	
