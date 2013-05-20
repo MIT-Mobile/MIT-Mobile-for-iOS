@@ -215,7 +215,7 @@ typedef enum {
 #pragma mark - UIScrollview Delegate
 - (void) scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    BOOL shouldCenter = YES;
+    BOOL shouldCenter = YES;    // unless we have hit edge of data, we should center the 3 comparison views
     
     // Handle infinite scroll between 3 views. Returns to center view so there is always a view on the left and right
     if (scrollView.contentOffset.x > scrollView.frame.size.width) {
@@ -235,8 +235,6 @@ typedef enum {
         }
     }
     
-    // TODO :: should only reset to center if we can page left and we can page right
-    // Also should not update data when we reach edge
     if (shouldCenter) {
         [scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO]; // return to center view to give illusion of infinite scroll
     }
@@ -245,13 +243,30 @@ typedef enum {
 
 - (BOOL) didReachEdgeInDirection:(MealPageDirection)direction
 {
+    // gets mealInfo for meal in paging direction
+    // then queries for list of meals for mealInfo to get accurate startTime
+    // then performs another query to see if any meals exist that come before/after this startTime
+    //   - assummes earliest meal in set will start before all other meals in day
+    //          - will return incorrect value if there is a breakfast that starts after a brunch and we are paging left, query for meals before earliest brunch would fail
     
     NSDictionary *mealInfo = [self mealInfoForMealInDirection:direction ofMealNamed:self.mealPointer onDate:self.datePointer];
     NSPredicate *pred;
-    if (direction == kPageDirectionForward) {
-        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime > %@", mealInfo[@"mealName"], mealInfo[@"mealDate"]];
+    NSDate *mealTime;
+    
+    pred = [NSPredicate predicateWithFormat:@"name == %@ AND startTime >= %@ AND startTime <= %@", mealInfo[@"mealName"], [mealInfo[@"mealDate"] startOfDay], [mealInfo[@"mealDate"] endOfDay]];
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:NO];    // want earliest meal to be last item in results
+    NSArray *currentMeals = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred sortDescriptors:@[sort]];
+    if (currentMeals) {
+        mealTime = [[currentMeals  lastObject] startTime];          // get earliest meals start time. Use this to query for any meals before this start time
     } else {
-        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime < %@", mealInfo[@"mealName"], mealInfo[@"mealDate"]];
+        // should never hit this else statement, but if we do, we can say it is the end of the data
+        return YES;
+    }
+    
+    if (direction == kPageDirectionForward) {
+        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime > %@", mealInfo[@"mealName"], mealTime];
+    } else {
+        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime < %@", mealInfo[@"mealName"], mealTime];
     }
     
     NSArray * meals = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred];
