@@ -13,6 +13,8 @@
 
 + (DiningDay *)newDayWithDictionary:(NSDictionary *)dict;
 + (DiningDay *)dayForDate:(NSDate *)date forVenue:(HouseVenue *)venue;
++ (NSArray *)daysInWeekOfDate:(NSDate *)date forVenue:(HouseVenue *)venue;
+
 - (NSString *)allHoursSummary;
 - (DiningMeal *)mealWithName:(NSString *)name;
 - (DiningMeal *)mealForDate:(NSDate *)date;
