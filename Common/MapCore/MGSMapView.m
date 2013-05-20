@@ -1177,4 +1177,15 @@ didClickAtPoint:(CGPoint)screen
     [customView sizeToFit];
     return customView;
 }
+
+- (void)layerControllerWillRefresh:(MGSLayerController *)layerController
+{
+    if (self.calloutAnnotation) {
+        MGSLayer *layer = [self layerContainingAnnotation:self.calloutAnnotation];
+        
+        if (layer == nil) {
+            [self dismissCallout];
+        }
+    }
+}
 @end
