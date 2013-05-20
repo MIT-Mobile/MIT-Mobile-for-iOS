@@ -611,8 +611,7 @@
         [UIView animateWithDuration:(animated ? 0.4 : 0.0)
                               delay: 0.0
                             options:(UIViewAnimationOptionCurveEaseOut |
-                                     UIViewAnimationOptionLayoutSubviews |
-                                     UIViewAnimationOptionBeginFromCurrentState)
+                                     UIViewAnimationOptionLayoutSubviews)
                          animations:^{
                              CGRect toolbarFrame = self.geoToolbar.frame;
                              toolbarFrame.origin = animationOrigin;
@@ -621,16 +620,22 @@
                                                              CGRectGetMinY(self.searchBarView.bounds),
                                                              CGRectGetWidth(self.searchBarView.frame) - CGRectGetWidth(self.cancelToolbar.frame),
                                                              CGRectGetHeight(self.searchBarView.frame));
-                             self.searchBar.frame = searchFrame;
-                             [self.searchBar layoutIfNeeded];
                              
-                             [self.searchBarView addSubview:self.cancelToolbar];
                              CGRect cancelFrame = self.cancelToolbar.frame;
                              cancelFrame.origin = CGPointMake(CGRectGetMaxX(searchFrame),
                                                               CGRectGetMinY(searchFrame));
-                             self.geoToolbar.frame = toolbarFrame;
-                             self.cancelToolbar.frame = cancelFrame;
                              
+                             
+                             self.searchBar.frame = searchFrame;
+                             
+                             self.geoToolbar.alpha = 1.0;
+                             self.geoToolbar.frame = toolbarFrame;
+                             self.geoToolbar.alpha = 0.0;
+                             
+                             self.cancelToolbar.alpha = 0.0;
+                             [self.searchBarView addSubview:self.cancelToolbar];
+                             self.cancelToolbar.frame = cancelFrame;
+                             self.cancelToolbar.alpha = 1.0;
                          }
                          completion:^(BOOL finished) {
                              self.toolbar = self.cancelToolbar;
@@ -656,23 +661,30 @@
         [UIView animateWithDuration:(animated ? 0.4 : 0.0)
                               delay:0.0
                             options:(UIViewAnimationOptionCurveEaseOut |
-                                     UIViewAnimationOptionLayoutSubviews |
-                                     UIViewAnimationOptionBeginFromCurrentState)
+                                     UIViewAnimationOptionLayoutSubviews)
                          animations:^{
                              CGRect cancelFrame = self.cancelToolbar.frame;
                              cancelFrame.origin = animationOrigin;
-                             self.cancelToolbar.frame = cancelFrame;
                              
                              CGRect geoToolbarFrame = self.geoToolbar.frame;
                              geoToolbarFrame.origin = CGPointMake(CGRectGetMaxX(searchFrame),
                                                                   CGRectGetMinY(searchFrame));
+                             
+                             
+                             self.cancelToolbar.alpha = 1.0;
+                             self.cancelToolbar.frame = cancelFrame;
+                             self.cancelToolbar.alpha = 0.0;
+                             
+                             self.geoToolbar.alpha = 0.0;
                              self.geoToolbar.frame = geoToolbarFrame;
+                             self.geoToolbar.alpha = 1.0;
                              
                              self.searchBar.frame = searchFrame;
-                             [self.searchBar layoutIfNeeded];
                          }
                          completion:^(BOOL finished) {
                              [self.cancelToolbar removeFromSuperview];
+                             self.cancelToolbar.alpha = 1.0;
+                             
                              self.toolbar = self.geoToolbar;
                              self.searchBar.showsBookmarkButton = YES;
                          }];
