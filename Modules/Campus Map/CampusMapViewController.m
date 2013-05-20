@@ -601,7 +601,7 @@
                               animated:(BOOL)animated
 {
     if (editing) {
-        CGPoint animationOrigin = CGPointMake(CGRectGetMaxX(self.searchBarView.frame), CGRectGetMinY(self.searchBarView.frame));
+        CGPoint animationOrigin = CGPointMake(kSearchBarWidth, CGRectGetMinY(self.searchBarView.frame));
         
         CGRect cancelRect = self.cancelToolbar.frame;
         cancelRect.origin = animationOrigin;
@@ -642,7 +642,7 @@
                              [self.geoToolbar removeFromSuperview];
                          }];
     } else {
-        CGPoint animationOrigin = CGPointMake(CGRectGetMaxX(self.searchBarView.frame), CGRectGetMinY(self.searchBarView.frame));
+        CGPoint animationOrigin = CGPointMake(kSearchBarWidth, CGRectGetMinY(self.searchBarView.frame));
         CGRect searchFrame = CGRectMake(CGRectGetMinX(self.searchBarView.bounds),
                                         CGRectGetMinY(self.searchBarView.bounds),
                                         CGRectGetWidth(self.searchBarView.frame) - CGRectGetWidth(self.geoToolbar.frame),
