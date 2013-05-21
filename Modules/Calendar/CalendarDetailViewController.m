@@ -15,12 +15,17 @@
 #define kDescriptionWebViewTag 516
 
 @interface CalendarDetailViewController ()
-@property (nonatomic, retain) UISegmentedControl *eventPager;
+@property (nonatomic,strong) UISegmentedControl *eventPager;
+@property (nonatomic,getter=isLoading) BOOL loading;
+@property (nonatomic,strong) NSArray *rowTypes;
+@property (nonatomic,strong) UIButton *shareButton;
+@property (nonatomic,strong) NSString *descriptionString;
+@property (nonatomic,strong) NSString *categoriesString;
+@property (nonatomic) CGFloat descriptionHeight;
+@property (nonatomic) CGFloat categoriesHeight;
 @end
 
 @implementation CalendarDetailViewController
-@synthesize event, events;
-
 - (void)loadView
 {
     CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
@@ -54,11 +59,11 @@
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                       UIViewAutoresizingFlexibleWidth);
         
-        self.tableView = [tableView autorelease];
+        self.tableView = tableView;
         [mainView addSubview:tableView];
     }
     
-    self.view = [mainView autorelease];
+    self.view = mainView;
 }
 
 - (void)viewDidLoad {
@@ -78,11 +83,10 @@
 		
         UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:_eventPager];
 		self.navigationItem.rightBarButtonItem = segmentBarItem;
-		[segmentBarItem release];
 	}
     
-	descriptionString = nil;
-    categoriesString = nil;
+	self.descriptionString = nil;
+    self.categoriesString = nil;
 	
 	// set up table rows
 	[self reloadEvent];
@@ -90,7 +94,7 @@
         [self requestEventDetails];
     }
 	
-	descriptionHeight = 0;
+	self.descriptionHeight = 0;
 }
 
 - (void)showNextEvent:(id)sender
@@ -118,17 +122,17 @@
 
 - (void)requestEventDetails
 {
-    if (isLoading) {
+    if (self.isLoading) {
         return;
     }
 
     NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:[self.event.eventID description], @"id", nil];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag
                                                                               command:@"detail"
-                                                                           parameters:params] autorelease];
+                                                                           parameters:params];
 
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        isLoading = NO;
+        self.loading = NO;
         
         if (error) {
 
@@ -142,13 +146,13 @@
         }
     };
 
-    isLoading = YES;
+    self.loading = YES;
     [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 - (void)reloadEvent
 {
-    if (event.url) {
+    if (self.event.url) {
         [self setupShareButton];
 	}
 	
@@ -160,76 +164,73 @@
         [_eventPager setEnabled:(currentEventIndex < [self.events count] - 1) forSegmentAtIndex:1];
     }
 	
-	if (numRows > 0) {
-		free(rowTypes);
-	}
-	
-	rowTypes = malloc(sizeof(CalendarDetailRowType) * 5);
-	numRows = 0;
+    NSMutableArray *rowTypes = [NSMutableArray array];
+    
 	if (self.event.start) {
-		rowTypes[numRows] = CalendarDetailRowTypeTime;
-		numRows++;
+		[rowTypes addObject:@(CalendarDetailRowTypeTime)];
 	}
+    
 	if (self.event.shortloc || self.event.location) {
-		rowTypes[numRows] = CalendarDetailRowTypeLocation;
-		numRows++;
+		[rowTypes addObject:@(CalendarDetailRowTypeLocation)];
 	}
+
 	if (self.event.phone) {
-		rowTypes[numRows] = CalendarDetailRowTypePhone;
-		numRows++;
+		[rowTypes addObject:@(CalendarDetailRowTypePhone)];
 	}
+    
 	if (self.event.url) {
-		rowTypes[numRows] = CalendarDetailRowTypeURL;
-		numRows++;
+		[rowTypes addObject:@(CalendarDetailRowTypeURL)];
 	}
+    
 	if (self.event.summary.length) {
-		rowTypes[numRows] = CalendarDetailRowTypeDescription;
-        [descriptionString release];
-        descriptionString = [[self htmlStringFromString:self.event.summary] retain];
-		numRows++;
+		[rowTypes addObject:@(CalendarDetailRowTypeDescription)];
+        self.descriptionString = [self htmlStringFromString:self.event.summary];
 	}
+    
 	if ([self.event.categories count] > 0) {
-        rowTypes[numRows] = CalendarDetailRowTypeCategories;
-        
-        [categoriesString release];
+		[rowTypes addObject:@(CalendarDetailRowTypeCategories)];
         
         NSMutableString *categoriesBody = [NSMutableString stringWithString:@"Categorized as:<ul>"];
-        for (EventCategory *category in event.categories) {
+        for (EventCategory *category in self.event.categories) {
             NSString *catIDString = [NSString stringWithFormat:@"catID=%d", [category.catID intValue]];
             if(category.listID) {
                 catIDString = [catIDString stringByAppendingFormat:@"&listID=%@", category.listID];
             }
-            NSURL *categoryURL = [NSURL internalURLWithModuleTag:CalendarTag path:CalendarStateCategoryEventList query:catIDString];
+            NSURL *categoryURL = [NSURL internalURLWithModuleTag:CalendarTag
+                                                            path:CalendarStateCategoryEventList
+                                                           query:catIDString];
             [categoriesBody appendString:[NSString stringWithFormat:
                                           @"<li><a href=\"%@\">%@</a></li>", [categoryURL absoluteString], category.title]];
         }
         
         [categoriesBody appendString:@"</ul>"];
-        categoriesString = [[self htmlStringFromString:categoriesBody] retain];
+        self.categoriesString = [self htmlStringFromString:categoriesBody];
         
         UIFont *cellFont = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
         CGSize textSize = [CalendarTag sizeWithFont:cellFont];
         // one line height per category, +1 each for "Categorized as" and <ul> spacing, 5px between lines
-        categoriesHeight = (textSize.height + 5.0) * ([event.categories count] + 2);
-
-        numRows++;
+        self.categoriesHeight = (textSize.height + 5.0) * ([self.event.categories count] + 2);
 	}
-	
+    
+	self.rowTypes = rowTypes;
 	[self.tableView reloadData];
 }
 
 - (void)setupShareButton {
-    if (!shareButton) {
+    if (!self.shareButton) {
         CGRect tableFrame = self.tableView.frame;
-        shareButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
+        self.shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *buttonImage = [UIImage imageNamed:@"global/share.png"];
-        shareButton.frame = CGRectMake(tableFrame.size.width - buttonImage.size.width - BUTTON_PADDING,
+        self.shareButton.frame = CGRectMake(tableFrame.size.width - buttonImage.size.width - BUTTON_PADDING,
                                        BUTTON_PADDING,
                                        buttonImage.size.width,
                                        buttonImage.size.height);
-        [shareButton setImage:buttonImage forState:UIControlStateNormal];
-        [shareButton setImage:[UIImage imageNamed:@"global/share_pressed.png"] forState:(UIControlStateNormal | UIControlStateHighlighted)];
-        [shareButton addTarget:self action:@selector(share:) forControlEvents:UIControlEventTouchUpInside];
+        [self.shareButton setImage:buttonImage forState:UIControlStateNormal];
+        [self.shareButton setImage:[UIImage imageNamed:@"global/share_pressed.png"]
+                          forState:(UIControlStateNormal | UIControlStateHighlighted)];
+        [self.shareButton addTarget:self
+                             action:@selector(share:)
+                   forControlEvents:UIControlEventTouchUpInside];
     }
 }
 
@@ -239,7 +240,7 @@
 	CGFloat titlePadding = 10.0;
     CGFloat titleWidth;
     if ([self.event hasMoreDetails]) {
-        titleWidth = tableFrame.size.width - shareButton.frame.size.width - BUTTON_PADDING * 2 - titlePadding;
+        titleWidth = tableFrame.size.width - self.shareButton.frame.size.width - BUTTON_PADDING * 2 - titlePadding;
         self.tableView.separatorColor = [UIColor colorWithWhite:0.8 alpha:1.0];
     } else {
         titleWidth = tableFrame.size.width - titlePadding * 2;
@@ -255,31 +256,28 @@
 	titleView.text = self.event.title;
 	
 	// if title is very short, add extra padding so button won't be too close to first cell
-	if (titleSize.height < shareButton.frame.size.height) {
+	if (titleSize.height < self.shareButton.frame.size.height) {
 		titleSize.height += BUTTON_PADDING;
 	}
 	
 	CGRect titleFrame = CGRectMake(0.0, 0.0, tableFrame.size.width, titleSize.height + titlePadding * 2);
-	self.tableView.tableHeaderView = [[[UIView alloc] initWithFrame:titleFrame] autorelease];
+	self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:titleFrame];
 	[self.tableView.tableHeaderView addSubview:titleView];
     if ([self.event hasMoreDetails]) {
-        [self.tableView.tableHeaderView addSubview:shareButton];
+        [self.tableView.tableHeaderView addSubview:self.shareButton];
     }
     
     // Add border "between" header and first cell.
     if ([self.event hasMoreDetails]) {
-        UIView *bottomBorder = 
-        [[UIView alloc] initWithFrame:
-         CGRectMake(0, 
-                    self.tableView.tableHeaderView.frame.size.height - 1, 
-                    self.tableView.tableHeaderView.frame.size.width, 
-                    1)];
+        CGRect borderRect = CGRectMake(0,
+                                       self.tableView.tableHeaderView.frame.size.height - 1,
+                                       self.tableView.tableHeaderView.frame.size.width,
+                                       1);
+        UIView *bottomBorder = [[UIView alloc] initWithFrame:borderRect];
         bottomBorder.backgroundColor = [UIColor colorWithWhite:0.8 alpha:1.0];
         [self.tableView.tableHeaderView addSubview:bottomBorder];
-        [bottomBorder release];
     }
     
-	[titleView release];
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -301,16 +299,15 @@
 }
 
 - (void)setEvent:(MITCalendarEvent *)anEvent {
-	if (anEvent != event) {
-        [event release];
-        event = [anEvent retain];
+	if ([self.event isEqual:anEvent] == NO) {
+        _event = anEvent;
+        
+        self.descriptionString = nil;
+        self.categoriesString = nil;
     }
     
-    [descriptionString release];
-    [categoriesString release];
+    
 
-    descriptionString = nil;
-    categoriesString = nil;
 }
 
 #pragma mark Table view methods
@@ -322,23 +319,23 @@
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return numRows;
+	return [self.rowTypes count];
 }
 
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-	NSInteger rowType = rowTypes[indexPath.row];
+	NSInteger rowType = [self.rowTypes[indexPath.row] integerValue];
 	NSString *CellIdentifier = [NSString stringWithFormat:@"%d", rowType];
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         if (rowType == CalendarDetailRowTypeCategories || rowType == CalendarDetailRowTypeDescription) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
 			cell.selectionStyle = UITableViewCellSelectionStyleNone;
         } else {
-            cell = [[[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+            cell = [[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         }
     }
     
@@ -347,26 +344,26 @@
 	switch (rowType) {
 		case CalendarDetailRowTypeTime:
 			cell.textLabel.text = 
-            [event dateStringWithDateStyle:NSDateFormatterFullStyle 
+            [self.event dateStringWithDateStyle:NSDateFormatterFullStyle 
                                  timeStyle:NSDateFormatterShortStyle 
                                  separator:@"\n"];
             cell.accessoryView = 
             [UIImageView accessoryViewWithMITType:MITAccessoryViewCalendar];
 			break;
 		case CalendarDetailRowTypeLocation:
-			cell.textLabel.text = (event.location != nil) ? event.location : event.shortloc;
+			cell.textLabel.text = (self.event.location != nil) ? self.event.location : self.event.shortloc;
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
-			if (![event hasCoords]) {
+			if (![self.event hasCoords]) {
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
 				cell.accessoryView.hidden = YES;
             }
 			break;
 		case CalendarDetailRowTypePhone:
-			cell.textLabel.text = event.phone;
+			cell.textLabel.text = self.event.phone;
 			cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];			
 			break;
 		case CalendarDetailRowTypeURL:
-			cell.textLabel.text = event.url;
+			cell.textLabel.text = self.event.url;
 			cell.textLabel.font = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
 			cell.textLabel.textColor = EMBEDDED_LINK_FONT_COLOR;
 			cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
@@ -376,8 +373,8 @@
             UIWebView *webView = (UIWebView *)[cell viewWithTag:kDescriptionWebViewTag];
 			webView.delegate = self;
 			CGFloat webViewHeight;
-			if (descriptionHeight > 0) {
-				webViewHeight = descriptionHeight;
+			if (self.descriptionHeight > 0) {
+				webViewHeight = self.descriptionHeight;
 			} else {
 				webViewHeight = 2000;
 			}
@@ -394,13 +391,14 @@
 				}
 				
                 webView.delegate = self;
-                [webView loadHTMLString:descriptionString baseURL:nil];
+                [webView loadHTMLString:self.descriptionString
+                                baseURL:nil];
                 webView.tag = kDescriptionWebViewTag;
                 [cell.contentView addSubview:webView];
-                [webView release];
             } else {
                 webView.frame = frame;
-                [webView loadHTMLString:descriptionString baseURL:nil];
+                [webView loadHTMLString:self.descriptionString
+                                baseURL:nil];
             }
 					
 			break;
@@ -408,7 +406,10 @@
 		case CalendarDetailRowTypeCategories:
         {
             UIWebView *webView = (UIWebView *)[cell viewWithTag:kCategoriesWebViewTag];
-            CGRect frame = CGRectMake(WEB_VIEW_PADDING, WEB_VIEW_PADDING, self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING, categoriesHeight);
+            CGRect frame = CGRectMake(WEB_VIEW_PADDING,
+                                      WEB_VIEW_PADDING,
+                                      self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING,
+                                      self.categoriesHeight);
             if (!webView) {
                 webView = [[UIWebView alloc] initWithFrame:frame];
 				
@@ -419,13 +420,14 @@
 					}
 				}
 				
-                [webView loadHTMLString:categoriesString baseURL:nil];
+                [webView loadHTMLString:self.categoriesString
+                                baseURL:nil];
                 webView.tag = kCategoriesWebViewTag;
                 [cell.contentView addSubview:webView];
-                [webView release];
             } else {
                 webView.frame = frame;
-                [webView loadHTMLString:categoriesString baseURL:nil];
+                [webView loadHTMLString:self.categoriesString
+                                baseURL:nil];
             }
 
 			break;
@@ -456,7 +458,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	NSInteger rowType = rowTypes[indexPath.row];
+	NSInteger rowType = [self.rowTypes[indexPath.row] integerValue];
 	
 	NSString *cellText = nil;
 	UIFont *cellFont = nil;
@@ -464,30 +466,30 @@
 
 	switch (rowType) {
 		case CalendarDetailRowTypeCategories:
-			return categoriesHeight;
+			return self.categoriesHeight;
 
 		case CalendarDetailRowTypeTime:
-			cellText = [event dateStringWithDateStyle:NSDateFormatterFullStyle timeStyle:NSDateFormatterShortStyle separator:@"\n"];
+			cellText = [self.event dateStringWithDateStyle:NSDateFormatterFullStyle timeStyle:NSDateFormatterShortStyle separator:@"\n"];
 			cellFont = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
 			constraintWidth = tableView.frame.size.width - 21.0;
 			break;
 		case CalendarDetailRowTypeDescription:
 			// this is the same font defined in the html template
-			if(descriptionHeight > 0) {
-				return descriptionHeight + CELL_VERTICAL_PADDING * 2;
+			if(self.descriptionHeight > 0) {
+				return self.descriptionHeight + CELL_VERTICAL_PADDING * 2;
 			} else {
 				return 400.0;
 			}
 
 			break;
 		case CalendarDetailRowTypeURL:
-			cellText = event.url;
+			cellText = self.event.url;
 			cellFont = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
 			// 33 and 21 are from MultiLineTableViewCell.m
 			constraintWidth = tableView.frame.size.width - 33.0 - 21.0;
 			break;
 		case CalendarDetailRowTypeLocation:
-			cellText = (event.location != nil) ? event.location : event.shortloc;
+			cellText = (self.event.location != nil) ? self.event.location : self.event.shortloc;
 			cellFont = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
 			// 33 and 21 are from MultiLineTableViewCell.m
 			constraintWidth = tableView.frame.size.width - 33.0 - 21.0;
@@ -506,14 +508,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
-	NSInteger rowType = rowTypes[indexPath.row];
+	NSInteger rowType = [self.rowTypes[indexPath.row] integerValue];
 	
 	switch (rowType) {
         case CalendarDetailRowTypeTime:
         {
-            EKEventStore *eventStore = [[EKEventStore alloc] init];            
-            NSAutoreleasePool *eventAddPool = [[NSAutoreleasePool alloc] init];
-            
+            EKEventStore *eventStore = [[EKEventStore alloc] init];
             EKEvent *newEvent = [EKEvent eventWithEventStore:eventStore];
             newEvent.calendar = [eventStore defaultCalendarForNewEvents];
             [self.event setUpEKEvent:newEvent];
@@ -531,25 +531,23 @@
                 }
             }
             
-            EKEventEditViewController *eventViewController = 
-            [[EKEventEditViewController alloc] init];
+            EKEventEditViewController *eventViewController = [[EKEventEditViewController alloc] init];
             eventViewController.event = newEvent;
             eventViewController.eventStore = eventStore;
             eventViewController.editViewDelegate = self;
             [self presentModalViewController:eventViewController animated:YES];
-            
-            [eventAddPool release];            
-            [eventStore release];
             break;
         }
 		case CalendarDetailRowTypeLocation:
-            if ([event hasCoords]) {
-                [[UIApplication sharedApplication] openURL:[NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:event.shortloc]];
+            if ([self.event hasCoords]) {
+                [[UIApplication sharedApplication] openURL:[NSURL internalURLWithModuleTag:CampusMapTag
+                                                                                      path:@"search"
+                                                                                     query:self.event.shortloc]];
             }
 			break;
 		case CalendarDetailRowTypePhone:
 		{
-			NSString *phoneString = [event.phone stringByReplacingOccurrencesOfString:@"-" withString:@""];
+			NSString *phoneString = [self.event.phone stringByReplacingOccurrencesOfString:@"-" withString:@""];
 			NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phoneString]];
 			if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
 				[[UIApplication sharedApplication] openURL:phoneURL];
@@ -558,8 +556,8 @@
 		}
 		case CalendarDetailRowTypeURL:
 		{
-			NSURL *eventURL = [NSURL URLWithString:event.url];
-			if (event.url && [[UIApplication sharedApplication] canOpenURL:eventURL]) {
+			NSURL *eventURL = [NSURL URLWithString:self.event.url];
+			if (self.event.url && [[UIApplication sharedApplication] canOpenURL:eventURL]) {
 				[[UIApplication sharedApplication] openURL:eventURL];
 			}
 			break;
@@ -578,11 +576,13 @@
 }
 
 - (NSString *)emailSubject {
-	return [NSString stringWithFormat:@"MIT Event: %@", event.title];
+	return [NSString stringWithFormat:@"MIT Event: %@", self.event.title];
 }
 
 - (NSString *)emailBody {
-	return [NSString stringWithFormat:@"I thought you might be interested in this event...\n\n%@\n\n%@", event.summary, event.url];
+	return [NSString stringWithFormat:@"I thought you might be interested in this event...\n\n%@\n\n%@",
+            self.event.summary,
+            self.event.url];
 }
 
 - (NSString *)fbDialogPrompt {
@@ -595,35 +595,21 @@
 			"\"href\":\"%@\","
 			"\"description\":\"%@\""
 			"}",
-			[event.title stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""],
-            event.url,
-            [event.summary stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]];
+			[self.event.title stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""],
+            self.event.url,
+            [self.event.summary stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]];
 }
 
 - (NSString *)twitterUrl {
-    return event.url;
+    return self.event.url;
 	//return [NSString stringWithFormat:@"http://%@/e/%@", MITMobileWebDomainString, [URLShortener compressedIdFromNumber:event.eventID]];
 }
 
 - (NSString *)twitterTitle {
-	return event.title;
+	return self.event.title;
 }
 
 #pragma mark JSONLoadedDelegate for background refreshing of events
-
-- (void)dealloc {
-    self.event = nil;
-    self.events = nil;
-	free(rowTypes);
-
-	[shareButton release];
-    [categoriesString release];
-    [descriptionString release];
-    
-    self.eventPager = nil;
-    self.tableView = nil;
-    [super dealloc];
-}
 
 
 #pragma mark -
@@ -636,8 +622,8 @@
     frame.size.height = newDescriptionHeight;
     webView.frame = frame;
 
-	if(newDescriptionHeight != descriptionHeight) {
-		descriptionHeight = newDescriptionHeight;
+	if(newDescriptionHeight != self.descriptionHeight) {
+		self.descriptionHeight = newDescriptionHeight;
 		[self.tableView reloadData];
 	}	
 }
