@@ -232,7 +232,11 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == _locationSectionIndex) {
+//        mitmobile://map/search?location
+        NSString *urlString = [NSString stringWithFormat:@"mitmobile://map/search?%@", [self.venue.location.displayDescription stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         
+        NSURL *url = [NSURL URLWithString:urlString];
+        [[UIApplication sharedApplication] openURL:url];
     }
 }
 
