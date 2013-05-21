@@ -52,7 +52,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     [super viewDidLoad];
     
     NSArray *defaultFilterNames = [[NSUserDefaults standardUserDefaults] objectForKey:DiningFiltersUserDefaultKey];
-    self.filtersApplied = [DiningDietaryFlag flagsFromNames:defaultFilterNames];
+    self.filtersApplied = (defaultFilterNames)?[DiningDietaryFlag flagsFromNames:defaultFilterNames]:nil;
     
     
     self.title = self.venue.shortName;
