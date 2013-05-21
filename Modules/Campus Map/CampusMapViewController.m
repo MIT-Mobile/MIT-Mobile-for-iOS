@@ -50,7 +50,7 @@
 @property (nonatomic, assign) SEL searchFilter;
 @property (nonatomic, assign) BOOL displayShuttles;
 
-@property (nonatomic) BOOL wasShowingUserLocation;
+@property (nonatomic) BOOL trackingUserLocation;
 
 - (void)updateMapListButton;
 - (void)addAnnotationsForShuttleStops:(NSArray*)shuttleStops;
@@ -175,15 +175,17 @@
 
 -(void) viewWillAppear:(BOOL)animated {
     [self.mapView addTileOverlay];
-    self.mapView.showsUserLocation = self.wasShowingUserLocation;
+    self.mapView.showsUserLocation = YES;
+    
+    self.mapView.tracksUserLocation = self.trackingUserLocation;
     
     [self updateMapListButton];
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
     [self.mapView removeTileOverlay];
-    self.wasShowingUserLocation = self.mapView.showsUserLocation;
     self.mapView.showsUserLocation = NO;
+    self.trackingUserLocation = self.mapView.tracksUserLocation;
 }
 
 -(void) viewDidAppear:(BOOL)animated
@@ -452,11 +454,8 @@
 
 -(void) geoLocationTouched:(id)sender
 {
-    if ((self.userLocation == nil) && (self.mapView.showsUserLocation == NO)) {
-        self.mapView.showsUserLocation = YES;
-    } else if (self.userLocation) {
-        CLLocationCoordinate2D center = self.userLocation.coordinate;
-        self.mapView.region = MKCoordinateRegionMake(center, DEFAULT_MAP_SPAN);
+    if (self.userLocation && [self.userLocation isNearCampus]) {
+        self.mapView.tracksUserLocation = YES;
     } else {
         // messages to be shown when user taps locate me button off campus
         NSString *message = nil;
@@ -875,15 +874,7 @@
 }
 
 - (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)userLocation {
-    CLLocation *oldLocation = self.userLocation;
-    
-    if ([userLocation isNearCampus]) {
-        self.userLocation = userLocation;
-    }
-    
-    if (oldLocation == nil) {
-        [self geoLocationTouched:nil];
-    }
+    self.userLocation = userLocation;
 }
 
 #pragma mark JSONLoadedDelegate
