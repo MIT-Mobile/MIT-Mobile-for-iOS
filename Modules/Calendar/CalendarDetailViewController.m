@@ -514,28 +514,59 @@
         case CalendarDetailRowTypeTime:
         {
             EKEventStore *eventStore = [[EKEventStore alloc] init];
-            EKEvent *newEvent = [EKEvent eventWithEventStore:eventStore];
-            newEvent.calendar = [eventStore defaultCalendarForNewEvents];
-            [self.event setUpEKEvent:newEvent];
             
-            NSInteger rowCount = [self tableView:tableView numberOfRowsInSection:indexPath.section];
-            NSInteger likelyIndexOfDescriptionRow = rowCount - 2;
-            NSIndexPath *descriptionIndexPath = [NSIndexPath indexPathForRow:likelyIndexOfDescriptionRow inSection:indexPath.section];
-            if (descriptionIndexPath.row > 0) {
-                UITableViewCell *cell = [tableView cellForRowAtIndexPath:descriptionIndexPath];
-                UIWebView *webView = (UIWebView *)[cell viewWithTag:kDescriptionWebViewTag];
-                NSString *result = [webView stringByEvaluatingJavaScriptFromString:
-                                    @"function f(){ return document.body.innerText; } f();"];
-                if (result) {
-                    newEvent.notes = result;
-                }
+            void (^eventBlock)(BOOL,NSError*) = ^(BOOL granted, NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (granted) {
+                            EKEvent *newEvent = [EKEvent eventWithEventStore:eventStore];
+                            newEvent.calendar = [eventStore defaultCalendarForNewEvents];
+                            [self.event setUpEKEvent:newEvent];
+                            
+                            NSInteger rowCount = [self tableView:tableView numberOfRowsInSection:indexPath.section];
+                            NSInteger likelyIndexOfDescriptionRow = rowCount - 2;
+                            NSIndexPath *descriptionIndexPath = [NSIndexPath indexPathForRow:likelyIndexOfDescriptionRow inSection:indexPath.section];
+                            if (descriptionIndexPath.row > 0) {
+                                UITableViewCell *cell = [tableView cellForRowAtIndexPath:descriptionIndexPath];
+                                UIWebView *webView = (UIWebView *)[cell viewWithTag:kDescriptionWebViewTag];
+                                NSString *result = [webView stringByEvaluatingJavaScriptFromString:
+                                                    @"function f(){ return document.body.innerText; } f();"];
+                                if (result) {
+                                    newEvent.notes = result;
+                                }
+                            }
+                            
+                            EKEventEditViewController *eventViewController = [[EKEventEditViewController alloc] init];
+                            eventViewController.event = newEvent;
+                            eventViewController.eventStore = eventStore;
+                            eventViewController.editViewDelegate = self;
+                            [self presentModalViewController:eventViewController
+                                                    animated:YES];
+                    } else {
+                        UIAlertView *alertView = nil;
+                        if (error) {
+                            alertView = [UIAlertView alertViewForError:error
+                                                             withTitle:self.navigationController.title
+                                                     alertViewDelegate:nil];
+                        } else {
+                            alertView = [[UIAlertView alloc] initWithTitle:self.navigationController.title
+                                                                   message:@"Unable to save event"
+                                                                  delegate:nil
+                                                         cancelButtonTitle:@"Done"
+                                                         otherButtonTitles:nil];
+                        }
+                        
+                        [alertView show];
+                    }
+                });
+            };
+            
+            if ([eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)]) {
+                [eventStore requestAccessToEntityType:EKEntityTypeEvent
+                                           completion:eventBlock];
+            } else {
+                eventBlock(YES,nil);
             }
             
-            EKEventEditViewController *eventViewController = [[EKEventEditViewController alloc] init];
-            eventViewController.event = newEvent;
-            eventViewController.eventStore = eventStore;
-            eventViewController.editViewDelegate = self;
-            [self presentModalViewController:eventViewController animated:YES];
             break;
         }
 		case CalendarDetailRowTypeLocation:
