@@ -27,6 +27,7 @@
 @dynamic region;
 @dynamic scrollEnabled;
 @dynamic showsUserLocation;
+@dynamic tracksUserLocation;
 
 - (id)init {
     return [self initWithFrame:CGRectZero];
@@ -130,6 +131,15 @@
 - (void)setShowsUserLocation:(BOOL)showsUserLocation
 {
     self.mapView.showUserLocation = showsUserLocation;
+}
+
+- (void)setTracksUserLocation:(BOOL)tracksUserLocation
+{
+    self.mapView.trackUserLocation = tracksUserLocation;
+}
+
+- (BOOL)tracksUserLocation {
+    return self.mapView.trackUserLocation;
 }
 
 - (BOOL)stayCenteredOnUserLocation
