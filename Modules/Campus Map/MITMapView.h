@@ -52,7 +52,6 @@ DEPRECATED_ATTRIBUTE
 @property MKCoordinateRegion region;
 @property BOOL scrollEnabled;
 @property BOOL showsUserLocation;
-@property BOOL tracksUserLocation;
 
 #pragma mark Annotations
 

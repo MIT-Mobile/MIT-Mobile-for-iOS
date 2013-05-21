@@ -177,7 +177,7 @@
     [self.mapView addTileOverlay];
     self.mapView.showsUserLocation = YES;
     
-    self.mapView.tracksUserLocation = self.trackingUserLocation;
+    self.mapView.stayCenteredOnUserLocation = self.trackingUserLocation;
     
     [self updateMapListButton];
 }
@@ -185,7 +185,7 @@
 - (void) viewDidDisappear:(BOOL)animated {
     [self.mapView removeTileOverlay];
     self.mapView.showsUserLocation = NO;
-    self.trackingUserLocation = self.mapView.tracksUserLocation;
+    self.trackingUserLocation = self.mapView.stayCenteredOnUserLocation;
 }
 
 -(void) viewDidAppear:(BOOL)animated
@@ -455,7 +455,7 @@
 -(void) geoLocationTouched:(id)sender
 {
     if (self.userLocation && [self.userLocation isNearCampus]) {
-        self.mapView.tracksUserLocation = YES;
+        self.mapView.stayCenteredOnUserLocation = YES;
     } else {
         // messages to be shown when user taps locate me button off campus
         NSString *message = nil;
