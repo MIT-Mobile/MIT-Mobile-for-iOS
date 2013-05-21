@@ -13,7 +13,6 @@
 #import "MGSLayerController.h"
 #import "MGSSafeAnnotation.h"
 #import "MGSLayerAnnotation.h"
-#import "MGSBootstrapper.h"
 
 
 @implementation MGSMapView
@@ -781,8 +780,10 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             self.mapView = view;
         }
         
-        MGSBootstrapper *bootstrapper = [MGSBootstrapper sharedBootstrapper];
-        [bootstrapper requestBootstrap:^(NSDictionary *content, NSError *error) {
+        MobileRequestOperation* operation = [MobileRequestOperation operationWithModule:@"map"
+                                                                                command:@"bootstrap"
+                                                                             parameters:nil];
+        [operation setCompleteBlock:^(MobileRequestOperation* blockOperation, id content, NSString* contentType, NSError* error) {
             if (error) {
                 DDLogError(@"failed to load basemap definitions: %@", error);
                 if ([self.delegate respondsToSelector:@selector(mapView:didFailWithError:)]) {
@@ -803,6 +804,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             }
         }];
         
+        [[NSOperationQueue mainQueue] addOperation:operation];
     }
     
     self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
