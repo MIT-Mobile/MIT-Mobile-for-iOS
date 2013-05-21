@@ -212,12 +212,16 @@
     }
 }
 
-- (BOOL)tracksUserLocation {
-    return (self.mapView.locationDisplay.autoPanMode == AGSLocationDisplayAutoPanModeDefault);
+- (BOOL)trackUserLocation {
+    return (self.showUserLocation &&
+            (self.mapView.locationDisplay.autoPanMode == AGSLocationDisplayAutoPanModeDefault));
 }
 
-- (void)setTracksUserLocation:(BOOL)tracksUserLocation {
-    if (tracksUserLocation) {
+- (void)setTrackUserLocation:(BOOL)trackUserLocation {
+    DDLogVerbose(@"%u : %u",self.mapView.locationDisplay.autoPanMode,AGSLocationDisplayAutoPanModeDefault);
+    if (trackUserLocation) {
+        self.showUserLocation = YES;
+        self.mapView.locationDisplay.wanderExtentFactor = 0;
         self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeDefault;
     } else {
         self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
@@ -232,9 +236,12 @@
 
 - (void)setShowUserLocation:(BOOL)showUserLocation {
     if (showUserLocation) {
-        [self.mapView.locationDisplay startDataSource];
-        self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
+        if ([self.mapView.locationDisplay isDataSourceStarted] == NO) {
+            self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
+        }
+        
         self.mapView.locationDisplay.dataSource.delegate = self;
+        [self.mapView.locationDisplay startDataSource];
     } else {
         [self.mapView.locationDisplay stopDataSource];
     }
