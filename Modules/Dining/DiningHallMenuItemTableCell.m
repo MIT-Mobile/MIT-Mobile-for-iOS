@@ -22,7 +22,7 @@
     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
     if (self) {
                                                                             // heights are initialized to be minimum allowed. Height will vary
-        self.station        = [[UILabel alloc] initWithFrame:CGRectMake(10, 15, 60, 14)];
+        self.station        = [[UILabel alloc] initWithFrame:CGRectMake(10, 15, 70, 14)];
         self.title          = [[UILabel alloc] initWithFrame:CGRectMake(90, 15, 160, 14)];
         self.subtitle       = [[UILabel alloc] initWithFrame:CGRectMake(90, 41, 160, 12)];
         
