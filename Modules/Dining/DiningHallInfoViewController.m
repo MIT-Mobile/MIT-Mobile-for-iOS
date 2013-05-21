@@ -231,11 +231,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == _locationSectionIndex) {
-//        mitmobile://map/search?location
-        NSString *urlString = [NSString stringWithFormat:@"mitmobile://map/search?%@", [self.venue.location.displayDescription stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-        
-        NSURL *url = [NSURL URLWithString:urlString];
+    if (indexPath.section == _locationSectionIndex && self.venue.location.displayDescription) {
+        NSURL *url = [NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:self.venue.location.displayDescription];
         [[UIApplication sharedApplication] openURL:url];
     }
 }
