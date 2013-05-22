@@ -354,7 +354,7 @@
 		EB7F32AE10CD6CB100188BCD /* StellarModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7F32A010CD6CB100188BCD /* StellarModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB7F32D310CD6FB300188BCD /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB7F32D210CD6FB300188BCD /* AddressBook.framework */; };
 		EB7F32D710CD6FBB00188BCD /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB7F32D610CD6FBB00188BCD /* AddressBookUI.framework */; };
-		EB83923D1163ECC20067C0A3 /* CalendarDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB83923B1163ECC20067C0A3 /* CalendarDetailViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		EB83923D1163ECC20067C0A3 /* CalendarDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB83923B1163ECC20067C0A3 /* CalendarDetailViewController.m */; };
 		EB8392471163EF340067C0A3 /* MITCalendarEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = EB8392431163EF340067C0A3 /* MITCalendarEvent.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB8392491163EF340067C0A3 /* EventCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = EB8392451163EF340067C0A3 /* EventCategory.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB83926C1163F7B00067C0A3 /* CalendarDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = EB83926A1163F7B00067C0A3 /* CalendarDataManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
