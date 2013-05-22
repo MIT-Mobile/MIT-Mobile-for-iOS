@@ -23,6 +23,11 @@
 @property (nonatomic,strong) NSString *categoriesString;
 @property (nonatomic) CGFloat descriptionHeight;
 @property (nonatomic) CGFloat categoriesHeight;
+
+- (void)presentEditorForEvent:(MITCalendarEvent*)calendarEvent
+                    withNotes:(NSString*)notes
+              usingEventStore:(EKEventStore*)eventStore;
+
 @end
 
 @implementation CalendarDetailViewController
@@ -514,57 +519,49 @@
         case CalendarDetailRowTypeTime:
         {
             EKEventStore *eventStore = [[EKEventStore alloc] init];
+
+            NSString *eventNotes = nil;
+            NSInteger rowCount = [self tableView:tableView
+                           numberOfRowsInSection:indexPath.section];
+            NSInteger likelyIndexOfDescriptionRow = rowCount - 2;
+            NSIndexPath *descriptionIndexPath = [NSIndexPath indexPathForRow:likelyIndexOfDescriptionRow
+                                                                   inSection:indexPath.section];
+            if (descriptionIndexPath.row > 0) {
+                UITableViewCell *cell = [tableView cellForRowAtIndexPath:descriptionIndexPath];
+                UIWebView *webView = (UIWebView *)[cell viewWithTag:kDescriptionWebViewTag];
+                eventNotes = [webView stringByEvaluatingJavaScriptFromString:@"function f(){ return document.body.innerText; } f();"];
+            }
             
-            void (^eventBlock)(BOOL,NSError*) = ^(BOOL granted, NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (granted) {
-                            EKEvent *newEvent = [EKEvent eventWithEventStore:eventStore];
-                            newEvent.calendar = [eventStore defaultCalendarForNewEvents];
-                            [self.event setUpEKEvent:newEvent];
-                            
-                            NSInteger rowCount = [self tableView:tableView numberOfRowsInSection:indexPath.section];
-                            NSInteger likelyIndexOfDescriptionRow = rowCount - 2;
-                            NSIndexPath *descriptionIndexPath = [NSIndexPath indexPathForRow:likelyIndexOfDescriptionRow inSection:indexPath.section];
-                            if (descriptionIndexPath.row > 0) {
-                                UITableViewCell *cell = [tableView cellForRowAtIndexPath:descriptionIndexPath];
-                                UIWebView *webView = (UIWebView *)[cell viewWithTag:kDescriptionWebViewTag];
-                                NSString *result = [webView stringByEvaluatingJavaScriptFromString:
-                                                    @"function f(){ return document.body.innerText; } f();"];
-                                if (result) {
-                                    newEvent.notes = result;
-                                }
-                            }
-                            
-                            EKEventEditViewController *eventViewController = [[EKEventEditViewController alloc] init];
-                            eventViewController.event = newEvent;
-                            eventViewController.eventStore = eventStore;
-                            eventViewController.editViewDelegate = self;
-                            [self presentModalViewController:eventViewController
-                                                    animated:YES];
-                    } else {
-                        UIAlertView *alertView = nil;
-                        if (error) {
-                            alertView = [UIAlertView alertViewForError:error
-                                                             withTitle:self.navigationController.title
-                                                     alertViewDelegate:nil];
-                        } else {
-                            alertView = [[UIAlertView alloc] initWithTitle:self.navigationController.title
-                                                                   message:@"Unable to save event"
-                                                                  delegate:nil
-                                                         cancelButtonTitle:@"Done"
-                                                         otherButtonTitles:nil];
-                        }
-                        
-                        [alertView show];
-                    }
-                });
-            };
-            
-            if ([eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)]) {
+            if ([eventStore respondsToSelector:NSSelectorFromString(@"requestAccessToEntityType:completion:")]) {
                 [eventStore requestAccessToEntityType:EKEntityTypeEvent
-                                           completion:eventBlock];
+                                           completion:^(BOOL granted, NSError *error) {
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   if (granted) {
+                                                       [self presentEditorForEvent:self.event
+                                                                         withNotes:eventNotes
+                                                                   usingEventStore:eventStore];
+                                                   } else {
+                                                       UIAlertView *alertView = nil;
+                                                       if (error) {
+                                                           alertView = [UIAlertView alertViewForError:error
+                                                                                            withTitle:self.navigationController.title
+                                                                                    alertViewDelegate:nil];
+                                                       } else {
+                                                           alertView = [[UIAlertView alloc] initWithTitle:self.navigationController.title
+                                                                                                  message:@"Unable to save event"
+                                                                                                 delegate:nil
+                                                                                        cancelButtonTitle:@"Done"
+                                                                                        otherButtonTitles:nil];
+                                                       }
+                                                       
+                                                       [alertView show];
+                                                   }
+                                               });
+                                           }];
             } else {
-                eventBlock(YES,nil);
+                [self presentEditorForEvent:self.event
+                                  withNotes:eventNotes
+                            usingEventStore:eventStore];
             }
             
             break;
@@ -672,6 +669,23 @@
 - (void)eventEditViewController:(EKEventEditViewController *)controller 
           didCompleteWithAction:(EKEventEditViewAction)action {
     [controller dismissModalViewControllerAnimated:YES];
+}
+
+- (void)presentEditorForEvent:(MITCalendarEvent*)calendarEvent
+                    withNotes:(NSString*)notes
+              usingEventStore:(EKEventStore*)eventStore
+{
+    EKEvent *event = [EKEvent eventWithEventStore:eventStore];
+    event.calendar = [eventStore defaultCalendarForNewEvents];
+    event.notes = notes;
+    [calendarEvent setUpEKEvent:event];
+
+    EKEventEditViewController *eventViewController = [[EKEventEditViewController alloc] init];
+    eventViewController.event = event;
+    eventViewController.eventStore = eventStore;
+    eventViewController.editViewDelegate = self;
+    [self presentModalViewController:eventViewController
+                            animated:YES];
 }
 
 @end
