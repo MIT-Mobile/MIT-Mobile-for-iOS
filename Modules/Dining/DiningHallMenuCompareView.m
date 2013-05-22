@@ -42,7 +42,9 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         self.collectionView.directionalLockEnabled = YES;
         self.collectionView.showsHorizontalScrollIndicator = NO;
         self.collectionView.showsVerticalScrollIndicator = NO;
-        [self.collectionView registerClass:[DiningHallMenuComparisonCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];
+        self.collectionView.backgroundColor = [UIColor whiteColor];
+        [self.collectionView registerClass:[DiningHallMenuComparisonCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];                  // may want a delegate method or some way to register classes outside ComparisonView
+        [self.collectionView registerClass:[DiningHallMenuComparisonNoMealsCell class] forCellWithReuseIdentifier:@"DiningMenuNoMealsCell"];
         [self.collectionView registerClass:[DiningHallMenuComparisonSectionHeaderView class] forSupplementaryViewOfKind:MITDiningMenuComparisonSectionHeaderKind withReuseIdentifier:SectionHeaderIdentifier];
         
         [self addSubview:self.headerView];
@@ -107,7 +109,6 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 - (CGFloat)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout heightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     return [self.delegate compareView:self heightForRowAtIndexPath:indexPath];
-//    return [DiningHallMenuComparisonCell heightForComparisonCellOfWidth:COLUMN_WIDTH withPrimaryText:@"Old fashioned hamburgers and hotdogs" secondaryText:@"served with fries and shakes" numDietaryTypes:2];
 }
 
 - (void) scrollViewDidScroll:(UIScrollView *)scrollView

@@ -491,7 +491,7 @@ typedef enum {
     }
 }
 
-- (DiningHallMenuComparisonCell *) compareView:(DiningHallMenuCompareView *)compareView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (PSTCollectionViewCell *) compareView:(DiningHallMenuCompareView *)compareView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSFetchedResultsController *controller = [self resultsControllerForCompareView:compareView];
     NSInteger cSectionIndex = [self indexOfSectionInController:controller withCompareViewSection:indexPath.section];
@@ -513,10 +513,8 @@ typedef enum {
         cell.dietaryTypes = [item.dietaryFlags allObjects];
         return cell;
     } else {
-        // TODO :: need to create a 'No Meals' cell
-         DiningHallMenuComparisonCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuCell" forIndexPath:indexPath];
+        DiningHallMenuComparisonNoMealsCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuNoMealsCell" forIndexPath:indexPath];
         cell.primaryLabel.text = @"No meals";
-        cell.primaryLabel.textAlignment = NSTextAlignmentCenter;
         return cell;
     }
 }
@@ -535,7 +533,6 @@ typedef enum {
     if (item) {
         return [DiningHallMenuComparisonCell heightForComparisonCellOfWidth:compareView.columnWidth withPrimaryText:item.name secondaryText:item.subtitle numDietaryTypes:[item.dietaryFlags count]];
     } else {
-        // TODO :: need to distinguish height of no meals cell
         return 30;
     }
 }
