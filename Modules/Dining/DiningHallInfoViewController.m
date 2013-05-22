@@ -208,27 +208,13 @@
     } else {
         // schedule
         NSDictionary *rowSchedule = self.scheduleInfo[indexPath.row];
-//        NSDateFormatter *df = [[NSDateFormatter alloc] init];
-//        [df setDateFormat:@"EEE"];
-//        NSString *daySpan;
-//        if ([rowSchedule[@"dayStart"] isEqual:rowSchedule[@"dayEnd"]]) {
-//            daySpan = [[df stringFromDate:rowSchedule[@"dayStart"]] lowercaseString];
-//        } else {
-//            daySpan = [NSString stringWithFormat:@"%@ - %@", [[df stringFromDate:rowSchedule[@"dayStart"]] lowercaseString], [[df stringFromDate:rowSchedule[@"dayEnd"]] lowercaseString]];
-//        }
-//        cell.textLabel.text = daySpan;
-//        NSString *scheduleString = @"";
-//        for (NSDictionary *schedule in rowSchedule[@"meals"]) {
-//            scheduleString = [scheduleString stringByAppendingFormat:@"%@\t\t%@ \n", schedule[@"mealName"], schedule[@"mealSpan"]];
-//        }
-//        cell.detailTextLabel.numberOfLines = 0;
-//        cell.detailTextLabel.text = scheduleString;
+
         DiningHallInfoScheduleCell *scheduleCell = [tableView dequeueReusableCellWithIdentifier:@"ScheduleCell"];
         if (!scheduleCell) {
             scheduleCell = [[DiningHallInfoScheduleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ScheduleCell"];
         }
         [scheduleCell setStartDate:rowSchedule[@"dayStart"] andEndDate:rowSchedule[@"dayEnd"]];
-        
+        scheduleCell.scheduleInfo = rowSchedule[@"meals"];
         
         return scheduleCell;
     }
@@ -248,7 +234,8 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == _scheduleSectionIndex) {
-        return 80;  // TODO :: be a little smarter here
+        NSDictionary *rowSchedule = self.scheduleInfo[indexPath.row];
+        return [DiningHallInfoScheduleCell heightForCellWithScheduleInfo:rowSchedule[@"meals"]];
     }
     return 44;
 }
