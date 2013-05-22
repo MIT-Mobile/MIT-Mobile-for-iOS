@@ -90,7 +90,7 @@
     [self layoutDietaryTypes];
     
     // reclaim the space if there are no dietary types
-    CGFloat maxWidth = ([self.dietaryTypes count]) ? CGRectGetMinX(self.typeContainer.frame) - 5 : CGRectGetWidth(self.frame);
+    CGFloat maxWidth = ([self.dietaryTypes count]) ? CGRectGetMinX(self.typeContainer.frame) + 5 : CGRectGetWidth(self.frame);
     
     CGSize constrainingSize = CGSizeMake(maxWidth - (2 * STANDARD_PADDING), CGFLOAT_MAX);
     self.primaryLabel.frame = [self frameForLabel:self.primaryLabel constrainedToSize:constrainingSize];
