@@ -330,6 +330,7 @@
 
 - (void)setupConclusionScreen {
     showingConclusionScreen = YES;
+    
     self.navigationItem.title = @"Thank You";
     [self hidePlayButton];
     
@@ -363,12 +364,11 @@
                    action:@selector(returnToHomeScreen:)
          forControlEvents:UIControlEventTouchUpInside];
 
-        UIView *footerWrapperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableFrame.size.width, buttonBackground.size.height + 10)];
+        UIView *footerWrapperView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, tableFrame.size.width, buttonBackground.size.height + 10)] autorelease];
         footerWrapperView.backgroundColor = [UIColor whiteColor];
         [footerWrapperView addSubview:button];
         
         tableView.tableFooterView = footerWrapperView;
-        [footerWrapperView release];
     }
     
     // table header
@@ -397,7 +397,6 @@
         headerView.backgroundColor = [UIColor whiteColor];
         [headerView addSubview:label];
         tableView.tableHeaderView = headerView;
-        [headerView release];
     }
     
     [newSlidingView addSubview:tableView];
