@@ -343,44 +343,62 @@
     tableView.dataSource = self;
     tableView.delegate = self;
     tableView.backgroundColor = [UIColor whiteColor];
+    tableView.backgroundView = nil;
     tableView.separatorColor = [UIColor colorWithHexString:@"#BBBBBB"];
 
     // table footer
-	NSString *buttonTitle = @"Return to MIT Home Screen";
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage *buttonBackground = [UIImage imageNamed:@"global/return_button.png"];
-    button.frame = CGRectMake(10, 0, buttonBackground.size.width, buttonBackground.size.height);
-    [button setBackgroundImage:buttonBackground forState:UIControlStateNormal];
-	button.titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
-	button.titleLabel.textAlignment = UITextAlignmentCenter;
-    [button setTitle:buttonTitle forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(returnToHomeScreen:) forControlEvents:UIControlEventTouchUpInside];
+    {
+        NSString *buttonTitle = @"Return to MIT Home Screen";
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        UIImage *buttonBackground = [UIImage imageNamed:@"global/return_button.png"];
+        button.frame = CGRectMake(10, 0, buttonBackground.size.width, buttonBackground.size.height);
+        [button setBackgroundImage:buttonBackground
+                          forState:UIControlStateNormal];
+        
+        button.titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
+        button.titleLabel.textAlignment = UITextAlignmentCenter;
+        [button setTitle:buttonTitle
+                forState:UIControlStateNormal];
+        [button addTarget:self
+                   action:@selector(returnToHomeScreen:)
+         forControlEvents:UIControlEventTouchUpInside];
 
-    UIView *wrapperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableFrame.size.width, buttonBackground.size.height + 10)];
-    [wrapperView addSubview:button];
-    tableView.tableFooterView = wrapperView;
+        UIView *footerWrapperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableFrame.size.width, buttonBackground.size.height + 10)];
+        footerWrapperView.backgroundColor = [UIColor whiteColor];
+        [footerWrapperView addSubview:button];
+        
+        tableView.tableFooterView = footerWrapperView;
+        [footerWrapperView release];
+    }
     
     // table header
-    NSSet *tourLinks = [[ToursDataManager sharedManager] activeTour].links;
-    NSInteger numRows = tourLinks.count + 1;
-    CGFloat currentTableHeight = tableView.rowHeight * numRows + wrapperView.frame.size.height + 10;
-    CGFloat headerHeight = tableFrame.size.height - currentTableHeight - 10;
-    
-	UIFont *font = [UIFont systemFontOfSize:15];
-	NSString *text = NSLocalizedString(@"End of tour text", nil);
-	CGSize size = [text sizeWithFont:font constrainedToSize:CGSizeMake(tableFrame.size.width - 20, headerHeight - 20) lineBreakMode:UILineBreakModeWordWrap];
-    UILabel *label = [[[UILabel alloc] initWithFrame:CGRectMake(10, 10, tableFrame.size.width - 20, size.height)] autorelease];
-    label.text = text;
-	label.lineBreakMode = UILineBreakModeWordWrap;
-	label.numberOfLines = 0;
-	[label sizeToFit];
-	label.textColor = [UIColor colorWithHexString:@"#202020"];
-    label.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
-    
-    [wrapperView release];
-    wrapperView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, tableFrame.size.width, headerHeight)] autorelease];
-    [wrapperView addSubview:label];
-    tableView.tableHeaderView = wrapperView;
+    {
+        NSSet *tourLinks = [[ToursDataManager sharedManager] activeTour].links;
+        NSInteger numRows = tourLinks.count + 1;
+        CGFloat currentTableHeight = tableView.rowHeight * numRows + CGRectGetHeight(tableView.tableFooterView.frame) + 10;
+        CGFloat headerHeight = tableFrame.size.height - currentTableHeight - 10;
+        
+        UIFont *font = [UIFont systemFontOfSize:15];
+        NSString *text = NSLocalizedString(@"End of tour text", nil);
+        CGSize size = [text sizeWithFont:font
+                       constrainedToSize:CGSizeMake(tableFrame.size.width - 20, headerHeight - 20)
+                           lineBreakMode:UILineBreakModeWordWrap];
+        
+        UILabel *label = [[[UILabel alloc] initWithFrame:CGRectMake(10, 10, tableFrame.size.width - 20, size.height)] autorelease];
+        label.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+        label.lineBreakMode = UILineBreakModeWordWrap;
+        label.numberOfLines = 0;
+        label.text = text;
+        label.textColor = [UIColor colorWithHexString:@"#202020"];
+        [label sizeToFit];
+        
+        
+        UIView *headerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, tableFrame.size.width, headerHeight)] autorelease];
+        headerView.backgroundColor = [UIColor whiteColor];
+        [headerView addSubview:label];
+        tableView.tableHeaderView = headerView;
+        [headerView release];
+    }
     
     [newSlidingView addSubview:tableView];
     
