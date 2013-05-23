@@ -4,8 +4,6 @@
 #import "DiningDietaryFlag.h"
 
 
-
-
 @interface ComparisonBackgroundView : UIView
 
 @end
@@ -23,9 +21,10 @@
     CGContextFillPath(ctx);
     
     CGContextSetStrokeColorWithColor(ctx, [UIColor blackColor].CGColor);
-    CGContextSetLineWidth(ctx, 1.0);
-    CGContextMoveToPoint(ctx, 0, rect.size.height - 1);
-    CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height - 1);
+    CGFloat borderWidth = 1.0;
+    CGContextSetLineWidth(ctx, borderWidth);
+    CGContextMoveToPoint(ctx, 0, rect.size.height - borderWidth);
+    CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height - borderWidth);
     CGContextStrokePath(ctx);
 }
 
@@ -60,8 +59,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-
-//        self.backgroundColor = [UIColor whiteColor];
         
         NSInteger labelWidth = CGRectGetWidth(frame) - 27;
         self.primaryLabel = [[UILabel alloc] initWithFrame:CGRectMake(STANDARD_PADDING, STANDARD_PADDING, labelWidth, 10)]; // height is one line of font
@@ -78,9 +75,6 @@
         
         ComparisonBackgroundView *backView = [[ComparisonBackgroundView alloc] initWithFrame:frame];
         self.backgroundView = backView;
-        
-//        self.backgroundView.layer.borderColor = [UIColor darkTextColor].CGColor;
-//        self.backgroundView.layer.borderWidth = 0.25;
         
         [self.contentView addSubview:self.primaryLabel];
         [self.contentView addSubview:self.secondaryLabel];
@@ -184,14 +178,5 @@
     
     return height + (2 * STANDARD_PADDING);
 }
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
 
 @end
