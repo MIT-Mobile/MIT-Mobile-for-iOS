@@ -215,6 +215,7 @@
         }
         [scheduleCell setStartDate:rowSchedule[@"dayStart"] andEndDate:rowSchedule[@"dayEnd"]];
         scheduleCell.scheduleInfo = rowSchedule[@"meals"];
+        scheduleCell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         return scheduleCell;
     }
