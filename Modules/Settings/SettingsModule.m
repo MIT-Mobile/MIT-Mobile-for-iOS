@@ -22,4 +22,12 @@
     self.moduleHomeController = [[[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
 }
 
+- (BOOL)handleLocalPath:(NSString *)localPath
+                  query:(NSString *)query
+{
+    [[MITAppDelegate() rootNavigationController] pushViewController:self.moduleHomeController
+                                                           animated:YES];
+	return YES;
+}
+
 @end
