@@ -106,18 +106,15 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
                 PSTCollectionViewLayoutAttributes *dividerAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind withIndexPath:indexPath];
                 dividerAttributes.frame = [self frameForDividerAtIndexPath:indexPath];
                 dividerLayoutInfo[indexPath] = dividerAttributes;
-                newLayoutInfo[MITDiningMenuComparisonSectionDividerKind] = dividerLayoutInfo;
-                
                 if (indexPath.section == sectionCount - 1) {
                     // need to add section divider at right edge of collectionview
-                    indexPath = [NSIndexPath indexPathForRow:item inSection:section];
-                    
-                    
+                    indexPath = [NSIndexPath indexPathForRow:item inSection:section + 1];
+                    PSTCollectionViewLayoutAttributes *dividerAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind withIndexPath:indexPath];
+                    dividerAttributes.frame = [self frameForDividerAtIndexPath:indexPath];
+                    dividerLayoutInfo[indexPath] = dividerAttributes;
                 }
-                
+                newLayoutInfo[MITDiningMenuComparisonSectionDividerKind] = dividerLayoutInfo;
             }
-            
-            
         }
     }
     
@@ -157,7 +154,7 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
     CGFloat dividerWidth = 1;
     CGFloat x = (indexPath.section * self.columnWidth);
     CGPoint contentOffset = self.collectionView.contentOffset;
-    return CGRectMake(x, MAX(contentOffset.y, 0), dividerWidth, 300);
+    return CGRectMake(x, MAX(contentOffset.y, 0), dividerWidth, CGRectGetHeight(self.collectionView.bounds));
 }
 
 - (NSArray *) layoutAttributesForElementsInRect:(CGRect)rect
@@ -171,8 +168,8 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
                 if ([attributes.representedElementKind isEqualToString:MITDiningMenuComparisonSectionHeaderKind]) {
                     attributes.frame = [self frameForHeaderAtIndexPath:indexPath];
                     attributes.zIndex = 1000;
-                } else if ([attributes.reuseIdentifier isEqualToString:MITDiningMenuComparisonSectionDividerKind]) {        // have to use reuse identifier here because of what I expect is a bug in PSTCollectionViewLayout layoutAttributesForDecorationViewOfKind:
-                    attributes.frame = [self frameForDividerAtIndexPath:indexPath];                                         //          method does not set representedElementKind to paramter passed in. Always static PSTCollectionElementKindDecorationView
+                } else if ([attributes.representedElementKind isEqualToString:MITDiningMenuComparisonSectionDividerKind]) {
+                    attributes.frame = [self frameForDividerAtIndexPath:indexPath];
                     attributes.zIndex = 1024;
                 }
                 [allAttributes addObject:attributes];
@@ -206,10 +203,13 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
     // get max Y for the tallest column. return collectionView width and calculated height
     [self.layoutInfo enumerateKeysAndObjectsUsingBlock:^(NSString *elementsIdentifier, NSDictionary *elementsInfo, BOOL *stop) {
         [elementsInfo enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *indexPath, PSTCollectionViewLayoutAttributes *attributes, BOOL *innerstop) {
-            if (![attributes.reuseIdentifier isEqualToString:MITDiningMenuComparisonSectionDividerKind]) {                  // reuse identifier used again here because of supected bug in PSTCollectionViewLayout described above
-                // don't take the SectionDividers into account
+            if (![attributes.representedElementKind isEqualToString:MITDiningMenuComparisonSectionDividerKind]) {                 
+                // don't take the SectionDividers into account, except for width of final divider
+                PSTCollectionViewLayoutAttributes *divattr = [self layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind atIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+                CGFloat dividerWidth = divattr.frame.size.width;
+                
                 CGFloat tempHeight = CGRectGetMaxY(attributes.frame);
-                CGFloat tempWidth = CGRectGetMaxX(attributes.frame);
+                CGFloat tempWidth = CGRectGetMaxX(attributes.frame) + dividerWidth;
                 height = (tempHeight > height) ? tempHeight : height;   // if tempHeight is greater update height
                 width = (tempWidth > width) ? tempWidth : width;        // if tempWidth is greater update width
             }
