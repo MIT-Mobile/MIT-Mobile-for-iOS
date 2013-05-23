@@ -404,6 +404,11 @@
     [progressbar markAsDone];
     [progressbar setNeedsDisplay];
     [self animateViews:YES];
+    
+    _routeMapView.showsUserLocation = NO;
+    [_routeMapView removeFromSuperview];
+    [_routeMapView release];
+    _routeMapView = nil;
 }
 
 - (void)setupContentAreaForward:(BOOL)forward {
