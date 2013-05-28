@@ -48,7 +48,39 @@
 - (CLLocationDegrees)euclideanHeadingFromCoordinate:(CLLocationCoordinate2D)start toCoordinate:(CLLocationCoordinate2D)end;
 @end
 
-@implementation SiteDetailViewController
+@implementation SiteDetailViewController {
+    
+    TourSiteOrRoute *_siteOrRoute;
+    CampusTourSideTrip *_sideTrip;
+    NSArray *_sites;
+    
+    MITMapView *_routeMapView;
+    UIImageView *_siteImageView;
+    NSString *siteTemplate;
+    MITGenericMapRoute *directionsRoute;
+    
+    IBOutlet UIButton *backArrow;
+    IBOutlet UIButton *nextArrow;
+    IBOutlet UIButton *overviewButton;
+    //IBOutlet UIButton *qrButton;
+    
+    //BOOL showingIntroScreen;
+    BOOL showingConclusionScreen;
+    
+    UIScrollView *oldSlidingView;
+    UIScrollView *newSlidingView;
+    
+    TourSiteOrRoute *firstSite;
+    TourSiteOrRoute *lastSite;
+    
+    IBOutlet SuperThinProgressBar *progressbar;
+    IBOutlet UIView *fakeToolbar;
+    CGFloat fakeToolbarHeightFromNIB;
+    
+    AVAudioPlayer *audioPlayer;
+    
+    UIProgressView *progressView;
+}
 
 #pragma mark Actions
 
