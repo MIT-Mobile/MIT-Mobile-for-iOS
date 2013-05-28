@@ -8,7 +8,7 @@
         "url": "http://m.mit.edu/apis/dining/venues/house/next",
         "name": "Next",
         "short_name": "Next",
-        "icon_url": "http://dining.mit.edu/sites/default/files/next.png",
+        "icon_url": "http://dining.mit.edu/sites/default/files/next-new-bw.png",
         "location": {
           "mit_room_number": "W71-129F",
           "description": "W71 - Next House",
@@ -543,7 +543,7 @@
         "url": "http://m.mit.edu/apis/dining/venues/house/maseeh",
         "name": "The Howard Dining Hall at Maseeh",
         "short_name": "Maseeh",
-        "icon_url": "http://dining.mit.edu/sites/default/files/maseeh.png",
+        "icon_url": "http://dining.mit.edu/sites/default/files/maseeh-new.png",
         "location": {
           "mit_room_number": "W1-1041",
           "description": "W1 - Fariborz Maseeh Hall",
@@ -2712,7 +2712,7 @@
         "url": "http://m.mit.edu/apis/dining/venues/house/mccormick",
         "name": "McCormick",
         "short_name": "McCormick",
-        "icon_url": "http://dining.mit.edu/sites/default/files/mccormick.png",
+        "icon_url": "http://dining.mit.edu/sites/default/files/mccormick-new.png",
         "location": {
           "mit_room_number": "W4-122",
           "description": "W4 - McCormick Hall",
