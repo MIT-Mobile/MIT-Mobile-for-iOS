@@ -77,9 +77,13 @@
          *  >0 -> Down on iOS, up on ArcGIS
          */
         options.offset = CGPointMake(CGRectGetMinX(drawingFrame),-CGRectGetMinY(drawingFrame));
+        options.hotspot.x = legacyAnnotationView.calloutOffset.x;
+        
+        CGFloat initialHotspot = CGRectGetHeight(legacyAnnotationView.frame) / 2.0;
+        options.hotspot.y = initialHotspot-legacyAnnotationView.calloutOffset.y;
         self.markerOptions = options;
     
-        UIGraphicsBeginImageContextWithOptions(legacyAnnotationView.bounds.size, NO, 0.0);
+        UIGraphicsBeginImageContextWithOptions(legacyAnnotationView.frame.size, NO, 0.0);
         CGContextRef context = UIGraphicsGetCurrentContext();
         
         if (context) {

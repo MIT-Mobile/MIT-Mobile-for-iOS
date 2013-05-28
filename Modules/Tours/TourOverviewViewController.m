@@ -933,6 +933,7 @@ enum {
     }
     
     annotationView.image = [ToursDataManager imageForVisitStatus:status];
+    annotationView.calloutOffset = CGPointMake(0,annotationView.image.size.height / 2.0);
     
     // if a side trip is being displayed
     // we need to override the sidetrip and its sites image

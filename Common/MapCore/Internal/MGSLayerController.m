@@ -78,15 +78,8 @@
     AGSGraphicsLayer *layer = nil;
     
     if (_nativeLayer == nil) {
-        if ([self.delegate respondsToSelector:@selector(layerManager:graphicsLayerForLayer:)]) {
-            layer = [self.delegate layerManager:self
-                          graphicsLayerForLayer:self.layer];
-        }
-        
-        if (layer == nil) {
-            layer = [[AGSGraphicsLayer alloc] init];
-            layer.renderNativeResolution = YES;
-        }
+        layer = [[AGSGraphicsLayer alloc] init];
+        layer.renderNativeResolution = YES;
     }
     
     if (layer) {
@@ -171,6 +164,13 @@
                              [[self.layer.name componentsSeparatedByString:@"."] lastObject],
                              (unsigned long) [orderedAnnotations count]);
                 
+                if ([self.delegate respondsToSelector:@selector(layerControllerWillRefresh:)])
+                {
+                    dispatch_sync(dispatch_get_main_queue(), ^{
+                        [self.delegate layerControllerWillRefresh:self];
+                    });
+                }
+                
                 NSArray *annotations = [orderedAnnotations sortedArrayUsingComparator:^NSComparisonResult(id <MGSAnnotation> obj1, id <MGSAnnotation> obj2) {
                     MGSSafeAnnotation *annotation1 = [[MGSSafeAnnotation alloc] initWithAnnotation:obj1];
                     MGSSafeAnnotation *annotation2 = [[MGSSafeAnnotation alloc] initWithAnnotation:obj2];
@@ -251,160 +251,161 @@
                     block();
                 });
             }];
+            
+            
+            if ([self.delegate respondsToSelector:@selector(layerControllerDidRefresh:)])
+            {
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [self.delegate layerControllerDidRefresh:self];
+                });
+                
+            }
         }
     }];
 }
 
 - (AGSGraphic*)createGraphicForAnnotation:(id <MGSAnnotation>)annotation
 {
-    // If the delegate responds to the selector, just use the result as-is,
-    // even if it is nil.
-    // TODO: Make sure that whoever calls this method can handle a nil result!
-    if ([self.delegate respondsToSelector:@selector(layerManager:graphicForAnnotation:)]) {
-        return [self.delegate layerManager:self
-                      graphicForAnnotation:annotation];
-    } else {
-        AGSSpatialReference *reference = self.spatialReference ? self.spatialReference : [AGSSpatialReference wgs84SpatialReference];
-        MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-        AGSGraphic* annotationGraphic = nil;
-        
-        switch (annotation.annotationType) {
-            case MGSAnnotationMarker: {
-                UIImage* markerImage = safeAnnotation.markerImage;
-                MGSMarkerOptions options;
+    AGSSpatialReference *reference = self.spatialReference ? self.spatialReference : [AGSSpatialReference wgs84SpatialReference];
+    MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+    AGSGraphic* annotationGraphic = nil;
+    
+    switch (annotation.annotationType) {
+        case MGSAnnotationMarker: {
+            UIImage* markerImage = safeAnnotation.markerImage;
+            MGSMarkerOptions options;
+            
+            AGSPictureMarkerSymbol* markerSymbol = nil;
+            if (markerImage) {
+                markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:markerImage];
+                options = safeAnnotation.markerOptions;
+            } else {
+                markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"];
+                options = MGSMarkerOptionsMake(CGPointMake(0.0, 8.0), CGPointMake(2.0, 16.0));
+            }
+            
+            markerSymbol.leaderPoint = options.hotspot;
+            markerSymbol.offset = options.offset;
+            
+            annotationGraphic = [[AGSGraphic alloc] initWithGeometry:AGSPointFromCLLocationCoordinate2DInSpatialReference(safeAnnotation.coordinate,reference)
+                                                              symbol:markerSymbol
+                                                          attributes:[NSMutableDictionary dictionary]
+                                                infoTemplateDelegate:nil];
+        }
+            break;
+            
+        case MGSAnnotationPolyline: {
+            if ([annotation respondsToSelector:@selector(points)]) {
+                AGSMutablePolyline* polyline = [[AGSMutablePolyline alloc] init];
+                polyline.spatialReference = [AGSSpatialReference wgs84SpatialReference];
+                [polyline addPathToPolyline];
                 
-                AGSPictureMarkerSymbol* markerSymbol = nil;
-                if (markerImage) {
-                    markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImage:markerImage];
-                    options = safeAnnotation.markerOptions;
-                } else {
-                    markerSymbol = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"map/map_pin_complete"];
-                    options = MGSMarkerOptionsMake(CGPointMake(0.0, 8.0), CGPointMake(2.0, 16.0));
+                for (NSValue* pointValue in [annotation points]) {
+                    CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
+                    
+                    if (CLLocationCoordinate2DIsValid(point)) {
+                        AGSPoint* agsPoint = AGSPointFromCLLocationCoordinate2D(point);
+                        [polyline addPointToPath:agsPoint];
+                    } else {
+                        DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
+                    }
                 }
                 
-                markerSymbol.leaderPoint = options.hotspot;
-                markerSymbol.offset = options.offset;
+                UIColor* lineColor = nil;
+                CGFloat lineWidth = 0.0;
                 
-                annotationGraphic = [[AGSGraphic alloc] initWithGeometry:AGSPointFromCLLocationCoordinate2DInSpatialReference(safeAnnotation.coordinate,reference)
-                                                                  symbol:markerSymbol
+                if ([annotation respondsToSelector:@selector(strokeColor)]) {
+                    lineColor = [annotation strokeColor];
+                }
+                
+                if ([annotation respondsToSelector:@selector(lineWidth)]) {
+                    lineWidth = [annotation lineWidth];
+                }
+                
+                AGSSimpleLineSymbol* lineSymbol = [AGSSimpleLineSymbol simpleLineSymbolWithColor:(lineColor ? lineColor : [UIColor greenColor])
+                                                                                           width:((lineWidth >= 0.5) ? lineWidth : 2.0)];
+                
+                annotationGraphic = [[AGSGraphic alloc] initWithGeometry:[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polyline
+                                                                                                                 toSpatialReference:reference]
+                                                                  symbol:lineSymbol
                                                               attributes:[NSMutableDictionary dictionary]
                                                     infoTemplateDelegate:nil];
+            } else {
+                DDLogVerbose(@"unable to create polyline, object does not response to -[MGSAnnotation points]");
             }
-                break;
-                
-            case MGSAnnotationPolyline: {
-                if ([annotation respondsToSelector:@selector(points)]) {
-                    AGSMutablePolyline* polyline = [[AGSMutablePolyline alloc] init];
-                    polyline.spatialReference = [AGSSpatialReference wgs84SpatialReference];
-                    [polyline addPathToPolyline];
-                    
-                    for (NSValue* pointValue in [annotation points]) {
-                        CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
-                        
-                        if (CLLocationCoordinate2DIsValid(point)) {
-                            AGSPoint* agsPoint = AGSPointFromCLLocationCoordinate2D(point);
-                            [polyline addPointToPath:agsPoint];
-                        } else {
-                            DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
-                        }
-                    }
-                    
-                    UIColor* lineColor = nil;
-                    CGFloat lineWidth = 0.0;
-                    
-                    if ([annotation respondsToSelector:@selector(strokeColor)]) {
-                        lineColor = [annotation strokeColor];
-                    }
-                    
-                    if ([annotation respondsToSelector:@selector(lineWidth)]) {
-                        lineWidth = [annotation lineWidth];
-                    }
-                    
-                    AGSSimpleLineSymbol* lineSymbol = [AGSSimpleLineSymbol simpleLineSymbolWithColor:(lineColor ? lineColor : [UIColor greenColor])
-                                                                                               width:((lineWidth >= 0.5) ? lineWidth : 2.0)];
-                    
-                    annotationGraphic = [[AGSGraphic alloc] initWithGeometry:[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polyline
-                                                                                                                     toSpatialReference:reference]
-                                                                      symbol:lineSymbol
-                                                                  attributes:[NSMutableDictionary dictionary]
-                                                        infoTemplateDelegate:nil];
-                } else {
-                    DDLogVerbose(@"unable to create polyline, object does not response to -[MGSAnnotation points]");
-                }
-            }
-                break;
-                
-            case MGSAnnotationPolygon: {
-                if ([annotation respondsToSelector:@selector(points)]) {
-                    AGSMutablePolygon* polygon = [[AGSMutablePolygon alloc] init];
-                    polygon.spatialReference = [AGSSpatialReference wgs84SpatialReference];
-                    [polygon addRingToPolygon];
-                    
-                    for (NSValue* pointValue in [annotation points]) {
-                        CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
-                        
-                        if (CLLocationCoordinate2DIsValid(point)) {
-                            AGSPoint* agsPoint = AGSPointFromCLLocationCoordinate2D(point);
-                            [polygon addPointToRing:agsPoint];
-                        } else {
-                            DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
-                        }
-                    }
-                    
-                    UIColor* strokeColor = nil;
-                    UIColor* fillColor = nil;
-                    CGFloat lineWidth = 0.0;
-                    
-                    if ([annotation respondsToSelector:@selector(strokeColor)]) {
-                        UIColor* aStrokeColor = [annotation strokeColor];
-                        
-                        if (aStrokeColor == nil) {
-                            strokeColor = [UIColor colorWithWhite:0.0
-                                                            alpha:0.5];
-                        } else {
-                            strokeColor = aStrokeColor;
-                        }
-                    }
-                    
-                    if ([annotation respondsToSelector:@selector(fillColor)]) {
-                        UIColor* aFillColor = [annotation fillColor];
-                        
-                        if (aFillColor == nil) {
-                            fillColor = [UIColor colorWithWhite:0.0
-                                                          alpha:0.5];
-                        } else {
-                            fillColor = aFillColor;
-                        }
-                    }
-                    
-                    if ([annotation respondsToSelector:@selector(lineWidth)]) {
-                        lineWidth = [annotation lineWidth];
-                    }
-                    
-                    AGSSimpleFillSymbol* fillSymbol = [AGSSimpleFillSymbol simpleFillSymbolWithColor:fillColor
-                                                                                        outlineColor:strokeColor];
-                    fillSymbol.outline.width = lineWidth;
-                    
-                    annotationGraphic = [[AGSGraphic alloc] initWithGeometry:[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polygon
-                                                                                                                     toSpatialReference:reference]
-                                                                      symbol:fillSymbol
-                                                                  attributes:[NSMutableDictionary dictionary]
-                                                        infoTemplateDelegate:nil];
-                } else {
-                    DDLogVerbose(@"unable to create polygon, object does not response to -[MGSAnnotation points]");
-                }
-            }
-                break;
-                
-            case MGSAnnotationPointOfInterest:
-                // Not sure how we'll handle this one. For the time being,
-                // default to a nil graphic
-            default:
-                annotationGraphic = nil;
         }
-        
-        return annotationGraphic;
+            break;
+            
+        case MGSAnnotationPolygon: {
+            if ([annotation respondsToSelector:@selector(points)]) {
+                AGSMutablePolygon* polygon = [[AGSMutablePolygon alloc] init];
+                polygon.spatialReference = [AGSSpatialReference wgs84SpatialReference];
+                [polygon addRingToPolygon];
+                
+                for (NSValue* pointValue in [annotation points]) {
+                    CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
+                    
+                    if (CLLocationCoordinate2DIsValid(point)) {
+                        AGSPoint* agsPoint = AGSPointFromCLLocationCoordinate2D(point);
+                        [polygon addPointToRing:agsPoint];
+                    } else {
+                        DDLogVerbose(@"skipping invalid point %@", NSStringFromCLLocationCoordinate2D(point));
+                    }
+                }
+                
+                UIColor* strokeColor = nil;
+                UIColor* fillColor = nil;
+                CGFloat lineWidth = 0.0;
+                
+                if ([annotation respondsToSelector:@selector(strokeColor)]) {
+                    UIColor* aStrokeColor = [annotation strokeColor];
+                    
+                    if (aStrokeColor == nil) {
+                        strokeColor = [UIColor colorWithWhite:0.0
+                                                        alpha:0.5];
+                    } else {
+                        strokeColor = aStrokeColor;
+                    }
+                }
+                
+                if ([annotation respondsToSelector:@selector(fillColor)]) {
+                    UIColor* aFillColor = [annotation fillColor];
+                    
+                    if (aFillColor == nil) {
+                        fillColor = [UIColor colorWithWhite:0.0
+                                                      alpha:0.5];
+                    } else {
+                        fillColor = aFillColor;
+                    }
+                }
+                
+                if ([annotation respondsToSelector:@selector(lineWidth)]) {
+                    lineWidth = [annotation lineWidth];
+                }
+                
+                AGSSimpleFillSymbol* fillSymbol = [AGSSimpleFillSymbol simpleFillSymbolWithColor:fillColor
+                                                                                    outlineColor:strokeColor];
+                fillSymbol.outline.width = lineWidth;
+                
+                annotationGraphic = [[AGSGraphic alloc] initWithGeometry:[[AGSGeometryEngine defaultGeometryEngine] projectGeometry:polygon
+                                                                                                                 toSpatialReference:reference]
+                                                                  symbol:fillSymbol
+                                                              attributes:[NSMutableDictionary dictionary]
+                                                    infoTemplateDelegate:nil];
+            } else {
+                DDLogVerbose(@"unable to create polygon, object does not response to -[MGSAnnotation points]");
+            }
+        }
+            break;
+            
+        case MGSAnnotationPointOfInterest:
+            // Not sure how we'll handle this one. For the time being,
+            // default to a nil graphic
+        default:
+            annotationGraphic = nil;
     }
+    
+    return annotationGraphic;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath

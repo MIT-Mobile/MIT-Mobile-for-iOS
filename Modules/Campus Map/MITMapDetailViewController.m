@@ -478,21 +478,13 @@
 #pragma mark MITMapViewDelegate
 - (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
-	MITMapAnnotationView* annotationView = nil;
-	
 	if ([annotation isKindOfClass:[MITMapSearchResultAnnotation class]]) 
 	{
-		annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"pin"] autorelease];
-		UIImage* pin = [UIImage imageNamed:@"map/map_pin_complete.png"];
-		UIImageView* imageView = [[[UIImageView alloc] initWithImage:pin] autorelease];
-		annotationView.frame = imageView.frame;
-		annotationView.showsCustomCallout = NO;
-		[annotationView addSubview:imageView];
-		annotationView.backgroundColor = [UIColor clearColor];
-        annotationView.centerOffset = CGPointMake(0, -(pin.size.height / 2.0));
-	}
+        return [[MITPinAnnotationView alloc] initWithAnnotation:annotation
+                                                reuseIdentifier:@"pin"];
+    }
 	
-	return annotationView;
+	return nil;
 }
 
 @end

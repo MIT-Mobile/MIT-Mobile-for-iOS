@@ -13,7 +13,6 @@
 #import "MGSLayerController.h"
 #import "MGSSafeAnnotation.h"
 #import "MGSLayerAnnotation.h"
-#import "MGSBootstrapper.h"
 
 
 @implementation MGSMapView
@@ -213,12 +212,16 @@
     }
 }
 
-- (BOOL)tracksUserLocation {
-    return (self.mapView.locationDisplay.autoPanMode == AGSLocationDisplayAutoPanModeDefault);
+- (BOOL)trackUserLocation {
+    return (self.showUserLocation &&
+            (self.mapView.locationDisplay.autoPanMode == AGSLocationDisplayAutoPanModeDefault));
 }
 
-- (void)setTracksUserLocation:(BOOL)tracksUserLocation {
-    if (tracksUserLocation) {
+- (void)setTrackUserLocation:(BOOL)trackUserLocation {
+    DDLogVerbose(@"%u : %u",self.mapView.locationDisplay.autoPanMode,AGSLocationDisplayAutoPanModeDefault);
+    if (trackUserLocation) {
+        self.showUserLocation = YES;
+        self.mapView.locationDisplay.wanderExtentFactor = 0;
         self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeDefault;
     } else {
         self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
@@ -233,9 +236,12 @@
 
 - (void)setShowUserLocation:(BOOL)showUserLocation {
     if (showUserLocation) {
-        [self.mapView.locationDisplay startDataSource];
-        self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
+        if ([self.mapView.locationDisplay isDataSourceStarted] == NO) {
+            self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
+        }
+        
         self.mapView.locationDisplay.dataSource.delegate = self;
+        [self.mapView.locationDisplay startDataSource];
     } else {
         [self.mapView.locationDisplay stopDataSource];
     }
@@ -781,8 +787,10 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             self.mapView = view;
         }
         
-        MGSBootstrapper *bootstrapper = [MGSBootstrapper sharedBootstrapper];
-        [bootstrapper requestBootstrap:^(NSDictionary *content, NSError *error) {
+        MobileRequestOperation* operation = [MobileRequestOperation operationWithModule:@"map"
+                                                                                command:@"bootstrap"
+                                                                             parameters:nil];
+        [operation setCompleteBlock:^(MobileRequestOperation* blockOperation, id content, NSString* contentType, NSError* error) {
             if (error) {
                 DDLogError(@"failed to load basemap definitions: %@", error);
                 if ([self.delegate respondsToSelector:@selector(mapView:didFailWithError:)]) {
@@ -803,6 +811,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             }
         }];
         
+        [[NSOperationQueue mainQueue] addOperation:operation];
     }
     
     self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
@@ -1176,5 +1185,16 @@ didClickAtPoint:(CGPoint)screen
     UIView *customView = [self calloutViewForAnnotation:annotation];
     [customView sizeToFit];
     return customView;
+}
+
+- (void)layerControllerWillRefresh:(MGSLayerController *)layerController
+{
+    if (self.calloutAnnotation) {
+        MGSLayer *layer = [self layerContainingAnnotation:self.calloutAnnotation];
+        
+        if (layer == nil) {
+            [self dismissCallout];
+        }
+    }
 }
 @end

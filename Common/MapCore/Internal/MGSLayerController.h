@@ -9,14 +9,8 @@
 
 @protocol MGSLayerControllerDelegate <NSObject>
 @optional
-- (AGSGraphicsLayer*)layerManager:(MGSLayerController*)layerManager
-            graphicsLayerForLayer:(MGSLayer*)layer;
-
-- (AGSGraphic*)layerManager:(MGSLayerController*)layerManager
-       graphicForAnnotation:(id<MGSAnnotation>)annotation;
-
-- (void)layerManagerWillSynchronizeAnnotations:(MGSLayerController*)layerManager;
-- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager;
+- (void)layerControllerWillRefresh:(MGSLayerController*)layerController;
+- (void)layerControllerDidRefresh:(MGSLayerController*)layerController;
 @end
 
 @interface MGSLayerController : NSObject
