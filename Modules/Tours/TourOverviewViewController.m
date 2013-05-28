@@ -26,8 +26,15 @@ typedef enum {
 }
 TourOverviewTags;
 
-@interface TourOverviewViewController (Private)
+@interface TourOverviewViewController ()
+@property (nonatomic,strong) IBOutlet UIToolbar *toolBar;
+@property (nonatomic,strong) IBOutlet UISegmentedControl *mapListToggle;
+@property (nonatomic,strong) IBOutlet UIBarButtonItem *locateUserButton;
 
+@property (nonatomic) UIInterfaceOrientation currentOrientation;
+@property (nonatomic) BOOL displayingMap;
+@property (nonatomic) BOOL didSelectAnnotation;
+@property (nonatomic) NSInteger selectedSiteIndex;
 
 - (NSString *)distanceTextForLocation:(id<TourGeoLocation>)location;
 - (NSString *)textForDistance:(CLLocationDistance)meters;
@@ -56,11 +63,6 @@ enum {
 };
 
 @implementation TourOverviewViewController
-
-
-@synthesize mapView = _mapView, tableView = _tableView, callingViewController, components = _components, userLocation = _userLocation, selectedAnnotation, sideTrip;
-@synthesize sideTripsItem;
-@synthesize hideSideTrips;
 
  // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -98,7 +100,7 @@ enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+    if ([self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
         self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
         self.navigationItem.title = @"Tour Overview";
         
@@ -114,7 +116,7 @@ enum {
     
     [self updateTourComponents];
     
-    locateUserButton.image = [UIImage imageNamed:@"map/map_button_location.png"];
+    self.locateUserButton.image = [UIImage imageNamed:@"map/map_button_location.png"];
     
     [self showMap:YES];
 }
@@ -152,13 +154,14 @@ enum {
 - (void)viewDidUnload {
     [super viewDidUnload];
     
+    self.mapView.delegate = nil;
     self.mapView = nil;
 }
 
 
 - (void)dealloc {
-    [sideTripsItem release];
-    [self.mapView removeTileOverlay];
+    self.sideTripsItem = nil;
+    
     self.mapView.delegate = nil;
     self.mapView = nil;
     self.components = nil;
@@ -183,7 +186,7 @@ enum {
 }
 
 - (IBAction)mapListToggled:(id)sender {
-    switch (mapListToggle.selectedSegmentIndex) {
+    switch (self.mapListToggle.selectedSegmentIndex) {
         case MapListSegmentMap:
             [self showMap:YES];
             break;
@@ -260,9 +263,9 @@ enum {
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex != [alertView cancelButtonIndex]) {
-        SiteDetailViewController *siteDetailVC = (SiteDetailViewController *)callingViewController;
+        SiteDetailViewController *siteDetailVC = (SiteDetailViewController *)self.callingViewController;
         siteDetailVC.sideTrip = nil;
-        [siteDetailVC jumpToSite:selectedSiteIndex];
+        [siteDetailVC jumpToSite:self.selectedSiteIndex];
         
         [self selectionDidComplete];
     }
@@ -319,9 +322,9 @@ enum {
             [self.mapView addAnnotation:annotation];
             
             if (!self.sideTrip) { // dont select a stop (if sidetrip is specified) {
-                if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
-                    if (aSite == ((SiteDetailViewController *)callingViewController).siteOrRoute
-                        || aSite == ((SiteDetailViewController *)callingViewController).siteOrRoute.nextComponent)
+                if ([self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+                    if (aSite == ((SiteDetailViewController *)self.callingViewController).siteOrRoute
+                        || aSite == ((SiteDetailViewController *)self.callingViewController).siteOrRoute.nextComponent)
                     {
                         [self.mapView selectAnnotation:annotation animated:YES withRecenter:YES];
                         self.selectedAnnotation = annotation; // attempt select again after annotation views are populated
@@ -335,11 +338,11 @@ enum {
 - (void)showMap:(BOOL)showMap {
     
     CGRect frame = CGRectMake(0, 0, self.view.frame.size.width,
-                              self.view.frame.size.height - toolBar.frame.size.height);
+                              self.view.frame.size.height - self.toolBar.frame.size.height);
     
-    NSMutableArray *toolbarItems = [toolBar.items mutableCopy];
+    NSMutableArray *toolbarItems = [self.toolBar.items mutableCopy];
     
-    mapListToggle.selectedSegmentIndex = showMap ? MapListSegmentMap : MapListSegmentList;
+    self.mapListToggle.selectedSegmentIndex = showMap ? MapListSegmentMap : MapListSegmentList;
     
     if (showMap) {
         //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -354,18 +357,19 @@ enum {
             
             self.mapView.showsUserLocation = YES;
         }
+        
         [self.view addSubview:self.mapView];
         
-        if (![toolbarItems containsObject:locateUserButton]) {
-            [toolbarItems addObject:locateUserButton];
+        if (![toolbarItems containsObject:self.locateUserButton]) {
+            [toolbarItems addObject:self.locateUserButton];
         }
         if ([toolbarItems containsObject:self.sideTripsItem]) {
             [toolbarItems removeObject:self.sideTripsItem];
         }
     } else {
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
-        
         [self.mapView removeFromSuperview];
+        self.mapView = nil;
+        
         if (!self.tableView) {
             self.tableView = [[[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain] autorelease];
             self.tableView.rowHeight = TOUR_SITE_ROW_HEIGHT;
@@ -375,11 +379,11 @@ enum {
         }
         [self.view addSubview:self.tableView];
         
-        if ([toolbarItems containsObject:locateUserButton]) {
-            [toolbarItems removeObject:locateUserButton];
+        if ([toolbarItems containsObject:self.locateUserButton]) {
+            [toolbarItems removeObject:self.locateUserButton];
         }
         
-        if (![callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+        if (![self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
             // Add item hiding/showing side trips.
             if (!self.sideTripsItem) {
                 self.sideTripsItem = 
@@ -394,13 +398,13 @@ enum {
         }
     }
     
-    displayingMap = showMap;
+    self.displayingMap = showMap;
     
-    [toolBar setItems:toolbarItems animated:NO];
+    [self.toolBar setItems:toolbarItems animated:NO];
     [toolbarItems release];
 
-    if (displayingMap) {
-        if (![callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+    if (self.displayingMap) {
+        if (![self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
             [self setupNotSureScrim];
         } else {
             [self setupMapLegend];
@@ -428,8 +432,10 @@ enum {
                            [ToursDataManager labelForVisitStatus:TourSiteVisited],
                            [ToursDataManager labelForVisitStatus:TourSiteNotVisited], nil];
         
-        legend = [[[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - toolBar.frame.size.height - legendHeight,
-                                                           self.view.frame.size.width, legendHeight)] autorelease];
+        legend = [[[UIView alloc] initWithFrame:CGRectMake(0,
+                                                           self.view.frame.size.height - self.toolBar.frame.size.height - legendHeight,
+                                                           self.view.frame.size.width,
+                                                           legendHeight)] autorelease];
         legend.backgroundColor = [UIColor clearColor];
         legend.layer.cornerRadius = 5.0;
         legend.tag = kOverviewSiteLegendTag;
@@ -528,9 +534,9 @@ enum {
 }
 
 - (void)selectTourComponent:(TourComponent *)component {
-    if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
-        SiteDetailViewController *siteDetailVC = (SiteDetailViewController *)callingViewController;
-        selectedSiteIndex = [siteDetailVC.sites indexOfObject:component];
+    if ([self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+        SiteDetailViewController *siteDetailVC = (SiteDetailViewController *)self.callingViewController;
+        self.selectedSiteIndex = [siteDetailVC.sites indexOfObject:component];
         if ([component isKindOfClass:[CampusTourSideTrip class]]) {
             [self dismiss:nil];
         }
@@ -544,7 +550,7 @@ enum {
             // user selected current stop, so just show then what they were looking at before
             if(siteDetailVC.sideTrip) {
                 siteDetailVC.sideTrip = nil;
-                [siteDetailVC jumpToSite:selectedSiteIndex];
+                [siteDetailVC jumpToSite:self.selectedSiteIndex];
             }
             [self dismiss:nil];
         }
@@ -557,9 +563,9 @@ enum {
         }
         else {
             // user is skipping ahead or going back
-            if (selectedSiteIndex == NSNotFound) {
+            if (self.selectedSiteIndex == NSNotFound) {
                 for (TourSiteOrRoute *aSite in siteDetailVC.sites) {
-                    selectedSiteIndex++;
+                    self.selectedSiteIndex++;
                     if ([aSite.componentID isEqualToString:component.componentID]) {
                         break;
                     }
@@ -573,7 +579,7 @@ enum {
                 TourSiteOrRoute *currentSite = siteDetailVC.siteOrRoute.nextComponent;
                 currentSiteIndex = [siteDetailVC.sites indexOfObject:currentSite];
             }
-            NSInteger difference = selectedSiteIndex - currentSiteIndex;
+            NSInteger difference = self.selectedSiteIndex - currentSiteIndex;
             NSString *message;
             if (difference < 0) {
                 message = [NSString stringWithFormat:@"Are you sure you want to go back %d stops?", -difference];
@@ -653,8 +659,8 @@ enum {
         }
     }
     
-    if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
-        SiteDetailViewController *detailVC = (SiteDetailViewController *)callingViewController;
+    if ([self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+        SiteDetailViewController *detailVC = (SiteDetailViewController *)self.callingViewController;
         TourSiteOrRoute *component = detailVC.siteOrRoute;
         if (component == site || component.nextComponent == site) {
             cell.visitStatus = TourSiteVisiting;
@@ -729,8 +735,8 @@ enum {
     
     NSArray *allSites = nil;
     
-    if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
-        allSites = ((SiteDetailViewController *)callingViewController).sites;
+    if ([self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+        allSites = ((SiteDetailViewController *)self.callingViewController).sites;
     } else {
         // We want to show side trips only if we were NOT pushed to the nav stack 
         // by a SiteDetailViewController.
@@ -782,8 +788,8 @@ enum {
 
 - (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)userLocation {    
     TourSiteOrRoute *currentSite = nil;
-    if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
-        currentSite = ((SiteDetailViewController *)callingViewController).siteOrRoute;
+    if ([self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+        currentSite = ((SiteDetailViewController *)self.callingViewController).siteOrRoute;
         if ([currentSite.type isEqualToString:@"route"]) {
             currentSite = currentSite.nextComponent;
         }
@@ -796,7 +802,7 @@ enum {
             locationIsAcceptable = NO;
             if (![userLocation isNearCampus]) {
                 mapView.showsUserLocation = NO; // turn off location updating
-                locateUserButton.enabled = NO;
+                self.locateUserButton.enabled = NO;
             }
         }
     }
@@ -804,7 +810,7 @@ enum {
     CLLocation *centerLocation = nil;
     
     if (locationIsAcceptable) {
-        locateUserButton.enabled = YES;
+        self.locateUserButton.enabled = YES;
         CLLocationDistance meters = [self.userLocation distanceFromLocation:userLocation];
         
         if (!self.userLocation || meters > 30) {
@@ -871,12 +877,12 @@ enum {
 }
 
 - (void)locateUserFailed:(MITMapView *)mapView {
-    locateUserButton.enabled = NO;
+    self.locateUserButton.enabled = NO;
     
-    if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+    if ([self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
         TourSiteOrRoute *currentSite = nil;
-        if ([callingViewController isKindOfClass:[SiteDetailViewController class]]) {
-            currentSite = ((SiteDetailViewController *)callingViewController).siteOrRoute;
+        if ([self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
+            currentSite = ((SiteDetailViewController *)self.callingViewController).siteOrRoute;
             if ([currentSite.type isEqualToString:@"route"]) {
                 currentSite = currentSite.nextComponent;
             }
@@ -909,12 +915,12 @@ enum {
     MITMapAnnotationView *annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"toursite"] autorelease];
 
     TourSiteVisitStatus status;
-    if ([callingViewController isKindOfClass:[SiteDetailViewController class]] &&
+    if ([self.callingViewController isKindOfClass:[SiteDetailViewController class]] &&
         [annotation isKindOfClass:[TourSiteMapAnnotation class]]) {
         
         TourSiteMapAnnotation *tourAnnotation = (TourSiteMapAnnotation *)annotation;
         TourSiteOrRoute *site = tourAnnotation.site;  
-        SiteDetailViewController *detailVC = (SiteDetailViewController *)callingViewController;
+        SiteDetailViewController *detailVC = (SiteDetailViewController *)self.callingViewController;
         
         TourSiteOrRoute *component = detailVC.siteOrRoute;
         if (component == site || component.nextComponent == site) { // current site
@@ -961,7 +967,7 @@ enum {
 }
 
 - (void)mapView:(MITMapView *)mapView didAddAnnotationViews:(NSArray *)views {
-    if (selectedAnnotation) {
+    if (self.selectedAnnotation) {
         self.selectedAnnotation = nil;
     }
 }

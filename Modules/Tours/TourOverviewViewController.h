@@ -11,32 +11,7 @@
 
 
 @interface TourOverviewViewController : UIViewController <UITableViewDataSource, 
-UITableViewDelegate, MITMapViewDelegate, UIAlertViewDelegate> {
-    
-    UITableView *_tableView;
-    MITMapView *_mapView;
-    BOOL displayingMap;
-    NSMutableArray *_components; // Will contain TourComponent objects.
-    CLLocation *_userLocation;
-    BOOL _didSelectAnnotation;
-    
-    IBOutlet UIToolbar *toolBar;
-    IBOutlet UISegmentedControl *mapListToggle;
-
-    IBOutlet UIBarButtonItem *locateUserButton;
-    
-    NSInteger selectedSiteIndex;
-    TourMapAnnotation *selectedAnnotation;
-
-    UIInterfaceOrientation currentOrientation;
-    
-    // currently we can be a modal view invoked from StartingLocationVC or SiteDetailVC
-    UIViewController *callingViewController;
-    
-    // if we are invokded from a sideTrip
-    // this needs to be set
-    CampusTourSideTrip *sideTrip;
-}
+UITableViewDelegate, MITMapViewDelegate, UIAlertViewDelegate>
 
 - (void)showMap:(BOOL)showMap;
 
@@ -47,14 +22,14 @@ UITableViewDelegate, MITMapViewDelegate, UIAlertViewDelegate> {
 - (void)dismiss:(id)sender;
 - (void)selectAnnotationForSite:(TourSiteOrRoute *)currentSite;
 
-@property (nonatomic, retain) CLLocation *userLocation;
-@property (nonatomic, retain) NSMutableArray *components;
-@property (nonatomic, retain) UITableView *tableView;
-@property (nonatomic, retain) MITMapView *mapView;
+@property (nonatomic, strong) CLLocation *userLocation;
+@property (nonatomic, strong) NSMutableArray *components;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) MITMapView *mapView;
 @property (nonatomic, assign) UIViewController *callingViewController;
-@property (nonatomic, retain) CampusTourSideTrip *sideTrip;
-@property (nonatomic, retain) TourMapAnnotation *selectedAnnotation;
-@property (nonatomic, retain) UIBarButtonItem *sideTripsItem;
+@property (nonatomic, strong) CampusTourSideTrip *sideTrip;
+@property (nonatomic, strong) TourMapAnnotation *selectedAnnotation;
+@property (nonatomic, strong) UIBarButtonItem *sideTripsItem;
 @property (assign) BOOL hideSideTrips;
 
 @end
