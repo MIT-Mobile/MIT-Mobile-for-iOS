@@ -15,29 +15,11 @@ typedef enum {
 
 @interface CalendarDetailViewController : ShareDetailViewController <
 UITableViewDelegate, UITableViewDataSource, ShareItemDelegate, 
-UIWebViewDelegate, EKEventEditViewDelegate> {
-	
-    BOOL isLoading;
-    
-	MITCalendarEvent *event;
-	CalendarDetailRowType* rowTypes;
-	NSInteger numRows;
-	
-	UIButton *shareButton;
-	
-    CGFloat descriptionHeight;
-	NSString *descriptionString;
-	
-    CGFloat categoriesHeight;
-	NSString *categoriesString;
+UIWebViewDelegate, EKEventEditViewDelegate>
 
-	// list of events to scroll through for previous/next buttons
-	NSArray *events;
-}
-
-@property (nonatomic, retain) MITCalendarEvent *event;
-@property (nonatomic, retain) UITableView *tableView;
-@property (nonatomic, retain) NSArray *events;
+@property (nonatomic, strong) MITCalendarEvent *event;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSArray *events;
 
 - (void)reloadEvent;
 - (void)setupHeader;

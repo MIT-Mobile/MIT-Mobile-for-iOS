@@ -3,6 +3,44 @@
 #import "UIKit+MITAdditions.h"
 #import "DiningDietaryFlag.h"
 
+
+@interface ComparisonBackgroundView : UIView
+
+@end
+
+@implementation ComparisonBackgroundView
+
+- (void) drawRect:(CGRect)rect
+{
+    [super drawRect:rect];
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGContextClearRect(ctx, CGRectInset(rect, -20, -20));
+    
+    CGContextAddRect(ctx, rect);
+    CGContextSetFillColorWithColor(ctx, [UIColor whiteColor].CGColor);
+    CGContextFillPath(ctx);
+    
+    CGContextSetStrokeColorWithColor(ctx, [UIColor blackColor].CGColor);
+    CGFloat borderWidth = 1.0;
+    CGContextSetLineWidth(ctx, borderWidth);
+    CGContextMoveToPoint(ctx, 0, rect.size.height - borderWidth);
+    CGContextAddLineToPoint(ctx, rect.size.width, rect.size.height - borderWidth);
+    CGContextStrokePath(ctx);
+}
+
+@end
+
+
+
+
+
+
+
+
+
+#pragma mark -
+#pragma mark DiningHallMenuComparisonCell
+
 @interface DiningHallMenuComparisonCell ()
 
 @property (nonatomic, strong) UILabel   * primaryLabel;
@@ -21,8 +59,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-
-        self.backgroundColor = [UIColor whiteColor];
         
         NSInteger labelWidth = CGRectGetWidth(frame) - 27;
         self.primaryLabel = [[UILabel alloc] initWithFrame:CGRectMake(STANDARD_PADDING, STANDARD_PADDING, labelWidth, 10)]; // height is one line of font
@@ -37,8 +73,8 @@
         
         self.typeContainer = [[UIView alloc] initWithFrame:CGRectMake( CGRectGetWidth(frame) - 22, STANDARD_PADDING, 12, 12)]; // width is from spec, height allows for single dietray type item
         
-        self.backgroundView.layer.borderColor = [UIColor darkTextColor].CGColor;
-        self.backgroundView.layer.borderWidth = 0.25;
+        ComparisonBackgroundView *backView = [[ComparisonBackgroundView alloc] initWithFrame:frame];
+        self.backgroundView = backView;
         
         [self.contentView addSubview:self.primaryLabel];
         [self.contentView addSubview:self.secondaryLabel];
@@ -90,7 +126,7 @@
     [self layoutDietaryTypes];
     
     // reclaim the space if there are no dietary types
-    CGFloat maxWidth = ([self.dietaryTypes count]) ? CGRectGetMinX(self.typeContainer.frame) - 5 : CGRectGetWidth(self.frame);
+    CGFloat maxWidth = ([self.dietaryTypes count]) ? CGRectGetMinX(self.typeContainer.frame) + 5 : CGRectGetWidth(self.frame);
     
     CGSize constrainingSize = CGSizeMake(maxWidth - (2 * STANDARD_PADDING), CGFLOAT_MAX);
     self.primaryLabel.frame = [self frameForLabel:self.primaryLabel constrainedToSize:constrainingSize];
@@ -142,14 +178,5 @@
     
     return height + (2 * STANDARD_PADDING);
 }
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
 
 @end

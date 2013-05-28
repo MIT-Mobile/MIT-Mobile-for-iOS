@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "DiningHallMenuComparisonCell.h"
+#import "DiningHallMenuComparisonNoMealsCell.h"
 
 @class DiningHallMenuCompareView;
 
@@ -12,7 +13,7 @@
 - (NSString *) compareView:(DiningHallMenuCompareView *)compareView titleForSection:(NSInteger)section;
 - (NSString *) compareView:(DiningHallMenuCompareView *)compareView subtitleForSection:(NSInteger)section;
 - (NSInteger) compareView:(DiningHallMenuCompareView *)compareView numberOfItemsInSection:(NSInteger) section;
-- (DiningHallMenuComparisonCell *) compareView:(DiningHallMenuCompareView *)compareView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
+- (PSTCollectionViewCell *) compareView:(DiningHallMenuCompareView *)compareView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (CGFloat) compareView:(DiningHallMenuCompareView *)compareView heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 
 @end

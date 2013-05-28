@@ -27,6 +27,7 @@
 @dynamic region;
 @dynamic scrollEnabled;
 @dynamic showsUserLocation;
+@dynamic stayCenteredOnUserLocation;
 
 - (id)init {
     return [self initWithFrame:CGRectZero];

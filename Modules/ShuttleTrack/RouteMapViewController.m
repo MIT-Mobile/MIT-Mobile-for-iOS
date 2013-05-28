@@ -330,13 +330,15 @@
                 annotationView.image = [UIImage imageNamed:@"shuttle/map_pin_shuttle_stop_complete.png"];
             }
             
-            annotationView.centerOffset = CGPointMake(0, -(annotationView.image.size.height / 2.0));
+            annotationView.centerOffset = CGPointMake(0,-(annotationView.image.size.height / 2.0));
         } else {
             if (stopAnnotation.shuttleStop.upcoming) {
                 annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"];
             } else {
                 annotationView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot.png"];
             }
+            
+            annotationView.calloutOffset = CGPointMake(0,annotationView.image.size.height / 2.0);
         }
         
 		annotationView.canShowCallout = NO;

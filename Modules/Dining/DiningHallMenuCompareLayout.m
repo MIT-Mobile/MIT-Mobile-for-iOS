@@ -1,8 +1,25 @@
 #import "DiningHallMenuCompareLayout.h"
 #import "PSTCollectionView.h"
 
+@interface SectionDividerView : PSTCollectionReusableView
+@end
+
+@implementation SectionDividerView
+
+- (id) initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.backgroundColor = [UIColor blackColor];
+    }
+    return self;
+}
+@end
+
+
 NSString * const MITDiningMenuComparisonCellKind = @"DiningMenuCell";
 NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionHeader";
+NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSectionDivider";
 
 @interface DiningHallMenuCompareLayout ()
 
@@ -21,11 +38,14 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
 - (void) setup
 {
     // layout some default values
-    self.itemInsets = UIEdgeInsetsMake(0, 1, 0, 1);
+    self.itemInsets = UIEdgeInsetsMake(0, 0, 0, 0);
     self.itemSize = CGSizeMake(60, 40);
     self.interItemSpacingY = 5;
     self.numberOfColumns = 5;
     self.heightOfSectionHeader = 48;
+    
+    [self registerClass:[SectionDividerView class] forDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind];
+    
 }
 
 - (id) init
@@ -57,6 +77,7 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
     NSMutableDictionary *newLayoutInfo = [NSMutableDictionary dictionary];
     NSMutableDictionary *cellLayoutInfo = [NSMutableDictionary dictionary];
     NSMutableDictionary *headerLayoutInfo = [NSMutableDictionary dictionary];
+    NSMutableDictionary *dividerLayoutInfo = [NSMutableDictionary dictionary];
     
     NSInteger sectionCount = [self.collectionView numberOfSections];
     NSIndexPath *indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
@@ -67,20 +88,33 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
         for (NSInteger item = 0; item < itemCount; item++) {
             indexPath = [NSIndexPath indexPathForRow:item inSection:section];
             
+            // Menu Item Cells
             PSTCollectionViewLayoutAttributes *itemAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
             itemAttributes.frame = [self frameForMenuItemAtIndexPath:indexPath inLayoutSet:newLayoutInfo];
-            
             cellLayoutInfo[indexPath] = itemAttributes;
+            newLayoutInfo[MITDiningMenuComparisonCellKind] = cellLayoutInfo;
             
             if (indexPath.row == 0) {
+                // only need to do these once per section
+                // Section Header
                 PSTCollectionViewLayoutAttributes *headerAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITDiningMenuComparisonSectionHeaderKind withIndexPath:indexPath];
                 headerAttributes.frame = [self frameForHeaderAtIndexPath:indexPath];
-                
                 headerLayoutInfo[indexPath] = headerAttributes;
                 newLayoutInfo[MITDiningMenuComparisonSectionHeaderKind] = headerLayoutInfo;
+                
+                // Section Dividers
+                PSTCollectionViewLayoutAttributes *dividerAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind withIndexPath:indexPath];
+                dividerAttributes.frame = [self frameForDividerAtIndexPath:indexPath];
+                dividerLayoutInfo[indexPath] = dividerAttributes;
+                if (indexPath.section == sectionCount - 1) {
+                    // need to add section divider at right edge of collectionview
+                    indexPath = [NSIndexPath indexPathForRow:item inSection:section + 1];
+                    PSTCollectionViewLayoutAttributes *dividerAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind withIndexPath:indexPath];
+                    dividerAttributes.frame = [self frameForDividerAtIndexPath:indexPath];
+                    dividerLayoutInfo[indexPath] = dividerAttributes;
+                }
+                newLayoutInfo[MITDiningMenuComparisonSectionDividerKind] = dividerLayoutInfo;
             }
-            
-            newLayoutInfo[MITDiningMenuComparisonCellKind] = cellLayoutInfo;
         }
     }
     
@@ -115,6 +149,14 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
     return frame;
 }
 
+- (CGRect) frameForDividerAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat dividerWidth = 1;
+    CGFloat x = (indexPath.section * self.columnWidth);
+    CGPoint contentOffset = self.collectionView.contentOffset;
+    return CGRectMake(x, MAX(contentOffset.y, 0), dividerWidth, CGRectGetHeight(self.collectionView.bounds));
+}
+
 - (NSArray *) layoutAttributesForElementsInRect:(CGRect)rect
 {
     NSMutableArray *allAttributes = [NSMutableArray arrayWithCapacity:self.layoutInfo.count];
@@ -125,6 +167,9 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
             if (CGRectIntersectsRect(rect, attributes.frame)) {
                 if ([attributes.representedElementKind isEqualToString:MITDiningMenuComparisonSectionHeaderKind]) {
                     attributes.frame = [self frameForHeaderAtIndexPath:indexPath];
+                    attributes.zIndex = 1000;
+                } else if ([attributes.representedElementKind isEqualToString:MITDiningMenuComparisonSectionDividerKind]) {
+                    attributes.frame = [self frameForDividerAtIndexPath:indexPath];
                     attributes.zIndex = 1024;
                 }
                 [allAttributes addObject:attributes];
@@ -145,6 +190,11 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
     return self.layoutInfo[MITDiningMenuComparisonSectionHeaderKind][indexPath];
 }
 
+- (PSTCollectionViewLayoutAttributes *) layoutAttributesForDecorationViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    return self.layoutInfo[MITDiningMenuComparisonSectionDividerKind][indexPath];
+}
+
 - (CGSize) collectionViewContentSize
 {
     __block CGFloat height = 0;
@@ -153,10 +203,16 @@ NSString * const MITDiningMenuComparisonSectionHeaderKind = @"DiningMenuSectionH
     // get max Y for the tallest column. return collectionView width and calculated height
     [self.layoutInfo enumerateKeysAndObjectsUsingBlock:^(NSString *elementsIdentifier, NSDictionary *elementsInfo, BOOL *stop) {
         [elementsInfo enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *indexPath, PSTCollectionViewLayoutAttributes *attributes, BOOL *innerstop) {
-            CGFloat tempHeight = CGRectGetMaxY(attributes.frame);
-            CGFloat tempWidth = CGRectGetMaxX(attributes.frame);
-            height = (tempHeight > height) ? tempHeight : height;   // if tempHeight is greater update height
-            width = (tempWidth > width) ? tempWidth : width;        // if tempWidth is greater update width
+            if (![attributes.representedElementKind isEqualToString:MITDiningMenuComparisonSectionDividerKind]) {                 
+                // don't take the SectionDividers into account, except for width of final divider
+                PSTCollectionViewLayoutAttributes *divattr = [self layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind atIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+                CGFloat dividerWidth = divattr.frame.size.width;
+                
+                CGFloat tempHeight = CGRectGetMaxY(attributes.frame);
+                CGFloat tempWidth = CGRectGetMaxX(attributes.frame) + dividerWidth;
+                height = (tempHeight > height) ? tempHeight : height;   // if tempHeight is greater update height
+                width = (tempWidth > width) ? tempWidth : width;        // if tempWidth is greater update width
+            }
         }];
     }];
     

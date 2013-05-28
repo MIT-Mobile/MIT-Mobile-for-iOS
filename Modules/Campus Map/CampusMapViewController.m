@@ -30,7 +30,11 @@
 @property (nonatomic, strong) MITMapView* mapView;
 @property (nonatomic, strong) MITModuleURL* url;
 
-@property (nonatomic, strong) CampusMapToolbar* toolBar;
+@property (nonatomic, strong) UIView *searchBarView;
+@property (nonatomic, strong) UIToolbar* toolbar;
+@property (nonatomic, strong) UIToolbar* geoToolbar;
+@property (nonatomic, strong) UIToolbar* cancelToolbar;
+
 @property (nonatomic, strong) UITableView* categoryTableView;
 @property (nonatomic, strong) UIBarButtonItem* cancelSearchButton;
 @property (nonatomic, strong) UIBarButtonItem* shuttleButton;
@@ -46,7 +50,7 @@
 @property (nonatomic, assign) SEL searchFilter;
 @property (nonatomic, assign) BOOL displayShuttles;
 
-@property (nonatomic) BOOL wasShowingUserLocation;
+@property (nonatomic) BOOL trackingUserLocation;
 
 - (void)updateMapListButton;
 - (void)addAnnotationsForShuttleStops:(NSArray*)shuttleStops;
@@ -65,47 +69,80 @@
 	self.viewTypeButton = [[UIBarButtonItem alloc] initWithTitle:@"Browse" style:UIBarButtonItemStylePlain target:self action:@selector(viewTypeChanged:)];
 	self.navigationItem.rightBarButtonItem = self.viewTypeButton;
 	
-	// add a search bar to our view
-	_searchBar = [[ UISearchBar alloc] initWithFrame:CGRectMake(0, 0, kSearchBarWidth, NAVIGATION_BAR_HEIGHT)];
-	[_searchBar setDelegate:self];
-	_searchBar.placeholder = NSLocalizedString(@"Search MIT Campus", nil);
-	_searchBar.translucent = NO;
-    _searchBar.backgroundImage = [UIImage imageNamed:@"global/toolbar-background.png"];
-	_searchBar.showsBookmarkButton = NO; // we'll be adding a custom bookmark button
-	[self.view addSubview:_searchBar];
-		
-	// create the map view controller and its view to our view. 
-	self.mapView = [[MITMapView alloc] initWithFrame: CGRectMake(0, self.searchBar.frame.size.height, 320, self.view.frame.size.height - self.searchBar.frame.size.height)];
+    
+    UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), NAVIGATION_BAR_HEIGHT)];
+    searchBarView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"global/toolbar-background.png"]];	
+    {
+        UIToolbar *geoToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(kSearchBarWidth, 0, 320 - kSearchBarWidth, NAVIGATION_BAR_HEIGHT)];
+        geoToolbar.translucent = NO;
+        geoToolbar.tintColor = SEARCH_BAR_TINT_COLOR;
+        [geoToolbar setBackgroundImage:[UIImage imageNamed:@"global/toolbar-background.png"]
+                    forToolbarPosition:UIToolbarPositionAny
+                            barMetrics:UIBarMetricsDefault];
+        
+        UIImage *buttonImage = [UIImage imageNamed:@"map/map_button_icon_locate"];
+        UIBarButtonItem *geoButton = [[UIBarButtonItem alloc] initWithImage:buttonImage
+                                                                      style:UIBarButtonItemStyleBordered
+                                                                     target:self
+                                                                     action:@selector(geoLocationTouched:)];
+        geoButton.width = buttonImage.size.width + 10;
+        [geoToolbar setItems:@[geoButton]];
+        [searchBarView addSubview:geoToolbar];
+        self.geoToolbar = geoToolbar;
+    }
+    
+    {
+        UIToolbar *cancelToolbar = [[UIToolbar alloc] init];
+        cancelToolbar.frame = CGRectMake(kSearchBarWidth - kSearchBarCancelWidthDiff,
+                                         0,
+                                         320 - kSearchBarWidth + kSearchBarCancelWidthDiff,
+                                         NAVIGATION_BAR_HEIGHT);
+        cancelToolbar.translucent = NO;
+        cancelToolbar.tintColor = SEARCH_BAR_TINT_COLOR;
+        
+        [cancelToolbar setBackgroundImage:[UIImage imageNamed:@"global/toolbar-background.png"]
+                       forToolbarPosition:UIToolbarPositionAny
+                               barMetrics:UIBarMetricsDefault];
+        
+        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel"
+                                                                         style:UIBarButtonItemStyleBordered
+                                                                        target:self
+                                                                        action:@selector(cancelSearch)];
+        [cancelToolbar setItems:@[cancelButton]];
+        self.cancelToolbar = cancelToolbar;
+    }
+    
+    
+    {
+        // add a search bar to our view
+        _searchBar = [[ UISearchBar alloc] initWithFrame:CGRectMake(0, 0, kSearchBarWidth, NAVIGATION_BAR_HEIGHT)];
+        [_searchBar setDelegate:self];
+        _searchBar.placeholder = NSLocalizedString(@"Search MIT Campus", nil);
+        _searchBar.translucent = NO;
+        _searchBar.backgroundImage = [UIImage imageNamed:@"global/toolbar-background.png"];
+        _searchBar.showsBookmarkButton = YES; // we'll be adding a custom bookmark button
+        _searchBar.showsCancelButton = NO;
+        [_searchBar setImage:[UIImage imageNamed:@"map/searchfield_star.png"]
+            forSearchBarIcon:UISearchBarIconBookmark
+                       state:UIControlStateNormal];
+        [searchBarView addSubview:_searchBar];
+    }
+    
+    self.toolbar = self.geoToolbar;
+    
+    self.searchBarView = searchBarView;
+    [self.view addSubview:searchBarView];
+	
+    
+	// create the map view controller and its view to our view.
+	self.mapView = [[MITMapView alloc] initWithFrame: CGRectMake(0, self.searchBar.frame.size.height, 320, CGRectGetHeight(self.view.bounds) - self.searchBar.frame.size.height)];
 	self.mapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	
 	[self.mapView setRegion:MKCoordinateRegionMake(DEFAULT_MAP_CENTER, DEFAULT_MAP_SPAN)];
 	[self.view addSubview:self.mapView];
 	self.mapView.delegate = self;
     [self.mapView fixateOnCampus];
-	
-	// add the rest of the toolbar to which we can add buttons
-	self.toolBar = [[CampusMapToolbar alloc] initWithFrame:CGRectMake(kSearchBarWidth, 0, 320 - kSearchBarWidth, NAVIGATION_BAR_HEIGHT)];
-	self.toolBar.translucent = NO;
-	self.toolBar.tintColor = SEARCH_BAR_TINT_COLOR;
-	[self.view addSubview:self.toolBar];
-	
-	// create toolbar button item for geolocation  
-	UIImage* image = [UIImage imageNamed:@"map/map_button_icon_locate.png"];
-	self.geoButton = [[UIBarButtonItem alloc] initWithImage:image
-												  style:UIBarButtonItemStyleBordered
-												 target:self
-												 action:@selector(geoLocationTouched:)];
-	self.geoButton.width = image.size.width + 10;
-
-	[self.toolBar setItems:[NSArray arrayWithObjects:self.geoButton, nil]];
-	
-	// add our own bookmark button item since we are not using the default
-	// bookmark button of the UISearchBar
-	self.bookmarkButton = [[UIButton alloc] initWithFrame:CGRectMake(231, 8, 32, 28)];
-	[self.bookmarkButton setImage:[UIImage imageNamed:@"map/searchfield_star.png"] forState:UIControlStateNormal];
-	[self.view addSubview:self.bookmarkButton];
-	[self.bookmarkButton addTarget:self action:@selector(bookmarkButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	
+    
 	self.url = [[MITModuleURL alloc] initWithTag:CampusMapTag];
 	
 }
@@ -138,15 +175,17 @@
 
 -(void) viewWillAppear:(BOOL)animated {
     [self.mapView addTileOverlay];
-    self.mapView.showsUserLocation = self.wasShowingUserLocation;
+    self.mapView.showsUserLocation = YES;
+    
+    self.mapView.stayCenteredOnUserLocation = self.trackingUserLocation;
     
     [self updateMapListButton];
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
     [self.mapView removeTileOverlay];
-    self.wasShowingUserLocation = self.mapView.showsUserLocation;
     self.mapView.showsUserLocation = NO;
+    self.trackingUserLocation = self.mapView.stayCenteredOnUserLocation;
 }
 
 -(void) viewDidAppear:(BOOL)animated
@@ -155,7 +194,7 @@
 	
 	[super viewDidAppear:animated];
 	
-	// if there is a bookmarks view controller hanging around, dismiss and release it. 
+	// if there is a bookmarks view controller hanging around, dismiss and release it.
 	if(nil != self.selectionVC)
 	{
 		[self.selectionVC dismissModalViewControllerAnimated:NO];
@@ -205,7 +244,7 @@
 	self.mapView.delegate = nil;
     self.mapView = nil;
     
-    self.toolBar = nil;
+    self.toolbar = nil;
     
 	self.geoButton = nil;
     
@@ -224,7 +263,7 @@
     self.bookmarkButton = nil;
     self.selectionVC = nil;
     self.cancelSearchButton = nil;
-
+    
 }
 
 
@@ -274,7 +313,7 @@
 
 -(MKCoordinateRegion)regionForAnnotations:(NSArray *) annotations {
 	
-	if (annotations.count > 0) 
+	if (annotations.count > 0)
 	{
 		// determine the region for the search results
 		double minLat = 90;
@@ -282,11 +321,11 @@
 		double minLon = 180;
 		double maxLon = -180;
 		
-		for (id<MKAnnotation> annotation in annotations) 
+		for (id<MKAnnotation> annotation in annotations)
 		{
 			CLLocationCoordinate2D coordinate = annotation.coordinate;
 			
-			if (coordinate.latitude < minLat) 
+			if (coordinate.latitude < minLat)
 			{
 				minLat = coordinate.latitude;
 			}
@@ -294,7 +333,7 @@
 			{
 				maxLat = coordinate.latitude;
 			}
-			if (coordinate.longitude < minLon) 
+			if (coordinate.longitude < minLon)
 			{
 				minLon = coordinate.longitude;
 			}
@@ -330,7 +369,7 @@
 		[self saveRegion];
 		return MKCoordinateRegionMake(DEFAULT_MAP_CENTER, DEFAULT_MAP_SPAN);
 	}
-
+    
 }
 
 #pragma mark ShuttleDataManagerDelegate
@@ -356,7 +395,7 @@
 		self.shuttleAnnotations = [[NSMutableArray alloc] initWithCapacity:shuttleStops.count];
 	}
 	
-	for (ShuttleStop* shuttleStop in shuttleStops) 
+	for (ShuttleStop* shuttleStop in shuttleStops)
 	{
 		ShuttleStopMapAnnotation* annotation = [[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop];
 		[self.mapView addAnnotation:annotation];
@@ -367,9 +406,9 @@
 -(void) noSearchResultsAlert
 {
 	UIAlertView* alert = [[UIAlertView alloc] initWithTitle:nil
-													 message:NSLocalizedString(@"Nothing found.", nil)
-													delegate:self cancelButtonTitle:NSLocalizedString(@"OK", nil)
-										   otherButtonTitles:nil];
+                                                    message:NSLocalizedString(@"Nothing found.", nil)
+                                                   delegate:self cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                          otherButtonTitles:nil];
 	alert.tag = kNoSearchResultsTag;
 	alert.delegate = self;
 	[alert show];
@@ -388,7 +427,7 @@
 }
 
 -(void) saveRegion
-{	
+{
 	// save this region so we can use it on launch
 	NSNumber* centerLat = [NSNumber numberWithDouble:self.mapView.region.center.latitude];
 	NSNumber* centerLong = [NSNumber numberWithDouble:self.mapView.region.center.longitude];
@@ -415,25 +454,22 @@
 
 -(void) geoLocationTouched:(id)sender
 {
-    if ((self.userLocation == nil) && (self.mapView.showsUserLocation == NO)) {
-        self.mapView.showsUserLocation = YES;
-    } else if (self.userLocation) {
-        CLLocationCoordinate2D center = self.userLocation.coordinate;
-        self.mapView.region = MKCoordinateRegionMake(center, DEFAULT_MAP_SPAN);
+    if (self.userLocation && [self.userLocation isNearCampus]) {
+        self.mapView.stayCenteredOnUserLocation = YES;
     } else {
         // messages to be shown when user taps locate me button off campus
         NSString *message = nil;
         if (arc4random() & 1) {
             message = NSLocalizedString(@"Off Campus Warning 1", nil);
         } else {
-            message = NSLocalizedString(@"Off Campus Warning 2", nil); 
+            message = NSLocalizedString(@"Off Campus Warning 2", nil);
         }
         
         UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Off Campus", nil)
-                                                         message:message 
-                                                        delegate:nil
-                                               cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                               otherButtonTitles:nil];
+                                                        message:message
+                                                       delegate:nil
+                                              cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                              otherButtonTitles:nil];
         [alert show];
         
         self.mapView.showsUserLocation = NO; // turn off location updating
@@ -444,9 +480,9 @@
 
 -(void) showListView:(BOOL)showList
 {
-
+    
 	if (showList) {
-		// if we are not already showing the list, do all this 
+		// if we are not already showing the list, do all this
 		if (!self.displayingList) {
 			// show the list.
 			if(nil == self.searchResultsVC)
@@ -458,41 +494,26 @@
 			
 			self.searchResultsVC.searchResults = self.searchResults;
 			self.searchResultsVC.view.frame = self.mapView.frame;
-						
+            
 			[self.view addSubview:self.searchResultsVC.view];
-			
-			// hide the toolbar and stretch the search bar
-			self.toolBar.items = nil;
-			self.toolBar.frame =  CGRectMake(kSearchBarWidth, 0, 0, NAVIGATION_BAR_HEIGHT);
-			self.searchBar.frame = CGRectMake(self.searchBar.frame.origin.x, 
-										  self.searchBar.frame.origin.y,
-										  self.view.frame.size.width,
-										  self.searchBar.frame.size.height);
-			self.bookmarkButton.frame = CGRectMake(281, 8, 32, 28);
 			
 			[self.url setPath:@"list" query:self.lastSearchText];
 			[self.url setAsModulePath];
 			[self setURLPathUserLocation];
+
 		}
 	}
 	else {
 		// if we're not already showing the map
 		if (self.displayingList) {
-			// show the map, by hiding the list. 
+			// show the map, by hiding the list.
 			[self.searchResultsVC.view removeFromSuperview];
 			self.searchResultsVC = nil;
 			
-			// show the toolbar and shrink the search bar. 
-			self.toolBar.frame =  CGRectMake(kSearchBarWidth, 0, 320 - kSearchBarWidth, NAVIGATION_BAR_HEIGHT);
-			self.toolBar.items = [NSArray arrayWithObject:self.geoButton];
-			self.searchBar.frame = CGRectMake(self.searchBar.frame.origin.x, 
-										  self.searchBar.frame.origin.y,
-										  kSearchBarWidth,
-										  self.searchBar.frame.size.height);
-			self.bookmarkButton.frame = CGRectMake(231, 8, 32, 28);
 		}
-	
-		// only let the user switch to the list view if there are search results. 
+        
+        
+		// only let the user switch to the list view if there are search results.
 		if (self.lastSearchText != nil &&
             ![self.lastSearchText isEqualToString:@""] &&
             self.mapView.currentAnnotation)
@@ -507,7 +528,15 @@
 		[self setURLPathUserLocation];
 	}
 	
+    
+    BOOL isDisplayingList = self.displayingList;
 	self.displayingList = showList;
+    
+    if (isDisplayingList != showList) {
+        [self layoutSearchBarViewWithEditing:NO
+                                    animated:NO];
+    }
+    
 }
 
 -(void) viewTypeChanged:(id)sender
@@ -527,7 +556,7 @@
                                                                                         campusMap:self];
         
 		[MITAppDelegate() presentAppModalViewController:self.selectionVC animated:YES];
-	} else {	
+	} else {
 		[self showListView:!self.displayingList];
 	}
 	
@@ -544,59 +573,125 @@
 		[searchResultsArr addObject:annotation];
 	}
 	
-	// this will remove old annotations and add the new ones. 
+	// this will remove old annotations and add the new ones.
 	self.searchResults = searchResultsArr;
 	
 	NSString* docsFolder = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
 	NSString* searchResultsFilename = [docsFolder stringByAppendingPathComponent:@"searchResults.plist"];
 	[searchResults writeToFile:searchResultsFilename atomically:YES];
 	[[NSUserDefaults standardUserDefaults] setObject:searchQuery forKey:CachedMapSearchQueryKey];
-
+    
 }
 
 #pragma mark UISearchBarDelegate
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-	self.bookmarkButton.hidden = YES;
-	
-	// Add the cancel button, and remove the geo button. 
-	self.cancelSearchButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered target:self action:@selector(cancelSearch)];
-	
-	if (self.displayingList) {
-		self.toolBar.frame = CGRectMake(320, 0, 320 - kSearchBarWidth + kSearchBarCancelWidthDiff, NAVIGATION_BAR_HEIGHT);
-	}
-	
-	[UIView beginAnimations:@"searching" context:nil];
-    [UIView setAnimationDuration:0.3];
-	self.searchBar.frame = CGRectMake(0, 0, kSearchBarWidth - kSearchBarCancelWidthDiff, NAVIGATION_BAR_HEIGHT);
-	[self.searchBar layoutSubviews];
-	self.bookmarkButton.frame = CGRectMake(231 - kSearchBarCancelWidthDiff, 8, 32, 28);
-	[self.toolBar setItems:[NSArray arrayWithObjects:self.cancelSearchButton, nil]];
-	self.toolBar.frame = CGRectMake(kSearchBarWidth - kSearchBarCancelWidthDiff, 0, 320 - kSearchBarWidth + kSearchBarCancelWidthDiff, NAVIGATION_BAR_HEIGHT);
-	[UIView commitAnimations];
+    [self layoutSearchBarViewWithEditing:YES
+                                animated:YES];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-	// when we're not editing, make sure the bookmark button is put back
-	self.bookmarkButton.hidden = NO;
-	
-	// remove the cancel button and add the geo button back.
-	self.cancelSearchButton = nil;
-	
-	
-	[UIView beginAnimations:@"doneSearching" context:nil];
-	self.searchBar.frame = CGRectMake(0, 0, self.displayingList ? self.view.frame.size.width : kSearchBarWidth, NAVIGATION_BAR_HEIGHT);
-	[self.searchBar layoutSubviews];
-	[self.toolBar setItems:[NSArray arrayWithObjects:self.displayingList ? nil : self.geoButton , nil]];
-	self.toolBar.frame = CGRectMake( self.displayingList ? 320 : kSearchBarWidth, 0, 320 - kSearchBarWidth, NAVIGATION_BAR_HEIGHT);
-	self.bookmarkButton.frame = self.displayingList ? CGRectMake(281, 8, 32, 28) : CGRectMake(231, 8, 32, 28);
+    [self layoutSearchBarViewWithEditing:NO
+                                animated:YES];
+}
 
-	[UIView commitAnimations];
+- (void)layoutSearchBarViewWithEditing:(BOOL)editing
+                              animated:(BOOL)animated
+{
+    if (editing) {
+        CGPoint animationOrigin = CGPointMake(kSearchBarWidth, CGRectGetMinY(self.searchBarView.frame));
+        
+        CGRect cancelRect = self.cancelToolbar.frame;
+        cancelRect.origin = animationOrigin;
+        self.cancelToolbar.frame = cancelRect;
+        self.searchBar.showsBookmarkButton = NO;
+        
+        [UIView animateWithDuration:(animated ? 0.4 : 0.0)
+                              delay: 0.0
+                            options:(UIViewAnimationOptionCurveEaseOut |
+                                     UIViewAnimationOptionLayoutSubviews)
+                         animations:^{
+                             CGRect toolbarFrame = self.geoToolbar.frame;
+                             toolbarFrame.origin = animationOrigin;
+                             
+                             CGRect searchFrame = CGRectMake(CGRectGetMinX(self.searchBarView.bounds),
+                                                             CGRectGetMinY(self.searchBarView.bounds),
+                                                             CGRectGetWidth(self.searchBarView.frame) - CGRectGetWidth(self.cancelToolbar.frame),
+                                                             CGRectGetHeight(self.searchBarView.frame));
+                             
+                             CGRect cancelFrame = self.cancelToolbar.frame;
+                             cancelFrame.origin = CGPointMake(CGRectGetMaxX(searchFrame),
+                                                              CGRectGetMinY(searchFrame));
+                             
+                             
+                             self.searchBar.frame = searchFrame;
+                             
+                             self.geoToolbar.alpha = 1.0;
+                             self.geoToolbar.frame = toolbarFrame;
+                             self.geoToolbar.alpha = 0.0;
+                             
+                             self.cancelToolbar.alpha = 0.0;
+                             [self.searchBarView addSubview:self.cancelToolbar];
+                             self.cancelToolbar.frame = cancelFrame;
+                             self.cancelToolbar.alpha = 1.0;
+                         }
+                         completion:^(BOOL finished) {
+                             self.toolbar = self.cancelToolbar;
+                             [self.geoToolbar removeFromSuperview];
+                         }];
+    } else {
+        CGPoint animationOrigin = CGPointMake(kSearchBarWidth, CGRectGetMinY(self.searchBarView.frame));
+        CGRect searchFrame = CGRectMake(CGRectGetMinX(self.searchBarView.bounds),
+                                        CGRectGetMinY(self.searchBarView.bounds),
+                                        CGRectGetWidth(self.searchBarView.frame) - CGRectGetWidth(self.geoToolbar.frame),
+                                        CGRectGetHeight(self.searchBarView.frame));
+        
+        CGRect geoFrame = self.geoToolbar.frame;
+        geoFrame.origin = animationOrigin;
+        self.geoToolbar.frame = geoFrame;
+        
+        if (!self.displayingList) {
+            [self.searchBarView addSubview:self.geoToolbar];
+        } else {
+            searchFrame.size.width = CGRectGetWidth(self.searchBarView.frame);
+        }
+        
+        [UIView animateWithDuration:(animated ? 0.4 : 0.0)
+                              delay:0.0
+                            options:(UIViewAnimationOptionCurveEaseOut |
+                                     UIViewAnimationOptionLayoutSubviews)
+                         animations:^{
+                             CGRect cancelFrame = self.cancelToolbar.frame;
+                             cancelFrame.origin = animationOrigin;
+                             
+                             CGRect geoToolbarFrame = self.geoToolbar.frame;
+                             geoToolbarFrame.origin = CGPointMake(CGRectGetMaxX(searchFrame),
+                                                                  CGRectGetMinY(searchFrame));
+                             
+                             
+                             self.cancelToolbar.alpha = 1.0;
+                             self.cancelToolbar.frame = cancelFrame;
+                             self.cancelToolbar.alpha = 0.0;
+                             
+                             self.geoToolbar.alpha = 0.0;
+                             self.geoToolbar.frame = geoToolbarFrame;
+                             self.geoToolbar.alpha = 1.0;
+                             
+                             self.searchBar.frame = searchFrame;
+                         }
+                         completion:^(BOOL finished) {
+                             [self.cancelToolbar removeFromSuperview];
+                             self.cancelToolbar.alpha = 1.0;
+                             
+                             self.toolbar = self.geoToolbar;
+                             self.searchBar.showsBookmarkButton = YES;
+                         }];
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{	
+{
 	[searchBar resignFirstResponder];
 	
 	// delete any previous instance of this search term
@@ -620,7 +715,7 @@
 	NSUInteger count = 	[[CoreDataManager managedObjectContext] countForFetchRequest:countFetchRequest
                                                                                error:&error];
 	
-	// cap the number of previous searches maintained in the DB. If we go over the limit, delete one. 
+	// cap the number of previous searches maintained in the DB. If we go over the limit, delete one.
 	if(nil == error && count > kPreviousSearchLimit)
 	{
 		// get the oldest item
@@ -630,12 +725,12 @@
 		[limitFetchRequest setFetchLimit:1];
 		NSArray* overLimit = [[CoreDataManager managedObjectContext] executeFetchRequest:limitFetchRequest
                                                                                    error:nil];
-		 
+        
 		if(overLimit && overLimit.count == 1)
 		{
 			[[CoreDataManager managedObjectContext] deleteObject:[overLimit objectAtIndex:0]];
 		}
-
+        
 		[CoreDataManager saveData];
 	}
 	
@@ -653,9 +748,9 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
 	// clear search result if search string becomes empty
-	if (searchText.length == 0 ) {		
+	if (searchText.length == 0 ) {
 		self.hasSearchResults = NO;
-		// tell the campus view controller to remove its search results. 
+		// tell the campus view controller to remove its search results.
 		[self search:nil];
 	}
 }
@@ -671,8 +766,7 @@
 }
 
 #pragma mark Custom Bookmark Button Functionality
-
-- (void)bookmarkButtonClicked:(UIButton *)sender
+- (void)searchBarBookmarkButtonClicked:(UISearchBar *)searchBar
 {
 	if(nil != self.selectionVC)
 	{
@@ -701,12 +795,12 @@
 -(void) pushAnnotationDetails:(id <MKAnnotation>) annotation animated:(BOOL)animated
 {
 	// determine the type of the annotation. If it is a search result annotation, display the details
-	if ([annotation isKindOfClass:[MITMapSearchResultAnnotation class]]) 
+	if ([annotation isKindOfClass:[MITMapSearchResultAnnotation class]])
 	{
 		
-		// push the details page onto the stack for the item selected. 
+		// push the details page onto the stack for the item selected.
 		MITMapDetailViewController* detailsVC = [[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
-																							  bundle:nil];
+                                                                                             bundle:nil];
 		
 		detailsVC.annotation = annotation;
 		detailsVC.title = @"Info";
@@ -714,13 +808,13 @@
 		
 		if(!((MITMapSearchResultAnnotation*)annotation).bookmark)
 		{
-
+            
 			if(self.lastSearchText != nil && self.lastSearchText.length > 0)
 			{
 				detailsVC.queryText = self.lastSearchText;
 			}
 		}
-		[self.navigationController pushViewController:detailsVC animated:animated];		
+		[self.navigationController pushViewController:detailsVC animated:animated];
 	}
 	
 	else if ([annotation isKindOfClass:[ShuttleStopMapAnnotation class]])
@@ -736,15 +830,15 @@
 		MITMapSearchResultAnnotation* theAnnotation = (MITMapSearchResultAnnotation*)annotation;
 		if (self.displayingList)
 			[self.url setPath:[NSString stringWithFormat:@"list/detail/%@", theAnnotation.uniqueID] query:self.lastSearchText];
-		else 
+		else
 			[self.url setPath:[NSString stringWithFormat:@"detail/%@", theAnnotation.uniqueID] query:self.lastSearchText];
 		[self.url setAsModulePath];
 		[self setURLPathUserLocation];
-	}	
+	}
 }
 
-// a callout accessory control was tapped. 
-- (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view 
+// a callout accessory control was tapped.
+- (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view
 {
 	[self pushAnnotationDetails:view.annotation animated:YES];
 }
@@ -759,8 +853,8 @@
 	{
 		MITMapSearchResultAnnotation* searchAnnotation = (MITMapSearchResultAnnotation*)annotation;
 		// if the annotation is not fully loaded, try to load it
-		if (!searchAnnotation.dataPopulated) 
-		{	
+		if (!searchAnnotation.dataPopulated)
+		{
 			[MITMapSearchResultAnnotation executeServerSearchWithQuery:searchAnnotation.bldgnum
                                                           jsonDelegate:self
                                                                 object:annotation];
@@ -773,39 +867,31 @@
 
 -(void) locateUserFailed:(MITMapView *)mapView
 {
-	if (self.mapView.stayCenteredOnUserLocation) 
+	if (self.mapView.stayCenteredOnUserLocation)
 	{
 		[self.geoButton setStyle:UIBarButtonItemStyleBordered];
-	}	
+	}
 }
 
 - (void)mapView:(MITMapView *)mapView didUpdateUserLocation:(CLLocation *)userLocation {
-    CLLocation *oldLocation = self.userLocation;
-
-    if ([userLocation isNearCampus]) {
-        self.userLocation = userLocation;
-    }
-
-    if (oldLocation == nil) {
-        [self geoLocationTouched:nil];
-    }
+    self.userLocation = userLocation;
 }
 
 #pragma mark JSONLoadedDelegate
 
 - (void) request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject
-{	
+{
 	NSArray *searchResults = JSONObject;
 	if ([request.userData isKindOfClass:[NSString class]]) {
 		NSString *searchType = request.userData;
-	
+        
 		if ([searchType isEqualToString:kAPISearch])
 		{
 			self.lastSearchText = [request.parameters objectForKey:@"q"];
-		
+            
 			[self receivedNewSearchResults:searchResults forQuery:self.lastSearchText];
-		
-			// if there were no search results, tell the user about it. 
+            
+			// if there were no search results, tell the user about it.
 			if(nil == searchResults || searchResults.count <= 0) {
 				[self noSearchResultsAlert];
 				self.hasSearchResults = NO;
@@ -814,14 +900,14 @@
 			}
 		}
 	}
-
+    
 	
 	else if([request.userData isKindOfClass:[MITMapSearchResultAnnotation class]]) {
 		// updating an annotation search request
 		MITMapSearchResultAnnotation* oldAnnotation = request.userData;
 		NSArray* results = JSONObject;
 		
-		if (results.count > 0) 
+		if (results.count > 0)
 		{
 			MITMapSearchResultAnnotation* newAnnotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:[results objectAtIndex:0]];
 			
@@ -837,7 +923,7 @@
 		} else {
 			self.hasSearchResults = NO;
 		}
-	}	
+	}
 }
 
 // there was an error connecting to the specified URL.
@@ -852,14 +938,14 @@
 #pragma mark UITableViewDataSource
 
 -(void) search:(NSString*)searchText
-{	
-	if (nil == searchText) 
+{
+	if (nil == searchText)
 	{
 		self.searchResults = nil;
 		self.lastSearchText = nil;
 	}
 	else
-	{		
+	{
 		[MITMapSearchResultAnnotation executeServerSearchWithQuery:searchText
                                                       jsonDelegate:self
                                                             object:kAPISearch];

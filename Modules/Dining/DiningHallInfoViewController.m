@@ -8,6 +8,7 @@
 #import "UIImageView+WebCache.h"
 #import "DiningDay.h"
 #import "DiningMeal.h"
+#import "DiningHallInfoScheduleCell.h"
 
 @interface DiningHallInfoViewController ()
 
@@ -137,13 +138,13 @@
     NSString *mealName = [meal.name capitalizedString];
     
     if (meal.message) {
-        return @{@"mealName": mealName, @"mealSpan": meal.message};
+        return @{@"mealName": mealName, @"mealSpan": meal.message};                     // if meal has a message set use that instead
     }
     
     NSString *startString = [self timeFormatForMealTime:meal.startTime];
     NSString *endString = [self timeFormatForMealTime:meal.endTime];
     
-    NSString *mealSpan = [NSString stringWithFormat:@"%@ - %@", startString, endString];     // if meal has a message set use that instead
+    NSString *mealSpan = [NSString stringWithFormat:@"%@ - %@", startString, endString];     
     return @{@"mealName": mealName, @"mealSpan": mealSpan};
 }
 
@@ -182,48 +183,42 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:CellIdentifier];
-    }
-    
-    cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
-    cell.textLabel.textColor = [UIColor darkTextColor];
-    cell.detailTextLabel.font = [UIFont fontWithName:@"Helvetica" size:13];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
-    if (indexPath.section == _locationSectionIndex) {
-        cell.textLabel.text = @"location";
-        cell.detailTextLabel.text = self.venue.location.displayDescription;
-        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-    } else if (indexPath.section == _paymentSectionIndex) {
-        cell.textLabel.text = @"payment";
-        cell.detailTextLabel.text = [[self.venue.paymentMethods allObjects] componentsJoinedByString:@", "];
+    UITableViewCell *cell;
+    if (indexPath.section != _scheduleSectionIndex) {
+        static NSString *CellIdentifier = @"Cell";
+        cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:CellIdentifier];
+        }
+        cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+        cell.textLabel.textColor = [UIColor darkTextColor];
+        cell.detailTextLabel.font = [UIFont fontWithName:@"Helvetica" size:13];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
+        if (indexPath.section == _locationSectionIndex) {
+            cell.textLabel.text = @"location";
+            cell.detailTextLabel.text = self.venue.location.displayDescription;
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        } else if (indexPath.section == _paymentSectionIndex) {
+            cell.textLabel.text = @"payment";
+            cell.detailTextLabel.text = [[self.venue.paymentMethods allObjects] componentsJoinedByString:@", "];
+        }
+        return cell;
     } else {
         // schedule
         NSDictionary *rowSchedule = self.scheduleInfo[indexPath.row];
-        NSDateFormatter *df = [[NSDateFormatter alloc] init];
-        [df setDateFormat:@"EEE"];
-        NSString *daySpan;
-        if ([rowSchedule[@"dayStart"] isEqual:rowSchedule[@"dayEnd"]]) {
-            daySpan = [[df stringFromDate:rowSchedule[@"dayStart"]] lowercaseString];
-        } else {
-            daySpan = [NSString stringWithFormat:@"%@ - %@", [[df stringFromDate:rowSchedule[@"dayStart"]] lowercaseString], [[df stringFromDate:rowSchedule[@"dayEnd"]] lowercaseString]];
+
+        DiningHallInfoScheduleCell *scheduleCell = [tableView dequeueReusableCellWithIdentifier:@"ScheduleCell"];
+        if (!scheduleCell) {
+            scheduleCell = [[DiningHallInfoScheduleCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ScheduleCell"];
         }
-        cell.textLabel.text = daySpan;
-        NSString *scheduleString = @"";
-        for (NSDictionary *schedule in rowSchedule[@"meals"]) {
-            scheduleString = [scheduleString stringByAppendingFormat:@"%@\t\t%@ \n", schedule[@"mealName"], schedule[@"mealSpan"]];
-        }
-        cell.detailTextLabel.numberOfLines = 0;
-        cell.detailTextLabel.text = scheduleString;
+        [scheduleCell setStartDate:rowSchedule[@"dayStart"] andEndDate:rowSchedule[@"dayEnd"]];
+        scheduleCell.scheduleInfo = rowSchedule[@"meals"];
+        scheduleCell.selectionStyle = UITableViewCellSelectionStyleNone;
         
+        return scheduleCell;
     }
-    
-    return cell;
 }
 
 #pragma mark - Table view delegate
@@ -240,7 +235,8 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == _scheduleSectionIndex) {
-        return 80;  // TODO :: be a little smarter here
+        NSDictionary *rowSchedule = self.scheduleInfo[indexPath.row];
+        return [DiningHallInfoScheduleCell heightForCellWithScheduleInfo:rowSchedule[@"meals"]];
     }
     return 44;
 }
