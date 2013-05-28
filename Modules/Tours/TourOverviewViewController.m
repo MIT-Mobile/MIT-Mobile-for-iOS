@@ -104,12 +104,10 @@ enum {
         self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
         self.navigationItem.title = @"Tour Overview";
         
-        self.navigationItem.rightBarButtonItem = 
-        [[[UIBarButtonItem alloc] 
-          initWithTitle:@"Cancel" 
-          style:UIBarButtonItemStyleBordered
-          target:self
-          action:@selector(dismiss:)] autorelease];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" 
+                                                                                  style:UIBarButtonItemStyleBordered
+                                                                                 target:self
+                                                                                 action:@selector(dismiss:)];
     } else {
         self.navigationItem.title = @"Starting Point";
     }    
@@ -160,17 +158,8 @@ enum {
 
 
 - (void)dealloc {
-    self.sideTripsItem = nil;
-    
     self.mapView.delegate = nil;
     self.mapView = nil;
-    self.components = nil;
-    self.userLocation = nil;
-    self.callingViewController = nil;
-    self.selectedAnnotation = nil;
-    self.sideTrip = nil;
-    
-    [super dealloc];
 }
 
 #pragma mark User actions
@@ -200,64 +189,62 @@ enum {
 
 - (IBAction)toggleHideSideTrips:(id)sender {
     self.hideSideTrips = !self.hideSideTrips;
-    // TODO: Update toolbar item title.
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-    if (self.hideSideTrips) {
-        NSMutableArray *indexPathsToDelete = 
-        [NSMutableArray arrayWithCapacity:self.components.count];
-        NSMutableArray *componentsToRemove = 
-        [NSMutableArray arrayWithCapacity:self.components.count];
-        
-        [self.components enumerateObjectsUsingBlock:
-         ^(id obj, NSUInteger idx, BOOL *stop) {
-             if ([obj isKindOfClass:[CampusTourSideTrip class]]) {
-                 [componentsToRemove addObject:obj];
-                 [indexPathsToDelete addObject:
-                  [NSIndexPath indexPathForRow:idx inSection:0]];
-             }
-         }];
-        
-        [self.tableView beginUpdates];
-        
-        [self.components removeObjectsInArray:componentsToRemove];
-        [self.tableView deleteRowsAtIndexPaths:indexPathsToDelete 
-                              withRowAnimation:UITableViewRowAnimationFade];
-        
-        [self.tableView endUpdates];
-        
-        self.sideTripsItem.title = @"Show side trips";
-    }
-    else {
-        NSMutableArray *indexPathsToAdd = 
-        [NSMutableArray arrayWithCapacity:self.components.count];
-        NSArray *currentlyShowingComponents = [self.components copy];
-        [self updateTourComponents];
-        [self.components enumerateObjectsUsingBlock:
-         ^(id obj, NSUInteger idx, BOOL *stop) {
-             if (![currentlyShowingComponents containsObject:obj]) {
-                 [indexPathsToAdd addObject:
-                  [NSIndexPath indexPathForRow:idx inSection:0]];
-             }
-         }];
-        
-        [self.tableView beginUpdates];
-        
-        [self.tableView insertRowsAtIndexPaths:indexPathsToAdd
-                              withRowAnimation:UITableViewRowAnimationFade];
-        
-        [self.tableView endUpdates];
-        self.sideTripsItem.title = @"Hide side trips";
-    }
     
-    [pool release];
+    @autoreleasepool {
+        if (self.hideSideTrips) {
+            NSMutableArray *indexPathsToDelete = 
+            [NSMutableArray arrayWithCapacity:self.components.count];
+            NSMutableArray *componentsToRemove = 
+            [NSMutableArray arrayWithCapacity:self.components.count];
+            
+            [self.components enumerateObjectsUsingBlock:
+             ^(id obj, NSUInteger idx, BOOL *stop) {
+                 if ([obj isKindOfClass:[CampusTourSideTrip class]]) {
+                     [componentsToRemove addObject:obj];
+                     [indexPathsToDelete addObject:
+                      [NSIndexPath indexPathForRow:idx inSection:0]];
+                 }
+             }];
+            
+            [self.tableView beginUpdates];
+            
+            [self.components removeObjectsInArray:componentsToRemove];
+            [self.tableView deleteRowsAtIndexPaths:indexPathsToDelete 
+                                  withRowAnimation:UITableViewRowAnimationFade];
+            
+            [self.tableView endUpdates];
+            
+            self.sideTripsItem.title = @"Show side trips";
+        } else {
+            NSMutableArray *indexPathsToAdd = 
+            [NSMutableArray arrayWithCapacity:self.components.count];
+            NSArray *currentlyShowingComponents = [self.components copy];
+            [self updateTourComponents];
+            [self.components enumerateObjectsUsingBlock:
+             ^(id obj, NSUInteger idx, BOOL *stop) {
+                 if (![currentlyShowingComponents containsObject:obj]) {
+                     [indexPathsToAdd addObject:
+                      [NSIndexPath indexPathForRow:idx inSection:0]];
+                 }
+             }];
+            
+            [self.tableView beginUpdates];
+            
+            [self.tableView insertRowsAtIndexPaths:indexPathsToAdd
+                                  withRowAnimation:UITableViewRowAnimationFade];
+            
+            [self.tableView endUpdates];
+            self.sideTripsItem.title = @"Hide side trips";
+        }        
+    }
 }
 
 - (void)showStartSuggestions:(id)sender {
-    StartingLocationViewController *vc = [[[StartingLocationViewController alloc] init] autorelease];
+    StartingLocationViewController *vc = [[StartingLocationViewController alloc] init];
     vc.startingLocations = [[ToursDataManager sharedManager] startLocationsForTour];
     vc.overviewController = self;
-    UINavigationController *dummyVC = [[[UINavigationController alloc] initWithRootViewController:vc] autorelease];
+    
+    UINavigationController *dummyVC = [[UINavigationController alloc] initWithRootViewController:vc];
     [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] presentAppModalViewController:dummyVC animated:YES];
 }
 
@@ -296,7 +283,7 @@ enum {
         [self.mapView addRoute:sideTripRoute];
         
         // add sidetrip annotation
-        TourSideTripMapAnnotation *annotation = [[[TourSideTripMapAnnotation alloc] init] autorelease];
+        TourSideTripMapAnnotation *annotation = [[TourSideTripMapAnnotation alloc] init];
         annotation.sideTrip = self.sideTrip;
         if(self.userLocation != nil) {
             annotation.subtitle = [self distanceTextForLocation:self.sideTrip];
@@ -313,7 +300,7 @@ enum {
         }
         TourSiteOrRoute *aSite = (TourSiteOrRoute *)component;
         if (aSite) {                    
-            TourSiteMapAnnotation *annotation = [[[TourSiteMapAnnotation alloc] init] autorelease];
+            TourSiteMapAnnotation *annotation = [[TourSiteMapAnnotation alloc] init];
             if (self.userLocation != nil) {
                 annotation.subtitle = 
                 [self distanceTextForLocation:aSite];
@@ -349,7 +336,7 @@ enum {
         
         [self.tableView removeFromSuperview];
         if (!self.mapView) {
-            self.mapView = [[[MITMapView alloc] initWithFrame:frame] autorelease];
+            self.mapView = [[MITMapView alloc] initWithFrame:frame];
             self.mapView.delegate = self;
             self.mapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             
@@ -371,7 +358,8 @@ enum {
         self.mapView = nil;
         
         if (!self.tableView) {
-            self.tableView = [[[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain] autorelease];
+            self.tableView = [[UITableView alloc] initWithFrame:frame
+                                                          style:UITableViewStylePlain];
             self.tableView.rowHeight = TOUR_SITE_ROW_HEIGHT;
             self.tableView.delegate = self;
             self.tableView.dataSource = self;
@@ -386,13 +374,10 @@ enum {
         if (![self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
             // Add item hiding/showing side trips.
             if (!self.sideTripsItem) {
-                self.sideTripsItem = 
-                [[[UIBarButtonItem alloc] 
-                  initWithTitle:@"Hide side trips" 
-                  style:UIBarButtonItemStyleBordered 
-                  target:self 
-                  action:@selector(toggleHideSideTrips:)]
-                 autorelease];             
+                self.sideTripsItem = [[UIBarButtonItem alloc] initWithTitle:@"Hide side trips"
+                                                                      style:UIBarButtonItemStyleBordered
+                                                                     target:self
+                                                                     action:@selector(toggleHideSideTrips:)];
             }
             [toolbarItems addObject:self.sideTripsItem];
         }
@@ -401,7 +386,6 @@ enum {
     self.displayingMap = showMap;
     
     [self.toolBar setItems:toolbarItems animated:NO];
-    [toolbarItems release];
 
     if (self.displayingMap) {
         if (![self.callingViewController isKindOfClass:[SiteDetailViewController class]]) {
@@ -432,10 +416,10 @@ enum {
                            [ToursDataManager labelForVisitStatus:TourSiteVisited],
                            [ToursDataManager labelForVisitStatus:TourSiteNotVisited], nil];
         
-        legend = [[[UIView alloc] initWithFrame:CGRectMake(0,
-                                                           self.view.frame.size.height - self.toolBar.frame.size.height - legendHeight,
-                                                           self.view.frame.size.width,
-                                                           legendHeight)] autorelease];
+        legend = [[UIView alloc] initWithFrame:CGRectMake(0,
+                                                          self.view.frame.size.height - self.toolBar.frame.size.height - legendHeight,
+                                                          self.view.frame.size.width,
+                                                          legendHeight)];
         legend.backgroundColor = [UIColor clearColor];
         legend.layer.cornerRadius = 5.0;
         legend.tag = kOverviewSiteLegendTag;
@@ -443,14 +427,15 @@ enum {
         legend.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
         
         UIImage *backgroundImage = [UIImage imageNamed:@"tours/map-legend-overlay.png"];
-        UIImageView *backgroundView = [[[UIImageView alloc] initWithImage:[backgroundImage stretchableImageWithLeftCapWidth:0 topCapHeight:0]] autorelease];
+        UIImageView *backgroundView = [[UIImageView alloc] initWithImage:[backgroundImage stretchableImageWithLeftCapWidth:0
+                                                                                                               topCapHeight:0]];
         backgroundView.frame = CGRectMake(0, -4, legend.frame.size.width, legend.frame.size.height + 4); // compensate for transparent pixels
         [legend addSubview:backgroundView];
         
         CGRect frame = CGRectZero;
         frame.origin.x = keyPadding;
         for (NSInteger i = 0; i < images.count; i++) {
-            UIImageView *imageView = [[[UIImageView alloc] initWithImage:[images objectAtIndex:i]] autorelease];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:[images objectAtIndex:i]];
             frame.size = imageView.frame.size;
             imageView.frame = frame;
             [legend addSubview:imageView];
@@ -460,7 +445,7 @@ enum {
             CGSize labelSize = [labelText sizeWithFont:labelFont];
             frame.size.width = labelSize.width;
             
-            UILabel *label = [[[UILabel alloc] initWithFrame:frame] autorelease];
+            UILabel *label = [[UILabel alloc] initWithFrame:frame];
             label.backgroundColor = [UIColor clearColor];
             label.text = labelText;
             label.font = labelFont;
@@ -474,10 +459,8 @@ enum {
         mapFrame.size.height -= legend.frame.size.height;
         self.mapView.frame = mapFrame;
         
-        [legend retain];
         [legend removeFromSuperview];
         [self.view addSubview:legend];
-        [legend release];
     }    
 }
 
@@ -489,11 +472,11 @@ enum {
         
         CGRect frame = CGRectMake(0, 0, self.view.frame.size.width, scrim.size.height);
         
-        control = [[[UIControl alloc] initWithFrame:frame] autorelease];
+        control = [[UIControl alloc] initWithFrame:frame];
         control.backgroundColor = [UIColor clearColor];
         control.tag = kOverviewSiteScrimControlTag;
         
-        UIImageView *imageView = [[[UIImageView alloc] initWithImage:scrim] autorelease];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:scrim];
         [control addSubview:imageView];
         
         frame.origin.x += 7;
@@ -501,7 +484,7 @@ enum {
         frame.size.width -= 14;
         frame.size.height = 21;
         
-        UILabel *label = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        UILabel *label = [[UILabel alloc] initWithFrame:frame];
         label.text = @"Not sure where to begin?";
         label.font = [UIFont boldSystemFontOfSize:15];
         label.textColor = [UIColor colorWithHexString:@"#202020"];
@@ -510,7 +493,7 @@ enum {
         
         frame.origin.y += 17;
         
-        UILabel *anotherLabel = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        UILabel *anotherLabel = [[UILabel alloc] initWithFrame:frame];
         anotherLabel.text = @"Browse suggested starting points.";
         anotherLabel.font = [UIFont systemFontOfSize:15];
         anotherLabel.textColor = [UIColor colorWithHexString:@"#404040"];
@@ -521,16 +504,14 @@ enum {
         [control addSubview:anotherLabel];
         [control addTarget:self action:@selector(showStartSuggestions:) forControlEvents:UIControlEventTouchUpInside];
 		
-		UIImageView *chevronView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow.png"]] autorelease];
+		UIImageView *chevronView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow.png"]];
 		chevronView.center = CGPointMake(control.frame.size.width - 10, (round(control.frame.size.height / 2)-2));
 		chevronView.userInteractionEnabled = NO;
 		[control addSubview:chevronView];
     }
     
-    [control retain];
     [control removeFromSuperview];
     [self.view addSubview:control];
-    [control release];
 }
 
 - (void)selectTourComponent:(TourComponent *)component {
@@ -588,11 +569,11 @@ enum {
             }
             
             NSString *title = [NSString string];
-            UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:title
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
                                                                  message:message
                                                                 delegate:self
                                                        cancelButtonTitle:@"Cancel"
-                                                       otherButtonTitles:@"OK", nil] autorelease];
+                                                       otherButtonTitles:@"OK", nil];
             alertView.tag = kOverviewSiteGoBackAlertTag;
             [alertView show];
         }
@@ -600,7 +581,7 @@ enum {
     } else {
         // This is the case in which the view controller that pushed us to the 
         // stack is not a SiteDetailViewController.
-        SiteDetailViewController *detailVC = [[[SiteDetailViewController alloc] init] autorelease];
+        SiteDetailViewController *detailVC = [[SiteDetailViewController alloc] init];
         if ([component isKindOfClass:[CampusTourSideTrip class]]) {
 
             CampusTourSideTrip *aSideTrip =  (CampusTourSideTrip *)component;
@@ -644,7 +625,7 @@ enum {
 
     TourOverviewTableViewCell *cell = (TourOverviewTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[TourOverviewTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[TourOverviewTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }    
 
     cell.tourComponent = [self.components objectAtIndex:indexPath.row];
@@ -704,7 +685,7 @@ enum {
     if (!thumbView) {
         CGRect frame = 
         CGRectMake(0, 0, TOUR_SITE_ROW_HEIGHT, TOUR_SITE_ROW_HEIGHT);
-        thumbView = [[[MITThumbnailView alloc] initWithFrame:frame] autorelease];
+        thumbView = [[MITThumbnailView alloc] initWithFrame:frame];
         thumbView.delegate = cell;
         thumbView.tag = kOverviewSiteCellThumbnailTag;
     }
@@ -756,7 +737,6 @@ enum {
         CLLocation *siteLocation = [[CLLocation alloc] initWithLatitude:[location.latitude floatValue]
                                                               longitude:[location.longitude floatValue]];
         CLLocationDistance meters = [siteLocation distanceFromLocation:self.userLocation];
-        [siteLocation release];
         text = [self textForDistance:meters];
     }
     return text;
@@ -828,7 +808,8 @@ enum {
     }
     else {
         CLLocationCoordinate2D defaultCenter = DEFAULT_MAP_CENTER;
-        centerLocation = [[[CLLocation alloc] initWithLatitude:defaultCenter.latitude longitude:defaultCenter.longitude] autorelease];
+        centerLocation = [[CLLocation alloc] initWithLatitude:defaultCenter.latitude
+                                                    longitude:defaultCenter.longitude];
     }
     
     if(!self.sideTrip && !currentSite) {
@@ -861,7 +842,8 @@ enum {
     for (id annotation in self.mapView.annotations) {
         if ([annotation isKindOfClass:[TourSiteMapAnnotation class]]) {
             TourSiteMapAnnotation *tourAnnotation = (TourSiteMapAnnotation *)annotation;
-            CLLocation *siteLocation = [[[CLLocation alloc] initWithLatitude:tourAnnotation.coordinate.latitude longitude:tourAnnotation.coordinate.longitude] autorelease];
+            CLLocation *siteLocation = [[CLLocation alloc] initWithLatitude:tourAnnotation.coordinate.latitude
+                                                                   longitude:tourAnnotation.coordinate.longitude];
             CGFloat distance = [siteLocation distanceFromLocation:location];
             if (distance < minDistance) {
                 minDistance = distance;
@@ -912,7 +894,8 @@ enum {
 }
 
 - (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
-    MITMapAnnotationView *annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"toursite"] autorelease];
+    MITMapAnnotationView *annotationView = [[MITMapAnnotationView alloc] initWithAnnotation:annotation
+                                                                             reuseIdentifier:@"toursite"];
 
     TourSiteVisitStatus status;
     if ([self.callingViewController isKindOfClass:[SiteDetailViewController class]] &&
@@ -991,7 +974,7 @@ enum {
     UIImageView *statusView = 
     (UIImageView *)[self.contentView viewWithTag:kOverviewSiteCellStatusViewTag];
     if (!statusView) {        
-        statusView = [[[UIImageView alloc] initWithImage:statusImage] autorelease];
+        statusView = [[UIImageView alloc] initWithImage:statusImage];
         statusView.tag = kOverviewSiteCellStatusViewTag;
         [self.contentView addSubview:statusView];
     }
@@ -1010,29 +993,25 @@ enum {
     UILabel *sideTripLabel = 
     (UILabel *)[self.contentView viewWithTag:kOverviewSiteCellSideTripLabelTag];
     if (!sideTripLabel) {
-        sideTripLabel = 
-        [[UILabel alloc] initWithFrame:
-         CGRectMake(mainTextLabelX + 20, 5, mainTextLabelWidth, 20)];
+        sideTripLabel = [[UILabel alloc] initWithFrame:CGRectMake(mainTextLabelX + 20, 5, mainTextLabelWidth, 20)];
         sideTripLabel.tag = kOverviewSiteCellSideTripLabelTag;
         sideTripLabel.textColor = [UIColor lightGrayColor];
         sideTripLabel.text = @"Side Trip:";
         [self.contentView addSubview:sideTripLabel];
-        [sideTripLabel release];
     }
     
     UIImageView *sideTripIconView = 
     (UIImageView *)[self.contentView viewWithTag:kOverviewSiteCellSideTripIconTag];
     if (!sideTripIconView) {
-        sideTripIconView = 
-        [[UIImageView alloc] initWithImage:
-         [UIImage imageNamed:@"tours/side_trip_arrow"]];
+        sideTripIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/side_trip_arrow"]];
         sideTripIconView.tag = kOverviewSiteCellSideTripIconTag;
+        
         CGRect iconFrame = sideTripIconView.frame;
         iconFrame.origin.x = mainTextLabelX;
         iconFrame.origin.y = 5;
+        
         sideTripIconView.frame = iconFrame;
         [self.contentView addSubview:sideTripIconView];
-        [sideTripIconView release];
     }
     
     if ([self.tourComponent isKindOfClass:[CampusTourSideTrip class]]) {
@@ -1075,7 +1054,6 @@ enum {
 
 - (void)dealloc {
     self.tourComponent = nil;
-    [super dealloc];
 }
 
 @end
