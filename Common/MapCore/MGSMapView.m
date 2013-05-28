@@ -63,6 +63,8 @@
     [self.observerTokens enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         [[NSNotificationCenter defaultCenter] removeObserver:obj];
     }];
+    
+    self.showUserLocation = NO;
 }
 
 #pragma mark Base Map Set Management
