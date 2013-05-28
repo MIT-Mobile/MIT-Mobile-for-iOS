@@ -833,16 +833,17 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         self->_mapRegion = MKCoordinateRegionInvalid;
     }
     
+    __weak MGSMapView *wself = self;
     void (^notificationBlock)(NSNotification*) = ^(NSNotification *note) {
         if ([note.name isEqualToString:AGSMapViewDidEndZoomingNotification]) {
-            [self.externalLayerManagers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+            [wself.externalLayerManagers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
                 MGSLayerController *controller = (MGSLayerController*) obj;
                 [controller setNeedsRefresh];
                 [controller refresh:nil];
             }];
         }
         
-        if (self.mapView.lastChangeFromInteraction == NO) {
+        if (wself.mapView.lastChangeFromInteraction == NO) {
             if (self.pendingCalloutBlock) {
                 self.pendingCalloutBlock();
                 self.pendingCalloutBlock = nil;
