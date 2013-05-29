@@ -38,7 +38,7 @@
 @property(nonatomic) CGFloat fakeToolbarHeightFromNIB;
     
 @property(nonatomic,strong) UIScrollView *oldSlidingView;
-@property(nonatomic,strong) UIScrollView *newSlidingView;
+@property(nonatomic,strong) UIScrollView *incomingSlidingView;
 
 @property(nonatomic,strong) TourSiteOrRoute *lastSite;
 @property(nonatomic,strong) AVAudioPlayer *audioPlayer;
@@ -338,9 +338,9 @@
     CGFloat height = self.view.frame.size.height - self.fakeToolbar.frame.size.height;
     
     CGRect newFrame = CGRectMake(xOrigin, 0, self.view.frame.size.width, height);
-    self.newSlidingView = [[UIScrollView alloc] initWithFrame:newFrame];
-    self.newSlidingView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    [self.view addSubview:self.newSlidingView];
+    self.incomingSlidingView = [[UIScrollView alloc] initWithFrame:newFrame];
+    self.incomingSlidingView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    [self.view addSubview:self.incomingSlidingView];
 }
 
 - (void)setupConclusionScreen {
@@ -352,7 +352,7 @@
     [self prepSlidingViewsForward:YES];
     
     CGRect tableFrame = CGRectZero;
-    tableFrame.size = self.newSlidingView.frame.size;
+    tableFrame.size = self.incomingSlidingView.frame.size;
     
     UITableView *tableView = [[[UITableView alloc] initWithFrame:tableFrame style:UITableViewStyleGrouped] autorelease];
     tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -414,7 +414,7 @@
         tableView.tableHeaderView = headerView;
     }
     
-    [self.newSlidingView addSubview:tableView];
+    [self.incomingSlidingView addSubview:tableView];
     
     [self.progressbar markAsDone];
     [self.progressbar setNeedsDisplay];
@@ -460,7 +460,7 @@
             
             self.navigationItem.title = @"Walking Directions";
 
-            newFrame = CGRectMake(10, 10, self.newSlidingView.frame.size.width - 20, floor(self.newSlidingView.frame.size.height * 0.5));
+            newFrame = CGRectMake(10, 10, self.incomingSlidingView.frame.size.width - 20, floor(self.incomingSlidingView.frame.size.height * 0.5));
             if (!self.routeMapView) {
                 MITMapView *routeMapView = [[MITMapView alloc] initWithFrame:newFrame];
                 routeMapView.delegate = self;
@@ -539,7 +539,7 @@
                             [data writeToFile:component.photoFile atomically:YES];
                             NSString *js = [NSString stringWithFormat:@"var img = document.getElementById(\"directionsphoto\");\n"
                                             "img.src = \"%@\";\n", component.photoFile];
-                            UIWebView *webView = (UIWebView *)[self.newSlidingView viewWithTag:WEB_VIEW_TAG];
+                            UIWebView *webView = (UIWebView *)[self.incomingSlidingView viewWithTag:WEB_VIEW_TAG];
                             [webView stringByEvaluatingJavaScriptFromString:js];
                 }
                     };
@@ -583,7 +583,7 @@
             [self.progressbar setNeedsDisplay];
         }
         
-        newFrame = CGRectMake(0, 0, self.newSlidingView.frame.size.width, floor(self.newSlidingView.frame.size.height * 0.5));
+        newFrame = CGRectMake(0, 0, self.incomingSlidingView.frame.size.width, floor(self.incomingSlidingView.frame.size.height * 0.5));
         MITThumbnailView *thumb = [[[MITThumbnailView alloc] initWithFrame:newFrame] autorelease];
         NSData *imageData = component.photo;
         NSString *imageURL = component.photoURL;
@@ -599,7 +599,7 @@
         newGraphic = thumb;
     }
     
-    [self.newSlidingView addSubview:newGraphic];
+    [self.incomingSlidingView addSubview:newGraphic];
     
     newFrame = CGRectMake(0, newFrame.origin.y + newFrame.size.height, self.view.frame.size.width,
                           self.view.frame.size.height - newFrame.size.height - self.fakeToolbar.frame.size.height);
@@ -627,7 +627,7 @@
 
     [webView loadHTMLString:html baseURL:baseURL];
     
-    [self.newSlidingView addSubview:webView];
+    [self.incomingSlidingView addSubview:webView];
     
     [self animateViews:forward];
 }
@@ -647,13 +647,13 @@
         [UIView setAnimationDidStopSelector:@selector(cleanupOldViews)];
         self.oldSlidingView.center = CGPointMake(self.oldSlidingView.center.x - transitionWidth,
                                                  self.oldSlidingView.center.y);
-        self.newSlidingView.center = CGPointMake(self.newSlidingView.center.x - transitionWidth,
-                                                 self.newSlidingView.center.y);
+        self.incomingSlidingView.center = CGPointMake(self.incomingSlidingView.center.x - transitionWidth,
+                                                 self.incomingSlidingView.center.y);
         [UIView commitAnimations];
         
     }
     else {
-        self.oldSlidingView = self.newSlidingView;
+        self.oldSlidingView = self.incomingSlidingView;
         [self setupPrevNextArrows];
     }
 
@@ -668,7 +668,7 @@
     }
     
     [self.oldSlidingView removeFromSuperview];
-    self.oldSlidingView = self.newSlidingView;
+    self.oldSlidingView = self.incomingSlidingView;
     
     [self setupPrevNextArrows];
 }
@@ -819,9 +819,9 @@
 
     if (addedHeight > 0) {
         // increase scrollview height by how much the webview height grows
-        CGSize contentSize = self.newSlidingView.contentSize;
-        contentSize.height = self.newSlidingView.frame.size.height + addedHeight;
-        self.newSlidingView.contentSize = contentSize;
+        CGSize contentSize = self.incomingSlidingView.contentSize;
+        contentSize.height = self.incomingSlidingView.frame.size.height + addedHeight;
+        self.incomingSlidingView.contentSize = contentSize;
     }
 }
 
