@@ -480,8 +480,8 @@
 {
 	if ([annotation isKindOfClass:[MITMapSearchResultAnnotation class]]) 
 	{
-        return [[MITPinAnnotationView alloc] initWithAnnotation:annotation
-                                                reuseIdentifier:@"pin"];
+        return [[[MITPinAnnotationView alloc] initWithAnnotation:annotation
+                                                reuseIdentifier:@"pin"] autorelease];
     }
 	
 	return nil;

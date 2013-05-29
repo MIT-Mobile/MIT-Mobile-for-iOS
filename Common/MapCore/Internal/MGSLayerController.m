@@ -8,7 +8,6 @@
 
 @interface MGSLayerController ()
 @property(nonatomic,strong) MGSLayer* layer;
-@property(nonatomic,strong) AGSLayer* nativeLayer;
 @property(strong) NSSet *layerAnnotations;
 @property(copy) NSSet *synchronizedAnnotations;
 @property (nonatomic,strong) NSMutableSet *notificationBlocks;
@@ -64,30 +63,11 @@
 #pragma mark - Dynamic Properties
 - (AGSSpatialReference*)spatialReference
 {
-    // Use a direct ivar access here so we don't trigger the
-    // lazy creation of a graphics layer if it doesn't exist
-    if (_nativeLayer && self.nativeLayer.spatialReference) {
+    if (self.nativeLayer && self.nativeLayer.spatialReference) {
         return self.nativeLayer.spatialReference;
     } else {
         return _spatialReference;
     }
-}
-
-- (AGSLayer*)nativeLayer
-{
-    AGSGraphicsLayer *layer = nil;
-    
-    if (_nativeLayer == nil) {
-        layer = [[AGSGraphicsLayer alloc] init];
-        layer.renderNativeResolution = YES;
-    }
-    
-    if (layer) {
-        self.nativeLayer = layer;
-        [self refresh:nil];
-    }
-    
-    return _nativeLayer;
 }
 
 #pragma mark -
@@ -156,7 +136,9 @@
                 [self.notificationBlocks addObject:localBlock];
             }
         } else {
-            if (self.needsRefresh) {
+            if (self.nativeLayer == nil) {
+                return;
+            } else if (self.needsRefresh) {
                 AGSSpatialReference *spatialReference = self.spatialReference;
                 NSOrderedSet *orderedAnnotations = [NSOrderedSet orderedSetWithOrderedSet:self.layer.annotations];
                 

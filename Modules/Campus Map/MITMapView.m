@@ -54,14 +54,19 @@
     return self;
 }
 
+- (void)dealloc
+{
+    self.mapView.delegate = nil;
+}
+
 - (void)commonInit {
     MGSMapView *mapView = [[MGSMapView alloc] initWithFrame:self.bounds];
     mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                 UIViewAutoresizingFlexibleWidth);
     mapView.delegate = self;
     
-    self.mapView = mapView;
     [self addSubview:mapView];
+    self.mapView = mapView;
     
     self.annotationLayer = [[MGSLayer alloc] initWithName:@"edu.mit.mobile.map.legacy.annotations"];
     self.annotationLayer.delegate = self;
