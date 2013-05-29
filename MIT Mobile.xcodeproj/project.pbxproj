@@ -3356,7 +3356,6 @@
 				486B1E70170E24C900A75563 /* DiningHallMenuFooterView.m in Sources */,
 				2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */,
 				2C70B81E170DBFFA00746EB9 /* MITLogFormatter.m in Sources */,
-				2C70B821170E0F9500746EB9 /* MGSBootstrapper.m in Sources */,
 				48B4ADE41713572300EF426F /* DiningHallMenuCompareView.m in Sources */,
 				48DF79E21714A14E00BCF59F /* DiningHallMenuItemTableCell.m in Sources */,
 				48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */,
