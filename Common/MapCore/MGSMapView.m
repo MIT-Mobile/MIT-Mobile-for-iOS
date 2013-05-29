@@ -284,6 +284,14 @@
                 manager.spatialReference = self.mapView.spatialReference;
                 
                 AGSLayer *arcgisLayer = manager.nativeLayer;
+                
+                if (arcgisLayer == nil) {
+                    arcgisLayer = [[AGSGraphicsLayer alloc] init];
+                    arcgisLayer.renderNativeResolution = YES;
+                    
+                    manager.nativeLayer = arcgisLayer;
+                }
+                
                 NSUInteger agsLayerIndex = [self.baseLayers count] + layerIndex;
                 
                 if ([self.mapView.mapLayers containsObject:arcgisLayer] == NO) {
