@@ -28,7 +28,7 @@
 @property(nonatomic,strong) UIImageView *siteImageView;
 @property(nonatomic,strong) NSString *siteTemplate;
 @property(nonatomic,strong) MITGenericMapRoute *directionsRoute;
-    
+
 @property(nonatomic,strong) IBOutlet UIButton *backArrow;
 @property(nonatomic,strong) IBOutlet UIButton *nextArrow;
 @property(nonatomic,strong) IBOutlet UIButton *overviewButton;
@@ -36,7 +36,7 @@
 @property(nonatomic,strong) IBOutlet UIView *fakeToolbar;
 
 @property(nonatomic) CGFloat fakeToolbarHeightFromNIB;
-    
+
 @property(nonatomic,strong) UIScrollView *oldSlidingView;
 @property(nonatomic,strong) UIScrollView *incomingSlidingView;
 
@@ -81,7 +81,7 @@
     TourSiteOrRoute *previous = self.siteOrRoute.previousComponent;
     if (!self.isShowingConclusionScreen)
         self.siteOrRoute = previous;
-
+    
     [self setupContentAreaForward:NO];
 }
 
@@ -92,17 +92,17 @@
     } else {
         TourSiteOrRoute *next = self.siteOrRoute.nextComponent;
         self.siteOrRoute = next;
-
+        
         [self setupBottomToolBar];
         [self setupContentAreaForward:YES];
     }
 }
 
 - (IBAction)overviewButtonPressed:(id)sender {
-    TourOverviewViewController *vc = [[[TourOverviewViewController alloc] init] autorelease];
-
+    TourOverviewViewController *vc = [[TourOverviewViewController alloc] init];
+    
     NSInteger indexOfTopVC = [self.navigationController.viewControllers indexOfObject:self];
-    UIViewController *callingVC = [self.navigationController.viewControllers objectAtIndex:indexOfTopVC-1];     
+    UIViewController *callingVC = [self.navigationController.viewControllers objectAtIndex:indexOfTopVC-1];
     if([callingVC isKindOfClass:[SiteDetailViewController class]]) {
         vc.callingViewController = callingVC;
     } else {
@@ -130,16 +130,15 @@
         NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
         
         NSError *error;
-        [self.audioPlayer release];
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
         [self.audioPlayer prepareToPlay];
     }
 }
 
 - (void)enablePlayButton {
-    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio.png"]
-                                                                               style:UIBarButtonItemStyleBordered
-                                                                              target:self action:@selector(playAudio)] autorelease];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio.png"]
+                                                                              style:UIBarButtonItemStyleBordered
+                                                                             target:self action:@selector(playAudio)];
     self.navigationItem.rightBarButtonItem.enabled = YES;
 }
 
@@ -162,69 +161,66 @@
     
     if (self.audioPlayer) {
         [self.audioPlayer play];
-
-        self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio_pause.png"]
-                                                                                   style:UIBarButtonItemStyleBordered
-                                                                                  target:self action:@selector(pauseAudio)] autorelease];
-    }
-    
-    else {
+        
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio_pause.png"]
+                                                                                  style:UIBarButtonItemStyleBordered
+                                                                                 target:self action:@selector(pauseAudio)];
+    } else {
         [self disablePlayButton];
         
         TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
         
         NSURL *audioURL = [NSURL URLWithString:component.audioURL];
         
-        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:audioURL parameters:nil] autorelease];
+        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:audioURL parameters:nil];
         request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
             TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
-
+            
             if (error) {
-                UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:@"Connection Failed"
-                                                                     message:@"Audio could not be loaded"
-                                                                    delegate:self
-                                                           cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Connection Failed"
+                                                                    message:@"Audio could not be loaded"
+                                                                   delegate:self
+                                                          cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 alertView.tag = CONNECTION_FAILED_TAG;
                 [alertView show];
-
+                
             } else {
-
                 if ([[audioURL absoluteString] isEqualToString:component.audioURL]) {
-    
-        [data writeToFile:component.audioFile atomically:YES];
-        
-        NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
-        
-        NSError *error;
-        self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL
-                                                                  error:&error];
-        [self.audioPlayer prepareToPlay];
-        if (!self.audioPlayer) {
-            DDLogError(@"%@", [error description]);
-        }
-        
-        self.progressView.progress = 1.0;
-        [UIView beginAnimations:@"fadeProgressView" context:nil];
-        [UIView setAnimationDelegate:self];
-        [UIView setAnimationDelay:0.3];
-        [UIView setAnimationDuration:0.5];
                     
-        if (self.audioPlayer) {
-            [UIView setAnimationDidStopSelector:@selector(playAudio)];
-        }
+                    [data writeToFile:component.audioFile atomically:YES];
                     
-        self.progressView.alpha = 0.0;
-        [UIView commitAnimations];
-    }
-}
+                    NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
+                    
+                    NSError *error;
+                    self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL
+                                                                              error:&error];
+                    [self.audioPlayer prepareToPlay];
+                    if (!self.audioPlayer) {
+                        DDLogError(@"%@", [error description]);
+                    }
+                    
+                    self.progressView.progress = 1.0;
+                    [UIView beginAnimations:@"fadeProgressView" context:nil];
+                    [UIView setAnimationDelegate:self];
+                    [UIView setAnimationDelay:0.3];
+                    [UIView setAnimationDuration:0.5];
+                    
+                    if (self.audioPlayer) {
+                        [UIView setAnimationDidStopSelector:@selector(playAudio)];
+                    }
+                    
+                    self.progressView.alpha = 0.0;
+                    [UIView commitAnimations];
+                }
+            }
         };
-
+        
         request.progressBlock = ^(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger expectedBytesWritten) {
             if (self.progressView) {
                 self.progressView.progress = 0.1 + 0.9 * totalBytesWritten / totalBytesWritten;
             }
         };
-    
+        
         self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
         self.progressView.frame = CGRectMake(200, 0, 120, 20);
         [self.view addSubview:self.progressView];
@@ -232,7 +228,7 @@
         [[NSOperationQueue mainQueue] addOperation:request];
     }
 }
-    
+
 - (void)pauseAudio {
     [self.audioPlayer pause];
     [self enablePlayButton];
@@ -241,10 +237,10 @@
 - (void)stopAudio {
     [self.audioPlayer stop];
     self.audioPlayer = nil;
-    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio.png"]
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio.png"]
                                                                                style:UIBarButtonItemStyleBordered
                                                                               target:self
-                                                                              action:@selector(prepAudio)] autorelease];
+                                                                              action:@selector(prepAudio)];
 }
 
 #pragma mark UIViewController
@@ -271,9 +267,9 @@
     [self.backArrow setTitle:nil forState:UIControlStateNormal];
     [self.nextArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_r.png"] forState:UIControlStateNormal];
     [self.nextArrow setTitle:nil forState:UIControlStateNormal];
-
+    
     self.fakeToolbarHeightFromNIB = self.fakeToolbar.frame.size.height;
-    [self setupBottomToolBar];    
+    [self setupBottomToolBar];
     [self setupContentAreaForward:YES];
 }
 
@@ -333,7 +329,7 @@
 
 - (void)prepSlidingViewsForward:(BOOL)forward {
     CGFloat viewWidth = self.view.frame.size.width;
-    CGFloat slideWidth = viewWidth  * (forward ? 1 : -1); 
+    CGFloat slideWidth = viewWidth  * (forward ? 1 : -1);
     CGFloat xOrigin = (self.oldSlidingView == nil) ? 0 : slideWidth;
     CGFloat height = self.view.frame.size.height - self.fakeToolbar.frame.size.height;
     
@@ -354,14 +350,14 @@
     CGRect tableFrame = CGRectZero;
     tableFrame.size = self.incomingSlidingView.frame.size;
     
-    UITableView *tableView = [[[UITableView alloc] initWithFrame:tableFrame style:UITableViewStyleGrouped] autorelease];
+    UITableView *tableView = [[UITableView alloc] initWithFrame:tableFrame style:UITableViewStyleGrouped];
     tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     tableView.dataSource = self;
     tableView.delegate = self;
     tableView.backgroundColor = [UIColor whiteColor];
     tableView.backgroundView = nil;
     tableView.separatorColor = [UIColor colorWithHexString:@"#BBBBBB"];
-
+    
     // table footer
     {
         NSString *buttonTitle = @"Return to MIT Home Screen";
@@ -378,8 +374,8 @@
         [button addTarget:self
                    action:@selector(returnToHomeScreen:)
          forControlEvents:UIControlEventTouchUpInside];
-
-        UIView *footerWrapperView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, tableFrame.size.width, buttonBackground.size.height + 10)] autorelease];
+        
+        UIView *footerWrapperView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableFrame.size.width, buttonBackground.size.height + 10)];
         footerWrapperView.backgroundColor = [UIColor whiteColor];
         [footerWrapperView addSubview:button];
         
@@ -399,7 +395,7 @@
                        constrainedToSize:CGSizeMake(tableFrame.size.width - 20, headerHeight - 20)
                            lineBreakMode:UILineBreakModeWordWrap];
         
-        UILabel *label = [[[UILabel alloc] initWithFrame:CGRectMake(10, 10, tableFrame.size.width - 20, size.height)] autorelease];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, tableFrame.size.width - 20, size.height)];
         label.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
         label.lineBreakMode = UILineBreakModeWordWrap;
         label.numberOfLines = 0;
@@ -408,7 +404,7 @@
         [label sizeToFit];
         
         
-        UIView *headerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, tableFrame.size.width, headerHeight)] autorelease];
+        UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableFrame.size.width, headerHeight)];
         headerView.backgroundColor = [UIColor whiteColor];
         [headerView addSubview:label];
         tableView.tableHeaderView = headerView;
@@ -426,14 +422,14 @@
 }
 
 - (void)setupContentAreaForward:(BOOL)forward {
-
+    
     if (self.audioPlayer) {
         [self stopAudio];
     }
     [self prepAudio];
     
     self.showingConclusionScreen = NO;
-
+    
     // prep views
     [self prepSlidingViewsForward:forward];
     
@@ -441,7 +437,7 @@
     CGRect newFrame;
     
     TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
-
+    
     // prep strings
     if (!self.siteTemplate) {
         NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
@@ -459,7 +455,7 @@
         if ([self.siteOrRoute.type isEqualToString:@"route"]) {
             
             self.navigationItem.title = @"Walking Directions";
-
+            
             newFrame = CGRectMake(10, 10, self.incomingSlidingView.frame.size.width - 20, floor(self.incomingSlidingView.frame.size.height * 0.5));
             if (!self.routeMapView) {
                 MITMapView *routeMapView = [[MITMapView alloc] initWithFrame:newFrame];
@@ -474,13 +470,13 @@
             } else {
                 self.routeMapView.frame = newFrame;
             }
-
+            
             [self.routeMapView addRoute:[[ToursDataManager sharedManager] mapRouteForTour]];
             
-            TourSiteMapAnnotation *startAnnotation = [[[TourSiteMapAnnotation alloc] init] autorelease];
+            TourSiteMapAnnotation *startAnnotation = [[TourSiteMapAnnotation alloc] init];
             startAnnotation.site = self.siteOrRoute.previousComponent;
             
-            TourSiteMapAnnotation *endAnnotation = [[[TourSiteMapAnnotation alloc] init] autorelease];
+            TourSiteMapAnnotation *endAnnotation = [[TourSiteMapAnnotation alloc] init];
             endAnnotation.site = self.siteOrRoute.nextComponent;
             
             NSArray *pathLocations = [self.siteOrRoute pathAsArray];
@@ -513,7 +509,7 @@
                 self.directionsRoute.pathLocations = pathLocations;
                 [self.routeMapView addRoute:self.directionsRoute];
             }
-
+            
             [self.routeMapView addAnnotation:startAnnotation];
             [self.routeMapView addAnnotation:endAnnotation];
             
@@ -530,8 +526,9 @@
                 NSInteger imageHeight = 100;
                 if (![[NSFileManager defaultManager] fileExistsAtPath:photoFile]) {
                     photoFile = @"tours/tour_photo_loading_animation.gif";
-
-                    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:component.photoURL] parameters:nil] autorelease];
+                    
+                    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:component.photoURL]
+                                                                                       parameters:nil];
                     request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
                         if (error) {
                             
@@ -541,7 +538,7 @@
                                             "img.src = \"%@\";\n", component.photoFile];
                             UIWebView *webView = (UIWebView *)[self.incomingSlidingView viewWithTag:WEB_VIEW_TAG];
                             [webView stringByEvaluatingJavaScriptFromString:js];
-                }
+                        }
                     };
                     [[NSOperationQueue mainQueue] addOperation:request];
                 }
@@ -558,16 +555,16 @@
         }
         
         if (self.siteOrRoute != self.firstSite) {
-            UIBarButtonItem *endTourButton = [[[UIBarButtonItem alloc] initWithTitle:@"End Tour"
+            UIBarButtonItem *endTourButton = [[UIBarButtonItem alloc] initWithTitle:@"End Tour"
                                                                                style:UIBarButtonItemStyleBordered
                                                                               target:self
-                                                                              action:@selector(endTour:)] autorelease];
+                                                                              action:@selector(endTour:)];
             self.navigationItem.leftBarButtonItem = endTourButton;
         } else {
             self.navigationItem.leftBarButtonItem = nil; // default back button
         }
         
-        static NSString *sideTripTemplate = @"<p class=\"sidetrip\"><a href=\"%@\">Side Trip: %@</a></p>";
+        NSString *sideTripTemplate = @"<p class=\"sidetrip\"><a href=\"%@\">Side Trip: %@</a></p>";
         for (CampusTourSideTrip *aTrip in self.siteOrRoute.sideTrips) {
             NSString *tripHTML = [NSString stringWithFormat:sideTripTemplate, aTrip.componentID, aTrip.title];
             NSString *stringToReplace = [NSString stringWithFormat:@"__SIDE_TRIP_%@__", aTrip.componentID];
@@ -584,11 +581,11 @@
         }
         
         newFrame = CGRectMake(0, 0, self.incomingSlidingView.frame.size.width, floor(self.incomingSlidingView.frame.size.height * 0.5));
-        MITThumbnailView *thumb = [[[MITThumbnailView alloc] initWithFrame:newFrame] autorelease];
+        MITThumbnailView *thumb = [[MITThumbnailView alloc] initWithFrame:newFrame];
         NSData *imageData = component.photo;
         NSString *imageURL = component.photoURL;
         
-        if (imageData != nil) { 
+        if (imageData != nil) {
             thumb.imageData = imageData;
         } else {
             thumb.imageURL = imageURL;
@@ -604,7 +601,7 @@
     newFrame = CGRectMake(0, newFrame.origin.y + newFrame.size.height, self.view.frame.size.width,
                           self.view.frame.size.height - newFrame.size.height - self.fakeToolbar.frame.size.height);
     
-    UIWebView *webView = [[[UIWebView alloc] initWithFrame:newFrame] autorelease];
+    UIWebView *webView = [[UIWebView alloc] initWithFrame:newFrame];
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     webView.delegate = self;
     webView.tag = WEB_VIEW_TAG;
@@ -615,7 +612,7 @@
 			((UIScrollView *)subview).bounces = NO;
 		}
 	}
-
+    
     NSMutableString *html = [NSMutableString stringWithString:self.siteTemplate];
     NSString *maxWidth = [NSString stringWithFormat:@"%.0f", webView.frame.size.width];
     [html replaceOccurrencesOfString:@"__WIDTH__" withString:maxWidth options:NSLiteralSearch range:NSMakeRange(0, html.length)];
@@ -624,7 +621,7 @@
     [html replaceOccurrencesOfString:@"__BODY__" withString:body options:NSLiteralSearch range:NSMakeRange(0, html.length)];
     
 	NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
-
+    
     [webView loadHTMLString:html baseURL:baseURL];
     
     [self.incomingSlidingView addSubview:webView];
@@ -635,11 +632,11 @@
 - (void)animateViews:(BOOL)forward {
     self.nextArrow.enabled = NO;
     self.backArrow.enabled = NO;
-
+    
     if (self.oldSlidingView) {
         
         CGFloat viewWidth = self.view.frame.size.width;
-        CGFloat transitionWidth = viewWidth  * (forward ? 1 : -1); 
+        CGFloat transitionWidth = viewWidth  * (forward ? 1 : -1);
         
         [UIView beginAnimations:@"tourAnimation" context:nil];
         [UIView setAnimationDuration:0.4];
@@ -648,7 +645,7 @@
         self.oldSlidingView.center = CGPointMake(self.oldSlidingView.center.x - transitionWidth,
                                                  self.oldSlidingView.center.y);
         self.incomingSlidingView.center = CGPointMake(self.incomingSlidingView.center.x - transitionWidth,
-                                                 self.incomingSlidingView.center.y);
+                                                      self.incomingSlidingView.center.y);
         [UIView commitAnimations];
         
     }
@@ -656,13 +653,12 @@
         self.oldSlidingView = self.incomingSlidingView;
         [self setupPrevNextArrows];
     }
-
+    
 }
 
 - (void)cleanupOldViews {
     if (!self.sideTrip && [self.siteOrRoute.type isEqualToString:@"site"] && self.directionsRoute) {
         [self.routeMapView removeRoute:self.directionsRoute];
-        [self.directionsRoute release];
         self.directionsRoute = nil;
         [self.routeMapView removeAllAnnotations:NO];
     }
@@ -676,11 +672,11 @@
 #pragma mark Navigation
 
 - (void)endTour:(id)sender {
-	UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:@"End Tour?"
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"End Tour?"
 														 message:@"Are you sure you want to end the tour?"
 														delegate:self
 											   cancelButtonTitle:@"Cancel"
-											   otherButtonTitles:@"OK", nil] autorelease];
+											   otherButtonTitles:@"OK", nil];
 	alertView.tag = END_TOUR_ALERT_TAG;
 	[alertView show];
 }
@@ -710,13 +706,12 @@
 
 - (void)setFirstSite:(TourSiteOrRoute *)aSite {
     if (self.firstSite != aSite) {
-        [_firstSite release];
-        _firstSite = [aSite retain];
+        _firstSite = aSite;
         self.lastSite = nil;
         
         if(_firstSite != nil) {
             self.sites = [[ToursDataManager sharedManager] allSitesStartingFrom:self.firstSite];
-            self.lastSite = [self.firstSite.previousComponent.previousComponent retain];
+            self.lastSite = self.firstSite.previousComponent.previousComponent;
         } else {
             self.sites = nil;
             self.lastSite = nil;
@@ -745,22 +740,13 @@
 
 - (void)dealloc {
     self.routeMapView.delegate = nil;
-    self.routeMapView = nil;
     
     if (self.audioPlayer) {
-        self.audioPlayer = nil;
+        self.audioPlayer.delegate = nil;
+        [self.audioPlayer stop];
     }
     
     [self hideProgressView]; // also releases progress view
-    self.siteOrRoute = nil;
-    self.sideTrip = nil;
-    self.sites = nil;
-    self.firstSite = nil;
-    self.siteTemplate = nil;
-    
-    self.lastSite = nil;
-    self.oldSlidingView = nil;
-    [super dealloc];
 }
 
 #pragma mark -
@@ -782,11 +768,11 @@
         }
         return NO;
     }
-
+    
     if (self.sideTrip == nil) {
         CampusTourSideTrip *trip = [self tripForRequest:request];
         if (trip) {
-            SiteDetailViewController *sideTripVC = [[[SiteDetailViewController alloc] init] autorelease];
+            SiteDetailViewController *sideTripVC = [[SiteDetailViewController alloc] init];
             sideTripVC.sideTrip = trip;
             sideTripVC.sites = self.sites;
             sideTripVC.siteOrRoute = self.siteOrRoute;
@@ -816,7 +802,7 @@
     CGFloat addedHeight = size.height - frame.size.height;
     frame.size.height = size.height;
     webView.frame = frame;
-
+    
     if (addedHeight > 0) {
         // increase scrollview height by how much the webview height grows
         CGSize contentSize = self.incomingSlidingView.contentSize;
@@ -829,7 +815,7 @@
 
 - (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
     TourSiteMapAnnotation *tourAnnotation = (TourSiteMapAnnotation *)annotation;
-    MITMapAnnotationView *annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:tourAnnotation reuseIdentifier:@"toursite"] autorelease];
+    MITMapAnnotationView *annotationView = [[MITMapAnnotationView alloc] initWithAnnotation:tourAnnotation reuseIdentifier:@"toursite"];
     
     TourSiteOrRoute *site = tourAnnotation.site;
     TourSiteOrRoute *upcomingSite = self.siteOrRoute.nextComponent;
@@ -858,11 +844,10 @@
     }
     
     [annotationView addSubview:markerView];
-    [markerView release];
     
     annotationView.frame = CGRectOffset(markerView.bounds, deltaX, deltaY);
     annotationView.showsCustomCallout = NO;
-
+    
     
     return annotationView;
 }
@@ -883,11 +868,11 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.backgroundColor = [UIColor colorWithHexString:@"#E0E0E0"];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
-
+    
     if (indexPath.row == 0) {
         cell.textLabel.text = @"Send feedback";
         cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
