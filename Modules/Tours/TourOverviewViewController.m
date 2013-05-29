@@ -40,7 +40,6 @@ TourOverviewTags;
 - (NSString *)textForDistance:(CLLocationDistance)meters;
 - (void)selectAnnotationClosestTo:(CLLocation *)location;
 - (void)showStartSuggestions:(id)sender;
-- (void)selectAnnotationForSideTrip;
 
 - (void)setupNotSureScrim;
 - (void)setupMapLegend;
