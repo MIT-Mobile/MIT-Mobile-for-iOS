@@ -848,9 +848,9 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         }
         
         if (wself.mapView.lastChangeFromInteraction == NO) {
-            if (self.pendingCalloutBlock) {
-                self.pendingCalloutBlock();
-                self.pendingCalloutBlock = nil;
+            if (wself.pendingCalloutBlock) {
+                wself.pendingCalloutBlock();
+                wself.pendingCalloutBlock = nil;
             }
         }
     };
