@@ -23,7 +23,26 @@
 #define END_TOUR_ALERT_TAG 878
 #define CONNECTION_FAILED_TAG 451
 
-@interface SiteDetailViewController (Private)
+@interface SiteDetailViewController ()
+@property(nonatomic,strong) MITMapView *routeMapView;
+@property(nonatomic,strong) UIImageView *siteImageView;
+@property(nonatomic,strong) NSString *siteTemplate;
+@property(nonatomic,strong) MITGenericMapRoute *directionsRoute;
+    
+@property(nonatomic,strong) IBOutlet UIButton *backArrow;
+@property(nonatomic,strong) IBOutlet UIButton *nextArrow;
+@property(nonatomic,strong) IBOutlet UIButton *overviewButton;
+@property(nonatomic,strong) IBOutlet SuperThinProgressBar *progressbar;
+@property(nonatomic,strong) IBOutlet UIView *fakeToolbar;
+
+@property(nonatomic) CGFloat fakeToolbarHeightFromNIB;
+    
+@property(nonatomic,strong) UIScrollView *oldSlidingView;
+@property(nonatomic,strong) UIScrollView *newSlidingView;
+
+@property(nonatomic,strong) TourSiteOrRoute *lastSite;
+@property(nonatomic,strong) AVAudioPlayer *audioPlayer;
+@property(nonatomic,strong) UIProgressView *progressView;
 
 //- (void)setupIntroScreenForward:(BOOL)forward;
 - (void)setupBottomToolBar;
@@ -48,43 +67,8 @@
 - (CLLocationDegrees)euclideanHeadingFromCoordinate:(CLLocationCoordinate2D)start toCoordinate:(CLLocationCoordinate2D)end;
 @end
 
-@implementation SiteDetailViewController {
-    
-    TourSiteOrRoute *_siteOrRoute;
-    CampusTourSideTrip *_sideTrip;
-    NSArray *_sites;
-    
-    MITMapView *_routeMapView;
-    UIImageView *_siteImageView;
-    NSString *siteTemplate;
-    MITGenericMapRoute *directionsRoute;
-    
-    IBOutlet UIButton *backArrow;
-    IBOutlet UIButton *nextArrow;
-    IBOutlet UIButton *overviewButton;
-    //IBOutlet UIButton *qrButton;
-    
-    //BOOL showingIntroScreen;
-    BOOL showingConclusionScreen;
-    
-    UIScrollView *oldSlidingView;
-    UIScrollView *newSlidingView;
-    
-    TourSiteOrRoute *firstSite;
-    TourSiteOrRoute *lastSite;
-    
-    IBOutlet SuperThinProgressBar *progressbar;
-    IBOutlet UIView *fakeToolbar;
-    CGFloat fakeToolbarHeightFromNIB;
-    
-    AVAudioPlayer *audioPlayer;
-    
-    UIProgressView *progressView;
-}
-
+@implementation SiteDetailViewController
 #pragma mark Actions
-
-@synthesize siteOrRoute = _siteOrRoute, sideTrip = _sideTrip, sites = _sites, showingConclusionScreen;
 
 - (void)feedbackButtonPressed:(id)sender {
     NSString *email = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"];
@@ -95,7 +79,7 @@
 - (IBAction)previousButtonPressed:(id)sender {
     
     TourSiteOrRoute *previous = self.siteOrRoute.previousComponent;
-    if (!showingConclusionScreen)
+    if (!self.isShowingConclusionScreen)
         self.siteOrRoute = previous;
 
     [self setupContentAreaForward:NO];
@@ -103,10 +87,9 @@
 
 - (IBAction)nextButtonPressed:(id)sender {
     
-    if (self.siteOrRoute == lastSite.nextComponent && !showingConclusionScreen) {
+    if ((self.siteOrRoute == self.lastSite.nextComponent) && !self.isShowingConclusionScreen) {
         [self setupConclusionScreen];
-    }
-    else {
+    } else {
         TourSiteOrRoute *next = self.siteOrRoute.nextComponent;
         self.siteOrRoute = next;
 
@@ -147,9 +130,9 @@
         NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
         
         NSError *error;
-        [audioPlayer release];
-        audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
-        [audioPlayer prepareToPlay];
+        [self.audioPlayer release];
+        self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
+        [self.audioPlayer prepareToPlay];
     }
 }
 
@@ -169,17 +152,16 @@
 }
 
 - (void)hideProgressView {
-    if (progressView) {
-        [progressView removeFromSuperview];
-        [progressView release];
-        progressView = nil;
+    if (self.progressView) {
+        [self.progressView removeFromSuperview];
+        self.progressView = nil;
     }
 }
 
 - (void)playAudio {
     
-    if (audioPlayer) {
-        [audioPlayer play];
+    if (self.audioPlayer) {
+        [self.audioPlayer play];
 
         self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio_pause.png"]
                                                                                    style:UIBarButtonItemStyleBordered
@@ -214,54 +196,55 @@
         NSURL *fileURL = [NSURL fileURLWithPath:component.audioFile isDirectory:NO];
         
         NSError *error;
-        audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&error];
-        [audioPlayer prepareToPlay];
-        if (!audioPlayer) {
+        self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL
+                                                                  error:&error];
+        [self.audioPlayer prepareToPlay];
+        if (!self.audioPlayer) {
             DDLogError(@"%@", [error description]);
         }
         
-        progressView.progress = 1.0;
+        self.progressView.progress = 1.0;
         [UIView beginAnimations:@"fadeProgressView" context:nil];
         [UIView setAnimationDelegate:self];
         [UIView setAnimationDelay:0.3];
         [UIView setAnimationDuration:0.5];
-        if (audioPlayer) {
+                    
+        if (self.audioPlayer) {
             [UIView setAnimationDidStopSelector:@selector(playAudio)];
         }
-        progressView.alpha = 0.0;
+                    
+        self.progressView.alpha = 0.0;
         [UIView commitAnimations];
     }
 }
         };
 
         request.progressBlock = ^(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger expectedBytesWritten) {
-            if (progressView) {
-                progressView.progress = 0.1 + 0.9 * totalBytesWritten / totalBytesWritten;
+            if (self.progressView) {
+                self.progressView.progress = 0.1 + 0.9 * totalBytesWritten / totalBytesWritten;
             }
         };
     
-        progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-        progressView.frame = CGRectMake(200, 0, 120, 20);
-        [self.view addSubview:progressView];
+        self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+        self.progressView.frame = CGRectMake(200, 0, 120, 20);
+        [self.view addSubview:self.progressView];
         
         [[NSOperationQueue mainQueue] addOperation:request];
     }
 }
     
 - (void)pauseAudio {
-    [audioPlayer pause];
+    [self.audioPlayer pause];
     [self enablePlayButton];
 }
 
 - (void)stopAudio {
-    [audioPlayer stop];
-
+    [self.audioPlayer stop];
+    self.audioPlayer = nil;
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tours/button_audio.png"]
                                                                                style:UIBarButtonItemStyleBordered
-                                                                              target:self action:@selector(prepAudio)] autorelease];
-    
-    [audioPlayer release];
-    audioPlayer = nil;
+                                                                              target:self
+                                                                              action:@selector(prepAudio)] autorelease];
 }
 
 #pragma mark UIViewController
@@ -281,15 +264,15 @@
     
     [super viewDidLoad];
     
-    [overviewButton setImage:[UIImage imageNamed:@"tours/toolbar_map.png"] forState:UIControlStateNormal];
-    [overviewButton setTitle:nil forState:UIControlStateNormal];
+    [self.overviewButton setImage:[UIImage imageNamed:@"tours/toolbar_map.png"] forState:UIControlStateNormal];
+    [self.overviewButton setTitle:nil forState:UIControlStateNormal];
     
-    [backArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_l.png"] forState:UIControlStateNormal];
-    [backArrow setTitle:nil forState:UIControlStateNormal];
-    [nextArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_r.png"] forState:UIControlStateNormal];
-    [nextArrow setTitle:nil forState:UIControlStateNormal];
+    [self.backArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_l.png"] forState:UIControlStateNormal];
+    [self.backArrow setTitle:nil forState:UIControlStateNormal];
+    [self.nextArrow setImage:[UIImage imageNamed:@"tours/toolbar_arrow_r.png"] forState:UIControlStateNormal];
+    [self.nextArrow setTitle:nil forState:UIControlStateNormal];
 
-    fakeToolbarHeightFromNIB = fakeToolbar.frame.size.height;
+    self.fakeToolbarHeightFromNIB = self.fakeToolbar.frame.size.height;
     [self setupBottomToolBar];    
     [self setupContentAreaForward:YES];
 }
@@ -298,13 +281,13 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    _routeMapView.showsUserLocation = YES;
+    self.routeMapView.showsUserLocation = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    _routeMapView.showsUserLocation = NO;
+    self.routeMapView.showsUserLocation = NO;
 }
 
 #pragma mark View setup
@@ -312,56 +295,56 @@
 - (void)setupBottomToolBar {
     if (self.sideTrip == nil) {
         
-        fakeToolbar.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"tours/progressbar_bkgrd.png"]];
+        self.fakeToolbar.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"tours/progressbar_bkgrd.png"]];
         
-        CGRect frame = fakeToolbar.frame;
-        frame.origin.y += frame.size.height - fakeToolbarHeightFromNIB;
-        frame.size.height = fakeToolbarHeightFromNIB;
-        fakeToolbar.frame = frame;
+        CGRect frame = self.fakeToolbar.frame;
+        frame.origin.y += frame.size.height - self.fakeToolbarHeightFromNIB;
+        frame.size.height = self.fakeToolbarHeightFromNIB;
+        self.fakeToolbar.frame = frame;
         
-        progressbar.numberOfSegments = self.sites.count;
-        [progressbar setNeedsDisplay];
+        self.progressbar.numberOfSegments = self.sites.count;
+        [self.progressbar setNeedsDisplay];
         
-        progressbar.hidden = NO;
-        backArrow.hidden = NO;
-        nextArrow.hidden = NO;
+        self.progressbar.hidden = NO;
+        self.backArrow.hidden = NO;
+        self.nextArrow.hidden = NO;
         
     } else {
         self.navigationItem.title = @"Side Trip";
         
         // resize the fake toolbar since there's no progress bar
         UIImage *toolbarImage = [UIImage imageNamed:@"tours/toolbar_bkgrd.png"];
-        CGRect frame = fakeToolbar.frame;
+        CGRect frame = self.fakeToolbar.frame;
         frame.origin.y += (frame.size.height - toolbarImage.size.height);
         frame.size.height = toolbarImage.size.height;
-        fakeToolbar.frame = frame;
-        fakeToolbar.backgroundColor = [UIColor colorWithPatternImage:toolbarImage];
+        self.fakeToolbar.frame = frame;
+        self.fakeToolbar.backgroundColor = [UIColor colorWithPatternImage:toolbarImage];
         
-        progressbar.hidden = YES;
-        backArrow.hidden = YES;
-        nextArrow.hidden = YES;
+        self.progressbar.hidden = YES;
+        self.backArrow.hidden = YES;
+        self.nextArrow.hidden = YES;
     }
 }
 
 - (void)setupPrevNextArrows {
-    backArrow.enabled = self.siteOrRoute != self.firstSite;
-    nextArrow.enabled = !showingConclusionScreen;
+    self.backArrow.enabled = self.siteOrRoute != self.firstSite;
+    self.nextArrow.enabled = !self.isShowingConclusionScreen;
 }
 
 - (void)prepSlidingViewsForward:(BOOL)forward {
     CGFloat viewWidth = self.view.frame.size.width;
     CGFloat slideWidth = viewWidth  * (forward ? 1 : -1); 
-    CGFloat xOrigin = (oldSlidingView == nil) ? 0 : slideWidth;
-    CGFloat height = self.view.frame.size.height - fakeToolbar.frame.size.height;
+    CGFloat xOrigin = (self.oldSlidingView == nil) ? 0 : slideWidth;
+    CGFloat height = self.view.frame.size.height - self.fakeToolbar.frame.size.height;
     
     CGRect newFrame = CGRectMake(xOrigin, 0, self.view.frame.size.width, height);
-    newSlidingView = [[UIScrollView alloc] initWithFrame:newFrame];
-    newSlidingView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    [self.view addSubview:newSlidingView];
+    self.newSlidingView = [[UIScrollView alloc] initWithFrame:newFrame];
+    self.newSlidingView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    [self.view addSubview:self.newSlidingView];
 }
 
 - (void)setupConclusionScreen {
-    showingConclusionScreen = YES;
+    self.showingConclusionScreen = YES;
     
     self.navigationItem.title = @"Thank You";
     [self hidePlayButton];
@@ -369,7 +352,7 @@
     [self prepSlidingViewsForward:YES];
     
     CGRect tableFrame = CGRectZero;
-    tableFrame.size = newSlidingView.frame.size;
+    tableFrame.size = self.newSlidingView.frame.size;
     
     UITableView *tableView = [[[UITableView alloc] initWithFrame:tableFrame style:UITableViewStyleGrouped] autorelease];
     tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -431,26 +414,25 @@
         tableView.tableHeaderView = headerView;
     }
     
-    [newSlidingView addSubview:tableView];
+    [self.newSlidingView addSubview:tableView];
     
-    [progressbar markAsDone];
-    [progressbar setNeedsDisplay];
+    [self.progressbar markAsDone];
+    [self.progressbar setNeedsDisplay];
     [self animateViews:YES];
     
-    _routeMapView.showsUserLocation = NO;
-    [_routeMapView removeFromSuperview];
-    [_routeMapView release];
-    _routeMapView = nil;
+    self.routeMapView.showsUserLocation = NO;
+    [self.routeMapView removeFromSuperview];
+    self.routeMapView = nil;
 }
 
 - (void)setupContentAreaForward:(BOOL)forward {
 
-    if (audioPlayer) {
+    if (self.audioPlayer) {
         [self stopAudio];
     }
     [self prepAudio];
     
-    showingConclusionScreen = NO;
+    self.showingConclusionScreen = NO;
 
     // prep views
     [self prepSlidingViewsForward:forward];
@@ -461,13 +443,14 @@
     TourComponent *component = (self.sideTrip == nil) ? (TourComponent *)self.siteOrRoute : (TourComponent *)self.sideTrip;
 
     // prep strings
-    if (!siteTemplate) {
+    if (!self.siteTemplate) {
         NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
         NSURL *fileURL = [NSURL URLWithString:@"tours/site_template.html" relativeToURL:baseURL];
         
         NSError *error = nil;
-        siteTemplate = [[NSString alloc] initWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
+        self.siteTemplate = [[NSString alloc] initWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
     }
+    
     NSString *nextStopPhoto = [NSString string];
     NSMutableString *body = [NSMutableString stringWithString:component.body];
     
@@ -477,21 +460,22 @@
             
             self.navigationItem.title = @"Walking Directions";
 
-            newFrame = CGRectMake(10, 10, newSlidingView.frame.size.width - 20, floor(newSlidingView.frame.size.height * 0.5));
-            if (!_routeMapView) {
-                _routeMapView = [[MITMapView alloc] initWithFrame:newFrame];
-                _routeMapView.delegate = self;
-                _routeMapView.userInteractionEnabled = NO;
-                _routeMapView.showsUserLocation = YES;
-                _routeMapView.stayCenteredOnUserLocation = NO;
-                _routeMapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-                _routeMapView.layer.borderWidth = 1.0;
-                _routeMapView.layer.borderColor = [UIColor colorWithHexString:@"#C0C0C0"].CGColor;
+            newFrame = CGRectMake(10, 10, self.newSlidingView.frame.size.width - 20, floor(self.newSlidingView.frame.size.height * 0.5));
+            if (!self.routeMapView) {
+                MITMapView *routeMapView = [[MITMapView alloc] initWithFrame:newFrame];
+                routeMapView.delegate = self;
+                routeMapView.userInteractionEnabled = NO;
+                routeMapView.showsUserLocation = YES;
+                routeMapView.stayCenteredOnUserLocation = NO;
+                routeMapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+                routeMapView.layer.borderWidth = 1.0;
+                routeMapView.layer.borderColor = [UIColor colorWithHexString:@"#C0C0C0"].CGColor;
+                self.routeMapView = routeMapView;
             } else {
-                _routeMapView.frame = newFrame;
+                self.routeMapView.frame = newFrame;
             }
 
-            [_routeMapView addRoute:[[ToursDataManager sharedManager] mapRouteForTour]];
+            [self.routeMapView addRoute:[[ToursDataManager sharedManager] mapRouteForTour]];
             
             TourSiteMapAnnotation *startAnnotation = [[[TourSiteMapAnnotation alloc] init] autorelease];
             startAnnotation.site = self.siteOrRoute.previousComponent;
@@ -520,24 +504,25 @@
                                                                        toCoordinate:endCoordinate];
                 endAnnotation.transform = CGAffineTransformMakeRotation(endHeading * (M_PI / 180.0));
                 
-                directionsRoute = [[MITGenericMapRoute alloc] init];
-                directionsRoute.lineWidth = 6;
+                self.directionsRoute = [[MITGenericMapRoute alloc] init];
+                self.directionsRoute.lineWidth = 6;
+                
                 UIColor *color = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
-                directionsRoute.fillColor = color;
-                directionsRoute.strokeColor = color;
-                directionsRoute.pathLocations = pathLocations;
-                [_routeMapView addRoute:directionsRoute];
+                self.directionsRoute.fillColor = color;
+                self.directionsRoute.strokeColor = color;
+                self.directionsRoute.pathLocations = pathLocations;
+                [self.routeMapView addRoute:self.directionsRoute];
             }
 
-            [_routeMapView addAnnotation:startAnnotation];
-            [_routeMapView addAnnotation:endAnnotation];
+            [self.routeMapView addAnnotation:startAnnotation];
+            [self.routeMapView addAnnotation:endAnnotation];
             
             CLLocationCoordinate2D center = CLLocationCoordinate2DMake((startAnnotation.coordinate.latitude + endAnnotation.coordinate.latitude) / 2.0,
                                                                        (startAnnotation.coordinate.longitude + endAnnotation.coordinate.longitude) / 2.0);
-            _routeMapView.zoomLevel = [self.siteOrRoute.zoom floatValue];
-            _routeMapView.centerCoordinate = center;
+            self.routeMapView.zoomLevel = [self.siteOrRoute.zoom floatValue];
+            self.routeMapView.centerCoordinate = center;
             
-            newGraphic = _routeMapView;
+            newGraphic = self.routeMapView;
             
             if (component.photoURL) {
                 NSString *photoFile = component.photoFile;
@@ -554,7 +539,7 @@
                             [data writeToFile:component.photoFile atomically:YES];
                             NSString *js = [NSString stringWithFormat:@"var img = document.getElementById(\"directionsphoto\");\n"
                                             "img.src = \"%@\";\n", component.photoFile];
-                            UIWebView *webView = (UIWebView *)[newSlidingView viewWithTag:WEB_VIEW_TAG];
+                            UIWebView *webView = (UIWebView *)[self.newSlidingView viewWithTag:WEB_VIEW_TAG];
                             [webView stringByEvaluatingJavaScriptFromString:js];
                 }
                     };
@@ -594,11 +579,11 @@
         
         NSInteger progress = [self.sites indexOfObject:self.siteOrRoute];
         if (progress != NSNotFound) {
-            progressbar.currentPosition = progress;
-            [progressbar setNeedsDisplay];
+            self.progressbar.currentPosition = progress;
+            [self.progressbar setNeedsDisplay];
         }
         
-        newFrame = CGRectMake(0, 0, newSlidingView.frame.size.width, floor(newSlidingView.frame.size.height * 0.5));
+        newFrame = CGRectMake(0, 0, self.newSlidingView.frame.size.width, floor(self.newSlidingView.frame.size.height * 0.5));
         MITThumbnailView *thumb = [[[MITThumbnailView alloc] initWithFrame:newFrame] autorelease];
         NSData *imageData = component.photo;
         NSString *imageURL = component.photoURL;
@@ -614,10 +599,10 @@
         newGraphic = thumb;
     }
     
-    [newSlidingView addSubview:newGraphic];
+    [self.newSlidingView addSubview:newGraphic];
     
     newFrame = CGRectMake(0, newFrame.origin.y + newFrame.size.height, self.view.frame.size.width,
-                          self.view.frame.size.height - newFrame.size.height - fakeToolbar.frame.size.height);
+                          self.view.frame.size.height - newFrame.size.height - self.fakeToolbar.frame.size.height);
     
     UIWebView *webView = [[[UIWebView alloc] initWithFrame:newFrame] autorelease];
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -631,7 +616,7 @@
 		}
 	}
 
-    NSMutableString *html = [NSMutableString stringWithString:siteTemplate];
+    NSMutableString *html = [NSMutableString stringWithString:self.siteTemplate];
     NSString *maxWidth = [NSString stringWithFormat:@"%.0f", webView.frame.size.width];
     [html replaceOccurrencesOfString:@"__WIDTH__" withString:maxWidth options:NSLiteralSearch range:NSMakeRange(0, html.length)];
     [html replaceOccurrencesOfString:@"__TITLE__" withString:component.title options:NSLiteralSearch range:NSMakeRange(0, html.length)];
@@ -642,16 +627,16 @@
 
     [webView loadHTMLString:html baseURL:baseURL];
     
-    [newSlidingView addSubview:webView];
+    [self.newSlidingView addSubview:webView];
     
     [self animateViews:forward];
 }
 
 - (void)animateViews:(BOOL)forward {
-    nextArrow.enabled = NO;
-    backArrow.enabled = NO;
+    self.nextArrow.enabled = NO;
+    self.backArrow.enabled = NO;
 
-    if (oldSlidingView) {
+    if (self.oldSlidingView) {
         
         CGFloat viewWidth = self.view.frame.size.width;
         CGFloat transitionWidth = viewWidth  * (forward ? 1 : -1); 
@@ -660,30 +645,30 @@
         [UIView setAnimationDuration:0.4];
         [UIView setAnimationDelegate:self];
         [UIView setAnimationDidStopSelector:@selector(cleanupOldViews)];
-        oldSlidingView.center = CGPointMake(oldSlidingView.center.x - transitionWidth, oldSlidingView.center.y);
-        newSlidingView.center = CGPointMake(newSlidingView.center.x - transitionWidth, newSlidingView.center.y);
+        self.oldSlidingView.center = CGPointMake(self.oldSlidingView.center.x - transitionWidth,
+                                                 self.oldSlidingView.center.y);
+        self.newSlidingView.center = CGPointMake(self.newSlidingView.center.x - transitionWidth,
+                                                 self.newSlidingView.center.y);
         [UIView commitAnimations];
         
     }
     else {
-        oldSlidingView = newSlidingView;
+        self.oldSlidingView = self.newSlidingView;
         [self setupPrevNextArrows];
     }
 
 }
 
 - (void)cleanupOldViews {
-    if (!self.sideTrip && [self.siteOrRoute.type isEqualToString:@"site"] && directionsRoute) {
-        [_routeMapView removeRoute:directionsRoute];
-        [directionsRoute release];
-        directionsRoute = nil;
-        [_routeMapView removeAllAnnotations:NO];
+    if (!self.sideTrip && [self.siteOrRoute.type isEqualToString:@"site"] && self.directionsRoute) {
+        [self.routeMapView removeRoute:self.directionsRoute];
+        [self.directionsRoute release];
+        self.directionsRoute = nil;
+        [self.routeMapView removeAllAnnotations:NO];
     }
     
-    [oldSlidingView removeFromSuperview];
-    [oldSlidingView release];
-    
-    oldSlidingView = newSlidingView;
+    [self.oldSlidingView removeFromSuperview];
+    self.oldSlidingView = self.newSlidingView;
     
     [self setupPrevNextArrows];
 }
@@ -723,22 +708,18 @@
     [self setupContentAreaForward:forward];
 }
 
-- (TourSiteOrRoute *)firstSite {
-    return firstSite;
-}
-
 - (void)setFirstSite:(TourSiteOrRoute *)aSite {
-    if (firstSite != aSite) {
-        [firstSite release];
-        firstSite = [aSite retain];
-        [lastSite release];
+    if (self.firstSite != aSite) {
+        [_firstSite release];
+        _firstSite = [aSite retain];
+        self.lastSite = nil;
         
-        if(firstSite != nil) {
-            self.sites = [[ToursDataManager sharedManager] allSitesStartingFrom:firstSite];
-            lastSite = [firstSite.previousComponent.previousComponent retain];
+        if(_firstSite != nil) {
+            self.sites = [[ToursDataManager sharedManager] allSitesStartingFrom:self.firstSite];
+            self.lastSite = [self.firstSite.previousComponent.previousComponent retain];
         } else {
             self.sites = nil;
-            lastSite = nil;
+            self.lastSite = nil;
         }
     }
 }
@@ -749,42 +730,36 @@
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
     
-    if (audioPlayer) { // don't use stopAudio as it accesses the nav bar
-        [audioPlayer stop];
-        [audioPlayer release];
-        audioPlayer = nil;
+    if (self.audioPlayer) { // don't use stopAudio as it accesses the nav bar
+        [self.audioPlayer stop];
+        self.audioPlayer = nil;
     }
     [self hideProgressView]; // also releases progress view
 }
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-
-    //[_routeMapView release];
-    //_routeMapView = nil;
-    
-    [oldSlidingView release];
-    oldSlidingView = nil;
+    self.oldSlidingView = nil;
 }
 
 
 - (void)dealloc {
-    [_routeMapView removeTileOverlay];
-    _routeMapView.delegate = nil;
-    [_routeMapView release];
+    self.routeMapView.delegate = nil;
+    self.routeMapView = nil;
     
-    if (audioPlayer) {
-        [audioPlayer stop];
-        [audioPlayer release];
+    if (self.audioPlayer) {
+        self.audioPlayer = nil;
     }
+    
     [self hideProgressView]; // also releases progress view
     self.siteOrRoute = nil;
     self.sideTrip = nil;
     self.sites = nil;
     self.firstSite = nil;
-    [siteTemplate release];
-    [lastSite release];
-    [oldSlidingView release];
+    self.siteTemplate = nil;
+    
+    self.lastSite = nil;
+    self.oldSlidingView = nil;
     [super dealloc];
 }
 
@@ -844,9 +819,9 @@
 
     if (addedHeight > 0) {
         // increase scrollview height by how much the webview height grows
-        CGSize contentSize = newSlidingView.contentSize;
-        contentSize.height = newSlidingView.frame.size.height + addedHeight;
-        newSlidingView.contentSize = contentSize;
+        CGSize contentSize = self.newSlidingView.contentSize;
+        contentSize.height = self.newSlidingView.frame.size.height + addedHeight;
+        self.newSlidingView.contentSize = contentSize;
     }
 }
 
@@ -960,10 +935,10 @@
         [UIView setAnimationDelegate:self];
         [UIView setAnimationDelay:0.3];
         [UIView setAnimationDuration:0.5];
-        if (audioPlayer) {
+        if (self.audioPlayer) {
             [UIView setAnimationDidStopSelector:@selector(hideProgressView)];
         }
-        progressView.alpha = 0.0;
+        self.progressView.alpha = 0.0;
         [UIView commitAnimations];
     }
     
