@@ -29,7 +29,7 @@ static ShuttleDataManager* s_dataManager = nil;
 @synthesize stopLocations = _stopLocations;
 @synthesize stopLocationsByID = _stopLocationsByID;
 
-NSString * const shuttlePathExtension = @"/shuttles/routes";
+NSString * const shuttlePathExtension = @"/apis/shuttles/routes";
 NSString * const shuttleStopPath = @"/stops/";
 
 + (ShuttleDataManager *)sharedDataManager {
@@ -201,22 +201,21 @@ NSString * const shuttleStopPath = @"/stops/";
 
 -(void) requestRoutes
 {
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:@"true", @"compact", nil];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"shuttles"
-                                                                              command:@"routes"
-                                                                           parameters:params] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:shuttlePathExtension parameters:nil];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
+        if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
             
             BOOL routesChanged = NO;
+            
+            jsonResult = [jsonResult objectForKey:@"routes"];
             
             NSMutableArray *routeIDs = [[NSMutableArray alloc] initWithCapacity:[jsonResult count]];
             NSInteger sortOrder = 0;
             
             for (NSDictionary *routeInfo in jsonResult) {
                 
-                NSString *routeID = [routeInfo objectForKey:@"route_id"];
+                NSString *routeID = [routeInfo objectForKey:@"id"];
                 
                 [routeIDs addObject:routeID];
                 
@@ -267,11 +266,9 @@ NSString * const shuttleStopPath = @"/stops/";
 
 -(void) requestStop:(NSString*)stopID
 {
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:stopID, @"id", nil];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"shuttles"
-                                                                              command:@"stopInfo"
-                                                                           parameters:params] autorelease];
-
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"%@%@", shuttlePathExtension, shuttleStopPath]
+                                                                                 parameters:nil];
+    
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
             
@@ -293,7 +290,7 @@ NSString * const shuttleStopPath = @"/stops/";
                     if (!next) {
                         next = [routeAtStop objectForKey:@"nextScheduled"];
                     }
-                    stop.nextScheduled = [next doubleValue];
+                    stop.next = [next doubleValue];
                     NSNumber* now = [jsonResult objectForKey:@"now"];
                     stop.now = [now doubleValue];
                     
@@ -315,15 +312,15 @@ NSString * const shuttleStopPath = @"/stops/";
 
 -(void) requestRoute:(NSString*)routeID
 {
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:routeID, @"id", @"true", @"full", nil];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"shuttles"
-                                                                              command:@"routeInfo"
-                                                                           parameters:params] autorelease];
-
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"%@/%@", shuttlePathExtension, routeID]
+                                                                                 parameters:nil];
+    
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
+        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
             
-            NSString *routeID = [jsonResult objectForKey:@"route_id"];
+            jsonResult = [jsonResult objectAtIndex:0];
+            
+            NSString *routeID = [jsonResult objectForKey:@"id"];
             
             ShuttleRoute *route = [_shuttleRoutesByID objectForKey:routeID];
             if (route == nil) {

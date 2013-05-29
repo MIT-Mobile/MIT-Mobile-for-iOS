@@ -38,6 +38,7 @@
 
 - (void)updateInfo:(NSDictionary *)stopInfo;
 
+- (id)initWithDictionary:(NSDictionary *)dict;
 - (id)initWithRouteStop:(ShuttleRouteStop *)routeStop;
 - (id)initWithStopLocation:(ShuttleStopLocation *)stopLocation routeID:(NSString *)routeID;
 

@@ -77,6 +77,22 @@
 //	_stopLocation.longitude = [NSNumber numberWithDouble:longitude];
 }
 
+- (NSString *)url {
+    return _url;
+}
+
+- (void)setUrl:(NSString *)url {
+    _url = url;
+}
+
+- (NSString *)routeID {
+    return _routeID;
+}
+
+- (void)setRouteID:(NSString *)routeID {
+    _routeID = routeID;
+}
+
 - (NSString *)direction
 {
     return @"";
@@ -148,6 +164,14 @@
 }
 
 #pragma mark initializers
+
+- (id)initWithDictionary:(NSDictionary *)dict {
+    self = [super init];
+	if (self != nil) {
+		[self updateInfo:dict];
+	}
+	return self;
+}
 
 - (id)initWithRouteStop:(ShuttleRouteStop *)routeStop
 {

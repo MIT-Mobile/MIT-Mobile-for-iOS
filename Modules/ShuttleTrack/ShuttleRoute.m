@@ -113,15 +113,18 @@
 	}
 	
 	NSMutableArray *newStops = [NSMutableArray array];
-	BOOL hasNewStops = NO;
-    BOOL pathChanged = NO;
+//	BOOL hasNewStops = NO;
+//    BOOL pathChanged = NO;
 	
 	NSMutableSet *oldRouteStops = [[NSMutableSet alloc] initWithSet:self.cache.stops];
-	NSMutableSet *newRouteStops = [NSMutableSet setWithCapacity:[stops count]];
+//	NSMutableSet *newRouteStops = [NSMutableSet setWithCapacity:[stops count]];
 	
 	NSInteger order = 0;
 	for (NSDictionary *stopInfo in stops) {
-		ShuttleStop *shuttleStop = nil;
+		ShuttleStop *shuttleStop = [[ShuttleStop alloc] initWithDictionary:stopInfo];
+        
+        // TODO: add check for old stops
+        /*
 		BOOL isOldStop = NO;
 		
 		NSString *stopID = [stopInfo objectForKey:@"id"];
@@ -146,19 +149,29 @@
 
 			hasNewStops = YES;
 		}
+         */
 		
+        // TODO: move to somewhere else. Stops has no path anymore.
+        /*
         NSArray *newPath = [stopInfo objectForKey:@"path"];
         if (newPath == nil) { newPath = [NSArray array]; }
         if ([shuttleStop.path isEqualToArray: newPath] == NO) {
             pathChanged = YES;
         }
+         */
+        
+        
 		[shuttleStop updateInfo:stopInfo];
 		[newStops addObject:shuttleStop];
 
 		shuttleStop.order = order;
 		order++;
 	}
+    
+    _stops = [newStops retain];
 	
+    // TODO: work with cached stops. Don't have this functionality yet.
+    /*
 	// check if we added new stops or shouldn't include old ones
 	if (pathChanged || hasNewStops || [_stops count] > [stops count]) {
 		
@@ -172,7 +185,7 @@
 		
 		pathShouldUpdate = YES;
 	}
-
+     
 	if (pathShouldUpdate) {
 		// get rid of obsolete map annotations
 		NSMutableArray *oldStops = [[NSMutableArray alloc] initWithCapacity:[stops count]];
@@ -188,6 +201,7 @@
 		
 		[self updatePath];
 	}
+     */
 	
 	[oldRouteStops release];
 }
@@ -220,6 +234,7 @@
 	NSArray *stops = [routeInfo objectForKey:@"stops"];
 	if (stops) {
         NSLog(@"STOPS: \n\n%@", stops);
+//        _stops = (NSMutableArray *)stops;
 		self.stops = (NSMutableArray *)stops;
 //        for (ShuttleStop *aStop in self.stops) {
 //            aStop.now = [[routeInfo objectForKey:@"now"] doubleValue];
@@ -340,7 +355,7 @@
 {
 	NSString* summaryString = [NSString stringWithFormat:@"Route loop repeats every %d minutes.", self.interval]; //self.interval];
 	if (nil != self.summary) {
-		summaryString = [NSString stringWithFormat:@"%@ %@", self.summary, summaryString];
+		summaryString = [NSString stringWithFormat:@"%@ %@", self.description, summaryString];
 	}
 	
     return [NSString stringWithFormat:@"%@\n%@", [self trackingStatus], summaryString];
@@ -349,23 +364,34 @@
 - (NSString *)trackingStatus
 {
 	NSString *summaryString = nil;
-	
+    
 	if (_liveStatusFailed) {
 		return @"Real time tracking failed to load.";
 	}
 	
-	ShuttleStop *aStop = [self.stops lastObject];
-	if (aStop.next) { // we have something from the server
-		if (self.vehicleLocations && self.vehicleLocations.count > 0) {
-			summaryString = @"Real time bus tracking online.";
-		} else if (self.isRunning) {
-			summaryString = @"Tracking offline. Following schedule.";
-		} else {
-			summaryString = @"Bus not running. Following schedule.";
-		}
-	} else {
-		summaryString = @"Loading...";
-	}
+//	ShuttleStop *aStop = [self.stops lastObject];
+//	if (aStop.next) { // we have something from the server
+//		if (self.vehicleLocations && self.vehicleLocations.count > 0) {
+//			summaryString = @"Real time bus tracking online.";
+//		} else if (self.isRunning) {
+//			summaryString = @"Tracking offline. Following schedule.";
+//		} else {
+//			summaryString = @"Bus not running. Following schedule.";
+//		}
+//	} else {
+//		summaryString = @"Loading...";
+//	}
+    
+    if (self.active) {
+        if (self.predictable) {
+            summaryString = @"Real time bus tracking online.";
+        } else {
+            summaryString = @"Tracking offline. Following schedule.";
+        }
+    } else {
+        summaryString = @"Bus not running. Following schedule.";
+    }
+    
 	
 	return summaryString;
 }
