@@ -60,6 +60,10 @@
 
 - (void)dealloc
 {
+    self.mapView.layerDelegate = nil;
+    self.mapView.calloutDelegate = nil;
+    self.mapView.touchDelegate = nil;
+    
     [self.observerTokens enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         [[NSNotificationCenter defaultCenter] removeObserver:obj];
     }];
