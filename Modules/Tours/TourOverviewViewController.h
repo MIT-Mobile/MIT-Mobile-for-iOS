@@ -26,7 +26,7 @@ UITableViewDelegate, MITMapViewDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) NSMutableArray *components;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) MITMapView *mapView;
-@property (nonatomic, assign) UIViewController *callingViewController;
+@property (nonatomic, weak) UIViewController *callingViewController;
 @property (nonatomic, strong) CampusTourSideTrip *sideTrip;
 @property (nonatomic, strong) TourMapAnnotation *selectedAnnotation;
 @property (nonatomic, strong) UIBarButtonItem *sideTripsItem;
