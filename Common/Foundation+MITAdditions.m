@@ -357,7 +357,7 @@ typedef struct {
 {
     // takes date string of format hh:mm and returns an NSDate with today's date at the specified time.
     
-    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSCalendar *cal = [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
     NSDateComponents *comp = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSTimeZoneCalendarUnit fromDate:[NSDate date]];
     
     NSArray *timeComponents = [time componentsSeparatedByString:@":"];
@@ -387,14 +387,14 @@ typedef struct {
 
 - (BOOL) isTomorrow
 {
-    NSDate *tomorrow = [[NSDate alloc] initWithTimeIntervalSinceNow:SECONDS_PER_DAY];
+    NSDate *tomorrow = [[[NSDate alloc] initWithTimeIntervalSinceNow:SECONDS_PER_DAY] autorelease];
     return [self isEqualToDateIgnoringTime:tomorrow];
 }
 
 
 - (BOOL) isYesterday
 {
-    NSDate *yesterday = [[NSDate alloc] initWithTimeIntervalSinceNow:-SECONDS_PER_DAY];
+    NSDate *yesterday = [[[NSDate alloc] initWithTimeIntervalSinceNow:-SECONDS_PER_DAY] autorelease];
     return [self isEqualToDateIgnoringTime:yesterday];
 }
 
