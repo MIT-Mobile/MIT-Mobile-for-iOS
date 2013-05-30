@@ -10,11 +10,11 @@
 #define LARGE_SHUTTLE_ANNOTATION_ZOOM 14.5
 
 @interface RouteMapViewController ()
-@property(nonatomic,strong) IBOutlet UILabel* routeTitleLabel;
-@property(nonatomic,strong) IBOutlet UILabel* routeStatusLabel;
-@property(nonatomic,strong) IBOutlet UIButton* resetButton;
-@property(nonatomic,strong) IBOutlet UIButton* gpsButton;
-@property(nonatomic,strong) IBOutlet UIImageView* scrim;
+@property(nonatomic,weak) IBOutlet UILabel* routeTitleLabel;
+@property(nonatomic,weak) IBOutlet UILabel* routeStatusLabel;
+@property(nonatomic,weak) IBOutlet UIButton* resetButton;
+@property(nonatomic,weak) IBOutlet UIButton* gpsButton;
+@property(nonatomic,weak) IBOutlet UIImageView* scrim;
 
 @property(nonatomic,strong) NSArray* vehicleAnnotations;
 @property(nonatomic,strong) NSDictionary* routeStops;
@@ -46,7 +46,7 @@
     
     if (self.mapView == nil)
     {
-        MITMapView *mapView = [[[MITMapView alloc] initWithFrame:self.view.bounds] autorelease];
+        MITMapView *mapView = [[MITMapView alloc] initWithFrame:self.view.bounds];
         mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                     UIViewAutoresizingFlexibleWidth);
         self.mapView = mapView;
@@ -82,9 +82,9 @@
 	[[ShuttleDataManager sharedDataManager] registerDelegate:self];
 	[[ShuttleDataManager sharedDataManager] requestRoute:self.route.routeID];
 	
-	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
 																							target:self
-																							action:@selector(pollShuttleLocations)] autorelease];
+																							action:@selector(pollShuttleLocations)];
 
 }
 
@@ -150,19 +150,7 @@
 
 - (void)dealloc {
 	self.mapView.delegate = nil;
-	self.mapView = nil;
-    self.routeStops = nil;
-    self.gpsButton = nil;
-    self.routeStops = nil;
-    self.vehicleAnnotations = nil;
-    self.routeTitleLabel = nil;
-    self.routeStatusLabel = nil;
-	self.route = nil;
-    
     [self.pollingTimer invalidate];
-    self.pollingTimer = nil;
-	
-    [super dealloc];
 }
 
 -(void) viewDidUnload
@@ -344,7 +332,8 @@
 	if ([annotation isKindOfClass:[ShuttleStopMapAnnotation class]]) {
         ShuttleStopMapAnnotation *stopAnnotation = (ShuttleStopMapAnnotation *)annotation;
         
-		annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"stop"] autorelease];
+		annotationView = [[MITMapAnnotationView alloc] initWithAnnotation:annotation
+                                                           reuseIdentifier:@"stop"];
         
         // determine which image to use for this annotation. If our map is above 2.0, use the big one
         if (self.mapView.zoomLevel >= LARGE_SHUTTLE_ANNOTATION_ZOOM) {
@@ -373,12 +362,13 @@
 	{
 		ShuttleLocation* shuttleLocation = (ShuttleLocation*) annotation;
 		
-		annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"bus"] autorelease];
+		annotationView = [[MITMapAnnotationView alloc] initWithAnnotation:annotation
+                                                           reuseIdentifier:@"bus"];
 		UIImage* pin = [UIImage imageNamed:@"shuttle/shuttle-bus-location.png"];
-		UIImageView* imageView = [[[UIImageView alloc] initWithImage:pin] autorelease];
+		UIImageView* imageView = [[UIImageView alloc] initWithImage:pin];
 		
 		UIImage* arrow = [UIImage imageNamed:@"shuttle/shuttle-bus-location-arrow.png"];
-		UIImageView* arrowImageView = [[[UIImageView alloc] initWithImage:arrow] autorelease];
+		UIImageView* arrowImageView = [[UIImageView alloc] initWithImage:arrow];
 
 		CGAffineTransform cgCTM = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(shuttleLocation.heading));
 		arrowImageView.frame = CGRectMake(9, 10, arrowImageView.frame.size.width, arrowImageView.frame.size.height);
@@ -407,11 +397,16 @@
 
 - (void)mapView:(MITMapView *)mapView annotationViewCalloutAccessoryTapped:(MITMapAnnotationView *)view {
     if ([view.annotation isKindOfClass:[ShuttleStopMapAnnotation class]]) {
-		ShuttleStopViewController* shuttleStopVC = [[[ShuttleStopViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+		ShuttleStopViewController* shuttleStopVC = [[ShuttleStopViewController alloc] initWithStyle:UITableViewStyleGrouped];
 		shuttleStopVC.shuttleStop = [(ShuttleStopMapAnnotation*)view.annotation shuttleStop];
 		shuttleStopVC.annotation = (ShuttleStopMapAnnotation*)view.annotation;
-		[self.navigationController pushViewController:shuttleStopVC animated:YES];
-		[shuttleStopVC.mapButton addTarget:self action:@selector(showSelectedStop:) forControlEvents:UIControlEventTouchUpInside];
+        
+		[self.navigationController pushViewController:shuttleStopVC
+                                             animated:YES];
+        
+		[shuttleStopVC.mapButton addTarget:self
+                                    action:@selector(showSelectedStop:)
+                          forControlEvents:UIControlEventTouchUpInside];
 	}
 }
 
