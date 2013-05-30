@@ -253,11 +253,14 @@
 {
 	
 	self.mapView.stayCenteredOnUserLocation = !self.mapView.stayCenteredOnUserLocation;
-
-	NSString *bgImageName = [NSString stringWithFormat:@"shuttle/scrim-button-background%@",
-                             (self.mapView.stayCenteredOnUserLocation ? @"-highlighted" : @"")];
-	[self.gpsButton setBackgroundImage:[UIImage imageNamed:bgImageName]
-                          forState:UIControlStateNormal];
+	
+    if (self.mapView.stayCenteredOnUserLocation) {
+        [self.gpsButton setBackgroundImage:[UIImage imageNamed:@"shuttle/scrim-button-background-highlighted"]
+                                  forState:UIControlStateNormal];
+    } else {
+        [self.gpsButton setBackgroundImage:[UIImage imageNamed:@"shuttle/scrim-button-background"]
+                                  forState:UIControlStateNormal];
+    }
 	
 	[self.mapView setShowsUserLocation:self.mapView.stayCenteredOnUserLocation];
 	
@@ -364,10 +367,10 @@
 		
 		annotationView = [[MITMapAnnotationView alloc] initWithAnnotation:annotation
                                                            reuseIdentifier:@"bus"];
-		UIImage* pin = [UIImage imageNamed:@"shuttle/shuttle-bus-location.png"];
+		UIImage* pin = [UIImage imageNamed:@"shuttle/shuttle-bus-location"];
 		UIImageView* imageView = [[UIImageView alloc] initWithImage:pin];
 		
-		UIImage* arrow = [UIImage imageNamed:@"shuttle/shuttle-bus-location-arrow.png"];
+		UIImage* arrow = [UIImage imageNamed:@"shuttle/shuttle-bus-location-arrow"];
 		UIImageView* arrowImageView = [[UIImageView alloc] initWithImage:arrow];
 
 		CGAffineTransform cgCTM = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(shuttleLocation.heading));
@@ -382,7 +385,7 @@
 		annotationView.frame = imageView.frame;
 		annotationView.canShowCallout = NO;
         annotationView.showsCustomCallout = NO;
-        annotationView.centerOffset = CGPointMake(0, -(pin.size.height / 2.0) - 3.0); // Subtracting 3px because there
+        annotationView.centerOffset = CGPointMake(0, -(pin.size.height / 2.0) + 3.0); // adding 3px because there
                                                                                       // is a 3px transparent border
                                                                                       // around the image.
         
