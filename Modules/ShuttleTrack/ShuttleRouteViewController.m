@@ -47,10 +47,7 @@
     self.titleCell = nil;
     self.loadingCell = nil;
     self.shuttleStopCell = nil;
-    [self.routeMapViewController removeFromParentViewController];
     self.routeMapViewController = nil;
-	
-    [super dealloc];
 }
 
 
@@ -63,10 +60,10 @@
     
     self.title = @"Route";
 	
-	self.viewTypeButton = [[[UIBarButtonItem alloc] initWithTitle:@"Map"
-													   style:UIBarButtonItemStylePlain 
-													  target:self
-													  action:@selector(displayTypeChanged:)] autorelease];
+	self.viewTypeButton = [[UIBarButtonItem alloc] initWithTitle:@"Map"
+                                                           style:UIBarButtonItemStylePlain 
+                                                          target:self
+                                                          action:@selector(displayTypeChanged:)];
 	self.navigationItem.rightBarButtonItem = self.viewTypeButton;
 	
     MITModuleURL *url = [[MITModuleURL alloc] initWithTag:ShuttleTag
@@ -105,10 +102,10 @@
         
         // poll for stop times every 20 seconds 
         self.pollingTimer = [NSTimer scheduledTimerWithTimeInterval:20
-                                                          target:self 
-                                                        selector:@selector(requestRoute)
-                                                        userInfo:nil 
-                                                         repeats:YES];
+                                                             target:self 
+                                                           selector:@selector(requestRoute)
+                                                           userInfo:nil 
+                                                            repeats:YES];
     }
 }
 
@@ -240,8 +237,8 @@
 	if (self.isMapShowing != showMap) {
         if (showMap) {
             if (self.routeMapViewController == nil) {
-                RouteMapViewController *routeMapViewController = [[[RouteMapViewController alloc] initWithNibName:@"RouteMapViewController"
-                                                                                                          bundle:nil] autorelease];
+                RouteMapViewController *routeMapViewController = [[RouteMapViewController alloc] initWithNibName:@"RouteMapViewController"
+                                                                                                          bundle:nil];
                 routeMapViewController.route = self.route;
                 [self addChildViewController:routeMapViewController];
                 self.routeMapViewController = routeMapViewController;
