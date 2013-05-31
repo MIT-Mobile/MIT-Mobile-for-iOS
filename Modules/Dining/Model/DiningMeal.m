@@ -25,7 +25,7 @@
     }
 
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"HH:mm"];
+    [formatter setDateFormat:@"HH:mm:ss"];
     [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
 
     if (dict[@"start_time"]) {

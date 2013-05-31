@@ -30,8 +30,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -41,8 +41,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -106,8 +106,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -117,8 +117,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -191,8 +191,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -202,8 +202,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "bits and bytes",
@@ -286,8 +286,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -300,8 +300,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -371,8 +371,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -385,8 +385,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -425,8 +425,8 @@
             "meals": [
               {
                 "name": "brunch",
-                "start_time": "10:00",
-                "end_time": "13:00",
+                "start_time": "10:00:00",
+                "end_time": "13:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -436,8 +436,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -484,8 +484,8 @@
             "meals": [
               {
                 "name": "brunch",
-                "start_time": "10:00",
-                "end_time": "13:00",
+                "start_time": "10:00:00",
+                "end_time": "13:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -495,8 +495,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -565,8 +565,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "11:00",
+                "start_time": "08:00:00",
+                "end_time": "11:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -576,8 +576,8 @@
               },
               {
                 "name": "lunch",
-                "start_time": "11:00",
-                "end_time": "15:00",
+                "start_time": "11:00:00",
+                "end_time": "15:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -624,8 +624,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "21:00",
+                "start_time": "17:00:00",
+                "end_time": "21:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -689,8 +689,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "11:00",
+                "start_time": "08:00:00",
+                "end_time": "11:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -701,8 +701,8 @@
               },
               {
                 "name": "lunch",
-                "start_time": "11:00",
-                "end_time": "15:00",
+                "start_time": "11:00:00",
+                "end_time": "15:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -755,8 +755,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "21:00",
+                "start_time": "17:00:00",
+                "end_time": "21:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -818,8 +818,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "11:00",
+                "start_time": "08:00:00",
+                "end_time": "11:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -832,8 +832,8 @@
               },
               {
                 "name": "lunch",
-                "start_time": "11:00",
-                "end_time": "15:00",
+                "start_time": "11:00:00",
+                "end_time": "15:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -883,8 +883,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "21:00",
+                "start_time": "17:00:00",
+                "end_time": "21:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -937,8 +937,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "11:00",
+                "start_time": "08:00:00",
+                "end_time": "11:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -948,8 +948,8 @@
               },
               {
                 "name": "lunch",
-                "start_time": "11:00",
-                "end_time": "15:00",
+                "start_time": "11:00:00",
+                "end_time": "15:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -1002,8 +1002,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "21:00",
+                "start_time": "17:00:00",
+                "end_time": "21:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -1058,8 +1058,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "11:00",
+                "start_time": "08:00:00",
+                "end_time": "11:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -1072,8 +1072,8 @@
               },
               {
                 "name": "lunch",
-                "start_time": "11:00",
-                "end_time": "15:00",
+                "start_time": "11:00:00",
+                "end_time": "15:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -1129,8 +1129,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "21:00",
+                "start_time": "17:00:00",
+                "end_time": "21:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -1188,8 +1188,8 @@
             "meals": [
               {
                 "name": "brunch",
-                "start_time": "10:00",
-                "end_time": "13:00",
+                "start_time": "10:00:00",
+                "end_time": "13:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -1234,8 +1234,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "21:00",
+                "start_time": "17:00:00",
+                "end_time": "21:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -1292,8 +1292,8 @@
             "meals": [
               {
                 "name": "brunch",
-                "start_time": "10:00",
-                "end_time": "13:00",
+                "start_time": "10:00:00",
+                "end_time": "13:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -1343,8 +1343,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "21:00",
+                "start_time": "17:00:00",
+                "end_time": "21:00:00",
                 "items": [
                   {
                     "station": "stockpot",
@@ -1430,8 +1430,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "bowls",
@@ -1503,8 +1503,8 @@
               },
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -1522,8 +1522,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "pi",
@@ -1593,8 +1593,8 @@
               },
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -1612,8 +1612,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "pi",
@@ -1690,8 +1690,8 @@
               },
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -1706,8 +1706,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "pi",
@@ -1787,8 +1787,8 @@
               },
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -1803,8 +1803,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "pi",
@@ -1843,8 +1843,8 @@
               },
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -1859,8 +1859,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "pi",
@@ -1886,8 +1886,8 @@
               },
               {
                 "name": "brunch",
-                "start_time": "10:00",
-                "end_time": "13:00",
+                "start_time": "10:00:00",
+                "end_time": "13:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -1963,8 +1963,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:30",
-                "end_time": "20:30",
+                "start_time": "17:30:00",
+                "end_time": "20:30:00",
                 "items": [
                   {
                     "station": "pi",
@@ -1975,8 +1975,8 @@
               },
               {
                 "name": "brunch",
-                "start_time": "10:00",
-                "end_time": "13:00",
+                "start_time": "10:00:00",
+                "end_time": "13:00:00",
                 "items": [
                   {
                     "station": "market grill",
@@ -2058,8 +2058,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -2076,8 +2076,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -2137,8 +2137,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -2158,8 +2158,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -2245,8 +2245,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -2266,8 +2266,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -2356,8 +2356,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -2378,8 +2378,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -2473,8 +2473,8 @@
             "meals": [
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "breakfast",
@@ -2494,8 +2494,8 @@
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -2575,13 +2575,13 @@
               },
               {
                 "name": "brunch",
-                "start_time": "10:00",
-                "end_time": "13:00"
+                "start_time": "10:00:00",
+                "end_time": "13:00:00"
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -2646,13 +2646,13 @@
               },
               {
                 "name": "brunch",
-                "start_time": "10:00",
-                "end_time": "13:00"
+                "start_time": "10:00:00",
+                "end_time": "13:00:00"
               },
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "comforts",
@@ -2734,8 +2734,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "Stock Pot",
@@ -2773,8 +2773,8 @@
               },
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -2798,8 +2798,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "Stock Pot",
@@ -2840,8 +2840,8 @@
               },
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -2865,8 +2865,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "Stock Pot",
@@ -2908,8 +2908,8 @@
               },
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -2933,8 +2933,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "Stock Pot",
@@ -2969,8 +2969,8 @@
               },
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -2994,8 +2994,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "Stock Pot",
@@ -3033,8 +3033,8 @@
               },
               {
                 "name": "breakfast",
-                "start_time": "08:00",
-                "end_time": "10:00",
+                "start_time": "08:00:00",
+                "end_time": "10:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -3058,8 +3058,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "Stock Pot",
@@ -3100,8 +3100,8 @@
               },
               {
                 "name": "brunch",
-                "start_time": "10:00",
-                "end_time": "13:00",
+                "start_time": "10:00:00",
+                "end_time": "13:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
@@ -3129,8 +3129,8 @@
             "meals": [
               {
                 "name": "dinner",
-                "start_time": "17:00",
-                "end_time": "20:00",
+                "start_time": "17:00:00",
+                "end_time": "20:00:00",
                 "items": [
                   {
                     "station": "Stock Pot",
@@ -3168,8 +3168,8 @@
               },
               {
                 "name": "brunch",
-                "start_time": "10:00",
-                "end_time": "13:00",
+                "start_time": "10:00:00",
+                "end_time": "13:00:00",
                 "items": [
                   {
                     "station": "Breakfast",
