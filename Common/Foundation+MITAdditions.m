@@ -426,4 +426,48 @@ typedef struct {
     return [self dateByAddingTimeInterval:SECONDS_PER_DAY];
 }
 
+/** Extra compact string representation of the date's time components.
+ 
+ This returns only the time of day for the date. The format is similar to "h:mma", but with the minute component only included when non-zero, e.g. "9pm", "10:30am", "4:01pm".
+ 
+ @return A compact string representation of the date's time components.
+ */
+- (NSString *) MITShortTimeOfDayString {
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self];
+    
+    NSString *minuteString = @"";
+    NSString *periodString;
+    
+    if (components.minute > 0) {
+        minuteString = [NSString stringWithFormat:@":%d", components.minute];
+    }
+    
+    if (components.hour <= 12) {
+        periodString = @"am";
+    } else {
+        periodString = @"pm";
+        components.hour -= 12;
+    }
+    return [NSString stringWithFormat:@"%d%@%@", components.hour, minuteString, periodString];
+}
+
+- (NSDateComponents *)dayComponents {
+    return [[NSCalendar currentCalendar] components:(NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:self];
+}
+
+- (NSDateComponents *)timeComponents {
+    return [[NSCalendar currentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:self];
+}
+
+- (NSDate *)dateByAdjustingToTimeFromDate:(NSDate *)date {
+    NSDateComponents *components = [self dayComponents];
+    NSDateComponents *timeComponents = [date timeComponents];
+    
+    components.hour = timeComponents.hour;
+    components.minute = timeComponents.minute;
+    components.second = timeComponents.second;
+    
+    return [[NSCalendar currentCalendar] dateFromComponents:components];
+}
+
 @end

@@ -324,6 +324,7 @@
 		DE936CA2161CD1FF00B69F7C /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA1161CD1FF00B69F7C /* Icon@2x.png */; };
 		DE936CA4161CD28100B69F7C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA3161CD28100B69F7C /* Default.png */; };
 		DE936CA6161CD28300B69F7C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA5161CD28300B69F7C /* Default@2x.png */; };
+		DE94998317450C800066F6CF /* RetailDay.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94998217450C800066F6CF /* RetailDay.m */; };
 		DE952E6816295EBA007E7356 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE952E6716295EBA007E7356 /* Default-568h@2x.png */; };
 		DE952E6C1629BFAB007E7356 /* MITRotationForwardingNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE952E6B1629BFAB007E7356 /* MITRotationForwardingNavigationController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE98C6651741B8E500319AA3 /* RetailVenue.m in Sources */ = {isa = PBXBuildFile; fileRef = DE98C6641741B8E500319AA3 /* RetailVenue.m */; };
@@ -1061,6 +1062,8 @@
 		DE936CA1161CD1FF00B69F7C /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		DE936CA3161CD28100B69F7C /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		DE936CA5161CD28300B69F7C /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		DE94998117450C800066F6CF /* RetailDay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetailDay.h; path = Dining/Model/RetailDay.h; sourceTree = "<group>"; };
+		DE94998217450C800066F6CF /* RetailDay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RetailDay.m; path = Dining/Model/RetailDay.m; sourceTree = "<group>"; };
 		DE952E6716295EBA007E7356 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		DE952E6A1629BFAB007E7356 /* MITRotationForwardingNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITRotationForwardingNavigationController.h; path = "Container Views/MITRotationForwardingNavigationController.h"; sourceTree = "<group>"; };
 		DE952E6B1629BFAB007E7356 /* MITRotationForwardingNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITRotationForwardingNavigationController.m; path = "Container Views/MITRotationForwardingNavigationController.m"; sourceTree = "<group>"; };
@@ -2672,6 +2675,8 @@
 			isa = PBXGroup;
 			children = (
 				DED41FD317381D180048376F /* Dining.xcdatamodeld */,
+				DED41FD9173850960048376F /* HouseVenue.h */,
+				DED41FDA173850960048376F /* HouseVenue.m */,
 				DED41FE817385A860048376F /* DiningMeal.h */,
 				DED41FE917385A860048376F /* DiningMeal.m */,
 				DED41FE517385A850048376F /* DiningDietaryFlag.h */,
@@ -2682,10 +2687,10 @@
 				DED41FE017385A730048376F /* DiningDay.m */,
 				DED41FDC173858BA0048376F /* VenueLocation.h */,
 				DED41FDD173858BA0048376F /* VenueLocation.m */,
-				DED41FD9173850960048376F /* HouseVenue.h */,
-				DED41FDA173850960048376F /* HouseVenue.m */,
 				DE98C6631741B8E500319AA3 /* RetailVenue.h */,
 				DE98C6641741B8E500319AA3 /* RetailVenue.m */,
+				DE94998117450C800066F6CF /* RetailDay.h */,
+				DE94998217450C800066F6CF /* RetailDay.m */,
 				DED41FD6173849500048376F /* DiningData.h */,
 				DED41FD7173849500048376F /* DiningData.m */,
 			);
@@ -3398,6 +3403,7 @@
 				DE98C6651741B8E500319AA3 /* RetailVenue.m in Sources */,
 				48C572CF174BC68100CF6C16 /* DiningHallInfoScheduleCell.m in Sources */,
 				48A4F409174D6EB20012F749 /* DiningHallMenuComparisonNoMealsCell.m in Sources */,
+				DE94998317450C800066F6CF /* RetailDay.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

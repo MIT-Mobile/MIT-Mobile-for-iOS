@@ -2,6 +2,7 @@
 #import "DiningDay.h"
 #import "DiningMealItem.h"
 #import "CoreDataManager.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation DiningMeal
 
@@ -61,29 +62,8 @@
         return nil;
     }
     
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
-    [formatter setDateFormat:@"h"];
-    
-    NSString *startString = [formatter stringFromDate:self.startTime];
-    NSString *endString = [formatter stringFromDate:self.endTime];
-    
-    [formatter setDateFormat:@":m"];
-    
-    NSString *startMinutes = [formatter stringFromDate:self.startTime];
-    NSString *endMinutes = [formatter stringFromDate:self.endTime];
-    
-    if (![startMinutes isEqualToString:@":0"]) {
-        startString = [startString stringByAppendingString:startMinutes];
-    }
-    if (![endMinutes isEqualToString:@":0"]) {
-        endString = [endString stringByAppendingString:endMinutes];
-    }
-    
-    [formatter setDateFormat:@"a"];
-    
-    startString = [startString stringByAppendingString:[formatter stringFromDate:self.startTime]];
-    endString = [endString stringByAppendingString:[formatter stringFromDate:self.endTime]];
+    NSString *startString = [self.startTime MITShortTimeOfDayString];
+    NSString *endString = [self.endTime MITShortTimeOfDayString];
     
     return [[NSString stringWithFormat:@"%@ - %@", startString, endString] lowercaseString];
 }

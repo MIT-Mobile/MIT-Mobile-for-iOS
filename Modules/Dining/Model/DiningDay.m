@@ -32,31 +32,10 @@
         
         if (meal.startTime && meal.endTime) {
             NSDate *dayDate = day.date;
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            NSDateComponents *dayComponents = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:dayDate];
-            NSDateComponents *timeComponents = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:meal.startTime];
-            timeComponents.year = dayComponents.year;
-            timeComponents.month = dayComponents.month;
-            timeComponents.day = dayComponents.day;
 
-            meal.startTime = [calendar dateFromComponents:timeComponents];
+            meal.startTime = [dayDate dateByAdjustingToTimeFromDate:meal.startTime];
 
-            timeComponents = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:meal.endTime];
-            timeComponents.year = dayComponents.year;
-            timeComponents.month = dayComponents.month;
-            timeComponents.day = dayComponents.day;
-            
-            meal.endTime = [calendar dateFromComponents:timeComponents];
-
-//            NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:meal.startTime toDate:dayDate options:0];
-//            components.day += 1;
-//            meal.startTime = [calendar dateByAddingComponents:components toDate:meal.startTime options:0];
-//            components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit |  NSDayCalendarUnit) fromDate:meal.endTime toDate:dayDate options:0];
-//            components.day += 1;
-//            meal.endTime = [calendar dateByAddingComponents:components toDate:meal.endTime options:0];
-//            
-//            NSLog(@"%@ %@ %@", dayDate, meal.startTime, meal.endTime);
-
+            meal.endTime = [dayDate dateByAdjustingToTimeFromDate:meal.endTime];
         }
     }
     
