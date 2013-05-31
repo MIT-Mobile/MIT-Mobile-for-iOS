@@ -468,47 +468,24 @@
     RetailVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     cell.titleLabel.text = venue.name;
-    cell.subtitleLabel.text = @"9am - 5pm";
-    cell.statusOpen = YES;
+    cell.subtitleLabel.text = [venue hoursToday];
+    cell.statusOpen = [venue isOpenNow];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    NSURL *iconURL = (venue.iconURL) ? [NSURL URLWithString:venue.iconURL] : nil;
     __weak DiningLocationCell *weakCell = cell;
-    [cell.imageView setImageWithURL:[NSURL URLWithString:venue.iconURL] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+    [cell.imageView setImageWithURL:iconURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
         [weakCell setNeedsLayout];
     }];
-}
-
-#pragma mark Configure Retail Cell
-- (UITableViewCell *) tableView:(UITableView *)tableView retailDiningLocationCellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    DiningLocationCell *cell = [tableView dequeueReusableCellWithIdentifier:@"locationCell"];
-    if (!cell) {
-        cell = [[DiningLocationCell alloc] initWithReuseIdentifier:@"locationCell"];
-    }
-    
-    
-    
-    NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:indexPath.section];
-    NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
-    
-    cell.titleLabel.text = venueData[@"name"];
-    cell.subtitleLabel.text = [self debugSubtitleData][indexPath.row%[[self debugSubtitleData] count]];
-    cell.statusOpen = indexPath.row % 2 == 0;
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    cell.imageView.image = [UIImage imageNamed:@"icons/home-map.png"];
-    
-    
-    return cell;
 }
 
 #pragma mark - UITableViewDelegate
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (![self showingHouseDining]) {
-        NSString *sectionKey = [[self.retailVenues allKeys] objectAtIndex:indexPath.section];
-        NSDictionary *venueData = self.retailVenues[sectionKey][indexPath.row];
+        RetailVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        DiningRetailInfoViewController *detailVC = [[DiningRetailInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
-        detailVC.venueData = venueData;
+        DiningRetailInfoViewController *detailVC = [[DiningRetailInfoViewController alloc] init];
+        detailVC.venue = venue;
         [self.navigationController pushViewController:detailVC animated:YES];
         return;
     }
@@ -623,7 +600,6 @@
     
     [self.mapView addLayer:houseLayer];
     [self.mapView setNeedsDisplay];
-    
 }
 
 #pragma mark -MGSMapView Delegate
@@ -637,6 +613,4 @@
     
 }
 
-
 @end
-

@@ -2,6 +2,7 @@
 #import "DiningHallDetailHeaderView.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
+#import "RetailVenue.h"
 
 @interface DiningRetailInfoViewController () <UIWebViewDelegate>
 
@@ -17,12 +18,9 @@
 
 @implementation DiningRetailInfoViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
+- (id)init
 {
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
+    self = [super initWithStyle:UITableViewStyleGrouped];
     return self;
 }
 
@@ -36,39 +34,25 @@
     return NO;
 }
 
-- (void) setVenueData:(NSDictionary *)venueData
-{
-    _venueData = venueData;
-    [self parseVenueDataIntoSections];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    if (!self.venueData) {
-        return;
-    }
-    if (!self.sectionData) {
-        [self parseVenueDataIntoSections];
-    }
     
-    self.title = self.venueData[@"name"];
+    self.title = self.venue.shortName;
     
     self.headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
-    self.headerView.titleLabel.text = self.venueData[@"name"];
+    self.headerView.titleLabel.text = self.venue.name;
     [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"global/bookmark_off"] forState:UIControlStateNormal];
     [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"global/bookmark_on"] forState:UIControlStateSelected];
     [self.headerView.accessoryButton addTarget:self action:@selector(bookmarkPressed:) forControlEvents:UIControlEventTouchUpInside];
     
-    NSDictionary *scheduleDict = [self dayScheduleFromHours:self.venueData[@"hours"]];
-    if ([scheduleDict[@"isOpen"] boolValue]) {
+    if ([self.venue isOpenNow]) {
         self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
     } else {
         self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
     }
     
-    NSString * scheduleString = scheduleDict[@"text"];
-    self.headerView.timeLabel.text = scheduleString;
+    self.headerView.timeLabel.text = [self.venue hoursToday];
     
     self.descriptionHtmlFormatString = @"<html>"
                                         "<head>"
@@ -94,17 +78,17 @@ static const NSString * sectionDataKey = @"section_data";
     NSArray *whiteKeys = @[@"description_html", @"menu_html", @"menu_url", @"hours", @"cuisine", @"payment", @"location", @"homepage_url"];     // whitelist of dictionary keys that will correspond to order in table
     NSMutableArray * sections = [NSMutableArray array];
     
-    for (NSString *key in whiteKeys) {
-        if (self.venueData[key]) {
-            if ([key isEqualToString:@"hours"]) {
-                // hours data is treated differently because raw data is too ugly to show the user.
-                [self parseHoursDataIntoFormat:self.venueData[key]];
-            }
-            
-            NSDictionary * sectionData = @{sectionIdKey : key, sectionDataKey : self.venueData[key]};
-            [sections addObject:sectionData];
-        }
-    }
+//    for (NSString *key in whiteKeys) {
+//        if (self.venueData[key]) {
+//            if ([key isEqualToString:@"hours"]) {
+//                // hours data is treated differently because raw data is too ugly to show the user.
+//                [self parseHoursDataIntoFormat:self.venueData[key]];
+//            }
+//            
+//            NSDictionary * sectionData = @{sectionIdKey : key, sectionDataKey : self.venueData[key]};
+//            [sections addObject:sectionData];
+//        }
+//    }
     self.sectionData = sections;
 }
 
