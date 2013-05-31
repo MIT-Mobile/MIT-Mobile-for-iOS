@@ -61,6 +61,6 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 - (NSString *) MITShortTimeOfDayString; // e.g. "1pm", "10:30am", etc
 - (NSDateComponents *) dayComponents;
 - (NSDateComponents *) timeComponents;
-- (NSDate *)dateByAdjustingToTimeFromDate:(NSDate *)date;
+- (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date;
 
 @end

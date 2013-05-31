@@ -32,12 +32,12 @@
     
     if (dict[@"start_time"]) {
         NSDate *date = [formatter dateFromString:dict[@"start_time"]];
-        day.startTime = [day.date dateByAdjustingToTimeFromDate:date];
+        day.startTime = [day.date dateWithTimeOfDayFromDate:date];
     }
     
     if (dict[@"end_time"]) {
         NSDate *date = [formatter dateFromString:dict[@"end_time"]];
-        day.endTime = [day.date dateByAdjustingToTimeFromDate:date];;
+        day.endTime = [day.date dateWithTimeOfDayFromDate:date];;
     }
     
     return day;

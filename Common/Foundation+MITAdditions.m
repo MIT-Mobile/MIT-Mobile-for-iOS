@@ -459,7 +459,13 @@ typedef struct {
     return [[NSCalendar currentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:self];
 }
 
-- (NSDate *)dateByAdjustingToTimeFromDate:(NSDate *)date {
+/** Returns a date with its time components changed to match the input date.
+
+ @param date The date from which to pull the new time of day.
+ @return An NSDate with the receiver's year, month, and day but date's hours, minutes, and seconds.
+ */
+
+- (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date {
     NSDateComponents *components = [self dayComponents];
     NSDateComponents *timeComponents = [date timeComponents];
     

@@ -33,9 +33,9 @@
         if (meal.startTime && meal.endTime) {
             NSDate *dayDate = day.date;
 
-            meal.startTime = [dayDate dateByAdjustingToTimeFromDate:meal.startTime];
+            meal.startTime = [dayDate dateWithTimeOfDayFromDate:meal.startTime];
 
-            meal.endTime = [dayDate dateByAdjustingToTimeFromDate:meal.endTime];
+            meal.endTime = [dayDate dateWithTimeOfDayFromDate:meal.endTime];
         }
     }
     
