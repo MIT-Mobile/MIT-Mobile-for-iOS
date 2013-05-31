@@ -24,6 +24,7 @@
         self.iconView.contentMode = UIViewContentModeScaleAspectFit;
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(64, 10, frame.size.width - 124, 44)];
         self.titleLabel.numberOfLines = 0;
+        self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 64, frame.size.width - 50, 13)];
         self.accessoryButton = [UIButton buttonWithType:UIButtonTypeCustom];
         self.accessoryButton.frame = CGRectMake(frame.size.width - 50, 0, 50, 67);
@@ -57,7 +58,6 @@
 - (void) layoutSubviews
 {
     [super layoutSubviews];
-    
 }
 
 @end
