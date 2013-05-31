@@ -1,4 +1,5 @@
 #import "RetailVenue.h"
+#import "RetailDay.h"
 #import "VenueLocation.h"
 #import "CoreDataManager.h"
 
@@ -13,10 +14,10 @@
 @dynamic homepageURL;
 @dynamic menuURL;
 @dynamic iconURL;
-@dynamic hours;
 @dynamic building;
 @dynamic sortableBuilding;
 @dynamic location;
+@dynamic days;
 
 + (RetailVenue *)newVenueWithDictionary:(NSDictionary *)dict {
     RetailVenue *venue = [CoreDataManager insertNewObjectForEntityForName:@"RetailVenue"];
@@ -35,11 +36,18 @@
         venue.descriptionHTML = dict[@"description_html"];
     }
     
+    for (NSDictionary *dayDict in dict[@"hours"]) {
+        RetailDay *day = [RetailDay newDayWithDictionary:dayDict];
+        if (day) {
+            [venue addDaysObject:day];
+        }
+    }
+
     venue.location = [VenueLocation newLocationWithDictionary:dict[@"location"]];
     
     // DiningMapListViewController groups RetailVenues by building.
     // Building is derived from roomNumber.
-    // If no roomNumber, it goes into @"Other"
+    // If roomNumber can't be parsed into an MIT building, it goes into @"Other"
     
     if (venue.location.roomNumber) {
         NSString *roomNumber = venue.location.roomNumber;
@@ -101,5 +109,45 @@
     [self didAccessValueForKey:@"paymentMethods"];
     return methods;
 }
+
+- (BOOL)isOpenNow {
+    NSDate *date = [RetailVenue fakeDate];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startTime <= %@ AND endTime >= %@", date, date];
+
+    return [[self.days filteredSetUsingPredicate:predicate] anyObject];
+}
+
+- (NSString *)hoursToday {
+    RetailDay *today = [self dayForDate:[RetailVenue fakeDate]];
+    return [today hoursSummary];
+}
+
+- (RetailDay *)dayForDate:(NSDate *)date {
+    if (!date) {
+        return nil;
+    }
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:date];
+    NSDate *dayDate = [calendar dateFromComponents:components];
+    
+    NSSet *matchingDays = [self.days filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"date == %@", dayDate]];
+    
+    return [matchingDays anyObject];
+}
+
++ (NSDate *)fakeDate {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterShortStyle];
+    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
+    components.year = 2013;
+    components.month = 5;
+    components.day = 3;
+    components.hour = 13;
+    
+    return [calendar dateFromComponents:components];
+}
+
 
 @end

@@ -35,12 +35,18 @@
         <relationship name="location" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="VenueLocation" inverseName="houseVenue" inverseEntity="VenueLocation" syncable="YES"/>
         <relationship name="menuDays" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DiningDay" inverseName="houseVenue" inverseEntity="DiningDay" syncable="YES"/>
     </entity>
+    <entity name="RetailDay" representedClassName="RetailDay" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="endTime" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="startTime" optional="YES" attributeType="Date" syncable="YES"/>
+        <relationship name="venue" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="RetailVenue" inverseName="days" inverseEntity="RetailVenue" syncable="YES"/>
+    </entity>
     <entity name="RetailVenue" representedClassName="RetailVenue" syncable="YES">
         <attribute name="building" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="cuisines" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="descriptionHTML" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="homepageURL" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="hours" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="iconURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="menuURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -48,6 +54,7 @@
         <attribute name="shortName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="sortableBuilding" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" valueTransformerName="URLTransformer" syncable="YES"/>
+        <relationship name="days" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailDay" inverseName="venue" inverseEntity="RetailDay" syncable="YES"/>
         <relationship name="location" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="VenueLocation" inverseName="retailVenue" inverseEntity="VenueLocation" syncable="YES"/>
     </entity>
     <entity name="VenueLocation" representedClassName="VenueLocation" syncable="YES">
@@ -63,12 +70,13 @@
         <relationship name="retailVenue" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="RetailVenue" inverseName="location" inverseEntity="RetailVenue" syncable="YES"/>
     </entity>
     <elements>
-        <element name="DiningDay" positionX="-225" positionY="-54" width="128" height="103"/>
-        <element name="DiningDietaryFlag" positionX="331" positionY="-24" width="128" height="73"/>
-        <element name="DiningMeal" positionX="-45" positionY="-54" width="128" height="133"/>
-        <element name="DiningMealItem" positionX="142" positionY="-54" width="128" height="135"/>
-        <element name="HouseVenue" positionX="-434" positionY="-234" width="128" height="150"/>
-        <element name="RetailVenue" positionX="322" positionY="-225" width="128" height="240"/>
-        <element name="VenueLocation" positionX="-225" positionY="-265" width="128" height="195"/>
+        <element name="DiningDay" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="DiningDietaryFlag" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="DiningMeal" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="DiningMealItem" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="HouseVenue" positionX="0" positionY="0" width="128" height="150"/>
+        <element name="RetailDay" positionX="0" positionY="0" width="128" height="120"/>
+        <element name="RetailVenue" positionX="0" positionY="0" width="128" height="240"/>
+        <element name="VenueLocation" positionX="0" positionY="0" width="128" height="195"/>
     </elements>
 </model>
