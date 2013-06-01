@@ -5,6 +5,5 @@
 @interface DiningHallInfoViewController : UITableViewController
 
 @property (nonatomic, strong) HouseVenue * venue;
-@property (nonatomic, strong) NSDictionary * hallStatus;
 
 @end

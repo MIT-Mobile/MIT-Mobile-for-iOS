@@ -21,7 +21,6 @@
 @property (nonatomic, strong) UIBarButtonItem *filterBarButton;
 @property (nonatomic, strong) NSSet * filtersApplied;
 @property (nonatomic, strong) NSArray * mealItems;
-@property (nonatomic, strong) NSDictionary * hallStatus;
 
 @property (nonatomic, strong) DiningMeal * currentMeal;
 @property (nonatomic, strong) DiningDay * currentDay;
@@ -82,13 +81,12 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         [weakHeaderView layoutIfNeeded];
     }];
     
-    self.hallStatus = [self hallStatusStringForMeal:self.currentMeal];
-    if ([self.hallStatus[@"isOpen"] boolValue]) {
+    if ([self.venue isOpenNow]) {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
     } else {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
     }
-    headerView.timeLabel.text = self.hallStatus[@"text"];
+    headerView.timeLabel.text = [self hallStatusStringForMeal:self.currentMeal];
     
     [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info.png"] forState:UIControlStateNormal];
     [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info-pressed.png"] forState:UIControlStateHighlighted];
@@ -109,7 +107,6 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 {
     DiningHallInfoViewController *infoVC = [[DiningHallInfoViewController alloc] initWithStyle:UITableViewStyleGrouped];
     infoVC.venue = self.venue;
-    infoVC.hallStatus = self.hallStatus;
     
     [self.navigationController pushViewController:infoVC animated:YES];
 }
@@ -177,53 +174,32 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     return [NSString stringWithFormat:@"%@ - %@", [dateFormatter stringFromDate:startDate], [dateFormatter stringFromDate:endDate]];
 }
 
-- (NSDictionary *) hallStatusStringForMeal:(DiningMeal *) meal
+- (NSString *) hallStatusStringForMeal:(DiningMeal *) meal
 {
 //      Returns hall status relative to the curent time of day.
-//      Return value is a dictionary with the structure
-//          isOpen : YES/NO
-//          text : @"User Facing String"
-// Example return strings
+//      Example return strings
 //          - Closed for the day
 //          - Opens at 5:30pm
-//          - Open until 4:00pm
+//          - Open until 4pm
 
-    NSDate *rightNow = [NSDate date];
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    NSDate *rightNow = [HouseVenue fakeDate];
     
-    if (!meal) {
-        // closed with no hours today
-        return @{@"isOpen": @NO,
-                 @"text" : @"Closed for the day"};
-    }
-    
-    if (meal.startTime && meal.endTime) {
+    if (meal && meal.startTime && meal.endTime) {
         // need to calculate if the current time is before opening, before closing, or after closing
+        BOOL isBeforeStart = ([meal.startTime compare:rightNow] == NSOrderedDescending);
+        BOOL isBeforeEnd   = ([meal.endTime compare:rightNow] == NSOrderedDescending);
         
-        BOOL willOpen       = ([meal.startTime compare:rightNow] == NSOrderedDescending); // openDate > rightNow , before the open hours for the day
-        BOOL currentlyOpen  = ([meal.startTime compare:rightNow] == NSOrderedAscending && [rightNow compare:meal.endTime] == NSOrderedAscending);  // openDate < rightNow < closeDate , within the open hours
-        BOOL hasClosed      = ([rightNow compare:meal.endTime] == NSOrderedDescending); // rightNow > closeDate , after the closing time for the day
-        
-        [dateFormat setDateFormat:@"h:mm a"];  // adjust format for pretty printing
-        
-        if (willOpen) {
-            NSString *closedStringFormatted = [dateFormat stringFromDate:meal.startTime];
-            return @{@"isOpen": @NO,
-                     @"text" : [NSString stringWithFormat:@"Opens at %@", closedStringFormatted]};
-            
-        } else if (currentlyOpen) {
-            NSString *openStringFormatted = [dateFormat stringFromDate:meal.endTime];
-            return @{@"isOpen": @YES,
-                     @"text" : [NSString stringWithFormat:@"Open until %@", openStringFormatted]};
-        } else if (hasClosed) {
-            return @{@"isOpen": @NO,
-                     @"text" : @"Closed for the day"};
+        if (isBeforeStart) {
+            // now-start-end
+            return [NSString stringWithFormat:@"Opens at %@", [meal.startTime MITShortTimeOfDayString]];
+        } else if (isBeforeEnd) {
+            // start-now-end
+            return [NSString stringWithFormat:@"Open until %@", [meal.endTime MITShortTimeOfDayString]];
         }
     }
     
-    // the just in case
-    return @{@"isOpen": @NO,
-             @"text" : @"Closed for the day"};
+    // start-end-now and ?-now-?
+    return @"Closed for the day";
 }
 
 - (void)didReceiveMemoryWarning

@@ -109,7 +109,7 @@
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startTime >= %@", date];
         // array keeps order intact, could also use sortdescriptor
         NSArray *meals = [[self.meals array] filteredArrayUsingPredicate:predicate];
-        if ([meals count]) {
+        if ([meals count] > 0) {
             meal = meals[0];
         }
     }

@@ -47,13 +47,12 @@
         [weakHeaderView setNeedsLayout];
     }];
     
-    NSDictionary *timeData = self.hallStatus;
-    if ([timeData[@"isOpen"] boolValue]) {
+    if ([self.venue isOpenNow]) {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
     } else {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
     }
-    headerView.timeLabel.text = timeData[@"text"];
+    headerView.timeLabel.text = [self.venue hoursToday];
     self.tableView.tableHeaderView = headerView;
     
     _locationSectionIndex   = 0;
