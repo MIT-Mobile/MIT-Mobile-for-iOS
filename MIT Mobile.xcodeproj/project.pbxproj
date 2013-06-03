@@ -220,6 +220,7 @@
 		48A4F409174D6EB20012F749 /* DiningHallMenuComparisonNoMealsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A4F408174D6EB20012F749 /* DiningHallMenuComparisonNoMealsCell.m */; };
 		48A6E4D7170B89C2004DED46 /* DiningHallMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */; };
 		48A6E4DB170B9423004DED46 /* DiningHallDetailHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4DA170B9423004DED46 /* DiningHallDetailHeaderView.m */; };
+		48B06EA1175CE904001DBCC6 /* MealReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B06EA0175CE904001DBCC6 /* MealReference.m */; };
 		48B4ADE41713572300EF426F /* DiningHallMenuCompareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B4ADE31713572300EF426F /* DiningHallMenuCompareView.m */; };
 		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -829,6 +830,8 @@
 		48A6E4D6170B89C2004DED46 /* DiningHallMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuViewController.m; path = Dining/DiningHallMenuViewController.m; sourceTree = "<group>"; };
 		48A6E4D9170B9423004DED46 /* DiningHallDetailHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallDetailHeaderView.h; path = Dining/DiningHallDetailHeaderView.h; sourceTree = "<group>"; };
 		48A6E4DA170B9423004DED46 /* DiningHallDetailHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallDetailHeaderView.m; path = Dining/DiningHallDetailHeaderView.m; sourceTree = "<group>"; };
+		48B06E9F175CE904001DBCC6 /* MealReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MealReference.h; path = Dining/lib/MealReference.h; sourceTree = "<group>"; };
+		48B06EA0175CE904001DBCC6 /* MealReference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MealReference.m; path = Dining/lib/MealReference.m; sourceTree = "<group>"; };
 		48B4ADE21713572300EF426F /* DiningHallMenuCompareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuCompareView.h; path = Dining/DiningHallMenuCompareView.h; sourceTree = "<group>"; };
 		48B4ADE31713572300EF426F /* DiningHallMenuCompareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuCompareView.m; path = Dining/DiningHallMenuCompareView.m; sourceTree = "<group>"; };
 		48B8129515E4295D00E791F9 /* LinksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksViewController.h; path = Links/LinksViewController.h; sourceTree = "<group>"; };
@@ -1979,6 +1982,7 @@
 		48327CDD16F74EA0003A2F23 /* Dining */ = {
 			isa = PBXGroup;
 			children = (
+				48B06EA2175CE90B001DBCC6 /* lib */,
 				DED41FD217381CDE0048376F /* Model */,
 				48A6E4D8170B91E9004DED46 /* Views */,
 				48327CDE16F74F19003A2F23 /* DiningModule.h */,
@@ -2063,6 +2067,15 @@
 				48C572CE174BC68100CF6C16 /* DiningHallInfoScheduleCell.m */,
 			);
 			name = Views;
+			sourceTree = "<group>";
+		};
+		48B06EA2175CE90B001DBCC6 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				48B06E9F175CE904001DBCC6 /* MealReference.h */,
+				48B06EA0175CE904001DBCC6 /* MealReference.m */,
+			);
+			name = lib;
 			sourceTree = "<group>";
 		};
 		48B8129315E428DA00E791F9 /* Links */ = {
@@ -3389,6 +3402,7 @@
 				DE654524173D90A900562C20 /* UIImageView+WebCache.m in Sources */,
 				48C572CF174BC68100CF6C16 /* DiningHallInfoScheduleCell.m in Sources */,
 				48A4F409174D6EB20012F749 /* DiningHallMenuComparisonNoMealsCell.m in Sources */,
+				48B06EA1175CE904001DBCC6 /* MealReference.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -103,8 +103,6 @@ typedef enum {
     
     [self.view addSubview:self.scrollView];
     
-    self.datePointer = [NSDate dateWithTimeIntervalSinceNow:0];
-    
 	self.previous = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
     self.current = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.previous.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
     self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
@@ -129,7 +127,7 @@ typedef enum {
     [super didReceiveMemoryWarning];
 }
 
-
+#pragma mark - Rotation
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration
 {
     if (UIInterfaceOrientationIsPortrait(orientation)) {
@@ -142,16 +140,14 @@ typedef enum {
 
 - (void) loadData
 {
-    NSDate *date = [HouseVenue fakeDate];
-    NSLog(@"Fake Date :: %@", date);
-    self.datePointer = date;
+    self.datePointer = self.mealRef.date;
     
     // load data for current collection view, set meal pointers
-    NSString *mealName = [self bestMealForDate:date];
+    NSString *mealName = self.mealRef.name;
     self.mealPointer = mealName;
     self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
     [self.currentFRC performFetch:nil];
-    self.current.date = date;
+    self.current.date = self.datePointer;
     
     // loadData for left collectionView
     NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionBackward ofMealNamed:self.mealPointer onDate:self.datePointer];
@@ -326,6 +322,10 @@ typedef enum {
     
     self.mealPointer = mealInfo[@"mealName"];
     self.datePointer = mealInfo[@"mealDate"];
+    self.mealRef = [MealReference referenceWithMealName:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
+    if (self.delegate) {
+        [self.delegate mealController:self didUpdateMealReference:self.mealRef];
+    }
 }
 
 - (NSDictionary *) mealInfoForMealInDirection:(MealPageDirection)direction ofMealNamed:(NSString *)mealName onDate:(NSDate *)date
@@ -358,7 +358,7 @@ typedef enum {
     }
     
     return @{@"mealName": newMealPointer,
-             @"mealDate" : newDatePointer};
+             @"mealDate" : [[queryResults lastObject] startTime]};
 }
 
 - (NSString *) bestMealForDate:(NSDate *) date

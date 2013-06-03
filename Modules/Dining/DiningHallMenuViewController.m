@@ -1,5 +1,4 @@
 #import "DiningHallMenuViewController.h"
-#import "DiningMenuCompareViewController.h"
 #import "DiningHallInfoViewController.h"
 #import "DiningMenuFilterViewController.h"
 #import "DiningHallDetailHeaderView.h"
@@ -45,6 +44,31 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         // Custom initialization
     }
     return self;
+}
+
+- (void) setCurrentMeal:(DiningMeal *)currentMeal
+{
+    _currentMeal = currentMeal;
+    [self updateMealReference];     // update mealReference to to match currentMeal
+}
+
+- (void) updateMealReference
+{
+    _mealRef = [MealReference referenceWithMealName:self.currentMeal.name onDate:self.currentMeal.day.date];
+}
+
+- (void) setMealRef:(MealReference *)mealRef
+{
+    _mealRef = mealRef;
+    // update current meal to closest meal to meal ref.
+    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:YES];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"day.houseVenue.name == %@ AND startTime >= %@", self.venue.name, mealRef.date];
+    NSArray *results = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:predicate sortDescriptors:@[sort]];
+    
+    if ([results count]) {
+        self.currentMeal = results[0];
+        self.currentDate = self.currentMeal.startTime;
+    }
 }
 
 - (void)viewDidLoad
@@ -231,6 +255,8 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     [super didReceiveMemoryWarning];
 }
 
+
+#pragma mark - Rotation
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation
 {
     if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeLeft) {
@@ -243,9 +269,19 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 {
     DiningMenuCompareViewController *vc = [[DiningMenuCompareViewController alloc] init];
     vc.filtersApplied = self.filtersApplied;
+    vc.mealRef = self.mealRef;
+    vc.delegate = self;
     vc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     
     [self presentViewController:vc animated:YES completion:NULL];
+}
+
+#pragma mark - MealReference Delegate
+-(void) mealController:(UIViewController *) controller didUpdateMealReference:(MealReference *)updatedMealRef
+{
+    self.mealRef = updatedMealRef;
+    [self fetchItemsForMeal:self.currentMeal withFilters:self.filtersApplied];
+    [self.tableView reloadData];
 }
 
 #pragma mark - Filter
@@ -492,7 +528,6 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     
     return YES;
 }
-
 
 
 @end
