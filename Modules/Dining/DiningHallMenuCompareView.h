@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "DiningHallMenuComparisonCell.h"
 #import "DiningHallMenuComparisonNoMealsCell.h"
+#import "MealReference.h"
 
 @class DiningHallMenuCompareView;
 
@@ -21,7 +22,7 @@
 @interface DiningHallMenuCompareView : UIView
 
 @property (nonatomic, readonly, strong) UILabel * headerView;
-@property (nonatomic, strong) NSDate *date;
+@property (nonatomic, strong) MealReference *mealRef;
 @property (nonatomic, assign) CGFloat columnWidth;
 
 @property (nonatomic, assign) id<DiningCompareViewDelegate> delegate;

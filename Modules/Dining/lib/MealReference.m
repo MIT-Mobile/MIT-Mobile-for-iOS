@@ -1,12 +1,7 @@
-//
-//  MealReference.m
-//  MIT Mobile
-//
-//  Created by Austin Emmons on 6/3/13.
-//
-//
 
 #import "MealReference.h"
+#import "CoreDataManager.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation MealReference
 
@@ -17,6 +12,13 @@
     ref.date = date;
     
     return ref;
+}
+
++ (DiningMeal *) mealForReference:(MealReference *)reference atVenueWithShortName:(NSString *)venueShortName
+{
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"name == %@ AND startTime >= %@ AND endTime <= %@ AND day.houseVenue.shortName == %@", reference.name, [reference.date startOfDay], [reference.date endOfDay], venueShortName];
+    NSArray *results = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred];
+    return [results lastObject];    // should never be more than 1 result (name is unique for a particular date)
 }
 
 - (NSString *) description
