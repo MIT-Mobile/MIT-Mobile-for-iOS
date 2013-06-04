@@ -357,7 +357,7 @@
             annotationView.calloutOffset = CGPointMake(0,annotationView.image.size.height / 2.0);
         }
         
-		annotationView.canShowCallout = NO;
+		annotationView.canShowCallout = YES;
 		annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
         
 	}
@@ -384,7 +384,6 @@
         
 		annotationView.frame = imageView.frame;
 		annotationView.canShowCallout = NO;
-        annotationView.showsCustomCallout = NO;
         annotationView.centerOffset = CGPointMake(0, -(pin.size.height / 2.0) + 3.0); // adding 3px because there
                                                                                       // is a 3px transparent border
                                                                                       // around the image.

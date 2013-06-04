@@ -942,7 +942,9 @@ enum {
                 annotationView.image = [UIImage imageNamed:@"tours/map_ending_arrow.png"];
             }
         }
-    } 
+    }
+    
+    annotationView.canShowCallout = YES;
     annotationView.showsCustomCallout = YES;
     
     return annotationView;
