@@ -498,7 +498,7 @@
 {
     if ([annotation isKindOfClass:[MITAnnotationAdaptor class]]) {
         MITAnnotationAdaptor *mgsAnnotation = (MITAnnotationAdaptor*) annotation;
-        return mgsAnnotation.calloutAnnotationView.enabled;
+        return mgsAnnotation.calloutAnnotationView.canShowCallout;
     }
     
     return NO;
