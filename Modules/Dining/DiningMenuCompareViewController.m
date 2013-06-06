@@ -138,19 +138,19 @@ typedef enum {
 - (void) loadData
 {
     // load data for current collection view, set meal pointers
-    self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealRef.name onDate:self.mealRef.date];
+    self.currentFRC = [self fetchedResultsControllerForMealReference:self.mealRef];
     [self.currentFRC performFetch:nil];
     self.current.mealRef = self.mealRef;
     
     // loadData for left collectionView
     MealReference *mRef = [self mealReferenceForMealInDirection:kPageDirectionBackward];
-    self.previousFRC = [self fetchedResultsControllerForMealNamed:mRef.name onDate:mRef.date];
+    self.previousFRC = [self fetchedResultsControllerForMealReference:mRef];
     [self.previousFRC performFetch:nil];
     self.previous.mealRef = mRef;
     
     // load data for right collectionView
     mRef = [self mealReferenceForMealInDirection:kPageDirectionForward];
-    self.nextFRC = [self fetchedResultsControllerForMealNamed:mRef.name onDate:mRef.date];
+    self.nextFRC = [self fetchedResultsControllerForMealReference:mRef];
     [self.nextFRC performFetch:nil];
     self.next.mealRef = mRef;
 }
@@ -168,13 +168,13 @@ typedef enum {
     return _managedObjectContext;
 }
 
-- (NSFetchedResultsController *)fetchedResultsControllerForMealNamed:(NSString *)mealName onDate:(NSDate *)date
+- (NSFetchedResultsController *)fetchedResultsControllerForMealReference:(MealReference *)ref
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"DiningMealItem"
                                               inManagedObjectContext:self.managedObjectContext];
     fetchRequest.entity = entity;
-    fetchRequest.predicate = [self predicateForMealNamed:mealName onDate:date];
+    fetchRequest.predicate = [self predicateForMealNamed:ref.name onDate:ref.date];
     NSString *sectionKeyPath = @"meal.day.houseVenue.shortName";
     NSSortDescriptor *sectionSort = [NSSortDescriptor sortDescriptorWithKey:sectionKeyPath ascending:YES selector:@selector(caseInsensitiveCompare:)];
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"ordinality" ascending:YES];
@@ -184,7 +184,7 @@ typedef enum {
                     [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                         managedObjectContext:self.managedObjectContext
                                                           sectionNameKeyPath:sectionKeyPath
-                                                                   cacheName:nil];
+                                                                   cacheName:ref.cacheName];
     return fetchedResultsController;
 }
 
@@ -276,10 +276,11 @@ typedef enum {
     self.mealRef = self.current.mealRef;
     
     MealReference *ref = [self mealReferenceForMealInDirection:kPageDirectionForward];
-    self.nextFRC = [self fetchedResultsControllerForMealNamed:ref.name onDate:ref.date];
+    self.nextFRC = [self fetchedResultsControllerForMealReference:ref];
     [self.nextFRC performFetch:nil];
     
     [self.current resetScrollOffset]; // need to reset scroll offset so user always starts at (0,0) in collectionView
+    [self.previous resetScrollOffset];
     self.next.mealRef = ref;
 
     [self reloadAllComparisonViews];
@@ -297,7 +298,7 @@ typedef enum {
     self.mealRef = self.current.mealRef;
     
     MealReference *ref = [self mealReferenceForMealInDirection:kPageDirectionBackward];
-    self.previousFRC = [self fetchedResultsControllerForMealNamed:ref.name onDate:ref.date];
+    self.previousFRC = [self fetchedResultsControllerForMealReference:ref];
     [self.previousFRC performFetch:nil];
     
     [self.current resetScrollOffset];

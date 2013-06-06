@@ -26,4 +26,16 @@
     return [NSString stringWithFormat:@"<%@:%p name:\"%@\" date:%@", [self class], self, self.name, self.date];
 }
 
+- (NSString *) cacheName
+{
+    if (!self.name || !self.date) {
+        // no reference, no cache
+        return nil;
+    }
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    [df setDateFormat:@"MM.dd.yyyy"];
+    NSString *dateString = [df stringFromDate:self.date];
+    return [NSString stringWithFormat:@"%@ - %@", self.name, dateString];
+}
+
 @end

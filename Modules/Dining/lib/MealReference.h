@@ -10,4 +10,6 @@
 + (MealReference *) referenceWithMealName:(NSString *)name onDate:(NSDate *)date;
 + (DiningMeal *) mealForReference:(MealReference *)reference atVenueWithShortName:(NSString *)venueShortName;
 
+- (NSString *) cacheName;
+
 @end
