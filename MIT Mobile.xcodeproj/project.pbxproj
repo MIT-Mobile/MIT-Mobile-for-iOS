@@ -112,6 +112,7 @@
 		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
 		2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD27AAA1709D3EF002E220E /* MGSGeometry.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
+		2CDA8ABB1762445F001F011F /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDA8AB71762445F001F011F /* libTestFlight.a */; };
 		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -644,6 +645,10 @@
 		2CD27AA91709D3EF002E220E /* MGSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSGeometry.h; sourceTree = "<group>"; };
 		2CD27AAA1709D3EF002E220E /* MGSGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSGeometry.m; sourceTree = "<group>"; };
 		2CD8FEED13565E8B00B00B28 /* QRReaderResult.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = QRReaderResult.xcdatamodel; sourceTree = "<group>"; };
+		2CDA8AB71762445F001F011F /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
+		2CDA8AB81762445F001F011F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		2CDA8AB91762445F001F011F /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
+		2CDA8ABA1762445F001F011F /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
 		2CDB024C15D0403500436B59 /* QRReaderResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderResult.h; sourceTree = "<group>"; };
 		2CDB024D15D0403500436B59 /* QRReaderResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResult.m; sourceTree = "<group>"; };
 		2CDB024F15D0404500436B59 /* MITScannerImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerImage.h; sourceTree = "<group>"; };
@@ -1324,6 +1329,7 @@
 				A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */,
 				A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */,
 				4B83723B157E5B5C004CBC49 /* libzbar.a in Frameworks */,
+				2CDA8ABB1762445F001F011F /* libTestFlight.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1463,6 +1469,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2CDA8AB61762445F001F011F /* TestFlight */,
 				2C33348E162DCF2600BBB312 /* Accounts.framework */,
 				EB7F32D210CD6FB300188BCD /* AddressBook.framework */,
 				EB7F32D610CD6FBB00188BCD /* AddressBookUI.framework */,
@@ -1793,6 +1800,17 @@
 				2CCF814F1636F69900DE273F /* README.txt */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		2CDA8AB61762445F001F011F /* TestFlight */ = {
+			isa = PBXGroup;
+			children = (
+				2CDA8AB71762445F001F011F /* libTestFlight.a */,
+				2CDA8AB81762445F001F011F /* README.md */,
+				2CDA8AB91762445F001F011F /* release_notes.md */,
+				2CDA8ABA1762445F001F011F /* TestFlight.h */,
+			);
+			path = TestFlight;
 			sourceTree = "<group>";
 		};
 		2CDF3017134DEAD3007C6813 /* Model */ = {
@@ -3431,6 +3449,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
+					"\"$(SRCROOT)/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
 				WARNING_CFLAGS = "-Wall";
@@ -3457,6 +3476,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
+					"\"$(SRCROOT)/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
 			};
@@ -3530,7 +3550,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(EXTERNAL_DEFINES)",
+					TESTFLIGHT,
+				);
 				GCC_THUMB_SUPPORT = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -3571,6 +3594,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
+					"\"$(SRCROOT)/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
 			};
