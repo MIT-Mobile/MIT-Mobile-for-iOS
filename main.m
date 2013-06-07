@@ -29,7 +29,7 @@ void mit_logger_init( void )
         }
 #endif //DEBUG
         
-#if defined(DEBUG)
+#if defined(TESTFLIGHT)
         {
             MITTestFlightLogger *logger = [MITTestFlightLogger sharedInstance];
             logger.logFormatter = [[MITLogFormatter alloc] init];
