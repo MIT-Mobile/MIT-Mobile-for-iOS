@@ -113,6 +113,7 @@
 		2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD27AAA1709D3EF002E220E /* MGSGeometry.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
 		2CDA8ABB1762445F001F011F /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDA8AB71762445F001F011F /* libTestFlight.a */; };
+		2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */; };
 		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -649,6 +650,8 @@
 		2CDA8AB81762445F001F011F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		2CDA8AB91762445F001F011F /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
 		2CDA8ABA1762445F001F011F /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		2CDA8ABF17624C63001F011F /* MITTestFlightLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITTestFlightLogger.h; path = Logging/MITTestFlightLogger.h; sourceTree = "<group>"; };
+		2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITTestFlightLogger.m; path = Logging/MITTestFlightLogger.m; sourceTree = "<group>"; };
 		2CDB024C15D0403500436B59 /* QRReaderResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderResult.h; sourceTree = "<group>"; };
 		2CDB024D15D0403500436B59 /* QRReaderResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResult.m; sourceTree = "<group>"; };
 		2CDB024F15D0404500436B59 /* MITScannerImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerImage.h; sourceTree = "<group>"; };
@@ -1359,9 +1362,7 @@
 				DEA3B6F710CB126200BDA774 /* MITConstants.m */,
 				EBA2867710E082010003BA01 /* MITLoadingActivityView.h */,
 				EBA2867810E082010003BA01 /* MITLoadingActivityView.m */,
-				2C70B81C170DBFFA00746EB9 /* MITLogFormatter.h */,
-				2C70B81D170DBFFA00746EB9 /* MITLogFormatter.m */,
-				DE129018134B748E00BEBDA2 /* MITLogging.h */,
+				2CDA8ABE17624C2D001F011F /* Logging */,
 				EBF8B37112B581AC00D39AE6 /* MITMailComposeController.h */,
 				EBF8B37212B581AC00D39AE6 /* MITMailComposeController.m */,
 				2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */,
@@ -1811,6 +1812,18 @@
 				2CDA8ABA1762445F001F011F /* TestFlight.h */,
 			);
 			path = TestFlight;
+			sourceTree = "<group>";
+		};
+		2CDA8ABE17624C2D001F011F /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				2C70B81C170DBFFA00746EB9 /* MITLogFormatter.h */,
+				2C70B81D170DBFFA00746EB9 /* MITLogFormatter.m */,
+				DE129018134B748E00BEBDA2 /* MITLogging.h */,
+				2CDA8ABF17624C63001F011F /* MITTestFlightLogger.h */,
+				2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */,
+			);
+			name = Logging;
 			sourceTree = "<group>";
 		};
 		2CDF3017134DEAD3007C6813 /* Model */ = {
@@ -3421,6 +3434,7 @@
 				48C572CF174BC68100CF6C16 /* DiningHallInfoScheduleCell.m in Sources */,
 				48A4F409174D6EB20012F749 /* DiningHallMenuComparisonNoMealsCell.m in Sources */,
 				48B06EA1175CE904001DBCC6 /* MealReference.m in Sources */,
+				2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
