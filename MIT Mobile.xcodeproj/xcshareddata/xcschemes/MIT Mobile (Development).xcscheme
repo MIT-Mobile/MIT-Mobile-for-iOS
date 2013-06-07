@@ -85,6 +85,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "TestFlight"
+      customArchiveName = "MIT Mobile"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>
