@@ -28,6 +28,15 @@
     DDLogInfo(@"Setting default app id to '%@'", FacebookAppId);
     [FBSession setDefaultAppID:FacebookAppId];
     
+#if defined(TESTFLIGHT)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+#pragma clang diagnostic pop
+    
+    [TestFlight takeOff:@"945d1b11-83b4-40d4-b9db-3a6581b614b7"];
+#endif
+    
     networkActivityRefCount = 0;
     
     [self updateBasicServerInfo];
