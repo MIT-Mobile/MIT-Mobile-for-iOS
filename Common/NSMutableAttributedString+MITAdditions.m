@@ -87,12 +87,11 @@ FOUNDATION_STATIC_INLINE CTTextAlignment CTTextAlignmentFromUITextAlignment(UITe
     CTFontRef ctFont = createCTFontFromUIFont(font);
     CTFontRef styledFont = CTFontCreateCopyWithSymbolicTraits(ctFont,
                                                               0.0,
-            NULL,
+                                                              NULL,
                                                               traits,
                                                               traits);
 
-    if (styledFont == NULL)
-    {
+    if (styledFont == NULL) {
         DDLogError(@"Error: Unable to create font '%@' with traits 0x%x", [font fontName], traits);
 
         if (ctFont) CFRelease(ctFont);
@@ -104,8 +103,13 @@ FOUNDATION_STATIC_INLINE CTTextAlignment CTTextAlignmentFromUITextAlignment(UITe
                  value:(NSString *)kCTFontAttributeName
                  range:attrRange];
 
-    if (ctFont)
+    if (ctFont) {
         CFRelease(ctFont);
+    }
+    
+    if (styledFont) {
+        CFRelease(styledFont);
+    }
 }
 
 
