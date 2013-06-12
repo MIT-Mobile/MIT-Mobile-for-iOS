@@ -93,7 +93,7 @@
     return displayName;
 }
 
-- (NSURL *)pdfPath {
+- (NSString *)pdfPath {
     NSString *pdfName = [DiningDietaryFlag detailsForName:self.name][@"pdfName"];
     return [NSString stringWithFormat:@"dining/%@.pdf", pdfName];
 }
