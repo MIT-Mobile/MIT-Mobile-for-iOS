@@ -22,6 +22,10 @@
 @synthesize springboardController = _springboardController,
             moduleStack = _moduleStack;
 
++ (void)initialize {
+    [NSTimeZone setDefaultTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
+}
+
 #pragma mark -
 #pragma mark Application lifecycle
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {

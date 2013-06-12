@@ -16,7 +16,6 @@
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"yyyy-MM-dd"];
-    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
     NSDate *date = [formatter dateFromString:dict[@"date"]];
     day.date = date;
     
