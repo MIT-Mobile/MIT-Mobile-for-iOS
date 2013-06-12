@@ -279,7 +279,7 @@ NSString * const shuttleStopPath = @"/stops/";
             for (NSDictionary* routeAtStop in routesAtStop) 
             {
                 NSError *error = nil;
-                ShuttleStop *stop = [ShuttleDataManager stopWithRoute:[routeAtStop objectForKey:@"route_id"] stopID:stopID error:&error];
+                ShuttleStop *stop = [ShuttleDataManager stopWithRoute:[routeAtStop objectForKey:@"id"] stopID:stopID error:&error];
                 
                 if (error != nil) {
                     DDLogError(@"error getting shuttle stop. code: %d; userinfo: %@", error.code, error.userInfo);

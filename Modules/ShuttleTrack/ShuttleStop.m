@@ -4,13 +4,15 @@
 #import "ShuttleStopLocation.h"
 #import "ShuttleRouteStop.h"
 #import "ShuttleRoute.h"
+#import "ShuttlePrediction.h"
 
 @implementation ShuttleStop
 
 // cached stop location properties
 @dynamic stopID;
 @dynamic url;
-@dynamic title;
+//@dynamic title;   // check when use cache
+@synthesize title = _title;
 @dynamic latitude;
 @dynamic longitude;
 
@@ -29,52 +31,34 @@
 
 #pragma mark getters and setters
 
-- (NSString *)title
-{
-    return _title;
-//	return _stopLocation.title;
-}
-
-- (void)setTitle:(NSString *)title
-{
-    _title = title;
-//	_stopLocation.title = title;
-}
-
 - (NSString *)stopID
 {
     return _stopID;
-//	return _stopLocation.stopID;
 }
 
 - (void)setStopID:(NSString *)stopID
 {
     _stopID = stopID;
-//	_stopLocation.stopID = stopID;
 }
 
 - (double)latitude
 {
     return _latitude;
-//	return [_stopLocation.latitude doubleValue];
 }
 
 - (void)setLatitude:(double)latitude
 {
     _latitude = latitude;
-//	_stopLocation.latitude = [NSNumber numberWithDouble:latitude];
 }
 
 - (double)longitude
 {
     return _longitude;
-//	return [_stopLocation.longitude doubleValue];
 }
 
 - (void)setLongitude:(double)longitude
 {
     _longitude = longitude;
-//	_stopLocation.longitude = [NSNumber numberWithDouble:longitude];
 }
 
 - (NSString *)url {
@@ -143,6 +127,7 @@
 }
  */
 
+/*
 - (NSArray *)predictions
 {
     if (self.next == 0) {
@@ -156,6 +141,7 @@
         return [NSArray arrayWithArray:absPredictions];
     }
 }
+ */
 
 - (void)setPredictions:(NSArray *)predictions
 {
@@ -222,6 +208,55 @@
     return result;
 }
 
+- (void) setPredictions:(NSArray *)predictions withPredictable:(BOOL)isPredictable
+{
+    _predictions = predictions;
+    
+    long now = [[NSDate date] timeIntervalSince1970];
+    
+    if ([predictions count] == 0)
+    {
+        return;
+    }
+    
+    if(isPredictable)
+    {
+        for (ShuttlePrediction *prediction in predictions) {
+            if ([prediction timestamp] / 1000 > now) {
+                _next = prediction.timestamp / 1000;
+            break;
+            }
+        }
+    }
+}
+
+- (void) setSchedule:(NSArray *)schedule withPredictable:(BOOL)isPredictable
+{
+    _schedule = schedule;
+    
+    long now = [[NSDate date] timeIntervalSince1970];
+    
+    if ([schedule count] == 0)
+    {
+        return;
+    }
+    
+    if(!isPredictable)
+    {
+        int index = -1;
+        long diff = now;
+        
+        for (int i = 0; i < [schedule count]; i++) {
+            long value = [[schedule objectAtIndex:i] longValue];
+            if (value > now && (value - now < diff)) {
+                diff = value - now;
+                index = i;
+            }
+        }        
+        _next = [[schedule objectAtIndex:(index != -1 ? index : 0) ] longValue ];
+    }
+}
+
 - (void)updateInfo:(NSDictionary *)stopInfo
 {
     self.stopID = [stopInfo objectForKey:@"id"];
@@ -235,16 +270,27 @@
     NSString *routeID = [self.url substringWithRange:NSMakeRange(startPos, endPos - startPos)];
     self.routeID = routeID;
     
-    // TODO: get predictions
+    // Get predictions
+    NSArray *predictions = [stopInfo objectForKey:@"predictions"];
+    if (predictions)
+    {
+        NSMutableArray *predictionArray = [[NSMutableArray alloc] init];
+        
+        for (int i=0; i<[predictions count]; i++){
+            NSDictionary *jPrediction = [predictions objectAtIndex:i];
+            ShuttlePrediction *prediction = [[ShuttlePrediction alloc]initWithDictionary:jPrediction];
+            [predictionArray addObject:prediction];
+        }
+        [self setPredictions:predictionArray withPredictable:[predictionArray count] > 0];
+    }
     
-    // TODO: get schedule
     
-    
-    NSLog(@"stopInfo: %@, %@", self.stopID, self.routeID);
+    // Get schedule
+    NSArray *schedule = [stopInfo objectForKey:@"schedule"];
+    [self setSchedule:schedule withPredictable:[self.predictions count] > 0];
     
     
     /*
-    
 	NSString *property = nil;
 	if ((property = [stopInfo objectForKey:@"title"]) != nil) {
 		self.title = property;

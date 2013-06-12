@@ -60,7 +60,7 @@
     [super viewDidLoad];
 
 	if (_route.stops == nil) {
-		[_route getStopsFromCache];
+    //    [_route getStopsFromCache];
 	}
     
     self.title = @"Route";
@@ -310,7 +310,7 @@
 	{
 		shuttleRoute.liveStatusFailed = NO;
 		if ([routeID isEqualToString:self.route.routeID]) {
-			if (!self.route.isRunning && [_pollingTimer isValid]) {
+			if (!self.route.active && [_pollingTimer isValid]) {
 				[_pollingTimer invalidate];
 			}
 		

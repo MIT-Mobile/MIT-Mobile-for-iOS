@@ -6,6 +6,8 @@
 #import "ShuttleRouteStop.h"
 #import "ShuttleDataManager.h"
 #import "CoreDataManager.h"
+#import "ShuttleVehicle.h"
+#import "ShuttlePrediction.h"
 
 @implementation ShuttleRoute
 
@@ -169,6 +171,7 @@
 	}
     
     _stops = [newStops retain];
+    [self calculateUpcoming];
 	
     // TODO: work with cached stops. Don't have this functionality yet.
     /*
@@ -206,6 +209,78 @@
 	[oldRouteStops release];
 }
 
+- (void) calculateUpcoming
+{
+    for (ShuttleStop *stop in _stops)
+    {
+        stop.upcoming = false;
+    }
+    
+    if (_predictable) {
+        [self setUpcomingByPredictions];
+    } else {
+        [self setUpcomingBySchedule];
+    }
+}
+
+- (void) setUpcomingBySchedule
+{
+    long minTimestamp = [[_stops objectAtIndex:0] next];
+    
+    long now = [[NSDate date] timeIntervalSince1970];
+    int upcomingIndex = 0;
+    
+    for (int i = 0; i < [_stops count]; i++) {
+        ShuttleStop *stop = [_stops objectAtIndex:i];
+        if (stop.next < minTimestamp && stop.next > now) {
+            minTimestamp = stop.next;
+            upcomingIndex = i;
+        }
+    }
+    [((ShuttleStop *)[_stops objectAtIndex:upcomingIndex]) setUpcoming:YES];
+}
+
+- (void) setUpcomingByPredictions
+{
+    long now = [[NSDate date] timeIntervalSince1970];
+    for (ShuttleVehicle *vehicle in _vehicles) {
+        NSString *upcomingID = [[NSString alloc] init];
+        long vehicleMin = now + (60 * 60 * 24);
+        bool hasUpcoming = false;
+        
+        for (int i = 0; i < [_stops count]; i++) {
+            ShuttleStop *stop = [_stops objectAtIndex:i];
+            long predictionMin = vehicleMin;
+            bool hasMinTime = false;
+            
+            for (ShuttlePrediction *prediction in stop.predictions) {
+                long predictionTime = prediction.timestamp / 1000;
+                if ([prediction.vehicleID isEqualToString:vehicle.vehicleID] &&
+                    predictionTime < predictionMin &&
+                    predictionTime > now) {
+                    predictionMin = predictionTime;
+                    hasMinTime = true;
+                }
+            }
+            
+            if (hasMinTime && predictionMin < vehicleMin) {
+                vehicleMin = predictionMin;
+                upcomingID = stop.stopID;
+                hasUpcoming = true;
+            }
+        }
+        
+        if (hasUpcoming) {
+            for (ShuttleStop *stop in _stops) {
+                if ([stop.stopID isEqualToString:(upcomingID)]) {
+                    stop.upcoming = true;
+                    break;
+                }
+            }
+        }
+    }
+}
+
 - (NSInteger)sortOrder {
     return [self.cache.sortOrder intValue];
 }
@@ -226,36 +301,24 @@
     self.active = [[routeInfo objectForKey:@"active"] boolValue];
     self.predictable = [[routeInfo objectForKey:@"predictable"] boolValue];
 	self.interval = [[routeInfo objectForKey:@"interval"] intValue];
-	
-//    NSLog(@"routeInfo: %@, %@, %@, %@, %@, %d, %d, %d", self.routeID, self.title, self.url,
-//          self.description, self.group, self.active, self.predictable, self.interval);
     
-    
+    // Get stops
 	NSArray *stops = [routeInfo objectForKey:@"stops"];
 	if (stops) {
-        NSLog(@"STOPS: \n\n%@", stops);
-//        _stops = (NSMutableArray *)stops;
 		self.stops = (NSMutableArray *)stops;
-//        for (ShuttleStop *aStop in self.stops) {
-//            aStop.now = [[routeInfo objectForKey:@"now"] doubleValue];
-//        }
 	}
-	
-    /*
-	NSArray* vehicleLocations = [routeInfo objectForKey:@"vehicleLocations"];
-	if (vehicleLocations && ![[NSNull null] isEqual:vehicleLocations])
-	{
-		self.vehicleLocations = nil;
-		
-		NSMutableArray* formattedVehicleLocations = [[NSMutableArray alloc] initWithCapacity:vehicleLocations.count];
-		for (NSDictionary* dictionary in vehicleLocations) {
-			ShuttleLocation* shuttleLocation = [[[ShuttleLocation alloc] initWithDictionary:dictionary] autorelease];
-			[formattedVehicleLocations addObject:shuttleLocation];
-		}
-		self.vehicleLocations = formattedVehicleLocations;
-		[formattedVehicleLocations release];
-	}
-     */
+    
+    // Get vehicles
+    NSArray *vehicles = [routeInfo objectForKey:@"vehicles"];
+    if (vehicles){
+        NSMutableArray *vehiclesArray = [[NSMutableArray alloc] init];
+        for (int i = 0; i < [vehicles count]; i++) {
+            NSDictionary *jVehicle = [vehicles objectAtIndex:i];
+            ShuttleVehicle *vehicle = [[ShuttleVehicle alloc] initWithDictionary:jVehicle];
+            [vehiclesArray addObject:vehicle];
+        }
+        self.vehicles = vehiclesArray;
+    }
 }
 
 - (void)getStopsFromCache
