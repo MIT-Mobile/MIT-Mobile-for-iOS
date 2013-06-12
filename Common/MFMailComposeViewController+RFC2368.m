@@ -70,12 +70,14 @@
         // Don't care if this fails. Some malformed mailto urls
         // are used in the app and this should (slightly) clean
         // it up.
-        [scanner scanString:@"//" intoString:NULL];
-        NSArray *toField = [self scanToFieldWithScanner:scanner];
+        [scanner scanString:@"//"
+                 intoString:NULL];
+        NSMutableArray *toField = [NSMutableArray arrayWithArray:[self scanToFieldWithScanner:scanner]];
         fields = [NSMutableDictionary dictionaryWithDictionary:[self scanHeadersWithScanner:scanner]];
         
         if ([fields objectForKey:@"to"]) {
-            [fields setObject:[toField arrayByAddingObjectsFromArray:[fields objectForKey:@"to"]]
+            [toField addObject:fields[@"to"]];
+            [fields setObject:toField
                        forKey:@"to"];
         } else {
             [fields setObject:toField
