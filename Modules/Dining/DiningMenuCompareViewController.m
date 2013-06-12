@@ -40,9 +40,6 @@
 
 @property (nonatomic, strong) UIScrollView *scrollView;
 
-@property (nonatomic, strong) NSDate *datePointer;
-@property (nonatomic, strong) NSString * mealPointer;
-
 @property (nonatomic, strong) NSDateFormatter *sectionSubtitleFormatter;
 
 @property (nonatomic, strong) DiningHallMenuCompareView * previous;     // on left
@@ -103,8 +100,6 @@ typedef enum {
     
     [self.view addSubview:self.scrollView];
     
-    self.datePointer = [NSDate dateWithTimeIntervalSinceNow:0];
-    
 	self.previous = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
     self.current = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.previous.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
     self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
@@ -129,7 +124,7 @@ typedef enum {
     [super didReceiveMemoryWarning];
 }
 
-
+#pragma mark - Rotation
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration
 {
     if (UIInterfaceOrientationIsPortrait(orientation)) {
@@ -142,30 +137,22 @@ typedef enum {
 
 - (void) loadData
 {
-    NSDate *date = [HouseVenue fakeDate];
-    NSLog(@"Fake Date :: %@", date);
-    self.datePointer = date;
-    
     // load data for current collection view, set meal pointers
-    NSString *mealName = [self bestMealForDate:date];
-    self.mealPointer = mealName;
-    self.currentFRC = [self fetchedResultsControllerForMealNamed:self.mealPointer onDate:self.datePointer];
+    self.currentFRC = [self fetchedResultsControllerForMealReference:self.mealRef];
     [self.currentFRC performFetch:nil];
-    self.current.date = date;
+    self.current.mealRef = self.mealRef;
     
     // loadData for left collectionView
-    NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionBackward ofMealNamed:self.mealPointer onDate:self.datePointer];
-    self.previousFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
+    MealReference *mRef = [self mealReferenceForMealInDirection:kPageDirectionBackward];
+    self.previousFRC = [self fetchedResultsControllerForMealReference:mRef];
     [self.previousFRC performFetch:nil];
-    self.previous.date = mealInfo[@"mealDate"];
+    self.previous.mealRef = mRef;
     
     // load data for right collectionView
-    mealInfo = [self mealInfoForMealInDirection:kPageDirectionForward ofMealNamed:self.mealPointer onDate:self.datePointer];
-    self.nextFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
+    mRef = [self mealReferenceForMealInDirection:kPageDirectionForward];
+    self.nextFRC = [self fetchedResultsControllerForMealReference:mRef];
     [self.nextFRC performFetch:nil];
-    self.next.date = mealInfo[@"mealDate"];
-    
-    
+    self.next.mealRef = mRef;
 }
 
 - (NSManagedObjectContext *)managedObjectContext {
@@ -181,13 +168,13 @@ typedef enum {
     return _managedObjectContext;
 }
 
-- (NSFetchedResultsController *)fetchedResultsControllerForMealNamed:(NSString *)mealName onDate:(NSDate *)date
+- (NSFetchedResultsController *)fetchedResultsControllerForMealReference:(MealReference *)ref
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"DiningMealItem"
                                               inManagedObjectContext:self.managedObjectContext];
     fetchRequest.entity = entity;
-    fetchRequest.predicate = [self predicateForMealNamed:mealName onDate:date];
+    fetchRequest.predicate = [self predicateForMealNamed:ref.name onDate:ref.date];
     NSString *sectionKeyPath = @"meal.day.houseVenue.shortName";
     NSSortDescriptor *sectionSort = [NSSortDescriptor sortDescriptorWithKey:sectionKeyPath ascending:YES selector:@selector(caseInsensitiveCompare:)];
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"ordinality" ascending:YES];
@@ -197,7 +184,7 @@ typedef enum {
                     [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                         managedObjectContext:self.managedObjectContext
                                                           sectionNameKeyPath:sectionKeyPath
-                                                                   cacheName:nil];
+                                                                   cacheName:ref.cacheName];
     return fetchedResultsController;
 }
 
@@ -249,11 +236,11 @@ typedef enum {
     //   - assummes earliest meal in set will start before all other meals in day
     //          - will return incorrect value if there is a breakfast that starts after a brunch and we are paging left, query for meals before earliest brunch would fail
     
-    NSDictionary *mealInfo = [self mealInfoForMealInDirection:direction ofMealNamed:self.mealPointer onDate:self.datePointer];
+    MealReference *ref = [self mealReferenceForMealInDirection:direction];
     NSPredicate *pred;
     NSDate *mealTime;
     
-    pred = [NSPredicate predicateWithFormat:@"name == %@ AND startTime >= %@ AND startTime <= %@", mealInfo[@"mealName"], [mealInfo[@"mealDate"] startOfDay], [mealInfo[@"mealDate"] endOfDay]];
+    pred = [NSPredicate predicateWithFormat:@"name == %@ AND startTime >= %@ AND startTime <= %@", ref.name, [ref.date startOfDay], [ref.date endOfDay]];
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:NO];    // want earliest meal to be last item in results
     NSArray *currentMeals = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred sortDescriptors:@[sort]];
     if (currentMeals) {
@@ -264,9 +251,9 @@ typedef enum {
     }
     
     if (direction == kPageDirectionForward) {
-        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime > %@", mealInfo[@"mealName"], mealTime];
+        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime > %@", ref.name, mealTime];
     } else {
-        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime < %@", mealInfo[@"mealName"], mealTime];
+        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime < %@", ref.name, mealTime];
     }
     
     NSArray * meals = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred];
@@ -282,17 +269,19 @@ typedef enum {
     [self pagePointersInDirection:kPageDirectionForward];
     
     self.previousFRC = self.currentFRC;
-    self.previous.date = self.current.date;
+    self.previous.mealRef = self.current.mealRef;
     
     self.currentFRC = self.nextFRC;
-    self.current.date = self.next.date;
+    self.current.mealRef = self.next.mealRef;
+    self.mealRef = self.current.mealRef;
     
-    NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionForward ofMealNamed:self.mealPointer onDate:self.datePointer];
-    self.nextFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
+    MealReference *ref = [self mealReferenceForMealInDirection:kPageDirectionForward];
+    self.nextFRC = [self fetchedResultsControllerForMealReference:ref];
     [self.nextFRC performFetch:nil];
     
     [self.current resetScrollOffset]; // need to reset scroll offset so user always starts at (0,0) in collectionView
-    self.next.date = mealInfo[@"mealDate"];
+    [self.previous resetScrollOffset];
+    self.next.mealRef = ref;
 
     [self reloadAllComparisonViews];
 }
@@ -302,17 +291,18 @@ typedef enum {
     [self pagePointersInDirection:kPageDirectionBackward];
     
     self.nextFRC = self.currentFRC;
-    self.next.date = self.current.date;
+    self.next.mealRef = self.current.mealRef;
     
     self.currentFRC = self.previousFRC;
-    self.current.date = self.previous.date;
+    self.current.mealRef = self.previous.mealRef;
+    self.mealRef = self.current.mealRef;
     
-    NSDictionary *mealInfo = [self mealInfoForMealInDirection:kPageDirectionBackward ofMealNamed:self.mealPointer onDate:self.datePointer];
-    self.previousFRC = [self fetchedResultsControllerForMealNamed:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
+    MealReference *ref = [self mealReferenceForMealInDirection:kPageDirectionBackward];
+    self.previousFRC = [self fetchedResultsControllerForMealReference:ref];
     [self.previousFRC performFetch:nil];
     
     [self.current resetScrollOffset];
-    self.previous.date = mealInfo[@"mealDate"];
+    self.previous.mealRef = ref;
 
     [self reloadAllComparisonViews];
 }
@@ -322,18 +312,19 @@ typedef enum {
     // when paging right, will find next meal in day and update meal pointer
     // if at last meal in day will update date pointer to next day and meal pointer to first meal in next day
     
-    NSDictionary *mealInfo = [self mealInfoForMealInDirection:direction ofMealNamed:self.mealPointer onDate:self.datePointer];
-    
-    self.mealPointer = mealInfo[@"mealName"];
-    self.datePointer = mealInfo[@"mealDate"];
+    MealReference *ref = [self mealReferenceForMealInDirection:direction];
+    self.mealRef = ref;
+    if (self.delegate) {
+        [self.delegate mealController:self didUpdateMealReference:self.mealRef];
+    }
 }
 
-- (NSDictionary *) mealInfoForMealInDirection:(MealPageDirection)direction ofMealNamed:(NSString *)mealName onDate:(NSDate *)date
+- (MealReference *) mealReferenceForMealInDirection:(MealPageDirection)direction
 {
-    // get meal information for meal before or after meal info parameters
+    // get meal information for meal before or after current Meal Reference
     
-    NSString *newMealPointer = mealName;
-    NSDate * newDatePointer = date;
+    NSString *newMealPointer = self.mealRef.name;
+    NSDate * newDatePointer = self.mealRef.date;
     
     NSArray *queryResults = nil;
     
@@ -344,8 +335,8 @@ typedef enum {
             // newIndex is out of range, update day
             newDatePointer = (direction == kPageDirectionForward) ? [newDatePointer dayAfter] : [newDatePointer dayBefore];
 
-            if (abs([newDatePointer timeIntervalSinceDate:date]) >= (SECONDS_IN_DAY * 2)) {
-                // TODO :: Need to handle holes in dining data by returning flag value here
+            if (abs([newDatePointer timeIntervalSinceDate:self.mealRef.date]) >= (SECONDS_IN_DAY * 2)) {
+                // TODO: Need to handle holes in dining data by returning flag value here
                 // compare view should stop on day if there are no meals but there are meals further in direction
                 break;
             }
@@ -357,8 +348,7 @@ typedef enum {
         queryResults = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:[NSPredicate predicateWithFormat:@"name == %@ AND startTime >= %@ AND startTime <= %@", newMealPointer, [newDatePointer startOfDay], [newDatePointer endOfDay]]];
     }
     
-    return @{@"mealName": newMealPointer,
-             @"mealDate" : newDatePointer};
+    return [MealReference referenceWithMealName:newMealPointer onDate:[[queryResults lastObject] startTime]];
 }
 
 - (NSString *) bestMealForDate:(NSDate *) date
@@ -421,19 +411,19 @@ typedef enum {
 #pragma mark - DiningCompareViewDelegate
 - (NSString *) titleForCompareView:(DiningHallMenuCompareView *)compareView
 {
-    NSDictionary *mealInfo;
+    MealReference *mRef;
     MealPageDirection direction = kPageDirectionNone;
     if (compareView == self.previous) {
         direction = kPageDirectionBackward;
         
     } else if (compareView == self.current) {
-        return [DiningHallMenuCompareView stringForMeal:self.mealPointer onDate:self.datePointer];
+        return [DiningHallMenuCompareView stringForMeal:self.mealRef.name onDate:self.mealRef.date];
     } else if (compareView == self.next) {
         direction = kPageDirectionForward;
     }
     
-    mealInfo = [self mealInfoForMealInDirection:direction ofMealNamed:self.mealPointer onDate:self.datePointer];
-    return [DiningHallMenuCompareView stringForMeal:mealInfo[@"mealName"] onDate:mealInfo[@"mealDate"]];
+    mRef = [self mealReferenceForMealInDirection:direction];
+    return [DiningHallMenuCompareView stringForMeal:mRef.name onDate:mRef.date];
 }
 
 - (NSInteger) numberOfSectionsInCompareView:(DiningHallMenuCompareView *)compareView
@@ -449,25 +439,16 @@ typedef enum {
 
 - (NSString *) compareView:(DiningHallMenuCompareView *)compareView subtitleForSection:(NSInteger)section
 {
-    NSFetchedResultsController *controller = [self resultsControllerForCompareView:compareView];
-    NSInteger cSectionIndex = [self indexOfSectionInController:controller withCompareViewSection:section];
-
-    if (cSectionIndex == NSNotFound) {
-        return @"";
-    }
-    
-    id<NSFetchedResultsSectionInfo> sectionInfo = [controller sections][cSectionIndex];
-    DiningMealItem *sampleItem = [[sectionInfo objects] lastObject];
-    
-    if (!sampleItem) {
+    DiningMeal *meal = [MealReference mealForReference:compareView.mealRef atVenueWithShortName:self.houseVenueSections[section]];
+    if (!meal) {
         return @"";
     }
     
     [self.sectionSubtitleFormatter setDateFormat:@"h:mm"];
-    NSString *start = [self.sectionSubtitleFormatter stringFromDate:sampleItem.meal.startTime];
+    NSString *start = [self.sectionSubtitleFormatter stringFromDate:meal.startTime];
     
     [self.sectionSubtitleFormatter setDateFormat:@"h:mm a"];
-    NSString *end = [self.sectionSubtitleFormatter stringFromDate:sampleItem.meal.endTime];
+    NSString *end = [self.sectionSubtitleFormatter stringFromDate:meal.endTime];
     
     return [NSString stringWithFormat:@"%@ - %@", start, end];
 }
@@ -514,7 +495,9 @@ typedef enum {
         return cell;
     } else {
         DiningHallMenuComparisonNoMealsCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuNoMealsCell" forIndexPath:indexPath];
-        cell.primaryLabel.text = @"No meals";
+        DiningMeal *meal = [MealReference mealForReference:compareView.mealRef atVenueWithShortName:self.houseVenueSections[indexPath.section]];
+        cell.primaryLabel.text = ([meal.items count])? @"no matching items" : @"no meals";
+        
         return cell;
     }
 }

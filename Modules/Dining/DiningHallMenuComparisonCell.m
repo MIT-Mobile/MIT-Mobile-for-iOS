@@ -14,7 +14,6 @@
 {
     [super drawRect:rect];
     CGContextRef ctx = UIGraphicsGetCurrentContext();
-    CGContextClearRect(ctx, CGRectInset(rect, -20, -20));
     
     CGContextAddRect(ctx, rect);
     CGContextSetFillColorWithColor(ctx, [UIColor whiteColor].CGColor);
@@ -72,7 +71,7 @@
         self.secondaryLabel.font = [DiningHallMenuComparisonCell fontForSecondaryLabel];
         
         self.typeContainer = [[UIView alloc] initWithFrame:CGRectMake( CGRectGetWidth(frame) - 22, STANDARD_PADDING, 12, 12)]; // width is from spec, height allows for single dietray type item
-        
+        // custom backgroundView to draw divider
         ComparisonBackgroundView *backView = [[ComparisonBackgroundView alloc] initWithFrame:frame];
         self.backgroundView = backView;
         
@@ -96,6 +95,9 @@
     self.secondaryLabel.text = @"";
     self.dietaryTypes = nil;
     [self.typeContainer removeAllSubviews];
+    
+    ComparisonBackgroundView *backView = [[ComparisonBackgroundView alloc] initWithFrame:self.frame];   // need to reallocate backgroundView so it doesn't draw over itself and thicken border line
+    self.backgroundView = backView;
 }
 
 + (UIFont *) fontForPrimaryLabel

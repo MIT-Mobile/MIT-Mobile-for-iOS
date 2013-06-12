@@ -7,7 +7,6 @@ build/
 *.perspective
 *.perspectivev3
 xcuserdata/
-project.xcworkspace/
 
 Common/Secret.m
 

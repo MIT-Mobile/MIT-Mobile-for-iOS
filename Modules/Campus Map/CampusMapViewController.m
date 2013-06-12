@@ -917,7 +917,9 @@
 			[self.mapView addAnnotation:newAnnotation];
 			
 			if (isViewingAnnotation) {
-				[self.mapView selectAnnotation:newAnnotation animated:NO withRecenter:NO];
+				[self.mapView selectAnnotation:newAnnotation
+                                      animated:NO
+                                  withRecenter:NO];
 			}
 			self.hasSearchResults = YES;
 		} else {

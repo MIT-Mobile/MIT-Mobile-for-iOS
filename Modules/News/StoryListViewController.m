@@ -24,8 +24,7 @@
 #define SEARCH_BUTTON_TAG 7947
 #define BOOKMARK_BUTTON_TAG 7948
 
-@interface StoryListViewController (Private)
-
+@interface StoryListViewController ()
 - (void)setupNavScroller;
 - (void)setupNavScrollButtons;
 - (void)buttonPressed:(id)sender;
@@ -40,7 +39,6 @@
 - (void)releaseSearchBar;
 
 - (void)pruneStories:(BOOL)asyncPrune;
-
 @end
 
 @implementation StoryListViewController
@@ -224,7 +222,9 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"UIApplicationWillTerminateNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:@"UIApplicationWillTerminateNotification"
+                                                  object:nil];
     self.stories = nil;
     self.searchQuery = nil;
     self.searchResults = nil;
@@ -241,49 +241,12 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
 - (void)pruneStories:(BOOL)asyncPrune
 {
-    
-    void (*dispatch_func)(dispatch_queue_t,dispatch_block_t) = NULL;
-    
-    if (asyncPrune)
-    {
-        dispatch_func = &dispatch_async;
-    }
-    else
-    {
-        dispatch_func = &dispatch_sync;
-    }
-    
-    (*dispatch_func)(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        NSManagedObjectContext *context = [[NSManagedObjectContext alloc] init];
+    dispatch_block_t pruningBlock = ^{
+        NSManagedObjectContext *context = [[[NSManagedObjectContext alloc] init] autorelease];
         context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-        context.undoManager = nil;
-        context.mergePolicy = NSOverwriteMergePolicy;
-        [context lock];
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;
         
         NSPredicate *notBookmarkedPredicate = [NSPredicate predicateWithFormat:@"(bookmarked == nil) || (bookmarked == NO)"];
-        
-        // bskinner (note): This is legacy code from 1.x. It was added to clean up
-        //  duplicate, un-bookmarked articles when upgrading from 1.x to 2.x.
-        //  On all new installs this ends up being a NOOP.
-        if (![[NSUserDefaults standardUserDefaults] boolForKey:MITNewsTwoFirstRunKey])
-        {
-            NSEntityDescription *newsStoryEntity = [NSEntityDescription entityForName:NewsStoryEntityName
-                                                               inManagedObjectContext:context];
-            
-            NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
-            fetchRequest.entity = newsStoryEntity;
-            fetchRequest.predicate = notBookmarkedPredicate;
-            
-            NSArray *results = [context executeFetchRequest:fetchRequest
-                                                      error:NULL];
-            for (NSManagedObject *result in results)
-            {
-                [context deleteObject:result];
-            }
-            [[NSUserDefaults standardUserDefaults] setBool:YES
-                                                    forKey:MITNewsTwoFirstRunKey];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-        }
         
         {
             NSEntityDescription *newsStoryEntity = [NSEntityDescription entityForName:NewsStoryEntityName
@@ -337,18 +300,22 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         NSError *error = nil;
         [context save:&error];
         
-        if (error)
-        {
+        if (error) {
             DDLogError(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
         }
         
-        [context unlock];
-        [context release];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self loadFromCache];
-        });
-    });
+        [self loadFromCache];
+    };
+    
+    
+    // (bskinner,6/6/2013)
+    // TODO: Fix news to support asynchronous operation a bit better
+    //  At the moment, news is *very* unhappy if things are happening
+    // asynchronously on the main thread. Rework News to use a
+    // NSFetchedResultsController for managing it's data and bump
+    // the data updates either to a general data controller or at least
+    // NSOperation-sized chunks.
+    dispatch_async(dispatch_get_main_queue(), pruningBlock);
 }
 
 
@@ -700,10 +667,10 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     // start new request
     NewsStory *lastStory = [self.stories lastObject];
     NSInteger lastStoryId = (loadMore) ? [lastStory.story_id integerValue] : 0;
-    if (self.xmlParser)
-    {
+    if (self.xmlParser) {
         [self.xmlParser abort];
     }
+    
     self.xmlParser = [[[StoryXMLParser alloc] init] autorelease];
     xmlParser.delegate = self;
     [xmlParser loadStoriesForCategory:self.activeCategoryId

@@ -15,7 +15,7 @@
 
 @interface MGSMapView : UIView
 #pragma mark - Properties
-@property (nonatomic,assign) id<MGSMapViewDelegate> delegate;
+@property (nonatomic,weak) id<MGSMapViewDelegate> delegate;
 
 #pragma mark Base Map Set Management
 @property (nonatomic, strong) NSString *activeMapSet;

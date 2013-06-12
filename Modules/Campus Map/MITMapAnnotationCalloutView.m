@@ -7,9 +7,7 @@ static const CGFloat kBuffer = 10;
 static const CGFloat kTitleFontSize = 16;
 static const CGFloat kSubTitleFontSize = 12;
 
-@interface MITMapAnnotationCalloutView(Private) 
-
-- (void)setupSubviews;
+@interface MITMapAnnotationCalloutView ()
 
 @end
 

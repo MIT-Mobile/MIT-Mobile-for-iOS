@@ -15,7 +15,7 @@
 
 @interface MGSLayerController : NSObject
 @property (nonatomic,readonly,strong) MGSLayer *layer;
-@property (nonatomic,readonly,strong) AGSLayer *nativeLayer;
+@property (nonatomic,weak) AGSLayer *nativeLayer;
 @property (nonatomic,readonly) NSSet *layerAnnotations;
 
 // The behavior for this property is a bit odd. If the graphics layer

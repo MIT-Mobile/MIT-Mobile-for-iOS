@@ -60,9 +60,15 @@
 
 - (void)dealloc
 {
+    self.mapView.layerDelegate = nil;
+    self.mapView.calloutDelegate = nil;
+    self.mapView.touchDelegate = nil;
+    
     [self.observerTokens enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         [[NSNotificationCenter defaultCenter] removeObserver:obj];
     }];
+    
+    self.showUserLocation = NO;
 }
 
 #pragma mark Base Map Set Management
@@ -278,6 +284,14 @@
                 manager.spatialReference = self.mapView.spatialReference;
                 
                 AGSLayer *arcgisLayer = manager.nativeLayer;
+                
+                if (arcgisLayer == nil) {
+                    arcgisLayer = [[AGSGraphicsLayer alloc] init];
+                    arcgisLayer.renderNativeResolution = YES;
+                    
+                    manager.nativeLayer = arcgisLayer;
+                }
+                
                 NSUInteger agsLayerIndex = [self.baseLayers count] + layerIndex;
                 
                 if ([self.mapView.mapLayers containsObject:arcgisLayer] == NO) {
@@ -831,19 +845,20 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         self->_mapRegion = MKCoordinateRegionInvalid;
     }
     
+    __weak MGSMapView *wself = self;
     void (^notificationBlock)(NSNotification*) = ^(NSNotification *note) {
         if ([note.name isEqualToString:AGSMapViewDidEndZoomingNotification]) {
-            [self.externalLayerManagers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+            [wself.externalLayerManagers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
                 MGSLayerController *controller = (MGSLayerController*) obj;
                 [controller setNeedsRefresh];
                 [controller refresh:nil];
             }];
         }
         
-        if (self.mapView.lastChangeFromInteraction == NO) {
-            if (self.pendingCalloutBlock) {
-                self.pendingCalloutBlock();
-                self.pendingCalloutBlock = nil;
+        if (wself.mapView.lastChangeFromInteraction == NO) {
+            if (wself.pendingCalloutBlock) {
+                wself.pendingCalloutBlock();
+                wself.pendingCalloutBlock = nil;
             }
         }
     };
