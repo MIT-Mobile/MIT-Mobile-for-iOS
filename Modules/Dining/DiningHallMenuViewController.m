@@ -64,8 +64,8 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     self.currentDate = [HouseVenue fakeDate];
     
     // set current meal
-    self.currentMeal = [self.venue bestMealForDate:self.currentDate];
     self.currentDay = [self.venue dayForDate:self.currentDate];
+    self.currentMeal = [self.currentDay bestMealForDate:self.currentDate];
     
     self.fetchedResultsController = [self fetchedResultsControllerForMeal:self.currentMeal filters:self.filtersApplied];
     self.fetchedResultsController.delegate = self;
@@ -86,7 +86,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     } else {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
     }
-    headerView.timeLabel.text = [self hallStatusStringForMeal:self.currentMeal];
+    headerView.timeLabel.text = [self hallStatusString];
     
     [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info.png"] forState:UIControlStateNormal];
     [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info-pressed.png"] forState:UIControlStateHighlighted];
@@ -174,7 +174,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     return [NSString stringWithFormat:@"%@ - %@", [dateFormatter stringFromDate:startDate], [dateFormatter stringFromDate:endDate]];
 }
 
-- (NSString *) hallStatusStringForMeal:(DiningMeal *) meal
+- (NSString *) hallStatusString
 {
 //      Returns hall status relative to the curent time of day.
 //      Example return strings
@@ -184,7 +184,10 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
     NSDate *rightNow = [HouseVenue fakeDate];
     
-    if (meal && meal.startTime && meal.endTime) {
+    DiningMeal *meal = self.currentMeal;
+    DiningDay *day = self.currentDay;
+    
+    if (meal.startTime && meal.endTime) {
         // need to calculate if the current time is before opening, before closing, or after closing
         BOOL isBeforeStart = ([meal.startTime compare:rightNow] == NSOrderedDescending);
         BOOL isBeforeEnd   = ([meal.endTime compare:rightNow] == NSOrderedDescending);
@@ -198,8 +201,14 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         }
     }
     
-    // start-end-now and ?-now-?
-    return @"Closed for the day";
+    // start-end-now or ?-now-?
+    
+    // if there's no meals today
+    if (day.message) {
+        return day.message;
+    } else {
+        return @"Closed for the day";
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -355,7 +364,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     return nil;
 }
 
--(CGFloat)tableView:(UITableView *) tableView heightForHeaderInSection:(NSInteger)section
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     if (section == 0) {
         CGFloat height = [DiningHallMenuSectionHeaderView heightForPagerBar];
