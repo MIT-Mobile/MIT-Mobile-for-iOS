@@ -15,7 +15,7 @@
 @end
 
 #define HEADER_VIEW_HEIGHT 24
-#define DEFAULT_COLUMN_WIDTH 180
+#define DEFAULT_COLUMN_WIDTH 170
 static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 
 @implementation DiningHallMenuCompareView
@@ -27,7 +27,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         
         self.headerView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, HEADER_VIEW_HEIGHT)];
         self.headerView.textAlignment = UITextAlignmentCenter;
-        self.headerView.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+        self.headerView.font = [UIFont boldSystemFontOfSize:12];
         
         self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setDateFormat:@"MMMM dd"];

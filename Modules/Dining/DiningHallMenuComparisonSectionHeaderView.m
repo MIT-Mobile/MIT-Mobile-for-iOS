@@ -19,13 +19,13 @@
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(frame), halfHeight)];
         self.titleLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
         self.titleLabel.backgroundColor = [UIColor lightGrayColor];
-        self.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
+        self.titleLabel.font = [UIFont boldSystemFontOfSize:14];
         self.titleLabel.textAlignment = NSTextAlignmentCenter;
         
         self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, halfHeight, CGRectGetWidth(frame), halfHeight)];
         self.timeLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
         self.timeLabel.backgroundColor = [UIColor darkGrayColor];
-        self.timeLabel.font = [UIFont fontWithName:@"Helvetica" size:10];
+        self.timeLabel.font = [UIFont boldSystemFontOfSize:12];
         self.timeLabel.textAlignment = NSTextAlignmentCenter;
         self.timeLabel.textColor = [UIColor whiteColor];
         

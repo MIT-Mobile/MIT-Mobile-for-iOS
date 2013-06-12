@@ -19,7 +19,7 @@
     CGContextSetFillColorWithColor(ctx, [UIColor whiteColor].CGColor);
     CGContextFillPath(ctx);
     
-    CGContextSetStrokeColorWithColor(ctx, [UIColor blackColor].CGColor);
+    CGContextSetStrokeColorWithColor(ctx, [UIColor colorWithWhite:0.88 alpha:1.0].CGColor);
     CGFloat borderWidth = 1.0;
     CGContextSetLineWidth(ctx, borderWidth);
     CGContextMoveToPoint(ctx, 0, rect.size.height - borderWidth);
@@ -102,12 +102,12 @@
 
 + (UIFont *) fontForPrimaryLabel
 {
-    return [UIFont fontWithName:@"Helvetica-Bold" size:10];
+    return [UIFont boldSystemFontOfSize:12];
 }
 
 + (UIFont *) fontForSecondaryLabel
 {
-    return [UIFont fontWithName:@"Helvetica" size:10];
+    return [UIFont systemFontOfSize:12];
 }
 
 
