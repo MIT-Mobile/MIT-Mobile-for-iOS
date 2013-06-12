@@ -114,7 +114,7 @@
 
 + (UIFont *) secondaryFont
 {
-    return [UIFont systemFontOfSize:12];
+    return [UIFont systemFontOfSize:14];
 }
 
 #pragma mark - Class Methods
