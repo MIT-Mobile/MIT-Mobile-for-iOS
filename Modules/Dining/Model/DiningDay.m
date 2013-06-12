@@ -38,9 +38,11 @@
         }
     }
     
-    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:YES];
-    NSArray *sortedMeals = [[day.meals array] sortedArrayUsingDescriptors:@[sort]];
-    [day setMeals:[NSOrderedSet orderedSetWithArray:sortedMeals]];
+    if ([day.meals count] > 0) {
+        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:YES];
+        NSArray *sortedMeals = [[day.meals array] sortedArrayUsingDescriptors:@[sort]];
+        [day setMeals:[NSOrderedSet orderedSetWithArray:sortedMeals]];
+    }
     
     return day;
 }
