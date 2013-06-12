@@ -117,15 +117,11 @@
     // Check for any available code => URL mappings from
     // the mobile server
     {
-        
-        NSMutableDictionary *params = [NSDictionary dictionaryWithObject:self.scanResult.text
-                                                                  forKey:@"q"];
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"qr"
                                                                                 command:nil
-                                                                             parameters:params];
+                                                                             parameters:@{@"q" : self.scanResult.text}];
         
-        operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSString *contentType, NSError *error)
-        {
+        operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSString *contentType, NSError *error) {
             [self handleScanInfoResponse:codeInfo
                                    error:error];
         };

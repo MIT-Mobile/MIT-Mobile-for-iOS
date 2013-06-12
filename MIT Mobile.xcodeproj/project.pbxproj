@@ -2958,7 +2958,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MIT Mobile" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -3096,7 +3096,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /usr/bin/ruby;
+			shellPath = "/usr/bin/ruby -Ku";
 			shellScript = "# Xcode auto-versioning script for git\n#\n# Based on a Ruby script by Jason Sallis, which was in turn\n# based on original Perl script by Marcus S. Zarra and Matt Long at\n#   (http://www.cimgf.com/2008/04/13/git-and-xcode-a-git-build-number-script/)\n\n# Fail if not run from Xcode\nraise \"Must be run from Xcode\" unless ENV['XCODE_VERSION_ACTUAL']\n\ninfo_plist = \"#{ENV['BUILT_PRODUCTS_DIR']}/#{ENV['INFOPLIST_PATH']}\"\n\n# Get the current git description\ndescription = `/usr/bin/git describe`.chomp!\n\n# Get the current git revision hash\nrevision = `/usr/bin/git rev-parse HEAD`.chomp!\n\n# Adjust the copyright year to be the year at build time\ntime = Time.new\ncopyright = \"Copyright © #{time.year} Massachusetts Institute of Technology. All rights reserved.\"\n\n# Temporarily turn plist into text\n`/usr/bin/plutil -convert xml1 \"#{info_plist}\"`\n\n# Open Info.plist and set the CFBundleVersion value to the revision hash\nlines = IO.readlines(info_plist).join\n\nlines.gsub! /(<key>MITBuildDescription<\\/key>\\n\\t<string>).*?(<\\/string>)/, \"\\\\1#{description}\\\\2\"\nlines.gsub! /(<key>MITBuildRevision<\\/key>\\n\\t<string>).*?(<\\/string>)/, \"\\\\1#{revision}\\\\2\"\nlines.gsub! /(<key>MITCopyright<\\/key>\\n\\t<string>).*?(<\\/string>)/, \"\\\\1#{copyright}\\\\2\"\n\n# Overwrite the original Info.plist file with our updated version\nFile.open(info_plist, 'w') {|f| f.puts lines}\n\n# Convert plist back into binary\n`/usr/bin/plutil -convert binary1 \"#{info_plist}\"`\n\n# Report to the user\nputs \"MITBuildDescription in #{info_plist} set to '#{description}'\"\nputs \"MITBuildRevision in #{info_plist} set to '#{revision}'\"";
 			showEnvVarsInLog = 0;
 		};
@@ -3515,7 +3515,6 @@
 				ARCHS = armv7;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
 				GCC_THUMB_SUPPORT = YES;
@@ -3526,13 +3525,13 @@
 					"\"Facebook Connect\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
 				);
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -3544,7 +3543,6 @@
 				ARCHS = armv7;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
 				GCC_THUMB_SUPPORT = YES;
@@ -3561,7 +3559,6 @@
 					"-ObjC",
 				);
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -3574,7 +3571,6 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(EXTERNAL_DEFINES)",
@@ -3594,7 +3590,6 @@
 					"-ObjC",
 				);
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};

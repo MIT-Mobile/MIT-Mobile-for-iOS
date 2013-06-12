@@ -320,7 +320,7 @@
     if (room) {
         [dict setObject: room
                  forKey: FacilitiesRequestLocationRoomKey];
-    } else {
+    } else if (altName) {
         [dict setObject: altName
                  forKey: FacilitiesRequestLocationUserRoomKey];
     }
