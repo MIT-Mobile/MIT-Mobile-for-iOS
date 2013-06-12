@@ -136,6 +136,12 @@
     //          - Opens at 5:30pm
     //          - Open until 4pm
     
+    // If there's a message, it wins.
+    // This is important for places like La Verde's which list their hours as "Open 24 Hours".
+    if (self.message) {
+        return self.message;
+    }
+    
     DiningMeal *bestMeal = [self bestMealForDate:date];
     
     if (bestMeal.startTime && bestMeal.endTime) {
@@ -155,11 +161,7 @@
     // start-end-now or ?-now-?
     
     // if there's no meals today
-    if (self.message) {
-        return self.message;
-    } else {
-        return @"Closed for the day";
-    }
+    return @"Closed for the day";
 }
 
 @end

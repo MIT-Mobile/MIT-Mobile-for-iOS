@@ -3,6 +3,7 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "RetailVenue.h"
+#import "RetailDay.h"
 
 @interface DiningRetailInfoViewController () <UIWebViewDelegate>
 
@@ -52,7 +53,8 @@
         self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
     }
     
-    self.headerView.timeLabel.text = [self.venue hoursToday];
+    RetailDay *currentDay = [self.venue dayForDate:[NSDate fakeDateForDining]];
+    self.headerView.timeLabel.text = [currentDay statusStringRelativeToDate:[NSDate fakeDateForDining]];
     
     self.descriptionHtmlFormatString = @"<html>"
                                         "<head>"

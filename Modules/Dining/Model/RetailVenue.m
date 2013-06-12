@@ -2,6 +2,7 @@
 #import "RetailDay.h"
 #import "VenueLocation.h"
 #import "CoreDataManager.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation RetailVenue
 
@@ -111,14 +112,14 @@
 }
 
 - (BOOL)isOpenNow {
-    NSDate *date = [RetailVenue fakeDate];
+    NSDate *date = [NSDate fakeDateForDining];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startTime <= %@ AND endTime >= %@", date, date];
 
     return [[self.days filteredSetUsingPredicate:predicate] anyObject];
 }
 
 - (NSString *)hoursToday {
-    RetailDay *today = [self dayForDate:[RetailVenue fakeDate]];
+    RetailDay *today = [self dayForDate:[NSDate fakeDateForDining]];
     return [today hoursSummary];
 }
 
@@ -134,20 +135,5 @@
     
     return [matchingDays anyObject];
 }
-
-+ (NSDate *)fakeDate {
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateStyle:NSDateFormatterShortStyle];
-    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
-    components.year = 2013;
-    components.month = 5;
-    components.day = 3;
-    components.hour = 13;
-    
-    return [calendar dateFromComponents:components];
-}
-
 
 @end

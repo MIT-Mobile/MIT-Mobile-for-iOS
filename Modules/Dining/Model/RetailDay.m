@@ -17,7 +17,6 @@
     // TODO: maybe make an -[NSDate dateForISO8601String:] category
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"yyyy-MM-dd"];
-    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
     NSDate *date = [formatter dateFromString:dict[@"date"]];
     day.date = date;
 
@@ -45,14 +44,50 @@
 
 - (NSString *)hoursSummary {
     
-    if (!self.startTime || !self.endTime) {
+    if (self.message) {
         return self.message;
     }
     
-    NSString *startString = [self.startTime MITShortTimeOfDayString];
-    NSString *endString = [self.endTime MITShortTimeOfDayString];
+    if (self.startTime && self.endTime) {
+        NSString *startString = [self.startTime MITShortTimeOfDayString];
+        NSString *endString = [self.endTime MITShortTimeOfDayString];
+        
+        return [[NSString stringWithFormat:@"%@ - %@", startString, endString] lowercaseString];
+    }
+    return @"Closed for the day";
+}
+
+- (NSString *)statusStringRelativeToDate:(NSDate *)date {
+    //      Returns hall status relative to the curent time of day.
+    //      Example return strings
+    //          - Closed for the day
+    //          - Opens at 5:30pm
+    //          - Open until 4pm
     
-    return [[NSString stringWithFormat:@"%@ - %@", startString, endString] lowercaseString];
+    // If there's a message, it wins.
+    // This is important for places like La Verde's which list their hours as "Open 24 Hours".
+    if (self.message) {
+        return self.message;
+    }
+    
+    if (self.startTime && self.endTime) {
+        // need to calculate if the current time is before opening, before closing, or after closing
+        BOOL isBeforeStart = ([self.startTime compare:date] == NSOrderedDescending);
+        BOOL isBeforeEnd   = ([self.endTime compare:date] == NSOrderedDescending);
+        
+        if (isBeforeStart) {
+            // now-start-end
+            return [NSString stringWithFormat:@"Opens at %@", [self.startTime MITShortTimeOfDayString]];
+        } else if (isBeforeEnd) {
+            // start-now-end
+            return [NSString stringWithFormat:@"Open until %@", [self.endTime MITShortTimeOfDayString]];
+        }
+    }
+    
+    // start-end-now or ?-now-?
+    
+    // if there's no hours today
+    return @"Closed for the day";
 }
 
 @end

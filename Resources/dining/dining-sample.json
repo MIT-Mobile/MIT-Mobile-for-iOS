@@ -4035,31 +4035,45 @@
         "hours": [
           {
             "date": "2013-04-29",
-            "message": "Open 24 Hours"
+            "message": "Open 24 Hours",
+            "start_time": "00:00:00",
+            "end_time": "23:59:59"
           },
           {
             "date": "2013-04-30",
-            "message": "Open 24 Hours"
+            "message": "Open 24 Hours",
+            "start_time": "00:00:00",
+            "end_time": "23:59:59"
           },
           {
             "date": "2013-05-01",
-            "message": "Open 24 Hours"
+            "message": "Open 24 Hours",
+            "start_time": "00:00:00",
+            "end_time": "23:59:59"
           },
           {
             "date": "2013-05-02",
-            "message": "Open 24 Hours"
+            "message": "Open 24 Hours",
+            "start_time": "00:00:00",
+            "end_time": "23:59:59"
           },
           {
             "date": "2013-05-03",
-            "message": "Open 24 Hours"
+            "message": "Open 24 Hours",
+            "start_time": "00:00:00",
+            "end_time": "23:59:59"
           },
           {
             "date": "2013-05-04",
-            "message": "Open 24 Hours"
+            "message": "Open 24 Hours",
+            "start_time": "00:00:00",
+            "end_time": "23:59:59"
           },
           {
             "date": "2013-05-05",
-            "message": "Open 24 Hours"
+            "message": "Open 24 Hours",
+            "start_time": "00:00:00",
+            "end_time": "23:59:59"
           }
         ]
       },

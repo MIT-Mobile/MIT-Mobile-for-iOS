@@ -13,5 +13,6 @@
 
 + (RetailDay *)newDayWithDictionary:(NSDictionary* )dict;
 - (NSString *)hoursSummary;
+- (NSString *)statusStringRelativeToDate:(NSDate *)date;
 
 @end

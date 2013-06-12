@@ -24,7 +24,6 @@
 - (BOOL)isOpenNow;
 - (NSString *)hoursToday;
 - (RetailDay *)dayForDate:(NSDate *)date;
-+ (NSDate *)fakeDate;
 
 @end
 
