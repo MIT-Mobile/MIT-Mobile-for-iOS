@@ -61,10 +61,12 @@
 }
 
 - (NSString *)hoursToday {
-    DiningDay *today = [self dayForDate:[HouseVenue fakeDate]];
-    return today.allHoursSummary;
-    // TODO: or closed with a message
-    // return @"Closed for renovations"
+    return [self hoursForDate:[HouseVenue fakeDate]];
+}
+
+- (NSString *)hoursForDate:(NSDate *)date {
+    DiningDay *day = [self dayForDate:date];
+    return day.allHoursSummary;
 }
 
 - (DiningDay *)dayForDate:(NSDate *)date {
@@ -81,9 +83,7 @@
 }
 
 - (DiningMeal *)bestMealForDate:(NSDate *)date {
-
     return [[self dayForDate:date] bestMealForDate:date];
-
 }
 
 + (NSDate *)fakeDate {

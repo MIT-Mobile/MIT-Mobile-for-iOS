@@ -75,7 +75,13 @@
     self.meals = tempSet;
 }
 
+/** Return all of hours for today as a comma-delimited list, e.g. "9am - 5pm, 5:30pm - 8:00pm". If the day has a message, all of the hours for the day are ignored and that message is displayed. Just because this returns a message shouldn't be taken to mean the venue is closed for the day.
+ */
+
 - (NSString *)allHoursSummary {
+    if (self.message) {
+        return self.message;
+    }
     NSMutableArray *summaries = [NSMutableArray array];
     for (DiningMeal *meal in self.meals) {
         NSString *summary = [meal hoursSummary];

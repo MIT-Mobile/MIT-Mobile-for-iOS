@@ -55,10 +55,15 @@
     self.items = tempSet;
 }
 
+/**
+ 
+ Could be nil. That happens when there's no times or message. Views can decide how they want to display that. Generally, if a meal isn't offered then it won't even be listed, so something weirder than just "Closed" must be going on if this returns nil.
+ */
+
 - (NSString *)hoursSummary {
     
     if (!self.startTime || !self.endTime) {
-        return nil;
+        return self.message;
     }
     
     NSString *startString = [self.startTime MITShortTimeOfDayString];
