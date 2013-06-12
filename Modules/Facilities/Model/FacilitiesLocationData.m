@@ -549,7 +549,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 - (void)loadLocationsWithArray:(NSArray*)locations {
     CoreDataManager *cdm = [CoreDataManager coreDataManager];
     
-    NSMutableSet *allObjects = [NSSet setWithArray:[cdm objectsForEntity:@"FacilitiesLocation"
+    NSSet *allObjects = [NSSet setWithArray:[cdm objectsForEntity:@"FacilitiesLocation"
                                                        matchingPredicate:[NSPredicate predicateWithValue:YES]]];
     NSMutableSet *modifiedObjects = [NSMutableSet set];
     
