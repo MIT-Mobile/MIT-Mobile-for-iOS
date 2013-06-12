@@ -3,6 +3,7 @@
 #import "DiningDay.h"
 #import "DiningMeal.h"
 #import "CoreDataManager.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation HouseVenue
 
@@ -42,7 +43,7 @@
 }
 
 - (BOOL)isOpenNow {
-    NSDate *date = [HouseVenue fakeDate];
+    NSDate *date = [NSDate fakeDateForDining];
     DiningDay *today = [self dayForDate:date];
     DiningMeal *meal = [today mealForDate:date];
 
@@ -61,7 +62,7 @@
 }
 
 - (NSString *)hoursToday {
-    return [self hoursForDate:[HouseVenue fakeDate]];
+    return [self hoursForDate:[NSDate fakeDateForDining]];
 }
 
 - (NSString *)hoursForDate:(NSDate *)date {
@@ -84,20 +85,6 @@
 
 - (DiningMeal *)bestMealForDate:(NSDate *)date {
     return [[self dayForDate:date] bestMealForDate:date];
-}
-
-+ (NSDate *)fakeDate {
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateStyle:NSDateFormatterShortStyle];
-    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
-    components.hour = 13;
-    components.year = 2013;
-    components.month = 5;
-    components.day = 3;
-    
-    return [calendar dateFromComponents:components];
 }
 
 - (NSString *)description {

@@ -353,6 +353,20 @@ typedef struct {
 
 @implementation NSDate (MITAdditions)
 
++ (NSDate *)fakeDateForDining {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterShortStyle];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    [calendar setTimeZone:[NSTimeZone defaultTimeZone]];
+    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
+    components.hour = 20;
+    components.year = 2013;
+    components.month = 5;
+    components.day = 3;
+    
+    return [calendar dateFromComponents:components];
+}
+
 + (NSDate *) dateForTodayFromTimeString:(NSString *)time
 {
     // takes date string of format hh:mm and returns an NSDate with today's date at the specified time.

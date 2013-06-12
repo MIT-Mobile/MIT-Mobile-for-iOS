@@ -85,7 +85,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     self.currentDateString = [dateFormatter stringFromDate:[NSDate date]];
     
-    self.currentDate = [HouseVenue fakeDate];
+    self.currentDate = [NSDate fakeDateForDining];
     
     // set current meal
     self.currentDay = [self.venue dayForDate:self.currentDate];
@@ -110,7 +110,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     } else {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
     }
-    headerView.timeLabel.text = [self hallStatusString];
+    headerView.timeLabel.text = [self.currentDay statusStringRelativeToDate:[NSDate fakeDateForDining]];
     
     [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info.png"] forState:UIControlStateNormal];
     [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info-pressed.png"] forState:UIControlStateHighlighted];
@@ -196,43 +196,6 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     NSDate *endDate = [NSDate dateForTodayFromTimeString:meal[@"end_time"]];
     
     return [NSString stringWithFormat:@"%@ - %@", [dateFormatter stringFromDate:startDate], [dateFormatter stringFromDate:endDate]];
-}
-
-- (NSString *) hallStatusString
-{
-//      Returns hall status relative to the curent time of day.
-//      Example return strings
-//          - Closed for the day
-//          - Opens at 5:30pm
-//          - Open until 4pm
-
-    NSDate *rightNow = [HouseVenue fakeDate];
-    
-    DiningMeal *meal = self.currentMeal;
-    DiningDay *day = self.currentDay;
-    
-    if (meal.startTime && meal.endTime) {
-        // need to calculate if the current time is before opening, before closing, or after closing
-        BOOL isBeforeStart = ([meal.startTime compare:rightNow] == NSOrderedDescending);
-        BOOL isBeforeEnd   = ([meal.endTime compare:rightNow] == NSOrderedDescending);
-        
-        if (isBeforeStart) {
-            // now-start-end
-            return [NSString stringWithFormat:@"Opens at %@", [meal.startTime MITShortTimeOfDayString]];
-        } else if (isBeforeEnd) {
-            // start-now-end
-            return [NSString stringWithFormat:@"Open until %@", [meal.endTime MITShortTimeOfDayString]];
-        }
-    }
-    
-    // start-end-now or ?-now-?
-    
-    // if there's no meals today
-    if (day.message) {
-        return day.message;
-    } else {
-        return @"Closed for the day";
-    }
 }
 
 - (void)didReceiveMemoryWarning

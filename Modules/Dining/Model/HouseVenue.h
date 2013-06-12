@@ -21,7 +21,6 @@
 - (BOOL)isOpenNow;
 - (NSString *)hoursToday;
 - (DiningDay *)dayForDate:(NSDate *)date;
-+ (NSDate *)fakeDate;
 - (DiningMeal *)bestMealForDate:(NSDate *)date;
 
 @end

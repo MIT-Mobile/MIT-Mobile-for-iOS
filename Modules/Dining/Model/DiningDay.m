@@ -129,5 +129,37 @@
     return meal;
 }
 
+- (NSString *)statusStringRelativeToDate:(NSDate *)date {
+    //      Returns hall status relative to the curent time of day.
+    //      Example return strings
+    //          - Closed for the day
+    //          - Opens at 5:30pm
+    //          - Open until 4pm
+    
+    DiningMeal *bestMeal = [self bestMealForDate:date];
+    
+    if (bestMeal.startTime && bestMeal.endTime) {
+        // need to calculate if the current time is before opening, before closing, or after closing
+        BOOL isBeforeStart = ([bestMeal.startTime compare:date] == NSOrderedDescending);
+        BOOL isBeforeEnd   = ([bestMeal.endTime compare:date] == NSOrderedDescending);
+        
+        if (isBeforeStart) {
+            // now-start-end
+            return [NSString stringWithFormat:@"Opens at %@", [bestMeal.startTime MITShortTimeOfDayString]];
+        } else if (isBeforeEnd) {
+            // start-now-end
+            return [NSString stringWithFormat:@"Open until %@", [bestMeal.endTime MITShortTimeOfDayString]];
+        }
+    }
+    
+    // start-end-now or ?-now-?
+    
+    // if there's no meals today
+    if (self.message) {
+        return self.message;
+    } else {
+        return @"Closed for the day";
+    }
+}
 
 @end

@@ -19,6 +19,7 @@
 - (DiningMeal *)mealWithName:(NSString *)name;
 - (DiningMeal *)mealForDate:(NSDate *)date;
 - (DiningMeal *)bestMealForDate:(NSDate *)date;
+- (NSString *)statusStringRelativeToDate:(NSDate *)date;
 
 @end
 

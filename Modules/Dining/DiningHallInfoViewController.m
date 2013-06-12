@@ -52,7 +52,8 @@
     } else {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
     }
-    headerView.timeLabel.text = [self.venue hoursToday];
+    DiningDay *currentDay = [self.venue dayForDate:[NSDate fakeDateForDining]];
+    headerView.timeLabel.text = [currentDay statusStringRelativeToDate:[NSDate fakeDateForDining]];
     self.tableView.tableHeaderView = headerView;
     
     _locationSectionIndex   = 0;
@@ -71,7 +72,7 @@
 
 - (void) fetchScheduleInfo
 {
-    NSArray *daysInWeek = [DiningDay daysInWeekOfDate:[HouseVenue fakeDate] forVenue:self.venue]; 
+    NSArray *daysInWeek = [DiningDay daysInWeekOfDate:[NSDate fakeDateForDining] forVenue:self.venue]; 
     NSMutableArray *schedules = [NSMutableArray array];
     
     NSTimeInterval oneDay = 60*60*24;

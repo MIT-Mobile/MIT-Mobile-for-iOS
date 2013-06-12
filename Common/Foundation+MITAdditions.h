@@ -49,6 +49,7 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 @end
 
 @interface NSDate (MITAdditions)
++ (NSDate *)fakeDateForDining;
 + (NSDate *) dateForTodayFromTimeString:(NSString *)time;
 - (BOOL) isEqualToDateIgnoringTime: (NSDate *) aDate;
 - (BOOL) isToday;
