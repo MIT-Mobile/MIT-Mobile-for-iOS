@@ -1,4 +1,5 @@
 #import "MITSingleWebViewCellTableViewController.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITSingleWebViewCellTableViewController () <UIWebViewDelegate>
 
