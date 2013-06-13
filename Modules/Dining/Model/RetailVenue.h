@@ -11,6 +11,7 @@
 @property (nonatomic, retain) NSString *descriptionHTML;
 @property (nonatomic, retain) NSArray *paymentMethods;
 @property (nonatomic, retain) NSArray *cuisines;
+@property (nonatomic, retain) NSNumber *favorite;
 @property (nonatomic, retain) NSString *url;
 @property (nonatomic, retain) NSString *homepageURL;
 @property (nonatomic, retain) NSString *menuURL;

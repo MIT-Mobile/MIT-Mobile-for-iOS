@@ -4,6 +4,7 @@
 #import "Foundation+MITAdditions.h"
 #import "RetailVenue.h"
 #import "RetailDay.h"
+#import "CoreDataManager.h"
 
 @interface DiningRetailInfoViewController () <UIWebViewDelegate>
 
@@ -45,7 +46,8 @@
     self.headerView.titleLabel.text = self.venue.name;
     [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"global/bookmark_off"] forState:UIControlStateNormal];
     [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"global/bookmark_on"] forState:UIControlStateSelected];
-    [self.headerView.accessoryButton addTarget:self action:@selector(bookmarkPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [self.headerView.accessoryButton addTarget:self action:@selector(favoriteButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    self.headerView.accessoryButton.selected = [self.venue.favorite boolValue];
     
     if ([self.venue isOpenNow]) {
         self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
@@ -177,11 +179,12 @@ static const NSString * sectionDataKey = @"section_data";
     // Dispose of any resources that can be recreated.
 }
 
-- (void) bookmarkPressed:(UIButton *)button
+- (void)favoriteButtonPressed:(UIButton *)button
 {
-    
-    button.selected = !button.selected;
-    
+    BOOL isFavorite = ![self.venue.favorite boolValue];
+    self.venue.favorite = @(isFavorite);
+    button.selected = isFavorite;
+    [CoreDataManager saveData];
 }
 
 - (NSDictionary *) dayScheduleFromHours:(NSArray *) hours

@@ -11,6 +11,7 @@
 @dynamic descriptionHTML;
 @dynamic paymentMethods;
 @dynamic cuisines;
+@dynamic favorite;
 @dynamic url;
 @dynamic homepageURL;
 @dynamic menuURL;
