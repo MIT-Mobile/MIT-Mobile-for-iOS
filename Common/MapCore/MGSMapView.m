@@ -863,15 +863,18 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         }
     };
     
-    self.observerTokens[AGSMapViewDidEndZoomingNotification] = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
-                                                                                                                      object:self.mapView
-                                                                                                                       queue:[NSOperationQueue mainQueue]
-                                                                                                                  usingBlock:notificationBlock];
+    id observerToken = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
+                                                                         object:self.mapView
+                                                                          queue:[NSOperationQueue mainQueue]
+                                                                     usingBlock:notificationBlock];
+    self.observerTokens[AGSMapViewDidEndZoomingNotification] = observerToken;
     
-    self.observerTokens[AGSMapViewDidEndPanningNotification] = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndPanningNotification
-                                                                                                                      object:self.mapView
-                                                                                                                       queue:[NSOperationQueue mainQueue]
-                                                                                                                  usingBlock:notificationBlock];
+    observerToken = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndPanningNotification
+                                                                      object:self.mapView
+                                                                       queue:[NSOperationQueue mainQueue]
+                                                                  usingBlock:notificationBlock];
+    self.observerTokens[AGSMapViewDidEndPanningNotification] = observerToken;
+    
     [self didFinishLoadingMapView];
 }
 
