@@ -485,10 +485,11 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     
     if (self.areBaseLayersLoaded == NO) {
         if (annotation) {
-            __weak MGSMapView *weak_self = self;
+            __weak MGSMapView *weakSelf = self;
             self.pendingCalloutBlock = ^ {
-                if ([annotation isEqual:weak_self.calloutAnnotation]) {
-                    [weak_self showCalloutForAnnotation:annotation
+                MGSMapView *mapView = weakSelf;
+                if ([annotation isEqual:mapView.calloutAnnotation]) {
+                    [mapView showCalloutForAnnotation:annotation
                                                animated:animated];
                 }
             };
@@ -563,10 +564,11 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                                                                             ymax:ymax
                                                                 spatialReference:envelope.spatialReference];
                         
-                        __weak MGSMapView *weak_self = self;
+                        __weak MGSMapView *weakSelf = self;
                         self.pendingCalloutBlock = ^ {
-                            if ([annotation isEqual:weak_self.calloutAnnotation]) {
-                                [weak_self showCalloutForAnnotation:annotation
+                            MGSMapView *mapView = weakSelf;
+                            if ([annotation isEqual:mapView.calloutAnnotation]) {
+                                [mapView showCalloutForAnnotation:annotation
                                                            animated:animated];
                             }
                         };
