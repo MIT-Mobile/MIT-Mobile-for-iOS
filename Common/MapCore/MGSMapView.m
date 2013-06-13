@@ -526,6 +526,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                             self.mapView.callout.title = [safeAnnotation title];
                             self.mapView.callout.detail = [safeAnnotation detail];
                             self.mapView.callout.image = [safeAnnotation calloutImage];
+                            self.mapView.callout.delegate = self;
                         }
                         
                         [self.mapView.callout showCalloutAtPoint:nil
