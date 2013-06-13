@@ -1,4 +1,3 @@
-
 #import "MITSingleWebViewCellTableViewController.h"
 
 @interface MITSingleWebViewCellTableViewController () <UIWebViewDelegate>
@@ -20,7 +19,8 @@
         self.htmlFormatString = @"<html>"
         "<head>"
         "<style type=\"text/css\" media=\"screen\">"
-        "body { margin: 0; padding: 0; font-family: Helvetica; font-size: 13px; } "
+        "body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 15px; }"
+        "a { color: #990000; }"
         "</style>"
         "</head>"
         "<body id=\"content\">"
@@ -37,6 +37,20 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+//    self.tableView.opaque = YES;
+    self.tableView.backgroundView = nil;
+//    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
+}
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)didReceiveMemoryWarning
