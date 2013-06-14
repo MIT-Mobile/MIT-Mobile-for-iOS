@@ -7,7 +7,6 @@
 #import "MGSAnnotation.h"
 #import "MITAnnotationAdaptor.h"
 #import "MGSRouteLayer.h"
-#import "MITMapAnnotationCalloutView.h"
 #import "CoreLocation+MITAdditions.h"
 
 @interface MITMapView () <MGSMapViewDelegate,MGSLayerDelegate>
@@ -532,34 +531,6 @@ didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
 }
 
-- (void)mapView:(MGSMapView *)mapView didDismissCalloutForAnnotation:(id<MGSAnnotation>)annotation {
-    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
-    {
-        MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
-        adaptor.calloutAnnotationView = nil;
-    }
-}
-
-- (UIView*)mapView:(MGSMapView *)mapView calloutViewForAnnotation:(id<MGSAnnotation>)annotation {
-    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]])
-    {
-        MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
-        MITMapAnnotationView *annotationView = adaptor.calloutAnnotationView;
-        MITMapAnnotationCalloutView *view = [[MITMapAnnotationCalloutView alloc] initWithAnnotationView:annotationView
-                                                                                                mapView:self];
-        __weak MITMapView *weakSelf = self;
-        view.accessoryActionBlock = ^(id sender) {
-            if ([weakSelf.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)]) {
-                [weakSelf.delegate mapView:weakSelf
-      annotationViewCalloutAccessoryTapped:annotationView];
-            }
-        };
-        
-        return view;
-    }
-    
-    return nil;
-}
 
 - (void)mapView:(MGSMapView*)mapView userLocationDidUpdate:(CLLocation*)location {
     if ([self.delegate respondsToSelector:@selector(mapView:didUpdateUserLocation:)]) {
