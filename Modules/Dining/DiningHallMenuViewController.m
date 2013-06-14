@@ -73,6 +73,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.tableView applyStandardColors];
     
     NSArray *defaultFilterNames = [[NSUserDefaults standardUserDefaults] objectForKey:DiningFiltersUserDefaultKey];
     self.filtersApplied = (defaultFilterNames)?[DiningDietaryFlag flagsFromNames:defaultFilterNames]:nil;
@@ -119,6 +120,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     self.tableView.tableHeaderView = headerView;
     
     DiningHallMenuFooterView *footerView = [[DiningHallMenuFooterView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 54)];
+    footerView.backgroundColor = [UIColor whiteColor];
     self.tableView.tableFooterView = footerView;
     
     self.filterBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Filter" style:UIBarButtonItemStylePlain target:self action:@selector(filterMenu:)];
@@ -291,6 +293,11 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         return [DiningHallMenuItemTableCell cellHeightForCellWithStation:item.station title:item.name subtitle:item.subtitle];
     }
     return 54;
+}
+
+- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    cell.backgroundColor = [UIColor whiteColor];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

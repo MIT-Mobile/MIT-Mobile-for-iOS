@@ -34,6 +34,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.tableView applyStandardColors];
     [self fetchScheduleInfo];
     
     self.title = [NSString stringWithFormat:@"%@ Info", self.venue.shortName];
