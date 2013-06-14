@@ -110,12 +110,12 @@
     
     CGFloat textWidth = CGRectGetMinX(accessoryFrame) - titleFrame.origin.x;
     titleFrame.size = [self.titleLabel.text sizeWithFont:self.titleLabel.font
-                                                forWidth:textWidth
+                                       constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
                                            lineBreakMode:self.titleLabel.lineBreakMode];
     
     detailFrame.origin = CGPointMake(titleFrame.origin.x, CGRectGetMaxY(titleFrame));
     detailFrame.size = [self.detailLabel.text sizeWithFont:self.detailLabel.font
-                                                  forWidth:textWidth
+                                         constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
                                              lineBreakMode:self.detailLabel.lineBreakMode];
     
     self.titleLabel.frame = titleFrame;
@@ -138,11 +138,11 @@
     
     CGFloat textWidth = MAX_CALLOUT_WIDTH - calculatedSize.width;
     CGSize titleSize = [self.titleLabel.text sizeWithFont:self.titleLabel.font
-                                                 forWidth:textWidth
+                                        constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
                                             lineBreakMode:self.titleLabel.lineBreakMode];
     
     CGSize detailSize = [self.detailLabel.text sizeWithFont:self.detailLabel.font
-                                                  forWidth:textWidth
+                                         constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
                                              lineBreakMode:self.detailLabel.lineBreakMode];
     
     textWidth = MIN(textWidth,MAX(titleSize.width,detailSize.width));
