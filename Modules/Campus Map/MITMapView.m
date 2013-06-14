@@ -497,7 +497,7 @@
 {
     if ([annotation isKindOfClass:[MITAnnotationAdaptor class]]) {
         MITAnnotationAdaptor *mgsAnnotation = (MITAnnotationAdaptor*) annotation;
-        return mgsAnnotation.calloutAnnotationView.canShowCallout;
+        return mgsAnnotation.annotationView.canShowCallout;
     }
     
     return NO;
@@ -523,9 +523,9 @@ didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         MITAnnotationAdaptor *adaptor = (MITAnnotationAdaptor*)annotation;
         
-        if (adaptor.calloutAnnotationView) {
+        if (adaptor.annotationView) {
             if ([self.delegate respondsToSelector:@selector(mapView:annotationViewCalloutAccessoryTapped:)]) {
-                [self.delegate mapView:self annotationViewCalloutAccessoryTapped:adaptor.calloutAnnotationView];
+                [self.delegate mapView:self annotationViewCalloutAccessoryTapped:adaptor.annotationView];
             }
         }
     }
@@ -612,7 +612,7 @@ didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                           reuseIdentifier:@"SimplePin"];
     }
     
-    adaptor.calloutAnnotationView = annotationView;
+    adaptor.annotationView = annotationView;
     return annotationView;
 }
 
