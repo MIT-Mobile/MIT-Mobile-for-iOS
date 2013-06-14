@@ -961,7 +961,10 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (void)mapViewDidDismissCallout:(AGSMapView*)mapView
 {
-    self.calloutAnnotation = nil;
+    if (self.calloutAnnotation) {
+        [self didDismissCalloutForAnnotation:self.calloutAnnotation];
+        self.calloutAnnotation = nil;
+    }
 }
 
 
