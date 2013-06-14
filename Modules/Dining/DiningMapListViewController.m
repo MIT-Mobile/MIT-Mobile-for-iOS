@@ -34,6 +34,7 @@
 @property (nonatomic, assign) BOOL isAnimating;
 @property (nonatomic, assign) BOOL isShowingMap;
 @property (nonatomic, assign) BOOL isShowingHouseDining;
+@property (nonatomic, assign, getter = isLoading) BOOL loading;
 
 @property (nonatomic, assign) NSInteger announcementSectionIndex;
 @property (nonatomic, assign) NSInteger venuesSectionIndex;
@@ -76,8 +77,17 @@
     self.title = @"Dining";
 
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
-    
-    [[DiningData sharedData] reload];
+
+    self.loading = YES;
+    dispatch_queue_t queue = dispatch_queue_create("edu.mit.mobile.DiningData", 0);
+    dispatch_async(queue, ^(void) {
+        [[DiningData sharedData] reload];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.loading = NO;
+            [self refreshSelectedTypeOfVenues];
+        });
+    });
+    dispatch_release(queue);
     
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
@@ -109,6 +119,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     NSIndexPath *selectedIndexPath = [self.listView indexPathForSelectedRow];
     [self.listView deselectRowAtIndexPath:selectedIndexPath animated:animated];
+    [self.listView reloadData];
 }
 
 - (void) addTabWithTitle:(NSString *)title
@@ -122,17 +133,14 @@
 - (void) tabBarDidChange:(UIButton *) sender
 {
     if ([sender isEqual:self.houseButton]) {
-        [self fetchHouseResults];
         self.isShowingHouseDining = YES;
         self.retailButton.selected = NO;
     } else {
-        [self fetchRetailResults];
         self.isShowingHouseDining = NO;
         self.houseButton.selected = NO;
     }
     sender.selected = YES;
-    
-    [self.listView reloadData];
+    [self refreshSelectedTypeOfVenues];
 }
 
 - (BOOL) shouldAutorotate
@@ -235,7 +243,16 @@
     return _managedObjectContext;
 }
 
-- (void)fetchHouseResults {
+- (void)refreshSelectedTypeOfVenues {
+    if (self.houseButton.selected) {
+        [self fetchHouseVenues];
+    } else {
+        [self fetchRetailVenues];
+    }
+    [self.listView reloadData];
+}
+
+- (void)fetchHouseVenues {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"HouseVenue"
                                               inManagedObjectContext:self.managedObjectContext];
@@ -256,7 +273,7 @@
     [self.fetchedResultsController performFetch:nil];
 }
 
-- (void)fetchRetailResults {
+- (void)fetchRetailVenues {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"RetailVenue"
                                               inManagedObjectContext:self.managedObjectContext];
@@ -277,6 +294,12 @@
     _fetchedResultsController.delegate = self;
     
     [self.fetchedResultsController performFetch:nil];
+}
+
+#pragma mark - UITableViewDataSource
+
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    [self.listView reloadData];
 }
 
 #pragma mark - UITableViewDataSource
