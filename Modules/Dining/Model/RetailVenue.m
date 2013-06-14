@@ -137,4 +137,25 @@
     return [matchingDays anyObject];
 }
 
+#pragma mark MGSAnnotation
+- (MGSAnnotationType) annotationType
+{
+    return MGSAnnotationMarker;
+}
+
+- (CLLocationCoordinate2D) coordinate
+{
+    return CLLocationCoordinate2DMake([self.location.latitude doubleValue], [self.location.longitude doubleValue]);
+}
+
+- (NSString *) title
+{
+    return self.name;
+}
+
+- (NSString *) detail
+{
+    return self.location.displayDescription;
+}
+
 @end

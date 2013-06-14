@@ -106,7 +106,6 @@
     NSInteger index = [self.tabBar.items count];
     UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:title image:nil tag:index];
     [self.tabBar insertSegmentWithItem:item atIndex:index animated:NO];
-    
 }
 
 - (void) tabBarDidChange:(UIButton *) sender
@@ -122,7 +121,11 @@
     }
     sender.selected = YES;
     
-    [self.listView reloadData];
+    if ([self isShowingMap]) {
+        [self annotateVenues];
+    } else {
+        [self.listView reloadData];
+    }
 }
 
 - (BOOL) shouldAutorotate
@@ -202,10 +205,7 @@
         [self.mapContainer addSubview:self.mapView];
     }
     [self setButtonBackgroundsForMapState];
-    
-    if ([self isShowingHouseDining]) {
-        [self annotateHouseVenues];
-    }
+    [self annotateVenues];
 }
 
 - (void) setButtonBackgroundsForListState
@@ -549,7 +549,7 @@
 
 #pragma mark - MapView Methods
 
-- (void) annotateHouseVenues
+- (void) annotateVenues
 {
     NSArray *venues = [self.fetchedResultsController fetchedObjects];
     
@@ -569,8 +569,11 @@
         DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
         detailVC.venue = (HouseVenue *)annotation;
         [self.navigationController pushViewController:detailVC animated:YES];
+    } else if ([annotation isKindOfClass:[RetailVenue class]]) {
+        DiningRetailInfoViewController *detailVC = [[DiningRetailInfoViewController alloc] init];
+        detailVC.venue = (RetailVenue *)annotation;
+        [self.navigationController pushViewController:detailVC animated:YES];
     }
-    
 }
 
 @end
