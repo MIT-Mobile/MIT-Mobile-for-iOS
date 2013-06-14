@@ -83,20 +83,9 @@
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
     
-    {
-        CGSize pdfSize = CGSizeMake(160, 55);
-        [self.houseButton addTarget:self action:@selector(tabBarDidChange:) forControlEvents:UIControlEventTouchUpInside];
-        [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
-        [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
-        [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
-        [self.houseButton sendActionsForControlEvents:UIControlEventTouchUpInside]; // press this button initially
-        
-        [self.retailButton addTarget:self action:@selector(tabBarDidChange:) forControlEvents:UIControlEventTouchUpInside];
-        [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
-        [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
-        [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
-    }
-    
+    [self.houseButton addTarget:self action:@selector(tabBarDidChange:) forControlEvents:UIControlEventTouchUpInside];
+    [self.houseButton sendActionsForControlEvents:UIControlEventTouchUpInside]; // press this button initially
+    [self.retailButton addTarget:self action:@selector(tabBarDidChange:) forControlEvents:UIControlEventTouchUpInside];
     
     [self addTabWithTitle:@"House Dining"];
     [self addTabWithTitle:@"Retail"];
@@ -194,7 +183,7 @@
     self.mapContainer.userInteractionEnabled = NO;
     self.mapContainer.alpha = 0;
     self.listView.frame = CGRectMake(0, CGRectGetMaxY(self.tabContainerView.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(self.tabContainerView.frame));
-    
+    [self setButtonBackgroundsForListState];
 }
 
 - (void) layoutMapState
@@ -212,13 +201,36 @@
         self.mapView.delegate = self;
         [self.mapContainer addSubview:self.mapView];
     }
+    [self setButtonBackgroundsForMapState];
     
     if ([self isShowingHouseDining]) {
         [self annotateHouseVenues];
     }
+}
+
+- (void) setButtonBackgroundsForListState
+{
+    CGSize pdfSize = CGSizeMake(160, 55);
+    [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
+    [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
+    [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
     
+    [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
+    [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
+    [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
     
+}
+
+- (void) setButtonBackgroundsForMapState
+{
+    CGSize pdfSize = CGSizeMake(160, 55);
+    [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-house-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
+    [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-house-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
+    [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-house-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
     
+    [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-retail-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
+    [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-retail-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
+    [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-retail-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
 }
 
 #pragma mark - Core Data
