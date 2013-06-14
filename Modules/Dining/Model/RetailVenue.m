@@ -116,7 +116,7 @@
     NSDate *date = [NSDate fakeDateForDining];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startTime <= %@ AND endTime >= %@", date, date];
 
-    return [[self.days filteredSetUsingPredicate:predicate] anyObject];
+    return ([[self.days filteredSetUsingPredicate:predicate] count] > 0);
 }
 
 - (NSString *)hoursToday {

@@ -335,6 +335,8 @@
 		DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B6F710CB126200BDA774 /* MITConstants.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DEBF146117699977009B6089 /* DiningRoot.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF146017699977009B6089 /* DiningRoot.m */; };
+		DEBF1464176999BA009B6089 /* DiningLink.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF1463176999B9009B6089 /* DiningLink.m */; };
 		DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FB914886F1A00B5719A /* LibrariesDetailLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FBB14886F1A00B5719A /* LibrariesDetailViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FBE14886F1A00B5719A /* LibrariesFinesSummaryView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -1088,6 +1090,10 @@
 		DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryGalleryViewController.m; sourceTree = "<group>"; };
 		DEAFF07B110001E300F0573E /* StoryImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryImageView.h; sourceTree = "<group>"; };
 		DEAFF07C110001E300F0573E /* StoryImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryImageView.m; sourceTree = "<group>"; };
+		DEBF145F17699977009B6089 /* DiningRoot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningRoot.h; path = Dining/Model/DiningRoot.h; sourceTree = "<group>"; };
+		DEBF146017699977009B6089 /* DiningRoot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningRoot.m; path = Dining/Model/DiningRoot.m; sourceTree = "<group>"; };
+		DEBF1462176999B9009B6089 /* DiningLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningLink.h; path = Dining/Model/DiningLink.h; sourceTree = "<group>"; };
+		DEBF1463176999B9009B6089 /* DiningLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningLink.m; path = Dining/Model/DiningLink.m; sourceTree = "<group>"; };
 		DEBF5FB814886F1A00B5719A /* LibrariesDetailLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesDetailLabel.h; sourceTree = "<group>"; };
 		DEBF5FB914886F1A00B5719A /* LibrariesDetailLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesDetailLabel.m; sourceTree = "<group>"; };
 		DEBF5FBA14886F1A00B5719A /* LibrariesDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesDetailViewController.h; sourceTree = "<group>"; };
@@ -2712,6 +2718,10 @@
 			isa = PBXGroup;
 			children = (
 				DED41FD317381D180048376F /* Dining.xcdatamodeld */,
+				DEBF145F17699977009B6089 /* DiningRoot.h */,
+				DEBF146017699977009B6089 /* DiningRoot.m */,
+				DEBF1462176999B9009B6089 /* DiningLink.h */,
+				DEBF1463176999B9009B6089 /* DiningLink.m */,
 				DED41FD9173850960048376F /* HouseVenue.h */,
 				DED41FDA173850960048376F /* HouseVenue.m */,
 				DED41FE817385A860048376F /* DiningMeal.h */,
@@ -3441,6 +3451,8 @@
 				DE94998317450C800066F6CF /* RetailDay.m in Sources */,
 				48B06EA1175CE904001DBCC6 /* MealReference.m in Sources */,
 				2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */,
+				DEBF146117699977009B6089 /* DiningRoot.m in Sources */,
+				DEBF1464176999BA009B6089 /* DiningLink.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

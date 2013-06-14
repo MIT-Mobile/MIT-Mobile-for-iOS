@@ -1,14 +1,16 @@
 #import "DiningMapListViewController.h"
 #import "DiningHallMenuViewController.h"
 #import "DiningRetailInfoViewController.h"
+#import "DiningData.h"
+#import "DiningLink.h"
 #import "MITSingleWebViewCellTableViewController.h"
 #import "DiningLocationCell.h"
+#import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 #import "MITTabBar.h"
 #import "FacilitiesLocationData.h"
 #import "FacilitiesLocation.h"
 #import "DiningModule.h"
-#import "DiningData.h"
 #import "CoreDataManager.h"
 #import "HouseVenue.h"
 #import "RetailVenue.h"
@@ -38,10 +40,6 @@
 @property (nonatomic, assign) NSInteger resourcesSectionIndex;
 @property (nonatomic, assign) NSInteger houseSectionCount;
 
-@property (nonatomic, strong) NSDictionary * retailVenues;
-
-@property (nonatomic, strong) NSDictionary * sampleData;
-
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
@@ -49,27 +47,10 @@
 
 @implementation DiningMapListViewController
 
-- (NSString *) debugAnnouncement
-{
-//    return nil;
-    return @"ENROLL in the spring 2013 Meal Plan Program today! Or else you should be worried. <a href=\"http://m.mit.edu\"> Check it out! </a>";
-}
-
-- (NSArray *) debugSubtitleData
-{
-    return @[@"12pm - 4pm", @"8pm - 4am, 9am - 12pm", @"10am - 2pm, 4pm - 7pm", @"8am - 2pm", @"7am - 9am, 2pm - 8pm, 5pm - 9pm"];
-}
-
-- (NSArray *) debugResourceData
-{
-    return @[@"Comments for MIT Dining", @"Food to Go", @"Full MIT Dining Website"];
-}
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        [[DiningData sharedData] loadDebugData];
         
         bool hasAnnouncement = true;
         
@@ -85,52 +66,9 @@
             _houseSectionCount = 2;
         }
         
-        self.sampleData = [DiningModule loadSampleDataFromFile];
-        
-        [self deriveRetailSections];
     }
     return self;
 }
-
-- (void) deriveRetailSections
-{
-    // Uses data from FacilitiesLocationData to get formal building names
-    
-    NSArray * buildingLocations = [[FacilitiesLocationData sharedData] locationsInCategory:@"building"];
-    
-    NSArray * retailLocations = self.sampleData[@"venues"][@"retail"];
-    NSMutableDictionary *tempBuildings = [NSMutableDictionary dictionary];
-    for (NSDictionary *venue in retailLocations) {
-        NSString *buildingNumber = venue[@"location"][@"mit_building"];
-        NSArray * results = [buildingLocations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"number == %@", buildingNumber]];
-       
-        // derive the section header name
-        NSString * sectionKey = @"Other";
-        if ([results count] == 1) {
-            NSString * buildingName = [[results lastObject] name];
-            sectionKey = [NSString stringWithFormat:@"%@ - %@", buildingNumber, buildingName];
-
-        } else if ([results count] == 0) {
-            // need to handle if building is not found
-            
-        }
-        
-        // insert venue into correct section array
-        if (tempBuildings[sectionKey]) {
-            // either at end of section array
-            NSMutableArray *venueArray = [tempBuildings[sectionKey] mutableCopy];
-            [venueArray addObject:venue];
-            tempBuildings[sectionKey] = venueArray;
-            
-        } else {
-            // or in new section array
-            tempBuildings[sectionKey] = @[venue];
-        }
-    }
-    
-    self.retailVenues = tempBuildings;
-}
-
 
 - (void)viewDidLoad
 {
@@ -138,6 +76,8 @@
     self.title = @"Dining";
 
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
+    
+    [[DiningData sharedData] reload];
     
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
@@ -350,7 +290,7 @@
     if (section == _announcementSectionIndex) {
         return 1;
     } else if (section == _resourcesSectionIndex) {
-        return [[self debugResourceData] count] + 1;
+        return [[[DiningData sharedData] links] count]; // No meal plan balances for now. Let's wait until the API is better tested.
     } else {
         NSArray *sections = [self.fetchedResultsController sections];
         if ([sections count] > 0) {
@@ -376,11 +316,11 @@
         if (indexPath.section == _announcementSectionIndex) {
             [self configureAnnouncementCell:cell];
         } else if (indexPath.section == _resourcesSectionIndex) {
-            if (indexPath.row == 0) {
-                [self configureBalanceCell:cell];
-            } else {
+//            if (indexPath.row == 0) {
+//                [self configureBalanceCell:cell];
+//            } else {
                 [self configureLinkCell:cell atIndexPath:indexPath];
-            }
+//            }
         } else {
             [self configureHouseVenueCell:(DiningLocationCell *)cell atIndexPath:indexPath];
         }
@@ -430,7 +370,7 @@
 }
 
 - (void)configureAnnouncementCell:(UITableViewCell *)cell {
-    cell.textLabel.text = [self debugAnnouncement];
+    cell.textLabel.text = [[[DiningData sharedData] announcementsHTML] stringByStrippingTags];
     cell.textLabel.font = [UIFont systemFontOfSize:14];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }
@@ -445,7 +385,8 @@
 - (void)configureLinkCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     [cell applyStandardFonts];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
-    cell.textLabel.text = [[self debugResourceData] objectAtIndex:indexPath.row - 1];
+    DiningLink *link = [[[DiningData sharedData] links] objectAtIndex:indexPath.row];
+    cell.textLabel.text = link.name;
 }
 
 - (void)configureHouseVenueCell:(DiningLocationCell *)cell atIndexPath:(NSIndexPath *)indexPath {
@@ -499,18 +440,22 @@
         [self.navigationController pushViewController:detailVC animated:YES];
     } else if (indexPath.section == _resourcesSectionIndex) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        if (indexPath.row == 0) {
-            // do meal plan balance (log in to Touchstone if not logged in, do nothing otherwise)
-        } else {
-            // handle links
+//        if (indexPath.row == 0) {
+//            // do meal plan balance (log in to Touchstone if not logged in, do nothing otherwise)
+//        } else {
+        // handle links
+        DiningLink *link = [[[DiningData sharedData] links] objectAtIndex:indexPath.row];
+        NSURL *url = [NSURL URLWithString:link.url];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[UIApplication sharedApplication] openURL:url];
         }
+//        }
     } else if (indexPath.section == _announcementSectionIndex) {
         MITSingleWebViewCellTableViewController *vc = [[MITSingleWebViewCellTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
         vc.webViewInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-        vc.htmlContent = [self debugAnnouncement];
+        vc.htmlContent = [[DiningData sharedData] announcementsHTML];
         
         [self.navigationController pushViewController:vc animated:YES];
-        
     }
 }
 
@@ -564,7 +509,7 @@
         return building;
     }
     
-    NSString *announcement = [self debugAnnouncement];
+    NSString *announcement = [[DiningData sharedData] announcementsHTML];
     if (announcement && section == 0) {
         return nil;
     } else if((!announcement && section == 0) || (announcement && section == 1)) {
@@ -580,7 +525,7 @@
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if ([self showingHouseDining] && [self debugAnnouncement] && section == 0) {
+    if ([self showingHouseDining] && [[DiningData sharedData] announcementsHTML] && section == 0) {
         return 0;
     }
     

@@ -10,6 +10,12 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DiningMealItem" inverseName="dietaryFlags" inverseEntity="DiningMealItem" syncable="YES"/>
     </entity>
+    <entity name="DiningLink" representedClassName="DiningLink" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="ordinality" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="root" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="DiningRoot" inverseName="links" inverseEntity="DiningRoot" syncable="YES"/>
+    </entity>
     <entity name="DiningMeal" representedClassName="DiningMeal" syncable="YES">
         <attribute name="endTime" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
@@ -26,6 +32,12 @@
         <relationship name="dietaryFlags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DiningDietaryFlag" inverseName="items" inverseEntity="DiningDietaryFlag" syncable="YES"/>
         <relationship name="meal" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="DiningMeal" inverseName="items" inverseEntity="DiningMeal" syncable="YES"/>
     </entity>
+    <entity name="DiningRoot" representedClassName="DiningRoot" syncable="YES">
+        <attribute name="announcementsHTML" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="houseVenues" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="HouseVenue" inverseName="root" inverseEntity="HouseVenue" syncable="YES"/>
+        <relationship name="links" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DiningLink" inverseName="root" inverseEntity="DiningLink" syncable="YES"/>
+        <relationship name="retailVenues" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailVenue" inverseName="root" inverseEntity="RetailVenue" syncable="YES"/>
+    </entity>
     <entity name="HouseVenue" representedClassName="HouseVenue" syncable="YES">
         <attribute name="iconURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -34,6 +46,7 @@
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="location" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="VenueLocation" inverseName="houseVenue" inverseEntity="VenueLocation" syncable="YES"/>
         <relationship name="menuDays" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DiningDay" inverseName="houseVenue" inverseEntity="DiningDay" syncable="YES"/>
+        <relationship name="root" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="DiningRoot" inverseName="houseVenues" inverseEntity="DiningRoot" syncable="YES"/>
     </entity>
     <entity name="RetailDay" representedClassName="RetailDay" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
@@ -56,7 +69,8 @@
         <attribute name="sortableBuilding" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" valueTransformerName="URLTransformer" syncable="YES"/>
         <relationship name="days" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailDay" inverseName="venue" inverseEntity="RetailDay" syncable="YES"/>
-        <relationship name="location" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="VenueLocation" inverseName="retailVenue" inverseEntity="VenueLocation" syncable="YES"/>
+        <relationship name="location" optional="YES" minCount="1" maxCount="1" deletionRule="Cascade" destinationEntity="VenueLocation" inverseName="retailVenue" inverseEntity="VenueLocation" syncable="YES"/>
+        <relationship name="root" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="DiningRoot" inverseName="retailVenues" inverseEntity="DiningRoot" syncable="YES"/>
     </entity>
     <entity name="VenueLocation" representedClassName="VenueLocation" syncable="YES">
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
@@ -75,9 +89,11 @@
         <element name="DiningDietaryFlag" positionX="0" positionY="0" width="128" height="75"/>
         <element name="DiningMeal" positionX="0" positionY="0" width="128" height="135"/>
         <element name="DiningMealItem" positionX="0" positionY="0" width="128" height="135"/>
-        <element name="HouseVenue" positionX="0" positionY="0" width="128" height="150"/>
+        <element name="HouseVenue" positionX="0" positionY="0" width="128" height="165"/>
         <element name="RetailDay" positionX="0" positionY="0" width="128" height="120"/>
-        <element name="RetailVenue" positionX="0" positionY="0" width="128" height="255"/>
+        <element name="RetailVenue" positionX="0" positionY="0" width="128" height="270"/>
         <element name="VenueLocation" positionX="0" positionY="0" width="128" height="195"/>
+        <element name="DiningRoot" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="DiningLink" positionX="160" positionY="192" width="128" height="105"/>
     </elements>
 </model>
