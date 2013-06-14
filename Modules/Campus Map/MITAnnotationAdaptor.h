@@ -10,7 +10,7 @@
 @interface MITAnnotationAdaptor : MGSSimpleAnnotation
 @property (nonatomic,strong) id<MKAnnotation> mkAnnotation;
 @property (nonatomic,weak) MITMapView *mapView;
-@property (nonatomic,strong) MITMapAnnotationView *calloutAnnotationView;
+@property (nonatomic,strong) MITMapAnnotationView *annotationView;
 
 - (id)initWithMKAnnotation:(id<MKAnnotation>)annotation;
 @end

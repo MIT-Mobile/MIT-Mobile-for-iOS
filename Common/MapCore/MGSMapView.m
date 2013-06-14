@@ -7,7 +7,6 @@
 #import "MGSUtility.h"
 #import "MGSGeometry.h"
 #import "MGSLayer.h"
-#import "MGSCalloutView.h"
 
 #import "MobileRequestOperation.h"
 #import "MGSLayerController.h"
@@ -485,10 +484,11 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     
     if (self.areBaseLayersLoaded == NO) {
         if (annotation) {
-            __weak MGSMapView *weak_self = self;
+            __weak MGSMapView *weakSelf = self;
             self.pendingCalloutBlock = ^ {
-                if ([annotation isEqual:weak_self.calloutAnnotation]) {
-                    [weak_self showCalloutForAnnotation:annotation
+                MGSMapView *mapView = weakSelf;
+                if ([annotation isEqual:mapView.calloutAnnotation]) {
+                    [mapView showCalloutForAnnotation:annotation
                                                animated:animated];
                 }
             };
@@ -525,6 +525,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                             self.mapView.callout.title = [safeAnnotation title];
                             self.mapView.callout.detail = [safeAnnotation detail];
                             self.mapView.callout.image = [safeAnnotation calloutImage];
+                            self.mapView.callout.delegate = self;
                         }
                         
                         [self.mapView.callout showCalloutAtPoint:nil
@@ -563,10 +564,11 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                                                                             ymax:ymax
                                                                 spatialReference:envelope.spatialReference];
                         
-                        __weak MGSMapView *weak_self = self;
+                        __weak MGSMapView *weakSelf = self;
                         self.pendingCalloutBlock = ^ {
-                            if ([annotation isEqual:weak_self.calloutAnnotation]) {
-                                [weak_self showCalloutForAnnotation:annotation
+                            MGSMapView *mapView = weakSelf;
+                            if ([annotation isEqual:mapView.calloutAnnotation]) {
+                                [mapView showCalloutForAnnotation:annotation
                                                            animated:animated];
                             }
                         };
@@ -696,44 +698,13 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 
 - (UIView*)calloutViewForAnnotation:(id <MGSAnnotation>)annotation
 {
-    UIView* view = nil;
     if (annotation) {
         if ([self.delegate respondsToSelector:@selector(mapView:calloutViewForAnnotation:)]) {
-            view = [self.delegate mapView:self
-                 calloutViewForAnnotation:annotation];
-        }
-        
-        // If the view is still nil, create a default one!
-        if (view == nil) {
-            MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-            MGSCalloutView* calloutView = [[MGSCalloutView alloc] init];
-            
-            calloutView.title = safeAnnotation.title;
-            calloutView.detail = safeAnnotation.detail;
-            calloutView.image = safeAnnotation.calloutImage;
-            
-            // This view could potentially be hanging around for a long time,
-            // we don't want strong references to the layer or the annotation
-            __weak MGSMapView* weakSelf = self;
-            __weak id <MGSAnnotation> weakAnnotation = annotation;
-            calloutView.accessoryActionBlock = ^(id sender) {
-                [weakSelf calloutDidReceiveTapForAnnotation:weakAnnotation];
-            };
-            
-            view = calloutView;
+            return [self.delegate mapView:self calloutViewForAnnotation:annotation];
         }
     }
     
-    return view;
-}
-
-- (void)calloutDidReceiveTapForAnnotation:(id <MGSAnnotation>)annotation
-{
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if ([self.delegate respondsToSelector:@selector(mapView:calloutDidReceiveTapForAnnotation:)]) {
-            [self.delegate mapView:self calloutDidReceiveTapForAnnotation:annotation];
-        }
-    }];
+    return nil;
 }
 
 
@@ -863,15 +834,18 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         }
     };
     
-    self.observerTokens[AGSMapViewDidEndZoomingNotification] = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
-                                                                                                                      object:self.mapView
-                                                                                                                       queue:[NSOperationQueue mainQueue]
-                                                                                                                  usingBlock:notificationBlock];
+    id observerToken = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
+                                                                         object:self.mapView
+                                                                          queue:[NSOperationQueue mainQueue]
+                                                                     usingBlock:notificationBlock];
+    self.observerTokens[AGSMapViewDidEndZoomingNotification] = observerToken;
     
-    self.observerTokens[AGSMapViewDidEndPanningNotification] = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndPanningNotification
-                                                                                                                      object:self.mapView
-                                                                                                                       queue:[NSOperationQueue mainQueue]
-                                                                                                                  usingBlock:notificationBlock];
+    observerToken = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndPanningNotification
+                                                                      object:self.mapView
+                                                                       queue:[NSOperationQueue mainQueue]
+                                                                  usingBlock:notificationBlock];
+    self.observerTokens[AGSMapViewDidEndPanningNotification] = observerToken;
+    
     [self didFinishLoadingMapView];
 }
 
@@ -972,10 +946,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     MGSLayerController* manager = [self layerControllerForLayer:myLayer];
     id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
     
-    if (graphic.infoTemplateDelegate == nil) {
-        // graphic.infoTemplateDelegate = self;
-    }
-    
     return [self shouldShowCalloutForAnnotation:annotation];
 }
 
@@ -1074,7 +1044,9 @@ didClickAtPoint:(CGPoint)screen
 - (void)didClickAccessoryButtonForCallout:(AGSCallout*)callout
 {
     if (self.calloutAnnotation) {
-        [self calloutDidReceiveTapForAnnotation:self.calloutAnnotation];
+        if ([self.delegate respondsToSelector:@selector(mapView:calloutDidReceiveTapForAnnotation:)]) {
+            [self.delegate mapView:self calloutDidReceiveTapForAnnotation:self.calloutAnnotation];
+        }
     }
 }
 
