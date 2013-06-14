@@ -3,6 +3,4 @@
 
 @interface DiningModule : MITModule
 
-+ (NSDictionary *) loadSampleDataFromFile;
-
 @end

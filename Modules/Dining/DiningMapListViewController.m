@@ -1,14 +1,15 @@
 #import "DiningMapListViewController.h"
 #import "DiningHallMenuViewController.h"
 #import "DiningRetailInfoViewController.h"
+#import "DiningData.h"
 #import "MITSingleWebViewCellTableViewController.h"
 #import "DiningLocationCell.h"
+#import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 #import "MITTabBar.h"
 #import "FacilitiesLocationData.h"
 #import "FacilitiesLocation.h"
 #import "DiningModule.h"
-#import "DiningData.h"
 #import "CoreDataManager.h"
 #import "HouseVenue.h"
 #import "RetailVenue.h"
@@ -38,27 +39,12 @@
 @property (nonatomic, assign) NSInteger resourcesSectionIndex;
 @property (nonatomic, assign) NSInteger houseSectionCount;
 
-@property (nonatomic, strong) NSDictionary * retailVenues;
-
-@property (nonatomic, strong) NSDictionary * sampleData;
-
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
 @end
 
 @implementation DiningMapListViewController
-
-- (NSString *) debugAnnouncement
-{
-//    return nil;
-    return @"ENROLL in the spring 2013 Meal Plan Program today! Or else you should be worried. <a href=\"http://m.mit.edu\"> Check it out! </a>";
-}
-
-- (NSArray *) debugSubtitleData
-{
-    return @[@"12pm - 4pm", @"8pm - 4am, 9am - 12pm", @"10am - 2pm, 4pm - 7pm", @"8am - 2pm", @"7am - 9am, 2pm - 8pm, 5pm - 9pm"];
-}
 
 - (NSArray *) debugResourceData
 {
@@ -69,7 +55,6 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        [[DiningData sharedData] loadDebugData];
         
         bool hasAnnouncement = true;
         
@@ -85,52 +70,9 @@
             _houseSectionCount = 2;
         }
         
-        self.sampleData = [DiningModule loadSampleDataFromFile];
-        
-        [self deriveRetailSections];
     }
     return self;
 }
-
-- (void) deriveRetailSections
-{
-    // Uses data from FacilitiesLocationData to get formal building names
-    
-    NSArray * buildingLocations = [[FacilitiesLocationData sharedData] locationsInCategory:@"building"];
-    
-    NSArray * retailLocations = self.sampleData[@"venues"][@"retail"];
-    NSMutableDictionary *tempBuildings = [NSMutableDictionary dictionary];
-    for (NSDictionary *venue in retailLocations) {
-        NSString *buildingNumber = venue[@"location"][@"mit_building"];
-        NSArray * results = [buildingLocations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"number == %@", buildingNumber]];
-       
-        // derive the section header name
-        NSString * sectionKey = @"Other";
-        if ([results count] == 1) {
-            NSString * buildingName = [[results lastObject] name];
-            sectionKey = [NSString stringWithFormat:@"%@ - %@", buildingNumber, buildingName];
-
-        } else if ([results count] == 0) {
-            // need to handle if building is not found
-            
-        }
-        
-        // insert venue into correct section array
-        if (tempBuildings[sectionKey]) {
-            // either at end of section array
-            NSMutableArray *venueArray = [tempBuildings[sectionKey] mutableCopy];
-            [venueArray addObject:venue];
-            tempBuildings[sectionKey] = venueArray;
-            
-        } else {
-            // or in new section array
-            tempBuildings[sectionKey] = @[venue];
-        }
-    }
-    
-    self.retailVenues = tempBuildings;
-}
-
 
 - (void)viewDidLoad
 {
@@ -138,6 +80,8 @@
     self.title = @"Dining";
 
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
+    
+    [[DiningData sharedData] reload];
     
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
@@ -430,7 +374,7 @@
 }
 
 - (void)configureAnnouncementCell:(UITableViewCell *)cell {
-    cell.textLabel.text = [self debugAnnouncement];
+    cell.textLabel.text = [[[DiningData sharedData] announcementsHTML] stringByStrippingTags];
     cell.textLabel.font = [UIFont systemFontOfSize:14];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }
@@ -507,7 +451,7 @@
     } else if (indexPath.section == _announcementSectionIndex) {
         MITSingleWebViewCellTableViewController *vc = [[MITSingleWebViewCellTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
         vc.webViewInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-        vc.htmlContent = [self debugAnnouncement];
+        vc.htmlContent = [[DiningData sharedData] announcementsHTML];
         
         [self.navigationController pushViewController:vc animated:YES];
         
@@ -564,7 +508,7 @@
         return building;
     }
     
-    NSString *announcement = [self debugAnnouncement];
+    NSString *announcement = [[DiningData sharedData] announcementsHTML];
     if (announcement && section == 0) {
         return nil;
     } else if((!announcement && section == 0) || (announcement && section == 1)) {
@@ -580,7 +524,7 @@
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if ([self showingHouseDining] && [self debugAnnouncement] && section == 0) {
+    if ([self showingHouseDining] && [[DiningData sharedData] announcementsHTML] && section == 0) {
         return 0;
     }
     

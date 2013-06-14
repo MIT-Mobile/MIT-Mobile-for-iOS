@@ -40,7 +40,10 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 @end
 
 @interface NSString (MITAdditions_HTMLEntity)
+
 - (NSString *)stringByDecodingXMLEntities;
+- (NSString *)stringByStrippingTags;
+
 @end
 
 @interface UIDevice (MITAdditions)

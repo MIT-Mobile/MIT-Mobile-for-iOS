@@ -274,6 +274,38 @@ typedef struct {
     
     return result;
 }
+
+/** String representation with HTML tags removed.
+ 
+ Replaces all angle bracketed text with spaces, collapses all spaces down to a single space, and trims leading and trailing whitespace and newlines.
+ 
+ @return A plain text string suitable for display in a UILabel.
+ */
+
+- (NSString *)stringByStrippingTags {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<[^>]*>"
+                                                                           options:NSRegularExpressionDotMatchesLineSeparators
+                                                                             error:&error];
+    NSString *stripped = [regex stringByReplacingMatchesInString:self
+                                                         options:0
+                                                           range:NSMakeRange(0, [self length])
+                                                    withTemplate:@" "];
+    if (!error) {
+        regex = [NSRegularExpression regularExpressionWithPattern:@"\\s{2,}"
+                                                          options:0 error:&error];
+        stripped = [regex stringByReplacingMatchesInString:stripped
+                                                   options:NSRegularExpressionDotMatchesLineSeparators
+                                                     range:NSMakeRange(0, [stripped length])
+                                              withTemplate:@" "];
+    } else {
+        DDLogError(@"%@", error);
+        // In case of a problem, return the string as is.
+        return self;
+    }
+    return [stripped stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
 @end
 
 @implementation UIDevice (MITAdditions)
