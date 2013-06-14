@@ -12,6 +12,7 @@
 #import "MGSLayerController.h"
 #import "MGSSafeAnnotation.h"
 #import "MGSLayerAnnotation.h"
+#import "MGSCalloutView.h"
 
 
 @implementation MGSMapView
@@ -462,6 +463,15 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 }
 
 #pragma mark Callout Handling
+- (IBAction)calloutAccessoryWasTapped:(id)sender
+{
+    if (self.calloutAnnotation) {
+        if ([self.delegate respondsToSelector:@selector(mapView:calloutDidReceiveTapForAnnotation:)]) {
+            [self.delegate mapView:self calloutDidReceiveTapForAnnotation:self.calloutAnnotation];
+        }
+    }
+}
+
 - (BOOL)isPresentingCallout
 {
     return (self.calloutAnnotation != nil);
@@ -522,10 +532,22 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                             self.mapView.callout.customView = annotationView;
                         } else {
                             MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-                            self.mapView.callout.title = [safeAnnotation title];
-                            self.mapView.callout.detail = [safeAnnotation detail];
-                            self.mapView.callout.image = [safeAnnotation calloutImage];
-                            self.mapView.callout.delegate = self;
+                            MGSCalloutView *calloutView = [[MGSCalloutView alloc] init];
+                            
+                            calloutView.titleLabel.text = [safeAnnotation title];
+                            calloutView.detailLabel.text = [safeAnnotation detail];
+                            calloutView.imageView.image = [safeAnnotation calloutImage];
+                            
+                            UIButton *rightAccessory = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+                            [rightAccessory addTarget:self
+                                               action:@selector(calloutAccessoryWasTapped:)
+                                     forControlEvents:UIControlEventTouchUpInside];
+                            calloutView.accessoryView = rightAccessory;
+                            
+                            [calloutView sizeToFit];
+                            [calloutView layoutIfNeeded];
+                            
+                            self.mapView.callout.customView = calloutView;
                         }
                         
                         [self.mapView.callout showCalloutAtPoint:nil
