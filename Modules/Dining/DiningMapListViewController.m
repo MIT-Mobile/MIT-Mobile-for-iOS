@@ -110,21 +110,23 @@
 
 - (void) tabBarDidChange:(UIButton *) sender
 {
-    if ([sender isEqual:self.houseButton]) {
-        [self fetchHouseResults];
-        self.isShowingHouseDining = YES;
-        self.retailButton.selected = NO;
-    } else {
-        [self fetchRetailResults];
-        self.isShowingHouseDining = NO;
-        self.houseButton.selected = NO;
-    }
-    sender.selected = YES;
-    
-    if ([self isShowingMap]) {
-        [self annotateVenues];
-    } else {
-        [self.listView reloadData];
+    if (!sender.selected) {
+        if ([sender isEqual:self.houseButton]) {
+            [self fetchHouseResults];
+            self.isShowingHouseDining = YES;
+            self.retailButton.selected = NO;
+        } else {
+            [self fetchRetailResults];
+            self.isShowingHouseDining = NO;
+            self.houseButton.selected = NO;
+        }
+        sender.selected = YES;
+        
+        if ([self isShowingMap]) {
+            [self annotateVenues];
+        } else {
+            [self.listView reloadData];
+        }
     }
 }
 
