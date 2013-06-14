@@ -2,6 +2,7 @@
 #import "DiningHallMenuViewController.h"
 #import "DiningRetailInfoViewController.h"
 #import "DiningData.h"
+#import "DiningLink.h"
 #import "MITSingleWebViewCellTableViewController.h"
 #import "DiningLocationCell.h"
 #import "Foundation+MITAdditions.h"
@@ -45,11 +46,6 @@
 @end
 
 @implementation DiningMapListViewController
-
-- (NSArray *) debugResourceData
-{
-    return @[@"Comments for MIT Dining", @"Food to Go", @"Full MIT Dining Website"];
-}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -294,7 +290,7 @@
     if (section == _announcementSectionIndex) {
         return 1;
     } else if (section == _resourcesSectionIndex) {
-        return [[self debugResourceData] count] + 1;
+        return [[[DiningData sharedData] links] count]; // No meal plan balances for now. Let's wait until the API is better tested.
     } else {
         NSArray *sections = [self.fetchedResultsController sections];
         if ([sections count] > 0) {
@@ -320,11 +316,11 @@
         if (indexPath.section == _announcementSectionIndex) {
             [self configureAnnouncementCell:cell];
         } else if (indexPath.section == _resourcesSectionIndex) {
-            if (indexPath.row == 0) {
-                [self configureBalanceCell:cell];
-            } else {
+//            if (indexPath.row == 0) {
+//                [self configureBalanceCell:cell];
+//            } else {
                 [self configureLinkCell:cell atIndexPath:indexPath];
-            }
+//            }
         } else {
             [self configureHouseVenueCell:(DiningLocationCell *)cell atIndexPath:indexPath];
         }
@@ -389,7 +385,8 @@
 - (void)configureLinkCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     [cell applyStandardFonts];
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
-    cell.textLabel.text = [[self debugResourceData] objectAtIndex:indexPath.row - 1];
+    DiningLink *link = [[[DiningData sharedData] links] objectAtIndex:indexPath.row];
+    cell.textLabel.text = link.name;
 }
 
 - (void)configureHouseVenueCell:(DiningLocationCell *)cell atIndexPath:(NSIndexPath *)indexPath {
@@ -443,18 +440,22 @@
         [self.navigationController pushViewController:detailVC animated:YES];
     } else if (indexPath.section == _resourcesSectionIndex) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        if (indexPath.row == 0) {
-            // do meal plan balance (log in to Touchstone if not logged in, do nothing otherwise)
-        } else {
-            // handle links
+//        if (indexPath.row == 0) {
+//            // do meal plan balance (log in to Touchstone if not logged in, do nothing otherwise)
+//        } else {
+        // handle links
+        DiningLink *link = [[[DiningData sharedData] links] objectAtIndex:indexPath.row];
+        NSURL *url = [NSURL URLWithString:link.url];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            [[UIApplication sharedApplication] openURL:url];
         }
+//        }
     } else if (indexPath.section == _announcementSectionIndex) {
         MITSingleWebViewCellTableViewController *vc = [[MITSingleWebViewCellTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
         vc.webViewInsets = UIEdgeInsetsMake(10, 10, 10, 10);
         vc.htmlContent = [[DiningData sharedData] announcementsHTML];
         
         [self.navigationController pushViewController:vc animated:YES];
-        
     }
 }
 
