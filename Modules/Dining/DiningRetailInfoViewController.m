@@ -65,6 +65,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
 {
     [super viewDidLoad];
     [self.tableView applyStandardColors];
+    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
     
     self.daySpanFormatter = [[NSDateFormatter alloc] init];
     [self.daySpanFormatter setDateFormat:@"EEE"];

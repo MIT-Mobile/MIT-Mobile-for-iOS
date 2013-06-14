@@ -76,6 +76,7 @@
     self.title = @"Dining";
 
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
+    self.listView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
     
     [[DiningData sharedData] reload];
     
@@ -366,6 +367,8 @@
     if ([self showingHouseDining] && indexPath.section == _announcementSectionIndex) {
         // set announcement background color to yellow color
         cell.backgroundColor = [UIColor colorWithHexString:@"#FFEF8A"];
+    } else {
+        cell.backgroundColor = [UIColor whiteColor];
     }
 }
 

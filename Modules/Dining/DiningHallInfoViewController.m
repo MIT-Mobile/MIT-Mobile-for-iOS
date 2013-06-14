@@ -35,6 +35,7 @@
 {
     [super viewDidLoad];
     [self.tableView applyStandardColors];
+    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
     [self fetchScheduleInfo];
     
     self.title = [NSString stringWithFormat:@"%@ Info", self.venue.shortName];
