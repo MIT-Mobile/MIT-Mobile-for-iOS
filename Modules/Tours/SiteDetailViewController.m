@@ -833,8 +833,8 @@
     // start from (0,0), not the center of the image, we need to
     // translate the view so that the image is centered around (0,0),
     // then do the rotation, then translate the result back
-    CGFloat deltaX = -CGRectGetWidth(markerView.bounds) / 2.0;
-    CGFloat deltaY = -CGRectGetHeight(markerView.bounds) / 2.0;
+    CGFloat deltaX = -CGRectGetMidX(markerView.frame);
+    CGFloat deltaY = -CGRectGetMidY(markerView.frame);
     
     if (CGAffineTransformEqualToTransform(CGAffineTransformIdentity,tourAnnotation.transform) == NO) {
         CGAffineTransform transform = CGAffineTransformMakeTranslation(deltaX, deltaY);
@@ -844,7 +844,6 @@
     }
     
     [annotationView addSubview:markerView];
-    
     annotationView.frame = CGRectOffset(markerView.bounds, deltaX, deltaY);
     annotationView.canShowCallout = NO;
     annotationView.showsCustomCallout = NO;
