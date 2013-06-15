@@ -879,17 +879,24 @@ enum {
     [self selectTourComponent:component];
 }
 
-- (CGAffineTransform)transformForSource:(id<TourGeoLocation>)source andDest:(id<TourGeoLocation>)dest {
-    CLLocationCoordinate2D sourceLocation = CLLocationCoordinate2DMake([source.latitude doubleValue], [source.longitude doubleValue]);
-    CGPoint srcPoint = [_mapView convertCoordinate:sourceLocation toPointToView:nil];
+- (UIImageView*)tourDirectionMarkerFromLocation:(id<TourGeoLocation>)startLocation
+                                     toLocation:(id<TourGeoLocation>)endLocation
+                                      withImage:(UIImage*)markerImage
+{
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:markerImage];
     
-    CLLocationCoordinate2D destLocation = CLLocationCoordinate2DMake([dest.latitude doubleValue], [dest.longitude doubleValue]);
-    CGPoint destPoint = [_mapView convertCoordinate:destLocation toPointToView:nil];
+    CGFloat deltaX = CGRectGetMidX(imageView.bounds);
+    CGFloat deltaY = CGRectGetMidY(imageView.bounds);
     
-    CGFloat dy = destPoint.y - srcPoint.y;
-    CGFloat dx = destPoint.x - srcPoint.x;
-    CGFloat norm = sqrt(dx * dx + dy * dy);
-    return CGAffineTransformMake(dx/norm, dy/norm, -dy/norm, dx/norm, 0, 0);    
+    MKMapPoint startPoint = MKMapPointForCoordinate(CLLocationCoordinate2DMake([startLocation.latitude doubleValue],
+                                                                               [startLocation.longitude doubleValue]));
+    MKMapPoint endPoint = MKMapPointForCoordinate(CLLocationCoordinate2DMake([endLocation.latitude doubleValue],
+                                                                             [endLocation.longitude doubleValue]));
+    CGAffineTransform transform = CGAffineTransformConcat(CGAffineTransformMakeTranslation(-deltaX, -deltaY),
+                                                          CGAffineTransformMakeRotation(atan2(endPoint.y - startPoint.y,
+                                                                                              endPoint.x - startPoint.x)));
+    imageView.transform = CGAffineTransformTranslate(transform, deltaX, deltaY);
+    return imageView;
 }
 
 - (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
@@ -933,13 +940,29 @@ enum {
             TourSideTripMapAnnotation *sideTripAnnotation = annotation;
             CampusTourSideTrip *source = sideTripAnnotation.sideTrip;        
             TourSiteOrRoute *dest = source.site;
-            annotationView.transform = [self transformForSource:source andDest:dest];
-            annotationView.image = [UIImage imageNamed:@"tours/map_starting_arrow.png"];
+            
+            annotationView.image = nil;
+            annotationView.calloutOffset = CGPointZero;
+            UIImageView *markerView = [self tourDirectionMarkerFromLocation:source
+                                                                  toLocation:dest
+                                                                   withImage:[UIImage imageNamed:@"tours/map_starting_arrow"]];
+            [annotationView addSubview:markerView];
+            annotationView.frame = CGRectOffset(markerView.bounds,
+                                                -CGRectGetMidX(markerView.frame),
+                                                -CGRectGetMidY(markerView.frame));
         } else {
             TourSiteMapAnnotation *siteAnnotation = annotation;
-            if(siteAnnotation.site == self.sideTrip.component) {        
-                annotationView.transform = [self transformForSource:self.sideTrip andDest:siteAnnotation.site];
-                annotationView.image = [UIImage imageNamed:@"tours/map_ending_arrow.png"];
+            if(siteAnnotation.site == self.sideTrip.component) {
+                
+                annotationView.image = nil;
+                annotationView.calloutOffset = CGPointZero;
+                UIImageView *markerView = [self tourDirectionMarkerFromLocation:self.sideTrip
+                                                                      toLocation:siteAnnotation.site
+                                                                       withImage:[UIImage imageNamed:@"tours/map_ending_arrow"]];
+                [annotationView addSubview:markerView];
+                annotationView.frame = CGRectOffset(markerView.bounds,
+                                                    -CGRectGetMidX(markerView.frame),
+                                                    -CGRectGetMidY(markerView.frame));
             }
         }
     }
