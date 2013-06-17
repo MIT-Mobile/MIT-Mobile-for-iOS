@@ -29,6 +29,7 @@
 
 - (void) reloadData;
 - (void) resetScrollOffset;
+- (void) setScrollOffsetAgainstRightEdge;
 
 - (id)dequeueReusableCellWithReuseIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath;
 
