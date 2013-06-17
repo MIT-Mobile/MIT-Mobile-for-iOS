@@ -307,7 +307,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
 {
     NSString *sectionKey = self.availableInfoKeys[indexPath.section];
     if ([sectionKey isEqualToString:sDescriptionHTMLKey]) {
-        return self.descriptionHeight + 10; // add some bottom padding
+        return self.descriptionHeight + 20; // add some vertical padding
     } else if ([sectionKey isEqualToString:sCuisinesKey]) {
         CGSize constraint = CGSizeMake(205, CGFLOAT_MAX);
         NSString *cuisineString = [self.venue.cuisines componentsJoinedByString:@", "];
