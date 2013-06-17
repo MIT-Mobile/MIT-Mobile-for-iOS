@@ -152,6 +152,7 @@
         self.navigationItem.rightBarButtonItem.title = (self.isShowingMap)? @"Map" : @"List";
         
         if (self.isShowingMap) {
+            [self.listView reloadData];
             // animate to the list
             self.listView.center = CGPointMake(self.view.center.x, self.view.center.y + CGRectGetHeight(self.view.bounds));
             [UIView animateWithDuration:0.4f animations:^{
@@ -162,6 +163,12 @@
             }];
             
         } else {
+            if (!self.mapView) {
+                self.mapView = [[MGSMapView alloc] initWithFrame:self.mapContainer.bounds];
+                self.mapView.delegate = self;
+                [self.mapContainer addSubview:self.mapView];
+            }
+            [self annotateVenues];
             // animate to the map
             [UIView animateWithDuration:0.4f animations:^{
                 [self layoutMapState];
@@ -201,13 +208,7 @@
     self.mapContainer.userInteractionEnabled = YES;
     self.mapContainer.hidden = NO;
     self.mapContainer.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
-    if (!self.mapView) {
-        self.mapView = [[MGSMapView alloc] initWithFrame:self.mapContainer.bounds];
-        self.mapView.delegate = self;
-        [self.mapContainer addSubview:self.mapView];
-    }
     [self setButtonBackgroundsForMapState];
-    [self annotateVenues];
 }
 
 - (void) setButtonBackgroundsForListState

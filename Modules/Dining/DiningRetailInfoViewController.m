@@ -79,8 +79,8 @@ static NSString * sHomePageURLKey       = @"homepageURL";
                                         [weakHeaderView layoutIfNeeded];
                                     }];
     self.headerView.titleLabel.text = self.venue.name;
-    [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"global/bookmark_off"] forState:UIControlStateNormal];
-    [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"global/bookmark_on"] forState:UIControlStateSelected];
+    [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/bookmark"] forState:UIControlStateNormal];
+    [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/bookmark_selected"] forState:UIControlStateSelected];
     [self.headerView.accessoryButton addTarget:self action:@selector(favoriteButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     self.headerView.accessoryButton.selected = [self.venue.favorite boolValue];
     
