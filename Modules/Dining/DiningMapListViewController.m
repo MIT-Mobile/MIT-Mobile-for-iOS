@@ -42,6 +42,7 @@
 
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, strong) NSArray *favoritedRetailVenues;
 
 @end
 
@@ -99,6 +100,8 @@
 - (void)viewWillAppear:(BOOL)animated {
     NSIndexPath *selectedIndexPath = [self.listView indexPathForSelectedRow];
     [self.listView deselectRowAtIndexPath:selectedIndexPath animated:animated];
+    self.favoritedRetailVenues = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]];
+    [[self listView] reloadData];
 }
 
 - (void) addTabWithTitle:(NSString *)title
@@ -239,16 +242,18 @@
 #pragma mark - Core Data
 
 - (NSManagedObjectContext *)managedObjectContext {
-    if (_managedObjectContext != nil) {
-        return _managedObjectContext;
-    }
+    return [CoreDataManager managedObjectContext];
     
-    _managedObjectContext = [[NSManagedObjectContext alloc] init];
-    _managedObjectContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-    _managedObjectContext.undoManager = nil;
-    _managedObjectContext.stalenessInterval = 0;
-    
-    return _managedObjectContext;
+//    if (_managedObjectContext != nil) {
+//        return _managedObjectContext;
+//    }
+//    
+//    _managedObjectContext = [[NSManagedObjectContext alloc] init];
+//    _managedObjectContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+//    _managedObjectContext.undoManager = nil;
+//    _managedObjectContext.stalenessInterval = 0;
+//    
+//    return _managedObjectContext;
 }
 
 - (void)fetchHouseResults {
@@ -297,9 +302,26 @@
 
 #pragma mark - UITableViewDataSource
 
+- (RetailVenue *) retailVenueAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([self.favoritedRetailVenues count] && indexPath.section == 0) {
+        return self.favoritedRetailVenues[indexPath.row];
+    } else if ([self.favoritedRetailVenues count]) {
+        NSIndexPath *offsetPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section - 1];
+        return [self.fetchedResultsController objectAtIndexPath:offsetPath];            // need to offset the path because fetchedResultsController does not know about favorites
+    } else {
+        return [self.fetchedResultsController objectAtIndexPath:indexPath];             // no favorites, no need to offset
+    }
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (![self showingHouseDining]) {
+        if ([self.favoritedRetailVenues count] && section == 0) {
+            return [self.favoritedRetailVenues count];
+        } else if ([self.favoritedRetailVenues count]) {
+            return [[self.fetchedResultsController sections][section - 1] numberOfObjects];         // need to offset section when favorites are there
+        }
         return [[self.fetchedResultsController sections][section] numberOfObjects];
     }
     
@@ -322,7 +344,8 @@
     if ([self showingHouseDining]) {
         return _houseSectionCount;
     } else {
-        return [[self.fetchedResultsController sections] count];
+        NSInteger sectionCount = [[self.fetchedResultsController sections] count];
+        return ([self.favoritedRetailVenues count]) ? sectionCount + 1 : sectionCount;
     }
 }
 
@@ -424,7 +447,7 @@
 
 - (void)configureRetailVenueCell:(DiningLocationCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     
-    RetailVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    RetailVenue *venue = [self retailVenueAtIndexPath:indexPath];
     
     cell.titleLabel.text = venue.name;
     cell.subtitleLabel.text = [venue hoursToday];
@@ -441,7 +464,7 @@
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (![self showingHouseDining]) {
-        RetailVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        RetailVenue *venue = [self retailVenueAtIndexPath:indexPath];
         
         DiningRetailInfoViewController *detailVC = [[DiningRetailInfoViewController alloc] init];
         detailVC.venue = venue;
@@ -480,8 +503,8 @@
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (![self showingHouseDining]) {
-        RetailVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        return [DiningLocationCell heightForRowWithTitle:venue.name subtitle:@"9am - 5pm"];
+        RetailVenue *venue = [self retailVenueAtIndexPath:indexPath];
+        return [DiningLocationCell heightForRowWithTitle:venue.name subtitle:[venue hoursToday]];
     }
     
     if (indexPath.section == _venuesSectionIndex) {
@@ -505,8 +528,14 @@
     label.backgroundColor = bc;
     label.textColor = [UIColor whiteColor];
     label.font = [UIFont boldSystemFontOfSize:14];
-    
     label.text = [self titleForHeaderInSection:section];
+    
+    if ([self.favoritedRetailVenues count] && section == 0) {
+        UIImageView *favIcon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 3, 18, 18)];
+        favIcon.image = [UIImage imageNamed:@"dining/bookmark_selected"];
+        label.frame = CGRectMake(CGRectGetMaxX(favIcon.frame) + 3, 0, CGRectGetWidth(view.bounds) - (CGRectGetMaxX(favIcon.frame) + 10), 25);  // shift label to the right
+        [view addSubview:favIcon];
+    }
     
     [view addSubview:label];
     
@@ -516,8 +545,10 @@
 - (NSString *) titleForHeaderInSection:(NSInteger)section // not the UITableViewDataSource method.
 {
     if (![self showingHouseDining]) {
-        id<NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController sections][section];
-        RetailVenue *venue = [sectionInfo objects][0];
+        if ([self.favoritedRetailVenues count] && section == 0) {
+            return @"Favorites";
+        }
+        RetailVenue *venue = [self retailVenueAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
         NSString *building = venue.building;
         // This may need to have an `updated` block in case locations aren't actually loaded yet.
         NSArray *matches = [[FacilitiesLocationData sharedData] locationsWithNumber:building updated:nil];
@@ -538,8 +569,6 @@
     
     return nil;
 }
-
-
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
