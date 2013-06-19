@@ -50,9 +50,14 @@
 		[parameters setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"] forKey:@"app_id"];
 	}		
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                              command:@"register"
-                                                                           parameters:parameters] autorelease];
+//    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
+//                                                                              command:@"register"
+//                                                                           parameters:parameters] autorelease];
+//    
+    
+    // TODO: check with MIT provisioning profile
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"/apps/push/devices/apple?device_token=%@&app_id=%@",
+                                                                                            [self stringFromToken:deviceToken],[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"]] parameters:nil];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {

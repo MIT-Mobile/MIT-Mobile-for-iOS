@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "MITMapRoute.h"
 #import "ShuttleRouteCache.h"
+#import "ShuttleRoutePath.h"
 
 #define DAYTIME_SHUTTLES        @"Daytime Shuttles"
 #define NIGHTTIME_SHUTTLES      @"Nighttime Saferide Shuttles"
@@ -37,7 +38,7 @@
 	
 	NSMutableArray *_stops;
 	NSArray *_vehicles;
-//	Path _path;
+	ShuttleRoutePath *_path;
 }
 
 - (id)initWithDictionary:(NSDictionary *)dict;
@@ -77,6 +78,6 @@
 
 @property (readwrite, retain) NSMutableArray *stops;
 @property (readwrite, retain) NSArray *vehicles;
-//@property (readwrite, retain) Path path;
+@property (readwrite, retain) ShuttleRoutePath *path;
 
 @end

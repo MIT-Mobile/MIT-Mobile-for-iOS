@@ -9,15 +9,16 @@
 @implementation ShuttleStop
 
 // cached stop location properties
-@dynamic stopID;
-@dynamic url;
+//@dynamic stopID;
+@synthesize stopID = _stopID;
+@synthesize url = _url;
 //@dynamic title;   // check when use cache
 @synthesize title = _title;
-@dynamic latitude;
-@dynamic longitude;
+@synthesize latitude = _latitude;
+@synthesize longitude = _longitude;
 
 // cached stop-route properties
-@dynamic routeID;
+@synthesize routeID = _routeID;
 
 // live stop-route properties
 @synthesize next = _next;
@@ -27,10 +28,12 @@
 @synthesize schedule = _schedule;
 
 @synthesize routeStop = _routeStop;
+@synthesize routeName;
 
 
 #pragma mark getters and setters
 
+/*
 - (NSString *)stopID
 {
     return _stopID;
@@ -76,7 +79,8 @@
 - (void)setRouteID:(NSString *)routeID {
     _routeID = routeID;
 }
-
+*/
+ 
 - (NSString *)direction
 {
     return @"";
@@ -334,16 +338,16 @@
 
 -(NSDate*) dateForPredictionAtIndex:(int)index
 {
-	NSTimeInterval prediction = 0;
+	ShuttlePrediction *prediction;
 	
 	if (index == 0) {
-		prediction = self.next;
+        return [NSDate dateWithTimeIntervalSince1970:self.next];
 	}
 	else {
-		prediction = [[self.predictions objectAtIndex:index - 1] doubleValue];
+		prediction = [self.predictions objectAtIndex:index - 1];
 	}
 	
-	return [NSDate dateWithTimeIntervalSince1970:prediction];
+	return [NSDate dateWithTimeIntervalSince1970:prediction.timestamp / 1000];
 }
 
 #pragma mark -

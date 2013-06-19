@@ -80,11 +80,11 @@
 
 - (void)setActiveMapSet:(NSString*)mapSetName
 {
-    if (self.baseMapGroups[mapSetName]) {
+//    if (self.baseMapGroups[mapSetName]) {
         NSMutableDictionary* coreMapLayers = [NSMutableDictionary dictionary];
         NSMutableArray* identifierOrder = [NSMutableArray array];
         
-        for (NSDictionary* layerInfo in self.baseMapGroups[mapSetName]) {
+        for (NSDictionary* layerInfo in self.baseMapGroups) {
             NSString* displayName = layerInfo[@"displayName"];
             NSString* identifier = layerInfo[@"layerIdentifier"];
             NSURL* layerURL = [NSURL URLWithString:layerInfo[@"url"]];
@@ -111,7 +111,7 @@
         
         self.baseLayers = coreMapLayers;
         _activeMapSet = mapSetName;
-    }
+//    }
 }
 
 
@@ -692,13 +692,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             } else if ([content isKindOfClass:[NSDictionary class]]) {
                 NSDictionary* response = (NSDictionary*) content;
                 self.baseMapGroups = response[@"basemaps"];
-                
-                NSString* defaultSetName = response[@"defaultBasemap"];
-                
-                if ([defaultSetName length] == 0) {
-                    defaultSetName = [[self.baseMapGroups allKeys] objectAtIndex:0];
-                }
-                
+                NSString* defaultSetName = @"default";
                 self.activeMapSet = defaultSetName;
             }
         }];

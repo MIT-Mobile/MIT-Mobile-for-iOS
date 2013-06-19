@@ -42,6 +42,7 @@
 @synthesize interval = _interval;
 @synthesize stops = _stops;
 @synthesize vehicles = _vehicles;
+@synthesize path = _path;
 //@dynamic path;
 
 
@@ -106,7 +107,7 @@
 	BOOL pathShouldUpdate = NO;
 	
 	if (_stopAnnotations == nil) {
-		_stopAnnotations = [[NSMutableArray alloc] initWithCapacity:stops.count];
+		_stopAnnotations = [[NSMutableArray alloc] initWithCapacity:[stops count]];
 		pathShouldUpdate = YES;
 	}
 	
@@ -124,6 +125,9 @@
 	NSInteger order = 0;
 	for (NSDictionary *stopInfo in stops) {
 		ShuttleStop *shuttleStop = [[ShuttleStop alloc] initWithDictionary:stopInfo];
+        
+        ShuttleStopMapAnnotation* annotation = [[[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop] autorelease];
+        [_stopAnnotations addObject:annotation];
         
         // TODO: add check for old stops
         /*
@@ -319,6 +323,12 @@
         }
         self.vehicles = vehiclesArray;
     }
+    
+    NSDictionary *path = [routeInfo objectForKey:@"path"];
+    if (path)
+    {
+        _path= [[ShuttleRoutePath alloc] initWithDictionary:path];
+    }
 }
 
 - (void)getStopsFromCache
@@ -494,7 +504,27 @@
 // array of CLLocations making up the path of this route
 -(NSArray*) pathLocations
 {
-	return _pathLocations;
+    return self.path.segments;
+}
+
+-(double) minLat
+{
+    return self.path.minLat;
+}
+
+-(double) minLon
+{
+    return self.path.minLon;
+}
+
+-(double) maxLat
+{
+    return self.path.maxLat;
+}
+
+-(double) maxLon
+{
+    return self.path.maxLon;
 }
 
 // array of MKAnnotations that are to be included with this route

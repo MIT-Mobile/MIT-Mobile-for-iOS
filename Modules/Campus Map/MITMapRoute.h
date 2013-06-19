@@ -8,6 +8,10 @@
 // array of CLLocations making up the path of this route
 // TODO: CLLocation might be overkill if we only need the associated CLLocationCoordinate2D
 - (NSArray *)pathLocations;
+- (double) minLat;
+- (double) minLon;
+- (double) maxLat;
+- (double) maxLon;
 
 // wrappers around MKPolyline properties
 - (UIColor *)fillColor;

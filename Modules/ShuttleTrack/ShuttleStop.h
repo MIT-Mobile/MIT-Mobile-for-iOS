@@ -5,6 +5,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "ShuttleRoute.h"
 
 @class ShuttleStopLocation;
 @class ShuttleRouteStop;
@@ -82,6 +83,7 @@
 @property NSTimeInterval now;
 @property BOOL upcoming;
 @property (nonatomic, retain) NSString* routeID;
+@property (nonatomic, retain) ShuttleRoute *routeName;
 
 
 @end

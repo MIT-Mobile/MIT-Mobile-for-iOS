@@ -332,16 +332,19 @@
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	ShuttleStop *stop = [self.shuttleStopSchedules objectAtIndex:section];
 	NSString *headerTitle = nil;
-	
-	if (section < self.shuttleStopSchedules.count) {
-		headerTitle = [NSString stringWithFormat:@"%@:", [(ShuttleRouteCache *)[stop.routeStop route] title]];
-	} else {
-		if(section == 0) {
-			headerTitle = @"Loading...";
-		} else {
-			return nil;
-		}
-	}
+    if ([self shuttleStopSchedules]){
+        if (section < self.shuttleStopSchedules.count && [tableView numberOfRowsInSection:section] > 0) {
+        //	headerTitle = [NSString stringWithFormat:@"%@:", [(ShuttleRouteCache *)[stop.routeID route] title];
+            headerTitle = [NSString stringWithFormat:@"%@:", stop.routeName.title];
+
+        } else {
+            if(section == 0) {
+                headerTitle = @"Loading...";
+            } else {
+                return nil;
+            }
+        }
+    }
 	return [UITableView groupedSectionHeaderWithTitle:headerTitle];
 }
 

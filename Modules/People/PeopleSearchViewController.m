@@ -201,12 +201,9 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
     }];
     
 	self.searchTokens = [NSArray arrayWithArray:tempTokens];
-
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:self.searchTerms, @"q", nil];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"people"
-                                                                              command:nil
-                                                                           parameters:params] autorelease];
-
+    
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"/apis/people?q=%@", self.searchTerms]
+                                                                                 parameters:nil];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (_searchCancelled) {
             return;
@@ -328,14 +325,20 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 		NSDictionary *searchResult = [self.searchResults objectAtIndex:indexPath.row];
 		NSString *fullname = [[searchResult objectForKey:@"name"] objectAtIndex:0];
 		
+        NSArray *detailTitle = nil;
+        NSArray *detailDept = nil;
+        
 		// figure out which field (if any) to display as subtitle
 		// display priority: title, dept
 		cell.detailTextLabel.text = @" "; // if this is empty textlabel will be bottom aligned
-		NSArray *detailAttribute = nil;
-		if ((detailAttribute = [searchResult objectForKey:@"title"]) != nil) {
-			cell.detailTextLabel.text = [detailAttribute objectAtIndex:0];
-		} else if ((detailAttribute = [searchResult objectForKey:@"dept"]) != nil) {
-			cell.detailTextLabel.text = [detailAttribute objectAtIndex:0];
+        
+        detailTitle = [searchResult objectForKey:@"title"];
+        detailDept = [searchResult objectForKey:@"dept"];
+        
+        if (detailTitle != nil && [detailTitle count] != 0) {
+			cell.detailTextLabel.text = [detailTitle objectAtIndex:0];
+		} else if (detailDept != nil && [detailDept count] != 0) {
+			cell.detailTextLabel.text = [detailDept objectAtIndex:0];
 		}
 		
 		// in this section we try to highlight the parts of the results that match the search terms

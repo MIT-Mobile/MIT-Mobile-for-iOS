@@ -184,9 +184,8 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 
 // request contacts
 - (void)reloadContacts {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"emergency"
-                                                                              command:@"contacts"
-                                                                           parameters:nil] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:@"/apis/emergency_info/contacts" parameters:nil];
+    
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
                 NSArray *contactsArray = (NSArray *)jsonResult;

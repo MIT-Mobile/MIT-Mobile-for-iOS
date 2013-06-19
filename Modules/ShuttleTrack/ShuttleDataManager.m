@@ -266,48 +266,31 @@ NSString * const shuttleStopPath = @"/stops/";
 
 -(void) requestStop:(NSString*)stopID
 {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"%@%@", shuttlePathExtension, shuttleStopPath]
-                                                                                 parameters:nil];
+    if (schedules) {
+        [schedules release];
+        schedules = nil;
+    }
+    schedules = [[NSMutableArray alloc] init];
     
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
-            
-            NSArray* routesAtStop = [jsonResult objectForKey:@"stops"]; // the api should've called this "routes", this is confusing
-            
-            NSMutableArray* schedules = [NSMutableArray arrayWithCapacity:routesAtStop.count];
-            
-            for (NSDictionary* routeAtStop in routesAtStop) 
-            {
-                NSError *error = nil;
-                ShuttleStop *stop = [ShuttleDataManager stopWithRoute:[routeAtStop objectForKey:@"id"] stopID:stopID error:&error];
-                
-                if (error != nil) {
-                    DDLogError(@"error getting shuttle stop. code: %d; userinfo: %@", error.code, error.userInfo);
-                }
-                
-                if (stop != nil) {
-                    NSNumber* next = [routeAtStop objectForKey:@"next"];
-                    if (!next) {
-                        next = [routeAtStop objectForKey:@"nextScheduled"];
-                    }
-                    stop.next = [next doubleValue];
-                    NSNumber* now = [jsonResult objectForKey:@"now"];
-                    stop.now = [now doubleValue];
-                    
-                    stop.predictions = [routeAtStop objectForKey:@"predictions"];
-                    
+    for (ShuttleRoute *route in _shuttleRoutes)
+    {
+        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"%@/%@%@%@", shuttlePathExtension, route.routeID ,shuttleStopPath, stopID]
+                                                                                    parameters:nil];
+        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+            if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
+                if ([jsonResult objectForKey:@"id"]) {
+                    ShuttleStop *stop = [[ShuttleStop alloc] initWithDictionary:jsonResult];
+                    stop.routeName = route;
                     [schedules addObject:stop];
+                    [self sendStopToDelegates:schedules forStopID:stopID];
                 }
+            } else {
+                [self sendStopToDelegates:nil forStopID:stopID];
             }
-            
-            [self sendStopToDelegates:schedules forStopID:stopID];
-
-        } else {
-            [self sendStopToDelegates:nil forStopID:stopID];
-        }
-    };
-    
-    [[NSOperationQueue mainQueue] addOperation:request];
+        };
+        
+        [[NSOperationQueue mainQueue] addOperation:request];
+    }
 }
 
 -(void) requestRoute:(NSString*)routeID

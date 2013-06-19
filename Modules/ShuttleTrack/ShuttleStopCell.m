@@ -35,8 +35,8 @@
 	NSDateFormatter *formatter = [[[NSDateFormatter alloc] init] autorelease];
 	[formatter setDateFormat:@"h:mm a"];
 	
-	_shuttleTimeLabel.text = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:shuttleStop.next]];
-
+    _shuttleTimeLabel.text = [formatter stringFromDate:shuttleStop.next ? [NSDate dateWithTimeIntervalSince1970:shuttleStop.next] : @"--:--"];
+        
 	if (shuttleStop.upcoming) 
 	{
 		_shuttleStopImageView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"] ;

@@ -53,20 +53,22 @@
 
     if ([content isKindOfClass:NSClassFromString(contentClass)]) {
         NSDictionary *bootstrap = (NSDictionary*)content;
-        NSDictionary *basemaps = bootstrap[@"basemaps"];
+        NSArray *basemaps = bootstrap[@"basemaps"];
         
         if ([basemaps count]) {
-            [basemaps enumerateKeysAndObjectsUsingBlock:^(NSString *setName, id obj, BOOL *stop) {
-                NSString *objectClass = @"NSArray";
-                if ([obj isKindOfClass:NSClassFromString(objectClass)] == NO) {
-                    (*stop) = YES;
-                    NSString *errorDescription = [NSString stringWithFormat:@"invalid set type, expected %@, received %@",
-                                                  objectClass, NSStringFromClass([obj class])];
-                    (*error) = [NSError errorWithDomain:NSURLErrorDomain
-                                                   code:NSURLErrorBadServerResponse
-                                               userInfo:@{ NSLocalizedDescriptionKey : errorDescription }];
-                }
-            }];
+            for (NSDictionary *basemap in basemaps) {
+                [basemap enumerateKeysAndObjectsUsingBlock:^(NSString *setName, id obj, BOOL *stop) {
+                    NSString *objectClass = @"NSArray";
+                    if ([obj isKindOfClass:NSClassFromString(objectClass)] == NO) {
+                        (*stop) = YES;
+                        NSString *errorDescription = [NSString stringWithFormat:@"invalid set type, expected %@, received %@",
+                                                      objectClass, NSStringFromClass([obj class])];
+                        (*error) = [NSError errorWithDomain:NSURLErrorDomain
+                                                       code:NSURLErrorBadServerResponse
+                                                   userInfo:@{ NSLocalizedDescriptionKey : errorDescription }];
+                    }
+                }];
+            }
         } else {
             if (error) {
                 (*error) = [NSError errorWithDomain:NSURLErrorDomain
@@ -99,18 +101,20 @@
     
     if (needsUpdate && !dispatch_semaphore_wait(self.requestSemaphore, DISPATCH_TIME_NOW)) {
         DDLogVerbose(@"Semaphore control obtained, initiating new request");
-        MobileRequestOperation* operation = [MobileRequestOperation operationWithModule:@"map"
-                                                                                command:@"bootstrap"
-                                                                             parameters:nil];
+          MobileRequestOperation* operation = [MobileRequestOperation operationWithRelativePath:@"apis/map/bootstrap"
+                                                                                     parameters:nil];
+                                             
         [operation setCompleteBlock:^(MobileRequestOperation* blockOperation, id content, NSString* contentType, NSError* error) {
             NSError *validationError = nil;
             if (error) {
                 self.cachedError = error;
                 self.cachedResponse = nil;
-            } else if ([self validateResponse:content
-                                        error:&validationError]) {
-                self.cachedError = validationError;
-                self.cachedResponse = nil;
+                
+             // TODO: check validate response method. Do we need it here ?
+//            } else if ([self validateResponse:content
+//                                        error:&validationError]) {
+//                self.cachedError = validationError;
+//                self.cachedResponse = nil;
             } else {
                 self.cachedResponse = content;
                 self.cachedError = nil;

@@ -39,6 +39,7 @@
 	
 	// registered delegates
 	NSMutableArray* _registeredDelegates;
+    NSMutableArray* schedules;
 }
 
 @property (readonly) NSArray* shuttleRoutes;

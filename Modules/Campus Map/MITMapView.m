@@ -384,6 +384,13 @@
 	double minLon = 180;
 	double maxLon = -180;
     
+    if ([route respondsToSelector:@selector(minLat)]) {
+        minLat = [route minLat];
+        maxLat = [route maxLat];
+        minLon = [route minLon];
+        maxLon = [route maxLon];
+    }
+    
     for (CLLocation *aLocation in route.pathLocations) {
         CLLocationCoordinate2D coordinate = aLocation.coordinate;
 		if (coordinate.latitude < minLat) {

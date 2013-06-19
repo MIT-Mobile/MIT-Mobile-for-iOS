@@ -331,10 +331,9 @@ static ToursDataManager *s_toursDataManager = nil;
 #pragma mark API Requests
 
 - (void)requestTourList {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"tours"
-                                                                              command:@"toursList"
-                                                                           parameters:nil] autorelease];
-
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath: @"/apis/tours"
+                                                                                 parameters:nil] autorelease];
+    
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
         NSMutableSet *oldTourKeys = [NSMutableSet setWithArray:[_tours allKeys]];
@@ -393,10 +392,7 @@ static ToursDataManager *s_toursDataManager = nil;
 }
 
 - (void)requestTour:(NSString *)tourID {
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:tourID, @"tourId", nil];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"tours"
-                                                                              command:@"tourDetails"
-                                                                           parameters:params] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"/apis/tours/%@", tourID] parameters:nil];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
