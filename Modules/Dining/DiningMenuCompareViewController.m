@@ -53,6 +53,8 @@
 @property (nonatomic, strong) NSFetchedResultsController *currentFRC;
 @property (nonatomic, strong) NSFetchedResultsController *nextFRC;
 
+@property (nonatomic, assign) BOOL pauseBeforeResettingScrollOffset;
+
 @end
 
 @implementation DiningMenuCompareViewController
@@ -202,9 +204,15 @@ typedef enum {
 
 
 
-#pragma mark - UIScrollview Delegate
+#pragma mark - UIScrollViewDelegate
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView   // called on finger up as we are moving
+{
+    scrollView.scrollEnabled = NO;      // [IPHONEAPP-663] needed to force touch response to inner scrollview on ComparisonView paging hasn't decelerated
+}
+
 - (void) scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+    scrollView.scrollEnabled = YES;
     BOOL shouldCenter = YES;    // unless we have hit edge of data, we should center the 3 comparison views
     
     // Handle infinite scroll between 3 views. Returns to center view so there is always a view on the left and right
@@ -213,7 +221,12 @@ typedef enum {
         if ([self didReachEdgeInDirection:kPageDirectionForward]) {
             shouldCenter = NO;
         } else {
-            [self pagePointersRight];
+            if (!self.next.isScrolling) {
+                [self pagePointersRight];
+            } else {
+                shouldCenter = NO;
+                self.pauseBeforeResettingScrollOffset = YES;    // need to wait to reset scroll offset to center DiningComparisonView until comparisonview stops scrolling. only an issue when fast scrolling happens (page, scroll) IPHONEAPP-663
+            }
         }
         
     } else if (scrollView.contentOffset.x < scrollView.frame.size.width) {
@@ -221,7 +234,12 @@ typedef enum {
         if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
             shouldCenter = NO;
         } else {
-            [self pagePointersLeft];
+            if (!self.previous.isScrolling) {
+                [self pagePointersLeft];
+            } else {
+                shouldCenter = NO;
+                self.pauseBeforeResettingScrollOffset = YES;    // need to wait to reset scroll offset to center DiningComparisonView until comparisonview stops scrolling. only an issue when fast scrolling happens (page, scroll) IPHONEAPP-663
+            }
         }
     }
     
@@ -282,7 +300,8 @@ typedef enum {
     self.nextFRC = [self fetchedResultsControllerForMealReference:ref];
     [self.nextFRC performFetch:nil];
     
-    [self.current resetScrollOffset]; // need to reset scroll offset so user always starts at (0,0) in collectionView
+    [self.current setScrollOffset:self.next.contentOffset animated:NO];
+    [self.next resetScrollOffset];
     [self.previous setScrollOffsetAgainstRightEdge];
     self.next.mealRef = ref;
 
@@ -304,7 +323,8 @@ typedef enum {
     self.previousFRC = [self fetchedResultsControllerForMealReference:ref];
     [self.previousFRC performFetch:nil];
     
-    [self.current setScrollOffsetAgainstRightEdge];
+    [self.current setScrollOffset:self.previous.contentOffset animated:NO];
+    [self.previous setScrollOffsetAgainstRightEdge];
     [self.next resetScrollOffset];
     self.previous.mealRef = ref;
 
@@ -521,6 +541,20 @@ typedef enum {
         return [DiningHallMenuComparisonCell heightForComparisonCellOfWidth:compareView.columnWidth withPrimaryText:item.name secondaryText:item.subtitle numDietaryTypes:[item.dietaryFlags count]];
     } else {
         return 30;
+    }
+}
+
+- (void) compareViewDidEndDecelerating:(DiningHallMenuCompareView *)compareView
+{
+    if (self.pauseBeforeResettingScrollOffset) {
+        if (self.previous == compareView) {
+            [self pagePointersLeft];
+        } else if (self.next == compareView) {
+            [self pagePointersRight];
+        }
+        
+        [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO]; // return to center view to give illusion of infinite scroll
+        self.pauseBeforeResettingScrollOffset = NO;
     }
 }
 

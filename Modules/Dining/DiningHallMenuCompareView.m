@@ -42,7 +42,8 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         self.collectionView.directionalLockEnabled = YES;
         self.collectionView.showsHorizontalScrollIndicator = YES;
         self.collectionView.showsVerticalScrollIndicator = NO;
-        self.collectionView.bounces = YES;
+        self.collectionView.bounces = NO;
+        self.collectionView.alwaysBounceVertical = YES;
         self.collectionView.backgroundColor = [UIColor whiteColor];
         [self.collectionView registerClass:[DiningHallMenuComparisonCell class] forCellWithReuseIdentifier:@"DiningMenuCell"];                  // may want a delegate method or some way to register classes outside ComparisonView
         [self.collectionView registerClass:[DiningHallMenuComparisonNoMealsCell class] forCellWithReuseIdentifier:@"DiningMenuNoMealsCell"];
@@ -69,6 +70,16 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 - (void) setScrollOffsetAgainstRightEdge
 {
     [self.collectionView setContentOffset:CGPointMake(CGFLOAT_MAX, 0) animated:NO];
+}
+
+- (void) setScrollOffset:(CGPoint) offset animated:(BOOL)animated
+{
+    [self.collectionView setContentOffset:offset animated:animated];
+}
+
+- (CGPoint) contentOffset
+{
+    return self.collectionView.contentOffset;
 }
 
 - (id)dequeueReusableCellWithReuseIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath
@@ -121,6 +132,20 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 {
     // necessary for sticky headers. 
     [self.collectionView.collectionViewLayout invalidateLayout];
+}
+
+#pragma mark - UIScrollViewDelegate methods
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    self.isScrolling = YES;
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if ([self.delegate respondsToSelector:@selector(compareViewDidEndDecelerating:)]) {
+        [self.delegate compareViewDidEndDecelerating:self];
+    }
+    self.isScrolling = NO;
 }
 
 #pragma mark Class Methods
