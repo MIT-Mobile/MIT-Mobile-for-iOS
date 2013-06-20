@@ -108,8 +108,6 @@ typedef enum {
     self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
                                                                         // (viewPadding * 2) is used because each view has own padding, so there are 2 padded spaces to account for
     
-    [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
-    
     self.previous.delegate = self;
     self.current.delegate = self;
     self.next.delegate = self;
@@ -118,7 +116,20 @@ typedef enum {
     [self.scrollView addSubview:self.current];
     [self.scrollView addSubview:self.next];
     
-    [self.previous setScrollOffsetAgainstRightEdge];
+    // offset if on edge of list
+    if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
+        // should center on previous view and have current meal ref be one ahead
+        self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionForward];
+        [self.scrollView setContentOffset:CGPointMake(self.previous.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
+    } else if ([self didReachEdgeInDirection:kPageDirectionForward]) {
+        // should center on next view and have current meal ref be one behind
+        self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionBackward];
+        [self.scrollView setContentOffset:CGPointMake(self.next.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
+        [self.current setScrollOffsetAgainstRightEdge];
+    } else {
+        [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
+        [self.previous setScrollOffsetAgainstRightEdge];
+    }
     
     [self loadData];
     [self reloadAllComparisonViews];
@@ -258,6 +269,9 @@ typedef enum {
     //          - will return incorrect value if there is a breakfast that starts after a brunch and we are paging left, query for meals before earliest brunch would fail
     
     MealReference *ref = [self mealReferenceForMealInDirection:direction];
+    if (!ref) {
+        return YES;
+    }
     NSPredicate *pred;
     NSDate *mealTime;
     
@@ -362,6 +376,7 @@ typedef enum {
             if (abs([newDatePointer timeIntervalSinceDate:self.mealRef.date]) >= (SECONDS_IN_DAY * 2)) {
                 // TODO: Need to handle holes in dining data by returning flag value here
                 // compare view should stop on day if there are no meals but there are meals further in direction
+                return nil;
                 break;
             }
         }
