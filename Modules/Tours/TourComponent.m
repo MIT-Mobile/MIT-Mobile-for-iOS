@@ -7,10 +7,12 @@
 @implementation TourComponent 
 
 @dynamic body;
+
 @dynamic photoURL;
 @dynamic title;
 @dynamic audioURL;
 @dynamic componentID;
+@dynamic photoThumbnailURL;
 
 - (void)deleteCachedMedia {
     for (NSString *path in [NSArray arrayWithObjects:[self photoFile], [self audioFile], nil]) {
@@ -22,21 +24,49 @@
 }
 
 - (NSData *)photo {
+    return [self photoWithPath:self.photoFile];
+}
+
+- (void)setPhoto:(NSData *)data {
+    [self setPhoto:data withPath:self.photoFile];
+}
+
+- (NSString *)photoFile {
+    NSString *filename = [NSString stringWithFormat:@"%@-%@", [self tourID], self.componentID];
+    return [self photoFileWithName:filename];
+}
+
+
+- (NSData *)photoThumbnail {
+    return [self photoWithPath:self.thumbnailPhotoFile];
+}
+
+- (void)setPhotoThumbnail:(NSData *)data {
+    [self setPhoto:data withPath:self.thumbnailPhotoFile];
+}
+
+- (NSString *)thumbnailPhotoFile {
+    NSString *filename = [NSString stringWithFormat:@"%@-%@-thumbnail", [self tourID], self.componentID];
+    return [self photoFileWithName:filename];
+}
+
+
+- (NSData *)photoWithPath:(NSString *)path {
     NSData *data = nil;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:self.photoFile]) {
-        data = [NSData dataWithContentsOfFile:self.photoFile];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        data = [NSData dataWithContentsOfFile:path];
     }
     return data;
 }
 
-- (void)setPhoto:(NSData *)data {
+- (void)setPhoto:(NSData *)data withPath:(NSString *)path {
     UIImage *image = [UIImage imageWithData:data];
     if (image) {
-        [data writeToFile:self.photoFile atomically:YES];
+        [data writeToFile:path atomically:YES];
     }
 }
 
-- (NSString *)photoFile {
+- (NSString *)photoFileWithName:(NSString *)name {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *documentPath = [paths objectAtIndex:0];
     NSString *photoDir = [documentPath stringByAppendingPathComponent:@"photos"];
@@ -49,9 +79,9 @@
                                                         error:&error];
     }
     
-    NSString *filename = [NSString stringWithFormat:@"%@-%@", [self tourID], self.componentID];
-    return [photoDir stringByAppendingPathComponent:filename];
+    return [photoDir stringByAppendingPathComponent:name];
 }
+
 
 - (NSString *)audioFile {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);

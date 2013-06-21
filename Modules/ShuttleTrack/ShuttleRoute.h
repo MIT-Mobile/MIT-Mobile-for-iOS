@@ -23,7 +23,7 @@
 	NSMutableArray* _stopAnnotations;
 	
 	// locations, if available of any vehicles on the route. 
-	NSArray* _vehicleLocations;
+	NSMutableArray* _vehicleLocations;
     
     
     // NEW API
@@ -49,7 +49,7 @@
 - (void)updatePath;
 
 @property (readwrite, retain) NSString *tag;
-@property (readwrite, retain) NSArray* vehicleLocations;
+@property (readwrite, retain) NSMutableArray* vehicleLocations;
 
 @property (readonly) NSString *fullSummary;
 @property (assign) BOOL gpsActive;

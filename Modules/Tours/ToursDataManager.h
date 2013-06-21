@@ -36,5 +36,6 @@ extern NSString * const TourDetailsFailedToLoadNotification;
 - (MITGenericMapRoute *)mapRouteFromSideTripToSite:(CampusTourSideTrip *)sideTrip;
 - (NSArray *)allSitesStartingFrom:(TourSiteOrRoute *)site;
 - (NSArray *)allRoutesStartingFrom:(TourSiteOrRoute *)route;
++ (NSString *)getPhotoUrl:(NSString *)photoID;
 
 @end

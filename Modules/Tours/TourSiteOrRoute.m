@@ -3,6 +3,7 @@
 #import "CampusTour.h"
 #import "CampusTourSideTrip.h"
 #import <CoreLocation/CoreLocation.h>
+#import "ToursDataManager.h"
 
 @implementation TourSiteOrRoute 
 
@@ -34,7 +35,8 @@
             aTrip.componentID = [content objectForKey:@"id"];
             aTrip.title = [content objectForKey:@"title"];
             aTrip.body = [content objectForKey:@"html"];
-            aTrip.photoURL = [content objectForKey:@"photo-url"];
+            aTrip.photoURL = [ToursDataManager getPhotoUrl:[content objectForKey:@"photo-id"]];
+            aTrip.photoThumbnailURL = [ToursDataManager getPhotoUrl:[content objectForKey:@"thumbnail156-id"]];
             aTrip.audioURL = [content objectForKey:@"audio-url"];
             
             NSDictionary *coords = [content objectForKey:@"latlon"];
@@ -62,7 +64,8 @@
     [self updateBody:[routeInfo objectForKey:@"content"]];
     [self updatePath:[routeInfo objectForKey:@"path"]];
     self.title = [routeInfo objectForKey:@"title"];
-    self.photoURL = [routeInfo objectForKey:@"photo-url"];
+    self.photoURL = [ToursDataManager getPhotoUrl:[routeInfo objectForKey:@"photo-id"]];
+    self.photoThumbnailURL = [ToursDataManager getPhotoUrl:[routeInfo objectForKey:@"thumbnail156-id"]];
     self.audioURL = [routeInfo objectForKey:@"audio-url"];
     self.zoom = [NSNumber numberWithInt:[[routeInfo objectForKey:@"zoom"] floatValue]];
 }

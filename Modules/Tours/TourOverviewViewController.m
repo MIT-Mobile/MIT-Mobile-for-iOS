@@ -702,10 +702,10 @@ enum {
         thumbView.delegate = cell;
         thumbView.tag = kOverviewSiteCellThumbnailTag;
     }
-    if (cell.tourComponent.photo != nil) {
-        thumbView.imageData = cell.tourComponent.photo;
+    if (cell.tourComponent.photoThumbnail != nil) {
+        thumbView.imageData = cell.tourComponent.photoThumbnail;
     } else {
-        thumbView.imageURL = cell.tourComponent.photoURL;
+        thumbView.imageURL = cell.tourComponent.photoThumbnailURL;
     }
     //[cell.contentView addSubview:thumbView];
     [thumbView loadImage];

@@ -22,6 +22,19 @@
 	return self;
 }
 
+- (id)initWithShuttleVehicle:(ShuttleVehicle *)vehicle {
+    self = [super init];
+	if (self) {
+		_coordinate.latitude = vehicle.latitude;
+		_coordinate.longitude = vehicle.longitude;
+		
+		self.heading = vehicle.heading;
+        self.secsSinceReport = vehicle.lastReport;
+	}
+	
+	return self;
+}
+
 // Title and subtitle for use by selection UI.
 - (NSString *)title
 {

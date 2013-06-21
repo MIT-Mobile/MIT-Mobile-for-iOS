@@ -1,6 +1,7 @@
 
 #import <Foundation/Foundation.h>
 #import <MapKit/MKAnnotation.h>
+#import "ShuttleVehicle.h"
 
 @interface ShuttleLocation : NSObject <MKAnnotation>{
 
@@ -14,5 +15,7 @@
 @property int heading;
 
 -(id) initWithDictionary:(NSDictionary*)dictionary;
+
+- (id)initWithShuttleVehicle:(ShuttleVehicle *)vehicle;
 
 @end

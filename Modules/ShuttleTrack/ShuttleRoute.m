@@ -316,12 +316,20 @@
     NSArray *vehicles = [routeInfo objectForKey:@"vehicles"];
     if (vehicles){
         NSMutableArray *vehiclesArray = [[NSMutableArray alloc] init];
+        NSMutableArray *formattedVehicleLocations = [[NSMutableArray alloc] initWithCapacity:vehicles.count];
         for (int i = 0; i < [vehicles count]; i++) {
             NSDictionary *jVehicle = [vehicles objectAtIndex:i];
             ShuttleVehicle *vehicle = [[ShuttleVehicle alloc] initWithDictionary:jVehicle];
             [vehiclesArray addObject:vehicle];
+            
+            ShuttleLocation* shuttleLocation = [[ShuttleLocation alloc] initWithShuttleVehicle:vehicle];
+            [formattedVehicleLocations addObject:shuttleLocation];
         }
         self.vehicles = vehiclesArray;
+        [vehiclesArray release];
+        
+        self.vehicleLocations = formattedVehicleLocations;
+        [formattedVehicleLocations release];
     }
     
     NSDictionary *path = [routeInfo objectForKey:@"path"];

@@ -420,7 +420,7 @@ static ToursDataManager *s_toursDataManager = nil;
         TourSiteOrRoute *lastRoute = nil;
         
         sortOrder = 0;
-            for (NSDictionary *siteInfo in [jsonResult objectForKey:@"sites"]) {
+        for (NSDictionary *siteInfo in [jsonResult objectForKey:@"sites"]) {
             NSString *siteID = [siteInfo objectForKey:@"id"];
             TourSiteOrRoute *aSite = [self tourSiteWithID:siteID];
             aSite.title = [siteInfo objectForKey:@"title"];
@@ -432,7 +432,8 @@ static ToursDataManager *s_toursDataManager = nil;
                 aSite.latitude = [NSNumber numberWithFloat:[[coords objectForKey:@"latitude"] floatValue]];
                 aSite.longitude = [NSNumber numberWithFloat:[[coords objectForKey:@"longitude"] floatValue]];
             }
-            aSite.photoURL = [siteInfo objectForKey:@"photo-url"];
+            aSite.photoURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"photo-id"]];
+            aSite.photoThumbnailURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"thumbnail156-id"]];
             aSite.audioURL = [siteInfo objectForKey:@"audio-url"];
             
             [aSite updateBody:[siteInfo objectForKey:@"content"]];
@@ -463,7 +464,9 @@ static ToursDataManager *s_toursDataManager = nil;
             TourStartLocation *aStartLocation = [self tourStartLocationWithID:locationID];
             
             aStartLocation.title = [siteInfo objectForKey:@"title"];
-            aStartLocation.photoURL = [siteInfo objectForKey:@"photo-url"];
+            aStartLocation.photoURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"photo-id"]];
+            aStartLocation.photoThumbnailURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"thumbnail156-id"]];
+            
             aStartLocation.body = [siteInfo objectForKey:@"content"];
             NSString *siteID = [siteInfo objectForKey:@"start-site"];
             aStartLocation.startSite = [self findSiteWithID:siteID];
@@ -478,6 +481,11 @@ static ToursDataManager *s_toursDataManager = nil;
     };
 
     [[NSOperationQueue mainQueue] addOperation:request];
+}
+
++ (NSString *)getPhotoUrl:(NSString *)photoID {    
+    NSURL *serverUrl = MITMobileWebGetCurrentServerURL();
+    return [NSString stringWithFormat:@"%@/tours/mit150/images/%@", [serverUrl absoluteString], photoID];
 }
 
 #pragma mark -
