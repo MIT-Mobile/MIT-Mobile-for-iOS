@@ -144,6 +144,8 @@ typedef enum {
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration
 {
     if (UIInterfaceOrientationIsPortrait(orientation)) {
+        [self.delegate mealController:self didUpdateMealReference:[self visibleMealReference]];
+        
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         [self dismissModalViewControllerAnimated:YES];
     }
@@ -298,11 +300,10 @@ typedef enum {
     return YES;
 }
 
-
+# pragma mark - Paging
 - (void) pagePointersRight
 {
-    [self pagePointersInDirection:kPageDirectionForward];
-    
+    // moves data reference to the right, reloads all views
     self.previousFRC = self.currentFRC;
     self.previous.mealRef = self.current.mealRef;
     
@@ -324,8 +325,7 @@ typedef enum {
 
 - (void) pagePointersLeft
 {
-    [self pagePointersInDirection:kPageDirectionBackward];
-    
+    // moves data reference to the left, reloads all views
     self.nextFRC = self.currentFRC;
     self.next.mealRef = self.current.mealRef;
     
@@ -345,18 +345,6 @@ typedef enum {
     [self reloadAllComparisonViews];
 }
 
-- (void) pagePointersInDirection:(MealPageDirection) direction
-{
-    // when paging right, will find next meal in day and update meal pointer
-    // if at last meal in day will update date pointer to next day and meal pointer to first meal in next day
-    
-    MealReference *ref = [self mealReferenceForMealInDirection:direction];
-    self.mealRef = ref;
-    if (self.delegate) {
-        [self.delegate mealController:self didUpdateMealReference:self.mealRef];
-    }
-}
-
 - (MealReference *) mealReferenceForMealInDirection:(MealPageDirection)direction
 {
     // get meal information for meal before or after current Meal Reference
@@ -374,8 +362,7 @@ typedef enum {
             newDatePointer = (direction == kPageDirectionForward) ? [newDatePointer dayAfter] : [newDatePointer dayBefore];
 
             if (abs([newDatePointer timeIntervalSinceDate:self.mealRef.date]) >= (SECONDS_IN_DAY * 2)) {
-                // TODO: Need to handle holes in dining data by returning flag value here
-                // compare view should stop on day if there are no meals but there are meals further in direction
+                // TODO compare view should stop on day if there are no meals but there are meals further in direction
                 return nil;
                 break;
             }
@@ -416,6 +403,25 @@ typedef enum {
     results = [CoreDataManager objectsForEntity:mealEntity matchingPredicate:lastOfDay sortDescriptors:@[startTimeAscending]];              // sorted by startTime
     meal = [results lastObject];                                                                                                            // grab last meal
     return meal.name;
+}
+
+- (MealReference *) visibleMealReference
+{
+    // Gets Meal reference of Comparison view currently on screen
+    CGFloat xOffset = self.scrollView.contentOffset.x;
+    if (xOffset >= CGRectGetMaxX(self.current.frame)) {
+        // to the right of center
+        NSLog(@"Viewing Next");
+        return self.next.mealRef;
+    } else if (xOffset >= CGRectGetMaxX(self.previous.frame)) {
+        // to the right of left
+        NSLog(@"Viewing Center");
+        return self.current.mealRef;
+    } else {
+        // must be left
+        NSLog(@"Viewing Previous");
+        return self.previous.mealRef;
+    }
 }
 
 #pragma mark - DiningCompareView Helper Methods
