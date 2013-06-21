@@ -25,10 +25,12 @@
 @interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, MGSMapViewDelegate, MGSLayerDelegate>
 
 @property (nonatomic, strong) IBOutlet UITableView * listView;
-@property (nonatomic, strong) IBOutlet UIView * tabContainerView;
-@property (nonatomic, strong) IBOutlet UIButton * houseButton;
-@property (nonatomic, strong) IBOutlet UIButton * retailButton;
-@property (nonatomic, strong) IBOutlet MITTabBar * tabBar;
+@property (nonatomic, strong) IBOutlet UIView * listTabContainerView;
+@property (nonatomic, strong) IBOutlet UIButton * listHouseButton;
+@property (nonatomic, strong) IBOutlet UIButton * listRetailButton;
+@property (nonatomic, strong) IBOutlet UIView * mapSegmentContainerView;
+@property (nonatomic, strong) IBOutlet UIButton * mapHouseButton;
+@property (nonatomic, strong) IBOutlet UIButton * mapRetailButton;
 @property (nonatomic, strong) IBOutlet UIView *mapContainer;
 @property (nonatomic, strong) MGSMapView *mapView;
 @property (nonatomic, assign) BOOL isAnimating;
@@ -43,6 +45,7 @@
 
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, strong) NSArray *favoritedRetailVenues;
 
 @end
 
@@ -76,40 +79,40 @@
     [super viewDidLoad];
     self.title = @"Dining";
 
-    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
+    self.view.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
+//    self.listView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
 
     self.loading = YES;
-    dispatch_queue_t queue = dispatch_queue_create("edu.mit.mobile.DiningData", 0);
-    dispatch_async(queue, ^(void) {
+//    dispatch_queue_t queue = dispatch_queue_create("edu.mit.mobile.DiningData", 0);
+//    dispatch_async(queue, ^(void) {
         [[DiningData sharedData] reload];
-        dispatch_async(dispatch_get_main_queue(), ^{
+//        dispatch_async(dispatch_get_main_queue(), ^{
             self.loading = NO;
             [self refreshSelectedTypeOfVenues];
-        });
-    });
-    dispatch_release(queue);
+//        });
+//    });
+//    dispatch_release(queue);
+
     
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
     
-    {
-        CGSize pdfSize = CGSizeMake(160, 55);
-        [self.houseButton addTarget:self action:@selector(tabBarDidChange:) forControlEvents:UIControlEventTouchUpInside];
-        [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
-        [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
-        [self.houseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
-        [self.houseButton sendActionsForControlEvents:UIControlEventTouchUpInside]; // press this button initially
-        
-        [self.retailButton addTarget:self action:@selector(tabBarDidChange:) forControlEvents:UIControlEventTouchUpInside];
-        [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
-        [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
-        [self.retailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
-    }
+    // only list buttons work at first
+    self.listTabContainerView.userInteractionEnabled = YES;
+    self.mapSegmentContainerView.userInteractionEnabled = NO;
     
+    // hook up list buttons
+    [self.listHouseButton addTarget:self action:@selector(showHouse:) forControlEvents:UIControlEventTouchUpInside];
+    [self.listHouseButton sendActionsForControlEvents:UIControlEventTouchUpInside]; // press this button initially
+    [self.listRetailButton addTarget:self action:@selector(showRetail:) forControlEvents:UIControlEventTouchUpInside];
     
-    [self addTabWithTitle:@"House Dining"];
-    [self addTabWithTitle:@"Retail"];
-    self.tabBar.selectedSegmentIndex = 0;
+    // hook up map buttons
+    [self.mapHouseButton addTarget:self action:@selector(showHouse:) forControlEvents:UIControlEventTouchUpInside];
+    [self.mapHouseButton sendActionsForControlEvents:UIControlEventTouchUpInside]; // press this button initially
+    [self.mapRetailButton addTarget:self action:@selector(showRetail:) forControlEvents:UIControlEventTouchUpInside];
+
+    [self setButtonBackgroundsForListState];
+    [self setButtonBackgroundsForMapState];
     
     self.listView.backgroundView = nil;
     
@@ -119,27 +122,30 @@
 - (void)viewWillAppear:(BOOL)animated {
     NSIndexPath *selectedIndexPath = [self.listView indexPathForSelectedRow];
     [self.listView deselectRowAtIndexPath:selectedIndexPath animated:animated];
+    self.favoritedRetailVenues = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]];
     [self.listView reloadData];
 }
 
-- (void) addTabWithTitle:(NSString *)title
-{
-    NSInteger index = [self.tabBar.items count];
-    UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:title image:nil tag:index];
-    [self.tabBar insertSegmentWithItem:item atIndex:index animated:NO];
-    
+- (void)showHouse:(id)sender {
+    if (!self.isShowingHouseDining) {
+        self.isShowingHouseDining = YES;
+        [self tabBarDidChange:sender];
+    }
+}
+
+- (void)showRetail:(id)sender {
+    if (self.isShowingHouseDining) {
+        self.isShowingHouseDining = NO;
+        [self tabBarDidChange:sender];
+    }
 }
 
 - (void) tabBarDidChange:(UIButton *) sender
 {
-    if ([sender isEqual:self.houseButton]) {
-        self.isShowingHouseDining = YES;
-        self.retailButton.selected = NO;
-    } else {
-        self.isShowingHouseDining = NO;
-        self.houseButton.selected = NO;
-    }
-    sender.selected = YES;
+    self.listHouseButton.selected = self.isShowingHouseDining;
+    self.mapHouseButton.selected = self.isShowingHouseDining;
+    self.listRetailButton.selected = !self.isShowingHouseDining;
+    self.mapRetailButton.selected = !self.isShowingHouseDining;
     [self refreshSelectedTypeOfVenues];
 }
 
@@ -165,6 +171,7 @@
         self.navigationItem.rightBarButtonItem.title = (self.isShowingMap)? @"Map" : @"List";
         
         if (self.isShowingMap) {
+            [self.listView reloadData];
             // animate to the list
             self.listView.center = CGPointMake(self.view.center.x, self.view.center.y + CGRectGetHeight(self.view.bounds));
             [UIView animateWithDuration:0.4f animations:^{
@@ -175,6 +182,12 @@
             }];
             
         } else {
+            if (!self.mapView) {
+                self.mapView = [[MGSMapView alloc] initWithFrame:self.mapContainer.bounds];
+                self.mapView.delegate = self;
+                [self.mapContainer addSubview:self.mapView];
+            }
+            [self annotateVenues];
             // animate to the map
             [UIView animateWithDuration:0.4f animations:^{
                 [self layoutMapState];
@@ -197,40 +210,70 @@
 
 - (void) layoutListState
 {
-    self.tabContainerView.center = CGPointMake(self.view.center.x, 25);
+    self.listTabContainerView.center = CGPointMake(self.view.center.x, 25);
+    self.mapSegmentContainerView.center = CGPointMake(self.view.center.x, 32);
+
+    self.mapSegmentContainerView.alpha = 0.0;
+    self.listTabContainerView.alpha = 1.0;
+    self.mapSegmentContainerView.userInteractionEnabled = NO;
+    self.listTabContainerView.userInteractionEnabled = YES;
+
     self.mapContainer.userInteractionEnabled = NO;
     self.mapContainer.alpha = 0;
-    self.listView.frame = CGRectMake(0, CGRectGetMaxY(self.tabContainerView.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(self.tabContainerView.frame));
-    
+    self.listView.frame = CGRectMake(0, CGRectGetMaxY(self.listTabContainerView.frame), self.view.bounds.size.width, CGRectGetHeight(self.view.bounds) - CGRectGetMaxY(self.listTabContainerView.frame));
 }
 
 - (void) layoutMapState
 {
-    self.tabContainerView.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 25);
+    self.listTabContainerView.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 51);
+
+    self.mapSegmentContainerView.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 45);
     
-    self.listView.center = CGPointMake(self.listView.center.x, self.listView.center.y + CGRectGetHeight(self.listView.bounds));
+    self.mapSegmentContainerView.alpha = 1.0;
+    self.listTabContainerView.alpha = 0.0;
+    self.mapSegmentContainerView.userInteractionEnabled = YES;
+    self.listTabContainerView.userInteractionEnabled = NO;
+
+    CGRect listFrame = self.listView.frame;
+    listFrame.origin.y = CGRectGetHeight(self.view.bounds);
+    self.listView.frame = listFrame;
     
     self.mapContainer.alpha = 1;
     self.mapContainer.userInteractionEnabled = YES;
     self.mapContainer.hidden = NO;
     self.mapContainer.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
-    if (!self.mapView) {
-        self.mapView = [[MGSMapView alloc] initWithFrame:self.mapContainer.bounds];
-        self.mapView.delegate = self;
-        [self.mapContainer addSubview:self.mapView];
-    }
+}
+
+- (void) setButtonBackgroundsForListState
+{
+    CGSize pdfSize = CGSizeMake(160, 55);
+    [self.listHouseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
+    [self.listHouseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
+    [self.listHouseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-house-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
     
-    if ([self isShowingHouseDining]) {
-        [self annotateHouseVenues];
-    }
+    [self.listRetailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
+    [self.listRetailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
+    [self.listRetailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
     
+}
+
+- (void) setButtonBackgroundsForMapState
+{
+    CGSize pdfSize = CGSizeMake(160, 64);
+    [self.mapHouseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-house-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
+    [self.mapHouseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-house-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
+    [self.mapHouseButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-house-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
     
-    
+    [self.mapRetailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-retail-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
+    [self.mapRetailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-retail-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
+    [self.mapRetailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/segment-retail-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
 }
 
 #pragma mark - Core Data
 
 - (NSManagedObjectContext *)managedObjectContext {
+//    return [CoreDataManager managedObjectContext];
+    
     if (_managedObjectContext != nil) {
         return _managedObjectContext;
     }
@@ -244,12 +287,16 @@
 }
 
 - (void)refreshSelectedTypeOfVenues {
-    if (self.houseButton.selected) {
+    if (self.isShowingHouseDining) {
         [self fetchHouseVenues];
     } else {
         [self fetchRetailVenues];
     }
-    [self.listView reloadData];
+    if ([self isShowingMap]) {
+        [self annotateVenues];
+    } else {
+        [self.listView reloadData];
+    }
 }
 
 - (void)fetchHouseVenues {
@@ -302,11 +349,26 @@
     [self.listView reloadData];
 }
 
-#pragma mark - UITableViewDataSource
+- (RetailVenue *) retailVenueAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([self.favoritedRetailVenues count] && indexPath.section == 0) {
+        return self.favoritedRetailVenues[indexPath.row];
+    } else if ([self.favoritedRetailVenues count]) {
+        NSIndexPath *offsetPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section - 1];
+        return [self.fetchedResultsController objectAtIndexPath:offsetPath];            // need to offset the path because fetchedResultsController does not know about favorites
+    } else {
+        return [self.fetchedResultsController objectAtIndexPath:indexPath];             // no favorites, no need to offset
+    }
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (![self showingHouseDining]) {
+        if ([self.favoritedRetailVenues count] && section == 0) {
+            return [self.favoritedRetailVenues count];
+        } else if ([self.favoritedRetailVenues count]) {
+            return [[self.fetchedResultsController sections][section - 1] numberOfObjects];         // need to offset section when favorites are there
+        }
         return [[self.fetchedResultsController sections][section] numberOfObjects];
     }
     
@@ -329,7 +391,8 @@
     if ([self showingHouseDining]) {
         return _houseSectionCount;
     } else {
-        return [[self.fetchedResultsController sections] count];
+        NSInteger sectionCount = [[self.fetchedResultsController sections] count];
+        return ([self.favoritedRetailVenues count]) ? sectionCount + 1 : sectionCount;
     }
 }
 
@@ -389,6 +452,8 @@
     if ([self showingHouseDining] && indexPath.section == _announcementSectionIndex) {
         // set announcement background color to yellow color
         cell.backgroundColor = [UIColor colorWithHexString:@"#FFEF8A"];
+    } else {
+        cell.backgroundColor = [UIColor whiteColor];
     }
 }
 
@@ -429,7 +494,7 @@
 
 - (void)configureRetailVenueCell:(DiningLocationCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     
-    RetailVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    RetailVenue *venue = [self retailVenueAtIndexPath:indexPath];
     
     cell.titleLabel.text = venue.name;
     cell.subtitleLabel.text = [venue hoursToday];
@@ -446,7 +511,7 @@
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (![self showingHouseDining]) {
-        RetailVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        RetailVenue *venue = [self retailVenueAtIndexPath:indexPath];
         
         DiningRetailInfoViewController *detailVC = [[DiningRetailInfoViewController alloc] init];
         detailVC.venue = venue;
@@ -485,8 +550,8 @@
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (![self showingHouseDining]) {
-        RetailVenue *venue = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        return [DiningLocationCell heightForRowWithTitle:venue.name subtitle:@"9am - 5pm"];
+        RetailVenue *venue = [self retailVenueAtIndexPath:indexPath];
+        return [DiningLocationCell heightForRowWithTitle:venue.name subtitle:[venue hoursToday]];
     }
     
     if (indexPath.section == _venuesSectionIndex) {
@@ -510,8 +575,14 @@
     label.backgroundColor = bc;
     label.textColor = [UIColor whiteColor];
     label.font = [UIFont boldSystemFontOfSize:14];
-    
     label.text = [self titleForHeaderInSection:section];
+    
+    if ([self.favoritedRetailVenues count] && section == 0) {
+        UIImageView *favIcon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 3, 18, 18)];
+        favIcon.image = [UIImage imageNamed:@"dining/bookmark_selected"];
+        label.frame = CGRectMake(CGRectGetMaxX(favIcon.frame) + 3, 0, CGRectGetWidth(view.bounds) - (CGRectGetMaxX(favIcon.frame) + 10), 25);  // shift label to the right
+        [view addSubview:favIcon];
+    }
     
     [view addSubview:label];
     
@@ -521,8 +592,10 @@
 - (NSString *) titleForHeaderInSection:(NSInteger)section // not the UITableViewDataSource method.
 {
     if (![self showingHouseDining]) {
-        id<NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController sections][section];
-        RetailVenue *venue = [sectionInfo objects][0];
+        if ([self.favoritedRetailVenues count] && section == 0) {
+            return @"Favorites";
+        }
+        RetailVenue *venue = [self retailVenueAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
         NSString *building = venue.building;
         // This may need to have an `updated` block in case locations aren't actually loaded yet.
         NSArray *matches = [[FacilitiesLocationData sharedData] locationsWithNumber:building updated:nil];
@@ -544,8 +617,6 @@
     return nil;
 }
 
-
-
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     if ([self showingHouseDining] && [[DiningData sharedData] announcementsHTML] && section == 0) {
@@ -557,7 +628,7 @@
 
 #pragma mark - MapView Methods
 
-- (void) annotateHouseVenues
+- (void) annotateVenues
 {
     NSArray *venues = [self.fetchedResultsController fetchedObjects];
     
@@ -577,8 +648,11 @@
         DiningHallMenuViewController *detailVC = [[DiningHallMenuViewController alloc] init];
         detailVC.venue = (HouseVenue *)annotation;
         [self.navigationController pushViewController:detailVC animated:YES];
+    } else if ([annotation isKindOfClass:[RetailVenue class]]) {
+        DiningRetailInfoViewController *detailVC = [[DiningRetailInfoViewController alloc] init];
+        detailVC.venue = (RetailVenue *)annotation;
+        [self.navigationController pushViewController:detailVC animated:YES];
     }
-    
 }
 
 @end
