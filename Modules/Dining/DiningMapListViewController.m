@@ -92,7 +92,6 @@
 //        });
 //    });
 //    dispatch_release(queue);
-
     
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
@@ -254,7 +253,6 @@
     [self.listRetailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-160x55.pdf" atSize:pdfSize] forState:UIControlStateNormal];
     [self.listRetailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-highlighted-160x55.pdf" atSize:pdfSize] forState:UIControlStateHighlighted];
     [self.listRetailButton setBackgroundImage:[UIImage imageWithPDFNamed:@"dining/tab-retail-selected-160x55.pdf" atSize:pdfSize] forState:UIControlStateSelected];
-    
 }
 
 - (void) setButtonBackgroundsForMapState
@@ -272,18 +270,18 @@
 #pragma mark - Core Data
 
 - (NSManagedObjectContext *)managedObjectContext {
-//    return [CoreDataManager managedObjectContext];
+    return [CoreDataManager managedObjectContext];
     
-    if (_managedObjectContext != nil) {
-        return _managedObjectContext;
-    }
-    
-    _managedObjectContext = [[NSManagedObjectContext alloc] init];
-    _managedObjectContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-    _managedObjectContext.undoManager = nil;
-    _managedObjectContext.stalenessInterval = 0;
-    
-    return _managedObjectContext;
+//    if (_managedObjectContext != nil) {
+//        return _managedObjectContext;
+//    }
+//    
+//    _managedObjectContext = [[NSManagedObjectContext alloc] init];
+//    _managedObjectContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+//    _managedObjectContext.undoManager = nil;
+//    _managedObjectContext.stalenessInterval = 0;
+//    
+//    return _managedObjectContext;
 }
 
 - (void)refreshSelectedTypeOfVenues {

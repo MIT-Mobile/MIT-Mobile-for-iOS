@@ -53,6 +53,8 @@
 @property (nonatomic, strong) NSFetchedResultsController *currentFRC;
 @property (nonatomic, strong) NSFetchedResultsController *nextFRC;
 
+@property (nonatomic, assign) BOOL pauseBeforeResettingScrollOffset;
+
 @end
 
 @implementation DiningMenuCompareViewController
@@ -106,8 +108,6 @@ typedef enum {
     self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
                                                                         // (viewPadding * 2) is used because each view has own padding, so there are 2 padded spaces to account for
     
-    [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
-    
     self.previous.delegate = self;
     self.current.delegate = self;
     self.next.delegate = self;
@@ -116,7 +116,20 @@ typedef enum {
     [self.scrollView addSubview:self.current];
     [self.scrollView addSubview:self.next];
     
-    [self.previous setScrollOffsetAgainstRightEdge];
+    // offset if on edge of list
+    if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
+        // should center on previous view and have current meal ref be one ahead
+        self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionForward];
+        [self.scrollView setContentOffset:CGPointMake(self.previous.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
+    } else if ([self didReachEdgeInDirection:kPageDirectionForward]) {
+        // should center on next view and have current meal ref be one behind
+        self.mealRef = [self mealReferenceForMealInDirection:kPageDirectionBackward];
+        [self.scrollView setContentOffset:CGPointMake(self.next.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
+        [self.current setScrollOffsetAgainstRightEdge];
+    } else {
+        [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
+        [self.previous setScrollOffsetAgainstRightEdge];
+    }
     
     [self loadData];
     [self reloadAllComparisonViews];
@@ -202,9 +215,15 @@ typedef enum {
 
 
 
-#pragma mark - UIScrollview Delegate
+#pragma mark - UIScrollViewDelegate
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView   // called on finger up as we are moving
+{
+    scrollView.scrollEnabled = NO;      // [IPHONEAPP-663] needed to force touch response to inner scrollview on ComparisonView paging hasn't decelerated
+}
+
 - (void) scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+    scrollView.scrollEnabled = YES;
     BOOL shouldCenter = YES;    // unless we have hit edge of data, we should center the 3 comparison views
     
     // Handle infinite scroll between 3 views. Returns to center view so there is always a view on the left and right
@@ -213,7 +232,12 @@ typedef enum {
         if ([self didReachEdgeInDirection:kPageDirectionForward]) {
             shouldCenter = NO;
         } else {
-            [self pagePointersRight];
+            if (!self.next.isScrolling) {
+                [self pagePointersRight];
+            } else {
+                shouldCenter = NO;
+                self.pauseBeforeResettingScrollOffset = YES;    // need to wait to reset scroll offset to center DiningComparisonView until comparisonview stops scrolling. only an issue when fast scrolling happens (page, scroll) IPHONEAPP-663
+            }
         }
         
     } else if (scrollView.contentOffset.x < scrollView.frame.size.width) {
@@ -221,7 +245,12 @@ typedef enum {
         if ([self didReachEdgeInDirection:kPageDirectionBackward]) {
             shouldCenter = NO;
         } else {
-            [self pagePointersLeft];
+            if (!self.previous.isScrolling) {
+                [self pagePointersLeft];
+            } else {
+                shouldCenter = NO;
+                self.pauseBeforeResettingScrollOffset = YES;    // need to wait to reset scroll offset to center DiningComparisonView until comparisonview stops scrolling. only an issue when fast scrolling happens (page, scroll) IPHONEAPP-663
+            }
         }
     }
     
@@ -240,6 +269,9 @@ typedef enum {
     //          - will return incorrect value if there is a breakfast that starts after a brunch and we are paging left, query for meals before earliest brunch would fail
     
     MealReference *ref = [self mealReferenceForMealInDirection:direction];
+    if (!ref) {
+        return YES;
+    }
     NSPredicate *pred;
     NSDate *mealTime;
     
@@ -282,7 +314,8 @@ typedef enum {
     self.nextFRC = [self fetchedResultsControllerForMealReference:ref];
     [self.nextFRC performFetch:nil];
     
-    [self.current resetScrollOffset]; // need to reset scroll offset so user always starts at (0,0) in collectionView
+    [self.current setScrollOffset:self.next.contentOffset animated:NO];
+    [self.next resetScrollOffset];
     [self.previous setScrollOffsetAgainstRightEdge];
     self.next.mealRef = ref;
 
@@ -304,7 +337,8 @@ typedef enum {
     self.previousFRC = [self fetchedResultsControllerForMealReference:ref];
     [self.previousFRC performFetch:nil];
     
-    [self.current setScrollOffsetAgainstRightEdge];
+    [self.current setScrollOffset:self.previous.contentOffset animated:NO];
+    [self.previous setScrollOffsetAgainstRightEdge];
     [self.next resetScrollOffset];
     self.previous.mealRef = ref;
 
@@ -342,6 +376,7 @@ typedef enum {
             if (abs([newDatePointer timeIntervalSinceDate:self.mealRef.date]) >= (SECONDS_IN_DAY * 2)) {
                 // TODO: Need to handle holes in dining data by returning flag value here
                 // compare view should stop on day if there are no meals but there are meals further in direction
+                return nil;
                 break;
             }
         }
@@ -521,6 +556,20 @@ typedef enum {
         return [DiningHallMenuComparisonCell heightForComparisonCellOfWidth:compareView.columnWidth withPrimaryText:item.name secondaryText:item.subtitle numDietaryTypes:[item.dietaryFlags count]];
     } else {
         return 30;
+    }
+}
+
+- (void) compareViewDidEndDecelerating:(DiningHallMenuCompareView *)compareView
+{
+    if (self.pauseBeforeResettingScrollOffset) {
+        if (self.previous == compareView) {
+            [self pagePointersLeft];
+        } else if (self.next == compareView) {
+            [self pagePointersRight];
+        }
+        
+        [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO]; // return to center view to give illusion of infinite scroll
+        self.pauseBeforeResettingScrollOffset = NO;
     }
 }
 
