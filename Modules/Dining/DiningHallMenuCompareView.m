@@ -66,6 +66,11 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
     [self.collectionView setContentOffset:CGPointZero animated:NO];
 }
 
+- (void) setScrollOffsetAgainstRightEdge
+{
+    [self.collectionView setContentOffset:CGPointMake(CGFLOAT_MAX, 0) animated:NO];
+}
+
 - (id)dequeueReusableCellWithReuseIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath
 {
     return [self.collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];

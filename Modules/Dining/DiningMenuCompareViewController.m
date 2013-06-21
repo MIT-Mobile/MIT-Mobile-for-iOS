@@ -97,6 +97,7 @@ typedef enum {
     self.scrollView.delegate = self;
     self.scrollView.contentSize = CGSizeMake((DAY_VIEW_PADDING * 6) + (CGRectGetHeight(self.view.bounds) * 3), CGRectGetWidth(self.view.bounds));
     self.scrollView.pagingEnabled = YES;
+    self.scrollView.showsHorizontalScrollIndicator = NO;
     
     [self.view addSubview:self.scrollView];
     
@@ -114,6 +115,8 @@ typedef enum {
     [self.scrollView addSubview:self.previous];
     [self.scrollView addSubview:self.current];
     [self.scrollView addSubview:self.next];
+    
+    [self.previous setScrollOffsetAgainstRightEdge];
     
     [self loadData];
     [self reloadAllComparisonViews];
@@ -280,7 +283,7 @@ typedef enum {
     [self.nextFRC performFetch:nil];
     
     [self.current resetScrollOffset]; // need to reset scroll offset so user always starts at (0,0) in collectionView
-    [self.previous resetScrollOffset];
+    [self.previous setScrollOffsetAgainstRightEdge];
     self.next.mealRef = ref;
 
     [self reloadAllComparisonViews];
@@ -301,7 +304,8 @@ typedef enum {
     self.previousFRC = [self fetchedResultsControllerForMealReference:ref];
     [self.previousFRC performFetch:nil];
     
-    [self.current resetScrollOffset];
+    [self.current setScrollOffsetAgainstRightEdge];
+    [self.next resetScrollOffset];
     self.previous.mealRef = ref;
 
     [self reloadAllComparisonViews];

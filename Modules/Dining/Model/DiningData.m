@@ -36,7 +36,6 @@
     return links;
 }
 
-// TODO: This should be rewritten to not lose favorited venues every time you reload
 - (void)reload {
     // Fetch data
     NSDictionary *latestDataDict = [self fetchData];
@@ -45,16 +44,23 @@
         // Make sure the set list of dietary flags already exist before we start parsing.
         [DiningDietaryFlag createDietaryFlagsInStore];
 
-        // TODO
-        // Find already favorited venues
-        NSArray *favoritedVenues = [CoreDataManager objectsForEntity:@"RetailVenue"
-                                                   matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]];
+        // Find already favorited venues and hold on to reference
+        NSArray *favoritedNames = [[CoreDataManager objectsForEntity:@"RetailVenue"
+                                                   matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]] valueForKey:@"name"];
+
         // Make list of old entities to delete
         NSArray *oldRoot = [CoreDataManager fetchDataForAttribute:@"DiningRoot"];
         // Delete old things
         [CoreDataManager deleteObjects:oldRoot];
         // Create new entities in Core Data
         [DiningRoot newRootWithDictionary:latestDataDict];
+        
+        // set favorites in new data using kept reference
+        if ([favoritedNames count]) {
+            NSArray *migratedFavorites = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"name IN %@", favoritedNames]];
+            [migratedFavorites setValue:@(YES) forKey:@"favorite"];
+        }
+        
         // Save
         [CoreDataManager saveData];
     }

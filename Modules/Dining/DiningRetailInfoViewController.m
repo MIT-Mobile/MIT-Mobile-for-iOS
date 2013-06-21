@@ -3,8 +3,10 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "RetailVenue.h"
+#import "VenueLocation.h"
 #import "RetailDay.h"
 #import "CoreDataManager.h"
+#import "UIImageView+WebCache.h"
 
 @interface DiningRetailInfoViewController () <UIWebViewDelegate>
 
@@ -13,16 +15,39 @@
 @property (nonatomic, assign) CGFloat descriptionHeight;
 
 @property (nonatomic, strong) NSArray * sectionData;
+@property (nonatomic, strong) NSArray * availableInfoKeys;
 
 @property (nonatomic, strong) NSArray * formattedHoursData;
+@property (nonatomic, strong) NSDateFormatter * daySpanFormatter;
 
 @end
+
+static NSString * sDescriptionHTMLKey   = @"descriptionHTML";
+static NSString * sMenuURLKey           = @"menuURL";
+static NSString * sDaysKey              = @"days";
+static NSString * sCuisinesKey          = @"cuisines";
+static NSString * sPaymentMethodsKey    = @"paymentMethods";
+static NSString * sLocationKey          = @"location";
+static NSString * sHomePageURLKey       = @"homepageURL";
 
 @implementation DiningRetailInfoViewController
 
 - (id)init
 {
     self = [super initWithStyle:UITableViewStyleGrouped];
+    if (self) {
+        self.descriptionHtmlFormatString = @"<html>"
+        "<head>"
+        "<style type=\"text/css\" media=\"screen\">"
+        "body { margin: 0; padding: 0; font-family: Helvetica; font-size: 13px; } "
+        "</style>"
+        "</head>"
+        "<body id=\"content\">"
+        "%@"
+        "</body>"
+        "</html>";
+        self.descriptionHeight = 44;
+    }
     return self;
 }
 
@@ -39,13 +64,23 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.tableView applyStandardColors];
+    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
+    
+    self.daySpanFormatter = [[NSDateFormatter alloc] init];
+    [self.daySpanFormatter setDateFormat:@"EEE"];
     
     self.title = self.venue.shortName;
     
     self.headerView = [[DiningHallDetailHeaderView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), 87)];
+    __weak DiningHallDetailHeaderView *weakHeaderView = self.headerView;
+    [self.headerView.iconView setImageWithURL:[NSURL URLWithString:self.venue.iconURL]
+                                    completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                                        [weakHeaderView layoutIfNeeded];
+                                    }];
     self.headerView.titleLabel.text = self.venue.name;
-    [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"global/bookmark_off"] forState:UIControlStateNormal];
-    [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"global/bookmark_on"] forState:UIControlStateSelected];
+    [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/bookmark"] forState:UIControlStateNormal];
+    [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/bookmark_selected"] forState:UIControlStateSelected];
     [self.headerView.accessoryButton addTarget:self action:@selector(favoriteButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     self.headerView.accessoryButton.selected = [self.venue.favorite boolValue];
     
@@ -58,119 +93,91 @@
     RetailDay *currentDay = [self.venue dayForDate:[NSDate fakeDateForDining]];
     self.headerView.timeLabel.text = [currentDay statusStringRelativeToDate:[NSDate fakeDateForDining]];
     
-    self.descriptionHtmlFormatString = @"<html>"
-                                        "<head>"
-                                        "<style type=\"text/css\" media=\"screen\">"
-                                        "body { margin: 0; padding: 0; font-family: Helvetica; font-size: 13px; } "
-                                        "</style>"
-                                        "</head>"
-                                        "<body id=\"content\">"
-                                        "%@"
-                                        "</body>"
-                                        "</html>";
-    self.descriptionHeight = 44;
-    
     self.tableView.tableHeaderView = self.headerView;
-
-}
-
-static const NSString * sectionIdKey = @"section_id";
-static const NSString * sectionDataKey = @"section_data";
-
-- (void) parseVenueDataIntoSections
-{
-    NSArray *whiteKeys = @[@"description_html", @"menu_html", @"menu_url", @"hours", @"cuisine", @"payment", @"location", @"homepage_url"];     // whitelist of dictionary keys that will correspond to order in table
-    NSMutableArray * sections = [NSMutableArray array];
     
-//    for (NSString *key in whiteKeys) {
-//        if (self.venueData[key]) {
-//            if ([key isEqualToString:@"hours"]) {
-//                // hours data is treated differently because raw data is too ugly to show the user.
-//                [self parseHoursDataIntoFormat:self.venueData[key]];
-//            }
-//            
-//            NSDictionary * sectionData = @{sectionIdKey : key, sectionDataKey : self.venueData[key]};
-//            [sections addObject:sectionData];
-//        }
-//    }
-    self.sectionData = sections;
+    self.availableInfoKeys = [self findAvailableInfo];
+    if ([self.availableInfoKeys containsObject:sDaysKey]) {
+        [self formatScheduleInfo];
+    }
 }
 
-- (void) parseHoursDataIntoFormat:(NSArray *)rawData
+- (NSArray *) findAvailableInfo
 {
-    NSArray *weekDays = @[@"monday", @"tuesday", @"wednesday", @"thursday", @"friday", @"saturday", @"sunday"];
-    NSMutableArray *hoursArray = [NSMutableArray arrayWithCapacity:[rawData count]];
-    NSInteger arrComparisonIndex = 0;  // used to compare items against objects in hoursArray
-    for (NSDictionary *item in rawData) {
-        if (item[@"start_time"] && item[@"end_time"]) {  // only parse hours that have start time and end time
-            
-            NSString *day = item[@"day"];
-            NSString *startTime = item[@"start_time"];
-            NSString * endTime = item[@"end_time"];
-        
-            NSString *timeFormat = [NSString stringWithFormat:@"%@ - %@", [self formatHourString:startTime], [self formatHourString:endTime]]; // this is the time format we want. need to group days based on this format
-            
-            if ([hoursArray count] == 0) {
-                // base case, no hour yet in hoursArray, no need to increment comparison pointer because want to compare against index 0 next time through
-                NSDictionary * newFormatItem = @{@"timeSpan": timeFormat, @"daySpan" : @[day]};
-                [hoursArray addObject:newFormatItem];
-                continue;
-            }
-            
-            NSMutableDictionary *formatItem = [hoursArray[arrComparisonIndex] mutableCopy];
-            if (formatItem && [formatItem[@"timeSpan"] isEqualToString:timeFormat]) {
-                // adding day to time format array, update is in placem no need to increment arrHead pointer
-                NSMutableArray *daySpan = (formatItem[@"daySpan"]) ? [formatItem[@"daySpan"] mutableCopy] : [NSMutableArray arrayWithCapacity:[rawData count]]; // if exists, get it; if not, make it
-                NSString * lastDay = [daySpan lastObject];
-                if (lastDay && [weekDays indexOfObject:day] - [weekDays indexOfObject:lastDay] == 1) {
-                    [daySpan addObject:day];
-                    formatItem[@"daySpan"] = daySpan;
-                    hoursArray[arrComparisonIndex] = formatItem;
-                    continue;
+    // find all viewable info that the retail venue has available
+    // also add hours and location if available
+    NSArray *nonInfoKeys = @[@"building", @"favorite", @"iconURL", @"name", @"shortName", @"sortableBuilding", @"url"];      // blacklist of keys we don't want to show in tableview
+    NSArray * desiredSectionOrder = @[sDescriptionHTMLKey, sMenuURLKey, sDaysKey, sCuisinesKey, sPaymentMethodsKey, sLocationKey, sHomePageURLKey];
+    NSMutableArray * usableInfoKeys = [NSMutableArray array];
+    NSArray *retailVenueKeys = [[[self.venue entity] attributesByName] allKeys];
+    for (NSString *key in retailVenueKeys) {
+        id value = [self.venue valueForKey:key];
+        if (![nonInfoKeys containsObject:key] && value) {
+            if ([value respondsToSelector:@selector(count)]) {
+                if ([value count] > 0) {
+                    [usableInfoKeys addObject:key];
                 }
-                
-                
+            } if ([value respondsToSelector:@selector(length)]) {
+                if ([value length] > 0) {
+                    [usableInfoKeys addObject:key];
+                }
             }
-            
-            // does not match previous time format, need to add new object to hoursArray, and increment the comparison pointer
-            NSDictionary * newFormatItem = @{@"timeSpan": timeFormat, @"daySpan" : @[day]};
-            [hoursArray addObject:newFormatItem];
-            arrComparisonIndex = [hoursArray count] - 1;
-            
-        } else {
-            // will need to handle order correctly
-            if (item[@"message"]) {
-                NSDictionary * formatItem = @{@"timeSpan": item[@"message"], @"daySpan" : @[item[@"day"]]};
-                [hoursArray addObject:formatItem];
-                arrComparisonIndex = [hoursArray count] - 1;
-            }
-
         }
     }
+    if (self.venue.days) {
+        [usableInfoKeys addObject:sDaysKey];
+    }
+    if (self.venue.location.displayDescription) {
+        [usableInfoKeys addObject:sLocationKey];
+    }
     
-    self.formattedHoursData = hoursArray;
+    NSArray *sortedInfo = [usableInfoKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSUInteger index1 = [desiredSectionOrder indexOfObject: obj1];
+        NSUInteger index2 = [desiredSectionOrder indexOfObject: obj2];
+        NSComparisonResult ret = NSOrderedSame;
+        if (index1 < index2)
+        {
+            ret = NSOrderedAscending;
+        }
+        else if (index1 > index2)
+        {
+            ret = NSOrderedDescending;
+        }
+        return ret;
+    }];
+    
+    return sortedInfo;
 }
 
-- (NSString *) formatHourString:(NSString *) rawString
-{   // takes 24 hour time string and formats it into h:mma
-    
-    NSArray * components = [rawString componentsSeparatedByString:@":"];
-    NSInteger hour = [components[0] integerValue];
-    NSInteger minute = [components[1] integerValue];
-    
-    BOOL isPM = NO;
-    if (hour >= 12) {
-        hour = (hour - 12 == 0)? 12 : hour - 12;
-        isPM = YES;
+- (NSArray *) desiredSectionOrder
+{
+    return @[sDescriptionHTMLKey, sMenuURLKey, sDaysKey, sCuisinesKey, sPaymentMethodsKey, sLocationKey, sHomePageURLKey];
+}
+
+- (void) formatScheduleInfo
+{
+    NSMutableArray *scheduleArray = [NSMutableArray array];
+    NSArray * days = [[self.venue.days allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]]];
+    RetailDay * previousDay = nil;
+    for (RetailDay * day in days) {
+        if (previousDay == nil) {
+            // first time through, add object to list
+            NSDictionary *schedule = @{@"dayStart" : day.date, @"dayEnd" : day.date, @"hours" : [day hoursSummary]};
+            [scheduleArray addObject:schedule];
+        } else {
+            if ([[previousDay hoursSummary] isEqualToString:[day hoursSummary]]) {
+                // previousDay matches current day, need to update last item in scheduleArray
+                NSMutableDictionary *lastSchedule = [[scheduleArray lastObject] mutableCopy];
+                lastSchedule[@"dayEnd"] = day.date;
+                scheduleArray[[scheduleArray count] - 1] = lastSchedule;
+            } else {
+                // previous day does not match current day, add new item
+                NSDictionary *schedule = @{@"dayStart" : day.date, @"dayEnd" : day.date, @"hours" : [day hoursSummary]};
+                [scheduleArray addObject:schedule];
+            }
+        }
+        previousDay = day;
     }
-    
-    if (minute == 0) {
-        // no minutes, truncate from string
-        return [NSString stringWithFormat:@"%i%@", hour, (isPM)? @"pm":@"am"];
-    } else {
-        return [NSString stringWithFormat:@"%i:%i%@", hour, minute, (isPM)? @"pm":@"am"];
-    }
-    
+    self.formattedHoursData = scheduleArray;
 }
 
 - (void)didReceiveMemoryWarning
@@ -187,82 +194,25 @@ static const NSString * sectionDataKey = @"section_data";
     [CoreDataManager saveData];
 }
 
-- (NSDictionary *) dayScheduleFromHours:(NSArray *) hours
-{
-    NSDate *rightNow = [NSDate date];
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-    [dateFormat setDateFormat:@"EEEE"];
-    NSString *dateString = [dateFormat stringFromDate:rightNow];
-    
-    NSString * dateKey = [dateString lowercaseString];
-    
-    NSDictionary *todaysHours;
-    for (NSDictionary *day in hours) {
-        if ([day[@"day"] isEqualToString:dateKey]) {
-            todaysHours = day;
-        }
-    }
-    
-    if (!todaysHours) {
-        // closed with no hours today
-        return @{@"isOpen": @NO,
-                 @"text" : @"Closed for the day"};
-    }
-    
-    if (todaysHours[@"message"]) {
-        return @{@"isOpen": @NO,
-          @"text" : todaysHours[@"message"]};
-    }
-    
-    if (todaysHours[@"start_time"] && todaysHours[@"end_time"]) {
-        // need to calculate if the current time is before opening, before closing, or after closing
-        [dateFormat setDateFormat:@"HH:mm"];
-        NSString * openString   = todaysHours[@"start_time"];
-        NSString * closeString    = todaysHours[@"end_time"];
-        
-        NSDate *openDate = [NSDate dateForTodayFromTimeString:openString];
-        NSDate *closeDate = [NSDate dateForTodayFromTimeString:closeString];
-        
-        BOOL willOpen       = ([openDate compare:rightNow] == NSOrderedDescending); // openDate > rightNow , before the open hours for the day
-        BOOL currentlyOpen  = ([openDate compare:rightNow] == NSOrderedAscending && [rightNow compare:closeDate] == NSOrderedAscending);  // openDate < rightNow < closeDate , within the open hours
-        BOOL hasClosed      = ([rightNow compare:closeDate] == NSOrderedDescending); // rightNow > closeDate , after the closing time for the day
-        
-        [dateFormat setDateFormat:@"h:mm a"];  // adjust format for pretty printing
-        
-        if (willOpen) {
-            NSString *closedStringFormatted = [dateFormat stringFromDate:openDate];
-            return @{@"isOpen": @NO,
-                     @"text" : [NSString stringWithFormat:@"Opens at %@", closedStringFormatted]};
-
-        } else if (currentlyOpen) {
-            NSString *openStringFormatted = [dateFormat stringFromDate:closeDate];
-            return @{@"isOpen": @YES,
-                     @"text" : [NSString stringWithFormat:@"Open until %@", openStringFormatted]};
-        } else if (hasClosed) {
-            return @{@"isOpen": @NO,
-                     @"text" : @"Closed for the day"};
-        }   
-    }
-    
-    // the just in case
-    return @{@"isOpen": @NO,
-             @"text" : @"Closed for the day"};
-}
-
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return [self.sectionData count];
+    return [self.availableInfoKeys count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSDictionary *sectionDict = self.sectionData[section];
-    if ([sectionDict[sectionIdKey] isEqualToString:@"hours"]) {
+    NSString *sectionKey = self.availableInfoKeys[section];
+    if ([sectionKey isEqualToString:sDaysKey]) {
         return [self.formattedHoursData count];
     }
     return 1;
+}
+
+- (UIFont *) detailTextLabelFont
+{
+    return [UIFont fontWithName:@"Helvetica" size:13];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -283,11 +233,12 @@ static const NSString * sectionDataKey = @"section_data";
     cell.textLabel.textColor = [UIColor darkTextColor];
     cell.textLabel.font   = [UIFont fontWithName:@"Helvetica-Bold" size:11];
     
-    cell.detailTextLabel.font = [UIFont fontWithName:@"Helvetica" size:13];
+    cell.detailTextLabel.font = [self detailTextLabelFont];
     cell.detailTextLabel.numberOfLines = 0;
     
-    NSDictionary *sectionData = self.sectionData[indexPath.section];
-    if ([sectionData[sectionIdKey] isEqualToString:@"description_html"]) {
+    NSString *currentSection = self.availableInfoKeys[indexPath.section];
+    
+    if ([currentSection isEqualToString:sDescriptionHTMLKey]) {
         // cell contents are rendered in a webview
         static NSString *DescriptionCellIdentifier = @"DescriptionCell";
         cell = [tableView dequeueReusableCellWithIdentifier:DescriptionCellIdentifier];
@@ -304,59 +255,48 @@ static const NSString * sectionDataKey = @"section_data";
             [cell.contentView addSubview:existingWebView];
         }
         existingWebView.frame = CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, self.descriptionHeight);
-        [existingWebView loadHTMLString:[NSString stringWithFormat:self.descriptionHtmlFormatString, sectionData[sectionDataKey]] baseURL:nil];
+        [existingWebView loadHTMLString:[NSString stringWithFormat:self.descriptionHtmlFormatString, self.venue.descriptionHTML] baseURL:nil];
         existingWebView.backgroundColor = [UIColor clearColor];
         existingWebView.opaque = NO;
-    } else if ([sectionData[sectionIdKey] isEqualToString:@"menu_html"]) {
-        cell.textLabel.text = @"menu";
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         
-    } else if ([sectionData[sectionIdKey] isEqualToString:@"menu_url"]) {
+    } else if ([currentSection isEqualToString:sMenuURLKey]){
         cell.textLabel.text = @"menu";
-        cell.detailTextLabel.text = sectionData[sectionDataKey];
+        cell.detailTextLabel.text = self.venue.menuURL;
         cell.detailTextLabel.numberOfLines = 1;
-        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-        
-    } else if ([sectionData[sectionIdKey] isEqualToString:@"hours"]) {
-        NSLog(@"%@", sectionData);
+        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+    } else if ([currentSection isEqualToString:sDaysKey]) {
         NSDictionary *hoursRow = self.formattedHoursData[indexPath.row];
-        NSArray * days = hoursRow[@"daySpan"];
-        NSString *dayText;
-        if ([days count] > 1) {
-            NSString * head = days[0];
-            NSString * tail = [days lastObject];
-            dayText = [NSString stringWithFormat:@"%@ - %@",[head substringToIndex:3], [tail substringToIndex:3]]; // abbreviates days
+        NSString *startDay  = [[self.daySpanFormatter stringFromDate:hoursRow[@"dayStart"]] lowercaseString];
+        NSString *daySpan;
+        if (![hoursRow[@"dayEnd"] isEqual: hoursRow[@"dayStart"]]) {
+            NSString *endDay = [[self.daySpanFormatter stringFromDate:hoursRow[@"dayEnd"]] lowercaseString];
+            daySpan = [NSString stringWithFormat:@"%@ - %@", startDay, endDay];
         } else {
-            dayText = days[0];
+            daySpan = startDay;
         }
         
-        cell.textLabel.text = dayText;
-        if (hoursRow[@"message"]) {
-            cell.detailTextLabel.text = hoursRow[@"message"];
-        } else {
-            cell.detailTextLabel.text = hoursRow[@"timeSpan"];
-        }
-        
-    } else if ([sectionData[sectionIdKey] isEqualToString:@"location"]) {
-         NSLog(@"%@", sectionData);
-        cell.textLabel.text = sectionData[sectionIdKey];
-    }else if ([sectionData[sectionIdKey] isEqualToString:@"homepage_url"]) {
-        cell.textLabel.text = @"homepage";
-        cell.detailTextLabel.numberOfLines = 1;
-        cell.detailTextLabel.text = sectionData[sectionDataKey];
-        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+        cell.textLabel.text = daySpan;
+        cell.detailTextLabel.text = hoursRow[@"hours"];
+    } else if ([currentSection isEqualToString:sCuisinesKey]) {
+        cell.textLabel.text = @"cuisine";
+        cell.detailTextLabel.text = [self.venue.cuisines componentsJoinedByString:@", "];
+    } else if ([currentSection isEqualToString:sPaymentMethodsKey]) {
+        cell.textLabel.text = @"payment";
+        cell.detailTextLabel.text = [self.venue.paymentMethods componentsJoinedByString:@", "];
+    } else if ([currentSection isEqualToString:sLocationKey]) {
+        cell.textLabel.text = @"location";
+        cell.detailTextLabel.text = self.venue.location.displayDescription;
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-                                     
-    } else if ([sectionData[sectionIdKey] isEqualToString:@"cuisine"] || [sectionData[sectionIdKey] isEqualToString:@"payment"]) {
-        cell.textLabel.text = sectionData[sectionIdKey];
-        if ([sectionData[sectionDataKey] isKindOfClass:[NSArray class]]) {
-            cell.detailTextLabel.text = [sectionData[sectionDataKey] componentsJoinedByString:@", "];
-        } else {
-            cell.detailTextLabel.text = sectionData[sectionDataKey];
-        }
+        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+    } else if ([currentSection isEqualToString:sHomePageURLKey]) {
+        cell.textLabel.text = @"home page";
+        cell.detailTextLabel.text = self.venue.homepageURL;
+        cell.detailTextLabel.numberOfLines = 1;
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     }
+    NSLog(@"DescriptionTextLabel frame :: %@", NSStringFromCGRect(cell.detailTextLabel.frame));
     
     return cell;
 }
@@ -365,10 +305,14 @@ static const NSString * sectionDataKey = @"section_data";
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-    NSDictionary *section = self.sectionData[indexPath.section];
-    if ([section[sectionIdKey] isEqualToString:@"description_html"]) {
-        return self.descriptionHeight + 10; // add some bottom padding
+    NSString *sectionKey = self.availableInfoKeys[indexPath.section];
+    if ([sectionKey isEqualToString:sDescriptionHTMLKey]) {
+        return self.descriptionHeight + 20; // add some vertical padding
+    } else if ([sectionKey isEqualToString:sCuisinesKey]) {
+        CGSize constraint = CGSizeMake(205, CGFLOAT_MAX);
+        NSString *cuisineString = [self.venue.cuisines componentsJoinedByString:@", "];
+        CGSize stringSize = [cuisineString sizeWithFont:[self detailTextLabelFont] constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
+        return MAX(44, stringSize.height + 20);
     }
     
     return 44;
@@ -378,19 +322,17 @@ static const NSString * sectionDataKey = @"section_data";
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSDictionary *sectionData = self.sectionData[indexPath.section];
-    if ([sectionData[sectionIdKey] isEqualToString:@"menu_html"]) {
-        // show menu view controller
-        
-    } else if ([sectionData[sectionIdKey] isEqualToString:@"menu_url"]) {
+    NSString *sectionKey = self.availableInfoKeys[indexPath.section];
+    if ([sectionKey isEqualToString:sMenuURLKey]) {
         // external url
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:sectionData[sectionDataKey]]];
-    } else if ([sectionData[sectionIdKey] isEqualToString:@"location"]) {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.venue.menuURL]];
+    } else if ([sectionKey isEqualToString:sLocationKey]) {
         // link to map view
-        
-    } else if ([sectionData[sectionIdKey] isEqualToString:@"homepage_url"]) {
+        NSURL *url = [NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:self.venue.location.displayDescription];
+        [[UIApplication sharedApplication] openURL:url];
+    } else if ([sectionKey isEqualToString:sHomePageURLKey]) {
         // external url
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:sectionData[sectionDataKey]]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.venue.homepageURL]];
     }
 }
 

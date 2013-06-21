@@ -17,36 +17,35 @@
 
 @implementation DiningHallInfoScheduleCell
 
-static const NSInteger lineHeight = 15;
+static const NSInteger lineHeight = 16;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-        self.spanLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 80, 12)];        // height set for single line of text
+        self.spanLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 66, 12)];        // height set for single line of text
         self.spanLabel.backgroundColor  = [UIColor clearColor];
         self.spanLabel.numberOfLines    = 1;
-        self.spanLabel.font             = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+        self.spanLabel.font             = [UIFont fontWithName:@"Helvetica-Bold" size:13];
         self.spanLabel.textAlignment    = NSTextAlignmentRight;
         [self.contentView addSubview:self.spanLabel];
         
         
-        CGRect frame = CGRectMake(98, 9, 192, lineHeight);
+        CGRect frame = CGRectMake(83, 9, 205, lineHeight);
         self.scheduleLabelMeals = [[UILabel alloc] initWithFrame:frame];
         self.scheduleLabelMeals.backgroundColor     = [UIColor clearColor];
         self.scheduleLabelMeals.numberOfLines       = 0;
-        self.scheduleLabelMeals.font                = [UIFont fontWithName:@"Helvetica" size:13];
+        self.scheduleLabelMeals.font                = [UIFont fontWithName:@"Helvetica" size:14];
         self.scheduleLabelMeals.textAlignment       = NSTextAlignmentLeft;
         [self.contentView addSubview:self.scheduleLabelMeals];
         
         self.scheduleLabelTimes = [[UILabel alloc] initWithFrame:frame];
         self.scheduleLabelTimes.backgroundColor     = [UIColor clearColor];
         self.scheduleLabelTimes.numberOfLines       = 0;
-        self.scheduleLabelTimes.font                = [UIFont fontWithName:@"Helvetica" size:13];
+        self.scheduleLabelTimes.font                = [UIFont fontWithName:@"Helvetica" size:14];
         self.scheduleLabelTimes.textAlignment       = NSTextAlignmentRight;
         [self.contentView addSubview:self.scheduleLabelTimes];
-        
     }
     return self;
 }

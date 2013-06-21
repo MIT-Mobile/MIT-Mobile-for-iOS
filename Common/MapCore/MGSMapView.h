@@ -116,7 +116,6 @@ shouldNotifyDelegate:(BOOL)notifyDelegate;
 - (void)didDismissCalloutForAnnotation:(id <MGSAnnotation>)annotation;
 
 - (UIView*)calloutViewForAnnotation:(id <MGSAnnotation>)annotation;
-- (void)calloutDidReceiveTapForAnnotation:(id <MGSAnnotation>)annotation;
 
 
 #pragma mark --Location Updates

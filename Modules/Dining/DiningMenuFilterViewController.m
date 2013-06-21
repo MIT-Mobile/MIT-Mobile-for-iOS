@@ -3,6 +3,7 @@
 #import "DiningDietaryFlag.h"
 #import "CoreDataManager.h"
 #import "UIImage+PDF.h"
+#import "UIKit+MITAdditions.h"
 
 @interface DiningMenuFilterViewController ()
 
@@ -45,6 +46,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.tableView applyStandardColors];
+    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
     
     self.title = @"Filters";
     self.tableView.rowHeight = 44;
