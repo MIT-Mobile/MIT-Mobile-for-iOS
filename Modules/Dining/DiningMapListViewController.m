@@ -81,17 +81,6 @@
 
     self.view.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
 //    self.listView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
-
-    self.loading = YES;
-//    dispatch_queue_t queue = dispatch_queue_create("edu.mit.mobile.DiningData", 0);
-//    dispatch_async(queue, ^(void) {
-        [[DiningData sharedData] reload];
-//        dispatch_async(dispatch_get_main_queue(), ^{
-            self.loading = NO;
-            [self refreshSelectedTypeOfVenues];
-//        });
-//    });
-//    dispatch_release(queue);
     
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
@@ -119,6 +108,17 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    self.loading = YES;
+    //    dispatch_queue_t queue = dispatch_queue_create("edu.mit.mobile.DiningData", 0);
+    //    dispatch_async(queue, ^(void) {
+    [[DiningData sharedData] reload];
+    //        dispatch_async(dispatch_get_main_queue(), ^{
+    self.loading = NO;
+    [self refreshSelectedTypeOfVenues];
+    //        });
+    //    });
+    //    dispatch_release(queue);
+
     NSIndexPath *selectedIndexPath = [self.listView indexPathForSelectedRow];
     [self.listView deselectRowAtIndexPath:selectedIndexPath animated:animated];
     self.favoritedRetailVenues = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]];

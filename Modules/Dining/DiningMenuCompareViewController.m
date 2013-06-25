@@ -277,7 +277,7 @@ typedef enum {
     NSPredicate *pred;
     NSDate *mealTime;
     
-    pred = [NSPredicate predicateWithFormat:@"name == %@ AND startTime >= %@ AND startTime <= %@", ref.name, [ref.date startOfDay], [ref.date endOfDay]];
+    pred = [NSPredicate predicateWithFormat:@"name ==[c] %@ AND startTime >= %@ AND startTime <= %@", ref.name, [ref.date startOfDay], [ref.date endOfDay]];
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:NO];    // want earliest meal to be last item in results
     NSArray *currentMeals = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred sortDescriptors:@[sort]];
     if (currentMeals) {
@@ -371,7 +371,7 @@ typedef enum {
         NSInteger nextMealIndex = (pointerIndex + direction) % [MEAL_ORDER count];
         newMealPointer = MEAL_ORDER[nextMealIndex];
         
-        queryResults = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:[NSPredicate predicateWithFormat:@"name == %@ AND startTime >= %@ AND startTime <= %@", newMealPointer, [newDatePointer startOfDay], [newDatePointer endOfDay]]];
+        queryResults = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:[NSPredicate predicateWithFormat:@"name ==[c] %@ AND startTime >= %@ AND startTime <= %@", newMealPointer, [newDatePointer startOfDay], [newDatePointer endOfDay]]];
     }
     
     return [MealReference referenceWithMealName:newMealPointer onDate:[[queryResults lastObject] startTime]];

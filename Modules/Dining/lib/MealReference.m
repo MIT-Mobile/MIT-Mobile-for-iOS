@@ -16,7 +16,7 @@
 
 + (DiningMeal *) mealForReference:(MealReference *)reference atVenueWithShortName:(NSString *)venueShortName
 {
-    NSPredicate *pred = [NSPredicate predicateWithFormat:@"name == %@ AND startTime >= %@ AND endTime <= %@ AND day.houseVenue.shortName == %@", reference.name, [reference.date startOfDay], [reference.date endOfDay], venueShortName];
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"name ==[c] %@ AND startTime >= %@ AND endTime <= %@ AND day.houseVenue.shortName == %@", reference.name, [reference.date startOfDay], [reference.date endOfDay], venueShortName];
     NSArray *results = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred];
     return [results lastObject];    // should never be more than 1 result (name is unique for a particular date)
 }

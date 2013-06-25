@@ -14,10 +14,15 @@
 @dynamic items;
 
 + (DiningMeal *)newMealWithDictionary:(NSDictionary* )dict {
+    // Meals need to have a name and either a message or both a start and end time.
+    if (!dict[@"name"] || !((dict[@"start_time"] && dict[@"end_time"]) || dict[@"message"])) {
+        return nil;
+    }
+    
     DiningMeal *meal = [CoreDataManager insertNewObjectForEntityForName:@"DiningMeal"];
     
     if (dict[@"name"]) {
-        meal.name = dict[@"name"];
+        meal.name = [dict[@"name"] lowercaseString];
     }
     
     if (dict[@"message"]) {

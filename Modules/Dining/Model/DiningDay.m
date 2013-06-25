@@ -25,16 +25,18 @@
     
     for (NSDictionary *mealDict in dict[@"meals"]) {
         DiningMeal *meal = [DiningMeal newMealWithDictionary:mealDict];
-        [day addMealsObject:meal];
-        
-        // adjust all of the start and end times to be complete dates and times to make querying easier
-        
-        if (meal.startTime && meal.endTime) {
-            NSDate *dayDate = day.date;
-
-            meal.startTime = [dayDate dateWithTimeOfDayFromDate:meal.startTime];
-
-            meal.endTime = [dayDate dateWithTimeOfDayFromDate:meal.endTime];
+        if (meal) {
+            [day addMealsObject:meal];
+            
+            // adjust all of the start and end times to be complete dates and times to make querying easier
+            
+            if (meal.startTime && meal.endTime) {
+                NSDate *dayDate = day.date;
+                
+                meal.startTime = [dayDate dateWithTimeOfDayFromDate:meal.startTime];
+                
+                meal.endTime = [dayDate dateWithTimeOfDayFromDate:meal.endTime];
+            }
         }
     }
     
@@ -96,7 +98,7 @@
 
 - (DiningMeal *)mealWithName:(NSString *)name
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name == %@", name];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name ==[c] %@", name];
     return [[[self.meals set] filteredSetUsingPredicate:predicate] anyObject];
 }
 

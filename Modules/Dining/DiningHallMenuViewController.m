@@ -61,7 +61,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     _mealRef = mealRef;
     // update current meal to closest meal to meal ref.
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:YES];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"day.houseVenue.name == %@ AND startTime >= %@", self.venue.name, mealRef.date];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"day.houseVenue.name ==[c] %@ AND startTime >= %@", self.venue.name, mealRef.date];
     NSArray *results = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:predicate sortDescriptors:@[sort]];
     
     if ([results count]) {
@@ -402,7 +402,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 - (void) pageLeft
 {
-    NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:self.currentMeal.name] : 0;   // if currentMeal is null, pretend we are first meal of day
+    NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:[self.currentMeal.name lowercaseString]] : 0;   // if currentMeal is null, pretend we are first meal of day
     NSInteger mealIndex = (self.currentMeal) ? [self.currentDay.meals indexOfObject:self.currentMeal] : 0;
     if (orderIndex == 0 || [self.currentDay.meals count] == 1 || mealIndex == 0) {
         // need to get last meal of previous day, or nil if previous day has no meals
