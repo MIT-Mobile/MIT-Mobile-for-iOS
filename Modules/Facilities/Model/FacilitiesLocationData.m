@@ -23,6 +23,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
 @interface FacilitiesLocationData ()
 @property (nonatomic,strong) NSOperationQueue* requestQueue;
+@property (nonatomic,strong) NSOperationQueue* updateQueue;
 @property (nonatomic,strong) NSMutableDictionary* notificationBlocks;
 
 // Keeps track of any pending blocks which should be fired off
@@ -63,7 +64,10 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     
     if (self) {
         self.requestQueue = [[NSOperationQueue alloc] init];
-        self.requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
+        self.requestQueue.maxConcurrentOperationCount = 1;
+        
+        self.updateQueue = [[NSOperationQueue alloc] init];
+        self.updateQueue.maxConcurrentOperationCount = 1;
         
         self.notificationBlocks = [NSMutableDictionary dictionary];
     }
@@ -371,12 +375,11 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         NSString *blkCommand = operation.command;
         NSDictionary *parameters = operation.parameters;
-        dispatch_queue_t handlerQueue = dispatch_queue_create(NULL, 0);
         
         if (error) {
             DDLogError(@"Request failed with error: %@",[error localizedDescription]);
         } else {
-            dispatch_async(handlerQueue, ^(void) {
+            [self.updateQueue addOperationWithBlock:^{
                 if ([blkCommand isEqualToString:FacilitiesCategoriesKey]) {
                     [self loadCategoriesWithArray:(NSArray*)content];
                 } else if ([blkCommand isEqualToString:FacilitiesLocationsKey]) {
@@ -394,24 +397,25 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
                     
                     [self loadRoomsWithData:roomData];
                 }
+            }];
             
-                BOOL shouldUpdateDate = !([blkCommand isEqualToString:FacilitiesRoomsKey] && [parameters objectForKey:@"building"]);
-                
-                if (shouldUpdateDate) {
-                    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
-                    [dict setObject:[NSDate date]
-                             forKey:blkCommand];
-                    [[NSUserDefaults standardUserDefaults] setObject:dict
-                                                              forKey:FacilitiesFetchDatesKey];
-                    [[NSUserDefaults standardUserDefaults] synchronize];
-                }
-                
-                [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
-                                     withUserData:blkCommand
-                                 newDataAvailable:YES];
-            });
+            [self.updateQueue waitUntilAllOperationsAreFinished];
+            [[CoreDataManager coreDataManager] saveData];
             
-            dispatch_release(handlerQueue);
+            BOOL shouldUpdateDate = !([blkCommand isEqualToString:FacilitiesRoomsKey] && [parameters objectForKey:@"building"]);
+            
+            if (shouldUpdateDate) {
+                NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
+                [dict setObject:[NSDate date]
+                         forKey:blkCommand];
+                [[NSUserDefaults standardUserDefaults] setObject:dict
+                                                          forKey:FacilitiesFetchDatesKey];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+            }
+            
+            [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
+                                 withUserData:blkCommand
+                             newDataAvailable:YES];
         }
     };
 
@@ -713,18 +717,41 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 }
 
 - (void)loadRepairTypesWithArray:(NSArray*)typeData {
-    CoreDataManager *cdm = [CoreDataManager coreDataManager];
-    [cdm deleteObjectsForEntity:@"FacilitiesRepairType"];
+    NSManagedObjectContext *context = [[CoreDataManager coreDataManager] managedObjectContext];
+    NSMutableArray *newTypes = [typeData mutableCopy];
+    NSMutableDictionary *repairTypes = [[NSMutableDictionary alloc] init];
     
-    NSInteger index = 0;
-    for (NSString *type in typeData) {
-        FacilitiesRepairType *repairType = [cdm insertNewObjectForEntityForName:@"FacilitiesRepairType"];
-        repairType.name = type;
-        repairType.order = [NSNumber numberWithInteger:index];
-        ++index;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"FacilitiesRepairType"];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order"
+                                                                   ascending:YES]];
+    
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest
+                                                     error:nil];
+    
+    for (FacilitiesRepairType *object in fetchedObjects) {
+        if ([typeData containsObject:object.name] == NO) {
+            [context deleteObject:object];
+        } else if (repairTypes[object.name]) {
+            // Fix for an issue that popped up in earlier releases (pre-3.4)
+            // where the contents may be repeated several times. If we already
+            // have an object for a certain repair type, nuke any others that
+            // we encounter.
+            [context deleteObject:object];
+        } else {
+            object.order = @([typeData indexOfObject:object.name]);
+            repairTypes[object.name] = object;
+            [newTypes removeObject:object.name];
+        }
     }
     
-    [cdm saveData];
+    for (NSString *repairType in newTypes) {
+        FacilitiesRepairType *object = [NSEntityDescription insertNewObjectForEntityForName:@"FacilitiesRepairType"
+                                                                     inManagedObjectContext:context];
+        object.name = repairType;
+        object.order = @([typeData indexOfObject:repairType]);
+    }
+    
+    [[CoreDataManager coreDataManager] saveData];
 }
 
 #pragma mark - Server request management
