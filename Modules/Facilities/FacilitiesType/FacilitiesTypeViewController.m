@@ -90,7 +90,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    if (self.observerToken != nil) {
+    if (self.observerToken == nil) {
         self.observerToken = [[FacilitiesLocationData sharedData] addUpdateObserver:^(NSString *name, BOOL dataUpdated, id userData) {
                                                    if ([userData isEqualToString:FacilitiesRepairTypesKey]) {
                                                        [self.loadingView removeFromSuperview];
