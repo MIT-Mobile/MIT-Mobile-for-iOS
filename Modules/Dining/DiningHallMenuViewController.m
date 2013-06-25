@@ -467,7 +467,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     NSArray * days = [[self.venue.menuDays allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES]]];
     NSInteger mealIndex = [self.currentDay.meals indexOfObject:self.currentMeal];
     
-    if ([days indexOfObject:self.currentDay] == 0 && mealIndex == 0) {
+    if ([days indexOfObject:self.currentDay] == 0 && (mealIndex == NSNotFound || mealIndex == 0)) {
         return NO;
     }
     return YES;
@@ -478,7 +478,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     NSArray * days = [[self.venue.menuDays allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]]];
     NSInteger mealIndex = [self.currentDay.meals indexOfObject:self.currentMeal];
     
-    if ([days indexOfObject:self.currentDay] == 0 && mealIndex == [self.currentDay.meals count] - 1) {
+    if ([days indexOfObject:self.currentDay] == 0 && (mealIndex == NSNotFound || mealIndex >= [self.currentDay.meals count] - 1)) {
         return NO;
     }
     
