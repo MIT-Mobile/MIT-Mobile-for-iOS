@@ -97,7 +97,7 @@
         return [summaries componentsJoinedByString:@", "];
     }
     else {
-        return @"Closed";
+        return @"Closed for the day";
     }
 }
 
