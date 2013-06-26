@@ -1,7 +1,7 @@
 #import "ShuttleDataManager.h"
 #import "ShuttleRoute.h"
 #import "ShuttleStop.h"
-#import "ShuttleRouteStop.h"
+#import "ShuttleRouteStop2.h"
 #import "CoreDataManager.h"
 #import "MITConstants.h"
 #import "MobileRequestOperation.h"
@@ -16,9 +16,9 @@ static ShuttleDataManager* s_dataManager = nil;
 -(void) sendRouteToDelegates:(ShuttleRoute *)route forRouteID:(NSString*)routeID;
 
 - (ShuttleRoute *)shuttleRouteWithID:(NSString *)routeID;
-- (ShuttleRouteCache *)routeCacheWithID:(NSString *)routeID;
+- (ShuttleRouteCache2 *)routeCacheWithID:(NSString *)routeID;
 - (ShuttleStop *)stopWithRoute:(NSString *)routeID stopID:(NSString *)stopID error:(NSError **)error;
-- (ShuttleStopLocation *)stopLocationWithID:(NSString *)stopID;
+- (ShuttleStopLocation2 *)stopLocationWithStop:(ShuttleStop *)stop;
 
 @end
 
@@ -73,7 +73,7 @@ NSString * const shuttleStopPath = @"/stops/";
         [sort release];
         DDLogVerbose(@"%d routes cached", [cachedRoutes count]);
         
-        for (ShuttleRouteCache *cachedRoute in cachedRoutes) {
+        for (ShuttleRouteCache2 *cachedRoute in cachedRoutes) {
             NSString *routeID = cachedRoute.routeID;
             ShuttleRoute *route = [[ShuttleRoute alloc] initWithCache:cachedRoute];
             DDLogVerbose(@"fetched route %@ from core data", route.routeID);
@@ -92,7 +92,7 @@ NSString * const shuttleStopPath = @"/stops/";
 	NSArray *routeStops = [CoreDataManager objectsForEntity:ShuttleRouteStopEntityName
 										  matchingPredicate:[NSPredicate predicateWithFormat:@"TRUEPREDICATE"]];
 	NSMutableArray *stops = [NSMutableArray arrayWithCapacity:[routeStops count]];
-	for (ShuttleRouteStop *routeStop in routeStops) {
+	for (ShuttleRouteStop2 *routeStop in routeStops) {
 		ShuttleStop *stop = [[[ShuttleStop alloc] initWithRouteStop:routeStop] autorelease];
 		[stops addObject:stop];
 	}
@@ -110,20 +110,20 @@ NSString * const shuttleStopPath = @"/stops/";
 	return [_shuttleRoutesByID objectForKey:routeID];
 }
 
-+ (ShuttleRouteCache *)routeCacheWithID:(NSString *)routeID
++ (ShuttleRouteCache2 *)routeCacheWithID:(NSString *)routeID;
 {
 	return [[ShuttleDataManager sharedDataManager] routeCacheWithID:routeID];
 }
 
-- (ShuttleRouteCache *)routeCacheWithID:(NSString *)routeID
+- (ShuttleRouteCache2 *)routeCacheWithID:(NSString *)routeID;
 {
 	NSPredicate *pred = [NSPredicate predicateWithFormat:@"routeID LIKE %@", routeID];
 	NSArray *routeCaches = [CoreDataManager objectsForEntity:ShuttleRouteEntityName matchingPredicate:pred];
-	ShuttleRouteCache *routeCache = nil;
+	ShuttleRouteCache2 *routeCache = nil;
 	if ([routeCaches count] == 0) {
 		NSManagedObject *newRoute = [CoreDataManager insertNewObjectForEntityForName:ShuttleRouteEntityName];
 		[newRoute setValue:routeID forKey:@"routeID"];
-		routeCache = (ShuttleRouteCache *)newRoute;
+		routeCache = (ShuttleRouteCache2 *)newRoute;
 	} else {
 		routeCache = [routeCaches lastObject];
 	}
@@ -149,7 +149,9 @@ NSString * const shuttleStopPath = @"/stops/";
         
         if (stop == nil) {
             DDLogVerbose(@"attempting to create new ShuttleStop for stop %@ on route %@", stopID, routeID);
-            ShuttleStopLocation *stopLocation = [self stopLocationWithID:stopID];
+            ShuttleStop *newStop = [[ShuttleStop alloc] init];
+            newStop.stopID = stopID;
+            ShuttleStopLocation2 *stopLocation = [self stopLocationWithStop:newStop];
             stop = [[[ShuttleStop alloc] initWithStopLocation:stopLocation routeID:routeID] autorelease];
         }
         
@@ -164,12 +166,12 @@ NSString * const shuttleStopPath = @"/stops/";
 	return stop;
 }
 
-+ (ShuttleStopLocation *)stopLocationWithID:(NSString *)stopID
++ (ShuttleStopLocation2 *)stopLocationWithStop:(ShuttleStop *)stop
 {
-	return [[ShuttleDataManager sharedDataManager] stopLocationWithID:stopID];
+	return [[ShuttleDataManager sharedDataManager] stopLocationWithStop:stop];
 }
 
-- (ShuttleStopLocation *)stopLocationWithID:(NSString *)stopID
+- (ShuttleStopLocation2 *)stopLocationWithStop:(ShuttleStop *)stop
 {
 	if (_stopLocations == nil) {
 		// populate stop cache in memory
@@ -179,20 +181,25 @@ NSString * const shuttleStopPath = @"/stops/";
 		NSPredicate *matchAll = [NSPredicate predicateWithFormat:@"TRUEPREDICATE"];
 		NSArray *stopLocations = [CoreDataManager objectsForEntity:ShuttleStopEntityName matchingPredicate:matchAll];
 		
-		for (ShuttleStopLocation *stopLocation in stopLocations) {
+		for (ShuttleStopLocation2 *stopLocation in stopLocations) {
 			NSString *stopID = [stopLocation stopID];
 			[_stopLocations addObject:stopLocation];
 			[_stopLocationsByID setObject:stopLocation forKey:stopID];
 		}
 	}
 	
-	ShuttleStopLocation *stopLocation = [_stopLocationsByID objectForKey:stopID];
+	ShuttleStopLocation2 *stopLocation = [_stopLocationsByID objectForKey:stop.stopID];
+  
 	if (stopLocation == nil) {
 		NSManagedObject *newStopLocation = [CoreDataManager insertNewObjectForEntityForName:ShuttleStopEntityName];
-		[newStopLocation setValue:stopID forKey:@"stopID"];
-		stopLocation = (ShuttleStopLocation *)newStopLocation;	
+		[newStopLocation setValue:stop.stopID forKey:@"stopID"];
+        stopLocation = (ShuttleStopLocation2 *)newStopLocation;
+        stopLocation.title = stop.title;
+        stopLocation.latitude = [NSNumber numberWithDouble: stop.latitude];
+        stopLocation.longitude = [NSNumber numberWithDouble: stop.longitude];
 		[_stopLocations addObject:stopLocation];
-		[_stopLocationsByID setObject:stopLocation forKey:stopID];
+		[_stopLocationsByID setObject:stopLocation forKey:stop.stopID];
+        [CoreDataManager saveData];
 	}
 	return stopLocation;
 }

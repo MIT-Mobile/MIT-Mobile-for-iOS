@@ -60,7 +60,7 @@
     [super viewDidLoad];
 
 	if (_route.stops == nil) {
-    //    [_route getStopsFromCache];
+        [_route getStopsFromCache];
 	}
     
     self.title = @"Route";

@@ -7,8 +7,8 @@
 #import <Foundation/Foundation.h>
 #import "ShuttleRoute.h"
 
-@class ShuttleStopLocation;
-@class ShuttleRouteStop;
+@class ShuttleStopLocation2;
+@class ShuttleRouteStop2;
 
 @interface ShuttleStop : NSObject {
 	
@@ -18,8 +18,8 @@
 //	BOOL _upcoming;
 //	NSArray *_predictions;
 
-	ShuttleStopLocation *_stopLocation;
-	ShuttleRouteStop *_routeStop;
+	ShuttleStopLocation2 *_stopLocation;
+	ShuttleRouteStop2 *_routeStop;
     
     
     // NEW API
@@ -40,8 +40,8 @@
 - (void)updateInfo:(NSDictionary *)stopInfo;
 
 - (id)initWithDictionary:(NSDictionary *)dict;
-- (id)initWithRouteStop:(ShuttleRouteStop *)routeStop;
-- (id)initWithStopLocation:(ShuttleStopLocation *)stopLocation routeID:(NSString *)routeID;
+- (id)initWithRouteStop:(ShuttleRouteStop2 *)routeStop;
+- (id)initWithStopLocation:(ShuttleStopLocation2 *)stopLocation routeID:(NSString *)routeID;
 
 /// methods from RouteStopSchedule
 
@@ -61,7 +61,7 @@
 //@property (nonatomic, readonly) NSString* routeID;
 @property (nonatomic, retain) NSArray* path;                    // not needed
 @property (nonatomic, assign) NSInteger order;                  // not needed
-@property (nonatomic, retain) ShuttleRouteStop *routeStop;
+@property (nonatomic, retain) ShuttleRouteStop2 *routeStop;
 
 //@property NSTimeInterval nextScheduled;
 //@property NSTimeInterval now;

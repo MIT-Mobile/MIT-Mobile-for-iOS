@@ -1,9 +1,9 @@
 #import "ShuttleRoute.h"
 #import "ShuttleStop.h" 
 #import "ShuttleStopMapAnnotation.h"
-#import "ShuttleStopLocation.h"
+#import "ShuttleStopLocation2.h"
 #import "ShuttleLocation.h"
-#import "ShuttleRouteStop.h"
+#import "ShuttleRouteStop2.h"
 #import "ShuttleDataManager.h"
 #import "CoreDataManager.h"
 #import "ShuttleVehicle.h"
@@ -23,7 +23,6 @@
 //@dynamic title;
 @dynamic summary;
 //@dynamic interval;
-@dynamic isSafeRide;
 //@dynamic stops;
 //@dynamic routeID;
 @dynamic sortOrder;
@@ -58,12 +57,12 @@
 }
 
 - (NSString *)summary {
-	return self.cache.summary;
+	return self.cache.descriptionText;
 }
 
 - (void)setSummary:(NSString *)summary {
 	if (summary != nil && self.cache != nil)
-		self.cache.summary = summary;
+		self.cache.descriptionText = summary;
 }
 
 - (NSString *)routeID {
@@ -89,13 +88,13 @@
 		self.cache.interval = [NSNumber numberWithInt:interval];
 }
 
-- (BOOL)isSafeRide {
-	return [self.cache.isSafeRide boolValue];
+- (NSString *)group {
+	return self.cache.group;
 }
 
-- (void)setIsSafeRide:(BOOL)isSafeRide {
+- (void)setGroup:(NSString *)group {
 	if (self.cache != nil)
-		self.cache.isSafeRide = [NSNumber numberWithBool:isSafeRide];
+		self.cache.group = group;
 }
 
 - (NSMutableArray *)stops {
@@ -104,33 +103,31 @@
 
 - (void)setStops:(NSMutableArray *)stops {
 	
-	BOOL pathShouldUpdate = NO;
-	
 	if (_stopAnnotations == nil) {
 		_stopAnnotations = [[NSMutableArray alloc] initWithCapacity:[stops count]];
-		pathShouldUpdate = YES;
-	}
-	
-	if (_pathLocations == nil) {
-		pathShouldUpdate = YES;
 	}
 	
 	NSMutableArray *newStops = [NSMutableArray array];
-//	BOOL hasNewStops = NO;
-//    BOOL pathChanged = NO;
-	
-	NSMutableSet *oldRouteStops = [[NSMutableSet alloc] initWithSet:self.cache.stops];
-//	NSMutableSet *newRouteStops = [NSMutableSet setWithCapacity:[stops count]];
+    
+	BOOL hasNewStops = NO;
+    
+    NSMutableSet *oldRouteStops;
+    NSLog(@"cache.stops = %@", self.cache.stops);
+	if (self.cache.stops) {
+        oldRouteStops = [[NSMutableSet alloc] initWithSet:self.cache.stops];
+    } else {
+        oldRouteStops = [[NSMutableSet alloc] init];
+    }
+    
+	NSMutableSet *newRouteStops = [NSMutableSet setWithCapacity:[stops count]];
 	
 	NSInteger order = 0;
 	for (NSDictionary *stopInfo in stops) {
 		ShuttleStop *shuttleStop = [[ShuttleStop alloc] initWithDictionary:stopInfo];
         
-        ShuttleStopMapAnnotation* annotation = [[[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop] autorelease];
-        [_stopAnnotations addObject:annotation];
+//        ShuttleStopMapAnnotation* annotation = [[[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop] autorelease];
+//        [_stopAnnotations addObject:annotation];
         
-        // TODO: add check for old stops
-        /*
 		BOOL isOldStop = NO;
 		
 		NSString *stopID = [stopInfo objectForKey:@"id"];
@@ -145,8 +142,8 @@
 		}
 		
 		if (!isOldStop) {
-			ShuttleStopLocation *stopLocation = [ShuttleDataManager stopLocationWithID:stopID];				
-			shuttleStop = [[[ShuttleStop alloc] initWithStopLocation:stopLocation routeID:self.routeID] autorelease];
+			ShuttleStopLocation2 *stopLocation = [ShuttleDataManager stopLocationWithStop:shuttleStop];
+            shuttleStop = [[ShuttleStop alloc] initWithStopLocation:stopLocation routeID:self.routeID];
 			
 			[newRouteStops addObject:shuttleStop.routeStop];
 			
@@ -155,17 +152,6 @@
 
 			hasNewStops = YES;
 		}
-         */
-		
-        // TODO: move to somewhere else. Stops has no path anymore.
-        /*
-        NSArray *newPath = [stopInfo objectForKey:@"path"];
-        if (newPath == nil) { newPath = [NSArray array]; }
-        if ([shuttleStop.path isEqualToArray: newPath] == NO) {
-            pathChanged = YES;
-        }
-         */
-        
         
 		[shuttleStop updateInfo:stopInfo];
 		[newStops addObject:shuttleStop];
@@ -177,39 +163,17 @@
     _stops = [newStops retain];
     [self calculateUpcoming];
 	
-    // TODO: work with cached stops. Don't have this functionality yet.
-    /*
-	// check if we added new stops or shouldn't include old ones
-	if (pathChanged || hasNewStops || [_stops count] > [stops count]) {
-		
+    // check if we added new stops or shouldn't include old ones
+    
+	if (hasNewStops || [_stops count] > [stops count]) {
 		_stops = [newStops retain];
-		
 		// prune cached stops no longer on the route
 		self.cache.stops = newRouteStops;
 		[oldRouteStops minusSet:newRouteStops];
         DDLogVerbose(@"deleting route stops: %@", [oldRouteStops description]);
 		[CoreDataManager deleteObjects:[oldRouteStops allObjects]];
-		
-		pathShouldUpdate = YES;
 	}
-     
-	if (pathShouldUpdate) {
-		// get rid of obsolete map annotations
-		NSMutableArray *oldStops = [[NSMutableArray alloc] initWithCapacity:[stops count]];
-		for (ShuttleStopMapAnnotation *annotation in _stopAnnotations) {
-			if (![_stops containsObject:annotation.shuttleStop]) {
-				[oldStops addObject:annotation];
-			}
-		}
-		for (ShuttleStopMapAnnotation *annotation in oldStops) {
-			[_stopAnnotations removeObject:annotation];
-		}
-		[oldStops release];
-		
-		[self updatePath];
-	}
-     */
-	
+    
 	[oldRouteStops release];
 }
 
@@ -336,7 +300,10 @@
     if (path)
     {
         _path= [[ShuttleRoutePath alloc] initWithDictionary:path];
-    }
+        if (![path isEqualToDictionary: self.cache.path]){
+            self.cache.path = path;
+        }
+    }    
 }
 
 - (void)getStopsFromCache
@@ -355,7 +322,7 @@
 	NSArray *sortedStops = [[cachedStops allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];		
 	[sortDescriptor release];
 	
-	for (ShuttleRouteStop *routeStop in sortedStops) {
+	for (ShuttleRouteStop2 *routeStop in sortedStops) {
         NSError *error;
 		ShuttleStop *shuttleStop = [ShuttleDataManager stopWithRoute:self.routeID stopID:[routeStop stopID] error:&error]; // should always be nil
 		if (shuttleStop == nil) {
@@ -409,7 +376,7 @@
     return self;
 }
 
-- (id)initWithCache:(ShuttleRouteCache *)cachedRoute
+- (id)initWithCache:(ShuttleRouteCache2 *)cachedRoute
 {
     if (self != nil) {
 		self.cache = cachedRoute;

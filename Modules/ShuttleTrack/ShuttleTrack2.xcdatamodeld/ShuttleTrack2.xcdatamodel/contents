@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2061" systemVersion="12C3103" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="ShuttleRouteCache2" representedClassName="ShuttleRouteCache2" syncable="YES">
+        <attribute name="descriptionText" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="group" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="interval" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="path" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="routeID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sortOrder" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="stops" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ShuttleRouteStop2" inverseName="route" inverseEntity="ShuttleRouteStop2" syncable="YES"/>
+    </entity>
+    <entity name="ShuttleRouteStop2" representedClassName="ShuttleRouteStop2" syncable="YES">
+        <attribute name="order" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="route" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleRouteCache2" inverseName="stops" inverseEntity="ShuttleRouteCache2" syncable="YES"/>
+        <relationship name="stopLocation" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleStopLocation2" inverseName="routeStops" inverseEntity="ShuttleStopLocation2" syncable="YES"/>
+    </entity>
+    <entity name="ShuttleStopLocation2" representedClassName="ShuttleStopLocation2" syncable="YES">
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="stopID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="routeStops" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ShuttleRouteStop2" inverseName="stopLocation" inverseEntity="ShuttleRouteStop2" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="ShuttleRouteCache2" positionX="-207" positionY="36" width="128" height="163"/>
+        <element name="ShuttleRouteStop2" positionX="9" positionY="-54" width="128" height="88"/>
+        <element name="ShuttleStopLocation2" positionX="261" positionY="71" width="128" height="118"/>
+    </elements>
+</model>

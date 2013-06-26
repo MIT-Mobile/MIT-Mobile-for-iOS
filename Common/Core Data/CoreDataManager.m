@@ -112,7 +112,7 @@
     [modelSet addObject:@"PeopleDataModel"];
     [modelSet addObject:@"News"];
     [modelSet addObject:@"Emergency"];
-    [modelSet addObject:@"ShuttleTrack"];
+    [modelSet addObject:@"ShuttleTrack2"];
     [modelSet addObject:@"Calendar"];
     [modelSet addObject:@"CampusMap"];
     [modelSet addObject:@"Tours"];

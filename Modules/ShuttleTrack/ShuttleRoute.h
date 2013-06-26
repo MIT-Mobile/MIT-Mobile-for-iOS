@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "MITMapRoute.h"
-#import "ShuttleRouteCache.h"
+#import "ShuttleRouteCache2.h"
 #import "ShuttleRoutePath.h"
 
 #define DAYTIME_SHUTTLES        @"Daytime Shuttles"
@@ -12,7 +12,7 @@
     BOOL _gpsActive;
     BOOL _isRunning;
 	BOOL _liveStatusFailed;
-	ShuttleRouteCache *_cache;
+	ShuttleRouteCache2 *_cache;
 
 //    NSMutableArray *_stops;
 	
@@ -42,7 +42,7 @@
 }
 
 - (id)initWithDictionary:(NSDictionary *)dict;
-- (id)initWithCache:(ShuttleRouteCache *)cachedRoute;
+- (id)initWithCache:(ShuttleRouteCache2 *)cachedRoute;
 - (void)updateInfo:(NSDictionary *)routeInfo;
 - (NSString *)trackingStatus;
 - (void)getStopsFromCache;
@@ -55,13 +55,12 @@
 @property (assign) BOOL gpsActive;
 @property (assign) BOOL isRunning;
 @property (assign) BOOL liveStatusFailed;
-@property (readwrite, retain) ShuttleRouteCache *cache;
+@property (readwrite, retain) ShuttleRouteCache2 *cache;
 
 //@property (readwrite, retain) NSString *title;
 @property (readwrite, retain) NSString *summary;
 //@property (nonatomic, retain) NSString *routeID;
 //@property (assign) NSInteger interval;
-@property (assign) BOOL isSafeRide;
 //@property (readwrite, retain) NSMutableArray *stops;
 @property (assign) NSInteger sortOrder;
 

@@ -1,9 +1,11 @@
 #import <Foundation/Foundation.h>
+#import "ShuttleRouteCache2.h"
+#import "ShuttleStopLocation2.h"
 
 @class ShuttleStop;
 @class ShuttleRoute;
-@class ShuttleRouteCache;
-@class ShuttleStopLocation;
+//@class ShuttleRouteCache2;
+//@class ShuttleStopLocation2;
 
 @protocol ShuttleDataManagerDelegate<NSObject>
 
@@ -58,9 +60,9 @@
 - (NSArray *)shuttleStops;
 
 + (ShuttleRoute *)shuttleRouteWithID:(NSString *)routeID;
-+ (ShuttleRouteCache *)routeCacheWithID:(NSString *)routeID;
++ (ShuttleRouteCache2 *)routeCacheWithID:(NSString *)routeID;
 + (ShuttleStop *)stopWithRoute:(NSString *)routeID stopID:(NSString *)stopID error:(NSError **)error;
-+ (ShuttleStopLocation *)stopLocationWithID:(NSString *)stopID;
++ (ShuttleStopLocation2 *)stopLocationWithStop:(ShuttleStop *)stop;
 
 // delegate registration and unregistration
 -(void) registerDelegate:(id<ShuttleDataManagerDelegate>)delegate;

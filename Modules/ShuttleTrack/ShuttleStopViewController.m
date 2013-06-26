@@ -93,7 +93,7 @@
 
 	_shuttleStopSchedules = [[NSMutableArray alloc] initWithCapacity:[self.shuttleStop.routeStops count]];
     // make sure selected route is sorted first
-	for (ShuttleRouteStop *routeStop in self.shuttleStop.routeStops) {
+	for (ShuttleRouteStop2 *routeStop in self.shuttleStop.routeStops) {
         NSError *error = nil;
         ShuttleStop *aStop = [ShuttleDataManager stopWithRoute:[routeStop routeID] stopID:[routeStop stopID] error:&error];
         if ([[routeStop routeID] isEqualToString:self.shuttleStop.routeID]) {

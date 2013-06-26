@@ -1,8 +1,8 @@
 #import "ShuttleStop.h"
 #import "CoreDataManager.h"
 #import "ShuttleDataManager.h"
-#import "ShuttleStopLocation.h"
-#import "ShuttleRouteStop.h"
+#import "ShuttleStopLocation2.h"
+#import "ShuttleRouteStop2.h"
 #import "ShuttleRoute.h"
 #import "ShuttlePrediction.h"
 
@@ -163,36 +163,38 @@
 	return self;
 }
 
-- (id)initWithRouteStop:(ShuttleRouteStop *)routeStop
+- (id)initWithRouteStop:(ShuttleRouteStop2 *)routeStop
 {
 	self = [super init];
 	if (self != nil) {
 		self.routeStop = routeStop;
-//		_stopLocation = (ShuttleStopLocation *)self.routeStop.stopLocation;
+//		_stopLocation = (ShuttleStopLocation2 *)self.routeStop.stopLocation;
 		
 	}
 	return self;
 }
 
 
-- (id)initWithStopLocation:(ShuttleStopLocation *)stopLocation routeID:(NSString *)routeID
+- (id)initWithStopLocation:(ShuttleStopLocation2 *)stopLocation routeID:(NSString *)routeID
 {
 	self = [super init];
 	if (self != nil) {
 		_stopLocation = stopLocation;
 		
-		NSPredicate *pred = [NSPredicate predicateWithFormat:@"(route.routeID LIKE %@) AND (stopLocation.stopID LIKE %@)", routeID, self.stopID];
-		NSArray *routeStops = [CoreDataManager objectsForEntity:ShuttleRouteStopEntityName matchingPredicate:pred];
+		NSPredicate *pred = [NSPredicate predicateWithFormat:@"(route.routeID LIKE %@) AND (stopLocation.stopID LIKE %@)", routeID, stopLocation.stopID];
+        NSArray *routeStops = [CoreDataManager objectsForEntity:ShuttleRouteStopEntityName matchingPredicate:pred];
 		
 		if ([routeStops count] == 0) {
 			
-			self.routeStop = (ShuttleRouteStop *)[CoreDataManager insertNewObjectForEntityForName:ShuttleRouteStopEntityName];
+			self.routeStop = (ShuttleRouteStop2 *)[CoreDataManager insertNewObjectForEntityForName:ShuttleRouteStopEntityName];
 			self.routeStop.route = (NSManagedObject *)[ShuttleDataManager shuttleRouteWithID:routeID].cache;
 			self.routeStop.stopLocation = _stopLocation;
             [CoreDataManager saveData];
 		} else {
 			
 			self.routeStop = [routeStops lastObject];
+            
+            self.title = stopLocation.title;
 		}
 	}
 	return self;
