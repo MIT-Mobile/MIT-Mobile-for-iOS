@@ -39,7 +39,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         self.descriptionHtmlFormatString = @"<html>"
         "<head>"
         "<style type=\"text/css\" media=\"screen\">"
-        "body { margin: 0; padding: 0; font-family: Helvetica; font-size: 13px; } "
+        "body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 13px; } "
         "</style>"
         "</head>"
         "<body id=\"content\">"
@@ -212,7 +212,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
 
 - (UIFont *) detailTextLabelFont
 {
-    return [UIFont fontWithName:@"Helvetica" size:13];
+    return [UIFont systemFontOfSize:13];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -231,7 +231,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     
     // configure cells style for everything but description cell (which is handled in css)
     cell.textLabel.textColor = [UIColor darkTextColor];
-    cell.textLabel.font   = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    cell.textLabel.font   = [UIFont boldSystemFontOfSize:11];
     
     cell.detailTextLabel.font = [self detailTextLabelFont];
     cell.detailTextLabel.numberOfLines = 0;

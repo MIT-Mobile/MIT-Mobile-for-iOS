@@ -34,7 +34,7 @@
 	htmlFormatString = [@"<html>"
 						"<head>"
 						"<style type=\"text/css\" media=\"screen\">"
-						"body { margin: 0; padding: 0; font-family: Helvetica; font-size: 17px; } "
+						"body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 17px; } "
 						"</style>"
 						"</head>"
 						"<body>"
