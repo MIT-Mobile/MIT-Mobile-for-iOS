@@ -93,7 +93,12 @@
             [summaries addObject:summary];
         }
     }
-    return [summaries componentsJoinedByString:@", "];
+    if ([summaries count] > 0) {
+        return [summaries componentsJoinedByString:@", "];
+    }
+    else {
+        return @"Closed";
+    }
 }
 
 - (DiningMeal *)mealWithName:(NSString *)name
