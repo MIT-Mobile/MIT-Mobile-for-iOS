@@ -219,13 +219,18 @@ static NSString * const WCHoldingAvailableKey = @"available";
     return object;
 }
 
-- (NSString *)stringFromDict:(NSDictionary *)dict key:(NSString *)key {
-    id object = [dict objectForKey:key];
-    if (![object isKindOfClass:[NSString class]]) {
-        DDLogWarn(@"key %@ key not string", key);
+- (NSString *)stringFromDict:(NSDictionary *)dict key:(NSString *)key
+{
+    id object = dict[key];
+    
+    if (object == nil) {
+        object = nil;
+    } else if (![object isKindOfClass:[NSString class]]) {
+        DDLogWarn(@"object for key '%@' is a '%@', expected a string", key, [object class]);
         self.parseFailure = YES;
-        return nil;
+        object = nil;
     }
+    
     return object;
 }
 
