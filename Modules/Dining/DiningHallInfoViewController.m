@@ -192,9 +192,9 @@
         if (!cell) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:CellIdentifier];
         }
-        cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+        cell.textLabel.font = [UIFont boldSystemFontOfSize:12];
         cell.textLabel.textColor = [UIColor darkTextColor];
-        cell.detailTextLabel.font = [UIFont fontWithName:@"Helvetica" size:13];
+        cell.detailTextLabel.font = [UIFont systemFontOfSize:13];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
         if (indexPath.section == _locationSectionIndex) {

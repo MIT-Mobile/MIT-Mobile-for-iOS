@@ -27,7 +27,7 @@ static const NSInteger lineHeight = 16;
         self.spanLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 66, 12)];        // height set for single line of text
         self.spanLabel.backgroundColor  = [UIColor clearColor];
         self.spanLabel.numberOfLines    = 1;
-        self.spanLabel.font             = [UIFont fontWithName:@"Helvetica-Bold" size:13];
+        self.spanLabel.font             = [UIFont boldSystemFontOfSize:13];
         self.spanLabel.textAlignment    = NSTextAlignmentRight;
         [self.contentView addSubview:self.spanLabel];
         
@@ -36,14 +36,14 @@ static const NSInteger lineHeight = 16;
         self.scheduleLabelMeals = [[UILabel alloc] initWithFrame:frame];
         self.scheduleLabelMeals.backgroundColor     = [UIColor clearColor];
         self.scheduleLabelMeals.numberOfLines       = 0;
-        self.scheduleLabelMeals.font                = [UIFont fontWithName:@"Helvetica" size:14];
+        self.scheduleLabelMeals.font                = [UIFont systemFontOfSize:14];
         self.scheduleLabelMeals.textAlignment       = NSTextAlignmentLeft;
         [self.contentView addSubview:self.scheduleLabelMeals];
         
         self.scheduleLabelTimes = [[UILabel alloc] initWithFrame:frame];
         self.scheduleLabelTimes.backgroundColor     = [UIColor clearColor];
         self.scheduleLabelTimes.numberOfLines       = 0;
-        self.scheduleLabelTimes.font                = [UIFont fontWithName:@"Helvetica" size:14];
+        self.scheduleLabelTimes.font                = [UIFont systemFontOfSize:14];
         self.scheduleLabelTimes.textAlignment       = NSTextAlignmentRight;
         [self.contentView addSubview:self.scheduleLabelTimes];
     }

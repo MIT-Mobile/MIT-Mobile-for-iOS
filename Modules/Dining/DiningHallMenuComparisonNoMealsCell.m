@@ -16,7 +16,7 @@
         self.primaryLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, frame.size.width, frame.size.height)];
         self.primaryLabel.backgroundColor = [UIColor clearColor];
         self.primaryLabel.textAlignment = NSTextAlignmentCenter;
-        self.primaryLabel.font = [UIFont fontWithName:@"Helvetica" size:10];
+        self.primaryLabel.font = [UIFont systemFontOfSize:10];
         [self addSubview:self.primaryLabel];
     }
     return self;
