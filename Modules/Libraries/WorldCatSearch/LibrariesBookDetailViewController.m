@@ -55,9 +55,14 @@ typedef enum {
     self.tableView.backgroundView = nil;
     self.tableView.backgroundColor = [UIColor colorWithWhite:0.88
                                                        alpha:1.0];
+    
     self.activityView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
-    self.activityView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    self.activityView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                          UIViewAutoresizingFlexibleWidth);
+    self.activityView.backgroundColor = [UIColor colorWithWhite:0.88
+                                                          alpha:1.0];
     [self.view addSubview:self.activityView];
+    
     [self loadBookDetails];
 }
 
