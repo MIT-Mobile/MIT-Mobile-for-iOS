@@ -48,11 +48,13 @@ typedef enum {
 }
 
 #pragma mark - View lifecycle
-
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.tableView.backgroundColor = [UIColor clearColor];
+    
+    self.tableView.backgroundView = nil;
+    self.tableView.backgroundColor = [UIColor colorWithWhite:0.88
+                                                       alpha:1.0];
     self.activityView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
     self.activityView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:self.activityView];
