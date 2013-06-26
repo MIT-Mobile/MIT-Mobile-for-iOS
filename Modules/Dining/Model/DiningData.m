@@ -67,7 +67,11 @@
 }
 
 - (NSDictionary *)fetchData {
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"dining-sample" ofType:@"json" inDirectory:@"dining"];
+    static NSInteger i = 0;
+    NSArray *samplePaths = @[@"dining-sample-1", @"dining-sample-2"];
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:samplePaths[i] ofType:@"json" inDirectory:@"dining"];
+    // Uncomment this line to make the app load a different data set each time the main dining view appears.
+    //    i = (i + 1) % 2;
     NSData *jsonData = [NSData dataWithContentsOfFile:filePath];
     NSError *error = nil;
     NSDictionary *parsedData = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
@@ -78,36 +82,5 @@
         return parsedData;
     }
 }
-
-//- (void)loadDebugData {
-//    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"dining-sample" ofType:@"json" inDirectory:@"dining"];
-//    NSData *jsonData = [NSData dataWithContentsOfFile:filePath];
-//    NSError *error = nil;
-//    id sampleData = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];
-//    if (error) {
-//        NSLog(@"Houston we have a problem. Sample Data not initialized from local file.");
-//    } else {
-//        [CoreDataManager clearDataForAttribute:@"HouseVenue"];
-//        [CoreDataManager clearDataForAttribute:@"RetailVenue"];
-//        [CoreDataManager saveData];
-//        [self importData:sampleData];
-//        [CoreDataManager saveData];
-//    }
-//}
-
-//- (void)importData:(NSDictionary *)parsedJSON {
-//    if ([parsedJSON respondsToSelector:@selector(objectForKey:)]) {
-//        NSMutableArray *venues = [NSMutableArray array];
-//        for (NSDictionary *venueDict in parsedJSON[@"venues"][@"house"]) {
-//            [venues addObject:[HouseVenue newVenueWithDictionary:venueDict]];
-//        }
-//        venues = [NSMutableArray array];
-//        for (NSDictionary *venueDict in parsedJSON[@"venues"][@"retail"]) {
-//            [venues addObject:[RetailVenue newVenueWithDictionary:venueDict]];
-//        }
-//    } else {
-//        DDLogError(@"Dining JSON is not a dictionary.");
-//    }
-//}
 
 @end
