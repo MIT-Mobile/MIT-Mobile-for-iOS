@@ -231,7 +231,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     
     // configure cells style for everything but description cell (which is handled in css)
     cell.textLabel.textColor = [UIColor darkTextColor];
-    cell.textLabel.font   = [UIFont boldSystemFontOfSize:11];
+    cell.textLabel.font   = [UIFont boldSystemFontOfSize:12];
     
     cell.detailTextLabel.font = [self detailTextLabelFont];
     cell.detailTextLabel.numberOfLines = 0;
@@ -251,7 +251,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
             existingWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, self.descriptionHeight)];
             existingWebView.delegate = self;
             existingWebView.tag = 42;
-            existingWebView.dataDetectorTypes = UIDataDetectorTypeAll;
+            existingWebView.dataDetectorTypes = UIDataDetectorTypeLink | UIDataDetectorTypePhoneNumber | UIDataDetectorTypeAddress;
             [cell.contentView addSubview:existingWebView];
             existingWebView.scrollView.scrollsToTop = NO;
         }
