@@ -82,6 +82,10 @@
     for (DiningDay *day in daysInWeek) {
         
         NSArray *daySchedule = [self scheduleInfoForDiningDay:day];
+        if (![daySchedule count]) {
+            daySchedule = @[@{@"mealName": @"Closed", @"mealSpan" : @""}];
+        }
+        
         if (!previousDay) {
             // first run through
             // set span start and end to the same thing, add daySchedule
@@ -238,7 +242,7 @@
 {
     if (indexPath.section == _scheduleSectionIndex) {
         NSDictionary *rowSchedule = self.scheduleInfo[indexPath.row];
-        return [DiningHallInfoScheduleCell heightForCellWithScheduleInfo:rowSchedule[@"meals"]];
+        return MAX([DiningHallInfoScheduleCell heightForCellWithScheduleInfo:rowSchedule[@"meals"]], 44);
     }
     return 44;
 }

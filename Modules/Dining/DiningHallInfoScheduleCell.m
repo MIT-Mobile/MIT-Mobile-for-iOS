@@ -17,7 +17,7 @@
 
 @implementation DiningHallInfoScheduleCell
 
-static const NSInteger lineHeight = 16;
+static const NSInteger lineHeight = 17;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -57,8 +57,14 @@ static const NSInteger lineHeight = 16;
     CGFloat height = [self.scheduleInfo count] * lineHeight;
     CGRect frame = self.scheduleLabelTimes.frame;
     frame.size.height = height;
+    CGFloat topPadding = (CGRectGetHeight(self.bounds) - CGRectGetHeight(frame)) * 0.5;
+    frame.origin.y = topPadding - 2;
     self.scheduleLabelTimes.frame = frame;
     self.scheduleLabelMeals.frame = frame;
+    
+    CGRect spanFrame = self.spanLabel.frame;
+    spanFrame.origin.y = topPadding;
+    self.spanLabel.frame = spanFrame;
 }
 
 - (void) setStartDate:(NSDate *)startDate andEndDate:(NSDate *)endDate
@@ -88,7 +94,7 @@ static const NSInteger lineHeight = 16;
     self.scheduleLabelTimes.text = self.timesColumn;
 }
 
-- (NSString *) formatStringforDaySpan
+- (NSString *) formatStringforDaySpan 
 {
     if (!self.startDate) {
         return @"";
