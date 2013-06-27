@@ -40,6 +40,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         "<head>"
         "<style type=\"text/css\" media=\"screen\">"
         "body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 13px; } "
+        "a { color: #990000; }"
         "</style>"
         "</head>"
         "<body id=\"content\">"
@@ -254,7 +255,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
             existingWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, self.descriptionHeight)];
             existingWebView.delegate = self;
             existingWebView.tag = 42;
-            existingWebView.dataDetectorTypes = UIDataDetectorTypeAll;
+            existingWebView.dataDetectorTypes = UIDataDetectorTypeLink | UIDataDetectorTypePhoneNumber | UIDataDetectorTypeAddress;
             [cell.contentView addSubview:existingWebView];
             existingWebView.scrollView.scrollsToTop = NO;
         }
