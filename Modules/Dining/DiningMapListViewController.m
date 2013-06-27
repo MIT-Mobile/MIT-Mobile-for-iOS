@@ -576,7 +576,7 @@
     label.text = [self titleForHeaderInSection:section];
     
     if ([self.favoritedRetailVenues count] && section == 0) {
-        UIImageView *favIcon = [[UIImageView alloc] initWithFrame:CGRectMake(10, 3, 18, 18)];
+        UIImageView *favIcon = [[UIImageView alloc] initWithFrame:CGRectMake(9, 2, 18, 18)];
         favIcon.image = [UIImage imageNamed:@"dining/bookmark_selected"];
         label.frame = CGRectMake(CGRectGetMaxX(favIcon.frame) + 3, 0, CGRectGetWidth(view.bounds) - (CGRectGetMaxX(favIcon.frame) + 10), 25);  // shift label to the right
         [view addSubview:favIcon];
