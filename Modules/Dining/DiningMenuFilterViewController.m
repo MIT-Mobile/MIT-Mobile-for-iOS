@@ -40,7 +40,7 @@
         [self.delegate applyFilters:self.selectedFilters];
     }
     
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 - (void)viewDidLoad

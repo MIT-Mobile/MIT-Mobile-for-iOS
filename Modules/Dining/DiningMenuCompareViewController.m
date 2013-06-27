@@ -86,10 +86,17 @@ typedef enum {
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"shortName" ascending:YES];
     NSArray *houseVenues = [CoreDataManager objectsForEntity:@"HouseVenue" matchingPredicate:nil sortDescriptors:@[sort]];
     self.houseVenueSections = [houseVenues valueForKey:@"shortName"];
-    
+
     // The scrollview has a frame that is just larger than the viewcontrollers view bounds so that padding can be seen between scrollable pages.
     // Frames are also inverted (height => width, width => height) because when the view loads the rotation has not yet occurred.
-    CGRect frame = CGRectMake(-DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds) + (DAY_VIEW_PADDING * 2), CGRectGetWidth(self.view.bounds));
+    CGRect frame;
+    if ([[[[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."] objectAtIndex:0] integerValue] >= 6) {
+        frame = CGRectMake(-DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds) + (DAY_VIEW_PADDING * 2), CGRectGetWidth(self.view.bounds));
+    } else {
+        // iOS 5 and iOS 6 differ on the size of the status bar at this point in time.
+        CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+        frame = CGRectMake(-DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds) + (DAY_VIEW_PADDING * 2) + statusBarHeight, CGRectGetWidth(self.view.bounds) - statusBarHeight);
+    }
     
     self.sectionSubtitleFormatter = [[NSDateFormatter alloc] init];
     [self.sectionSubtitleFormatter setAMSymbol:@"am"];
@@ -97,15 +104,16 @@ typedef enum {
     
     self.scrollView = [[UIScrollView alloc] initWithFrame:frame];
     self.scrollView.delegate = self;
-    self.scrollView.contentSize = CGSizeMake((DAY_VIEW_PADDING * 6) + (CGRectGetHeight(self.view.bounds) * 3), CGRectGetWidth(self.view.bounds));
+    self.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.scrollView.bounds) * 3, CGRectGetHeight(self.scrollView.bounds));
     self.scrollView.pagingEnabled = YES;
     self.scrollView.showsHorizontalScrollIndicator = NO;
     
     [self.view addSubview:self.scrollView];
     
-	self.previous = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
-    self.current = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.previous.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
-    self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds))];
+    CGSize comparisonSize = CGSizeMake(CGRectGetWidth(self.scrollView.bounds) - (DAY_VIEW_PADDING * 2), CGRectGetHeight(self.scrollView.bounds));
+	self.previous = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(DAY_VIEW_PADDING, 0, comparisonSize.width, comparisonSize.height)];
+    self.current = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.previous.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height)];
+    self.next = [[DiningHallMenuCompareView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.current.frame) + (DAY_VIEW_PADDING * 2), 0, comparisonSize.width, comparisonSize.height)];
                                                                         // (viewPadding * 2) is used because each view has own padding, so there are 2 padded spaces to account for
     
     self.previous.delegate = self;
@@ -141,16 +149,6 @@ typedef enum {
 }
 
 #pragma mark - Rotation
-- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration
-{
-    if (UIInterfaceOrientationIsPortrait(orientation)) {
-        [self.delegate mealController:self didUpdateMealReference:[self visibleMealReference]];
-        
-        self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        [self dismissModalViewControllerAnimated:YES];
-    }
-}
-
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
     if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
