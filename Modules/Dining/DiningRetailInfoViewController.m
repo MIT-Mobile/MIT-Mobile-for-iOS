@@ -40,6 +40,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         "<head>"
         "<style type=\"text/css\" media=\"screen\">"
         "body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 13px; } "
+        "a { color: #990000; }"
         "</style>"
         "</head>"
         "<body id=\"content\">"
@@ -79,6 +80,9 @@ static NSString * sHomePageURLKey       = @"homepageURL";
                                         [weakHeaderView layoutIfNeeded];
                                     }];
     self.headerView.titleLabel.text = self.venue.name;
+    CGRect frame = self.headerView.accessoryButton.frame;
+    frame.origin = CGPointMake(frame.origin.x - 10, frame.origin.y - 15);
+    self.headerView.accessoryButton.frame = frame;
     [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/bookmark"] forState:UIControlStateNormal];
     [self.headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/bookmark_selected"] forState:UIControlStateSelected];
     [self.headerView.accessoryButton addTarget:self action:@selector(favoriteButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
