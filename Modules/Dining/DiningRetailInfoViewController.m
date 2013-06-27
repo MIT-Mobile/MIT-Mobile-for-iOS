@@ -253,6 +253,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
             existingWebView.tag = 42;
             existingWebView.dataDetectorTypes = UIDataDetectorTypeAll;
             [cell.contentView addSubview:existingWebView];
+            existingWebView.scrollView.scrollsToTop = NO;
         }
         existingWebView.frame = CGRectMake(10, 10, CGRectGetWidth(cell.bounds) - 40, self.descriptionHeight);
         [existingWebView loadHTMLString:[NSString stringWithFormat:self.descriptionHtmlFormatString, self.venue.descriptionHTML] baseURL:nil];

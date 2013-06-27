@@ -605,6 +605,7 @@
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     webView.delegate = self;
     webView.tag = WEB_VIEW_TAG;
+    webView.scrollView.scrollsToTop = NO;
 	
 	// prevent webView from scrolling separately from the parent scrollview
 	for (id subview in webView.subviews) {

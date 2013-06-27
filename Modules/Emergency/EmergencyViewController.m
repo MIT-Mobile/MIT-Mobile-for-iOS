@@ -31,6 +31,7 @@
 	infoWebView.delegate = self;
 	infoWebView.dataDetectorTypes = UIDataDetectorTypeAll;
 	infoWebView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    infoWebView.scrollView.scrollsToTop = NO;
 	htmlFormatString = [@"<html>"
 						"<head>"
 						"<style type=\"text/css\" media=\"screen\">"
@@ -227,7 +228,8 @@
                 existingWebView = [[UIWebView alloc] initWithFrame:infoWebView.frame];
                 existingWebView.delegate = self;
                 existingWebView.tag = 42;
-                infoWebView.dataDetectorTypes = UIDataDetectorTypeAll;
+                existingWebView.dataDetectorTypes = UIDataDetectorTypeAll;
+                existingWebView.scrollView.scrollsToTop = NO;
                 [cell.contentView addSubview:existingWebView];
                 [existingWebView release];
             }

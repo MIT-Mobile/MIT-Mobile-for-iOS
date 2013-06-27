@@ -71,7 +71,7 @@
     NSArray *samplePaths = @[@"dining-sample-1", @"dining-sample-2"];
     NSString *filePath = [[NSBundle mainBundle] pathForResource:samplePaths[i] ofType:@"json" inDirectory:@"dining"];
     // Uncomment this line to make the app load a different data set each time the main dining view appears.
-    //    i = (i + 1) % 2;
+    i = (i + 1) % 2;
     NSData *jsonData = [NSData dataWithContentsOfFile:filePath];
     NSError *error = nil;
     NSDictionary *parsedData = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&error];

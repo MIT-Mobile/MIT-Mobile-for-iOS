@@ -239,6 +239,7 @@ LocationsHoursTableRows;
                     // Make web view background transparent.
                     self.contentWebView.backgroundColor = [UIColor clearColor];
                     self.contentWebView.opaque = NO;
+                    self.contentWebView.scrollView.scrollsToTop = NO;
                     
                     [self.contentWebView loadHTMLString:[self contentHtml] baseURL:nil];
                     [cell.contentView addSubview:self.contentWebView];

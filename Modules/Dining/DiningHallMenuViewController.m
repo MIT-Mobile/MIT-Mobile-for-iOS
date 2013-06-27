@@ -53,7 +53,8 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 - (void) updateMealReference
 {
-    _mealRef = [MealReference referenceWithMealName:self.currentMeal.name onDate:self.currentMeal.day.date];
+    NSDate *date = (self.currentMeal) ? self.currentMeal.day.date : self.currentDay.date;
+    _mealRef = [MealReference referenceWithMealName:self.currentMeal.name onDate:date];
 }
 
 - (void) setMealRef:(MealReference *)mealRef
@@ -409,11 +410,10 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         NSDate *dayBefore = (self.currentDay) ? [self.currentDay.date dayBefore] : [self.currentDate dayBefore];
         self.currentDay = [self.venue dayForDate:dayBefore];
         self.currentDate = dayBefore;
-        self.currentMeal = nil;
-        if (self.currentDay) {
-            if ([self.currentDay.meals count]) {
-                self.currentMeal = [self.currentDay.meals lastObject];  // get last meal in day
-            }
+        if (self.currentDay && [self.currentDay.meals count] > 0) {
+            self.currentMeal = [self.currentDay.meals lastObject];  // get last meal in day
+        } else {
+            self.currentMeal = nil;
         }
     } else {
         // need to get previous meal in same day
@@ -433,18 +433,17 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 - (void) pageRight
 {
-    NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:self.currentMeal.name] : [MEAL_ORDER count] - 1; // if currentMeal is null, pretend we are last meal of day
+    NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:[self.currentMeal.name lowercaseString]] : [MEAL_ORDER count] - 1; // if currentMeal is null, pretend we are last meal of day
     NSInteger mealIndex = (self.currentMeal) ? [self.currentDay.meals indexOfObject:self.currentMeal] : 0;
     if (orderIndex == [MEAL_ORDER count] - 1 || [self.currentDay.meals count] == 1 || mealIndex == [self.currentDay.meals count] - 1) {
         // need to get first meal of next day, or nil if next day has no meals
         NSDate *dayAfter = (self.currentDay) ? [self.currentDay.date dayAfter] : [self.currentDate dayAfter];
         self.currentDay = [self.venue dayForDate:dayAfter];
         self.currentDate = dayAfter;
-        self.currentMeal = nil;
-        if (self.currentDay) {
-            if ([self.currentDay.meals count]) {
-                self.currentMeal = self.currentDay.meals[0];  // get last meal in day
-            }
+        if (self.currentDay && [self.currentDay.meals count] > 0) {
+            self.currentMeal = self.currentDay.meals[0];  // get last meal in day
+        } else {
+            self.currentMeal = nil;
         }
     } else {
         DiningMeal * meal = nil;

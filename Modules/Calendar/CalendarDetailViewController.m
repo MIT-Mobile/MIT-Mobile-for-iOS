@@ -387,13 +387,7 @@
             CGRect frame = CGRectMake(WEB_VIEW_PADDING, WEB_VIEW_PADDING, self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING, webViewHeight);
             if (!webView) {
                 webView = [[UIWebView alloc] initWithFrame:frame];
-				
-				// prevent webView from scrolling separately from the parent scrollview
-				for (id subview in webView.subviews) {
-					if ([[subview class] isSubclassOfClass: [UIScrollView class]]) {
-						((UIScrollView *)subview).bounces = NO;
-					}
-				}
+				webView.scrollView.scrollsToTop = NO;
 				
                 webView.delegate = self;
                 [webView loadHTMLString:self.descriptionString
@@ -417,13 +411,7 @@
                                       self.categoriesHeight);
             if (!webView) {
                 webView = [[UIWebView alloc] initWithFrame:frame];
-				
-				// prevent webView from scrolling separately from the parent scrollview
-				for (id subview in webView.subviews) {
-					if ([[subview class] isSubclassOfClass: [UIScrollView class]]) {
-						((UIScrollView *)subview).bounces = NO;
-					}
-				}
+                webView.scrollView.scrollsToTop = NO;
 				
                 [webView loadHTMLString:self.categoriesString
                                 baseURL:nil];

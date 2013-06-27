@@ -93,6 +93,7 @@
         existingWebView.delegate = self;
         existingWebView.tag = 42;
         existingWebView.dataDetectorTypes = UIDataDetectorTypeLink | UIDataDetectorTypePhoneNumber | UIDataDetectorTypeAddress;
+        existingWebView.scrollView.scrollsToTop = NO;
         [cell.contentView addSubview:existingWebView];
     }
     existingWebView.frame = CGRectMake(self.webViewInsets.left, self.webViewInsets.top, CGRectGetWidth(cell.bounds) - systemHPadding - self.webViewInsets.right, self.htmlHeight);
