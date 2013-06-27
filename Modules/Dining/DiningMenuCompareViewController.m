@@ -151,6 +151,14 @@ typedef enum {
     }
 }
 
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
+        return YES;
+    }
+    return NO;
+}
+
 #pragma mark - Model methods
 
 - (void) loadData
