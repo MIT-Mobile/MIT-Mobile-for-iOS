@@ -109,9 +109,9 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     }];
     
     if ([self.venue isOpenNow]) {
-        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
+        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#009900"];
     } else {
-        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
+        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#d20000"];
     }
     headerView.timeLabel.text = [self.currentDay statusStringRelativeToDate:[NSDate fakeDateForDining]];
     

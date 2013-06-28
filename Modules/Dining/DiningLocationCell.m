@@ -44,7 +44,7 @@ static CGFloat textWidth = 180;
 
 - (UIColor *) textColorForOpenStatus
 {
-    return (self.statusOpen) ? [UIColor colorWithHexString:@"#008800"] : [UIColor colorWithHexString:@"#bb0000"];
+    return (self.statusOpen) ? [UIColor colorWithHexString:@"#009900"] : [UIColor colorWithHexString:@"#d20000"];
 }
 
 - (NSString *) textForOpenStatus

@@ -89,9 +89,9 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     self.headerView.accessoryButton.selected = [self.venue.favorite boolValue];
     
     if ([self.venue isOpenNow]) {
-        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
+        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#009900"];
     } else {
-        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
+        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#d20000"];
     }
     
     RetailDay *currentDay = [self.venue dayForDate:[NSDate fakeDateForDining]];
