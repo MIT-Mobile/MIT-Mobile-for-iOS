@@ -75,7 +75,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 {
     [super viewDidLoad];
     [self.tableView applyStandardColors];
-    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
+    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
     
     NSArray *defaultFilterNames = [[NSUserDefaults standardUserDefaults] objectForKey:DiningFiltersUserDefaultKey];
     self.filtersApplied = (defaultFilterNames)?[DiningDietaryFlag flagsFromNames:defaultFilterNames]:nil;

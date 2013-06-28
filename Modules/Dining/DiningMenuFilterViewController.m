@@ -47,7 +47,7 @@
 {
     [super viewDidLoad];
     [self.tableView applyStandardColors];
-    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
+    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
     
     self.title = @"Filters";
     self.tableView.rowHeight = 44;

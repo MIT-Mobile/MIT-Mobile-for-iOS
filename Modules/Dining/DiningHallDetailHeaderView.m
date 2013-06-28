@@ -17,7 +17,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
+        self.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
         
         // dimensions derived from https://jira.mit.edu/jira/secure/attachment/26097/house+menu.pdf
         self.iconView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 44, 44)];
