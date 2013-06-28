@@ -49,8 +49,8 @@
 @end
 
 #define STANDARD_PADDING 10
-#define ICON_SQUARE 12
-#define ICON_PADDING 3
+#define ICON_SQUARE 16
+#define ICON_PADDING 4
 
 @implementation DiningHallMenuComparisonCell
 
@@ -70,7 +70,7 @@
         self.secondaryLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.secondaryLabel.font = [DiningHallMenuComparisonCell fontForSecondaryLabel];
         
-        self.typeContainer = [[UIView alloc] initWithFrame:CGRectMake( CGRectGetWidth(frame) - 22, STANDARD_PADDING, 12, 12)]; // width is from spec, height allows for single dietray type item
+        self.typeContainer = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(frame) - (STANDARD_PADDING + ICON_SQUARE), STANDARD_PADDING, ICON_SQUARE, ICON_SQUARE)]; // width is from spec, height allows for single dietary type item
         // custom backgroundView to draw divider
         ComparisonBackgroundView *backView = [[ComparisonBackgroundView alloc] initWithFrame:frame];
         self.backgroundView = backView;
@@ -128,7 +128,7 @@
     [self layoutDietaryTypes];
     
     // reclaim the space if there are no dietary types
-    CGFloat maxWidth = ([self.dietaryTypes count]) ? CGRectGetMinX(self.typeContainer.frame) + 5 : CGRectGetWidth(self.frame);
+    CGFloat maxWidth = ([self.dietaryTypes count] > 0) ? CGRectGetMinX(self.typeContainer.frame) + 5 : CGRectGetWidth(self.frame);
     
     CGSize constrainingSize = CGSizeMake(maxWidth - (2 * STANDARD_PADDING), CGFLOAT_MAX);
     self.primaryLabel.frame = [self frameForLabel:self.primaryLabel constrainedToSize:constrainingSize];
@@ -150,13 +150,13 @@
     self.typeContainer.frame = CGRectMake(self.typeContainer.frame.origin.x, self.typeContainer.frame.origin.y, iconSquare, containerHeight);
     
     
-    CGSize iconSize = CGSizeMake(12, 12);
+    CGSize iconSize = CGSizeMake(ICON_SQUARE, ICON_SQUARE);
     int i = 0;
     for (DiningDietaryFlag *type in self.dietaryTypes) {
         UIImage *icon = [UIImage imageWithPDFNamed:type.pdfPath atSize:iconSize];
         UIImageView *imgView = [[UIImageView alloc] initWithImage:icon];
         
-        imgView.center = CGPointMake(6, 6 + ((12 + iconPadding) * i));
+        imgView.center = CGPointMake(ICON_SQUARE / 2.0, (ICON_SQUARE / 2.0) + ((ICON_SQUARE + iconPadding) * i));
         i++;
         
         [self.typeContainer addSubview:imgView];
