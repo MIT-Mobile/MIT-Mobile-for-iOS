@@ -2,6 +2,7 @@
 #import "DiningDietaryFlag.h"
 #import "UIImage+PDF.h"
 #import "Foundation+MITAdditions.h"
+#import "UIKit+MITAdditions.h"
 
 @interface DiningHallMenuSectionHeaderView ()
 
@@ -99,7 +100,7 @@
 {
     CGFloat rowHeight = 30;
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), rowHeight)];
-    view.backgroundColor = [UIColor darkGrayColor];
+    view.backgroundColor = [UIColor colorWithHexString:@"#a41f35"];
     
     
     CGFloat hPadding = 28.0;
@@ -144,7 +145,7 @@
 - (UIView *) viewForMealTime
 {
     UIView * view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), [[self class] heightForMealBar])];
-    view.backgroundColor = [UIColor darkTextColor];
+    view.backgroundColor = [UIColor colorWithHexString:@"#333333"];
     
     self.mealLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 7, CGRectGetWidth(view.bounds) - 20, 12)]; // 7px vertical padding, width is arbitrary, height matches font size
     self.mealLabel.textAlignment = NSTextAlignmentLeft;

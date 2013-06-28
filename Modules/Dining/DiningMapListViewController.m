@@ -79,8 +79,7 @@
     [super viewDidLoad];
     self.title = @"Dining";
 
-    self.view.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
-//    self.listView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
+    self.view.backgroundColor = [UIColor colorWithHexString:@"#c8cacf"];
     
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;
@@ -166,13 +165,11 @@
 - (void) toggleMapList:(id)sender
 {
     if (!self.isAnimating) {
-        NSLog(@"Toggle the Map List");
         self.navigationItem.rightBarButtonItem.title = (self.isShowingMap)? @"Map" : @"List";
         
         if (self.isShowingMap) {
             [self.listView reloadData];
             // animate to the list
-            self.listView.center = CGPointMake(self.view.center.x, self.view.center.y + CGRectGetHeight(self.view.bounds));
             [UIView animateWithDuration:0.4f animations:^{
                 [self layoutListState];
                 self.isAnimating = YES;
@@ -209,8 +206,13 @@
 
 - (void) layoutListState
 {
-    self.listTabContainerView.center = CGPointMake(self.view.center.x, 25);
-    self.mapSegmentContainerView.center = CGPointMake(self.view.center.x, 32);
+    CGRect frame = self.listTabContainerView.frame;
+    frame.origin = CGPointMake(0.0, 0.0);
+    self.listTabContainerView.frame = frame;
+    
+    frame = self.mapSegmentContainerView.frame;
+    frame.origin = CGPointMake(0.0, self.listTabContainerView.frame.origin.y + 6);
+    self.mapSegmentContainerView.frame = frame;
 
     self.mapSegmentContainerView.alpha = 0.0;
     self.listTabContainerView.alpha = 1.0;
@@ -224,10 +226,14 @@
 
 - (void) layoutMapState
 {
-    self.listTabContainerView.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 51);
-
-    self.mapSegmentContainerView.center = CGPointMake(self.view.center.x, CGRectGetHeight(self.view.bounds) - 45);
+    CGRect frame = self.listTabContainerView.frame;
+    frame.origin = CGPointMake(0.0, self.view.bounds.size.height - self.listTabContainerView.frame.size.height - 20 - 4); // 20pt padding + 4pt adjusting for the image size
+    self.listTabContainerView.frame = frame;
     
+    frame = self.mapSegmentContainerView.frame;
+    frame.origin = CGPointMake(0.0, self.listTabContainerView.frame.origin.y + 6);
+    self.mapSegmentContainerView.frame = frame;
+
     self.mapSegmentContainerView.alpha = 1.0;
     self.listTabContainerView.alpha = 0.0;
     self.mapSegmentContainerView.userInteractionEnabled = YES;
@@ -563,11 +569,10 @@
 
 - (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UIColor *bc = [UIColor colorWithHexString:@"#718fb1"];
+    UIColor *bc = [UIColor colorWithHexString:@"#a41f35"];
     
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.listView.bounds), 25)];
     view.backgroundColor = bc;
-    
     
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, CGRectGetWidth(view.bounds) - 10 , 25)];
     label.backgroundColor = bc;

@@ -66,7 +66,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
 {
     [super viewDidLoad];
     [self.tableView applyStandardColors];
-    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
+    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
     
     self.daySpanFormatter = [[NSDateFormatter alloc] init];
     [self.daySpanFormatter setDateFormat:@"EEE"];
@@ -89,9 +89,9 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     self.headerView.accessoryButton.selected = [self.venue.favorite boolValue];
     
     if ([self.venue isOpenNow]) {
-        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
+        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#009900"];
     } else {
-        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
+        self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#d20000"];
     }
     
     RetailDay *currentDay = [self.venue dayForDate:[NSDate fakeDateForDining]];
@@ -235,7 +235,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     
     // configure cells style for everything but description cell (which is handled in css)
     cell.textLabel.textColor = [UIColor darkTextColor];
-    cell.textLabel.font   = [UIFont boldSystemFontOfSize:11];
+    cell.textLabel.font   = [UIFont boldSystemFontOfSize:12];
     
     cell.detailTextLabel.font = [self detailTextLabelFont];
     cell.detailTextLabel.numberOfLines = 0;

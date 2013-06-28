@@ -75,7 +75,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 {
     [super viewDidLoad];
     [self.tableView applyStandardColors];
-    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
+    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
     
     NSArray *defaultFilterNames = [[NSUserDefaults standardUserDefaults] objectForKey:DiningFiltersUserDefaultKey];
     self.filtersApplied = (defaultFilterNames)?[DiningDietaryFlag flagsFromNames:defaultFilterNames]:nil;
@@ -109,9 +109,9 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     }];
     
     if ([self.venue isOpenNow]) {
-        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
+        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#009900"];
     } else {
-        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
+        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#d20000"];
     }
     headerView.timeLabel.text = [self.currentDay statusStringRelativeToDate:[NSDate fakeDateForDining]];
     
@@ -330,7 +330,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.textLabel.font = [UIFont systemFontOfSize:17];
-        if (self.currentMeal && [self.filtersApplied count] > 0) {
+        if (self.currentMeal && ([self.currentMeal.items count] == 0 || [self.filtersApplied count] > 0)) {
             cell.textLabel.text = @"No matching items";
         } else {
             cell.textLabel.text = @"No meals this day";
@@ -470,9 +470,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         self.currentMeal = meal;
     }
     
-        
     [self fetchItemsForMeal:self.currentMeal withFilters:self.filtersApplied];
-    self.filterBarButton.enabled = (self.currentMeal) ? YES : NO;       // enable/disable filter button if meal is valid
     [self.tableView reloadData];
 }
 

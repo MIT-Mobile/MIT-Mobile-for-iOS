@@ -45,7 +45,7 @@
 {
     [super viewDidLoad];
     [self.tableView applyStandardColors];
-    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#d4d6db"];
+    self.tableView.backgroundColor = [UIColor colorWithHexString:@"#e1e3e8"];
     [self fetchScheduleInfo];
     
     self.title = [NSString stringWithFormat:@"%@ Info", self.venue.shortName];
@@ -60,9 +60,9 @@
     }];
     
     if ([self.venue isOpenNow]) {
-        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#008800"];
+        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#009900"];
     } else {
-        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#bb0000"];
+        headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#d20000"];
     }
     DiningDay *currentDay = [self.venue dayForDate:[NSDate fakeDateForDining]];
     headerView.timeLabel.text = [currentDay statusStringRelativeToDate:[NSDate fakeDateForDining]];

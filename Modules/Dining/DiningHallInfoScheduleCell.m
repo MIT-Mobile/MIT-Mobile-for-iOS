@@ -17,53 +17,64 @@
 
 @implementation DiningHallInfoScheduleCell
 
-static const NSInteger lineHeight = 17;
-
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-        self.spanLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 66, 12)];        // height set for single line of text
+        self.spanLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 66, 0)];
         self.spanLabel.backgroundColor  = [UIColor clearColor];
         self.spanLabel.numberOfLines    = 1;
-        self.spanLabel.font             = [UIFont boldSystemFontOfSize:13];
+        self.spanLabel.font             = [[self class] labelFont];
         self.spanLabel.textAlignment    = NSTextAlignmentRight;
         [self.contentView addSubview:self.spanLabel];
         
-        
-        CGRect frame = CGRectMake(83, 9, 205, lineHeight);
+        CGRect frame = CGRectMake(83, 0, 205, 0);
         self.scheduleLabelMeals = [[UILabel alloc] initWithFrame:frame];
         self.scheduleLabelMeals.backgroundColor     = [UIColor clearColor];
         self.scheduleLabelMeals.numberOfLines       = 0;
-        self.scheduleLabelMeals.font                = [UIFont systemFontOfSize:14];
+        self.scheduleLabelMeals.font                = [[self class] detailFont];
         self.scheduleLabelMeals.textAlignment       = NSTextAlignmentLeft;
         [self.contentView addSubview:self.scheduleLabelMeals];
         
         self.scheduleLabelTimes = [[UILabel alloc] initWithFrame:frame];
         self.scheduleLabelTimes.backgroundColor     = [UIColor clearColor];
         self.scheduleLabelTimes.numberOfLines       = 0;
-        self.scheduleLabelTimes.font                = [UIFont systemFontOfSize:14];
+        self.scheduleLabelTimes.font                = [[self class] detailFont];
         self.scheduleLabelTimes.textAlignment       = NSTextAlignmentRight;
         [self.contentView addSubview:self.scheduleLabelTimes];
     }
     return self;
 }
 
++ (UIFont *)labelFont {
+    return [UIFont boldSystemFontOfSize:12];
+}
+
++ (UIFont *)detailFont {
+    return [UIFont systemFontOfSize:13];
+}
+
 - (void) layoutSubviews
 {
     [super layoutSubviews];
     
-    CGFloat height = [self.scheduleInfo count] * lineHeight;
+    UIFont *labelFont = [[self class] labelFont];
+    UIFont *detailFont = [[self class] detailFont];
+    
     CGRect frame = self.scheduleLabelTimes.frame;
-    frame.size.height = height;
-    CGFloat topPadding = (CGRectGetHeight(self.bounds) - CGRectGetHeight(frame)) * 0.5;
-    frame.origin.y = topPadding - 2;
+    frame.size.height = [self.scheduleInfo count] * [[self class] detailFont].lineHeight;
+    CGFloat topPadding = round((CGRectGetHeight(self.bounds) - CGRectGetHeight(frame)) * 0.5) - 1;
+    frame.origin.y = topPadding;
+
     self.scheduleLabelTimes.frame = frame;
     self.scheduleLabelMeals.frame = frame;
     
+    // Match the baselines between the UILabels despite their differing font sizes. Account for rounding differences on Retina displays.
     CGRect spanFrame = self.spanLabel.frame;
-    spanFrame.origin.y = topPadding;
+    const CGFloat scale = [UIScreen mainScreen].scale;
+    spanFrame.origin.y = topPadding + ceil(((detailFont.lineHeight + detailFont.descender) - (labelFont.lineHeight + labelFont.descender)) * scale) / scale;
+    spanFrame.size.height = labelFont.lineHeight;
     self.spanLabel.frame = spanFrame;
 }
 
@@ -83,7 +94,6 @@ static const NSInteger lineHeight = 17;
 
 - (void) updateScheduleStrings
 {
-    NSLog(@"%@", self.scheduleInfo);
     NSArray *meals = [self.scheduleInfo valueForKey:@"mealName"];
     self.mealsColumn = [meals componentsJoinedByString:@"\n"];
     
@@ -114,7 +124,7 @@ static const NSInteger lineHeight = 17;
 + (CGFloat) heightForCellWithScheduleInfo:(NSArray *)scheduleInfo
 {
     if ([scheduleInfo count]) {
-        return 20 + (lineHeight * [scheduleInfo count]);        // vertical padding plus size of schedule text
+        return 20 + ([self detailFont].lineHeight * [scheduleInfo count]);        // vertical padding plus size of schedule text
     }
     return 44;
 }
