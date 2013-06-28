@@ -569,11 +569,10 @@
 
 - (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UIColor *bc = [UIColor colorWithHexString:@"#718fb1"];
+    UIColor *bc = [UIColor colorWithHexString:@"#a41f35"];
     
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.listView.bounds), 25)];
     view.backgroundColor = bc;
-    
     
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, CGRectGetWidth(view.bounds) - 10 , 25)];
     label.backgroundColor = bc;

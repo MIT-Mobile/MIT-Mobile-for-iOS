@@ -27,7 +27,9 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         
         self.headerView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, HEADER_VIEW_HEIGHT)];
         self.headerView.textAlignment = UITextAlignmentCenter;
+        self.headerView.textColor = [UIColor whiteColor];
         self.headerView.font = [UIFont boldSystemFontOfSize:12];
+        self.headerView.backgroundColor = [UIColor colorWithHexString:@"#a41f35"];
         
         self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setDateFormat:@"MMMM dd"];
