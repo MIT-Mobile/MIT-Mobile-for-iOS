@@ -7,5 +7,6 @@
 
 @property (nonatomic, strong, readonly) NSString *announcementsHTML;
 @property (nonatomic, strong, readonly) NSArray *links;
+@property (nonatomic, strong, readonly) NSDate *lastUpdated;
 
 @end

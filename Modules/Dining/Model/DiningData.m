@@ -11,6 +11,12 @@
 #import "MobileRequestOperation.h"
 #import "JSON.h"
 
+@interface DiningData ()
+
+@property (nonatomic, strong, readonly) DiningRoot *root;
+
+@end
+
 @implementation DiningData
 
 + (DiningData *)sharedData {
@@ -24,16 +30,24 @@
     return _sharedData;
 }
 
-- (NSString *)announcementsHTML {
+- (DiningRoot *)root {
     // There should only be one DiningRoot
     NSArray *roots = [CoreDataManager objectsForEntity:@"DiningRoot" matchingPredicate:nil];
     DiningRoot *root = [roots lastObject];
-    return root.announcementsHTML;
+    return root;
+}
+
+- (NSString *)announcementsHTML {
+    return self.root.announcementsHTML;
 }
 
 - (NSArray *)links {
     NSArray *links = [CoreDataManager objectsForEntity:@"DiningLink" matchingPredicate:nil sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"ordinality" ascending:YES]]];
     return links;
+}
+
+- (NSDate *)lastUpdated {
+    return self.root.lastUpdated;
 }
 
 - (void)reload {
@@ -53,7 +67,11 @@
         // Delete old things
         [CoreDataManager deleteObjects:oldRoot];
         // Create new entities in Core Data
-        [DiningRoot newRootWithDictionary:latestDataDict];
+        DiningRoot *newRoot = [DiningRoot newRootWithDictionary:latestDataDict];
+        
+        if (newRoot) {
+            newRoot.lastUpdated = [NSDate date];
+        }
         
         // set favorites in new data using kept reference
         if ([favoritedNames count]) {

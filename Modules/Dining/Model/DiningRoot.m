@@ -7,6 +7,7 @@
 @implementation DiningRoot
 
 @dynamic announcementsHTML;
+@dynamic lastUpdated;
 @dynamic links;
 @dynamic houseVenues;
 @dynamic retailVenues;

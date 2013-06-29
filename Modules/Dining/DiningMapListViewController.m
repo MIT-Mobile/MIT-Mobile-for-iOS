@@ -21,6 +21,7 @@
 #import "MGSLayer.h"
 #import "MGSAnnotation.h"
 #import "MGSSimpleAnnotation.h"
+#import "UIScrollView+SVPullToRefresh.h"
 
 @interface DiningMapListViewController() <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, MGSMapViewDelegate, MGSLayerDelegate>
 
@@ -103,21 +104,41 @@
     
     self.listView.backgroundView = nil;
     
+    __weak DiningMapListViewController *weakSelf = self;
+    [self.listView addPullToRefreshWithActionHandler:^{
+        dispatch_queue_t queue = dispatch_queue_create("edu.mit.mobile.DiningData", 0);
+        dispatch_async(queue, ^(void) {
+            [[DiningData sharedData] reload];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf refreshSelectedTypeOfVenues];
+                [weakSelf updatePullToRefreshSubtitle];
+                [weakSelf.listView.pullToRefreshView stopAnimating];
+            });
+        });
+    }];
+    
+    [self.listView.pullToRefreshView setTitle:@"Pull to refresh" forState:SVPullToRefreshStateStopped];
+    [self.listView.pullToRefreshView setTitle:@"Release to refresh" forState:SVPullToRefreshStateTriggered];
+    [self.listView.pullToRefreshView setTitle:@"Loading..." forState:SVPullToRefreshStateLoading];
+    
+    [self updatePullToRefreshSubtitle];
+    
     [self layoutListState];
+    
+    [self.listView triggerPullToRefresh];
+}
+
+- (void)updatePullToRefreshSubtitle {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateStyle = NSDateFormatterMediumStyle;
+    formatter.timeStyle = NSDateFormatterShortStyle;
+    NSDate *date = [[DiningData sharedData] lastUpdated];
+    NSString *dateString = [formatter stringFromDate:date];
+    NSString *lastUpdated = [NSString stringWithFormat:@"Updated %@", dateString];
+    [self.listView.pullToRefreshView setSubtitle:lastUpdated forState:SVPullToRefreshStateAll];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    self.loading = YES;
-    //    dispatch_queue_t queue = dispatch_queue_create("edu.mit.mobile.DiningData", 0);
-    //    dispatch_async(queue, ^(void) {
-    [[DiningData sharedData] reload];
-    //        dispatch_async(dispatch_get_main_queue(), ^{
-    self.loading = NO;
-    [self refreshSelectedTypeOfVenues];
-    //        });
-    //    });
-    //    dispatch_release(queue);
-
     NSIndexPath *selectedIndexPath = [self.listView indexPathForSelectedRow];
     [self.listView deselectRowAtIndexPath:selectedIndexPath animated:animated];
     self.favoritedRetailVenues = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]];

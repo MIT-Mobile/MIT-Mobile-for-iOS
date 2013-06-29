@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2061" systemVersion="12B19" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2061" systemVersion="12E55" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="DiningDay" representedClassName="DiningDay" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
@@ -34,6 +34,7 @@
     </entity>
     <entity name="DiningRoot" representedClassName="DiningRoot" syncable="YES">
         <attribute name="announcementsHTML" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lastUpdated" attributeType="Date" syncable="YES"/>
         <relationship name="houseVenues" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="HouseVenue" inverseName="root" inverseEntity="HouseVenue" syncable="YES"/>
         <relationship name="links" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DiningLink" inverseName="root" inverseEntity="DiningLink" syncable="YES"/>
         <relationship name="retailVenues" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="RetailVenue" inverseName="root" inverseEntity="RetailVenue" syncable="YES"/>
@@ -90,7 +91,7 @@
         <element name="DiningLink" positionX="-767" positionY="-177" width="128" height="105"/>
         <element name="DiningMeal" positionX="-216" positionY="-297" width="128" height="135"/>
         <element name="DiningMealItem" positionX="-45" positionY="-342" width="128" height="135"/>
-        <element name="DiningRoot" positionX="-1035" positionY="-150" width="128" height="105"/>
+        <element name="DiningRoot" positionX="-1035" positionY="-150" width="128" height="120"/>
         <element name="HouseVenue" positionX="-711" positionY="-360" width="128" height="165"/>
         <element name="RetailDay" positionX="-477" positionY="198" width="128" height="120"/>
         <element name="RetailVenue" positionX="-738" positionY="-36" width="128" height="270"/>
