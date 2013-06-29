@@ -129,8 +129,12 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     self.navigationItem.rightBarButtonItem = self.filterBarButton;
     
     self.tableView.allowsSelection = NO;
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+}
+
+- (void) viewDidUnload
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void) infoButtonPressed:(id) sender
@@ -218,11 +222,14 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 - (void) orientationDidChange:(NSNotification *)aNotification
 {
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if (UIDeviceOrientationIsLandscape(orientation)) {
-        [self showComparisonView];
-    } else if (UIDeviceOrientationIsPortrait(orientation) && [self.modalViewController isKindOfClass:[DiningMenuCompareViewController class]]) {
-        [self dismissViewControllerAnimated:YES completion:NULL];
+    UIViewController *visibleVC = self.navigationController.visibleViewController;
+    if (visibleVC == self || [visibleVC isKindOfClass:[DiningMenuCompareViewController class]]) {
+        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+        if (UIDeviceOrientationIsLandscape(orientation)) {
+            [self showComparisonView];
+        } else if (UIDeviceOrientationIsPortrait(orientation) && [self.modalViewController isKindOfClass:[DiningMenuCompareViewController class]]) {
+            [self dismissViewControllerAnimated:YES completion:NULL];
+        }
     }
 }
 

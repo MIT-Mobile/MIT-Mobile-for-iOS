@@ -141,7 +141,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     NSIndexPath *selectedIndexPath = [self.listView indexPathForSelectedRow];
     [self.listView deselectRowAtIndexPath:selectedIndexPath animated:animated];
-    self.favoritedRetailVenues = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]];
+    self.favoritedRetailVenues = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"] sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
     [self.listView reloadData];
 }
 
