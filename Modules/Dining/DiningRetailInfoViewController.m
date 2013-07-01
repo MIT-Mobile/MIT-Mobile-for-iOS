@@ -130,7 +130,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     if (self.venue.days) {
         [usableInfoKeys addObject:sDaysKey];
     }
-    if ([self.venue.location.displayDescription length]) {
+    if (self.venue.location) {
         [usableInfoKeys addObject:sLocationKey];
     }
     
@@ -291,7 +291,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         cell.detailTextLabel.text = [self.venue.paymentMethods componentsJoinedByString:@", "];
     } else if ([currentSection isEqualToString:sLocationKey]) {
         cell.textLabel.text = @"location";
-        cell.detailTextLabel.text = self.venue.location.displayDescription;
+        cell.detailTextLabel.text = ([self.venue.location.displayDescription length]) ? self.venue.location.displayDescription : self.venue.location.roomNumber;
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
     } else if ([currentSection isEqualToString:sHomePageURLKey]) {
@@ -333,7 +333,8 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.venue.menuURL]];
     } else if ([sectionKey isEqualToString:sLocationKey]) {
         // link to map view
-        NSURL *url = [NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:self.venue.location.displayDescription];
+        NSString * query = ([self.venue.location.displayDescription length]) ? self.venue.location.displayDescription : self.venue.location.roomNumber;
+        NSURL *url = [NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:query];
         [[UIApplication sharedApplication] openURL:url];
     } else if ([sectionKey isEqualToString:sHomePageURLKey]) {
         // external url
