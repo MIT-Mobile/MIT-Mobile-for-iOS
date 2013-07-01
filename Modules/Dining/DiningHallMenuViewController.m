@@ -330,7 +330,9 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.textLabel.font = [UIFont systemFontOfSize:17];
-        if (self.currentMeal && [self.currentMeal.items count] != 0 && [self.filtersApplied count] > 0) {
+        if (!self.currentMeal) {
+            cell.textLabel.text = @"Closed";
+        } else if (self.currentMeal && [self.currentMeal.items count] != 0 && [self.filtersApplied count] > 0) {
             cell.textLabel.text = @"No matching items";
         } else {
             cell.textLabel.text = @"No meals this day";

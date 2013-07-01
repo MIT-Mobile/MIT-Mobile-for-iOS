@@ -547,7 +547,15 @@ typedef enum {
     } else {
         DiningHallMenuComparisonNoMealsCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuNoMealsCell" forIndexPath:indexPath];
         DiningMeal *meal = [MealReference mealForReference:compareView.mealRef atVenueWithShortName:self.houseVenueSections[indexPath.section]];
-        cell.primaryLabel.text = ([meal.items count])? @"no matching items" : @"no meals";
+        NSString *text;
+        if (!meal) {
+            text = @"closed";
+        } else if ([meal.items count]) {
+            text = @"no matching items";
+        } else {
+            text = @"no meals";
+        }
+        cell.primaryLabel.text = text;
         
         return cell;
     }
