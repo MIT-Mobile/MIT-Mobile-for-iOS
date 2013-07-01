@@ -68,3 +68,9 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 - (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date;
 
 @end
+
+@interface NSCalendar (MITAdditions)
+
++ (NSCalendar *)cachedCurrentCalendar;
+
+@end

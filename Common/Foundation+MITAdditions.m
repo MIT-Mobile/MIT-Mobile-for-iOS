@@ -388,7 +388,7 @@ typedef struct {
 + (NSDate *)fakeDateForDining {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateStyle:NSDateFormatterShortStyle];
-    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
     [calendar setTimeZone:[NSTimeZone defaultTimeZone]];
     NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
     components.hour = 20;
@@ -421,8 +421,8 @@ typedef struct {
 #define SECONDS_PER_DAY 24 * 60 * 60
 - (BOOL) isEqualToDateIgnoringTime: (NSDate *) aDate
 {
-	NSDateComponents *components1 = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:self];
-	NSDateComponents *components2 = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:aDate];
+	NSDateComponents *components1 = [[NSCalendar cachedCurrentCalendar] components:DATE_COMPONENTS fromDate:self];
+	NSDateComponents *components2 = [[NSCalendar cachedCurrentCalendar] components:DATE_COMPONENTS fromDate:aDate];
 	return ((components1.year == components2.year) &&
 			(components1.month == components2.month) &&
 			(components1.day == components2.day));
@@ -448,20 +448,20 @@ typedef struct {
 
 - (NSDate *) startOfDay
 {
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:self];
+    NSDateComponents *components = [[NSCalendar cachedCurrentCalendar] components:DATE_COMPONENTS fromDate:self];
     components.hour = 0;
     components.minute = 0;
     components.second = 0;
-    return [[NSCalendar currentCalendar] dateFromComponents:components];
+    return [[NSCalendar cachedCurrentCalendar] dateFromComponents:components];
 }
 
 - (NSDate *) endOfDay
 {
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:self];
+    NSDateComponents *components = [[NSCalendar cachedCurrentCalendar] components:DATE_COMPONENTS fromDate:self];
     components.hour = 23;
     components.minute = 59;
     components.second = 59;
-    return [[NSCalendar currentCalendar] dateFromComponents:components];
+    return [[NSCalendar cachedCurrentCalendar] dateFromComponents:components];
 }
 
 - (NSDate *) dayBefore
@@ -481,7 +481,7 @@ typedef struct {
  @return A compact string representation of the date's time components.
  */
 - (NSString *) MITShortTimeOfDayString {
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self];
+    NSDateComponents *components = [[NSCalendar cachedCurrentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self];
     
     NSString *minuteString = @"";
     NSString *periodString;
@@ -500,11 +500,11 @@ typedef struct {
 }
 
 - (NSDateComponents *)dayComponents {
-    return [[NSCalendar currentCalendar] components:(NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:self];
+    return [[NSCalendar cachedCurrentCalendar] components:(NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:self];
 }
 
 - (NSDateComponents *)timeComponents {
-    return [[NSCalendar currentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:self];
+    return [[NSCalendar cachedCurrentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:self];
 }
 
 /** Returns a date with its time components changed to match the input date.
@@ -521,7 +521,21 @@ typedef struct {
     components.minute = timeComponents.minute;
     components.second = timeComponents.second;
     
-    return [[NSCalendar currentCalendar] dateFromComponents:components];
+    return [[NSCalendar cachedCurrentCalendar] dateFromComponents:components];
+}
+
+@end
+
+@implementation NSCalendar (MITAdditions)
+
++ (NSCalendar *)cachedCurrentCalendar {
+    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
+    NSCalendar *currentCalendar = threadDictionary[@"MITNSCalendarCurrentCalendar"];
+    if (!currentCalendar) {
+        currentCalendar = [NSCalendar currentCalendar];
+        threadDictionary[@"MITNSCalendarCurrentCalendar"] = currentCalendar;
+    }
+    return currentCalendar;
 }
 
 @end
