@@ -15,8 +15,7 @@
     RetailDay *day = [CoreDataManager insertNewObjectForEntityForName:@"RetailDay"];
     
     // TODO: maybe make an -[NSDate dateForISO8601String:] category
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd"];
+    NSDateFormatter *formatter = [NSDateFormatter cachedFormatterWithFormat:@"yyyy-MM-dd"];
     NSDate *date = [formatter dateFromString:dict[@"date"]];
     day.date = date;
 
