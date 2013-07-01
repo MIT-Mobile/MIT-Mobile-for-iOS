@@ -529,13 +529,30 @@ typedef struct {
 @implementation NSCalendar (MITAdditions)
 
 + (NSCalendar *)cachedCurrentCalendar {
+    NSString *key = @"MIT_NSCalendar_currentCalendar";
     NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    NSCalendar *currentCalendar = threadDictionary[@"MITNSCalendarCurrentCalendar"];
+    NSCalendar *currentCalendar = threadDictionary[key];
     if (!currentCalendar) {
         currentCalendar = [NSCalendar currentCalendar];
-        threadDictionary[@"MITNSCalendarCurrentCalendar"] = currentCalendar;
+        threadDictionary[key] = currentCalendar;
     }
     return currentCalendar;
+}
+
+@end
+
+@implementation NSDateFormatter (MITAdditions)
+
++ (NSDateFormatter *)cachedFormatterWithFormat:(NSString *)format {
+    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
+    NSString *key = [NSString stringWithFormat:@"MIT_NSDateFormatter_%@", format];
+    NSDateFormatter *formatter = threadDictionary[key];
+    if (!formatter) {
+        formatter = [[NSDateFormatter alloc] init];
+        formatter.dateFormat = format;
+        threadDictionary[key] = formatter;
+    }
+    return formatter;
 }
 
 @end
