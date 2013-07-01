@@ -19,11 +19,14 @@ inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
     if ([path rangeOfString:@"/"].location != 0) {
         path = [NSString stringWithFormat:@"/%@", path];
     }
+    
     if ([query length] > 0) {
         path = [path stringByAppendingFormat:@"?%@", query];
     }
-    NSURL *url = [[NSURL alloc] initWithScheme:MITInternalURLScheme host:tag path:path];
-    return [url autorelease];
+    
+    return [[NSURL alloc] initWithScheme:MITInternalURLScheme
+                                    host:tag
+                                    path:path];
 }
 
 @end
@@ -101,12 +104,11 @@ static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
                                                     withTemplate:@"\x0D\x0A"];
     }
     
-    NSString *encodedString =  (NSString*)CFURLCreateStringByAddingPercentEscapes(NULL,
+    NSString *encodedString =  (NSString*)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
                                                                                   (CFStringRef)stringToEncode,
                                                                                   (formUrlEncoded ? CFSTR(" ") : NULL),
                                                                                   (CFStringRef)forceEscapedCharacters,
-                                                                                  CFStringConvertNSStringEncodingToEncoding(encoding));
-    [encodedString autorelease];
+                                                                                  CFStringConvertNSStringEncodingToEncoding(encoding)));
     
     if (formUrlEncoded) {
         encodedString = [encodedString stringByReplacingOccurrencesOfString:@" "
@@ -121,11 +123,10 @@ static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
 }
 
 - (NSString*)urlDecodeUsingEncoding:(NSStringEncoding)encoding {
-    NSString *decodedString = (NSString*)CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
-                                                                                                 (CFStringRef)self,
-                                                                                                 NULL,
-                                                                                                 CFStringConvertNSStringEncodingToEncoding(encoding));
-    return [decodedString autorelease];
+    return (NSString*)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
+                                                                                                (CFStringRef)self,
+                                                                                                NULL,
+                                                                                                CFStringConvertNSStringEncodingToEncoding(encoding)));
 }
 @end
 
@@ -396,8 +397,6 @@ typedef struct {
     components.month = 5;
     components.day = 3;
     
-    [formatter release];
-    
     return [calendar dateFromComponents:components];
 }
 
@@ -405,7 +404,7 @@ typedef struct {
 {
     // takes date string of format hh:mm and returns an NSDate with today's date at the specified time.
     
-    NSCalendar *cal = [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
+    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     NSDateComponents *comp = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSTimeZoneCalendarUnit fromDate:[NSDate date]];
     
     NSArray *timeComponents = [time componentsSeparatedByString:@":"];
@@ -435,14 +434,14 @@ typedef struct {
 
 - (BOOL) isTomorrow
 {
-    NSDate *tomorrow = [[[NSDate alloc] initWithTimeIntervalSinceNow:SECONDS_PER_DAY] autorelease];
+    NSDate *tomorrow = [[NSDate alloc] initWithTimeIntervalSinceNow:SECONDS_PER_DAY];
     return [self isEqualToDateIgnoringTime:tomorrow];
 }
 
 
 - (BOOL) isYesterday
 {
-    NSDate *yesterday = [[[NSDate alloc] initWithTimeIntervalSinceNow:-SECONDS_PER_DAY] autorelease];
+    NSDate *yesterday = [[NSDate alloc] initWithTimeIntervalSinceNow:-SECONDS_PER_DAY];
     return [self isEqualToDateIgnoringTime:yesterday];
 }
 
@@ -552,7 +551,7 @@ typedef struct {
         formatter.dateFormat = format;
         threadDictionary[key] = formatter;
     }
-    return [[formatter copy] autorelease];
+    return [formatter copy];
 }
 
 @end

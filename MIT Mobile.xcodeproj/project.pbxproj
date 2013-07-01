@@ -302,7 +302,7 @@
 		DE654522173D90A900562C20 /* SDWebImagePrefetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = DE654516173D90A900562C20 /* SDWebImagePrefetcher.m */; };
 		DE654523173D90A900562C20 /* UIButton+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DE654518173D90A900562C20 /* UIButton+WebCache.m */; };
 		DE654524173D90A900562C20 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DE65451A173D90A900562C20 /* UIImageView+WebCache.m */; };
-		DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */; };
 		DE6D32F610346D02008A5823 /* ShuttleModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D32F510346D02008A5823 /* ShuttleModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE6D332B10346F6D008A5823 /* ShuttleRoutes.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D332A10346F6D008A5823 /* ShuttleRoutes.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE6D570610F05C59006431A8 /* TabScrollerBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D570510F05C59006431A8 /* TabScrollerBackgroundView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
