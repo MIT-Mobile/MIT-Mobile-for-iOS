@@ -396,6 +396,8 @@ typedef struct {
     components.month = 5;
     components.day = 3;
     
+    [formatter release];
+    
     return [calendar dateFromComponents:components];
 }
 

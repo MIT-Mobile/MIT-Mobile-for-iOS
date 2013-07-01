@@ -6,6 +6,7 @@
 @interface DiningRoot : NSManagedObject
 
 @property (nonatomic, retain) NSString * announcementsHTML;
+@property (nonatomic, retain) NSDate *lastUpdated;
 @property (nonatomic, retain) NSSet *links;
 @property (nonatomic, retain) NSSet *houseVenues;
 @property (nonatomic, retain) NSSet *retailVenues;

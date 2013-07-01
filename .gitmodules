@@ -9,4 +9,7 @@
 	url = git://github.com/MIT-Mobile/PSTCollectionView.git
 [submodule "External/SDWebImage"]
 	path = External/SDWebImage
-	url = git@github.com:rs/SDWebImage.git
+	url = git@github.com:MIT-Mobile/SDWebImage.git
+[submodule "External/SVPullToRefresh"]
+	path = External/SVPullToRefresh
+	url = git@github.com:MIT-Mobile/SVPullToRefresh.git
