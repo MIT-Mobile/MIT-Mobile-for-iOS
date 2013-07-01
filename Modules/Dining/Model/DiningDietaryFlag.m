@@ -7,19 +7,27 @@
 @dynamic name;
 @dynamic items;
 
++ (NSArray *)flagNames {
+    return @[
+             @"farm to fork",
+             @"for your well-being",
+             @"halal",
+             @"humane",
+             @"in balance",
+             @"kosher",
+             @"made without gluten",
+             @"organic",
+             @"seafood watch",
+             @"vegan",
+             @"vegetarian"
+             ];
+}
+
 + (void) createDietaryFlagsInStore
 {
-    [self flagWithName:@"farm to fork"];
-    [self flagWithName:@"organic"];
-    [self flagWithName:@"seafood watch"];
-    [self flagWithName:@"vegan"];
-    [self flagWithName:@"vegetarian"];
-    [self flagWithName:@"for your well-being"];
-    [self flagWithName:@"made without gluten"];
-    [self flagWithName:@"halal"];
-    [self flagWithName:@"kosher"];
-    [self flagWithName:@"humane"];
-    [self flagWithName:@"in balance"];
+    [[self flagNames] enumerateObjectsUsingBlock:^(NSString *name, NSUInteger idx, BOOL *stop) {
+        [self flagWithName:name];
+    }];
 }
 
 + (DiningDietaryFlag *)flagWithName:(NSString *)name {
@@ -31,9 +39,9 @@
     return flag;
 }
 
-+ (NSSet *) flagsFromNames:(NSArray *)flagNames
++ (NSSet *)flagsWithNames:(NSArray *)flagNames
 {
-    NSArray *results = [CoreDataManager objectsForEntity:@"DiningDietaryFlag" matchingPredicate:[NSPredicate predicateWithFormat:@"name In %@", flagNames]];
+    NSArray *results = [CoreDataManager objectsForEntity:@"DiningDietaryFlag" matchingPredicate:[NSPredicate predicateWithFormat:@"name in %@", flagNames]];
     return [NSSet setWithArray:results];
 }
 
@@ -90,6 +98,9 @@
 
 - (NSString *)displayName {
     NSString *displayName = [DiningDietaryFlag detailsForName:self.name][@"displayName"];
+    if (!displayName) {
+        displayName = self.name;
+    }
     return displayName;
 }
 

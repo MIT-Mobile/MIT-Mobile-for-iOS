@@ -21,6 +21,6 @@
 
 + (void) createDietaryFlagsInStore;
 + (DiningDietaryFlag *)flagWithName:(NSString *)name;       // creates flag with name if it doesn't exist
-+ (NSSet *) flagsFromNames:(NSArray *)flagNames;            // returns flags in persistent store with names in array
++ (NSSet *)flagsWithNames:(NSArray *)flagNames;            // returns flags in persistent store with names in array
 
 @end
