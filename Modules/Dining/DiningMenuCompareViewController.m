@@ -286,10 +286,10 @@ typedef enum {
     pred = [NSPredicate predicateWithFormat:@"name ==[c] %@ AND startTime >= %@ AND startTime <= %@", ref.name, [ref.date startOfDay], [ref.date endOfDay]];
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:NO];    // want earliest meal to be last item in results
     NSArray *currentMeals = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred sortDescriptors:@[sort]];
-    if (currentMeals) {
+    if ([currentMeals count]) {
         mealTime = [[currentMeals  lastObject] startTime];          // get earliest meals start time. Use this to query for any meals before this start time
     } else {
-        // should never hit this else statement, but if we do, we can say it is the end of the data
+        // we have no currentMeals
         return YES;
     }
     
@@ -369,7 +369,7 @@ typedef enum {
 
             if (abs([newDatePointer timeIntervalSinceDate:self.mealRef.date]) >= (SECONDS_IN_DAY * 2)) {
                 // TODO compare view should stop on day if there are no meals but there are meals further in direction
-                return nil;
+                return [MealReference referenceWithMealName:MealReferenceEmptyMeal onDate:[self.mealRef.date dayAfter]];
                 break;
             }
         }
@@ -547,7 +547,15 @@ typedef enum {
     } else {
         DiningHallMenuComparisonNoMealsCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuNoMealsCell" forIndexPath:indexPath];
         DiningMeal *meal = [MealReference mealForReference:compareView.mealRef atVenueWithShortName:self.houseVenueSections[indexPath.section]];
-        cell.primaryLabel.text = ([meal.items count])? @"no matching items" : @"no meals";
+        NSString *text;
+        if (!meal) {
+            text = @"closed";
+        } else if ([meal.items count]) {
+            text = @"no matching items";
+        } else {
+            text = @"no meals";
+        }
+        cell.primaryLabel.text = text;
         
         return cell;
     }

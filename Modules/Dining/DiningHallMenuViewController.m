@@ -330,7 +330,9 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.textLabel.font = [UIFont systemFontOfSize:17];
-        if (self.currentMeal && ([self.currentMeal.items count] == 0 || [self.filtersApplied count] > 0)) {
+        if (!self.currentMeal) {
+            cell.textLabel.text = @"Closed";
+        } else if (self.currentMeal && [self.currentMeal.items count] != 0 && [self.filtersApplied count] > 0) {
             cell.textLabel.text = @"No matching items";
         } else {
             cell.textLabel.text = @"No meals this day";
@@ -419,7 +421,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 - (void) pageLeft
 {
-    NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:[self.currentMeal.name lowercaseString]] : 0;   // if currentMeal is null, pretend we are first meal of day
+    NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:[self.currentMeal.name lowercaseString]] : 0;   // if currentMeal is nil, pretend we are first meal of day
     NSInteger mealIndex = (self.currentMeal) ? [self.currentDay.meals indexOfObject:self.currentMeal] : 0;
     if (orderIndex == 0 || [self.currentDay.meals count] == 1 || mealIndex == 0) {
         // need to get last meal of previous day, or nil if previous day has no meals
@@ -448,7 +450,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 - (void) pageRight
 {
-    NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:[self.currentMeal.name lowercaseString]] : [MEAL_ORDER count] - 1; // if currentMeal is null, pretend we are last meal of day
+    NSInteger orderIndex = (self.currentMeal) ? [MEAL_ORDER indexOfObject:[self.currentMeal.name lowercaseString]] : [MEAL_ORDER count] - 1; // if currentMeal is nil, pretend we are last meal of day
     NSInteger mealIndex = (self.currentMeal) ? [self.currentDay.meals indexOfObject:self.currentMeal] : 0;
     if (orderIndex == [MEAL_ORDER count] - 1 || [self.currentDay.meals count] == 1 || mealIndex == [self.currentDay.meals count] - 1) {
         // need to get first meal of next day, or nil if next day has no meals

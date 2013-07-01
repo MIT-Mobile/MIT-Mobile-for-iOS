@@ -130,7 +130,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
     if (self.venue.days) {
         [usableInfoKeys addObject:sDaysKey];
     }
-    if (self.venue.location.displayDescription) {
+    if ([self.venue.location.displayDescription length]) {
         [usableInfoKeys addObject:sLocationKey];
     }
     

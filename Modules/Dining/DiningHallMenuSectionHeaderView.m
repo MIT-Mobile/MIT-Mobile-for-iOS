@@ -21,22 +21,6 @@
 
 @implementation DiningHallMenuSectionHeaderView
 
-- (NSArray *) filterImages
-{
-    return @[@{@"icon": @"farm_to_fork.pdf",    @"title" : @"Farm to Fork"},
-             @{@"icon": @"well_being.pdf",      @"title" : @"For Your Well-Being"},
-             @{@"icon": @"gluten_free.pdf",     @"title" : @"Gluten Free"},
-             @{@"icon": @"halal.pdf",           @"title" : @"Halal"},
-             @{@"icon": @"humane.pdf",          @"title" : @"Humane"},
-             @{@"icon": @"in_balance.pdf",      @"title" : @"In Balance"},
-             @{@"icon": @"kosher.pdf",          @"title" : @"Kosher"},
-             @{@"icon": @"organic.pdf",         @"title" : @"Organic"},
-             @{@"icon": @"seafood_watch.pdf",   @"title" : @"Seafood Watch"},
-             @{@"icon": @"vegan.pdf",           @"title" : @"Vegan"},
-             @{@"icon": @"vegetarian.pdf",      @"title" : @"Vegetarian"}];
-}
-
-
 - (void) setShowMealBar:(BOOL)showMealBar
 {
     _showMealBar = showMealBar;
@@ -138,6 +122,10 @@
         icon.center = CGPointMake(offset + (23 * i), 15);
         [view addSubview:icon];
     }
+    
+    UIView *hairlineDivider = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(view.bounds) - 1, CGRectGetWidth(view.bounds), 1)];
+    hairlineDivider.backgroundColor = [UIColor colorWithWhite:0.8 alpha:1.0];
+    [view addSubview:hairlineDivider];
     
     return view;
 }

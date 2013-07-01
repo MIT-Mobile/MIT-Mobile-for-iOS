@@ -3,12 +3,14 @@
 #import "CoreDataManager.h"
 #import "Foundation+MITAdditions.h"
 
+NSString * const MealReferenceEmptyMeal = @"EMPTYMEALREFERENCE";
+
 @implementation MealReference
 
 + (MealReference *) referenceWithMealName:(NSString *)name onDate:(NSDate *)date
 {
     MealReference *ref = [[MealReference alloc] init];
-    ref.name = name;
+    ref.name = (name)? name : MealReferenceEmptyMeal;
     ref.date = date;
     
     return ref;
