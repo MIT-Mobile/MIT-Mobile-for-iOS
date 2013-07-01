@@ -552,7 +552,7 @@ typedef struct {
         formatter.dateFormat = format;
         threadDictionary[key] = formatter;
     }
-    return formatter;
+    return [[formatter copy] autorelease];
 }
 
 @end
