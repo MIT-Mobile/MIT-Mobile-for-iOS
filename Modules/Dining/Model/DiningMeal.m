@@ -1,6 +1,8 @@
 #import "DiningMeal.h"
 #import "DiningDay.h"
 #import "DiningMealItem.h"
+#import "DiningDietaryFlag.h"
+#import "DiningData.h"
 #import "CoreDataManager.h"
 #import "Foundation+MITAdditions.h"
 
@@ -42,9 +44,11 @@
         meal.endTime = date;
     }
     
+    NSArray *allDietaryFlags = [DiningData sharedData].allFlags;
+    
     NSInteger i = 0;
     for (NSDictionary *itemDict in dict[@"items"]) {
-        DiningMealItem *item = [DiningMealItem newItemWithDictionary:itemDict];
+        DiningMealItem *item = [DiningMealItem newItemWithDictionary:itemDict possibleFlags:allDietaryFlags];
         item.ordinality = @(i);
         i++;
         [meal addItemsObject:item];

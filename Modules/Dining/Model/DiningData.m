@@ -14,6 +14,7 @@
 @interface DiningData ()
 
 @property (nonatomic, strong, readonly) DiningRoot *root;
+@property (nonatomic, strong) NSOperationQueue *loadingQueue;
 
 @end
 
@@ -25,6 +26,8 @@
 
     dispatch_once(&onceToken, ^{
         _sharedData = [[self alloc] init];
+        _sharedData.loadingQueue = [[NSOperationQueue alloc] init];
+        _sharedData.loadingQueue.maxConcurrentOperationCount = 1;
     });
     
     return _sharedData;
@@ -50,38 +53,45 @@
     return self.root.lastUpdated;
 }
 
-- (void)reload {
-    // Fetch data
-    NSDictionary *latestDataDict = [self fetchData];
-    
-    if (latestDataDict) {
-        // Make sure the set list of dietary flags already exist before we start parsing.
-        [DiningDietaryFlag createDietaryFlagsInStore];
+- (void)reloadAndCompleteWithBlock:(void (^)())completionBlock {
+    [self.loadingQueue addOperationWithBlock:^(void) {
+        // Fetch data
+        NSDictionary *latestDataDict = [self fetchData];
+        
+        if (latestDataDict) {
+            [[CoreDataManager managedObjectContext] processPendingChanges];
+            [[[CoreDataManager managedObjectContext] undoManager] disableUndoRegistration];
+            // Make sure the set list of dietary flags already exist before we start parsing.
+            [DiningDietaryFlag createDietaryFlagsInStore];
+            
+            self.allFlags = [CoreDataManager fetchDataForAttribute:@"DiningDietaryFlag"];
+            
+            // Find already favorited venues and hold on to reference
+            NSArray *favoritedNames = [[CoreDataManager objectsForEntity:@"RetailVenue"
+                                                       matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]] valueForKey:@"shortName"];
+            
+            // Make list of old entities to delete
+            NSArray *oldRoot = [CoreDataManager fetchDataForAttribute:@"DiningRoot"];
+            // Delete old things
+            [CoreDataManager deleteObjects:oldRoot];
+            // Create new entities in Core Data
+            DiningRoot *newRoot = [DiningRoot newRootWithDictionary:latestDataDict];
+            
+            if (newRoot) {
+                newRoot.lastUpdated = [NSDate date];
+            }
+            
+            // set favorites in new data using kept reference
+            if ([favoritedNames count]) {
+                NSArray *migratedFavorites = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"shortName IN %@", favoritedNames]];
+                [migratedFavorites setValue:@(YES) forKey:@"favorite"];
+            }
 
-        // Find already favorited venues and hold on to reference
-        NSArray *favoritedNames = [[CoreDataManager objectsForEntity:@"RetailVenue"
-                                                   matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]] valueForKey:@"name"];
-
-        // Make list of old entities to delete
-        NSArray *oldRoot = [CoreDataManager fetchDataForAttribute:@"DiningRoot"];
-        // Delete old things
-        [CoreDataManager deleteObjects:oldRoot];
-        // Create new entities in Core Data
-        DiningRoot *newRoot = [DiningRoot newRootWithDictionary:latestDataDict];
-        
-        if (newRoot) {
-            newRoot.lastUpdated = [NSDate date];
+            // Save
+            [CoreDataManager saveData];
         }
-        
-        // set favorites in new data using kept reference
-        if ([favoritedNames count]) {
-            NSArray *migratedFavorites = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"name IN %@", favoritedNames]];
-            [migratedFavorites setValue:@(YES) forKey:@"favorite"];
-        }
-        
-        // Save
-        [CoreDataManager saveData];
-    }
+        completionBlock();
+    }];
 }
 
 - (NSDictionary *)fetchData {

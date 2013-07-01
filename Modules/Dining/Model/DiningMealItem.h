@@ -12,7 +12,7 @@
 @property (nonatomic, retain) NSSet *dietaryFlags;
 @property (nonatomic, retain) NSNumber *ordinality;
 
-+ (DiningMealItem *)newItemWithDictionary:(NSDictionary *)dict;
++ (DiningMealItem *)newItemWithDictionary:(NSDictionary *)dict possibleFlags:(NSArray *)possibleFlags;
 
 @end
 

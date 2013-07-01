@@ -106,15 +106,15 @@
     
     __weak DiningMapListViewController *weakSelf = self;
     [self.listView addPullToRefreshWithActionHandler:^{
-        dispatch_queue_t queue = dispatch_queue_create("edu.mit.mobile.DiningData", 0);
-        dispatch_async(queue, ^(void) {
-            [[DiningData sharedData] reload];
-            dispatch_async(dispatch_get_main_queue(), ^{
+        NSDate *startDate = [NSDate date];
+        [[DiningData sharedData] reloadAndCompleteWithBlock:^{
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [weakSelf refreshSelectedTypeOfVenues];
                 [weakSelf updatePullToRefreshSubtitle];
                 [weakSelf.listView.pullToRefreshView stopAnimating];
-            });
-        });
+                NSLog(@"Time taken: %f", [[NSDate date] timeIntervalSinceDate:startDate]);
+            }];
+        }];
     }];
     
     [self.listView.pullToRefreshView setTitle:@"Pull to refresh" forState:SVPullToRefreshStateStopped];
