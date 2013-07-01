@@ -2,6 +2,8 @@
 #import <Foundation/Foundation.h>
 #import "DiningMeal.h"
 
+extern NSString * const MealReferenceEmptyMeal; // Empty Meal
+
 @interface MealReference : NSObject
 
 @property (nonatomic, strong) NSString  * name;

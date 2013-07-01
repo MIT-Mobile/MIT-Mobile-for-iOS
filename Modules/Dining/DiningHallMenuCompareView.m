@@ -171,7 +171,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
     [dateFormatter setDateFormat:@"MMM d"];
     NSString *fullDate = [dateFormatter stringFromDate:date];
     
-    if (mealName) {
+    if (mealName && ![mealName isEqualToString:MealReferenceEmptyMeal]) {
         NSString * mealString = [mealName capitalizedString];
         return [NSString stringWithFormat:@"%@'s %@, %@", dayString, mealString, fullDate];
     } else {
