@@ -138,7 +138,10 @@ typedef enum {
         [self.scrollView setContentOffset:CGPointMake(self.current.frame.origin.x - DAY_VIEW_PADDING, 0) animated:NO];  // have to subtract DAY_VIEW_PADDING because scrollview sits offscreen at offset.
         [self.previous setScrollOffsetAgainstRightEdge];
     }
-    
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
     [self loadData];
     [self reloadAllComparisonViews];
 }
@@ -277,29 +280,25 @@ typedef enum {
     //          - will return incorrect value if there is a breakfast that starts after a brunch and we are paging left, query for meals before earliest brunch would fail
     
     MealReference *ref = [self mealReferenceForMealInDirection:direction];
-    if (!ref) {
-        return YES;
-    }
-    NSPredicate *pred;
-    NSDate *mealTime;
-    
-    pred = [NSPredicate predicateWithFormat:@"name ==[c] %@ AND startTime >= %@ AND startTime <= %@", ref.name, [ref.date startOfDay], [ref.date endOfDay]];
-    NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"startTime" ascending:NO];    // want earliest meal to be last item in results
-    NSArray *currentMeals = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred sortDescriptors:@[sort]];
-    if ([currentMeals count]) {
-        mealTime = [[currentMeals  lastObject] startTime];          // get earliest meals start time. Use this to query for any meals before this start time
-    } else {
-        // we have no currentMeals
-        return YES;
-    }
-    
+
+    NSPredicate *dayPredicate;
+    NSPredicate *mealPredicate;
     if (direction == kPageDirectionForward) {
-        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime > %@", ref.name, mealTime];
+        dayPredicate = [NSPredicate predicateWithFormat:@"date > %@", [ref.date endOfDay]];
+        mealPredicate = [NSPredicate predicateWithFormat:@"name !=[c] %@ AND startTime > %@", ref.name, ref.date];
     } else {
-        pred = [NSPredicate predicateWithFormat:@"name != %@ AND startTime < %@", ref.name, mealTime];
+        dayPredicate = [NSPredicate predicateWithFormat:@"date < %@", [ref.date startOfDay]];
+        mealPredicate = [NSPredicate predicateWithFormat:@"name !=[c] %@ AND startTime < %@", ref.name, ref.date];
     }
     
-    NSArray * meals = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:pred];
+    NSArray * days = [CoreDataManager objectsForEntity:@"DiningDay" matchingPredicate:dayPredicate];
+    if ([days count]) {
+        // we can stop here if there are DiningDays in direction. Definitely not at edge
+        return NO;
+    }
+    
+    // also need to check for meals in same day. otherwise won't let dinner page to breakfast on left edge and vice versa on right edge
+    NSArray *meals = [CoreDataManager objectsForEntity:@"DiningMeal" matchingPredicate:mealPredicate];
     if ([meals count]) {
         return NO;
     }
@@ -368,8 +367,9 @@ typedef enum {
             newDatePointer = (direction == kPageDirectionForward) ? [newDatePointer dayAfter] : [newDatePointer dayBefore];
 
             if (abs([newDatePointer timeIntervalSinceDate:self.mealRef.date]) >= (SECONDS_IN_DAY * 2)) {
-                // TODO compare view should stop on day if there are no meals but there are meals further in direction
-                return [MealReference referenceWithMealName:MealReferenceEmptyMeal onDate:[self.mealRef.date dayAfter]];
+                // Return a MealReference with a flag saying it is an empty meal reference. date is correct, but meal name is not valid
+                newDatePointer = (direction == kPageDirectionForward) ? [self.mealRef.date dayAfter] : [self.mealRef.date dayBefore];
+                return [MealReference referenceWithMealName:MealReferenceEmptyMeal onDate:newDatePointer];
                 break;
             }
         }
@@ -553,7 +553,7 @@ typedef enum {
         } else if ([meal.items count]) {
             text = @"no matching items";
         } else {
-            text = @"no meals";
+            text = @"no items";
         }
         cell.primaryLabel.text = text;
         

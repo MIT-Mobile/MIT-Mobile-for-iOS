@@ -29,6 +29,8 @@
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
+@property (nonatomic, strong) DiningMenuCompareViewController *comparisonVC;
+
 @end
 
 
@@ -227,27 +229,33 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
         if (UIDeviceOrientationIsLandscape(orientation)) {
             [self showComparisonView];
-        } else if (UIDeviceOrientationIsPortrait(orientation) && [self.modalViewController isKindOfClass:[DiningMenuCompareViewController class]]) {
+        } else if (orientation == UIDeviceOrientationPortrait && [self.modalViewController isKindOfClass:[DiningMenuCompareViewController class]]) {
             [self dismissViewControllerAnimated:YES completion:NULL];
+            self.mealRef = [self.comparisonVC visibleMealReference];
+            [self reloadMealInfo];
         }
     }
 }
 
 - (void) showComparisonView
 {
-    DiningMenuCompareViewController *vc = [[DiningMenuCompareViewController alloc] init];
-    vc.filtersApplied = self.filtersApplied;
-    vc.mealRef = self.mealRef;
-    vc.delegate = self;
-    vc.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    if (!self.comparisonVC) {
+        self.comparisonVC = [[DiningMenuCompareViewController alloc] init];
+    }
     
-    [self presentViewController:vc animated:YES completion:NULL];
+    if (!self.modalViewController) {
+        // don't present comparison view over itself
+        self.comparisonVC.filtersApplied = self.filtersApplied;
+        self.comparisonVC.mealRef = self.mealRef;
+        self.comparisonVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        
+        [self presentViewController:self.comparisonVC animated:YES completion:NULL];
+    }
 }
 
 #pragma mark - MealReference Delegate
--(void) mealController:(UIViewController *) controller didUpdateMealReference:(MealReference *)updatedMealRef
+-(void) reloadMealInfo
 {
-    self.mealRef = updatedMealRef;
     [self fetchItemsForMeal:self.currentMeal withFilters:self.filtersApplied];
     [self.tableView reloadData];
 }

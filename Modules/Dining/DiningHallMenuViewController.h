@@ -6,7 +6,7 @@
 
 @class HouseVenue;
 
-@interface DiningHallMenuViewController : UITableViewController <MealReferenceDelegate, DiningMenuFilterDelegate, NSFetchedResultsControllerDelegate>
+@interface DiningHallMenuViewController : UITableViewController <DiningMenuFilterDelegate, NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) HouseVenue * venue;
 @property (nonatomic, strong) MealReference * mealRef;
