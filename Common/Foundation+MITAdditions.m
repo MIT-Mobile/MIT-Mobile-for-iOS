@@ -485,22 +485,22 @@ typedef struct {
  @return A compact string representation of the date's time components.
  */
 - (NSString *) MITShortTimeOfDayString {
-    NSDateComponents *components = [[NSCalendar cachedCurrentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self];
+    NSDateComponents *components = [[NSCalendar cachedCurrentCalendar] components:NSMinuteCalendarUnit
+                                                                         fromDate:self];
     
-    NSString *minuteString = @"";
-    NSString *periodString;
-    
-    if (components.minute > 0) {
-        minuteString = [NSString stringWithFormat:@":%d", components.minute];
-    }
-    
-    if (components.hour <= 12) {
-        periodString = @"am";
+    // (bskinner,TODO)
+    // Profile this method in the wild. These NSDateFormatter allocs are expensive
+    // but I'm not sure if we're calling this method enough for it to require caching.
+    // Possible add in a thread-local cached copy if we need to.
+    if ([components minute]) {
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"h:mma"];
+        return [formatter stringFromDate:self];
     } else {
-        periodString = @"pm";
-        components.hour -= 12;
-    }
-    return [NSString stringWithFormat:@"%d%@%@", components.hour, minuteString, periodString];
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"ha"];
+        return [formatter stringFromDate:self];
+    } 
 }
 
 - (NSDateComponents *)dayComponents {
