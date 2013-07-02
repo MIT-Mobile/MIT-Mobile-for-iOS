@@ -11,12 +11,21 @@
 @dynamic meals;
 @dynamic houseVenue;
 
+NSString * const MITDiningDayDateFormatterKey = @"DiningDay.MITDiningDayDateFormatterKey";
+
 + (DiningDay *)newDayWithDictionary:(NSDictionary *)dict {
     DiningDay *day = [CoreDataManager insertNewObjectForEntityForName:@"DiningDay"];
     
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd"];
-    NSDate *date = [formatter dateFromString:dict[@"date"]];
+    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
+    NSDateFormatter *dateFormatter = threadDictionary[MITDiningDayDateFormatterKey];
+    
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+        threadDictionary[MITDiningDayDateFormatterKey] = dateFormatter;
+    }
+    
+    NSDate *date = [dateFormatter dateFromString:dict[@"date"]];
     day.date = date;
     
     if (dict[@"message"]) {

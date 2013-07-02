@@ -553,19 +553,3 @@ typedef struct {
 }
 
 @end
-
-@implementation NSDateFormatter (MITAdditions)
-
-+ (NSDateFormatter *)cachedFormatterWithFormat:(NSString *)format {
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    NSString *key = [NSString stringWithFormat:@"MIT_NSDateFormatter_%@", format];
-    NSDateFormatter *formatter = threadDictionary[key];
-    if (!formatter) {
-        formatter = [[NSDateFormatter alloc] init];
-        formatter.dateFormat = format;
-        threadDictionary[key] = formatter;
-    }
-    return [formatter copy];
-}
-
-@end

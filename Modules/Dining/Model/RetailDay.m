@@ -11,12 +11,35 @@
 @dynamic message;
 @dynamic venue;
 
+NSString * const MITRetailDayTimeFormatterKey = @"RetailDay.MITRetailDayTimeFormatter";
+NSString * const MITRetailDayDateFormatterKey = @"RetailDay.MITRetailDayDateFormatter";
+
 + (RetailDay *)newDayWithDictionary:(NSDictionary* )dict {
     RetailDay *day = [CoreDataManager insertNewObjectForEntityForName:@"RetailDay"];
     
     // TODO: maybe make an -[NSDate dateForISO8601String:] category
-    NSDateFormatter *formatter = [NSDateFormatter cachedFormatterWithFormat:@"yyyy-MM-dd"];
-    NSDate *date = [formatter dateFromString:dict[@"date"]];
+    
+    NSDateFormatter *timeFormatter = nil;
+    NSDateFormatter *dateFormatter = nil;
+    {
+        NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
+
+        dateFormatter = threadDictionary[MITRetailDayDateFormatterKey];
+        if (!dateFormatter) {
+            dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+            threadDictionary[MITRetailDayDateFormatterKey] = dateFormatter;
+        }
+        
+        timeFormatter = threadDictionary[MITRetailDayTimeFormatterKey];
+        if (!timeFormatter) {
+            timeFormatter = [[NSDateFormatter alloc] init];
+            [timeFormatter setDateFormat:@"HH:mm:ss"];
+            threadDictionary[MITRetailDayTimeFormatterKey] = timeFormatter;
+        }
+    }
+    
+    NSDate *date = [dateFormatter dateFromString:dict[@"date"]];
     day.date = date;
 
     if (dict[@"message"]) {
@@ -24,17 +47,14 @@
     }
     
     // TODO: maybe make an -[NSDate dateForISO8601TimeString:] category
-    // Also, make it support both HH:mm and HH:mm:ss, since both are valid time strings
-    [formatter setDateFormat:@"HH:mm:ss"];
-
     
     if (dict[@"start_time"]) {
-        NSDate *date = [formatter dateFromString:dict[@"start_time"]];
+        NSDate *date = [timeFormatter dateFromString:dict[@"start_time"]];
         day.startTime = [day.date dateWithTimeOfDayFromDate:date];
     }
     
     if (dict[@"end_time"]) {
-        NSDate *date = [formatter dateFromString:dict[@"end_time"]];
+        NSDate *date = [timeFormatter dateFromString:dict[@"end_time"]];
         day.endTime = [day.date dateWithTimeOfDayFromDate:date];;
     }
     
