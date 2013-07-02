@@ -542,14 +542,7 @@ typedef struct {
 @implementation NSCalendar (MITAdditions)
 
 + (NSCalendar *)cachedCurrentCalendar {
-    NSString *key = @"MIT_NSCalendar_currentCalendar";
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    NSCalendar *currentCalendar = threadDictionary[key];
-    if (!currentCalendar) {
-        currentCalendar = [NSCalendar currentCalendar];
-        threadDictionary[key] = currentCalendar;
-    }
-    return currentCalendar;
+    return (NSCalendar*)CFBridgingRelease(CFCalendarCopyCurrent());
 }
 
 @end
