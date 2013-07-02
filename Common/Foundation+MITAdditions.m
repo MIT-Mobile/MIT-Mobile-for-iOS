@@ -404,7 +404,7 @@ typedef struct {
 {
     // takes date string of format hh:mm and returns an NSDate with today's date at the specified time.
     
-    NSCalendar *cal = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSCalendar *cal = [NSCalendar cachedCurrentCalendar];
     NSDateComponents *comp = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSTimeZoneCalendarUnit fromDate:[NSDate date]];
     
     NSArray *timeComponents = [time componentsSeparatedByString:@":"];
