@@ -71,7 +71,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 
 - (void) setScrollOffsetAgainstRightEdge
 {
-    [self.collectionView setContentOffset:CGPointMake(CGFLOAT_MAX, 0) animated:NO];
+    [self.collectionView setContentOffset:CGPointMake(self.collectionView.contentSize.width - CGRectGetWidth(self.collectionView.bounds), 0) animated:NO];
 }
 
 - (void) setScrollOffset:(CGPoint) offset animated:(BOOL)animated
