@@ -40,8 +40,6 @@
 
 @property (nonatomic, strong) UIScrollView *scrollView;
 
-@property (nonatomic, strong) NSDateFormatter *sectionSubtitleFormatter;
-
 @property (nonatomic, strong) DiningHallMenuCompareView * previous;     // on left
 @property (nonatomic, strong) DiningHallMenuCompareView * current;      // center
 @property (nonatomic, strong) DiningHallMenuCompareView * next;         // on right
@@ -97,10 +95,6 @@ typedef enum {
         CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
         frame = CGRectMake(-DAY_VIEW_PADDING, 0, CGRectGetHeight(self.view.bounds) + (DAY_VIEW_PADDING * 2) + statusBarHeight, CGRectGetWidth(self.view.bounds) - statusBarHeight);
     }
-    
-    self.sectionSubtitleFormatter = [[NSDateFormatter alloc] init];
-    [self.sectionSubtitleFormatter setAMSymbol:@"am"];
-    [self.sectionSubtitleFormatter setPMSymbol:@"pm"];
     
     self.scrollView = [[UIScrollView alloc] initWithFrame:frame];
     self.scrollView.delegate = self;
@@ -495,12 +489,8 @@ typedef enum {
         return @"";
     }
     
-    [self.sectionSubtitleFormatter setDateFormat:@"h:mm"];
-    NSString *start = [self.sectionSubtitleFormatter stringFromDate:meal.startTime];
-    
-    [self.sectionSubtitleFormatter setDateFormat:@"h:mm a"];
-    NSString *end = [self.sectionSubtitleFormatter stringFromDate:meal.endTime];
-    
+    NSString *start = [[meal.startTime MITShortTimeOfDayString] lowercaseString];
+    NSString *end = [[meal.endTime MITShortTimeOfDayString] lowercaseString];
     return [NSString stringWithFormat:@"%@ - %@", start, end];
 }
 
