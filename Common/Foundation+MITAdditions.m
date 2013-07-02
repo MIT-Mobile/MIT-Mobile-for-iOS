@@ -415,17 +415,25 @@ typedef struct {
 }
 
 #pragma mark Comparing Dates
+- (BOOL) isEqualToDateIgnoringTime:(NSDate *)aDate
+{
+    return [self isEqualToDate:aDate
+                    components:(NSYearCalendarUnit |
+                                NSMonthCalendarUnit |
+                                NSDayCalendarUnit)];
+}
 
-#define DATE_COMPONENTS (NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit | NSWeekCalendarUnit |  NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit | NSWeekdayCalendarUnit | NSWeekdayOrdinalCalendarUnit)
-#define SECONDS_PER_DAY 24 * 60 * 60
-- (BOOL) isEqualToDateIgnoringTime: (NSDate *) aDate
+- (BOOL) isEqualToDate:(NSDate*)otherDate
+            components:(NSCalendarUnit)components
 {
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
-	NSDateComponents *components1 = [calendar components:DATE_COMPONENTS fromDate:self];
-	NSDateComponents *components2 = [calendar  components:DATE_COMPONENTS fromDate:aDate];
-	return ((components1.year == components2.year) &&
-			(components1.month == components2.month) &&
-			(components1.day == components2.day));
+    
+    NSDate *date1 = [calendar dateFromComponents:[calendar components:components
+                                                             fromDate:self]];
+    NSDate *date2 = [calendar dateFromComponents:[calendar components:components
+                                                             fromDate:otherDate]];
+    
+	return [date1 isEqual:date2];
 }
 
 - (BOOL) isToday
@@ -435,47 +443,104 @@ typedef struct {
 
 - (BOOL) isTomorrow
 {
-    NSDate *tomorrow = [[NSDate alloc] initWithTimeIntervalSinceNow:SECONDS_PER_DAY];
-    return [self isEqualToDateIgnoringTime:tomorrow];
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
+                                                             NSMonthCalendarUnit |
+                                                             NSDayCalendarUnit)
+                                                   fromDate:self];
+    
+    NSDate *compareDate = [calendar dateFromComponents:selfComponents];
+    
+    NSDateComponents *tomorrowComponents = [[NSDateComponents alloc] init];
+    [tomorrowComponents setDay:1];
+    
+    return [compareDate isEqual:[calendar dateByAddingComponents:tomorrowComponents
+                                                          toDate:compareDate
+                                                         options:0]];
 }
 
 
 - (BOOL) isYesterday
 {
-    NSDate *yesterday = [[NSDate alloc] initWithTimeIntervalSinceNow:-SECONDS_PER_DAY];
-    return [self isEqualToDateIgnoringTime:yesterday];
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
+                                                             NSMonthCalendarUnit |
+                                                             NSDayCalendarUnit)
+                                                   fromDate:self];
+    
+    NSDate *compareDate = [calendar dateFromComponents:selfComponents];
+    
+    NSDateComponents *yesterdayComponents = [[NSDateComponents alloc] init];
+    [yesterdayComponents setDay:-1];
+    
+    return [compareDate isEqual:[calendar dateByAddingComponents:yesterdayComponents
+                                                          toDate:compareDate
+                                                         options:0]];
 }
 
 - (NSDate *) startOfDay
 {
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
-    
-    NSDateComponents *components = [calendar components:DATE_COMPONENTS fromDate:self];
-    components.hour = 0;
-    components.minute = 0;
-    components.second = 0;
-    return [calendar dateFromComponents:components];
+    return [calendar dateFromComponents:[calendar components:(NSYearCalendarUnit |
+                                                              NSMonthCalendarUnit |
+                                                              NSDayCalendarUnit)
+                                                    fromDate:self]];
 }
 
 - (NSDate *) endOfDay
 {
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
     
-    NSDateComponents *components = [calendar components:DATE_COMPONENTS fromDate:self];
-    components.hour = 23;
-    components.minute = 59;
-    components.second = 59;
-    return [calendar dateFromComponents:components];
+    NSDate *dayStart = nil;
+    NSTimeInterval dayInterval = 0;
+    [calendar rangeOfUnit:NSDayCalendarUnit
+                startDate:&dayStart
+                 interval:&dayInterval
+                  forDate:self];
+    
+    // Subtracting 1 second from the dayInterval since
+    // the -endOfDay caller expects an inclusive end date,
+    // not an exclusive one
+    --dayInterval;
+    
+    return [dayStart dateByAddingTimeInterval:dayInterval];
 }
 
 - (NSDate *) dayBefore
 {
-    return [self dateByAddingTimeInterval:-SECONDS_PER_DAY];
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    
+    NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+    [dateComponents setDay:-1];
+    
+    // Strip off the time so we return a date that is at the
+    // start of the previous day
+    NSDateComponents *strippedComponents = [calendar components:(NSYearCalendarUnit |
+                                                                     NSMonthCalendarUnit |
+                                                                     NSDayCalendarUnit)
+                                                           fromDate:self];
+    
+    return [[NSCalendar cachedCurrentCalendar] dateByAddingComponents:dateComponents
+                                                               toDate:[calendar dateFromComponents:strippedComponents]
+                                                              options:0];
 }
 
 - (NSDate *) dayAfter
 {
-    return [self dateByAddingTimeInterval:SECONDS_PER_DAY];
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    
+    NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+    [dateComponents setDay:1];
+    
+    // Strip off the time so we return a date that is at the
+    // start of the next day
+    NSDateComponents *strippedComponents = [calendar components:(NSYearCalendarUnit |
+                                                                     NSMonthCalendarUnit |
+                                                                     NSDayCalendarUnit)
+                                                           fromDate:self];
+    return [[NSCalendar cachedCurrentCalendar] dateByAddingComponents:dateComponents
+                                                               toDate:[calendar dateFromComponents:strippedComponents]
+                                                              options:0];
 }
 
 /** Extra compact string representation of the date's time components.
@@ -530,11 +595,9 @@ typedef struct {
                                                              NSSecondCalendarUnit)
                                                    fromDate:date];
     
-    components.hour = timeComponents.hour;
-    components.minute = timeComponents.minute;
-    components.second = timeComponents.second;
-    
-    return [calendar dateFromComponents:components];
+   return [calendar dateByAddingComponents:timeComponents
+                                    toDate:[calendar dateFromComponents:components]
+                                   options:0];
 }
 
 @end
