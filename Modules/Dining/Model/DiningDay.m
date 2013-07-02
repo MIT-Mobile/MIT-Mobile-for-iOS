@@ -70,10 +70,11 @@ NSString * const MITDiningDayDateFormatterKey = @"DiningDay.MITDiningDayDateForm
 {
     // returns array of DiningDays with weekday component 1 thru 7 of date
     //      sorted ascending by date
-    NSDateComponents *comps = [[NSCalendar currentCalendar] components:NSWeekdayCalendarUnit fromDate:date];
-    NSTimeInterval secondsInDay = 60*60*24;
-    NSDate *weekStart = [NSDate dateWithTimeInterval:-((comps.weekday - 1) * secondsInDay) sinceDate:date];         // -1 so index starts at 0. Sunday shifted from weekday 1 to weekday 0, allows for cleaner math
-    NSDate *weekEnd = [NSDate dateWithTimeInterval:((7 - (comps.weekday - 1)) * secondsInDay) sinceDate:date];
+    NSDate *weekStart = nil;
+    NSTimeInterval duration = 0;
+    [[NSCalendar cachedCurrentCalendar] setFirstWeekday:1];
+    [[NSCalendar cachedCurrentCalendar] rangeOfUnit:NSWeekCalendarUnit startDate:&weekStart interval:&duration forDate:date];
+    NSDate *weekEnd = [weekStart dateByAddingTimeInterval:duration];
     
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"houseVenue == %@ AND date >= %@ AND date <= %@", venue, [weekStart startOfDay], [weekEnd endOfDay]];
     NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES];

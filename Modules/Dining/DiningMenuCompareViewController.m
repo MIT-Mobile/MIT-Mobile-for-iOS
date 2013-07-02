@@ -479,7 +479,6 @@ typedef enum {
 - (NSString *) compareView:(DiningHallMenuCompareView *)compareView titleForSection:(NSInteger)section
 {
     return self.houseVenueSections[section];
-    
 }
 
 - (NSString *) compareView:(DiningHallMenuCompareView *)compareView subtitleForSection:(NSInteger)section
@@ -525,7 +524,6 @@ typedef enum {
         id<NSFetchedResultsSectionInfo> sectionInfo = [controller sections][cSectionIndex];
         item = [sectionInfo objects][indexPath.row];
     }
-    
     
     if (item) {
         DiningHallMenuComparisonCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuCell" forIndexPath:indexPath];
