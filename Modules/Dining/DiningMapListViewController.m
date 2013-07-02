@@ -129,13 +129,20 @@
 }
 
 - (void)updatePullToRefreshSubtitle {
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateStyle = NSDateFormatterMediumStyle;
-    formatter.timeStyle = NSDateFormatterShortStyle;
     NSDate *date = [[DiningData sharedData] lastUpdated];
-    NSString *dateString = [formatter stringFromDate:date];
-    NSString *lastUpdated = [NSString stringWithFormat:@"Updated %@", dateString];
-    [self.listView.pullToRefreshView setSubtitle:lastUpdated forState:SVPullToRefreshStateAll];
+    
+    if (date) {
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.dateStyle = NSDateFormatterMediumStyle;
+        formatter.timeStyle = NSDateFormatterShortStyle;
+        
+        NSString *dateString = [formatter stringFromDate:date];
+        [self.listView.pullToRefreshView setSubtitle:[NSString stringWithFormat:@"Updated %@", dateString]
+                                            forState:SVPullToRefreshStateAll];
+    } else {
+        [self.listView.pullToRefreshView setSubtitle:nil
+                                            forState:SVPullToRefreshStateAll];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
