@@ -60,7 +60,6 @@
         
         if (latestDataDict) {
             [[CoreDataManager managedObjectContext] processPendingChanges];
-            [[[CoreDataManager managedObjectContext] undoManager] disableUndoRegistration];
             // Make sure the set list of dietary flags already exist before we start parsing.
             [DiningDietaryFlag createDietaryFlagsInStore];
             
