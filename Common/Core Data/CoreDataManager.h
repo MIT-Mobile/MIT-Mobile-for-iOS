@@ -2,6 +2,8 @@
 
 #import <CoreData/CoreData.h>
 
+FOUNDATION_EXTERN NSString * const MITCoreDataThreadLocalContextKey;
+
 @interface CoreDataManager : NSObject {
 	NSManagedObjectModel *managedObjectModel;
     NSManagedObjectContext *managedObjectContext;	    

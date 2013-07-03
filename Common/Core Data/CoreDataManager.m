@@ -5,9 +5,11 @@
 
 // not sure what to call this, just a placeholder for now, still hard coding file name below
 #define SQLLITE_PREFIX @"CoreDataXML."
+NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalContext";
 
 @interface CoreDataManager ()
 @property (nonatomic,strong) NSMutableSet *contextThreads;
+@property (nonatomic,strong) NSManagedObjectContext *mainContext;
 @property (nonatomic,strong) NSSet *modelNames;
 @end
 
@@ -16,7 +18,6 @@
 @synthesize managedObjectModel;
 @synthesize managedObjectContext;
 @synthesize persistentStoreCoordinator;
-@synthesize contextThreads = _contextThreads;
 @dynamic modelNames;
 
 #pragma mark -
@@ -278,7 +279,7 @@
 // modified to allow safe multithreaded Core Data use
 -(NSManagedObjectContext *)managedObjectContext {
     NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
-    NSManagedObjectContext *localContext = [threadDict objectForKey:@"MITCoreDataManagedObjectContext"];
+    NSManagedObjectContext *localContext = threadDict[MITCoreDataThreadLocalContextKey];
     if (localContext) {
         return localContext;
     }
@@ -287,9 +288,10 @@
     if (coordinator != nil) {
         localContext = [[[NSManagedObjectContext alloc] init] autorelease];
         [localContext setPersistentStoreCoordinator: coordinator];
-        [threadDict setObject:localContext
-                       forKey:@"MITCoreDataManagedObjectContext"];
+        threadDict[MITCoreDataThreadLocalContextKey] = localContext;
         
+        if ([[NSThread currentThread] isMainThread]) {
+            localContext.stalenessInterval = 0.0;
         if (self.contextThreads == nil)
         {
             self.contextThreads = [NSMutableSet set];
@@ -297,13 +299,10 @@
         
         [self.contextThreads addObject:[NSThread currentThread]];
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(syncManagedObjectContexts:)
+                                                 selector:@selector(mergeChangesFromBackgroundContextWithNotification:)
                                                      name:NSManagedObjectContextDidSaveNotification
                                                    object:localContext];
-        
-        if ([[NSThread currentThread] isMainThread])
-        {
-            localContext.stalenessInterval = 0.0;
+            self.mainContext = localContext;
         }
     }
     
@@ -519,34 +518,44 @@
 	[managedObjectContext release];
 	[persistentStoreCoordinator release];
     self.contextThreads = nil;
+    self.mainContext = nil;
 
 	[super dealloc];
 }
 
 
-- (void)syncManagedObjectContexts:(NSNotification*)notification
+- (void)mergeChangesFromBackgroundContextWithNotification:(NSNotification*)notification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableSet *finishedThreads = [NSMutableSet set];
-        [self.contextThreads enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-            NSThread *thread = (NSThread*)obj;
-            NSManagedObjectContext *moc = [[thread threadDictionary] objectForKey:@"MITCoreDataManagedObjectContext"];
+        [self.contextThreads enumerateObjectsUsingBlock:^(NSThread *thread, BOOL *stop) {
+            NSMutableDictionary *threadDictionary = [thread threadDictionary];
+            NSManagedObjectContext *moc = threadDictionary[MITCoreDataThreadLocalContextKey];
             
-            if ([thread isFinished])
-            {
+            if ([thread isFinished]) {
                 [finishedThreads addObject:thread];
                 [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                                name:NSManagedObjectContextDidSaveNotification
+                                                                name:nil
                                                               object:moc];
-                [[thread threadDictionary] removeObjectForKey:@"MITCoreDataManagedObjectContext"];
-            }
-            else
-            {
-                [moc mergeChangesFromContextDidSaveNotification:notification];
+                [[thread threadDictionary] removeObjectForKey:MITCoreDataThreadLocalContextKey];
             }
         }];
         
         [self.contextThreads minusSet:finishedThreads];
+        
+        NSManagedObjectContext *mainContext = self.mainContext;
+        NSSet *updated = notification.userInfo[NSUpdatedObjectsKey];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            for (NSManagedObject *updatedObject in updated) {
+                NSManagedObject *contextObject = [mainContext objectWithID:[updatedObject objectID]];
+                
+                // Force a fault-in of all the updates objects, otherwise there could be an inconsistency
+                // with NSFetchedResultsControllers since updates to faulted objects are not considered 'changes'
+                [contextObject willAccessValueForKey:nil];
+            }
+            
+            [mainContext mergeChangesFromContextDidSaveNotification:notification];
+        });
     });
 }
 @end
