@@ -74,9 +74,3 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 + (NSCalendar *)cachedCurrentCalendar;
 
 @end
-
-@interface NSDateFormatter (MITAdditions)
-
-+ (NSDateFormatter *)cachedFormatterWithFormat:(NSString *)format;
-
-@end

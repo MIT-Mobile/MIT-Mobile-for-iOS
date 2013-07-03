@@ -15,6 +15,7 @@
 @dynamic day;
 @dynamic items;
 
+NSString * const MITDiningMealTimeFormatterKey = @"DiningMeal.MITDiningMealTimeFormatter";
 + (DiningMeal *)newMealWithDictionary:(NSDictionary* )dict {
     // Meals need to have a name and either a message or both a start and end time.
     if (!dict[@"name"] || !((dict[@"start_time"] && dict[@"end_time"]) || dict[@"message"])) {
@@ -31,16 +32,26 @@
         meal.message = dict[@"message"];
     }
 
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"HH:mm:ss"];
+    
+    NSDateFormatter *timeFormatter = nil;
+    {
+        NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
+        timeFormatter = threadDictionary[MITDiningMealTimeFormatterKey];
+        if (!timeFormatter) {
+            timeFormatter = [[NSDateFormatter alloc] init];
+            [timeFormatter setDateFormat:@"HH:mm:ss"];
+            threadDictionary[MITDiningMealTimeFormatterKey] = timeFormatter;
+        }
+    }
+    
 
     if (dict[@"start_time"]) {
-        NSDate *date = [formatter dateFromString:dict[@"start_time"]];
+        NSDate *date = [timeFormatter dateFromString:dict[@"start_time"]];
         meal.startTime = date;
     }
 
     if (dict[@"end_time"]) {
-        NSDate *date = [formatter dateFromString:dict[@"end_time"]];
+        NSDate *date = [timeFormatter dateFromString:dict[@"end_time"]];
         meal.endTime = date;
     }
     
