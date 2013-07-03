@@ -55,7 +55,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
 
 - (void) updateMealReference
 {
-    NSDate *date = (self.currentMeal) ? self.currentMeal.day.date : self.currentDay.date;
+    NSDate *date = (self.currentMeal.startTime) ? self.currentMeal.startTime : self.currentDay.date;
     _mealRef = [MealReference referenceWithMealName:self.currentMeal.name onDate:date];
 }
 
