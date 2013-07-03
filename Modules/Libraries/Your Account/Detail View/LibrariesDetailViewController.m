@@ -282,11 +282,14 @@
     [activityView startActivityWithTitle:@"Renewing..."];
     self.renewButton.enabled = NO;
     
-    NSDictionary *params = [NSDictionary dictionaryWithObject:[self.details objectForKey:@"barcode"]
-                                                       forKey:@"barcodes"];
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                            command:@"renewBooks"
-                                                                         parameters:params];
+//  NSDictionary *params = [NSDictionary dictionaryWithObject:[self.details objectForKey:@"barcode"]
+//                                                       forKey:@"barcodes"];
+//  MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
+//                                                                            command:@"renewBooks"
+//                                                                         parameters:params];
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithRelativePath:[NSString stringWithFormat:@"apis/secure/libraries/account/renewals/barcodes=%@", [self.details objectForKey:@"barcode"]]
+                                                                               parameters:nil];
+    operation.usePOST = YES;
     [operation setCompleteBlock:^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         self.request = nil;
         self.navigationItem.titleView = nil;

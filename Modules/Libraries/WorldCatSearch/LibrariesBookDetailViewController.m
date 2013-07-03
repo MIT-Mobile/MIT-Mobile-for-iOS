@@ -79,8 +79,7 @@ typedef enum {
 }
 
 - (void)loadBookDetails {
-    NSDictionary *parameters = [NSDictionary dictionaryWithObject:self.book.identifier forKey:@"id"];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"detail" parameters:parameters] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/libraries/worldcat/%@", self.book.identifier] parameters:nil];
     
     self.loadingStatus = BookLoadingStatusPartial;
     

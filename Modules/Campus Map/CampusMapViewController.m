@@ -19,7 +19,8 @@
 #define kSearchBarWidth 270
 #define kSearchBarCancelWidthDiff 28
 
-#define kAPISearch		@"Search"
+//#define kAPISearch		@"Search"
+#define kAPISearch		@"Places"
 
 #define kNoSearchResultsTag 31678
 
@@ -171,7 +172,8 @@
 		[self setURLPathUserLocation];
 	} else {
 		if (self.lastSearchText != nil && ![self.lastSearchText isEqualToString:@""] && self.mapView.currentAnnotation) {
-			[self.url setPath:[NSString stringWithFormat:@"search/%@", [(MITMapSearchResultAnnotation*)self.mapView.currentAnnotation uniqueID]] query:self.lastSearchText];
+        //	[self.url setPath:[NSString stringWithFormat:@"search/%@", [(MITMapSearchResultAnnotation*)self.mapView.currentAnnotation uniqueID]] query:self.lastSearchText];
+            [self.url setPath:[NSString stringWithFormat:@"places/q=%@", [(MITMapSearchResultAnnotation*)self.mapView.currentAnnotation uniqueID]] query:self.lastSearchText];
 			[self.url setAsModulePath];
 			[self setURLPathUserLocation];
 		}
@@ -497,7 +499,9 @@
             ![self.lastSearchText isEqualToString:@""] &&
             self.mapView.currentAnnotation)
         {
-			[self.url setPath:[NSString stringWithFormat:@"search/%@", [(MITMapSearchResultAnnotation*)self.mapView.currentAnnotation uniqueID]]
+//     [self.url setPath:[NSString stringWithFormat:@"search/%@", [(MITMapSearchResultAnnotation*)self.mapView.currentAnnotation uniqueID]]
+//                                            query:self.lastSearchText];
+        [self.url setPath:[NSString stringWithFormat:@"places/q=%@", [(MITMapSearchResultAnnotation*)self.mapView.currentAnnotation uniqueID]]
                         query:self.lastSearchText];
         }
 		else {
@@ -765,7 +769,8 @@
                                                           jsonDelegate:self
                                                                 object:annotation];
 		}
-		[self.url setPath:[NSString stringWithFormat:@"search/%@", searchAnnotation.uniqueID] query:self.lastSearchText];
+//      [self.url setPath:[NSString stringWithFormat:@"search/%@", searchAnnotation.uniqueID] query:self.lastSearchText];
+        [self.url setPath:[NSString stringWithFormat:@"places/q=%@", searchAnnotation.uniqueID] query:self.lastSearchText];
 		[self.url setAsModulePath];
 		[self setURLPathUserLocation];
 	}
@@ -867,7 +872,8 @@
 	if (self.displayingList)
 		[self.url setPath:@"list" query:searchText];
 	else if (searchText != nil && ![searchText isEqualToString:@""])
-		[self.url setPath:@"search" query:searchText];
+//  [self.url setPath:@"search" query:searchText];
+    [self.url setPath:@"places/q=" query:searchText];
 	else 
 		[self.url setPath:@"" query:nil];
 	[self.url setAsModulePath];

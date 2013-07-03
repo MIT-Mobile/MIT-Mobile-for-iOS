@@ -291,8 +291,7 @@
 }
 
 - (void)loadLinksFromServer {
-    
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"links" parameters:nil] autorelease];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"apis/libraries/links" parameters:nil] autorelease];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             // look for old cached version of links

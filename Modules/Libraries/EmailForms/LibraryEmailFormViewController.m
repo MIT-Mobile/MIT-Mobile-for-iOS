@@ -543,11 +543,8 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     MITLoadingActivityView *loginLoadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
     loginLoadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.tableView addSubview:loginLoadingView];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag
-                                                                              command:@"getUserIdentity"
-                                                                           parameters:[NSDictionary dictionary]] autorelease];
     
-    
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:@"apis/secure/apps/user" parameters:nil];
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         [self.loadingView removeFromSuperview];
         

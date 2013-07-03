@@ -145,7 +145,7 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 
 // Send request
 - (void)checkForEmergencies {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"emergency" command:nil parameters:nil] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:@"apis/emergency_info/announcement" parameters: nil];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:self];

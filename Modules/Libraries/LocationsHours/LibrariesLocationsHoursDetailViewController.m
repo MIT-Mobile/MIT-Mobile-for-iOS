@@ -81,8 +81,16 @@ LocationsHoursTableRows;
     if (![self.library hasDetails]) {
         self.librariesDetailStatus = LibrariesDetailStatusLoading;
         
-        NSDictionary *params = [NSDictionary dictionaryWithObject:self.library.title forKey:@"library"];
-        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locationDetail" parameters:params] autorelease];
+        NSString *libraryTitle = self.library.title;
+        while([libraryTitle rangeOfString:@" "].location != NSNotFound)
+        {
+            libraryTitle = [libraryTitle stringByReplacingCharactersInRange:[libraryTitle rangeOfString:@" "] withString:@"%20"];
+        }
+        
+//      NSDictionary *params = [NSDictionary dictionaryWithObject:self.library.title forKey:@"library"];
+//      MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locationDetail" parameters:params] autorelease];
+        
+        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/libraries/locations/%@",libraryTitle] parameters:nil] autorelease];
         request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
             if (error) {
                 self.librariesDetailStatus = LibrariesDetailStatusLoadingFailed;

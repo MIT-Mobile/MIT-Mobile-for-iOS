@@ -301,10 +301,7 @@ enum {
             self.navigationItem.titleView = activityView;
             [activityView startActivityWithTitle:@"Verifying..."];
             
-            self.authOperation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                     command:@"getUserIdentity"
-                                                                  parameters:nil];
-            
+            self.authOperation = [MobileRequestOperation operationWithRelativePath:@"apis/secure/apps/user" parameters:nil];
             [self.authOperation authenticateUsingUsername:username
                                                  password:password];
             self.authOperation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error)

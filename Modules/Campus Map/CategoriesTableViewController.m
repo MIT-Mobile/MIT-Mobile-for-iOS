@@ -57,9 +57,7 @@
 	if (_topLevel) {
 		_headerText = @"Browse map by:";
         
-        MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"map"
-                                                                                command:@"categorytitles"
-                                                                             parameters:nil];
+        MobileRequestOperation *operation = [MobileRequestOperation operationWithRelativePath:@"apis/map/place_categories" parameters:nil];
         operation.userData = @"CategoryTitles";
         operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mime, NSError *error) {
             [self operation:operation
@@ -325,9 +323,7 @@
 
 -(void) executeServerCategoryRequestWithQuery:(NSString *)query 
 {
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"map"
-                                                                            command:@"category"
-                                                                         parameters:@{@"id":query}];
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithRelativePath:[NSString stringWithFormat:@"apis/map/places/%@",query] parameters:nil];
     operation.userData = @"Category";
     operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mime, NSError *error) {
         [self operation:operation

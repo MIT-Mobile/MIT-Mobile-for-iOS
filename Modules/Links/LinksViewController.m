@@ -132,9 +132,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 #pragma mark - Connection
 - (void)queryForLinks
 {
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"links"
-                                                                            command:nil
-                                                                         parameters:nil];
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithRelativePath:@"apis/links" parameters:nil];
     
     operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error)
     {

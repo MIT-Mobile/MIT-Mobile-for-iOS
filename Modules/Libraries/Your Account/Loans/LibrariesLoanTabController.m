@@ -218,10 +218,10 @@
 #pragma mark -
 - (void)updateLoanData
 {
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                            command:@"loans"
-                                                                         parameters:nil];
-    
+//    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
+//                                                                            command:@"loans"
+//                                                                         parameters:nil];
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithRelativePath:@"/apis/secure/libraries/account/loans" parameters:nil];
     self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
     
     operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
@@ -320,11 +320,14 @@
     self.cancelBarItem.enabled = NO;
     self.renewBarItem.enabled = NO;
 
-    NSDictionary *params = [NSDictionary dictionaryWithObject:[barcodes componentsJoinedByString:@" "]
-                                                       forKey:@"barcodes"];
-    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                            command:@"renewBooks"
-                                                                         parameters:params];
+//    NSDictionary *params = [NSDictionary dictionaryWithObject:[barcodes componentsJoinedByString:@" "]
+//                                                       forKey:@"barcodes"];
+//    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
+//                                                                            command:@"renewBooks"
+//                                                                         parameters:params];
+    MobileRequestOperation *operation = [MobileRequestOperation operationWithRelativePath:[NSString stringWithFormat:@"apis/secure/libraries/account/renewals/barcodes=%@", barcodes]
+                                                                               parameters:nil];
+    operation.usePOST = YES;
     [operation setCompleteBlock:^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         self.renewOperation = nil;
         

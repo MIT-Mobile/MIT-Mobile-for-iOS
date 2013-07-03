@@ -53,7 +53,8 @@
         self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self.view addSubview:self.loadingView];
         
-        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locations" parameters:nil] autorelease];
+//      MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locations" parameters:nil] autorelease];
+        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"apis/libraries/locations" parameters:nil] autorelease];
         request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
             if (error) {
                 [UIAlertView alertViewForError:error withTitle:@"Libraries" alertViewDelegate:self];
