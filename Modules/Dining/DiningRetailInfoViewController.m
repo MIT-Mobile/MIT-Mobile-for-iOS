@@ -41,13 +41,23 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         "<style type=\"text/css\" media=\"screen\">"
         "body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 13px; } "
         "a { color: #990000; }"
+        ".emptyParagraph { display: none; }"
         "</style>"
         "</head>"
         "<body id=\"content\">"
         "%@"
         "</body>"
-        "</html>";
-        self.descriptionHeight = 44;
+        "</html>"
+        "<script type=\"text/javascript\" charset=\"utf-8\">"
+        "/* hide all of the empty paragraph tags, because emergency info announcements tend to have a lot of unnecessary whitespace*/"
+        "var allParagraphs = document.getElementsByTagName(\"p\");"
+        "for (var i = allParagraphs.length - 1; i >= 0; i--){"
+            "if (/\\S+/.test(allParagraphs[i].innerText) == false) {"
+                "allParagraphs[i].className = \"emptyParagraph\";"
+            "}"
+        "}"
+        "</script>";
+        self.descriptionHeight = 24;
     }
     return self;
 }
