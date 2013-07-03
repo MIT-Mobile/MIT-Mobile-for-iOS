@@ -62,7 +62,8 @@
             [[CoreDataManager managedObjectContext] processPendingChanges];
             
             // (bskinner)
-            // Added to overcome severe and irreparable control flow model issues in CoreDataManager.
+            // Added to get around issues with CoreDataManager context caching. CoreDataManager keeps
+            // a single context per thread and will reuse them in a dirty state.
             // Since NSOperationQueue reuses its thread, we are getting a stale, modified context
             // from CoreDataManager which leads to merge conflicts in certain instances.
             // This will force CoreDataManager to regenerate a new NSManagedObjectContext
