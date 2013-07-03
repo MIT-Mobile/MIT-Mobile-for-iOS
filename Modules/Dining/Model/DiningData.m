@@ -60,6 +60,16 @@
         
         if (latestDataDict) {
             [[CoreDataManager managedObjectContext] processPendingChanges];
+            
+            // (bskinner)
+            // Added to overcome severe and irreparable control flow model issues in CoreDataManager.
+            // Since NSOperationQueue reuses its thread, we are getting a stale, modified context
+            // from CoreDataManager which leads to merge conflicts in certain instances.
+            // This will force CoreDataManager to regenerate a new NSManagedObjectContext
+            // the next time we ask for one.
+            NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
+            [threadDictionary removeObjectForKey:MITCoreDataThreadLocalContextKey];
+            
             // Make sure the set list of dietary flags already exist before we start parsing.
             [DiningDietaryFlag createDietaryFlagsInStore];
             
