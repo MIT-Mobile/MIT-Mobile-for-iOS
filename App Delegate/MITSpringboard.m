@@ -65,7 +65,7 @@
 }
 
 - (void)checkForFeaturedModule {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"features" command:@"banner" parameters:nil] autorelease];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"apis/apps/banners" parameters:nil] autorelease];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         
         if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {

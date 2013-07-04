@@ -80,7 +80,8 @@ typedef enum {
         [parameters setObject:[NSString stringWithFormat:@"%d", [self.nextIndex intValue]] forKey:@"startIndex"];
     }
     
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/libraries/worldcat?q=%@", searchTerms] parameters:nil];
+    searchTerms = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)searchTerms, NULL, (CFStringRef)@"[]", kCFStringEncodingUTF8 ));
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/libraries/worldcat?q=%@", searchTerms] parameters:nil] autorelease];
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         UIView *loadingView = [self.searchResultsTableView viewWithTag:LOADING_ACTIVITY_TAG];
         [loadingView removeFromSuperview];

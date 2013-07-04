@@ -864,7 +864,8 @@
 		self.lastSearchText = nil;
 	}
 	else
-	{		
+	{        
+        searchText = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)searchText, NULL, (CFStringRef)@"[]", kCFStringEncodingUTF8 ));
 		[MITMapSearchResultAnnotation executeServerSearchWithQuery:searchText
                                                       jsonDelegate:self
                                                             object:kAPISearch];

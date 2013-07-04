@@ -117,13 +117,8 @@
     // Check for any available code => URL mappings from
     // the mobile server
     {
-        
-        NSMutableDictionary *params = [NSDictionary dictionaryWithObject:self.scanResult.text
-                                                                  forKey:@"q"];
-        MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"qr"
-                                                                                command:nil
-                                                                             parameters:params];
-        
+        NSString * scanText = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)self.scanResult.text, NULL, (CFStringRef)@"[]", kCFStringEncodingUTF8 );
+        MobileRequestOperation *operation = [MobileRequestOperation operationWithRelativePath:[NSString stringWithFormat:@"apis/scanner/mappings/%@", scanText] parameters:nil];
         operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSString *contentType, NSError *error)
         {
             [self handleScanInfoResponse:codeInfo
