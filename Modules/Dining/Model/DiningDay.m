@@ -72,8 +72,10 @@ NSString * const MITDiningDayDateFormatterKey = @"DiningDay.MITDiningDayDateForm
     //      sorted ascending by date
     NSDate *weekStart = nil;
     NSTimeInterval duration = 0;
-    [[NSCalendar cachedCurrentCalendar] setFirstWeekday:1];
-    [[NSCalendar cachedCurrentCalendar] rangeOfUnit:NSWeekCalendarUnit startDate:&weekStart interval:&duration forDate:date];
+    
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    [calendar setFirstWeekday:1];
+    [calendar rangeOfUnit:NSWeekCalendarUnit startDate:&weekStart interval:&duration forDate:date];
     NSDate *weekEnd = [weekStart dateByAddingTimeInterval:duration];
     
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"houseVenue == %@ AND date >= %@ AND date <= %@", venue, [weekStart startOfDay], [weekEnd endOfDay]];
