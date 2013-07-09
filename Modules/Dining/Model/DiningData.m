@@ -59,8 +59,6 @@
         NSDictionary *latestDataDict = [self fetchData];
         
         if (latestDataDict) {
-            [[CoreDataManager managedObjectContext] processPendingChanges];
-            
             // (bskinner)
             // Added to get around issues with CoreDataManager context caching. CoreDataManager keeps
             // a single context per thread and will reuse them in a dirty state.
