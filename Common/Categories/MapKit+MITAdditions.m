@@ -1,8 +1,8 @@
 #import "MapKit+MITAdditions.h"
 #import "CoreLocation+MITAdditions.h"
 
-#define MITMK_DEFAULT_REGION_PADDING (0.1)
-#define MITMK_MINIMUM_REGION_METERS (25)
+const double MITMapRegionDefaultPadding = 0.20;
+const CLLocationDistance MITMapRegionDefaultMinimumRegionSize = 25.;
 
 const MKCoordinateRegion MKCoordinateRegionInvalid = {{.longitude = CGFLOAT_MAX,
     .latitude = CGFLOAT_MAX},
@@ -10,10 +10,10 @@ const MKCoordinateRegion MKCoordinateRegionInvalid = {{.longitude = CGFLOAT_MAX,
         .longitudeDelta = CGFLOAT_MAX}};
 
 MKCoordinateRegion MKCoordinateRegionForCoordinates(NSSet *coordinateValues) {
-    return MKCoordinateRegionForCoordinatesWithPadding(coordinateValues, MITMK_DEFAULT_REGION_PADDING);
+    return MKCoordinateRegionForCoordinatesWithPadding(coordinateValues,MITMapRegionDefaultPadding,MITMapRegionDefaultMinimumRegionSize);
 }
 
-MKCoordinateRegion MKCoordinateRegionForCoordinatesWithPadding(NSSet *coordinateValues, CGFloat padding) {
+MKCoordinateRegion MKCoordinateRegionForCoordinatesWithPadding(NSSet *coordinateValues, CGFloat paddingPercent, CLLocationDistance minimumRegionSize) {
     NSMutableArray *longitudes = [NSMutableArray array];
     NSMutableArray *latitudes = [NSMutableArray array];
     
@@ -24,10 +24,10 @@ MKCoordinateRegion MKCoordinateRegionForCoordinatesWithPadding(NSSet *coordinate
     }
     
     // Ensure that the padding is bounded to [0,1]
-    if (padding < 0.0) {
-        padding = 0.0;
-    } else if (padding > 1.0) {
-        padding = 1.0;
+    if (paddingPercent < 0.0) {
+        paddingPercent = 0.0;
+    } else if (paddingPercent > 1.0) {
+        paddingPercent = 1.0;
     }
     
     for (NSValue *value in coordinateValues) {
@@ -45,9 +45,9 @@ MKCoordinateRegion MKCoordinateRegionForCoordinatesWithPadding(NSSet *coordinate
         return MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake(CGFLOAT_MAX,CGFLOAT_MAX),
                                                   0,0);
     } else if ([longitudes count] == 1) {
-        return MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake([latitudes[0] doubleValue],
-                                                                 [longitudes[0] doubleValue]),
-                                                  MITMK_MINIMUM_REGION_METERS,MITMK_MINIMUM_REGION_METERS);
+        return MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake([latitudes[0] doubleValue], [longitudes[0] doubleValue]),
+                                                  minimumRegionSize,
+                                                  minimumRegionSize);
     }
     
     [longitudes sortUsingSelector:@selector(compare:)];
@@ -61,9 +61,11 @@ MKCoordinateRegion MKCoordinateRegionForCoordinatesWithPadding(NSSet *coordinate
     CLLocationDegrees latitudeDelta = fabs(maxLatitude - minLatitude);
     CLLocationDegrees longitudeDelta = fabs(maxLongitude - minLongitude);
     CLLocationCoordinate2D centerPoint = CLLocationCoordinate2DMake(minLatitude + (latitudeDelta / 2.0),
-                                             minLongitude + (longitudeDelta / 2.0));
+                                                                    minLongitude + (longitudeDelta / 2.0));
+    latitudeDelta += latitudeDelta * paddingPercent;
+    longitudeDelta += longitudeDelta * paddingPercent;
     
-    return MKCoordinateRegionMake(centerPoint, MKCoordinateSpanMake(latitudeDelta * (1.0 + padding), longitudeDelta * (1.0 + padding)));
+    return MKCoordinateRegionMake(centerPoint, MKCoordinateSpanMake(latitudeDelta,longitudeDelta));
 }
 
 
