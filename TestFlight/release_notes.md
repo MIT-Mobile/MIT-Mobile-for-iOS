@@ -1,3 +1,7 @@
+## 1.2.6 - June 11, 2013
+
+- Fixed a bug with crash reporting on iOS 7
+
 ## 1.2.5 - May 1, 2013
 
 - Removed any access to mac address
