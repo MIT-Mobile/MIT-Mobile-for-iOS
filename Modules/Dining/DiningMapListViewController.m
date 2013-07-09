@@ -668,6 +668,8 @@
     MGSLayer * houseLayer = [[MGSLayer alloc] initWithName:@"house.layer"];
     houseLayer.delegate = self;
     [houseLayer addAnnotationsFromArray:venues];
+    MKCoordinateRegion region = MKCoordinateRegionForMGSAnnotations([NSSet setWithArray:venues]);
+    [self.mapView setMapRegion:region animated:YES];
     
     [self.mapView addLayer:houseLayer];
     [self.mapView setNeedsDisplay];
