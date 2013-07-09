@@ -278,32 +278,33 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
 
 // modified to allow safe multithreaded Core Data use
 -(NSManagedObjectContext *)managedObjectContext {
-    NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
-    NSManagedObjectContext *localContext = threadDict[MITCoreDataThreadLocalContextKey];
-    if (localContext) {
-        return localContext;
-    }
-    
-    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
-    if (coordinator != nil) {
-        localContext = [[[NSManagedObjectContext alloc] init] autorelease];
-        [localContext setPersistentStoreCoordinator: coordinator];
-        threadDict[MITCoreDataThreadLocalContextKey] = localContext;
+    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
+    NSManagedObjectContext *localContext = threadDictionary[MITCoreDataThreadLocalContextKey];
         
-        if ([[NSThread currentThread] isMainThread]) {
+    if (!localContext) {
+        if ([NSThread isMainThread]) {
+            localContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType] autorelease];
             localContext.stalenessInterval = 0.0;
-        if (self.contextThreads == nil)
-        {
+            self.mainContext = localContext;
+        } else {
+            localContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType] autorelease];
+            
+            // If we are creating a secondary context, be sure to observe it for
+            // changes so we can merge those changes with the main context
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(mergeChangesFromBackgroundContextWithNotification:)
+                                                         name:NSManagedObjectContextDidSaveNotification
+                                                       object:localContext];
+        }
+        
+        localContext.persistentStoreCoordinator = [self persistentStoreCoordinator];;
+        threadDictionary[MITCoreDataThreadLocalContextKey] = localContext;
+        
+        if (!self.contextThreads) {
             self.contextThreads = [NSMutableSet set];
         }
         
         [self.contextThreads addObject:[NSThread currentThread]];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(mergeChangesFromBackgroundContextWithNotification:)
-                                                     name:NSManagedObjectContextDidSaveNotification
-                                                   object:localContext];
-            self.mainContext = localContext;
-        }
     }
     
     return localContext;
@@ -517,6 +518,20 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
 	[managedObjectModel release];
 	[managedObjectContext release];
 	[persistentStoreCoordinator release];
+    
+    // Make sure we unregister for the save notifications from the
+    // secondary contexts before we are deallocated.
+    [self.contextThreads enumerateObjectsUsingBlock:^(NSThread *thread, BOOL *stop) {
+        NSMutableDictionary *threadDictionary = [thread threadDictionary];
+        NSManagedObjectContext *moc = threadDictionary[MITCoreDataThreadLocalContextKey];
+        
+        if (moc) {
+            [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                            name:nil
+                                                          object:moc];
+        }
+    }];
+    
     self.contextThreads = nil;
     self.mainContext = nil;
 
@@ -533,11 +548,11 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
             NSManagedObjectContext *moc = threadDictionary[MITCoreDataThreadLocalContextKey];
             
             if ([thread isFinished]) {
-                [finishedThreads addObject:thread];
                 [[NSNotificationCenter defaultCenter] removeObserver:self
                                                                 name:nil
                                                               object:moc];
                 [[thread threadDictionary] removeObjectForKey:MITCoreDataThreadLocalContextKey];
+                [finishedThreads addObject:thread];
             }
         }];
         
