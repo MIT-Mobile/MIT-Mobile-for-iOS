@@ -97,10 +97,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:8];
-    [params setObject:@"" forKey:@"name"];
-    [params setObject:[self.reportDictionary objectForKey:FacilitiesRequestUserEmailKey] forKey:@"email"];
     
     FacilitiesLocation *location = [self.reportDictionary objectForKey:FacilitiesRequestLocationBuildingKey];
     FacilitiesRoom *room = [self.reportDictionary objectForKey:FacilitiesRequestLocationRoomKey];
@@ -108,10 +104,11 @@
     NSString *customLocation = [self.reportDictionary objectForKey:FacilitiesRequestLocationUserBuildingKey];
     NSString *customRoom = [self.reportDictionary objectForKey:FacilitiesRequestLocationUserRoomKey];
     
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:9];
     if (location) {
+        [params setObject:location.uid forKey:@"location"];
         [params setObject:location.name forKey:@"locationName"];
         [params setObject:location.number forKey:@"buildingNumber"];
-        [params setObject:location.uid forKey:@"location"];
     } else {
         [params setObject:customLocation forKey:@"locationNameByUser"];
     }
@@ -123,24 +120,21 @@
     }
     
     [params setObject:type.name forKey:@"problemType"];
-    
-    [params setObject:[self.reportDictionary objectForKey:FacilitiesRequestUserDescriptionKey] 
-               forKey:@"message"];
-    
+    [params setObject:[self.reportDictionary objectForKey:FacilitiesRequestUserDescriptionKey] forKey:@"message"];
+    [params setObject:[self.reportDictionary objectForKey:FacilitiesRequestUserEmailKey] forKey:@"email"];
+        
     NSData *pictureData = [self.reportDictionary objectForKey:FacilitiesRequestImageDataKey];
     if (pictureData) {
         [params setObject:[pictureData base64EncodingWithLineLength:64] forKey:@"image"];
-        [params setObject:@"image/jpeg" forKey:@"imageFormat"];
+        //[params setObject:@"image/jpeg" forKey:@"imageFormat"];
     }
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"facilities"
-                                                                              command:@"upload"
-                                                                           parameters:params] autorelease];
-    request.usePOST = YES;
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && 
-            [jsonResult respondsToSelector:@selector(objectForKey:)] &&
-            [[jsonResult objectForKey:@"success"] boolValue] == YES)
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"apis/building_services/problems" parameters:params] autorelease];
+    
+    request.usePOST = YES;  
+    request.completeBlock = ^(MobileRequestOperation *operation, NSData *content, NSString *contentType, NSError *error) {
+        NSString *result = [[NSString alloc]initWithData:content encoding:NSUTF8StringEncoding];
+        if (!error && [result isEqual:@"SUCCESS"])
         {
             [self showSuccess];
         } else {

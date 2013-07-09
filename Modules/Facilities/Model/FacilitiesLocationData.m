@@ -14,10 +14,10 @@
 
 NSString* const FacilitiesDidLoadDataNotification = @"MITFacilitiesDidLoadData";
 
-NSString * const FacilitiesCategoriesKey = @"categorylist";
-NSString * const FacilitiesLocationsKey = @"location";
-NSString * const FacilitiesRoomsKey = @"room";
-NSString * const FacilitiesRepairTypesKey = @"problemtype";
+NSString * const FacilitiesCategoriesKey = @"building_services/location_categories";
+NSString * const FacilitiesLocationsKey = @"map/places";
+NSString * const FacilitiesRoomsKey = @"map/rooms";
+NSString * const FacilitiesRepairTypesKey = @"building_services/problem_types";
 
 static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 
@@ -360,18 +360,21 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     }
 }
 
-- (void)updateRepairTypeData {
+- (void)updateRepairTypeData { 
     [self updateDataForCommand:FacilitiesRepairTypesKey
                         params:nil];
 }
 
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"facilities"
-                                                                              command:command
-                                                                           parameters:params];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] init];    
+    if (command == FacilitiesRoomsKey) {
+        request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"/apis/%@/%@", command, [params objectForKey:@"building"]] parameters:nil];
+    } else {
+        request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"/apis/%@", command] parameters:nil];
+    }
     
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        NSString *blkCommand = operation.command;
+        NSString *blkCommand = command; 
         NSDictionary *parameters = operation.parameters;
         dispatch_queue_t handlerQueue = dispatch_queue_create(NULL, 0);
         

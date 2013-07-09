@@ -747,9 +747,7 @@
         self.lastSearchTerm = searchTerms;
         
         NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:searchTerms, @"q", nil];
-        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
-                                                                                  command:@"search"
-                                                                               parameters:params] autorelease];
+        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"apis/calendars/events_calendar/events" parameters:params] autorelease];
         
         request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
             if ([searchTerms isEqualToString:self.lastSearchTerm]) {
@@ -815,9 +813,7 @@
 
 - (void)makeCategoriesRequest
 {
-	MITEventList *categories = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
-    NSString *command = [CalendarDataManager apiCommandForEventType:categories];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil] autorelease];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"apis/calendars/events_calendar/categories" parameters:nil] autorelease];   
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             
@@ -845,6 +841,7 @@
 	if ([[CalendarDataManager sharedManager] isDailyEvent:activeEventList]) {
 		NSTimeInterval interval = [startDate timeIntervalSince1970];
 		NSString *timeString = [NSString stringWithFormat:@"%d", (int)interval];
+        long long end_date = [timeString doubleValue] + 86400;
 		
 		if (self.category) {
             NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -853,14 +850,15 @@
             if(self.category.listID) {
                 [params setObject:self.category.listID forKey:@"type"];
             }
-            request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:@"category" parameters:params] autorelease];
-
-		} else {
-            NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    activeEventList.listID, @"type",
-                                    timeString, @"time", nil];
-            NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
-            request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params] autorelease];
+            request = [[[MobileRequestOperation alloc] initWithRelativePath:
+                       [NSString stringWithFormat:@"apis/calendars/events_calendar/events?category=%@&start_date=%@&end_date=%lld&q=2", self.category.catID, timeString, end_date]
+                                                                parameters:nil] autorelease];
+		} else {           
+            if ([activeEventList.listID isEqualToString:@"Events"]){
+                request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/calendars/events_calendar/non_exhibits?time=%@", timeString] parameters:nil] autorelease];
+            } else if ([activeEventList.listID isEqualToString:@"Exhibits"]){
+                request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/calendars/events_calendar/exhibits?time=%@", timeString] parameters:nil] autorelease];
+            }
 		}
     
     } else if ([activeEventList.listID isEqualToString:@"academic"] || [activeEventList.listID isEqualToString:@"holidays"]) {
@@ -869,11 +867,14 @@
 		NSDateComponents *comps = [calendar components:unitFlags fromDate:startDate];
 		NSString *month = [NSString stringWithFormat:@"%d", [comps month]];
 		NSString *year = [NSString stringWithFormat:@"%d", [comps year]];
-
         NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:year, @"year", month, @"month", nil];
-        NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
-        request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params] autorelease];
-
+        
+        if ([activeEventList.listID isEqualToString:@"academic"]){
+            request = [[[MobileRequestOperation alloc] initWithRelativePath:@"/apis/calendars/academic_calendar/events" parameters:params] autorelease];
+        } else if ([activeEventList.listID isEqualToString:@"holidays"])
+        {
+            request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"/apis/calendars/academic_holidays/events?year=%@", year] parameters:nil] autorelease];
+        }
 	} else {
         NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
         request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil] autorelease];
@@ -881,6 +882,11 @@
     
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        if (!error && [jsonResult isKindOfClass:[NSDictionary class]])
+        {
+            jsonResult = [jsonResult objectForKey:@"events"];
+        }
+        
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
             
             NSMutableArray *arrayForTable = [NSMutableArray arrayWithCapacity:[jsonResult count]];

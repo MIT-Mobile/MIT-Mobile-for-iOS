@@ -7,6 +7,9 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface FacilitiesTypeViewController ()
+{
+    NSArray *_problemTypes;
+}
 @property (nonatomic,retain) id observerToken;
 @end
 
@@ -14,6 +17,7 @@
 @synthesize userData = _userData;
 @synthesize tableView = _tableView;
 @synthesize loadingView = _loadingView;
+@dynamic problemTypes;
 
 - (id)init {
     self = [super init];
@@ -90,15 +94,21 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    if (self.observerToken != nil) {
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    if (self.observerToken == nil) {
         self.observerToken = [[FacilitiesLocationData sharedData] addUpdateObserver:^(NSString *name, BOOL dataUpdated, id userData) {
                                                    if ([userData isEqualToString:FacilitiesRepairTypesKey]) {
                                                        [self.loadingView removeFromSuperview];
                                                        self.loadingView = nil;
                                                        self.tableView.hidden = NO;
-                                                       
-                                                       if (dataUpdated) {
-                                                           [self.tableView reloadData];
+                                                        
+                                                       if (dataUpdated || self.problemTypes == nil) {
+                                                          self.problemTypes = nil;
+                                                          [self.tableView reloadData];
                                                        }
                                                    }
                                                }];
@@ -117,6 +127,22 @@
     self.tableView = nil;
 }
 
+- (void)setProblemTypes:(NSArray *)typesArray {
+    if (_problemTypes != nil) {
+        [_problemTypes release];
+    }
+    
+    _problemTypes = [typesArray retain];
+}
+
+- (NSArray*)problemTypes {
+    if (_problemTypes == nil) {
+        [self setProblemTypes:[self repairTypes]];
+    }
+    
+    return _problemTypes;
+}
+
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
@@ -130,7 +156,7 @@
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[self repairTypes] count];
+    return [[self problemTypes] count];
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -143,10 +169,8 @@
                                        reuseIdentifier:reuseIdentifier] autorelease];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
-
-    FacilitiesRepairType *type = (FacilitiesRepairType *)[[self repairTypes] objectAtIndex:indexPath.row];
+    FacilitiesRepairType *type = (FacilitiesRepairType *)[[self problemTypes] objectAtIndex:indexPath.row];
     cell.textLabel.text = type.name;
-
     return cell;
 }
 

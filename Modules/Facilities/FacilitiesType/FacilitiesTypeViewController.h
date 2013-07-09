@@ -11,4 +11,5 @@
 @property (nonatomic,copy) NSDictionary *userData;
 @property (nonatomic,retain) UITableView* tableView;
 @property (nonatomic, retain) MITLoadingActivityView *loadingView;
+@property (nonatomic, retain) NSArray *problemTypes;
 @end

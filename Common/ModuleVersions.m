@@ -29,10 +29,7 @@
 }
 
 - (void)updateVersionInformation {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"version"
-                                                                              command:@"list"
-                                                                           parameters:nil] autorelease];
-    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"apis/apps/timestamps" parameters:nil] autorelease];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error) {
             NSDictionary *remoteDates = (NSDictionary *)jsonResult;

@@ -13,10 +13,7 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 
 	self.categories = nil;
-    
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"calendar"
-                                                                              command:@"categories"
-                                                                           parameters:nil] autorelease];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"/apis/calendars/events_calendar" parameters:nil] autorelease];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error)
         {

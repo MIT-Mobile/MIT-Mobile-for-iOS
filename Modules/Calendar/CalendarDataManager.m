@@ -9,8 +9,8 @@
 NSString * const CalendarStateEventList = @"events";
 NSString * const CalendarStateCategoryList = @"categories";
 NSString * const CalendarStateCategoryEventList = @"category";
-//NSString * const CalendarStateSearchHome = @"search";
-//NSString * const CalendarStateSearchResults = @"results";
+NSString * const CalendarStateSearchHome = @"search";
+NSString * const CalendarStateSearchResults = @"results";
 NSString * const CalendarStateEventDetail = @"detail";
 
 NSString * const CalendarEventAPIDay = @"day";
@@ -78,10 +78,7 @@ static CalendarDataManager *s_sharedManager = nil;
 	[_staticEventListIDs release];
 	_staticEventListIDs = [[NSArray alloc] initWithArray:mutableStaticEvents];
     
-    NSDictionary *params = [NSDictionary dictionaryWithObject:@"2" forKey:@"version"];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
-                                                                              command:@"extraTopLevels"
-                                                                           parameters:params] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:@"apis/calendars" parameters:nil];    
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             if ([[CoreDataManager managedObjectContext] hasChanges]) {

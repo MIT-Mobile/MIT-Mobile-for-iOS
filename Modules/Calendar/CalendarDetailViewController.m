@@ -122,11 +122,7 @@
         return;
     }
 
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:[self.event.eventID description], @"id", nil];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
-                                                                              command:@"detail"
-                                                                           parameters:params] autorelease];
-
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/calendars/events_calendar/events/%@", self.event.eventID] parameters:nil] autorelease];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         isLoading = NO;
         

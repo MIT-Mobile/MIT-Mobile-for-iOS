@@ -98,23 +98,43 @@
     return ([self.latitude doubleValue] != 0);
 }
 
+- (NSDate *)timeEvent:(NSDictionary *)dict
+{
+    NSDateFormatter* dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+    dateFormatter.dateFormat = @"yyyy-MM-dd HH:mm";
+    NSDate* date = [dateFormatter dateFromString:
+                          [NSString stringWithFormat:@"%@-%@-%@ %@:%@",[dict objectForKey:@"year"],[dict objectForKey:@"month"],[dict objectForKey:@"day"],[dict objectForKey:@"hour"],[dict objectForKey:@"minute"]]];
+    return date;
+}
+
 - (void)updateWithDict:(NSDictionary *)dict
 {
 	self.eventID = [NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]];
-
-	self.start = [NSDate dateWithTimeIntervalSince1970:[[dict objectForKey:@"start"] doubleValue]];
-    double endTime = [[dict objectForKey:@"end"] doubleValue];
-    if (endTime) {
-        self.end = [NSDate dateWithTimeIntervalSince1970:endTime];
+    
+    if([[dict objectForKey:@"start"] isKindOfClass:[NSDictionary class]]){
+        self.start = [self timeEvent:[dict objectForKey:@"start"]];
+    } else{
+        self.start = [NSDate dateWithTimeIntervalSince1970:[[dict objectForKey:@"start"] doubleValue]];
+    }
+    
+    if ([dict objectForKey:@"end"]) {
+        if([[dict objectForKey:@"end"] isKindOfClass:[NSDictionary class]]){
+            self.end = [self timeEvent:[dict objectForKey:@"end"]];
+        } else{
+            self.end = [NSDate dateWithTimeIntervalSince1970:[[dict objectForKey:@"end"] doubleValue]];
+        }
     }
 	self.summary = [dict objectForKey:@"description"];
 	self.title = [dict objectForKey:@"title"];
 
 	// optional strings
-	NSString *maybeValue = [dict objectForKey:@"shortloc"];
-	if (maybeValue.length > 0) {
-		self.shortloc = maybeValue;
-	}
+    NSString *maybeValue = [[NSString alloc] init];
+    if (![[dict objectForKey:@"shortloc"] isKindOfClass:[NSNull class]]){
+        maybeValue = [dict objectForKey:@"shortloc"];
+        if (maybeValue != nil && maybeValue.length > 0) {
+            self.shortloc = maybeValue;
+        }
+    }
 	maybeValue = [dict objectForKey:@"location"];
 	if (maybeValue.length > 0) {
 		self.location = maybeValue;

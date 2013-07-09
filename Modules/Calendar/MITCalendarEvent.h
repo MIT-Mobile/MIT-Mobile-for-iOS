@@ -26,6 +26,7 @@
 - (NSString *)subtitle;
 - (NSString *)dateStringWithDateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle separator:(NSString *)separator ;
 - (BOOL)hasCoords;
+- (NSDate *)timeEvent:(NSDictionary *)dict;
 - (void)updateWithDict:(NSDictionary *)dict;
 - (BOOL)hasMoreDetails;
 - (void)setUpEKEvent:(EKEvent *)ekEvent;
