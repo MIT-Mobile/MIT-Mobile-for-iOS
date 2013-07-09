@@ -572,6 +572,7 @@
 //        }
     } else if (indexPath.section == _announcementSectionIndex) {
         MITSingleWebViewCellTableViewController *vc = [[MITSingleWebViewCellTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        vc.title = @"Announcements";
         vc.webViewInsets = UIEdgeInsetsMake(10, 10, 10, 10);
         vc.htmlContent = [[DiningData sharedData] announcementsHTML];
         
