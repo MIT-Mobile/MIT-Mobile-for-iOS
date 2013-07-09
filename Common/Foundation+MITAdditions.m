@@ -538,9 +538,9 @@ typedef struct {
                                                                      NSMonthCalendarUnit |
                                                                      NSDayCalendarUnit)
                                                            fromDate:self];
-    return [[NSCalendar cachedCurrentCalendar] dateByAddingComponents:dateComponents
-                                                               toDate:[calendar dateFromComponents:strippedComponents]
-                                                              options:0];
+    return [calendar dateByAddingComponents:dateComponents
+                                     toDate:[calendar dateFromComponents:strippedComponents]
+                                    options:0];
 }
 
 /** Extra compact string representation of the date's time components.
@@ -557,15 +557,21 @@ typedef struct {
     // Profile this method in the wild. These NSDateFormatter allocs are expensive
     // but I'm not sure if we're calling this method enough for it to require caching.
     // Possible add in a thread-local cached copy if we need to.
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    
+    
+    // If the minute value is not zero, use an alternate format
+    // that includes the minutes. Otherwise, just ignore them and
+    // only include the hour and period. NSDateFormatter will alter
+    // the format strings if the user has either 24h time enabled
+    // or has disabled display of the current period.
     if ([components minute]) {
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         [formatter setDateFormat:@"h:mma"];
-        return [formatter stringFromDate:self];
     } else {
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         [formatter setDateFormat:@"ha"];
-        return [formatter stringFromDate:self];
-    } 
+    }
+    
+    return [formatter stringFromDate:self];
 }
 
 - (NSDateComponents *)dayComponents {
@@ -604,6 +610,13 @@ typedef struct {
 
 @implementation NSCalendar (MITAdditions)
 
+/** Returns a copy of the current calendar. This method uses CFCalendarCopyCurrent so a
+ cached copy may be returned if one is available. Do not assume that multiple calls to this
+ method will return the same reference.
+ 
+ @return The logical calendar for the current user.
+ @see CFCalendarCopyCurrent
+*/
 + (NSCalendar *)cachedCurrentCalendar {
     return (NSCalendar*)CFBridgingRelease(CFCalendarCopyCurrent());
 }
