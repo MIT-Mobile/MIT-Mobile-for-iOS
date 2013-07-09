@@ -15,6 +15,10 @@
 
 @end
 
+const NSInteger kStationWidth = 70;
+const NSInteger kTitleWidth = 160;
+const NSInteger kSubtitleWidth = 160;
+
 @implementation DiningHallMenuItemTableCell
 
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
@@ -22,9 +26,9 @@
     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
     if (self) {
                                                                             // heights are initialized to be minimum allowed. Height will vary
-        self.station        = [[UILabel alloc] initWithFrame:CGRectMake(10, 15, 70, 14)];
-        self.title          = [[UILabel alloc] initWithFrame:CGRectMake(90, 15, 160, 14)];
-        self.subtitle       = [[UILabel alloc] initWithFrame:CGRectMake(90, 41, 160, 12)];
+        self.station        = [[UILabel alloc] initWithFrame:CGRectMake(10, 15, kStationWidth, 14)];
+        self.title          = [[UILabel alloc] initWithFrame:CGRectMake(90, 15, kTitleWidth, 14)];
+        self.subtitle       = [[UILabel alloc] initWithFrame:CGRectMake(90, 41, kSubtitleWidth, 12)];
         
         [self formatLabel:self.station withFont:[[self class] primaryFont]];
         [self formatLabel:self.title withFont:[[self class] primaryFont]];
@@ -120,13 +124,13 @@
 #pragma mark - Class Methods
 + (CGFloat) cellHeightForCellWithStation:(NSString *)station title:(NSString *) title subtitle:(NSString *)subtitle
 {
-    CGFloat stationWidth        = 60;
-    CGFloat titleWidth          = 160;
-    CGFloat subtitleWidth    = 160;
+    CGFloat stationWidth        = kStationWidth;
+    CGFloat titleWidth          = kTitleWidth;
+    CGFloat subtitleWidth       = kSubtitleWidth;
     
     CGSize maximumStationSize       = CGSizeMake(stationWidth, CGFLOAT_MAX);
     CGSize maximumTitleSize         = CGSizeMake(titleWidth, CGFLOAT_MAX);
-    CGSize maximumSubtitleSize   = CGSizeMake(subtitleWidth, CGFLOAT_MAX);
+    CGSize maximumSubtitleSize      = CGSizeMake(subtitleWidth, CGFLOAT_MAX);
     
     CGSize necessaryStationLabelSize        = [station sizeWithFont:[self primaryFont] constrainedToSize:maximumStationSize lineBreakMode:UILineBreakModeWordWrap];
     CGSize necessaryTitleLabelSize          = [title sizeWithFont:[self primaryFont] constrainedToSize:maximumTitleSize lineBreakMode:UILineBreakModeWordWrap];
