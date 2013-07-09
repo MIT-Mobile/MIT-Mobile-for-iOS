@@ -59,8 +59,15 @@
         NSDictionary *latestDataDict = [self fetchData];
         
         if (latestDataDict) {
-            [[CoreDataManager managedObjectContext] processPendingChanges];
-            [[[CoreDataManager managedObjectContext] undoManager] disableUndoRegistration];
+            // (bskinner)
+            // Added to get around issues with CoreDataManager context caching. CoreDataManager keeps
+            // a single context per thread and will reuse them in a dirty state.
+            // Since NSOperationQueue reuses its thread, we are getting a stale, modified context
+            // from CoreDataManager which leads to merge conflicts in certain instances. Forcing a reset
+            // in this case should work but it is still likely a VeryBadThing (especially in other cases
+            // where multiple operations could be happening on a shared thread).
+            [[[CoreDataManager coreDataManager] managedObjectContext] reset];
+            
             // Make sure the set list of dietary flags already exist before we start parsing.
             [DiningDietaryFlag createDietaryFlagsInStore];
             
