@@ -1,7 +1,7 @@
 #import "MapKit+MITAdditions.h"
 #import "CoreLocation+MITAdditions.h"
 
-const double MITMapRegionDefaultPadding = 0.20;
+const double MITMapRegionDefaultPadding = 0.40;
 const CLLocationDistance MITMapRegionDefaultMinimumRegionSize = 25.;
 
 const MKCoordinateRegion MKCoordinateRegionInvalid = {{.longitude = CGFLOAT_MAX,
