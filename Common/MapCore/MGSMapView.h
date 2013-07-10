@@ -47,7 +47,25 @@
 
 
 #pragma mark Base Map Set Management
+/** Returns the user readable name for the specified map set,
+    if one is available.
+ 
+ @param The map set identifier to get the name for
+ @return A user-readable name for the map, if one exists
+ @see mapSets
+ @see activeMapSet
+ */
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)mapSetIdentifier;
+
+
+/** The set of all currently available map sets. These values should be passed
+ to the activeMapSet property in order to change the current basemap set.
+ Any layers currently to the map will be preserved.
+ 
+ @return Set of NSString map set identifiers
+ @see nameForMapSetWithIdentifier:
+ @see activeMapSet
+ */
 - (NSSet*)mapSets;
 - (void)setActiveMapSet:(NSString*)mapSetName;
 
