@@ -78,7 +78,7 @@ static CalendarDataManager *s_sharedManager = nil;
 	[_staticEventListIDs release];
 	_staticEventListIDs = [[NSArray alloc] initWithArray:mutableStaticEvents];
     
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:@"apis/calendars" parameters:nil];    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"apis/calendars" parameters:nil] autorelease];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             if ([[CoreDataManager managedObjectContext] hasChanges]) {

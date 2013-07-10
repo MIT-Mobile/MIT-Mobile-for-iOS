@@ -9,11 +9,11 @@
 {
 }
 
-- (void)updateBody:(NSArray *)contents;
+- (void)updateBody:(NSArray *)contents withTourID:(NSString *)tourID;
 - (void)updatePath:(NSArray *)pathLocations;
 - (NSArray *)pathAsArray;
 - (void)saveArrayToPath:(NSArray *)array;
-- (void)updateRouteWithInfo:(NSDictionary *)routeInfo;
+- (void)updateRouteWithInfo:(NSDictionary *)routeInfo withTourID:(NSString *)tourID;
 
 @property (nonatomic, retain) NSNumber * longitude;
 @property (nonatomic, retain) NSNumber * latitude;

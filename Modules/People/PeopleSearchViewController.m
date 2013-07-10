@@ -201,9 +201,8 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
     }];
     
 	self.searchTokens = [NSArray arrayWithArray:tempTokens];
-    
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"/apis/people?q=%@", self.searchTerms]
-                                                                                 parameters:nil];
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:self.searchTerms, @"q", nil];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"/apis/people" parameters:params] autorelease];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (_searchCancelled) {
             return;

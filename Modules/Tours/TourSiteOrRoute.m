@@ -19,7 +19,7 @@
 @dynamic startLocations;
 @dynamic sortOrder;
 
-- (void)updateBody:(NSArray *)contents {
+- (void)updateBody:(NSArray *)contents withTourID:(NSString *)tourID{
     for (CampusTourSideTrip *aTrip in self.sideTrips) {
         [CoreDataManager deleteObject:aTrip];
     }
@@ -35,9 +35,10 @@
             aTrip.componentID = [content objectForKey:@"id"];
             aTrip.title = [content objectForKey:@"title"];
             aTrip.body = [content objectForKey:@"html"];
-            aTrip.photoURL = [ToursDataManager getPhotoUrl:[content objectForKey:@"photo-id"]];
-            aTrip.photoThumbnailURL = [ToursDataManager getPhotoUrl:[content objectForKey:@"thumbnail156-id"]];
-            aTrip.audioURL = [content objectForKey:@"audio-url"];
+            aTrip.photoURL = [ToursDataManager getPhotoUrl:[content objectForKey:@"photo-id"] withTourID:tourID];
+            aTrip.photoThumbnailURL = [ToursDataManager getPhotoUrl:[content objectForKey:@"thumbnail156-id"] withTourID:tourID];
+//            aTrip.audioURL = [content objectForKey:@"audio-url"];
+            aTrip.audioURL = [ToursDataManager getSoundUrl:[content objectForKey:@"audio-id"] withTourID:tourID];
             
             NSDictionary *coords = [content objectForKey:@"latlon"];
             aTrip.latitude = [NSNumber numberWithFloat:[[coords objectForKey:@"latitude"] floatValue]];
@@ -60,13 +61,14 @@
     [self saveArrayToPath:pathArray];
 }
 
-- (void)updateRouteWithInfo:(NSDictionary *)routeInfo {
-    [self updateBody:[routeInfo objectForKey:@"content"]];
+- (void)updateRouteWithInfo:(NSDictionary *)routeInfo withTourID:(NSString *)tourID{
+    [self updateBody:[routeInfo objectForKey:@"content"] withTourID:tourID];
     [self updatePath:[routeInfo objectForKey:@"path"]];
     self.title = [routeInfo objectForKey:@"title"];
-    self.photoURL = [ToursDataManager getPhotoUrl:[routeInfo objectForKey:@"photo-id"]];
-    self.photoThumbnailURL = [ToursDataManager getPhotoUrl:[routeInfo objectForKey:@"thumbnail156-id"]];
-    self.audioURL = [routeInfo objectForKey:@"audio-url"];
+    self.photoURL = [ToursDataManager getPhotoUrl:[routeInfo objectForKey:@"photo-id"] withTourID:tourID];
+    self.photoThumbnailURL = [ToursDataManager getPhotoUrl:[routeInfo objectForKey:@"thumbnail156-id"] withTourID:tourID];
+//    self.audioURL = [routeInfo objectForKey:@"audio-url"];
+    self.audioURL = [ToursDataManager getSoundUrl:[routeInfo objectForKey:@"audio-id"] withTourID:tourID];
     self.zoom = [NSNumber numberWithInt:[[routeInfo objectForKey:@"zoom"] floatValue]];
 }
 

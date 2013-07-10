@@ -142,13 +142,14 @@ NSString * const NewsTagImageHeight     = @"height";
     NSString *newsPath = nil;
     
     if (MITMobileWebGetCurrentServerType() == MITMobileWebDevelopment) {
-        newsPath = @"newsoffice-dev";
+        newsPath = @"news/stories";
     } else {
         newsPath = @"newsoffice";
     }
     
     NSURL *host = MITMobileWebGetCurrentServerURL();
-    NSURL *baseURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/", [host absoluteString], newsPath]];
+    NSMutableString *baseURLString = [NSMutableString stringWithFormat:@"%@/%@", [host absoluteString], newsPath];
+    NSURL *baseURL = [[NSURL alloc] init];
     NSMutableString *pathString = [NSMutableString stringWithCapacity:22];
     NSMutableArray *params = [NSMutableArray arrayWithCapacity:2];
     if (category != 0) {
@@ -159,16 +160,16 @@ NSString * const NewsTagImageHeight     = @"height";
 	self.loadingMore = NO;
     if (storyId != 0) {
 		self.loadingMore = YES;
-        [params addObject:[NSString stringWithFormat:@"story_id=%d", storyId]];
+        [baseURLString appendString:[NSString stringWithFormat:@"/%i", storyId]];
     }
     if ([params count] > 0) {
         [pathString appendString:@"?"];
     }
+    baseURL =[NSURL URLWithString:baseURLString];
     [pathString appendString:[params componentsJoinedByString:@"&"]];
-    NSURL *fullURL = [NSURL URLWithString:pathString relativeToURL:baseURL];
+    NSURL *fullURL = [NSURL URLWithString:pathString relativeToURL:baseURL];    
     
     expectedStoryCount = 10; // if the server is ever made to support a range param, set this to count instead
-    
 	[self downloadAndParseURL:fullURL];
 }
 

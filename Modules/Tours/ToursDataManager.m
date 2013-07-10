@@ -432,15 +432,16 @@ static ToursDataManager *s_toursDataManager = nil;
                 aSite.latitude = [NSNumber numberWithFloat:[[coords objectForKey:@"latitude"] floatValue]];
                 aSite.longitude = [NSNumber numberWithFloat:[[coords objectForKey:@"longitude"] floatValue]];
             }
-            aSite.photoURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"photo-id"]];
-            aSite.photoThumbnailURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"thumbnail156-id"]];
-            aSite.audioURL = [siteInfo objectForKey:@"audio-url"];
+            aSite.photoURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"photo-id"] withTourID:_activeTour.tourID];
+            aSite.photoThumbnailURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"thumbnail156-id"] withTourID:_activeTour.tourID];
+//            aSite.audioURL = [siteInfo objectForKey:@"audio-url"];
+            aSite.audioURL = [ToursDataManager getSoundUrl:[siteInfo objectForKey:@"audio-id"] withTourID:_activeTour.tourID];
             
-            [aSite updateBody:[siteInfo objectForKey:@"content"]];
+            [aSite updateBody:[siteInfo objectForKey:@"content"] withTourID:tourID];
             NSDictionary *routeInfo = [siteInfo objectForKey:@"exit-directions"];
 
             lastRoute = [self tourRouteWithStartID:siteID];
-            [lastRoute updateRouteWithInfo:routeInfo];
+            [lastRoute updateRouteWithInfo:routeInfo withTourID:tourID];
             lastRoute.previousComponent = aSite;
             lastRoute.tour = aTour;
             
@@ -464,14 +465,13 @@ static ToursDataManager *s_toursDataManager = nil;
             TourStartLocation *aStartLocation = [self tourStartLocationWithID:locationID];
             
             aStartLocation.title = [siteInfo objectForKey:@"title"];
-            aStartLocation.photoURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"photo-id"]];
-            aStartLocation.photoThumbnailURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"thumbnail156-id"]];
+            aStartLocation.photoURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"photo-id"] withTourID:tourID];
+            aStartLocation.photoThumbnailURL = [ToursDataManager getPhotoUrl:[siteInfo objectForKey:@"thumbnail156-id"] withTourID:tourID];
             
             aStartLocation.body = [siteInfo objectForKey:@"content"];
             NSString *siteID = [siteInfo objectForKey:@"start-site"];
             aStartLocation.startSite = [self findSiteWithID:siteID];
         }
-        
         [CoreDataManager saveData];
         
         [[NSNotificationCenter defaultCenter] postNotificationName:TourDetailsLoadedNotification 
@@ -483,9 +483,14 @@ static ToursDataManager *s_toursDataManager = nil;
     [[NSOperationQueue mainQueue] addOperation:request];
 }
 
-+ (NSString *)getPhotoUrl:(NSString *)photoID {    
++ (NSString *)getPhotoUrl:(NSString *)photoID withTourID:(NSString *)tourID {
     NSURL *serverUrl = MITMobileWebGetCurrentServerURL();
-    return [NSString stringWithFormat:@"%@/tours/mit150/images/%@", [serverUrl absoluteString], photoID];
+    return [NSString stringWithFormat:@"%@/tours/%@/images/%@", [serverUrl absoluteString], tourID, photoID];
+}
+
++ (NSString *)getSoundUrl:(NSString *)soundID withTourID:(NSString *)tourID {
+    NSURL *serverUrl = MITMobileWebGetCurrentServerURL();
+    return [NSString stringWithFormat:@"%@/tours/%@/sound/%@", [serverUrl absoluteString], tourID, soundID];
 }
 
 #pragma mark -
