@@ -179,49 +179,14 @@
 
 - (MKCoordinateRegion)regionForAnnotations:(NSArray *)annotations
 {
-	double minLat = 90;
-	double maxLat = -90;
-	double minLon = 180;
-	double maxLon = -180;
+    NSMutableSet *coordinateSet = [[NSMutableSet alloc] init];
     
-    for (id<MKAnnotation> anAnnotation in annotations) {
-        CLLocationCoordinate2D coordinate = anAnnotation.coordinate;
-		if (coordinate.latitude < minLat) {
-			minLat = coordinate.latitude;
-		}
-		if (coordinate.latitude > maxLat) {
-			maxLat = coordinate.latitude;
-		}
-		if(coordinate.longitude < minLon) {
-			minLon = coordinate.longitude;
-		}
-		if (coordinate.longitude > maxLon) {
-			maxLon = coordinate.longitude;
-		}
+    for (id<MKAnnotation> annotation in annotations) {
+        NSValue *coordinateValue = [NSValue valueWithMKCoordinate:[annotation coordinate]];
+        [coordinateSet addObject:coordinateValue];
     }
     
-	CLLocationCoordinate2D center;
-	center.latitude = minLat + (maxLat - minLat) / 2;
-	center.longitude = minLon + (maxLon - minLon) / 2;
-    
-	double latDelta = maxLat - minLat;
-	double lonDelta = maxLon - minLon;
-    
-    MKCoordinateRegion minRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake(0, 0),
-                                                                    self.minimumRegionSize, self.minimumRegionSize);
-    
-    if (latDelta < minRegion.span.latitudeDelta) {
-        latDelta = minRegion.span.latitudeDelta;
-    }
-    
-    if (lonDelta < minRegion.span.longitudeDelta) {
-        lonDelta = minRegion.span.longitudeDelta;
-    }
-    
-	MKCoordinateSpan span = MKCoordinateSpanMake(latDelta + latDelta / 4, lonDelta + lonDelta / 4);
-	MKCoordinateRegion region = MKCoordinateRegionMake(center, span);
-    
-	return region;
+    return MKCoordinateRegionForCoordinates(coordinateSet);
 }
 
 - (void)selectAnnotation:(id<MKAnnotation>)annotation
@@ -393,49 +358,19 @@
 
 - (MKCoordinateRegion)regionForRoute:(id<MITMapRoute>)route
 {
-    double minLat = 90;
-	double maxLat = -90;
-	double minLon = 180;
-	double maxLon = -180;
+    NSMutableSet *coordinateSet = [[NSMutableSet alloc] init];
     
-    for (CLLocation *aLocation in route.pathLocations) {
-        CLLocationCoordinate2D coordinate = aLocation.coordinate;
-		if (coordinate.latitude < minLat) {
-			minLat = coordinate.latitude;
-		}
-		if (coordinate.latitude > maxLat) {
-			maxLat = coordinate.latitude;
-		}
-		if(coordinate.longitude < minLon) {
-			minLon = coordinate.longitude;
-		}
-		if (coordinate.longitude > maxLon) {
-			maxLon = coordinate.longitude;
-		}
+    for (CLLocation *pathLocation in [route pathLocations]) {
+        NSValue *coordinateValue = [NSValue valueWithMKCoordinate:[pathLocation coordinate]];
+        [coordinateSet addObject:coordinateValue];
     }
     
-	CLLocationCoordinate2D center;
-	center.latitude = minLat + (maxLat - minLat) / 2;
-	center.longitude = minLon + (maxLon - minLon) / 2;
-    
-	double latDelta = maxLat - minLat;
-	double lonDelta = maxLon - minLon;
-    
-    MKCoordinateRegion minRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake(0, 0),
-                                                                      self.minimumRegionSize, self.minimumRegionSize);
-    
-    if (latDelta < minRegion.span.latitudeDelta) {
-        latDelta = minRegion.span.latitudeDelta;
+    for (id<MKAnnotation> annotation in [route annotations]) {
+        NSValue *coordinateValue = [NSValue valueWithMKCoordinate:[annotation coordinate]];
+        [coordinateSet addObject:coordinateValue];
     }
     
-    if (lonDelta < minRegion.span.longitudeDelta) {
-        lonDelta = minRegion.span.longitudeDelta;
-    }
-    
-	MKCoordinateSpan span = MKCoordinateSpanMake(latDelta + latDelta / 4, lonDelta + lonDelta / 4);
-	MKCoordinateRegion region = MKCoordinateRegionMake(center, span);
-    
-	return region;
+    return MKCoordinateRegionForCoordinates(coordinateSet);
 }
 
 - (void)removeAllRoutes
