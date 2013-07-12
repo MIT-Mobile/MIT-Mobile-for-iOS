@@ -1486,7 +1486,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2CDA8AB61762445F001F011F /* TestFlight */,
 				2C33348E162DCF2600BBB312 /* Accounts.framework */,
 				EB7F32D210CD6FB300188BCD /* AddressBook.framework */,
 				EB7F32D610CD6FBB00188BCD /* AddressBookUI.framework */,
@@ -1827,7 +1826,8 @@
 				2CDA8AB91762445F001F011F /* release_notes.md */,
 				2CDA8ABA1762445F001F011F /* TestFlight.h */,
 			);
-			path = TestFlight;
+			name = TestFlight;
+			path = External/TestFlight;
 			sourceTree = "<group>";
 		};
 		2CDA8ABE17624C2D001F011F /* Logging */ = {
@@ -2232,16 +2232,17 @@
 		4B83721C157E5B19004CBC49 /* External */ = {
 			isa = PBXGroup;
 			children = (
-				DE27768E177E7A3900CF46FF /* SVPullToRefresh */,
-				DE654505173D90A900562C20 /* SDWebImage */,
-				48EDC96417175AF400376BCF /* UIImage+PDF */,
-				4869CDA217037F8500A3662B /* PSTCollectionView */,
 				2C101A9616540907000E40E3 /* ArcGIS */,
 				2C333496162DD2FA00BBB312 /* Facebook Connect */,
 				2CEBBF5C1635A68400441252 /* FacebookComposeViewController */,
 				2C7EDD8F1656CD2E001684E1 /* GDataXML */,
 				2CCF813F1636F69900DE273F /* Lumberjack */,
 				2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */,
+				4869CDA217037F8500A3662B /* PSTCollectionView */,
+				DE654505173D90A900562C20 /* SDWebImage */,
+				DE27768E177E7A3900CF46FF /* SVPullToRefresh */,
+				2CDA8AB61762445F001F011F /* TestFlight */,
+				48EDC96417175AF400376BCF /* UIImage+PDF */,
 				4B83721D157E5B5C004CBC49 /* ZBarSDK */,
 			);
 			name = External;
@@ -3504,7 +3505,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
-					"\"$(SRCROOT)/TestFlight\"",
+					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
 				WARNING_CFLAGS = "-Wall";
@@ -3531,7 +3532,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
-					"\"$(SRCROOT)/TestFlight\"",
+					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
 			};
@@ -3613,7 +3614,10 @@
 					"\"Facebook Connect\"",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = (
+					"-DDEBUG",
+					"-DTESTFLIGHT",
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -3644,7 +3648,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
-					"\"$(SRCROOT)/TestFlight\"",
+					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
 			};
