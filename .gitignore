@@ -9,9 +9,8 @@ build/
 xcuserdata/
 *.xccheckout
 
-Common/Secret.m
+Common/Configuration/Secret.m
 
 Resources/mit150/*.mp4
 
 .idea/
-/Secret.xcconfig

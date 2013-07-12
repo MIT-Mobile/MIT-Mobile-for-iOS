@@ -1405,7 +1405,7 @@
 				DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */,
 				EB6FD1F710E19D7900D56BE1 /* SecondaryGroupedTableViewCell.h */,
 				EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */,
-				2CEBBFA11635C4D200441252 /* Secret */,
+				2CEBBFA11635C4D200441252 /* Configuration */,
 				29C454BE118B61CA00A321B0 /* SFHFKeychainUtils.h */,
 				29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */,
 				EB74ED2C11924E7C006673F9 /* ShareDetailViewController.h */,
@@ -1907,14 +1907,14 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		2CEBBFA11635C4D200441252 /* Secret */ = {
+		2CEBBFA11635C4D200441252 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
 				2C6528F017906DBD00BED0DF /* Secret.h */,
 				2C6528F117906DBD00BED0DF /* Secret.m */,
 				2CEBBFA31635C7D900441252 /* Secret.m.in */,
 			);
-			name = Secret;
+			path = Configuration;
 			sourceTree = "<group>";
 		};
 		2CED98F013534B2C0034F6F1 /* QRReaderDetailView */ = {
@@ -2959,7 +2959,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MIT Mobile" */;
 			buildPhases = (
-				2C101ABD165440CD000E40E3 /* ShellScript */,
+				2C101ABD165440CD000E40E3 /* Run Script */,
 				2C6894FE1316F4B700245391 /* Run Script */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -3079,13 +3079,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2C101ABD165440CD000E40E3 /* ShellScript */ = {
+		2C101ABD165440CD000E40E3 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3105,7 +3106,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "CONFIG_REPO_PATH=\"${PROJECT_DIR}/External/MIT-Mobile-for-iPhone-Private\"\nLOCAL_CONFIG_DIR=\"${PROJECT_DIR}/Common\"\n\nSECRET_IMPL=\"Secret.m\"\nSECRET_IMPL_TEMPLATE=\"Secret.m.in\"\n\nif [[ -d \"${CONFIG_REPO_PATH}\" ]]; then\n    echo \"using external configuration at ${CONFIG_REPO_PATH}\"\n    use_ext=1\nelse\n    echo \"using local configuration at ${LOCAL_CONFIG_DIR}\"\n    use_ext=0\nfi\n\nif [[ ! -f \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\" ]]; then\n    echo \"'${SECRET_IMPL}' is missing\"\n    if [[ $use_ext -eq 1 ]]; then\n        cp \"${CONFIG_REPO_PATH}/${SECRET_IMPL}\" \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\"\n    else\n        cp \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL_TEMPLATE}\" \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\"\n    fi\nfi\n\nexit 0";
+			shellScript = "CONFIG_REPO_PATH=\"${PROJECT_DIR}/External/MIT-Mobile-for-iPhone-Private\"\nLOCAL_CONFIG_DIR=\"${PROJECT_DIR}/Common/Configuration\"\n\nmkdir -p \"${LOCAL_CONFIG_DIR}\"\n\nif [[ -d \"${CONFIG_REPO_PATH}\" ]]; then\n    shopt -s nullglob\n    for file in \"${CONFIG_REPO_PATH}/\"*.{m,h,in}; do\n        file_name=$(basename \"${file}\")\n        cp \"${file}\" \"${LOCAL_CONFIG_DIR}/${file_name}\"\n    done\nelse\n    if [[ ! -f \"${LOCAL_CONFIG_DIR}/Secret.m\" ]]; then\n        cp \"${LOCAL_CONFIG_DIR}/Secret.m.in\" \"${LOCAL_CONFIG_DIR}/Secret.m\"\n    fi\nfi\n\nexit 0";
 			showEnvVarsInLog = 0;
 		};
 		DEE2B550104C17860037A4AB /* Run Script */ = {
