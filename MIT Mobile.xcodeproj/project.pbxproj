@@ -108,7 +108,6 @@
 		2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81491636F69900DE273F /* DDTTYLogger.m */; };
 		2CCF81551636F69900DE273F /* ContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF814C1636F69900DE273F /* ContextFilterLogFormatter.m */; };
 		2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF814E1636F69900DE273F /* DispatchQueueLogFormatter.m */; };
-		2CCF81571636F69900DE273F /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2CCF814F1636F69900DE273F /* README.txt */; };
 		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
 		2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD27AAA1709D3EF002E220E /* MGSGeometry.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
@@ -230,7 +229,6 @@
 		48C572CF174BC68100CF6C16 /* DiningHallInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C572CE174BC68100CF6C16 /* DiningHallInfoScheduleCell.m */; };
 		48DF79E21714A14E00BCF59F /* DiningHallMenuItemTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48DF79E11714A14E00BCF59F /* DiningHallMenuItemTableCell.m */; };
 		48E6026A173D4553008A3521 /* DiningHallInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48E60269173D4553008A3521 /* DiningHallInfoViewController.m */; };
-		48EDC96817175AF400376BCF /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 48EDC96517175AF400376BCF /* LICENSE.txt */; };
 		48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96717175AF400376BCF /* UIImage+PDF.m */; };
 		48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96B17175B4000376BCF /* NSString+MD5.m */; };
 		48EDC97117175B4000376BCF /* PDFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96D17175B4000376BCF /* PDFView.m */; };
@@ -3068,10 +3066,8 @@
 				2CEBBF9C1635A68500441252 /* DEFacebookURLAttachment@2x.png in Resources */,
 				2CEBBF9D1635A68500441252 /* NavBarLandscape.png in Resources */,
 				2CEBBF9E1635A68500441252 /* NavBarLandscape@2x.png in Resources */,
-				2CCF81571636F69900DE273F /* README.txt in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,
-				48EDC96817175AF400376BCF /* LICENSE.txt in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
