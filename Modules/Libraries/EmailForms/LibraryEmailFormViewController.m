@@ -910,13 +910,11 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
     [alertView release];
 }
 
-- (void)submitForm:(NSDictionary *)parameters {
+- (void)submitForm:(NSMutableDictionary *)parameters {
     LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag
-                                                                              command:[self command]
-                                                                           parameters:parameters] autorelease];
-    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/secure/libraries/forms/%@", self.command]
+                                                                                 parameters:parameters] autorelease];
     ThankYouViewController *thanksController = [[ThankYouViewController alloc] initWithMessage:nil];
     thanksController.title = @"Submitting";
     [self.navigationController pushViewController:thanksController animated:NO];

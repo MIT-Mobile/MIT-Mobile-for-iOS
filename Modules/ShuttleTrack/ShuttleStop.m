@@ -169,7 +169,8 @@
 	if (self != nil) {
 		self.routeStop = routeStop;
 //		_stopLocation = (ShuttleStopLocation2 *)self.routeStop.stopLocation;
-		
+        _stopLocation = (ShuttleStopLocation2 *)routeStop.stopLocation;
+        [self initWithStopLocation:_stopLocation routeID:self.routeStop.routeID];
 	}
 	return self;
 }
@@ -193,8 +194,10 @@
 		} else {
 			
 			self.routeStop = [routeStops lastObject];
-            
+            self.stopID = stopLocation.stopID;
             self.title = stopLocation.title;
+            self.latitude = [[stopLocation latitude] doubleValue];
+            self.longitude = [[stopLocation longitude] doubleValue];
 		}
 	}
 	return self;

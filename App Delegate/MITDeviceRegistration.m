@@ -44,21 +44,16 @@
 }
 	
 + (void) registerNewDeviceWithToken: (NSData *)deviceToken {
-	NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithObject:APPLE forKey:DEVICE_TYPE_KEY];
-	if(deviceToken) {		
+    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+	if(deviceToken) {
 		[parameters setObject:[self stringFromToken:deviceToken] forKey:@"device_token"];
 		[parameters setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"] forKey:@"app_id"];
-	}		
+	}
     
-//    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
-//                                                                              command:@"register"
-//                                                                           parameters:parameters] autorelease];
-//    
-    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"/apis/apps/push/devices/%@",
+                                                                                             APPLE] parameters:parameters] autorelease];
     // TODO: check with MIT provisioning profile
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"/apps/push/devices/apple?device_token=%@&app_id=%@",
-                                                                                            [self stringFromToken:deviceToken],[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"]] parameters:nil];
-    
+    request.usePOST = YES;
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             
@@ -77,14 +72,13 @@
 
 + (void) newDeviceToken: (NSData *)deviceToken {
 	NSMutableDictionary *parameters = [[self identity] mutableDictionary];
-	[parameters setObject:APPLE forKey:DEVICE_TYPE_KEY];
 	[parameters setObject:[self stringFromToken:deviceToken] forKey:@"device_token"];
 	[parameters setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"] forKey:@"app_id"];
+    [parameters setObject:[[NSUserDefaults standardUserDefaults] objectForKey:MITPassCodeKey] forKey:@"pass_key"];
+    NSString *device_id = [[NSUserDefaults standardUserDefaults] objectForKey:MITDeviceIdKey];
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                              command:@"newDeviceToken"
-                                                                           parameters:parameters] autorelease];
-
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/apps/push/devices/%@/%@", APPLE, device_id] parameters:parameters] autorelease];
+    request.usePUT = YES;
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
 

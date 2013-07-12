@@ -21,7 +21,9 @@
 }
 
 - (NSString *)command {
-    return @"sendTellUsEmail";
+//    return @"sendTellUsEmail";
+//    return @"tellUs";
+    return @"sendTellForm";
 }
 
 - (NSArray *)formGroups {

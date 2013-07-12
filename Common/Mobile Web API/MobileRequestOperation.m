@@ -79,6 +79,8 @@ typedef enum
 @synthesize command = _command;
 @synthesize parameters = _parameters;
 @synthesize usePOST = _usePOST;
+@synthesize usePUT = _usePUT;
+@synthesize useDELETE = _useDELETE;
 @synthesize presetCredentials = _presetCredentials;
 @synthesize completeBlock = _completeBlock;
 @synthesize progressBlock = _progressBlock;
@@ -282,6 +284,8 @@ typedef enum
         self.requestBaseURL = requestURL;
         self.parameters = params;
         self.usePOST = NO;
+        self.usePUT = NO;
+        self.useDELETE = NO;
         
         self.isExecuting = NO;
         self.isFinished = NO;
@@ -590,7 +594,10 @@ typedef enum
 
 - (NSURLRequest *)buildURLRequest
 {
+    // TODO: uncomment
     NSMutableString *urlString = [NSMutableString stringWithString:[self.requestBaseURL absoluteString]];
+//    NSMutableString *urlString ;
+//    urlString = [NSMutableString stringWithFormat:@"http://192.168.2.3/MIT-Mobile-Web-Overhaul/web/app_dev.php%@", [self.requestBaseURL relativeString]];
     NSMutableArray *params = [NSMutableArray arrayWithCapacity:[self.parameters count]];
     
     for (NSString *key in self.parameters)
@@ -619,7 +626,26 @@ typedef enum
         [request setValue:@"application/x-www-form-urlencoded"
        forHTTPHeaderField:@"Content-Type"];
     }
-    else
+    if (self.usePUT)
+    {
+        request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
+                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
+                                      timeoutInterval:5.0];
+        [request setHTTPMethod:@"PUT"];
+        [request setHTTPBody:[paramString dataUsingEncoding:NSUTF8StringEncoding]];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    }
+    if (self.useDELETE)
+    {
+        request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
+                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
+                                      timeoutInterval:5.0];
+        [request setHTTPMethod:@"DELETE"];
+        [request setHTTPBody:[paramString dataUsingEncoding:NSUTF8StringEncoding]];
+        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    }
+    
+    if (!self.usePOST && !self.usePUT && !self.useDELETE)
     {
         if ([paramString length] > 0)
         {

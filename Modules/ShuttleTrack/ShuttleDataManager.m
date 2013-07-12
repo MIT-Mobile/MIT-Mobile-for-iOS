@@ -208,7 +208,7 @@ NSString * const shuttleStopPath = @"/stops/";
 
 -(void) requestRoutes
 {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:shuttlePathExtension parameters:nil];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:shuttlePathExtension parameters:nil] autorelease];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
@@ -302,8 +302,8 @@ NSString * const shuttleStopPath = @"/stops/";
 
 -(void) requestRoute:(NSString*)routeID
 {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"%@/%@", shuttlePathExtension, routeID]
-                                                                                 parameters:nil];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"%@/%@", shuttlePathExtension, routeID]
+                                                                                 parameters:nil] autorelease];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {

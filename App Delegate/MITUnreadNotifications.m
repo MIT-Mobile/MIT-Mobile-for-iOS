@@ -75,10 +75,16 @@
 }
 		
 
-+ (MobileRequestOperation *)requestOperationForCommand:(NSString *)command parameters:(NSDictionary *)params {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                              command:command
-                                                                           parameters:params] autorelease];
++ (MobileRequestOperation *)requestOperationForCommand:(NSString *)command parameters:(NSMutableDictionary *)params {
+    NSString *device_id = [params objectForKey:@"device_id"];
+    NSString *device_type = [params objectForKey:@"device_type"];
+    [params removeObjectForKey:@"device_id"];
+    [params removeObjectForKey:@"device_type"];
+    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/apps/push/devices/%@/%@/notifications", device_type, device_id] parameters:params] autorelease];
+    if ([command isEqualToString:@"markNotificationsAsRead"]) {
+        request.useDELETE = YES;
+    }
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
             NSMutableArray *notifications = [NSMutableArray array];

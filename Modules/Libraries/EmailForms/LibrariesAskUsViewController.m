@@ -114,7 +114,9 @@
 }
 
 - (NSString *)command {
-    return @"sendAskUsEmail"; 
+//    return @"sendAskUsEmail"; 
+//    return @"askUs";
+    return @"sendAskUsForm";
 }
 
 - (NSDictionary *)formValues {

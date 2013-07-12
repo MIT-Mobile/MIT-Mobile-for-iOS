@@ -290,6 +290,9 @@
             [formattedVehicleLocations addObject:shuttleLocation];
         }
         self.vehicles = vehiclesArray;
+        if (self.vehicles) {
+            [self setUpcomingByPredictions];
+        }
         [vehiclesArray release];
         
         self.vehicleLocations = formattedVehicleLocations;

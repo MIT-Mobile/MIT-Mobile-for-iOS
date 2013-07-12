@@ -438,16 +438,16 @@ enum {
 
 - (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled
 {
-    NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
-    [parameters setObject:tag
-                   forKey:@"module_name"];
-    [parameters setObject:(enabled) ? @"1" : @"0"
+    NSMutableDictionary *deviceParameters = [[MITDeviceRegistration identity] mutableDictionary];
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    NSString *device_type = [deviceParameters objectForKey:@"device_type"];
+    NSString *device_id = [deviceParameters objectForKey:@"device_id"];
+    [params setObject:(enabled) ? @"1" : @"0"
                    forKey:@"enabled"];
+    [params setObject:[deviceParameters objectForKey:@"pass_key"] forKey:@"pass_key"];
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                              command:@"moduleSetting"
-                                                                           parameters:parameters] autorelease];
-
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/apps/push/devices/%@/%@/module_settings/%@", device_type, device_id, tag] parameters:params] autorelease];
+    request.usePUT = YES;
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [UIAlertView alertViewForError:error withTitle:@"Settings" alertViewDelegate:nil];

@@ -490,7 +490,7 @@ static ToursDataManager *s_toursDataManager = nil;
 
 + (NSString *)getSoundUrl:(NSString *)soundID withTourID:(NSString *)tourID {
     NSURL *serverUrl = MITMobileWebGetCurrentServerURL();
-    return [NSString stringWithFormat:@"%@/tours/%@/sound/%@", [serverUrl absoluteString], tourID, soundID];
+    return [NSString stringWithFormat:@"%@/tours/%@/audio/%@", [serverUrl absoluteString], tourID, soundID];
 }
 
 #pragma mark -

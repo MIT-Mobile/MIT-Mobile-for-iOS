@@ -13,6 +13,8 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 @property (nonatomic,readonly,copy) NSDictionary *parameters;
 @property (nonatomic,strong) id userData;
 @property (nonatomic) BOOL usePOST;
+@property (nonatomic) BOOL usePUT;
+@property (nonatomic) BOOL useDELETE;
 
 + (BOOL)isAuthenticationCookie:(NSHTTPCookie*)cookie;
 + (void)clearAuthenticatedSession;
