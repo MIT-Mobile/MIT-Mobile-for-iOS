@@ -54,11 +54,25 @@
 }
 
 - (void)reloadAndCompleteWithBlock:(void (^)())completionBlock {
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"dining" command:nil parameters:nil];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        if (error) {
+            DDLogInfo(@"Dining data failed to load. Error: %@", [error debugDescription]);
+        } else {
+            if (![jsonResult isKindOfClass:[NSDictionary class]]) {
+                DDLogError(@"%@ received JSON result as %@, not NSDictionary.", NSStringFromClass([self class]), NSStringFromClass([jsonResult class]));
+            } else {
+                [self importData:jsonResult completionBlock:completionBlock];
+            }
+        }
+    };
+    [[NSOperationQueue mainQueue] addOperation:request];
+}
+
+- (void)importData:(NSDictionary *)dataDict completionBlock:(void (^)())completionBlock {
     [self.loadingQueue addOperationWithBlock:^(void) {
         // Fetch data
-        NSDictionary *latestDataDict = [self fetchData];
-        
-        if (latestDataDict) {
+        if (dataDict) {
             // (bskinner)
             // Added to get around issues with CoreDataManager context caching. CoreDataManager keeps
             // a single context per thread and will reuse them in a dirty state.
@@ -82,7 +96,7 @@
             // Delete old things
             [CoreDataManager deleteObjects:oldRoot];
             // Create new entities in Core Data
-            DiningRoot *newRoot = [DiningRoot newRootWithDictionary:latestDataDict];
+            DiningRoot *newRoot = [DiningRoot newRootWithDictionary:dataDict];
             
             if (newRoot) {
                 newRoot.lastUpdated = [NSDate date];
@@ -93,7 +107,7 @@
                 NSArray *migratedFavorites = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"shortName IN %@", favoritedNames]];
                 [migratedFavorites setValue:@(YES) forKey:@"favorite"];
             }
-
+            
             // Save
             [CoreDataManager saveData];
         }
@@ -101,7 +115,7 @@
     }];
 }
 
-- (NSDictionary *)fetchData {
+- (NSDictionary *)fetchSampleData {
     static NSInteger i = 0;
     NSArray *samplePaths = @[@"dining-sample-1", @"dining-sample-2"];
     NSString *filePath = [[NSBundle mainBundle] pathForResource:samplePaths[i] ofType:@"json" inDirectory:@"dining"];

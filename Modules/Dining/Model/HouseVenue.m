@@ -43,7 +43,7 @@
 }
 
 - (BOOL)isOpenNow {
-    NSDate *date = [NSDate fakeDateForDining];
+    NSDate *date = [NSDate date];
     DiningDay *today = [self dayForDate:date];
     DiningMeal *meal = [today mealForDate:date];
 
@@ -62,7 +62,7 @@
 }
 
 - (NSString *)hoursToday {
-    return [self hoursForDate:[NSDate fakeDateForDining]];
+    return [self hoursForDate:[NSDate date]];
 }
 
 - (NSString *)hoursForDate:(NSDate *)date {

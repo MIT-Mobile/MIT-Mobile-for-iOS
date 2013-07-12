@@ -113,14 +113,14 @@
 }
 
 - (BOOL)isOpenNow {
-    NSDate *date = [NSDate fakeDateForDining];
+    NSDate *date = [NSDate date];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"startTime <= %@ AND endTime >= %@", date, date];
 
     return ([[self.days filteredSetUsingPredicate:predicate] count] > 0);
 }
 
 - (NSString *)hoursToday {
-    RetailDay *today = [self dayForDate:[NSDate fakeDateForDining]];
+    RetailDay *today = [self dayForDate:[NSDate date]];
     return [today hoursSummary];
 }
 

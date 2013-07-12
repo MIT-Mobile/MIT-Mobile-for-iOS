@@ -104,8 +104,8 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#d20000"];
     }
     
-    RetailDay *currentDay = [self.venue dayForDate:[NSDate fakeDateForDining]];
-    self.headerView.timeLabel.text = [currentDay statusStringRelativeToDate:[NSDate fakeDateForDining]];
+    RetailDay *currentDay = [self.venue dayForDate:[NSDate date]];
+    self.headerView.timeLabel.text = [currentDay statusStringRelativeToDate:[NSDate date]];
     
     self.tableView.tableHeaderView = self.headerView;
     

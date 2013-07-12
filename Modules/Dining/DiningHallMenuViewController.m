@@ -90,7 +90,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     self.currentDateString = [dateFormatter stringFromDate:[NSDate date]];
     
-    self.currentDate = [NSDate fakeDateForDining];
+    self.currentDate = [NSDate date];
     
     // set current meal
     self.currentDay = [self.venue dayForDate:self.currentDate];
@@ -115,7 +115,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
     } else {
         headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#d20000"];
     }
-    headerView.timeLabel.text = [self.currentDay statusStringRelativeToDate:[NSDate fakeDateForDining]];
+    headerView.timeLabel.text = [self.currentDay statusStringRelativeToDate:[NSDate date]];
     
     [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info.png"] forState:UIControlStateNormal];
     [headerView.accessoryButton setImage:[UIImage imageNamed:@"dining/info-pressed.png"] forState:UIControlStateHighlighted];
