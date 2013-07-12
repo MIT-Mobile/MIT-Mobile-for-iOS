@@ -74,6 +74,7 @@
 		2C5DECDC13E9BEF400F9C089 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5DECDB13E9BEF400F9C089 /* libz.dylib */; };
 		2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C603011139EA21700D34F1B /* FacilitiesRepairType.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2C6528F217906DBD00BED0DF /* Secret.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6528F117906DBD00BED0DF /* Secret.m */; };
 		2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6FE84813B2717700AFD8B8 /* FacilitiesContent.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C70B81E170DBFFA00746EB9 /* MITLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C70B81D170DBFFA00746EB9 /* MITLogFormatter.m */; };
@@ -371,7 +372,6 @@
 		EB07AD9812B886DF005D6A4C /* MITEventList.m in Sources */ = {isa = PBXBuildFile; fileRef = EB07AD9612B886DF005D6A4C /* MITEventList.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB07B06612B89440005D6A4C /* NavScrollerView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB07B06C12B8971D005D6A4C /* calendar in Resources */ = {isa = PBXBuildFile; fileRef = EB07B06912B8971D005D6A4C /* calendar */; };
-		EB13860D12F1FC8E004DBB7C /* Secret.m in Sources */ = {isa = PBXBuildFile; fileRef = EB13860B12F1FC8E004DBB7C /* Secret.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB3294701166777500DEDC8A /* CalendarEventMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = EB32946E1166777500DEDC8A /* CalendarEventMapAnnotation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB3F0952118F0FFE00540B8A /* CalendarMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3F0950118F0FFE00540B8A /* CalendarMapView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB4C1E9B127723B700058748 /* ToursModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C1E99127723B700058748 /* ToursModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -579,6 +579,8 @@
 		2C63A1E3143205000068333F /* SettingsTouchstoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTouchstoneViewController.h; sourceTree = "<group>"; };
 		2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTouchstoneViewController.m; sourceTree = "<group>"; };
 		2C642D1F1663D0A10062B00A /* MGSAnnotation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MGSAnnotation.h; sourceTree = "<group>"; };
+		2C6528F017906DBD00BED0DF /* Secret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Secret.h; sourceTree = "<group>"; };
+		2C6528F117906DBD00BED0DF /* Secret.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Secret.m; sourceTree = "<group>"; };
 		2C6AB73E13564F74003B174A /* NSDateFormatter+RelativeString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDateFormatter+RelativeString.h"; sourceTree = "<group>"; };
 		2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDateFormatter+RelativeString.m"; sourceTree = "<group>"; };
 		2C6FE84713B2717700AFD8B8 /* FacilitiesContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesContent.h; sourceTree = "<group>"; };
@@ -709,9 +711,7 @@
 		2CEBBF801635A68500441252 /* UIApplication+DEFacebookComposeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIApplication+DEFacebookComposeViewController.m"; sourceTree = "<group>"; };
 		2CEBBF811635A68500441252 /* UIDevice+DEFacebookComposeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+DEFacebookComposeViewController.h"; sourceTree = "<group>"; };
 		2CEBBF821635A68500441252 /* UIDevice+DEFacebookComposeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+DEFacebookComposeViewController.m"; sourceTree = "<group>"; };
-		2CEBBFA21635C50400441252 /* Secret.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secret.xcconfig; sourceTree = SOURCE_ROOT; };
 		2CEBBFA31635C7D900441252 /* Secret.m.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secret.m.in; sourceTree = "<group>"; };
-		2CEBBFA41635D4F000441252 /* Secret.xcconfig.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secret.xcconfig.in; sourceTree = SOURCE_ROOT; };
 		2CED98F113534B5C0034F6F1 /* QRReaderDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderDetailViewController.h; sourceTree = "<group>"; };
 		2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderDetailViewController.m; sourceTree = "<group>"; };
 		2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QRReaderDetailViewController.xib; sourceTree = "<group>"; };
@@ -1160,8 +1160,6 @@
 		EB07B06512B89440005D6A4C /* NavScrollerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavScrollerView.h; sourceTree = "<group>"; };
 		EB07B06612B89440005D6A4C /* NavScrollerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavScrollerView.m; sourceTree = "<group>"; };
 		EB07B06912B8971D005D6A4C /* calendar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = calendar; path = Resources/calendar; sourceTree = "<group>"; };
-		EB13860A12F1FC8E004DBB7C /* Secret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Secret.h; sourceTree = "<group>"; };
-		EB13860B12F1FC8E004DBB7C /* Secret.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Secret.m; path = Common/Secret.m; sourceTree = SOURCE_ROOT; };
 		EB32946D1166777500DEDC8A /* CalendarEventMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarEventMapAnnotation.h; sourceTree = "<group>"; };
 		EB32946E1166777500DEDC8A /* CalendarEventMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarEventMapAnnotation.m; sourceTree = "<group>"; };
 		EB3F094F118F0FFE00540B8A /* CalendarMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarMapView.h; sourceTree = "<group>"; };
@@ -1912,11 +1910,9 @@
 		2CEBBFA11635C4D200441252 /* Secret */ = {
 			isa = PBXGroup;
 			children = (
-				EB13860A12F1FC8E004DBB7C /* Secret.h */,
-				EB13860B12F1FC8E004DBB7C /* Secret.m */,
+				2C6528F017906DBD00BED0DF /* Secret.h */,
+				2C6528F117906DBD00BED0DF /* Secret.m */,
 				2CEBBFA31635C7D900441252 /* Secret.m.in */,
-				2CEBBFA41635D4F000441252 /* Secret.xcconfig.in */,
-				2CEBBFA21635C50400441252 /* Secret.xcconfig */,
 			);
 			name = Secret;
 			sourceTree = "<group>";
@@ -3109,7 +3105,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "CONFIG_REPO_PATH=\"${PROJECT_DIR}/External/MIT-Mobile-for-iPhone-Private\"\nLOCAL_CONFIG_DIR=\"${PROJECT_DIR}/Common\"\n\nSECRET_IMPL=\"Secret.m\"\nSECRET_IMPL_TEMPLATE=\"Secret.m.in\"\n\nSECRET_CFG=\"Secret.xcconfig\"\nSECRET_CFG_TEMPLATE=\"Secret.xcconfig.in\"\n\nif [[ -d \"${CONFIG_REPO_PATH}\" ]]; then\n    echo \"using external configuration at ${CONFIG_REPO_PATH}\"\n    use_ext=1\nelse\n    echo \"using local configuration at ${LOCAL_CONFIG_DIR}\"\n    use_ext=0\nfi\n\nif [[ ! -f \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\" ]]; then\n    echo \"'${SECRET_IMPL}' is missing\"\n    if [[ $use_ext -eq 1 ]]; then\n        cp \"${CONFIG_REPO_PATH}/${SECRET_IMPL}\" \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\"\n    else\n        cp \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL_TEMPLATE}\" \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\"\n    fi\nfi\n\nif [[ ! -f \"${PROJECT_DIR}/${SECRET_CFG}\" ]]; then\n    echo \"'${SECRET_CFG}' is missing\"\n    if [[ $use_ext -eq 1 ]]; then\n        cp \"${CONFIG_REPO_PATH}/${SECRET_CFG}\" \"${PROJECT_DIR}/${SECRET_CFG}\"\n    else\n        cp \"${PROJECT_DIR}/${SECRET_CFG_TEMPLATE}\" \"${PROJECT_DIR}/${SECRET_CFG}\"\n    fi\nfi\n\nexit 0";
+			shellScript = "CONFIG_REPO_PATH=\"${PROJECT_DIR}/External/MIT-Mobile-for-iPhone-Private\"\nLOCAL_CONFIG_DIR=\"${PROJECT_DIR}/Common\"\n\nSECRET_IMPL=\"Secret.m\"\nSECRET_IMPL_TEMPLATE=\"Secret.m.in\"\n\nif [[ -d \"${CONFIG_REPO_PATH}\" ]]; then\n    echo \"using external configuration at ${CONFIG_REPO_PATH}\"\n    use_ext=1\nelse\n    echo \"using local configuration at ${LOCAL_CONFIG_DIR}\"\n    use_ext=0\nfi\n\nif [[ ! -f \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\" ]]; then\n    echo \"'${SECRET_IMPL}' is missing\"\n    if [[ $use_ext -eq 1 ]]; then\n        cp \"${CONFIG_REPO_PATH}/${SECRET_IMPL}\" \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\"\n    else\n        cp \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL_TEMPLATE}\" \"${LOCAL_CONFIG_DIR}/${SECRET_IMPL}\"\n    fi\nfi\n\nexit 0";
 			showEnvVarsInLog = 0;
 		};
 		DEE2B550104C17860037A4AB /* Run Script */ = {
@@ -3253,7 +3249,6 @@
 				29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */,
 				EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */,
 				EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */,
-				EB13860D12F1FC8E004DBB7C /* Secret.m in Sources */,
 				DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */,
 				DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */,
 				EB74ED2F11924E7C006673F9 /* ShareDetailViewController.m in Sources */,
@@ -3404,6 +3399,7 @@
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,
 				2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */,
 				2C101A8D1653F06C000E40E3 /* MGSMapView.m in Sources */,
+				2C6528F217906DBD00BED0DF /* Secret.m in Sources */,
 				2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */,
 				2C101ACA16552AF5000E40E3 /* MITMapView.m in Sources */,
 				2C0CE20C1663FFA80020E70D /* MGSLayerAnnotation.m in Sources */,
@@ -3540,13 +3536,12 @@
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2CEBBFA21635C50400441252 /* Secret.xcconfig */;
 			buildSettings = {
 				ARCHS = armv7;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_THUMB_SUPPORT = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -3568,13 +3563,12 @@
 		};
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2CEBBFA21635C50400441252 /* Secret.xcconfig */;
 			buildSettings = {
 				ARCHS = armv7;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(EXTERNAL_DEFINES)";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_THUMB_SUPPORT = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -3595,17 +3589,13 @@
 		};
 		DEF93C661110C9C4009DF154 /* TestFlight */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2CEBBFA21635C50400441252 /* Secret.xcconfig */;
 			buildSettings = {
 				ARCHS = armv7;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(EXTERNAL_DEFINES)",
-					TESTFLIGHT,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_THUMB_SUPPORT = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
