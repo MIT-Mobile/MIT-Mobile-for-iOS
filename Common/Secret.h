@@ -2,6 +2,7 @@
 extern NSString * const FacebookAppId;
 extern NSString * const FacebookAPIKey;
 extern NSString * const FacebookAPISecret;
+extern NSString * const MITApplicationTestFlightToken;
 
 
 /*!
