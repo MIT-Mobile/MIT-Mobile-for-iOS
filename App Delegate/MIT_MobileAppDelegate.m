@@ -11,6 +11,7 @@
 #import <FacebookSDK/FacebookSDK.h>
 #import "MITLogging.h"
 #import "Secret.h"
+#import "SDImageCache.h"
 
 @implementation MIT_MobileAppDelegate
 @synthesize window,
@@ -45,6 +46,8 @@
 #endif
     
     networkActivityRefCount = 0;
+    
+    [[SDImageCache sharedImageCache] setMaxCacheAge:60 * 60 * 24];
     
     [self updateBasicServerInfo];
     
