@@ -106,13 +106,12 @@
     
     __weak DiningMapListViewController *weakSelf = self;
     [self.listView addPullToRefreshWithActionHandler:^{
-        NSDate *startDate = [NSDate date];
+        [[SDImageCache sharedImageCache] cleanDisk];
         [[DiningData sharedData] reloadAndCompleteWithBlock:^{
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [weakSelf refreshSelectedTypeOfVenues];
                 [weakSelf updatePullToRefreshSubtitle];
                 [weakSelf.listView.pullToRefreshView stopAnimating];
-                NSLog(@"Time taken: %f", [[NSDate date] timeIntervalSinceDate:startDate]);
             }];
         }];
     }];
