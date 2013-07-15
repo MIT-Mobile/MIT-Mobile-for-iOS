@@ -10,6 +10,8 @@ xcuserdata/
 *.xccheckout
 
 Common/Configuration/Secret.m
+Common/Secret.m
+Secret.xcconfig
 
 Resources/mit150/*.mp4
 
