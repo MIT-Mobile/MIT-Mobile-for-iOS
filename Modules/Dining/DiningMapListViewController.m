@@ -126,7 +126,6 @@
                                      [weakSelf.listView.pullToRefreshView stopAnimating];
                                  }
                                  completion:^(BOOL finished) {
-                                     DDLogInfo(@"Time taken: %f", [[NSDate date] timeIntervalSinceDate:startDate]);
                                      weakSelf.loading = NO;
                                  }];
             }];
