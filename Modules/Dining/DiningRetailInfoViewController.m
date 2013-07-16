@@ -311,7 +311,7 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     }
-    NSLog(@"DescriptionTextLabel frame :: %@", NSStringFromCGRect(cell.detailTextLabel.frame));
+    
     
     return cell;
 }
