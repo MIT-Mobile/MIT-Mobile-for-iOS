@@ -87,7 +87,7 @@
  @param completionBlock A block that is called after the import completes
  @see reloadAndCompleteWithBlock:
  */
-- (void)importData:(NSDictionary *)dataDict completionBlock:(void (^)())completionBlock
+- (void)importData:(NSDictionary *)dataDict completionBlock:(void (^)(NSError* error))completionBlock
 {
     [self.loadingQueue addOperationWithBlock:^(void) {
         // Fetch data
@@ -132,7 +132,7 @@
         }
         
         if (completionBlock) {
-            completionBlock();
+            completionBlock(nil);
         }
     }];
 }
