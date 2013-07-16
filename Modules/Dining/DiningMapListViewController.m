@@ -106,7 +106,7 @@
     
     __weak DiningMapListViewController *weakSelf = self;
     [self.listView addPullToRefreshWithActionHandler:^{
-        NSDate *startDate = [NSDate date];
+        [[SDImageCache sharedImageCache] cleanDisk];
         weakSelf.loading = YES;
         
         [[DiningData sharedData] reloadAndCompleteWithBlock:^ (NSError *error) {
