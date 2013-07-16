@@ -3,7 +3,7 @@
 @interface DiningData : NSObject
 
 + (DiningData *)sharedData;
-- (void)reloadAndCompleteWithBlock:(void (^)())completionBlock;
+- (void)reloadAndCompleteWithBlock:(void (^)(NSError *error))completionBlock;
 
 @property (nonatomic, strong, readonly) NSString *announcementsHTML;
 @property (nonatomic, strong, readonly) NSArray *links;

@@ -107,12 +107,28 @@
     __weak DiningMapListViewController *weakSelf = self;
     [self.listView addPullToRefreshWithActionHandler:^{
         NSDate *startDate = [NSDate date];
-        [[DiningData sharedData] reloadAndCompleteWithBlock:^{
+        weakSelf.loading = YES;
+        
+        [[DiningData sharedData] reloadAndCompleteWithBlock:^ (NSError *error) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 [weakSelf refreshSelectedTypeOfVenues];
-                [weakSelf updatePullToRefreshSubtitle];
-                [weakSelf.listView.pullToRefreshView stopAnimating];
-                NSLog(@"Time taken: %f", [[NSDate date] timeIntervalSinceDate:startDate]);
+                
+                if (error) {
+                    [weakSelf.listView.pullToRefreshView setSubtitle:@"Update failed"
+                                                            forState:SVPullToRefreshStateAll];
+                } else {
+                    [weakSelf updatePullToRefreshSubtitle];
+                }
+                
+                
+                [UIView animateWithDuration:0.3
+                                 animations:^{
+                                     [weakSelf.listView.pullToRefreshView stopAnimating];
+                                 }
+                                 completion:^(BOOL finished) {
+                                     DDLogInfo(@"Time taken: %f", [[NSDate date] timeIntervalSinceDate:startDate]);
+                                     weakSelf.loading = NO;
+                                 }];
             }];
         }];
     }];
@@ -153,14 +169,14 @@
 }
 
 - (void)showHouse:(id)sender {
-    if (!self.isShowingHouseDining) {
+    if (!self.isLoading  && !self.isShowingHouseDining) {
         self.isShowingHouseDining = YES;
         [self tabBarDidChange:sender];
     }
 }
 
 - (void)showRetail:(id)sender {
-    if (self.isShowingHouseDining) {
+    if (!self.isLoading && self.isShowingHouseDining) {
         self.isShowingHouseDining = NO;
         [self tabBarDidChange:sender];
     }
@@ -192,7 +208,7 @@
 
 - (void) toggleMapList:(id)sender
 {
-    if (!self.isAnimating) {
+    if (!self.isLoading && !self.isAnimating) {
         self.navigationItem.rightBarButtonItem.title = (self.isShowingMap)? @"Map" : @"List";
         
         if (self.isShowingMap) {
@@ -542,6 +558,12 @@
 #pragma mark - UITableViewDelegate
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (self.isLoading) {
+        [tableView deselectRowAtIndexPath:indexPath
+                                 animated:YES];
+        return;
+    }
+    
     if (![self showingHouseDining]) {
         RetailVenue *venue = [self retailVenueAtIndexPath:indexPath];
         

@@ -53,14 +53,24 @@
     return self.root.lastUpdated;
 }
 
-- (void)reloadAndCompleteWithBlock:(void (^)())completionBlock {
+- (void)reloadAndCompleteWithBlock:(void (^)(NSError *error))completionBlock {
     MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"dining" command:nil parameters:nil];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             DDLogInfo(@"Dining data failed to load. Error: %@", [error debugDescription]);
+            if (completionBlock) {
+                completionBlock(error);
+            }
         } else {
             if (![jsonResult isKindOfClass:[NSDictionary class]]) {
-                DDLogError(@"%@ received JSON result as %@, not NSDictionary.", NSStringFromClass([self class]), NSStringFromClass([jsonResult class]));
+                NSString *message =[NSString stringWithFormat:@"%@ received JSON result as %@, not NSDictionary.", NSStringFromClass([self class]), NSStringFromClass([jsonResult class])];
+                DDLogError(@"%@",message);
+                NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                                     code:NSURLErrorResourceUnavailable
+                                                 userInfo:@{NSLocalizedDescriptionKey : message}];
+                if (completionBlock) {
+                    completionBlock(error);
+                }
             } else {
                 [self importData:jsonResult completionBlock:completionBlock];
             }
