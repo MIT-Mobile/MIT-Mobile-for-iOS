@@ -69,7 +69,16 @@
     [[NSOperationQueue mainQueue] addOperation:request];
 }
 
-- (void)importData:(NSDictionary *)dataDict completionBlock:(void (^)())completionBlock {
+/** Loads the data from the specified dictionary into the CoreData model and then
+ executes the passed completion block. The completion block is called regardless
+ of whether the import succeeded or failed.
+ 
+ @param dataDict The data to import
+ @param completionBlock A block that is called after the import completes
+ @see reloadAndCompleteWithBlock:
+ */
+- (void)importData:(NSDictionary *)dataDict completionBlock:(void (^)())completionBlock
+{
     [self.loadingQueue addOperationWithBlock:^(void) {
         // Fetch data
         if (dataDict) {
@@ -111,7 +120,10 @@
             // Save
             [CoreDataManager saveData];
         }
-        completionBlock();
+        
+        if (completionBlock) {
+            completionBlock();
+        }
     }];
 }
 
