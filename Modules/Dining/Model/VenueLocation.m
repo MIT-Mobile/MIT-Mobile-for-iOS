@@ -1,6 +1,7 @@
 #import "VenueLocation.h"
 #import "HouseVenue.h"
 #import "CoreDataManager.h"
+#import "CoreLocation+MITAdditions.h"
 
 @implementation VenueLocation
 
@@ -30,5 +31,37 @@
     return location;
 }
 
+- (NSString*)locationDisplayString
+{
+    if ([self.displayDescription length]) {
+        return self.displayDescription;
+    } else if ([self.roomNumber length]) {
+        return self.roomNumber;
+    } else {
+        NSMutableString *displayString = [[NSMutableString alloc] init];
+        
+        if ([self.street length]) {
+            [displayString appendString:self.street];
+        }
+        
+        if ([self.city length]) {
+            if ([displayString length]) {
+                [displayString appendFormat:@", %@", self.city];
+            } else {
+                [displayString appendString:self.city];
+            }
+        }
+        
+        if ([displayString length]) {
+            if (self.state) {
+                [displayString appendFormat:@", %@",self.state];
+            }
+        } else {
+            displayString = nil;
+        }
+        
+        return displayString;
+    }
+}
 
 @end

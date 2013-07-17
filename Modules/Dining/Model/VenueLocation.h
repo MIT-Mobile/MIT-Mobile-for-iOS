@@ -18,4 +18,18 @@
 
 + (VenueLocation *)newLocationWithDictionary:(NSDictionary *)dict;
 
+
+/** Returns a string formatted for display for the venue.
+ This method can (and will) return nil if a valid display
+ string cannot be created. The current formats this methods
+ returns (in order) are:
+ 
+ ${displayDescription}
+ ${roomNumber}
+ ${street}, ${city}, ${state}
+ ${city}, ${state}
+ 
+ @return A human-readable string for the location or nil if one cannot be constructed.
+*/
+- (NSString*)locationDisplayString;
 @end
