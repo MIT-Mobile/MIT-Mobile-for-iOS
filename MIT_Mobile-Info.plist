@@ -42,7 +42,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb${FB_APP_ID}</string>
+				<string>FB_APP_ID</string>
 			</array>
 		</dict>
 		<dict>
