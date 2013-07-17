@@ -46,7 +46,7 @@
         
         if ([self.city length]) {
             if ([displayString length]) {
-                [displayString appendFormat:@", %@", self.city];
+                [displayString appendFormat:@"\n%@", self.city];
             } else {
                 [displayString appendString:self.city];
             }
