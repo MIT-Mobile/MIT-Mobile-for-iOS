@@ -2,6 +2,35 @@
 
 const CLLocationCoordinate2D CLLocationCoordinate2DInvalid = {.longitude = CGFLOAT_MAX, .latitude = CGFLOAT_MAX};
 
+FOUNDATION_EXTERN NSString* NSStringFromCLLocationCoordinate2DAsDMS(CLLocationCoordinate2D coordinate) {
+    if (!CLLocationCoordinate2DIsValid(coordinate)) {
+        return nil;
+    }
+    
+    NSMutableString *coordinateString = [[NSMutableString alloc] init];
+    {
+        CLLocationDegrees latitude = coordinate.latitude;
+        double degrees = 0;
+        double minutes = fabs(modf(latitude, &degrees) * 60.);
+        double seconds = floor(modf(minutes, &minutes) * 60.);
+        
+        NSString *hemisphere = (degrees >= 0) ? @"N" : @"S";
+        [coordinateString appendFormat:@"%d°%d'%d\"%@", (int)fabs(degrees), (int)minutes, (int)seconds, hemisphere];
+    }
+    
+    {
+        CLLocationDegrees longitude = coordinate.longitude;
+        double degrees = 0;
+        double minutes = fabs(modf(longitude, &degrees) * 60.);
+        double seconds = floor(modf(minutes, &minutes) * 60.);
+        
+        NSString *hemisphere = (degrees >= 0) ? @"E" : @"W";
+        [coordinateString appendFormat:@", %d°%d'%d\"%@", (int)fabs(degrees), (int)minutes, (int)seconds, hemisphere];
+    }
+    
+    return coordinateString;
+}
+
 @implementation CLLocation (MITAdditions)
 
 - (CLLocationDistance)distanceFromCenterOfCampus {

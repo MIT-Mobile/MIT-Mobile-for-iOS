@@ -16,6 +16,8 @@ FOUNDATION_STATIC_INLINE NSString* NSStringFromCLLocationCoordinate2D(CLLocation
     return [NSString stringWithFormat:@"{ x: %lf, y: %lf }", coordinate.longitude, coordinate.latitude];
 }
 
+FOUNDATION_EXTERN NSString* NSStringFromCLLocationCoordinate2DAsDMS(CLLocationCoordinate2D coordinate);
+
 @interface CLLocation (MITAdditions)
 
 - (CLLocationDistance)distanceFromCenterOfCampus;
