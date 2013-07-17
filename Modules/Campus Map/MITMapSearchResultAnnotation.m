@@ -23,7 +23,7 @@
 @synthesize bookmark = _bookmark;
 
 + (void) executeServerSearchWithQuery:(NSString *)query jsonDelegate:(id<JSONLoadedDelegate>)delegate object:(id)object {
-    MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/map/places/q=%@",query] parameters:nil];
+    MobileRequestOperation *apiRequest = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/map/places/q=%@",query] parameters:nil] autorelease];
     apiRequest.userData = object;
     apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
         if (delegate) {

@@ -14,12 +14,11 @@
 	
 	NSInteger unixtime_int = round([time timeIntervalSince1970]);
 	NSString *unixtime_string = [NSString stringWithFormat:@"%i", unixtime_int];	
-	[parameters setObject:unixtime_string forKey:@"time"];	
-    
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"shuttles"
-                                                                              command:@"subscribe"
-                                                                           parameters:parameters] autorelease];
-    
+	[parameters setObject:unixtime_string forKey:@"time"];
+        
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:@"apis/shuttles/subscriptions" parameters:parameters] autorelease];
+       
+    request.usePOST = YES;
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error || ![jsonResult isKindOfClass:[NSDictionary class]]) {
             [delegate subscriptionFailedWithObject:object passkeyError:NO];
@@ -45,13 +44,11 @@
 
 + (void) unsubscribeForRoute:(NSString *)routeID atStop:(NSString *)stopID delegate: (id<ShuttleSubscriptionDelegate>)delegate object: (id)object {
 	NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
-	[parameters setObject:routeID forKey:@"route"];
 	[parameters setObject:stopID forKey:@"stop"];
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"shuttles"
-                                                                              command:@"unsubscribe"
-                                                                           parameters:parameters] autorelease];
-
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/shuttles/subscriptions/%@", routeID]
+                                                                                 parameters:parameters] autorelease];
+    request.useDELETE = YES;
 	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [delegate subscriptionFailedWithObject:object passkeyError:NO];

@@ -145,13 +145,7 @@
         return [NSArray arrayWithArray:absPredictions];
     }
 }
- */
-
-- (void)setPredictions:(NSArray *)predictions
-{
-    [_predictions release];
-    _predictions = [predictions retain];
-}
+*/
 
 #pragma mark initializers
 
