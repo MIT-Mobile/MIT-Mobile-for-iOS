@@ -301,17 +301,8 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         cell.textLabel.text = @"payment";
         cell.detailTextLabel.text = [self.venue.paymentMethods componentsJoinedByString:@", "];
     } else if ([currentSection isEqualToString:sLocationKey]) {
-        NSString *locationText = nil;
-        if ([self.venue.location.displayDescription length]) {
-            locationText = self.venue.location.displayDescription;
-        } else if ([self.venue.location.roomNumber length]) {
-            locationText = self.venue.location.roomNumber;
-        } else if ([self.venue.location.street length]) {
-            locationText = self.venue.location.street;
-        }
-        
         cell.textLabel.text = @"location";
-        cell.detailTextLabel.text = locationText;
+        cell.detailTextLabel.text = [self.venue.location locationDisplayString];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
     } else if ([currentSection isEqualToString:sHomePageURLKey]) {
