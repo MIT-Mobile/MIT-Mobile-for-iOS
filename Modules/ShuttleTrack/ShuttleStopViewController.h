@@ -56,7 +56,7 @@
 //@property (nonatomic, retain) NSDictionary* routes;
 //@property (nonatomic, retain) ShuttleRoute* route;
 
-@property (nonatomic, retain) NSArray* shuttleStopSchedules;
+@property (nonatomic, retain) NSMutableArray* shuttleStopSchedules;
 
 @property (nonatomic, retain) NSMutableDictionary* subscriptions;
 @property (nonatomic, retain) NSMutableArray* loadingSubscriptionRequests;

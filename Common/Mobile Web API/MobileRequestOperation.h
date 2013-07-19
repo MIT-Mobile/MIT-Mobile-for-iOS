@@ -40,6 +40,7 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 - (id)initWithURL:(NSURL*)requestURL parameters:(NSDictionary*)params;
 
 - (NSURLRequest*)urlRequest;
+- (NSString*)getHttpMethod;
 
 // Override the saved username/password (if there is one) when attempting
 //  to authenticate to a Touchstone protected resource. Note that if the

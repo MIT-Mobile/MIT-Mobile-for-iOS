@@ -277,9 +277,9 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     return [NSString stringWithString:string];
 }
 
-- (BOOL)shouldUpdateDataWithRequest:(MobileRequestOperation*)request {
+- (BOOL)shouldUpdateDataWithRequest:(MobileRequestOperation*)request withCommand:(NSString*)blkCommand {
     NSDictionary *parameters = request.parameters;
-    NSString *command = request.command;
+    NSString *command = blkCommand;
     
     if ([ConnectionDetector isConnected] == NO) {
         return NO;
@@ -374,7 +374,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     }
     
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        NSString *blkCommand = command; 
+        NSString *blkCommand = command;
         NSDictionary *parameters = operation.parameters;
         dispatch_queue_t handlerQueue = dispatch_queue_create(NULL, 0);
         
@@ -421,7 +421,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     };
 
     if ([self hasActiveRequest:request] == NO) {
-        if ([self shouldUpdateDataWithRequest:request]) {
+        if ([self shouldUpdateDataWithRequest:request withCommand:command]) {
             [self.requestQueue addOperation:request];
         } else {
             [self sendNotificationToObservers:FacilitiesDidLoadDataNotification

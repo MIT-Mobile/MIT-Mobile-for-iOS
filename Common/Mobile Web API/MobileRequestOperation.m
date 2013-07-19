@@ -591,13 +591,23 @@ typedef enum
     }
 }
 
+- (NSString *)getHttpMethod
+{
+    if (self.usePOST){
+        return @"POST";
+    }
+    if (self.usePUT){
+        return @"PUT";
+    }
+    if (self.useDELETE){
+        return @"DELETE";   
+    }
+    return @"GET";
+}
 
 - (NSURLRequest *)buildURLRequest
 {
-    // TODO: uncomment
     NSMutableString *urlString = [NSMutableString stringWithString:[self.requestBaseURL absoluteString]];
-//    NSMutableString *urlString ;
-//    urlString = [NSMutableString stringWithFormat:@"http://192.168.2.3/MIT-Mobile-Web-Overhaul/web/app_dev.php%@", [self.requestBaseURL relativeString]];
     NSMutableArray *params = [NSMutableArray arrayWithCapacity:[self.parameters count]];
     
     for (NSString *key in self.parameters)
@@ -616,35 +626,16 @@ typedef enum
     NSMutableURLRequest *request = nil;
     NSString *paramString = [params componentsJoinedByString:@"&"];
     
-    if (self.usePOST)
+    if (self.usePOST || self.usePUT || self.useDELETE)
     {
         request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
                                           cachePolicy:NSURLRequestReloadIgnoringCacheData
                                       timeoutInterval:5.0];
-        [request setHTTPMethod:@"POST"];
+        [request setHTTPMethod:[self getHttpMethod]];
         [request setHTTPBody:[paramString dataUsingEncoding:NSUTF8StringEncoding]];
         [request setValue:@"application/x-www-form-urlencoded"
        forHTTPHeaderField:@"Content-Type"];
-    }
-    if (self.usePUT)
-    {
-        request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
-                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                      timeoutInterval:5.0];
-        [request setHTTPMethod:@"PUT"];
-        [request setHTTPBody:[paramString dataUsingEncoding:NSUTF8StringEncoding]];
-        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    }
-    if (self.useDELETE)
-    {
-        request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]
-                                          cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                      timeoutInterval:5.0];
-        [request setHTTPMethod:@"DELETE"];
-        [request setHTTPBody:[paramString dataUsingEncoding:NSUTF8StringEncoding]];
-        [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    }
-    
+    } else    
     if (!self.usePOST && !self.usePUT && !self.useDELETE)
     {
         if ([paramString length] > 0)

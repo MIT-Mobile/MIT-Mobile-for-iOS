@@ -266,10 +266,9 @@
 	{
 		// determine the route schedule
 		ShuttleStop* schedule = [self.shuttleStopSchedules objectAtIndex:section];
-		
-        // if nextScheduled is not defined, the first row will be negative
-		return (schedule.next != 0) ? schedule.predictions.count + 1 : 0;
-        
+        if (schedule.predictions.count == 0 && schedule.next != 0)
+            return 1;
+        return (schedule.next != 0) ? schedule.predictions.count : 0;
 	}
 	
 	return 0;
@@ -517,21 +516,26 @@
 		return;
 	}
 	
-	NSMutableArray *otherSchedules = [NSMutableArray array];
-	self.shuttleStopSchedules = [NSMutableArray array];
+    if (self.shuttleStopSchedules == nil)
+        self.shuttleStopSchedules = [NSMutableArray array];
 	
-	if ([self.shuttleStop.stopID isEqualToString:stopID]) 
-	{
-		// need to make sure the main route is first
+	if ([self.shuttleStop.stopID isEqualToString:stopID]) {
+		
 		for(ShuttleStop *routeStopSchedule in shuttleStopSchedules) {
-			if([routeStopSchedule.routeID isEqualToString:self.shuttleStop.routeID]) {
-				self.shuttleStopSchedules = [NSArray arrayWithObject:routeStopSchedule];
-			} else {
-				[otherSchedules addObject:routeStopSchedule];
-			}
+            for (ShuttleStop *stop in self.shuttleStopSchedules) {
+                if ([stop.stopID isEqualToString:stopID] && [stop.routeID isEqualToString:routeStopSchedule.routeID]) {
+                    [self.shuttleStopSchedules removeObject:stop];
+                    break;
+                }
+            }
+            
+            // need to make sure the main route is first
+            if ([self.shuttleStop.routeID isEqualToString:routeStopSchedule.routeID]) {
+                [self.shuttleStopSchedules insertObject:routeStopSchedule atIndex:0];
+            } else {
+                [self.shuttleStopSchedules addObject:routeStopSchedule];
+            }           
 		}
-        
-		self.shuttleStopSchedules = [self.shuttleStopSchedules arrayByAddingObjectsFromArray:otherSchedules];
         
 		_tableFooterLabel.text = [NSString stringWithFormat:@"Last updated at %@", [_timeFormatter stringFromDate:[NSDate date]]];
 		

@@ -332,7 +332,7 @@
 
 -(NSInteger) predictionCount
 {
-	return self.predictions.count + 1;
+    return [self.predictions count] == 0 ? 1 : self.predictions.count;
 }
 
 -(NSDate*) dateForPredictionAtIndex:(int)index
@@ -343,7 +343,7 @@
         return [NSDate dateWithTimeIntervalSince1970:self.next];
 	}
 	else {
-		prediction = [self.predictions objectAtIndex:index - 1];
+        prediction = [self.predictions objectAtIndex:index];
 	}
 	
 	return [NSDate dateWithTimeIntervalSince1970:prediction.timestamp / 1000];

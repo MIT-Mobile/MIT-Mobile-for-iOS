@@ -58,7 +58,6 @@
     self.loadingView = nil;
     self.searchString = nil;
     self.filterPredicate = nil;
-    self.cachedData = nil;
     self.filteredData = nil;
     [super dealloc];
 }
