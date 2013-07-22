@@ -26,6 +26,7 @@ NSString * const MITInternalURLScheme = @"mitmobile";
 NSString * const CalendarTag   = @"calendar";
 NSString * const EmergencyTag  = @"emergencyinfo";
 NSString * const CampusMapTag  = @"map";
+NSString * const DiningTag     = @"dining";
 NSString * const NewsOfficeTag = @"newsoffice";
 NSString * const DirectoryTag  = @"people";
 NSString * const StellarTag    = @"stellar";

@@ -9,19 +9,13 @@
 
 @protocol MGSLayerControllerDelegate <NSObject>
 @optional
-- (AGSGraphicsLayer*)layerManager:(MGSLayerController*)layerManager
-            graphicsLayerForLayer:(MGSLayer*)layer;
-
-- (AGSGraphic*)layerManager:(MGSLayerController*)layerManager
-       graphicForAnnotation:(id<MGSAnnotation>)annotation;
-
-- (void)layerManagerWillSynchronizeAnnotations:(MGSLayerController*)layerManager;
-- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager;
+- (void)layerControllerWillRefresh:(MGSLayerController*)layerController;
+- (void)layerControllerDidRefresh:(MGSLayerController*)layerController;
 @end
 
 @interface MGSLayerController : NSObject
 @property (nonatomic,readonly,strong) MGSLayer *layer;
-@property (nonatomic,readonly,strong) AGSLayer *nativeLayer;
+@property (nonatomic,weak) AGSLayer *nativeLayer;
 @property (nonatomic,readonly) NSSet *layerAnnotations;
 
 // The behavior for this property is a bit odd. If the graphics layer
@@ -31,8 +25,8 @@
 @property (nonatomic,weak) id<MGSLayerControllerDelegate> delegate;
 
 - (id)initWithLayer:(MGSLayer*)layer;
-- (void)refresh;
-- (void)reload;
+- (void)setNeedsRefresh;
+- (void)refresh:(void(^)(void))refreshBlock;
 
 - (MGSLayerAnnotation*)layerAnnotationForGraphic:(AGSGraphic*)graphic;
 - (NSSet*)layerAnnotationsForGraphics:(NSSet*)graphics;

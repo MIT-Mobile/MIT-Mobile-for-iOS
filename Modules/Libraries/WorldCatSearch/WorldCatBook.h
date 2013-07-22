@@ -9,6 +9,7 @@ extern NSString * const MITLibrariesOCLCCode;
 @property (nonatomic, retain) NSString *code;
 @property (nonatomic, retain) NSString *address;
 @property (nonatomic, retain) NSString *library;
+@property (nonatomic, retain) NSString *collection;
 @property (nonatomic, retain) NSString *url;
 @property (nonatomic, retain) NSArray *availability;
 @property (nonatomic) NSUInteger count;

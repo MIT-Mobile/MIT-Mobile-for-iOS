@@ -72,7 +72,9 @@
     
 	_shuttleRunningImage = [[UIImage imageNamed:@"shuttle/shuttle.png"] retain];
 	_shuttleNotRunningImage = [[UIImage imageNamed:@"shuttle/shuttle-off.png"] retain];
-	_shuttleLoadingImage = [[UIImage imageNamed:@"shuttle/shuttle-blank.png"] retain];
+    
+    UIGraphicsBeginImageContext(CGSizeMake(18, 19));
+    _shuttleLoadingImage = [UIGraphicsGetImageFromCurrentImageContext() retain];
 	
     [self.tableView applyStandardColors];
 

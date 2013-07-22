@@ -119,8 +119,7 @@
     {
         NSString * scanText = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)self.scanResult.text, NULL, (CFStringRef)@"[]", kCFStringEncodingUTF8 );
         MobileRequestOperation *operation = [MobileRequestOperation operationWithRelativePath:[NSString stringWithFormat:@"apis/scanner/mappings/%@", scanText] parameters:nil];
-        operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSString *contentType, NSError *error)
-        {
+        operation.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *codeInfo, NSString *contentType, NSError *error) {
             [self handleScanInfoResponse:codeInfo
                                    error:error];
         };

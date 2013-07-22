@@ -13,7 +13,6 @@
 #import "MGSLayerController.h"
 #import "MGSSafeAnnotation.h"
 #import "MGSLayerAnnotation.h"
-#import "MGSBootstrapper.h"
 
 
 @implementation MGSMapView
@@ -61,21 +60,31 @@
 
 - (void)dealloc
 {
-    if (self.zoomNotificationObject) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self.zoomNotificationObject];
-    }
+    self.mapView.layerDelegate = nil;
+    self.mapView.calloutDelegate = nil;
+    self.mapView.touchDelegate = nil;
+    
+    [self.observerTokens enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        [[NSNotificationCenter defaultCenter] removeObserver:obj];
+    }];
+    
+    self.showUserLocation = NO;
 }
 
 #pragma mark Base Map Set Management
 - (NSSet*)mapSets
 {
     return [NSSet setWithArray:[self.baseMapGroups allKeys]];
+//    return [NSSet setWithArray:self.baseMapGroups];
 }
 
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)mapSetIdentifier
 {
     NSDictionary* layerInfo = self.baseMapGroups[mapSetIdentifier];
     return layerInfo[@"displayName"];
+//    NSDictionary* layerInfo = self.baseMapGroups[mapSetIdentifier];
+//    return layerInfo[@"displayName"];
+//    return @"Hello world!";
 }
 
 - (void)setActiveMapSet:(NSString*)mapSetName
@@ -84,7 +93,7 @@
         NSMutableDictionary* coreMapLayers = [NSMutableDictionary dictionary];
         NSMutableArray* identifierOrder = [NSMutableArray array];
         
-        for (NSDictionary* layerInfo in self.baseMapGroups) {
+        for (NSDictionary* layerInfo in self.baseMapGroups[mapSetName]) {
             NSString* displayName = layerInfo[@"displayName"];
             NSString* identifier = layerInfo[@"layerIdentifier"];
             NSURL* layerURL = [NSURL URLWithString:layerInfo[@"url"]];
@@ -121,7 +130,7 @@
     MKCoordinateRegion region = _mapRegion;
     
     if (MKCoordinateRegionIsValid(region) == NO) {
-        if (self.isBaseLayersLoaded) {
+        if (self.areBaseLayersLoaded) {
             region = MKCoordinateRegionFromAGSEnvelope(self.mapView.visibleAreaEnvelope);
         } else {
             region = [self defaultVisibleArea];
@@ -145,7 +154,7 @@
     } else {
         _mapRegion = mapRegion;
         
-        if (self.isBaseLayersLoaded) {
+        if (self.areBaseLayersLoaded) {
             AGSEnvelope *regionEnvelope = AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(mapRegion,
                                                                                                 self.mapView.spatialReference);
             
@@ -205,7 +214,7 @@
 #pragma mark Misc
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    if (self.isBaseLayersLoaded) {
+    if (self.areBaseLayersLoaded) {
         AGSPoint *mapPoint = AGSPointFromCLLocationCoordinate2DInSpatialReference(coordinate, self.mapView.spatialReference);
         return [self.mapView toScreenPoint:mapPoint];
     } else {
@@ -213,17 +222,36 @@
     }
 }
 
+- (BOOL)trackUserLocation {
+    return (self.showUserLocation &&
+            (self.mapView.locationDisplay.autoPanMode == AGSLocationDisplayAutoPanModeDefault));
+}
+
+- (void)setTrackUserLocation:(BOOL)trackUserLocation {
+    DDLogVerbose(@"%u : %u",self.mapView.locationDisplay.autoPanMode,AGSLocationDisplayAutoPanModeDefault);
+    if (trackUserLocation) {
+        self.showUserLocation = YES;
+        self.mapView.locationDisplay.wanderExtentFactor = 0;
+        self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeDefault;
+    } else {
+        self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
+    }
+}
+
 - (BOOL)showUserLocation {
     return (self.mapView.locationDisplay.dataSource &&
             self.mapView.locationDisplay.isDataSourceStarted);
-
+    
 }
 
 - (void)setShowUserLocation:(BOOL)showUserLocation {
     if (showUserLocation) {
-        [self.mapView.locationDisplay startDataSource];
-        self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
+        if ([self.mapView.locationDisplay isDataSourceStarted] == NO) {
+            self.mapView.locationDisplay.autoPanMode = AGSLocationDisplayAutoPanModeOff;
+        }
+        
         self.mapView.locationDisplay.dataSource.delegate = self;
+        [self.mapView.locationDisplay startDataSource];
     } else {
         [self.mapView.locationDisplay stopDataSource];
     }
@@ -236,22 +264,9 @@
     return [NSArray arrayWithArray:self.externalLayers];
 }
 
-- (void)refreshLayer:(MGSLayer*)layer
-{
-    [self refreshLayers:[NSSet setWithObject:layer]
-            forceReload:NO];
-}
-
 - (void)refreshLayers:(NSSet*)layers
 {
-    [self refreshLayers:layers
-            forceReload:NO];
-}
-
-- (void)refreshLayers:(NSSet*)layers
-          forceReload:(BOOL)forceReload
-{
-    if (self.isBaseLayersLoaded) {
+    if (self.areBaseLayersLoaded) {
         NSArray *sortedArrays = [[layers allObjects] sortedArrayUsingComparator:^NSComparisonResult(MGSLayer *layer1, MGSLayer *layer2) {
             NSUInteger index1 = [self.externalLayers indexOfObject:layer1];
             NSUInteger index2 = [self.externalLayers indexOfObject:layer2];
@@ -269,24 +284,27 @@
             NSUInteger layerIndex = [self.externalLayers indexOfObject:layer];
             
             if (layerIndex != NSNotFound) {
-                MGSLayerController *manager = [self layerManagerForLayer:layer];
+                MGSLayerController *manager = [self layerControllerForLayer:layer];
                 manager.spatialReference = self.mapView.spatialReference;
                 
                 AGSLayer *arcgisLayer = manager.nativeLayer;
+                
+                if (arcgisLayer == nil) {
+                    arcgisLayer = [[AGSGraphicsLayer alloc] init];
+                    arcgisLayer.renderNativeResolution = YES;
+                    
+                    manager.nativeLayer = arcgisLayer;
+                }
+                
                 NSUInteger agsLayerIndex = [self.baseLayers count] + layerIndex;
                 
                 if ([self.mapView.mapLayers containsObject:arcgisLayer] == NO) {
                     arcgisLayer.delegate = self;
                     [self.mapView insertMapLayer:arcgisLayer
-                                        withName:layer.name
                                          atIndex:agsLayerIndex];
                 }
                 
-                if (forceReload) {
-                    [manager reload];
-                } else {
-                    [manager refresh];
-                }
+                [manager refresh:nil];
             }
         }];
     }
@@ -294,14 +312,14 @@
 
 - (BOOL)isLayerHidden:(MGSLayer*)layer
 {
-    MGSLayerController* manager = [self layerManagerForLayer:layer];
+    MGSLayerController* manager = [self layerControllerForLayer:layer];
     return (manager.nativeLayer.isVisible);
 }
 
 - (void)setHidden:(BOOL)hidden
          forLayer:(MGSLayer*)layer
 {
-    MGSLayerController* manager = [self layerManagerForLayer:layer];
+    MGSLayerController* manager = [self layerControllerForLayer:layer];
     manager.nativeLayer.visible = !hidden;
 }
 
@@ -337,7 +355,7 @@
             atIndex:(NSUInteger)index
 shouldNotifyDelegate:(BOOL)notifyDelegate
 {
-    MGSLayerController* layerManager = [self layerManagerForLayer:newLayer];
+    MGSLayerController* layerManager = [self layerControllerForLayer:newLayer];
     
     if ([self.externalLayers containsObject:newLayer] == NO) {
         if (layerManager == nil) {
@@ -362,12 +380,34 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
     }
     
     // The map view will only have a spatial reference once it has been loaded
-    if (self.isBaseLayersLoaded) {
-        [self refreshLayer:newLayer];
+    if (self.areBaseLayersLoaded) {
+        [self refreshLayers:[NSSet setWithObject:newLayer]];
     }
 }
 
 #pragma mark Removing Layers
+- (void)removeAllLayers
+{
+    [self removeLayers:[NSSet setWithArray:self.externalLayers]];
+}
+
+- (void)removeLayers:(NSSet*)layers
+{
+    NSArray *sortedLayers = [[layers allObjects] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSUInteger index1 = [self.externalLayers indexOfObject:obj1];
+        NSUInteger index2 = [self.externalLayers indexOfObject:obj2];
+        
+        return [@(index1) compare:@(index2)];
+    }];
+    
+    [sortedLayers enumerateObjectsWithOptions:NSEnumerationReverse
+                                   usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                                       if ([obj isEqual:self.defaultLayer] == NO) {
+                                           [self removeLayer:(MGSLayer*) obj];
+                                       }
+                                   }];
+}
+
 - (void)removeLayer:(MGSLayer*)layer
 {
     [self removeLayer:layer
@@ -377,7 +417,7 @@ shouldNotifyDelegate:(BOOL)notifyDelegate
 - (void)removeLayer:(MGSLayer*)layer
 shoulNotifyDelegate:(BOOL)notifyDelegate
 {
-    MGSLayerController* layerManager = [self layerManagerForLayer:layer];
+    MGSLayerController* layerManager = [self layerControllerForLayer:layer];
     
     if (layerManager == nil) {
         DDLogError(@"external layers out of sync during removal of '%@'", layer.name);
@@ -435,29 +475,112 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
 {
     [self showCalloutForAnnotation:annotation
-                          recenter:YES
                           animated:YES];
 }
 
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
-                        recenter:(BOOL)recenter
                         animated:(BOOL)animated
 {
+    if ([self.calloutAnnotation isEqual:annotation] == NO) {
+        [self dismissCallout];
+    }
     
-    self.pendingCalloutLayer = [self layerContainingAnnotation:annotation];
+    self.calloutAnnotation = annotation;
     
-    __weak MGSMapView *w_self = self;
-    if (self.pendingCalloutLayer) {
-        self.pendingCalloutBlock = ^{
-            [w_self showPendingCalloutForAnnotation:annotation
-                                       withRecenter:recenter
-                                           animated:animated];
+    if (self.areBaseLayersLoaded == NO) {
+        if (annotation) {
+            __weak MGSMapView *weak_self = self;
+            self.pendingCalloutBlock = ^ {
+                if ([annotation isEqual:weak_self.calloutAnnotation]) {
+                    [weak_self showCalloutForAnnotation:annotation
+                                               animated:animated];
+                }
+            };
+        }
+    } else {
+        if (annotation && [self shouldShowCalloutForAnnotation:annotation]) {
+            MGSLayer *layer = [self layerContainingAnnotation:annotation];
+            MGSLayerController *controller = [self layerControllerForLayer:layer];
             
-            w_self.pendingCalloutBlock = nil;
-            w_self.pendingCalloutLayer = nil;
-        };
-        
-        [self refreshLayer:self.pendingCalloutLayer];
+            [controller refresh:^{
+                if ([self.calloutAnnotation isEqual:annotation]) {
+                    AGSGraphic *graphic = [controller layerAnnotationForAnnotation:annotation].graphic;
+                    AGSEnvelope *graphicEnvelope = graphic.geometry.envelope;
+                    AGSEnvelope *envelope = [self.mapView visibleAreaEnvelope];
+                    
+                    // 10% padding on each size of the envelope
+                    double horizontalPadding = fabs(envelope.xmax - envelope.xmin) * 0.1;
+                    double verticalPadding = fabs(envelope.ymax - envelope.ymin) * 0.1;
+                    AGSEnvelope *shrunkEnvelope = [AGSEnvelope envelopeWithXmin:envelope.xmin + horizontalPadding
+                                                                           ymin:envelope.ymin + verticalPadding
+                                                                           xmax:envelope.xmax - horizontalPadding
+                                                                           ymax:envelope.ymax - verticalPadding
+                                                               spatialReference:envelope.spatialReference];
+                    
+                    if ([shrunkEnvelope containsEnvelope:graphicEnvelope]) {
+                        [self willShowCalloutForAnnotation:annotation];
+                        UIView *annotationView = [self calloutViewForAnnotation:annotation];
+                        
+                        if (annotationView) {
+                            [annotationView sizeToFit];
+                            self.mapView.callout.customView = annotationView;
+                        } else {
+                            MGSSafeAnnotation *safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
+                            self.mapView.callout.title = [safeAnnotation title];
+                            self.mapView.callout.detail = [safeAnnotation detail];
+                            self.mapView.callout.image = [safeAnnotation calloutImage];
+                        }
+                        
+                        [self.mapView.callout showCalloutAtPoint:nil
+                                                      forGraphic:graphic
+                                                        animated:animated];
+                        
+                        [self didShowCalloutForAnnotation:annotation];
+                    } else {
+                        double xmin = envelope.xmin;
+                        double xmax = envelope.xmax;
+                        double width = fabs(xmax - xmin) - horizontalPadding;
+                        
+                        double ymin = envelope.ymin;
+                        double ymax = envelope.ymax;
+                        double height = fabs(ymax - ymin);
+                        
+                        if (graphicEnvelope.xmin <= (envelope.xmin + horizontalPadding)) {
+                            xmin = graphicEnvelope.xmin - horizontalPadding;
+                            xmax = xmin + width;
+                        } else if (graphicEnvelope.xmax >= (envelope.xmax - horizontalPadding)) {
+                            xmax = graphicEnvelope.xmax + horizontalPadding;
+                            xmin = xmax - width;
+                        }
+                        
+                        if (graphicEnvelope.ymin <= (envelope.ymin + verticalPadding)) {
+                            ymin = graphicEnvelope.ymin - verticalPadding;
+                            ymax = ymin + height;
+                        } else if (graphicEnvelope.ymax >= (envelope.ymax - verticalPadding)) {
+                            ymax = graphicEnvelope.ymax + verticalPadding;
+                            ymin = ymax - height;
+                        }
+                        
+                        AGSEnvelope *newEnvelope = [AGSEnvelope envelopeWithXmin:xmin
+                                                                            ymin:ymin
+                                                                            xmax:xmax
+                                                                            ymax:ymax
+                                                                spatialReference:envelope.spatialReference];
+                        
+                        __weak MGSMapView *weak_self = self;
+                        self.pendingCalloutBlock = ^ {
+                            if ([annotation isEqual:weak_self.calloutAnnotation]) {
+                                [weak_self showCalloutForAnnotation:annotation
+                                                           animated:animated];
+                            }
+                        };
+                        
+                        [self setMapRegion:MKCoordinateRegionFromAGSEnvelope(newEnvelope)
+                                  animated:YES];
+                    }
+                }
+            }];
+        }
     }
 }
 
@@ -467,9 +590,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [self.mapView.callout dismiss];
         [self didDismissCalloutForAnnotation:self.calloutAnnotation];
         self.calloutAnnotation = nil;
-    } else if (self.pendingCalloutBlock) {
         self.pendingCalloutBlock = nil;
-        self.pendingCalloutLayer = nil;
     }
 }
 
@@ -602,6 +723,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             calloutView.accessoryActionBlock = ^(id sender) {
                 [weakSelf calloutDidReceiveTapForAnnotation:weakAnnotation];
             };
+            
+            view = calloutView;
         }
     }
     
@@ -653,6 +776,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     self.baseLayersLoaded = NO;
     self.externalLayers = [NSMutableArray array];
     self.externalLayerManagers = [NSMutableSet set];
+    self.observerTokens = [NSMutableDictionary dictionary];
     
     // Make sure that we don't do draw anything outside the bounds of the window.
     // The ArcGIS SDK has a really annoying bug where it will happily draw a presented
@@ -681,8 +805,11 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             self.mapView = view;
         }
         
-        MGSBootstrapper *bootstrapper = [MGSBootstrapper sharedBootstrapper];
-        [bootstrapper requestBootstrap:^(NSDictionary *content, NSError *error) {
+        MobileRequestOperation* operation = [MobileRequestOperation operationWithModule:@"map"
+                                                                                command:@"bootstrap"
+                                                                             parameters:nil];
+//        MobileRequestOperation* operation = [MobileRequestOperation operationWithRelativePath:@"apis/map/bootstrap" parameters:nil];
+        [operation setCompleteBlock:^(MobileRequestOperation* blockOperation, id content, NSString* contentType, NSError* error) {
             if (error) {
                 DDLogError(@"failed to load basemap definitions: %@", error);
                 if ([self.delegate respondsToSelector:@selector(mapView:didFailWithError:)]) {
@@ -694,17 +821,24 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                 self.baseMapGroups = response[@"basemaps"];
                 NSString* defaultSetName = @"default";
                 self.activeMapSet = defaultSetName;
+//                self.baseMapGroups = [content objectForKey:@"basemaps"];
+//                NSString* defaultSetName = @"default";
+//                self.activeMapSet = defaultSetName;
             }
         }];
         
+        [[NSOperationQueue mainQueue] addOperation:operation];
     }
-
+    
     self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
+//    self.defaultLayer = [[MGSLayer alloc] initWithName:@"basemaps"];
     [self addLayer:self.defaultLayer];
 }
 
 - (void)baseLayersDidFinishLoading
 {
+    [self refreshLayers:[NSSet setWithArray:self.externalLayers]];
+    
     if (MKCoordinateRegionIsValid(self->_mapRegion)) {
         [self.mapView zoomToEnvelope:AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(self->_mapRegion, self.mapView.spatialReference)
                             animated:NO];
@@ -714,13 +848,33 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         self->_mapRegion = MKCoordinateRegionInvalid;
     }
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
-                                                      object:self.mapView
-                                                       queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification *note) {
-                                                      [self refreshLayers:[NSSet setWithArray:self.externalLayers]
-                                                              forceReload:YES];
-                                                  }];
+    __weak MGSMapView *wself = self;
+    void (^notificationBlock)(NSNotification*) = ^(NSNotification *note) {
+        if ([note.name isEqualToString:AGSMapViewDidEndZoomingNotification]) {
+            [wself.externalLayerManagers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+                MGSLayerController *controller = (MGSLayerController*) obj;
+                [controller setNeedsRefresh];
+                [controller refresh:nil];
+            }];
+        }
+        
+        if (wself.mapView.lastChangeFromInteraction == NO) {
+            if (wself.pendingCalloutBlock) {
+                wself.pendingCalloutBlock();
+                wself.pendingCalloutBlock = nil;
+            }
+        }
+    };
+    
+    self.observerTokens[AGSMapViewDidEndZoomingNotification] = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
+                                                                                                                      object:self.mapView
+                                                                                                                       queue:[NSOperationQueue mainQueue]
+                                                                                                                  usingBlock:notificationBlock];
+    
+    self.observerTokens[AGSMapViewDidEndPanningNotification] = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndPanningNotification
+                                                                                                                      object:self.mapView
+                                                                                                                       queue:[NSOperationQueue mainQueue]
+                                                                                                                  usingBlock:notificationBlock];
     [self didFinishLoadingMapView];
 }
 
@@ -751,52 +905,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     return MKCoordinateRegionFromAGSEnvelope(envelope);
 }
 
-#pragma mark ArcGIS Callout
-- (void)showPendingCalloutForAnnotation:(id<MGSAnnotation>)annotation
-                           withRecenter:(BOOL)recenter
-                               animated:(BOOL)animated
-{
-    if ([self shouldShowCalloutForAnnotation:annotation]) {
-        [self willShowCalloutForAnnotation:annotation];
-        
-        MGSLayer* layer = [self layerContainingAnnotation:annotation];
-        MGSLayerController* manager = [self layerManagerForLayer:layer];
-        AGSGraphic* graphic = [[manager layerAnnotationForAnnotation:annotation] graphic];
-        
-        if (graphic == nil) {
-            return;
-        } else if (graphic.infoTemplateDelegate == nil) {
-            UIView *view = [self calloutViewForAnnotation:annotation];
-            
-            if (view == nil) {
-                MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
-                self.mapView.callout.title = safeAnnotation.title;
-                self.mapView.callout.detail = safeAnnotation.detail;
-                self.mapView.callout.image = safeAnnotation.calloutImage;
-            }
-            
-            [view sizeToFit];
-            self.mapView.callout.customView = view;
-        }
-        
-        self.calloutAnnotation = annotation;
-        
-        [self willShowCalloutForAnnotation:annotation];
-        self.mapView.callout.delegate = self;
-        
-        
-        [self.mapView.callout showCalloutAtPoint:nil
-                                      forGraphic:graphic
-                                        animated:animated];
-        
-        [self.mapView centerAtPoint:graphic.geometry.envelope.center
-                           animated:animated];
-        [self didShowCalloutForAnnotation:annotation];
-    }
-}
-
 #pragma mark Lookup Methods
-- (MGSLayerController*)layerManagerForLayer:(MGSLayer*)layer
+- (MGSLayerController*)layerControllerForLayer:(MGSLayer*)layer
 {
     MGSLayerController *layerManager = nil;
     
@@ -836,7 +946,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     __block MGSLayer* myLayer = nil;
     [self.mapLayers enumerateObjectsWithOptions:NSEnumerationReverse
                                      usingBlock:^(MGSLayer* layer, NSUInteger idx, BOOL* stop) {
-                                         MGSLayerController* manager = [self layerManagerForLayer:layer];
+                                         MGSLayerController* manager = [self layerControllerForLayer:layer];
                                          if ([manager layerAnnotationForGraphic:graphic]) {
                                              myLayer = layer;
                                              (*stop) = YES;
@@ -851,9 +961,9 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (void)mapViewDidLoad:(AGSMapView*)mapView
 {
     DDLogVerbose(@"basemap loaded with WKID %d", mapView.spatialReference.wkid);
-
+    
     mapView.maxEnvelope = AGSEnvelopeFromMKCoordinateRegionWithSpatialReference([self defaultMaximumEnvelope], mapView.spatialReference);
-
+    
     MKCoordinateRegion visibleRegion = [self defaultVisibleArea];
     [mapView zoomToEnvelope:AGSEnvelopeFromMKCoordinateRegionWithSpatialReference(visibleRegion, mapView.spatialReference)
                    animated:NO];
@@ -862,11 +972,11 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
 - (BOOL)mapView:(AGSMapView*)mapView shouldShowCalloutForGraphic:(AGSGraphic*)graphic
 {
     MGSLayer* myLayer = [self layerContainingGraphic:graphic];
-    MGSLayerController* manager = [self layerManagerForLayer:myLayer];
+    MGSLayerController* manager = [self layerControllerForLayer:myLayer];
     id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
     
     if (graphic.infoTemplateDelegate == nil) {
-        graphic.infoTemplateDelegate = self;
+        // graphic.infoTemplateDelegate = self;
     }
     
     return [self shouldShowCalloutForAnnotation:annotation];
@@ -887,34 +997,42 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     self.calloutAnnotation = nil;
 }
 
-- (BOOL)mapView:(AGSMapView*)mapView shouldProcessClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint
-{
-    return YES;
-}
 
-- (void)mapView:(AGSMapView*)mapView didClickAtPoint:(CGPoint)screen mapPoint:(AGSPoint*)mappoint graphics:(NSDictionary*)graphics
+#pragma mark -- AGSMapViewTouchDelegate
+- (BOOL)mapView:(AGSMapView*)mapView
+shouldProcessClickAtPoint:(CGPoint)screen
+       mapPoint:(AGSPoint*)mappoint
 {
     CGPoint viewPoint = [self.mapView convertPoint:screen
                                           fromView:nil];
-    
-     if (self.isPresentingCallout) {
-        if (CGRectContainsPoint(self.mapView.callout.frame, viewPoint) == NO) {
+    if (self.calloutAnnotation) {
+        if ((self.mapView.callout.hidden == NO) && CGRectContainsPoint(self.mapView.callout.frame, viewPoint)) {
+            return NO;
+        } else {
             [self dismissCallout];
         }
     }
     
-    NSMutableArray *tappedGraphics = [NSMutableArray array];
-    [graphics enumerateKeysAndObjectsUsingBlock:^(id key, NSArray *layerGraphics, BOOL *stop) {
+    return YES;
+}
+
+- (void)mapView:(AGSMapView*)mapView
+didClickAtPoint:(CGPoint)screen
+       mapPoint:(AGSPoint*)mappoint
+       graphics:(NSDictionary*)graphics
+{
+    NSMutableArray* tappedGraphics = [NSMutableArray array];
+    [graphics enumerateKeysAndObjectsUsingBlock:^(id key, NSArray* layerGraphics, BOOL* stop) {
         [tappedGraphics addObjectsFromArray:layerGraphics];
     }];
     
     if ([tappedGraphics count]) {
-        [tappedGraphics sortUsingComparator:^NSComparisonResult(AGSGraphic *graphic1, AGSGraphic *graphic2) {
-            MGSLayer *layer1 = [self layerContainingGraphic:graphic1];
-            NSUInteger index1 = [self.externalLayers indexOfObject:layer1];
-            
-            MGSLayer *layer2 = [self layerContainingGraphic:graphic2];
-            NSUInteger index2 = [self.externalLayers indexOfObject:layer2];
+        [tappedGraphics sortUsingComparator:^NSComparisonResult(AGSGraphic* graphic1, AGSGraphic* graphic2) {
+            NSRange layerRange = NSMakeRange([self.baseLayers count], [self.mapView.mapLayers count] - [self.baseLayers count]);
+            NSUInteger index1 = [self.mapView.mapLayers indexOfObject:graphic1.layer
+                                                              inRange:layerRange];
+            NSUInteger index2 = [self.mapView.mapLayers indexOfObject:graphic2.layer
+                                                              inRange:layerRange];
             
             if (index1 < index2) {
                 return NSOrderedDescending;
@@ -923,21 +1041,30 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             } else {
                 return NSOrderedSame;
             }
+            
         }];
         
-        [tappedGraphics enumerateObjectsUsingBlock:^(AGSGraphic *graphic, NSUInteger idx, BOOL *stop) {
-            BOOL showCallout = [self mapView:mapView
-                 shouldShowCalloutForGraphic:graphic];
+        for (AGSGraphic *graphic in tappedGraphics) {
+            __block BOOL foundCallout = NO;
             
-            if (showCallout) {
-                MGSLayer *layer = [self layerContainingGraphic:graphic];
-                MGSLayerController *layerManager = [self layerManagerForLayer:layer];
-                id<MGSAnnotation> annotation = [layerManager layerAnnotationForGraphic:graphic].annotation;
-
-                [self showCalloutForAnnotation:annotation];
-                (*stop) = YES;
+            [self.externalLayerManagers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+                MGSLayerController *controller = (MGSLayerController*)obj;
+                MGSLayerAnnotation *layerAnnotation = [controller layerAnnotationForGraphic:graphic];
+                id<MGSAnnotation> annotation = layerAnnotation.annotation;
+                
+                if (annotation) {
+                    if ([self shouldShowCalloutForAnnotation:annotation]) {
+                        [self showCalloutForAnnotation:annotation];
+                        foundCallout = YES;
+                        (*stop) = YES;
+                    }
+                }
+            }];
+            
+            if (foundCallout) {
+                break;
             }
-        }];
+        }
     }
     
     if ([self.delegate respondsToSelector:@selector(mapView:didReceiveTapAtCoordinate:screenPoint:)]) {
@@ -963,17 +1090,17 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [self.baseLayers removeObjectForKey:loadedLayer.name];
         [self.mapView removeMapLayer:loadedLayer];
     }
-
+    
     // Perform the coreLayersLoaded checking here since we don't want to add any of the
     // user layers until we actually have a spatial reference to work with.
     if (self.baseLayers[loadedLayer.name]) {
-        if (self.isBaseLayersLoaded == NO) {
+        if (self.areBaseLayersLoaded == NO) {
             __block BOOL layersLoaded = YES;
             [self.baseLayers enumerateKeysAndObjectsUsingBlock:^(NSString* name, AGSLayer* layer, BOOL* stop) {
                 layersLoaded = (layersLoaded && layer.spatialReference);
             }];
-
-
+            
+            
             // Check again after we iterate through everything to make sure the state
             // hasn't changed now that we have another layer loaded
             if (layersLoaded) {
@@ -994,7 +1121,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
         [self.baseLayers removeObjectForKey:layer.name];
         [self.mapView removeMapLayer:layer];
         
-        if (self.isBaseLayersLoaded == NO) {
+        if (self.areBaseLayersLoaded == NO) {
             __block BOOL layersLoaded = YES;
             [self.baseLayers enumerateKeysAndObjectsUsingBlock:^(NSString* name, AGSLayer* layer, BOOL* stop) {
                 layersLoaded = (layersLoaded && layer.spatialReference);
@@ -1070,7 +1197,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                        mapPoint:(AGSPoint *)mapPoint
 {
     MGSLayer* myLayer = [self layerContainingGraphic:graphic];
-    MGSLayerController* manager = [self layerManagerForLayer:myLayer];
+    MGSLayerController* manager = [self layerControllerForLayer:myLayer];
     id <MGSAnnotation> annotation = [[manager layerAnnotationForGraphic:graphic] annotation];
     
     UIView *customView = [self calloutViewForAnnotation:annotation];
@@ -1078,12 +1205,13 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     return customView;
 }
 
-#pragma mark --MGSLayerManagerDelegate
-- (void)layerManagerDidSynchronizeAnnotations:(MGSLayerController*)layerManager
+- (void)layerControllerWillRefresh:(MGSLayerController *)layerController
 {
-    if (self.isBaseLayersLoaded && self.pendingCalloutBlock) {
-        if ([self.pendingCalloutLayer isEqual:layerManager.layer]) {
-            self.pendingCalloutBlock();
+    if (self.calloutAnnotation) {
+        MGSLayer *layer = [self layerContainingAnnotation:self.calloutAnnotation];
+        
+        if (layer == nil) {
+            [self dismissCallout];
         }
     }
 }

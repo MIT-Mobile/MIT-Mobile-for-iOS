@@ -15,7 +15,7 @@
 
 @interface MGSMapView : UIView
 #pragma mark - Properties
-@property (nonatomic,assign) id<MGSMapViewDelegate> delegate;
+@property (nonatomic,weak) id<MGSMapViewDelegate> delegate;
 
 #pragma mark Base Map Set Management
 @property (nonatomic, strong) NSString *activeMapSet;
@@ -36,6 +36,7 @@
 
 #pragma mark Location Updates
 @property (nonatomic) BOOL showUserLocation;
+@property (nonatomic) BOOL trackUserLocation;
 
 
 #pragma mark - Methods
@@ -61,12 +62,9 @@
 
 #pragma mark Misc
 - (CGPoint)screenPointForCoordinate:(CLLocationCoordinate2D)coordinate;
-- (BOOL)showUserLocation;
-- (void)setShowUserLocation:(BOOL)showUserLocation;
 
 #pragma mark Layer Management
 - (NSArray*)mapLayers;
-- (void)refreshLayer:(MGSLayer*)layer;
 - (void)refreshLayers:(NSSet*)layers;
 
 - (BOOL)isLayerHidden:(MGSLayer*)layer;
@@ -85,9 +83,9 @@ shouldNotifyDelegate:(BOOL)notifyDelegate;
 
 
 #pragma mark --Removing Layers
+- (void)removeAllLayers;
+- (void)removeLayers:(NSSet*)layers;
 - (void)removeLayer:(MGSLayer*)layer;
-- (void)removeLayer:(MGSLayer*)layer
-shoulNotifyDelegate:(BOOL)notifyDelegate;
 
 #pragma mark --Layer Reorganization
 - (void)moveLayer:(MGSLayer*)layer
@@ -97,7 +95,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate;
 - (BOOL)isPresentingCallout;
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation;
 - (void)showCalloutForAnnotation:(id <MGSAnnotation>)annotation
-                        recenter:(BOOL)recenter
                         animated:(BOOL)animated;
 - (void)dismissCallout;
 

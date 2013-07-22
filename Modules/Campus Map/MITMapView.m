@@ -27,6 +27,7 @@
 @dynamic region;
 @dynamic scrollEnabled;
 @dynamic showsUserLocation;
+@dynamic stayCenteredOnUserLocation;
 
 - (id)init {
     return [self initWithFrame:CGRectZero];
@@ -53,14 +54,19 @@
     return self;
 }
 
+- (void)dealloc
+{
+    self.mapView.delegate = nil;
+}
+
 - (void)commonInit {
     MGSMapView *mapView = [[MGSMapView alloc] initWithFrame:self.bounds];
     mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                 UIViewAutoresizingFlexibleWidth);
     mapView.delegate = self;
     
-    self.mapView = mapView;
     [self addSubview:mapView];
+    self.mapView = mapView;
     
     self.annotationLayer = [[MGSLayer alloc] initWithName:@"edu.mit.mobile.map.legacy.annotations"];
     self.annotationLayer.delegate = self;
@@ -81,7 +87,7 @@
 
 - (void)refreshLayers
 {
-    [self.mapView refreshLayer:self.annotationLayer];
+    [self.mapView refreshLayers:[NSSet setWithObject:self.annotationLayer]];
 }
 
 #pragma mark - Dynamic Properties
@@ -130,6 +136,16 @@
 - (void)setShowsUserLocation:(BOOL)showsUserLocation
 {
     self.mapView.showUserLocation = showsUserLocation;
+}
+
+- (BOOL)stayCenteredOnUserLocation
+{
+    return self.mapView.trackUserLocation;
+}
+
+- (void)setStayCenteredOnUserLocation:(BOOL)stayCenteredOnUserLocation
+{
+    self.mapView.trackUserLocation = stayCenteredOnUserLocation;
 }
 
 - (CGFloat)zoomLevel {
@@ -223,10 +239,9 @@
     MITAnnotationAdaptor *adaptor = [self adaptorForAnnotation:annotation
                                                         create:NO];
     
-    if (adaptor)
+    if (adaptor && ([self.currentAnnotation isEqual:annotation] == NO))
     {
         [self.mapView showCalloutForAnnotation:adaptor
-                                      recenter:recenter
                                       animated:animated];
         
         self.currentAnnotation = annotation;
@@ -486,6 +501,16 @@
 }
 
 #pragma mark - MGSMapView Delegation Methods
+- (BOOL)mapView:(MGSMapView *)mapView shouldShowCalloutForAnnotation:(id<MGSAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MITAnnotationAdaptor class]]) {
+        MITAnnotationAdaptor *mgsAnnotation = (MITAnnotationAdaptor*) annotation;
+        return mgsAnnotation.calloutAnnotationView.canShowCallout;
+    }
+    
+    return NO;
+}
+
 - (void)mapView:(MGSMapView *)mapView
 didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     screenPoint:(CGPoint)screenPoint

@@ -28,6 +28,30 @@ inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
 
 @end
 
+@implementation NSArray (MITAdditions)
+
+- (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block {
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
+    [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [result addObject:block(obj, idx)];
+    }];
+    return result;
+}
+
+@end
+
+@implementation NSSet (MITAdditions)
+
+- (NSSet *)mapObjectsUsingBlock:(id (^)(id obj))block {
+    NSMutableSet *result = [NSMutableSet setWithCapacity:[self count]];
+    [self enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+        [result addObject:block(obj)];
+    }];
+    return result;
+}
+
+@end
+
 @implementation NSMutableString (MITAdditions)
 
 - (void)replaceOccurrencesOfStrings:(NSArray *)targets withStrings:(NSArray *)replacements options:(NSStringCompareOptions)options {
@@ -324,4 +348,146 @@ typedef struct {
         return @"Unknown";
     }
 }
+@end
+
+
+@implementation NSDate (MITAdditions)
+
++ (NSDate *)fakeDateForDining {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterShortStyle];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    [calendar setTimeZone:[NSTimeZone defaultTimeZone]];
+    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
+    components.hour = 20;
+    components.year = 2013;
+    components.month = 5;
+    components.day = 3;
+    
+    return [calendar dateFromComponents:components];
+}
+
++ (NSDate *) dateForTodayFromTimeString:(NSString *)time
+{
+    // takes date string of format hh:mm and returns an NSDate with today's date at the specified time.
+    
+    NSCalendar *cal = [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
+    NSDateComponents *comp = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSTimeZoneCalendarUnit fromDate:[NSDate date]];
+    
+    NSArray *timeComponents = [time componentsSeparatedByString:@":"];
+    comp.hour = [[timeComponents objectAtIndex:0] integerValue];
+    comp.minute = [[timeComponents objectAtIndex:1] integerValue];
+    
+    return [cal dateFromComponents:comp];
+}
+
+#pragma mark Comparing Dates
+
+#define DATE_COMPONENTS (NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit | NSWeekCalendarUnit |  NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit | NSWeekdayCalendarUnit | NSWeekdayOrdinalCalendarUnit)
+#define SECONDS_PER_DAY 24 * 60 * 60
+- (BOOL) isEqualToDateIgnoringTime: (NSDate *) aDate
+{
+	NSDateComponents *components1 = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:self];
+	NSDateComponents *components2 = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:aDate];
+	return ((components1.year == components2.year) &&
+			(components1.month == components2.month) &&
+			(components1.day == components2.day));
+}
+
+- (BOOL) isToday
+{
+	return [self isEqualToDateIgnoringTime:[NSDate date]];
+}
+
+- (BOOL) isTomorrow
+{
+    NSDate *tomorrow = [[[NSDate alloc] initWithTimeIntervalSinceNow:SECONDS_PER_DAY] autorelease];
+    return [self isEqualToDateIgnoringTime:tomorrow];
+}
+
+
+- (BOOL) isYesterday
+{
+    NSDate *yesterday = [[[NSDate alloc] initWithTimeIntervalSinceNow:-SECONDS_PER_DAY] autorelease];
+    return [self isEqualToDateIgnoringTime:yesterday];
+}
+
+- (NSDate *) startOfDay
+{
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:self];
+    components.hour = 0;
+    components.minute = 0;
+    components.second = 0;
+    return [[NSCalendar currentCalendar] dateFromComponents:components];
+}
+
+- (NSDate *) endOfDay
+{
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:DATE_COMPONENTS fromDate:self];
+    components.hour = 23;
+    components.minute = 59;
+    components.second = 59;
+    return [[NSCalendar currentCalendar] dateFromComponents:components];
+}
+
+- (NSDate *) dayBefore
+{
+    return [self dateByAddingTimeInterval:-SECONDS_PER_DAY];
+}
+
+- (NSDate *) dayAfter
+{
+    return [self dateByAddingTimeInterval:SECONDS_PER_DAY];
+}
+
+/** Extra compact string representation of the date's time components.
+ 
+ This returns only the time of day for the date. The format is similar to "h:mma", but with the minute component only included when non-zero, e.g. "9pm", "10:30am", "4:01pm".
+ 
+ @return A compact string representation of the date's time components.
+ */
+- (NSString *) MITShortTimeOfDayString {
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self];
+    
+    NSString *minuteString = @"";
+    NSString *periodString;
+    
+    if (components.minute > 0) {
+        minuteString = [NSString stringWithFormat:@":%d", components.minute];
+    }
+    
+    if (components.hour <= 12) {
+        periodString = @"am";
+    } else {
+        periodString = @"pm";
+        components.hour -= 12;
+    }
+    return [NSString stringWithFormat:@"%d%@%@", components.hour, minuteString, periodString];
+}
+
+- (NSDateComponents *)dayComponents {
+    return [[NSCalendar currentCalendar] components:(NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:self];
+}
+
+- (NSDateComponents *)timeComponents {
+    return [[NSCalendar currentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:self];
+}
+
+/** Returns a date with its time components changed to match the input date.
+
+ @param date The date from which to pull the new time of day.
+ @return An NSDate with the receiver's year, month, and day but date's hours, minutes, and seconds.
+ */
+
+- (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date {
+    NSDateComponents *components = [self dayComponents];
+    NSDateComponents *timeComponents = [date timeComponents];
+    
+    components.hour = timeComponents.hour;
+    components.minute = timeComponents.minute;
+    components.second = timeComponents.second;
+    
+    return [[NSCalendar currentCalendar] dateFromComponents:components];
+}
+
 @end

@@ -221,24 +221,32 @@ NSString * const shuttleStopPath = @"/stops/";
             NSInteger sortOrder = 0;
             
             for (NSDictionary *routeInfo in jsonResult) {
-                
                 NSString *routeID = [routeInfo objectForKey:@"id"];
                 
-                [routeIDs addObject:routeID];
-                
-                ShuttleRoute *route = [_shuttleRoutesByID objectForKey:routeID];
-                if (route == nil) {
-                    route = [[[ShuttleRoute alloc] initWithDictionary:routeInfo] autorelease];
-                    [_shuttleRoutes addObject:route];
-                    [_shuttleRoutesByID setValue:route forKey:routeID];
-                    routesChanged = YES;
+                if ([routeID length]) {
+                    [routeIDs addObject:routeID];
+                    
+                    ShuttleRoute *route = [_shuttleRoutesByID objectForKey:routeID];
+                    if (route == nil) {
+                        route = [[[ShuttleRoute alloc] initWithDictionary:routeInfo] autorelease];
+                        
+                        if (route) {
+                            [_shuttleRoutes addObject:route];
+                            [_shuttleRoutesByID setObject:route
+                                                   forKey:routeID];
+                            routesChanged = YES;
+                        }
+                    }
+                    
+                    if (route) {
+                        [route updateInfo:routeInfo];
+                        if (route.sortOrder != sortOrder) {
+                            route.sortOrder = sortOrder;
+                            routesChanged = YES;
+                        }
+                        sortOrder++;
+                    }
                 }
-                [route updateInfo:routeInfo];
-                if (route.sortOrder != sortOrder) {
-                    route.sortOrder = sortOrder;
-                    routesChanged = YES;
-                }
-                sortOrder++;
             }
             
             // prune routes that don't exist anymore
@@ -248,7 +256,7 @@ NSString * const shuttleStopPath = @"/stops/";
             for (ShuttleRoute *route in missingRoutes) {
                 NSString *routeID = route.routeID;
                 [CoreDataManager deleteObject:route.cache];
-                [_shuttleRoutesByID setValue:nil forKey:routeID];
+                [_shuttleRoutesByID removeObjectForKey:routeID];
                 [_shuttleRoutes removeObject:route];
                 route = nil;
                 routesChanged = YES;

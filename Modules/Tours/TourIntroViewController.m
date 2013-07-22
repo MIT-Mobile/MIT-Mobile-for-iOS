@@ -5,7 +5,7 @@
 #import "MITLoadingActivityView.h"
 #import "MITUIConstants.h"
 
-@interface TourIntroViewController (Private)
+@interface TourIntroViewController ()
 
 - (void)loadTourInfo;
 - (void)showLoadingView;

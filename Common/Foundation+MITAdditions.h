@@ -10,6 +10,18 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 
 @end
 
+@interface NSArray (MITAdditions)
+
+- (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block;
+
+@end
+
+@interface NSSet (MITAdditions)
+
+- (NSSet *)mapObjectsUsingBlock:(id (^)(id obj))block;
+
+@end
+
 @interface NSMutableString (MITAdditions)
 
 - (void)replaceOccurrencesOfStrings:(NSArray *)targets withStrings:(NSArray *)replacements options:(NSStringCompareOptions)options;
@@ -34,4 +46,22 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 @interface UIDevice (MITAdditions)
 - (NSString*)sysInfoByName:(NSString*)typeSpecifier;
 - (NSString*)cpuType;
+@end
+
+@interface NSDate (MITAdditions)
++ (NSDate *)fakeDateForDining;
++ (NSDate *) dateForTodayFromTimeString:(NSString *)time;
+- (BOOL) isEqualToDateIgnoringTime: (NSDate *) aDate;
+- (BOOL) isToday;
+- (BOOL) isTomorrow;
+- (BOOL) isYesterday;
+- (NSDate *) startOfDay;
+- (NSDate *) endOfDay;
+- (NSDate *) dayBefore;
+- (NSDate *) dayAfter;
+- (NSString *) MITShortTimeOfDayString; // e.g. "1pm", "10:30am", etc
+- (NSDateComponents *) dayComponents;
+- (NSDateComponents *) timeComponents;
+- (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date;
+
 @end
