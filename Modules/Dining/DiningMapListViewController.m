@@ -111,6 +111,8 @@
         
         [[DiningData sharedData] reloadAndCompleteWithBlock:^ (NSError *error) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                weakSelf.favoritedRetailVenues = nil;
+                
                 [weakSelf refreshSelectedTypeOfVenues];
                 
                 if (error) {
@@ -163,7 +165,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     NSIndexPath *selectedIndexPath = [self.listView indexPathForSelectedRow];
     [self.listView deselectRowAtIndexPath:selectedIndexPath animated:animated];
-    self.favoritedRetailVenues = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"] sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
+    self.favoritedRetailVenues = nil;
     [self.listView reloadData];
 }
 
@@ -238,6 +240,18 @@
         // toggle boolean flag 
         self.showingMap = !self.isShowingMap;
     }
+}
+
+#pragma mark - Dynamic Properties
+- (NSArray*)favoritedRetailVenues
+{
+    if (_favoritedRetailVenues == nil) {
+        _favoritedRetailVenues = [CoreDataManager objectsForEntity:@"RetailVenue"
+                                                 matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]
+                                                   sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
+    }
+    
+    return _favoritedRetailVenues;
 }
 
 
