@@ -17,6 +17,7 @@
 @property (nonatomic, retain) PersonDetails *personDetails;
 @property (nonatomic, retain) NSMutableArray *sectionArray;
 @property (nonatomic, retain) NSString *fullname;
+@property (nonatomic, retain) NSString *personID;
 
 - (void)mapIconTapped:(NSString *)room;
 - (void)phoneIconTapped:(NSString *)phone;

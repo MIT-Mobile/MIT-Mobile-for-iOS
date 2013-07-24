@@ -140,10 +140,6 @@
 
 - (void)updateLoanData
 {
-//    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-//                                                                            command:@"holds"
-//                                                                         parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
-//                                                                                                                forKey:@"limit"]];
     MobileRequestOperation *operation = [MobileRequestOperation operationWithRelativePath:@"/apis/secure/libraries/account/holds" parameters:nil];
     operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         if ([self.loadingView isDescendantOfView:self.tableView]) {

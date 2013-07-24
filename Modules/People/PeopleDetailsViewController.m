@@ -11,7 +11,7 @@
 
 @implementation PeopleDetailsViewController
 
-@synthesize personDetails, sectionArray, fullname;
+@synthesize personDetails, sectionArray, fullname, personID;
 
 - (void)viewDidLoad
 {
@@ -20,7 +20,7 @@
     
     // get fullname for header
     self.fullname = [self.personDetails displayName];
-	
+    self.personID = [self.personDetails uid];
 	// populate remaining contents to be displayed
 	self.sectionArray = [[[NSMutableArray alloc] init] autorelease];
 	
@@ -81,10 +81,8 @@
 	// TODO: change this time interval to something more reasonable
 	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300) { // 5 mins for testing
 		if ([ConnectionDetector isConnected]) {
-            NSDictionary *parameters = [NSDictionary dictionaryWithObjectsAndKeys:self.fullname, @"q", nil];
-            MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"people"
-                                                                                      command:nil
-                                                                                   parameters:parameters] autorelease];
+            MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/people/%@", self.personID]
+                                                                                         parameters:nil] autorelease];
             request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
                 if (!error && [jsonResult isKindOfClass:[NSArray class]]) { // fail silently
                     for (NSDictionary *entry in jsonResult) {

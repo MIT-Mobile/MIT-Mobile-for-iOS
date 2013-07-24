@@ -140,11 +140,7 @@
 }
 
 - (void)updateLoanData
-{
-//    MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
-//                                                                            command:@"fines"
-//                                                                         parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
-//                                                                                                                forKey:@"limit"]];    
+{   
     MobileRequestOperation *operation = [MobileRequestOperation operationWithRelativePath:@"/apis/secure/libraries/account/fines" parameters:nil];
 
     operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {

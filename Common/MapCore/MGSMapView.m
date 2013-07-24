@@ -74,17 +74,14 @@
 #pragma mark Base Map Set Management
 - (NSSet*)mapSets
 {
-    return [NSSet setWithArray:[self.baseMapGroups allKeys]];
-//    return [NSSet setWithArray:self.baseMapGroups];
+    return [NSSet setWithArray:self.baseMapGroups];
 }
 
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)mapSetIdentifier
 {
-    NSDictionary* layerInfo = self.baseMapGroups[mapSetIdentifier];
-    return layerInfo[@"displayName"];
-//    NSDictionary* layerInfo = self.baseMapGroups[mapSetIdentifier];
-//    return layerInfo[@"displayName"];
-//    return @"Hello world!";
+    NSDictionary* layerInfo = [self.baseMapGroups objectAtIndex:(int)mapSetIdentifier];
+    return [layerInfo objectForKey:@"displayName"];
+
 }
 
 - (void)setActiveMapSet:(NSString*)mapSetName
@@ -93,7 +90,7 @@
         NSMutableDictionary* coreMapLayers = [NSMutableDictionary dictionary];
         NSMutableArray* identifierOrder = [NSMutableArray array];
         
-        for (NSDictionary* layerInfo in self.baseMapGroups[mapSetName]) {
+        for (NSDictionary* layerInfo in self.baseMapGroups) {
             NSString* displayName = layerInfo[@"displayName"];
             NSString* identifier = layerInfo[@"layerIdentifier"];
             NSURL* layerURL = [NSURL URLWithString:layerInfo[@"url"]];
@@ -297,10 +294,11 @@
                 }
                 
                 NSUInteger agsLayerIndex = [self.baseLayers count] + layerIndex;
-                
                 if ([self.mapView.mapLayers containsObject:arcgisLayer] == NO) {
                     arcgisLayer.delegate = self;
+                    NSLog(@"name = %@", layer.name);
                     [self.mapView insertMapLayer:arcgisLayer
+                                        withName:layer.name
                                          atIndex:agsLayerIndex];
                 }
                 
@@ -805,10 +803,7 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             self.mapView = view;
         }
         
-        MobileRequestOperation* operation = [MobileRequestOperation operationWithModule:@"map"
-                                                                                command:@"bootstrap"
-                                                                             parameters:nil];
-//        MobileRequestOperation* operation = [MobileRequestOperation operationWithRelativePath:@"apis/map/bootstrap" parameters:nil];
+        MobileRequestOperation* operation = [MobileRequestOperation operationWithRelativePath:@"apis/map/bootstrap" parameters:nil];
         [operation setCompleteBlock:^(MobileRequestOperation* blockOperation, id content, NSString* contentType, NSError* error) {
             if (error) {
                 DDLogError(@"failed to load basemap definitions: %@", error);
@@ -817,13 +812,9 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                           didFailWithError:error];
                 }
             } else if ([content isKindOfClass:[NSDictionary class]]) {
-                NSDictionary* response = (NSDictionary*) content;
-                self.baseMapGroups = response[@"basemaps"];
+                self.baseMapGroups = [content objectForKey:@"basemaps"];
                 NSString* defaultSetName = @"default";
                 self.activeMapSet = defaultSetName;
-//                self.baseMapGroups = [content objectForKey:@"basemaps"];
-//                NSString* defaultSetName = @"default";
-//                self.activeMapSet = defaultSetName;
             }
         }];
         
@@ -831,7 +822,6 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
     }
     
     self.defaultLayer = [[MGSLayer alloc] initWithName:@"Default"];
-//    self.defaultLayer = [[MGSLayer alloc] initWithName:@"basemaps"];
     [self addLayer:self.defaultLayer];
 }
 

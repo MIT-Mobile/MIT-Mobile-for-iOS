@@ -83,8 +83,6 @@ LocationsHoursTableRows;
         
         NSString *libraryTitle = self.library.title;        
         libraryTitle = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)libraryTitle, NULL, (CFStringRef)@"[]", kCFStringEncodingUTF8 ));
-//      NSDictionary *params = [NSDictionary dictionaryWithObject:self.library.title forKey:@"library"];
-//      MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locationDetail" parameters:params] autorelease];
         
         MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/libraries/locations/%@",libraryTitle] parameters:nil] autorelease];
         request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {

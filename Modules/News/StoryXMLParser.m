@@ -188,7 +188,7 @@ NSString * const NewsTagImageHeight     = @"height";
 	}
     
     NSURL *mobileServer = MITMobileWebGetCurrentServerURL();
-    NSString *relativeString = [NSString stringWithFormat:@"%@/newsoffice/index.php?command=search&q=%@&start=%d&limit=%d",
+    NSString *relativeString = [NSString stringWithFormat:@"%@/news/stories?q=%@&start=%d&limit=%d",
                                 [mobileServer absoluteString], [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], start, count];
     
     NSURL *fullURL = [NSURL URLWithString:relativeString];
