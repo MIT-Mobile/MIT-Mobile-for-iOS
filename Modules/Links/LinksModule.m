@@ -25,9 +25,11 @@
 #pragma mark Handle Url
 - (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query
 {
-    [self loadModuleHomeController];
+    UIViewController *moduleHomeController = self.moduleHomeController;
+    
     [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
-    [[MITAppDelegate() rootNavigationController] pushViewController:self.moduleHomeController animated:YES];
+    [[MITAppDelegate() rootNavigationController] pushViewController:moduleHomeController
+                                                           animated:YES];
     return YES;
 }
 
