@@ -19,7 +19,7 @@
 
 - (void)loadModuleHomeController
 {
-    self.moduleHomeController = [[[LinksViewController alloc] init] autorelease];
+    self.moduleHomeController = [[LinksViewController alloc] init];
 }
 
 #pragma mark Handle Url
