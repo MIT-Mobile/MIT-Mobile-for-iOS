@@ -21,7 +21,6 @@
     webview.backgroundColor = [UIColor clearColor];
     [self.view addSubview:webview];
     [webview loadHTMLString:htmlString baseURL:nil];
-    [webview release];
 }
 
 @end

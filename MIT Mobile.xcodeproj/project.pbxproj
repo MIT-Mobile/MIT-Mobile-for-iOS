@@ -283,7 +283,7 @@
 		BD1E930E103B5D60004429AA /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E9300103B5D60004429AA /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		BD9FA7EE1047A05E00BC3C0A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */; };
 		DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; };
 		DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DE18F9ED10F19105009A69B9 /* News.xcdatamodeld */; };
 		DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1B4D7110CE17B30073BABC /* MITJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE277694177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277691177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m */; };
@@ -332,7 +332,7 @@
 		DE952E6C1629BFAB007E7356 /* MITRotationForwardingNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE952E6B1629BFAB007E7356 /* MITRotationForwardingNavigationController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE98C6651741B8E500319AA3 /* RetailVenue.m in Sources */ = {isa = PBXBuildFile; fileRef = DE98C6641741B8E500319AA3 /* RetailVenue.m */; };
 		DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B48C10C9BB7300BDA774 /* AboutModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B48C10C9BB7300BDA774 /* AboutModule.m */; };
 		DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B6F710CB126200BDA774 /* MITConstants.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -353,7 +353,7 @@
 		DEBF5FE414886F1A00B5719A /* LibrariesLoanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD414886F1A00B5719A /* LibrariesLoanTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEBF5FE514886F1A00B5719A /* LibrariesRenewResultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD714886F1A00B5719A /* LibrariesRenewResultViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFF07C110001E300F0573E /* StoryImageView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; };
 		DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6A110F8F71D009FAE35 /* NewsImage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DECBF6B610F8F91B009FAE35 /* NewsImageRep.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6B510F8F91B009FAE35 /* NewsImageRep.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DED41FD517381D180048376F /* Dining.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DED41FD317381D180048376F /* Dining.xcdatamodeld */; };
@@ -365,7 +365,7 @@
 		DED41FE717385A860048376F /* DiningDietaryFlag.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FE617385A850048376F /* DiningDietaryFlag.m */; };
 		DED41FEA17385A860048376F /* DiningMeal.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FE917385A860048376F /* DiningMeal.m */; };
 		DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */; };
-		DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */; };
 		DEE6AF201117477E0037F03C /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = DEE6AF1F1117477E0037F03C /* credits.html */; };
 		EB07AD9812B886DF005D6A4C /* MITEventList.m in Sources */ = {isa = PBXBuildFile; fileRef = EB07AD9612B886DF005D6A4C /* MITEventList.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB07B06612B89440005D6A4C /* NavScrollerView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };

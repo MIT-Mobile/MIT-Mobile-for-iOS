@@ -64,7 +64,7 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
     cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
@@ -158,13 +158,11 @@
             case 0: {
                 AboutCreditsVC *aboutCreditsVC = [[AboutCreditsVC alloc] init];
                 [self.navigationController pushViewController:aboutCreditsVC animated:YES];
-                [aboutCreditsVC release];
                 break;
             }
             case 1: {
                 AboutMITVC *aboutMITVC = [[AboutMITVC alloc] initWithStyle:UITableViewStyleGrouped];
                 [self.navigationController pushViewController:aboutMITVC animated:YES];
-                [aboutMITVC release];
                 break;
             }
             case 2: {
@@ -187,7 +185,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     switch (section) {
         case 1: {
-            ExplanatorySectionLabel *copyrightFooter = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter] autorelease];
+            ExplanatorySectionLabel *copyrightFooter = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
             copyrightFooter.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITCopyright"];
             copyrightFooter.fontSize = 12.0;
             return copyrightFooter;

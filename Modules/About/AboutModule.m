@@ -18,7 +18,7 @@
 
 - (void)loadModuleHomeController
 {
-    self.moduleHomeController = [[[AboutTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+    self.moduleHomeController = [[AboutTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
 }
 
 @end
