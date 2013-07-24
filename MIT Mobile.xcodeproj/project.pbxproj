@@ -223,7 +223,7 @@
 		48A6E4DB170B9423004DED46 /* DiningHallDetailHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6E4DA170B9423004DED46 /* DiningHallDetailHeaderView.m */; };
 		48B06EA1175CE904001DBCC6 /* MealReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B06EA0175CE904001DBCC6 /* MealReference.m */; };
 		48B4ADE41713572300EF426F /* DiningHallMenuCompareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B4ADE31713572300EF426F /* DiningHallMenuCompareView.m */; };
-		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; };
 		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; };
 		48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C2D2881729D41900F39DB5 /* DiningRetailInfoViewController.m */; };
 		48C572CF174BC68100CF6C16 /* DiningHallInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C572CE174BC68100CF6C16 /* DiningHallInfoScheduleCell.m */; };

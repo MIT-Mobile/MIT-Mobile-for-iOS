@@ -3,8 +3,5 @@
 #import "MITLoadingActivityView.h"
 
 @interface LinksViewController : UITableViewController
-{
-    
-}
 
 @end

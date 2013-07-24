@@ -6,9 +6,9 @@
 
 @interface LinksViewController ()
 
-@property (nonatomic, retain) NSArray *linkResults;
-@property (nonatomic, retain) MITLoadingActivityView *loadingView;
-@property (nonatomic, retain) UILabel *errorLabel;
+@property (nonatomic, strong) NSArray *linkResults;
+@property (nonatomic, strong) MITLoadingActivityView *loadingView;
+@property (nonatomic, strong) UILabel *errorLabel;
 
 @end
 
@@ -20,16 +20,6 @@ static NSString * kLinksKeyLinkUrl      = @"link";
 static NSString * kLinksKeyLinkTitle    = @"name";
 
 @implementation LinksViewController
-
-@synthesize linkResults = _linkResults;
-@synthesize loadingView = _loadingView;
-@synthesize errorLabel = _errorLabel;
-
-- (void) dealloc
-{
-    self.linkResults = nil;
-    [super dealloc];
-}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -47,8 +37,8 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 	// Do any additional setup after loading the view.
     self.title = @"Links";
     
-    self.tableView = [[[UITableView alloc] initWithFrame:CGRectInset(self.view.bounds, 0, 0)
-                                                   style:UITableViewStyleGrouped] autorelease];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectInset(self.view.bounds, 0, 0)
+                                                   style:UITableViewStyleGrouped];
     [self.tableView setBackgroundColor:[UIColor clearColor]];
     [self.tableView applyStandardColors];
     
@@ -96,7 +86,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     if (!self.loadingView) {
         self.tableView.userInteractionEnabled = NO;
         CGRect loadingFrame = self.tableView.bounds;
-        self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        self.loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
         self.loadingView.usesBackgroundImage = NO;
         [self.view addSubview:self.loadingView];
     }
@@ -159,7 +149,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     CGRect frame = self.tableView.bounds;
     frame.origin.x = horizontalPadding;
     frame.size.width -= 2 * horizontalPadding;
-    self.errorLabel = [[[UILabel alloc] initWithFrame:frame] autorelease];
+    self.errorLabel = [[UILabel alloc] initWithFrame:frame];
     self.errorLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.errorLabel.backgroundColor = [UIColor clearColor];
     self.errorLabel.text = @"There was a problem loading the links. Please try again later.";
@@ -189,7 +179,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     UITableViewCell *cell = nil;
     cell = [tableView dequeueReusableCellWithIdentifier:reuseID];
     if (!cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseID] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseID];
     }
     
     NSDictionary *section = [self.linkResults objectAtIndex:indexPath.section];
