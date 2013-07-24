@@ -10,7 +10,6 @@
 @interface MITSpringboard ()
 @property (nonatomic, retain) NSMutableDictionary *bannerInfo;
 
-- (void)internalInit;
 - (void)showModuleForIcon:(id)sender;
 - (void)showModuleForBanner;
 - (void)checkForFeaturedModule;
@@ -26,7 +25,7 @@
 {
     self = [super init];
     if (self) {
-        [self internalInit];
+        
     }
     
     return self;
@@ -37,15 +36,10 @@
     self = [super initWithNibName:nibNameOrNil
                            bundle:nibBundleOrNil];
     if (self) {
-        [self internalInit];
+        
     }
     
     return self;
-}
-
-- (void)internalInit
-{
-    /* Do Nothing */
 }
 
 - (void)showModuleForIcon:(id)sender {
