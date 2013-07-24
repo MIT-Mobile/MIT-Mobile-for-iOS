@@ -17,17 +17,10 @@
 
 @end
 
-@interface MITSpringboard : UIViewController <UINavigationControllerDelegate> {
-	id<MITSpringboardDelegate> delegate;
-    NSArray *primaryModules;
-    IconGrid *grid;
-    
-	NSTimer *checkBannerTimer;
-}
-
-@property (nonatomic, assign) id<MITSpringboardDelegate> delegate;
-@property (nonatomic, retain) IconGrid *grid;
-@property (nonatomic, retain) NSArray *primaryModules;
+@interface MITSpringboard : UIViewController <UINavigationControllerDelegate>
+@property (nonatomic,weak) id<MITSpringboardDelegate> delegate;
+@property (nonatomic,strong) IconGrid *grid;
+@property (nonatomic,strong) NSArray *primaryModules;
 
 - (void)pushModuleWithTag:(NSString*)tag;
 @end

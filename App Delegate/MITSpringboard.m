@@ -8,7 +8,7 @@
 #import "MobileRequestOperation.h"
 
 @interface MITSpringboard ()
-@property (nonatomic, retain) NSMutableDictionary *bannerInfo;
+@property (nonatomic, strong) NSMutableDictionary *bannerInfo;
 
 - (void)showModuleForIcon:(id)sender;
 - (void)showModuleForBanner;
@@ -19,7 +19,9 @@
 #define BANNER_CONTROL_TAG 9966
 
 @implementation MITSpringboard
-@synthesize grid, primaryModules, delegate;
+{
+	NSTimer *_checkBannerTimer;
+}
 
 - (id)init
 {
@@ -59,7 +61,7 @@
 }
 
 - (void)checkForFeaturedModule {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"features" command:@"banner" parameters:nil] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"features" command:@"banner" parameters:nil];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         
         if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
@@ -97,13 +99,13 @@
             
             NSString *photoURL = [jsonResult objectForKey:@"photo-url"];
             if (photoURL) {
-                NSString *oldPhotoURL = [[[self.bannerInfo objectForKey:@"photo-url"] retain] autorelease];
-                [self.bannerInfo setObject:photoURL forKey:@"photo-url"];
+                NSString *oldPhotoURL = self.bannerInfo[@"photo-url"];
+                self.bannerInfo[@"photo-url"] = photoURL;
 
                 if (![oldPhotoURL isEqualToString:photoURL] // new image
                     || ![self.view viewWithTag:BANNER_CONTROL_TAG]) // or we haven't displayed the image
                 {
-                    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:photoURL] parameters:nil] autorelease];
+                    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:photoURL] parameters:nil];
                     request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
                         if (error) {
                             
@@ -166,9 +168,9 @@
 		[self.view addSubview:bannerButton];
         
         // will trigger a relayout of grid if the frame is different
-        CGRect newGridFrame = grid.frame;
+        CGRect newGridFrame = _grid.frame;
         newGridFrame.size.height = self.view.frame.size.height - bannerButton.frame.size.height;
-        grid.frame = newGridFrame;
+        _grid.frame = newGridFrame;
 	}
 }
 
@@ -238,9 +240,9 @@
     
     self.navigationItem.title = @"Home";
     UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo.png"];
-    self.navigationItem.titleView = [[[UIImageView alloc] initWithImage:logoView] autorelease];
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
 
-    self.grid = [[[IconGrid alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)] autorelease];
+    self.grid = [[IconGrid alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     self.grid.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.grid setHorizontalMargin:5.0 vertical:10.0];
     [self.grid setHorizontalPadding:5.0 vertical:10.0];
@@ -280,27 +282,18 @@
         self.bannerInfo = [NSDictionary dictionaryWithContentsOfFile:bannerInfoFile];
     }
     if (!self.bannerInfo) {
-        self.bannerInfo = [[[NSMutableDictionary alloc] init] autorelease];
+        self.bannerInfo = [[NSMutableDictionary alloc] init];
     }
     
     [self displayBannerImage];
 	[self checkForFeaturedModule];
 
-	checkBannerTimer = [[NSTimer scheduledTimerWithTimeInterval:60 * 60 * 12
+	_checkBannerTimer = [NSTimer scheduledTimerWithTimeInterval:60 * 60 * 12
 														 target:self 
 													   selector:@selector(checkForFeaturedModule)
 													   userInfo:nil 
-														repeats:YES] retain];
+														repeats:YES];
 }
-
-
-- (void)dealloc {
-	self.primaryModules = nil;
-	[checkBannerTimer release];
-    self.bannerInfo = nil;
-    [super dealloc];
-}
-
 
 @end
 
@@ -316,8 +309,7 @@
 #define BADGE_TAG 62
 #define BADGE_LABEL_TAG 63
 - (void)setBadgeValue:(NSString *)newValue {
-    [badgeValue release];
-    badgeValue = [newValue retain];
+    badgeValue = newValue;
     
     UIView *badgeView = [self viewWithTag:BADGE_TAG];
 
@@ -329,11 +321,11 @@
             UIImage *stretchableImage = [image stretchableImageWithLeftCapWidth:(NSUInteger)(floor(image.size.width / 2) - 1)
                                                                    topCapHeight:0];
             
-            badgeView = [[[UIImageView alloc] initWithImage:stretchableImage] autorelease];
+            badgeView = [[UIImageView alloc] initWithImage:stretchableImage];
             badgeView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin;
             badgeView.tag = BADGE_TAG;
             
-            UILabel *badgeLabel = [[[UILabel alloc] initWithFrame:badgeView.frame] autorelease];
+            UILabel *badgeLabel = [[UILabel alloc] initWithFrame:badgeView.frame];
             badgeLabel.backgroundColor = [UIColor clearColor];
             badgeLabel.textColor = [UIColor whiteColor];
             badgeLabel.font = labelFont;
@@ -368,12 +360,6 @@
     } else {
         [badgeView removeFromSuperview];
     }
-}
-
-- (void)dealloc {
-    self.badgeValue = nil;
-    self.moduleTag = nil;
-    [super dealloc];
 }
 
 @end

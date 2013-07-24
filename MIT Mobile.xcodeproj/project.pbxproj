@@ -386,7 +386,7 @@
 		EB4C31BC1280AA9600058748 /* TourSiteOrRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C31BA1280AA9600058748 /* TourSiteOrRoute.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB4C34FA1281FCBD00058748 /* tours in Resources */ = {isa = PBXBuildFile; fileRef = EB4C34F81281FCBD00058748 /* tours */; };
 		EB4C3A0B1283698000058748 /* TourOverviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C3A091283698000058748 /* TourOverviewViewController.m */; };
-		EB4C3A8C1283812A00058748 /* MITSpringboard.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C3A8A1283812A00058748 /* MITSpringboard.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		EB4C3A8C1283812A00058748 /* MITSpringboard.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C3A8A1283812A00058748 /* MITSpringboard.m */; };
 		EB4C3A93128456DB00058748 /* TourOverviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB4C3A92128456DB00058748 /* TourOverviewViewController.xib */; };
 		EB4C40D51288988900058748 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4C40D41288988900058748 /* OpenGLES.framework */; };
 		EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C42DD1289CC8000058748 /* MITMapRoute.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
