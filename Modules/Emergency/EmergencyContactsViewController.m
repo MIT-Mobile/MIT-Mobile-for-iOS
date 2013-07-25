@@ -60,11 +60,6 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void)dealloc {
-    self.emergencyContacts = nil;
-    [super dealloc];
-}
-
 - (void)contactsDidLoad:(NSNotification *)aNotification {
     self.emergencyContacts = [[EmergencyData sharedData] allPhoneNumbers];
     [self.tableView reloadData];
@@ -102,7 +97,7 @@
     static NSString *CellIdentifier = @"Cell";
     MultiLineTableViewCell *cell = (MultiLineTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
         UIImageView *imageView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
         cell.accessoryView = imageView;

@@ -8,11 +8,9 @@
 #define kAPICategory		@"Category"
 
 @implementation CategoriesTableViewController
-@synthesize mapSelectionController = _mapSelectionController;
-@synthesize itemsInTable = _itemsInTable;
-@synthesize headerText = _headerText;
-@synthesize topLevel = _topLevel;
-@synthesize leafLevel = _leafLevel;
+{
+	MITLoadingActivityView* _loadingView;
+}
 
 #pragma mark -
 #pragma mark Initialization
@@ -22,7 +20,7 @@
 {
 	self = [super initWithStyle:UITableViewStyleGrouped];
 	if (self) {
-		_mapSelectionController = [mapSelectionController retain];
+		_mapSelectionController = mapSelectionController;
 	}
 	
 	return self;
@@ -32,7 +30,7 @@
 {
 	self = [super initWithStyle:style];
 	if (self) {
-		_mapSelectionController = [mapSelectionController retain];
+		_mapSelectionController = mapSelectionController;
 	}
 	
 	return self;
@@ -73,8 +71,7 @@
 		if (!_loadingView)
 		{
 			self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-			_loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame]
-							retain];
+			_loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
 			[self.view addSubview:_loadingView];
 		}
 	}
@@ -84,8 +81,7 @@
 		if (!_loadingView) 
 		{
 			self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-			_loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame]
-							retain];
+			_loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
 			[self.view addSubview:_loadingView];
 		}
 	}
@@ -127,13 +123,13 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
 		cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
 		cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
     }
     
 	if ([[self.itemsInTable objectAtIndex:indexPath.row] objectForKey:@"categoryName"]) {
-		cell.textLabel.text = [[self.itemsInTable objectAtIndex:indexPath.row] objectForKey:@"categoryName"];
+		cell.textLabel.text = self.itemsInTable[indexPath.row][@"categoryName"];
 	} 
 	else
 	{
@@ -177,7 +173,7 @@
 		
 		NSMutableArray* searchResultsArray = [NSMutableArray array];
 
-		MITMapSearchResultAnnotation* annotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:thisItem] autorelease];
+		MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:thisItem];
 		[searchResultsArray addObject:annotation];
 		
 		// this will remove any old annotations and add the new ones. 
@@ -193,15 +189,21 @@
 		
 		if ([thisItem objectForKey:@"subcategories"]) 
 		{
-			newCategoriesTVC = [[[CategoriesTableViewController alloc] initWithMapSelectionController:self.mapSelectionController] autorelease];
+			newCategoriesTVC = [[CategoriesTableViewController alloc] initWithMapSelectionController:self.mapSelectionController];
 			newCategoriesTVC.itemsInTable = [thisItem objectForKey:@"subcategories"];
-			newCategoriesTVC.headerText = [NSString stringWithFormat:@"Buildings by %@:", [[thisItem objectForKey:@"categoryName"] isEqualToString:@"Building name"] ? @"name" : @"number"];
+			NSString *formatString = @"Buildings by %@:";
+            if ([thisItem[@"categoryName"] isEqual:@"Building name"]) {
+                newCategoriesTVC.headerText = [NSString stringWithFormat:formatString,@"name"];
+            } else {
+                newCategoriesTVC.headerText = [NSString stringWithFormat:formatString,@"number"];
+            }
 		} else 
 		{
-			newCategoriesTVC = [[[CategoriesTableViewController alloc] initWithMapSelectionController:self.mapSelectionController andStyle:UITableViewStylePlain] autorelease];
-			[newCategoriesTVC executeServerCategoryRequestWithQuery:[thisItem objectForKey:@"categoryId"]];
+			newCategoriesTVC = [[CategoriesTableViewController alloc] initWithMapSelectionController:self.mapSelectionController
+                                                                                            andStyle:UITableViewStylePlain];
+			[newCategoriesTVC executeServerCategoryRequestWithQuery:thisItem[@"categoryId"]];
 			newCategoriesTVC.leafLevel = YES;
-			newCategoriesTVC.headerText = [NSString stringWithFormat:@"%@:", [thisItem objectForKey:@"categoryName"]];
+			newCategoriesTVC.headerText = [NSString stringWithFormat:@"%@:", thisItem[@"categoryName"]];
 		}
 		
 		newCategoriesTVC.topLevel = NO;
@@ -217,17 +219,15 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-	UIView* headerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 60)] autorelease];
-//	headerView.backgroundColor = [UIColor yellowColor];
-//	headerView.alpha = 0.5;
+	UIView* headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 60)];
+    
 	if (section == 0) {
-		UILabel* headerLabel = [[[UILabel alloc] initWithFrame:CGRectMake(16, 10, 226, 40)] autorelease];
+		UILabel* headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(16, 10, 226, 40)];
 		headerLabel.text = self.headerText;
 		headerLabel.font = [UIFont boldSystemFontOfSize:16];
 		headerLabel.textColor = [UIColor darkGrayColor];
 		headerLabel.numberOfLines = 0;
 		headerLabel.backgroundColor = [UIColor clearColor];
-		//			[headerLabel sizeToFit];
 		[headerView addSubview:headerLabel];
 		if (_leafLevel) {
 			headerView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
@@ -258,7 +258,7 @@
 	NSMutableArray* searchResultsArray = [NSMutableArray array];
 	
 	for (NSDictionary* thisItem in self.itemsInTable) {
-		MITMapSearchResultAnnotation* annotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:thisItem] autorelease];
+		MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:thisItem];
 		[searchResultsArray addObject:annotation];
 	}
 	
@@ -294,7 +294,6 @@
 	if (_loadingView) {
 		self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 		[_loadingView removeFromSuperview];
-		[_loadingView release];
 		_loadingView = nil;
 		
 		if(_leafLevel)
@@ -310,7 +309,6 @@
 	if (_loadingView) {
 		//self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 		[_loadingView removeFromSuperview];
-		[_loadingView release];
 		_loadingView = nil;
 	}
 }
@@ -350,7 +348,6 @@
         if (_loadingView) {
             self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
             [_loadingView removeFromSuperview];
-            [_loadingView release];
             _loadingView = nil;
             
             if(_leafLevel)
@@ -362,7 +359,6 @@
     } else {
         if (_loadingView) {
             [_loadingView removeFromSuperview];
-            [_loadingView release];
             _loadingView = nil;
         }
         
@@ -373,12 +369,4 @@
 }
 
 
-- (void)dealloc {
-	self.itemsInTable = nil;
-	[_headerText release];
-    [super dealloc];
-}
-
-
 @end
-

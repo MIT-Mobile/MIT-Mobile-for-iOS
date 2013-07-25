@@ -4,20 +4,10 @@
 
 @class MapSelectionController;
 
-@interface CategoriesTableViewController : UITableViewController <JSONLoadedDelegate> {
-	MapSelectionController* _mapSelectionController;
-	
-	NSMutableArray* _itemsInTable;
-	NSString* _headerText;
-	BOOL _topLevel;
-	BOOL _leafLevel;
-	
-	MITLoadingActivityView* _loadingView;
-}
-
-@property (nonatomic, assign) MapSelectionController* mapSelectionController;
-@property (nonatomic, retain) NSMutableArray* itemsInTable;
-@property (nonatomic, retain) NSString* headerText;
+@interface CategoriesTableViewController : UITableViewController <JSONLoadedDelegate>
+@property (nonatomic, weak) MapSelectionController* mapSelectionController;
+@property (nonatomic, strong) NSMutableArray* itemsInTable;
+@property (nonatomic, strong) NSString* headerText;
 @property BOOL topLevel;
 @property BOOL leafLevel;
 

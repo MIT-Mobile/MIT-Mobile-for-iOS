@@ -46,7 +46,7 @@
 
 - (void)loadModuleHomeController
 {
-    EmergencyViewController *controller = [[[EmergencyViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+    EmergencyViewController *controller = [[EmergencyViewController alloc] initWithStyle:UITableViewStyleGrouped];
     controller.delegate = self;
     
     self.mainViewController = controller;
@@ -62,7 +62,7 @@
             
             // show More Emergency Contact drilldown
             // init its view controller
-            EmergencyContactsViewController *contactsVC = [[[EmergencyContactsViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+            EmergencyContactsViewController *contactsVC = [[EmergencyContactsViewController alloc] initWithNibName:nil bundle:nil];
             // push it onto the navigation stack
             [controller pushViewController:contactsVC
                                   animated:YES];

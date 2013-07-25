@@ -34,20 +34,12 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
     self = [super init];
     if (self != nil) {
         // TODO: get primary numbers from m.mit.edu (it's unlikely, but numbers might change)
-        primaryPhoneNumbers = [[NSArray arrayWithObjects:
-                                    [NSDictionary dictionaryWithObjectsAndKeys:
-                                     @"Campus Police", @"title",
-                                     @"617.253.1212", @"phone",
-                                     nil],
-                                    [NSDictionary dictionaryWithObjectsAndKeys:
-                                     @"MIT Medical", @"title",
-                                     @"617.253.1311", @"phone",
-                                     nil],
-                                    [NSDictionary dictionaryWithObjectsAndKeys:
-                                     @"Emergency Status", @"title",
-                                     @"617.253.7669", @"phone",
-                                     nil],
-                                    nil] retain];
+        primaryPhoneNumbers = @[@{@"title" : @"Campus Police",
+                                  @"phone" : @"617.253.1212"},
+                                @{@"title" : @"MIT Medical",
+                                  @"phone" : @"617.253.1311"},
+                                @{@"title" : @"Emergency Status",
+                                  @"phone" : @"617.253.7669"}];
         [self fetchEmergencyInfo];
         [self fetchContacts];
         
@@ -58,9 +50,10 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 }
 
 - (void)fetchEmergencyInfo {
-    info = [[[CoreDataManager fetchDataForAttribute:EmergencyInfoEntityName] lastObject] retain];
+    info = [[CoreDataManager fetchDataForAttribute:EmergencyInfoEntityName] lastObject];
+    
     if (!info) {
-        info = [[CoreDataManager insertNewObjectForEntityForName:EmergencyInfoEntityName] retain];
+        info = [CoreDataManager insertNewObjectForEntityForName:EmergencyInfoEntityName];
         [info setValue:@"" forKey:@"htmlString"];
         [info setValue:[NSDate distantPast] forKey:@"lastUpdated"];
         [info setValue:[NSDate distantPast] forKey:@"lastFetched"];
@@ -68,10 +61,11 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 }
 
 - (void)fetchContacts {
-    [allPhoneNumbers release];
     NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
-    NSSortDescriptor *sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"ordinality" ascending:YES] autorelease];
-    allPhoneNumbers = [[CoreDataManager objectsForEntity:EmergencyContactEntityName matchingPredicate:predicate sortDescriptors:[NSArray arrayWithObject:sortDescriptor]] retain];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ordinality" ascending:YES];
+    allPhoneNumbers = [CoreDataManager objectsForEntity:EmergencyContactEntityName
+                                      matchingPredicate:predicate
+                                        sortDescriptors:@[sortDescriptor]];
     if (!allPhoneNumbers) {
         allPhoneNumbers = [[NSArray alloc] init];
     }
@@ -119,7 +113,6 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
     [formatter setDateFormat:@"M/d/y h:mm a zz"];
     [formatter setTimeZone:[NSTimeZone localTimeZone]];
     NSString *lastUpdatedString = [formatter stringFromDate:lastUpdated];
-    [formatter release];
     
     NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     NSURL *fileURL = [NSURL URLWithString:@"emergency_template.html" relativeToURL:baseURL];
@@ -145,7 +138,7 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 
 // Send request
 - (void)checkForEmergencies {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"emergency" command:nil parameters:nil] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"emergency" command:nil parameters:nil];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:self];
@@ -184,9 +177,9 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 
 // request contacts
 - (void)reloadContacts {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"emergency"
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"emergency"
                                                                               command:@"contacts"
-                                                                           parameters:nil] autorelease];
+                                                                           parameters:nil];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
                 NSArray *contactsArray = (NSArray *)jsonResult;

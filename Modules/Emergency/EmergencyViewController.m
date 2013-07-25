@@ -25,14 +25,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshInfo:)] autorelease];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshInfo:)];
 	
 	infoWebView = [[UIWebView alloc] initWithFrame:CGRectMake(10, 10, self.view.frame.size.width - 20 - 20, 32)];
 	infoWebView.delegate = self;
 	infoWebView.dataDetectorTypes = UIDataDetectorTypeAll;
 	infoWebView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     infoWebView.scrollView.scrollsToTop = NO;
-	htmlFormatString = [@"<html>"
+	htmlFormatString = @"<html>"
 						"<head>"
 						"<style type=\"text/css\" media=\"screen\">"
 						"body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 17px; } "
@@ -41,7 +41,7 @@
 						"<body>"
 						"%@"
 						"</body>"
-						"</html>" retain];
+						"</html>";
 	
 	self.htmlString = [NSString stringWithFormat:htmlFormatString, @"Loading..."];
     
@@ -122,7 +122,6 @@
 			cancelButtonTitle:@"OK" 
 			otherButtonTitles:nil];
 		[alertView show];
-		[alertView release];
 	}
 	
 	// touch handled
@@ -218,7 +217,7 @@
 		{
 			UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 			if (cell == nil) {
-				cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+				cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
                 // info cell should not be tappable
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
 			}
@@ -231,7 +230,6 @@
                 existingWebView.dataDetectorTypes = UIDataDetectorTypeAll;
                 existingWebView.scrollView.scrollsToTop = NO;
                 [cell.contentView addSubview:existingWebView];
-                [existingWebView release];
             }
             existingWebView.frame = infoWebView.frame;
             [existingWebView loadHTMLString:htmlString baseURL:nil];
@@ -244,7 +242,7 @@
 		{
 			SecondaryGroupedTableViewCell *cell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:SecondaryCellIdentifier];
 			if (cell == nil) {
-				cell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:SecondaryCellIdentifier] autorelease];
+				cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:SecondaryCellIdentifier];
 			}
 			
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -294,7 +292,6 @@
                 EmergencyContactsViewController *contactsVC = [[EmergencyContactsViewController alloc] initWithNibName:nil bundle:nil];
                 // push it onto the navigation stack
                 [self.navigationController pushViewController:contactsVC animated:YES];
-                [contactsVC release];
             }
             break;
         }
@@ -352,10 +349,6 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidLoadNotification object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidFailToLoadNotification object:nil];
-	[htmlFormatString release];
-	self.htmlString = nil;
-	self.infoWebView = nil;
-    [super dealloc];
 }
 
 

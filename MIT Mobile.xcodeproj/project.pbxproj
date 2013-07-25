@@ -185,7 +185,7 @@
 		4463D09510D92CB00048CA83 /* MITMapDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4463D09310D92CB00048CA83 /* MITMapDetailViewController.xib */; };
 		448FF58F10FA4BDE00850BC0 /* ShuttleRouteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */; };
 		4499332E11A371CF00A7041B /* RecentSearchesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4499332C11A371CF00A7041B /* RecentSearchesViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4499341F11A5E53D00A7041B /* CategoriesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4499341D11A5E53D00A7041B /* CategoriesTableViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		4499341F11A5E53D00A7041B /* CategoriesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4499341D11A5E53D00A7041B /* CategoriesTableViewController.m */; };
 		44ACF76D1187884300F1F4B2 /* BookmarksTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */; };
 		44ACF76E1187884300F1F4B2 /* MapBookmarkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44ACF76A1187884300F1F4B2 /* MapBookmarkManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BF5B421100A75C00E150D5 /* RouteInfoTitleCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -307,9 +307,9 @@
 		DE6D570610F05C59006431A8 /* TabScrollerBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D570510F05C59006431A8 /* TabScrollerBackgroundView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE705493103FB792003B5F41 /* ShuttleRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705491103FB792003B5F41 /* ShuttleRoute.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705496103FB79D003B5F41 /* EmergencyData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705498103FB79D003B5F41 /* EmergencyModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE70549A103FB79D003B5F41 /* EmergencyViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705496103FB79D003B5F41 /* EmergencyData.m */; };
+		DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705498103FB79D003B5F41 /* EmergencyModule.m */; };
+		DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE70549A103FB79D003B5F41 /* EmergencyViewController.m */; };
 		DE715349102FC897005E6111 /* MITModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE715348102FC897005E6111 /* MITModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE71537C102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71537B102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE71F6E3104234F900661DED /* ShuttleRouteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */; };
@@ -437,7 +437,7 @@
 		EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFABAE129461C3009AAEE0 /* ScrollFadeImageView.m */; };
 		EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFAF94129C2A23009AAEE0 /* TabViewControl.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EBBFB233129C7DED009AAEE0 /* TourSiteMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFB231129C7DED009AAEE0 /* TourSiteMapAnnotation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */; };
 		EBDB0C4D11484072008AAE42 /* ShuttleTrack.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EBDB0C4C11484072008AAE42 /* ShuttleTrack.xcdatamodeld */; };
 		EBF1120712A495170002D751 /* en.lproj in Resources */ = {isa = PBXBuildFile; fileRef = EBF1120412A495170002D751 /* en.lproj */; };
 		EBF114FD12A700510002D751 /* TourIntroViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF114FB12A700510002D751 /* TourIntroViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -3127,6 +3127,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
+				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
+				EB8392A01163FD6E0067C0A3 /* Calendar.xcdatamodeld in Sources */,
+				DED41FD517381D180048376F /* Dining.xcdatamodeld in Sources */,
+				2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */,
+				DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */,
 				DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */,
@@ -3134,7 +3140,6 @@
 				DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */,
 				44ACF76D1187884300F1F4B2 /* BookmarksTableViewController.m in Sources */,
 				4463CC9810D6F4A50048CA83 /* CMModule.m in Sources */,
-				EB8392A01163FD6E0067C0A3 /* Calendar.xcdatamodeld in Sources */,
 				4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */,
 				EB83926C1163F7B00067C0A3 /* CalendarDataManager.m in Sources */,
 				EB83923D1163ECC20067C0A3 /* CalendarDetailViewController.m in Sources */,
@@ -3142,7 +3147,6 @@
 				EB86CAC6115D4ED500C8F3D1 /* CalendarEventsViewController.m in Sources */,
 				EB3F0952118F0FFE00540B8A /* CalendarMapView.m in Sources */,
 				EB86CA6F115D276700C8F3D1 /* CalendarModule.m in Sources */,
-				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
 				441009DE110A6DAF00451B23 /* CampusMapToolbar.m in Sources */,
 				4463CC9110D6F4A50048CA83 /* CampusMapViewController.m in Sources */,
 				EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */,
@@ -3156,7 +3160,6 @@
 				1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */,
 				EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */,
 				B64B47081288502E002E2F1D /* DummyRotatingViewController.m in Sources */,
-				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
 				EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */,
 				DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */,
 				DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */,
@@ -3168,7 +3171,6 @@
 				2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */,
 				2CCB85F91361F44E0024E474 /* FacilitiesLocationData.m in Sources */,
 				2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */,
-				2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */,
 				2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */,
 				2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */,
 				2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */,
@@ -3214,15 +3216,14 @@
 				BD1E9309103B5D60004429AA /* NSObject+SBJSON.m in Sources */,
 				BD1E930A103B5D60004429AA /* NSString+SBJSON.m in Sources */,
 				EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */,
-				DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */,
 				2980C03210D9728800F19FF0 /* NewsDataSource.m in Sources */,
+				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */,
 				DECBF6B610F8F91B009FAE35 /* NewsImageRep.m in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
 				DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */,
 				4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */,
 				EB7F328210CD6C5B00188BCD /* PartialHighlightTableViewCell.m in Sources */,
-				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				EB6F2B6D10E9026200A29A2A /* PeopleDetailsTableViewCell.m in Sources */,
 				EB7F328310CD6C5B00188BCD /* PeopleDetailsViewController.m in Sources */,
 				EB7F328410CD6C5B00188BCD /* PeopleModule.m in Sources */,
@@ -3234,8 +3235,8 @@
 				2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */,
 				2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */,
 				2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */,
-				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				3A827081103DAA0500BB4109 /* Reachability.m in Sources */,
+				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				4499332E11A371CF00A7041B /* RecentSearchesViewController.m in Sources */,
 				44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */,
 				442C192A10F3AE3400CB44EC /* RouteMapViewController.m in Sources */,
@@ -3266,8 +3267,8 @@
 				EBDB0C4D11484072008AAE42 /* ShuttleTrack.xcdatamodeld in Sources */,
 				EB4C23AE1279E89A00058748 /* SiteDetailViewController.m in Sources */,
 				2970D4F210DA871F00F770DF /* StaffDataSource.m in Sources */,
-				EB4C21DA12777C8D00058748 /* StartingLocationViewController.m in Sources */,
 				EBA0A46710D405F5005B0D96 /* Stellar.xcdatamodeld in Sources */,
+				EB4C21DA12777C8D00058748 /* StartingLocationViewController.m in Sources */,
 				297746D110D3526200ACFCE6 /* StellarAnnouncement.m in Sources */,
 				2971CE0B10DB116800FAF160 /* StellarAnnouncementViewController.m in Sources */,
 				29A0D12110CDD0E8009FC010 /* StellarCache.m in Sources */,
@@ -3299,9 +3300,9 @@
 				EB4C3A0B1283698000058748 /* TourOverviewViewController.m in Sources */,
 				4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */,
 				EBBFB233129C7DED009AAEE0 /* TourSiteMapAnnotation.m in Sources */,
+				EB4C225B1278962000058748 /* Tours.xcdatamodeld in Sources */,
 				EB4C31BC1280AA9600058748 /* TourSiteOrRoute.m in Sources */,
 				EBF8B8C512B6B8B400D39AE6 /* TourStartLocation.m in Sources */,
-				EB4C225B1278962000058748 /* Tours.xcdatamodeld in Sources */,
 				EB4C21DE127780EC00058748 /* ToursDataManager.m in Sources */,
 				EB4C1E9B127723B700058748 /* ToursModule.m in Sources */,
 				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,
@@ -3319,9 +3320,9 @@
 				2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */,
 				2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */,
 				4B667063140330A000714C6A /* LibrariesViewController.m in Sources */,
+				4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */,
 				4B667067140330CD00714C6A /* LibrariesModule.m in Sources */,
 				4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */,
-				4B6670711404020200714C6A /* LibrariesLocationsHours.xcdatamodeld in Sources */,
 				2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */,
 				2C5DECD613E9BABB00F9C089 /* MobileRequestLoginViewController.m in Sources */,
 				2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */,
@@ -3440,7 +3441,6 @@
 				483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */,
 				48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */,
 				48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */,
-				DED41FD517381D180048376F /* Dining.xcdatamodeld in Sources */,
 				DED41FD8173849500048376F /* DiningData.m in Sources */,
 				DED41FDB173850960048376F /* HouseVenue.m in Sources */,
 				DED41FDE173858BA0048376F /* VenueLocation.m in Sources */,
