@@ -77,12 +77,13 @@
     return [NSSet setWithArray:self.baseMapGroups];
 }
 
+/* Unused method. Not needed in the REST-API.
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)mapSetIdentifier
 {
-    NSDictionary* layerInfo = [self.baseMapGroups objectAtIndex:(int)mapSetIdentifier];
-    return [layerInfo objectForKey:@"displayName"];
-
+    NSDictionary* layerInfo = self.baseMapGroups[mapSetIdentifier];
+    return layerInfo[@"displayName"];
 }
+*/
 
 - (void)setActiveMapSet:(NSString*)mapSetName
 {

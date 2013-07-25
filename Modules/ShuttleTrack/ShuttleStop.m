@@ -9,10 +9,8 @@
 @implementation ShuttleStop
 
 // cached stop location properties
-//@dynamic stopID;
 @synthesize stopID = _stopID;
 @synthesize url = _url;
-//@dynamic title;   // check when use cache
 @synthesize title = _title;
 @synthesize latitude = _latitude;
 @synthesize longitude = _longitude;
@@ -33,81 +31,6 @@
 
 #pragma mark getters and setters
 
-/*
-- (NSString *)stopID
-{
-    return _stopID;
-}
-
-- (void)setStopID:(NSString *)stopID
-{
-    _stopID = stopID;
-}
-
-- (double)latitude
-{
-    return _latitude;
-}
-
-- (void)setLatitude:(double)latitude
-{
-    _latitude = latitude;
-}
-
-- (double)longitude
-{
-    return _longitude;
-}
-
-- (void)setLongitude:(double)longitude
-{
-    _longitude = longitude;
-}
-
-- (NSString *)url {
-    return _url;
-}
-
-- (void)setUrl:(NSString *)url {
-    _url = url;
-}
-
-- (NSString *)routeID {
-    return _routeID;
-}
-
-- (void)setRouteID:(NSString *)routeID {
-    _routeID = routeID;
-}
-*/
- 
-- (NSString *)direction
-{
-    return @"";
-//	return _stopLocation.direction;
-}
-
-- (void)setDirection:(NSString *)direction
-{
-//	_stopLocation.direction = direction;
-}
-
-/*
-- (NSArray *)routeStops
-{
-	return [_stopLocation.routeStops allObjects];
-}
-
-- (void)setRouteStops:(NSArray *)routeStops
-{
-	_stopLocation.routeStops = [NSSet setWithArray:routeStops];
-}
-
-- (NSString *)routeID
-{
-	return [self.routeStop routeID];
-}
-
 - (NSInteger)order
 {
 	return [self.routeStop.order intValue];
@@ -117,35 +40,6 @@
 {
 	self.routeStop.order = [NSNumber numberWithInt:order];
 }
-
-- (NSArray *)path
-{
-	NSData *pathData = self.routeStop.path;
-	return [NSKeyedUnarchiver unarchiveObjectWithData:pathData];
-}
-
-- (void)setPath:(NSArray *)path
-{
-	NSData *pathData = [NSKeyedArchiver archivedDataWithRootObject:path];
-	self.routeStop.path = pathData;
-}
- */
-
-/*
-- (NSArray *)predictions
-{
-    if (self.next == 0) {
-        return [NSArray array];
-    } else {
-        NSMutableArray *absPredictions = [NSMutableArray arrayWithCapacity:_predictions.count];
-        for (NSString *prediction in _predictions) {
-            NSTimeInterval predictionTime = [prediction doubleValue] + self.now;
-            [absPredictions addObject:[NSNumber numberWithDouble:predictionTime]];
-        }
-        return [NSArray arrayWithArray:absPredictions];
-    }
-}
-*/
 
 #pragma mark initializers
 
@@ -162,8 +56,7 @@
 	self = [super init];
 	if (self != nil) {
 		self.routeStop = routeStop;
-//		_stopLocation = (ShuttleStopLocation2 *)self.routeStop.stopLocation;
-        _stopLocation = (ShuttleStopLocation2 *)routeStop.stopLocation;
+		_stopLocation = (ShuttleStopLocation2 *)self.routeStop.stopLocation;
         [self initWithStopLocation:_stopLocation routeID:self.routeStop.routeID];
 	}
 	return self;
@@ -291,41 +184,6 @@
     // Get schedule
     NSArray *schedule = [stopInfo objectForKey:@"schedule"];
     [self setSchedule:schedule withPredictable:[self.predictions count] > 0];
-    
-    
-    /*
-	NSString *property = nil;
-	if ((property = [stopInfo objectForKey:@"title"]) != nil) {
-		self.title = property;
-    }
-	if ((property = [stopInfo objectForKey:@"direction"]) != nil) {
-        self.direction = property;
-    }
-	
-	NSNumber *num = nil;
-	if ((num = [stopInfo objectForKey:@"lon"]) != nil) {
-        self.longitude = [num doubleValue];
-    }
-	if ((num = [stopInfo objectForKey:@"lat"]) != nil) {
-		self.latitude = [num doubleValue];
-    }
-	self.upcoming = ([stopInfo objectForKey:@"upcoming"] != nil); // upcoming only appears if it's true
-	
-	if ((num = [stopInfo objectForKey:@"next"]) != nil ||
-		(num = [stopInfo objectForKey:@"nextScheduled"]) != nil) {
-		self.nextScheduled = [num doubleValue];
-    }
-
-	NSArray *array = nil;
-	if ((array = [stopInfo objectForKey:@"path"]) != nil) {
-		self.path = array;
-    } else {
-        self.path = [NSArray array];
-    }
-    if ((array = [stopInfo objectForKey:@"predictions"]) != nil) {
-        self.predictions = array;
-    }
-     */
 }
 
 #pragma mark methods from RouteStopSchedule

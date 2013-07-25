@@ -20,17 +20,11 @@
 @synthesize cache = _cache;
 
 // cached properties
-//@dynamic title;
 @dynamic summary;
-//@dynamic interval;
-//@dynamic stops;
-//@dynamic routeID;
 @dynamic sortOrder;
 
 @dynamic fullSummary;
 
-
-// NEW API
 @synthesize routeID = _routeID;
 @synthesize group = _group;
 @synthesize url = _url;
@@ -42,7 +36,6 @@
 @synthesize stops = _stops;
 @synthesize vehicles = _vehicles;
 @synthesize path = _path;
-//@dynamic path;
 
 
 #pragma mark Getters and setters
@@ -124,14 +117,12 @@
 	NSInteger order = 0;
 	for (NSDictionary *stopInfo in stops) {
 		ShuttleStop *shuttleStop = [[ShuttleStop alloc] initWithDictionary:stopInfo];
-        
+        shuttleStop.order = order;
 //        ShuttleStopMapAnnotation* annotation = [[[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop] autorelease];
 //        [_stopAnnotations addObject:annotation];
         
 		BOOL isOldStop = NO;
-		
 		NSString *stopID = [stopInfo objectForKey:@"id"];
-		
 		for (ShuttleStop *stop in _stops) {
 			if ([stop.stopID isEqualToString:stopID]) {
 				shuttleStop = stop;
@@ -337,30 +328,6 @@
 		ShuttleStopMapAnnotation* annotation = [[[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop] autorelease];
 		[_stopAnnotations addObject:annotation];
 	}
-		
-	if (_pathLocations == nil) {
-		[self updatePath];
-	}
-}
-
-- (void)updatePath
-{
-	if (_pathLocations != nil) {
-		[_pathLocations removeAllObjects];
-		_pathLocations = nil;
-	}
-	
-	_pathLocations = [[NSMutableArray alloc] init];
-
-	for (ShuttleStop *stop in _stops) {
-		for(NSDictionary* pathComponent in stop.path) {
-			CLLocation* location = [[[CLLocation alloc] initWithLatitude:[[pathComponent objectForKey:@"lat"] doubleValue]
-															   longitude:[[pathComponent objectForKey:@"lon"] doubleValue]
-									 ] autorelease];
-			
-			[_pathLocations addObject:location];
-		}
-	}	
 }
 
 - (id)initWithDictionary:(NSDictionary *)dict

@@ -13,8 +13,6 @@
     BOOL _isRunning;
 	BOOL _liveStatusFailed;
 	ShuttleRouteCache2 *_cache;
-
-//    NSMutableArray *_stops;
 	
 	// parsed path locations for the entire route. 
 	NSMutableArray* _pathLocations;
@@ -25,8 +23,6 @@
 	// locations, if available of any vehicles on the route. 
 	NSMutableArray* _vehicleLocations;
     
-    
-    // NEW API
     NSString *_routeID;
 	NSString *_url;
 	NSString *_title;
@@ -57,15 +53,9 @@
 @property (assign) BOOL liveStatusFailed;
 @property (readwrite, retain) ShuttleRouteCache2 *cache;
 
-//@property (readwrite, retain) NSString *title;
 @property (readwrite, retain) NSString *summary;
-//@property (nonatomic, retain) NSString *routeID;
-//@property (assign) NSInteger interval;
-//@property (readwrite, retain) NSMutableArray *stops;
 @property (assign) NSInteger sortOrder;
 
-
-// NEW API
 @property (readwrite, retain) NSString *routeID;
 @property (readwrite, retain) NSString *url;
 @property (readwrite, retain) NSString *title;

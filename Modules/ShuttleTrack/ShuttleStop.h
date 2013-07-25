@@ -11,18 +11,10 @@
 @class ShuttleRouteStop2;
 
 @interface ShuttleStop : NSObject {
-	
-//	NSTimeInterval _nextScheduled;
-//    NSTimeInterval _now;
-	
-//	BOOL _upcoming;
-//	NSArray *_predictions;
 
 	ShuttleStopLocation2 *_stopLocation;
 	ShuttleRouteStop2 *_routeStop;
     
-    
-    // NEW API
     NSString *_stopID;
     NSString *_url;
     NSString *_title;
@@ -51,26 +43,11 @@
 // number of available predictions. We add one for the next scheduled stop
 -(NSInteger) predictionCount;
 
-//@property (nonatomic, retain) NSString *title;
-//@property (nonatomic, retain) NSString *stopID;
-//@property double latitude;
-//@property double longitude;
-@property (nonatomic, retain) NSArray *routeStops;              // not needed
-//@property (nonatomic, retain) NSString* direction;
+@property (nonatomic, retain) NSArray *routeStops;             
 
-//@property (nonatomic, readonly) NSString* routeID;
-@property (nonatomic, retain) NSArray* path;                    // not needed
-@property (nonatomic, assign) NSInteger order;                  // not needed
+@property (nonatomic, assign) NSInteger order;
 @property (nonatomic, retain) ShuttleRouteStop2 *routeStop;
 
-//@property NSTimeInterval nextScheduled;
-//@property NSTimeInterval now;
-//@property (readonly) NSDate *nextScheduledDate;
-//@property (nonatomic, retain) NSArray* predictions;
-//@property BOOL upcoming;
-
-
-// NEW API
 @property (nonatomic, retain) NSString *stopID;
 @property (nonatomic, retain) NSString *url;
 @property (nonatomic, retain) NSString *title;
