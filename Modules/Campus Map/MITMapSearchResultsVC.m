@@ -6,35 +6,13 @@
 #import "MITUIConstants.h"
 #import "MultiLineTableViewCell.h"
 
+@interface MITMapSearchResultsVC ()
+@property (nonatomic,strong) IBOutlet UITableView* tableView;
+@end
+
 @implementation MITMapSearchResultsVC
-@synthesize searchResults = _searchResults;
-@synthesize isCategory = _isCategory;
-@synthesize campusMapVC = _campusMapVC;
-
-- (void)dealloc {
-    [super dealloc];
-}
-
-
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
-}
-
--(void) viewDidLoad
-{
-	[super viewDidLoad];
-		
-	
-}
-
 - (void)viewDidUnload {
-	
 	self.searchResults = nil;
-	[_tableView release];
-	
 	[super viewDidUnload];
 }
 
@@ -51,9 +29,7 @@
 
 -(void) setSearchResults:(NSArray *)searchResults
 {
-	[_searchResults release];
-	_searchResults = [searchResults retain];
-	[_tableView reloadData];
+	_searchResults = searchResults;
 }
 
 -(void) touchEnded
@@ -70,7 +46,7 @@
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.searchResults.count;
+    return [self.searchResults count];
 }
 
 
@@ -80,7 +56,7 @@
 	
 	UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
 	// get the annotation for this index
@@ -102,8 +78,8 @@
 {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	
-	MITMapDetailViewController* detailsVC = [[[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
-																						  bundle:nil] autorelease];
+	MITMapDetailViewController* detailsVC = [[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
+																						  bundle:nil];
 	
 	MITMapSearchResultAnnotation* annotation = (MITMapSearchResultAnnotation*)[self.searchResults objectAtIndex:indexPath.row];
 	detailsVC.annotation = annotation;

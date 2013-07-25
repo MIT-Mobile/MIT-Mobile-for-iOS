@@ -82,8 +82,6 @@
 	self.snippets = nil;
 	self.city = nil;
 	self.info = nil;
-	
-	[super dealloc];
 }
 
 -(id) initWithInfo:(NSDictionary*)info

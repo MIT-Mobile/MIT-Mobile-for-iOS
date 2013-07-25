@@ -20,13 +20,89 @@
 @end
 
 
-@implementation MITMapDetailViewController
-@synthesize annotation = _annotation;
-@synthesize annotationDetails = _annotationDetails;
-@synthesize campusMapVC = _campusMapVC;
-@synthesize queryText = _queryText;
-@synthesize imageConnectionWrapper;
-@synthesize startingTab = _startingTab;
+@implementation MITMapDetailViewController{
+    
+	// tab controller for which we are a delegate.
+	IBOutlet TabViewControl* _tabViewControl;
+	
+	IBOutlet UIButton* _bookmarkButton;
+	
+	// label for the name
+	IBOutlet UILabel* _nameLabel;
+	
+	// label for the second line of the name;
+	IBOutlet UILabel* _nameLabel2;
+	
+	// label for the location
+	IBOutlet UILabel* _locationLabel;
+    
+	// label for the query
+	IBOutlet UILabel* _queryLabel;
+	
+	// container view for the tabbed contents.
+	IBOutlet UIView* _tabViewContainer;
+	
+	// map view
+	IBOutlet MITMapView* _mapView;
+	IBOutlet UIButton* _mapViewContainer;
+    
+	//
+	// BUILDING IMAGE
+	//
+	
+	// view for the building image info
+	IBOutlet UIView* _buildingView;
+	
+	// image view for the building
+	IBOutlet UIImageView* _buildingImageView;
+	
+	// label describing the image
+	IBOutlet UILabel* _buildingImageDescriptionLabel;
+	
+	
+	//
+	// WHAT's HERE
+	//
+	// view for what's here info
+	IBOutlet UIView* _whatsHereView;
+	
+	//
+	// LOADING IMAGE VIEW
+	//
+	IBOutlet UIView* _loadingImageView;
+	
+	//
+	// LOADING RESULT VIEW
+	//
+	IBOutlet UIView* _loadingResultView;
+	
+	//
+	// MAIN CONTENT SCROLL VIEW
+	//
+	IBOutlet UIScrollView* _scrollView;
+	
+	// array of views that appear in our tabs, indexed by tab index.
+	NSMutableArray* _tabViews;
+	
+	// the search result we are attempting to display
+	MITMapSearchResultAnnotation* _annotation;
+	
+	// updated search result details. Not the annotation we started with, but based on its ID.
+	MITMapSearchResultAnnotation* _annotationDetails;
+	
+	NSString* _queryText;
+	
+	CGFloat _tabViewContainerMinHeight;
+	
+	// Connection Wrapper used for loading building images
+	ConnectionWrapper *_imageConnectionWrapper;
+	
+	// network activity status for loading building image
+	BOOL networkActivity;
+	
+	// to persist saved state
+	int _startingTab;
+}
 
 - (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -46,8 +122,6 @@
 	}
 	self.imageConnectionWrapper.delegate = nil;
 	self.imageConnectionWrapper = nil;
-	
-    [super dealloc];
 }
 
 
@@ -80,10 +154,10 @@
 	
 	[_mapView deselectAnnotation:self.annotation animated:NO];
 	
-	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Google Map"
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Google Map"
 																			   style:UIBarButtonItemStylePlain
 																			  target:self
-																			  action:@selector(externalMapButtonPressed:)] autorelease];
+																			  action:@selector(externalMapButtonPressed:)];
 	
 	// never resize the tab view container below this height. 
 	_tabViewContainerMinHeight = _tabViewContainer.frame.size.height;
@@ -203,14 +277,12 @@
 			UILabel *bullet = [[UILabel alloc] initWithFrame:CGRectMake(padding, currentHeight, bulletWidth - padding, 20.0)];
 			bullet.text = @"•";
 			[_whatsHereView addSubview:bullet];
-			[bullet release];
 			
 			UILabel *listItem = [[UILabel alloc] initWithFrame:CGRectMake(bulletWidth, currentHeight, textSize.width, textSize.height)];
 			listItem.text = content;
 			listItem.lineBreakMode = UILineBreakModeWordWrap;
 			listItem.numberOfLines = 0;
 			[_whatsHereView addSubview:listItem];
-			[listItem release];
 			
 			currentHeight += textSize.height;
 		}
@@ -232,7 +304,7 @@
 			[_scrollView setContentSize:contentSize];
 		}
 	} else {
-		UILabel* noWhatsHereLabel = [[[UILabel alloc] initWithFrame:CGRectMake(13, 6, _whatsHereView.frame.size.width, 20)] autorelease];
+		UILabel* noWhatsHereLabel = [[UILabel alloc] initWithFrame:CGRectMake(13, 6, _whatsHereView.frame.size.width, 20)];
 		noWhatsHereLabel.text = NSLocalizedString(@"No Information Available", nil);
 		[_whatsHereView addSubview:noWhatsHereLabel];
 		
@@ -244,9 +316,9 @@
 	if (self.annotationDetails.bldgimg) 
 	{
 		// go get the image.
-		self.imageConnectionWrapper = [[ConnectionWrapper new] autorelease];
+		self.imageConnectionWrapper = [[ConnectionWrapper alloc] init];
 		self.imageConnectionWrapper.delegate = self;
-		[imageConnectionWrapper requestDataFromURL:[NSURL URLWithString:self.annotationDetails.bldgimg] allowCachedResponse:YES];
+		[_imageConnectionWrapper requestDataFromURL:[NSURL URLWithString:self.annotationDetails.bldgimg] allowCachedResponse:YES];
 		
 		NSString* decriptionText = self.annotationDetails.viewAngle ? [NSString stringWithFormat:@"View from: %@", self.annotationDetails.viewAngle] : nil ;
 		_buildingImageDescriptionLabel.text = decriptionText;
@@ -343,29 +415,17 @@
 }
 
 - (void)viewDidUnload {
-	
-	[_tabViewControl release];
-	
-	[_nameLabel release];
-	
-	[_locationLabel release];
-	
-	[_tabViewContainer release];
-
-	[_buildingView release];
-	
-	[_buildingImageView release];
-	
-	[_buildingImageDescriptionLabel release];
-	
-	[_whatsHereView release];
-	
-	[_tabViews release];
-	
-	[_loadingImageView release];
-	
-	[_loadingResultView release];
-	
+	_tabViewControl = nil;
+	_nameLabel = nil;
+	_locationLabel = nil;
+	_tabViewContainer = nil;
+	_buildingView = nil;
+	_buildingImageView = nil;
+	_buildingImageDescriptionLabel = nil;
+	_whatsHereView = nil;
+	_tabViews = nil;
+	_loadingImageView = nil;
+	_loadingResultView = nil;
 }
 
 #pragma mark User Actions
@@ -437,7 +497,7 @@
 // data was received from the MITMobileWeb request. 
 -(void) request:request jsonLoaded:(id)results {
 	if ([(NSArray *)results count] > 0) {
-		MITMapSearchResultAnnotation* annotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:[results objectAtIndex:0]] autorelease];
+		MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:[results objectAtIndex:0]];
 		self.annotationDetails = annotation;
 		
 		// load the new contents. 
@@ -480,8 +540,8 @@
 {
 	if ([annotation isKindOfClass:[MITMapSearchResultAnnotation class]]) 
 	{
-        return [[[MITPinAnnotationView alloc] initWithAnnotation:annotation
-                                                reuseIdentifier:@"pin"] autorelease];
+        return [[MITPinAnnotationView alloc] initWithAnnotation:annotation
+                                                reuseIdentifier:@"pin"];
     }
 	
 	return nil;

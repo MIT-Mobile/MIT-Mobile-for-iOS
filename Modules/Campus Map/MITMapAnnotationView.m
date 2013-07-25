@@ -3,11 +3,6 @@
 #import "MITMapView.h"
 
 @implementation MITMapAnnotationView
-@synthesize annotation = _annotation;
-@synthesize showsCustomCallout = _showsCustomCallout;
-@synthesize mapView = _mapView;
-@synthesize centeredVertically = _centeredVertically;
-
 - (id)initWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier
 {
 	self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
@@ -19,13 +14,6 @@
 	}
 	
 	return self;
-}
-
-- (void)dealloc {
-	self.annotation = nil;
-	self.mapView = nil;
-	
-    [super dealloc];
 }
 
 @end
@@ -53,21 +41,13 @@
 
 - (void)setAnimatesDrop:(BOOL)animatesDrop {
     _animatesDrop = animatesDrop;
+    
     // TODO: separate pin drop from shadow appearing
     if (_animatesDrop) {
         self.image = [UIImage imageNamed:@"map/map_pin_complete.png"];
     } else {
         self.image = [UIImage imageNamed:@"map/map_pin_complete.png"];
     }
-}
-
-- (BOOL)animatesDrop {
-    return _animatesDrop;
-}
-
-- (void)dealloc {
-    self.shadowView = nil;
-    [super dealloc];
 }
 
 @end

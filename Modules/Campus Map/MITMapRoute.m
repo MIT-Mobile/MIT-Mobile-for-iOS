@@ -20,7 +20,6 @@
     self.fillColor = nil;
     self.strokeColor = nil;
     self.lineDashPattern = nil;
-    [super dealloc];
 }
 
 @end
