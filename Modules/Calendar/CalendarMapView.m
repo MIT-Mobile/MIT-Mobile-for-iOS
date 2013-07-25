@@ -4,8 +4,9 @@
 #import "CoreLocation+MITAdditions.h"
 
 @implementation CalendarMapView
-
-@dynamic events;
+{
+    NSArray *_events;
+}
 
 - (NSArray *)events
 {
@@ -21,15 +22,14 @@
 {
     [self removeAllAnnotations:YES];
     
-    [_events release];
-	_events = [events retain];
+	_events = events;
     
     if ([_events count])
     {
         NSMutableArray *mappedEvents = [NSMutableArray array];
         for (MITCalendarEvent *event in [events reverseObjectEnumerator]) {
             if ([event hasCoords]) {
-                [mappedEvents addObject:[[[CalendarEventMapAnnotation alloc] initWithEvent:event] autorelease]];
+                [mappedEvents addObject:[[CalendarEventMapAnnotation alloc] initWithEvent:event]];
             }
         }
         
@@ -42,12 +42,6 @@
         [self setRegion:MKCoordinateRegionMake(DEFAULT_MAP_CENTER, DEFAULT_MAP_SPAN)];
     }
     
-}
-
-- (void)dealloc {
-    [_events release];
-    _events = nil;
-    [super dealloc];
 }
 
 @end

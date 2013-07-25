@@ -3,14 +3,8 @@
 @class CampusMapViewController;
 @class MapSelectionController;
 
-@interface BookmarksTableViewController : UITableViewController 
-{	
-	MapSelectionController* _mapSelectionController;
-}
+@interface BookmarksTableViewController : UITableViewController
+@property (nonatomic, weak) MapSelectionController* mapSelectionController;
 
 -(id) initWithMapSelectionController:(MapSelectionController*)mapSelectionController;
-
-
-@property (nonatomic, assign) MapSelectionController* mapSelectionController;
-
 @end

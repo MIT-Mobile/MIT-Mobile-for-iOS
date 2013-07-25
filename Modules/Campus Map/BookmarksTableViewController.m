@@ -7,8 +7,6 @@
 
 @implementation BookmarksTableViewController
 
-@synthesize mapSelectionController = _mapSelectionController;
-
 #pragma mark -
 #pragma mark View lifecycle
 
@@ -78,7 +76,7 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
 		cell.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
 		cell.detailTextLabel.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
 		cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
@@ -167,7 +165,7 @@
 	NSDictionary* bookmark = [[[MapBookmarkManager defaultManager] bookmarks] objectAtIndex:indexPath.row];
 	
 	NSDictionary* data = [bookmark objectForKey:@"data"];
-	MITMapSearchResultAnnotation* annotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:data] autorelease];
+	MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:data];
 	annotation.bookmark = YES;
 	
 	[_mapSelectionController.mapVC.mapView removeAnnotations:_mapSelectionController.mapVC.mapView.annotations];
@@ -193,11 +191,6 @@
 - (void)viewDidUnload {
     // Relinquish ownership of anything that can be recreated in viewDidLoad or on demand.
     // For example: self.myOutlet = nil;
-}
-
-
-- (void)dealloc {
-    [super dealloc];
 }
 
 

@@ -5,7 +5,9 @@
 #import "MultiLineTableViewCell.h"
 
 @implementation EventListTableView
-@synthesize events, parentViewController, isSearchResults, searchSpan;
+{
+	NSIndexPath *_previousSelectedIndexPath;
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
@@ -20,13 +22,13 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return (isSearchResults) ? UNGROUPED_SECTION_HEADER_HEIGHT : 0;
+    return (self.searchResults) ? UNGROUPED_SECTION_HEADER_HEIGHT : 0;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIView *titleView = nil;
     NSString *titleString = nil;
-	if (isSearchResults) {
+	if (self.searchResults) {
 		NSUInteger numResults = [self.events count];
 		switch (numResults) {
 			case 0:
@@ -40,12 +42,13 @@
 				break;
 		}
         
-        if (searchSpan) {
-            titleString = [NSString stringWithFormat:@"%@ in the next %@", titleString, searchSpan];
+        if (self.searchSpan) {
+            titleString = [NSString stringWithFormat:@"%@ in the next %@", titleString, self.searchSpan];
         }
         
         titleView = [UITableView ungroupedSectionHeaderWithTitle:titleString];
 	}
+    
     return titleView;
 }
 
@@ -55,7 +58,7 @@
     
     MultiLineTableViewCell *cell = (MultiLineTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     } else {
 		UIView *extraView = [cell viewWithTag:randomTagNumberForLocationLabel];
 		[extraView removeFromSuperview];
@@ -75,7 +78,7 @@
     cell.textLabel.text = event.title;
 
 	// show time only if date is shown; date plus time otherwise
-	BOOL showTimeOnly = !isSearchResults && ([CalendarDataManager intervalForEventType:self.parentViewController.activeEventList fromDate:self.parentViewController.startDate forward:YES] == 86400.0);
+	BOOL showTimeOnly = !self.searchResults && ([CalendarDataManager intervalForEventType:self.parentViewController.activeEventList fromDate:self.parentViewController.startDate forward:YES] == 86400.0);
     
     if (showTimeOnly) {
         cell.detailTextLabel.text = [event dateStringWithDateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterShortStyle separator:@" "];
@@ -101,7 +104,6 @@
         locationLabel.highlightedTextColor = [UIColor whiteColor];
         
         [cell.contentView addSubview:locationLabel];
-        [locationLabel release];
     }
 	
     return cell;
@@ -149,19 +151,6 @@
 	detailVC.events = self.events;
 
 	[self.parentViewController.navigationController pushViewController:detailVC animated:YES];
-	[detailVC release];
 }
-
-
-- (void)dealloc {
-    if (searchSpan) {
-        [searchSpan release];
-    }
-    [events release];
-    events = nil;
-    [super dealloc];
-}
-
 
 @end
-

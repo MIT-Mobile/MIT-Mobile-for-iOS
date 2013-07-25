@@ -34,7 +34,7 @@
 
 - (void)loadModuleHomeController
 {
-    CalendarEventsViewController *controller = [[[CalendarEventsViewController alloc] init] autorelease];
+    CalendarEventsViewController *controller = [[CalendarEventsViewController alloc] init];
     controller.showList = YES;
     controller.showScroller = YES;
     
@@ -119,10 +119,4 @@
 	return didHandle;
 }
 
-- (void)dealloc {
-    [calendarVC release];
-    [super dealloc];
-}
-
 @end
-

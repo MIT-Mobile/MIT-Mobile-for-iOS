@@ -88,8 +88,6 @@
 		[parts addObject:timeString];
 	}
 	
-	[formatter release];
-	
 	return [parts componentsJoinedByString:separator];
 }
 

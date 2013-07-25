@@ -11,19 +11,10 @@
 @end
 
 
-@interface DatePickerViewController : UIViewController {
-    
-    NSDate *_date;
-    id<DatePickerViewControllerDelegate> delegate;
-    
-    UIDatePicker *datePicker;
-    UIBarButtonItem *cancelButton;
-    UIBarButtonItem *doneButton;
-}
-
+@interface DatePickerViewController : UIViewController
 - (void)navBarButtonPressed:(id)sender;
 
 @property (nonatomic, retain) NSDate *date;
-@property (nonatomic, assign) id<DatePickerViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<DatePickerViewControllerDelegate> delegate;
 
 @end

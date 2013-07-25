@@ -38,11 +38,4 @@
 	return self.event.title;
 }
 
-- (void)dealloc
-{
-	event = nil;
-	[super dealloc];
-}
-
-
 @end

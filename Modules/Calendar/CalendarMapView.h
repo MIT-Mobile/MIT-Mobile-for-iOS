@@ -1,12 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "MITMapView.h"
 
-@interface CalendarMapView : MITMapView {
-
-	NSArray *_events;
-
-}
-
+@interface CalendarMapView : MITMapView
 @property (nonatomic, retain) NSArray *events;
 
 @end

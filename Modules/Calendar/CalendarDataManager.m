@@ -59,15 +59,12 @@ static CalendarDataManager *s_sharedManager = nil;
 
 - (void)dealloc {
 	_delegate = nil;
-	[_eventLists release];
-	[super dealloc];
 }
 
 - (void)requestEventLists {
 	// first assemble anything we already have
 	NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
-	[_eventLists release];
-	_eventLists = [[CoreDataManager objectsForEntity:@"MITEventList" matchingPredicate:nil sortDescriptors:[NSArray arrayWithObject:sort]] retain];
+	_eventLists = [CoreDataManager objectsForEntity:@"MITEventList" matchingPredicate:nil sortDescriptors:[NSArray arrayWithObject:sort]];
 
 	NSArray *staticLists = [CalendarDataManager staticEventTypes];
 	
@@ -75,13 +72,12 @@ static CalendarDataManager *s_sharedManager = nil;
 	for (MITEventList *aList in staticLists) {
 		[mutableStaticEvents addObject:aList.listID];
 	}
-	[_staticEventListIDs release];
 	_staticEventListIDs = [[NSArray alloc] initWithArray:mutableStaticEvents];
     
     NSDictionary *params = [NSDictionary dictionaryWithObject:@"2" forKey:@"version"];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
-                                                                              command:@"extraTopLevels"
-                                                                           parameters:params] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag
+                                                                             command:@"extraTopLevels"
+                                                                          parameters:params];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             if ([[CoreDataManager managedObjectContext] hasChanges]) {
@@ -125,8 +121,7 @@ static CalendarDataManager *s_sharedManager = nil;
                 }
                 
                 NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
-                [_eventLists release];
-                _eventLists = [[newLists sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]] retain];
+                _eventLists = [newLists sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
                 [_delegate calendarListsLoaded];
             }
         }
@@ -233,8 +228,7 @@ static CalendarDataManager *s_sharedManager = nil;
 		NSSet *eventSet = [listType.events filteredSetUsingPredicate:pred];
         events = [[eventSet allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
     }
-    [sort release];
-	[endDate release];
+    
     return events;
 }
 
@@ -258,7 +252,6 @@ static CalendarDataManager *s_sharedManager = nil;
 	NSSet *categories = [CoreDataManager objectsForEntity:CalendarCategoryEntityName
 										matchingPredicate:pred
 										  sortDescriptors:[NSArray arrayWithObject:sort]];
-	[sort release];
 
 	NSMutableArray *result = [NSMutableArray arrayWithCapacity:10];
 	for (EventCategory *category in categories) {
@@ -277,7 +270,7 @@ static CalendarDataManager *s_sharedManager = nil;
 + (NSArray *)openHouseCategories
 {
 	NSPredicate *pred = [NSPredicate predicateWithFormat:@"listID == %@", @"OpenHouse"];
-	NSSortDescriptor *sort = [[[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES] autorelease];
+	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES];
 	return [CoreDataManager objectsForEntity:CalendarCategoryEntityName
 										matchingPredicate:pred
 										  sortDescriptors:[NSArray arrayWithObject:sort]];
@@ -343,7 +336,6 @@ static CalendarDataManager *s_sharedManager = nil;
         [CoreDataManager deleteObjects:events];
         [CoreDataManager saveData];
     }
-    [freshDate release];
 }
 
 #pragma mark formerly defined in CalendarConstants
@@ -387,12 +379,11 @@ static CalendarDataManager *s_sharedManager = nil;
         [comps setYear:[comps year] + 1];
         NSDate *endDate = [calendar dateFromComponents:comps];
         dateString = [NSString stringWithFormat:@"%@-%@", [df stringFromDate:startDate], [df stringFromDate:endDate]];
-        [calendar release];
 	} else {
 		[df setDateStyle:kCFDateFormatterMediumStyle];
 		dateString = [df stringFromDate:aDate];
     }
-    [df release];
+    
 	
 	return dateString;
 }
@@ -405,7 +396,6 @@ static CalendarDataManager *s_sharedManager = nil;
 		NSDateComponents *comps = [[NSDateComponents alloc] init];
 		[comps setMonth:sign];
 		NSDate *targetDate = [calendar dateByAddingComponents:comps toDate:aDate options:0];
-		[comps release];
 		return [targetDate timeIntervalSinceDate:aDate];
 	}
 	else if ([listType.listID isEqualToString:@"holidays"]) {
@@ -413,7 +403,6 @@ static CalendarDataManager *s_sharedManager = nil;
 		NSDateComponents *comps = [[NSDateComponents alloc] init];
 		[comps setYear:sign];
 		NSDate *targetDate = [calendar dateByAddingComponents:comps toDate:aDate options:0];
-		[comps release];
 		return [targetDate timeIntervalSinceDate:aDate];
 	} else {
 		return 86400.0 * sign;

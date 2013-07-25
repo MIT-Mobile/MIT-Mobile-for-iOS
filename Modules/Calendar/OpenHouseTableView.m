@@ -10,7 +10,6 @@
     return 1;
 }
 
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	if (categories) {
 		return [categories count];
@@ -24,7 +23,7 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
     EventCategory *category = [self.categories objectAtIndex:indexPath.row];
@@ -48,17 +47,8 @@
 	vc.events = events;
     vc.showList = YES;
 	[self.parentViewController.navigationController pushViewController:vc animated:YES];
-	[vc release];
 
-}
-
-- (void)dealloc {
-    [categories release];
-    parentViewController = nil;
-    
-    [super dealloc];
 }
 
 
 @end
-

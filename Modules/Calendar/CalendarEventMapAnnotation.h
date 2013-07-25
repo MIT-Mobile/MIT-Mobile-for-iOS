@@ -4,13 +4,8 @@
 
 @class MITCalendarEvent;
 
-@interface CalendarEventMapAnnotation : NSObject <MKAnnotation> {
-	
-	MITCalendarEvent *event;
-
-}
-
-@property (nonatomic, assign) MITCalendarEvent *event;
+@interface CalendarEventMapAnnotation : NSObject <MKAnnotation>
+@property (nonatomic, weak) MITCalendarEvent *event;
 
 - (id)initWithEvent:(MITCalendarEvent *)anEvent;
 - (NSInteger)eventID;

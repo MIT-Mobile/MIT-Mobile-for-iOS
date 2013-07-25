@@ -3,12 +3,9 @@
 #import "CalendarEventsViewController.h"
 
 @implementation EventCategoriesTableView
-
-@synthesize categories, parentViewController;
-
 - (BOOL)isSubcategoryView
 {
-	return (parentViewController.category != nil);
+	return (_parentViewController.category != nil);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -17,10 +14,7 @@
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (categories) {
-		return [categories count];
-	}
-	return 0;
+	return [_categories count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -29,7 +23,7 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
     EventCategory *category = [self.categories objectAtIndex:indexPath.row];
@@ -66,17 +60,7 @@
 	}
 
 	[self.parentViewController.navigationController pushViewController:vc animated:YES];
-	[vc release];
 
 }
-
-- (void)dealloc {
-    [categories release];
-    parentViewController = nil;
-    
-    [super dealloc];
-}
-
 
 @end
-

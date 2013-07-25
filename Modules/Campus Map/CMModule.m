@@ -23,7 +23,7 @@
 
 - (void)loadModuleHomeController
 {
-    CampusMapViewController *controller = [[[CampusMapViewController alloc] init] autorelease];
+    CampusMapViewController *controller = [[CampusMapViewController alloc] init];
     controller.campusMapModule = self;
     
     self.moduleHomeController = controller;
@@ -32,11 +32,6 @@
 - (CampusMapViewController*)campusMapVC
 {
     return ((CampusMapViewController*)self.moduleHomeController);
-}
-
--(void) dealloc
-{
-	[super dealloc];
 }
 
 - (void)applicationDidEnterBackground {
@@ -128,7 +123,7 @@
             
                 for (NSDictionary* info in searchResultsArray)
                 {
-                    MITMapSearchResultAnnotation* annotation = [[[MITMapSearchResultAnnotation alloc] initWithInfo:info] autorelease];
+                    MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:info];
                     [searchResultsArr addObject:annotation];
                 }
                 // this will remove old annotations and add the new ones. 
@@ -172,8 +167,8 @@
             else if ([pathRoot isEqualToString:@"detail"])
             {	
                 // push the details page onto the stack for the item selected. 
-                detailsVC = [[[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
-                                                                          bundle:nil] autorelease];
+                detailsVC = [[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
+                                                                          bundle:nil];
                 
                 detailsVC.annotation = currentAnnotation;
                 detailsVC.title = @"Info";

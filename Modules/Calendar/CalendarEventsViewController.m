@@ -55,8 +55,8 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-		startDate = [[NSDate date] retain];
-		endDate = [[NSDate date] retain];
+		startDate = [NSDate date];
+		endDate = [NSDate date];
 		
 		loadingIndicatorCount = 0;
 		showScroller = YES;
@@ -68,26 +68,7 @@
 }
 
 - (void)dealloc {
-    
-	[theTableView release];
-    [queuedButton release];
-    
     theMapView.delegate = nil;
-	[theMapView release];
-	
-	[navScrollView release];
-    
-    [datePicker release];
-	
-	[events release];
-	[startDate release];
-	[endDate release];
-	
-    [childViewController release];
-    
-    self.lastSearchTerm = nil;
-
-    [super dealloc];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -96,10 +77,8 @@
 	
 	// Release any cached data, images, etc that aren't in use.
 	if (showList) {
-		[theMapView release];
 		theMapView = nil;
 	} else {
-		[theTableView release];
 		theTableView = nil;
 	}
 }
@@ -138,21 +117,13 @@
 }
 
 - (void)viewDidUnload {
-	
-	[theTableView release];
-    theTableView = nil;
-	[theMapView release];
-    theMapView = nil;
-	
-	[navScrollView release];
-    navScrollView = nil;
-    
-    [datePicker release];
-    datePicker = nil;
-    
-    self.category = nil;
-    
     [super viewDidUnload];
+    
+    theTableView = nil;
+    theMapView = nil;
+    navScrollView = nil;
+    datePicker = nil;
+    self.category = nil;
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -199,7 +170,7 @@
         [navScrollView addButton:searchButton shouldHighlight:NO];
 		
         // increase tappable area for search button
-        UIControl *searchTapRegion = [[[UIControl alloc] initWithFrame:CGRectMake(0.0, 0.0, 44.0, 44.0)] autorelease];
+        UIControl *searchTapRegion = [[UIControl alloc] initWithFrame:CGRectMake(0.0, 0.0, 44.0, 44.0)];
         searchTapRegion.backgroundColor = [UIColor clearColor];
         searchTapRegion.center = searchButton.center;
         [searchTapRegion addTarget:self action:@selector(showSearchBar) forControlEvents:UIControlEventTouchUpInside];
@@ -252,8 +223,7 @@
 - (void)setEvents:(NSArray *)someEvents
 {
     if (events != someEvents) {
-        [events release];
-        events = [someEvents retain];
+        events = someEvents;
     }
 
     // set "events" property on subviews if we're called via handleOpenUrl
@@ -277,7 +247,6 @@
         dateVC.delegate = self;
         dateVC.date = startDate;
         [appDelegate presentAppModalViewController:dateVC animated:YES];
-        [dateVC release];
     }
 }
 
@@ -303,7 +272,7 @@
 - (void)datePickerValueChanged:(id)sender
 {
     UIDatePicker *picker = (UIDatePicker *)sender;
-    NSDate *oldDate = [[self.startDate retain] autorelease];
+    NSDate *oldDate = self.startDate;
     self.startDate = picker.date;
     [self setupDatePicker];
     self.startDate = oldDate;
@@ -336,10 +305,9 @@
 - (void)reloadView:(MITEventList *)listType {
 
 	[searchResultsMapView removeFromSuperview];
-    [searchResultsMapView release];
     searchResultsMapView = nil;
+    
 	[searchResultsTableView removeFromSuperview];
-    [searchResultsTableView release];
     searchResultsTableView = nil;
     
     [self.tableView removeFromSuperview];
@@ -381,7 +349,7 @@
 		self.tableView = nil;
 		
 		if ([activeEventList.listID isEqualToString:@"categories"]) {
-			self.tableView = [[[EventCategoriesTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped] autorelease];		
+			self.tableView = [[EventCategoriesTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped];
 			[self.tableView applyStandardColors];
 			EventCategoriesTableView *categoriesTV = (EventCategoriesTableView *)self.tableView;
 			categoriesTV.delegate = categoriesTV;
@@ -392,7 +360,7 @@
             // if we receive nil from core data, then make a trip to the server
             NSArray *categories = nil;
             if (self.category) {
-                NSMutableArray *subCategories = [[[self.category.subCategories allObjects] mutableCopy] autorelease];
+                NSMutableArray *subCategories = [[self.category.subCategories allObjects] mutableCopy];
                 // sort "All" category, i.e. the category that is a subcategory of itself, to the beginning
                 [subCategories removeObject:self.category];
                 categories = [[NSArray arrayWithObject:self.category] arrayByAddingObjectsFromArray:subCategories];
@@ -407,7 +375,7 @@
             requestNeeded = NO;
 
 		} else if([activeEventList.listID isEqualToString:@"OpenHouse"]) {
-            OpenHouseTableView *openHouseTV = [[[OpenHouseTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped] autorelease];
+            OpenHouseTableView *openHouseTV = [[OpenHouseTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped];
             [openHouseTV applyStandardColors];
             self.tableView = openHouseTV;
             self.tableView.delegate = openHouseTV;
@@ -420,7 +388,7 @@
             requestNeeded = NO;
             
         } else {
-			self.tableView = [[[EventListTableView alloc] initWithFrame:contentFrame] autorelease];
+			self.tableView = [[EventListTableView alloc] initWithFrame:contentFrame];
 			self.tableView.delegate = (EventListTableView *)self.tableView;
 			self.tableView.dataSource = (EventListTableView *)self.tableView;
 			((EventListTableView *)self.tableView).parentViewController = self;
@@ -436,22 +404,22 @@
 		[self.view addSubview:self.tableView];
 		
 		self.navigationItem.rightBarButtonItem = [self canShowMap:activeEventList]
-		? [[[UIBarButtonItem alloc] initWithTitle:@"Map"
+		? [[UIBarButtonItem alloc] initWithTitle:@"Map"
 											style:UIBarButtonItemStylePlain
 										   target:self
-										   action:@selector(mapButtonToggled)] autorelease]
+										   action:@selector(mapButtonToggled)]
 		: nil;
 
 		[self.mapView removeFromSuperview];
 	} else {
 		
-		self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"List"
-																				   style:UIBarButtonItemStylePlain
-																				  target:self
-																				  action:@selector(listButtonToggled)] autorelease];
+		self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"List"
+                                                                                  style:UIBarButtonItemStylePlain
+                                                                                 target:self
+                                                                                 action:@selector(listButtonToggled)];
 
         if (self.mapView == nil) {
-            self.mapView = [[[CalendarMapView alloc] initWithFrame:contentFrame] autorelease];
+            self.mapView = [[CalendarMapView alloc] initWithFrame:contentFrame];
             self.mapView.delegate = self;
         }
 
@@ -485,8 +453,7 @@
 	}
     // we haven't found the button among our titles;
     // hold on to it in case a request response comes in with new titles
-    [queuedButton release];
-    queuedButton = [buttonTitle retain];
+    queuedButton = buttonTitle;
 }
 
 - (void)incrementStartDate:(BOOL)forward
@@ -495,7 +462,7 @@
 															 fromDate:startDate
 															  forward:forward];
     
-    NSDate *newDate = [[[NSDate alloc] initWithTimeInterval:interval sinceDate:startDate] autorelease];
+    NSDate *newDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:startDate];
     self.startDate = newDate;
     
 	dateRangeDidChange = YES;
@@ -531,7 +498,6 @@
 		UIImageView *datePickerBackground = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, datePicker.frame.size.width, datePicker.frame.size.height)];
 		datePickerBackground.image = [[UIImage imageNamed:@"global/subheadbar_background.png"] stretchableImageWithLeftCapWidth:0 topCapHeight:0];
 		[datePicker addSubview:datePickerBackground];
-		[datePickerBackground release];
 		
 		UIImage *buttonImage = [UIImage imageNamed:@"global/subheadbar_button.png"];
 		
@@ -634,18 +600,14 @@
 
 - (void)releaseSearchBar {
     [theSearchBar removeFromSuperview];
-    [theSearchBar release];
     theSearchBar = nil;
     
-    [searchController release];
     searchController = nil;
     
 	[searchResultsMapView removeFromSuperview];
-    [searchResultsMapView release];
     searchResultsMapView = nil;
 
 	[searchResultsTableView removeFromSuperview];
-    [searchResultsTableView release];
     searchResultsTableView = nil;
 }
 
@@ -670,20 +632,20 @@
 	showList = NO;
 	[self.view addSubview:searchResultsMapView];
 	[searchResultsTableView removeFromSuperview];
-	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"List"
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"List"
 																			   style:UIBarButtonItemStylePlain
 																			  target:self
-																			  action:@selector(showSearchResultsTableView)] autorelease];
+																			  action:@selector(showSearchResultsTableView)];
 }
 
 - (void)showSearchResultsTableView {
 	showList = YES;
 	[self.view addSubview:searchResultsTableView];
 	[searchResultsMapView removeFromSuperview];
-	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Map"
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Map"
 																			   style:UIBarButtonItemStylePlain
 																			  target:self
-																			  action:@selector(showSearchResultsMapView)] autorelease];
+																			  action:@selector(showSearchResultsMapView)];
 }
 
 #pragma mark -
@@ -731,7 +693,6 @@
 		CalendarDetailViewController *detailVC = [[CalendarDetailViewController alloc] init];
 		detailVC.event = event;
 		[self.navigationController pushViewController:detailVC animated:YES];
-		[detailVC release];
 	}
 }
 
@@ -747,9 +708,9 @@
         self.lastSearchTerm = searchTerms;
         
         NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:searchTerms, @"q", nil];
-        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag
+        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag
                                                                                   command:@"search"
-                                                                               parameters:params] autorelease];
+                                                                               parameters:params];
         
         request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
             if ([searchTerms isEqualToString:self.lastSearchTerm]) {
@@ -771,7 +732,7 @@
                             searchResultsMapView.events = eventsArray;
                             searchResultsTableView.events = eventsArray;
                             searchResultsTableView.searchSpan = resultSpan;
-                            searchResultsTableView.isSearchResults = YES;
+                            searchResultsTableView.searchResults = YES;
                             [searchResultsTableView reloadData];
                             
                             if (showList) {
@@ -786,7 +747,6 @@
                                                                                delegate:self
                                                                       cancelButtonTitle:@"OK" otherButtonTitles:nil];
                             [alertView show];
-                            [alertView release];
                         }
                         
                 } else {
@@ -799,7 +759,7 @@
         
         if (showList) {
             searchResultsTableView.events = nil;
-            searchResultsTableView.isSearchResults = NO;
+            searchResultsTableView.searchResults = NO;
             [searchResultsTableView reloadData];
             [self showSearchResultsTableView];
         } else {
@@ -817,7 +777,7 @@
 {
 	MITEventList *categories = [[CalendarDataManager sharedManager] eventListWithID:@"categories"];
     NSString *command = [CalendarDataManager apiCommandForEventType:categories];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             
@@ -853,14 +813,14 @@
             if(self.category.listID) {
                 [params setObject:self.category.listID forKey:@"type"];
             }
-            request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:@"category" parameters:params] autorelease];
+            request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:@"category" parameters:params];
 
 		} else {
             NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
                                     activeEventList.listID, @"type",
                                     timeString, @"time", nil];
             NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
-            request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params] autorelease];
+            request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params];
 		}
     
     } else if ([activeEventList.listID isEqualToString:@"academic"] || [activeEventList.listID isEqualToString:@"holidays"]) {
@@ -872,11 +832,11 @@
 
         NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:year, @"year", month, @"month", nil];
         NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
-        request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params] autorelease];
+        request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params];
 
 	} else {
         NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
-        request = [[[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil] autorelease];
+        request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil];
 	}
     
     
@@ -931,10 +891,10 @@
         CGFloat cornerRadius = 8.0;
         
         UIActivityIndicatorViewStyle style = (showList) ? UIActivityIndicatorViewStyleGray : UIActivityIndicatorViewStyleWhite;
-		UIActivityIndicatorView *spinny = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:style] autorelease];
+		UIActivityIndicatorView *spinny = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:style];
 		[spinny startAnimating];
         
-		UILabel *label = [[[UILabel alloc] init] autorelease];
+		UILabel *label = [[UILabel alloc] init];
 		label.textColor = (showList) ? [UIColor colorWithWhite:0.5 alpha:1.0] : [UIColor whiteColor];
 		label.text = loadingString;
 		label.font = loadingFont;
@@ -979,7 +939,6 @@
 	if (loadingIndicatorCount <= 0) {
 		loadingIndicatorCount = 0;
 		[loadingIndicator removeFromSuperview];
-		[loadingIndicator release];
 		loadingIndicator = nil;
 	}
 }
@@ -991,7 +950,6 @@
 	[self setupScrollButtons];
     if (queuedButton) {
         [self selectScrollerButton:queuedButton];
-        [queuedButton release];
         queuedButton = nil;
     }
 }
