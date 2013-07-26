@@ -16,15 +16,10 @@
     return self;
 }
 
-- (void)dealloc {
-    [super dealloc];
-}
-
 - (void)loadModuleHomeController
 {
-    FacilitiesRootViewController *controller = [[FacilitiesRootViewController alloc] initWithNibName:@"FacilitiesRootViewController"
-                                                                                              bundle:nil];
-    self.moduleHomeController = [controller autorelease];
+    self.moduleHomeController = [[FacilitiesRootViewController alloc] initWithNibName:@"FacilitiesRootViewController"
+                                                                               bundle:nil];
 }
 
 @end

@@ -28,17 +28,6 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
     return self;
 }
 
-- (void)dealloc
-{
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
-
 #pragma mark - View lifecycle
 - (void)viewDidLoad
 {
@@ -96,14 +85,14 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
     if (indexPath.section == 0) {
         cell = [tableView dequeueReusableCellWithIdentifier:reportCellIdentifier];
         if (cell == nil) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                            reuseIdentifier:reportCellIdentifier] autorelease];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                            reuseIdentifier:reportCellIdentifier];
         }
     } else {
         cell = [tableView dequeueReusableCellWithIdentifier:contactCellIdentifier];
         if (cell == nil) {
-            cell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                          reuseIdentifier:contactCellIdentifier] autorelease];
+            cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                          reuseIdentifier:contactCellIdentifier];
         }
     }
 
@@ -155,7 +144,7 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
 #pragma mark - UITableViewDelegate Methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if ((indexPath.section == 0) && (indexPath.row == 0)) {
-        FacilitiesCategoryViewController *vc = [[[FacilitiesCategoryViewController alloc] init] autorelease];
+        FacilitiesCategoryViewController *vc = [[FacilitiesCategoryViewController alloc] init];
         [self.navigationController pushViewController:vc
                                              animated:YES];
     } else if (indexPath.section == 1) {
