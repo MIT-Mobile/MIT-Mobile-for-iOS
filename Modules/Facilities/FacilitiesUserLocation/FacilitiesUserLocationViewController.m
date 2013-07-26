@@ -7,34 +7,32 @@
 #import "MITLoadingActivityView.h"
 #import "MITLogging.h"
 #import "UIKit+MITAdditions.h"
+#import "MITBlockTimer.h"
 
 static const NSUInteger kMaxResultCount = 10;
 
 @interface FacilitiesUserLocationViewController ()
-@property (nonatomic,retain) NSArray* filteredData;
-@property (nonatomic,retain) CLLocation *currentLocation;
-@property (nonatomic,retain) NSTimer *locationTimeout;
-@property (nonatomic,retain) id observerToken;
+@property (nonatomic,strong) CLLocationManager *locationManager;
+@property (nonatomic,strong) CLLocation *currentLocation;
+@property (nonatomic,strong) NSTimer *locationTimer;
+
+@property (nonatomic,weak) MITLoadingActivityView* loadingView;
+@property (nonatomic,weak) id dataObserverToken;
+
+@property (nonatomic,copy) NSArray* filteredData;
+@property (nonatomic,getter = isUpdatingCurrentLocation) BOOL updatingCurrentLocation;
 
 - (void)displayTableForCurrentLocation;
 - (void)startUpdatingLocation;
 - (void)stopUpdatingLocation;
-- (void)locationUpdateTimedOut;
 @end
 
 @implementation FacilitiesUserLocationViewController
-@synthesize tableView = _tableView;
-@synthesize loadingView = _loadingView;
-@synthesize locationManager = _locationManager;
-@synthesize filteredData = _filteredData;
-@synthesize currentLocation = _currentLocation;
-@synthesize locationTimeout = _locationTimeout;
-
 - (id)init {
     self = [super init];
     if (self) {
         self.title = @"Nearby Locations";
-        _isLocationUpdating = NO;
+        self.updatingCurrentLocation = NO;
     }
     return self;
 }
@@ -42,25 +40,13 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)dealloc
 {
     [self stopUpdatingLocation];
-    self.tableView = nil;
-    self.loadingView = nil;
-    self.locationManager = nil;
-    self.filteredData = nil;
-    self.currentLocation = nil;
-    self.locationTimeout = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - View lifecycle
 - (void)loadView {
     CGRect screenFrame = [[UIScreen mainScreen] applicationFrame];
     
-    UIView *mainView = [[[UIView alloc] initWithFrame:screenFrame] autorelease];
+    UIView *mainView = [[UIView alloc] initWithFrame:screenFrame];
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
@@ -70,8 +56,8 @@ static const NSUInteger kMaxResultCount = 10;
         CGRect tableRect = mainView.frame;
         tableRect.origin = CGPointZero;
         
-        UITableView *tableView = [[[UITableView alloc] initWithFrame: tableRect
-                                                               style: UITableViewStyleGrouped] autorelease];
+        UITableView *tableView = [[UITableView alloc] initWithFrame:tableRect
+                                                              style:UITableViewStyleGrouped];
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                       UIViewAutoresizingFlexibleWidth);
         tableView.delegate = self;
@@ -83,14 +69,13 @@ static const NSUInteger kMaxResultCount = 10;
         
         self.tableView = tableView;
         [mainView addSubview:tableView];
-        
     }
     
     {
         CGRect loadingFrame = mainView.frame;
         loadingFrame.origin = CGPointZero;
         
-        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                         UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor clearColor];
@@ -116,14 +101,14 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if (self.observerToken == nil) {
-        self.observerToken = [[FacilitiesLocationData sharedData] addUpdateObserver:^(NSString *name, BOOL dataUpdated, id userData) {
-                                                   BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey]);
-                                                   if (commandMatch && dataUpdated) {
-                                                       self.filteredData = nil;
-                                                       [self displayTableForCurrentLocation];
-                                                   }
-                                               }];
+    if (!self.dataObserverToken) {
+        self.dataObserverToken = [[FacilitiesLocationData sharedData] addUpdateObserver:^(NSString *name, BOOL dataUpdated, id userData) {
+            BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey]);
+            if (commandMatch && dataUpdated) {
+                self.filteredData = nil;
+                [self displayTableForCurrentLocation];
+            }
+        }];
     }
     
     [self startUpdatingLocation];
@@ -132,9 +117,8 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    if (self.observerToken) {
-        [[FacilitiesLocationData sharedData] removeUpdateObserver:self.observerToken];
-        self.observerToken = nil;
+    if (self.dataObserverToken) {
+        [[FacilitiesLocationData sharedData] removeUpdateObserver:self.dataObserverToken];
     }
     
     [self stopUpdatingLocation];
@@ -159,67 +143,54 @@ static const NSUInteger kMaxResultCount = 10;
 
 #pragma mark - Private Methods
 - (void)displayTableForCurrentLocation {
-    if (self.currentLocation == nil) {
-        return;
-    }
-    
-    NSMutableArray *locArray = [NSMutableArray arrayWithArray:[[FacilitiesLocationData sharedData] locationsWithinRadius:CGFLOAT_MAX
-                                                                                                              ofLocation:self.currentLocation
-                                                                                                            withCategory:nil]];
-    [locArray removeObjectsInArray:[[FacilitiesLocationData sharedData] hiddenBuildings]];
-    self.filteredData = locArray;
-    
-    if ([self.filteredData count] == 0) {
-        return;
-    } else {
-        
-        NSUInteger filterLimit = MIN([self.filteredData count],kMaxResultCount);
-        self.filteredData = [self.filteredData objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, filterLimit)]];
-        
-        if (self.loadingView) {
-            [self.loadingView removeFromSuperview];
-            self.loadingView = nil;
-            self.tableView.hidden = NO;
-            [self.view setNeedsDisplay];
+    if (self.currentLocation) {
+        NSMutableArray *locArray = [NSMutableArray arrayWithArray:[[FacilitiesLocationData sharedData] locationsWithinRadius:CGFLOAT_MAX
+                                                                                                                  ofLocation:self.currentLocation
+                                                                                                                withCategory:nil]];
+        [locArray removeObjectsInArray:[[FacilitiesLocationData sharedData] hiddenBuildings]];
+        self.filteredData = locArray;
+
+        if ([self.filteredData count] == 0) {
+            return;
+        } else {
+            NSUInteger filterLimit = MIN([self.filteredData count],kMaxResultCount);
+            self.filteredData = [self.filteredData objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, filterLimit)]];
+            
+            if (self.loadingView) {
+                [self.loadingView removeFromSuperview];
+                self.tableView.hidden = NO;
+                [self.view setNeedsDisplay];
+            }
+            
+            [self.tableView reloadData];
         }
-        
-        [self.tableView reloadData];
     }
 }
 
 - (void)startUpdatingLocation {
     if (self.locationManager == nil) {
-        self.locationManager = [[[CLLocationManager alloc] init] autorelease];
+        self.locationManager = [[CLLocationManager alloc] init];
         self.locationManager.delegate = self;
         self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-        _isLocationUpdating = NO;
+        self.updatingCurrentLocation = NO;
     }
     
-    if (_isLocationUpdating == NO) {
+    if (self.isUpdatingCurrentLocation == NO) {
         [self.locationManager startUpdatingLocation];
-        _isLocationUpdating = YES;
+        self.updatingCurrentLocation = YES;
     }
 }
 
 - (void)stopUpdatingLocation {
     if (self.locationManager) {
         [self.locationManager stopUpdatingLocation];
-        _isLocationUpdating = NO;
-        
-        [self.locationTimeout invalidate];
-        self.locationTimeout = nil;
+        self.updatingCurrentLocation = NO;
     }
-}
-
-- (void)locationUpdateTimedOut {
-    DDLogVerbose(@"Timeout triggered at accuracy of %f meters", [self.currentLocation horizontalAccuracy]);
-    [self displayTableForCurrentLocation];
-    [self stopUpdatingLocation];
 }
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return (self.filteredData == nil) ? 0 : [self.filteredData count];
+    return [self.filteredData count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -228,8 +199,8 @@ static const NSUInteger kMaxResultCount = 10;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
     
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                       reuseIdentifier:reuseIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                      reuseIdentifier:reuseIdentifier];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
@@ -248,12 +219,12 @@ static const NSUInteger kMaxResultCount = 10;
     }
     
     if ([location.isLeased boolValue]) {
-        FacilitiesLeasedViewController *controller = [[[FacilitiesLeasedViewController alloc] initWithLocation:location] autorelease];
+        FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
         
         [self.navigationController pushViewController:controller
                                              animated:YES];
     } else {    
-        FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
+        FacilitiesRoomViewController *controller = [[FacilitiesRoomViewController alloc] init];
         controller.location = location;
         
         [self.navigationController pushViewController:controller
@@ -271,25 +242,24 @@ static const NSUInteger kMaxResultCount = 10;
     
     DDLogError(@"%@",[error localizedDescription]);
     
-    switch([error code])
-    {
+    switch([error code]) {
         case kCLErrorDenied:{
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Unable to Determine Location"
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Unable to Determine Location"
                                                              message:@"Please turn on location services to allow MIT Mobile to determine your location."
                                                             delegate:self
                                                    cancelButtonTitle:@"OK"
-                                                   otherButtonTitles:nil] autorelease];
+                                                   otherButtonTitles:nil];
             [alert show];
         }
             break;
         case kCLErrorNetwork:
         default:
         {
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Unable to Determine Location"
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Unable to Determine Location"
                                                              message:@"Please check your network connection and that you are not in airplane mode."
                                                             delegate:self
                                                    cancelButtonTitle:@"OK"
-                                                   otherButtonTitles:nil] autorelease];
+                                                   otherButtonTitles:nil];
             [alert show];
         }
             break;
@@ -301,26 +271,32 @@ static const NSUInteger kMaxResultCount = 10;
            fromLocation:(CLLocation *)oldLocation
 {
     CLLocationAccuracy horizontalAccuracy = [newLocation horizontalAccuracy];
+    
     if (horizontalAccuracy < 0) {
         return;
-    } else if (([newLocation horizontalAccuracy] > kCLLocationAccuracyHundredMeters) && _isLocationUpdating) {
-        if (self.locationTimeout == nil) {
+    } else if ((horizontalAccuracy > kCLLocationAccuracyHundredMeters) && self.isUpdatingCurrentLocation) {
+        if (self.locationTimer == nil) {
             self.currentLocation = newLocation;
-            self.locationTimeout = [NSTimer scheduledTimerWithTimeInterval:5.0
-                                                                    target:self
-                                                                  selector:@selector(locationUpdateTimedOut)
-                                                                  userInfo:nil
-                                                                   repeats:NO];
+            
+            __weak FacilitiesUserLocationViewController *weakSelf = self;
+            self.locationTimer = [NSTimer timerWithTimeInterval:5.0
+                                                        repeats:NO
+                                                          fired:^(NSTimer *timer) {
+                                                              DDLogVerbose(@"Timeout triggered at accuracy of %f meters", [weakSelf.currentLocation horizontalAccuracy]);
+                                                              [weakSelf displayTableForCurrentLocation];
+                                                              [weakSelf stopUpdatingLocation];
+                                                              weakSelf.locationTimer = nil;
+                                                          }];
+            
         } else if ([self.currentLocation horizontalAccuracy] > horizontalAccuracy) {
             self.currentLocation = newLocation;
         }
-        return;
     } else {
         self.currentLocation = newLocation;
         [self stopUpdatingLocation];
+        [self displayTableForCurrentLocation];
     }
     
-    [self displayTableForCurrentLocation];
 }
 
 #pragma mark -
@@ -328,4 +304,5 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     [self.navigationController popViewControllerAnimated:YES];
 }
+
 @end

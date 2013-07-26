@@ -7,28 +7,9 @@
 @class HighlightTableViewCell;
 @class FacilitiesLocationSearch;
 
-@interface FacilitiesCategoryViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate,UISearchBarDelegate> {
-    UITableView *_tableView;
-    MITLoadingActivityView *_loadingView;
-    
-    FacilitiesLocationData *_locationData;
-    FacilitiesLocationSearch *_searchHelper;
-    NSArray *_cachedData;
-    NSArray *_filteredData;
-    NSPredicate *_filterPredicate;
-    NSString *_searchString;
-    NSString *_trimmedString;
-}
-
-@property (nonatomic,retain) UITableView* tableView;
-@property (nonatomic,retain) MITLoadingActivityView* loadingView;
-@property (retain) FacilitiesLocationData* locationData;
-@property (nonatomic,retain) NSPredicate* filterPredicate;
-
-@property (nonatomic,retain) NSArray* cachedData;
-@property (nonatomic,retain) NSArray* filteredData;
-@property (nonatomic,retain) NSString* searchString;
-@property (nonatomic,retain) NSString *trimmedString;
+@interface FacilitiesCategoryViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
+@property (nonatomic,strong) UITableView* tableView;
+@property (nonatomic,strong) MITLoadingActivityView* loadingView;
 
 - (NSArray*)dataForMainTableView;
 - (NSArray*)resultsForSearchString:(NSString*)searchText;

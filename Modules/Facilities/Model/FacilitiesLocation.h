@@ -3,20 +3,19 @@
 
 @class FacilitiesContent, FacilitiesPropertyOwner;
 
-@interface FacilitiesLocation : NSManagedObject {
-@private
-}
-@property (nonatomic, retain) NSString * number;
-@property (nonatomic, retain) NSString * uid;
-@property (nonatomic, retain) NSNumber * longitude;
-@property (nonatomic, retain) NSNumber * latitude;
-@property (nonatomic, retain) NSDate * roomsUpdated;
-@property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSNumber * isHiddenInBldgServices;
-@property (nonatomic, retain) NSNumber * isLeased;
-@property (nonatomic, retain) NSSet *categories;
-@property (nonatomic, retain) NSSet *contents;
-@property (nonatomic, retain) FacilitiesPropertyOwner *propertyOwner;
+@interface FacilitiesLocation : NSManagedObject
+
+@property (nonatomic, strong) NSString * number;
+@property (nonatomic, strong) NSString * uid;
+@property (nonatomic, strong) NSNumber * longitude;
+@property (nonatomic, strong) NSNumber * latitude;
+@property (nonatomic, strong) NSDate * roomsUpdated;
+@property (nonatomic, strong) NSString * name;
+@property (nonatomic, strong) NSNumber * isHiddenInBldgServices;
+@property (nonatomic, strong) NSNumber * isLeased;
+@property (nonatomic, strong) NSSet *categories;
+@property (nonatomic, strong) NSSet *contents;
+@property (nonatomic, strong) FacilitiesPropertyOwner *propertyOwner;
 
 - (NSString*)displayString;
 @end

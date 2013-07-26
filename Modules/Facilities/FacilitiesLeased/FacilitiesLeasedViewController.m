@@ -11,14 +11,10 @@ enum {
 };
 
 @interface FacilitiesLeasedViewController ()
-@property (nonatomic, retain) FacilitiesLocation *location;
+@property (nonatomic, strong) FacilitiesLocation *location;
 @end
 
 @implementation FacilitiesLeasedViewController
-@synthesize location = _location;
-@synthesize contactsTable = _contactsTable;
-@synthesize messageView = _messageView;
-
 - (id)initWithLocation:(FacilitiesLocation*)location
 {
     self = [super initWithNibName:nil
@@ -29,24 +25,11 @@ enum {
     return self;
 }
 
-- (void)dealloc {
-    self.location = nil;
-    self.contactsTable = nil;
-    self.messageView = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
-
 #pragma mark - View lifecycle
 - (void)loadView
 {
     CGRect viewFrame = [[UIScreen mainScreen] applicationFrame];
-    UIView *mainView = [[[UIView alloc] initWithFrame:viewFrame] autorelease];
+    UIView *mainView = [[UIView alloc] initWithFrame:viewFrame];
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
@@ -55,7 +38,7 @@ enum {
     {
         CGFloat margin = 20.0;
         CGRect labelFrame = CGRectZero;
-        UILabel *labelView = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
+        UILabel *labelView = [[UILabel alloc] initWithFrame:labelFrame];
         labelView.backgroundColor = [UIColor clearColor];
         labelView.userInteractionEnabled = NO;
         labelView.lineBreakMode = UILineBreakModeWordWrap;
@@ -75,8 +58,8 @@ enum {
         CGRect tableFrame = CGRectZero;
         tableFrame.origin = CGPointMake(0, floor(CGRectGetMaxY(self.messageView.frame) + 10.0));
         tableFrame.size = CGSizeMake(viewFrame.size.width, viewFrame.size.height - tableFrame.origin.y);
-        UITableView *tableView = [[[UITableView alloc] initWithFrame:tableFrame
-                                                               style:UITableViewStyleGrouped] autorelease];
+        UITableView *tableView = [[UITableView alloc] initWithFrame:tableFrame
+                                                              style:UITableViewStyleGrouped];
         [tableView applyStandardColors];
         tableView.delegate = self;
         tableView.dataSource = self;
@@ -162,8 +145,8 @@ enum {
     SecondaryGroupedTableViewCell *cell = (SecondaryGroupedTableViewCell*)[tableView dequeueReusableCellWithIdentifier:cellReuseIdentifier];
     
     if (cell == nil) {
-        cell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                     reuseIdentifier:cellReuseIdentifier] autorelease];
+        cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                    reuseIdentifier:cellReuseIdentifier];
         cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.textLabel.backgroundColor = [UIColor clearColor];

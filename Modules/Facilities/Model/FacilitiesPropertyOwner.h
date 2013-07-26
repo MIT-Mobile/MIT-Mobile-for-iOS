@@ -3,13 +3,11 @@
 
 @class FacilitiesLocation;
 
-@interface FacilitiesPropertyOwner : NSManagedObject {
-@private
-}
-@property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSString * phone;
-@property (nonatomic, retain) NSString * email;
-@property (nonatomic, retain) NSSet* locations;
+@interface FacilitiesPropertyOwner : NSManagedObject
+@property (nonatomic, strong) NSString* name;
+@property (nonatomic, strong) NSString* phone;
+@property (nonatomic, strong) NSString* email;
+@property (nonatomic, strong) NSSet* locations;
 
 - (void)addLocationsObject:(FacilitiesLocation *)value;
 - (void)removeLocationsObject:(FacilitiesLocation *)value;

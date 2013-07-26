@@ -3,12 +3,10 @@
 
 @class FacilitiesLocation;
 
-@interface FacilitiesRoom : NSManagedObject {
-@private
-}
-@property (nonatomic, retain) NSString * floor;
-@property (nonatomic, retain) NSString * number;
-@property (nonatomic, retain) NSString * building;
+@interface FacilitiesRoom : NSManagedObject
+@property (nonatomic, strong) NSString * floor;
+@property (nonatomic, strong) NSString * number;
+@property (nonatomic, strong) NSString * building;
 
 - (NSString*)displayString;
 - (NSString*)description;

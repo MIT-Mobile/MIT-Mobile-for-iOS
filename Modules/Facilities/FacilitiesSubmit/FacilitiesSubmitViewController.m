@@ -9,34 +9,12 @@
 #import "MobileRequestOperation.h"
 
 @interface FacilitiesSubmitViewController ()
-@property BOOL abortRequest;
-
 - (void)setStatusText:(NSString *)string;
 - (void)showSuccess;
 - (void)showFailure;
-
 @end
 
 @implementation FacilitiesSubmitViewController
-@synthesize statusLabel = _statusLabel;
-@synthesize progressView = _progressView;
-@synthesize completeButton = _completeButton;
-@synthesize abortRequest = _abortRequest;
-@synthesize reportDictionary = _reportDictionary;
-
-- (void)dealloc {
-    self.statusLabel = nil;
-    self.progressView = nil;
-    self.completeButton = nil;
-    self.reportDictionary = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    
-}
-
 #pragma mark - View lifecycle
 - (void)viewDidLoad {
     self.title = @"Submit Report";
@@ -45,9 +23,9 @@
     CGFloat margin = 20.0;
     
     {
-        self.progressView = [[[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault] autorelease];
+        self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
         CGRect progressFrame = CGRectMake(margin,
-                                          floor((frame.size.height - self.progressView.frame.size.height) / (1 / (1 - (1 / 1.62)))),
+                                          floor((frame.size.height - self.progressView.frame.size.height) / (1. / (1. - (1. / 1.62)))),
                                           frame.size.width - (2.0 * margin),
                                           self.progressView.frame.size.height);
         self.progressView.frame = progressFrame;
@@ -80,7 +58,7 @@
                                        frame.size.width - (2.0 * margin),
                                        250.0);
         
-        self.statusLabel = [[[UILabel alloc] initWithFrame:labelFrame] autorelease];
+        self.statusLabel = [[UILabel alloc] initWithFrame:labelFrame];
         self.statusLabel.textAlignment = UITextAlignmentCenter;
         self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
         self.statusLabel.numberOfLines = 0;
@@ -133,9 +111,9 @@
         [params setObject:@"image/jpeg" forKey:@"imageFormat"];
     }
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"facilities"
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"facilities"
                                                                               command:@"upload"
-                                                                           parameters:params] autorelease];
+                                                                           parameters:params];
     request.usePOST = YES;
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error && 

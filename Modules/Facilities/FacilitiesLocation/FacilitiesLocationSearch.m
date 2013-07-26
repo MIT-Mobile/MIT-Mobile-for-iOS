@@ -15,8 +15,9 @@ NSString * const FacilitiesMatchTypeContentName = @"FacilitiesMatchTypeContentNa
 NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeContentCategory";
 
 @interface FacilitiesLocationSearch ()
-@property (nonatomic,retain) NSArray *cachedResults;
-- (void)rebuildSearchResults;
+@property (nonatomic,copy) NSArray *searchResults;
+
+- (void)loadSearchResults;
 - (NSDictionary*)searchNameAndNumberForLocation:(FacilitiesLocation*)location
                                    forSubstring:(NSString*)substring;
 - (NSDictionary*)searchCategoriesForLocation:(FacilitiesLocation*)location
@@ -26,61 +27,40 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
 @end
 
 @implementation FacilitiesLocationSearch
-@synthesize cachedResults = _cachedResults;
-@synthesize searchesCategories = _searchesCategories;
-@synthesize showHiddenBuildings = _showHiddenBuildings;
-@dynamic category;
-@dynamic searchString;
-
 - (id)init {
     self = [super init];
     if (self) {
-        self.cachedResults = nil;
-        self.searchesCategories = NO;
-        self.showHiddenBuildings = NO;
-        self.category = nil;
-        self.searchString = nil;
+        _searchResults = nil;
+        _searchesCategories = NO;
+        _showHiddenBuildings = NO;
+        _category = nil;
+        _searchString = nil;
     }
     
     return self;
 }
 
-#pragma mark - Dynamic Accessor/Mutator
+#pragma mark - Custom Property Setters/Getters
 - (void)setCategory:(FacilitiesCategory *)category {
-   self.cachedResults = nil;
-    
-    [_category release];
-    _category = [category retain];
-}
-
-- (FacilitiesCategory*)category {
-    return _category;
+    self.searchResults = nil;
+    _category = category;
 }
 
 - (void)setSearchString:(NSString *)searchString {
-    self.cachedResults = nil;
-    
-    [_searchString release];
-    if (searchString) {
-        _searchString = [[NSString alloc] initWithString:searchString];
-    }
+    self.searchResults = nil;
+    _searchString = [searchString copy];
 }
 
-- (NSString *)searchString {
-    return [[_searchString copy] autorelease];
-}
-
-#pragma mark - Public Methods
 - (NSArray*)searchResults {
-    if (self.cachedResults == nil) {
-        [self rebuildSearchResults];
+    if (_searchResults == nil) {
+        [self loadSearchResults];
     }
     
-    return self.cachedResults;
+    return _searchResults;
 }
 
 #pragma mark - Private Methods
-- (void)rebuildSearchResults {
+- (void)loadSearchResults {
     FacilitiesLocationData *fld = [FacilitiesLocationData sharedData];
     NSString *searchString = [NSString stringWithString:self.searchString];
     NSMutableArray *locations = nil;
@@ -111,7 +91,7 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
                                                             forSubstring:searchString];
         if (matchResult) {
             [searchResults addObject:matchResult];
-            [matchedLocations addObject:[matchResult objectForKey:FacilitiesSearchResultLocationKey]];
+            [matchedLocations addObject:matchResult[FacilitiesSearchResultLocationKey]];
             continue;
         }
         
@@ -121,7 +101,7 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
                                       WithRegularExpression:regex];
             if (matchResult) {
                 [searchResults addObject:matchResult];
-                [matchedLocations addObject:[matchResult objectForKey:FacilitiesSearchResultLocationKey]];
+                [matchedLocations addObject:matchResult[FacilitiesSearchResultLocationKey]];
                 continue;
             }
         }
@@ -131,25 +111,20 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
                                         forSubstring:searchString];
         if (matchResult) {
             [searchResults addObject:matchResult];
-            [matchedLocations addObject:[matchResult objectForKey:FacilitiesSearchResultLocationKey]];
+            [matchedLocations addObject:matchResult[FacilitiesSearchResultLocationKey]];
         }
     }
     
-    self.cachedResults = [searchResults allObjects];
+    self.searchResults = [searchResults allObjects];
 }
 
 - (NSDictionary*)searchNameAndNumberForLocation:(FacilitiesLocation*)location forSubstring:(NSString*)substring {
     NSRange substringRange = [[location displayString] rangeOfString:substring
                                                              options:NSCaseInsensitiveSearch];
     if (substringRange.location != NSNotFound) {
-        NSMutableDictionary *matchData = [NSMutableDictionary dictionary];
-        [matchData setObject:location
-                      forKey:FacilitiesSearchResultLocationKey];
-        [matchData setObject:[location displayString]
-                      forKey:FacilitiesSearchResultDisplayStringKey];
-        [matchData setObject:FacilitiesMatchTypeLocationNameOrNumber
-                      forKey:FacilitiesSearchResultMatchTypeKey];
-        return [NSDictionary dictionaryWithDictionary:matchData];
+        return @{FacilitiesSearchResultLocationKey : location,
+                 FacilitiesSearchResultDisplayStringKey : [location displayString],
+                 FacilitiesSearchResultMatchTypeKey : FacilitiesMatchTypeLocationNameOrNumber};
     }
     
     return nil;
@@ -163,17 +138,10 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
                                                          range:NSMakeRange(0, [catName length])];
         
         if (matchCount > 0) {
-            NSMutableDictionary *matchData = [NSMutableDictionary dictionary];
-            [matchData setObject:location
-                          forKey:FacilitiesSearchResultLocationKey];
-    
-            [matchData setObject:[location displayString]
-                          forKey:FacilitiesSearchResultDisplayStringKey];
-            [matchData setObject:FacilitiesMatchTypeLocationCategory
-                          forKey:FacilitiesSearchResultMatchTypeKey];
-            [matchData setObject:category
-                          forKey:FacilitiesSearchResultMatchObjectKey];
-            return [NSDictionary dictionaryWithDictionary:matchData];
+            return @{FacilitiesSearchResultLocationKey : location,
+                     FacilitiesSearchResultDisplayStringKey : [location displayString],
+                     FacilitiesSearchResultMatchTypeKey : FacilitiesMatchTypeLocationCategory,
+                     FacilitiesSearchResultMatchObjectKey : category};
         }
     }
     
@@ -193,23 +161,17 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
                                               options:NSCaseInsensitiveSearch];
             
             if (substrRange.location != NSNotFound) {
-                NSMutableDictionary *matchData = [NSMutableDictionary dictionary];
-                [matchData setObject:location
-                              forKey:FacilitiesSearchResultLocationKey];
-               
                 NSString *displayString = nil;
                 if (location.number && ([location.number length] > 0)) {
                     displayString = [NSString stringWithFormat:@"%@ (%@)",location.number,name];
                 } else {
                     displayString = [NSString stringWithFormat:@"%@ (%@)",location.name,name];
                 }
-                [matchData setObject:displayString
-                              forKey:FacilitiesSearchResultDisplayStringKey];
-                [matchData setObject:FacilitiesMatchTypeContentName
-                              forKey:FacilitiesSearchResultMatchTypeKey];
-                [matchData setObject:content
-                              forKey:FacilitiesSearchResultMatchObjectKey];
-                return [NSDictionary dictionaryWithDictionary:matchData];
+                
+                return @{FacilitiesSearchResultLocationKey : location,
+                         FacilitiesSearchResultDisplayStringKey : displayString,
+                         FacilitiesSearchResultMatchTypeKey : FacilitiesMatchTypeContentName,
+                         FacilitiesSearchResultMatchObjectKey : content};
             }
         }
         
@@ -220,17 +182,10 @@ NSString * const FacilitiesMatchTypeContentCategory = @"FacilitiesMatchTypeConte
                                                            options:NSCaseInsensitiveSearch];
                 
                 if (substrRange.location != NSNotFound) {
-                    NSMutableDictionary *matchData = [NSMutableDictionary dictionary];
-                    [matchData setObject:location
-                                  forKey:FacilitiesSearchResultLocationKey];
-                    
-                    [matchData setObject:[location displayString]
-                                  forKey:FacilitiesSearchResultDisplayStringKey];
-                    [matchData setObject:FacilitiesMatchTypeContentCategory
-                                  forKey:FacilitiesSearchResultMatchTypeKey];
-                    [matchData setObject:category
-                                  forKey:FacilitiesSearchResultMatchObjectKey];
-                    return [NSDictionary dictionaryWithDictionary:matchData];
+                    return @{FacilitiesSearchResultLocationKey : location,
+                             FacilitiesSearchResultDisplayStringKey : [location displayString],
+                             FacilitiesSearchResultMatchTypeKey : FacilitiesMatchTypeContentCategory,
+                             FacilitiesSearchResultMatchObjectKey : category};
                 }
             }
         }

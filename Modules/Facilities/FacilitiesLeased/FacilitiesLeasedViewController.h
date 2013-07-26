@@ -3,15 +3,10 @@
 
 @class FacilitiesLocation;
 
-@interface FacilitiesLeasedViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,MFMailComposeViewControllerDelegate> {
-    FacilitiesLocation *_location;
-    UITableView *_contactsTable;
-    UILabel *_messageView;
-}
-
-@property (nonatomic, retain) UITableView *contactsTable;
-@property (nonatomic, retain) UILabel *messageView;
-@property (nonatomic, readonly, retain) FacilitiesLocation *location;
+@interface FacilitiesLeasedViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,MFMailComposeViewControllerDelegate>
+@property (nonatomic, strong) UITableView *contactsTable;
+@property (nonatomic, strong) UILabel *messageView;
+@property (nonatomic, readonly, strong) FacilitiesLocation *location;
 
 - (id)initWithLocation:(FacilitiesLocation*)location;
 @end

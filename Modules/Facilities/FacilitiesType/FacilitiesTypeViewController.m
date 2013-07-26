@@ -26,19 +26,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    self.userData = nil;
-    self.tableView = nil;
-    self.view = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
 - (NSArray*)repairTypes {
     return [[FacilitiesLocationData sharedData] allRepairTypes];
 }
@@ -48,7 +35,7 @@
     CGRect screenFrame = [[UIScreen mainScreen] applicationFrame];
     screenFrame.origin = CGPointZero;
 
-    UIView *mainView = [[[UIView alloc] initWithFrame:screenFrame] autorelease];
+    UIView *mainView = [[UIView alloc] initWithFrame:screenFrame];
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
@@ -56,8 +43,8 @@
 
     {
         CGRect tableRect = screenFrame;
-        UITableView *tableView = [[[UITableView alloc] initWithFrame: tableRect
-                                                               style: UITableViewStyleGrouped] autorelease];
+        UITableView *tableView = [[UITableView alloc] initWithFrame: tableRect
+                                                               style: UITableViewStyleGrouped];
         [tableView applyStandardColors];
 
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
@@ -74,7 +61,7 @@
 
     {
         CGRect loadingFrame = screenFrame;
-        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                              UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor clearColor];
@@ -139,8 +126,8 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
 
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                       reuseIdentifier:reuseIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                       reuseIdentifier:reuseIdentifier];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
 
@@ -156,7 +143,7 @@
     [dict setObject:[[self repairTypes] objectAtIndex:indexPath.row]
              forKey:FacilitiesRequestRepairTypeKey];
     
-    FacilitiesSummaryViewController *vc = [[[FacilitiesSummaryViewController alloc] init] autorelease];
+    FacilitiesSummaryViewController *vc = [[FacilitiesSummaryViewController alloc] init];
     vc.reportData = dict;
     [self.navigationController pushViewController:vc
                                          animated:YES];

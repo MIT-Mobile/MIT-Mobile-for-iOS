@@ -7,18 +7,8 @@
 static NSString* const kFacilitiesEmailAddress = @"txtdof@mit.edu";
 static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
 
-#pragma mark - Private Interface
-@interface FacilitiesRootViewController ()
-@property (nonatomic,retain) UITextView *textView;
-@property (nonatomic,retain) UITableView* tableView;
-@end
-
-
 #pragma mark -
 @implementation FacilitiesRootViewController
-@synthesize textView = _textView;
-@synthesize tableView = _tableView;
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -72,13 +62,6 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *reportCellIdentifier = @"FacilitiesCell";
     static NSString *contactCellIdentifier = @"ContactCell";
-    
-    // Strings for each of the cells used in the table view.
-    // These could be inlined but it's a bit easier to find them if they are all
-    //  in one spot instead of interspersed in the code.
-    static NSString *emailCellText = @"Email Facilities";
-    static NSString *callCellText = @"Call Facilities";
-    static NSString *reportCellText = @"Report a Problem";
 
     UITableViewCell *cell = nil;
 
@@ -102,7 +85,7 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             cell.accessoryView = nil;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            cell.textLabel.text = reportCellText;
+            cell.textLabel.text = @"Report a Problem";
             break;
         }
         
@@ -117,12 +100,12 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
             switch (indexPath.row) {
                 case 0:
                     customCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
-                    customCell.textLabel.text = emailCellText;
+                    customCell.textLabel.text = @"Email Facilities";
                     customCell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",kFacilitiesEmailAddress];
                     break;
                 case 1:
                     customCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-                    customCell.textLabel.text = callCellText;
+                    customCell.textLabel.text =  @"Call Facilities";
                     customCell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",kFacilitiesPhoneNumber];
                     break;
                 default:

@@ -23,7 +23,7 @@
 @property (nonatomic, readonly) NSString *htmlString;
 @property (nonatomic, readonly) NSDate *lastUpdated;
 @property (nonatomic, readonly) NSDate *lastFetched;
-@property (nonatomic, retain) NSDate *lastRead;
+@property (nonatomic, strong) NSDate *lastRead;
 @property (nonatomic, readonly) NSArray *primaryPhoneNumbers;
 @property (nonatomic, readonly) NSArray *allPhoneNumbers;
 

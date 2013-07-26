@@ -11,23 +11,22 @@
 #import "UIKit+MITAdditions.h"
 
 @interface FacilitiesRoomViewController ()
+@property (nonatomic,strong) MITLoadingActivityView* loadingView;
+@property (nonatomic,strong) FacilitiesLocationData* locationData;
+@property (nonatomic,strong) NSPredicate* filterPredicate;
+
+@property (nonatomic,copy) NSArray* cachedData;
+@property (nonatomic,copy) NSArray* filteredData;
+@property (nonatomic,copy) NSString* searchString;
+@property (nonatomic,copy) NSString *trimmedString;
 @property (nonatomic,strong) id observerToken;
+
+- (NSArray*)dataForMainTableView;
+- (void)configureMainTableCell:(UITableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
+- (void)configureSearchCell:(HighlightTableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
 @end
 
 @implementation FacilitiesRoomViewController
-@synthesize tableView = _tableView;
-@synthesize loadingView = _loadingView;
-
-@synthesize locationData = _locationData;
-@synthesize filteredData = _filteredData;
-@synthesize searchString = _searchString;
-@synthesize trimmedString = _trimmedString;
-
-@synthesize location = _location;
-
-@dynamic cachedData;
-@dynamic filterPredicate;
-
 - (id)init
 {
     self = [super init];
@@ -38,26 +37,11 @@
     return self;
 }
 
-- (void)dealloc
-{
-	self.location = nil;
-    self.tableView = nil;
-    self.loadingView = nil;
-    self.locationData = nil;
-    self.searchString = nil;
-
-    self.filterPredicate = nil;
-    self.filteredData = nil;
-    self.cachedData = nil;
-    [super dealloc];
-}
-
-
 #pragma mark - View lifecycle
 - (void)loadView {
     CGRect screenFrame = [[UIScreen mainScreen] applicationFrame];
     
-    UIView *mainView = [[[UIView alloc] initWithFrame:screenFrame] autorelease];
+    UIView *mainView = [[UIView alloc] initWithFrame:screenFrame];
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
@@ -67,7 +51,7 @@
     CGRect searchBarFrame = CGRectZero;
     
     {
-        UISearchBar *searchBar = [[[UISearchBar alloc] init] autorelease];
+        UISearchBar *searchBar = [[UISearchBar alloc] init];
         searchBar.delegate = self;
         searchBar.barStyle = UIBarStyleBlackOpaque;
         
@@ -87,8 +71,8 @@
         tableRect.origin = CGPointMake(0, searchBarFrame.size.height);
         tableRect.size.height -= searchBarFrame.size.height;
         
-        UITableView *tableView = [[[UITableView alloc] initWithFrame: tableRect
-                                                               style: UITableViewStyleGrouped] autorelease];
+        UITableView *tableView = [[UITableView alloc] initWithFrame: tableRect
+                                                               style: UITableViewStyleGrouped];
         [tableView applyStandardColors];
         
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
@@ -109,7 +93,7 @@
         loadingFrame.origin = CGPointMake(0, searchBarFrame.size.height);
         loadingFrame.size.height -= searchBarFrame.size.height;
         
-        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                              UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor clearColor];
@@ -138,23 +122,27 @@
     [super viewWillAppear:animated];
     
     if (self.observerToken == nil) {
+        __weak FacilitiesRoomViewController *weakSelf = self;
         self.observerToken = [self.locationData addUpdateObserver:^(NSString *notification, BOOL updated, id userData) {
-                                 if ((notification == nil) || [userData isEqualToString:FacilitiesRoomsKey]) {
-                                     [self.loadingView removeFromSuperview];
-                                     self.loadingView = nil;
-                                     self.tableView.hidden = NO;
-                                     
-                                     if ((self.cachedData == nil) || updated) {
-                                         self.cachedData = nil;
-                                         [self.tableView reloadData];
-                                     }
-                                     
-                                     if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
-                                         self.filteredData = nil;
-                                         [self.searchDisplayController.searchResultsTableView reloadData];
-                                     }
-                                 }
-                             }];
+            FacilitiesRoomViewController *blockSelf = weakSelf;
+            if (blockSelf) {
+                if ((notification == nil) || [userData isEqualToString:FacilitiesRoomsKey]) {
+                    [blockSelf.loadingView removeFromSuperview];
+                    blockSelf.loadingView = nil;
+                    blockSelf.tableView.hidden = NO;
+                    
+                    if ((blockSelf.cachedData == nil) || updated) {
+                        blockSelf.cachedData = nil;
+                        [blockSelf.tableView reloadData];
+                    }
+                    
+                    if ([blockSelf.searchDisplayController isActive] && ((blockSelf.filteredData == nil) || updated)) {
+                        blockSelf.filteredData = nil;
+                        [blockSelf.searchDisplayController.searchResultsTableView reloadData];
+                    }
+                }
+            }
+        }];
     }
 }
 
@@ -255,38 +243,20 @@
 #pragma mark - Dynamic Setters/Getters
 - (void)setFilterPredicate:(NSPredicate *)filterPredicate {
     self.cachedData = nil;
-    [_filterPredicate release];
-    _filterPredicate = [filterPredicate retain];
-}
-
-- (NSPredicate*)filterPredicate {
-    return _filterPredicate;
-}
-
-- (void)setCachedData:(NSArray *)cachedData {
-    if (_cachedData != nil) {
-        [_cachedData release];
-    }
-    
-    _cachedData = [cachedData retain];
+    _filterPredicate = filterPredicate;
 }
 
 - (NSArray*)cachedData {
     if (_cachedData == nil) {
-        [self setCachedData:[self dataForMainTableView]];
+        self.cachedData = [self dataForMainTableView];
     }
     
     return _cachedData;
 }
 
-- (void)setFilteredData:(NSArray *)filteredData {
-    [_filteredData release];
-    _filteredData = [filteredData retain];
-}
-
 - (NSArray*)filteredData {
     if (_filteredData == nil && [self.searchString length] > 0) {
-        [self setFilteredData:[self resultsForSearchString:self.searchString]];
+        self.filteredData = [self resultsForSearchString:self.searchString];
     }
     
     return _filteredData;
@@ -311,22 +281,19 @@
         if (indexPath.row == 0) {
             altName = self.searchString;
         } else {
-            room = [self.filteredData objectAtIndex:(indexPath.row-1)];
+            room = self.filteredData[indexPath.row-1];
         }
     }
     
-    FacilitiesTypeViewController *vc = [[[FacilitiesTypeViewController alloc] init] autorelease];
+    FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
     
     if (room) {
-        [dict setObject: room
-                 forKey: FacilitiesRequestLocationRoomKey];
+        dict[FacilitiesRequestLocationRoomKey] = room;
     } else if (altName) {
-        [dict setObject: altName
-                 forKey: FacilitiesRequestLocationUserRoomKey];
+        dict[FacilitiesRequestLocationUserRoomKey] = altName;
     }
     
-    [dict setObject: self.location
-             forKey: FacilitiesRequestLocationBuildingKey];
+    dict[FacilitiesRequestLocationBuildingKey] = self.location;
     
     vc.userData = dict;
     
@@ -368,8 +335,8 @@
         cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
         
         if (cell == nil) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                           reuseIdentifier:facilitiesIdentifier] autorelease];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                          reuseIdentifier:facilitiesIdentifier];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
@@ -381,8 +348,8 @@
         hlCell = (HighlightTableViewCell*)[tableView dequeueReusableCellWithIdentifier:searchIdentifier];
         
         if (hlCell == nil) {
-            hlCell = [[[HighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                    reuseIdentifier:searchIdentifier] autorelease];
+            hlCell = [[HighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                    reuseIdentifier:searchIdentifier];
             
             hlCell.autoresizesSubviews = YES;
             hlCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;

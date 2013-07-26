@@ -2,10 +2,7 @@
 #import <CoreData/CoreData.h>
 
 
-@interface FacilitiesRepairType : NSManagedObject {
-@private
-}
-@property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSNumber * order;
-
+@interface FacilitiesRepairType : NSManagedObject
+@property (nonatomic, strong) NSString * name;
+@property (nonatomic, strong) NSNumber * order;
 @end

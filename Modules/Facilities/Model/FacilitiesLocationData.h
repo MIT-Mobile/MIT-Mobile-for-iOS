@@ -12,7 +12,6 @@ typedef void (^FacilitiesDidLoadBlock)(NSString *name, BOOL dataUpdated, id user
 @class FacilitiesLocation;
 
 @interface FacilitiesLocationData : NSObject
-
 + (FacilitiesLocationData*)sharedData;
 
 - (id)init;

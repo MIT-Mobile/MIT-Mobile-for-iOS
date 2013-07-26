@@ -16,7 +16,14 @@
 
 
 @interface FacilitiesCategoryViewController ()
-@property (nonatomic,retain) FacilitiesLocationSearch *searchHelper;
+@property (nonatomic,strong) FacilitiesLocationSearch *searchHelper;
+@property (nonatomic,strong) FacilitiesLocationData* locationData;
+@property (nonatomic,strong) NSPredicate* filterPredicate;
+
+@property (nonatomic,strong) NSArray* cachedData;
+@property (nonatomic,strong) NSArray* filteredData;
+@property (nonatomic,strong) NSString* searchString;
+@property (nonatomic,strong) NSString *trimmedString;
 @property (nonatomic,strong) id observerToken;
 
 - (BOOL)shouldShowLocationSection;
@@ -27,16 +34,6 @@
 @end
 
 @implementation FacilitiesCategoryViewController
-@synthesize tableView = _tableView;
-@synthesize loadingView = _loadingView;
-@synthesize locationData = _locationData;
-@synthesize searchString = _searchString;
-@synthesize trimmedString = _trimmedString;
-@synthesize searchHelper = _searchHelper;
-
-@dynamic cachedData;
-@dynamic filteredData;
-@dynamic filterPredicate;
 
 - (id)init
 {
@@ -49,30 +46,12 @@
     return self;
 }
 
-- (void)dealloc
-{
-    self.tableView = nil;
-    self.cachedData = nil;
-	self.filteredData = nil;
-	self.locationData = nil;
-    self.loadingView = nil;
-    self.searchString = nil;
-    self.filterPredicate = nil;
-    self.cachedData = nil;
-    self.filteredData = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - View lifecycle
-- (void)loadView {
+- (void)loadView
+{
     CGRect screenFrame = [[UIScreen mainScreen] applicationFrame];
     
-    UIView *mainView = [[[UIView alloc] initWithFrame:screenFrame] autorelease];
+    UIView *mainView = [[UIView alloc] initWithFrame:screenFrame];
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
@@ -82,7 +61,7 @@
     CGRect searchBarFrame = CGRectZero;
     
     {
-        UISearchBar *searchBar = [[[UISearchBar alloc] init] autorelease];
+        UISearchBar *searchBar = [[UISearchBar alloc] init];
         searchBar.delegate = self;
         searchBar.barStyle = UIBarStyleBlackOpaque;
         
@@ -102,8 +81,8 @@
         tableRect.origin = CGPointMake(0, searchBarFrame.size.height);
         tableRect.size.height -= searchBarFrame.size.height;
         
-        UITableView *tableView = [[[UITableView alloc] initWithFrame: tableRect
-                                                               style: UITableViewStyleGrouped] autorelease];
+        UITableView *tableView = [[UITableView alloc] initWithFrame: tableRect
+                                                               style: UITableViewStyleGrouped];
         [tableView applyStandardColors];
         
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
@@ -124,7 +103,7 @@
         loadingFrame.origin = CGPointMake(0, searchBarFrame.size.height);
         loadingFrame.size.height -= searchBarFrame.size.height;
         
-        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                              UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor clearColor];
@@ -140,11 +119,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back"
-                                                                   style:UIBarButtonItemStyleBordered
-                                                                  target:nil
-                                                                  action:nil];
-    self.navigationItem.backBarButtonItem = [backButton autorelease];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back"
+                                                                             style:UIBarButtonItemStyleBordered
+                                                                            target:nil
+                                                                            action:nil];
 }
 
 - (void)viewDidUnload
@@ -158,25 +136,27 @@
     [super viewWillAppear:animated];
     
     if (self.observerToken == nil) {
+        __block FacilitiesCategoryViewController *weakSelf = self;
         self.observerToken = [self.locationData addUpdateObserver:^(NSString *notification, BOOL updated, id userData) {
-                                 if ([userData isEqualToString:FacilitiesCategoriesKey]) {
-                                     if ([self.loadingView superview]) {
-                                         [self.loadingView removeFromSuperview];
-                                         self.loadingView = nil;
-                                         self.tableView.hidden = NO;
-                                     }
+            FacilitiesCategoryViewController *blockSelf = weakSelf;
+            if (blockSelf && [userData isEqualToString:FacilitiesCategoriesKey]) {
+                if ([blockSelf.loadingView superview]) {
+                    [blockSelf.loadingView removeFromSuperview];
+                    blockSelf.loadingView = nil;
+                    blockSelf.tableView.hidden = NO;
+                }
                                      
-                                     if ((self.cachedData == nil) || updated) {
-                                         self.cachedData = nil;
-                                         [self.tableView reloadData];
-                                     }
-                                 } else if ([userData isEqualToString:FacilitiesLocationsKey]) {
-                                     if ([self.searchDisplayController isActive] && ((self.filteredData == nil) || updated)) {
-                                         self.filteredData = nil;
-                                         [self.searchDisplayController.searchResultsTableView reloadData];
-                                     }
-                                 }
-                             }];
+                if ((blockSelf.cachedData == nil) || updated) {
+                    blockSelf.cachedData = nil;
+                    [blockSelf.tableView reloadData];
+                }
+            } else if ([userData isEqualToString:FacilitiesLocationsKey]) {
+                if ([blockSelf.searchDisplayController isActive] && ((blockSelf.filteredData == nil) || updated)) {
+                    blockSelf.filteredData = nil;
+                    [blockSelf.searchDisplayController.searchResultsTableView reloadData];
+                }
+            }
+        }];
     }
 }
 
@@ -224,7 +204,7 @@
 
 - (NSArray*)resultsForSearchString:(NSString *)searchText {
     if (self.searchHelper == nil) {
-        self.searchHelper = [[[FacilitiesLocationSearch alloc] init] autorelease];
+        self.searchHelper = [[FacilitiesLocationSearch alloc] init];
     }
     
     self.searchHelper.category = nil;
@@ -268,38 +248,20 @@
 #pragma mark - Dynamic Setters/Getters
 - (void)setFilterPredicate:(NSPredicate *)filterPredicate {
     self.cachedData = nil;
-    [_filterPredicate release];
-    _filterPredicate = [filterPredicate retain];
-}
-
-- (NSPredicate*)filterPredicate {
-    return _filterPredicate;
-}
-
-- (void)setCachedData:(NSArray *)cachedData {
-    if (_cachedData != nil) {
-        [_cachedData release];
-    }
-    
-    _cachedData = [cachedData retain];
+    _filterPredicate = filterPredicate;
 }
 
 - (NSArray*)cachedData {
     if (_cachedData == nil) {
-        [self setCachedData:[self dataForMainTableView]];
+        self.cachedData = [self dataForMainTableView];
     }
     
     return _cachedData;
 }
 
-- (void)setFilteredData:(NSArray *)filteredData {
-    [_filteredData release];
-    _filteredData = [filteredData retain];
-}
-
 - (NSArray*)filteredData {
-    if (_filteredData == nil && [self.searchString length] > 0) {
-        [self setFilteredData:[self resultsForSearchString:self.searchString]];
+    if (!_filteredData && [self.searchString length] > 0) {
+        self.filteredData = [self resultsForSearchString:self.searchString];
     }
     
     return _filteredData;
@@ -312,16 +274,16 @@
     
     if (tableView == self.tableView) {
         if ((indexPath.section == 0) && [self shouldShowLocationSection]) {
-            nextViewController = [[[FacilitiesUserLocationViewController alloc] init] autorelease];
+            nextViewController = [[FacilitiesUserLocationViewController alloc] init];
         } else {
             FacilitiesCategory *category = (FacilitiesCategory*)[self.cachedData objectAtIndex:indexPath.row];
-            FacilitiesLocationViewController *controller = [[[FacilitiesLocationViewController alloc] init] autorelease];
+            FacilitiesLocationViewController *controller = [[FacilitiesLocationViewController alloc] init];
             controller.category = category;
             nextViewController = controller;
         }
     } else {
         if (indexPath.row == 0) {
-            FacilitiesTypeViewController *vc = [[[FacilitiesTypeViewController alloc] init] autorelease];
+            FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
             vc.userData = [NSDictionary dictionaryWithObject: self.searchString
                                                       forKey: FacilitiesRequestLocationUserBuildingKey];
             nextViewController = vc;
@@ -331,11 +293,11 @@
             FacilitiesLocation *location = (FacilitiesLocation*)[dict objectForKey:FacilitiesSearchResultLocationKey];
             
             if ([location.isLeased boolValue]) {
-                FacilitiesLeasedViewController *controller = [[[FacilitiesLeasedViewController alloc] initWithLocation:location] autorelease];
+                FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
                 
                 nextViewController = controller;
             } else {
-                FacilitiesRoomViewController *controller = [[[FacilitiesRoomViewController alloc] init] autorelease];
+                FacilitiesRoomViewController *controller = [[FacilitiesRoomViewController alloc] init];
                 controller.location = location;
                 nextViewController = controller;
             }
@@ -375,8 +337,8 @@
         cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
         
         if (cell == nil) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                           reuseIdentifier:facilitiesIdentifier] autorelease];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                           reuseIdentifier:facilitiesIdentifier];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
@@ -388,8 +350,8 @@
         hlCell = (HighlightTableViewCell*)[tableView dequeueReusableCellWithIdentifier:searchIdentifier];
         
         if (hlCell == nil) {
-            hlCell = [[[HighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                    reuseIdentifier:searchIdentifier] autorelease];
+            hlCell = [[HighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                    reuseIdentifier:searchIdentifier];
             
             hlCell.autoresizesSubviews = YES;
             hlCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;

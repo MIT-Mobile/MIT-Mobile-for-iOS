@@ -4,14 +4,13 @@
 @class FacilitiesLocation;
 @class FacilitiesCategory;
 
-@interface FacilitiesContent : NSManagedObject {
-@private
-}
-@property (nonatomic, retain) NSArray * altname;
-@property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSURL * url;
-@property (nonatomic, retain) NSSet* categories;
-@property (nonatomic, retain) FacilitiesLocation * location;
+@interface FacilitiesContent : NSManagedObject
+
+@property (nonatomic, strong) NSArray * altname;
+@property (nonatomic, strong) NSString * name;
+@property (nonatomic, strong) NSURL * url;
+@property (nonatomic, strong) NSSet* categories;
+@property (nonatomic, strong) FacilitiesLocation * location;
 
 - (void)addCategoriesObject:(FacilitiesCategory *)value;
 - (void)removeCategoriesObject:(FacilitiesCategory *)value;

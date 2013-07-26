@@ -80,13 +80,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UITextViewTextDidChangeNotification
                                                   object:self.descriptionTextView];
-
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - View lifecycle
@@ -94,10 +87,10 @@
 {
     [super viewDidLoad];
     
-    self.submitButton = [[[UIBarButtonItem alloc] initWithTitle:@"Submit"
+    self.submitButton = [[UIBarButtonItem alloc] initWithTitle:@"Submit"
                                                           style:UIBarButtonItemStyleDone
                                                          target:self
-                                                         action:@selector(submitReport:)] autorelease];
+                                                         action:@selector(submitReport:)];
     self.submitButton.enabled = NO;
     self.navigationItem.rightBarButtonItem = self.submitButton;
 
@@ -122,7 +115,7 @@
     }
     
     {
-        UIActivityIndicatorView *aiView = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge] autorelease];
+        UIActivityIndicatorView *aiView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
         aiView.hidesWhenStopped = YES;
         
         CGRect frame = aiView.frame;
@@ -287,14 +280,16 @@
         destructiveButtonTitle = @"Unattach Photo";
     }
 
-    UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:nil
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil
                                                         delegate:self
                                                cancelButtonTitle:@"Cancel"
                                           destructiveButtonTitle:destructiveButtonTitle
-                                               otherButtonTitles:nil] autorelease];
+                                               otherButtonTitles:nil];
+    
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         [sheet addButtonWithTitle:@"Take Photo"];
     }
+    
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
         [sheet addButtonWithTitle:@"Choose Photo"];
     }
@@ -310,7 +305,6 @@
     vc.reportDictionary = self.reportData;
     [self.navigationController pushViewController:vc
                                          animated:YES];
-    [vc release];
 }
 
 - (IBAction)dismissKeyboard:(id)sender {
@@ -393,7 +387,7 @@
         [self setAttachedImage:nil];
         
     } else {
-        UIImagePickerController *controller = [[[UIImagePickerController alloc] init] autorelease];
+        UIImagePickerController *controller = [[UIImagePickerController alloc] init];
         if ([buttonTitle isEqualToString:@"Take Photo"]) {
             controller.sourceType = UIImagePickerControllerSourceTypeCamera;
             controller.showsCameraControls = YES;
@@ -444,7 +438,7 @@
         }
         
         NSMutableData *imageData = [NSMutableData data];
-        CGImageDestinationRef imageDestination = CGImageDestinationCreateWithData((CFMutableDataRef)imageData,
+        CGImageDestinationRef imageDestination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imageData,
                                                                                   kUTTypeJPEG,
                                                                                   1,
                                                                                   NULL);
@@ -459,29 +453,22 @@
         
         if ([imgProperties objectForKey:(NSString*)kCGImagePropertyGPSDictionary] == nil) {
             NSMutableDictionary *gpsDict = [NSMutableDictionary dictionaryWithCapacity:5];
-            CLLocationManager *locationManager = [[[CLLocationManager alloc] init] autorelease];
+            CLLocationManager *locationManager = [[CLLocationManager alloc] init];
             CLLocation *location = [locationManager location];
             
             if (location) {
-                [gpsDict setObject:[NSNumber numberWithDouble:fabs(location.coordinate.latitude)]
-                            forKey:(NSString*)kCGImagePropertyGPSLatitude];
-                [gpsDict setObject:((location.coordinate.latitude >= 0) ? @"N" : @"S")
-                            forKey:(NSString*)kCGImagePropertyGPSLatitudeRef];
-                [gpsDict setObject:[NSNumber numberWithDouble:fabs(location.coordinate.longitude)]
-                            forKey:(NSString*)kCGImagePropertyGPSLongitude];
-                [gpsDict setObject:((location.coordinate.longitude >= 0) ? @"E" : @"W")
-                            forKey:(NSString*)kCGImagePropertyGPSLongitudeRef];
-                [gpsDict setObject:[location.timestamp descriptionWithLocale:nil]
-                            forKey:(NSString*)kCGImagePropertyGPSTimeStamp];
-                
-                [imgProperties setObject:gpsDict
-                                    forKey:(NSString*)kCGImagePropertyGPSDictionary];
+                gpsDict[(NSString*)kCGImagePropertyGPSLatitude] = @(fabs(location.coordinate.latitude));
+                gpsDict[(NSString*)kCGImagePropertyGPSLatitudeRef] = ((location.coordinate.latitude >= 0) ? @"N" : @"S");
+                gpsDict[(NSString*)kCGImagePropertyGPSLongitude] = @(fabs(location.coordinate.longitude));
+                gpsDict[(NSString*)kCGImagePropertyGPSLongitudeRef] = ((location.coordinate.longitude >= 0) ? @"E" : @"W");
+                gpsDict[(NSString*)kCGImagePropertyGPSTimeStamp] = [location.timestamp descriptionWithLocale:nil];
+                imgProperties[(NSString*)kCGImagePropertyGPSDictionary] = gpsDict;
             }
         }
         
         CGImageDestinationAddImage(imageDestination,
                                    [image CGImage],
-                                   (CFDictionaryRef)imgProperties);
+                                   (__bridge CFDictionaryRef)imgProperties);
         CGImageDestinationFinalize(imageDestination);
         CFRelease(imageDestination);
         
@@ -514,7 +501,7 @@
         if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 4.1) {
             NSURL *assetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
             if (assetURL) {
-                ALAssetsLibrary *assetLibrary = [[[ALAssetsLibrary alloc] init] autorelease];
+                ALAssetsLibrary *assetLibrary = [[ALAssetsLibrary alloc] init];
                 [assetLibrary assetForURL:assetURL
                               resultBlock:^(ALAsset *asset) {
                                   updateBlock(image,asset.defaultRepresentation.metadata);
