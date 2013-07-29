@@ -9,5 +9,6 @@
 #import "MFMailComposeViewController+RFC2368.h"
 #import "NSData+MGTwitterBase64.h"
 #import "NSMutableAttributedString+MITAdditions.h"
+#import "NSTimer+MITBlockTimer.h"
 
 #endif

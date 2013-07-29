@@ -115,7 +115,7 @@
 		2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */; };
 		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2CDE4EFD17A305BD00F40598 /* MITBlockTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE4EFC17A305BD00F40598 /* MITBlockTimer.m */; };
+		2CDE4EFD17A305BD00F40598 /* NSTimer+MITBlockTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */; };
 		2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CDF301F134DF504007C6813 /* qrreader in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF301E134DF504007C6813 /* qrreader */; };
 		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -660,8 +660,8 @@
 		2CDB024D15D0403500436B59 /* QRReaderResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderResult.m; sourceTree = "<group>"; };
 		2CDB024F15D0404500436B59 /* MITScannerImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerImage.h; sourceTree = "<group>"; };
 		2CDB025015D0404500436B59 /* MITScannerImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerImage.m; sourceTree = "<group>"; };
-		2CDE4EFB17A3057F00F40598 /* MITBlockTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITBlockTimer.h; sourceTree = "<group>"; };
-		2CDE4EFC17A305BD00F40598 /* MITBlockTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITBlockTimer.m; sourceTree = "<group>"; };
+		2CDE4EFB17A3057F00F40598 /* NSTimer+MITBlockTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSTimer+MITBlockTimer.h"; path = "Categories/NSTimer+MITBlockTimer.h"; sourceTree = "<group>"; };
+		2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSTimer+MITBlockTimer.m"; path = "Categories/NSTimer+MITBlockTimer.m"; sourceTree = "<group>"; };
 		2CDE951714EAAA4D000271BD /* TouchstoneResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchstoneResponse.h; sourceTree = "<group>"; };
 		2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchstoneResponse.m; sourceTree = "<group>"; };
 		2CDF301E134DF504007C6813 /* qrreader */ = {isa = PBXFileReference; lastKnownFileType = folder; name = qrreader; path = Resources/qrreader; sourceTree = "<group>"; };
@@ -1379,8 +1379,6 @@
 				EBA2867810E082010003BA01 /* MITLoadingActivityView.m */,
 				2CDA8ABE17624C2D001F011F /* Logging */,
 				EBF8B37112B581AC00D39AE6 /* MITMailComposeController.h */,
-				2CDE4EFB17A3057F00F40598 /* MITBlockTimer.h */,
-				2CDE4EFC17A305BD00F40598 /* MITBlockTimer.m */,
 				EBF8B37212B581AC00D39AE6 /* MITMailComposeController.m */,
 				2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */,
 				2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */,
@@ -1636,6 +1634,8 @@
 				2C544B9C1358A24400685545 /* UIImage+Resize.m */,
 				DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */,
 				DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */,
+				2CDE4EFB17A3057F00F40598 /* NSTimer+MITBlockTimer.h */,
+				2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -3339,7 +3339,7 @@
 				2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */,
 				2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */,
 				2CFB87D91416B1AC0014E141 /* MITTabView.m in Sources */,
-				2CDE4EFD17A305BD00F40598 /* MITBlockTimer.m in Sources */,
+				2CDE4EFD17A305BD00F40598 /* NSTimer+MITBlockTimer.m in Sources */,
 				4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */,
 				4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */,
 				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,

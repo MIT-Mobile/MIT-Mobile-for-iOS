@@ -6,8 +6,7 @@
 #import "FacilitiesRoomViewController.h"
 #import "MITLoadingActivityView.h"
 #import "MITLogging.h"
-#import "UIKit+MITAdditions.h"
-#import "MITBlockTimer.h"
+#import "MITAdditions.h"
 
 static const NSUInteger kMaxResultCount = 10;
 

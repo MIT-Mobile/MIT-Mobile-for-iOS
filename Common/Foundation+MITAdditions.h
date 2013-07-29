@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "MITBlockTimer.h"
 
 #define kFPDefaultEpsilon (0.001)
 BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);

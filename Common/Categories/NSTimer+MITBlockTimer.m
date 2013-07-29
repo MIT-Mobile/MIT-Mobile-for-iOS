@@ -1,9 +1,11 @@
-#include "MITBlockTimer.h"
+#include "NSTimer+MITBlockTimer.h"
+typedef void (^MITTimerFireBlock)(NSTimer *timer);
 
-@interface MITBlockTimer ()
+@interface MITBlockTimer : NSObject
 @property (nonatomic,weak) NSTimer *timer;
 @property (nonatomic,copy) MITTimerFireBlock fireBlock;
 
+- (id)initWithFireBlock:(MITTimerFireBlock)firedBlock;
 - (void)timerFired:(NSTimer*)theTimer;
 @end
 
