@@ -2,53 +2,45 @@
 
 extern NSString * const MITLibrariesOCLCCode;
 
-@interface WorldCatHolding : NSObject {
-@private
-}
-
-@property (nonatomic, retain) NSString *code;
-@property (nonatomic, retain) NSString *address;
-@property (nonatomic, retain) NSString *library;
-@property (nonatomic, retain) NSString *collection;
-@property (nonatomic, retain) NSString *url;
-@property (nonatomic, retain) NSArray *availability;
-@property (nonatomic) NSUInteger count;
-
-- (NSDictionary*)libraryAvailability;
+@interface WorldCatHolding : NSObject
+@property (copy) NSString *code;
+@property (copy) NSString *address;
+@property (copy) NSString *library;
+@property (copy) NSString *collection;
+@property (copy) NSString *url;
+@property (nonatomic,copy) NSArray *availability;
+@property (nonatomic,readonly,strong) NSDictionary *libraryAvailability;
+@property NSUInteger count;
 
 - (NSUInteger)inLibraryCount;
 - (NSUInteger)inLibraryCountForLocation:(NSString*)location;
 @end
 
 
-@interface WorldCatBook : NSObject {
-    
-}
-
-- (id)initWithDictionary:(NSDictionary *)dict;
-
-@property (nonatomic, retain) NSString *identifier;
-@property (nonatomic, retain) NSString *title;
-@property (nonatomic, retain) NSString *imageURL;
-@property (nonatomic, retain) NSArray *authors;
-@property (nonatomic, retain) NSArray *publishers;
-@property (nonatomic, retain) NSArray *years;
-@property (nonatomic, retain) NSArray *isbns;
+@interface WorldCatBook : NSObject
+@property (copy) NSString *identifier;
+@property (copy) NSString *title;
+@property (copy) NSString *imageURL;
+@property (copy) NSArray *authors;
+@property (copy) NSArray *publishers;
+@property (copy) NSArray *years;
+@property (copy) NSArray *isbns;
 
 // detail fields
-@property (nonatomic, retain) NSArray *formats;
-@property (nonatomic, retain) NSArray *addresses;
-@property (nonatomic, retain) NSArray *extents;
-@property (nonatomic, retain) NSDictionary *holdings; // sort these by library title
-@property (nonatomic, retain) NSArray *lang;
-@property (nonatomic, retain) NSArray *subjects;
-@property (nonatomic, retain) NSArray *summarys;
-@property (nonatomic, retain) NSArray *editions;
-@property (nonatomic, retain) NSString *emailAndCiteMessage;
-@property (nonatomic, retain) NSString *url;
+@property (copy) NSArray *formats;
+@property (copy) NSArray *addresses;
+@property (copy) NSArray *extents;
+@property (copy) NSDictionary *holdings; // sort these by library title
+@property (copy) NSArray *lang;
+@property (copy) NSArray *subjects;
+@property (copy) NSArray *summarys;
+@property (copy) NSArray *editions;
+@property (copy) NSString *emailAndCiteMessage;
+@property (copy) NSString *url;
 
-@property (nonatomic) BOOL parseFailure;
+@property (getter = isParseFailure) BOOL parseFailure;
 
+- (id)initWithDictionary:(NSDictionary *)dict;
 - (void)updateDetailsWithDictionary:(NSDictionary *)dict;
 - (NSString *)yearWithAuthors;
 - (NSArray *)addressesWithPublishers;

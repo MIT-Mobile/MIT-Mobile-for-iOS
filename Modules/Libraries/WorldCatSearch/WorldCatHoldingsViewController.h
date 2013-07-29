@@ -3,8 +3,7 @@
 @class WorldCatBook;
 
 @interface WorldCatHoldingsViewController : UITableViewController
-
-@property (nonatomic, retain) WorldCatBook *book;
-@property (nonatomic, retain) NSArray *holdings;
+@property (nonatomic,strong) WorldCatBook *book;
+@property (copy) NSArray *holdings;
 
 @end

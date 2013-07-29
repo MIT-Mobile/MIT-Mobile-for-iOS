@@ -22,9 +22,6 @@ typedef enum {
 
 @implementation WorldCatHoldingsViewController
 
-@synthesize book = _book,
-            holdings = _holdings;
-
 - (id)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
     if (self) {
@@ -33,21 +30,15 @@ typedef enum {
     return self;
 }
 
-- (void)dealloc {
-    self.book = nil;
-    self.holdings = nil;
-    [super dealloc];
-}
-
 - (void)setBook:(WorldCatBook *)book {
-    if (book != _book) {
-        [_book release];
-        _book = [book retain];
+    if ([_book isEqual:book]) {
+        _book = book;
         
         NSPredicate *pred = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
             NSString *code = [(WorldCatHolding *)evaluatedObject code];
-            return ![code isEqualToString:MITLibrariesOCLCCode];
+            return ![code isEqual:MITLibrariesOCLCCode];
         }];
+        
         NSArray *tempHoldings = [[self.book.holdings allValues] filteredArrayUsingPredicate:pred];
         self.holdings = [tempHoldings sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
             NSString *code1 = [(WorldCatHolding *)obj1 code];
@@ -90,7 +81,7 @@ typedef enum {
         case LinkSection:
             return 1;
         case OwnerSection:
-            return self.holdings.count;
+            return [self.holdings count];
     }
     return 0;
 }
@@ -105,7 +96,7 @@ typedef enum {
         case TitleSection: {
             cell = [tableView dequeueReusableCellWithIdentifier:TitleCellIdentifier];
             if (cell == nil) {
-                cell = [[[BookDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:TitleCellIdentifier] autorelease];
+                cell = [[BookDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:TitleCellIdentifier];
             }
             break;
         }
@@ -114,7 +105,7 @@ typedef enum {
         default: {
             cell = [tableView dequeueReusableCellWithIdentifier:DefaultCellIdentifier];
             if (cell == nil) {
-                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:DefaultCellIdentifier] autorelease];
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:DefaultCellIdentifier];
                 cell.textLabel.numberOfLines = 0;
                 cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
             }
@@ -159,7 +150,7 @@ typedef enum {
             break;
         case OwnerSection:
         default: {
-            WorldCatHolding *holding = [self.holdings objectAtIndex:indexPath.row];
+            WorldCatHolding *holding = self.holdings[indexPath.row];
             cell.textLabel.text = holding.library;
             cell.accessoryView = nil;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -197,7 +188,7 @@ typedef enum {
             return self.tableView.rowHeight;
         case OwnerSection:
         default: {
-            WorldCatHolding *holding = [self.holdings objectAtIndex:indexPath.row];
+            WorldCatHolding *holding = self.holdings[indexPath.row];
             NSString *labelText = holding.library;
             CGSize textSize = [labelText sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]] constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - (20.0 * 2.0), 2000.0)];
             return textSize.height + 2 * PADDING;
@@ -209,8 +200,7 @@ typedef enum {
     switch (section) {
         case LinkSection: {
             NSString *labelText = @"Items unavailable from MIT may be available from the Boston Library Consortium members listed below. Visit the WorldCat website to request an interlibrary loan.";
-            ExplanatorySectionLabel *footerLabel = 
-            [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader] autorelease];
+            ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader];
             footerLabel.text = labelText;
             return footerLabel;
         }

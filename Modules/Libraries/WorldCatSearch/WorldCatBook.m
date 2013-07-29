@@ -8,79 +8,54 @@ static NSString * const WCHoldingCallNumberKey = @"call-no";
 static NSString * const WCHoldingAvailableKey = @"available";
 
 
-
-@interface WorldCatBook (Private)
-
+@interface WorldCatBook ()
 - (NSArray *)arrayOfStringsFromDict:(NSDictionary *)dict key:(NSString *)key;
 - (NSString *)stringFromDict:(NSDictionary *)dict key:(NSString *)key;
 
 @end
 
 @interface WorldCatHolding ()
-@property (nonatomic,retain) NSDictionary *libraryAvailability;
+@property (nonatomic,strong) NSDictionary *libraryAvailability;
 @end
 
 @implementation WorldCatHolding
-@synthesize address;
-@synthesize url;
-@synthesize library;
-@synthesize collection;
-@synthesize code;
-@synthesize count;
-@synthesize availability = _availability;
-@synthesize libraryAvailability = _libraryAvailability;
-
-- (void)dealloc {
-    self.address = nil;
-    self.url = nil;
-    self.library = nil;
-    self.code = nil;
-    self.availability = nil;
-    [super dealloc];
-}
-
 - (void)setAvailability:(NSArray *)availability {
-    if (availability != _availability) {
-        [_availability release];
-        _availability = nil;
-    }
-    
-    NSIndexSet *goodIndexes = [availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        if ([obj isKindOfClass:[NSDictionary class]]) {
-            NSDictionary *dict = obj;
-            if ([[dict objectForKey:WCHoldingLocationKey] isKindOfClass:[NSString class]] &&
-                [[dict objectForKey:WCHoldingCallNumberKey] isKindOfClass:[NSString class]] &&
-                [[dict objectForKey:WCHoldingStatusKey] isKindOfClass:[NSString class]]) {
-                return YES;
+    if (![_availability isEqual:availability]) {
+        NSIndexSet *validIndexes = [availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+            if ([obj isKindOfClass:[NSDictionary class]]) {
+                NSDictionary *dict = (NSDictionary*)obj;
+                return ([dict[WCHoldingLocationKey] isKindOfClass:[NSString class]] &&
+                        [dict[WCHoldingCallNumberKey] isKindOfClass:[NSString class]] &&
+                        [dict[WCHoldingStatusKey] isKindOfClass:[NSString class]]);
+            } else {
+                DDLogError(@"invalid object type '%@' in WorldCat availability response", NSStringFromClass([obj class]));
+                return NO;
             }
-        }
-        return NO;
-    }];
-    
-    _availability = [[availability objectsAtIndexes:goodIndexes] retain];
+        }];
+        
+        _availability = [availability objectsAtIndexes:validIndexes];
+    }
 }
 
 - (NSDictionary*)libraryAvailability
 {
-    if (_libraryAvailability == nil)
-    {
-        NSMutableDictionary *availability = [NSMutableDictionary dictionary];
+    if (!_libraryAvailability) {
+        NSMutableDictionary *libraryAvailability = [NSMutableDictionary dictionary];
+        
         [self.availability enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             NSDictionary *book = (NSDictionary*)obj;
-            NSString *location = [book objectForKey:WCHoldingLocationKey];
-            NSMutableArray *array = [availability objectForKey:location];
+            NSString *location = book[WCHoldingLocationKey];
+            NSMutableArray *locationAvailability = libraryAvailability[location];
             
-            if (array == nil)
-            {
-                array = [NSMutableArray array];
-                [availability setObject:array
-                                 forKey:location];
+            if (!locationAvailability) {
+                locationAvailability = [[NSMutableArray alloc] init];
+                libraryAvailability[location] = locationAvailability;
             }
             
-            [array addObject:book];
+            [locationAvailability addObject:book];
         }];
         
-        [self setLibraryAvailability:availability];
+        self.libraryAvailability = libraryAvailability;
     }
     
     return _libraryAvailability;
@@ -92,10 +67,10 @@ static NSString * const WCHoldingAvailableKey = @"available";
     
     NSIndexSet *set = [self.availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
         NSDictionary *dict = (NSDictionary*)obj;
-        NSString *bookLocation = [[dict objectForKey:WCHoldingLocationKey] lowercaseString];
+        NSString *bookLocation = [dict[WCHoldingLocationKey] lowercaseString];
         
-        return ([[dict objectForKey:WCHoldingAvailableKey] boolValue] &&
-                [bookLocation isEqualToString:location]);
+        return ([dict[WCHoldingAvailableKey] boolValue] &&
+                [bookLocation isEqual:location]);
     }];
                            
     return [set count];
@@ -104,35 +79,15 @@ static NSString * const WCHoldingAvailableKey = @"available";
 - (NSUInteger)inLibraryCount {
     NSIndexSet *indexes = [self.availability indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
         NSDictionary *dict = (NSDictionary*)obj;
-        return [[dict objectForKey:WCHoldingAvailableKey] boolValue];
+        return [dict[WCHoldingAvailableKey] boolValue];
     }];
+    
     return [indexes count];
 }
 
 @end
 
 @implementation WorldCatBook
-@synthesize identifier;
-@synthesize title;
-@synthesize imageURL;
-@synthesize isbns;
-@synthesize publishers;
-@synthesize years;
-@synthesize authors;
-
-@synthesize formats;
-@synthesize addresses;
-@synthesize extents;
-@synthesize holdings;
-@synthesize lang;
-@synthesize subjects;
-@synthesize summarys;
-@synthesize editions;
-@synthesize emailAndCiteMessage;
-@synthesize url;
-
-@synthesize parseFailure;
-
 - (id)initWithDictionary:(NSDictionary *)dict {
     self = [super init];
     if (self) {
@@ -147,30 +102,6 @@ static NSString * const WCHoldingAvailableKey = @"available";
     return self;
 }
 
-- (void)dealloc {
-    self.identifier = nil;
-    self.title = nil;
-    self.imageURL = nil;
-    self.authors = nil;
-    self.publishers = nil;
-    self.years = nil;
-    self.isbns = nil;
-    
-    // detail fields
-    self.formats = nil;
-    self.addresses = nil;
-    self.extents = nil;
-    self.lang = nil;
-    self.subjects = nil;
-    self.summarys = nil;
-    self.editions = nil;
-    self.emailAndCiteMessage = nil;
-    self.url = nil;
-
-    self.holdings = nil;
-    [super dealloc];
-}
-
 - (void)updateDetailsWithDictionary:(NSDictionary *)dict {
     self.formats = [self arrayOfStringsFromDict:dict key:@"format"];
     self.addresses = [self arrayOfStringsFromDict:dict key:@"address"];
@@ -179,73 +110,93 @@ static NSString * const WCHoldingAvailableKey = @"available";
     self.subjects = [self arrayOfStringsFromDict:dict key:@"subject"];
     self.summarys = [self arrayOfStringsFromDict:dict key:@"summary"];
     self.editions = [self arrayOfStringsFromDict:dict key:@"edition"];
-    self.emailAndCiteMessage = [dict objectForKey:@"composed-html"];
-    self.url = [dict objectForKey:@"url"];
+    self.emailAndCiteMessage = dict[@"composed-html"];
+    self.url = dict[@"url"];
     
     NSMutableDictionary *tempHoldings = [NSMutableDictionary dictionary];
-    for (NSDictionary *holdingDict in [dict objectForKey:@"holdings"]) {
-        WorldCatHolding *holding = [[[WorldCatHolding alloc] init] autorelease];
+    for (NSDictionary *holdingDict in dict[@"holdings"]) {
+        WorldCatHolding *holding = [[WorldCatHolding alloc] init];
         holding.address = [self stringFromDict:holdingDict key:@"address"];
         holding.library = [self stringFromDict:holdingDict key:@"library"];
         holding.collection = [self stringFromDict:holdingDict key:@"collection"];
-        if ([holdingDict objectForKey:@"url"]) {
+        if (holdingDict[@"url"]) {
             holding.url = [self stringFromDict:holdingDict key:@"url"];
         }
+        
         holding.code = [self stringFromDict:holdingDict key:@"code"];
-        id countObj = [holdingDict objectForKey:@"count"];
+        
+        id countObj = holdingDict[@"count"];
         if ([countObj isKindOfClass:[NSNumber class]]) {
             holding.count = [countObj unsignedIntegerValue];
         }
-        holding.availability = [holdingDict objectForKey:@"availability"];
-        [tempHoldings setObject:holding forKey:holding.code];
+        
+        holding.availability = holdingDict[@"availability"];
+        tempHoldings[holding.code] = holding;
     }
     self.holdings = tempHoldings;
 }
 
-- (NSArray *)arrayOfStringsFromDict:(NSDictionary *)dict key:(NSString *)key {
-    id object = [dict objectForKey:key];
-    if (![object isKindOfClass:[NSArray class]]) {
-        return [NSArray array];
-    } else {
-        NSArray *array = object;
-        for (id item in array) {
-            if (![item isKindOfClass:[NSString class]]) {
-                DDLogWarn(@"key %@ has invalid data format",key);
-                self.parseFailure = YES;
-                return nil;
-            }
-        }
-    }
-    return object;
-}
-
 - (NSString *)stringFromDict:(NSDictionary *)dict key:(NSString *)key
 {
-    id object = dict[key];
+    return [self objectFromDictionary:dict
+                               forKey:key
+                          typeOfClass:[NSString class]];
+}
+
+- (NSArray *)arrayOfStringsFromDict:(NSDictionary *)dict key:(NSString *)key {
+    NSArray *array = [self objectFromDictionary:dict
+                                         forKey:key
+                                    typeOfClass:[NSArray class]];
     
-    if (object == nil) {
-        object = nil;
-    } else if (![object isKindOfClass:[NSString class]]) {
-        DDLogWarn(@"object for key '%@' is a '%@', expected a string", key, [object class]);
-        self.parseFailure = YES;
-        object = nil;
+    if (array) {
+        NSMutableArray *resultArray = [[NSMutableArray alloc] init];
+        [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            if ([obj isKindOfClass:[NSString class]]) {
+                [resultArray addObject:obj];
+            } else if ([obj respondsToSelector:@selector(stringValue)]) {
+                [resultArray addObject:[obj stringValue]];
+            } else {
+                DDLogWarn(@"object at index %lu in array for key '%@' is a '%@', expected a '%@'", (unsigned long)idx, key, NSStringFromClass([obj class]), NSStringFromClass([NSString class]));
+            }
+        }];
+        
+        return resultArray;
+    } else {
+        return nil;
+    }
+}
+
+- (id)objectFromDictionary:(NSDictionary*)dictionary
+                    forKey:(NSString*)key
+               typeOfClass:(Class)objectClass
+{
+    id object = dictionary[key];
+    
+    if (object) {
+        if ([object isKindOfClass:objectClass]) {
+            return object;
+        } else {
+            DDLogWarn(@"object for key '%@' is a '%@', expected a %@", key, NSStringFromClass([object class]), NSStringFromClass(objectClass));
+            self.parseFailure = YES;
+        }
     }
     
-    return object;
+    return nil;
 }
 
 - (NSString *)yearWithAuthors {
     NSString *yearWithAuthors = [self.authors componentsJoinedByString:@", "];
-    if (self.years.count > 0) {
-        yearWithAuthors = [NSString stringWithFormat:@"%@; %@", [self.years objectAtIndex:0], yearWithAuthors];
+    if ([self.years count] > 0) {
+        yearWithAuthors = [NSString stringWithFormat:@"%@; %@", self.years[0], yearWithAuthors];
     }
     return yearWithAuthors;
 }
 
 - (NSString *)isbn {
-    if (self.isbns.count >= 2) {
-        return [self.isbns objectAtIndex:1];
+    if ([self.isbns count] >= 2) {
+        return self.isbns[1];
     }
+    
     return nil;
 }
 
@@ -260,16 +211,18 @@ static NSString * const WCHoldingAvailableKey = @"available";
     NSArray *rawAddresses = self.addresses;
     NSArray *output = rawPublishers;
     if ([rawPublishers count] != [rawAddresses count]) {
-        DDLogWarn(@"%@ mismatch between number of publishers and addresses for OCLC ID %@", NSStringFromSelector(_cmd), self.identifier);
+        DDLogWarn(@"mismatch between number of publishers and addresses for OCLC ID %@", self.identifier);
     } else {
         NSMutableArray *composedPublishers = [NSMutableArray array];
         for (NSInteger i = 0; i < [rawPublishers count]; i++) {
-            NSString *address = [rawAddresses objectAtIndex:i];
-            NSString *publisher = [rawPublishers objectAtIndex:i];
+            NSString *address = rawAddresses[i];
+            NSString *publisher = rawPublishers[i];
             [composedPublishers addObject:[NSString stringWithFormat:@"%@ %@", address, publisher]];
         }
+        
         output = composedPublishers;
     }
+    
     return output;
 }
 

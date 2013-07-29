@@ -23,7 +23,26 @@ typedef enum {
     CELL_CUSTOM_DETAIL_LABEL_TAG 
 } WorldCatSearchViewTags;
 
-@interface WorldCatSearchController (Private)
+typedef enum {
+    BooksSearchingStatusNotLoaded,
+    BooksSearchingStatusLoading,
+    BooksSearchingStatusLoaded,
+    BooksSearchingStatusFailed
+} BooksSearchingStatus;
+
+
+@interface WorldCatSearchController ()
+@property (strong) UITableView *searchResultsTableView;
+@property (strong) UIView *loadMoreView;
+
+@property (copy) NSString *searchTerms;
+@property (copy) NSMutableArray *searchResults;
+@property (strong) NSNumber *totalResultsCount;
+@property (strong) NSNumber *nextIndex;
+
+@property BOOL parseError;
+@property (nonatomic) BooksSearchingStatus searchingStatus;
+@property NSTimeInterval lastSearchAttempt;
 
 - (void)doSearch;
 - (void)showSearchError;
@@ -36,32 +55,12 @@ typedef enum {
 @end
 
 @implementation WorldCatSearchController
-@synthesize totalResultsCount;
-@synthesize nextIndex;
-@synthesize searchTerms;
-@synthesize searchResults;
-@synthesize searchResultsTableView;
-@synthesize loadMoreView;
-@synthesize lastSearchAttempt;
-@synthesize navigationController;
-@synthesize parseError;
-
 - (id) init {
     self = [super init];
     if (self) {
         self.searchingStatus = BooksSearchingStatusLoaded;
     }
     return self;
-}
-
-- (void)dealloc {
-    self.searchTerms = nil;
-    self.searchResults = nil;
-    self.nextIndex = nil;
-    self.totalResultsCount = nil;
-    self.searchResultsTableView = nil;
-    self.loadMoreView = nil;
-    [super dealloc];
 }
 
 - (void) doSearch:(NSString *)theSearchTerms {
@@ -72,15 +71,19 @@ typedef enum {
 }
 
 - (void) doSearch {
-    
     LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
     
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithObject:searchTerms forKey:@"q"];
+    NSDictionary *parameters = nil;
     if (self.nextIndex) {
-        [parameters setObject:[NSString stringWithFormat:@"%d", [self.nextIndex intValue]] forKey:@"startIndex"];
+        parameters = @{@"startIndex" : [NSString stringWithFormat:@"%d",[self.nextIndex intValue]],
+                       @"q" : self.searchTerms};
+    } else {
+        parameters = @{@"q" : self.searchTerms};
     }
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"search" parameters:parameters] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"libraries"
+                                                                             command:@"search"
+                                                                          parameters:parameters];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         UIView *loadingView = [self.searchResultsTableView viewWithTag:LOADING_ACTIVITY_TAG];
@@ -103,11 +106,11 @@ typedef enum {
                 return;
             }
             
-            id items = [content objectForKey:@"items"];
+            id items = content[@"items"];
             if ([items isKindOfClass:[NSArray class]]) {
                 NSMutableArray *temporarySearchResults = [NSMutableArray array];
                 for (NSDictionary *dict in items) {
-                    WorldCatBook *book = [[[WorldCatBook alloc] initWithDictionary:dict] autorelease];
+                    WorldCatBook *book = [[WorldCatBook alloc] initWithDictionary:dict];
                     if (book.parseFailure) {
                         self.searchingStatus = BooksSearchingStatusFailed;
                         [self.searchResultsTableView reloadData];
@@ -133,7 +136,7 @@ typedef enum {
     
     // show loading indicator for initial search
     if (!self.nextIndex) {
-        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.searchResultsTableView.bounds] autorelease];
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.searchResultsTableView.bounds];
         loadingView.tag = LOADING_ACTIVITY_TAG;
         [self.searchResultsTableView addSubview:loadingView];
     }
@@ -152,14 +155,13 @@ typedef enum {
 
 - (void)initLoadMoreViewToTableView:(UITableView *)tableView {
     if (!self.loadMoreView) {
-        self.loadMoreView = [[[UIView alloc] initWithFrame:CGRectMake(
-                                                                      0, tableView.contentSize.height, tableView.frame.size.width, LOADER_HEIGHT)] autorelease];
-        UIActivityIndicatorView *activityView = [[[UIActivityIndicatorView alloc] 
-                                                  initWithFrame:CGRectMake(ACTIVITY_ORIGIN_X, ACTIVITY_ORIGIN_Y, ACTIVITY_SIZE, ACTIVITY_SIZE)] autorelease];
+        self.loadMoreView = [[UIView alloc] initWithFrame:CGRectMake(0, tableView.contentSize.height, tableView.frame.size.width, LOADER_HEIGHT)];
+        UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc]
+                                                  initWithFrame:CGRectMake(ACTIVITY_ORIGIN_X, ACTIVITY_ORIGIN_Y, ACTIVITY_SIZE, ACTIVITY_SIZE)];
         activityView.tag = ACTIVITY_TAG;
         [self.loadMoreView addSubview:activityView];
         
-        UILabel *label = [[[UILabel alloc] initWithFrame:CGRectMake(LABEL_ORIGIN_X, LABEL_ORIGIN_Y, 200.0, 30)] autorelease];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(LABEL_ORIGIN_X, LABEL_ORIGIN_Y, 200.0, 30)];
         label.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
         label.textColor = CELL_STANDARD_FONT_COLOR;
         label.tag = LABEL_TAG;
@@ -202,10 +204,6 @@ typedef enum {
     }
 }
 
-- (BooksSearchingStatus)searchingStatus {
-    return _searchingStatus;
-}
-
 - (void)setSearchingStatus:(BooksSearchingStatus)searchingStatus {
     _searchingStatus = searchingStatus;
     [self updateLoaderView];
@@ -241,7 +239,7 @@ typedef enum {
 }
 
 - (NSNumber *)getNumberFromDict:(NSDictionary *)dict forKey:(NSString *)key required:(BOOL)required {
-    NSNumber *number = (NSNumber *)[dict objectForKey:key];
+    NSNumber *number = dict[key];
     if (!number) {
         if (required) {
             self.parseError = YES;
@@ -269,16 +267,16 @@ typedef enum {
     if (!self.searchResults) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EmptyCell"];
         if (!cell) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"EmptyCell"] autorelease];            
-        }        
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"EmptyCell"];
+        }
+        
         return cell;
     }
     
     NSString *cellIdentifier = @"book";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (!cell) 
-    {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier] autorelease];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
         cell.textLabel.numberOfLines = 0;
         cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
         cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
@@ -289,7 +287,7 @@ typedef enum {
         cell.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
-    WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
+    WorldCatBook *book = self.searchResults[indexPath.row];
     cell.textLabel.text = book.title;
     cell.detailTextLabel.text = [book yearWithAuthors];
     
@@ -298,13 +296,17 @@ typedef enum {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (self.searchResults) {
-        WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
+        WorldCatBook *book = self.searchResults[indexPath.row];
         UIEdgeInsets margins = [[self class] searchCellMargins];
         CGFloat availableWidth = CGRectGetWidth(tableView.bounds) - (margins.left + margins.right);
         
-        CGSize titleSize = [book.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(availableWidth, 2000.0) lineBreakMode:UILineBreakModeWordWrap];
+        CGSize titleSize = [book.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
+                                  constrainedToSize:CGSizeMake(availableWidth, 2000.0)
+                                      lineBreakMode:UILineBreakModeWordWrap];
         
-        CGSize detailSize = [[book yearWithAuthors] sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE] forWidth:availableWidth lineBreakMode:UILineBreakModeTailTruncation];
+        CGSize detailSize = [[book yearWithAuthors] sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
+                                                        forWidth:availableWidth
+                                                   lineBreakMode:UILineBreakModeTailTruncation];
         
         return titleSize.height + detailSize.height + margins.top + margins.bottom;
     } else {
@@ -331,8 +333,8 @@ typedef enum {
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    WorldCatBook *book = [self.searchResults objectAtIndex:indexPath.row];
-    LibrariesBookDetailViewController *vc = [[LibrariesBookDetailViewController new] autorelease];
+    WorldCatBook *book = self.searchResults[indexPath.row];
+    LibrariesBookDetailViewController *vc = [[LibrariesBookDetailViewController alloc] init];
     vc.book = book;
     [self.navigationController pushViewController:vc animated:YES];
 }
@@ -343,8 +345,9 @@ typedef enum {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (self.searchResults) {
-        return self.searchResults.count;
+        return [self.searchResults count];
     }
+    
     return 1;  // returning 1 prevents "No results"
 }
 
