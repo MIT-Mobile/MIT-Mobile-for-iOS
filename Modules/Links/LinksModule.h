@@ -1,8 +1,6 @@
 
 #import "MITModule.h"
 
-@interface LinksModule : MITModule {
-    
-}
+@interface LinksModule : MITModule
 
 @end

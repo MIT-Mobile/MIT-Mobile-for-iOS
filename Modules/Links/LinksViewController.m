@@ -5,57 +5,66 @@
 #import "MIT_MobileAppDelegate.h"
 
 @interface LinksViewController ()
+@property (strong) NSArray *linkResults;
 
-@property (nonatomic, strong) NSArray *linkResults;
-@property (nonatomic, strong) MITLoadingActivityView *loadingView;
-@property (nonatomic, strong) UILabel *errorLabel;
-
+@property (weak) MITLoadingActivityView *loadingView;
+@property (weak) UILabel *errorLabel;
 @end
 
-static NSString * kLinksCacheFileName = @"links_cache.plist";
-
-static NSString * kLinksKeySectionTitle = @"title";
-static NSString * kLinksKeySectionLinks = @"links";
-static NSString * kLinksKeyLinkUrl      = @"link";
-static NSString * kLinksKeyLinkTitle    = @"name";
+static NSString* const MITLinksDataCacheName = @"links_cache.plist";
+static NSString* const MITLinksDataSectionTitleKey = @"title";
+static NSString* const MITLinksDataSectionKey = @"links";
+static NSString* const MITLinksDataURLKey = @"link";
+static NSString* const MITLinksDataTitleKey = @"name";
 
 @implementation LinksViewController
+- (id)init
+{
+    self = [super initWithStyle:UITableViewStyleGrouped];
+    if (self) {
+        self.title = @"Links";
+    }
+    
+    return self;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
-        
+        self.title = @"Links";
     }
     return self;
+}
+
+- (BOOL)wantsFullScreenLayout
+{
+    // iOS 7 compatibility
+    return YES;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    self.title = @"Links";
     
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectInset(self.view.bounds, 0, 0)
-                                                   style:UITableViewStyleGrouped];
-    [self.tableView setBackgroundColor:[UIColor clearColor]];
     [self.tableView applyStandardColors];
-    
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.tableView.bounds];
+    imageView.image = [UIImage imageNamed:@"global/body-background"];
+    self.tableView.backgroundView = imageView;
+
     self.linkResults = [self cachedLinks];
-    
-    [self.tableView reloadData];
 }
 
-- (void) viewWillAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-    if (self.errorLabel) {
-        [self.errorLabel removeFromSuperview];
-        self.errorLabel = nil;
-    }
+    [super viewWillAppear:animated];
+    [self.errorLabel removeFromSuperview];
+    
     if (!self.linkResults) {
         [self showLoadingView];
     }
+    
     self.tableView.userInteractionEnabled = YES;
     [self queryForLinks];
 }
@@ -86,8 +95,9 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     if (!self.loadingView) {
         self.tableView.userInteractionEnabled = NO;
         CGRect loadingFrame = self.tableView.bounds;
-        self.loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
-        self.loadingView.usesBackgroundImage = NO;
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
+        loadingView.usesBackgroundImage = NO;
+        self.loadingView = loadingView;
         [self.view addSubview:self.loadingView];
     }
 }
@@ -95,7 +105,6 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 - (void) removeLoadingView {
     self.tableView.userInteractionEnabled = YES;
     [self.loadingView removeFromSuperview];
-    self.loadingView = nil;
 }
 
 #pragma mark - Server/Cache Difference handling
@@ -149,16 +158,18 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     CGRect frame = self.tableView.bounds;
     frame.origin.x = horizontalPadding;
     frame.size.width -= 2 * horizontalPadding;
-    self.errorLabel = [[UILabel alloc] initWithFrame:frame];
-    self.errorLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.errorLabel.backgroundColor = [UIColor clearColor];
-    self.errorLabel.text = @"There was a problem loading the links. Please try again later.";
-    self.errorLabel.textAlignment = UITextAlignmentCenter;
-    self.errorLabel.shadowColor = [UIColor whiteColor];
-    self.errorLabel.shadowOffset = CGSizeMake(0, 1);
-    self.errorLabel.numberOfLines = 0;
-    self.errorLabel.lineBreakMode = UILineBreakModeWordWrap;
-    [self.tableView addSubview:self.errorLabel];
+    UILabel *errorLabel = [[UILabel alloc] initWithFrame:frame];
+    errorLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    errorLabel.backgroundColor = [UIColor clearColor];
+    errorLabel.text = @"There was a problem loading the links. Please try again later.";
+    errorLabel.textAlignment = UITextAlignmentCenter;
+    errorLabel.shadowColor = [UIColor whiteColor];
+    errorLabel.shadowOffset = CGSizeMake(0, 1);
+    errorLabel.numberOfLines = 0;
+    errorLabel.lineBreakMode = UILineBreakModeWordWrap;
+    
+    self.errorLabel = errorLabel;
+    [self.tableView addSubview:errorLabel];
     
     self.tableView.userInteractionEnabled = NO;
 }
@@ -167,8 +178,8 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (self.linkResults) {
-        NSDictionary * sectionDict = [self.linkResults objectAtIndex:section];
-        return [[sectionDict objectForKey:kLinksKeySectionLinks] count];
+        NSDictionary * sectionDict = self.linkResults[section];
+        return [sectionDict[MITLinksDataSectionKey] count];
     }
     return 0;
 }
@@ -183,11 +194,11 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     }
     
     NSDictionary *section = [self.linkResults objectAtIndex:indexPath.section];
-    NSArray *links = [section objectForKey:kLinksKeySectionLinks];
-    NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
+    NSArray *links = section[MITLinksDataSectionKey];
+    NSDictionary *currentLink = links[indexPath.row];
     
-    cell.textLabel.text = [currentLink objectForKey:kLinksKeyLinkTitle];
-    cell.detailTextLabel.text = [currentLink objectForKey:kLinksKeyLinkUrl];
+    cell.textLabel.text = currentLink[MITLinksDataTitleKey];
+    cell.detailTextLabel.text = currentLink[MITLinksDataURLKey];
     
     cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
     
@@ -207,7 +218,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     if (self.linkResults) {
-        NSString *headerTitle = [[self.linkResults objectAtIndex:section] objectForKey:kLinksKeySectionTitle];
+        NSString *headerTitle = self.linkResults[section][MITLinksDataSectionTitleKey];
         return [UITableView groupedSectionHeaderWithTitle:headerTitle];
     }
     return nil;
@@ -219,12 +230,12 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSDictionary *section = [self.linkResults objectAtIndex:indexPath.section];
-    NSArray *links = [section objectForKey:kLinksKeySectionLinks];
-    NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
+    NSDictionary *section = self.linkResults[indexPath.section];
+    NSArray *links = section[MITLinksDataSectionKey];
+    NSDictionary *currentLink = links[indexPath.row];
     
-    NSString *title = [currentLink objectForKey:kLinksKeyLinkTitle];
-    NSString *url = [currentLink objectForKey:kLinksKeyLinkUrl];
+    NSString *title = currentLink[MITLinksDataTitleKey];
+    NSString *url = currentLink[MITLinksDataURLKey];
 
     CGFloat padding = 10.0f;
     CGFloat linkTitleWidth = CGRectGetWidth(tableView.bounds) - (3 * padding + 39); // padding on each side due to being a grouped tableview + padding on left + 39px of accessory view on right
@@ -240,12 +251,15 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSDictionary *section = [self.linkResults objectAtIndex:indexPath.section];
-    NSArray *links = [section objectForKey:kLinksKeySectionLinks];
-    NSDictionary *currentLink = [links objectAtIndex:indexPath.row];
+    NSDictionary *section = self.linkResults[indexPath.section];
+    NSArray *links = section[MITLinksDataSectionKey];
+    NSDictionary *currentLink = links[indexPath.row];
     
-    NSString *urlString = [currentLink objectForKey:kLinksKeyLinkUrl];
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString: urlString]];
+    NSURL *linkURL = [NSURL URLWithString:currentLink[MITLinksDataURLKey]];
+    
+    if ([[UIApplication sharedApplication] canOpenURL:linkURL]) {
+        [[UIApplication sharedApplication] openURL:linkURL];
+    }
 }
 
 #pragma mark - Link Caching
@@ -291,7 +305,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (NSString *) applicationCachesDirectory
 {
-    NSString *executableName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
+    NSString *executableName = [[NSBundle mainBundle] infoDictionary][@"CFBundleExecutable"];
     NSError *error;
     NSString *result = [self findOrCreateDirectory:NSCachesDirectory
                                           inDomain:NSUserDomainMask
@@ -304,7 +318,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 }
 
 - (NSString *)linkCachePath {
-    return [[self applicationCachesDirectory] stringByAppendingPathComponent:kLinksCacheFileName];
+    return [[self applicationCachesDirectory] stringByAppendingPathComponent:MITLinksDataCacheName];
 }
 
 - (void) saveLinksToCache:(NSArray *) linksArray
@@ -315,8 +329,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
 
 - (NSArray *) cachedLinks
 {
-    NSArray *linksArray = [NSArray arrayWithContentsOfFile:[self linkCachePath]];
-    return linksArray;
+    return [[NSArray alloc] initWithContentsOfFile:[self linkCachePath]];
 }
 
 

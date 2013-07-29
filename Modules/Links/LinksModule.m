@@ -14,6 +14,7 @@
         self.longName = @"Links";
         self.iconName = @"webmitedu";
     }
+    
     return self;
 }
 
