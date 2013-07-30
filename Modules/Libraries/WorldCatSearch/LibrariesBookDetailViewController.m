@@ -15,20 +15,20 @@ typedef enum {
     kBLCHoldingSection = 3
 } BookDetailSections;
 
-@interface LibrariesBookDetailViewController (Private)
+typedef enum {
+    BookLoadingStatusPartial,
+    BookLoadingStatusFailed,
+    BookLoadingStatusCompleted
+} BookLoadingStatus;
+
+@interface LibrariesBookDetailViewController ()
+@property BookLoadingStatus loadingStatus;
 
 - (void)loadBookDetails;
 - (void)configureCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath;
-
 @end
 
 @implementation LibrariesBookDetailViewController
-
-@synthesize book;
-@synthesize activityView;
-@synthesize loadingStatus;
-@synthesize bookInfo;
-
 - (id)init
 {
     self = [super initWithStyle:UITableViewStyleGrouped];
@@ -37,14 +37,6 @@ typedef enum {
         self.title = @"Book Detail";
     }
     return self;
-}
-
-- (void)dealloc
-{
-    self.activityView = nil;
-    self.book = nil;
-    self.bookInfo = nil;
-    [super dealloc];
 }
 
 #pragma mark - View lifecycle
@@ -56,12 +48,13 @@ typedef enum {
     self.tableView.backgroundColor = [UIColor colorWithWhite:0.88
                                                        alpha:1.0];
     
-    self.activityView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
-    self.activityView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                          UIViewAutoresizingFlexibleWidth);
-    self.activityView.backgroundColor = [UIColor colorWithWhite:0.88
-                                                          alpha:1.0];
-    [self.view addSubview:self.activityView];
+    MITLoadingActivityView *activityView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
+    activityView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                     UIViewAutoresizingFlexibleWidth);
+    activityView.backgroundColor = [UIColor colorWithWhite:0.88
+                                                     alpha:1.0];
+    [self.view addSubview:activityView];
+    self.activityView = activityView;
     
     [self loadBookDetails];
 }
@@ -69,9 +62,6 @@ typedef enum {
 
 - (void)viewDidUnload {
     [super viewDidUnload];
-    self.activityView = nil;
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -86,8 +76,9 @@ typedef enum {
 }
 
 - (void)loadBookDetails {
-    NSDictionary *parameters = [NSDictionary dictionaryWithObject:self.book.identifier forKey:@"id"];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag command:@"detail" parameters:parameters] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:LibrariesTag
+                                                                             command:@"detail"
+                                                                          parameters:@{@"id" : self.book.identifier}];
     
     self.loadingStatus = BookLoadingStatusPartial;
     
@@ -188,16 +179,19 @@ typedef enum {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     NSInteger sections = 2; // one for book info, one for email & cite
+    
     if (self.loadingStatus == BookLoadingStatusCompleted) {
         NSInteger numHoldings = self.book.holdings.count;
-        if ([self.book.holdings objectForKey:MITLibrariesOCLCCode]) {
+        if (self.book.holdings[MITLibrariesOCLCCode]) {
             sections++; // one section for MIT holdings
             numHoldings--;
         }
+        
         if (numHoldings > 0) {
             sections++; // one section for all other holdings
         }
     }
+    
     return sections;
 }
 
@@ -212,7 +206,7 @@ typedef enum {
                 rows = 1;
                 break;
             case kMITHoldingSection: {
-                WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+                WorldCatHolding *mitHoldings = self.book.holdings[MITLibrariesOCLCCode];
                 rows = [[mitHoldings libraryAvailability] count] + 1;
                 break;
             }
@@ -235,37 +229,36 @@ typedef enum {
     
     switch (indexPath.section) {
         case kInfoSection: {
-            cell = [tableView dequeueReusableCellWithIdentifier:infoIdentifier];
+            BookDetailTableViewCell *bookDetailCell = [tableView dequeueReusableCellWithIdentifier:infoIdentifier];
             if (!cell) {
-                cell = [[[BookDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                       reuseIdentifier:infoIdentifier] autorelease];
+                bookDetailCell = [[BookDetailTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                       reuseIdentifier:infoIdentifier];
             }
-            NSAttributedString *displayString = [self.bookInfo objectAtIndex:indexPath.row];
-            ((BookDetailTableViewCell *)cell).displayString = displayString;
+            
+            bookDetailCell.displayString = self.bookInfo[indexPath.row];
+            cell = bookDetailCell;
             break;
         }
+            
         case kMITHoldingSection: {
-            if (indexPath.row == 0) {
-                cell = [tableView dequeueReusableCellWithIdentifier:defaultIdentifier];
-                if (!cell) {
-                    cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                   reuseIdentifier:defaultIdentifier] autorelease];
-                }
-            } else {
-                cell = [tableView dequeueReusableCellWithIdentifier:availabilityIdentifier];
-                if (!cell) {
-                    cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                                   reuseIdentifier:availabilityIdentifier] autorelease];
-                }
+            NSString *reuseIdentifier = (indexPath.row == 0) ? defaultIdentifier : availabilityIdentifier;
+            
+            cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
+            
+            if (!cell) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                              reuseIdentifier:reuseIdentifier];
             }
+            
             [self configureCell:cell forRowAtIndexPath:indexPath];
             break;
         }
+            
         default: {
             cell = [tableView dequeueReusableCellWithIdentifier:defaultIdentifier];
             if (!cell) {
-                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault 
-                                               reuseIdentifier:defaultIdentifier] autorelease];
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                              reuseIdentifier:defaultIdentifier];
             }
             [self configureCell:cell forRowAtIndexPath:indexPath];
             break;
@@ -292,14 +285,13 @@ typedef enum {
                     cell.textLabel.text = @"Request Item";
                     break;
                 default: {
-                    WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+                    WorldCatHolding *mitHoldings = self.book.holdings[MITLibrariesOCLCCode];
+                    NSDictionary *libraryAvailability = [mitHoldings libraryAvailability];
+                    NSArray *libraries = [[libraryAvailability allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
                     
-                    NSArray *libraries = [[mitHoldings libraryAvailability] allKeys];
-                    libraries = [libraries sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-                    
-                    NSString *location = [libraries objectAtIndex:indexPath.row - 1];
+                    NSString *location = libraries[indexPath.row - 1];
                     NSUInteger available = [mitHoldings inLibraryCountForLocation:location];
-                    NSUInteger total = [[[mitHoldings libraryAvailability] objectForKey:location] count];
+                    NSUInteger total = [libraryAvailability[location] count];
                     
                     cell.textLabel.text = location;
                     cell.textLabel.numberOfLines = 0;
@@ -333,19 +325,19 @@ typedef enum {
     CGFloat height = tableView.rowHeight;
     switch (indexPath.section) {
         case kInfoSection: {
-            NSAttributedString *displayString = [self.bookInfo objectAtIndex:indexPath.row];
+            NSAttributedString *displayString = self.bookInfo[indexPath.row];
             height = [BookDetailTableViewCell sizeForDisplayString:displayString tableView:tableView].height + 8;
             break;
         }
         case kMITHoldingSection: {
             if (indexPath.row >= 1) {
-                WorldCatHolding *mitHoldings = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
-                NSArray *libraries = [[mitHoldings libraryAvailability] allKeys];
-                libraries = [libraries sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+                WorldCatHolding *mitHoldings = self.book.holdings[MITLibrariesOCLCCode];
+                NSDictionary *libraryAvailability = [mitHoldings libraryAvailability];
+                NSArray *libraries = [[libraryAvailability allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
                 
-                NSString *location = [libraries objectAtIndex:indexPath.row - 1];
+                NSString *location = libraries[indexPath.row - 1];
                 NSUInteger available = [mitHoldings inLibraryCountForLocation:location];
-                NSUInteger total = [[[mitHoldings libraryAvailability] objectForKey:location] count];
+                NSUInteger total = [libraryAvailability[location] count];
                 
                 NSString *detail = [NSString stringWithFormat:@"%lu of %lu available", (unsigned long)available, (unsigned long)total];
                 
@@ -374,7 +366,7 @@ typedef enum {
                 NSString *subject = [NSString stringWithFormat:@"MIT Libraries Item Details for: %@", self.book.title];
                 NSString *body = self.book.emailAndCiteMessage;
                 
-                MFMailComposeViewController *mailView = [[[MFMailComposeViewController alloc] init] autorelease];
+                MFMailComposeViewController *mailView = [[MFMailComposeViewController alloc] init];
                 [mailView setMailComposeDelegate:self];
                 [mailView setSubject:subject];
                 [mailView setMessageBody:body isHTML:YES];
@@ -383,21 +375,24 @@ typedef enum {
             break;
         case kMITHoldingSection:
         {
-            WorldCatHolding *holding = [self.book.holdings objectForKey:MITLibrariesOCLCCode];
+            WorldCatHolding *mitHoldings = self.book.holdings[MITLibrariesOCLCCode];
             
             if (indexPath.row == 0) {
-                NSURL *url = [NSURL URLWithString:holding.url];
-                if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
+                NSURL *url = [NSURL URLWithString:mitHoldings.url];
+                
+                if ([[UIApplication sharedApplication] canOpenURL:url]) {
                     [[UIApplication sharedApplication] openURL:url];
                 }
+                
                 [tableView deselectRowAtIndexPath:indexPath animated:YES];
             } else {
-                NSArray *locations = [[holding libraryAvailability] allKeys];
-                locations = [locations sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+                NSDictionary *libraryAvailability = [mitHoldings libraryAvailability];
+                NSArray *locations = [[libraryAvailability allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
                 
-                NSString *location = [locations objectAtIndex:indexPath.row - 1];
-                NSArray *holdings = [[holding libraryAvailability] objectForKey:location];
-                LibrariesHoldingsDetailViewController *detailVC = [[[LibrariesHoldingsDetailViewController alloc] initWithHoldings:holdings] autorelease];
+                NSString *location = locations[indexPath.row - 1];
+                NSArray *holdings = libraryAvailability[location];
+                
+                LibrariesHoldingsDetailViewController *detailVC = [[LibrariesHoldingsDetailViewController alloc] initWithHoldings:holdings];
                 detailVC.title = location;
                 [self.navigationController pushViewController:detailVC
                                                      animated:YES];
@@ -408,7 +403,7 @@ typedef enum {
         }
         case kBLCHoldingSection:
         {
-            WorldCatHoldingsViewController *vc = [[[WorldCatHoldingsViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+            WorldCatHoldingsViewController *vc = [[WorldCatHoldingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
             vc.book = self.book;
             [self.navigationController pushViewController:vc animated:YES];
             break;

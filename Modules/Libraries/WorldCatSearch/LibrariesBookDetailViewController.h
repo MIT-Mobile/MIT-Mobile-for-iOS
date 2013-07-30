@@ -3,19 +3,10 @@
 #import "MITLoadingActivityView.h"
 #import <MessageUI/MessageUI.h>
 
-typedef enum {
-    BookLoadingStatusPartial,
-    BookLoadingStatusFailed,
-    BookLoadingStatusCompleted
-} BookLoadingStatus;
-
-@interface LibrariesBookDetailViewController : UITableViewController <MFMailComposeViewControllerDelegate> {
-}
-
-@property (nonatomic, retain) UIView *activityView;
-@property (nonatomic, retain) WorldCatBook *book;
-@property (nonatomic, assign) BookLoadingStatus loadingStatus;
-@property (nonatomic, retain) NSArray *bookInfo;
+@interface LibrariesBookDetailViewController : UITableViewController <MFMailComposeViewControllerDelegate>
+@property (nonatomic,weak) UIView *activityView;
+@property (strong) WorldCatBook *book;
+@property (copy) NSArray *bookInfo;
 
 @end
 

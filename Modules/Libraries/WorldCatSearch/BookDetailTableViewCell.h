@@ -4,8 +4,7 @@ const CGFloat BookDetailFontSizeTitle;
 const CGFloat BookDetailFontSizeDefault;
 
 @interface BookDetailTableViewCell : UITableViewCell
-
-@property (nonatomic, retain) NSAttributedString *displayString;
+@property (nonatomic,copy) NSAttributedString *displayString;
 
 + (NSAttributedString *)displayStringWithTitle:(NSString *)title
                                       subtitle:(NSString *)subtitle

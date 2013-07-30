@@ -7,48 +7,18 @@ const CGFloat BookDetailFontSizeTitle = 18.0;
 const CGFloat BookDetailFontSizeDefault = 15.0;
 
 @implementation BookDetailTableViewCell
-
-@synthesize displayString = _displayString;
-
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        self.backgroundColor = [UIColor clearColor];
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
-        self.backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-        self.backgroundView.backgroundColor = [UIColor clearColor];
-    }
-    return self;
-}
-
-- (void)setDisplayString:(NSAttributedString *)displayString {
-    if (displayString != _displayString) {
-        [_displayString release];
-        _displayString = [displayString retain];
-        [self setNeedsDisplay];
-    }
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-}
-
 + (CGSize)sizeForDisplayString:(NSAttributedString *)displayString tableView:(UITableView *)tableView
 {
     CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)displayString);
     
     CGSize limitSize = CGSizeMake(CGRectGetWidth(tableView.bounds) - BOOK_DETAIL_CELL_MARGIN * 2, 2009);
-    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, 
+    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter,
                                                                   CFRangeMake(0, 0),
                                                                   NULL,
-                                                                  limitSize, 
+                                                                  limitSize,
                                                                   NULL);
     CFRelease(framesetter);
-
+    
     return fitSize;
 }
 
@@ -75,14 +45,38 @@ const CGFloat BookDetailFontSizeDefault = 15.0;
     UIFont *boldFont = [UIFont boldSystemFontOfSize:fontSize];
     CTFontRef ctBoldFont = CTFontCreateWithName((CFStringRef)boldFont.fontName, boldFont.pointSize, NULL);
     
-    NSMutableAttributedString *mutableString = [[[NSMutableAttributedString alloc] initWithString:rawString] autorelease];
-    [mutableString addAttribute:(NSString *)kCTFontAttributeName value:(id)ctBoldFont range:NSMakeRange(0, titleLength)];
-    [mutableString addAttribute:(NSString *)kCTFontAttributeName value:(id)ctFont range:NSMakeRange(titleLength, rawString.length - titleLength)];
+    NSMutableAttributedString *mutableString = [[NSMutableAttributedString alloc] initWithString:rawString];
+    [mutableString addAttribute:(NSString *)kCTFontAttributeName
+                          value:(__bridge id)ctBoldFont
+                          range:NSMakeRange(0, titleLength)];
+    
+    [mutableString addAttribute:(NSString *)kCTFontAttributeName
+                          value:(__bridge id)ctFont
+                          range:NSMakeRange(titleLength, rawString.length - titleLength)];
     
     CFRelease(ctFont);
     CFRelease(ctBoldFont);
     
-    return [[[NSAttributedString alloc] initWithAttributedString:mutableString] autorelease];
+    return mutableString;
+}
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        self.backgroundColor = [UIColor clearColor];
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        self.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+        self.backgroundView.backgroundColor = [UIColor clearColor];
+    }
+    return self;
+}
+
+- (void)setDisplayString:(NSAttributedString *)displayString {
+    if (![_displayString isEqual:displayString]) {
+        _displayString = [displayString copy];
+        [self setNeedsDisplay];
+    }
 }
 
 - (void)drawRect:(CGRect)rect
@@ -125,11 +119,4 @@ const CGFloat BookDetailFontSizeDefault = 15.0;
     CFRelease(framesetter);
     CFRelease(frame);
 }
-
-- (void)dealloc
-{
-    self.displayString = nil;
-    [super dealloc];
-}
-
 @end

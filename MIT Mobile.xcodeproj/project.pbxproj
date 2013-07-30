@@ -94,7 +94,7 @@
 		2CA454F213C7468F00891428 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA454F113C7468F00891428 /* AssetsLibrary.framework */; };
 		2CA91F9915CB03BB00C03732 /* MITScannerHelpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA91F9715CB03BB00C03732 /* MITScannerHelpViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CA91F9815CB03BB00C03732 /* MITScannerHelpViewController.xib */; };
-		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -257,7 +257,7 @@
 		4B83723E157E5B5C004CBC49 /* zbar-helpicons.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B837239157E5B5C004CBC49 /* zbar-helpicons.png */; };
 		4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B83723A157E5B5C004CBC49 /* zbar-samples.png */; };
 		4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9A4EA31355E24800E37876 /* MorseCodePattern.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4B9EF9B714321E360071F8E3 /* LibrariesBookDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		4B9EF9B714321E360071F8E3 /* LibrariesBookDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */; };
 		4BAA30AD143A8DF1004C47C1 /* LibraryMenuElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAA30AC143A8DF1004C47C1 /* LibraryMenuElementViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */; };
 		4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */; };
@@ -428,7 +428,7 @@
 		EB86CAC6115D4ED500C8F3D1 /* CalendarEventsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB86CAC5115D4ED500C8F3D1 /* CalendarEventsViewController.m */; };
 		EB976D18116CF6630036A18E /* EventListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB976D16116CF6630036A18E /* EventListTableView.m */; };
 		EB976D1C116CF6A10036A18E /* EventCategoriesTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB976D1A116CF6A10036A18E /* EventCategoriesTableView.m */; };
-		EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9FF4A5145A1D7500028A18 /* BookDetailTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9FF4A5145A1D7500028A18 /* BookDetailTableViewCell.m */; };
 		EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9FF4E1145F495900028A18 /* WorldCatHoldingsViewController.m */; };
 		EBA0A46710D405F5005B0D96 /* Stellar.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EBA0A46610D405F5005B0D96 /* Stellar.xcdatamodeld */; };
 		EBA2865610E07E140003BA01 /* PeopleSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };

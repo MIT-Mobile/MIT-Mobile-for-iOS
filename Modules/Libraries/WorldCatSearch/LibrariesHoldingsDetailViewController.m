@@ -1,66 +1,18 @@
 #import "LibrariesHoldingsDetailViewController.h"
 #import "MITUIConstants.h"
 
-@interface LibrariesHoldingsDetailViewController ()
-@property (nonatomic,retain) NSArray *holdings;
-@end
-
 @implementation LibrariesHoldingsDetailViewController
-@synthesize holdings = _holdings;
-
 - (id)initWithHoldings:(NSArray*)holdings
 {
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
         self.holdings = holdings;
     }
+    
     return self;
 }
 
-- (void)dealloc
-{
-    self.holdings = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - View lifecycle
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-}
 
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -79,6 +31,14 @@
     return;
 }
 
+- (void)setHoldings:(NSArray *)holdings
+{
+    if (![_holdings isEqual:holdings]) {
+        _holdings = [holdings copy];
+        
+        [self.tableView reloadData];
+    }
+}
 
 #pragma mark - Table view data source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -97,21 +57,20 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                       reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    NSDictionary *holding = [self.holdings objectAtIndex:indexPath.row];
-    cell.textLabel.text = [holding objectForKey:@"call-no"];
+    NSDictionary *holding = self.holdings[indexPath.row];
+    cell.textLabel.text = holding[@"call-no"];
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
     
-    BOOL available = [[holding objectForKey:@"available"] boolValue];
+    BOOL available = [holding[@"available"] boolValue];
 
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@\n%@",[holding objectForKey:@"collection"], [holding objectForKey:@"status"]];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@\n%@",holding[@"collection"], holding[@"status"]];
     cell.detailTextLabel.numberOfLines = 0;
     cell.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
     cell.detailTextLabel.font = (available) ?
@@ -125,15 +84,13 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // TODO:
-    NSDictionary *holding = [self.holdings objectAtIndex:indexPath.row];
-    CGSize labelSize = [[holding objectForKey:@"call-no"] sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
+    NSDictionary *holding = self.holdings[indexPath.row];
+    CGSize labelSize = [holding[@"call-no"] sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
                                                      constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - (CELL_HORIZONTAL_PADDING * 2.0), CGFLOAT_MAX)
                                                          lineBreakMode:UILineBreakModeWordWrap];
     
-    
-    BOOL available = [[holding objectForKey:@"available"] boolValue];
-    NSString *detailString = [NSString stringWithFormat:@"%@\n%@",[holding objectForKey:@"collection"], [holding objectForKey:@"status"]];
-    UIFont *detailFont = (available) ? 
+    NSString *detailString = [NSString stringWithFormat:@"%@\n%@",holding[@"collection"], holding[@"status"]];
+    UIFont *detailFont = ([holding[@"available"] boolValue]) ?
                           [UIFont boldSystemFontOfSize:CELL_DETAIL_FONT_SIZE] :
                           [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
 
