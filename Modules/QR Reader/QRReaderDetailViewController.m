@@ -127,7 +127,8 @@
         };
         
         self.urlMappingOperation = operation;
-        [operation start];
+        
+        [[MobileRequestOperation defaultQueue] addOperation:operation];
     }
 }
 

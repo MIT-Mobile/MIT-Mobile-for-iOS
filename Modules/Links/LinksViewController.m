@@ -148,8 +148,8 @@ static NSString* const MITLinksDataTitleKey = @"name";
         }
         
     };
-
-    [operation start];
+    
+    [[MobileRequestOperation defaultQueue] addOperation:operation];
 }
 
 - (void)displayLoadingError {

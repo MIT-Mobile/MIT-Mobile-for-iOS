@@ -291,7 +291,7 @@
     }];
 
     self.request = operation;
-    [operation start];
+    [[MobileRequestOperation defaultQueue] addOperation:operation];
 }
 
 @end
