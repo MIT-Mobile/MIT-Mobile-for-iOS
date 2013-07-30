@@ -7,21 +7,14 @@
 #import "UIKit+MITAdditions.h"
 
 @interface LibrariesFinesTabController ()
-@property (nonatomic,retain) MITLoadingActivityView *loadingView;
-@property (nonatomic,retain) NSDictionary *loanData;
+@property (nonatomic,weak) MITLoadingActivityView *loadingView;
+@property (copy) NSDictionary *loanData;
 
 - (void)setupTableView;
 - (void)updateLoanData;
 @end
 
 @implementation LibrariesFinesTabController
-@synthesize parentController = _parentController,
-            tableView = _tableView;
-
-@synthesize loadingView = _loadingView,
-            loanData = _loanData,
-            headerView = _headerView;
-
 - (id)initWithTableView:(UITableView *)tableView
 {
     self = [super init];
@@ -35,16 +28,6 @@
     }
     
     return self;
-}
-
-- (void)dealloc {
-    self.parentController = nil;
-    self.tableView = nil;
-    self.headerView = nil;
-    self.loadingView = nil;
-    self.loanData = nil;
-
-    [super dealloc];
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -62,7 +45,7 @@
 {
     {
         CGRect loadingFrame = self.tableView.bounds;
-        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                         UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor whiteColor];
@@ -74,7 +57,7 @@
     }
     
     {
-        LibrariesFinesSummaryView *headerView = [[[LibrariesFinesSummaryView alloc] initWithFrame:CGRectZero] autorelease];
+        LibrariesFinesSummaryView *headerView = [[LibrariesFinesSummaryView alloc] initWithFrame:CGRectZero];
         headerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                        UIViewAutoresizingFlexibleWidth);
         self.headerView = headerView;
@@ -89,9 +72,9 @@
 {
     if (tableView.isEditing == NO)
     {
-        NSArray *book = [self.loanData objectForKey:@"items"];
-        LibrariesDetailViewController *viewControler = [[[LibrariesDetailViewController alloc] initWithBookDetails:[book objectAtIndex:indexPath.row]
-                                                                                                        detailType:LibrariesDetailFineType] autorelease];
+        NSArray *book = self.loanData[@"items"];
+        LibrariesDetailViewController *viewControler = [[LibrariesDetailViewController alloc] initWithBookDetails:book[indexPath.row]
+                                                                                                        detailType:LibrariesDetailFineType];
         [self.parentController.navigationController pushViewController:viewControler
                                                               animated:YES];
         [tableView deselectRowAtIndexPath:indexPath
@@ -102,12 +85,7 @@
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSArray *items = [self.loanData objectForKey:@"items"];
-    if (items) {
-        return [items count];
-    } else {
-        return 0;
-    }
+    return [self.loanData[@"items"] count];
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -117,11 +95,11 @@
     LibrariesFinesTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
     
     if (cell == nil) {
-        cell = [[[LibrariesFinesTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier] autorelease];
+        cell = [[LibrariesFinesTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier];
     }
     
-    NSArray *loans = [self.loanData objectForKey:@"items"];
-    cell.itemDetails = [loans objectAtIndex:indexPath.row];
+    NSArray *loans = self.loanData[@"items"];
+    cell.itemDetails = loans[indexPath.row];
     
     return cell;
 }
@@ -133,41 +111,45 @@
         cell = [[LibrariesFinesTableViewCell alloc] init];
     }
     
-    NSArray *loans = [self.loanData objectForKey:@"items"];
-    cell.itemDetails = [loans objectAtIndex:indexPath.row];
+    NSArray *loans = self.loanData[@"items"];
+    cell.itemDetails = loans[indexPath.row];
     
     return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame) - 20.0]; // 20.0 for the accessory view
 }
 
 - (void)updateLoanData
 {
+    NSString *limitString = [NSString stringWithFormat:@"%ld", NSIntegerMax];
     MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                             command:@"fines"
-                                                                         parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
-                                                                                                                forKey:@"limit"]];
+                                                                         parameters:@{@"limit" : limitString}];
+    
+    __weak LibrariesFinesTabController *weakSelf = self;
     operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        if ([self.loadingView isDescendantOfView:self.tableView]) {
-            [self.loadingView removeFromSuperview];
-            self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        }
-        
-        if (error) {
-            [self.parentController reportError:error
-                                       fromTab:self];
-        } else {
-            self.loanData = (NSDictionary*)content;
-            self.headerView.accountDetails = (NSDictionary *)self.loanData;
-            [self.headerView sizeToFit];
-            [self.tableView reloadData];
-            if (self.parentController.activeTabController == self)
-            {
-                [self.parentController forceTabLayout];
+        LibrariesFinesTabController *blockSelf = weakSelf;
+        if (blockSelf) {
+            if (blockSelf.loadingView) {
+                [blockSelf.loadingView removeFromSuperview];
+                blockSelf.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+            }
+            
+            if (error) {
+                [blockSelf.parentController reportError:error
+                                           fromTab:self];
+            } else {
+                blockSelf.loanData = (NSDictionary*)content;
+                blockSelf.headerView.accountDetails = (NSDictionary *)blockSelf.loanData;
+                [blockSelf.headerView sizeToFit];
+                [blockSelf.tableView reloadData];
+                if (blockSelf.parentController.activeTabController == self)
+                {
+                    [blockSelf.parentController forceTabLayout];
+                }
             }
         }
     };
     
-    if ([self.parentController.requestOperations.operations containsObject:operation] == NO)
-    {
+    if ([self.parentController.requestOperations.operations containsObject:operation] == NO) {
         [self.parentController.requestOperations addOperation:operation];
     }
 }
@@ -176,21 +158,6 @@
 - (void)tabWillBecomeActive
 {
     [self updateLoanData];
-}
-
-- (void)tabDidBecomeActive
-{
-    
-}
-
-- (void)tabWillBecomeInactive
-{
-    
-}
-
-- (void)tabDidBecomeInactive
-{
-    
 }
 
 @end

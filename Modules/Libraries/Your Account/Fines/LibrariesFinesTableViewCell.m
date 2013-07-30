@@ -4,19 +4,18 @@
 #import "UIKit+MITAdditions.h"
 
 @implementation LibrariesFinesTableViewCell
-@synthesize fineLabel = _fineLabel;
-
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithReuseIdentifier:reuseIdentifier];
     if (self) {
-        self.fineLabel = [[[UILabel alloc] init] autorelease];
-        self.fineLabel.lineBreakMode = UILineBreakModeWordWrap;
-        self.fineLabel.numberOfLines = 1;
-        self.fineLabel.font = [UIFont systemFontOfSize:17.0];
-        self.fineLabel.textColor = [UIColor blackColor];
-        self.fineLabel.highlightedTextColor = [UIColor whiteColor];
-        [self.contentView addSubview:self.fineLabel];
+        UILabel *fineLabel = [[UILabel alloc] init];
+        fineLabel.lineBreakMode = UILineBreakModeWordWrap;
+        fineLabel.numberOfLines = 1;
+        fineLabel.font = [UIFont systemFontOfSize:17.0];
+        fineLabel.textColor = [UIColor blackColor];
+        fineLabel.highlightedTextColor = [UIColor whiteColor];
+        [self.contentView addSubview:fineLabel];
+        self.fineLabel = fineLabel;
         
         self.statusIcon.hidden = YES;
     }
@@ -50,17 +49,15 @@
 {
     [super setItemDetails:itemDetails];
     
-    NSMutableString *status = [NSMutableString string];
-    NSTimeInterval fineInterval = [[itemDetails objectForKey:@"fine-date"] doubleValue];
+    NSTimeInterval fineInterval = [itemDetails[@"fine-date"] doubleValue];
     NSDate *fineDate = [NSDate dateWithTimeIntervalSince1970:fineInterval];
-    [status appendFormat:@"Fined %@", [NSDateFormatter localizedStringFromDate:fineDate
-                                                                     dateStyle:NSDateFormatterShortStyle
-                                                                     timeStyle:NSDateFormatterNoStyle]];
+    NSString *status =  [NSString stringWithFormat:@"Fined %@", [NSDateFormatter localizedStringFromDate:fineDate
+                                                                                               dateStyle:NSDateFormatterShortStyle
+                                                                                               timeStyle:NSDateFormatterNoStyle]];
     
     self.statusLabel.textColor = [UIColor colorWithHexString:@"#404649"];
     self.statusLabel.text = [[status stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByDecodingXMLEntities];
-    
-    self.fineLabel.text= [itemDetails objectForKey:@"display-amount"];
+    self.fineLabel.text = itemDetails[@"display-amount"];
 }
 
 @end

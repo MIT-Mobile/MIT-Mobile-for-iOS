@@ -341,9 +341,9 @@
 		DEBF1464176999BA009B6089 /* DiningLink.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF1463176999B9009B6089 /* DiningLink.m */; };
 		DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FB914886F1A00B5719A /* LibrariesDetailLabel.m */; };
 		DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FBB14886F1A00B5719A /* LibrariesDetailViewController.m */; };
-		DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FBE14886F1A00B5719A /* LibrariesFinesSummaryView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEBF5FDB14886F1A00B5719A /* LibrariesFinesTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC014886F1A00B5719A /* LibrariesFinesTabController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEBF5FDC14886F1A00B5719A /* LibrariesFinesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC214886F1A00B5719A /* LibrariesFinesTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FBE14886F1A00B5719A /* LibrariesFinesSummaryView.m */; };
+		DEBF5FDB14886F1A00B5719A /* LibrariesFinesTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC014886F1A00B5719A /* LibrariesFinesTabController.m */; };
+		DEBF5FDC14886F1A00B5719A /* LibrariesFinesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC214886F1A00B5719A /* LibrariesFinesTableViewCell.m */; };
 		DEBF5FDD14886F1A00B5719A /* LibrariesHoldsSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC514886F1A00B5719A /* LibrariesHoldsSummaryView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEBF5FDE14886F1A00B5719A /* LibrariesHoldsTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC714886F1A00B5719A /* LibrariesHoldsTabController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEBF5FDF14886F1A00B5719A /* LibrariesHoldsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC914886F1A00B5719A /* LibrariesHoldsTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };

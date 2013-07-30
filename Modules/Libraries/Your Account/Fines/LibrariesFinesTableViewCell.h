@@ -2,6 +2,6 @@
 #import "LibrariesTableViewCell.h"
 
 @interface LibrariesFinesTableViewCell : LibrariesTableViewCell
-@property (nonatomic,retain) UILabel *fineLabel;
+@property (nonatomic,weak) UILabel *fineLabel;
 
 @end

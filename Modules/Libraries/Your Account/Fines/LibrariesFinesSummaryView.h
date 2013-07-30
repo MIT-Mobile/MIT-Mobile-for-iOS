@@ -2,6 +2,6 @@
 #import "MITTabHeaderView.h"
 
 @interface LibrariesFinesSummaryView : MITTabHeaderView
-@property (nonatomic) UIEdgeInsets edgeInsets;
-@property (nonatomic,retain) NSDictionary* accountDetails;
+@property (nonatomic,copy) NSDictionary* accountDetails;
+@property UIEdgeInsets edgeInsets;
 @end

@@ -3,53 +3,38 @@
 #import "UIKit+MITAdditions.h"
 
 @interface LibrariesFinesSummaryView ()
-@property (nonatomic,retain) UILabel *balanceLabel;
-@property (nonatomic,retain) UILabel *infoLabel;
+@property (nonatomic,weak) UILabel *balanceLabel;
+@property (nonatomic,weak) UILabel *infoLabel;
 @end
 
 @implementation LibrariesFinesSummaryView
-@synthesize accountDetails = _accountDetails,
-            edgeInsets = _edgeInsets;
-
-@synthesize balanceLabel = _balanceLabel,
-            infoLabel = _infoLabel;
-
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.balanceLabel = [[[UILabel alloc] init] autorelease];
-        self.balanceLabel.font = [UIFont boldSystemFontOfSize:17.0];
-        self.balanceLabel.backgroundColor = [UIColor clearColor];
-        self.balanceLabel.lineBreakMode = UILineBreakModeTailTruncation;
-        self.balanceLabel.text = @"";
-        [self addSubview:self.balanceLabel];
+        UILabel *balanceLabel = [[UILabel alloc] init];
+        balanceLabel.font = [UIFont boldSystemFontOfSize:17.0];
+        balanceLabel.backgroundColor = [UIColor clearColor];
+        balanceLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        balanceLabel.text = @"";
+        [self addSubview:balanceLabel];
+        self.balanceLabel = balanceLabel;
         
-        self.infoLabel = [[[UILabel alloc] init] autorelease];
-        self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
-        self.infoLabel.numberOfLines = 2;
-        self.infoLabel.backgroundColor = [UIColor clearColor];
-        self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
-        self.infoLabel.font = [UIFont systemFontOfSize:14.0];
-        
-        self.infoLabel.text = @"Payable at any MIT library service desk." "\n"
+        UILabel *infoLabel = [[UILabel alloc] init];
+        infoLabel.lineBreakMode = UILineBreakModeWordWrap;
+        infoLabel.numberOfLines = 2;
+        infoLabel.backgroundColor = [UIColor clearColor];
+        infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
+        infoLabel.font = [UIFont systemFontOfSize:14.0];
+        infoLabel.text = @"Payable at any MIT library service desk." "\n"
                                "TechCASH accepted only at Hayden Library.";
-        self.accountDetails = nil;
-        
-        [self addSubview:self.infoLabel];
+        [self addSubview:infoLabel];
+        self.infoLabel = infoLabel;
 
         self.edgeInsets = UIEdgeInsetsMake(6, 10, 9, 10);
     }
     
     return self;
-}
-
-- (void)dealloc
-{
-    self.accountDetails = nil;
-    self.balanceLabel = nil;
-    self.infoLabel = nil;
-    [super dealloc];
 }
 
 - (void)layoutSubviews
@@ -98,16 +83,18 @@
 
 - (void)setAccountDetails:(NSDictionary *)accountDetails
 {
-    [_accountDetails release];
-    _accountDetails = [accountDetails retain];
+    _accountDetails = [accountDetails copy];
     
     NSString *dateString = [NSDateFormatter localizedStringFromDate:[NSDate date]
                                                           dateStyle:NSDateFormatterShortStyle
                                                           timeStyle:NSDateFormatterNoStyle];
-    NSString *totalFines = [accountDetails objectForKey:@"balance"];
-    if (!totalFines) {
+    NSString *totalFines = nil;
+    if ([accountDetails[@"balance"] length]) {
+        totalFines = accountDetails[@"balance"];
+    } else {
         totalFines = @"";
     }
+    
     self.balanceLabel.text = [NSString stringWithFormat:@"Balance as of %@: %@", dateString, totalFines];
     
     [self setNeedsLayout];
