@@ -11,18 +11,19 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
 #pragma mark -
 
 @interface LibrariesDetailLabel ()
-@property (nonatomic,retain) NSAttributedString *textString;
-@property (nonatomic,assign) CTFramesetterRef framesetter;
-@property (nonatomic,retain) NSDictionary *bookDetails;
+@property (nonatomic,copy) NSAttributedString *textString;
+@property (nonatomic,copy) NSDictionary *bookDetails;
+@property (assign) CTFramesetterRef framesetter;
 
 - (NSAttributedString*)attributedStringWithHeader:(NSString*)header
                                       displayText:(NSString*)text;
 @end
 
 @implementation LibrariesDetailLabel
-@synthesize bookDetails = _bookDetails;
-@synthesize textString = _textString;
-@synthesize textInsets = _textInsets;
+{
+    CTFramesetterRef _framesetter;
+}
+
 @dynamic framesetter;
 
 - (id)initWithBook:(NSDictionary*)details
@@ -37,10 +38,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
 
 - (void)dealloc
 {
-    self.bookDetails = nil;
-    self.textString = nil;
     self.framesetter = nil;
-    [super dealloc];
 }
 
 
@@ -79,9 +77,8 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
 
 - (void)setBookDetails:(NSDictionary *)bookDetails
 {
-    if ([_bookDetails isEqualToDictionary:bookDetails] == NO)
-    {
-        _bookDetails = [bookDetails retain];
+    if (![_bookDetails isEqual:bookDetails]) {
+        _bookDetails = [bookDetails copy];
         self.framesetter = nil;
         self.textString = nil;
     }
@@ -90,8 +87,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
 #pragma mark - Dynamic Property Methods
 - (void)setFramesetter:(CTFramesetterRef)framesetter
 {
-    if (_framesetter)
-    {
+    if (_framesetter) {
         CFRelease(_framesetter);
     }
     
@@ -100,8 +96,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
 
 - (CTFramesetterRef)framesetter
 {
-    if (_framesetter == nil)
-    {
+    if (_framesetter == nil) {
         _framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.textString);
     }
     
@@ -110,36 +105,29 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
 
 - (NSAttributedString*)textString
 {
-    if (self.bookDetails == nil)
-    {
-        self.textString = [[[NSAttributedString alloc] init] autorelease];
-    }
-    else if (_textString == nil)
-    {
-        NSMutableAttributedString *detailText = [[[NSMutableAttributedString alloc] init] autorelease];
+    if (self.bookDetails == nil) {
+        self.textString = [[NSAttributedString alloc] init];
+    } else if (_textString == nil) {
+        NSMutableAttributedString *detailText = [[NSMutableAttributedString alloc] init];
 
         UIFont *defaultBoldFont = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
 
         // Setup the title view
         {
-            NSMutableDictionary *titleAttributes = [NSMutableDictionary dictionary];
             CTFontRef titleFont = CTFontCreateWithName((CFStringRef)[defaultBoldFont fontName],
                                                        18.0,
                                                        NULL);
 
-            [titleAttributes setObject:(id)titleFont
-                             forKey:(id)kCTFontAttributeName];
-            NSMutableAttributedString *title = [[NSMutableAttributedString alloc] initWithString:[self.bookDetails objectForKey:LibrariesDetailTitleKey]
-                                                                                      attributes:titleAttributes];
+            NSMutableAttributedString *title = [[NSMutableAttributedString alloc] initWithString:self.bookDetails[LibrariesDetailTitleKey]
+                                                                                      attributes:@{(NSString*)kCTFontAttributeName : (__bridge id)titleFont}];
             
             [detailText appendAttributedString:title];
-            [title release];
             CFRelease(titleFont);
         }
 
         {
-            NSString *author = [self.bookDetails objectForKey:LibrariesDetailAuthorKey];
-            NSString *year = [self.bookDetails objectForKey:LibrariesDetailYearKey];
+            NSString *author = self.bookDetails[LibrariesDetailAuthorKey];
+            NSString *year = self.bookDetails[LibrariesDetailYearKey];
             NSString *displayString = [NSString stringWithFormat:@"\n%@; %@", year, author];
             
             [detailText appendAttributedString:[self attributedStringWithHeader:nil
@@ -147,30 +135,30 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
         }
 
 
-        NSString *callNumber = [self.bookDetails objectForKey:LibrariesDetailCallNumberKey];
+        NSString *callNumber = self.bookDetails[LibrariesDetailCallNumberKey];
         if ([callNumber length])
         {
             [detailText appendAttributedString:[self attributedStringWithHeader:@"\nCall #"
                                                                     displayText:[NSString stringWithFormat:@"%@",callNumber]]];
         }
  
-        NSString *library = [self.bookDetails objectForKey:LibrariesDetailLibraryKey];
+        NSString *library = self.bookDetails[LibrariesDetailLibraryKey];
         if ([library length])
         {
             [detailText appendAttributedString:[self attributedStringWithHeader:@"\nLibrary"
                                                                     displayText:[NSString stringWithFormat:@"%@",library]]];
         }
 
-        NSDictionary *isbNumbers = [self.bookDetails objectForKey:LibrariesDetailISBNKey];
+        NSDictionary *isbNumbers = self.bookDetails[LibrariesDetailISBNKey];
         if ([isbNumbers count])
         {
-            NSString *isbnString = [[isbNumbers objectForKey:@"display"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            NSString *isbnString = [isbNumbers[@"display"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
             [detailText appendAttributedString:[self attributedStringWithHeader:@"\nISBN"
                                                                     displayText:isbnString]];
         }
         
-        
-        NSString *displayAmount = [self.bookDetails objectForKey:@"display-amount"];
+    
+        NSString *displayAmount = self.bookDetails[@"display-amount"];
         if ([displayAmount length])
         {
             [detailText appendAttributedString:[self attributedStringWithHeader:@"\nAmount owed"
@@ -178,7 +166,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
         }
         
         
-        NSNumber *fineTimestamp = [self.bookDetails objectForKey:@"fine-date"];
+        NSNumber *fineTimestamp = self.bookDetails[@"fine-date"];
         if (fineTimestamp)
         {
             NSDate *fineDate = [NSDate dateWithTimeIntervalSince1970:[fineTimestamp doubleValue]];
@@ -201,46 +189,38 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
     NSMutableAttributedString *resultString = [[NSMutableAttributedString alloc] init];
     CGFloat fontSize = 14.0;
     
-    if ([header length])
-    {
+    if ([header length]) {
         UIFont *defaultBoldFont = [UIFont boldSystemFontOfSize:fontSize];
         CTFontRef boldFont = CTFontCreateWithName((CFStringRef)[defaultBoldFont fontName],
                                                   [defaultBoldFont pointSize],
                                                   NULL);
         
-        NSDictionary *attributes = [NSDictionary dictionaryWithObject:(id)boldFont
-                                                               forKey:(id)kCTFontAttributeName];
+        NSDictionary *attributes = @{(NSString*)kCTFontAttributeName : (__bridge id)boldFont};
         NSAttributedString *headerString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@: ",header]
                                                                            attributes:attributes];
         
         [resultString appendAttributedString:headerString];
-        [headerString release];
         CFRelease(boldFont);
     }
     
-    if ([text length])
-    {
+    if ([text length]) {
         UIFont *defaultFont = [UIFont systemFontOfSize:fontSize];
         CTFontRef font = CTFontCreateWithName((CFStringRef)[defaultFont fontName],
                                                   [defaultFont pointSize],
                                                   NULL);
         
-        NSDictionary *attributes = [NSDictionary dictionaryWithObject:(id)font
-                                                               forKey:(id)kCTFontAttributeName];
+        NSDictionary *attributes = @{(NSString*)kCTFontAttributeName : (__bridge id)font};
         NSAttributedString *string = [[NSAttributedString alloc] initWithString:text
                                                                      attributes:attributes];
         
         [resultString appendAttributedString:string];
-        [string release];
         CFRelease(font);
     }
     
-    if ([resultString length])
-    {
+    if ([resultString length]) {
         CGFloat lineSpacing = 1.0;
         CGFloat paragraphSpacing = 6.0;
-        CTParagraphStyleSetting paragraphSetting[] = 
-        {
+        CTParagraphStyleSetting paragraphSetting[] = {
             {
                 .spec = kCTParagraphStyleSpecifierLineSpacing,
                 .valueSize = sizeof(CGFloat),
@@ -253,9 +233,8 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
             }
         };   
         CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(paragraphSetting, 2);
-        NSMutableDictionary *textAttributes = [NSMutableDictionary dictionary];
-        [textAttributes setObject:(id)paragraphStyle forKey:(id)kCTParagraphStyleAttributeName];
-        [textAttributes setObject:(id)[[UIColor colorWithHexString:@"#404649"] CGColor] forKey:(id)kCTForegroundColorAttributeName];
+        NSDictionary *textAttributes = @{(NSString*)kCTParagraphStyleAttributeName : (__bridge id)paragraphStyle,
+                                         (NSString*)kCTForegroundColorAttributeName : (__bridge id)[[UIColor colorWithHexString:@"#404649"] CGColor]};
         
         [resultString addAttributes:textAttributes
                               range:NSMakeRange(0, [resultString length])];
@@ -263,7 +242,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
         CFRelease(paragraphStyle);
     }
     
-    return [resultString autorelease];
+    return resultString;
 }
 
 @end

@@ -339,8 +339,8 @@
 		DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEBF146117699977009B6089 /* DiningRoot.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF146017699977009B6089 /* DiningRoot.m */; };
 		DEBF1464176999BA009B6089 /* DiningLink.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF1463176999B9009B6089 /* DiningLink.m */; };
-		DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FB914886F1A00B5719A /* LibrariesDetailLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FBB14886F1A00B5719A /* LibrariesDetailViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FB914886F1A00B5719A /* LibrariesDetailLabel.m */; };
+		DEBF5FD914886F1A00B5719A /* LibrariesDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FBB14886F1A00B5719A /* LibrariesDetailViewController.m */; };
 		DEBF5FDA14886F1A00B5719A /* LibrariesFinesSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FBE14886F1A00B5719A /* LibrariesFinesSummaryView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEBF5FDB14886F1A00B5719A /* LibrariesFinesTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC014886F1A00B5719A /* LibrariesFinesTabController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEBF5FDC14886F1A00B5719A /* LibrariesFinesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC214886F1A00B5719A /* LibrariesFinesTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };

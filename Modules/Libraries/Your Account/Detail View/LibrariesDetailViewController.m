@@ -7,20 +7,13 @@
 #import "Foundation+MITAdditions.h"
 
 @interface LibrariesDetailViewController ()
-@property (nonatomic,retain) NSDictionary *details;
-@property (nonatomic) LibrariesDetailType type;
-@property (nonatomic, retain) MobileRequestOperation *request;
-@property (nonatomic, assign) UIButton *renewButton;
+@property (nonatomic, weak) UIButton *renewButton;
+@property (strong) MobileRequestOperation *request;
+@property (copy) NSDictionary *details;
+@property LibrariesDetailType type;
 @end
 
 @implementation LibrariesDetailViewController
-@synthesize details = _details;
-@synthesize type = _type;
-@synthesize request = _request;
-@synthesize renewButton = _renewButton;
-
-
-
 - (id)initWithBookDetails:(NSDictionary*)dictionary detailType:(LibrariesDetailType)type
 {
     self = [super initWithNibName:nil
@@ -46,10 +39,7 @@
 
 - (void)dealloc
 {
-    self.details = nil;
     [self.request cancel];
-    self.request = nil;
-    [super dealloc];
 }
 
 - (void)didReceiveMemoryWarning
@@ -70,7 +60,7 @@
         mainFrame.origin.y += CGRectGetHeight(self.navigationController.navigationBar.frame);
         mainFrame.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
     }
-    UIScrollView *mainView = [[[UIScrollView alloc] initWithFrame:mainFrame] autorelease];
+    UIScrollView *mainView = [[UIScrollView alloc] initWithFrame:mainFrame];
 
     CGRect contentFrame = mainFrame;
     contentFrame.origin = CGPointZero;
@@ -80,7 +70,7 @@
     UIEdgeInsets statusInsets = UIEdgeInsetsMake(4 - detailInsets.top, 10, 4, 10);
 
     {
-        LibrariesDetailLabel *detailLabel = [[[LibrariesDetailLabel alloc] initWithBook:self.details] autorelease];
+        LibrariesDetailLabel *detailLabel = [[LibrariesDetailLabel alloc] initWithBook:self.details];
         detailLabel.backgroundColor = [UIColor whiteColor];
         CGRect detailFrame = CGRectMake(contentFrame.origin.x,
                                         contentFrame.origin.y,
@@ -96,7 +86,7 @@
 
 
     {
-        UIView *statusView = [[[UIView alloc] init] autorelease];
+        UIView *statusView = [[UIView alloc] init];
 
         CGRect statusContentFrame = CGRectMake(0, 0, CGRectGetWidth(contentFrame), CGFLOAT_MAX);;
         statusContentFrame.origin = CGPointZero;
@@ -106,17 +96,17 @@
         switch (self.type)
         {
             case LibrariesDetailHoldType:
-                if ([[self.details objectForKey:@"ready"] boolValue])
+                if ([self.details[@"ready"] boolValue])
                 {
-                    statusIcon = [[[UIImageView alloc] init] autorelease];
+                    statusIcon = [[UIImageView alloc] init];
                     statusIcon.image = [UIImage imageNamed:@"libraries/status-ready"];
                 }
                 break;
 
             case LibrariesDetailLoanType:
-                if ([[self.details objectForKey:@"overdue"] boolValue])
+                if ([self.details[@"overdue"] boolValue])
                 {
-                    statusIcon = [[[UIImageView alloc] init] autorelease];
+                    statusIcon = [[UIImageView alloc] init];
                     statusIcon.image = [UIImage imageNamed:@"libraries/status-alert"];
                 }
                 break;
@@ -139,7 +129,7 @@
         }
 
 
-        UILabel *statusLabel = [[[UILabel alloc] init] autorelease];
+        UILabel *statusLabel = [[UILabel alloc] init];
         statusLabel.numberOfLines = 0;
         statusLabel.lineBreakMode = UILineBreakModeWordWrap;
         statusLabel.font = [UIFont systemFontOfSize:14.0];
@@ -149,14 +139,14 @@
         {
             case LibrariesDetailHoldType:
             {
-                [statusText appendString:[self.details objectForKey:@"status"]];
-                if ([[self.details objectForKey:@"ready"] boolValue])
+                [statusText appendString:self.details[@"status"]];
+                if ([self.details[@"ready"] boolValue])
                 {
                     statusLabel.textColor = [UIColor colorWithRed:0
                                                             green:0.5
                                                              blue:0
                                                             alpha:1.0];
-                    [statusText appendFormat:@"\nPick up at %@", [self.details objectForKey:@"pickup-location"]];
+                    [statusText appendFormat:@"\nPick up at %@", self.details[@"pickup-location"]];
                 }
                 else
                 {
@@ -169,24 +159,19 @@
 
             case LibrariesDetailLoanType:
             {
-                if ([[self.details objectForKey:@"has-hold"] boolValue])
-                {
+                if ([self.details[@"has-hold"] boolValue]) {
                     [statusText appendString:@"Item has holds\n"];
                 }
 
-                if ([[self.details objectForKey:@"overdue"] boolValue])
-                {
+                if ([self.details[@"overdue"] boolValue]) {
                     statusLabel.textColor = [UIColor redColor];
-                }
-                else
-                {
+                } else {
                     statusLabel.textColor = [UIColor blackColor];
                     statusIcon.hidden = YES;
                 }
 
-                NSString *dueText = [self.details objectForKey:@"dueText"];
-                if (dueText)
-                {
+                NSString *dueText = self.details[@"dueText"];
+                if ([dueText length]) {
                     [statusText appendString:dueText];
                 }
                 break;
@@ -277,31 +262,28 @@
 
 - (IBAction)renewBook:(id)sender
 {
-    MITNavigationActivityView *activityView = [[[MITNavigationActivityView alloc] init] autorelease];
+    MITNavigationActivityView *activityView = [[MITNavigationActivityView alloc] init];
     self.navigationItem.titleView = activityView;
     [activityView startActivityWithTitle:@"Renewing..."];
     self.renewButton.enabled = NO;
     
-    NSDictionary *params = [NSDictionary dictionaryWithObject:[self.details objectForKey:@"barcode"]
-                                                       forKey:@"barcodes"];
     MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                             command:@"renewBooks"
-                                                                         parameters:params];
+                                                                         parameters:@{@"barcodes" : self.details[@"barcode"]}];
     [operation setCompleteBlock:^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         self.request = nil;
         self.navigationItem.titleView = nil;
         self.renewButton.enabled = YES;
 
-        if (error)
-        {
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Renew"
+        if (error) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Renew"
                                                              message:[error localizedDescription]
-                                                            delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil] autorelease];
+                                                            delegate:nil
+                                                   cancelButtonTitle:nil
+                                                   otherButtonTitles:@"OK", nil];
             [alert show];
-        }
-        else
-        {
-            LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:(NSArray *) content] autorelease];
+        } else {
+            LibrariesRenewResultViewController *vc = [[LibrariesRenewResultViewController alloc] initWithItems:(NSArray*)content];
             [self.navigationController pushViewController:vc
                                                  animated:YES];
         }
