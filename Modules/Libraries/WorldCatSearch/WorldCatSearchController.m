@@ -32,8 +32,8 @@ typedef enum {
 
 
 @interface WorldCatSearchController ()
-@property (strong) UITableView *searchResultsTableView;
-@property (strong) UIView *loadMoreView;
+@property (nonatomic,strong) UITableView *searchResultsTableView;
+@property (nonatomic,strong) UIView *loadMoreView;
 
 @property (copy) NSString *searchTerms;
 @property (copy) NSMutableArray *searchResults;

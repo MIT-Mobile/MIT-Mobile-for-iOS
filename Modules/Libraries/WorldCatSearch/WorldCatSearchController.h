@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
 @interface WorldCatSearchController : NSObject  <UITableViewDataSource, UITableViewDelegate>
-@property (weak) UINavigationController *navigationController;
+@property (nonatomic,weak) UINavigationController *navigationController;
 
 - (void)doSearch:(NSString *)searchTerms;
 - (void)clearSearch;

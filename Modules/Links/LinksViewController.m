@@ -5,10 +5,10 @@
 #import "MIT_MobileAppDelegate.h"
 
 @interface LinksViewController ()
-@property (strong) NSArray *linkResults;
+@property (copy) NSArray *linkResults;
 
-@property (weak) MITLoadingActivityView *loadingView;
-@property (weak) UILabel *errorLabel;
+@property (nonatomic,weak) MITLoadingActivityView *loadingView;
+@property (nonatomic,weak) UILabel *errorLabel;
 @end
 
 static NSString* const MITLinksDataCacheName = @"links_cache.plist";
