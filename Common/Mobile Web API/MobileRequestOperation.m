@@ -104,6 +104,18 @@ typedef enum
     gSecureStateTracker = [[MobileRequestAuthenticationTracker alloc] init];
 }
 
++ (NSOperationQueue*)defaultQueue
+{
+    static NSOperationQueue *defaultOperationQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        defaultOperationQueue = [[NSOperationQueue alloc] init];
+        defaultOperationQueue.maxConcurrentOperationCount = 1;
+    });
+    
+    return defaultOperationQueue;
+}
+
 
 + (id)operationWithURL:(NSURL *)requestURL parameters:(NSDictionary *)params
 {
@@ -387,8 +399,10 @@ typedef enum
                                                      interval:0.0
                                                        target:self
                                                      selector:nil userInfo:nil repeats:NO];
+        
         [self.operationRunLoop addTimer:self.runLoopTimer
                                 forMode:NSDefaultRunLoopMode];
+        
         [self transitionToState:MobileRequestStateOK
                 willSendRequest:self.initialRequest];
         

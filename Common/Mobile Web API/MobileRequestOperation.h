@@ -14,6 +14,7 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 @property (nonatomic,strong) id userData;
 @property (nonatomic) BOOL usePOST;
 
++ (NSOperationQueue*)defaultQueue;
 + (BOOL)isAuthenticationCookie:(NSHTTPCookie*)cookie;
 + (void)clearAuthenticatedSession;
 + (NSString*)userAgent;
