@@ -2,7 +2,6 @@
 #import "MIT_MobileAppDelegate+Private.h"
 #import "NewsModule.h"
 #import "ShuttleModule.h"
-#import "StellarModule.h"
 #import "PeopleModule.h"
 #import	"CMModule.h"
 #import "EmergencyModule.h"

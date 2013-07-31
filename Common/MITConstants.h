@@ -9,7 +9,6 @@ extern NSString * const EmergencyInfoKey;
 extern NSString * const EmergencyLastUpdatedKey;
 extern NSString * const EmergencyUnreadCountKey;
 extern NSString * const ShuttleSubscriptionsKey;
-extern NSString * const StellarTermKey;
 extern NSString * const TwitterShareUsernameKey;
 extern NSString * const MITDeviceIdKey;
 extern NSString * const MITPassCodeKey;
@@ -30,7 +29,6 @@ extern NSString * const CampusMapTag;
 extern NSString * const DiningTag;
 extern NSString * const NewsOfficeTag;
 extern NSString * const DirectoryTag;
-extern NSString * const StellarTag;
 extern NSString * const ShuttleTag;
 extern NSString * const ToursTag;
 extern NSString * const MobileWebTag;
@@ -51,19 +49,12 @@ extern NSString * const ShuttleAlertRemoved;
 
 extern NSString * const UnreadBadgeValuesChangeNotification;
 
-extern NSString * const MyStellarAlertNotification;
-
 // core data entity names
 extern NSString * const NewsStoryEntityName;
 extern NSString * const NewsCategoryEntityName;
 extern NSString * const NewsImageEntityName;
 extern NSString * const NewsImageRepEntityName;
 extern NSString * const PersonDetailsEntityName;
-extern NSString * const StellarCourseEntityName;
-extern NSString * const StellarClassEntityName;
-extern NSString * const StellarClassTimeEntityName;
-extern NSString * const StellarStaffMemberEntityName;
-extern NSString * const StellarAnnouncementEntityName;
 extern NSString * const EmergencyInfoEntityName;
 extern NSString * const EmergencyContactEntityName;
 extern NSString * const ShuttleRouteEntityName;

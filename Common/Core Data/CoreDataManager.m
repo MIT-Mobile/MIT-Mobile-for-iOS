@@ -109,7 +109,6 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
 - (NSSet*)modelNames
 {
     NSMutableSet *modelSet = [NSMutableSet set];
-    [modelSet addObject:@"Stellar"];
     [modelSet addObject:@"PeopleDataModel"];
     [modelSet addObject:@"News"];
     [modelSet addObject:@"Emergency"];

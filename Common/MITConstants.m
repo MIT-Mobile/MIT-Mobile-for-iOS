@@ -7,7 +7,6 @@ NSString * const MITNewsTwoFirstRunKey = @"MITNews2ClearedCachedArticles";
 NSString * const MITEventsModuleInSortOrderKey = @"MITEventsModuleInSortOrder";
 NSString * const EmergencyUnreadCountKey = @"UnreadEmergencyCount";
 NSString * const ShuttleSubscriptionsKey = @"ActiveShuttleSubscriptions";
-NSString * const StellarTermKey = @"StellarTerm";
 NSString * const TwitterShareUsernameKey = @"TwitterShareUsername";
 NSString * const MITDeviceIdKey = @"device_id";
 NSString * const MITPassCodeKey = @"pass_key";
@@ -29,7 +28,6 @@ NSString * const CampusMapTag  = @"map";
 NSString * const DiningTag     = @"dining";
 NSString * const NewsOfficeTag = @"newsoffice";
 NSString * const DirectoryTag  = @"people";
-NSString * const StellarTag    = @"stellar";
 NSString * const ShuttleTag    = @"shuttletrack";
 NSString * const ToursTag      = @"tours";
 NSString * const MobileWebTag  = @"mobileweb";
@@ -50,19 +48,12 @@ NSString * const ShuttleAlertRemoved = @"MITShuttleAlertRemovedNotification";
 
 NSString * const UnreadBadgeValuesChangeNotification = @"UnreadBadgeValuesChangeNotification";
 
-NSString * const MyStellarAlertNotification = @"MyStellarAlertNotification";
-
 // core data entity names
 NSString * const NewsStoryEntityName = @"NewsStory";
 NSString * const NewsCategoryEntityName = @"NewsCategory";
 NSString * const NewsImageEntityName = @"NewsImage";
 NSString * const NewsImageRepEntityName = @"NewsImageRep";
 NSString * const PersonDetailsEntityName = @"PersonDetails";
-NSString * const StellarCourseEntityName = @"StellarCourse";
-NSString * const StellarClassEntityName = @"StellarClass";
-NSString * const StellarClassTimeEntityName = @"StellarClassTime";
-NSString * const StellarStaffMemberEntityName = @"StellarStaffMember";
-NSString * const StellarAnnouncementEntityName = @"StellarAnnouncement";
 NSString * const EmergencyInfoEntityName = @"EmergencyInfo";
 NSString * const EmergencyContactEntityName = @"EmergencyContact";
 NSString * const ShuttleRouteEntityName = @"ShuttleRouteCache";
