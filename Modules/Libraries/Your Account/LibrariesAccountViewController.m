@@ -212,7 +212,10 @@ typedef enum {
     [self.tabControllers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if (view == [obj tableView])
         {
-            [obj tabWillBecomeActive];
+            if ([obj respondsToSelector:@selector(tabWillBecomeActive)]) {
+                [obj tabWillBecomeActive];
+            }
+            
             *stop = YES;
         }
     }];
@@ -221,9 +224,11 @@ typedef enum {
 - (void)tabView:(MITTabView*)tabView viewDidBecomeActive:(UIView*)view
 {
     [self.tabControllers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if (view == [obj tableView])
-        {
-            [obj tabDidBecomeActive];
+        if (view == [obj tableView]) {
+            if ([obj respondsToSelector:@selector(tabDidBecomeActive)]) {
+                [obj tabDidBecomeActive];
+            }
+            
             self.activeTabIndex = (LibrariesActiveTabType)idx;
             *stop = YES;
         }
@@ -233,9 +238,11 @@ typedef enum {
 - (void)tabView:(MITTabView*)tabView viewWillBecomeInactive:(UIView*)view
 {
     [self.tabControllers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if (view == [obj tableView])
-        {
-            [obj tabWillBecomeInactive];
+        if (view == [obj tableView]) {
+            if ([obj respondsToSelector:@selector(tabWillBecomeInactive)]) {
+                [obj tabWillBecomeInactive];
+            }
+            
             *stop = YES;
         }
     }];
@@ -246,7 +253,10 @@ typedef enum {
     [self.tabControllers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if (view == [obj tableView])
         {
-            [obj tabDidBecomeInactive];
+            if ([obj respondsToSelector:@selector(tabDidBecomeInactive)]) {
+                [obj tabDidBecomeInactive];
+            }
+            
             *stop = YES;
         }
     }];
