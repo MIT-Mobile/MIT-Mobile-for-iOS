@@ -9,7 +9,7 @@ extern NSString * const MITLibrariesOCLCCode;
 @property (copy) NSString *collection;
 @property (copy) NSString *url;
 @property (nonatomic,copy) NSArray *availability;
-@property (nonatomic,readonly,strong) NSDictionary *libraryAvailability;
+@property (nonatomic,readonly,copy) NSDictionary *libraryAvailability;
 @property NSUInteger count;
 
 - (NSUInteger)inLibraryCount;

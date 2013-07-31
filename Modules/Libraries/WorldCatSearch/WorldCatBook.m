@@ -15,7 +15,7 @@ static NSString * const WCHoldingAvailableKey = @"available";
 @end
 
 @interface WorldCatHolding ()
-@property (nonatomic,strong) NSDictionary *libraryAvailability;
+@property (nonatomic,copy) NSDictionary *libraryAvailability;
 @end
 
 @implementation WorldCatHolding
