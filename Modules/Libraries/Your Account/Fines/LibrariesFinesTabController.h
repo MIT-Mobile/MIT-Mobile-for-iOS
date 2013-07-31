@@ -5,8 +5,8 @@
 
 @interface LibrariesFinesTabController : NSObject <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic,weak) LibrariesAccountViewController *parentController;
-@property (nonatomic,strong) UITableView *tableView;
-@property (nonatomic,weak) LibrariesFinesSummaryView* headerView;
+@property (nonatomic,weak) UITableView *tableView;
+@property (nonatomic,strong) LibrariesFinesSummaryView* headerView;
 
 - (id)initWithTableView:(UITableView*)tableView;
 
