@@ -22,13 +22,13 @@
     
     if (itemDetails) {
         NSMutableString *status = [NSMutableString string];
-        [status appendString:[itemDetails objectForKey:@"status"]];
-        if ([[itemDetails objectForKey:@"ready"] boolValue]) {
+        [status appendString:itemDetails[@"status"]];
+        if ([itemDetails[@"ready"] boolValue]) {
             self.statusLabel.textColor = [UIColor colorWithRed:0
                                                          green:0.5
                                                           blue:0
                                                          alpha:1.0];
-            [status appendFormat:@"\nPick up at %@", [itemDetails objectForKey:@"pickup-location"]];
+            [status appendFormat:@"\nPick up at %@", itemDetails[@"pickup-location"]];
             self.statusIcon.hidden = NO;
         } else {
             self.statusLabel.textColor = [UIColor colorWithHexString:@"#404649"];

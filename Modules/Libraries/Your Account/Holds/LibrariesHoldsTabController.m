@@ -7,20 +7,14 @@
 #import "UIKit+MITAdditions.h"
 
 @interface LibrariesHoldsTabController ()
-@property (nonatomic,retain) MITLoadingActivityView *loadingView;
-@property (nonatomic,retain) NSDictionary *loanData;
+@property (nonatomic,weak) MITLoadingActivityView *loadingView;
+@property (copy) NSDictionary *loanData;
 
 - (void)setupTableView;
 - (void)updateLoanData;
 @end
 
 @implementation LibrariesHoldsTabController
-@synthesize parentController = _parentController,
-            tableView = _tableView;
-
-@synthesize headerView = _headerView,
-            loadingView = _loadingView,
-            loanData = _loanData;
 
 - (id)initWithTableView:(UITableView *)tableView
 {
@@ -37,31 +31,11 @@
     return self;
 }
 
-- (void)dealloc {
-    self.parentController = nil;
-    self.tableView = nil;
-    self.headerView = nil;
-    self.loadingView = nil;
-    self.loanData = nil;
-    [super dealloc];
-}
-
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
-}
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskPortrait;
-}
-
 - (void)setupTableView
 {
     {
         CGRect loadingFrame = self.tableView.bounds;
-        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                         UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor whiteColor];
@@ -73,7 +47,7 @@
     }
     
     {
-        LibrariesHoldsSummaryView *headerView = [[[LibrariesHoldsSummaryView alloc] initWithFrame:CGRectZero] autorelease];
+        LibrariesHoldsSummaryView *headerView = [[LibrariesHoldsSummaryView alloc] initWithFrame:CGRectZero];
         headerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                        UIViewAutoresizingFlexibleWidth);
         self.headerView = headerView;
@@ -88,9 +62,9 @@
 {
     if (tableView.isEditing == NO)
     {
-        NSArray *book = [self.loanData objectForKey:@"items"];
-        LibrariesDetailViewController *viewControler = [[[LibrariesDetailViewController alloc] initWithBookDetails:[book objectAtIndex:indexPath.row]
-                                                                                                        detailType:LibrariesDetailHoldType] autorelease];
+        NSArray *book = self.loanData[@"items"];
+        LibrariesDetailViewController *viewControler = [[LibrariesDetailViewController alloc] initWithBookDetails:book[indexPath.row]
+                                                                                                        detailType:LibrariesDetailHoldType];
         [self.parentController.navigationController pushViewController:viewControler
                                                               animated:YES];
         [tableView deselectRowAtIndexPath:indexPath
@@ -101,12 +75,7 @@
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSArray *items = [self.loanData objectForKey:@"items"];
-    if (items) {
-        return [items count];
-    } else {
-        return 0;
-    }
+    return [self.loanData[@"items"] count];
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -116,11 +85,11 @@
     LibrariesHoldsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
     
     if (cell == nil) {
-        cell = [[[LibrariesHoldsTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier] autorelease];
+        cell = [[LibrariesHoldsTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier];
     }
     
-    NSArray *loans = [self.loanData objectForKey:@"items"];
-    cell.itemDetails = [loans objectAtIndex:indexPath.row];
+    NSArray *loans = self.loanData[@"items"];
+    cell.itemDetails = loans[indexPath.row];
     
     return cell;
 }
@@ -132,8 +101,8 @@
         cell = [[LibrariesHoldsTableViewCell alloc] init];
     }
     
-    NSArray *loans = [self.loanData objectForKey:@"items"];
-    cell.itemDetails = [loans objectAtIndex:indexPath.row];
+    NSArray *loans = self.loanData[@"items"];
+    cell.itemDetails = loans[indexPath.row];
     
     return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame) - 20.0]; // 20.0 for the accessory view
 }
@@ -142,10 +111,9 @@
 {
     MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
                                                                             command:@"holds"
-                                                                         parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
-                                                                                                                forKey:@"limit"]];
+                                                                         parameters:@{@"limit" : [@(NSIntegerMax) stringValue]}];
     operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        if ([self.loadingView isDescendantOfView:self.tableView]) {
+        if (self.loadingView) {
             [self.loadingView removeFromSuperview];
             self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         }
@@ -176,21 +144,6 @@
 - (void)tabWillBecomeActive
 {
     [self updateLoanData];
-}
-
-- (void)tabDidBecomeActive
-{
-    
-}
-
-- (void)tabWillBecomeInactive
-{
-    
-}
-
-- (void)tabDidBecomeInactive
-{
-    
 }
 
 @end

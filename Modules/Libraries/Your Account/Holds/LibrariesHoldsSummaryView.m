@@ -5,39 +5,29 @@ static NSString* kLibrariesHoldsStatusText = @"You have %ld hold %@.";
 static NSString* kLibrariesHoldsPickupText = @"\n%ld %@ ready for pickup.";
 
 @interface LibrariesHoldsSummaryView ()
-@property (nonatomic,retain) UILabel *infoLabel;
+@property (nonatomic,weak) UILabel *infoLabel;
 @end
 
 @implementation LibrariesHoldsSummaryView
-@synthesize accountDetails = _accountDetails,
-            edgeInsets = _edgeInsets;
-
-@synthesize infoLabel = _infoLabel;
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.infoLabel = [[[UILabel alloc] init] autorelease];
-        self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
-        self.infoLabel.numberOfLines = 2;
-        self.infoLabel.backgroundColor = [UIColor clearColor];
-        self.infoLabel.font = [UIFont systemFontOfSize:14.0];
-        self.infoLabel.text = @"";
-        self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
-        [self addSubview:self.infoLabel];
+        UILabel *infoLabel = [[UILabel alloc] init];
+        infoLabel.lineBreakMode = UILineBreakModeWordWrap;
+        infoLabel.numberOfLines = 2;
+        infoLabel.backgroundColor = [UIColor clearColor];
+        infoLabel.font = [UIFont systemFontOfSize:14.0];
+        infoLabel.text = @"";
+        infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
+        [self addSubview:infoLabel];
+        self.infoLabel = infoLabel;
         
         self.edgeInsets = UIEdgeInsetsMake(6, 10, 9, 10);
     }
     
     return self;
-}
-
-- (void)dealloc
-{
-    self.accountDetails = nil;
-    self.infoLabel = nil;
-    [super dealloc];
 }
 
 - (void)layoutSubviews
@@ -69,10 +59,9 @@ static NSString* kLibrariesHoldsPickupText = @"\n%ld %@ ready for pickup.";
 
 - (void)setAccountDetails:(NSDictionary *)accountDetails
 {
-    [_accountDetails release];
-    _accountDetails = [accountDetails retain];
-    NSInteger totalHolds = [[accountDetails objectForKey:@"total"] integerValue];
-    NSInteger ready = [[accountDetails objectForKey:@"ready"] integerValue];
+    _accountDetails = [accountDetails copy];
+    NSInteger totalHolds = [accountDetails[@"total"] integerValue];
+    NSInteger ready = [accountDetails[@"ready"] integerValue];
 
     NSMutableString *text = [NSMutableString stringWithFormat:kLibrariesHoldsStatusText, totalHolds, ((totalHolds == 1) ? @"request" : @"requests")];
     

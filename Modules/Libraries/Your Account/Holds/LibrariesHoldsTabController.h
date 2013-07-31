@@ -4,14 +4,11 @@
 @class LibrariesAccountViewController;
 
 @interface LibrariesHoldsTabController : NSObject <UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic,retain) LibrariesAccountViewController *parentController;
-@property (nonatomic,retain) UITableView *tableView;
-@property (nonatomic,retain) LibrariesHoldsSummaryView* headerView;
+@property (nonatomic,weak) LibrariesAccountViewController *parentController;
+@property (nonatomic,weak) UITableView *tableView;
+@property (nonatomic,strong) LibrariesHoldsSummaryView* headerView;
 
 - (id)initWithTableView:(UITableView*)tableView;
 
 - (void)tabWillBecomeActive;
-- (void)tabDidBecomeActive;
-- (void)tabWillBecomeInactive;
-- (void)tabDidBecomeInactive;
 @end
