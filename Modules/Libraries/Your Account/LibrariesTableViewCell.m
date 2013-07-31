@@ -5,17 +5,10 @@
 const CGFloat kLibrariesTableCellDefaultWidth = 290;
 
 @interface LibrariesTableViewCell ()
-- (void)privateInit;
+- (void)setup;
 @end
 
 @implementation LibrariesTableViewCell
-@synthesize contentViewInsets = _contentViewInsets,
-            infoLabel = _infoLabel,
-            itemDetails = _itemDetails,
-            statusLabel = _statusLabel,
-            statusIcon = _statusIcon,
-            titleLabel = _titleLabel;
-
 - (id)init
 {
     return [self initWithReuseIdentifier:nil];
@@ -26,61 +19,56 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     self = [super initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:reuseIdentifier];
     if (self) {
-        [self privateInit];
+        [self setup];
     }
 
     return self;
 }
 
-- (void)privateInit
+- (void)setup
 {
     self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     self.editingAccessoryType = UITableViewCellAccessoryNone;
     self.shouldIndentWhileEditing = NO;
     
-    self.titleLabel = [[[UILabel alloc] init] autorelease];
-    self.titleLabel.lineBreakMode = UILineBreakModeWordWrap;
-    self.titleLabel.numberOfLines = 0;
-    self.titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
-    self.titleLabel.highlightedTextColor = [UIColor whiteColor];
-    self.titleLabel.autoresizingMask = UIViewAutoresizingNone;
-    [self.contentView addSubview:self.titleLabel];
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.lineBreakMode = UILineBreakModeWordWrap;
+    titleLabel.numberOfLines = 0;
+    titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
+    titleLabel.highlightedTextColor = [UIColor whiteColor];
+    titleLabel.autoresizingMask = UIViewAutoresizingNone;
+    [self.contentView addSubview:titleLabel];
+    self.titleLabel = titleLabel;
     
-    self.infoLabel = [[[UILabel alloc] init] autorelease];
-    self.infoLabel.lineBreakMode = UILineBreakModeTailTruncation;
-    self.infoLabel.numberOfLines = 1;
-    self.infoLabel.font = [UIFont systemFontOfSize:14.0];
-    self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
-    self.infoLabel.highlightedTextColor = [UIColor whiteColor];
-    self.infoLabel.autoresizingMask = UIViewAutoresizingNone;
+    UILabel *infoLabel = [[UILabel alloc] init];
+    infoLabel.lineBreakMode = UILineBreakModeTailTruncation;
+    infoLabel.numberOfLines = 1;
+    infoLabel.font = [UIFont systemFontOfSize:14.0];
+    infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
+    infoLabel.highlightedTextColor = [UIColor whiteColor];
+    infoLabel.autoresizingMask = UIViewAutoresizingNone;
     
     [self.contentView addSubview:self.infoLabel];
+    self.infoLabel = infoLabel;
     
-    self.statusLabel = [[[UILabel alloc] init] autorelease];
-    self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
-    self.statusLabel.numberOfLines = 0;
-    self.statusLabel.font = [UIFont systemFontOfSize:14.0];
-    self.statusLabel.textColor = [UIColor colorWithHexString:@"#404649"];
-    self.statusLabel.highlightedTextColor = [UIColor whiteColor];
-    self.statusLabel.autoresizingMask = UIViewAutoresizingNone;
-    [self.contentView addSubview:self.statusLabel];
+    UILabel *statusLabel = [[UILabel alloc] init];
+    statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+    statusLabel.numberOfLines = 0;
+    statusLabel.font = [UIFont systemFontOfSize:14.0];
+    statusLabel.textColor = [UIColor colorWithHexString:@"#404649"];
+    statusLabel.highlightedTextColor = [UIColor whiteColor];
+    statusLabel.autoresizingMask = UIViewAutoresizingNone;
+    [self.contentView addSubview:statusLabel];
+    self.statusLabel = statusLabel;
     
-    self.statusIcon = [[[UIImageView alloc] init] autorelease];
-    self.statusIcon.hidden = YES;
-    [self.contentView addSubview:self.statusIcon];
+    UIImageView *statusIcon = [[UIImageView alloc] init];
+    statusIcon.hidden = YES;
+    [self.contentView addSubview:statusIcon];
+    self.statusIcon = statusIcon;
     
     self.contentViewInsets = UIEdgeInsetsMake(10, 10, 10, 10);
 }
 
-- (void)dealloc
-{
-    self.itemDetails = nil;
-    self.infoLabel = nil;
-    self.statusLabel = nil;
-    self.titleLabel = nil;
-    
-    [super dealloc];
-}
 
 - (void)layoutSubviews
 {
@@ -181,8 +169,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
 
 - (void)setItemDetails:(NSDictionary *)itemDetails
 {
-    if ([self.itemDetails isEqualToDictionary:itemDetails] == NO) {
-        [_itemDetails release];
+    if (![self.itemDetails isEqual:itemDetails]) {
         _itemDetails = [itemDetails copy];
         
         if (itemDetails == nil) {
@@ -190,11 +177,10 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
             self.infoLabel.text = nil;
             self.statusLabel.text = nil;
         } else {
-            NSDictionary *item = self.itemDetails;
-            self.titleLabel.text = [item objectForKey:@"title"];
+            self.titleLabel.text = self.itemDetails[@"title"];
             
-            NSString *author = [item objectForKey:@"author"];
-            NSString *year = [item objectForKey:@"year"];
+            NSString *author = self.itemDetails[@"author"];
+            NSString *year = self.itemDetails[@"year"];
             self.infoLabel.text = [[NSString stringWithFormat:@"%@; %@",year,author] stringByDecodingXMLEntities];
         }
         

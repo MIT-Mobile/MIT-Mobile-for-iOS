@@ -2,8 +2,8 @@
 #import "MITTabView.h"
 
 @interface LibrariesAccountViewController : UIViewController <MITTabViewDelegate>
-@property (nonatomic,readonly, retain) NSOperationQueue *requestOperations;
-@property (nonatomic,readonly) id activeTabController;
+@property (readonly, strong) NSOperationQueue *requestOperations;
+@property (nonatomic,readonly, weak) id activeTabController;
 
 - (void)reportError:(NSError*)error fromTab:(id)tabController;
 - (void)forceTabLayout;

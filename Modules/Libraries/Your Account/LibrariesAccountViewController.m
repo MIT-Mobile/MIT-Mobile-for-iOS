@@ -14,22 +14,15 @@ typedef enum {
 } LibrariesActiveTabType;
 
 @interface LibrariesAccountViewController ()
-@property (nonatomic,retain) NSOperationQueue *requestOperations;
-@property (nonatomic,retain) MITTabView *tabView;
-@property (nonatomic,assign) LibrariesActiveTabType activeTabIndex;
-@property (nonatomic,retain) NSMutableArray *barItems;
-@property (nonatomic,retain) NSMutableArray *tabControllers;
-@property (nonatomic) BOOL alertIsActive;
+@property (strong) NSOperationQueue *requestOperations;
+@property (nonatomic,weak) MITTabView *tabView;
+@property LibrariesActiveTabType activeTabIndex;
+@property (nonatomic,strong) NSMutableArray *barItems;
+@property (nonatomic,strong) NSMutableArray *tabControllers;
+@property BOOL alertIsActive;
 @end
 
 @implementation LibrariesAccountViewController
-@synthesize tabView = _tabView,
-            activeTabIndex = _activeTabIndex,
-            barItems = _barItems,
-            tabControllers = _tabControllers,
-            alertIsActive = _alertIsActive,
-            requestOperations = _requestOperations;
-
 @dynamic activeTabController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -40,34 +33,21 @@ typedef enum {
         self.barItems = [NSMutableArray array];
         self.tabControllers = [NSMutableArray array];
         
-        self.requestOperations = [[[NSOperationQueue alloc] init] autorelease];
+        self.requestOperations = [[NSOperationQueue alloc] init];
         self.requestOperations.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
     }
+    
     return self;
 }
 
 - (void)dealloc {
     self.activeTabIndex = LibrariesActiveTabInvalid;
     [self.requestOperations cancelAllOperations];
-    
-    self.tabView = nil;
-    self.barItems = nil;
-    self.tabControllers = nil;
-    
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
 }
 
 - (id)activeTabController
 {
-    return [self.tabControllers objectAtIndex:self.activeTabIndex];
+    return self.tabControllers[self.activeTabIndex];
 }
 
 #pragma mark - View lifecycle
@@ -77,11 +57,11 @@ typedef enum {
     screenRect.origin.y += CGRectGetHeight(self.navigationController.navigationBar.frame);
     screenRect.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
     
-    UIView *mainView = [[[UIView alloc] initWithFrame:screenRect] autorelease];
+    UIView *mainView = [[UIView alloc] initWithFrame:screenRect];
     mainView.autoresizesSubviews = YES;
     
     {
-        MITTabView *tabView = [[[MITTabView alloc] init] autorelease];
+        MITTabView *tabView = [[MITTabView alloc] init];
         tabView.autoresizesSubviews = YES;
         tabView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                      UIViewAutoresizingFlexibleWidth |
@@ -93,19 +73,19 @@ typedef enum {
     
     // keep this order in sync with LibrariesActiveTabType enum above
     {
-        UITableView *view = [[[UITableView alloc] initWithFrame:CGRectZero
-                                                          style:UITableViewStylePlain] autorelease];
+        UITableView *view = [[UITableView alloc] initWithFrame:CGRectZero
+                                                          style:UITableViewStylePlain];
         view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
-        LibrariesLoanTabController *tabController = [[[LibrariesLoanTabController alloc] initWithTableView:view] autorelease];
+        LibrariesLoanTabController *tabController = [[LibrariesLoanTabController alloc] initWithTableView:view];
         tabController.parentController = self;
         tabController.tabViewHidingDelegate = self.tabView;
         
-        UITabBarItem *item = [[[UITabBarItem alloc] initWithTitle:@"Loans"
-                                                            image:nil
-                                                              tag:LibrariesActiveTabLoans] autorelease];
+        UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:@"Loans"
+                                                           image:nil
+                                                             tag:LibrariesActiveTabLoans];
         [self.barItems addObject:item];
         [self.tabControllers addObject:tabController];
         [self.tabView addView:view
@@ -114,18 +94,18 @@ typedef enum {
     }
     
     {
-        UITableView *view = [[[UITableView alloc] initWithFrame:CGRectZero
-                                                          style:UITableViewStylePlain] autorelease];
+        UITableView *view = [[UITableView alloc] initWithFrame:CGRectZero
+                                                          style:UITableViewStylePlain];
         view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
-        LibrariesFinesTabController *tabController = [[[LibrariesFinesTabController alloc] initWithTableView:view] autorelease];
+        LibrariesFinesTabController *tabController = [[LibrariesFinesTabController alloc] initWithTableView:view];
         tabController.parentController = self;
         
-        UITabBarItem *item = [[[UITabBarItem alloc] initWithTitle:@"Fines"
-                                                            image:nil
-                                                              tag:LibrariesActiveTabFines] autorelease];
+        UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:@"Fines"
+                                                           image:nil
+                                                             tag:LibrariesActiveTabFines];
         [self.barItems addObject:item];
         [self.tabControllers addObject:tabController];
         [self.tabView addView:view
@@ -134,18 +114,18 @@ typedef enum {
     }
     
     {
-        UITableView *view = [[[UITableView alloc] initWithFrame:CGRectZero
-                                                          style:UITableViewStylePlain] autorelease];
+        UITableView *view = [[UITableView alloc] initWithFrame:CGRectZero
+                                                         style:UITableViewStylePlain];
         view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
         view.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         
-        LibrariesHoldsTabController *tabController = [[[LibrariesHoldsTabController alloc] initWithTableView:view] autorelease];
+        LibrariesHoldsTabController *tabController = [[LibrariesHoldsTabController alloc] initWithTableView:view];
         tabController.parentController = self;
         
-        UITabBarItem *item = [[[UITabBarItem alloc] initWithTitle:@"Holds"
-                                                            image:nil
-                                                              tag:LibrariesActiveTabHolds] autorelease];
+        UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:@"Holds"
+                                                           image:nil
+                                                             tag:LibrariesActiveTabHolds];
         [self.barItems addObject:item];
         [self.tabControllers addObject:tabController];
         [self.tabView addView:view
@@ -179,8 +159,13 @@ typedef enum {
     
     switch (self.activeTabIndex) {
         default:
-        case LibrariesActiveTabLoans:
-            [[self.tabControllers objectAtIndex:LibrariesActiveTabLoans] tabWillBecomeActive];
+        case LibrariesActiveTabLoans: {
+            id tabController = self.tabControllers[LibrariesActiveTabLoans];
+            if ([tabController respondsToSelector:@selector(tabWillBecomeActive)]) {
+                [tabController tabWillBecomeActive];
+            }
+        }
+            
         case LibrariesActiveTabFines:
         case LibrariesActiveTabHolds:
             [self.tabView selectTabAtIndex:self.activeTabIndex];
@@ -191,7 +176,10 @@ typedef enum {
 {
     [super viewDidAppear:animated];
     if (self.activeTabIndex == LibrariesActiveTabLoans) {
-        [[self.tabControllers objectAtIndex:LibrariesActiveTabLoans] tabDidBecomeActive];
+        id tabController = self.tabControllers[LibrariesActiveTabLoans];
+        if ([tabController respondsToSelector:@selector(tabWillBecomeActive)]) {
+            [tabController tabWillBecomeActive];
+        }
     }
 }
 
@@ -254,7 +242,7 @@ typedef enum {
         if (view == [obj tableView])
         {
             if ([obj respondsToSelector:@selector(tabDidBecomeInactive)]) {
-                [obj tabDidBecomeInactive];
+                [obj performSelector:@selector(tabDidBecomeInactive)];
             }
             
             *stop = YES;
@@ -310,7 +298,7 @@ typedef enum {
         return;
     }
     
-    DDLogVerbose(@"Tab <%@> encountered an error: %@", [[self.barItems objectAtIndex:type] title], [error localizedDescription]);
+    DDLogVerbose(@"Tab <%@> encountered an error: %@", [self.barItems[type] title], [error localizedDescription]);
     
     if ((self.alertIsActive == NO) && (self.activeTabIndex == type))
     {
@@ -321,11 +309,11 @@ typedef enum {
         }
         else
         {
-            UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:self.title
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:self.title
                                                              message:[error localizedDescription]
                                                             delegate:self
                                                    cancelButtonTitle:nil
-                                                   otherButtonTitles:@"OK",nil] autorelease];
+                                                   otherButtonTitles:@"OK",nil];
             self.alertIsActive = YES;
             [alert show];
         }
