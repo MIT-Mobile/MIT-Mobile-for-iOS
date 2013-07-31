@@ -2,7 +2,7 @@
 #import "MITTabHeaderView.h"
 
 @interface LibrariesLoanSummaryView : MITTabHeaderView
-@property (nonatomic,retain) UIButton* renewButton;
-@property (nonatomic) UIEdgeInsets edgeInsets;
-@property (nonatomic,retain) NSDictionary* accountDetails;
+@property UIEdgeInsets edgeInsets;
+@property (nonatomic,copy) NSDictionary* accountDetails;
+@property (nonatomic,weak) UIButton* renewButton;
 @end

@@ -7,61 +7,47 @@ static NSString* kLibrariesLoanFormatString = @"You have %lu %@ on loan.";
 static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
 
 @interface LibrariesLoanSummaryView ()
-@property (nonatomic, retain) UILabel* infoLabel;
+@property (nonatomic,weak) UILabel* infoLabel;
 @end
 
 @implementation LibrariesLoanSummaryView
-@synthesize accountDetails = _accountDetails,
-            edgeInsets = _edgeInsets;
-@synthesize infoLabel = _infoLabel;
-@synthesize renewButton = _renewButton;
-
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.infoLabel = [[[UILabel alloc] init] autorelease];
-        self.infoLabel.backgroundColor = [UIColor clearColor];
-        self.infoLabel.text = @"";
-        self.infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
-        self.infoLabel.font = [UIFont systemFontOfSize:14.0];
-        self.infoLabel.lineBreakMode = UILineBreakModeWordWrap;
-        self.infoLabel.numberOfLines = 2;
-        [self addSubview:self.infoLabel];
+        UILabel *infoLabel = [[UILabel alloc] init];
+        infoLabel.backgroundColor = [UIColor clearColor];
+        infoLabel.text = @"";
+        infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
+        infoLabel.font = [UIFont systemFontOfSize:14.0];
+        infoLabel.lineBreakMode = UILineBreakModeWordWrap;
+        infoLabel.numberOfLines = 2;
+        [self addSubview:infoLabel];
+        self.infoLabel = infoLabel;
         
         
-        self.renewButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        
-        [self.renewButton setTitle:@"Renew Books…"
+        UIButton *renewButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [renewButton setTitle:@"Renew Books…"
+                     forState:UIControlStateNormal];
+        [renewButton setTitleColor:[UIColor colorWithWhite:0.19 alpha:1.0]
                           forState:UIControlStateNormal];
-        [self.renewButton setTitleColor:[UIColor colorWithWhite:0.19 alpha:1.0]
-                               forState:UIControlStateNormal];
-        [self.renewButton setTitleColor:[UIColor lightGrayColor]
-                               forState:UIControlStateDisabled];
-        self.renewButton.titleLabel.font = [UIFont systemFontOfSize:14.0];
+        [renewButton setTitleColor:[UIColor lightGrayColor]
+                          forState:UIControlStateDisabled];
+        renewButton.titleLabel.font = [UIFont systemFontOfSize:14.0];
 
-        UIImage *buttonBackground = [[UIImage imageNamed:@"global/tab2-summary-button"]
-                                     stretchableImageWithLeftCapWidth:5 topCapHeight:5];
-        [self.renewButton setBackgroundImage:buttonBackground forState:UIControlStateNormal];
-        self.renewButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 3.0, 0.0, -3.0);
+        UIImage *buttonBackground = [[UIImage imageNamed:@"global/tab2-summary-button"] stretchableImageWithLeftCapWidth:5 topCapHeight:5];
+        [renewButton setBackgroundImage:buttonBackground forState:UIControlStateNormal];
+        renewButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 3.0, 0.0, -3.0);
 
-        CGRect buttonFrame = self.renewButton.frame;
+        CGRect buttonFrame = renewButton.frame;
         buttonFrame.size = CGSizeMake(118.0, 35.0);
-        self.renewButton.frame = buttonFrame;
-        
-        [self addSubview:self.renewButton];
+        renewButton.frame = buttonFrame;
+        [self addSubview:renewButton];
+        self.renewButton = renewButton;
         
         self.edgeInsets = UIEdgeInsetsMake(6, 10, 9, 10);
     }
     return self;
-}
-
-- (void)dealloc
-{
-    self.infoLabel = nil;
-    self.accountDetails = nil;
-
-    [super dealloc];
 }
 
 - (void)layoutSubviews
@@ -103,11 +89,10 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
 
 - (void)setAccountDetails:(NSDictionary *)accountDetails
 {
-    [_accountDetails release];
-    _accountDetails = [accountDetails retain];
+    _accountDetails = [accountDetails copy];
 
-    NSUInteger loanCount = [[accountDetails objectForKey:@"total"] unsignedIntegerValue];
-    NSUInteger overdueCount = [[accountDetails objectForKey:@"overdue"] unsignedIntegerValue];
+    NSUInteger loanCount = [accountDetails[@"total"] unsignedIntegerValue];
+    NSUInteger overdueCount = [accountDetails[@"overdue"] unsignedIntegerValue];
     
     NSMutableString *infoText = [NSMutableString stringWithFormat:kLibrariesLoanFormatString, loanCount, ((loanCount == 1) ? @"item" : @"items")];
     

@@ -4,11 +4,10 @@
 #import "UIKit+MITAdditions.h"
 
 @interface LibrariesLoanTableViewCell ()
-@property (nonatomic, retain) UIImageView *selectionView;
+@property (nonatomic, weak) UIImageView *selectionView;
 @end
 
 @implementation LibrariesLoanTableViewCell
-@synthesize selectionView = _selectionView;
 
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -24,12 +23,6 @@
     }
     
     return self;
-}
-
-- (void)dealloc
-{
-    self.selectionView = nil;
-    [super dealloc];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -54,17 +47,18 @@
     // Before transitioning to editing:
     // - selectionView is totally invisible and hidden, so make it unhidden
     if (state & UITableViewCellStateShowingEditControlMask) {
-        if (self.selectionView == nil) {
-            self.selectionView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/cell-unselected"]] autorelease];
+        if (!self.selectionView) {
+            UIImageView *selectionView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"libraries/cell-unselected"]];
             
-            CGRect frame = self.selectionView.frame;
+            CGRect frame = selectionView.frame;
             frame.origin.x = -30.0 + self.contentViewInsets.left;
-            frame.origin.y = floor((CGRectGetHeight(self.contentView.bounds) - CGRectGetHeight(self.selectionView.frame)) / 2.0);
-            self.selectionView.frame = frame;
+            frame.origin.y = floor((CGRectGetHeight(self.contentView.bounds) - CGRectGetHeight(selectionView.frame)) / 2.0);
+            selectionView.frame = frame;
 
             self.selectionStyle = UITableViewCellSelectionStyleNone;
-            [self.contentView addSubview:self.selectionView];
-            [self.contentView sendSubviewToBack:self.selectionView];
+            [self.contentView addSubview:selectionView];
+            [self.contentView sendSubviewToBack:selectionView];
+            self.selectionView = selectionView;
         }
     }
 
@@ -90,11 +84,11 @@
     [super setItemDetails:itemDetails];
     
     NSMutableString *status = [NSMutableString string];
-    if ([[itemDetails objectForKey:@"has-hold"] boolValue]) {
+    if ([itemDetails[@"has-hold"] boolValue]) {
         [status appendString:@"Item has holds\n"];
     }
     
-    if ([[itemDetails objectForKey:@"overdue"] boolValue]) {
+    if ([itemDetails[@"overdue"] boolValue]) {
         self.statusLabel.textColor = [UIColor redColor];
         self.statusIcon.hidden = NO;
     } else {
@@ -102,7 +96,7 @@
         self.statusIcon.hidden = YES;
     }
     
-    NSString *dueText = [itemDetails objectForKey:@"dueText"];
+    NSString *dueText = itemDetails[@"dueText"];
     
     if (dueText) {
         [status appendString:dueText];

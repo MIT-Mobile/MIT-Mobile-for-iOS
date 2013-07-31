@@ -335,10 +335,10 @@
 		DEBF5FDF14886F1A00B5719A /* LibrariesHoldsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FC914886F1A00B5719A /* LibrariesHoldsTableViewCell.m */; };
 		DEBF5FE014886F1A00B5719A /* LibrariesAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FCB14886F1A00B5719A /* LibrariesAccountViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEBF5FE114886F1A00B5719A /* LibrariesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FCD14886F1A00B5719A /* LibrariesTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEBF5FE214886F1A00B5719A /* LibrariesLoanSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD014886F1A00B5719A /* LibrariesLoanSummaryView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEBF5FE314886F1A00B5719A /* LibrariesLoanTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD214886F1A00B5719A /* LibrariesLoanTabController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEBF5FE414886F1A00B5719A /* LibrariesLoanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD414886F1A00B5719A /* LibrariesLoanTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEBF5FE514886F1A00B5719A /* LibrariesRenewResultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD714886F1A00B5719A /* LibrariesRenewResultViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DEBF5FE214886F1A00B5719A /* LibrariesLoanSummaryView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD014886F1A00B5719A /* LibrariesLoanSummaryView.m */; };
+		DEBF5FE314886F1A00B5719A /* LibrariesLoanTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD214886F1A00B5719A /* LibrariesLoanTabController.m */; };
+		DEBF5FE414886F1A00B5719A /* LibrariesLoanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD414886F1A00B5719A /* LibrariesLoanTableViewCell.m */; };
+		DEBF5FE514886F1A00B5719A /* LibrariesRenewResultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD714886F1A00B5719A /* LibrariesRenewResultViewController.m */; };
 		DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFF07C110001E300F0573E /* StoryImageView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; };
 		DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6A110F8F71D009FAE35 /* NewsImage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };

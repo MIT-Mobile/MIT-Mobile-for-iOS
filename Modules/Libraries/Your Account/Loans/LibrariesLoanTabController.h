@@ -10,16 +10,15 @@
 @end
 
 @interface LibrariesLoanTabController : NSObject <UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic,retain) LibrariesLoanSummaryView *headerView;
-@property (nonatomic,retain) LibrariesAccountViewController *parentController;
-@property (nonatomic,retain) UITableView *tableView;
-@property (nonatomic,assign) id<MITTabViewHidingDelegate> tabViewHidingDelegate;
+@property (nonatomic,strong) LibrariesLoanSummaryView *headerView;
+@property (nonatomic,weak) LibrariesAccountViewController *parentController;
+@property (nonatomic,weak) UITableView *tableView;
+@property (nonatomic,weak) id<MITTabViewHidingDelegate> tabViewHidingDelegate;
 
 - (id)initWithTableView:(UITableView*)tableView;
 
 - (void)tabWillBecomeActive;
 - (void)tabDidBecomeActive;
 - (void)tabWillBecomeInactive;
-- (void)tabDidBecomeInactive;
 
 @end

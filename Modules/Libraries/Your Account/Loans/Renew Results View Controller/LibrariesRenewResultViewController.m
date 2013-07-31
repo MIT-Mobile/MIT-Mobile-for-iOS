@@ -5,18 +5,14 @@
 #import "UIKit+MITAdditions.h"
 
 @interface LibrariesRenewResultViewController ()
-@property (nonatomic,retain) NSArray *renewItems;
-@property (nonatomic,retain) UIView *headerView;
-@property (nonatomic,assign) UITableView *tableView;
+@property (nonatomic,strong) UIView *headerView;
+@property (nonatomic,weak) UITableView *tableView;
+@property (copy) NSArray *renewItems;
 
 - (UIView*)tableHeaderViewForWidth:(CGFloat)width;
 @end
 
 @implementation LibrariesRenewResultViewController
-@synthesize renewItems = _renewItems;
-@synthesize tableView = _tableView;
-@synthesize headerView = _headerView;
-
 - (id)init
 {
     return [self initWithItems:nil];
@@ -39,25 +35,13 @@
         self.renewItems = [renewItems objectsAtIndexes:validItems];
         self.title = @"Renew";
         self.navigationItem.hidesBackButton = YES;
-        self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                                target:self
-                                                                                                action:@selector(done:)] autorelease];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                               target:self
+                                                                                               action:@selector(done:)];
     }
     
     return self;
 }
-
-- (void)dealloc
-{
-    self.renewItems = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
 
 #pragma mark - View lifecycle
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
@@ -71,8 +55,8 @@
     }
     
     {
-        UITableView *view = [[[UITableView alloc] initWithFrame:mainFrame
-                                                          style:UITableViewStylePlain] autorelease];
+        UITableView *view = [[UITableView alloc] initWithFrame:mainFrame
+                                                         style:UITableViewStylePlain];
         view.delegate = self;
         view.dataSource = self;
         
@@ -103,7 +87,7 @@
     contentFrame.size.height = 0.0;
     
     void(^addIconAndLabel)(UIImage *, NSString *) = ^(UIImage *image, NSString *text) {
-        UIImageView *icon = [[[UIImageView alloc] initWithImage:image] autorelease];
+        UIImageView *icon = [[UIImageView alloc] initWithImage:image];
         icon.autoresizingMask = UIViewAutoresizingNone;
         
         CGRect iconFrame = icon.frame;
@@ -111,7 +95,7 @@
         icon.frame = iconFrame;
         iconFrame.size.width += 4.0;
         
-        UILabel *label = [[[UILabel alloc] init] autorelease];
+        UILabel *label = [[UILabel alloc] init];
         label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         label.backgroundColor = [UIColor clearColor];
         label.textColor = [UIColor colorWithHexString:@"#404649"];
@@ -150,7 +134,7 @@
     
     headerView.frame = contentFrame;
     
-    return [headerView autorelease];
+    return headerView;
 }
 
 
@@ -203,11 +187,11 @@
     LibrariesLoanTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
-        cell = [[[LibrariesLoanTableViewCell alloc] initWithReuseIdentifier:CellIdentifier] autorelease];
+        cell = [[LibrariesLoanTableViewCell alloc] initWithReuseIdentifier:CellIdentifier];
     }
     
-    NSDictionary *bookDetails = [self.renewItems objectAtIndex:indexPath.row];
-    cell.itemDetails = [bookDetails objectForKey:@"details"];
+    NSDictionary *bookDetails = self.renewItems[indexPath.row];
+    cell.itemDetails = bookDetails[@"details"];
     cell.accessoryType = UITableViewCellAccessoryNone;
     
     return cell;
@@ -220,8 +204,8 @@
         cell = [[LibrariesLoanTableViewCell alloc] init];
     }
     
-    NSDictionary *bookDetails = [self.renewItems objectAtIndex:indexPath.row];
-    cell.itemDetails = [bookDetails objectForKey:@"details"];
+    NSDictionary *bookDetails = self.renewItems[indexPath.row];
+    cell.itemDetails = bookDetails[@"details"];
     cell.accessoryType = UITableViewCellAccessoryNone;
     
     return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame)];

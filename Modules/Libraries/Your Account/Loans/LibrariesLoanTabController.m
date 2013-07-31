@@ -8,14 +8,14 @@
 #import "UIKit+MITAdditions.h"
 
 @interface LibrariesLoanTabController ()
-@property (nonatomic, retain) MITLoadingActivityView *loadingView;
+@property (nonatomic, weak) MITLoadingActivityView *loadingView;
+@property (nonatomic, weak) UIBarButtonItem *renewBarItem;
+@property (nonatomic, weak) UIBarButtonItem *cancelBarItem;
 
-@property (nonatomic, retain) NSDictionary *loanData;
-@property (nonatomic, retain) NSMutableIndexSet *renewItems;
-@property (nonatomic, retain) UIBarButtonItem *renewBarItem;
-@property (nonatomic, retain) UIBarButtonItem *cancelBarItem;
+@property (copy) NSDictionary *loanData;
+@property (copy) NSMutableIndexSet *renewItems;
 
-@property (nonatomic,retain) MobileRequestOperation *renewOperation;
+@property (strong) MobileRequestOperation *renewOperation;
 
 - (void)setupTableView;
 - (void)updateLoanData;
@@ -26,21 +26,6 @@
 @end
 
 @implementation LibrariesLoanTabController
-@synthesize parentController = _parentController;
-@synthesize tableView = _tableView;
-@synthesize tabViewHidingDelegate = _tabViewHidingDelegate;
-
-@synthesize headerView = _headerView;
-@synthesize loadingView = _loadingView;
-@synthesize loanData = _loanData;
-
-@synthesize renewItems = _renewItems;
-@synthesize renewBarItem = _renewBarItem;
-@synthesize cancelBarItem = _cancelBarItem;
-
-
-@synthesize renewOperation = _renewOperation;
-
 - (id)initWithTableView:(UITableView *)tableView
 {
     self = [super init];
@@ -61,18 +46,6 @@
 - (void)dealloc
 {
     [self.renewOperation cancel];
-    
-    self.parentController = nil;
-    self.tableView = nil;
-    self.tabViewHidingDelegate = nil;
-    self.headerView = nil;
-    self.loadingView = nil;
-    self.loanData = nil;
-    self.renewItems = nil;
-    self.renewBarItem = nil;
-    self.cancelBarItem = nil;
-
-    [super dealloc];
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -90,7 +63,7 @@
 {
     {
         CGRect loadingFrame = self.tableView.bounds;
-        MITLoadingActivityView *loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingFrame] autorelease];
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
         loadingView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                         UIViewAutoresizingFlexibleWidth);
         loadingView.backgroundColor = [UIColor whiteColor];
@@ -103,7 +76,7 @@
     
     {
         CGRect headerFrame = CGRectZero;
-        LibrariesLoanSummaryView *headerView = [[[LibrariesLoanSummaryView alloc] initWithFrame:headerFrame] autorelease];
+        LibrariesLoanSummaryView *headerView = [[LibrariesLoanSummaryView alloc] initWithFrame:headerFrame];
         headerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                        UIViewAutoresizingFlexibleWidth);
         [headerView.renewButton addTarget:self
@@ -160,11 +133,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (tableView.isEditing == NO)
-    {
-        NSArray *book = [self.loanData objectForKey:@"items"];
-        LibrariesDetailViewController *viewControler = [[[LibrariesDetailViewController alloc] initWithBookDetails:[book objectAtIndex:indexPath.row]
-                                                                                                        detailType:LibrariesDetailLoanType] autorelease];
+    if (tableView.isEditing == NO) {
+        NSArray *book = self.loanData[@"items"];
+        LibrariesDetailViewController *viewControler = [[LibrariesDetailViewController alloc] initWithBookDetails:book[indexPath.row]
+                                                                                                       detailType:LibrariesDetailLoanType];
         [self.parentController.navigationController pushViewController:viewControler
                                                               animated:YES];
         [tableView deselectRowAtIndexPath:indexPath
@@ -181,8 +153,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSArray *items = [self.loanData objectForKey:@"items"];
-    return [items count];
+    return [self.loanData[@"items"] count];
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -192,11 +163,11 @@
     LibrariesLoanTableViewCell *cell = (LibrariesLoanTableViewCell *)[tableView dequeueReusableCellWithIdentifier:LoanCellIdentifier];
     
     if (cell == nil) {
-        cell = [[[LibrariesLoanTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier] autorelease];
+        cell = [[LibrariesLoanTableViewCell alloc] initWithReuseIdentifier:LoanCellIdentifier];
     }
 
-    NSArray *loans = [self.loanData objectForKey:@"items"];
-    cell.itemDetails = [loans objectAtIndex:indexPath.row];
+    NSArray *loans = self.loanData[@"items"];
+    cell.itemDetails = loans[indexPath.row];
 
     return cell;
 }
@@ -208,8 +179,8 @@
         cell = [[LibrariesLoanTableViewCell alloc] init];
     }
 
-    NSArray *loans = [self.loanData objectForKey:@"items"];
-    cell.itemDetails = [loans objectAtIndex:indexPath.row];
+    NSArray *loans = self.loanData[@"items"];
+    cell.itemDetails = loans[indexPath.row];
     cell.editing = tableView.isEditing;
 
     return [cell heightForContentWithWidth:CGRectGetWidth(tableView.frame) - 20.0]; // 20.0 for the accessory view
@@ -222,7 +193,7 @@
                                                                             command:@"loans"
                                                                          parameters:nil];
     
-    self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
+    self.headerView.renewButton.enabled = ([self.loanData[@"items"] count] > 0);
     
     operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         if ([self.loadingView isDescendantOfView:self.tableView]) {
@@ -235,7 +206,7 @@
                                        fromTab:self];
         } else {
             self.loanData = (NSDictionary*)content;
-            self.headerView.renewButton.enabled = ([[self.loanData objectForKey:@"items"] count] > 0);
+            self.headerView.renewButton.enabled = ([self.loanData[@"items"] count] > 0);
             self.headerView.accountDetails = (NSDictionary *)self.loanData;
             [self.headerView sizeToFit];
             [self.tableView reloadData];
@@ -260,25 +231,28 @@
 
     if (self.cancelBarItem == nil)
     {
-        self.cancelBarItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+        UIBarButtonItem *cancelBarItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                  target:self
-                                                                                 action:@selector(cancelRenew:)] autorelease];
+                                                                                 action:@selector(cancelRenew:)];
+        [self.parentController.navigationItem setRightBarButtonItem:self.renewBarItem
+                                                           animated:YES];
+        self.cancelBarItem = cancelBarItem;
     }
 
     if (self.renewBarItem == nil)
     {
-        self.renewBarItem = [[[UIBarButtonItem alloc] initWithTitle:@"Renew"
-                                                              style:UIBarButtonItemStyleDone
-                                                             target:self
-                                                             action:@selector(renewItems:)] autorelease];
+        UIBarButtonItem *renewBarItem = [[UIBarButtonItem alloc] initWithTitle:@"Renew"
+                                                                         style:UIBarButtonItemStyleDone
+                                                                        target:self
+                                                                        action:@selector(renewItems:)];
+        [self.parentController.navigationItem setLeftBarButtonItem:self.cancelBarItem
+                                                          animated:YES];
+        self.renewBarItem = renewBarItem;
     }
+    
     self.renewBarItem.enabled = NO;
     
     [self.parentController.navigationItem setHidesBackButton:YES animated:YES];
-    [self.parentController.navigationItem setRightBarButtonItem:self.renewBarItem
-                                                       animated:YES];
-    [self.parentController.navigationItem setLeftBarButtonItem:self.cancelBarItem
-                                                      animated:YES];
 
     if ([self.tabViewHidingDelegate conformsToProtocol:@protocol(MITTabViewHidingDelegate)]) {
         [self.tabViewHidingDelegate setTabBarHidden:YES animated:YES];
@@ -305,13 +279,11 @@
 - (IBAction)renewItems:(id)sender
 {
     NSMutableArray *barcodes = [NSMutableArray array];
-    NSArray *bookDetails = [self.loanData objectForKey:@"items"];
+    NSArray *bookDetails = self.loanData[@"items"];
 
     [self.renewItems enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-        NSDictionary *book = [bookDetails objectAtIndex:idx];
-        NSString *barcode = [book objectForKey:@"barcode"];
-        if (barcode)
-        {
+        NSString *barcode = bookDetails[idx][@"barcode"];
+        if (barcode) {
             [barcodes addObject:barcode];
         }
 
@@ -336,7 +308,7 @@
         }
         else
         {
-            LibrariesRenewResultViewController *vc = [[[LibrariesRenewResultViewController alloc] initWithItems:(NSArray*)content] autorelease];
+            LibrariesRenewResultViewController *vc = [[LibrariesRenewResultViewController alloc] initWithItems:(NSArray*)content];
             [self.parentController.navigationController pushViewController:vc
                                                                   animated:YES];
         }
@@ -372,11 +344,6 @@
 {
     [self.parentController.navigationItem setRightBarButtonItem:nil
                                                        animated:YES];
-}
-
-- (void)tabDidBecomeInactive
-{
-    
 }
 
 @end
