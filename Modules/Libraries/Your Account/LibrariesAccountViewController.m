@@ -267,11 +267,13 @@ typedef enum {
 {
     __block CGFloat height = 0;
     [self.tabControllers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if (view == [obj tableView])
-        {
+        if (view == [obj tableView]) {
             UIView *header = [obj headerView];
-            CGSize size = [header sizeThatFits:tabView.bounds.size];
-            height = size.height;
+            
+            header.frame = CGRectMake(0,0,CGRectGetWidth(tabView.bounds),CGRectGetHeight(tabView.bounds));
+            [header sizeToFit];
+            
+            height = CGRectGetHeight(header.frame);
             *stop = YES;
         }
     }];
