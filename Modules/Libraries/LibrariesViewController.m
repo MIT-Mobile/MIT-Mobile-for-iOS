@@ -18,21 +18,18 @@
 #define LINK_TITLE_TAG 1
 #define PADDING 10
 
-@interface LibrariesViewController (Private)
+@interface LibrariesViewController ()
+@property (nonatomic, weak) IBOutlet UISearchBar *searchBar;
+@property (nonatomic, weak) IBOutlet UITableView *tableView;
+
+@property (copy) NSArray *links;
 
 - (void)loadLinksFromUserDefaults;
 - (void)loadLinksFromServer;
 - (void)showLinksLoadingFailure;
-
 @end
 
 @implementation LibrariesViewController
-@synthesize tableView;
-@synthesize searchBar;
-@synthesize links;
-@synthesize linksStatus;
-@synthesize searchController;
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -44,25 +41,14 @@
 
 - (void)dealloc
 {
-    self.links = nil;
-    self.tableView = nil;
     self.searchController.navigationController = nil;
-    self.searchController = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
 }
 
 #pragma mark - View lifecycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     self.searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
     self.searchBar.delegate = self;
     self.searchDisplayController.delegate = self;
@@ -78,7 +64,7 @@
         [self loadLinksFromServer];
     }
     
-    self.searchController = [[[WorldCatSearchController alloc] init] autorelease];
+    self.searchController = [[WorldCatSearchController alloc] init];
     self.searchController.navigationController = self.navigationController;
 }
 
@@ -172,7 +158,7 @@
             if (self.linksStatus != LinksStatusLoaded) {
                 UITableViewCell *loadingStatusCell = [aTableView dequeueReusableCellWithIdentifier:@"LinksStatus"];
                 if (!loadingStatusCell) {
-                    loadingStatusCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LinksStatus"] autorelease];
+                    loadingStatusCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LinksStatus"];
                     loadingStatusCell.selectionStyle = UITableViewCellSelectionStyleNone;
                 }
                 
@@ -185,14 +171,13 @@
             } else {
                 UITableViewCell *linkCell = [aTableView dequeueReusableCellWithIdentifier:@"LinkCell"];
                 if (!linkCell) {
-                    linkCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LinkCell"] autorelease];
+                    linkCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LinkCell"];
                     linkCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
                     linkCell.textLabel.numberOfLines = 0;
                     [linkCell applyStandardFonts];
                 }
                 
-                NSString *title = [(NSDictionary *)[self.links objectAtIndex:indexPath.row] objectForKey:@"title"];
-                linkCell.textLabel.text = title;
+                linkCell.textLabel.text = self.links[indexPath.row][@"title"];
                 return linkCell;
             }
             break;
@@ -203,7 +188,7 @@
     
     UITableViewCell *cell = [aTableView dequeueReusableCellWithIdentifier:@"Libraries"];
     if (!cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Libraries"] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Libraries"];
     }
     
     cell.textLabel.text = title;
@@ -229,8 +214,9 @@
             if (self.linksStatus != LinksStatusLoaded) {
                 return aTableView.rowHeight;
             } else {
-                NSString *title = [(NSDictionary *)[self.links objectAtIndex:indexPath.row] objectForKey:@"title"];
-                return MAX([self heightForLinkTitle:title] + 2 * PADDING, aTableView.rowHeight);
+                NSString *title = self.links[indexPath.row][@"title"];
+                CGFloat titleHeight = [self heightForLinkTitle:title] + 2 * PADDING;
+                return MAX(titleHeight, aTableView.rowHeight);
             }
         default:
             break;
@@ -249,19 +235,19 @@
             switch (indexPath.row) {
                 case 0:
                     // Your Account
-                    vc = [[[LibrariesAccountViewController alloc] init] autorelease];
+                    vc = [[LibrariesAccountViewController alloc] init];
                     break;
                 case 1:
                     // Locations and Hours
-                    vc = [[[LibrariesLocationsHoursViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+                    vc = [[LibrariesLocationsHoursViewController alloc] initWithStyle:UITableViewStyleGrouped];
                     break;
                 case 2:
                     // Ask Us
-                    vc = [[[LibrariesAskUsTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+                    vc = [[LibrariesAskUsTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
                     break;
                 case 3:
                     // Tell Us
-                    vc = [[[LibrariesTellUsViewController alloc] init] autorelease];
+                    vc = [[LibrariesTellUsViewController alloc] init];
                     break;
                     
                 default:
@@ -272,8 +258,11 @@
             
         case EXTERNAL_URLS_SECTION:
             if (self.linksStatus == LinksStatusLoaded) {
-                NSString *urlString = [(NSDictionary *)[self.links objectAtIndex:indexPath.row] objectForKey:@"url"];
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
+                NSURL *url = [[NSURL alloc] initWithString:self.links[indexPath.row][@"url"]];
+                
+                if ([[UIApplication sharedApplication] canOpenURL:url]) {
+                    [[UIApplication sharedApplication] openURL:url];
+                }
             }
             break;
             
@@ -292,10 +281,13 @@
 
 - (void)loadLinksFromServer {
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"links" parameters:nil] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"libraries"
+                                                                             command:@"links"
+                                                                          parameters:nil];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             // look for old cached version of links
+            
             if ([[NSUserDefaults standardUserDefaults] objectForKey:LibrariesLinksKey]) {
                 self.linksStatus = LinksStatusLoaded;
                 self.links = [[NSUserDefaults standardUserDefaults] objectForKey:LibrariesLinksKey];
@@ -307,11 +299,11 @@
             // quick sanity check
             NSArray *linksArray = jsonResult;
             for (NSDictionary *linkDict in linksArray) {
-                if (![[linkDict objectForKey:@"title"] isKindOfClass:[NSString class]]) {
+                if (![linkDict[@"title"] isKindOfClass:[NSString class]]) {
                     [self showLinksLoadingFailure];
                     return;
                 }
-                if (![[linkDict objectForKey:@"url"] isKindOfClass:[NSString class]]) {
+                if (![linkDict[@"url"] isKindOfClass:[NSString class]]) {
                     [self showLinksLoadingFailure];
                     return;
                 }

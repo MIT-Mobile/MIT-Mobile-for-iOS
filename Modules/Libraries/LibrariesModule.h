@@ -2,10 +2,7 @@
 #import "MITModule.h"
 
 
-@interface LibrariesModule : MITModule {
-    NSOperationQueue *_requestQueue;
-}
-
-@property (nonatomic, retain) NSOperationQueue *requestQueue;
+@interface LibrariesModule : MITModule
+@property (strong) NSOperationQueue *requestQueue;
 
 @end
