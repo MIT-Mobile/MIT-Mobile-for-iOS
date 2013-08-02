@@ -1,37 +1,29 @@
 #import "LibraryMenuElementViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "MenuLibraryFormElement.h"
 
+@interface LibraryMenuElementViewController ()
+@property NSInteger currentSelectedValue;
+@end
 
 @implementation LibraryMenuElementViewController
-@synthesize menuElement;
-
 - (void)viewDidLoad {
     [super viewDidLoad];
-    currentSelectedValue = self.menuElement.currentOptionIndex;
+    self.currentSelectedValue = self.menuElement.currentOptionIndex;
     
     self.view.backgroundColor = [UIColor clearColor];
     self.title = self.menuElement.displayLabel;
     
-    self.navigationItem.leftBarButtonItem = 
-    [[[UIBarButtonItem alloc] 
-     initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self 
-     action:@selector(cancelTapped:)] autorelease];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                          target:self
+                                                                                          action:@selector(cancelTapped:)];
     
-    self.navigationItem.rightBarButtonItem = 
-    [[[UIBarButtonItem alloc]
-     initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self 
-     action:@selector(doneTapped:)] autorelease];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                           target:self
+                                                                                           action:@selector(doneTapped:)];
 }
-
-- (void)dealloc
-{
-    self.menuElement = nil;
-    [super dealloc];
-}
-
 
 #pragma mark - View lifecycle
-
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
@@ -45,14 +37,9 @@
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.menuElement.displayOptions.count;
+    return [self.menuElement.displayOptions count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -60,16 +47,17 @@
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    cell.textLabel.text = [self.menuElement.displayOptions objectAtIndex:indexPath.row];
-    if (currentSelectedValue == indexPath.row) {
+    cell.textLabel.text = self.menuElement.displayOptions[indexPath.row];
+    if (self.currentSelectedValue == indexPath.row) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
+    
     return cell;
 }
 
@@ -78,7 +66,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    currentSelectedValue = indexPath.row;
+    self.currentSelectedValue = indexPath.row;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [tableView reloadData];
 }
@@ -92,7 +80,7 @@
 - (IBAction)doneTapped:(id)sender
 {
     [self.navigationController popViewControllerAnimated:YES];
-    self.menuElement.currentOptionIndex = currentSelectedValue;
+    self.menuElement.currentOptionIndex = self.currentSelectedValue;
 }
 
 @end

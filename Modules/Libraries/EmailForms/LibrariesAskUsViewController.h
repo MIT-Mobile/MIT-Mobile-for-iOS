@@ -6,13 +6,3 @@
 }
 
 @end
-
-
-@interface TopicsMenuLibraryFormElement : MenuLibraryFormElement {
-@private
-    
-}
-
-+ (TopicsMenuLibraryFormElement *)formElementWithDelegate:(id<LibraryFormElementDelegate>) delegate;
-
-@end

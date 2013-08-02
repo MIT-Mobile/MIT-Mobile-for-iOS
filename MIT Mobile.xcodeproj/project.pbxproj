@@ -40,6 +40,14 @@
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
 		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
+		2C249ECA17AC0B1C003C41FE /* LibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EC917AC0B1C003C41FE /* LibraryFormElement.m */; };
+		2C249ECD17AC0F50003C41FE /* MenuLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ECC17AC0F50003C41FE /* MenuLibraryFormElement.m */; };
+		2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ECF17AC119C003C41FE /* TextLibraryFormElement.m */; };
+		2C249ED317AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ED217AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m */; };
+		2C249ED617AC133B003C41FE /* ExternalLinkLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ED517AC133B003C41FE /* ExternalLinkLibraryFormElement.m */; };
+		2C249EDA17AC13C0003C41FE /* LibraryFormElementGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249ED917AC13C0003C41FE /* LibraryFormElementGroup.m */; };
+		2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EDC17AC22FE003C41FE /* TextAreaLibraryFormElement.m */; };
+		2C249EE017AC5096003C41FE /* TopicsMenuLibraryFormElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249EDF17AC5096003C41FE /* TopicsMenuLibraryFormElement.m */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
 		2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348E162DCF2600BBB312 /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -496,6 +504,23 @@
 		2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRootViewController.h; sourceTree = "<group>"; };
 		2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRootViewController.m; sourceTree = "<group>"; };
 		2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesRootViewController.xib; sourceTree = "<group>"; };
+		2C249EC817AC0B1C003C41FE /* LibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryFormElement.h; path = "Form Elements/LibraryFormElement.h"; sourceTree = "<group>"; };
+		2C249EC917AC0B1C003C41FE /* LibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibraryFormElement.m; path = "Form Elements/LibraryFormElement.m"; sourceTree = "<group>"; };
+		2C249ECB17AC0F50003C41FE /* MenuLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuLibraryFormElement.h; path = "Form Elements/MenuLibraryFormElement.h"; sourceTree = "<group>"; };
+		2C249ECC17AC0F50003C41FE /* MenuLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MenuLibraryFormElement.m; path = "Form Elements/MenuLibraryFormElement.m"; sourceTree = "<group>"; };
+		2C249ECE17AC119C003C41FE /* TextLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextLibraryFormElement.h; path = "Form Elements/TextLibraryFormElement.h"; sourceTree = "<group>"; };
+		2C249ECF17AC119C003C41FE /* TextLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TextLibraryFormElement.m; path = "Form Elements/TextLibraryFormElement.m"; sourceTree = "<group>"; };
+		2C249ED117AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DedicatedViewTextLibraryFormElement.h; path = "Form Elements/DedicatedViewTextLibraryFormElement.h"; sourceTree = "<group>"; };
+		2C249ED217AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DedicatedViewTextLibraryFormElement.m; path = "Form Elements/DedicatedViewTextLibraryFormElement.m"; sourceTree = "<group>"; };
+		2C249ED417AC133B003C41FE /* ExternalLinkLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExternalLinkLibraryFormElement.h; path = "Form Elements/ExternalLinkLibraryFormElement.h"; sourceTree = "<group>"; };
+		2C249ED517AC133B003C41FE /* ExternalLinkLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ExternalLinkLibraryFormElement.m; path = "Form Elements/ExternalLinkLibraryFormElement.m"; sourceTree = "<group>"; };
+		2C249ED817AC13C0003C41FE /* LibraryFormElementGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryFormElementGroup.h; path = "Form Elements/LibraryFormElementGroup.h"; sourceTree = "<group>"; };
+		2C249ED917AC13C0003C41FE /* LibraryFormElementGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibraryFormElementGroup.m; path = "Form Elements/LibraryFormElementGroup.m"; sourceTree = "<group>"; };
+		2C249EDB17AC22FE003C41FE /* TextAreaLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextAreaLibraryFormElement.h; path = "Form Elements/TextAreaLibraryFormElement.h"; sourceTree = "<group>"; };
+		2C249EDC17AC22FE003C41FE /* TextAreaLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TextAreaLibraryFormElement.m; path = "Form Elements/TextAreaLibraryFormElement.m"; sourceTree = "<group>"; };
+		2C249EDE17AC5096003C41FE /* TopicsMenuLibraryFormElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopicsMenuLibraryFormElement.h; path = "Form Elements/TopicsMenuLibraryFormElement.h"; sourceTree = "<group>"; };
+		2C249EDF17AC5096003C41FE /* TopicsMenuLibraryFormElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopicsMenuLibraryFormElement.m; path = "Form Elements/TopicsMenuLibraryFormElement.m"; sourceTree = "<group>"; };
+		2C249EE117AC556C003C41FE /* LibraryFormElements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryFormElements.h; path = "Form Elements/LibraryFormElements.h"; sourceTree = "<group>"; };
 		2C2E95401382F00200FA5557 /* FacilitiesConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesConstants.m; sourceTree = "<group>"; };
 		2C2E95411382F00200FA5557 /* FacilitiesConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesConstants.h; sourceTree = "<group>"; };
 		2C32BD24136F27D40015ACF6 /* FacilitiesLocations.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacilitiesLocations.xcdatamodel; sourceTree = "<group>"; };
@@ -1529,6 +1554,29 @@
 			path = FacilitiesRoot;
 			sourceTree = "<group>";
 		};
+		2C249EC617AC0AF7003C41FE /* Form Elements */ = {
+			isa = PBXGroup;
+			children = (
+				2C249ED117AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.h */,
+				2C249ED217AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m */,
+				2C249ED417AC133B003C41FE /* ExternalLinkLibraryFormElement.h */,
+				2C249ED517AC133B003C41FE /* ExternalLinkLibraryFormElement.m */,
+				2C249EC817AC0B1C003C41FE /* LibraryFormElement.h */,
+				2C249EC917AC0B1C003C41FE /* LibraryFormElement.m */,
+				2C249ED817AC13C0003C41FE /* LibraryFormElementGroup.h */,
+				2C249ED917AC13C0003C41FE /* LibraryFormElementGroup.m */,
+				2C249ECB17AC0F50003C41FE /* MenuLibraryFormElement.h */,
+				2C249ECC17AC0F50003C41FE /* MenuLibraryFormElement.m */,
+				2C249EDB17AC22FE003C41FE /* TextAreaLibraryFormElement.h */,
+				2C249EDC17AC22FE003C41FE /* TextAreaLibraryFormElement.m */,
+				2C249ECE17AC119C003C41FE /* TextLibraryFormElement.h */,
+				2C249ECF17AC119C003C41FE /* TextLibraryFormElement.m */,
+				2C249EDE17AC5096003C41FE /* TopicsMenuLibraryFormElement.h */,
+				2C249EDF17AC5096003C41FE /* TopicsMenuLibraryFormElement.m */,
+			);
+			name = "Form Elements";
+			sourceTree = "<group>";
+		};
 		2C32D33A170CB78000F9FD44 /* Layers */ = {
 			isa = PBXGroup;
 			children = (
@@ -2111,6 +2159,8 @@
 		4B1B7E3D1417CA0E0090039F /* EmailForms */ = {
 			isa = PBXGroup;
 			children = (
+				2C249EE117AC556C003C41FE /* LibraryFormElements.h */,
+				2C249EC617AC0AF7003C41FE /* Form Elements */,
 				4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */,
 				4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */,
 				4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */,
@@ -3033,6 +3083,7 @@
 				EB86CAC6115D4ED500C8F3D1 /* CalendarEventsViewController.m in Sources */,
 				EB3F0952118F0FFE00540B8A /* CalendarMapView.m in Sources */,
 				EB86CA6F115D276700C8F3D1 /* CalendarModule.m in Sources */,
+				2C249ED017AC119C003C41FE /* TextLibraryFormElement.m in Sources */,
 				441009DE110A6DAF00451B23 /* CampusMapToolbar.m in Sources */,
 				4463CC9110D6F4A50048CA83 /* CampusMapViewController.m in Sources */,
 				EB4C226D1278BD6E00058748 /* CampusTour.m in Sources */,
@@ -3126,6 +3177,7 @@
 				442C192A10F3AE3400CB44EC /* RouteMapViewController.m in Sources */,
 				BD1E930B103B5D60004429AA /* SBJSON.m in Sources */,
 				BD1E930C103B5D60004429AA /* SBJsonBase.m in Sources */,
+				2C249ED617AC133B003C41FE /* ExternalLinkLibraryFormElement.m in Sources */,
 				BD1E930D103B5D60004429AA /* SBJsonParser.m in Sources */,
 				BD1E930E103B5D60004429AA /* SBJsonWriter.m in Sources */,
 				29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */,
@@ -3144,6 +3196,7 @@
 				DE6D332B10346F6D008A5823 /* ShuttleRoutes.m in Sources */,
 				DE71F7D510424E3400661DED /* ShuttleStop.m in Sources */,
 				44BF602011050AC000E150D5 /* ShuttleStopCell.m in Sources */,
+				2C249ECD17AC0F50003C41FE /* MenuLibraryFormElement.m in Sources */,
 				EB676033114A9316004596BB /* ShuttleStopLocation.m in Sources */,
 				4420F31B10E96EBE00A8CD05 /* ShuttleStopMapAnnotation.m in Sources */,
 				4420F62910EBA5D000A8CD05 /* ShuttleStopViewController.m in Sources */,
@@ -3152,6 +3205,7 @@
 				EB4C23AE1279E89A00058748 /* SiteDetailViewController.m in Sources */,
 				EB4C21DA12777C8D00058748 /* StartingLocationViewController.m in Sources */,
 				DE728E7B10D6FF4700BFED37 /* StoryDetailViewController.m in Sources */,
+				2C249ECA17AC0B1C003C41FE /* LibraryFormElement.m in Sources */,
 				DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */,
 				DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */,
 				DE728E7C10D6FF4700BFED37 /* StoryListViewController.m in Sources */,
@@ -3200,10 +3254,12 @@
 				2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */,
 				2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */,
 				2CFB87D91416B1AC0014E141 /* MITTabView.m in Sources */,
+				2C249EE017AC5096003C41FE /* TopicsMenuLibraryFormElement.m in Sources */,
 				2CDE4EFD17A305BD00F40598 /* NSTimer+MITBlockTimer.m in Sources */,
 				4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */,
 				4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */,
 				4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */,
+				2C249ED317AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m in Sources */,
 				4B33EA16141AC9D900B30312 /* LibrariesAppointmentViewController.m in Sources */,
 				4B779FDF141E42050082DEF9 /* LibrariesTellUsViewController.m in Sources */,
 				4B7B66F5142D01BD00366615 /* WorldCatSearchController.m in Sources */,
@@ -3259,6 +3315,7 @@
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
 				2CCF81551636F69900DE273F /* ContextFilterLogFormatter.m in Sources */,
 				2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */,
+				2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */,
 				2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */,
 				2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */,
 				2C101A801653F054000E40E3 /* MGSLayer.m in Sources */,
@@ -3300,6 +3357,7 @@
 				48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */,
 				48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */,
 				48EDC97117175B4000376BCF /* PDFView.m in Sources */,
+				2C249EDA17AC13C0003C41FE /* LibraryFormElementGroup.m in Sources */,
 				48EDC97217175B4000376BCF /* UIView+Image.m in Sources */,
 				48EDC995171764BD00376BCF /* DiningMenuFilterViewController.m in Sources */,
 				48EDC99B1718652900376BCF /* DiningHallMenuSectionHeaderView.m in Sources */,
