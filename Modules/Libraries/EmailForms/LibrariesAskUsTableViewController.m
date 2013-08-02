@@ -31,19 +31,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
-}
-
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad
@@ -55,20 +42,21 @@
     self.title = @"Ask";
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (NSUInteger)supportedInterfaceOrientations
 {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 
 - (CGFloat)heightForText:(NSString *)text {
-    CGSize textSize = [text sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] 
+    CGSize textSize = [text sizeWithFont:[UIFont fontWithName:BOLD_FONT
+                                                         size:CELL_STANDARD_FONT_SIZE]
                        constrainedToSize:CGSizeMake(260, 100)];
     return textSize.height;
 }
@@ -97,7 +85,7 @@
     
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
             [cell applyStandardFonts];
             cell.textLabel.numberOfLines = 0;
@@ -112,7 +100,7 @@
     } else if (indexPath.section == HELP_SECTION) {
         SecondaryGroupedTableViewCell *helpCell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"Help"];
         if (!helpCell) {
-            helpCell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Help"] autorelease];
+            helpCell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Help"];
             helpCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
             helpCell.textLabel.text = @"General help";
             helpCell.secondaryTextLabel.text = @"(617-324-2275)";
@@ -143,9 +131,9 @@
     if (indexPath.section == FORM_SECTION) {
         UIViewController *vc = nil;
         if (indexPath.row == ASK_US_ROW) {
-            vc = [[[LibrariesAskUsViewController alloc] init] autorelease];
+            vc = [[LibrariesAskUsViewController alloc] init];
         } else if (indexPath.row == APPOINTMENT_ROW) {
-            vc = [[[LibrariesAppointmentViewController alloc] init] autorelease];
+            vc = [[LibrariesAppointmentViewController alloc] init];
         } 
         [self.navigationController pushViewController:vc animated:YES];
     } else if (indexPath.section == HELP_SECTION) {
