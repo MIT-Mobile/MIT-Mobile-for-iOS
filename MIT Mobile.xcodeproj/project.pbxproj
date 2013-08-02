@@ -224,7 +224,7 @@
 		48EDC995171764BD00376BCF /* DiningMenuFilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC994171764BD00376BCF /* DiningMenuFilterViewController.m */; };
 		48EDC99B1718652900376BCF /* DiningHallMenuSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC99A1718652800376BCF /* DiningHallMenuSectionHeaderView.m */; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; };
-		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; };
 		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; };
 		4B33EA16141AC9D900B30312 /* LibrariesAppointmentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA15141AC9D900B30312 /* LibrariesAppointmentViewController.m */; };
 		4B53F2AA1354F6180081EA38 /* TourSideTripMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B53F2A91354F6180081EA38 /* TourSideTripMapAnnotation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -244,7 +244,7 @@
 		4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B83723A157E5B5C004CBC49 /* zbar-samples.png */; };
 		4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9A4EA31355E24800E37876 /* MorseCodePattern.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4B9EF9B714321E360071F8E3 /* LibrariesBookDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9EF9B614321E360071F8E3 /* LibrariesBookDetailViewController.m */; };
-		4BAA30AD143A8DF1004C47C1 /* LibraryMenuElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAA30AC143A8DF1004C47C1 /* LibraryMenuElementViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		4BAA30AD143A8DF1004C47C1 /* LibraryMenuElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BAA30AC143A8DF1004C47C1 /* LibraryMenuElementViewController.m */; };
 		4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C550134BA78200B7F135 /* CalendarCategoriesViewController.m */; };
 		4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB9C552134BA78200B7F135 /* OpenHouseTableView.m */; };
 		4BE4D2F414115B9600E723F0 /* LibrariesLocationsHoursTermHours.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BE4D2F314115B9600E723F0 /* LibrariesLocationsHoursTermHours.m */; };
@@ -260,7 +260,7 @@
 		A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A63DEE271353CF37001C52BF /* EventKit.framework */; };
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
-		A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */; };
 		B64B47081288502E002E2F1D /* DummyRotatingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B64B47061288502E002E2F1D /* DummyRotatingViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		BD1E9309103B5D60004429AA /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92F6103B5D60004429AA /* NSObject+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		BD1E930A103B5D60004429AA /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92F8103B5D60004429AA /* NSString+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
