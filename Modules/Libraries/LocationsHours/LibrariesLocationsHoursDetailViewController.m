@@ -27,34 +27,18 @@ LocationsHoursTableRows;
 @end
 
 @implementation LibrariesLocationsHoursDetailViewController
-@synthesize library;
-@synthesize librariesDetailStatus;
-@synthesize contentRowHeight;
-@synthesize contentWebView;
-
 - (id)init {
     self = [super initWithNibName:nil
                            bundle:nil];
     if (self) {
-        self.contentRowHeight = 0;
+        
     }
     return self;
 }
 
 - (void)dealloc
 {
-    self.library = nil;
     self.contentWebView.delegate = nil;
-    self.contentWebView = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
 }
 
 #pragma mark - View lifecycle
@@ -81,9 +65,10 @@ LocationsHoursTableRows;
     if (![self.library hasDetails]) {
         self.librariesDetailStatus = LibrariesDetailStatusLoading;
         
-        NSDictionary *params = [NSDictionary dictionaryWithObject:self.library.title forKey:@"library"];
-        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locationDetail" parameters:params] autorelease];
-        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"libraries"
+                                                                                  command:@"locationDetail"
+                                                                              parameters:@{@"library" : self.library.title}];
+        request.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *jsonResult, NSString *contentType, NSError *error) {
             if (error) {
                 self.librariesDetailStatus = LibrariesDetailStatusLoadingFailed;
                 [self.tableView reloadData];
@@ -112,26 +97,6 @@ LocationsHoursTableRows;
     // e.g. self.myOutlet = nil;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-}
-
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
@@ -144,12 +109,6 @@ LocationsHoursTableRows;
 }
 
 #pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (self.librariesDetailStatus == LibrariesDetailStatusLoaded) {
@@ -163,8 +122,8 @@ LocationsHoursTableRows;
     NSString *cellIdentifier = @"titleRow";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier]autorelease];
-        UILabel *titleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, TITLE_WIDTH, 0)] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+        UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, TITLE_WIDTH, 0)];
         titleLabel.tag = TITLE_ROW_TAG;
         titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
         titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
@@ -173,14 +132,16 @@ LocationsHoursTableRows;
         [cell.contentView addSubview:titleLabel];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
+    
     return cell;
 }
 
 - (UITableViewCell *)defaultRowWithTable:(UITableView *)tableView {
     NSString *cellIdentifier = @"defaultRow";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier]autorelease];
+    
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         [cell applyStandardFonts];
     }  
     return cell;
@@ -233,20 +194,22 @@ LocationsHoursTableRows;
                 }
                 
                 if (cell == nil) {
-                    cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier]autorelease];
-                    self.contentWebView = [[[UIWebView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width - padding, 100)] autorelease];
-                    self.contentWebView.delegate = self;      
+                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+                    UIWebView *contentWebView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width - padding, 100)];
+                    contentWebView.delegate = self;
                     // Make web view background transparent.
-                    self.contentWebView.backgroundColor = [UIColor clearColor];
-                    self.contentWebView.opaque = NO;
-                    self.contentWebView.scrollView.scrollsToTop = NO;
+                    contentWebView.backgroundColor = [UIColor clearColor];
+                    contentWebView.opaque = NO;
+                    contentWebView.scrollView.scrollsToTop = NO;
                     
-                    [self.contentWebView loadHTMLString:[self contentHtml] baseURL:nil];
-                    [cell.contentView addSubview:self.contentWebView];
+                    [contentWebView loadHTMLString:[self contentHtml] baseURL:nil];
+                    [cell.contentView addSubview:contentWebView];
+                    self.contentWebView = contentWebView;
                 }
             }
         }
     }
+    
     return cell;
 }
 
@@ -291,25 +254,25 @@ LocationsHoursTableRows;
 }
 
 - (NSString *)termScheduleHtml:(LibrariesLocationsHoursTerm *)term defaultTitle:(NSString *)defaultTitle{
-    NSDateFormatter *startDateFormat = [[[NSDateFormatter alloc] init] autorelease];
+    NSDateFormatter *startDateFormat = [[NSDateFormatter alloc] init];
     [startDateFormat setDateFormat:@"MMM d, YYYY"];
     
-    NSDateFormatter *endDateFormat = [[[NSDateFormatter alloc] init] autorelease];
+    NSDateFormatter *endDateFormat = [[NSDateFormatter alloc] init];
     [endDateFormat setDateFormat:@"MMM d, YYYY"];
     
     NSString *name = term.name;
-    if (name == nil) {
+    if ([name length]) {
         name = defaultTitle;
     }
+    
     NSString *hoursTitle = [NSString stringWithFormat:@"%@ Hours (%@-%@)", name, [startDateFormat stringFromDate:term.startDate], [endDateFormat stringFromDate:term.endDate]];
     
-    NSString *hoursString = @"";
     NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
-    NSArray *hourElements = [term.hours sortedArrayUsingDescriptors:[NSArray arrayWithObject:descriptor]];
+    NSArray *hourElements = [term.hours sortedArrayUsingDescriptors:@[descriptor]];
+    
+    NSMutableString *hoursString = [[NSMutableString alloc] init];
     for (LibrariesLocationsHoursTermHours *hoursElement in hourElements) {
-        hoursString = 
-        [hoursString stringByAppendingFormat:@"%@ %@<br/>", 
-         hoursElement.title, hoursElement.hoursDescription];
+        [hoursString appendFormat:@"%@ %@<br/>", hoursElement.title, hoursElement.hoursDescription];
     }
     
     return [NSString stringWithFormat:@"<span class=\"title\">%@</span><br /> %@", hoursTitle, hoursString];
@@ -324,28 +287,27 @@ LocationsHoursTableRows;
         DDLogError(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
     }
     
-    LibrariesLocationsHoursTerm *term = [[self.library.terms filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder = %d", 0]] anyObject];
     
-    NSArray *previousTerms = [[self.library.terms filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder < %d", 0]] 
-                              sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"termSortOrder" ascending:NO]]];
+    NSArray *termSortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"termSortOrder" ascending:YES]];
+    NSArray *sortedTerms = [self.library.terms sortedArrayUsingDescriptors:termSortDescriptors];
     
-    NSArray *nextTerms = [[self.library.terms filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder > %d", 0]] 
-                          sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"termSortOrder" ascending:YES]]];
+    NSArray *previousTerms = [sortedTerms filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder < %d", 0]];
+    NSArray *nextTerms = [sortedTerms filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder > %d", 0]];
+    LibrariesLocationsHoursTerm *term = [[sortedTerms filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"termSortOrder = %d", 0]] lastObject];
     
-    NSString *scheduleHtml = [self termScheduleHtml:term defaultTitle:@""];
+    NSMutableString *scheduleHtml = [[NSMutableString alloc] initWithString:[self termScheduleHtml:term defaultTitle:@""]];
     for (LibrariesLocationsHoursTerm *aTerm in previousTerms) {
-        scheduleHtml = [scheduleHtml stringByAppendingFormat:@"<br />%@", [self termScheduleHtml:aTerm defaultTitle:@"Previous Term"]];
-    }
-    for (LibrariesLocationsHoursTerm *aTerm in nextTerms) {
-        scheduleHtml = [scheduleHtml stringByAppendingFormat:@"<br />%@", [self termScheduleHtml:aTerm defaultTitle:@"Next Term"]];
+        [scheduleHtml appendFormat:@"<br />%@", [self termScheduleHtml:aTerm defaultTitle:@"Previous Term"]];
     }
     
-    [target 
-     replaceOccurrencesOfStrings:
-     [NSArray arrayWithObjects:@"__HOURS_HTML__", @"__SCHEDULE_HTML__", nil]
-     withStrings:
-     [NSArray arrayWithObjects:self.library.hoursToday, scheduleHtml, nil] 
-     options:NSLiteralSearch];
+    for (LibrariesLocationsHoursTerm *aTerm in nextTerms) {
+        [scheduleHtml appendFormat:@"<br />%@", [self termScheduleHtml:aTerm defaultTitle:@"Next Term"]];
+    }
+    
+    [target replaceOccurrencesOfStrings:@[@"__HOURS_HTML__", @"__SCHEDULE_HTML__"]
+                            withStrings:@[self.library.hoursToday, scheduleHtml]
+                                options:NSLiteralSearch];
     return target;        
 }
+
 @end

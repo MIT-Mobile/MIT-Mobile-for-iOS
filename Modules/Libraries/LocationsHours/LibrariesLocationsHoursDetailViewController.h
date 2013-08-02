@@ -1,20 +1,16 @@
 #import <UIKit/UIKit.h>
 #import "LibrariesLocationsHours.h"
 
-typedef enum {
-    LibrariesDetailStatusLoaded,
+typedef NS_ENUM(NSInteger, LibrariesDetailStatus) {
+    LibrariesDetailStatusLoaded = 0,
     LibrariesDetailStatusLoading,
     LibrariesDetailStatusLoadingFailed
-} LibrariesDetailStatus;
+};
 
-@interface LibrariesLocationsHoursDetailViewController : UIViewController <UIWebViewDelegate> {
-    
-}
-
-@property (nonatomic, strong) UITableView *tableView;
-@property (retain, nonatomic) LibrariesLocationsHours *library;
-@property (nonatomic) LibrariesDetailStatus librariesDetailStatus;
-@property (nonatomic) CGFloat contentRowHeight;
-@property (retain, nonatomic) UIWebView *contentWebView;
-
+@interface LibrariesLocationsHoursDetailViewController : UIViewController <UIWebViewDelegate>
+@property (nonatomic, weak) UITableView *tableView;
+@property (nonatomic, weak) UIWebView *contentWebView;
+@property (nonatomic, strong) LibrariesLocationsHours *library;
+@property LibrariesDetailStatus librariesDetailStatus;
+@property CGFloat contentRowHeight;
 @end

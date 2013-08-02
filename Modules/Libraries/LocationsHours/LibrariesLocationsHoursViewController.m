@@ -12,11 +12,11 @@
 #define CELL_SUBTITLE_TAG 2
 #define CELL_LABEL_WIDTH 250
 
+@interface LibrariesLocationsHoursViewController ()
+@property (nonatomic, weak) UIView *loadingView;
+@end
+
 @implementation LibrariesLocationsHoursViewController
-@synthesize loadingView;
-@synthesize libraries;
-
-
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -24,20 +24,6 @@
         // Custom initialization
     }
     return self;
-}
-
-- (void)dealloc
-{
-    self.loadingView = nil;
-    [super dealloc];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
 }
 
 #pragma mark - View lifecycle
@@ -49,23 +35,26 @@
     self.title = @"Locations & Hours";
     
     if (!self.libraries) {
-        self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
-        self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [self.view addSubview:self.loadingView];
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
+        loadingView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                        UIViewAutoresizingFlexibleHeight);
+        [self.view addSubview:loadingView];
         
-        MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"libraries" command:@"locations" parameters:nil] autorelease];
-        request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"libraries"
+                                                                                 command:@"locations"
+                                                                              parameters:nil];
+        request.completeBlock = ^(MobileRequestOperation *operation, NSArray *libraryItems, NSString *contentType, NSError *error) {
             if (error) {
                 [UIAlertView alertViewForError:error withTitle:@"Libraries" alertViewDelegate:self];
             } else {
                 [LibrariesLocationsHours removeAllLibraries];
+                NSMutableArray *mutableLibraries = [NSMutableArray arrayWithCapacity:[libraryItems count]];
                 
-                NSArray *libraryItems = jsonResult;
-                NSMutableArray *mutableLibraries = [NSMutableArray arrayWithCapacity:libraryItems.count];
                 for (NSDictionary *libraryItem in libraryItems) {
                     LibrariesLocationsHours *library = [LibrariesLocationsHours libraryWithDict:libraryItem];
                     [mutableLibraries addObject:library];
                 }
+                
                 [CoreDataManager saveData];
                 [self.loadingView removeFromSuperview];
                 self.libraries = mutableLibraries;
@@ -140,10 +129,10 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
-        UILabel *titleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, CELL_LABEL_WIDTH, 0)] autorelease];
+        UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, CELL_LABEL_WIDTH, 0)];
         titleLabel.tag = CELL_TITLE_TAG;
         titleLabel.backgroundColor = [UIColor clearColor];
         titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
@@ -153,7 +142,7 @@
         titleLabel.numberOfLines = 0;
         
         UIFont *subtitleFont = [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE];
-        UILabel *subtitleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, CELL_LABEL_WIDTH, subtitleFont.lineHeight)] autorelease];
+        UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, CELL_LABEL_WIDTH, subtitleFont.lineHeight)];
         subtitleLabel.backgroundColor = [UIColor clearColor];
         subtitleLabel.font = subtitleFont;
         subtitleLabel.textColor = CELL_DETAIL_FONT_COLOR;
@@ -189,7 +178,6 @@
     LibrariesLocationsHoursDetailViewController *detailController = [[LibrariesLocationsHoursDetailViewController alloc] init];
     detailController.library = [self.libraries objectAtIndex:indexPath.row];
     [self.navigationController pushViewController:detailController animated:YES];
-    [detailController release];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath 

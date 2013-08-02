@@ -17,7 +17,6 @@
     [self willChangeValueForKey:@"hours" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
     [[self primitiveValueForKey:@"hours"] addObject:value];
     [self didChangeValueForKey:@"hours" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
-    [changedObjects release];
 }
 
 - (void)removeHoursObject:(LibrariesLocationsHoursTermHours *)value {
@@ -25,7 +24,6 @@
     [self willChangeValueForKey:@"hours" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
     [[self primitiveValueForKey:@"hours"] removeObject:value];
     [self didChangeValueForKey:@"hours" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
-    [changedObjects release];
 }
 
 - (void)addHours:(NSSet *)value {    

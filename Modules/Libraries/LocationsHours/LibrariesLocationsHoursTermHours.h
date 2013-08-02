@@ -6,9 +6,9 @@
 @interface LibrariesLocationsHoursTermHours : NSManagedObject {
 @private
 }
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSString * hoursDescription;
-@property (nonatomic, retain) NSNumber * sortOrder;
-@property (nonatomic, retain) LibrariesLocationsHoursTerm * term;
+@property (nonatomic, copy) NSString * title;
+@property (nonatomic, copy) NSString * hoursDescription;
+@property (nonatomic, strong) NSNumber * sortOrder;
+@property (nonatomic, strong) LibrariesLocationsHoursTerm * term;
 
 @end
