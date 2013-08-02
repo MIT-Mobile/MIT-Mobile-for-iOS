@@ -5,6 +5,6 @@
 @class PlaceholderTextView;
 
 @interface TextAreaLibraryFormElement : LibraryFormElement
-@property (nonatomic, retain) PlaceholderTextView *textView;
+@property (nonatomic, strong) PlaceholderTextView *textView;
 
 @end

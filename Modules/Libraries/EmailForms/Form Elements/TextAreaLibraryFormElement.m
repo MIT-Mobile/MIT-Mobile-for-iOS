@@ -4,14 +4,6 @@
 #import "MITUIConstants.h"
 
 @implementation TextAreaLibraryFormElement
-@synthesize textView;
-
-- (void)dealloc {
-    self.textView = nil;
-}
-
-- (void)updateCell:(UITableViewCell *)tableViewCell { }
-
 - (UITableViewCell *)tableViewCell {
     self.textView = (PlaceholderTextView *)[self textInputView];
     self.textView.placeholder = self.displayLabel;

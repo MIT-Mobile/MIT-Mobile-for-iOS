@@ -1,8 +1,9 @@
 #import "ExternalLinkLibraryFormElement.h"
+#import "UIKit+MITAdditions.h"
 
 @implementation ExternalLinkLibraryFormElement
 - (UITableViewCell *)tableViewCell {
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:self.key]];
+    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:self.key];
     return cell;
 }
 
@@ -10,18 +11,9 @@
     return 46;
 }
 
-- (NSString *)value {
-    return nil;
-}
-
 - (void)updateCell:(UITableViewCell *)tableViewCell {
     tableViewCell.textLabel.text = self.displayLabel;
     tableViewCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
 }
-
-- (UIView *)textInputView {
-    return nil;
-}
-
 
 @end

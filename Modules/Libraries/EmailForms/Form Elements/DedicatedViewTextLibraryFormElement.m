@@ -22,10 +22,6 @@
     return 44.;
 }
 
-- (UIView *)textInputView {
-    return nil;
-}
-
 - (NSString *)value {
     return self.textValue;
 }

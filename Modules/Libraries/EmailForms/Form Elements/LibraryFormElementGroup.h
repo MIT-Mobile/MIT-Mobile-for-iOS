@@ -3,16 +3,12 @@
 @class LibraryEmailFormViewController;
 @class LibraryFormElement;
 
-@interface LibraryFormElementGroup : NSObject {
-@private
-    NSArray *formElements;
-}
-
-@property (nonatomic, retain) NSString *name;
-@property (nonatomic, retain) NSString *headerText;
-@property (nonatomic, retain) NSString *footerText;
-@property (nonatomic) BOOL hidden;
-@property (nonatomic, assign) LibraryEmailFormViewController *formViewController;
+@interface LibraryFormElementGroup : NSObject
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSString *headerText;
+@property (nonatomic, copy) NSString *footerText;
+@property BOOL hidden;
+@property (nonatomic, weak) LibraryEmailFormViewController *formViewController;
 
 + (LibraryFormElementGroup *)groupForName:(NSString *)name elements:(NSArray *)elements;
 + (LibraryFormElementGroup *)hiddenGroupForName:(NSString *)name elements:(NSArray *)elements;

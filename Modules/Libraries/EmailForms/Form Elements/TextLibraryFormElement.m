@@ -3,11 +3,9 @@
 #import "MITUIConstants.h"
 
 @implementation TextLibraryFormElement
-- (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel
-         required:(BOOL)required {
+- (id)initWithKey:(NSString *)key displayLabel:(NSString *)displayLabel required:(BOOL)required {
     self = [super initWithKey:key displayLabel:displayLabel required:required];
-    if (self)
-    {
+    if (self) {
         self.keyboardType = UIKeyboardTypeDefault;
     }
     return self;
@@ -43,10 +41,11 @@
 
 - (UIView *)textInputView {
     if (!self.textField) {
-        self.textField = [[UITextField alloc] initWithFrame:CGRectZero];
+        self.textField = [[UITextField alloc] init];
         self.textField.tag = kLibraryEmailFormTextField;
         self.textField.delegate = self;
     }
+    
     return self.textField;
 }
 

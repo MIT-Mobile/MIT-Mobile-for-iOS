@@ -43,11 +43,13 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 
 #pragma mark - View lifecycle
 - (void)setFormGroups:(NSArray *)formGroups {
-    if (_formGroups) {
-        for (LibraryFormElementGroup *formGroup in _formGroups) {
-            formGroup.formViewController = nil;
-        }
-    }
+    [_formGroups enumerateObjectsUsingBlock:^(LibraryFormElementGroup *formGroup, NSUInteger idx, BOOL *stop) {
+        formGroup.formViewController = nil;
+    }];
+    
+    [formGroups enumerateObjectsUsingBlock:^(LibraryFormElementGroup *formGroup, NSUInteger idx, BOOL *stop) {
+        formGroup.formViewController = self;
+    }];
     
     _formGroups = [formGroups copy];
 }
@@ -64,8 +66,6 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
                                                                              target:self
                                                                              action:@selector(submitForm)];
     self.navigationItem.rightBarButtonItem.enabled = NO;
-    
-    [self setFormGroups:[self formGroups]];
     
     self.prevNextSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Previous", @"Next"]];
     self.prevNextSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
@@ -84,10 +84,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
                                     self.doneButton];
     
     _formInputAccessoryView = inputAccessoryToolbar;
-    
-    for (LibraryFormElementGroup *formGroup in _formGroups) {
-        formGroup.formViewController = self;
-    }
+
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTextInputView:) name:UITextFieldTextDidBeginEditingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTextInputView:) name:UITextViewTextDidBeginEditingNotification object:nil];
@@ -99,8 +96,8 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     loginLoadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.tableView addSubview:loginLoadingView];
     MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:LibrariesTag
-                                                                              command:@"getUserIdentity"
-                                                                           parameters:nil];
+                                                                             command:@"getUserIdentity"
+                                                                          parameters:nil];
     
     
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
@@ -142,9 +139,9 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:YES];
     [self.tableView reloadData];
-    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                           target:self
-                                                                                           action:@selector(back:)] autorelease];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                          target:self
+                                                                                          action:@selector(back:)];
 }
 
 - (void)back:(id)sender {
@@ -350,17 +347,14 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:indexPath.section];
     LibraryFormElement *element = [[formGroup elements] objectAtIndex:indexPath.row];
     if ([element isKindOfClass:[MenuLibraryFormElement class]]) {
-        LibraryMenuElementViewController *vc = [[[LibraryMenuElementViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+        LibraryMenuElementViewController *vc = [[LibraryMenuElementViewController alloc] initWithStyle:UITableViewStyleGrouped];
         vc.menuElement = (MenuLibraryFormElement *)element;
         [self.navigationController pushViewController:vc animated:YES];
-    }
-    else if ([element isKindOfClass:[DedicatedViewTextLibraryFormElement class]]) {
-        LibraryTextElementViewController *vc = 
-        [[[LibraryTextElementViewController alloc] init] autorelease];
+    } else if ([element isKindOfClass:[DedicatedViewTextLibraryFormElement class]]) {
+        LibraryTextElementViewController *vc = [[LibraryTextElementViewController alloc] init];
         vc.textElement = (DedicatedViewTextLibraryFormElement *)element;
         [self.navigationController pushViewController:vc animated:YES];
-    }
-    else if ([element isKindOfClass:[ExternalLinkLibraryFormElement class]]) {
+    } else if ([element isKindOfClass:[ExternalLinkLibraryFormElement class]]) {
         ExternalLinkLibraryFormElement *externalLink = (ExternalLinkLibraryFormElement *)element;
         if ([[UIApplication sharedApplication] canOpenURL:externalLink.url]) {
             [[UIApplication sharedApplication] openURL:externalLink.url];
@@ -386,9 +380,10 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     if (!identityVerified) {
         return nil;
     }
+    
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
     if (formGroup.headerText) {
-        ExplanatorySectionLabel *headerLabel = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader] autorelease];
+        ExplanatorySectionLabel *headerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader];
         headerLabel.text = formGroup.headerText;
         return headerLabel;
     } else if (formGroup.name) {
@@ -414,7 +409,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     }
     LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
     if (formGroup.footerText) {
-        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter] autorelease];
+        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
         footerLabel.text = formGroup.footerText;
         return footerLabel;
     }
@@ -456,22 +451,25 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 }
 
 - (void)showErrorSubmittingForm {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Failure" message:@"Error submitting form" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Failure"
+                                                        message:@"Error submitting form"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+    
     [alertView show];
-    [alertView release];
 }
 
 - (void)submitForm:(NSDictionary *)parameters {
     LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:LibrariesTag
-                                                                              command:[self command]
-                                                                           parameters:parameters] autorelease];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:LibrariesTag
+                                                                             command:[self command]
+                                                                          parameters:parameters];
     
     ThankYouViewController *thanksController = [[ThankYouViewController alloc] initWithMessage:nil];
     thanksController.title = @"Submitting";
     [self.navigationController pushViewController:thanksController animated:NO];
-    [thanksController release];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         NSDictionary *jsonDict = content;
@@ -482,11 +480,9 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
             [self showErrorSubmittingForm];
         } else {
             NSDictionary *resultsDict = [jsonDict objectForKey:@"results"];
-            NSString *text = 
-            [NSString 
-             stringWithFormat:@"%@\n\nYou will be contacted at %@.", 
-             [resultsDict objectForKey:@"thank_you_text"], 
-             [resultsDict objectForKey:@"email"]];
+            NSString *text = [NSString stringWithFormat:@"%@\n\nYou will be contacted at %@.",
+                              [resultsDict objectForKey:@"thank_you_text"],
+                              [resultsDict objectForKey:@"email"]];
             
             thanksController.title = @"Thank You";
             thanksController.message = text;

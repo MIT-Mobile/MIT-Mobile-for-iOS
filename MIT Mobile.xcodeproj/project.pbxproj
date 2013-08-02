@@ -1557,14 +1557,14 @@
 		2C249EC617AC0AF7003C41FE /* Form Elements */ = {
 			isa = PBXGroup;
 			children = (
+				2C249ED817AC13C0003C41FE /* LibraryFormElementGroup.h */,
+				2C249ED917AC13C0003C41FE /* LibraryFormElementGroup.m */,
+				2C249EC817AC0B1C003C41FE /* LibraryFormElement.h */,
+				2C249EC917AC0B1C003C41FE /* LibraryFormElement.m */,
 				2C249ED117AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.h */,
 				2C249ED217AC11B0003C41FE /* DedicatedViewTextLibraryFormElement.m */,
 				2C249ED417AC133B003C41FE /* ExternalLinkLibraryFormElement.h */,
 				2C249ED517AC133B003C41FE /* ExternalLinkLibraryFormElement.m */,
-				2C249EC817AC0B1C003C41FE /* LibraryFormElement.h */,
-				2C249EC917AC0B1C003C41FE /* LibraryFormElement.m */,
-				2C249ED817AC13C0003C41FE /* LibraryFormElementGroup.h */,
-				2C249ED917AC13C0003C41FE /* LibraryFormElementGroup.m */,
 				2C249ECB17AC0F50003C41FE /* MenuLibraryFormElement.h */,
 				2C249ECC17AC0F50003C41FE /* MenuLibraryFormElement.m */,
 				2C249EDB17AC22FE003C41FE /* TextAreaLibraryFormElement.h */,

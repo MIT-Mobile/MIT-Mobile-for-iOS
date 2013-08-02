@@ -1,7 +1,6 @@
 #import "TopicsMenuLibraryFormElement.h"
 
 @implementation TopicsMenuLibraryFormElement
-
 + (TopicsMenuLibraryFormElement *)formElementWithDelegate:(id<LibraryFormElementDelegate>) delegate {
     NSArray *topics = @[@"General",
                         @"Art, Architecture & Planning",

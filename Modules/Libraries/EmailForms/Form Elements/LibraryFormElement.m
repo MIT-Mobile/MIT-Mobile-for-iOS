@@ -27,7 +27,7 @@
 
 - (void)updateCell:(UITableViewCell *)tableViewCell
 {
-    
+    /* Do Nothing */
 }
 
 - (CGFloat)heightForTableViewCell

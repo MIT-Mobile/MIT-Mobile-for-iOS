@@ -35,10 +35,6 @@
     return 50;
 }
 
-- (UIView *)textInputView {
-    return nil;
-}
-
 - (void)setCurrentOptionIndex:(NSInteger)currentOptionIndex {
     if (currentOptionIndex != _currentOptionIndex) {
         _currentOptionIndex = currentOptionIndex;
