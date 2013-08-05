@@ -1,5 +1,6 @@
 #import "LibrariesTellUsViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "LibraryFormElements.h"
 
 
 @implementation LibrariesTellUsViewController
@@ -29,7 +30,7 @@
                                                                            elements:@[[self statusMenuFormElementWithRequired:NO],
                                                                                       [[TextAreaLibraryFormElement alloc] initWithKey:@"feedback"
                                                                                                                          displayLabel:@"Feedback"
-                                                                                                                             required:YES]]];;
+                                                                                                                             required:YES]]];
     feedbackGroup.footerText = @"Please let us know your thoughts for improving our services. We'd also appreciate hearing what you like about our current services.";
     
     

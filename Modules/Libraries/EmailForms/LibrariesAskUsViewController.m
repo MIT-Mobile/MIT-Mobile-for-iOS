@@ -1,7 +1,13 @@
 #import "LibrariesAskUsViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "LibraryFormElements.h"
+
+@interface LibrariesAskUsViewController () <LibraryFormElementDelegate>
+@property BOOL techHelpSectionHidden;
+@end
 
 @implementation LibrariesAskUsViewController
+
 - (NSArray *)formGroups {
     LibraryFormElementGroup *questionGroup = nil;
     {
@@ -61,7 +67,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    techHelpSectionHidden = YES;
+    self.techHelpSectionHidden = YES;
     self.title = @"Ask Us!";
 }
 
@@ -69,9 +75,9 @@
     [super viewDidAppear:animated];
     
     LibraryFormElementGroup *techFormGroup = [self groupForName:@"Technical Help"];
-    if (techHelpSectionHidden != techFormGroup.hidden) {
+    if (self.techHelpSectionHidden != techFormGroup.hidden) {
         NSIndexSet *techHelpSection = [NSIndexSet indexSetWithIndex:1];
-        techFormGroup.hidden = techHelpSectionHidden;
+        techFormGroup.hidden = self.techHelpSectionHidden;
         if (techFormGroup.hidden) {
             [self.tableView deleteSections:techHelpSection withRowAnimation:UITableViewRowAnimationTop];
         } else {
@@ -103,9 +109,9 @@
 
 - (void)valueChangedForElement:(LibraryFormElement *)element {
     if ([[element value] isEqual:@"Technical Help"]) {
-        techHelpSectionHidden = NO;    
+        self.techHelpSectionHidden = NO;
     } else {
-        techHelpSectionHidden = YES;
+        self.techHelpSectionHidden = YES;
     }
 }
 

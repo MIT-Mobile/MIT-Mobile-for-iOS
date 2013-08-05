@@ -1,13 +1,14 @@
 #import "LibraryEmailFormViewController.h"
 
 #import "LibrariesModule.h"
+#import "LibraryFormElements.h"
+
 #import "MobileRequestOperation.h"
 #import "MITUIConstants.h"
 #import "LibraryMenuElementViewController.h"
 #import "ThankYouViewController.h"
 #import "LibraryTextElementViewController.h"
 #import "ExplanatorySectionLabel.h"
-#import "LibraryFormElements.h"
 #import "MITLoadingActivityView.h"
 
 #define PADDING 10
@@ -28,6 +29,9 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 }
 
 @interface LibraryEmailFormViewController ()
+@property (nonatomic,copy) NSArray *formGroups;
+@property BOOL identityVerified;
+
 - (NSArray *)nonHiddenFormGroups;
 - (void)back:(id)sender;
 - (void)submitForm:(NSDictionary *)parameters;
@@ -42,18 +46,6 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 }
 
 #pragma mark - View lifecycle
-- (void)setFormGroups:(NSArray *)formGroups {
-    [_formGroups enumerateObjectsUsingBlock:^(LibraryFormElementGroup *formGroup, NSUInteger idx, BOOL *stop) {
-        formGroup.formViewController = nil;
-    }];
-    
-    [formGroups enumerateObjectsUsingBlock:^(LibraryFormElementGroup *formGroup, NSUInteger idx, BOOL *stop) {
-        formGroup.formViewController = self;
-    }];
-    
-    _formGroups = [formGroups copy];
-}
-
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad
 {
@@ -112,7 +104,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
             NSNumber *isMITIdentity = [(NSDictionary *)content objectForKey:@"is_mit_identity"];
             if ([isMITIdentity boolValue]) {
                 [loginLoadingView removeFromSuperview];
-                identityVerified = YES;
+                self.identityVerified = YES;
                 [self.tableView reloadData];
             } else {
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Not Authorized" message:@"Must login with an MIT account" delegate:self cancelButtonTitle:@"ok" otherButtonTitles: nil];
@@ -302,8 +294,16 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (NSArray *)formGroups {
-    return nil;
+- (void)setFormGroups:(NSArray *)formGroups {
+    [_formGroups enumerateObjectsUsingBlock:^(LibraryFormElementGroup *formGroup, NSUInteger idx, BOOL *stop) {
+        formGroup.formViewController = nil;
+    }];
+    
+    [formGroups enumerateObjectsUsingBlock:^(LibraryFormElementGroup *formGroup, NSUInteger idx, BOOL *stop) {
+        formGroup.formViewController = self;
+    }];
+    
+    _formGroups = [formGroups copy];
 }
 
 - (NSString *)command {
@@ -377,26 +377,25 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (!identityVerified) {
-        return nil;
+    if (self.identityVerified) {
+        LibraryFormElementGroup *formGroup = [self nonHiddenFormGroups][section];
+        if (formGroup.headerText) {
+            ExplanatorySectionLabel *headerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader];
+            headerLabel.text = formGroup.headerText;
+            return headerLabel;
+        } else if (formGroup.name) {
+            return [UITableView groupedSectionHeaderWithTitle:formGroup.name];
+        }
     }
     
-    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
-    if (formGroup.headerText) {
-        ExplanatorySectionLabel *headerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader];
-        headerLabel.text = formGroup.headerText;
-        return headerLabel;
-    } else if (formGroup.name) {
-        return [UITableView groupedSectionHeaderWithTitle:formGroup.name];
-    }
     return nil;
 }
 
 - (CGFloat)tableView: (UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+    LibraryFormElementGroup *formGroup = [self nonHiddenFormGroups][section];
     if (formGroup.footerText) {
         CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.footerText
-                                                           width:self.view.frame.size.width
+                                                           width:CGRectGetWidth(tableView.bounds)
                                                             type:ExplanatorySectionFooter];
         return height;
     }
@@ -404,15 +403,15 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    if (!identityVerified) {
-        return nil;
+    if (self.identityVerified) {
+        LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+        if (formGroup.footerText) {
+            ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
+            footerLabel.text = formGroup.footerText;
+            return footerLabel;
+        }
     }
-    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
-    if (formGroup.footerText) {
-        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
-        footerLabel.text = formGroup.footerText;
-        return footerLabel;
-    }
+
     return nil;
 }
 

@@ -1,7 +1,7 @@
 #import "LibraryTextElementViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
-#import "DedicatedViewTextLibraryFormElement.h"
+#import "LibraryFormElements.h"
 
 static const NSInteger kEditViewTag = 0x70;
 static const CGFloat kEditViewHeight = 24.;

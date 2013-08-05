@@ -4,18 +4,13 @@
 #import "MITLoadingActivityView.h"
 
 @interface ThankYouViewController ()
-
-@property (nonatomic, retain) MITLoadingActivityView *loadingView;
+@property (nonatomic, weak) MITLoadingActivityView *loadingView;
 
 - (IBAction)returnToHomeButtonTapped:(id)sender;
 
 @end
 
 @implementation ThankYouViewController
-
-@synthesize message = _message;
-@synthesize loadingView = _loadingView;
-
 - (id)initWithMessage:(NSString *)message {
     self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
@@ -26,17 +21,9 @@
     return self;
 }
 
-- (void)dealloc {
-    [_message release];
-    _message = nil;
-    [super dealloc];
-}
-
 - (void)setMessage:(NSString *)message {
-    if (message != _message) {
-        [_message release];
-        _message = message;
-        [_message retain];
+    if (![_message isEqual:message]) {
+        _message = [message copy];
         
         [self.loadingView removeFromSuperview];
         [self.tableView reloadData];
@@ -55,14 +42,15 @@
     self.navigationItem.hidesBackButton = YES;
 
     // show a loading indicator
-    if (!self.message) {
+    if ([self.message length] == 0) {
         if (!self.loadingView) {
-            self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:self.view.bounds] autorelease];
-            self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
+            loadingView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                            UIViewAutoresizingFlexibleHeight);
+            loadingView.frame = self.view.bounds;
+            [self.view addSubview:loadingView];
+            self.loadingView = loadingView;
         }
-        [self.loadingView removeFromSuperview];
-        self.loadingView.frame = self.view.bounds;
-        [self.view addSubview:self.loadingView];
     }
 }
 
@@ -93,11 +81,9 @@
     // There's two sections and one row per section.
     switch (indexPath.section) {
         case 0: {
-            CGSize messageSize = 
-            [self.message 
-             sizeWithFont:[UIFont systemFontOfSize:15.0f] 
-             constrainedToSize:CGSizeMake(280, 1000) 
-             lineBreakMode:UILineBreakModeWordWrap];
+            CGSize messageSize =  [self.message  sizeWithFont:[UIFont systemFontOfSize:15.]
+                                            constrainedToSize:CGSizeMake(280, 1000)
+                                                lineBreakMode:UILineBreakModeWordWrap];
             return messageSize.height + 20;
             break;
         }
@@ -110,15 +96,13 @@
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView 
-         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = 
-        [[[UITableViewCell alloc] 
-          initWithStyle:UITableViewCellStyleDefault 
-          reuseIdentifier:CellIdentifier] autorelease];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.backgroundColor = [UIColor whiteColor];
         cell.textLabel.backgroundColor = [UIColor clearColor];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -130,14 +114,10 @@
         // The thank you text cell.
         cell.textLabel.font = [UIFont systemFontOfSize:15.0f];
         cell.textLabel.text = self.message;
-    }
-    else {
+    } else {
         // The "button".
-        UIImageView *imageView = 
-        [[UIImageView alloc] 
-         initWithImage:[UIImage imageNamed:@"global/return_button.png"]];
+        UIImageView *imageView =  [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/return_button.png"]];
         cell.backgroundView = imageView;
-        [imageView release];
         cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0f];
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.textLabel.text = @"Return to Libraries";

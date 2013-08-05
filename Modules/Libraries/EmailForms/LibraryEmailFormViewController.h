@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "LibraryFormElements.h"
 
 @class LibraryFormElementGroup;
 @class LibraryFormElement;
@@ -9,12 +8,7 @@ extern const NSInteger kLibraryEmailFormTextField;
 extern const NSInteger kLibraryEmailFormTextView;
 
 
-@interface LibraryEmailFormViewController : UITableViewController <UITextFieldDelegate, UIAlertViewDelegate> {
-@private    
-    NSArray *_formGroups;
-    BOOL identityVerified;
-}
-
+@interface LibraryEmailFormViewController : UITableViewController <UITextFieldDelegate, UIAlertViewDelegate>
 - (NSString *)command;
 
 

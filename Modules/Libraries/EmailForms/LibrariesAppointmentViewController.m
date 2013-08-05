@@ -1,6 +1,6 @@
-
 #import "LibrariesAppointmentViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "LibraryFormElements.h"
 
 
 @implementation LibrariesAppointmentViewController
@@ -46,7 +46,7 @@
         
         DedicatedViewTextLibraryFormElement *courseElement = [[DedicatedViewTextLibraryFormElement alloc] initWithKey:@"course"
                                                                                                          displayLabel:@"Course"
-                                                                                                             required:NO];
+                                                                                                                required:NO];
         
         NSArray *topics = @[@"General", @"Art & Architecture", @"Engineering & Computer Science",
                            @"GIS", @"Humanities", @"Management & Business", @"Science",

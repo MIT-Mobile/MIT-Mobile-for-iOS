@@ -3,9 +3,7 @@
 #import "LibrariesLocationsHoursTerm.h"
 
 
-@interface LibrariesLocationsHoursTermHours : NSManagedObject {
-@private
-}
+@interface LibrariesLocationsHoursTermHours : NSManagedObject
 @property (nonatomic, copy) NSString * title;
 @property (nonatomic, copy) NSString * hoursDescription;
 @property (nonatomic, strong) NSNumber * sortOrder;

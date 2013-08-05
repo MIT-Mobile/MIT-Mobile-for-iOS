@@ -1,6 +1,6 @@
 #import "LibraryMenuElementViewController.h"
 #import "UIKit+MITAdditions.h"
-#import "MenuLibraryFormElement.h"
+#import "LibraryFormElements.h"
 
 @interface LibraryMenuElementViewController ()
 @property NSInteger currentSelectedValue;

@@ -2,13 +2,9 @@
 
 @class MITLoadingActivityView;
 
-@interface ThankYouViewController : UITableViewController {
-    NSString *_message;
-    MITLoadingActivityView *_loadingView;
-}
+@interface ThankYouViewController : UITableViewController
+@property (nonatomic,copy) NSString *message;
 
 - (id)initWithMessage:(NSString *)message;
-
-@property (nonatomic, retain) NSString *message;
 
 @end

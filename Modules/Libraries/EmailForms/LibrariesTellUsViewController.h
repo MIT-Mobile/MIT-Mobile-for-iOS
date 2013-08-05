@@ -2,8 +2,6 @@
 #import "LibraryEmailFormViewController.h"
 
 
-@interface LibrariesTellUsViewController : LibraryEmailFormViewController {
-    
-}
+@interface LibrariesTellUsViewController : LibraryEmailFormViewController
 
 @end
