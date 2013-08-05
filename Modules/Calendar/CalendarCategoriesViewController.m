@@ -3,9 +3,6 @@
 #import "UIKit+MITAdditions.h"
 
 @implementation CalendarCategoriesViewController
-
-@synthesize categories;
-
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -40,38 +37,15 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
-}
-
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-}
-
-
 #pragma mark Table view methods
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (self.categories != nil) {
-		return [self.categories count];
-	}
-	return 0;
+	return [self.categories count];
 }
 
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -79,9 +53,8 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-	NSDictionary *category = [self.categories objectAtIndex:indexPath.row];
-    // Set up the cell...
-	cell.textLabel.text = [category objectForKey:@"name"];
+	NSDictionary *category = self.categories[indexPath.row];
+	cell.textLabel.text = category[@"name"];
 	
     return cell;
 }
