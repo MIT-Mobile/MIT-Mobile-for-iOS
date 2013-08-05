@@ -1,99 +1,83 @@
 #import "LibrariesAskUsViewController.h"
 #import "UIKit+MITAdditions.h"
+#import "LibraryFormElements.h"
 
-@implementation TopicsMenuLibraryFormElement
-
-+ (TopicsMenuLibraryFormElement *)formElementWithDelegate:(id<LibraryFormElementDelegate>) delegate {
-    TopicsMenuLibraryFormElement *element = [[[TopicsMenuLibraryFormElement alloc] initWithKey:@"topic"
-                                                 displayLabel:@"Topic"
-                                                     required:YES
-                                                       values:[NSArray arrayWithObjects:
-                                                               @"General",
-                                                               @"Art, Architecture & Planning", 
-                                                               @"Engineering & Computer Science",
-                                                               @"Management & Business",
-                                                               @"Science",
-                                                               @"Social Sciences",
-                                                               @"Circulation",
-                                                               @"Technical Help",
-                                                               nil]] autorelease];
-    element.value = @"General"; // default
-    element.delegate = delegate;
-    return element;
-}
-
+@interface LibrariesAskUsViewController () <LibraryFormElementDelegate>
+@property BOOL techHelpSectionHidden;
 @end
 
 @implementation LibrariesAskUsViewController
 
 - (NSArray *)formGroups {
+    LibraryFormElementGroup *questionGroup = nil;
+    {
+        TopicsMenuLibraryFormElement *formElement = [TopicsMenuLibraryFormElement formElementWithDelegate:self];
+        TextLibraryFormElement *subjectElement = [[TextLibraryFormElement alloc] initWithKey:@"subject"
+                                                                                displayLabel:@"Subject"
+                                                                                    required:YES];
+        TextAreaLibraryFormElement *questionElement = [[TextAreaLibraryFormElement alloc] initWithKey:@"question"
+                                                                                         displayLabel:@"Detailed question"
+                                                                                             required:YES];
+        questionGroup = [LibraryFormElementGroup groupForName:nil
+                                                     elements:@[formElement,subjectElement, questionElement]];
+    }
     
-    TextLibraryFormElement *phoneElement = 
-    [[[TextLibraryFormElement alloc] 
-      initWithKey:@"phone" displayLabel:@"Phone" required:NO] 
-     autorelease];
-    phoneElement.keyboardType = UIKeyboardTypePhonePad;
     
-    MenuLibraryFormElement *vpnElement = 
-    [[[MenuLibraryFormElement alloc] initWithKey:@"vpn"
-                                    displayLabel:@"Using VPN"
-                                        required:YES 
-                                          values:[NSArray arrayWithObjects:@"yes", @"no", nil] 
-                                   displayValues:[NSArray arrayWithObjects:@"Yes", @"No", nil]] autorelease];
-    vpnElement.value = @"no";
+    LibraryFormElementGroup *technicalGroup = nil;
+    {
+        MenuLibraryFormElement *vpnElement = [[MenuLibraryFormElement alloc] initWithKey:@"vpn"
+                                                                            displayLabel:@"Using VPN"
+                                                                                required:YES
+                                                                                  values:@[@YES,@NO]
+                                                                           displayValues:@[@"Yes", @"No"]];
+        vpnElement.value = @"no";
+        
+        
+        MenuLibraryFormElement *locationElement = [[MenuLibraryFormElement alloc] initWithKey:@"on_campus"
+                                                                                 displayLabel:@"Location"
+                                                                                     required:YES
+                                                                                       values:@[@"on campus",@"off campus"]
+                                                                                displayValues:@[@"On campus",@"Off campus"]];
+        technicalGroup = [LibraryFormElementGroup hiddenGroupForName:@"Technical Help"
+                                                            elements:@[vpnElement,locationElement]];
+    }
     
-    LibraryFormElementGroup *questionGroup = [LibraryFormElementGroup 
-     groupForName:nil
-     elements:[NSArray arrayWithObjects:
-               [TopicsMenuLibraryFormElement formElementWithDelegate:self],
-               
-               [[[TextLibraryFormElement alloc] initWithKey:@"subject" 
-                                               displayLabel:@"Subject" 
-                                                   required:YES] autorelease],
-               
-               [[[TextAreaLibraryFormElement alloc] initWithKey:@"question" 
-                                                   displayLabel:@"Detailed question" 
-                                                       required:YES] autorelease],
-               
-               nil]];
+    LibraryFormElementGroup *personalGroup = nil;
+    {
+        
+        TextLibraryFormElement *phoneElement = [[TextLibraryFormElement alloc] initWithKey:@"phone"
+                                                                              displayLabel:@"Phone"
+                                                                                  required:NO];
+        phoneElement.keyboardType = UIKeyboardTypePhonePad;
+        
+        TextLibraryFormElement *departmentElement = [[TextLibraryFormElement alloc] initWithKey:@"department"
+                                                                                   displayLabel:@"Department, Lab, or Center"
+                                                                                       required:YES];
+        
+        personalGroup = [LibraryFormElementGroup groupForName:@"Personal Info"
+                                                     elements:@[[self statusMenuFormElementWithRequired:YES],
+                                                                departmentElement,
+                                                                phoneElement]];
 
-    LibraryFormElementGroup *technicalGroup = [LibraryFormElementGroup 
-     hiddenGroupForName:@"Technical Help" 
-     elements:[NSArray arrayWithObjects:
-               [[[MenuLibraryFormElement alloc] initWithKey:@"on_campus"
-                                               displayLabel:@"Location"
-                                                   required:YES 
-                                                     values:[NSArray arrayWithObjects:@"on campus", @"off campus", nil] 
-                                              displayValues:[NSArray arrayWithObjects:@"On campus", @"Off campus", nil]] autorelease],
-               
-               vpnElement,
-               
-               nil]];
+    }
     
-    LibraryFormElementGroup *personalGroup = [LibraryFormElementGroup 
-     groupForName:@"Personal Info" 
-     elements:[NSArray arrayWithObjects:
-               [self statusMenuFormElementWithRequired:YES],
-               [[[TextLibraryFormElement alloc] initWithKey:@"department" displayLabel:@"Department, Lab, or Center" required:YES] autorelease],
-               phoneElement,
-               nil]];
-
-    
-    return [NSArray arrayWithObjects:questionGroup, technicalGroup, personalGroup, nil];
+    return @[questionGroup, technicalGroup, personalGroup];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    techHelpSectionHidden = YES;
+    
+    self.techHelpSectionHidden = YES;
     self.title = @"Ask Us!";
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    
     LibraryFormElementGroup *techFormGroup = [self groupForName:@"Technical Help"];
-    if (techHelpSectionHidden != techFormGroup.hidden) {
+    if (self.techHelpSectionHidden != techFormGroup.hidden) {
         NSIndexSet *techHelpSection = [NSIndexSet indexSetWithIndex:1];
-        techFormGroup.hidden = techHelpSectionHidden;
+        techFormGroup.hidden = self.techHelpSectionHidden;
         if (techFormGroup.hidden) {
             [self.tableView deleteSections:techHelpSection withRowAnimation:UITableViewRowAnimationTop];
         } else {
@@ -119,16 +103,15 @@
 
 - (NSDictionary *)formValues {
     NSMutableDictionary *values = [NSMutableDictionary dictionaryWithDictionary:[super formValues]];
-    [values setObject:@"form" forKey:@"ask_type"];
+    values[@"ask_type"] = @"form";
     return values;
 }
 
 - (void)valueChangedForElement:(LibraryFormElement *)element {
-    MenuLibraryFormElement *menuElement = (MenuLibraryFormElement *)element;
-    if ([[menuElement value] isEqualToString:@"Technical Help"]) {
-        techHelpSectionHidden = NO;    
+    if ([[element value] isEqual:@"Technical Help"]) {
+        self.techHelpSectionHidden = NO;
     } else {
-        techHelpSectionHidden = YES;
+        self.techHelpSectionHidden = YES;
     }
 }
 

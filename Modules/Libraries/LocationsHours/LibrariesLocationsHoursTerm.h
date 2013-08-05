@@ -3,14 +3,12 @@
 
 @class LibrariesLocationsHours, LibrariesLocationsHoursTermHours;
 
-@interface LibrariesLocationsHoursTerm : NSManagedObject {
-@private
-}
-@property (nonatomic, retain) NSDate * startDate;
-@property (nonatomic, retain) NSDate * endDate;
-@property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSNumber * termSortOrder;
-@property (nonatomic, retain) LibrariesLocationsHours * library;
-@property (nonatomic, retain) NSSet* hours;
+@interface LibrariesLocationsHoursTerm : NSManagedObject
+@property (nonatomic, strong) NSDate * startDate;
+@property (nonatomic, strong) NSDate * endDate;
+@property (nonatomic, copy) NSString * name;
+@property (nonatomic, strong) NSNumber * termSortOrder;
+@property (nonatomic, strong) LibrariesLocationsHours * library;
+@property (nonatomic, copy) NSSet* hours;
 
 @end

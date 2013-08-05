@@ -1,12 +1,10 @@
 #import <UIKit/UIKit.h>
 #import "LibraryEmailFormViewController.h"
 
+@class MenuLibraryFormElement;
 
-@interface LibraryMenuElementViewController : UITableViewController {
-    NSInteger currentSelectedValue;
-}
-
-@property (nonatomic, retain)  MenuLibraryFormElement *menuElement;
+@interface LibraryMenuElementViewController : UITableViewController
+@property (nonatomic, strong)  MenuLibraryFormElement *menuElement;
 
 #pragma mark UI actions
 - (IBAction)cancelTapped:(id)sender;

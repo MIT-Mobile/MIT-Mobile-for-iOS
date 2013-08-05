@@ -7,7 +7,7 @@
 #define LibrariesLocationsHoursTermEntity @"LibrariesLocationsHoursTerm"
 #define LibrariesLocationsHoursTermHoursEntity @"LibrariesLocationsHoursTermHours"
 
-@interface LibrariesLocationsHours (Private)
+@interface LibrariesLocationsHours ()
 - (void)addTermWithDict:(NSDictionary *)dict sortOrder:(NSInteger)sortOrder;
 @end
 
@@ -25,7 +25,6 @@
     [self willChangeValueForKey:@"terms" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
     [[self primitiveValueForKey:@"terms"] addObject:value];
     [self didChangeValueForKey:@"terms" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
-    [changedObjects release];
 }
 
 - (void)removeTermsObject:(LibrariesLocationsHoursTerm *)value {
@@ -33,7 +32,6 @@
     [self willChangeValueForKey:@"terms" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
     [[self primitiveValueForKey:@"terms"] removeObject:value];
     [self didChangeValueForKey:@"terms" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
-    [changedObjects release];
 }
 
 - (void)addTerms:(NSSet *)value {    
@@ -53,54 +51,51 @@
 }
 
 - (void)updateDetailsWithDict:(NSDictionary *)dict {
-    self.hoursToday = [dict objectForKey:@"hours_today"];
-    self.url = [dict objectForKey:@"url"];
-    self.telephone = [dict objectForKey:@"tel"];
-    self.location = [dict objectForKey:@"location"];
+    self.hoursToday = dict[@"hours_today"];
+    self.url = dict[@"url"];
+    self.telephone = dict[@"tel"];
+    self.location = dict[@"location"];
     
-    NSDictionary *scheduleDict = [dict objectForKey:@"schedule"];
-    if ([scheduleDict objectForKey:@"current_term"]) {
-        [self addTermWithDict:[scheduleDict objectForKey:@"current_term"] sortOrder:0];
-    }
-    if ([scheduleDict objectForKey:@"next_terms"]) {
-        NSArray *nextTerms = [scheduleDict objectForKey:@"next_terms"];
-        for (NSInteger index=0; index < nextTerms.count; index++) {
-            NSDictionary *term = [nextTerms objectAtIndex:index];
-            [self addTermWithDict:term sortOrder:(index+1)]; 
-        }
-    }
-    if ([scheduleDict objectForKey:@"previous_terms"]) {
-        NSArray *previousTerms = [scheduleDict objectForKey:@"previous_terms"];
-        for (NSInteger index=0; index < previousTerms.count; index++) {
-            NSDictionary *term = [previousTerms objectAtIndex:index];
-            [self addTermWithDict:term sortOrder:(-1 * (index+1))]; 
-        }
+    NSDictionary *termSchedules = dict[@"schedule"];
+    if (termSchedules[@"current_term"]) {
+        [self addTermWithDict:termSchedules[@"current_term"]
+                    sortOrder:0];
     }
     
+    [termSchedules[@"next_terms"] enumerateObjectsUsingBlock:^(NSDictionary *term, NSUInteger idx, BOOL *stop) {
+        [self addTermWithDict:term
+                    sortOrder:(idx + 1)];
+    }];
+    
+    [termSchedules[@"previous_terms"] enumerateObjectsUsingBlock:^(NSDictionary *term, NSUInteger idx, BOOL *stop) {
+        [self addTermWithDict:term
+                    sortOrder:-(idx + 1)];
+    }];
 }
 
 - (void)addTermWithDict:(NSDictionary *)dict sortOrder:(NSInteger)sortOrder {
-    LibrariesLocationsHoursTerm *term = [CoreDataManager insertNewObjectForEntityForName:LibrariesLocationsHoursTermEntity];
-    NSDictionary *rangeDict = [dict objectForKey:@"range"];
-    NSNumber *startNumber = [rangeDict objectForKey:@"start"];
-    term.startDate = [NSDate dateWithTimeIntervalSince1970:[startNumber longValue]];
-    NSNumber *endNumber = [rangeDict objectForKey:@"end"];
-    term.endDate = [NSDate dateWithTimeIntervalSince1970:[endNumber longValue]];
-    term.termSortOrder = [NSNumber numberWithInteger:sortOrder];
-    term.name = [dict objectForKey:@"name"];
+    LibrariesLocationsHoursTerm *termObject = [CoreDataManager insertNewObjectForEntityForName:LibrariesLocationsHoursTermEntity];
+    NSDictionary *rangeDict = dict[@"range"];
+    NSTimeInterval startTimestamp = [rangeDict[@"start"] doubleValue];
+    NSTimeInterval endTimestamp = [rangeDict[@"end"] doubleValue];
     
-    NSArray *hoursArray = [dict objectForKey:@"hours"];
-    NSMutableSet *hoursSet = [NSMutableSet set];
-    for (NSInteger index=0; index < hoursArray.count; index++) {
-        LibrariesLocationsHoursTermHours *hours = [CoreDataManager insertNewObjectForEntityForName:LibrariesLocationsHoursTermHoursEntity];
-        NSDictionary *hoursDict = [hoursArray objectAtIndex:index];
-        hours.title = [hoursDict objectForKey:@"title"];
-        hours.hoursDescription = [hoursDict objectForKey:@"description"];
-        hours.sortOrder = [NSNumber numberWithInteger:index];
-        [hoursSet addObject:hours];
-    }
-    term.hours = hoursSet;
-    [self addTermsObject:term];
+    termObject.startDate = [NSDate dateWithTimeIntervalSince1970:startTimestamp];
+    termObject.endDate = [NSDate dateWithTimeIntervalSince1970:endTimestamp];
+    termObject.termSortOrder = @(sortOrder);
+    termObject.name = dict[@"name"];
+    
+    NSArray *termHoursData = dict[@"hours"];
+    NSMutableSet *termHours = [NSMutableSet set];
+    [termHoursData enumerateObjectsUsingBlock:^(NSDictionary *hoursData, NSUInteger idx, BOOL *stop) {
+        LibrariesLocationsHoursTermHours *hoursObject = [CoreDataManager insertNewObjectForEntityForName:LibrariesLocationsHoursTermHoursEntity];
+        hoursObject.title = hoursData[@"title"];
+        hoursObject.hoursDescription = hoursData[@"description"];
+        hoursObject.sortOrder = @(idx);
+        [termHours addObject:hoursObject];
+    }];
+    
+    termObject.hours = termHours;
+    [self addTermsObject:termObject];
 }
 
 + (void)removeAllLibraries {
@@ -109,8 +104,8 @@
 
 + (LibrariesLocationsHours *)libraryWithDict:(NSDictionary *)dict {
     LibrariesLocationsHours *library = [CoreDataManager insertNewObjectForEntityForName:LibrariesLocationsHoursEntity];
-    library.title = [dict objectForKey:@"library"];
-    library.status = [dict objectForKey:@"status"];
+    library.title = dict[@"library"];
+    library.status = dict[@"status"];
     return library;
 }
 

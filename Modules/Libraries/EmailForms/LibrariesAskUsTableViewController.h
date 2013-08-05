@@ -1,9 +1,6 @@
 #import <UIKit/UIKit.h>
-#import "SecondaryGroupedTableViewCell.h"
 
 
-@interface LibrariesAskUsTableViewController : UITableViewController {
-    
-}
+@interface LibrariesAskUsTableViewController : UITableViewController
 
 @end

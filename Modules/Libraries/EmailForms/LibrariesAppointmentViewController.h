@@ -1,8 +1,6 @@
 #import "LibraryEmailFormViewController.h"
 
 
-@interface LibrariesAppointmentViewController : LibraryEmailFormViewController {
-    
-}
+@interface LibrariesAppointmentViewController : LibraryEmailFormViewController
 
 @end

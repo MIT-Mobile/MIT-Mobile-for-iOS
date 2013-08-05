@@ -3,16 +3,15 @@
 
 @class LibrariesLocationsHoursTerm;
 
-@interface LibrariesLocationsHours : NSManagedObject {
-@private
-}
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSString * status;
-@property (nonatomic, retain) NSString * hoursToday;
-@property (nonatomic, retain) NSString * url;
-@property (nonatomic, retain) NSString * telephone;
-@property (nonatomic, retain) NSString * location;
-@property (nonatomic, retain) NSSet* terms;
+@interface LibrariesLocationsHours : NSManagedObject
+
+@property (nonatomic, copy) NSString * title;
+@property (nonatomic, copy) NSString * status;
+@property (nonatomic, copy) NSString * hoursToday;
+@property (nonatomic, copy) NSString * url;
+@property (nonatomic, copy) NSString * telephone;
+@property (nonatomic, copy) NSString * location;
+@property (nonatomic, copy) NSSet* terms;
 
 - (BOOL)hasDetails;
 - (void)updateDetailsWithDict:(NSDictionary *)dict;
