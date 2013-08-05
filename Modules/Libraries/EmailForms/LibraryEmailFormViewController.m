@@ -30,9 +30,9 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 
 @interface LibraryEmailFormViewController ()
 @property (nonatomic,copy) NSArray *formGroups;
+@property (nonatomic,readonly) NSArray *visibleFormGroups;
 @property BOOL identityVerified;
 
-- (NSArray *)nonHiddenFormGroups;
 - (void)back:(id)sender;
 - (void)submitForm:(NSDictionary *)parameters;
 - (void)submitForm;
@@ -41,6 +41,8 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 @end
 
 @implementation LibraryEmailFormViewController
+@dynamic visibleFormGroups;
+
 - (id)init {
     return [super initWithStyle:UITableViewStyleGrouped];
 }
@@ -101,7 +103,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
         } else if (!content) {
             [self.navigationController popViewControllerAnimated:YES];    
         } else {
-            NSNumber *isMITIdentity = [(NSDictionary *)content objectForKey:@"is_mit_identity"];
+            NSNumber *isMITIdentity = content[@"is_mit_identity"];
             if ([isMITIdentity boolValue]) {
                 [loginLoadingView removeFromSuperview];
                 self.identityVerified = YES;
@@ -118,14 +120,8 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     [librariesModule.requestQueue addOperation:request];
 }
 
-- (NSArray *)nonHiddenFormGroups {
-    NSMutableArray *nonHiddenFormGroups = [NSMutableArray array];
-    for (LibraryFormElementGroup *formGroup in _formGroups) {
-        if (!formGroup.hidden) {
-            [nonHiddenFormGroups addObject:formGroup];
-        }
-    }
-    return nonHiddenFormGroups;
+- (NSArray *)visibleFormGroups {
+    return [self.formGroups filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self.hidden = NO"]];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -142,29 +138,32 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 
 - (NSArray *)textInputs {
     NSMutableArray *textInputs = [NSMutableArray array];
-    for (LibraryFormElementGroup *formGroup in [self nonHiddenFormGroups]) {
+    for (LibraryFormElementGroup *formGroup in self.visibleFormGroups) {
         [textInputs addObjectsFromArray:[formGroup textInputViews]];
     }
     return textInputs;
 }
 
 - (NSIndexPath *)indexPathForTextInput:(UIView *)textInput {
-    for (int section=0; section < [self nonHiddenFormGroups].count; section++) {
-        LibraryFormElementGroup *group = [[self nonHiddenFormGroups] objectAtIndex:section];
-        NSArray *elements = [group elements];
-        for (int row=0; row < [elements count]; row++) {
-            LibraryFormElement *element = [elements objectAtIndex:row];
+    __block NSIndexPath *indexPath = nil;
+    
+    [self.visibleFormGroups enumerateObjectsUsingBlock:^(LibraryFormElementGroup *group, NSUInteger section, BOOL *stop) {
+        [[group elements] enumerateObjectsUsingBlock:^(LibraryFormElement *element, NSUInteger row, BOOL *stop) {
             if ([element textInputView] == textInput) {
-                return [NSIndexPath indexPathForRow:row inSection:section]; 
+                indexPath = [NSIndexPath indexPathForRow:row
+                                               inSection:section];
+                (*stop) = YES;
             }
-        }
-    }
-    return nil;
+        }];
+        
+        (*stop) = (indexPath != nil);
+    }];
+    
+    return indexPath;
 }
   
 - (void)updateSubmitButton:(NSNotification *)note {
-    if ([note.object respondsToSelector:@selector(tag)])
-    {
+    if ([note.object respondsToSelector:@selector(tag)]) {
         UIView *changedView = (UIView *)note.object;
 
         // Only do this if the changed view belongs to this controller.
@@ -199,9 +198,9 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     UIView *nextTextInput = nil;
     UISegmentedControl *segmentedControl = sender;
     if (segmentedControl.selectedSegmentIndex == 0 && textInputIndex > 0) { // previous button
-        nextTextInput = [textInputs objectAtIndex:textInputIndex-1];
-    } else if (segmentedControl.selectedSegmentIndex == 1 && textInputIndex < textInputs.count) {
-        nextTextInput = [textInputs objectAtIndex:textInputIndex+1];
+        nextTextInput = textInputs[textInputIndex - 1];
+    } else if (segmentedControl.selectedSegmentIndex == 1 && textInputIndex < [textInputs count]) {
+        nextTextInput = textInputs[textInputIndex + 1];
     }
 
     [nextTextInput becomeFirstResponder];
@@ -212,7 +211,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     if (textField.returnKeyType == UIReturnKeyNext) {
         NSArray *textInputs = [self textInputs];
         NSInteger textInputIndex = [textInputs indexOfObject:self.currentTextView];
-        UIView *nextTextInput = [textInputs objectAtIndex:textInputIndex+1];
+        UIView *nextTextInput = textInputs[textInputIndex + 1];
         [nextTextInput becomeFirstResponder];
         [self.tableView scrollToRowAtIndexPath:[self indexPathForTextInput:nextTextInput] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     } else {
@@ -316,36 +315,40 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 
 #pragma mark - UITableView data source
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:indexPath.section];
+    LibraryFormElementGroup *formGroup = self.visibleFormGroups[indexPath.section];
     NSString *key = [formGroup keyForRow:indexPath.row];
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:key];
+    
     LibraryFormElement *formElement = [formGroup formElementForKey:key];
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:key];
     if (!cell) {
         cell = [formElement tableViewCell];
     }
+    
     [formElement updateCell:cell];
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:indexPath.section];
+    LibraryFormElementGroup *formGroup = self.visibleFormGroups[indexPath.section];
     NSString *key = [formGroup keyForRow:indexPath.row];
     LibraryFormElement *formElement = [formGroup formElementForKey:key];
     return [formElement heightForTableViewCell];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [self nonHiddenFormGroups].count;
+    return [self.visibleFormGroups count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+    LibraryFormElementGroup *formGroup = self.visibleFormGroups[section];
     return [formGroup numberOfRows];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:indexPath.section];
-    LibraryFormElement *element = [[formGroup elements] objectAtIndex:indexPath.row];
+    NSArray *formGroupElements = [self.visibleFormGroups[indexPath.section] elements];
+    LibraryFormElement *element = formGroupElements[indexPath.row];
+    
     if ([element isKindOfClass:[MenuLibraryFormElement class]]) {
         LibraryMenuElementViewController *vc = [[LibraryMenuElementViewController alloc] initWithStyle:UITableViewStyleGrouped];
         vc.menuElement = (MenuLibraryFormElement *)element;
@@ -364,7 +367,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 }
 
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+    LibraryFormElementGroup *formGroup = self.visibleFormGroups[section];
     if (formGroup.headerText) {
         CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.headerText
                                                            width:self.view.frame.size.width
@@ -378,7 +381,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     if (self.identityVerified) {
-        LibraryFormElementGroup *formGroup = [self nonHiddenFormGroups][section];
+        LibraryFormElementGroup *formGroup = self.visibleFormGroups[section];
         if (formGroup.headerText) {
             ExplanatorySectionLabel *headerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionHeader];
             headerLabel.text = formGroup.headerText;
@@ -392,7 +395,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 }
 
 - (CGFloat)tableView: (UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    LibraryFormElementGroup *formGroup = [self nonHiddenFormGroups][section];
+    LibraryFormElementGroup *formGroup = self.visibleFormGroups[section];
     if (formGroup.footerText) {
         CGFloat height = [ExplanatorySectionLabel heightWithText:formGroup.footerText
                                                            width:CGRectGetWidth(tableView.bounds)
@@ -404,7 +407,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     if (self.identityVerified) {
-        LibraryFormElementGroup *formGroup = [[self nonHiddenFormGroups] objectAtIndex:section];
+        LibraryFormElementGroup *formGroup = self.visibleFormGroups[section];
         if (formGroup.footerText) {
             ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
             footerLabel.text = formGroup.footerText;
@@ -417,7 +420,7 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 
 
 - (BOOL)formValid {
-    for (LibraryFormElementGroup *formGroup in [self nonHiddenFormGroups]) {
+    for (LibraryFormElementGroup *formGroup in self.visibleFormGroups) {
         for (NSString *key in [formGroup keys]) {
             NSString *value = [formGroup getFormValueForKey:key];
             
@@ -433,11 +436,11 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
 
 - (NSDictionary *)formValues {
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    for (LibraryFormElementGroup *formGroup in [self nonHiddenFormGroups]) {
+    for (LibraryFormElementGroup *formGroup in self.visibleFormGroups) {
         for (NSString *key in [formGroup keys]) {
             NSString *value = [formGroup getFormValueForKey:key];
             if (value) {
-                [params setObject:value forKey:key];
+                params[key] = value;
             }
         }
     }
@@ -472,16 +475,14 @@ UITableViewCell* createTextInputTableCell(UIView *textInputView, CGFloat padding
     
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         NSDictionary *jsonDict = content;
-        BOOL success = [(NSNumber *)[jsonDict objectForKey:@"success"] boolValue];
+        BOOL success = [jsonDict[@"success"] boolValue];
         if (error || !success) {
             DDLogVerbose(@"Request failed with error: %@",[error localizedDescription]);
             [self.navigationController popViewControllerAnimated:NO];
             [self showErrorSubmittingForm];
         } else {
-            NSDictionary *resultsDict = [jsonDict objectForKey:@"results"];
-            NSString *text = [NSString stringWithFormat:@"%@\n\nYou will be contacted at %@.",
-                              [resultsDict objectForKey:@"thank_you_text"],
-                              [resultsDict objectForKey:@"email"]];
+            NSDictionary *resultsDict = jsonDict[@"results"];
+            NSString *text = [NSString stringWithFormat:@"%@\n\nYou will be contacted at %@.",resultsDict[@"thank_you_text"],resultsDict[@"email"]];
             
             thanksController.title = @"Thank You";
             thanksController.message = text;

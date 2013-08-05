@@ -75,7 +75,8 @@
 }
 
 - (NSString *)keyForRow:(NSInteger)row {
-    return [[self keys] objectAtIndex:row];
+    NSArray *allKeys = [self keys];
+    return allKeys[row];
 }
 
 - (LibraryFormElement *)formElementForKey:(NSString *)key {

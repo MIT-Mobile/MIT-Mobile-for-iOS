@@ -26,7 +26,7 @@
 - (UITableViewCell *)tableViewCell {
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:self.key];
     cell.textLabel.text = self.displayLabel;
-    cell.detailTextLabel.text = [self.displayOptions objectAtIndex:self.currentOptionIndex];
+    cell.detailTextLabel.text = self.displayOptions[self.currentOptionIndex];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
 }

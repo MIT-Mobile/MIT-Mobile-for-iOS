@@ -156,7 +156,7 @@
     UILabel *titleLabel = (UILabel *)[cell.contentView viewWithTag:CELL_TITLE_TAG];
     UILabel *subtitleLabel = (UILabel *)[cell.contentView viewWithTag:CELL_SUBTITLE_TAG];    
     
-    LibrariesLocationsHours *library = [self.libraries objectAtIndex:indexPath.row];
+    LibrariesLocationsHours *library = self.libraries[indexPath.row];
     titleLabel.text = library.title;
     subtitleLabel.text = library.status;
     
@@ -176,16 +176,16 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     LibrariesLocationsHoursDetailViewController *detailController = [[LibrariesLocationsHoursDetailViewController alloc] init];
-    detailController.library = [self.libraries objectAtIndex:indexPath.row];
+    detailController.library = self.libraries[indexPath.row];
     [self.navigationController pushViewController:detailController animated:YES];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    LibrariesLocationsHours *library = [self.libraries objectAtIndex:indexPath.row];
-    CGSize titleSize = [library.title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] 
+    LibrariesLocationsHours *library = self.libraries[indexPath.row];
+    CGSize titleSize = [library.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
                                  constrainedToSize:CGSizeMake(CELL_LABEL_WIDTH, 500)];
-    return titleSize.height + 2 * PADDING + [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE].lineHeight;
+    return titleSize.height + 2 * PADDING + [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE].lineHeight;
 }
 
 #pragma mark - UIAlertView delegate methods
