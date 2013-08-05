@@ -10,13 +10,17 @@
 #import  <QuartzCore/CALayer.h>
 #import "ExplanatorySectionLabel.h"
 
+@interface AboutTableViewController ()  <MFMailComposeViewControllerDelegate>
+@property BOOL showBuildNumber;
+@end
+
 @implementation AboutTableViewController
 
 - (void)viewDidLoad {
     [self.tableView applyStandardColors];
     self.title = @"About";
     
-    showBuildNumber = NO;
+    self.showBuildNumber = NO;
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -49,7 +53,8 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0 && indexPath.row == 1) {
-        NSString *aboutText = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITAboutAppText"];
+        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+        NSString *aboutText = infoDictionary[@"MITAboutAppText"];
         UIFont *aboutFont = [UIFont systemFontOfSize:14.0];
         CGSize aboutSize = [aboutText sizeWithFont:aboutFont constrainedToSize:CGSizeMake(270, 2000) lineBreakMode:UILineBreakModeWordWrap];
         return aboutSize.height + 20;
@@ -83,7 +88,7 @@
                     cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0];
         			cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
                     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-                    if (showBuildNumber && [[MITBuildInfo description] length]) {
+                    if (self.showBuildNumber && [[MITBuildInfo description] length]) {
                         cell.textLabel.text = [MITBuildInfo description];
                         
                         CGImageRef hashImage = [MITBuildInfo newHashImage];
@@ -97,14 +102,14 @@
                                                              orientation:UIImageOrientationUp];
                         CGImageRelease(hashImage);
                     } else {
-                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", [infoDict objectForKey:@"CFBundleDisplayName"], [infoDict objectForKey:@"CFBundleVersion"]];
+                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", infoDict[@"CFBundleDisplayName"], infoDict[@"CFBundleVersion"]];
                     } 
                 }
                     break;
                 case 1:
                 {
                     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-                    cell.textLabel.text = [infoDict objectForKey:@"MITAboutAppText"];
+                    cell.textLabel.text = infoDict[@"MITAboutAppText"];
                     cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
                     cell.textLabel.numberOfLines = 0;
                     cell.textLabel.font = [UIFont systemFontOfSize:15.0];
@@ -150,8 +155,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0 && indexPath.row == 0) {
-        showBuildNumber = !showBuildNumber;
-        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        self.showBuildNumber = !self.showBuildNumber;
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }
     else if (indexPath.section == 1) {
         switch (indexPath.row) {
@@ -166,14 +171,15 @@
                 break;
             }
             case 2: {
-                NSString *email = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"];
-                NSString *subject = [NSString stringWithFormat:@"Feedback for MIT Mobile %@ (%@) on %@ %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], [MITBuildInfo description], [[UIDevice currentDevice] systemName], [[UIDevice currentDevice] systemVersion]];
+                NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+                NSString *email = infoDict[@"MITFeedbackAddress"];
+                NSString *subject = [NSString stringWithFormat:@"Feedback for MIT Mobile %@ (%@) on %@ %@", infoDict[@"CFBundleVersion"], [MITBuildInfo description], [[UIDevice currentDevice] systemName], [[UIDevice currentDevice] systemVersion]];
                 
                 if ([MFMailComposeViewController canSendMail]) {
                     MFMailComposeViewController *mailView = [[MFMailComposeViewController alloc] init];
                     [mailView setMailComposeDelegate:self];
                     [mailView setSubject:subject];
-                    [mailView setToRecipients:[NSArray arrayWithObject:email]];
+                    [mailView setToRecipients:@[email]];
                     [self presentModalViewController:mailView
                                             animated:YES]; 
                 }            
@@ -186,7 +192,8 @@
     switch (section) {
         case 1: {
             ExplanatorySectionLabel *copyrightFooter = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
-            copyrightFooter.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITCopyright"];
+            NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+            copyrightFooter.text = infoDict[@"MITCopyright"];
             copyrightFooter.fontSize = 12.0;
             return copyrightFooter;
         }
@@ -197,7 +204,8 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     switch (section) {
         case 1: {
-            NSString *copyrightText = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITCopyright"];
+            NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+            NSString *copyrightText = infoDict[@"MITCopyright"];
             return [ExplanatorySectionLabel heightWithText:copyrightText width:CGRectGetWidth(tableView.bounds) type:ExplanatorySectionFooter accessoryView:nil fontSize:12.0];
         }
     }

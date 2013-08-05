@@ -13,6 +13,7 @@
         self.longName = @"About";
         self.iconName = @"about";
     }
+    
     return self;
 }
 

@@ -1,8 +1,6 @@
 #import <UIKit/UIKit.h>
 
 
-@interface AboutMITVC : UITableViewController {
-
-}
+@interface AboutMITVC : UITableViewController
 
 @end

@@ -1,8 +1,6 @@
 #import <UIKit/UIKit.h>
 
 
-@interface AboutCreditsVC : UIViewController {
-
-}
+@interface AboutCreditsVC : UIViewController
 
 @end
