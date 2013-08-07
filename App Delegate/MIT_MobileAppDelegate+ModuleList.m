@@ -5,7 +5,6 @@
 #import "PeopleModule.h"
 #import	"CMModule.h"
 #import "EmergencyModule.h"
-#import "MobileWebModule.h"
 #import "SettingsModule.h"
 #import "AboutModule.h"
 #import "CalendarModule.h"
