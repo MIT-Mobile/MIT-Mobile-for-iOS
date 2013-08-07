@@ -16,7 +16,22 @@
 
 #define SEARCH_BUTTON_TAG 9144
 
-@interface CalendarEventsViewController (Private)
+@interface CalendarEventsViewController ()
+// (bskinner - 2013.08)
+// These really should be weak but the current code depends on having strong
+// references and breaks badly when weak is used.
+@property (nonatomic,strong) NavScrollerView *navigationScroller;
+@property (nonatomic,strong) UISearchBar *searchBar;
+@property (nonatomic,strong) UIView *datePicker;
+@property (nonatomic,strong) MITSearchDisplayController *searchController;
+@property (nonatomic,strong) UIView *loadingIndicator;
+@property (nonatomic,strong) EventListTableView *searchResultsTableView;
+@property (nonatomic,strong) CalendarMapView *searchResultsMapView;
+
+@property BOOL dateRangeDidChange;
+@property NSInteger loadingIndicatorCount;
+
+@property (copy) NSString *queuedButtonTitle;
 
 - (void)returnToToday;
 - (CGRect)contentFrame;
@@ -33,7 +48,6 @@
 // search bar animation
 - (void)showSearchBar;
 - (void)hideSearchBar;
-- (void)releaseSearchBar;
 
 - (void)addLoadingIndicatorForSearch:(BOOL)isSearch;
 - (void)removeLoadingIndicator;
@@ -46,29 +60,21 @@
 
 @implementation CalendarEventsViewController
 
-@synthesize startDate, endDate, events;
-@synthesize activeEventList, showList, showScroller;
-@synthesize tableView = theTableView, mapView = theMapView, category = theCategory;
-@synthesize childViewController;
-@synthesize lastSearchTerm;
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-		startDate = [NSDate date];
-		endDate = [NSDate date];
+		_startDate = [NSDate date];
+		_endDate = [NSDate date];
 		
-		loadingIndicatorCount = 0;
-		showScroller = YES;
-		theCategory = nil;
-        queuedButton = nil;
-        showList = YES;
+		_showScroller = YES;
+        _showList = YES;
     }
+    
     return self;
 }
 
 - (void)dealloc {
-    theMapView.delegate = nil;
+    self.mapView.delegate = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -76,10 +82,12 @@
     [super didReceiveMemoryWarning];
 	
 	// Release any cached data, images, etc that aren't in use.
-	if (showList) {
-		theMapView = nil;
+	if (self.showList) {
+        [self.mapView removeFromSuperview];
+		self.mapView = nil;
 	} else {
-		theTableView = nil;
+        [self.tableView removeFromSuperview];
+		self.tableView = nil;
 	}
 }
 
@@ -87,42 +95,43 @@
     [super viewDidLoad];
     [MultiLineTableViewCell setNeedsRedrawing:YES];
 	
-	if (!activeEventList) {
+	if (!self.activeEventList) {
 		NSArray *lists = [[CalendarDataManager sharedManager] eventLists];
-		if (lists.count) {
-			activeEventList = [lists objectAtIndex:0];
+		if ([lists count]) {
+			self.activeEventList = lists[0];
 		} else {
 			// TODO: show failure state
 		}
 	}
     
     NSArray *categories = [CalendarDataManager topLevelCategories];
-    if (categories == nil) {
+    if ([categories count] == 0) {
         [self makeCategoriesRequest];
     }
+    
     [self calendarListsLoaded]; // make sure the queued button loaded
     
 	self.view.backgroundColor = [UIColor clearColor];
 	
-	if (showScroller) {
-		[self.view addSubview:navScrollView];
-		[self.view addSubview:theSearchBar];
+	if (self.showScroller) {
+		[self.view addSubview:self.navigationScroller];
+		[self.view addSubview:self.searchBar];
 	}
 	
-	if ([self shouldShowDatePicker:activeEventList]) {
-		[self.view addSubview:datePicker];
+	if ([self shouldShowDatePicker:self.activeEventList]) {
+		[self.view addSubview:self.datePicker];
 	}
 	
-	[self reloadView:activeEventList];
+	[self reloadView:self.activeEventList];
 }
 
 - (void)viewDidUnload {
     [super viewDidUnload];
     
-    theTableView = nil;
-    theMapView = nil;
-    navScrollView = nil;
-    datePicker = nil;
+    self.tableView = nil;
+    self.mapView = nil;
+    self.navigationScroller = nil;
+    self.datePicker = nil;
     self.category = nil;
 }
 
@@ -144,30 +153,32 @@
     UIView *controllerView = [self defaultApplicationView];
     self.view = controllerView;
 
-	theTableView = nil;
-	dateRangeDidChange = YES;
+	self.dateRangeDidChange = YES;
 	
-	[[CalendarDataManager sharedManager] registerDelegate:self];
-	
+	[CalendarDataManager sharedManager].delegate = self;
 	[self setupScrollButtons];
 }
 
 - (void)setupScrollButtons {
-	if (showScroller) {
-        if (!navScrollView) {
-            navScrollView = [[NavScrollerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44.0)];
-            navScrollView.navScrollerDelegate = self;
+	if (self.showScroller) {
+        NavScrollerView *navigationScroller = self.navigationScroller;
+        
+        if (!navigationScroller) {
+            navigationScroller = [[NavScrollerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44.0)];
+            navigationScroller.navScrollerDelegate = self;
+            self.navigationScroller = navigationScroller;
         }
 		
-		[navScrollView removeAllButtons];
+		[navigationScroller removeAllButtons];
         
 		UIButton *searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		UIImage *searchImage = [UIImage imageNamed:MITImageNameSearch];
 		[searchButton setImage:searchImage forState:UIControlStateNormal];
         searchButton.adjustsImageWhenHighlighted = NO;
 		searchButton.tag = SEARCH_BUTTON_TAG; // random number that won't conflict with event list types
-        navScrollView.currentXOffset += 4.0;
-        [navScrollView addButton:searchButton shouldHighlight:NO];
+        
+        navigationScroller.currentXOffset += 4.0;
+        [navigationScroller addButton:searchButton shouldHighlight:NO];
 		
         // increase tappable area for search button
         UIControl *searchTapRegion = [[UIControl alloc] initWithFrame:CGRectMake(0.0, 0.0, 44.0, 44.0)];
@@ -178,23 +189,21 @@
 		NSArray *eventLists = [[CalendarDataManager sharedManager] eventLists];
 		
 		// create buttons for nav scroller view
-		for (int i = 0; i < [eventLists count]; i++) {
-			MITEventList *listType = [eventLists objectAtIndex:i];
-			NSString *buttonTitle = listType.title;
+        [eventLists enumerateObjectsUsingBlock:^(MITEventList *eventList, NSUInteger idx, BOOL *stop) {
 			UIButton *aButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			aButton.tag = i;
-			[aButton setTitle:buttonTitle forState:UIControlStateNormal];
-            [navScrollView addButton:aButton shouldHighlight:YES];
-		}
+			aButton.tag = idx;
+			[aButton setTitle:eventList.title forState:UIControlStateNormal];
+            [navigationScroller addButton:aButton shouldHighlight:YES];
+        }];
         
-        [navScrollView setNeedsLayout];
+        [navigationScroller setNeedsLayout];
 		
         // TODO: use active category instead of always start at first tab
-		UIButton *homeButton = [navScrollView buttonWithTag:0];
+		UIButton *homeButton = [navigationScroller buttonWithTag:0];
 		
-        [navScrollView buttonPressed:homeButton];
+        [navigationScroller buttonPressed:homeButton];
         searchTapRegion.tag = 8768; // all subviews of navscrollview need tag numbers that don't compete with buttons
-        [navScrollView addSubview:searchTapRegion];
+        [navigationScroller addSubview:searchTapRegion];
 	}
 }
 
@@ -203,36 +212,32 @@
 	
 	// since we add our tableviews manually we also need to do this manually
 	[self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
-	[searchResultsTableView deselectRowAtIndexPath:[searchResultsTableView indexPathForSelectedRow] animated:YES];
+	[self.searchResultsTableView deselectRowAtIndexPath:[self.searchResultsTableView indexPathForSelectedRow] animated:YES];
 }
 
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    if (childViewController) {
-        [self.navigationController pushViewController:childViewController animated:NO];
+    if (self.childViewController) {
+        [self.navigationController pushViewController:self.childViewController animated:NO];
         self.childViewController = nil;
     }
 }
 
-- (NSArray *)events
-{
-	return events;
-}
-
 - (void)setEvents:(NSArray *)someEvents
 {
-    if (events != someEvents) {
-        events = someEvents;
-    }
-
-    // set "events" property on subviews if we're called via handleOpenUrl
-    if (self.mapView) {
-        self.mapView.events = events;
-    }
-
-    if ([self.tableView isKindOfClass:[EventListTableView class]]) {
-        ((EventListTableView *)self.tableView).events = events;
+    if (![_events isEqualToArray:someEvents]) {
+        _events = [someEvents copy];
+        
+        // set "events" property on subviews if we're called via handleOpenUrl
+        if (self.mapView) {
+            self.mapView.events = self.events;
+        }
+        
+        if ([self.tableView isKindOfClass:[EventListTableView class]]) {
+            EventListTableView *eventListTableView = (EventListTableView*)self.tableView;
+            eventListTableView.events = self.events;
+        }
     }
 }
 
@@ -241,11 +246,11 @@
 
 - (void)datePickerDateLabelTapped {
     //if (activeEventList != CalendarEventListTypeHoliday) {
-	if (![activeEventList.listID isEqualToString:@"holidays"]) {
+	if (![self.activeEventList.listID isEqualToString:@"holidays"]) {
         MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
         DatePickerViewController *dateVC = [[DatePickerViewController alloc] init];
         dateVC.delegate = self;
-        dateVC.date = startDate;
+        dateVC.date = self.startDate;
         [appDelegate presentAppModalViewController:dateVC animated:YES];
     }
 }
@@ -262,8 +267,8 @@
 - (void)datePickerViewController:(DatePickerViewController *)controller didSelectDate:(NSDate *)date
 {
     self.startDate = date;
-    dateRangeDidChange = YES;
-    [self reloadView:activeEventList];
+    self.dateRangeDidChange = YES;
+    [self reloadView:self.activeEventList];
     
 	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 	[appDelegate dismissAppModalViewControllerAnimated:YES];
@@ -280,17 +285,17 @@
 
 - (void)returnToToday {
     self.startDate = [NSDate date];
-    dateRangeDidChange = YES;
+    self.dateRangeDidChange = YES;
 }
 
 #pragma mark Redrawing logic and helper functions
 - (CGRect)contentFrame {
-	CGFloat yOffset = showScroller ? CGRectGetHeight(navScrollView.frame) : 0.0;
-	if ([self shouldShowDatePicker:activeEventList]) {
+	CGFloat yOffset = self.showScroller ? CGRectGetHeight(self.navigationScroller.frame) : 0.0;
+	if ([self shouldShowDatePicker:self.activeEventList]) {
 		[self setupDatePicker];
-		yOffset += CGRectGetHeight(datePicker.frame) - 4.0; // 4.0 is height of transparent shadow under image
+		yOffset += CGRectGetHeight(self.datePicker.frame) - 4.0; // 4.0 is height of transparent shadow under image
 	} else {
-        [datePicker removeFromSuperview];
+        [self.datePicker removeFromSuperview];
 	}
     
     CGRect controllerBounds = self.view.bounds;
@@ -304,39 +309,39 @@
 
 - (void)reloadView:(MITEventList *)listType {
 
-	[searchResultsMapView removeFromSuperview];
-    searchResultsMapView = nil;
+	[self.searchResultsMapView removeFromSuperview];
+    self.searchResultsMapView = nil;
     
-	[searchResultsTableView removeFromSuperview];
-    searchResultsTableView = nil;
+	[self.searchResultsTableView removeFromSuperview];
+    self.searchResultsTableView = nil;
     
     [self.tableView removeFromSuperview];
     
 	BOOL requestNeeded = NO;
 	
-	if (listType != activeEventList) {
-		activeEventList = listType;
+	if (listType != self.activeEventList) {
+		self.activeEventList = listType;
         [self returnToToday];
 	}
 
 	CGRect contentFrame = [self contentFrame];
 	
 	// see if we need a mapview
-	if (![self canShowMap:activeEventList]) {
-		showList = YES;
+	if (![self canShowMap:self.activeEventList]) {
+		self.showList = YES;
 	}
 
-	if (dateRangeDidChange && [self shouldShowDatePicker:activeEventList]) {
+	if (self.dateRangeDidChange && [self shouldShowDatePicker:self.activeEventList]) {
 		requestNeeded = YES;
 	}
 	
-	if (showScroller) {
+	if (self.showScroller) {
 		self.navigationItem.title = @"Events";
 	}
     
-	if ([activeEventList.listID isEqualToString:@"categories"]) {
-        NSArray *someEvents = [CalendarDataManager eventsWithStartDate:startDate
-                                                              listType:activeEventList
+	if ([self.activeEventList.listID isEqualToString:@"categories"]) {
+        NSArray *someEvents = [CalendarDataManager eventsWithStartDate:self.startDate
+                                                              listType:self.activeEventList
                                                               category:self.category.catID];
         
         if (someEvents != nil && [someEvents count]) {
@@ -345,10 +350,10 @@
         }
     }
 	
-	if (showList) {
+	if (self.showList) {
 		self.tableView = nil;
 		
-		if ([activeEventList.listID isEqualToString:@"categories"]) {
+		if ([self.activeEventList.listID isEqualToString:@"categories"]) {
 			self.tableView = [[EventCategoriesTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped];
 			[self.tableView applyStandardColors];
 			EventCategoriesTableView *categoriesTV = (EventCategoriesTableView *)self.tableView;
@@ -363,18 +368,20 @@
                 NSMutableArray *subCategories = [[self.category.subCategories allObjects] mutableCopy];
                 // sort "All" category, i.e. the category that is a subcategory of itself, to the beginning
                 [subCategories removeObject:self.category];
-                categories = [[NSArray arrayWithObject:self.category] arrayByAddingObjectsFromArray:subCategories];
+                [subCategories insertObject:self.category atIndex:0];
+                categories = subCategories;
             } else {
                 categories = [CalendarDataManager topLevelCategories];
-                if (!categories) {
+                if ([categories count] == 0) {
                     [self makeCategoriesRequest];
                 }
             }
+            
             categoriesTV.categories = categories;
 
             requestNeeded = NO;
 
-		} else if([activeEventList.listID isEqualToString:@"OpenHouse"]) {
+		} else if([self.activeEventList.listID isEqualToString:@"OpenHouse"]) {
             OpenHouseTableView *openHouseTV = [[OpenHouseTableView alloc] initWithFrame:contentFrame style:UITableViewStyleGrouped];
             [openHouseTV applyStandardColors];
             self.tableView = openHouseTV;
@@ -386,7 +393,6 @@
             openHouseTV.categories = categories;
             [self.tableView reloadData];
             requestNeeded = NO;
-            
         } else {
 			self.tableView = [[EventListTableView alloc] initWithFrame:contentFrame];
 			self.tableView.delegate = (EventListTableView *)self.tableView;
@@ -394,7 +400,11 @@
 			((EventListTableView *)self.tableView).parentViewController = self;
             
             if (!requestNeeded) {
-				((EventListTableView *)self.tableView).events = events;
+                if ([self.tableView isKindOfClass:[EventListTableView class]]) {
+                    EventListTableView *eventListTableView = (EventListTableView*)self.tableView;
+                    eventListTableView.events = self.events;
+                }
+                
 				[self.tableView reloadData];
 			}
 		}
@@ -403,7 +413,7 @@
 
 		[self.view addSubview:self.tableView];
 		
-		self.navigationItem.rightBarButtonItem = [self canShowMap:activeEventList]
+		self.navigationItem.rightBarButtonItem = [self canShowMap:self.activeEventList]
 		? [[UIBarButtonItem alloc] initWithTitle:@"Map"
 											style:UIBarButtonItemStylePlain
 										   target:self
@@ -428,11 +438,11 @@
         }
 
         if (!requestNeeded) {
-            self.mapView.events = events;
+            self.mapView.events = self.events;
         }
 	}
 	
-	if ([self shouldShowDatePicker:activeEventList]) {
+	if ([self shouldShowDatePicker:self.activeEventList]) {
 		[self setupDatePicker];
 	}
 	
@@ -440,33 +450,33 @@
 		[self makeRequest];
 	}
 	
-	dateRangeDidChange = NO;
+	self.dateRangeDidChange = NO;
 }
 
 - (void)selectScrollerButton:(NSString *)buttonTitle
 {
-	for (UIButton *aButton in navScrollView.buttons) {
+	for (UIButton *aButton in self.navigationScroller.buttons) {
 		if ([aButton.titleLabel.text isEqualToString:buttonTitle]) {
-			[navScrollView buttonPressed:aButton];
+			[self.navigationScroller buttonPressed:aButton];
 			return;
 		}
 	}
     // we haven't found the button among our titles;
     // hold on to it in case a request response comes in with new titles
-    queuedButton = buttonTitle;
+    self.queuedButtonTitle = buttonTitle;
 }
 
 - (void)incrementStartDate:(BOOL)forward
 {
-	NSTimeInterval interval = [CalendarDataManager intervalForEventType:activeEventList
-															 fromDate:startDate
-															  forward:forward];
+	NSTimeInterval interval = [CalendarDataManager intervalForEventType:self.activeEventList
+                                                               fromDate:self.startDate
+                                                                forward:forward];
     
-    NSDate *newDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:startDate];
+    NSDate *newDate = [[NSDate alloc] initWithTimeInterval:interval sinceDate:self.startDate];
     self.startDate = newDate;
     
-	dateRangeDidChange = YES;
-	[self reloadView:activeEventList];
+	self.dateRangeDidChange = YES;
+	[self reloadView:self.activeEventList];
 }
 
 - (void)showPreviousDate {
@@ -489,15 +499,15 @@
 {
     NSInteger randomTag = 3289;
     
-	if (datePicker == nil) {
+	if (!self.datePicker) {
 		
-		CGFloat yOffset = showScroller ? navScrollView.frame.size.height : 0.0;
+		CGFloat yOffset = self.showScroller ? self.navigationScroller.frame.size.height : 0.0;
 		CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
 		
-		datePicker = [[UIView alloc] initWithFrame:CGRectMake(0.0, yOffset, appFrame.size.width, 44.0)];
-		UIImageView *datePickerBackground = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, datePicker.frame.size.width, datePicker.frame.size.height)];
+		self.datePicker = [[UIView alloc] initWithFrame:CGRectMake(0.0, yOffset, appFrame.size.width, 44.0)];
+		UIImageView *datePickerBackground = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, CGRectGetWidth(self.datePicker.bounds), CGRectGetHeight(self.datePicker.bounds))];
 		datePickerBackground.image = [[UIImage imageNamed:@"global/subheadbar_background.png"] stretchableImageWithLeftCapWidth:0 topCapHeight:0];
-		[datePicker addSubview:datePickerBackground];
+		[self.datePicker addSubview:datePickerBackground];
 		
 		UIImage *buttonImage = [UIImage imageNamed:@"global/subheadbar_button.png"];
 		
@@ -508,7 +518,7 @@
 		[prevDate setBackgroundImage:[UIImage imageNamed:@"global/subheadbar_button_pressed"] forState:UIControlStateHighlighted];
 		[prevDate setImage:[UIImage imageNamed:MITImageNameLeftArrow] forState:UIControlStateNormal];	
 		[prevDate addTarget:self action:@selector(showPreviousDate) forControlEvents:UIControlEventTouchUpInside];
-		[datePicker addSubview:prevDate];
+		[self.datePicker addSubview:prevDate];
 		
 		UIButton *nextDate = [UIButton buttonWithType:UIButtonTypeCustom];
 		nextDate.frame = CGRectMake(0, 0, buttonImage.size.width, buttonImage.size.height);
@@ -517,29 +527,31 @@
 		[nextDate setBackgroundImage:[UIImage imageNamed:@"global/subheadbar_button_pressed"] forState:UIControlStateHighlighted];
 		[nextDate setImage:[UIImage imageNamed:MITImageNameRightArrow] forState:UIControlStateNormal];
 		[nextDate addTarget:self action:@selector(showNextDate) forControlEvents:UIControlEventTouchUpInside];
-		[datePicker addSubview:nextDate];
+		[self.datePicker addSubview:nextDate];
         
-        UIFont *dateFont = [UIFont fontWithName:BOLD_FONT size:20.0];
+        UIFont *dateFont = [UIFont boldSystemFontOfSize:20.0];
         
         UIButton *dateButton = [UIButton buttonWithType:UIButtonTypeCustom];
         dateButton.titleLabel.font = dateFont;
         dateButton.titleLabel.textColor = [UIColor whiteColor];
         [dateButton addTarget:self action:@selector(datePickerDateLabelTapped) forControlEvents:UIControlEventTouchUpInside];
         dateButton.tag = randomTag;
-        [datePicker addSubview:dateButton];
+        [self.datePicker addSubview:dateButton];
 	}
 	
-	UIButton *dateButton = (UIButton *)[datePicker viewWithTag:randomTag];
+	UIButton *dateButton = (UIButton *)[self.datePicker viewWithTag:randomTag];
     
-    UIFont *dateFont = [UIFont fontWithName:BOLD_FONT size:20.0];
-    NSString *dateText = [CalendarDataManager dateStringForEventType:activeEventList forDate:startDate];
+    UIFont *dateFont = [UIFont boldSystemFontOfSize:20.0];
+    NSString *dateText = [CalendarDataManager dateStringForEventType:self.activeEventList
+                                                             forDate:self.startDate];
     CGSize textSize = [dateText sizeWithFont:dateFont];
     dateButton.frame = CGRectMake(0.0, 0.0, textSize.width, textSize.height);
-    dateButton.center = CGPointMake(datePicker.center.x, datePicker.center.y - datePicker.frame.origin.y);
-    [dateButton setTitle:dateText forState:UIControlStateNormal];
+    dateButton.center = CGPointMake(self.datePicker.center.x, self.datePicker.center.y - self.datePicker.bounds.origin.y);
+    [dateButton setTitle:dateText
+                forState:UIControlStateNormal];
     
-    if (![datePicker isDescendantOfView:self.view]) {
-        [self.view addSubview:datePicker];
+    if (![self.datePicker isDescendantOfView:self.view]) {
+        [self.view addSubview:self.datePicker];
     }
 }
 
@@ -549,70 +561,66 @@
 
 - (void)showSearchBar
 {
-    if (!theSearchBar) {
-        theSearchBar = [[UISearchBar alloc] initWithFrame:navScrollView.frame];
-        theSearchBar.tintColor = SEARCH_BAR_TINT_COLOR;
-        theSearchBar.alpha = 0.0;
-        [self.view addSubview:theSearchBar];
+    if (!self.searchBar) {
+        self.searchBar = [[UISearchBar alloc] initWithFrame:self.navigationScroller.frame];
+        self.searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
+        self.searchBar.alpha = 0.0;
+        [self.view addSubview:self.searchBar];
     }
     
-    CGRect frame = CGRectMake(0.0, theSearchBar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - theSearchBar.frame.size.height);
+    CGRect frame = CGRectMake(0.0, CGRectGetHeight(self.searchBar.frame),CGRectGetWidth(self.view.bounds),CGRectGetHeight(self.view.bounds) - CGRectGetHeight(self.searchBar.frame));
     
-	if (searchResultsTableView == nil) {
-		searchResultsTableView = [[EventListTableView alloc] initWithFrame:frame];
-		searchResultsTableView.parentViewController = self;
-		searchResultsTableView.delegate = searchResultsTableView;
-		searchResultsTableView.dataSource = searchResultsTableView;
+	if (!self.searchResultsTableView) {
+		self.searchResultsTableView = [[EventListTableView alloc] initWithFrame:frame];
+		self.searchResultsTableView.parentViewController = self;
+		self.searchResultsTableView.delegate = self.searchResultsTableView;
+		self.searchResultsTableView.dataSource = self.searchResultsTableView;
 	}
 	
-	if (searchResultsMapView == nil) {
-		searchResultsMapView = [[CalendarMapView alloc] initWithFrame:frame];
-        searchResultsMapView.region = self.mapView.region;
-		searchResultsMapView.delegate = self;
+	if (!self.searchResultsMapView) {
+		self.searchResultsMapView = [[CalendarMapView alloc] initWithFrame:frame];
+        self.searchResultsMapView.region = self.mapView.region;
+		self.searchResultsMapView.delegate = self;
 	}
     
-    if (searchController == nil) {
-        searchController = [[MITSearchDisplayController alloc] initWithSearchBar:theSearchBar contentsController:self];
-        searchController.delegate = self;
-        searchController.searchResultsTableView = searchResultsTableView;
-        searchController.searchResultsDelegate = searchResultsTableView.delegate;
-        searchController.searchResultsDataSource = searchResultsTableView.dataSource;
+    if (!self.searchController) {
+        self.searchController = [[MITSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+        self.searchController.delegate = self;
+        self.searchController.searchResultsTableView = self.searchResultsTableView;
+        self.searchController.searchResultsDelegate = self.searchResultsTableView.delegate;
+        self.searchController.searchResultsDataSource = self.searchResultsTableView.dataSource;
     }
     
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.4];
-	theSearchBar.alpha = 1.0;
-	[UIView commitAnimations];
-    
-    [searchController setActive:YES animated:YES];
+    [UIView animateWithDuration:0.4
+                     animations:^{
+                         self.searchBar.alpha = 1.0;
+                     }];
+    [self.searchController setActive:YES animated:YES];
 }
 
 - (void)hideSearchBar {
-	if (theSearchBar) {
-		[UIView beginAnimations:nil context:NULL];
-		[UIView setAnimationDuration:0.4];
-        [UIView setAnimationDelegate:self];
-        [UIView setAnimationDidStopSelector:@selector(releaseSearchBar)];
-		theSearchBar.alpha = 0.0;
-		[UIView commitAnimations];
+	if (self.searchBar) {
+        [UIView animateWithDuration:0.4
+                         animations:^{
+                             self.searchBar.alpha = 0.0;
+                         } completion:^(BOOL finished) {
+                             if (finished) {
+                                 [self.searchBar removeFromSuperview];
+                                 self.searchBar = nil;
+                                 
+                                 self.searchController = nil;
+                                 
+                                 [self.searchResultsMapView removeFromSuperview];
+                                 self.searchResultsMapView = nil;
+                                 
+                                 [self.searchResultsTableView removeFromSuperview];
+                                 self.searchResultsTableView = nil;
+                             }
+                         }];
 	}
 }
 
-- (void)releaseSearchBar {
-    [theSearchBar removeFromSuperview];
-    theSearchBar = nil;
-    
-    searchController = nil;
-    
-	[searchResultsMapView removeFromSuperview];
-    searchResultsMapView = nil;
-
-	[searchResultsTableView removeFromSuperview];
-    searchResultsTableView = nil;
-}
-
 #pragma mark Search delegate
-
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
 	[self makeSearchRequest:searchBar.text];
@@ -620,18 +628,18 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {	
-	theSearchBar.text = [NSString string];
+	self.searchBar.text = [NSString string];
 	[self hideSearchBar];
     
-	[self reloadView:activeEventList];
+	[self reloadView:self.activeEventList];
 }
 
 #pragma mark -
 
 - (void)showSearchResultsMapView {
-	showList = NO;
-	[self.view addSubview:searchResultsMapView];
-	[searchResultsTableView removeFromSuperview];
+	self.showList = NO;
+	[self.view addSubview:self.searchResultsMapView];
+	[self.searchResultsTableView removeFromSuperview];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"List"
 																			   style:UIBarButtonItemStylePlain
 																			  target:self
@@ -639,9 +647,9 @@
 }
 
 - (void)showSearchResultsTableView {
-	showList = YES;
-	[self.view addSubview:searchResultsTableView];
-	[searchResultsMapView removeFromSuperview];
+	self.showList = YES;
+	[self.view addSubview:self.searchResultsTableView];
+	[self.searchResultsMapView removeFromSuperview];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Map"
 																			   style:UIBarButtonItemStylePlain
 																			  target:self
@@ -652,13 +660,13 @@
 #pragma mark UI Event observing
 
 - (void)mapButtonToggled {
-	showList = NO;
-	[self reloadView:activeEventList];
+	self.showList = NO;
+	[self reloadView:self.activeEventList];
 }
 
 - (void)listButtonToggled {
-	showList = YES;
-	[self reloadView:activeEventList];
+	self.showList = YES;
+	[self reloadView:self.activeEventList];
 }
 
 - (void)buttonPressed:(id)sender {
@@ -666,13 +674,14 @@
 	if (pressedButton.tag == SEARCH_BUTTON_TAG) {
 		[self showSearchBar];
 	} else {
-		MITEventList *eventList = [[[CalendarDataManager sharedManager] eventLists] objectAtIndex:pressedButton.tag];
+        NSArray *eventLists = [[CalendarDataManager sharedManager] eventLists];
+		MITEventList *eventList = eventLists[pressedButton.tag];
 		[self reloadView:eventList];
 	}
 }
 
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
-    [searchController setActive:YES animated:YES];
+    [self.searchController setActive:YES animated:YES];
 }
 
 #pragma mark Map View Delegate
@@ -707,19 +716,17 @@
     if (searchTerms.length) {
         self.lastSearchTerm = searchTerms;
         
-        NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:searchTerms, @"q", nil];
         MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag
                                                                                   command:@"search"
-                                                                               parameters:params];
+                                                                              parameters:@{@"q":searchTerms}];
         
         request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
             if ([searchTerms isEqualToString:self.lastSearchTerm]) {
-                if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
+                if ([jsonResult isKindOfClass:[NSDictionary class]]) {
+                        NSArray *resultEvents = jsonResult[@"events"];
+                        NSString *resultSpan = jsonResult[@"span"];
                         
-                        NSArray *resultEvents = [jsonResult objectForKey:@"events"];
-                        NSString *resultSpan = [jsonResult objectForKey:@"span"];
-                        
-                        NSMutableArray *arrayForTable = [NSMutableArray arrayWithCapacity:[resultEvents count]];
+                        NSMutableArray *arrayForTable = [[NSMutableArray alloc] init];
                         
                         for (NSDictionary *eventDict in resultEvents) {
                             MITCalendarEvent *event = [CalendarDataManager eventWithDict:eventDict];
@@ -727,15 +734,14 @@
                         }
                         
                         if ([resultEvents count] > 0) {
-                            
                             NSArray *eventsArray = [NSArray arrayWithArray:arrayForTable];
-                            searchResultsMapView.events = eventsArray;
-                            searchResultsTableView.events = eventsArray;
-                            searchResultsTableView.searchSpan = resultSpan;
-                            searchResultsTableView.searchResults = YES;
-                            [searchResultsTableView reloadData];
+                            self.searchResultsMapView.events = eventsArray;
+                            self.searchResultsTableView.events = eventsArray;
+                            self.searchResultsTableView.searchSpan = resultSpan;
+                            self.searchResultsTableView.searchResults = YES;
+                            [self.searchResultsTableView reloadData];
                             
-                            if (showList) {
+                            if (self.showList) {
                                 [self showSearchResultsTableView];
                             } else {
                                 [self showSearchResultsMapView];
@@ -750,26 +756,30 @@
                         }
                         
                 } else {
-                    
-                
+                    if (error) {
+                        DDLogVerbose(@"Calendar 'search' failed with error '%@'",error);
+                    } else {
+                        DDLogVerbose(@"Calendar 'search' failed with result type '%@'", NSStringFromClass([jsonResult class]));
+                    }
                 }
+                
                 [self removeLoadingIndicator];
             }
         };
         
-        if (showList) {
-            searchResultsTableView.events = nil;
-            searchResultsTableView.searchResults = NO;
-            [searchResultsTableView reloadData];
+        if (self.showList) {
+            self.searchResultsTableView.events = nil;
+            self.searchResultsTableView.searchResults = NO;
+            [self.searchResultsTableView reloadData];
             [self showSearchResultsTableView];
         } else {
-            searchResultsMapView.events = nil;
+            self.searchResultsMapView.events = nil;
             [self showSearchResultsMapView];
         }
         
         [self addLoadingIndicatorForSearch:YES];
         
-        [[NSOperationQueue mainQueue] addOperation:request];
+        [[MobileRequestOperation defaultQueue] addOperation:request];
     }
 }
 
@@ -787,7 +797,7 @@
                 [CoreDataManager saveData];
             }
             
-            if ([activeEventList.listID isEqualToString:@"categories"]) {
+            if ([self.activeEventList.listID isEqualToString:@"categories"]) {
                 [(EventCategoriesTableView *)self.tableView setCategories:[CalendarDataManager topLevelCategories]];
                 [self.tableView reloadData];
             }
@@ -802,52 +812,53 @@
 {
     MobileRequestOperation *request = nil;
     
-	if ([[CalendarDataManager sharedManager] isDailyEvent:activeEventList]) {
-		NSTimeInterval interval = [startDate timeIntervalSince1970];
+	if ([[CalendarDataManager sharedManager] isDailyEvent:self.activeEventList]) {
+		NSTimeInterval interval = [self.startDate timeIntervalSince1970];
 		NSString *timeString = [NSString stringWithFormat:@"%d", (int)interval];
 		
 		if (self.category) {
             NSMutableDictionary *params = [NSMutableDictionary dictionary];
-            [params setObject:[NSString stringWithFormat:@"%d", [self.category.catID intValue]] forKey:@"id"];
-            [params setObject:timeString forKey:@"start"];
+            params[@"id"] = [NSString stringWithFormat:@"%d", [self.category.catID intValue]];
+            params[@"start"] = timeString;
+            
             if(self.category.listID) {
-                [params setObject:self.category.listID forKey:@"type"];
+                params[@"type"] = self.category.listID;
             }
+            
             request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:@"category" parameters:params];
 
 		} else {
-            NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    activeEventList.listID, @"type",
-                                    timeString, @"time", nil];
-            NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
+            NSDictionary *params = @{@"type" : self.activeEventList.listID,
+                                     @"time" : timeString};
+            NSString *command = [CalendarDataManager apiCommandForEventType:self.activeEventList];
             request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params];
 		}
     
-    } else if ([activeEventList.listID isEqualToString:@"academic"] || [activeEventList.listID isEqualToString:@"holidays"]) {
+    } else if ([@[@"academic",@"holidays"] containsObject:self.activeEventList.listID]) {
 		NSCalendar *calendar = [NSCalendar currentCalendar];
 		NSUInteger unitFlags = NSYearCalendarUnit | NSMonthCalendarUnit;
-		NSDateComponents *comps = [calendar components:unitFlags fromDate:startDate];
+		NSDateComponents *comps = [calendar components:unitFlags fromDate:self.startDate];
 		NSString *month = [NSString stringWithFormat:@"%d", [comps month]];
 		NSString *year = [NSString stringWithFormat:@"%d", [comps year]];
 
-        NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:year, @"year", month, @"month", nil];
-        NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
+        NSDictionary *params = @{@"year" : year,
+                                 @"month" : month};
+        NSString *command = [CalendarDataManager apiCommandForEventType:self.activeEventList];
         request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:params];
-
 	} else {
-        NSString *command = [CalendarDataManager apiCommandForEventType:activeEventList];
+        NSString *command = [CalendarDataManager apiCommandForEventType:self.activeEventList];
         request = [[MobileRequestOperation alloc] initWithModule:CalendarTag command:command parameters:nil];
 	}
     
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
+        if (error) {
             
-            NSMutableArray *arrayForTable = [NSMutableArray arrayWithCapacity:[jsonResult count]];
-            
+        } else if ([jsonResult isKindOfClass:[NSArray class]]) {
+            NSMutableArray *arrayForTable = [[NSMutableArray alloc] init];
             EventCategory *category = nil;
             
-            if ([activeEventList.listID isEqualToString:@"Exhibits"]) {
+            if ([self.activeEventList.listID isEqualToString:@"Exhibits"]) {
                 category = [CalendarDataManager categoryForExhibits];
             } else {
                 category = self.category;
@@ -859,30 +870,27 @@
                 if (category != nil) {
                     [event addCategoriesObject:category];
                 }
-                [activeEventList addEventsObject:event];
+                [self.activeEventList addEventsObject:event];
                 [CoreDataManager saveData]; // save now to preserve many-many relationships
                 [arrayForTable addObject:event];
             }
             
-            self.events = [NSArray arrayWithArray:arrayForTable];
-            
+            self.events = arrayForTable;
             [self.tableView reloadData];
-
-        } else {
-
         }
+        
         [self removeLoadingIndicator];
     };
 	
     [self addLoadingIndicatorForSearch:NO];
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[MobileRequestOperation defaultQueue] addOperation:request];
 }
 
 - (void)addLoadingIndicatorForSearch:(BOOL)isSearch
 {
-	if (loadingIndicator == nil) {
+	if (self.loadingIndicator == nil) {
 		static NSString *loadingString = @"Loading...";
-		UIFont *loadingFont = [UIFont fontWithName:STANDARD_FONT size:17.0];
+		UIFont *loadingFont = [UIFont systemFontOfSize:17.0];
 		CGSize stringSize = [loadingString sizeWithFont:loadingFont];
 		
         CGFloat verticalPadding = 10.0;
@@ -890,56 +898,61 @@
         CGFloat horizontalSpacing = 3.0;
         CGFloat cornerRadius = 8.0;
         
-        UIActivityIndicatorViewStyle style = (showList) ? UIActivityIndicatorViewStyleGray : UIActivityIndicatorViewStyleWhite;
+        UIActivityIndicatorViewStyle style = (self.showList) ? UIActivityIndicatorViewStyleGray : UIActivityIndicatorViewStyleWhite;
 		UIActivityIndicatorView *spinny = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:style];
 		[spinny startAnimating];
         
 		UILabel *label = [[UILabel alloc] init];
-		label.textColor = (showList) ? [UIColor colorWithWhite:0.5 alpha:1.0] : [UIColor whiteColor];
+		label.textColor = (self.showList) ? [UIColor colorWithWhite:0.5 alpha:1.0] : [UIColor whiteColor];
 		label.text = loadingString;
 		label.font = loadingFont;
 		label.backgroundColor = [UIColor clearColor];
         
-		CGRect frame = (showList) ? self.tableView.frame : CGRectMake(0, 0, stringSize.width + spinny.frame.size.width + horizontalPadding * 2,  stringSize.height + verticalPadding * 2);
-		loadingIndicator = [[UIView alloc] initWithFrame:frame];
-		loadingIndicator.autoresizingMask = (showList) ? UIViewAutoresizingFlexibleHeight : UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        loadingIndicator.layer.cornerRadius = cornerRadius;
-        loadingIndicator.backgroundColor = (showList) ? [UIColor whiteColor] : [UIColor colorWithWhite:0.0 alpha:0.8];
+		CGRect frame = (self.showList) ? self.tableView.frame : CGRectMake(0, 0, stringSize.width + spinny.frame.size.width + horizontalPadding * 2,  stringSize.height + verticalPadding * 2);
+		self.loadingIndicator = [[UIView alloc] initWithFrame:frame];
+        if (self.showList) {
+            self.loadingIndicator.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+            self.loadingIndicator.backgroundColor = [UIColor whiteColor];
+        }
+        
+		self.loadingIndicator.autoresizingMask = (self.showList) ? UIViewAutoresizingFlexibleHeight : UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        self.loadingIndicator.layer.cornerRadius = cornerRadius;
+        self.loadingIndicator.backgroundColor = (self.showList) ? [UIColor whiteColor] : [UIColor colorWithWhite:0.0 alpha:0.8];
 		
-		if (showList) {
-			label.frame = CGRectMake(round((loadingIndicator.frame.size.width - stringSize.width + spinny.frame.size.width + horizontalSpacing) / 2),
-									 round((loadingIndicator.frame.size.height - stringSize.height) / 2),
+		if (self.showList) {
+			label.frame = CGRectMake(round((self.loadingIndicator.frame.size.width - stringSize.width + spinny.frame.size.width + horizontalSpacing) / 2),
+									 round((self.loadingIndicator.frame.size.height - stringSize.height) / 2),
 									 stringSize.width, stringSize.height + 2.0);
-			spinny.frame = CGRectMake(round((loadingIndicator.frame.size.width - spinny.frame.size.width - stringSize.width) / 2),
-									  round((loadingIndicator.frame.size.height - spinny.frame.size.height) / 2),
+			spinny.frame = CGRectMake(round((self.loadingIndicator.frame.size.width - spinny.frame.size.width - stringSize.width) / 2),
+									  round((self.loadingIndicator.frame.size.height - spinny.frame.size.height) / 2),
 									  spinny.frame.size.width, spinny.frame.size.height);
 			label.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
 			spinny.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
 		} else {
 			label.frame = CGRectMake(spinny.frame.size.width + horizontalPadding + horizontalSpacing, verticalPadding, stringSize.width, stringSize.height + 2.0);
 			spinny.center = CGPointMake(spinny.center.x + horizontalPadding, spinny.center.y + verticalPadding);
-			loadingIndicator.center = self.mapView.center;
+			self.loadingIndicator.center = self.mapView.center;
 		}
 		
-		[loadingIndicator addSubview:spinny];
-		[loadingIndicator addSubview:label];
+		[self.loadingIndicator addSubview:spinny];
+		[self.loadingIndicator addSubview:label];
 	}
 	
-	loadingIndicatorCount++;
-	DDLogVerbose(@"loading indicator count: %d", loadingIndicatorCount);
-	if (![loadingIndicator isDescendantOfView:self.view]) {
-		[self.view addSubview:loadingIndicator];
+	self.loadingIndicatorCount++;
+	DDLogVerbose(@"loading indicator count: %d", self.loadingIndicatorCount);
+	if (![self.loadingIndicator isDescendantOfView:self.view]) {
+		[self.view addSubview:self.loadingIndicator];
 	}
 }
 
 - (void)removeLoadingIndicator
 {
-	loadingIndicatorCount--;
-	DDLogVerbose(@"loading indicator count: %d", loadingIndicatorCount);
-	if (loadingIndicatorCount <= 0) {
-		loadingIndicatorCount = 0;
-		[loadingIndicator removeFromSuperview];
-		loadingIndicator = nil;
+	self.loadingIndicatorCount--;
+	DDLogVerbose(@"loading indicator count: %d", self.loadingIndicatorCount);
+	if (self.loadingIndicatorCount <= 0) {
+		self.loadingIndicatorCount = 0;
+		[self.loadingIndicator removeFromSuperview];
+		self.loadingIndicator = nil;
 	}
 }
 
@@ -948,9 +961,9 @@
 
 - (void)calendarListsLoaded {
 	[self setupScrollButtons];
-    if (queuedButton) {
-        [self selectScrollerButton:queuedButton];
-        queuedButton = nil;
+    if (self.queuedButtonTitle) {
+        [self selectScrollerButton:self.queuedButtonTitle];
+        self.queuedButtonTitle = nil;
     }
 }
 

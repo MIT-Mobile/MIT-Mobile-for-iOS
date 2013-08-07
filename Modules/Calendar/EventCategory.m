@@ -20,22 +20,19 @@
 
 - (void)updateWithDict:(NSDictionary *)dict forListID:(NSString *)listID;
 {
-	self.catID = [NSNumber numberWithInt:[[dict objectForKey:@"catid"] intValue]];
-	self.title = [dict objectForKey:@"name"];
-	NSArray *subcatArray = [dict objectForKey:@"subcategories"];
-	if (subcatArray != nil) {
-		self.parentCategory = self;
-		for (NSDictionary *subcatDict in subcatArray) {
-			NSInteger subcatID = [[subcatDict objectForKey:@"catid"] intValue];
-			EventCategory *subCategory = [CalendarDataManager categoryWithID:subcatID forListID:listID];
-			subCategory.parentCategory = self;
-			subCategory.title = [subcatDict objectForKey:@"name"];
-		}
-		
-	} else if (self.parentCategory == nil) {
-		// categories without subcategories
-		self.parentCategory = self;
-	}
+	self.catID = @([dict[@"catid"] integerValue]);
+	self.title = dict[@"name"];
+	NSArray *subcategories = dict[@"subcategories"];
+    
+    [subcategories enumerateObjectsUsingBlock:^(NSDictionary *category, NSUInteger idx, BOOL *stop) {
+        NSInteger subcatID = [category[@"catid"] integerValue];
+        
+        EventCategory *subCategory = [CalendarDataManager categoryWithID:subcatID
+                                                               forListID:listID];
+        subCategory.title = category[@"name"];
+        subCategory.parentCategory = self;
+    }];
+    
 	[CoreDataManager saveData];
 }
 

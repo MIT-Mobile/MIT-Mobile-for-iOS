@@ -17,27 +17,14 @@ extern NSString * const CalendarStateEventDetail;
 // server API parameters
 extern NSString * const CalendarEventAPISearch;
 
-@protocol CalendarDataManagerDelegate <NSObject>
-
-- (void)calendarListsLoaded;
-- (void)calendarListsFailedToLoad;
-
-@end
-
-
+@protocol CalendarDataManagerDelegate;
 @class MITEventList;
 
-@interface CalendarDataManager : NSObject {
-	
-	id <CalendarDataManagerDelegate> _delegate;
-	NSArray *_eventLists;
-	NSArray *_staticEventListIDs;
-
-}
+@interface CalendarDataManager : NSObject
+@property (weak) id<CalendarDataManagerDelegate> delegate;
 
 + (CalendarDataManager *)sharedManager;
 - (NSArray *)eventLists;
-- (void)registerDelegate:(id<CalendarDataManagerDelegate>)aDelegate;
 - (NSArray *)staticEventListIDs;
 - (MITEventList *)eventListWithID:(NSString *)listID; // grabs from memory
 - (BOOL)isDailyEvent:(MITEventList *)listType;
@@ -64,5 +51,13 @@ extern NSString * const CalendarEventAPISearch;
 + (NSString *)apiCommandForEventType:(MITEventList *)listType;
 + (NSTimeInterval)intervalForEventType:(MITEventList *)listType fromDate:(NSDate *)aDate forward:(BOOL)forward;
 + (NSString *)dateStringForEventType:(MITEventList *)listType forDate:(NSDate *)aDate;
+
+@end
+
+
+@protocol CalendarDataManagerDelegate <NSObject>
+
+- (void)calendarListsLoaded;
+- (void)calendarListsFailedToLoad;
 
 @end

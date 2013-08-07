@@ -78,9 +78,8 @@
 	
 	// setup nav bar
 	if (self.events.count > 1) {
-		_eventPager = [[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:
-                                                                [UIImage imageNamed:MITImageNameUpArrow],
-                                                                [UIImage imageNamed:MITImageNameDownArrow], nil]];
+		_eventPager = [[UISegmentedControl alloc] initWithItems:@[[UIImage imageNamed:MITImageNameUpArrow],
+                                                                  [UIImage imageNamed:MITImageNameDownArrow]]];
 		[_eventPager setMomentary:YES];
 		[_eventPager addTarget:self action:@selector(showNextEvent:) forControlEvents:UIControlEventValueChanged];
 		_eventPager.segmentedControlStyle = UISegmentedControlStyleBar;
@@ -117,7 +116,7 @@
                 currentEventIndex++;
             }
 		}
-		self.event = [self.events objectAtIndex:currentEventIndex];
+		self.event = self.events[currentEventIndex];
 		[self reloadEvent];
         if ([self.event hasMoreDetails] && [self.event.summary length] == 0) {
             [self requestEventDetails];
@@ -131,28 +130,27 @@
         return;
     }
 
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:[self.event.eventID description], @"id", nil];
     MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag
-                                                                              command:@"detail"
-                                                                           parameters:params];
+                                                                             command:@"detail"
+                                                                          parameters:@{@"id" : [self.event.eventID description]}];
 
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         self.loading = NO;
         
         if (error) {
-
+            DDLogVerbose(@"Calendar 'detail' request failed: %@",error);
         } else {
-            if ([jsonResult isKindOfClass:[NSDictionary class]]
-                && [[jsonResult objectForKey:@"id"] integerValue] == [self.event.eventID integerValue])
-            {
-                [self.event updateWithDict:jsonResult];
-                [self reloadEvent];
+            if ([jsonResult isKindOfClass:[NSDictionary class]]) {
+                if ([jsonResult[@"id"] integerValue] == [self.event.eventID integerValue]) {
+                    [self.event updateWithDict:jsonResult];
+                    [self reloadEvent];
+                }
             }
         }
     };
 
     self.loading = YES;
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[MobileRequestOperation defaultQueue] addOperation:request];
 }
 
 - (void)reloadEvent
@@ -165,8 +163,8 @@
     
     if ([self.events count] > 1) {
         NSInteger currentEventIndex = [self.events indexOfObject:self.event];
-        [_eventPager setEnabled:(currentEventIndex > 0) forSegmentAtIndex:0];
-        [_eventPager setEnabled:(currentEventIndex < [self.events count] - 1) forSegmentAtIndex:1];
+        [self.eventPager setEnabled:(currentEventIndex > 0) forSegmentAtIndex:0];
+        [self.eventPager setEnabled:(currentEventIndex < [self.events count] - 1) forSegmentAtIndex:1];
     }
 	
     NSMutableArray *rowTypes = [NSMutableArray array];
@@ -211,7 +209,7 @@
         [categoriesBody appendString:@"</ul>"];
         self.categoriesString = [self htmlStringFromString:categoriesBody];
         
-        UIFont *cellFont = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
+        UIFont *cellFont = [UIFont systemFontOfSize:CELL_STANDARD_FONT_SIZE];
         CGSize textSize = [CalendarTag sizeWithFont:cellFont];
         // one line height per category, +1 each for "Categorized as" and <ul> spacing, 5px between lines
         self.categoriesHeight = (textSize.height + 5.0) * ([self.event.categories count] + 2);
@@ -369,7 +367,7 @@
 			break;
 		case CalendarDetailRowTypeURL:
 			cell.textLabel.text = self.event.url;
-			cell.textLabel.font = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
+			cell.textLabel.font = [UIFont systemFontOfSize:CELL_STANDARD_FONT_SIZE];
 			cell.textLabel.textColor = EMBEDDED_LINK_FONT_COLOR;
 			cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
 			break;
@@ -442,8 +440,8 @@
     NSString *maxWidth = [NSString stringWithFormat:@"%.0f", self.tableView.frame.size.width - 2 * WEB_VIEW_PADDING];
     [target replaceOccurrencesOfString:@"__WIDTH__" withString:maxWidth options:NSLiteralSearch range:NSMakeRange(0, target.length)];
     
-	[target replaceOccurrencesOfStrings:[NSArray arrayWithObject:@"__BODY__"] 
-							withStrings:[NSArray arrayWithObject:source] 
+	[target replaceOccurrencesOfStrings:@[@"__BODY__"]
+							withStrings:@[source]
 								options:NSLiteralSearch];
 
 	return [NSString stringWithString:target];
@@ -463,7 +461,7 @@
 
 		case CalendarDetailRowTypeTime:
 			cellText = [self.event dateStringWithDateStyle:NSDateFormatterFullStyle timeStyle:NSDateFormatterShortStyle separator:@"\n"];
-			cellFont = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+			cellFont = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
 			constraintWidth = tableView.frame.size.width - 21.0;
 			break;
 		case CalendarDetailRowTypeDescription:
@@ -477,13 +475,13 @@
 			break;
 		case CalendarDetailRowTypeURL:
 			cellText = self.event.url;
-			cellFont = [UIFont fontWithName:STANDARD_FONT size:CELL_STANDARD_FONT_SIZE];
+			cellFont = [UIFont systemFontOfSize:CELL_STANDARD_FONT_SIZE];
 			// 33 and 21 are from MultiLineTableViewCell.m
 			constraintWidth = tableView.frame.size.width - 33.0 - 21.0;
 			break;
 		case CalendarDetailRowTypeLocation:
 			cellText = (self.event.location != nil) ? self.event.location : self.event.shortloc;
-			cellFont = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+			cellFont = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
 			// 33 and 21 are from MultiLineTableViewCell.m
 			constraintWidth = tableView.frame.size.width - 33.0 - 21.0;
 			break;
@@ -573,7 +571,7 @@
 		case CalendarDetailRowTypeURL:
 		{
 			NSURL *eventURL = [NSURL URLWithString:self.event.url];
-			if (self.event.url && [[UIApplication sharedApplication] canOpenURL:eventURL]) {
+			if ([[UIApplication sharedApplication] canOpenURL:eventURL]) {
 				[[UIApplication sharedApplication] openURL:eventURL];
 			}
 			break;
@@ -618,7 +616,6 @@
 
 - (NSString *)twitterUrl {
     return self.event.url;
-	//return [NSString stringWithFormat:@"http://%@/e/%@", MITMobileWebDomainString, [URLShortener compressedIdFromNumber:event.eventID]];
 }
 
 - (NSString *)twitterTitle {

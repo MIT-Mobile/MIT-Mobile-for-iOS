@@ -3,13 +3,8 @@
 
 @class CalendarEventsViewController;
 
-@interface CalendarModule : MITModule {
-
-	CalendarEventsViewController *calendarVC;
-	
-}
-
-@property (nonatomic, retain) CalendarEventsViewController *calendarVC;
+@interface CalendarModule : MITModule
+@property (nonatomic, readonly) CalendarEventsViewController *calendarVC;
 
 @end
 

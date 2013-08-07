@@ -4,24 +4,21 @@
 @class EventCategory;
 @class MITEventList;
 
-@interface MITCalendarEvent :  NSManagedObject  
-{
-}
-
-@property (nonatomic, retain) NSString * location;
-@property (nonatomic, retain) NSString * shortloc;
-@property (nonatomic, retain) NSNumber * latitude;
-@property (nonatomic, retain) NSNumber * longitude;
-@property (nonatomic, retain) NSDate * start;
-@property (nonatomic, retain) NSDate * end;
-@property (nonatomic, retain) NSNumber * eventID;
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSString * phone;
-@property (nonatomic, retain) NSString * summary;
-@property (nonatomic, retain) NSString * url;
-@property (nonatomic, retain) NSSet* categories;
-@property (nonatomic, retain) NSDate * lastUpdated;
-@property (nonatomic, retain) NSSet* lists;
+@interface MITCalendarEvent :  NSManagedObject
+@property (nonatomic, copy) NSString * location;
+@property (nonatomic, copy) NSString * shortloc;
+@property (nonatomic, strong) NSNumber * latitude;
+@property (nonatomic, strong) NSNumber * longitude;
+@property (nonatomic, strong) NSDate * start;
+@property (nonatomic, strong) NSDate * end;
+@property (nonatomic, strong) NSNumber * eventID;
+@property (nonatomic, copy) NSString * title;
+@property (nonatomic, copy) NSString * phone;
+@property (nonatomic, copy) NSString * summary;
+@property (nonatomic, copy) NSString * url;
+@property (nonatomic, copy) NSSet* categories;
+@property (nonatomic, strong) NSDate * lastUpdated;
+@property (nonatomic, copy) NSSet* lists;
 
 - (NSString *)subtitle;
 - (NSString *)dateStringWithDateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle separator:(NSString *)separator ;

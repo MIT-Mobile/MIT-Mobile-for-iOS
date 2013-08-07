@@ -19,7 +19,7 @@ UIWebViewDelegate, EKEventEditViewDelegate>
 
 @property (nonatomic, strong) MITCalendarEvent *event;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) NSArray *events;
+@property (nonatomic, copy) NSArray *events;
 
 - (void)reloadEvent;
 - (void)setupHeader;
