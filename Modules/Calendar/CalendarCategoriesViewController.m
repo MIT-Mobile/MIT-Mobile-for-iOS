@@ -12,18 +12,15 @@
                                                                               command:@"categories"
                                                                            parameters:nil];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (error)
-        {
-            DDLogVerbose(@"request failed");
-        }
-        else if ([jsonResult isKindOfClass:[NSArray class]])
-        {
+        if (error) {
+            DDLogVerbose(@"calendar categories request failed: %@", error);
+        } else if ([jsonResult isKindOfClass:[NSArray class]]) {
             self.categories = jsonResult;
             [self.tableView reloadData];
         }
     };
     
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[MobileRequestOperation defaultQueue] addOperation:request];
 }
 
 // Override to allow orientations other than the default portrait orientation.
