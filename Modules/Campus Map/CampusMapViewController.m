@@ -607,6 +607,9 @@
         self.cancelToolbar.frame = cancelRect;
         self.searchBar.showsBookmarkButton = NO;
         
+        self.geoToolbar.alpha = 1.0;
+        self.cancelToolbar.alpha = 0.0;
+        
         [UIView animateWithDuration:(animated ? 0.4 : 0.0)
                               delay: 0.0
                             options:(UIViewAnimationOptionCurveEaseOut |
@@ -627,11 +630,9 @@
                              
                              self.searchBar.frame = searchFrame;
                              
-                             self.geoToolbar.alpha = 1.0;
                              self.geoToolbar.frame = toolbarFrame;
                              self.geoToolbar.alpha = 0.0;
                              
-                             self.cancelToolbar.alpha = 0.0;
                              [self.searchBarView addSubview:self.cancelToolbar];
                              self.cancelToolbar.frame = cancelFrame;
                              self.cancelToolbar.alpha = 1.0;
@@ -657,6 +658,8 @@
             searchFrame.size.width = CGRectGetWidth(self.searchBarView.frame);
         }
         
+        self.cancelToolbar.alpha = 1.0;
+        self.geoToolbar.alpha = 0.0;
         [UIView animateWithDuration:(animated ? 0.4 : 0.0)
                               delay:0.0
                             options:(UIViewAnimationOptionCurveEaseOut |
@@ -670,11 +673,9 @@
                                                                   CGRectGetMinY(searchFrame));
                              
                              
-                             self.cancelToolbar.alpha = 1.0;
                              self.cancelToolbar.frame = cancelFrame;
                              self.cancelToolbar.alpha = 0.0;
                              
-                             self.geoToolbar.alpha = 0.0;
                              self.geoToolbar.frame = geoToolbarFrame;
                              self.geoToolbar.alpha = 1.0;
                              
