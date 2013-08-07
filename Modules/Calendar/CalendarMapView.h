@@ -2,6 +2,6 @@
 #import "MITMapView.h"
 
 @interface CalendarMapView : MITMapView
-@property (nonatomic, retain) NSArray *events;
+@property (nonatomic, copy) NSArray *events;
 
 @end

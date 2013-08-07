@@ -9,16 +9,8 @@
 	NSIndexPath *_previousSelectedIndexPath;
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	
-	if (self.events != nil) {
-		return [self.events count];
-	}
-    return 0;
+	return [self.events count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -28,6 +20,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIView *titleView = nil;
     NSString *titleString = nil;
+    
 	if (self.searchResults) {
 		NSUInteger numResults = [self.events count];
 		switch (numResults) {
@@ -57,22 +50,19 @@
 	NSInteger randomTagNumberForLocationLabel = 1831;
     
     MultiLineTableViewCell *cell = (MultiLineTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
+    
+    if (!cell) {
         cell = [[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     } else {
 		UIView *extraView = [cell viewWithTag:randomTagNumberForLocationLabel];
 		[extraView removeFromSuperview];
 	}
+    
 	[cell applyStandardFonts];
     
-	MITCalendarEvent *event = [self.events objectAtIndex:indexPath.row];
+	MITCalendarEvent *event = self.events[indexPath.row];
 
-	//CGFloat maxWidth = self.frame.size.width - MULTILINE_ADJUSTMENT_ACCESSORY;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    
-	//CGSize textSize = [event.title sizeWithFont:cell.textLabel.font];
-	//CGFloat textHeight = 10.0 + (textSize.width > maxWidth ? textSize.height * 2 : textSize.height);
-
     cell.textLabelNumberOfLines = 2;
     cell.textLabelLineBreakMode = UILineBreakModeTailTruncation;
     cell.textLabel.text = event.title;
@@ -88,7 +78,10 @@
         
     if (event.shortloc) {
         // right align event location
-        CGSize locationTextSize = [event.shortloc sizeWithFont:[UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE] forWidth:100.0 lineBreakMode:UILineBreakModeTailTruncation];
+        CGSize locationTextSize = [event.shortloc sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
+                                                      forWidth:100.0
+                                                 lineBreakMode:UILineBreakModeTailTruncation];
+        
         CGFloat labelY = [self tableView:self heightForRowAtIndexPath:indexPath] - CELL_VERTICAL_PADDING - locationTextSize.height;
         CGRect locationFrame = CGRectMake(self.frame.size.width - locationTextSize.width - 20.0,
                                           labelY,
@@ -109,11 +102,9 @@
     return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    //CGFloat *constraintWidth = [MultiLineTableViewCell cellWidthForTableStyle:self accessoryType:UITableViewCellAccessoryDisclosureIndicator];
-    //if (*constraintWidth == 0) {
-    
-	MITCalendarEvent *event = [self.events objectAtIndex:indexPath.row];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	MITCalendarEvent *event = self.events[indexPath.row];
     
     CGFloat cellHeight = [MultiLineTableViewCell cellHeightForTableView:self
                                                                    text:event.title
@@ -126,27 +117,13 @@
                                                          accessoryType:UITableViewCellAccessoryDisclosureIndicator];
     
     return (cellHeight > maxHeight) ? maxHeight : cellHeight;
-    /*
-	CGFloat height = CELL_TWO_LINE_HEIGHT;
-    
-	UIFont *font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
-	CGFloat constraintWidth = self.frame.size.width - MULTILINE_ADJUSTMENT_ACCESSORY;
-
-	MITCalendarEvent *event = [self.events objectAtIndex:indexPath.row];
-	CGSize textSize = [event.title sizeWithFont:font];
-	if (textSize.width > constraintWidth) {
-		height += textSize.height + 2.0;
-	}
-
-	return height;
-    */
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	
-	MITCalendarEvent *event = [self.events objectAtIndex:indexPath.row];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	MITCalendarEvent *event = self.events[indexPath.row];
 		
-	CalendarDetailViewController *detailVC = [[CalendarDetailViewController alloc] initWithNibName:nil bundle:nil];//initWithStyle:UITableViewStylePlain];
+	CalendarDetailViewController *detailVC = [[CalendarDetailViewController alloc] initWithNibName:nil bundle:nil];
 	detailVC.event = event;
 	detailVC.events = self.events;
 

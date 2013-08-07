@@ -4,15 +4,6 @@
 #import "CoreLocation+MITAdditions.h"
 
 @implementation CalendarMapView
-{
-    NSArray *_events;
-}
-
-- (NSArray *)events
-{
-	return _events;
-}
-
 /*
  * while setting events
  * create map annotations for all events that we can map
@@ -22,10 +13,9 @@
 {
     [self removeAllAnnotations:YES];
     
-	_events = events;
+	_events = [events copy];
     
-    if ([_events count])
-    {
+    if ([_events count]) {
         NSMutableArray *mappedEvents = [NSMutableArray array];
         for (MITCalendarEvent *event in [events reverseObjectEnumerator]) {
             if ([event hasCoords]) {
@@ -38,7 +28,6 @@
         self.region = region;
 
     } else {
-        
         [self setRegion:MKCoordinateRegionMake(DEFAULT_MAP_CENTER, DEFAULT_MAP_SPAN)];
     }
     

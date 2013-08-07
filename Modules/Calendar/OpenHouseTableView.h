@@ -4,7 +4,7 @@
 @class CalendarEventsViewController;
 
 @interface OpenHouseTableView : UITableView <UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic, retain) NSArray *categories;
-@property (nonatomic, assign) CalendarEventsViewController *parentViewController;
+@property (copy) NSArray *categories;
+@property (weak) CalendarEventsViewController *parentViewController;
 
 @end
