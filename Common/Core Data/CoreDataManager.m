@@ -34,51 +34,51 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
 #pragma mark -
 #pragma mark *** Public accessors ***
 
-+(NSArray *)fetchDataForAttribute:(NSString *)attributeName {
++ (NSArray *)fetchDataForAttribute:(NSString *)attributeName {
 	return [[CoreDataManager coreDataManager] fetchDataForAttribute:attributeName];
 }
 
-+(NSArray *)fetchDataForAttribute:(NSString *)attributeName sortDescriptor:(NSSortDescriptor *)sortDescriptor {
++ (NSArray *)fetchDataForAttribute:(NSString *)attributeName sortDescriptor:(NSSortDescriptor *)sortDescriptor {
 	return [[CoreDataManager coreDataManager] fetchDataForAttribute:attributeName sortDescriptor:sortDescriptor];
 }
 
-+(void)clearDataForAttribute:(NSString *)attributeName {
++ (void)clearDataForAttribute:(NSString *)attributeName {
 	[[CoreDataManager coreDataManager] clearDataForAttribute:attributeName];
 }
 
-+(id)insertNewObjectForEntityForName:(NSString *)entityName {
++ (id)insertNewObjectForEntityForName:(NSString *)entityName {
 	return [[CoreDataManager coreDataManager] insertNewObjectForEntityForName:entityName];
 }
 
-+(id)insertNewObjectWithNoContextForEntity:(NSString *)entityName {
++ (id)insertNewObjectWithNoContextForEntity:(NSString *)entityName {
 	return [[CoreDataManager coreDataManager] insertNewObjectWithNoContextForEntity:entityName];
 }
 
-+(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate sortDescriptors:(NSArray *)sortDescriptors {
++ (NSArray*)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate sortDescriptors:(NSArray *)sortDescriptors {
     return [[CoreDataManager coreDataManager] objectsForEntity:entityName matchingPredicate:predicate sortDescriptors:sortDescriptors];
 }
 
-+(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate {
++ (NSArray*)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate {
     return [[CoreDataManager coreDataManager] objectsForEntity:entityName matchingPredicate:predicate];
 }
 
-+(id)getObjectForEntity:(NSString *)entityName attribute:(NSString *)attributeName value:(id)value {
++ (id)getObjectForEntity:(NSString *)entityName attribute:(NSString *)attributeName value:(id)value {
 	return [[CoreDataManager coreDataManager] getObjectForEntity:entityName attribute:attributeName value:value];
 }
 
-+(void)deleteObjects:(NSArray *)objects {
++ (void)deleteObjects:(NSArray *)objects {
     [[CoreDataManager coreDataManager] deleteObjects:objects];
 }
 
-+(void)deleteObject:(NSManagedObject *)object {
++ (void)deleteObject:(NSManagedObject *)object {
 	[[CoreDataManager coreDataManager] deleteObject:object];
 }
 
-+(void)saveData {
++ (void)saveData {
 	[[CoreDataManager coreDataManager] saveData];
 }
 
-+(void)saveDataWithTemporaryMergePolicy:(id)temporaryMergePolicy {
++ (void)saveDataWithTemporaryMergePolicy:(id)temporaryMergePolicy {
     NSManagedObjectContext *context = [CoreDataManager managedObjectContext];
     id originalMergePolicy = [context mergePolicy];
     [context setMergePolicy:NSOverwriteMergePolicy];
@@ -86,19 +86,19 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
 	[context setMergePolicy:originalMergePolicy];
 }
 
-+(BOOL)wipeData {
++ (BOOL)wipeData {
     return [[CoreDataManager coreDataManager] wipeData];
 }
 
-+(NSManagedObjectModel *)managedObjectModel {
++ (NSManagedObjectModel *)managedObjectModel {
 	return [[CoreDataManager coreDataManager] managedObjectModel];
 }
 
-+(NSManagedObjectContext *)managedObjectContext {
++ (NSManagedObjectContext *)managedObjectContext {
 	return [[CoreDataManager coreDataManager] managedObjectContext];
 }
 
-+(NSPersistentStoreCoordinator *)persistentStoreCoordinator {
++ (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
 	return [[CoreDataManager coreDataManager] persistentStoreCoordinator];
 }
 
@@ -123,7 +123,7 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
     return modelSet;
 }
 
--(NSArray *)fetchDataForAttribute:(NSString *)attributeName {
+- (NSArray *)fetchDataForAttribute:(NSString *)attributeName {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];	// make a request object
 	NSEntityDescription *entity = [NSEntityDescription entityForName:attributeName inManagedObjectContext:self.managedObjectContext];	// tell the request what to look for
 	[request setEntity:entity];
@@ -136,7 +136,7 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
 	return result;
 }
 
--(NSArray *)fetchDataForAttribute:(NSString *)attributeName sortDescriptor:(NSSortDescriptor *)sortDescriptor {
+- (NSArray *)fetchDataForAttribute:(NSString *)attributeName sortDescriptor:(NSSortDescriptor *)sortDescriptor {
     NSArray *result = nil;
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];	// make a request object
 	[request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
@@ -153,20 +153,20 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
 	return result;
 }
 
--(void)clearDataForAttribute:(NSString *)attributeName {
+- (void)clearDataForAttribute:(NSString *)attributeName {
 	for (id object in [self fetchDataForAttribute:attributeName]) {
 		[self deleteObject:(NSManagedObject *)object];
 	}
 	[self saveData];
 }
 
--(void)deleteObjects:(NSArray *)objects {
+- (void)deleteObjects:(NSArray *)objects {
     for (NSManagedObject *object in objects) {
         [self.managedObjectContext deleteObject:object];
     }
 }
 
--(void)deleteObject:(NSManagedObject *)object {
+- (void)deleteObject:(NSManagedObject *)object {
 	[self.managedObjectContext deleteObject:object];
 }
 
@@ -176,53 +176,47 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
     [self deleteObjects:objects];
 }
 
--(id)insertNewObjectForEntityForName:(NSString *)entityName {
+- (id)insertNewObjectForEntityForName:(NSString *)entityName {
 	return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:self.managedObjectContext];
 }
 
--(id)insertNewObjectForEntityForName:(NSString *)entityName context:(NSManagedObjectContext *)aManagedObjectContext {
+- (id)insertNewObjectForEntityForName:(NSString *)entityName context:(NSManagedObjectContext *)aManagedObjectContext {
 	NSEntityDescription *entityDescription = [[managedObjectModel entitiesByName] objectForKey:entityName];
 	return [[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:aManagedObjectContext] autorelease];
 }
 
--(id)insertNewObjectWithNoContextForEntity:(NSString *)entityName {
+- (id)insertNewObjectWithNoContextForEntity:(NSString *)entityName {
 	return [self insertNewObjectForEntityForName:entityName context:nil];
 }
 
--(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate sortDescriptors:(NSArray *)sortDescriptors {
-    NSManagedObjectContext *context = self.managedObjectContext;
-    
-	NSEntityDescription *entity = [NSEntityDescription entityForName:entityName
-                                              inManagedObjectContext:context];
-	NSFetchRequest *request = [[[NSFetchRequest alloc] init] autorelease];
-	[request setEntity:entity];
-	if (predicate != nil) {
-		[request setPredicate:predicate];
-	}
-    if (sortDescriptors) {
-        [request setSortDescriptors:sortDescriptors];
-    }
+- (NSArray*)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate sortDescriptors:(NSArray *)sortDescriptors {
+	NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:entityName];
+    request.predicate = predicate;
+    request.sortDescriptors = sortDescriptors;
 	
 	NSError *error = nil;
-	NSArray *objects = [context executeFetchRequest:request
-                                              error:&error];
+	NSArray *objects = [self.managedObjectContext executeFetchRequest:request
+                                                                error:&error];
+    
+    if (error) {
+        DDLogError(@"fetch for entity '%@' failed: %@", entityName, [error localizedDescription]);
+    }
 
     // Should only return 'nil' on error
     return objects;
 }
 
--(id)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate {
+- (NSArray*)objectsForEntity:(NSString *)entityName matchingPredicate:(NSPredicate *)predicate {
     return [self objectsForEntity:entityName matchingPredicate:predicate sortDescriptors:nil];
 }
 
--(id)getObjectForEntity:(NSString *)entityName attribute:(NSString *)attributeName value:(id)value {	
-	NSString *predicateFormat = [attributeName stringByAppendingString:@" like %@"];
-	NSPredicate *predicate = [NSPredicate predicateWithFormat:predicateFormat, value];
+- (id)getObjectForEntity:(NSString *)entityName attribute:(NSString *)attributeName value:(id)value {
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%@ LIKE %@", attributeName, value];
     NSArray *objects = [self objectsForEntity:entityName matchingPredicate:predicate];
-    return ([objects count] > 0) ? [objects lastObject] : nil;
+    return [objects lastObject];
 }
 
--(void)saveData {
+- (void)saveData {
 	NSError *error = nil;
 	if (![self.managedObjectContext save:&error])
     {
@@ -276,7 +270,7 @@ NSString * const MITCoreDataThreadLocalContextKey = @"MITCoreDataThreadLocalCont
 #pragma mark Core Data stack
 
 // modified to allow safe multithreaded Core Data use
--(NSManagedObjectContext *)managedObjectContext {
+- (NSManagedObjectContext *)managedObjectContext {
     NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
     NSManagedObjectContext *localContext = threadDictionary[MITCoreDataThreadLocalContextKey];
         

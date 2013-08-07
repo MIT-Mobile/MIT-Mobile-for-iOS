@@ -3,9 +3,8 @@
 @class CalendarEventsViewController;
 
 @interface EventCategoriesTableView : UITableView <UITableViewDelegate, UITableViewDataSource>
-
-@property (nonatomic, retain) NSArray *categories;
 @property (nonatomic, weak) CalendarEventsViewController *parentViewController;
+@property (nonatomic, copy) NSArray *categories;
 
 - (BOOL)isSubcategoryView;
 

@@ -5,20 +5,14 @@
 @implementation EventCategoriesTableView
 - (BOOL)isSubcategoryView
 {
-	return (_parentViewController.category != nil);
+	return (self.parentViewController.category != nil);
 }
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [_categories count];
+	return [self.categories count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -26,8 +20,8 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    EventCategory *category = [self.categories objectAtIndex:indexPath.row];
-	if ([self isSubcategoryView] && category.parentCategory == category) {
+    EventCategory *category = self.categories[indexPath.row];
+	if ([self isSubcategoryView] && !category.parentCategory) {
 		cell.textLabel.text = [NSString stringWithFormat:@"All %@", category.title];
 	} else {
 		cell.textLabel.text = category.title;
@@ -40,7 +34,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-    EventCategory *category = [self.categories objectAtIndex:indexPath.row];
+    EventCategory *category = self.categories[indexPath.row];
 	
 	CalendarEventsViewController *vc = [[CalendarEventsViewController alloc] init];
 	vc.category = category;

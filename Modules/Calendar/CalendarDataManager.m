@@ -16,7 +16,9 @@ NSString * const CalendarStateEventDetail = @"detail";
 NSString * const CalendarEventAPIDay = @"day";
 NSString * const CalendarEventAPISearch = @"search";
 
-@interface CalendarDataManager (Private)
+@interface CalendarDataManager ()
+@property (copy) NSArray *eventLists;
+@property (copy) NSArray *staticEventListIDs;
 
 + (NSArray *)staticEventTypes;
 
@@ -24,96 +26,79 @@ NSString * const CalendarEventAPISearch = @"search";
 
 
 @implementation CalendarDataManager
-
-static CalendarDataManager *s_sharedManager = nil;
-
 + (CalendarDataManager *)sharedManager {
-	if (s_sharedManager == nil) {
-		s_sharedManager = [[CalendarDataManager alloc] init];
-	}
-	return s_sharedManager;
+    static CalendarDataManager *sharedManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedManager = [[CalendarDataManager alloc] init];
+    });
+    
+    return sharedManager;
 }
 
-- (id)init {
+- (id)init
+{
 	self = [super init];
+    
 	if (self) {
-		_eventLists = [[NSArray alloc] init];
 		[self requestEventLists];
 	}
+    
 	return self;
-}
-
-- (NSArray *)eventLists {
-	if (_eventLists.count)
-		return _eventLists;
-	return nil;
-}
-
-- (NSArray *)staticEventListIDs {
-	return _staticEventListIDs;
-}
-
-- (void)registerDelegate:(id<CalendarDataManagerDelegate>)aDelegate {
-	_delegate = aDelegate;
-}
-
-- (void)dealloc {
-	_delegate = nil;
 }
 
 - (void)requestEventLists {
 	// first assemble anything we already have
 	NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
-	_eventLists = [CoreDataManager objectsForEntity:@"MITEventList" matchingPredicate:nil sortDescriptors:[NSArray arrayWithObject:sort]];
+	self.eventLists = [CoreDataManager objectsForEntity:@"MITEventList" matchingPredicate:nil sortDescriptors:@[sort]];
 
 	NSArray *staticLists = [CalendarDataManager staticEventTypes];
 	
-	NSMutableArray *mutableStaticEvents = [NSMutableArray arrayWithCapacity:staticLists.count];
+	NSMutableArray *staticEvents = [[NSMutableArray alloc] init];
 	for (MITEventList *aList in staticLists) {
-		[mutableStaticEvents addObject:aList.listID];
+		[staticEvents addObject:aList.listID];
 	}
-	_staticEventListIDs = [[NSArray alloc] initWithArray:mutableStaticEvents];
     
-    NSDictionary *params = [NSDictionary dictionaryWithObject:@"2" forKey:@"version"];
+	self.staticEventListIDs = staticEvents;
+    
     MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:CalendarTag
                                                                              command:@"extraTopLevels"
-                                                                          parameters:params];
+                                                                          parameters:@{@"version" : @"2"}];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
             if ([[CoreDataManager managedObjectContext] hasChanges]) {
                 [[CoreDataManager managedObjectContext] rollback];
             }
-            [_delegate calendarListsFailedToLoad];
+            
+            if ([self.delegate respondsToSelector:@selector(calendarListsFailedToLoad)]) {
+                [self.delegate calendarListsFailedToLoad];
+            }
         } else {
             NSMutableArray *newLists = [NSMutableArray arrayWithArray:[CalendarDataManager staticEventTypes]];
-            if (jsonResult && [jsonResult isKindOfClass:[NSArray class]]) {
-                NSInteger sortOrder = 1;
-                for (id anObject in jsonResult) {
-                    if ([anObject isKindOfClass:[NSDictionary class]]) {
-                        NSDictionary *dict = (NSDictionary *)anObject;
-                        NSString *listID = [dict objectForKey:@"type"];
-                        MITEventList *list = [CalendarDataManager eventListWithID:listID];
-                        if (!list.title)
-                            list.title = [dict objectForKey:@"shortName"];
-                        if ([list.sortOrder integerValue] != sortOrder)
-                            list.sortOrder = [NSNumber numberWithInt:sortOrder];
-                        sortOrder++;
-                        [newLists addObject:list];
-                    }
-                }
+            if ([jsonResult isKindOfClass:[NSArray class]]) {
+                NSArray *eventLists = (NSArray*)jsonResult;
+                [eventLists enumerateObjectsUsingBlock:^(NSDictionary *eventList, NSUInteger idx, BOOL *stop) {
+                    MITEventList *eventListObject = [CalendarDataManager eventListWithID:eventList[@"type"]];
+                    eventListObject.title = eventList[@"shortName"];
+                    eventListObject.sortOrder = @(idx + 1);
+                    [newLists addObject:eventListObject];
+                }];
             }
             
-            if ([[NSSet setWithArray:newLists] isEqualToSet:[NSSet setWithArray:_eventLists]] == NO) {
+            NSSet *newEventLists = [NSSet setWithArray:newLists];
+            NSSet *currentEventLists = [NSSet setWithArray:self.eventLists];
+            if (![currentEventLists isEqualToSet:newEventLists]) {
                 DDLogVerbose(@"event lists have changed");
                 [CoreDataManager saveData];
                 
                 // check for deleted categories
-                NSMutableSet *newEventListIDs = [NSMutableSet setWithCapacity:newLists.count];
+                NSMutableSet *newEventListIDs = [[NSMutableSet alloc] init];
+                
                 for (MITEventList *newEventList in newLists) {
                     [newEventListIDs addObject:newEventList.listID];
                 }
                 
-                for (MITEventList *oldEventList in _eventLists) {
+                for (MITEventList *oldEventList in self.eventLists) {
                     if (![newEventListIDs containsObject:oldEventList.listID]) {
                         DDLogVerbose(@"deleting old list %@", [oldEventList description]);
                         [CoreDataManager deleteObject:oldEventList];
@@ -121,27 +106,31 @@ static CalendarDataManager *s_sharedManager = nil;
                 }
                 
                 NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES];
-                _eventLists = [newLists sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
-                [_delegate calendarListsLoaded];
+                self.eventLists = [newLists sortedArrayUsingDescriptors:@[sort]];
+                if ([self.delegate respondsToSelector:@selector(calendarListsLoaded)]) {
+                    [self.delegate calendarListsLoaded];
+                }
             }
         }
     };
     
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[MobileRequestOperation defaultQueue] addOperation:request];
 }
 
 - (BOOL)isDailyEvent:(MITEventList *)listType {
 	if ([listType.listID isEqualToString:@"Events"]) {
 		return YES;
 	}
+    
     if ([listType.listID isEqualToString:@"OpenHouse"]) {
         return NO;
     }
-	return ![_staticEventListIDs containsObject:listType.listID];
+    
+	return ![self.staticEventListIDs containsObject:listType.listID];
 }
 
 - (MITEventList *)eventListWithID:(NSString *)listID {
-	for (MITEventList *aList in _eventLists) {
+	for (MITEventList *aList in self.eventLists) {
 		if ([aList.listID isEqualToString:listID])
 			return aList;
 	}
@@ -151,17 +140,20 @@ static CalendarDataManager *s_sharedManager = nil;
 + (NSArray *)staticEventTypes {
 	NSString *path = [[NSBundle mainBundle] pathForResource:@"staticEventTypes" ofType:@"plist" inDirectory:@"calendar"];
 	NSArray *staticEventData = [NSArray arrayWithContentsOfFile:path];
+    
 	NSMutableArray *mutableArray = [NSMutableArray array];
 	for (NSDictionary *listInfo in staticEventData) {
-		MITEventList *eventList = [CalendarDataManager eventListWithID:[listInfo objectForKey:@"listID"]];
+		MITEventList *eventList = [CalendarDataManager eventListWithID:listInfo[@"listID"]];
 		if (!eventList.title || !eventList.sortOrder) {
-			eventList.title = [listInfo objectForKey:@"title"];
-			eventList.sortOrder = [NSNumber numberWithInt:[[listInfo objectForKey:@"sortOrder"] integerValue]];
+			eventList.title = listInfo[@"title"];
+			eventList.sortOrder = @([listInfo[@"sortOrder"] integerValue]);
 			[CoreDataManager saveData];
 		}
+        
 		[mutableArray addObject:eventList];
 	}
-	return [NSArray arrayWithArray:mutableArray];
+    
+	return mutableArray;
 }
 
 #pragma mark -
@@ -211,7 +203,7 @@ static CalendarDataManager *s_sharedManager = nil;
     //if (listType == CalendarEventListTypeEvents && catID == nil) {
 	if ([listType.listID isEqualToString:@"Events"]) {
         pred = [NSPredicate predicateWithFormat:@"(start >= %@) and (start < %@) and (ANY lists.title like '%@')", startDate, endDate, @"Events"];
-        events = [CoreDataManager objectsForEntity:CalendarEventEntityName matchingPredicate:pred sortDescriptors:[NSArray arrayWithObject:sort]];
+        events = [CoreDataManager objectsForEntity:CalendarEventEntityName matchingPredicate:pred sortDescriptors:@[sort]];
         
         // simple check for whether the cached events are from a previous load of
         // all of today's events or from a category; if the latter then we need a network request
@@ -226,7 +218,7 @@ static CalendarDataManager *s_sharedManager = nil;
         pred = [NSPredicate predicateWithFormat:@"(start >= %@) and (start < %@)", startDate, endDate];
 		
 		NSSet *eventSet = [listType.events filteredSetUsingPredicate:pred];
-        events = [[eventSet allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sort]];
+        events = [[eventSet allObjects] sortedArrayUsingDescriptors:@[sort]];
     }
     
     return events;
@@ -247,24 +239,32 @@ static CalendarDataManager *s_sharedManager = nil;
 
 + (NSArray *)topLevelCategories
 {
-	NSPredicate *pred = [NSPredicate predicateWithFormat:@"listID == nil"];
-	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES];
-	NSSet *categories = [CoreDataManager objectsForEntity:CalendarCategoryEntityName
-										matchingPredicate:pred
-										  sortDescriptors:[NSArray arrayWithObject:sort]];
-
-	NSMutableArray *result = [NSMutableArray arrayWithCapacity:10];
-	for (EventCategory *category in categories) {
-		if (category.parentCategory == category) {
-			[result addObject:category];
-		}
-	}
-
-	if ([result count] > 0) {
-		return result;
-	}
-	
-	return nil;
+	NSPredicate *topLevelPredicate = [NSPredicate predicateWithFormat:@"listID == nil AND ((parentCategory == nil) OR (parentCategory == self))"];
+	NSSortDescriptor *titleSortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES];
+	NSArray *categories = [CoreDataManager objectsForEntity:CalendarCategoryEntityName
+                                          matchingPredicate:topLevelPredicate
+                                            sortDescriptors:@[titleSortDescriptor]];
+    
+    // (bskinner - 2013.08)
+    // Need to fix an issue in the categories management.
+    // Prior to this, each EventCategory would keep a strong reference
+    //  to itself in the 'parentCategory' relation to mark it as a top-
+    //  level category. This creates a retain cycle for the top level
+    //  objects so, instead, the top-level categories have been redefined
+    //  to have a 'nil' parent.
+    __block BOOL saveNeeded = NO;
+    [categories enumerateObjectsUsingBlock:^(EventCategory *category, NSUInteger idx, BOOL *stop) {
+        if ([category.parentCategory isEqual:category]) {
+            category.parentCategory = nil;
+            saveNeeded = YES;
+        }
+    }];
+    
+    if (saveNeeded) {
+        [[CoreDataManager coreDataManager] saveData];
+    }
+    
+    return categories;
 }
 
 + (NSArray *)openHouseCategories
@@ -272,27 +272,28 @@ static CalendarDataManager *s_sharedManager = nil;
 	NSPredicate *pred = [NSPredicate predicateWithFormat:@"listID == %@", @"OpenHouse"];
 	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"title" ascending:YES];
 	return [CoreDataManager objectsForEntity:CalendarCategoryEntityName
-										matchingPredicate:pred
-										  sortDescriptors:[NSArray arrayWithObject:sort]];
+                           matchingPredicate:pred
+                             sortDescriptors:@[sort]];
 }
 
 + (EventCategory *)categoryWithID:(NSInteger)catID forListID:(NSString *)listID;
-{	
+{
 	NSPredicate *pred = [NSPredicate predicateWithFormat:@"catID == %d AND listID == %@", catID, listID];
 	EventCategory *category = [[CoreDataManager objectsForEntity:CalendarCategoryEntityName
 											   matchingPredicate:pred] lastObject];
 	if (!category) {
         category = (EventCategory *)[CoreDataManager insertNewObjectForEntityForName:CalendarCategoryEntityName];
-		category.catID = [NSNumber numberWithInt:catID];
+		category.catID = @(catID);
         category.listID = listID;
         [CoreDataManager saveData];
 	}
+    
 	return category;
 }
 
 + (EventCategory *)categoryWithDict:(NSDictionary *)dict forListID:(NSString *)listID;
 {
-    NSInteger catID = [[dict objectForKey:@"catid"] intValue];
+    NSInteger catID = [dict[@"catid"] intValue];
 	EventCategory *category = [CalendarDataManager categoryWithID:catID forListID:listID];
 	[category updateWithDict:dict forListID:listID];
 	return category;
@@ -319,7 +320,7 @@ static CalendarDataManager *s_sharedManager = nil;
 		[[CoreDataManager managedObjectContext] rollback];
 	}
 
-	NSInteger eventID = [[dict objectForKey:@"id"] intValue];
+	NSInteger eventID = [dict[@"id"] integerValue];
 	MITCalendarEvent *event = [CalendarDataManager eventWithID:eventID];	
 	[event updateWithDict:dict];
 	return event;
@@ -410,12 +411,11 @@ static CalendarDataManager *s_sharedManager = nil;
 }
 
 - (EventCategory *)openHouseCategoryWithTitle:(NSString *)title catId:(NSInteger)catId {
-    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-                          title, @"name",
-                          [NSNumber numberWithInt:catId], @"catid",
-                          nil];
+    NSDictionary *dict = @{@"name" : title,
+                           @"catid" : @(catId)};
     
-    return [CalendarDataManager categoryWithDict:dict forListID:@"OpenHouse"];
+    return [CalendarDataManager categoryWithDict:dict
+                                       forListID:@"OpenHouse"];
 }
 
 - (void)makeOpenHouseCategoriesRequest {
@@ -434,19 +434,21 @@ static CalendarDataManager *s_sharedManager = nil;
 }
 
 - (NSString *)getOpenHouseCatIdWithIdentifier:(NSString *)identifier {
-    NSMutableDictionary *catIds = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        @"39", @"eng",
-        @"40", @"energy",
-        @"41", @"entrepreneurship",
-        @"42", @"biotech",
-        @"43", @"sciences",
-        @"44", @"air",
-        @"45", @"architecture",
-        @"46", @"humanities",
-        @"47", @"life",
-        nil];
+    static NSDictionary *cachedIdentifiers = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        cachedIdentifiers = @{@"eng" : @"39",
+                              @"energy" : @"40",
+                              @"entrepreneurship" : @"41",
+                              @"biotech" : @"42",
+                              @"sciences" : @"43",
+                              @"air" : @"44",
+                              @"architecture" : @"45",
+                              @"humanities" : @"46",
+                              @"life" : @"47"};
+    });
     
-    return [catIds objectForKey:identifier];
+    return cachedIdentifiers[identifier];
 }
 
 @end

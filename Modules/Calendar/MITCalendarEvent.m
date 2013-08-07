@@ -3,8 +3,7 @@
 #import "CalendarDataManager.h"
 #import "CoreDataManager.h"
 
-@implementation MITCalendarEvent 
-
+@implementation MITCalendarEvent
 @dynamic location;
 @dynamic latitude;
 @dynamic longitude;
@@ -36,14 +35,15 @@
 	if (aList) {
 		return [[CalendarDataManager sharedManager] isDailyEvent:aList];
 	}
+    
 	return YES; // if we have no idea what the source is, then always try to get more details
 }
 
 - (NSString *)dateStringWithDateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle separator:(NSString *)separator {
 	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-	NSMutableArray *parts = [NSMutableArray arrayWithCapacity:2];
+	NSMutableArray *parts = [[NSMutableArray alloc] init];
+    
 	if (dateStyle != NSDateFormatterNoStyle) {
-	
 		[formatter setDateStyle:dateStyle];
 	
 		NSString *dateString = [formatter stringFromDate:self.start];
@@ -60,14 +60,13 @@
 		NSString *timeString = nil;
         
         if (self.end) {
-            
             NSCalendar *calendar = [NSCalendar currentCalendar];
             NSDateComponents *startComps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.start];
             NSDateComponents *endComps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.end];
             NSTimeInterval interval = [self.end timeIntervalSinceDate:self.start];
             // only a date with no time -> no time displayed
             if (startComps.hour == 0 && startComps.minute == 0 && endComps.hour == 0 && endComps.minute == 0) {
-                timeString = [NSString string];
+                timeString = @"";
                 // identical start and end times -> just start time displayed
             } else if (interval == 0 ||
                        // starts at the same time every day -> just start time displayed
@@ -98,72 +97,68 @@
 
 - (void)updateWithDict:(NSDictionary *)dict
 {
-	self.eventID = [NSNumber numberWithInt:[[dict objectForKey:@"id"] intValue]];
+	self.eventID = @([dict[@"id"] integerValue]);
 
-	self.start = [NSDate dateWithTimeIntervalSince1970:[[dict objectForKey:@"start"] doubleValue]];
-    double endTime = [[dict objectForKey:@"end"] doubleValue];
+	self.start = [NSDate dateWithTimeIntervalSince1970:[dict[@"start"] doubleValue]];
+    
+    NSTimeInterval endTime = [dict[@"end"] doubleValue];
     if (endTime) {
         self.end = [NSDate dateWithTimeIntervalSince1970:endTime];
     }
-	self.summary = [dict objectForKey:@"description"];
-	self.title = [dict objectForKey:@"title"];
+    
+	self.summary = dict[@"description"];
+	self.title = dict[@"title"];
 
 	// optional strings
-	NSString *maybeValue = [dict objectForKey:@"shortloc"];
-	if (maybeValue.length > 0) {
-		self.shortloc = maybeValue;
+	NSString *shortLocationName = dict[@"shortloc"];
+	if (![shortLocationName isEqual:[NSNull null]] && [shortLocationName length]) {
+		self.shortloc = shortLocationName;
 	}
-	maybeValue = [dict objectForKey:@"location"];
-	if (maybeValue.length > 0) {
-		self.location = maybeValue;
-	}
-
-	if ([dict objectForKey:@"infophone"] != [NSNull null]) {
-		self.phone = [dict objectForKey:@"infophone"];
-	}
-	if ([dict objectForKey:@"infourl"] != [NSNull null]) {
-		self.url = [dict objectForKey:@"infourl"];
+    
+	NSString *locationName = dict[@"location"];
+	if (![locationName isEqual:[NSNull null]] && [locationName length]) {
+		self.location = locationName;
 	}
 
-	NSDictionary *coordinate = [dict objectForKey:@"coordinate"];
+    NSString *phone = dict[@"infophone"];
+	if (![phone isEqual:[NSNull null]] && [phone length]) {
+		self.phone = phone;
+	}
+    
+    NSString *url = dict[@"infourl"];
+	if (![url isEqual:[NSNull null]] && [url length]) {
+		self.url = url;
+	}
+
+	NSDictionary *coordinate = dict[@"coordinate"];
 	if (coordinate) {
-		self.latitude = [NSNumber numberWithDouble:[[coordinate objectForKey:@"lat"] doubleValue]];
-		self.longitude = [NSNumber numberWithDouble:[[coordinate objectForKey:@"lon"] doubleValue]];
+		self.latitude = @([coordinate[@"lat"] doubleValue]);
+		self.longitude = @([coordinate[@"lon"] doubleValue]);
 	}
     
 	// populate event-category relationships
-	NSArray *catArray = [dict objectForKey:@"categories"];
-	if (catArray) {
-		for (NSDictionary *catDict in catArray) {
-			NSString *name = [catDict objectForKey:@"name"];
-			NSInteger catID = [[catDict objectForKey:@"catid"] intValue];
-			
-			EventCategory *category = [CalendarDataManager categoryWithID:catID forListID:nil];
-            if (category.title == nil) {
-                category.title = name;
-            }
-			[self addCategoriesObject:category];
-		}
-	}
+	NSArray *categories = dict[@"categories"];
+	[categories enumerateObjectsUsingBlock:^(NSDictionary *category, NSUInteger idx, BOOL *stop) {
+        EventCategory *categoryObject = [CalendarDataManager categoryWithID:[category[@"catid"] integerValue]
+                                                                  forListID:nil];
+        if (!categoryObject.title) {
+            categoryObject.title = category[@"name"];
+        }
+        
+        [self addCategoriesObject:categoryObject];
+    }];
 
     self.lastUpdated = [NSDate date];
 	[CoreDataManager saveData];
 }
-/*
-- (NSString *)description
-{
-    return self.title;
-}
-*/
 
 - (void)setUpEKEvent:(EKEvent *)ekEvent {
     ekEvent.title = self.title;
     ekEvent.startDate = self.start;
     ekEvent.endDate = self.end;
-    if (self.location.length > 0) {
+    if ([self.location length] > 0) {
         ekEvent.location = self.location;
-    }
-    else if (self.shortloc.length > 0) {
+    } else if ([self.shortloc length] > 0) {
         ekEvent.location = self.shortloc;
     }
 }

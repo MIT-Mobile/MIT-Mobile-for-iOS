@@ -1,11 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface CalendarCategoriesViewController : UITableViewController {
-
-	NSArray *categories;
-	
-}
-
-@property (nonatomic, retain) NSArray *categories;
+@interface CalendarCategoriesViewController : UITableViewController
+@property (copy) NSArray *categories;
 
 @end

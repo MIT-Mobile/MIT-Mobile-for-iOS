@@ -17,64 +17,23 @@
 
 @interface CalendarEventsViewController : UIViewController <UIScrollViewDelegate, UISearchBarDelegate,
 MITMapViewDelegate, MITSearchDisplayDelegate, NavScrollerDelegate,
-DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
+DatePickerViewControllerDelegate, CalendarDataManagerDelegate>
 
-	//CalendarEventListType activeEventList; // today, browse, acad, holidays...
-	MITEventList *activeEventList;
-	NSDate *startDate;
-	NSDate *endDate;
-	NSArray *events;
-	
-	// views in the body
-	UITableView *theTableView;
-	CalendarMapView *theMapView;
-	
-	// views in the header
-	NavScrollerView *navScrollView;
-	UISearchBar *theSearchBar;
-	
-	UIView *datePicker;
-	
-	// search
-	MITSearchDisplayController *searchController;
-	UIView *loadingIndicator;
-	EventListTableView *searchResultsTableView;
-	CalendarMapView *searchResultsMapView;
-	
-	// category parameter for list of events in a category
-	//NSInteger theCatID;
-    EventCategory *theCategory;
-	
-	BOOL showList;
-	BOOL showScroller;
-	BOOL dateRangeDidChange;
-	
-	NSInteger loadingIndicatorCount;
-    
-    NSString *queuedButton;
-    
-    // this is just to temporarily store a view
-    // controller that needs to be pushed onto
-    // the stack (onlu used by can handle url functionality)
-    UIViewController *childViewController;
-}
 
-@property (nonatomic, retain) NSString *lastSearchTerm;
+@property (nonatomic, strong) EventCategory *category;
+@property (nonatomic, strong) MITEventList *activeEventList;
+@property (nonatomic, strong) UIViewController *childViewController;
 
-@property (nonatomic, assign) BOOL showScroller;
-@property (nonatomic, assign) BOOL showList;
-@property (nonatomic, retain) EventCategory *category;
-//@property (nonatomic, assign) NSInteger catID;
-//@property (nonatomic, assign) CalendarEventListType activeEventList;
-@property (nonatomic, retain) MITEventList *activeEventList;
-@property (nonatomic, retain) UIViewController *childViewController;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) CalendarMapView *mapView;
 
-@property (nonatomic, retain) UITableView *tableView;
-@property (nonatomic, retain) CalendarMapView *mapView;
+@property (nonatomic, strong) NSDate *startDate;
+@property (nonatomic, strong) NSDate *endDate;
+@property (nonatomic, copy) NSArray *events;
+@property (nonatomic, copy) NSString *lastSearchTerm;
 
-@property (nonatomic, retain) NSDate *startDate;
-@property (nonatomic, retain) NSDate *endDate;
-@property (nonatomic, retain) NSArray *events;
+@property (nonatomic) BOOL showScroller;
+@property (nonatomic) BOOL showList;
 
 
 - (void)makeRequest;
@@ -83,10 +42,7 @@ DatePickerViewControllerDelegate, CalendarDataManagerDelegate> {
 
 - (void)mapButtonToggled;
 - (void)listButtonToggled;
-//- (void)sideButtonPressed:(id)sender;
-//- (void)buttonPressed:(id)sender;
 
-//- (void)reloadView:(CalendarEventListType)listType;
 - (void)reloadView:(MITEventList *)listType;
 - (void)selectScrollerButton:(NSString *)buttonTitle;
 

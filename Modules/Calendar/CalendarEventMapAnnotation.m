@@ -2,14 +2,13 @@
 #import "MITCalendarEvent.h"
 
 @implementation CalendarEventMapAnnotation
-
-@synthesize event;
-
 - (id)initWithEvent:(MITCalendarEvent *)anEvent {
     self = [super init];
+    
     if (self) {
-        event = anEvent;
+        _event = anEvent;
     }
+    
     return self;
 }
 
@@ -25,7 +24,7 @@
 
 - (NSInteger)eventID
 {
-	return [self.event.eventID intValue];
+	return [self.event.eventID integerValue];
 }
 
 - (NSString *)subtitle

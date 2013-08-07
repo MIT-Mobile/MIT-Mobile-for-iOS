@@ -2,14 +2,11 @@
 
 @class MITCalendarEvent;
 
-@interface MITEventList :  NSManagedObject  
-{
-}
-
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSString * listID;
-@property (nonatomic, retain) NSNumber * sortOrder;
-@property (nonatomic, retain) NSSet* events;
+@interface MITEventList :  NSManagedObject
+@property (nonatomic, copy) NSString * title;
+@property (nonatomic, copy) NSString * listID;
+@property (nonatomic, copy) NSNumber * sortOrder;
+@property (nonatomic, copy) NSSet* events;
 
 @end
 

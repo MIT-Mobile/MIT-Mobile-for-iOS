@@ -3,18 +3,8 @@
 #import "CalendarEventsViewController.h"
 
 @implementation OpenHouseTableView
-
-@synthesize categories, parentViewController;
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (categories) {
-		return [categories count];
-	}
-	return 0;
+	return [self.categories count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -26,7 +16,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    EventCategory *category = [self.categories objectAtIndex:indexPath.row];
+    EventCategory *category = self.categories[indexPath.row];
 	cell.textLabel.text = category.title;
 	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	
@@ -36,12 +26,13 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-    EventCategory *category = [self.categories objectAtIndex:indexPath.row];
+    EventCategory *category = self.categories[indexPath.row];
 	
 	CalendarEventsViewController *vc = [[CalendarEventsViewController alloc] init];
 	vc.category = category;
 	vc.navigationItem.title = category.title;
 	vc.showScroller = NO;
+    
     NSArray *events = [category.events allObjects];	
     vc.startDate = [NSDate dateWithTimeIntervalSince1970:OPEN_HOUSE_START_DATE];
 	vc.events = events;

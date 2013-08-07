@@ -5,7 +5,7 @@
 @class MITCalendarEvent;
 
 @interface CalendarEventMapAnnotation : NSObject <MKAnnotation>
-@property (nonatomic, weak) MITCalendarEvent *event;
+@property (nonatomic, strong) MITCalendarEvent *event;
 
 - (id)initWithEvent:(MITCalendarEvent *)anEvent;
 - (NSInteger)eventID;

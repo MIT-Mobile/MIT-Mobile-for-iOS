@@ -1,12 +1,12 @@
 #import "DatePickerViewController.h"
 
+@interface DatePickerViewController ()
+@property (nonatomic,weak) UIDatePicker *datePicker;
+@property (nonatomic,weak) UIBarButtonItem *cancelButton;
+@property (nonatomic,weak) UIBarButtonItem *doneButton;
+@end
 
 @implementation DatePickerViewController
-{
-    UIDatePicker *_datePicker;
-    UIBarButtonItem *_cancelButton;
-    UIBarButtonItem *_doneButton;
-}
 
 - (void)loadView {
     [super loadView];
@@ -25,27 +25,38 @@
     
     UINavigationItem *navItem = [[UINavigationItem alloc] initWithTitle:@"Jump to a Date"];
     
-    _doneButton = [[UIBarButtonItem alloc] initWithTitle:@"Go" style:UIBarButtonItemStylePlain target:self action:@selector(navBarButtonPressed:)];
-    navItem.rightBarButtonItem = _doneButton;
+    UIBarButtonItem *doneButon = [[UIBarButtonItem alloc] initWithTitle:@"Go"
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(navBarButtonPressed:)];
+    navItem.rightBarButtonItem = doneButon;
+    self.doneButton = doneButon;
     
-    _cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(navBarButtonPressed:)];
-    navItem.leftBarButtonItem = _cancelButton;
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel"
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(navBarButtonPressed:)];
+    navItem.leftBarButtonItem = cancelButton;
+    self.cancelButton = cancelButton;
     
     [navBar pushNavigationItem:navItem animated:NO];
     
     [self.view addSubview:navBar];
     
-    _datePicker = [[UIDatePicker alloc] init];
-    _datePicker.frame = CGRectMake(0.0,
-                                   self.view.frame.size.height - _datePicker.frame.size.height,
-                                   _datePicker.frame.size.width,
-                                   _datePicker.frame.size.height);
-    _datePicker.datePickerMode = UIDatePickerModeDate;
-    _datePicker.date = self.date;
-    _datePicker.maximumDate = [NSDate dateWithTimeIntervalSinceNow:2 * 366 * 24 * 3600];
-    _datePicker.minimumDate = [NSDate dateWithTimeIntervalSinceNow:-10 * 366 * 24 * 3600];
-    [_datePicker addTarget:self.delegate action:@selector(datePickerValueChanged:) forControlEvents:UIControlEventValueChanged];
-    [self.view addSubview:_datePicker];
+    UIDatePicker *datePicker = [[UIDatePicker alloc] init];
+    datePicker.frame = CGRectMake(0.0,
+                                   self.view.frame.size.height - datePicker.frame.size.height,
+                                   datePicker.frame.size.width,
+                                   datePicker.frame.size.height);
+    datePicker.datePickerMode = UIDatePickerModeDate;
+    datePicker.date = self.date;
+    datePicker.maximumDate = [NSDate dateWithTimeIntervalSinceNow:2 * 366 * 24 * 3600];
+    datePicker.minimumDate = [NSDate dateWithTimeIntervalSinceNow:-10 * 366 * 24 * 3600];
+    [datePicker addTarget:self.delegate
+                   action:@selector(datePickerValueChanged:)
+         forControlEvents:UIControlEventValueChanged];
+    [self.view addSubview:datePicker];
+    self.datePicker = datePicker;
 }
 
 - (void)navBarButtonPressed:(id)sender

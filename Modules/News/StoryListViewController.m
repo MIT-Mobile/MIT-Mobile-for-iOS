@@ -159,23 +159,29 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 {
     [super viewWillAppear:animated];
     // show / hide the bookmarks category
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bookmarked == YES"];
-    NSMutableArray *allBookmarkedStories = [CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate];
-    hasBookmarks = ([allBookmarkedStories count] > 0) ? YES : NO;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:NewsStoryEntityName];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"bookmarked == YES"];
+    fetchRequest.resultType = NSCountResultType;
+    
+    NSManagedObjectContext *context = [[CoreDataManager coreDataManager] managedObjectContext];
+    NSUInteger bookmarkCount = [context countForFetchRequest:fetchRequest
+                                                       error:nil];
+    hasBookmarks = (bookmarkCount != NSNotFound) && (bookmarkCount > 0);
+    
     [self setupNavScrollButtons];
     if (showingBookmarks)
     {
         [self loadFromCache];
         if (!hasBookmarks)
         {
-            [self buttonPressed:[navButtons objectAtIndex:0]];
+            [self buttonPressed:navButtons[0]];
         }
     }
+    
     // Unselect the selected row
     [tempTableSelection release];
     tempTableSelection = [[storyTable indexPathForSelectedRow] retain];
-    if (tempTableSelection)
-    {
+    if (tempTableSelection) {
         [storyTable beginUpdates];
         [storyTable deselectRowAtIndexPath:tempTableSelection animated:YES];
         [storyTable endUpdates];
@@ -591,16 +597,11 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 - (void)loadFromCache
 {
     // if showing bookmarks, show those instead
-    if (showingBookmarks)
-    {
+    if (showingBookmarks) {
         [self setStatusText:@""];
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bookmarked == YES"];
-        NSMutableArray *allBookmarkedStories = [CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate];
-        self.stories = allBookmarkedStories;
-
-    }
-    else
-    {
+        self.stories = [[CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate] mutableCopy];
+    } else {
         // load what's in CoreData, up to categoryCount
         NSArray *sortDescriptors = [NSArray arrayWithObjects:
                                     //[NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:NO],
