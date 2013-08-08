@@ -1,12 +1,9 @@
 #import <CoreData/CoreData.h>
 
 
-@interface MapSearch :  NSManagedObject  
-{
-}
-
-@property (nonatomic, retain) NSString * searchTerm;
-@property (nonatomic, retain) NSDate * date;
+@interface MapSearch :  NSManagedObject
+@property (nonatomic, copy) NSString * searchTerm;
+@property (nonatomic, strong) NSDate * date;
 
 @end
 

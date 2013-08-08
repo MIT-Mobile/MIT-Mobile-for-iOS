@@ -4,47 +4,20 @@
 #import <CoreLocation/CoreLocation.h>
 #import "MITMobileWebAPI.h"
 
-@interface MITMapSearchResultAnnotation : NSObject <MKAnnotation>{
-
-	CLLocationCoordinate2D _coordinate;
-	
-	NSString* _architect;
-	NSString* _bldgimg;
-	NSString* _bldgnum;
-	
-	NSString* _uniqueID;
-	NSString* _mailing;
-	NSString* _name;
-	NSString* _street;
-	NSString* _city;
-	NSString* _viewAngle;
-	
-	NSArray* _contents;
-	
-	NSArray* _snippets;
-	
-	// has the data of this object been populated yet
-	BOOL _dataPopulated;
-	
-	NSDictionary* _info;
-	
-	// flag indicating if this instance was loaded from a bookmark
-	BOOL _bookmark;
-}
-
-@property (nonatomic, retain) NSString* architect;
-@property (nonatomic, retain) NSString* bldgimg;
-@property (nonatomic, retain) NSString* bldgnum;
-@property (nonatomic, retain) NSString* uniqueID;
-@property (nonatomic, retain) NSString* mailing;
-@property (nonatomic, retain) NSString* name;
-@property (nonatomic, retain) NSString* street;
-@property (nonatomic, retain) NSString* viewAngle;
-@property (nonatomic, retain) NSArray* contents;
-@property (nonatomic, retain) NSArray* snippets;
-@property (nonatomic, retain) NSString* city;
-
-@property (nonatomic, retain) NSDictionary* info;
+@interface MITMapSearchResultAnnotation : NSObject <MKAnnotation>
+@property (nonatomic) CLLocationCoordinate2D coordinate;
+@property (nonatomic, copy) NSString* architect;
+@property (nonatomic, copy) NSString* bldgimg;
+@property (nonatomic, copy) NSString* bldgnum;
+@property (nonatomic, copy) NSString* uniqueID;
+@property (nonatomic, copy) NSString* mailing;
+@property (nonatomic, copy) NSString* name;
+@property (nonatomic, copy) NSString* street;
+@property (nonatomic, copy) NSString* viewAngle;
+@property (nonatomic, copy) NSArray* contents;
+@property (nonatomic, copy) NSArray* snippets;
+@property (nonatomic, copy) NSString* city;
+@property (nonatomic, copy) NSDictionary* info;
 
 @property BOOL dataPopulated;
 @property BOOL bookmark;

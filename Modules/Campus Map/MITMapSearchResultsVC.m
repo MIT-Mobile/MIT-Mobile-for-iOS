@@ -7,7 +7,7 @@
 #import "MultiLineTableViewCell.h"
 
 @interface MITMapSearchResultsVC ()
-@property (nonatomic,strong) IBOutlet UITableView* tableView;
+@property (nonatomic,weak) IBOutlet UITableView* tableView;
 @end
 
 @implementation MITMapSearchResultsVC
@@ -55,12 +55,12 @@
 	static NSString* CellIdentifier = @"Cell";
 	
 	UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
+    if (!cell) {
         cell = [[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
 	// get the annotation for this index
-	MITMapSearchResultAnnotation* annotation = [self.searchResults objectAtIndex:indexPath.row];
+	MITMapSearchResultAnnotation* annotation = self.searchResults[indexPath.row];
 	cell.textLabel.text = annotation.name;
 	
 	if(nil != annotation.bldgnum)
@@ -81,25 +81,22 @@
 	MITMapDetailViewController* detailsVC = [[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
 																						  bundle:nil];
 	
-	MITMapSearchResultAnnotation* annotation = (MITMapSearchResultAnnotation*)[self.searchResults objectAtIndex:indexPath.row];
+	MITMapSearchResultAnnotation* annotation = self.searchResults[indexPath.row];
 	detailsVC.annotation = annotation;
 	detailsVC.title = @"Info";
 	detailsVC.campusMapVC = self.campusMapVC;
 
-	if (self.isCategory) 
-	{
+	if (self.isCategory) {
 		detailsVC.queryText = detailsVC.annotation.name;
-	}
-	else if(self.campusMapVC.lastSearchText != nil && self.campusMapVC.lastSearchText.length > 0)
-	{
+	} else if([self.campusMapVC.lastSearchText length]) {
 		detailsVC.queryText = self.campusMapVC.lastSearchText;
-		[self.campusMapVC.url setPath:[NSString stringWithFormat:@"detail/%@", annotation.uniqueID] query:self.campusMapVC.lastSearchText];
+		[self.campusMapVC.url setPath:[NSString stringWithFormat:@"detail/%@", annotation.uniqueID]
+                                query:self.campusMapVC.lastSearchText];
 		[self.campusMapVC.url setAsModulePath];
 		[self.campusMapVC setURLPathUserLocation];
 	}
 	
 	[self.campusMapVC.navigationController pushViewController:detailsVC animated:YES];
-     
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -110,7 +107,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	
-	MITMapSearchResultAnnotation* annotation = [self.searchResults objectAtIndex:indexPath.row];
+	MITMapSearchResultAnnotation* annotation = self.searchResults[indexPath.row];
 	
 	CGFloat width = self.view.frame.size.width - 33.0;
 	
@@ -119,7 +116,7 @@
 									   lineBreakMode:UILineBreakModeWordWrap];
 	
 	CGFloat height = labelSize.height;
-	
+
 	NSString *detailString = [NSString stringWithFormat:@"Building %@", annotation.bldgnum];
 	
 	labelSize = [detailString sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
