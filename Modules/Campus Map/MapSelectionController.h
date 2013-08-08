@@ -9,18 +9,10 @@ typedef enum {
 } MapSelectionControllerSegment;
 
 
-@interface MapSelectionController : UINavigationController 
-{
-	NSArray* _toolbarButtonItems;
-	
-	CampusMapViewController* _mapVC;
-	
-	UIBarButtonItem* _cancelButton;
-}
-
-@property(nonatomic, readonly) NSArray* toolbarButtonItems;
-@property(nonatomic, readonly) CampusMapViewController* mapVC;
-@property(nonatomic, readonly) UIBarButtonItem* cancelButton;
+@interface MapSelectionController : UINavigationController
+@property(nonatomic, weak) CampusMapViewController* mapVC;
+@property(nonatomic, readonly, strong) UIBarButtonItem* cancelButton;
+@property(nonatomic, readonly, copy) NSArray* toolbarButtonItems;
 
 -(id) initWithMapSelectionControllerSegment:(MapSelectionControllerSegment) segment campusMap:(CampusMapViewController*)mapVC;
 
