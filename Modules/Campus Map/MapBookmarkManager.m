@@ -1,146 +1,110 @@
 #import "MapBookmarkManager.h"
 
+@interface MapBookmarkManager ()
+@property (nonatomic,copy) NSArray *bookmarks;
 
-@interface MapBookmarkManager (Private)
-
--(NSString*) getBookmarkFilename;
-
--(void) save;
-
+- (NSURL*)bookmarksURL;
 @end
 
 
-
-static MapBookmarkManager* s_mapBookmarksManager = nil;
-
 @implementation MapBookmarkManager
-@synthesize bookmarks = _bookmarks;
-
 #pragma mark Creation and initialization
-+(MapBookmarkManager*) defaultManager
++ (MapBookmarkManager*)defaultManager
 {
-	if(nil == s_mapBookmarksManager)
-	{
-		s_mapBookmarksManager = [[MapBookmarkManager alloc] init];
-	}
-	
-	return s_mapBookmarksManager;
+    static MapBookmarkManager* defaultManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        defaultManager = [[MapBookmarkManager alloc] init];
+    });
+
+    return defaultManager;
 }
 
 
--(id) init
+- (id)init
 {
 	self = [super init];
 	if (self) {
-		NSString* filename = [self getBookmarkFilename];
-		
-		// see if we can load the bookmarks from disk. 
-		_bookmarks = [[NSMutableArray arrayWithContentsOfFile:filename] retain];
-		
-		// if there was no file on disk, create the array from scratch
-		if (nil == _bookmarks) {
-			_bookmarks = [[NSMutableArray alloc] init];
-		}
+		// see if we can load the bookmarks from disk.
+        _bookmarks = [[NSArray alloc] initWithContentsOfURL:[self bookmarksURL]];
 	}
 	
 	return self;
 }
 
--(void) dealloc
-{
-	[_bookmarks release];
-	
-	[super dealloc];
-}
-
 #pragma mark Private category
--(NSString*) getBookmarkFilename
+- (NSURL*)bookmarksURL
 {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString* documentPath = [paths objectAtIndex:0];
-	return [documentPath stringByAppendingPathComponent:@"mapBookmarks.plist"];
+    NSURL *url = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory
+                                                        inDomain:NSUserDomainMask
+                                               appropriateForURL:nil
+                                                          create:NO
+                                                           error:nil];
+
+    return [NSURL URLWithString:@"mapBookmarks.plist"
+                  relativeToURL:url];
 }
 
--(void) save
+- (void)setBookmarks:(NSArray *)bookmarks
 {
-	NSString* filename = [self getBookmarkFilename];
-	[_bookmarks writeToFile:filename atomically:YES];
-}
+    if (![_bookmarks isEqualToArray:bookmarks]) {
+        _bookmarks = [bookmarks copy];
 
+        [_bookmarks writeToURL:[self bookmarksURL]
+                    atomically:YES];
+    }
+}
 
 #pragma mark Bookmark Management
--(void) addBookmark:(NSString*) bookmarkID title:(NSString*)title subtitle:(NSString*)subtitle data:(NSDictionary*) data
+- (void)addBookmark:(NSString*)bookmarkID title:(NSString*)title subtitle:(NSString*)subtitle data:(NSDictionary*) data
 {
-	NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:bookmarkID, @"id", title, @"title", nil, nil];
+	NSMutableDictionary* dictionary = [@{@"id" : bookmarkID,
+                                         @"title" : title} mutableCopy];
 
-	if (nil != subtitle) {
-		[dictionary setObject:subtitle forKey:@"subtitle"];
-	}
-	
-	if(nil != data)
-	{
-		[dictionary setObject:data forKey:@"data"];
-	}
-	
-	[_bookmarks addObject:dictionary];
-	[self save];
-}
-
--(void) removeBookmark:(NSString*) bookmarkID
-{
-	NSString* idfield = @"id";
-	
-	for(int idx = _bookmarks.count - 1; idx >= 0; idx--)
-	{
-		NSDictionary* dictionary = [_bookmarks objectAtIndex:idx];
-		NSString* uniqueID = [dictionary objectForKey:idfield];
-		if([uniqueID isEqualToString:bookmarkID])
-		{
-			[_bookmarks removeObjectAtIndex:idx];
-			[self save];
-			break;
-		}
-	}
-}
-
--(BOOL) isBookmarked:(NSString*) bookmarkID
-{
-	NSString* idfield = @"id";
-	
-	for (NSDictionary* dictionary in _bookmarks) 
-	{
-		NSString* uniqueID = [dictionary objectForKey:idfield];
-		if([uniqueID isEqualToString:bookmarkID])
-		{
-			return YES;
-		}
-	}
-	
-	return NO;
-}
-
--(void) moveBookmarkFromRow:(int) from toRow:(int)to
-{
-    if (to != from) 
-	{
-        
-		id obj = [_bookmarks objectAtIndex:from];
-        [obj retain];
-
-        [_bookmarks removeObjectAtIndex:from];
-        
-		if (to >= [_bookmarks count]) 
-		{
-            [_bookmarks addObject:obj];
-        }
-		else 
-		{
-            [_bookmarks insertObject:obj atIndex:to];
-        }
-        [obj release];
+	if (subtitle) {
+		dictionary[@"subtitle"] = subtitle;
     }
 	
-	[self save];
+	if (data) {
+		dictionary[@"data"] = data;
+	}
+
+    NSMutableArray *newBookmarks = [[NSMutableArray alloc] initWithArray:self.bookmarks];
+	[newBookmarks addObject:dictionary];
+    self.bookmarks = newBookmarks;
+}
+
+- (void)removeBookmark:(NSString*)bookmarkID
+{
+    NSMutableArray *newBookmarks = [self.bookmarks mutableCopy];
+    [newBookmarks enumerateObjectsUsingBlock:^(NSDictionary *bookmark, NSUInteger idx, BOOL *stop) {
+        if ([bookmark[@"id"] isEqualToString:bookmarkID]) {
+            [newBookmarks removeObjectAtIndex:idx];
+            (*stop) = YES;
+        }
+    }];
+
+    self.bookmarks = newBookmarks;
+}
+
+- (BOOL)isBookmarked:(NSString*)bookmarkID
+{
+    NSArray *matchingBookmarks = [self.bookmarks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id = %@", bookmarkID]];
+    return ([matchingBookmarks count] > 0);
+}
+
+- (void)moveBookmarkFromRow:(NSInteger)from toRow:(NSInteger)to
+{
+    if (to != from) {
+        NSMutableArray *newBookmarks = [self.bookmarks mutableCopy];
+        NSDictionary *bookmark = newBookmarks[from];
+        [newBookmarks removeObjectAtIndex:from];
+
+        // Decrement the 'to' since we just removed the 'from'
+        // bookmark.
+        to = MIN(--to,[newBookmarks count]);
+        newBookmarks[to] = bookmark;
+    }
 }
 
 @end
