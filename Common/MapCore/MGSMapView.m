@@ -74,16 +74,14 @@
 #pragma mark Base Map Set Management
 - (NSSet*)mapSets
 {
-    return [NSSet setWithArray:self.baseMapGroups];
+    return [NSSet setWithArray:[self.baseMapGroups allKeys]];
 }
 
-/* Unused method. Not needed in the REST-API.
 - (NSString*)nameForMapSetWithIdentifier:(NSString*)mapSetIdentifier
 {
     NSDictionary* layerInfo = self.baseMapGroups[mapSetIdentifier];
     return layerInfo[@"displayName"];
 }
-*/
 
 - (void)setActiveMapSet:(NSString*)mapSetName
 {
@@ -91,7 +89,7 @@
         NSMutableDictionary* coreMapLayers = [NSMutableDictionary dictionary];
         NSMutableArray* identifierOrder = [NSMutableArray array];
         
-        for (NSDictionary* layerInfo in self.baseMapGroups) {
+        for (NSDictionary* layerInfo in self.baseMapGroups[mapSetName]) {
             NSString* displayName = layerInfo[@"displayName"];
             NSString* identifier = layerInfo[@"layerIdentifier"];
             NSURL* layerURL = [NSURL URLWithString:layerInfo[@"url"]];
@@ -813,7 +811,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                           didFailWithError:error];
                 }
             } else if ([content isKindOfClass:[NSDictionary class]]) {
-                self.baseMapGroups = [content objectForKey:@"basemaps"];
+                NSDictionary* response = (NSDictionary*) content;
+                self.baseMapGroups = response[@"basemaps"];
                 NSString* defaultSetName = @"default";
                 self.activeMapSet = defaultSetName;
             }

@@ -17,7 +17,7 @@
 
 @property(nonatomic,assign,getter=areBaseLayersLoaded) BOOL baseLayersLoaded;
 @property(nonatomic,strong) NSMutableDictionary* baseLayers;
-@property(nonatomic,strong) NSArray* baseMapGroups;
+@property(nonatomic,strong) NSDictionary* baseMapGroups;
 
 @property(nonatomic,strong) NSMutableArray* externalLayers;
 @property(nonatomic,strong) NSMutableSet* externalLayerManagers;
