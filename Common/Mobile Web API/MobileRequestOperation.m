@@ -273,6 +273,25 @@ typedef enum
                   parameters:params];
 }
 
+// We need  to use post https request to send email form in Library module.
+// Server url begins with 'http' string. So we need to make some manipulation with url string.
+- (id)initWithRelativePath:(NSString *)relativePath parameters:(NSDictionary *)params useHttps:(BOOL)isUseHttps
+{
+    NSString *serverUrl = [MITMobileWebGetCurrentServerURL() absoluteString];
+    NSInteger colon = [serverUrl rangeOfString:@":"].location;
+    if (colon != NSNotFound) {
+        serverUrl= [serverUrl substringFromIndex:colon];
+        if (isUseHttps == YES) {
+            serverUrl = [@"https" stringByAppendingString:serverUrl];
+        } else {
+            serverUrl = [@"http" stringByAppendingString:serverUrl];
+        }
+    }
+    return [self initWithURL:[NSURL URLWithString:relativePath
+                                    relativeToURL:[NSURL URLWithString:serverUrl]]
+                  parameters:params];
+}
+
 - (id)initWithURL:(NSURL *)requestURL parameters:(NSDictionary *)params
 {
     self = [super init];

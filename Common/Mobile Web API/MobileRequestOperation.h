@@ -37,6 +37,7 @@ typedef void (^MobileRequestCompleteBlock)(MobileRequestOperation *operation, id
 
 - (id)initWithModule:(NSString*)aModule command:(NSString*)theCommand parameters:(NSDictionary*)params;
 - (id)initWithRelativePath:(NSString*)relativePath parameters:(NSDictionary*)params;
+- (id)initWithRelativePath:(NSString *)relativePath parameters:(NSDictionary *)params useHttps:(BOOL)isUseHttps;
 - (id)initWithURL:(NSURL*)requestURL parameters:(NSDictionary*)params;
 
 - (NSURLRequest*)urlRequest;

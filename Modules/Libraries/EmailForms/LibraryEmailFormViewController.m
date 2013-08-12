@@ -913,12 +913,16 @@ NSString* placeholderText(NSString *displayLabel, BOOL required) {
 - (void)submitForm:(NSMutableDictionary *)parameters {
     LibrariesModule *librariesModule = (LibrariesModule *)[MIT_MobileAppDelegate moduleForTag:LibrariesTag];
     
+    // If we use HTTP, we get redirected request with GET method. So we should use HTTPS to get correct POST request.
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:[NSString stringWithFormat:@"apis/secure/libraries/forms/%@", self.command]
-                                                                                 parameters:parameters] autorelease];
+                                                                                 parameters:parameters
+                                                                                   useHttps:YES] autorelease];
+    
     ThankYouViewController *thanksController = [[ThankYouViewController alloc] initWithMessage:nil];
     thanksController.title = @"Submitting";
     [self.navigationController pushViewController:thanksController animated:NO];
     [thanksController release];
+    request.usePOST = YES;
     
     request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         NSDictionary *jsonDict = content;
