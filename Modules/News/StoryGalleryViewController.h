@@ -2,21 +2,12 @@
 #import "StoryImageView.h"
 
 
-@interface StoryGalleryViewController : UIViewController <StoryImageViewDelegate> {
-    NSArray *images;
-    NSInteger imageIndex;
-    
-    UIScrollView *scrollView;
-    StoryImageView *storyImageView;
-    UILabel *captionLabel;
-    UILabel *creditLabel;
-}
+@interface StoryGalleryViewController : UIViewController <StoryImageViewDelegate>
+@property (copy) NSArray *images;
 
 - (void)resizeLabelWithFixedWidth:(UILabel *)aLabel;
 - (void)storyImageViewDidDisplayImage:(StoryImageView *)imageView;
 - (void)didPressNavButton:(id)sender;
 - (void)changeImage;
-
-@property (nonatomic, retain) NSArray *images;
 
 @end
