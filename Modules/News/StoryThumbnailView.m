@@ -4,7 +4,9 @@
 #import "NewsImageRep.h"
 #import "MobileRequestOperation.h"
 
-@interface StoryThumbnailView (Private)
+@interface StoryThumbnailView ()
+@property (nonatomic, weak) UIActivityIndicatorView *loadingView;
+@property (strong) NSData *imageData;
 
 + (UIImage *)placeholderImage;
 
@@ -12,14 +14,11 @@
 
 
 @implementation StoryThumbnailView
-
-@synthesize imageRep, imageData, loadingView, imageView;
-
 + (UIImage *)placeholderImage {
     static NSString * const placeholderImageName = @"news/news-placeholder.png";
     static UIImage *placeholderImage = nil;
     if (!placeholderImage) {
-        placeholderImage = [[UIImage imageNamed:placeholderImageName] retain];
+        placeholderImage = [UIImage imageNamed:placeholderImageName];
     }
     return placeholderImage;
 }
@@ -27,10 +26,6 @@
 - (id) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self != nil) {
-        imageRep = nil;
-        imageData = nil;
-        loadingView = nil;
-        imageView = nil;
         self.opaque = YES;
         self.clipsToBounds = YES;
         self.backgroundColor = [UIColor colorWithPatternImage:[StoryThumbnailView placeholderImage]];
@@ -39,17 +34,14 @@
 }
 
 - (void)setImageRep:(NewsImageRep *)newImageRep {
-    if (![newImageRep isEqual:imageRep]) {
-        [imageRep release];
-        imageRep = [newImageRep retain];
-        imageView.image = nil;
-        imageView.hidden = YES;
+    if (![newImageRep isEqual:_imageRep]) {
+        _imageRep = newImageRep;
+        self.imageView.image = nil;
+        self.imageView.hidden = YES;
 
-        if (self.loadingView) {
-            [self.loadingView stopAnimating];
-            self.loadingView.hidden = YES;
-        }
-        if (imageRep) {
+        [self.loadingView stopAnimating];
+
+        if (self.imageRep) {
             self.backgroundColor = [UIColor colorWithWhite:0.60 alpha:1.0];
         } else {
             self.backgroundColor = [UIColor colorWithPatternImage:[StoryThumbnailView placeholderImage]];
@@ -60,10 +52,9 @@
 
 - (void)loadImage {
     // show cached image if available
-    if (imageRep.data) {
-        self.imageData = imageRep.data;
+    if (self.imageRep.data) {
+        self.imageData = self.imageRep.data;
         [self displayImage];
-    // otherwise try to fetch the image from
     } else {
         [self requestImage];
     }
@@ -72,31 +63,29 @@
 - (BOOL)displayImage {
     BOOL wasSuccessful = NO;
     
-    [loadingView stopAnimating];
-    loadingView.hidden = YES;
+    [self.loadingView stopAnimating];
 
     UIImage *image = [[UIImage alloc] initWithData:self.imageData];
     
     // don't show imageView if imageData isn't actually a valid image
     if (image && image.size.width > 0 && image.size.height > 0) {
-        if (!imageView) {
-            imageView = [[UIImageView alloc] initWithImage:nil]; // image is set below
-            [self addSubview:imageView];
+        if (!self.imageView) {
+            UIImageView *imageView = [[UIImageView alloc] init]; // image is set below
             imageView.frame = self.bounds;
             imageView.contentMode = UIViewContentModeScaleAspectFill;
             imageView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+            [self addSubview:imageView];
+            self.imageView = imageView;
         }
 
-        imageView.image = image;
-        imageView.hidden = NO;
+        self.imageView.image = image;
+        self.imageView.hidden = NO;
         wasSuccessful = YES;
-        [imageView setNeedsLayout];
     } else {
         self.backgroundColor = [UIColor colorWithPatternImage:[StoryThumbnailView placeholderImage]];
     }
+
     [self setNeedsLayout];
-    
-    [image release];
     return wasSuccessful;
 }
 
@@ -107,23 +96,25 @@
     // need news office to improve feed
     // 
     // in the future, should spin off thumbnail as its own Core Data entity with an "not a valid image" flag
-    if ([[imageRep.url pathExtension] length] == 0) {
+    if ([[self.imageRep.url pathExtension] length] == 0) {
         self.backgroundColor = [UIColor colorWithPatternImage:[StoryThumbnailView placeholderImage]];
         return;
     }
     
-    NSString *imageURLString = imageRep.url;
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:imageURLString] parameters:nil] autorelease];
-    
+    NSURL *imageURL = [[NSURL alloc] initWithString:self.imageRep.url];
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:imageURL parameters:nil];
+
+    __weak StoryThumbnailView *weakSelf = self;
     request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
-        if ([self.imageRep.url isEqualToString:imageURLString]) {
+        StoryThumbnailView *blockSelf = weakSelf;
+        if ([blockSelf.imageRep.url isEqualToString:[imageURL absoluteString]]) {
             if (error) {
-                self.imageData = nil;
+                blockSelf.imageData = nil;
             } else {
-                self.imageData = data;
-                BOOL validImage = [self displayImage];
+                blockSelf.imageData = data;
+                BOOL validImage = [blockSelf displayImage];
                 if (validImage) {
-                    imageRep.data = data;
+                    blockSelf.imageRep.data = data;
                     [CoreDataManager saveDataWithTemporaryMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
                 }
             }
@@ -133,23 +124,17 @@
     self.imageData = nil;
     
     if (!self.loadingView) {
-        loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        [self addSubview:self.loadingView];
+        UIActivityIndicatorView *loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         loadingView.center = self.center;
+        loadingView.hidesWhenStopped = YES;
+        [self addSubview:loadingView];
+        self.loadingView = loadingView;
     }
-    imageView.hidden = YES;
-    loadingView.hidden = NO;
-    [loadingView startAnimating];
-    
-    [[NSOperationQueue mainQueue] addOperation:request];
-}
 
-- (void)dealloc {
-    [imageData release];
-    imageData = nil;
-    [loadingView release];
-    [imageView release];
-    [super dealloc];
+    self.imageView.hidden = YES;
+    [self.loadingView startAnimating];
+    
+    [[MobileRequestOperation defaultQueue] addOperation:request];
 }
 
 @end

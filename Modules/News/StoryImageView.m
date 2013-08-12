@@ -4,17 +4,16 @@
 #import "NewsImageRep.h"
 #import "MobileRequestOperation.h"
 
+@interface StoryImageView ()
+@property (nonatomic, weak) UIActivityIndicatorView *loadingView;
+
+@property (strong) NSData *imageData;
+@end
+
 @implementation StoryImageView
-
-@synthesize delegate, imageRep, imageData, loadingView, imageView;
-
 - (id) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self != nil) {
-        imageRep = nil;
-        imageData = nil;
-        loadingView = nil;
-        imageView = nil;
         self.opaque = YES;
         self.clipsToBounds = YES;
     }
@@ -22,22 +21,22 @@
 }
 
 - (void)setImageRep:(NewsImageRep *)newImageRep {
-    if (![newImageRep isEqual:imageRep]) {
-        [imageRep release];
-        imageRep = [newImageRep retain];
-        imageView.image = nil;
-        imageView.hidden = YES;
+    if (![newImageRep isEqual:_imageRep]) {
+        _imageRep = newImageRep;
+
+        self.imageView.image = nil;
+        self.imageView.hidden = YES;
+
         if (self.loadingView) {
             [self.loadingView stopAnimating];
-            self.loadingView.hidden = YES;
         }
     }
 }
 
 - (void)loadImage {
     // show cached image if available
-    if (imageRep.data) {
-        self.imageData = imageRep.data;
+    if (self.imageRep.data) {
+        self.imageData = self.imageRep.data;
         [self displayImage];
         // otherwise try to fetch the image from
     } else {
@@ -50,21 +49,21 @@
     
     UIImage *image = [[UIImage alloc] initWithData:self.imageData];
     
-    if (!imageView) {
-        imageView = [[UIImageView alloc] initWithImage:nil]; // image is set below
-        [self addSubview:imageView];
+    if (!self.imageView) {
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:nil]; // image is set below
         imageView.frame = self.bounds;
         imageView.contentMode = UIViewContentModeScaleAspectFit;
         imageView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+        [self addSubview:imageView];
+        self.imageView = imageView;
     }
     
-    [loadingView stopAnimating];
-    loadingView.hidden = YES;
+    [self.loadingView stopAnimating];
     
     // don't show imageView if imageData isn't actually a valid image
     if (image) {
-        imageView.image = image;
-        imageView.hidden = NO;
+        self.imageView.image = image;
+        self.imageView.hidden = NO;
         wasSuccessful = YES;
     }
     
@@ -72,36 +71,31 @@
         [self.delegate storyImageViewDidDisplayImage:self];
     }
     
-    [image release];
     return wasSuccessful;
 }
 
 - (void)layoutSubviews {
-    imageView.frame = self.bounds;
-    if (self.loadingView) {
-        loadingView.center = CGPointMake(self.center.x - loadingView.frame.size.width / 2, self.center.y - loadingView.frame.size.height / 2);
-    }
+    self.imageView.frame = self.bounds;
+    self.loadingView.center = CGPointMake(self.center.x - CGRectGetMidX(self.loadingView.frame),
+                                          self.center.y - CGRectGetMidY(self.loadingView.frame));
 }
 
 - (void)requestImage {
-    // TODO: don't attempt to load anything if there's no net connection
-    
-    if ([[imageRep.url pathExtension] length] == 0) {
-        return;
-    }
-    
-    NSString *imageURLString = imageRep.url;
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:imageURLString] parameters:nil] autorelease];
-    
+    NSString *imageURLString = self.imageRep.url;
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:[NSURL URLWithString:imageURLString]
+                                                                       parameters:nil];
+
+    __weak StoryImageView *weakSelf = self;
     request.completeBlock = ^(MobileRequestOperation *request, NSData *data, NSString *contentType, NSError *error) {
-        if ([self.imageRep.url isEqualToString:imageURLString]) {
+        StoryImageView *blockSelf = weakSelf;
+        if ([blockSelf.imageRep.url isEqualToString:imageURLString]) {
             if (error) {
-                self.imageData = nil;
+                blockSelf.imageData = nil;
             } else {
-                self.imageData = data;
-                BOOL validImage = [self displayImage];
+                blockSelf.imageData = data;
+                BOOL validImage = [blockSelf displayImage];
                 if (validImage) {
-                    imageRep.data = data;
+                    blockSelf.imageRep.data = data;
                     [CoreDataManager saveDataWithTemporaryMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
                 }
             }
@@ -111,23 +105,18 @@
     self.imageData = nil;
     
     if (!self.loadingView) {
-        loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [self addSubview:self.loadingView];
-        loadingView.center = CGPointMake(self.center.x - loadingView.frame.size.width / 2, self.center.y - loadingView.frame.size.height / 2);
+        UIActivityIndicatorView *loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        loadingView.center = CGPointMake(self.center.x - CGRectGetMidX(loadingView.frame),
+                                         self.center.y - CGRectGetMidY(loadingView.frame));
+        loadingView.hidesWhenStopped = YES;
+        [self addSubview:loadingView];
+        self.loadingView = loadingView;
     }
-    imageView.hidden = YES;
-    loadingView.hidden = NO;
-    [loadingView startAnimating];
-    
-    [[NSOperationQueue mainQueue] addOperation:request];
-}
 
-- (void)dealloc {
-    [imageData release];
-    imageData = nil;
-    [loadingView release];
-    [imageView release];
-    [super dealloc];
+    self.imageView.hidden = YES;
+    [self.loadingView startAnimating];
+    
+    [[MobileRequestOperation defaultQueue] addOperation:request];
 }
 
 @end
