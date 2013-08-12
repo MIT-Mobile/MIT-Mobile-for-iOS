@@ -6,7 +6,18 @@
 #import "MobileRequestOperation.h"
 
 @interface StoryXMLParser ()
-@property (nonatomic, assign) NSAutoreleasePool *downloadAndParsePool;
+@property (nonatomic,strong) NSXMLParser *xmlParser;
+
+@property (nonatomic, copy) NSString *currentElement;
+@property (nonatomic, strong) NSMutableArray *currentStack;
+@property (nonatomic, strong) NSMutableDictionary *currentContents;
+@property (nonatomic, strong) NSMutableDictionary *currentImage;
+
+@property NSUInteger expectedNumberOfStories;
+@property (getter = isFinished) BOOL finished;
+@property BOOL parseSuccessful;
+@property (getter = isCanceled) BOOL canceled;
+
 
 - (void)downloadAndParseURL:(NSURL *)url;
 - (NSArray *)itemWhitelist;
@@ -19,51 +30,10 @@
 - (void)reportProgress:(NSNumber *)percentComplete;
 - (void)parseEnded;
 - (void)parseError:(NSError *)error;
-
 @end
 
 
 @implementation StoryXMLParser
-{
-    id <StoryXMLParserDelegate> delegate;
-    
-	NSThread *thread;
-    
-	NSXMLParser *xmlParser;
-	
-    NSInteger expectedStoryCount;
-    
-    BOOL parsingTopStories;
-    
-	NSString *currentElement;
-    NSMutableArray *currentStack;
-    NSMutableDictionary *currentContents;
-    NSMutableDictionary *currentImage;
-	BOOL done;
-    BOOL parseSuccessful;
-    BOOL shouldAbort;
-	BOOL isSearch;
-	BOOL loadingMore;
-	NSInteger totalAvailableResults;
-    
-    NSMutableArray *addedStories;
-    
-	NSAutoreleasePool *downloadAndParsePool;
-}
-
-@synthesize delegate;
-@synthesize parsingTopStories;
-@synthesize isSearch;
-@synthesize loadingMore;
-@synthesize totalAvailableResults;
-@synthesize xmlParser;
-@synthesize currentElement;
-@synthesize currentStack;
-@synthesize currentContents;
-@synthesize currentImage;
-@synthesize addedStories;
-@synthesize downloadAndParsePool;
-
 NSString * const NewsTagItem            = @"item";
 NSString * const NewsTagTitle           = @"title";
 NSString * const NewsTagAuthor          = @"author";
@@ -100,45 +70,13 @@ NSString * const NewsTagImageHeight     = @"height";
 {
     self = [super init];
     if (self != nil) {
-        delegate = nil;
-		thread = nil;
-        expectedStoryCount = 0;
-        parsingTopStories = NO;
-        currentElement = nil;
-        currentStack = nil;
-        currentContents = nil;
-        currentImage = nil;
-        addedStories = nil;
-        downloadAndParsePool = nil;
-        done = NO;
-		isSearch = NO;
-		loadingMore = NO;
-		totalAvailableResults = 0;
-        parseSuccessful = NO;
-        shouldAbort = NO;
+
     }
     return self;
 }
 
-- (void)dealloc {
-	if (![thread isFinished]) {
-		DDLogError(@"***** %s called before parsing finished", __PRETTY_FUNCTION__);
-	}
-	[thread release];
-	thread = nil;
-    self.delegate = nil;
-	self.xmlParser = nil;
-    self.addedStories = nil;
-    self.currentElement = nil;
-    self.currentStack = nil;
-    self.currentContents = nil;
-    self.currentImage = nil;
-	self.downloadAndParsePool = nil;
-    [super dealloc];
-}
-
 - (void)loadStoriesForCategory:(NSInteger)category afterStoryId:(NSInteger)storyId count:(NSInteger)count {
-	self.isSearch = NO;
+	self.search = NO;
     NSString *newsPath = nil;
     
     if (MITMobileWebGetCurrentServerType() == MITMobileWebDevelopment) {
@@ -149,13 +87,14 @@ NSString * const NewsTagImageHeight     = @"height";
     
     NSURL *host = MITMobileWebGetCurrentServerURL();
     NSURL *baseURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/", [host absoluteString], newsPath]];
-    NSMutableString *pathString = [NSMutableString stringWithCapacity:22];
-    NSMutableArray *params = [NSMutableArray arrayWithCapacity:2];
+    NSMutableString *pathString = [[NSMutableString alloc] init];
+    NSMutableArray *params = [[NSMutableArray alloc] init];
     if (category != 0) {
         [params addObject:[NSString stringWithFormat:@"channel=%d", category]];
     } else {
-        parsingTopStories = TRUE;
+        self.parsingTopStories = YES;
     }
+
 	self.loadingMore = NO;
     if (storyId != 0) {
 		self.loadingMore = YES;
@@ -167,13 +106,13 @@ NSString * const NewsTagImageHeight     = @"height";
     [pathString appendString:[params componentsJoinedByString:@"&"]];
     NSURL *fullURL = [NSURL URLWithString:pathString relativeToURL:baseURL];
     
-    expectedStoryCount = 10; // if the server is ever made to support a range param, set this to count instead
+    self.expectedNumberOfStories = 10; // if the server is ever made to support a range param, set this to count instead
     
 	[self downloadAndParseURL:fullURL];
 }
 
 - (void)loadStoriesforQuery:(NSString *)query afterIndex:(NSInteger)start count:(NSInteger)count {
-	self.isSearch = YES;
+	self.search = YES;
 	self.loadingMore = (start == 0) ? NO : YES;
 	
 	// before getting new results, clear old search results if this is a new search request
@@ -192,43 +131,49 @@ NSString * const NewsTagImageHeight     = @"height";
     
     NSURL *fullURL = [NSURL URLWithString:relativeString];
     
-    expectedStoryCount = count;
+    self.expectedNumberOfStories = count;
     
 	[self downloadAndParseURL:fullURL];
 }
 
 - (void)abort {
-    shouldAbort = YES;
-	[thread cancel];
+    self.canceled = YES;
+    [self.xmlParser abortParsing];
 }
 
 // should be spawned on a separate thread
 - (void)downloadAndParseURL:(NSURL *)url {
-	self.downloadAndParsePool = [[NSAutoreleasePool alloc] init];
-	done = NO;
-    parseSuccessful = NO;
+	self.finished = NO;
+    self.parseSuccessful = NO;
     
     MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:url parameters:nil];
-    
+
+    __weak StoryXMLParser *weakSelf = self;
     request.completeBlock = ^(MobileRequestOperation *request, NSData *xmlData, NSString *contentType, NSError *error) {
+        StoryXMLParser *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        }
+
         if (error) {
-            parseSuccessful = NO;
-            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(parser:didFailWithDownloadError:)]) {
-                [self.delegate parser:self didFailWithDownloadError:error];	
+            blockSelf.parseSuccessful = NO;
+            if (blockSelf.delegate != nil && [blockSelf.delegate respondsToSelector:@selector(parser:didFailWithDownloadError:)]) {
+                [blockSelf.delegate parser:blockSelf didFailWithDownloadError:error];
             }
-            done = YES;
+            blockSelf.finished = YES;
         } else {
-            self.addedStories = [NSMutableArray array];
-            self.xmlParser = [[[NSXMLParser alloc] initWithData:xmlData] autorelease];
-            self.xmlParser.delegate = self;
-            self.currentContents = [NSMutableDictionary dictionary];
-            self.currentStack = [NSMutableArray array];
-            [self.xmlParser parse];
-            self.xmlParser = nil;
-            self.currentStack = nil;
+            blockSelf.addedStories = [NSMutableArray array];
+            blockSelf.xmlParser = [[NSXMLParser alloc] initWithData:xmlData];
+            blockSelf.xmlParser.delegate = blockSelf;
+            blockSelf.currentContents = [NSMutableDictionary dictionary];
+            blockSelf.currentStack = [NSMutableArray array];
+            [blockSelf.xmlParser parse];
+            blockSelf.xmlParser = nil;
+            blockSelf.currentStack = nil;
         }
     };
-    [[NSOperationQueue mainQueue] addOperation:[request autorelease]];
+    
+    [[MobileRequestOperation defaultQueue] addOperation:request];
 }
 
 #pragma mark NSXMLParser delegation
@@ -237,17 +182,17 @@ NSString * const NewsTagImageHeight     = @"height";
     static NSArray *itemWhitelist;
     
     if (!itemWhitelist) {
-        itemWhitelist = [[NSArray arrayWithObjects:
-                      NewsTagTitle,
-                      NewsTagAuthor,
-                      NewsTagCategory,
-                      NewsTagLink,
-                      NewsTagStoryId,
-                      NewsTagFeatured,
-                      NewsTagSummary,
-                      NewsTagPostDate,
-                      NewsTagBody, nil] retain];
+        itemWhitelist = @[NewsTagTitle,
+                          NewsTagAuthor,
+                          NewsTagCategory,
+                          NewsTagLink,
+                          NewsTagStoryId,
+                          NewsTagFeatured,
+                          NewsTagSummary,
+                          NewsTagPostDate,
+                          NewsTagBody];
     }
+    
     return itemWhitelist;
 }
 
@@ -255,61 +200,58 @@ NSString * const NewsTagImageHeight     = @"height";
     static NSArray *imageWhitelist;
     
     if (!imageWhitelist) {
-        imageWhitelist = [[NSArray arrayWithObjects:
-                      [self newsTagThumbURL],
-                      NewsTagSmallURL,
-                      NewsTagFullURL,
-                      NewsTagImageCredits,
-                      NewsTagImageCaption, nil] retain];
+        imageWhitelist = @[[self newsTagThumbURL],
+                           NewsTagSmallURL,
+                           NewsTagFullURL,
+                           NewsTagImageCredits,
+                           NewsTagImageCaption];
     }
     return imageWhitelist;
 }
 
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *) qualifiedName attributes:(NSDictionary *)attributeDict {
-    
     self.currentElement = elementName;
 	if ([elementName isEqualToString:NewsTagItem]) {
-        if ([[currentContents allValues] count] > 0) {
+        if ([[self.currentContents allValues] count] > 0) {
             DDLogError(@"%s warning: found a nested <item> in the News XML.", __PRETTY_FUNCTION__);
-            [currentContents removeAllObjects];
+            [self.currentContents removeAllObjects];
         }
         NSArray *whitelist = [self itemWhitelist];
         for (NSString *key in whitelist) {
-            [currentContents setObject:[NSMutableString string] forKey:key];
+            self.currentContents[key] = [NSMutableString string];
         }
 	} else if ([elementName isEqualToString:NewsTagOtherImages]) {
-        [currentContents setObject:[NSMutableArray array] forKey:NewsTagOtherImages];
+        self.currentContents[NewsTagOtherImages] = [NSMutableArray array];
     } else if ([elementName isEqualToString:NewsTagImage]) {
         // prep new image element
         self.currentImage = [NSMutableDictionary dictionary];
         NSArray *whitelist = [self imageWhitelist];
         for (NSString *key in whitelist) {
-            [currentImage setObject:[NSMutableString string] forKey:key];
+            self.currentImage[key] = [NSMutableString string];
         }
-        if ([[currentStack lastObject] isEqualToString:NewsTagItem]) {
+        
+        if ([[self.currentStack lastObject] isEqualToString:NewsTagItem]) {
             // if last tag on stack is <item>, then this is an inline image
-            [currentContents setObject:currentImage forKey:NewsTagImage];
+            self.currentContents[NewsTagImage] = self.currentImage;
         } else {
             // otherwise, this belongs in <otherImages>
-            NSMutableArray *otherImages = [currentContents objectForKey:NewsTagOtherImages];
-            [otherImages addObject:currentImage];
+            NSMutableArray *otherImages = self.currentContents[NewsTagOtherImages];
+            [otherImages addObject:self.currentImage];
         }
-    } else if ([elementName isEqualToString:NewsTagSmallURL] && currentImage) {
-        [currentImage setObject:attributeDict forKey:@"smallSize"];
-    } else if ([elementName isEqualToString:NewsTagFullURL] && currentImage) {
-        [currentImage setObject:attributeDict forKey:@"fullSize"];
+    } else if ([elementName isEqualToString:NewsTagSmallURL] && self.currentImage) {
+        self.currentImage[@"smallSize"] = attributeDict;
+    } else if ([elementName isEqualToString:NewsTagFullURL] && self.currentImage) {
+        self.currentImage[@"fullSize" ] = attributeDict;
     } else if ([elementName isEqualToString:@"items"]) {
-		NSNumber *totalResults = [attributeDict objectForKey:@"totalResults"];
-		if (totalResults) {
-			self.totalAvailableResults = [totalResults integerValue];
-		}
+		self.totalAvailableResults = [attributeDict[@"totalResults"] integerValue];
 	}
-    [currentStack addObject:elementName];
+    
+    [self.currentStack addObject:elementName];
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
-    if (shouldAbort) {
+    if (self.isCanceled) {
         [parser abortParsing];
         return;
     }
@@ -319,82 +261,77 @@ NSString * const NewsTagImageHeight     = @"height";
     NSMutableDictionary *currentDict = nil;
     NSArray *whitelist = nil;
     
-    if ([currentStack indexOfObject:NewsTagImage] != NSNotFound) {
-        currentDict = currentImage;
+    if ([self.currentStack indexOfObject:NewsTagImage] != NSNotFound) {
+        currentDict = self.currentImage;
         whitelist = [self imageWhitelist];
-    } else if ([currentStack indexOfObject:NewsTagItem] != NSNotFound) {
-        currentDict = currentContents;
+    } else if ([self.currentStack indexOfObject:NewsTagItem] != NSNotFound) {
+        currentDict = self.currentContents;
         whitelist = [self itemWhitelist];
     } else {
         return;
     }
     
-    if ([string length] > 0 && [whitelist containsObject:currentElement]) {
-        NSMutableString *value = [currentDict objectForKey:currentElement];
+    if ([string length] > 0 && [whitelist containsObject:self.currentElement]) {
+        NSMutableString *value = currentDict[self.currentElement];
         [value appendString:string];
     }
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
-    
-    NSAutoreleasePool *tinyPool = [[NSAutoreleasePool alloc] init];
-    
-    [currentStack removeLastObject];
+    @autoreleasepool {
+        [self.currentStack removeLastObject];
 
-	if ([elementName isEqualToString:NewsTagItem]) {
-            // use existing story if it's already in the db
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"story_id == %d", [[currentContents objectForKey:NewsTagStoryId] integerValue]];
-            NewsStory *story = [[CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate] lastObject];
-            // otherwise create new
-            if (!story) {
-                story = (NewsStory *)[CoreDataManager insertNewObjectForEntityForName:NewsStoryEntityName];
-            }
-
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            formatter.locale = [[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"] autorelease];
-            [formatter setDateFormat:@"EEE, d MMM y HH:mm:ss zzz"];
-            [formatter setTimeZone:[NSTimeZone localTimeZone]];
-            NSDate *postDate = [formatter dateFromString:[currentContents objectForKey:NewsTagPostDate]];
-            [formatter release];
-            
-            story.story_id = [NSNumber numberWithInteger:[[currentContents objectForKey:NewsTagStoryId] integerValue]];
-            story.postDate = postDate;
-            story.title = [currentContents objectForKey:NewsTagTitle];
-            story.link = [currentContents objectForKey:NewsTagLink];
-            story.author = [currentContents objectForKey:NewsTagAuthor];
-            story.summary = [currentContents objectForKey:NewsTagSummary];
-            story.body = [currentContents objectForKey:NewsTagBody];
-            [story addCategory:[[currentContents objectForKey:NewsTagCategory] integerValue]];
-            if (parsingTopStories) {
-                // because NewsStory objects are shared between categories, only set this to YES, never revert it to NO
-                story.topStory = [NSNumber numberWithBool:parsingTopStories];
-            }
-			story.searchResult = [NSNumber numberWithBool:isSearch]; // gets reset to NO before every search
-
-            story.featured = [NSNumber numberWithBool:[[currentContents objectForKey:NewsTagFeatured] boolValue]];
-            
-            story.inlineImage = [self imageWithDictionary:[currentContents objectForKey:NewsTagImage]];
-            
-            NSMutableArray *otherImagesDict = [currentContents objectForKey:NewsTagOtherImages];
-            NSInteger i = 0;
-            for (NSDictionary *otherImage in otherImagesDict) {
-                NewsImage *anImage = [self imageWithDictionary:otherImage];
-                if (anImage) {
-                    anImage.ordinality = [NSNumber numberWithInteger:i];
-                    i++;
-                    [story addGalleryImage:anImage];
+        if ([elementName isEqualToString:NewsTagItem]) {
+                // use existing story if it's already in the db
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"story_id == %d", [self.currentContents[NewsTagStoryId] integerValue]];
+                NewsStory *story = [[CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate] lastObject];
+                // otherwise create new
+                if (!story) {
+                    story = (NewsStory *)[CoreDataManager insertNewObjectForEntityForName:NewsStoryEntityName];
                 }
-            }
 
-            [self performSelectorOnMainThread:@selector(reportProgress:) withObject:[NSNumber numberWithFloat:[addedStories count] / (0.01 * expectedStoryCount)] waitUntilDone:NO];
+                NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+                formatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+                [formatter setDateFormat:@"EEE, d MMM y HH:mm:ss zzz"];
+                [formatter setTimeZone:[NSTimeZone localTimeZone]];
+                NSDate *postDate = [formatter dateFromString:self.currentContents[NewsTagPostDate]];
+                
+                story.story_id = @([self.currentContents[NewsTagStoryId] integerValue]);
+                story.postDate = postDate;
+                story.title = self.currentContents[NewsTagTitle];
+                story.link = self.currentContents[NewsTagLink];
+                story.author = self.currentContents[NewsTagAuthor];
+                story.summary = self.currentContents[NewsTagSummary];
+                story.body = self.currentContents[NewsTagBody];
+                [story addCategory:[self.currentContents[NewsTagCategory] integerValue]];
+                if (self.isParsingTopStories) {
+                    story.topStory = @(self.parsingTopStories);
+                }
 
-            [addedStories addObject:story];
-            
-            // prepare for next item
-            [currentContents removeAllObjects];
-	}
-    [tinyPool release];
-    
+                story.searchResult = @(self.isSearch); // gets reset to NO before every search
+                story.featured = @([self.currentContents[NewsTagFeatured] boolValue]);
+                story.inlineImage = [self imageWithDictionary:self.currentContents[NewsTagImage]];
+                
+                NSMutableArray *otherImagesDict = self.currentContents[NewsTagOtherImages];
+                [otherImagesDict enumerateObjectsUsingBlock:^(NSDictionary *image, NSUInteger idx, BOOL *stop) {
+                    NewsImage *anImage = [self imageWithDictionary:image];
+                    if (anImage) {
+                        anImage.ordinality = @(idx);
+                        [story addGalleryImage:anImage];
+                    }
+                }];
+
+                [self performSelectorOnMainThread:@selector(reportProgress:)
+                                       withObject:@([self.addedStories count] / (0.01 * self.expectedNumberOfStories))
+                                    waitUntilDone:NO];
+
+                [self.addedStories addObject:story];
+                
+                // prepare for next item
+                [self.currentContents removeAllObjects];
+        }
+        
+    }
 }
 
 - (void)reportProgress:(NSNumber *)percentComplete {
@@ -406,13 +343,13 @@ NSString * const NewsTagImageHeight     = @"height";
 - (NewsImage *)imageWithDictionary:(NSDictionary *)imageDict {
     NewsImage *newsImage = nil;
     if (imageDict) {
-        NSString *credits = [imageDict objectForKey:NewsTagImageCredits];
-        NSString *caption = [imageDict objectForKey:NewsTagImageCaption];
-        NSString *thumbURL = [imageDict objectForKey:[self newsTagThumbURL]];
-        NSString *smallURL = [imageDict objectForKey:NewsTagSmallURL];
-        NSString *fullURL = [imageDict objectForKey:NewsTagFullURL];
-        NSDictionary *smallSize = [imageDict objectForKey:@"smallSize"];
-        NSDictionary *fullSize = [imageDict objectForKey:@"fullSize"];
+        NSString *credits = imageDict[NewsTagImageCredits];
+        NSString *caption = imageDict[NewsTagImageCaption];
+        NSString *thumbURL = imageDict[[self newsTagThumbURL]];
+        NSString *smallURL = imageDict[NewsTagSmallURL];
+        NSString *fullURL = imageDict[NewsTagFullURL];
+        NSDictionary *smallSize = imageDict[@"smallSize"];
+        NSDictionary *fullSize = imageDict[@"fullSize"];
 		
         // every <image> in the feed has at least a <fullURL>, so index on that
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fullImage.url == %@", fullURL];
@@ -426,13 +363,13 @@ NSString * const NewsTagImageHeight     = @"height";
         newsImage.thumbImage = [self imageRepForURLString:thumbURL];
         newsImage.smallImage = [self imageRepForURLString:smallURL];
         if (smallSize) {
-            newsImage.smallImage.width = [NSNumber numberWithInteger:[[smallSize objectForKey:NewsTagImageWidth] integerValue]];
-            newsImage.smallImage.height = [NSNumber numberWithInteger:[[smallSize objectForKey:NewsTagImageHeight] integerValue]];
+            newsImage.smallImage.width = @([smallSize[NewsTagImageWidth] integerValue]);
+            newsImage.smallImage.height = @([smallSize[NewsTagImageHeight] integerValue]);
         }
         newsImage.fullImage = [self imageRepForURLString:fullURL];
         if (fullSize) {
-            newsImage.fullImage.width = [NSNumber numberWithInteger:[[fullSize objectForKey:NewsTagImageWidth] integerValue]];
-            newsImage.fullImage.height = [NSNumber numberWithInteger:[[fullSize objectForKey:NewsTagImageHeight] integerValue]];
+            newsImage.fullImage.width = @([fullSize[NewsTagImageWidth] integerValue]);
+            newsImage.fullImage.height = @([fullSize[NewsTagImageHeight] integerValue]);
         }
     }
     return newsImage;
@@ -461,41 +398,45 @@ NSString * const NewsTagImageHeight     = @"height";
 }
 
 - (void)didStartParsing {
-	if (self.delegate != nil && [self.delegate respondsToSelector:@selector(parserDidStartParsing:)]) {
+	if ([self.delegate respondsToSelector:@selector(parserDidStartParsing:)]) {
 		[self.delegate parserDidStartParsing:self];	
 	}
 }
 
 - (void)parseEnded {
-	if (parseSuccessful && self.delegate != nil && [self.delegate respondsToSelector:@selector(parserDidFinishParsing:)]) {
+	if (self.parseSuccessful && [self.delegate respondsToSelector:@selector(parserDidFinishParsing:)]) {
 		[self.delegate parserDidFinishParsing:self];
 	}
 }
 
 - (void)parser:(NSXMLParser *)parser parseErrorOccurred:(NSError *)error {
-    [self performSelectorOnMainThread:@selector(parseError:) withObject:error waitUntilDone:NO];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self parseError:error];
+    });
 }
 
 - (void)parserDidStartDocument:(NSXMLParser *)parser {
-    [self performSelectorOnMainThread:@selector(didStartParsing) withObject:nil waitUntilDone:NO];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self didStartParsing];
+    });
 }
          
 - (void)parserDidEndDocument:(NSXMLParser *)parser {
-    if (shouldAbort) {
+    if (self.isCanceled) {
         [parser abortParsing];
         return;
     }
     
-    parseSuccessful = YES;
+    self.parseSuccessful = YES;
 	[CoreDataManager saveDataWithTemporaryMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-    if (parseSuccessful) {
-        [self performSelectorOnMainThread:@selector(parseEnded) withObject:nil waitUntilDone:NO];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self parseEnded];
+    });
 }
 
 - (void)parseError:(NSError *)error {
-    parseSuccessful = NO;
-	if (self.delegate != nil && [self.delegate respondsToSelector:@selector(parser:didFailWithParseError:)]) {
+    self.parseSuccessful = NO;
+	if ([self.delegate respondsToSelector:@selector(parser:didFailWithParseError:)]) {
 		[self.delegate parser:self didFailWithParseError:error];	
 	}
 }

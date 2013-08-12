@@ -18,18 +18,13 @@
 @end
 
 @interface StoryXMLParser : NSObject <NSXMLParserDelegate>
+@property (nonatomic, weak) id <StoryXMLParserDelegate> delegate;
 
-@property (nonatomic, assign) id <StoryXMLParserDelegate> delegate;
-@property (nonatomic, retain) NSXMLParser *xmlParser;
-@property (nonatomic, assign) BOOL parsingTopStories;
-@property (nonatomic, assign) BOOL isSearch;
-@property (nonatomic, assign) BOOL loadingMore;
-@property (nonatomic, assign) NSInteger totalAvailableResults;
-@property (nonatomic, retain) NSString *currentElement;
-@property (nonatomic, retain) NSMutableArray *currentStack;
-@property (nonatomic, retain) NSMutableDictionary *currentContents;
-@property (nonatomic, retain) NSMutableDictionary *currentImage;
-@property (nonatomic, retain) NSMutableArray *addedStories;
+@property (nonatomic, strong) NSMutableArray *addedStories;
+@property (nonatomic) NSInteger totalAvailableResults;
+@property (getter = isParsingTopStories) BOOL parsingTopStories;
+@property (nonatomic,getter = isSearch) BOOL search;
+@property (nonatomic) BOOL loadingMore;
 
 // called by main thread
 - (void)loadStoriesForCategory:(NSInteger)category afterStoryId:(NSInteger)storyId count:(NSInteger)count;
