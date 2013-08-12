@@ -21,39 +21,18 @@
 @end
 
 @implementation StoryDetailViewController
-{
-	StoryListViewController *newsController;
-    NewsStory *story;
-}
-
-@synthesize newsController, story;
-@synthesize storyView = _storyView;
-@synthesize storyPager = _storyPager;
-
-- (void)dealloc
-{
-    self.newsController = nil;
-    self.storyView = nil;
-    self.story = nil;
-    self.storyPager = nil;
-    
-    [super dealloc];
-}
-
 - (void)loadView {
     CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
-    UIView *mainView = [[[UIView alloc] initWithFrame:mainFrame] autorelease];
+    UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
     mainView.backgroundColor = [UIColor whiteColor];
 
     {
-        NSArray *pagerItems = [NSArray arrayWithObjects:
-                               [UIImage imageNamed:MITImageNameUpArrow], 
-                               [UIImage imageNamed:MITImageNameDownArrow], 
-                               nil];
-        UISegmentedControl *pager = [[[UISegmentedControl alloc] initWithItems:pagerItems] autorelease];
+        NSArray *pagerItems = @[[UIImage imageNamed:MITImageNameUpArrow],
+                                [UIImage imageNamed:MITImageNameDownArrow]];
+        UISegmentedControl *pager = [[UISegmentedControl alloc] initWithItems:pagerItems];
         
         pager.momentary = YES;
         pager.segmentedControlStyle = UISegmentedControlStyleBar;
@@ -69,13 +48,13 @@
                   action:@selector(didPressNavButton:)
         forControlEvents:UIControlEventValueChanged];
         
-        UIBarButtonItem *segmentItem = [[[UIBarButtonItem alloc] initWithCustomView:pager] autorelease];
+        UIBarButtonItem *segmentItem = [[UIBarButtonItem alloc] initWithCustomView:pager];
         self.navigationItem.rightBarButtonItem = segmentItem;
         self.storyPager = pager;
     }
     
     {
-        UIWebView *webView = [[[UIWebView alloc] initWithFrame:mainView.bounds] autorelease];
+        UIWebView *webView = [[UIWebView alloc] initWithFrame:mainView.bounds];
         webView.dataDetectorTypes = UIDataDetectorTypeLink;
         webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                                     UIViewAutoresizingFlexibleHeight);
@@ -122,47 +101,51 @@
         return;
     }
     
-    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"MMM dd, y"];
-    NSString *postDate = [dateFormatter stringFromDate:story.postDate];
+    NSString *postDate = [dateFormatter stringFromDate:self.story.postDate];
     
-    NSString *thumbnailURL = story.inlineImage.smallImage.url;
-    NSString *thumbnailWidth = [story.inlineImage.smallImage.width stringValue];
-    NSString *thumbnailHeight = [story.inlineImage.smallImage.height stringValue];
+    NSString *thumbnailURL = self.story.inlineImage.smallImage.url;
     if (!thumbnailURL) {
         thumbnailURL = @"";
     }
+    
+    NSString *thumbnailWidth = [self.story.inlineImage.smallImage.width stringValue];
     if (!thumbnailWidth) {
         thumbnailWidth = @"";
     }
+    
+    NSString *thumbnailHeight = [self.story.inlineImage.smallImage.height stringValue];
     if (!thumbnailHeight) {
         thumbnailHeight = @"";
     }
     
-    NSInteger galleryCount = [story.galleryImages count];
-    if (story.inlineImage) {
+    NSInteger galleryCount = [self.story.galleryImages count];
+    if (self.story.inlineImage) {
         galleryCount++;
     }
     
     // if not connected, pretend there are no images
-    NSString *galleryCountString = ([ConnectionDetector isConnected]) ? [[NSNumber numberWithInteger:galleryCount] stringValue] : @"0";
-    
-    NSArray *keys = [NSArray arrayWithObjects:
-                     @"__TITLE__", @"__AUTHOR__", @"__DATE__", @"__BOOKMARKED__",
-                     @"__THUMBNAIL_URL__", @"__THUMBNAIL_WIDTH__", @"__THUMBNAIL_HEIGHT__", 
-					 @"__GALLERY_COUNT__", @"__DEK__", @"__BODY__", nil];
-    
+    NSString *galleryCountString = ([ConnectionDetector isConnected]) ? [@(galleryCount) stringValue] : @"0";
 	NSString *isBookmarked = ([self.story.bookmarked boolValue]) ? @"on" : @"";
-	
-    NSArray *values = [NSArray arrayWithObjects:
-                       story.title, story.author, postDate, isBookmarked, 
-					   thumbnailURL, thumbnailWidth, thumbnailHeight, 
-					   galleryCountString, story.summary, story.body, nil];
     
-    [htmlString replaceOccurrencesOfStrings:keys withStrings:values options:NSLiteralSearch];
+    NSDictionary *replacements = @{@"__TITLE__" : self.story.title,
+                                   @"__AUTHOR__" : self.story.author,
+                                   @"__DATE__" : postDate,
+                                   @"__BOOKMARKED__" : isBookmarked,
+                                   @"__THUMBNAIL_URL__" : thumbnailURL,
+                                   @"__THUMBNAIL_WIDTH__" : thumbnailWidth,
+                                   @"__THUMBNAIL_HEIGHT__" : thumbnailHeight,
+                                   @"__GALLERY_COUNT__" : galleryCountString,
+                                   @"__DEK__" : self.story.summary,
+                                   @"__BODY__" : self.story.body};
+    
+    [htmlString replaceOccurrencesOfStrings:[replacements allKeys]
+                                withStrings:[replacements allValues]
+                                    options:NSLiteralSearch];
     
     // mark story as read
-    self.story.read = [NSNumber numberWithBool:YES];
+    self.story.read = @(YES);
 	[CoreDataManager saveDataWithTemporaryMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
 	[self.storyView loadHTMLString:htmlString baseURL:baseURL];
 }
@@ -193,7 +176,7 @@
 
         if ([[url scheme] caseInsensitiveCompare:@"mailto"] == NSOrderedSame) {
             if ([MFMailComposeViewController canSendMail]) {
-                MFMailComposeViewController *mailController = [[[MFMailComposeViewController alloc] initWithMailToURL:url] autorelease];
+                MFMailComposeViewController *mailController = [[MFMailComposeViewController alloc] initWithMailToURL:url];
                 mailController.mailComposeDelegate = self;
                 [self presentModalViewController:mailController animated:YES];
             }
@@ -202,13 +185,13 @@
             result = NO;
         } else {
             if ([[url path] rangeOfString:@"image" options:NSBackwardsSearch].location != NSNotFound) {
-                StoryGalleryViewController *galleryVC = [[[StoryGalleryViewController alloc] init] autorelease];
-                galleryVC.images = story.allImages;
+                StoryGalleryViewController *galleryVC = [[StoryGalleryViewController alloc] init];
+                galleryVC.images = self.story.allImages;
                 [self.navigationController pushViewController:galleryVC animated:YES];
                 result = NO;
             } else if ([[url path] rangeOfString:@"bookmark" options:NSBackwardsSearch].location != NSNotFound) {
                 // toggle bookmarked state
-                self.story.bookmarked = [NSNumber numberWithBool:([self.story.bookmarked boolValue]) ? NO : YES];
+                self.story.bookmarked = @(![self.story.bookmarked boolValue]);
                 [CoreDataManager saveData];
             } else if ([[url path] rangeOfString:@"share" options:NSBackwardsSearch].location != NSNotFound) {
                 [self share:nil];
@@ -223,11 +206,11 @@
 }
 
 - (NSString *)emailSubject {
-	return [NSString stringWithFormat:@"MIT News: %@", story.title];
+	return [NSString stringWithFormat:@"MIT News: %@", self.story.title];
 }
 
 - (NSString *)emailBody {
-	return [NSString stringWithFormat:@"I thought you might be interested in this story found on the MIT News Office:\n\n\"%@\"\n%@\n\n%@\n\nTo view this story, click the link above or paste it into your browser.", story.title, story.summary, story.link];
+	return [NSString stringWithFormat:@"I thought you might be interested in this story found on the MIT News Office:\n\n\"%@\"\n%@\n\n%@\n\nTo view this story, click the link above or paste it into your browser.", self.story.title, self.story.summary, self.story.link];
 }
 
 - (NSString *)fbDialogPrompt {
@@ -246,19 +229,15 @@
 			"\"href\":\"%@\"}]"
 			//,"\"properties\":{\"another link\":{\"text\":\"Facebook home page\",\"href\":\"http://www.facebook.com\"}}"
 			"}",
-			story.title, story.link, story.summary, story.inlineImage.smallImage.url, story.link];
+			self.story.title, self.story.link, self.story.summary, self.story.inlineImage.smallImage.url, self.story.link];
 }
 
 - (NSString *)twitterUrl {
-	return [NSString stringWithFormat:@"http://%@/n/%@", MITMobileWebGetCurrentServerDomain(), [URLShortener compressedIdFromNumber:story.story_id]];
+	return [NSString stringWithFormat:@"http://%@/n/%@", MITMobileWebGetCurrentServerDomain(), [URLShortener compressedIdFromNumber:self.story.story_id]];
 }
 
 - (NSString *)twitterTitle {
-	return story.title;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning]; 
+	return self.story.title;
 }
 
 #pragma mark MFMailComposeViewControllerDelegate
