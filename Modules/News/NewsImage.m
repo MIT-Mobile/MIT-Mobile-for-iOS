@@ -1,6 +1,5 @@
 #import "NewsImage.h"
 
-
 @implementation NewsImage
 
 @dynamic thumbImage;

@@ -36,13 +36,13 @@
     // reuse existing category objects
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"category_id == %d", newCategory];
     NSManagedObject *value = [[CoreDataManager objectsForEntity:NewsCategoryEntityName matchingPredicate:predicate] lastObject];
+    
     if (!value) {
         value = [CoreDataManager insertNewObjectForEntityForName:NewsCategoryEntityName];
-        [value setValue:[NSNumber numberWithInteger:newCategory] forKey:@"category_id"];
+        [value setValue:@(newCategory) forKey:@"category_id"];
     }
     
     NSMutableSet *categoriesSet = [self mutableSetValueForKey:@"categories"];
-
     [categoriesSet addObject:value];
 }
 
@@ -54,18 +54,11 @@
 }
 
 - (NSArray *)allImages {
-    NSMutableArray *result = [NSMutableArray array];
-    if (self.inlineImage) {
-        [result addObject:self.inlineImage];
-    }
-    NSSortDescriptor *ordinalitySortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ordinality" ascending:NO];
-    NSArray *mediaImages = [[self.galleryImages allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:ordinalitySortDescriptor]];
-    [ordinalitySortDescriptor release];
-    [result addObjectsFromArray:mediaImages];
-    if ([result count] == 0) {
-        result = nil;
-    }
-    return result;
+    NSMutableArray *mediaImages = [NSMutableArray arrayWithObject:self.inlineImage];
+    [mediaImages addObjectsFromArray:[self.galleryImages allObjects]];
+    
+    [mediaImages sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"ordinality" ascending:NO]]];
+    return mediaImages;
 }
 
 @end
