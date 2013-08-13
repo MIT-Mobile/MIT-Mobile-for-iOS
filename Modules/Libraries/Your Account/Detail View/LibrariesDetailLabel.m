@@ -97,7 +97,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
 - (CTFramesetterRef)framesetter
 {
     if (_framesetter == nil) {
-        _framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.textString);
+        _framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)self.textString);
     }
     
     return _framesetter;
@@ -114,7 +114,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
 
         // Setup the title view
         {
-            CTFontRef titleFont = CTFontCreateWithName((CFStringRef)[defaultBoldFont fontName],
+            CTFontRef titleFont = CTFontCreateWithName((__bridge CFStringRef)[defaultBoldFont fontName],
                                                        18.0,
                                                        NULL);
 
@@ -191,7 +191,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
     
     if ([header length]) {
         UIFont *defaultBoldFont = [UIFont boldSystemFontOfSize:fontSize];
-        CTFontRef boldFont = CTFontCreateWithName((CFStringRef)[defaultBoldFont fontName],
+        CTFontRef boldFont = CTFontCreateWithName((__bridge CFStringRef)[defaultBoldFont fontName],
                                                   [defaultBoldFont pointSize],
                                                   NULL);
         
@@ -205,7 +205,7 @@ static NSString const * LibrariesDetailISBNKey = @"isbn-issn";
     
     if ([text length]) {
         UIFont *defaultFont = [UIFont systemFontOfSize:fontSize];
-        CTFontRef font = CTFontCreateWithName((CFStringRef)[defaultFont fontName],
+        CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)[defaultFont fontName],
                                                   [defaultFont pointSize],
                                                   NULL);
         

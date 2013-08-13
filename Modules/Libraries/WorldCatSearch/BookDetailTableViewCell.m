@@ -9,7 +9,7 @@ const CGFloat BookDetailFontSizeDefault = 15.0;
 @implementation BookDetailTableViewCell
 + (CGSize)sizeForDisplayString:(NSAttributedString *)displayString tableView:(UITableView *)tableView
 {
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)displayString);
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)displayString);
     
     CGSize limitSize = CGSizeMake(CGRectGetWidth(tableView.bounds) - BOOK_DETAIL_CELL_MARGIN * 2, 2009);
     CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter,
@@ -40,10 +40,10 @@ const CGFloat BookDetailFontSizeDefault = 15.0;
     NSString *rawString = [NSString stringWithFormat:@"%@%@%@", title, separator, subtitle];
     NSUInteger titleLength = title.length + separator.length;
     UIFont *font = [UIFont systemFontOfSize:fontSize];
-    CTFontRef ctFont = CTFontCreateWithName((CFStringRef)font.fontName, font.pointSize, NULL);
+    CTFontRef ctFont = CTFontCreateWithName((__bridge CFStringRef)font.fontName, font.pointSize, NULL);
     
     UIFont *boldFont = [UIFont boldSystemFontOfSize:fontSize];
-    CTFontRef ctBoldFont = CTFontCreateWithName((CFStringRef)boldFont.fontName, boldFont.pointSize, NULL);
+    CTFontRef ctBoldFont = CTFontCreateWithName((__bridge CFStringRef)boldFont.fontName, boldFont.pointSize, NULL);
     
     NSMutableAttributedString *mutableString = [[NSMutableAttributedString alloc] initWithString:rawString];
     [mutableString addAttribute:(NSString *)kCTFontAttributeName
@@ -87,7 +87,7 @@ const CGFloat BookDetailFontSizeDefault = 15.0;
     CGContextTranslateCTM(context, 0, rect.size.height);
     CGContextScaleCTM(context, 1.0f, -1.0f);
     
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.displayString);
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)self.displayString);
     
     // add margins to the outside rect
     CGRect innerRect = CGRectMake(BOOK_DETAIL_CELL_MARGIN, 0,
