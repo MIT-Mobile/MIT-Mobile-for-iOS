@@ -4,9 +4,6 @@
 #import "MITModule+Protected.h"
 
 @implementation NewsModule
-
-@synthesize storyListChannelController;
-
 - (id) init {
     self = [super init];
     if (self != nil) {
@@ -20,14 +17,15 @@
 
 - (void)loadModuleHomeController
 {
-    StoryListViewController *controller = [[[StoryListViewController alloc] init] autorelease];
+    self.moduleHomeController = [[StoryListViewController alloc] init];
+}
+
+- (StoryListViewController*)storyListChannelController
+{
+    if ([self.moduleHomeController isKindOfClass:[StoryListViewController class]]) {
+        return (StoryListViewController*)self.moduleHomeController;
+    }
     
-    self.moduleHomeController = controller;
+    return nil;
 }
-
-- (void)dealloc {
-    [storyListChannelController release];
-    [super dealloc];
-}
-
 @end
