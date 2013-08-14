@@ -26,25 +26,14 @@
 
 
 @interface ShuttleDataManager : NSObject {
-
-	// cached shuttle routes.
-	NSMutableArray* _shuttleRoutes;
-	
-	// cached shuttle routes sorted by route ID
-	NSMutableDictionary* _shuttleRoutesByID;
-	
-	// cached shuttle stops locations. 
-	NSMutableArray* _stopLocations;
-	NSMutableDictionary *_stopLocationsByID;
-	
 	// registered delegates
 	NSMutableArray* _registeredDelegates;
 }
 
-@property (readonly) NSArray* shuttleRoutes;
-@property (readonly) NSDictionary* shuttleRoutesByID;
-@property (readonly) NSArray* stopLocations;
-@property (readonly) NSDictionary *stopLocationsByID;
+@property (nonatomic, readonly, copy) NSMutableArray* shuttleRoutes;               // cached shuttle routes.
+@property (nonatomic, readonly, copy) NSMutableDictionary* shuttleRoutesByID;      // cached shuttle routes sorted by route ID
+@property (nonatomic, readonly, copy) NSMutableArray* stopLocations;               // cached shuttle stops locations.
+@property (nonatomic, readonly, copy) NSMutableDictionary *stopLocationsByID;      // cached shuttle stops sorted by ID
 
 // get the signleton data manager
 +(ShuttleDataManager*) sharedDataManager;

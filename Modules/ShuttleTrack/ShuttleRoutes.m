@@ -6,29 +6,21 @@
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate+ModuleList.h"
 
+@interface ShuttleRoutes ()
+{
+	
+	UIImage* _shuttleRunningImage;
+	UIImage* _shuttleNotRunningImage;
+	UIImage *_shuttleLoadingImage;
+    
+	NSArray* _contactInfo;
+    
+	NSArray* _extraLinks;
+}
+
+@end
 
 @implementation ShuttleRoutes
-
-@synthesize shuttleRoutes = _shuttleRoutes;
-@synthesize saferideRoutes = _saferideRoutes;
-@synthesize nonSaferideRoutes = _nonSaferideRoutes;
-@synthesize sections = _sections;
-@synthesize isLoading = _isLoading;
-
-- (void)dealloc {
-	
-	self.shuttleRoutes = nil;
-	self.saferideRoutes = nil;
-	self.nonSaferideRoutes = nil;
-	self.sections = nil;
-	
-	[_shuttleRunningImage release];
-	[_shuttleNotRunningImage release];
-	[_shuttleLoadingImage release];
-	[_contactInfo release];
-	
-    [super dealloc];
-}
 
 - (id)initWithStyle:(UITableViewStyle)style {
     // Override initWithStyle: if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
@@ -51,14 +43,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 	
-	_contactInfo = [[NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Parking Office", @"description",
+	_contactInfo = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Parking Office", @"description",
 																						 @"16172586510", @"phoneNumber", 
 																						 @"(617.258.6510)", @"formattedPhoneNumber", nil, nil],
 					 [NSDictionary dictionaryWithObjectsAndKeys:@"Saferide", @"description",
 																@"16172532997", @"phoneNumber",
-					  @"(617.253.2997)", @"formattedPhoneNumber", nil, nil], nil] retain];
+					  @"(617.253.2997)", @"formattedPhoneNumber", nil, nil], nil];
 	
-    _extraLinks = [[NSArray arrayWithObjects:
+    _extraLinks = [NSArray arrayWithObjects:
                     [NSDictionary dictionaryWithObjectsAndKeys:
                      @"Real-time Bus Arrivals", @"description",
                      @"http://www.nextbus.com/webkit", @"url", nil],
@@ -68,13 +60,13 @@
                     [NSDictionary dictionaryWithObjectsAndKeys:
                      @"Google Transit", @"description",
                      @"http://www.google.com/transit", @"url", nil],
-                    nil] retain];
+                    nil];
     
-	_shuttleRunningImage = [[UIImage imageNamed:@"shuttle/shuttle.png"] retain];
-	_shuttleNotRunningImage = [[UIImage imageNamed:@"shuttle/shuttle-off.png"] retain];
+	_shuttleRunningImage = [UIImage imageNamed:@"shuttle/shuttle.png"];
+	_shuttleNotRunningImage = [UIImage imageNamed:@"shuttle/shuttle-off.png"];
     
     UIGraphicsBeginImageContext(CGSizeMake(18, 19));
-    _shuttleLoadingImage = [UIGraphicsGetImageFromCurrentImageContext() retain];
+    _shuttleLoadingImage = UIGraphicsGetImageFromCurrentImageContext();
 	
     [self.tableView applyStandardColors];
 
@@ -93,7 +85,7 @@
 	self.isLoading = YES;
 	[dataManager requestRoutes];
 
-	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshRoutes)] autorelease];
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshRoutes)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -135,17 +127,17 @@
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	
-	NSArray* routes = [[self.sections objectAtIndex:section] objectForKey:@"routes"];
+	NSArray* routes = self.sections[section][@"routes"];
 	if (nil != routes) {
 		return routes.count;
 	}
 	
-	NSArray* phoneNumbers = [[self.sections objectAtIndex:section] objectForKey:@"phoneNumbers"];
+	NSArray* phoneNumbers = self.sections[section][@"phoneNumbers"];
 	if (nil != phoneNumbers) {
 		return phoneNumbers.count;
 	}
     
-	NSArray* urls = [[self.sections objectAtIndex:section] objectForKey:@"urls"];
+	NSArray* urls = self.sections[section][@"urls"];
 	if (nil != urls) {
 		return urls.count;
 	}
@@ -156,7 +148,7 @@
 }
 
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	NSString *headerTitle = [[self.sections objectAtIndex:section] objectForKey:@"title"];
+	NSString *headerTitle = self.sections[section][@"title"];
 	return [UITableView groupedSectionHeaderWithTitle:headerTitle];
 }
 
@@ -167,9 +159,9 @@
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	NSArray* routes = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"routes"];
-	NSArray* phoneNumbers = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"phoneNumbers"];
-	NSArray* urls = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"urls"];
+	NSArray* routes = self.sections[indexPath.section][@"routes"];
+	NSArray* phoneNumbers = self.sections[indexPath.section][@"phoneNumbers"];
+	NSArray* urls = self.sections[indexPath.section][@"urls"];
 
 
 	NSString* cellID = @"Cell";
@@ -181,10 +173,10 @@
 		cellID = @"RouteCell";
 		cell = [tableView dequeueReusableCellWithIdentifier:cellID];
 		if (cell == nil) {
-			cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
+			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
 		}
 		
-		ShuttleRoute* route = [routes objectAtIndex:indexPath.row];
+		ShuttleRoute* route = routes[indexPath.row];
 		
 		cell.textLabel.text = route.title;
 		
@@ -195,7 +187,6 @@
 			spinny.center = CGPointMake(18.0, 22.0);
 			[spinny startAnimating];
 			[cell.contentView addSubview:spinny];
-			[spinny release];
 		} else {
 			for (UIView *aView in cell.contentView.subviews) {
 				if ([aView isKindOfClass:[UIActivityIndicatorView class]]) {
@@ -209,35 +200,35 @@
 	}
 	else if(nil != phoneNumbers)
 	{
-		NSDictionary* phoneNumberInfo = [phoneNumbers objectAtIndex:indexPath.row];
+		NSDictionary* phoneNumberInfo = phoneNumbers[indexPath.row];
 		
 		
 		cellID = @"PhoneCell";
 		cell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellID];
 		if (cell == nil) {
-			cell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
+			cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
 		}
 		
 		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		
 		SecondaryGroupedTableViewCell* formattedCell = (SecondaryGroupedTableViewCell*)cell;
-		formattedCell.textLabel.text = [phoneNumberInfo objectForKey:@"description"];
-		formattedCell.secondaryTextLabel.text = [phoneNumberInfo objectForKey:@"formattedPhoneNumber"];
+		formattedCell.textLabel.text = phoneNumberInfo[@"description"];
+		formattedCell.secondaryTextLabel.text = phoneNumberInfo[@"formattedPhoneNumber"];
 		formattedCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
 		
 	}
 	else if(nil != urls)
 	{
-		NSDictionary* urlInfo = [urls objectAtIndex:indexPath.row];
+		NSDictionary* urlInfo = urls[indexPath.row];
 		
 		
 		cellID = @"URLCell";
 		cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellID];
 		if (cell == nil) {
-			cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
+			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
 		}
 		
-		cell.textLabel.text = [urlInfo objectForKey:@"description"];
+		cell.textLabel.text = urlInfo[@"description"];
 		cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
 		
 	}
@@ -246,12 +237,12 @@
 		cellID = @"Cell";
 		cell = [tableView dequeueReusableCellWithIdentifier:cellID];
 		if (cell == nil) {
-			cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID] autorelease];
+			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
 		}
 
 		
 		// check for text to display
-		NSString* text = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"text"];
+		NSString* text = self.sections[indexPath.section][@"text"];
 		cell.textLabel.text = text;
 	}
 
@@ -265,16 +256,16 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 	
-	NSArray* routes = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"routes"];
-	NSArray* phoneNumbers = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"phoneNumbers"];
-	NSArray* urls = [[self.sections objectAtIndex:indexPath.section] objectForKey:@"urls"];
+	NSArray* routes = self.sections[indexPath.section][@"routes"];
+	NSArray* phoneNumbers = self.sections[indexPath.section][@"phoneNumbers"];
+	NSArray* urls = self.sections[indexPath.section][@"urls"];
 
 	if (nil != routes) 
 	{
-		ShuttleRoute* route = [routes objectAtIndex:indexPath.row];
+		ShuttleRoute* route = routes[indexPath.row];
 
 		
-		ShuttleRouteViewController *routeVC = [[[ShuttleRouteViewController alloc] initWithNibName:@"ShuttleRouteViewController" bundle:nil ] autorelease];
+		ShuttleRouteViewController *routeVC = [[ShuttleRouteViewController alloc] initWithNibName:@"ShuttleRouteViewController" bundle:nil ];
 		routeVC.route = route;
 		
 		[self.navigationController pushViewController:routeVC animated:YES];
@@ -283,7 +274,7 @@
 	
 	else if(nil != phoneNumbers)
 	{
-		NSString* phoneNumber = [[phoneNumbers objectAtIndex:indexPath.row] objectForKey:@"phoneNumber"];
+		NSString* phoneNumber = phoneNumbers[indexPath.row][@"phoneNumber"];
 
 		NSURL *externURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phoneNumber]];
 		if ([[UIApplication sharedApplication] canOpenURL:externURL])
@@ -292,7 +283,7 @@
 
 	else if(nil != urls)
 	{
-		NSString* url = [[urls objectAtIndex:indexPath.row] objectForKey:@"url"];
+		NSString* url = urls[indexPath.row][@"url"];
         
 		NSURL *externURL = [NSURL URLWithString:url];
 		if ([[UIApplication sharedApplication] canOpenURL:externURL])
@@ -302,8 +293,7 @@
 
 - (void)setShuttleRoutes:(NSArray *) shuttleRoutes
 {
-	[_shuttleRoutes release];
-	_shuttleRoutes = [shuttleRoutes retain];
+	_shuttleRoutes = shuttleRoutes;
 	
 	
 	// create saferide and non saferide arrays based on the data. 

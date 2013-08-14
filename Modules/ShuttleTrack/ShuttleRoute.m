@@ -7,15 +7,14 @@
 #import "ShuttleDataManager.h"
 #import "CoreDataManager.h"
 
-@implementation ShuttleRoute
+@interface ShuttleRoute ()
+{
+    NSMutableArray *_stops;
+}
 
-// live properties
-@synthesize tag = _tag;
-@synthesize gpsActive = _gpsActive;
-@synthesize isRunning = _isRunning;
-@synthesize liveStatusFailed = _liveStatusFailed;
-@synthesize vehicleLocations = _vehicleLocations;
-@synthesize cache = _cache;
+@end
+
+@implementation ShuttleRoute
 
 // cached properties
 @dynamic title;
@@ -81,10 +80,6 @@
 		self.cache.isSafeRide = [NSNumber numberWithBool:isSafeRide];
 }
 
-- (NSMutableArray *)stops {
-	return _stops;
-}
-
 - (void)setStops:(NSMutableArray *)stops {
 	
 	BOOL pathShouldUpdate = NO;
@@ -110,13 +105,13 @@
 		ShuttleStop *shuttleStop = nil;
 		BOOL isOldStop = NO;
 		
-		NSString *stopID = [stopInfo objectForKey:@"stop_id"];
+		NSString *stopID = stopInfo[@"stop_id"];
 		if (stopID == nil) {
-			stopID = [stopInfo objectForKey:@"id"];
+			stopID = stopInfo[@"id"];
 			
 		}
 		
-		for (ShuttleStop *stop in _stops) {
+		for (ShuttleStop *stop in self.stops) {
 			if ([stop.stopID isEqualToString:stopID]) {
 				shuttleStop = stop;
 				isOldStop = YES;
@@ -127,17 +122,17 @@
 		
 		if (!isOldStop) {
 			ShuttleStopLocation *stopLocation = [ShuttleDataManager stopLocationWithID:stopID];				
-			shuttleStop = [[[ShuttleStop alloc] initWithStopLocation:stopLocation routeID:self.routeID] autorelease];
+			shuttleStop = [[ShuttleStop alloc] initWithStopLocation:stopLocation routeID:self.routeID];
 			
 			[newRouteStops addObject:shuttleStop.routeStop];
 			
-			ShuttleStopMapAnnotation* annotation = [[[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop] autorelease];
+			ShuttleStopMapAnnotation* annotation = [[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop];
 			[_stopAnnotations addObject:annotation];
 
 			hasNewStops = YES;
 		}
 		
-        NSArray *newPath = [stopInfo objectForKey:@"path"];
+        NSArray *newPath = stopInfo[@"path"];
         if (newPath == nil) { newPath = [NSArray array]; }
         if ([shuttleStop.path isEqualToArray: newPath] == NO) {
             pathChanged = YES;
@@ -150,9 +145,9 @@
 	}
 	
 	// check if we added new stops or shouldn't include old ones
-	if (pathChanged || hasNewStops || [_stops count] > [stops count]) {
+	if (pathChanged || hasNewStops || [self.stops count] > [stops count]) {
 		
-		_stops = [newStops retain];
+		_stops = newStops;
 		
 		// prune cached stops no longer on the route
 		self.cache.stops = newRouteStops;
@@ -167,19 +162,16 @@
 		// get rid of obsolete map annotations
 		NSMutableArray *oldStops = [[NSMutableArray alloc] initWithCapacity:[stops count]];
 		for (ShuttleStopMapAnnotation *annotation in _stopAnnotations) {
-			if (![_stops containsObject:annotation.shuttleStop]) {
+			if (![self.stops containsObject:annotation.shuttleStop]) {
 				[oldStops addObject:annotation];
 			}
 		}
 		for (ShuttleStopMapAnnotation *annotation in oldStops) {
 			[_stopAnnotations removeObject:annotation];
 		}
-		[oldStops release];
 		
 		[self updatePath];
 	}
-	
-	[oldRouteStops release];
 }
 
 - (NSInteger)sortOrder {
@@ -194,64 +186,59 @@
 
 - (void)updateInfo:(NSDictionary *)routeInfo
 {
-	self.title = [routeInfo objectForKey:@"title"];
-	self.summary = [routeInfo objectForKey:@"summary"];
-	self.interval = [[routeInfo objectForKey:@"interval"] intValue];
-	self.isSafeRide = [[routeInfo objectForKey:@"isSafeRide"] boolValue];
+	self.title = routeInfo[@"title"];
+	self.summary = routeInfo[@"summary"];
+	self.interval = [routeInfo[@"interval"] intValue];
+	self.isSafeRide = [routeInfo[@"isSafeRide"] boolValue];
 	
-	self.tag = [routeInfo objectForKey:@"tag"];
-	self.gpsActive = [[routeInfo objectForKey:@"gpsActive"] boolValue];
-	self.isRunning = [[routeInfo objectForKey:@"isRunning"] boolValue];
+	self.tag = routeInfo[@"tag"];
+	self.gpsActive = [routeInfo[@"gpsActive"] boolValue];
+	self.isRunning = [routeInfo[@"isRunning"] boolValue];
 	
-	NSArray *stops = [routeInfo objectForKey:@"stops"];
+	NSArray *stops = routeInfo[@"stops"];
 	if (stops) {
 		self.stops = (NSMutableArray *)stops;
         for (ShuttleStop *aStop in self.stops) {
-            aStop.now = [[routeInfo objectForKey:@"now"] doubleValue];
+            aStop.now = [routeInfo[@"now"] doubleValue];
         }
 	}
 	
-	NSArray* vehicleLocations = [routeInfo objectForKey:@"vehicleLocations"];
+	NSArray* vehicleLocations = routeInfo[@"vehicleLocations"];
 	if (vehicleLocations && ![[NSNull null] isEqual:vehicleLocations])
 	{
 		self.vehicleLocations = nil;
 		
 		NSMutableArray* formattedVehicleLocations = [[NSMutableArray alloc] initWithCapacity:vehicleLocations.count];
 		for (NSDictionary* dictionary in vehicleLocations) {
-			ShuttleLocation* shuttleLocation = [[[ShuttleLocation alloc] initWithDictionary:dictionary] autorelease];
+			ShuttleLocation* shuttleLocation = [[ShuttleLocation alloc] initWithDictionary:dictionary];
 			[formattedVehicleLocations addObject:shuttleLocation];
 		}
 		self.vehicleLocations = formattedVehicleLocations;
-		[formattedVehicleLocations release];
 	}
 }
 
 - (void)getStopsFromCache
 {
-	[_stops release];
-	_stops = nil;
-	
-	[_stopAnnotations release];
+	self.stops = nil;
 	_stopAnnotations = nil;
 	
 	NSSet *cachedStops = self.cache.stops;
-	_stops = [[NSMutableArray alloc] initWithCapacity:[cachedStops count]];
+	self.stops = [[NSMutableArray alloc] initWithCapacity:[cachedStops count]];
 	_stopAnnotations = [[NSMutableArray alloc] initWithCapacity:[cachedStops count]];
 	
 	NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"order" ascending:YES];
 	NSArray *sortedStops = [[cachedStops allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];		
-	[sortDescriptor release];
 	
 	for (ShuttleRouteStop *routeStop in sortedStops) {
         NSError *error;
 		ShuttleStop *shuttleStop = [ShuttleDataManager stopWithRoute:self.routeID stopID:[routeStop stopID] error:&error]; // should always be nil
 		if (shuttleStop == nil) {
-			shuttleStop = [[[ShuttleStop alloc] initWithRouteStop:routeStop] autorelease];
+			shuttleStop = [[ShuttleStop alloc] initWithRouteStop:routeStop] ;
 		}
 		
-		[_stops addObject:shuttleStop];
+		[self.stops addObject:shuttleStop];
 
-		ShuttleStopMapAnnotation* annotation = [[[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop] autorelease];
+		ShuttleStopMapAnnotation* annotation = [[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop];
 		[_stopAnnotations addObject:annotation];
 	}
 		
@@ -269,11 +256,11 @@
 	
 	_pathLocations = [[NSMutableArray alloc] init];
 
-	for (ShuttleStop *stop in _stops) {
+	for (ShuttleStop *stop in self.stops) {
 		for(NSDictionary* pathComponent in stop.path) {
-			CLLocation* location = [[[CLLocation alloc] initWithLatitude:[[pathComponent objectForKey:@"lat"] doubleValue]
-															   longitude:[[pathComponent objectForKey:@"lon"] doubleValue]
-									 ] autorelease];
+			CLLocation* location = [[CLLocation alloc] initWithLatitude:[pathComponent[@"lat"] doubleValue]
+															   longitude:[pathComponent[@"lon"] doubleValue]
+									 ];
 			
 			[_pathLocations addObject:location];
 		}
@@ -284,7 +271,7 @@
 {
     self = [super init];
     if (self != nil) {
-		self.routeID = [dict objectForKey:@"route_id"];
+		self.routeID = dict[@"route_id"];
 		_vehicleLocations = nil;
 		_pathLocations = nil;
 		_stopAnnotations = nil;
@@ -301,22 +288,9 @@
     if (self != nil) {
 		self.cache = cachedRoute;
 		_liveStatusFailed = NO;
-		_stops = nil;
+		self.stops = nil;
     }
     return self;
-}
-
--(void) dealloc
-{
-	self.tag = nil;
-	self.cache = nil;
-	
-	[_stops release];
-	[_vehicleLocations release];	
-	[_pathLocations release];
-	[_stopAnnotations release];
-	
-	[super dealloc];
 }
 
 - (NSString *)fullSummary 

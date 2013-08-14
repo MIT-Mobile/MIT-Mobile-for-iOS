@@ -4,10 +4,10 @@
 {
 }
 
-@property (nonatomic, retain) id path;
-@property (nonatomic, retain) NSNumber * order;
-@property (nonatomic, retain) NSManagedObject * stopLocation;
-@property (nonatomic, retain) NSManagedObject * route;
+@property (nonatomic, strong) id path;
+@property (nonatomic, strong) NSNumber * order;
+@property (nonatomic, strong) NSManagedObject * stopLocation;
+@property (nonatomic, strong) NSManagedObject * route;
 
 - (NSString *)stopID;
 - (NSString *)routeID;

@@ -3,22 +3,12 @@
 #import "ShuttleRouteCache.h"
 
 @interface ShuttleRoute : NSObject <MITMapRoute> {
-    NSString *_tag;
-    BOOL _gpsActive;
-    BOOL _isRunning;
-	BOOL _liveStatusFailed;
-	ShuttleRouteCache *_cache;
-
-    NSMutableArray *_stops;
 	
 	// parsed path locations for the entire route. 
 	NSMutableArray* _pathLocations;
 	
 	// annotaions for each shuttle stop 
 	NSMutableArray* _stopAnnotations;
-	
-	// locations, if available of any vehicles on the route. 
-	NSArray* _vehicleLocations;
 }
 
 - (id)initWithDictionary:(NSDictionary *)dict;
@@ -28,21 +18,23 @@
 - (void)getStopsFromCache;
 - (void)updatePath;
 
-@property (readwrite, retain) NSString *tag;
-@property (readwrite, retain) NSArray* vehicleLocations;
+- (NSArray *)annotations;
 
-@property (readonly) NSString *fullSummary;
-@property (assign) BOOL gpsActive;
-@property (assign) BOOL isRunning;
-@property (assign) BOOL liveStatusFailed;
-@property (readwrite, retain) ShuttleRouteCache *cache;
+@property (nonatomic, readwrite, strong) NSString *tag;
+@property (nonatomic, readwrite, copy) NSArray* vehicleLocations;        // locations, if available of any vehicles on the route.
 
-@property (readwrite, retain) NSString *title;
-@property (readwrite, retain) NSString *summary;
-@property (nonatomic, retain) NSString *routeID;
-@property (assign) NSInteger interval;
-@property (assign) BOOL isSafeRide;
-@property (readwrite, retain) NSMutableArray *stops;
-@property (assign) NSInteger sortOrder;
+@property (nonatomic, strong, readonly) NSString *fullSummary;
+@property (nonatomic, assign) BOOL gpsActive;
+@property (nonatomic, assign) BOOL isRunning;
+@property (nonatomic, assign) BOOL liveStatusFailed;
+@property (nonatomic, readwrite, strong) ShuttleRouteCache *cache;
+
+@property (nonatomic, readwrite, strong) NSString *title;
+@property (nonatomic, readwrite, strong) NSString *summary;
+@property (nonatomic, strong) NSString *routeID;
+@property (nonatomic, assign) NSInteger interval;
+@property (nonatomic, assign) BOOL isSafeRide;
+@property (nonatomic, copy) NSMutableArray *stops;
+@property (nonatomic, assign) NSInteger sortOrder;
 
 @end

@@ -2,9 +2,9 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1552</int>
-		<string key="IBDocument.SystemVersion">12D78</string>
+		<string key="IBDocument.SystemVersion">12E55</string>
 		<string key="IBDocument.InterfaceBuilderVersion">3084</string>
-		<string key="IBDocument.AppKitVersion">1187.37</string>
+		<string key="IBDocument.AppKitVersion">1187.39</string>
 		<string key="IBDocument.HIToolboxVersion">626.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -166,27 +166,27 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">_shuttleNameLabel</string>
-						<reference key="source" ref="879231645"/>
-						<reference key="destination" ref="560178347"/>
-					</object>
-					<int key="connectionID">8</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">_shuttleStopImageView</string>
+						<string key="label">shuttleStopImageView</string>
 						<reference key="source" ref="879231645"/>
 						<reference key="destination" ref="338343221"/>
 					</object>
-					<int key="connectionID">9</int>
+					<int key="connectionID">13</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">_shuttleTimeLabel</string>
+						<string key="label">shuttleNameLabel</string>
+						<reference key="source" ref="879231645"/>
+						<reference key="destination" ref="560178347"/>
+					</object>
+					<int key="connectionID">14</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">shuttleTimeLabel</string>
 						<reference key="source" ref="879231645"/>
 						<reference key="destination" ref="920602357"/>
 					</object>
-					<int key="connectionID">10</int>
+					<int key="connectionID">15</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -279,7 +279,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">11</int>
+			<int key="maxID">15</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -291,9 +291,9 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>_backgroundImage</string>
-							<string>_rotueDescriptionLabel</string>
-							<string>_routeTitleLabel</string>
+							<string>backgroundImage</string>
+							<string>routeDescriptionLabel</string>
+							<string>routeTitleLabel</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -306,22 +306,22 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>_backgroundImage</string>
-							<string>_rotueDescriptionLabel</string>
-							<string>_routeTitleLabel</string>
+							<string>backgroundImage</string>
+							<string>routeDescriptionLabel</string>
+							<string>routeTitleLabel</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
-								<string key="name">_backgroundImage</string>
+								<string key="name">backgroundImage</string>
 								<string key="candidateClassName">UIImageView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">_rotueDescriptionLabel</string>
+								<string key="name">routeDescriptionLabel</string>
 								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">_routeTitleLabel</string>
+								<string key="name">routeTitleLabel</string>
 								<string key="candidateClassName">UILabel</string>
 							</object>
 						</object>
@@ -338,6 +338,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>contentView</string>
 							<string>loadingCell</string>
 							<string>shuttleStopCell</string>
 							<string>tableView</string>
@@ -345,6 +346,7 @@
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIView</string>
 							<string>UITableViewCell</string>
 							<string>ShuttleStopCell</string>
 							<string>UITableView</string>
@@ -355,6 +357,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>contentView</string>
 							<string>loadingCell</string>
 							<string>shuttleStopCell</string>
 							<string>tableView</string>
@@ -362,6 +365,10 @@
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">contentView</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">loadingCell</string>
 								<string key="candidateClassName">UITableViewCell</string>
@@ -392,9 +399,9 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>_shuttleNameLabel</string>
-							<string>_shuttleStopImageView</string>
-							<string>_shuttleTimeLabel</string>
+							<string>shuttleNameLabel</string>
+							<string>shuttleStopImageView</string>
+							<string>shuttleTimeLabel</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -407,22 +414,22 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>_shuttleNameLabel</string>
-							<string>_shuttleStopImageView</string>
-							<string>_shuttleTimeLabel</string>
+							<string>shuttleNameLabel</string>
+							<string>shuttleStopImageView</string>
+							<string>shuttleTimeLabel</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
-								<string key="name">_shuttleNameLabel</string>
+								<string key="name">shuttleNameLabel</string>
 								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">_shuttleStopImageView</string>
+								<string key="name">shuttleStopImageView</string>
 								<string key="candidateClassName">UIImageView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">_shuttleTimeLabel</string>
+								<string key="name">shuttleTimeLabel</string>
 								<string key="candidateClassName">UILabel</string>
 							</object>
 						</object>

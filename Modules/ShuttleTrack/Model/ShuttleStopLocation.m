@@ -13,14 +13,14 @@
 
 - (void)updateInfo:(NSDictionary *)stopInfo
 {
-	self.title = [stopInfo objectForKey:@"title"];
-	self.direction = [stopInfo objectForKey:@"direction"];
+	self.title = stopInfo[@"title"];
+	self.direction = stopInfo[@"direction"];
 	
-	id num = [stopInfo objectForKey:@"lat"];
+	id num = stopInfo[@"lat"];
 	if (nil != num && num != [NSNull null])
 		self.latitude = [NSNumber numberWithDouble:[num doubleValue]];
 	
-	num = [stopInfo objectForKey:@"lon"];
+	num = stopInfo[@"lon"];
 	if(nil != num && num != [NSNull null])	
 		self.longitude = [NSNumber numberWithDouble:[num doubleValue]];
 }

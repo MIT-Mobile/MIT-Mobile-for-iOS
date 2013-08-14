@@ -172,7 +172,7 @@
 	// for each of the annotations in our route, retrieve subtitles, which in this case is the next time at stop
 	for (ShuttleStopMapAnnotation* annotation in self.route.annotations) 
 	{
-		ShuttleStop* stop = [self.routeStops objectForKey:annotation.shuttleStop.stopID];
+		ShuttleStop* stop = self.routeStops[annotation.shuttleStop.stopID];
 		if(nil != stop) {
 			NSDate* nextScheduled = [NSDate dateWithTimeIntervalSince1970:stop.nextScheduled];
 			NSTimeInterval intervalTillStop = [nextScheduled timeIntervalSinceDate:[NSDate date]];
@@ -210,7 +210,7 @@
 {
 	for(ShuttleStopMapAnnotation* annotation in self.route.annotations)
 	{
-		ShuttleStop* info = [self.routeStops objectForKey:annotation.shuttleStop.stopID];
+		ShuttleStop* info = self.routeStops[annotation.shuttleStop.stopID];
 		
 		if (info.upcoming != annotation.shuttleStop.upcoming) 
 		{

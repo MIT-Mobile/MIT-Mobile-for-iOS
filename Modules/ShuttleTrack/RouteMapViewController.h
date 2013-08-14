@@ -5,14 +5,14 @@
 #import "ShuttleDataManager.h"
 
 @interface RouteMapViewController : UIViewController <MITMapViewDelegate, ShuttleDataManagerDelegate>
-@property (nonatomic, retain) ShuttleRoute* route;
-@property (nonatomic, retain) ShuttleRoute* routeInfo;
+@property (nonatomic, strong) ShuttleRoute* route;
+@property (nonatomic, strong) ShuttleRoute* routeInfo;
 
-@property (nonatomic, retain) IBOutlet MITMapView* mapView;
-@property (nonatomic, retain) IBOutlet UIView* routeInfoView;
+@property (nonatomic, strong) IBOutlet MITMapView* mapView;
+@property (nonatomic, strong) IBOutlet UIView* routeInfoView;
 
-@property (nonatomic, retain) MKPolyline * routeLine;
-@property (nonatomic, retain) MKPolylineView* routeLineView;
+@property (nonatomic, strong) MKPolyline * routeLine;
+@property (nonatomic, strong) MKPolylineView* routeLineView;
 
 -(IBAction) gpsTouched:(id)sender;
 -(IBAction) refreshTouched:(id)sender;

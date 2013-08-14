@@ -2,6 +2,11 @@
 #import "RouteInfoTitleCell.h"
 #import "ShuttleRoute.h"
 
+@interface RouteInfoTitleCell ()
+@property (nonatomic, strong) IBOutlet UIImageView * backgroundImage;
+
+@end
+
 @implementation RouteInfoTitleCell
 @synthesize routeTitleLabel = _routeTitleLabel;
 @synthesize routeDescriptionLabel = _rotueDescriptionLabel;

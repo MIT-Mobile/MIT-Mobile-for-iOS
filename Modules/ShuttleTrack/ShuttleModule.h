@@ -1,7 +1,5 @@
 #import "MITModule.h"
 
-@interface ShuttleModule : MITModule {
-    NSArray *listOfRoutes;
-}
+@interface ShuttleModule : MITModule
 
 @end

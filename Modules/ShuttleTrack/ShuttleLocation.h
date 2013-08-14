@@ -2,13 +2,7 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MKAnnotation.h>
 
-@interface ShuttleLocation : NSObject <MKAnnotation>{
-
-	int _secsSinceReport;
-	int _heading;
-
-	CLLocationCoordinate2D _coordinate;
-}
+@interface ShuttleLocation : NSObject <MKAnnotation>
 
 @property int secsSinceReport;
 @property int heading;

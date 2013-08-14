@@ -1,6 +1,7 @@
 #import "ShuttleStopViewController.h"
 #import "ShuttleStop.h"
 #import "ShuttleRoute.h"
+#import "ShuttleRouteStop.h"
 #import "ShuttleSubscriptionManager.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
@@ -40,37 +41,6 @@
 
 
 @implementation ShuttleStopViewController
-@synthesize shuttleStop = _shuttleStop;
-@synthesize annotation = _shuttleStopAnnotation;
-@synthesize shuttleStopSchedules = _shuttleStopSchedules;
-@synthesize subscriptions = _subscriptions;
-@synthesize loadingSubscriptionRequests = _loadingSubscriptionRequests;
-@synthesize mapButton = _mapButton;
-
-- (void)dealloc 
-{
-	[url release];
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-	self.shuttleStop = nil;
-
-	self.annotation = nil;
-	self.loadingSubscriptionRequests = nil;
-	self.shuttleStopSchedules = nil;
-	self.subscriptions = nil;
-	
-	[_timeFormatter release];
-	[_tableFooterLabel release];
-    
-	[_mapButton release];
-	[_mapThumbnail release];
-	
-	// shouldn't [super dealloc] do this?
-	self.tableView.delegate = nil;
-	self.tableView.dataSource = nil;
-	
- 	[super dealloc];
-}
 
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -96,8 +66,8 @@
     // make sure selected route is sorted first
 	for (ShuttleRouteStop *routeStop in self.shuttleStop.routeStops) {
         NSError *error = nil;
-        ShuttleStop *aStop = [ShuttleDataManager stopWithRoute:[routeStop routeID] stopID:[routeStop stopID] error:&error];
-        if ([[routeStop routeID] isEqualToString:self.shuttleStop.routeID]) {
+        ShuttleStop *aStop = [ShuttleDataManager stopWithRoute:routeStop.routeID stopID:[routeStop stopID] error:&error];
+        if ([routeStop.routeID isEqualToString:self.shuttleStop.routeID]) {
             [_shuttleStopSchedules insertObject:aStop atIndex:0];
         } else {
             [_shuttleStopSchedules addObject:aStop];
@@ -106,7 +76,7 @@
 	
 	self.title = NSLocalizedString(@"Shuttle Stop", nil);
 	
-	UIView *headerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 135)] autorelease];
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 135)];
 	headerView.backgroundColor = [UIColor clearColor];
 	
 	int mapBuffer = 15;
@@ -118,7 +88,7 @@
                                           constrainedToSize:CGSizeMake(titleWidth, 300)
                                               lineBreakMode:UILineBreakModeWordWrap];
     
-	UILabel* titleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(mapSize + mapBuffer * 2, mapBuffer, titleWidth, titleSize.height)] autorelease];
+	UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(mapSize + mapBuffer * 2, mapBuffer, titleWidth, titleSize.height)];
 	titleLabel.text = self.shuttleStop.title;
 	titleLabel.backgroundColor = [UIColor clearColor];
 	titleLabel.textAlignment = UITextAlignmentLeft;
@@ -148,18 +118,18 @@
     
 	[headerView addSubview:_mapButton];
 	
-	UIImageView *alertHeaderIcon = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/shuttle-alert-descriptive.png"]] autorelease];
+	UIImageView *alertHeaderIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/shuttle-alert-descriptive.png"]];
 	CGRect alertHeaderIconFrame = alertHeaderIcon.frame;
 	alertHeaderIconFrame.origin = CGPointMake(MARGIN, mapSize + mapBuffer * 2);
 	alertHeaderIcon.frame = alertHeaderIconFrame;
 	[headerView addSubview:alertHeaderIcon];
 	
-	UILabel *alertHeaderText = [[[UILabel alloc] 
+	UILabel *alertHeaderText = [[UILabel alloc] 
                                  initWithFrame:CGRectMake(
                                                           alertHeaderIcon.frame.origin.x + alertHeaderIcon.frame.size.width + PADDING, 
                                                           alertHeaderIcon.frame.origin.y,
                                                           headerView.frame.size.width - alertHeaderIcon.frame.size.width - PADDING - 2 * MARGIN, 
-                                                          30)] autorelease];
+                                                          30)];
 	alertHeaderText.font = [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE];
 	alertHeaderText.lineBreakMode = UILineBreakModeWordWrap;
 	alertHeaderText.backgroundColor = [UIColor clearColor];
@@ -187,12 +157,16 @@
 	url = [[MITModuleURL alloc] initWithTag:ShuttleTag];	 
 }
 
+- (void) viewDidUnload
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 -(void) viewWillDisappear:(BOOL)animated
 {
 	[[ShuttleDataManager sharedDataManager] unregisterDelegate:self];
 	
 	[_pollingTimer invalidate];
-	[_pollingTimer release];
 	_pollingTimer = nil;
 }
 
@@ -201,11 +175,11 @@
 	[[ShuttleDataManager sharedDataManager] registerDelegate:self];
 	
 	// poll for stop times every 20 seconds 
-	_pollingTimer = [[NSTimer scheduledTimerWithTimeInterval:20
+	_pollingTimer = [NSTimer scheduledTimerWithTimeInterval:20
 													  target:self 
 													selector:@selector(requestStop)
 													userInfo:nil 
-													 repeats:YES] retain];
+													 repeats:YES];
 }
 
 -(void) viewDidAppear:(BOOL)animated 
@@ -216,7 +190,7 @@
 	UIViewController *parentController = (ShuttleRouteViewController *)[[MIT_MobileAppDelegate moduleForTag:ShuttleTag] parentForViewController:self];
 	ShuttleRouteViewController *shuttleVC = (ShuttleRouteViewController*) parentController;
 	NSString *routeID = shuttleVC.route.routeID;
-	NSString *root = [[shuttleVC.url.path componentsSeparatedByString:@"/"] objectAtIndex:0];
+	NSString *root = [shuttleVC.url.path componentsSeparatedByString:@"/"][0];
 	[url setPath:[NSString stringWithFormat:@"%@/%@/%@/stops", root, routeID, self.shuttleStop.stopID] query:nil];
 	[url setAsModulePath];
 }
@@ -226,8 +200,8 @@
 	
 	// push a map view onto the stack
 	
-	RouteMapViewController* routeMap = [[[RouteMapViewController alloc] initWithNibName:@"RouteMapViewController" bundle:nil] autorelease];
-	routeMap.route = [[ShuttleDataManager sharedDataManager].shuttleRoutesByID objectForKey:self.shuttleStop.routeID];
+	RouteMapViewController* routeMap = [[RouteMapViewController alloc] initWithNibName:@"RouteMapViewController" bundle:nil];
+	routeMap.route = [ ShuttleDataManager sharedDataManager].shuttleRoutesByID[self.shuttleStop.routeID];
 	
 	// ensure the view and map view are loaded
 	(void)routeMap.view;
@@ -266,7 +240,7 @@
 	if (section < self.shuttleStopSchedules.count) 
 	{
 		// determine the route schedule
-		ShuttleStop* schedule = [self.shuttleStopSchedules objectAtIndex:section];
+		ShuttleStop* schedule = self.shuttleStopSchedules[section];
 		
         // if nextScheduled is not defined, the first row will be negative
 		return (schedule.nextScheduled != 0) ? schedule.predictions.count + 1 : 0;
@@ -283,14 +257,14 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[ShuttlePredictionTableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[ShuttlePredictionTableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
 		[cell applyStandardFonts];		
     }
     
     if (indexPath.section < self.shuttleStopSchedules.count) 
 	{
 		// determine the route schedule
-		ShuttleStop* schedule = [self.shuttleStopSchedules objectAtIndex:indexPath.section];
+		ShuttleStop* schedule = self.shuttleStopSchedules[indexPath.section];
 		
 		NSDate* date = [schedule dateForPredictionAtIndex:indexPath.row];
 		NSTimeInterval timeInterval = [date timeIntervalSinceNow];
@@ -314,14 +288,14 @@
         if(minutes > NOTIFICATION_MINUTES) {
             
             if([self hasSubscription:indexPath]) {
-                cell.accessoryView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-on.png"]] autorelease];
+                cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-on.png"]];
             } else {
-                cell.accessoryView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-off.png"]] autorelease];
+                cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shuttle/shuttle-alert-toggle-off.png"]];
             }
             
             
             if([self hasSubscriptionRequestLoading:indexPath]) {
-                cell.accessoryView = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease];
+                cell.accessoryView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
                 [((UIActivityIndicatorView *)cell.accessoryView) startAnimating]; 
             }
         }
@@ -331,7 +305,7 @@
 }
 
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	ShuttleStop *stop = [self.shuttleStopSchedules objectAtIndex:section];
+	ShuttleStop *stop = self.shuttleStopSchedules[section];
 	NSString *headerTitle = nil;
 	
 	if (section < self.shuttleStopSchedules.count) {
@@ -354,7 +328,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    ShuttleStop *schedule = [self.shuttleStopSchedules objectAtIndex:indexPath.section];
+    ShuttleStop *schedule = self.shuttleStopSchedules[indexPath.section];
     
 	NSDate *date = [schedule dateForPredictionAtIndex:indexPath.row];
 	NSTimeInterval timeInterval = [date timeIntervalSinceNow];
@@ -371,7 +345,6 @@
                                   otherButtonTitles:nil];
 		
 		[alertView show];
-		[alertView release];
 		return;
 	}
 	
@@ -392,7 +365,6 @@
         // TODO: It would be nice if there was some URL we could open to send the user to that settings window.
         
 		[alertView show];
-		[alertView release];
 		return;
     }
     
@@ -411,7 +383,6 @@
         // TODO: It would be nice if there was some URL we could open to send the user to that settings window.
         
 		[alertView show];
-		[alertView release];
 		return;
     }
 	
@@ -430,7 +401,6 @@
         // TODO: If settings are disabled in the Settings module, we should add a button in this dialogue to switch the user to the Settings module.
         
 		[alertView show];
-		[alertView release];
 		return;
     }
 	
@@ -475,7 +445,6 @@
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil];
 		[alertView show];
-		[alertView release];
 	}
 	[self.tableView reloadData];	
 }
@@ -487,7 +456,7 @@
 	
 	if ([annotation isKindOfClass:[ShuttleStopMapAnnotation class]]) 
 	{
-		annotationView = [[[MITMapAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"stop"] autorelease];
+		annotationView = [[MITMapAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"stop"];
         annotationView.image = [UIImage imageNamed:@"shuttle/map_pin_shuttle_stop_complete.png"];
 		annotationView.showsCustomCallout = NO;
 		annotationView.backgroundColor = [UIColor clearColor];
@@ -564,7 +533,7 @@
 	self.subscriptions = [NSMutableDictionary dictionary];
     
 	for(ShuttleStop *schedule in self.shuttleStopSchedules) {
-		//ShuttleRoute *route = [self.routes objectForKey:schedule.routeID];
+		//ShuttleRoute *route = self.routes[schedule.routeID];
 		
 		NSInteger i;
 		
@@ -595,8 +564,8 @@
 }
 
 -(BOOL) hasSubscription: (NSIndexPath *)indexPath {
-	NSString *routeID = ((ShuttleStop *)[self.shuttleStopSchedules objectAtIndex:indexPath.section]).routeID;
-	NSNumber *subscriptionIndex = [self.subscriptions objectForKey:routeID];
+	NSString *routeID = ((ShuttleStop *)self.shuttleStopSchedules[indexPath.section]).routeID;
+	NSNumber *subscriptionIndex = self.subscriptions[routeID];
 	if(subscriptionIndex) {
 		if([subscriptionIndex intValue] == indexPath.row) {
 			return YES;
@@ -609,7 +578,7 @@
 	NSInteger index;
 	NSIndexPath *aIndexPath;
 	for(index=0; index < [self.loadingSubscriptionRequests count]; index++) {
-		aIndexPath = [self.loadingSubscriptionRequests objectAtIndex:index];
+		aIndexPath = self.loadingSubscriptionRequests[index];
 		if((aIndexPath.section == theIndexPath.section) && (aIndexPath.row == theIndexPath.row)) {
 			[self.loadingSubscriptionRequests removeObjectAtIndex:index];
 		}

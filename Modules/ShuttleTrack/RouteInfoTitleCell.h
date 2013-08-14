@@ -5,13 +5,11 @@
 
 @interface RouteInfoTitleCell : UITableViewCell {
 
-    IBOutlet UIImageView* _backgroundImage;
-	IBOutlet UILabel* _routeTitleLabel;
-	IBOutlet UILabel* _rotueDescriptionLabel;
+    
 }
 
-@property (nonatomic, retain) UILabel* routeTitleLabel;
-@property (nonatomic, retain) UILabel* routeDescriptionLabel;
+@property (nonatomic, strong) IBOutlet UILabel* routeTitleLabel;
+@property (nonatomic, strong) IBOutlet UILabel* routeDescriptionLabel;
 
 -(void) setRouteInfo:(ShuttleRoute*) route;
 

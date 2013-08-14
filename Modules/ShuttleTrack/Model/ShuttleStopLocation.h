@@ -6,12 +6,12 @@
 {
 }
 
-@property (nonatomic, retain) NSString * stopID;
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSNumber * longitude;
-@property (nonatomic, retain) NSNumber * latitude;
-@property (nonatomic, retain) NSString * direction;
-@property (nonatomic, retain) NSSet* routeStops;
+@property (nonatomic, strong) NSString * stopID;
+@property (nonatomic, strong) NSString * title;
+@property (nonatomic, strong) NSNumber * longitude;
+@property (nonatomic, strong) NSNumber * latitude;
+@property (nonatomic, strong) NSString * direction;
+@property (nonatomic, strong) NSSet* routeStops;
 
 - (void)updateInfo:(NSDictionary *)stopInfo;
  

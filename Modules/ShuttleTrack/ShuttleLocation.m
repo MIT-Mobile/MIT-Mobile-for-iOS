@@ -1,22 +1,23 @@
 
 #import "ShuttleLocation.h"
 
+@interface ShuttleLocation ()
+
+@property CLLocationCoordinate2D coordinate;
+
+@end
 
 @implementation ShuttleLocation
-@synthesize coordinate = _coordinate;
-@synthesize secsSinceReport = _secsSinceReport;
-@synthesize heading = _heading;
-
 
 -(id) initWithDictionary:(NSDictionary*)dictionary
 {
 	self = [super init];
 	if (self) {
-		_coordinate.latitude = [[dictionary objectForKey:@"lat"] doubleValue];
-		_coordinate.longitude = [[dictionary objectForKey:@"lon"] doubleValue];
+		_coordinate.latitude = [dictionary[@"lat"] doubleValue];
+		_coordinate.longitude = [dictionary[@"lon"] doubleValue];
 		
-		self.secsSinceReport = [[dictionary objectForKey:@"secsSinceReport"] intValue];
-		self.heading = [[dictionary objectForKey:@"heading"] intValue];
+		self.secsSinceReport = [dictionary[@"secsSinceReport"] intValue];
+		self.heading = [dictionary[@"heading"] intValue];
 	}
 	
 	return self;

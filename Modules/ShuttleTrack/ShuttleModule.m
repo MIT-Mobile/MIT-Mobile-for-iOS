@@ -1,4 +1,5 @@
 #import "ShuttleModule.h"
+#import "ShuttleRoute.h"
 #import "ShuttleRoutes.h"
 #import "ShuttleRouteViewController.h"
 #import "ShuttleSubscriptionManager.h"
@@ -22,7 +23,7 @@
 
 - (void)loadModuleHomeController
 {
-    [self setModuleHomeController:[[[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped] autorelease]];
+    [self setModuleHomeController:[[ShuttleRoutes alloc] initWithStyle:UITableViewStyleGrouped]];
 }
 
 - (void) didAppear {
@@ -33,8 +34,8 @@
 
 - (void) removeSubscriptionByNotification: (MITNotification *)notification {
 	NSArray *parts = [notification.noticeId componentsSeparatedByString: @":"];
-	NSString *routeID = [parts objectAtIndex:0];
-	NSString *stopID = [parts objectAtIndex:1];
+	NSString *routeID = parts[0];
+	NSString *stopID = parts[1];
 	[ShuttleSubscriptionManager removeSubscriptionForRouteID:routeID atStopID:stopID];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:ShuttleAlertRemoved object:notification];
@@ -45,7 +46,7 @@
 	[self removeSubscriptionByNotification:notification];
 	
 	if(shouldOpen) {
-		NSString *routeID = [[notification.noticeId componentsSeparatedByString:@":"] objectAtIndex:0];
+		NSString *routeID = [notification.noticeId componentsSeparatedByString:@":"][0];
 		[self handleLocalPath:[NSString stringWithFormat:@"route-list/%@", routeID] query:nil];
 	}
 	
@@ -75,14 +76,14 @@
 	}
 	
 	NSArray *components = [localPath componentsSeparatedByString:@"/"];
-	NSString *pathRoot = [components objectAtIndex:0];
+	NSString *pathRoot = components[0];
 	UINavigationController *navigationController = [self rootViewController].navigationController;
 	 
 	if ([pathRoot isEqualToString:@"route-list"] || [pathRoot isEqualToString:@"route-map"]) {
-		NSString *routeID = [components objectAtIndex:1];
+		NSString *routeID = components[1];
 		ShuttleRoute *route = [ShuttleDataManager shuttleRouteWithID:routeID];
 		if(route) {
-			ShuttleRouteViewController *routeViewController = [[[ShuttleRouteViewController alloc] initWithNibName:@"ShuttleRouteViewController" bundle:nil] autorelease];
+			ShuttleRouteViewController *routeViewController = [[ShuttleRouteViewController alloc] initWithNibName:@"ShuttleRouteViewController" bundle:nil];
 			routeViewController.route = route;
 			[navigationController pushViewController:routeViewController
                                             animated:NO];
@@ -90,7 +91,7 @@
 			ShuttleStop *stop = nil;
 			ShuttleStopMapAnnotation *annotation = nil;
 			if (components.count > 2) {
-				NSString *stopID = [components objectAtIndex:2];
+				NSString *stopID = components[2];
                 NSError *error = nil;
 				stop = [ShuttleDataManager stopWithRoute:routeID stopID:stopID error:&error];
 				
@@ -122,7 +123,7 @@
 				}
 				
 				if (components.count > 3 && 
-					[@"stops" isEqualToString:[components objectAtIndex:3]]) {
+					[@"stops" isEqualToString:components[3]]) {
 						[routeViewController pushStopViewControllerWithStop:stop
                                                                  annotation:annotation
                                                                    animated:NO];

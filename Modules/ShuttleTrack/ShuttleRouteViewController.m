@@ -177,7 +177,7 @@
     // Set up the cell...
     ShuttleStop *aStop = nil;
 	if(nil != self.route && self.route.stops.count > indexPath.row) {
-		aStop = [self.route.stops objectAtIndex:indexPath.row];
+		aStop = self.route.stops[indexPath.row];
 	}
 	
 	[cell setShuttleInfo:aStop];
@@ -190,8 +190,8 @@
 	
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	
-	[self pushStopViewControllerWithStop:[self.route.stops objectAtIndex:indexPath.row] 
-							  annotation:[self.route.annotations objectAtIndex:indexPath.row] 
+	[self pushStopViewControllerWithStop:self.route.stops[indexPath.row] 
+							  annotation:self.route.annotations[indexPath.row] 
 								animated:YES];
 }
 

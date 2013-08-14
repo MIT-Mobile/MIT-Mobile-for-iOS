@@ -3,6 +3,14 @@
 #import "ShuttleStop.h"
 #import "MITUIConstants.h"
 
+@interface ShuttleStopCell ()
+
+@property(nonatomic, strong) IBOutlet UIImageView* shuttleStopImageView;
+@property(nonatomic, strong) IBOutlet UILabel* shuttleNameLabel;
+@property(nonatomic, strong) IBOutlet UILabel* shuttleTimeLabel;
+
+@end
+
 @implementation ShuttleStopCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
@@ -21,34 +29,28 @@
     // Configure the view for the selected state
 }
 
-
-- (void)dealloc {
-    [super dealloc];
-}
-
-
 -(void) setShuttleInfo:(ShuttleStop*)shuttleStop
 {
-	_shuttleNameLabel.text = shuttleStop.title;
+	self.shuttleNameLabel.text = shuttleStop.title;
 	
 	
-	NSDateFormatter *formatter = [[[NSDateFormatter alloc] init] autorelease];
+	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 	[formatter setDateFormat:@"h:mm a"];
 	
-	_shuttleTimeLabel.text = [formatter stringFromDate:shuttleStop.nextScheduledDate];
+	self.shuttleTimeLabel.text = [formatter stringFromDate:shuttleStop.nextScheduledDate];
 
 	if (shuttleStop.upcoming) 
 	{
-		_shuttleStopImageView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"] ;
-		_shuttleTimeLabel.textColor = SEARCH_BAR_TINT_COLOR;
-        _shuttleTimeLabel.font = [UIFont boldSystemFontOfSize:16.0];
+		self.shuttleStopImageView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot-next.png"] ;
+		self.shuttleTimeLabel.textColor = SEARCH_BAR_TINT_COLOR;
+        self.shuttleTimeLabel.font = [UIFont boldSystemFontOfSize:16.0];
 		
 	}
 	else 
 	{
-		_shuttleStopImageView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot.png"];
-		_shuttleTimeLabel.textColor = [UIColor blackColor];
-        _shuttleTimeLabel.font = [UIFont systemFontOfSize:16.0];
+		self.shuttleStopImageView.image = [UIImage imageNamed:@"shuttle/shuttle-stop-dot.png"];
+		self.shuttleTimeLabel.textColor = [UIColor blackColor];
+        self.shuttleTimeLabel.font = [UIFont systemFontOfSize:16.0];
 	}
 }
 

@@ -9,18 +9,12 @@
 {
 	self = [super init];
 	if (self) {
-		_shuttleStop = [shuttleStop retain];
+		_shuttleStop = shuttleStop;
 	}
 	
 	return self;
 }
 
--(void) dealloc
-{
-	[_shuttleStop release];
-	
-	[super dealloc];
-}
 
 -(CLLocationCoordinate2D) coordinate
 {
@@ -43,8 +37,7 @@
 
 -(void) setSubtitle:(NSString*)subtitle
 {
-	[_subtitle release];
-	_subtitle = [subtitle retain];
+	_subtitle = subtitle;
 }
 
 @end

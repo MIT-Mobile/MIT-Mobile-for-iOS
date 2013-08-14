@@ -13,15 +13,15 @@
 	self = [super init];
 	if (self) {
 		self.stopID = stopID;
-		self.routeID = [dictionary objectForKey:@"route_id"];
+		self.routeID = dictionary[@"route_id"];
 		
-		NSNumber* next = [dictionary objectForKey:@"next"];
+		NSNumber* next = dictionary[@"next"];
 		if (nil == next)
-			next = [dictionary objectForKey:@"nextScheduled"];
+			next = dictionary[@"nextScheduled"];
 		
 		self.nextScheduled = [next unsignedLongValue];
 		
-		NSArray* predictionsArr = [dictionary objectForKey:@"predictions"];
+		NSArray* predictionsArr = dictionary[@"predictions"];
 		
 		NSMutableArray* predictions = [NSMutableArray arrayWithCapacity:predictionsArr.count];
 		
@@ -50,7 +50,7 @@
 		prediction = self.nextScheduled;
 	}
 	else {
-		prediction = [[self.predictions objectAtIndex:index - 1] intValue];
+		prediction = [self.predictions[index - 1] intValue];
 	}
 
 	return [NSDate dateWithTimeIntervalSince1970:prediction];

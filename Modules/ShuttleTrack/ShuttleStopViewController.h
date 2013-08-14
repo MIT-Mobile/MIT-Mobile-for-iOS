@@ -10,20 +10,13 @@
 
 @interface ShuttleStopViewController : UITableViewController <ShuttleDataManagerDelegate, ShuttleSubscriptionDelegate, MITMapViewDelegate> 
 {
-	// the shuttle stop at which we are looking
-	ShuttleStop* _shuttleStop;
 	//ShuttleStopLocation *_stopLocation;
-	
-	// annotation 
-	ShuttleStopMapAnnotation* _shuttleStopAnnotation;
 		
 	// routes that run through this shuttle stop
 	//NSDictionary* _routes;
 	
 	// single route that was selected for display. Can be null if no specific route was selected. 
 	//ShuttleRoute* _route;
-	
-	NSMutableArray* _shuttleStopSchedules;
 	
 	BOOL _isLoading;
 	
@@ -49,17 +42,17 @@
 }
 
 
-@property (nonatomic, retain) ShuttleStop* shuttleStop;
+@property (nonatomic, strong) ShuttleStop* shuttleStop;                 // the shuttle stop at which we are looking
 //@property (nonatomic, retain) ShuttleStopLocation *stopLocation;
 @property (nonatomic, assign) ShuttleStopMapAnnotation* annotation;
 
 //@property (nonatomic, retain) NSDictionary* routes;
 //@property (nonatomic, retain) ShuttleRoute* route;
 
-@property (nonatomic, retain) NSArray* shuttleStopSchedules;
+@property (nonatomic, copy) NSMutableArray* shuttleStopSchedules;
 
-@property (nonatomic, retain) NSMutableDictionary* subscriptions;
-@property (nonatomic, retain) NSMutableArray* loadingSubscriptionRequests;
+@property (nonatomic, copy) NSMutableDictionary* subscriptions;
+@property (nonatomic, copy) NSMutableArray* loadingSubscriptionRequests;
 
 @property (readonly) UIButton* mapButton;
 @end

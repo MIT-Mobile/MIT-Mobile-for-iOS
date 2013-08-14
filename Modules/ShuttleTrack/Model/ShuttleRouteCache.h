@@ -5,13 +5,13 @@
 {
 }
 
-@property (nonatomic, retain) NSString * routeID;
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSNumber * interval;
-@property (nonatomic, retain) NSNumber * isSafeRide;
-@property (nonatomic, retain) NSString * summary;
-@property (nonatomic, retain) NSSet* stops;
-@property (nonatomic, retain) NSNumber * sortOrder;
+@property (nonatomic, strong) NSString * routeID;
+@property (nonatomic, strong) NSString * title;
+@property (nonatomic, strong) NSNumber * interval;
+@property (nonatomic, strong) NSNumber * isSafeRide;
+@property (nonatomic, strong) NSString * summary;
+@property (nonatomic, strong) NSSet* stops;
+@property (nonatomic, strong) NSNumber * sortOrder;
  
 @end
 

@@ -19,15 +19,8 @@
 @dynamic routeID;
 @dynamic path;
 @dynamic order;
-@synthesize routeStop = _routeStop;
 
-// live stop-route properties
-@synthesize nextScheduled = _nextScheduled;
-@synthesize now = _now;
-@synthesize upcoming = _upcoming;
-//@synthesize predictions = _predictions;
 @dynamic nextScheduledDate;
-@dynamic predictions;
 
 #pragma mark getters and setters
 
@@ -132,12 +125,6 @@
     }
 }
 
-- (void)setPredictions:(NSArray *)predictions
-{
-    [_predictions release];
-    _predictions = [predictions retain];
-}
-
 #pragma mark initializers
 
 - (id)initWithRouteStop:(ShuttleRouteStop *)routeStop
@@ -190,34 +177,34 @@
 - (void)updateInfo:(NSDictionary *)stopInfo
 {
 	NSString *property = nil;
-	if ((property = [stopInfo objectForKey:@"title"]) != nil) {
+	if ((property = stopInfo[@"title"]) != nil) {
 		self.title = property;
     }
-	if ((property = [stopInfo objectForKey:@"direction"]) != nil) {
+	if ((property = stopInfo[@"direction"]) != nil) {
         self.direction = property;
     }
 	
 	NSNumber *num = nil;
-	if ((num = [stopInfo objectForKey:@"lon"]) != nil) {
+	if ((num = stopInfo[@"lon"]) != nil) {
         self.longitude = [num doubleValue];
     }
-	if ((num = [stopInfo objectForKey:@"lat"]) != nil) {
+	if ((num = stopInfo[@"lat"]) != nil) {
 		self.latitude = [num doubleValue];
     }
-	self.upcoming = ([stopInfo objectForKey:@"upcoming"] != nil); // upcoming only appears if it's true
+	self.upcoming = (stopInfo[@"upcoming"] != nil); // upcoming only appears if it's true
 	
-	if ((num = [stopInfo objectForKey:@"next"]) != nil ||
-		(num = [stopInfo objectForKey:@"nextScheduled"]) != nil) {
+	if ((num = stopInfo[@"next"]) != nil ||
+		(num = stopInfo[@"nextScheduled"]) != nil) {
 		self.nextScheduled = [num doubleValue];
     }
 
 	NSArray *array = nil;
-	if ((array = [stopInfo objectForKey:@"path"]) != nil) {
+	if ((array = stopInfo[@"path"]) != nil) {
 		self.path = array;
     } else {
         self.path = [NSArray array];
     }
-    if ((array = [stopInfo objectForKey:@"predictions"]) != nil) {
+    if ((array = stopInfo[@"predictions"]) != nil) {
         self.predictions = array;
     }
 }
@@ -237,22 +224,10 @@
 		prediction = self.nextScheduled;
 	}
 	else {
-		prediction = [[self.predictions objectAtIndex:index - 1] doubleValue];
+		prediction = [self.predictions[index - 1] doubleValue];
 	}
 	
 	return [NSDate dateWithTimeIntervalSince1970:prediction];
-}
-
-#pragma mark -
-
-- (void)dealloc 
-{   
-	_stopLocation = nil;
-	self.routeStop = nil;
-
-	[_predictions release];
-	
-    [super dealloc];
 }
 
 @end

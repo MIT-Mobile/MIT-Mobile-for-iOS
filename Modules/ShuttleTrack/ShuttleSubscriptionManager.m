@@ -16,21 +16,21 @@
 	NSString *unixtime_string = [NSString stringWithFormat:@"%i", unixtime_int];	
 	[parameters setObject:unixtime_string forKey:@"time"];	
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"shuttles"
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"shuttles"
                                                                               command:@"subscribe"
-                                                                           parameters:parameters] autorelease];
+                                                                           parameters:parameters];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error || ![jsonResult isKindOfClass:[NSDictionary class]]) {
             [delegate subscriptionFailedWithObject:object passkeyError:NO];
             [UIAlertView alertViewForError:nil withTitle:@"Shuttles" alertViewDelegate:nil];
 
-        } else if (![jsonResult objectForKey:@"success"]) {
+        } else if (!jsonResult[@"success"]) {
             [delegate subscriptionFailedWithObject:object passkeyError:YES];
         
         } else {
-            NSNumber *startTimeNumber = [jsonResult objectForKey:@"start_time"];
-            NSNumber *endTimeNumber = [jsonResult objectForKey:@"expire_time"];
+            NSNumber *startTimeNumber = jsonResult[@"start_time"];
+            NSNumber *endTimeNumber = jsonResult[@"expire_time"];
             
             NSDate *startTime = [NSDate dateWithTimeIntervalSince1970:[startTimeNumber doubleValue]];
             NSDate *endTime = [NSDate dateWithTimeIntervalSince1970:[endTimeNumber doubleValue]];
@@ -48,9 +48,9 @@
 	[parameters setObject:routeID forKey:@"route"];
 	[parameters setObject:stopID forKey:@"stop"];
     
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"shuttles"
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"shuttles"
                                                                               command:@"unsubscribe"
-                                                                           parameters:parameters] autorelease];
+                                                                           parameters:parameters] ;
 
 	request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (error) {
@@ -71,10 +71,10 @@
 	
 	NSDictionary *savedSubscriptions = [[NSUserDefaults standardUserDefaults] objectForKey:ShuttleSubscriptionsKey];
 	
-	NSArray *subscriptionTimeWindow = [[savedSubscriptions objectForKey:routeID] objectForKey:stopID];
+	NSArray *subscriptionTimeWindow = savedSubscriptions[routeID][stopID];
 	if(subscriptionTimeWindow) {
-		NSDate *startTime = [subscriptionTimeWindow objectAtIndex:0];
-		NSDate *endTime = [subscriptionTimeWindow objectAtIndex:1];
+		NSDate *startTime = subscriptionTimeWindow[0];
+		NSDate *endTime = subscriptionTimeWindow[1];
 		
 		// check if time is within time interval
 		return ([time timeIntervalSinceDate:startTime] > 0) && ([time timeIntervalSinceDate:endTime] < 0);
@@ -86,9 +86,9 @@
 	NSDictionary *subscriptions = [[NSUserDefaults standardUserDefaults] objectForKey:ShuttleSubscriptionsKey];
 	NSMutableDictionary *mutableSubscriptions = [NSMutableDictionary dictionaryWithDictionary:subscriptions];
 	for(NSString *routeID in [mutableSubscriptions allKeys]) {
-		NSMutableDictionary *mutableRouteStopsDictionary = [NSMutableDictionary dictionaryWithDictionary:[mutableSubscriptions objectForKey:routeID]];
+		NSMutableDictionary *mutableRouteStopsDictionary = [NSMutableDictionary dictionaryWithDictionary:mutableSubscriptions[routeID]];
 		for(NSString *aStopKey in [mutableRouteStopsDictionary allKeys]) {
-			NSDate *endTime = [((NSArray *)[mutableRouteStopsDictionary objectForKey:aStopKey]) objectAtIndex:1];
+			NSDate *endTime = ((NSArray *)mutableRouteStopsDictionary[aStopKey])[1];
 			if([endTime timeIntervalSinceNow] < 0) {
 				// this subscription is in the past it needs to be cleared
 				[mutableRouteStopsDictionary removeObjectForKey:aStopKey];
@@ -112,7 +112,7 @@
 	NSDictionary *subscriptions = [[NSUserDefaults standardUserDefaults] objectForKey:ShuttleSubscriptionsKey];
 	
 	NSMutableDictionary *mutableSubscriptions = [NSMutableDictionary dictionaryWithDictionary:subscriptions];
-	NSMutableDictionary *routeSubscriptions = [mutableSubscriptions objectForKey:routeID];
+	NSMutableDictionary *routeSubscriptions = mutableSubscriptions[routeID];
 	
 	if(!routeSubscriptions) {
 		routeSubscriptions = [NSMutableDictionary dictionary];
@@ -130,7 +130,7 @@
 	NSDictionary *subscriptions = [[NSUserDefaults standardUserDefaults] objectForKey:ShuttleSubscriptionsKey];
 
 	NSMutableDictionary *mutableSubscriptions = [NSMutableDictionary dictionaryWithDictionary:subscriptions];
-	NSMutableDictionary *routeSubscriptions = [mutableSubscriptions objectForKey:routeID];
+	NSMutableDictionary *routeSubscriptions = mutableSubscriptions[routeID];
 
 	if(!routeSubscriptions) {
 		// no subscription found

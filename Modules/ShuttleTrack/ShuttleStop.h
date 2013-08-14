@@ -34,22 +34,22 @@
 // number of available predictions. We add one for the next scheduled stop
 -(NSInteger) predictionCount;
 
-@property (nonatomic, retain) NSString *title;
-@property (nonatomic, retain) NSString *stopID;
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *stopID;
 @property double latitude;
 @property double longitude;
-@property (nonatomic, retain) NSArray *routeStops;
-@property (nonatomic, retain) NSString* direction;
+@property (nonatomic, copy) NSArray *routeStops;
+@property (nonatomic, strong) NSString* direction;
 
-@property (nonatomic, readonly) NSString* routeID;
-@property (nonatomic, retain) NSArray* path;
+@property (nonatomic, strong, readonly) NSString* routeID;
+@property (nonatomic, copy) NSArray* path;
 @property (nonatomic, assign) NSInteger order;
-@property (nonatomic, retain) ShuttleRouteStop *routeStop;
+@property (nonatomic, strong) ShuttleRouteStop *routeStop;
 
 @property NSTimeInterval nextScheduled;
 @property NSTimeInterval now;
 @property (readonly) NSDate *nextScheduledDate;
-@property (nonatomic, retain) NSArray* predictions;
+@property (nonatomic, copy) NSArray* predictions;
 @property BOOL upcoming;
 
 @end
