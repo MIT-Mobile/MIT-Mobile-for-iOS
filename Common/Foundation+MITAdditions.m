@@ -32,7 +32,6 @@ inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
 @end
 
 @implementation NSArray (MITAdditions)
-
 - (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block {
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
     [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -40,7 +39,6 @@ inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
     }];
     return result;
 }
-
 @end
 
 @implementation NSSet (MITAdditions)
@@ -56,16 +54,27 @@ inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
 @end
 
 @implementation NSMutableString (MITAdditions)
-
-- (void)replaceOccurrencesOfStrings:(NSArray *)targets withStrings:(NSArray *)replacements options:(NSStringCompareOptions)options {
-    assert([targets count] == [replacements count]);
-    NSInteger i = 0;
-    for (NSString *target in targets) {
-        [self replaceOccurrencesOfString:target withString:[replacements objectAtIndex:i] options:options range:NSMakeRange(0, [self length])];
-        i++;
+/** Replace all the occurrences of the strings in targets with the
+ *  values in replacements.
+ *
+ *  @param targets The strings to replace. Raises an NSInvalidArgumentException if targets and replacements do not have the same number of strings.
+ *  @param replacements The strings with which to replace target. Raises an NSInvalidArgumentException if targets and replacements do not have the same number of strings.
+ *  @param opts See replaceOccurrencesOfString:withString:options:range:
+ *
+ *  @see replaceOccurrencesOfString:withString:options:range:
+ */
+- (void)replaceOccurrencesOfStrings:(NSArray *)targets withStrings:(NSArray *)replacements options:(NSStringCompareOptions)opts {
+    if ([targets count] != [replacements count]) {
+        @throw NSInvalidArgumentException;
+    } else {
+        [targets enumerateObjectsUsingBlock:^(NSString *target, NSUInteger idx, BOOL *stop) {
+            [self replaceOccurrencesOfString:target
+                                  withString:replacements[idx]
+                                     options:opts
+                                       range:NSMakeRange(0, [self length])];
+        }];
     }
 }
-
 @end
 
 @implementation NSString (MITAdditions)
