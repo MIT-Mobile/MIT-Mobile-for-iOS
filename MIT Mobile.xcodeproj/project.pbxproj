@@ -2901,6 +2901,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0500;
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = A35W4MM59Y;
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MIT Mobile" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -3387,6 +3392,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3408,6 +3415,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Debug;
@@ -3416,6 +3424,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3435,6 +3445,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -3526,6 +3537,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3545,6 +3558,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 			};
 			name = TestFlight;
 		};
