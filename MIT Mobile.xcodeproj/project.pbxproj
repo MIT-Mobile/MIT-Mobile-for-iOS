@@ -53,7 +53,6 @@
 		2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348E162DCF2600BBB312 /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C333491162DCF2600BBB312 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348F162DCF2600BBB312 /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C333493162DD0D500BBB312 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C333492162DD0D500BBB312 /* FacebookSDK.framework */; };
-		2C333495162DD16300BBB312 /* FacebookSDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2C333494162DD16300BBB312 /* FacebookSDKResources.bundle */; };
 		2C333498162EEFA700BBB312 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C333497162EEFA700BBB312 /* Twitter.framework */; };
 		2C33349A162F27E200BBB312 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C333499162F27E200BBB312 /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C33349F162F2F0200BBB312 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33349E162F2F0200BBB312 /* libsqlite3.dylib */; };
@@ -526,7 +525,6 @@
 		2C33348E162DCF2600BBB312 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		2C33348F162DCF2600BBB312 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		2C333492162DD0D500BBB312 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FacebookSDK.framework; path = "~/Documents/FacebookSDK/FacebookSDK.framework"; sourceTree = "<absolute>"; };
-		2C333494162DD16300BBB312 /* FacebookSDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = FacebookSDKResources.bundle; path = "~/Documents/FacebookSDK/FacebookSDK.framework/Versions/A/Resources/FacebookSDKResources.bundle"; sourceTree = "<absolute>"; };
 		2C333497162EEFA700BBB312 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		2C333499162F27E200BBB312 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		2C33349E162F2F0200BBB312 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -1589,7 +1587,6 @@
 			isa = PBXGroup;
 			children = (
 				2C333492162DD0D500BBB312 /* FacebookSDK.framework */,
-				2C333494162DD16300BBB312 /* FacebookSDKResources.bundle */,
 			);
 			name = "Facebook Connect";
 			sourceTree = "<group>";
@@ -2965,7 +2962,6 @@
 				DE936CA4161CD28100B69F7C /* Default.png in Resources */,
 				DE936CA6161CD28300B69F7C /* Default@2x.png in Resources */,
 				DE952E6816295EBA007E7356 /* Default-568h@2x.png in Resources */,
-				2C333495162DD16300BBB312 /* FacebookSDKResources.bundle in Resources */,
 				2CEBBF831635A68500441252 /* DEFacebookComposeView.xib in Resources */,
 				2CEBBF891635A68500441252 /* DEFacebookAttachmentFrame.png in Resources */,
 				2CEBBF8A1635A68500441252 /* DEFacebookAttachmentFrame@2x.png in Resources */,
