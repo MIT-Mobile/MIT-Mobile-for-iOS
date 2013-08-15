@@ -43,17 +43,7 @@
 
 
 @property (nonatomic, strong) ShuttleStop* shuttleStop;                 // the shuttle stop at which we are looking
-//@property (nonatomic, retain) ShuttleStopLocation *stopLocation;
 @property (nonatomic, assign) ShuttleStopMapAnnotation* annotation;
-
-//@property (nonatomic, retain) NSDictionary* routes;
-//@property (nonatomic, retain) ShuttleRoute* route;
-
-@property (nonatomic, copy) NSMutableArray* shuttleStopSchedules;
-
-@property (nonatomic, copy) NSMutableDictionary* subscriptions;
-@property (nonatomic, copy) NSMutableArray* loadingSubscriptionRequests;
-
 @property (readonly) UIButton* mapButton;
 @end
 

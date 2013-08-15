@@ -19,23 +19,15 @@
 #define kHeaderTag 837402
 
 @interface ShuttleStopViewController () <UIAlertViewDelegate>
-
-//-(void) loadRouteData;
-
-// load our individual stop full data from an item in the full list of stops
-//-(void) loadStopFromStops:(NSArray*) stops;
+@property (nonatomic, copy) NSMutableArray* shuttleStopSchedules;
+@property (nonatomic, copy) NSMutableDictionary* subscriptions;
+@property (nonatomic, copy) NSMutableArray* loadingSubscriptionRequests;
 
 - (void)requestStop;
-
--(void) findScheduledSubscriptions;
-
--(BOOL) hasSubscriptionRequestLoading: (NSIndexPath *)theIndexPath;
-
--(BOOL) hasSubscription: (NSIndexPath *)theIndexPath;
-
--(void) removeFromLoadingSubscriptionRequests: (NSIndexPath *)indexPath;
-
-//-(ShuttleRoute *) routeForSection: (NSInteger)section;
+- (void)findScheduledSubscriptions;
+- (BOOL)hasSubscriptionRequestLoading: (NSIndexPath *)theIndexPath;
+- (BOOL)hasSubscription: (NSIndexPath *)theIndexPath;
+- (void)removeFromLoadingSubscriptionRequests: (NSIndexPath *)indexPath;
 
 @end
 
@@ -493,13 +485,13 @@
 		// need to make sure the main route is first
 		for(ShuttleStop *routeStopSchedule in shuttleStopSchedules) {
 			if([routeStopSchedule.routeID isEqualToString:self.shuttleStop.routeID]) {
-				self.shuttleStopSchedules = [NSArray arrayWithObject:routeStopSchedule];
+				self.shuttleStopSchedules = [@[routeStopSchedule] mutableCopy];
 			} else {
 				[otherSchedules addObject:routeStopSchedule];
 			}
 		}
         
-		self.shuttleStopSchedules = [self.shuttleStopSchedules arrayByAddingObjectsFromArray:otherSchedules];
+		[self.shuttleStopSchedules addObject:otherSchedules];
         
 		_tableFooterLabel.text = [NSString stringWithFormat:@"Last updated at %@", [_timeFormatter stringFromDate:[NSDate date]]];
 		
