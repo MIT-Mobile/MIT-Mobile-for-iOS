@@ -3,10 +3,6 @@
 
 @class StoryListViewController;
 
-@interface NewsModule : MITModule {
-	StoryListViewController *storyListChannelController;
-}
-
-@property (nonatomic, retain) StoryListViewController *storyListChannelController;
-
+@interface NewsModule : MITModule
+@property (nonatomic, readonly) StoryListViewController *storyListChannelController;
 @end

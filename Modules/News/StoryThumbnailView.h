@@ -2,20 +2,11 @@
 
 @class NewsImageRep;
 
-@interface StoryThumbnailView : UIView {
-    NewsImageRep *imageRep;
-	NSData *imageData;
-    UIActivityIndicatorView *loadingView;
-    UIImageView *imageView;
-}
+@interface StoryThumbnailView : UIView
+@property (nonatomic, weak) UIImageView *imageView;
+@property (nonatomic, strong) NewsImageRep *imageRep;
 
 - (void)loadImage;
 - (void)requestImage;
 - (BOOL)displayImage;
-
-@property (nonatomic, retain) NewsImageRep *imageRep;
-@property (nonatomic, retain) NSData *imageData;
-@property (nonatomic, retain) UIActivityIndicatorView *loadingView;
-@property (nonatomic, retain) UIImageView *imageView;
-
 @end

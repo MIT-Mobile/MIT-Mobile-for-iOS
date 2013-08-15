@@ -6,8 +6,7 @@
 @class StoryListViewController;
 
 @interface StoryDetailViewController : ShareDetailViewController <UIWebViewDelegate, MFMailComposeViewControllerDelegate, ShareItemDelegate>
-
-@property (strong) StoryListViewController *newsController;
+@property (nonatomic,weak) StoryListViewController *newsController;
 @property (strong) NewsStory *story;
 
 - (void)displayStory:(NewsStory *)aStory;

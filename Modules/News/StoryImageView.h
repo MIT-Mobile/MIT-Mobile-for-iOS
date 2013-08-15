@@ -9,22 +9,13 @@
 @end
 
 
-@interface StoryImageView : UIView {
-    id <StoryImageViewDelegate> delegate;
-    NewsImageRep *imageRep;
-	NSData *imageData;
-    UIActivityIndicatorView *loadingView;
-    UIImageView *imageView;
-}
+@interface StoryImageView : UIView
+@property (nonatomic, weak) id <StoryImageViewDelegate> delegate;
+@property (nonatomic, weak) UIImageView *imageView;
+@property (nonatomic, strong) NewsImageRep *imageRep;
 
 - (void)loadImage;
 - (void)requestImage;
 - (BOOL)displayImage;
-
-@property (nonatomic, assign) id <StoryImageViewDelegate> delegate;
-@property (nonatomic, retain) NewsImageRep *imageRep;
-@property (nonatomic, retain) NSData *imageData;
-@property (nonatomic, retain) UIActivityIndicatorView *loadingView;
-@property (nonatomic, retain) UIImageView *imageView;
 
 @end

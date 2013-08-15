@@ -4,41 +4,48 @@
 
 #define STORY_GALLERY_PADDING 10.0
 
+@interface StoryGalleryViewController ()
+@property (nonatomic,weak) UIScrollView *scrollView;
+@property (nonatomic,weak) UILabel *captionLabel;
+@property (nonatomic,weak) UILabel *creditLabel;
+@property (nonatomic,weak) StoryImageView *storyImageView;
+
+@property NSInteger imageIndex;
+
+@end
+
 @implementation StoryGalleryViewController
-
-@synthesize images;
-
-- (void)loadView {
-    [super loadView];
-    // if this isn't implemented, the view is never reloaded after a memory warning
-}
-
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-    scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
+    UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
     scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     scrollView.backgroundColor = [UIColor whiteColor];
-    CGFloat paddedWidth = self.view.frame.size.width - (STORY_GALLERY_PADDING * 2);
-    storyImageView = [[StoryImageView alloc] initWithFrame:CGRectMake(STORY_GALLERY_PADDING, STORY_GALLERY_PADDING, paddedWidth, 200)];
-    storyImageView.delegate = self;
+    self.scrollView = scrollView;
 
-    captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(STORY_GALLERY_PADDING, 0, paddedWidth, 10)];
+    CGFloat paddedWidth = self.view.frame.size.width - (STORY_GALLERY_PADDING * 2);
+    StoryImageView *storyImageView = [[StoryImageView alloc] initWithFrame:CGRectMake(STORY_GALLERY_PADDING, STORY_GALLERY_PADDING, paddedWidth, 200)];
+    storyImageView.delegate = self;
+    self.storyImageView = storyImageView;
+
+    UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(STORY_GALLERY_PADDING, 0, paddedWidth, 10)];
     captionLabel.textColor = [UIColor colorWithHexString:@"#202020"];
     captionLabel.font = [UIFont systemFontOfSize:13.0];
     captionLabel.numberOfLines = 0;
     captionLabel.lineBreakMode = UILineBreakModeWordWrap;
     captionLabel.backgroundColor = [UIColor whiteColor];
     captionLabel.opaque = YES;
-    
-    creditLabel = [[UILabel alloc] initWithFrame:CGRectMake(STORY_GALLERY_PADDING, 0, paddedWidth, 10)];
+    self.captionLabel = captionLabel;
+
+    UILabel *creditLabel = [[UILabel alloc] initWithFrame:CGRectMake(STORY_GALLERY_PADDING, 0, paddedWidth, 10)];
     creditLabel.textColor = [UIColor colorWithHexString:@"#505050"];
     creditLabel.font = [UIFont systemFontOfSize:11.0];
     creditLabel.numberOfLines = 0;
     creditLabel.lineBreakMode = UILineBreakModeWordWrap;
     creditLabel.backgroundColor = [UIColor whiteColor];
     creditLabel.opaque = YES;
-    
+    self.creditLabel = creditLabel;
+
     [scrollView addSubview:storyImageView];
     [scrollView addSubview:captionLabel];
     [scrollView addSubview:creditLabel];
@@ -48,11 +55,8 @@
     
     if (imageCount > 0) {
         if (imageCount > 1) {
-            UISegmentedControl* segmentedControl = [[UISegmentedControl alloc] initWithItems:
-													[NSArray arrayWithObjects:
-													 [UIImage imageNamed:MITImageNameUpArrow], 
-													 [UIImage imageNamed:MITImageNameDownArrow], 
-													 nil]];
+            UISegmentedControl* segmentedControl = [[UISegmentedControl alloc] initWithItems:@[[UIImage imageNamed:MITImageNameUpArrow],
+                                                                                               [UIImage imageNamed:MITImageNameDownArrow]]];
             [segmentedControl setMomentary:YES];
             segmentedControl.autoresizingMask = UIViewAutoresizingFlexibleWidth;
             segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
@@ -61,25 +65,12 @@
             
             UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView: segmentedControl];
             self.navigationItem.rightBarButtonItem = segmentBarItem;
-            [segmentedControl release];
-            [segmentBarItem release];
         }
-        imageIndex = 0;
+        self.imageIndex = 0;
 
         [self changeImage];
     }
     [scrollView sizeToFit];
-}
-
-- (void)viewDidUnload {
-    [scrollView release];
-    scrollView = nil;
-    
-    [captionLabel release];
-    captionLabel = nil;
-    
-    [creditLabel release];
-    creditLabel = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -106,7 +97,6 @@
     for (NewsImage *anImage in self.images) {
         anImage.fullImage.data = nil;
     }
-    [super dealloc];
 }
 
 - (void)resizeLabelWithFixedWidth:(UILabel *)aLabel {
@@ -117,7 +107,7 @@
 }
 
 - (void)storyImageViewDidDisplayImage:(StoryImageView *)imageView {
-    CGSize imageSize = storyImageView.imageView.image.size;
+    CGSize imageSize = self.storyImageView.imageView.image.size;
     CGFloat galleryWidth = self.view.frame.size.width - (STORY_GALLERY_PADDING * 2);
     CGFloat ratio = galleryWidth / imageSize.width;
     CGSize scaledSize;
@@ -127,23 +117,23 @@
         scaledSize = CGSizeMake(galleryWidth, imageSize.height);
     }
 
-    CGRect frame = storyImageView.frame;
+    CGRect frame = self.storyImageView.frame;
     frame.size = scaledSize;
-    storyImageView.frame = frame;
-    [storyImageView setNeedsLayout];
+    self.storyImageView.frame = frame;
+    [self.storyImageView setNeedsLayout];
     
-    frame = captionLabel.frame;
-    frame.origin.y = ceil(CGRectGetMaxY(storyImageView.frame) + 3.0);
-    captionLabel.frame = frame;
+    frame = self.captionLabel.frame;
+    frame.origin.y = ceil(CGRectGetMaxY(self.storyImageView.frame) + 3.0);
+    self.captionLabel.frame = frame;
     
-    frame = creditLabel.frame;
-    frame.origin.y = ceil(CGRectGetMaxY(captionLabel.frame) + 3.0);
-    creditLabel.frame = frame;
+    frame = self.creditLabel.frame;
+    frame.origin.y = ceil(CGRectGetMaxY(self.captionLabel.frame) + 3.0);
+    self.creditLabel.frame = frame;
     
-    CGSize size = scrollView.contentSize;
+    CGSize size = self.scrollView.contentSize;
     size.width = self.view.frame.size.width;
-    size.height = ceil(CGRectGetMaxY(creditLabel.frame) + STORY_GALLERY_PADDING);
-    scrollView.contentSize = size;
+    size.height = ceil(CGRectGetMaxY(self.creditLabel.frame) + STORY_GALLERY_PADDING);
+    self.scrollView.contentSize = size;
 }
 
 - (void)didPressNavButton:(id)sender {
@@ -151,14 +141,14 @@
         UISegmentedControl *theControl = (UISegmentedControl *)sender;
         NSInteger i = theControl.selectedSegmentIndex;
         if (i == 0) {
-            imageIndex--;
-            if (imageIndex < 0) {
-                imageIndex = [self.images count] - 1;
+            self.imageIndex += 1;
+            if (self.imageIndex < 0) {
+                self.imageIndex = [self.images count] - 1;
             }
         } else {
-            imageIndex++;
-            if (imageIndex >= [self.images count]) {
-                imageIndex =  0;
+            self.imageIndex++;
+            if (self.imageIndex >= [self.images count]) {
+                self.imageIndex =  0;
             }
         }
         [self changeImage];
@@ -166,31 +156,29 @@
 }
 
 - (void)changeImage {
-    self.title = [NSString stringWithFormat:@"%d of %d", imageIndex + 1, [self.images count]];
+    self.title = [NSString stringWithFormat:@"%d of %d", self.imageIndex + 1, [self.images count]];
 	
-    NewsImage *anImage = [self.images objectAtIndex:imageIndex];
-    CGRect frame = storyImageView.frame;
+    NewsImage *anImage = self.images[self.imageIndex];
+    CGRect frame = self.storyImageView.frame;
 	CGFloat imageWidth = [anImage.fullImage.width floatValue];
 	CGFloat imageHeight = [anImage.fullImage.height floatValue];
     frame.size.height = (frame.size.width >= imageWidth) ? imageHeight : (imageHeight * frame.size.width / imageWidth); // scale height to predict how aspect scaling will affect the image's height
-    storyImageView.frame = frame;
-    storyImageView.imageRep = anImage.fullImage;
-	[storyImageView setNeedsLayout];
+    self.storyImageView.frame = frame;
+    self.storyImageView.imageRep = anImage.fullImage;
     
-    captionLabel.text = anImage.caption;
-    [self resizeLabelWithFixedWidth:captionLabel];
-    creditLabel.text = anImage.credits;
-    [self resizeLabelWithFixedWidth:creditLabel];
+    self.captionLabel.text = anImage.caption;
+    [self resizeLabelWithFixedWidth:self.captionLabel];
+    self.creditLabel.text = anImage.credits;
+    [self resizeLabelWithFixedWidth:self.creditLabel];
 
-    frame = captionLabel.frame;
-    frame.origin.y = ceil(CGRectGetMaxY(storyImageView.frame) + 3.0);
-    captionLabel.frame = frame;
+    frame = self.captionLabel.frame;
+    frame.origin.y = ceil(CGRectGetMaxY(self.storyImageView.frame) + 3.0);
+    self.captionLabel.frame = frame;
     
-    frame = creditLabel.frame;
-    frame.origin.y = ceil(CGRectGetMaxY(captionLabel.frame) + 3.0);
-    creditLabel.frame = frame;
-	
-    [storyImageView loadImage];
+    frame = self.creditLabel.frame;
+    frame.origin.y = ceil(CGRectGetMaxY(self.captionLabel.frame) + 3.0);
+    self.creditLabel.frame = frame;
+    
 }
 
 - (BOOL)shouldAutorotate {

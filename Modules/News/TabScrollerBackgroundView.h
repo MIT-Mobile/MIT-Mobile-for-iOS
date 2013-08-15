@@ -1,8 +1,6 @@
 #import <UIKit/UIKit.h>
 
 
-@interface TabScrollerBackgroundView : UIView {
-    UIImage *backgroundImage;
-}
-
+@interface TabScrollerBackgroundView : UIView
+@property (nonatomic,strong) UIImage *backgroundImage;
 @end

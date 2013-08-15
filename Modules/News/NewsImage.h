@@ -3,13 +3,13 @@
 
 @interface NewsImage : NSManagedObject
 
-@property (nonatomic, retain) NewsImageRep *thumbImage;
-@property (nonatomic, retain) NewsImageRep *smallImage;
-@property (nonatomic, retain) NewsImageRep *fullImage;
+@property (nonatomic, strong) NewsImageRep *thumbImage;
+@property (nonatomic, strong) NewsImageRep *smallImage;
+@property (nonatomic, strong) NewsImageRep *fullImage;
 
-@property (nonatomic, retain) NSString *credits;
-@property (nonatomic, retain) NSString *caption;
+@property (nonatomic, copy) NSString *credits;
+@property (nonatomic, copy) NSString *caption;
 
-@property (nonatomic, retain) NSNumber *ordinality;
+@property (nonatomic, strong) NSNumber *ordinality;
 
 @end

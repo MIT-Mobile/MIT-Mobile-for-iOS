@@ -53,7 +53,6 @@
 		2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348E162DCF2600BBB312 /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C333491162DCF2600BBB312 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348F162DCF2600BBB312 /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C333493162DD0D500BBB312 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C333492162DD0D500BBB312 /* FacebookSDK.framework */; };
-		2C333495162DD16300BBB312 /* FacebookSDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2C333494162DD16300BBB312 /* FacebookSDKResources.bundle */; };
 		2C333498162EEFA700BBB312 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C333497162EEFA700BBB312 /* Twitter.framework */; };
 		2C33349A162F27E200BBB312 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C333499162F27E200BBB312 /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C33349F162F2F0200BBB312 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33349E162F2F0200BBB312 /* libsqlite3.dylib */; };
@@ -283,7 +282,7 @@
 		DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1B4D7110CE17B30073BABC /* MITJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE277694177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277691177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m */; };
 		DE277695177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277693177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m */; };
-		DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4AB0B310ED5148007476D9 /* NewsStory.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4AB0B310ED5148007476D9 /* NewsStory.m */; };
 		DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DE516255147889D1002415DE /* ExplanatorySectionLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE5E99D31124B57C00498760 /* emergency_template.html in Resources */ = {isa = PBXBuildFile; fileRef = DE5E99D21124B57C00498760 /* emergency_template.html */; };
 		DE65451B173D90A900562C20 /* MKAnnotationView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DE654507173D90A900562C20 /* MKAnnotationView+WebCache.m */; };
@@ -299,7 +298,7 @@
 		DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6AFDC610D99C4D00B48BA7 /* Foundation+MITAdditions.m */; };
 		DE6D32F610346D02008A5823 /* ShuttleModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D32F510346D02008A5823 /* ShuttleModule.m */; };
 		DE6D332B10346F6D008A5823 /* ShuttleRoutes.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D332A10346F6D008A5823 /* ShuttleRoutes.m */; };
-		DE6D570610F05C59006431A8 /* TabScrollerBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D570510F05C59006431A8 /* TabScrollerBackgroundView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE6D570610F05C59006431A8 /* TabScrollerBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D570510F05C59006431A8 /* TabScrollerBackgroundView.m */; };
 		DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE705493103FB792003B5F41 /* ShuttleRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705491103FB792003B5F41 /* ShuttleRoute.m */; };
 		DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705496103FB79D003B5F41 /* EmergencyData.m */; };
@@ -309,13 +308,13 @@
 		DE71537C102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71537B102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE71F6E3104234F900661DED /* ShuttleRouteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */; };
 		DE71F7D510424E3400661DED /* ShuttleStop.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F7D410424E3400661DED /* ShuttleStop.m */; };
-		DE728E6C10D6FF4700BFED37 /* StoryThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E4610D6FF4700BFED37 /* StoryThumbnailView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DE728E7B10D6FF4700BFED37 /* StoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6510D6FF4700BFED37 /* StoryDetailViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DE728E7C10D6FF4700BFED37 /* StoryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6710D6FF4700BFED37 /* StoryListViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DE728E7E10D6FF4700BFED37 /* StoryXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6B10D6FF4700BFED37 /* StoryXMLParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE728E7B10D6FF4700BFED37 /* StoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6510D6FF4700BFED37 /* StoryDetailViewController.m */; };
+		DE728E7C10D6FF4700BFED37 /* StoryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6710D6FF4700BFED37 /* StoryListViewController.m */; };
+		DE728E6C10D6FF4700BFED37 /* StoryThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E4610D6FF4700BFED37 /* StoryThumbnailView.m */; };
+		DE728E7E10D6FF4700BFED37 /* StoryXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6B10D6FF4700BFED37 /* StoryXMLParser.m */; };
 		DE7720D910C57DBC00620A7D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE7720D810C57DBC00620A7D /* CoreGraphics.framework */; };
 		DE7720E010C57E1C00620A7D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE7720DF10C57E1C00620A7D /* QuartzCore.framework */; };
-		DE81CF6210C6BC390085573D /* NewsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE81CF6110C6BC390085573D /* NewsModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE81CF6210C6BC390085573D /* NewsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE81CF6110C6BC390085573D /* NewsModule.m */; };
 		DE821E8110EAB4F500B4C4C8 /* UIKit+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE936CA0161CD1FB00B69F7C /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936C9F161CD1FB00B69F7C /* Icon.png */; };
 		DE936CA2161CD1FF00B69F7C /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA1161CD1FF00B69F7C /* Icon@2x.png */; };
@@ -329,7 +328,7 @@
 		DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B48C10C9BB7300BDA774 /* AboutModule.m */; };
 		DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B6F710CB126200BDA774 /* MITConstants.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */; };
 		DEBF146117699977009B6089 /* DiningRoot.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF146017699977009B6089 /* DiningRoot.m */; };
 		DEBF1464176999BA009B6089 /* DiningLink.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF1463176999B9009B6089 /* DiningLink.m */; };
 		DEBF5FD814886F1A00B5719A /* LibrariesDetailLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FB914886F1A00B5719A /* LibrariesDetailLabel.m */; };
@@ -346,10 +345,10 @@
 		DEBF5FE314886F1A00B5719A /* LibrariesLoanTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD214886F1A00B5719A /* LibrariesLoanTabController.m */; };
 		DEBF5FE414886F1A00B5719A /* LibrariesLoanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD414886F1A00B5719A /* LibrariesLoanTableViewCell.m */; };
 		DEBF5FE514886F1A00B5719A /* LibrariesRenewResultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD714886F1A00B5719A /* LibrariesRenewResultViewController.m */; };
-		DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFF07C110001E300F0573E /* StoryImageView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFF07C110001E300F0573E /* StoryImageView.m */; };
 		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; };
-		DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6A110F8F71D009FAE35 /* NewsImage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DECBF6B610F8F91B009FAE35 /* NewsImageRep.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6B510F8F91B009FAE35 /* NewsImageRep.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6A110F8F71D009FAE35 /* NewsImage.m */; };
+		DECBF6B610F8F91B009FAE35 /* NewsImageRep.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6B510F8F91B009FAE35 /* NewsImageRep.m */; };
 		DED41FD517381D180048376F /* Dining.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DED41FD317381D180048376F /* Dining.xcdatamodeld */; };
 		DED41FD8173849500048376F /* DiningData.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FD7173849500048376F /* DiningData.m */; };
 		DED41FDB173850960048376F /* HouseVenue.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FDA173850960048376F /* HouseVenue.m */; };
@@ -526,7 +525,6 @@
 		2C33348E162DCF2600BBB312 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		2C33348F162DCF2600BBB312 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		2C333492162DD0D500BBB312 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FacebookSDK.framework; path = "~/Documents/FacebookSDK/FacebookSDK.framework"; sourceTree = "<absolute>"; };
-		2C333494162DD16300BBB312 /* FacebookSDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = FacebookSDKResources.bundle; path = "~/Documents/FacebookSDK/FacebookSDK.framework/Versions/A/Resources/FacebookSDKResources.bundle"; sourceTree = "<absolute>"; };
 		2C333497162EEFA700BBB312 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		2C333499162F27E200BBB312 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		2C33349E162F2F0200BBB312 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -1589,7 +1587,6 @@
 			isa = PBXGroup;
 			children = (
 				2C333492162DD0D500BBB312 /* FacebookSDK.framework */,
-				2C333494162DD16300BBB312 /* FacebookSDKResources.bundle */,
 			);
 			name = "Facebook Connect";
 			sourceTree = "<group>";
@@ -2904,6 +2901,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0500;
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = A35W4MM59Y;
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MIT Mobile" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -2965,7 +2967,6 @@
 				DE936CA4161CD28100B69F7C /* Default.png in Resources */,
 				DE936CA6161CD28300B69F7C /* Default@2x.png in Resources */,
 				DE952E6816295EBA007E7356 /* Default-568h@2x.png in Resources */,
-				2C333495162DD16300BBB312 /* FacebookSDKResources.bundle in Resources */,
 				2CEBBF831635A68500441252 /* DEFacebookComposeView.xib in Resources */,
 				2CEBBF891635A68500441252 /* DEFacebookAttachmentFrame.png in Resources */,
 				2CEBBF8A1635A68500441252 /* DEFacebookAttachmentFrame@2x.png in Resources */,
@@ -3391,6 +3392,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3412,6 +3415,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Debug;
@@ -3420,6 +3424,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3439,6 +3445,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -3530,6 +3537,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3549,6 +3558,7 @@
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
+				PROVISIONING_PROFILE = "";
 			};
 			name = TestFlight;
 		};

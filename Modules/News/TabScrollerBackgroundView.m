@@ -10,7 +10,7 @@
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        backgroundImage = [[UIImage imageNamed:MITImageNameScrollTabBackgroundTranslucent] retain];
+        _backgroundImage = [UIImage imageNamed:MITImageNameScrollTabBackgroundTranslucent];
         self.backgroundColor = [UIColor clearColor];
         self.opaque = NO;
     }
@@ -20,14 +20,7 @@
 
 - (void)drawRect:(CGRect)rect {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextDrawTiledImage(context, rect, backgroundImage.CGImage);
+    CGContextDrawTiledImage(context, rect, self.backgroundImage.CGImage);
 }
-
-
-- (void)dealloc {
-    [backgroundImage release];
-    [super dealloc];
-}
-
 
 @end

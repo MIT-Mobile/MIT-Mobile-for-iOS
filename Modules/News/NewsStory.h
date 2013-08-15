@@ -6,27 +6,27 @@
 - (void)addCategory:(NSInteger)newCategory;
 - (void)addGalleryImage:(NewsImage *)newImage;
 
-@property (nonatomic, retain) NSNumber *story_id;
-@property (nonatomic, retain) NSDate *postDate;
+@property (nonatomic, strong) NSNumber *story_id;
+@property (nonatomic, strong) NSDate *postDate;
 
-@property (nonatomic, retain) NSString *title;
-@property (nonatomic, retain) NSString *link;
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *link;
 
-@property (nonatomic, retain) NSString *author;
-@property (nonatomic, retain) NSString *summary;
-@property (nonatomic, retain) NSString *body;
+@property (nonatomic, copy) NSString *author;
+@property (nonatomic, copy) NSString *summary;
+@property (nonatomic, copy) NSString *body;
 
-@property (nonatomic, retain) NSNumber *featured;
+@property (nonatomic, copy) NSNumber *featured;
 
-@property (nonatomic, retain) NSSet *categories;
-@property (nonatomic, retain) NSNumber *topStory;
-@property (nonatomic, retain) NSNumber *searchResult;
-@property (nonatomic, retain) NSNumber *bookmarked;
+@property (nonatomic, copy) NSSet *categories;
+@property (nonatomic, strong) NSNumber *topStory;
+@property (nonatomic, strong) NSNumber *searchResult;
+@property (nonatomic, strong) NSNumber *bookmarked;
 
-@property (nonatomic, retain) NewsImage *inlineImage;
-@property (nonatomic, retain) NSSet *galleryImages;
+@property (nonatomic, strong) NewsImage *inlineImage;
+@property (nonatomic, copy) NSSet *galleryImages;
 @property (nonatomic, readonly) NSArray *allImages;
 
-@property (nonatomic, retain) NSNumber *read;
+@property (nonatomic, strong) NSNumber *read;
 
 @end
