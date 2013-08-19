@@ -5,7 +5,6 @@ NSString * const MITModuleTabOrderKey = @"MITModuleTabOrder";
 NSString * const MITActiveModuleKey = @"ActiveModule";
 NSString * const MITNewsTwoFirstRunKey = @"MITNews2ClearedCachedArticles";
 NSString * const MITEventsModuleInSortOrderKey = @"MITEventsModuleInSortOrder";
-NSString * const EmergencyUnreadCountKey = @"UnreadEmergencyCount";
 NSString * const ShuttleSubscriptionsKey = @"ActiveShuttleSubscriptions";
 NSString * const TwitterShareUsernameKey = @"TwitterShareUsername";
 NSString * const MITDeviceIdKey = @"device_id";

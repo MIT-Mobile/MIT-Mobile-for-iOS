@@ -6,16 +6,11 @@
 #import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MITModule.h"
 
-@interface EmergencyContactsViewController(Private)
-
-- (NSString *) mainText: (id)contactInfo;
-- (NSString *) detailText: (id)contactInfo;
-
+@interface EmergencyContactsViewController ()
+- (NSString *)detailText:(NSManagedObject*)contactInfo;
 @end
 
 @implementation EmergencyContactsViewController
-
-@synthesize emergencyContacts;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -37,18 +32,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyContactsDidLoadNotification object:nil];
 }
 
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
-}
-
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-}
-
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
@@ -66,30 +49,23 @@
 }
 
 #pragma mark Table view methods
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+// Do not delete this method. It is required by the MultiLineTableViewCell
+// and will crash if it is removed.
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     return 1;
 }
-
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [self.emergencyContacts count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
-	NSManagedObject *contactInfo = [self.emergencyContacts objectAtIndex:indexPath.row];
+	NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
     return [MultiLineTableViewCell cellHeightForTableView:tableView
-                                                     text:[self mainText:contactInfo] 
+                                                     text:[contactInfo valueForKey:@"title"]
                                                detailText:[self detailText:contactInfo] 
                                             accessoryType:UITableViewCellAccessoryDetailDisclosureButton];
-    
-    /*
-	return [MultiLineTableViewCell
-			cellHeightForTableView:tableView
-			main:[self mainText:contactInfo]
-			detail:[self detailText:contactInfo]
-			widthAdjustment: 26];	
-    */
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -98,23 +74,20 @@
     MultiLineTableViewCell *cell = (MultiLineTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        // Required by the MultiLineTableViewCell. If the accessoryType is not set, MultiLineTableViewCell
+        // will enter an infinite loop.
         cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-        UIImageView *imageView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-        cell.accessoryView = imageView;
+        cell.accessoryView =  [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
 		[cell applyStandardFonts];
     }
 
-	NSDictionary *contactInfo = [self.emergencyContacts objectAtIndex:indexPath.row];
-	cell.textLabel.text = [self mainText:contactInfo];
+	NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
+	cell.textLabel.text = [contactInfo valueForKey:@"title"];
 	cell.detailTextLabel.text = [self detailText:contactInfo];
     return cell;
 }
 
-- (NSString *) mainText: (id)contactInfo {
-	return [contactInfo valueForKey:@"title"];
-}
-
-- (NSString *) detailText: (id)contactInfo {
+- (NSString *)detailText:(NSManagedObject*)contactInfo {
 	NSString *phoneString = [contactInfo valueForKey:@"phone"];
 	phoneString = [NSString stringWithFormat:@"(%@.%@.%@)", 
 				   [phoneString substringToIndex:3], 
