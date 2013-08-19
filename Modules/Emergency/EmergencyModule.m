@@ -20,12 +20,6 @@
         self.iconName = @"emergency";
         self.pushNotificationSupported = YES;
         
-        // preserve unread state
-        if ([[NSUserDefaults standardUserDefaults] integerForKey:EmergencyUnreadCountKey] > 0) {
-            // TODO: EmergencyUnreadCountKey doesn't seem to be used anywhere else
-            // so we wouldn't ever get here
-            self.badgeValue = @"1";
-        }
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNewEmergencyInfo:) name:EmergencyInfoDidChangeNotification object:nil];
         

@@ -7,7 +7,6 @@ extern NSString * const MITNewsTwoFirstRunKey;
 extern NSString * const MITEventsModuleInSortOrderKey;
 extern NSString * const EmergencyInfoKey;
 extern NSString * const EmergencyLastUpdatedKey;
-extern NSString * const EmergencyUnreadCountKey;
 extern NSString * const ShuttleSubscriptionsKey;
 extern NSString * const TwitterShareUsernameKey;
 extern NSString * const MITDeviceIdKey;
