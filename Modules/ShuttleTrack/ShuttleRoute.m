@@ -21,7 +21,7 @@
 @dynamic summary;
 @dynamic interval;
 @dynamic isSafeRide;
-@dynamic stops;
+//@dynamic stops;
 @dynamic routeID;
 @dynamic sortOrder;
 

@@ -34,14 +34,14 @@
 // number of available predictions. We add one for the next scheduled stop
 -(NSInteger) predictionCount;
 
-@property (nonatomic, strong) NSString *title;
-@property (nonatomic, strong) NSString *stopID;
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *stopID;
 @property double latitude;
 @property double longitude;
 @property (nonatomic, copy) NSArray *routeStops;
-@property (nonatomic, strong) NSString* direction;
+@property (nonatomic, copy) NSString* direction;
 
-@property (nonatomic, strong, readonly) NSString* routeID;
+@property (nonatomic, readonly, copy) NSString* routeID;
 @property (nonatomic, copy) NSArray* path;
 @property (nonatomic, assign) NSInteger order;
 @property (nonatomic, strong) ShuttleRouteStop *routeStop;

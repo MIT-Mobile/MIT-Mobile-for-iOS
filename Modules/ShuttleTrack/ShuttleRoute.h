@@ -20,18 +20,18 @@
 
 - (NSArray *)annotations;
 
-@property (nonatomic, readwrite, strong) NSString *tag;
+@property (nonatomic, readwrite, copy) NSString *tag;
 @property (nonatomic, readwrite, copy) NSArray* vehicleLocations;        // locations, if available of any vehicles on the route.
 
-@property (nonatomic, strong, readonly) NSString *fullSummary;
+@property (nonatomic, readonly, copy) NSString *fullSummary;
 @property (nonatomic, assign) BOOL gpsActive;
 @property (nonatomic, assign) BOOL isRunning;
 @property (nonatomic, assign) BOOL liveStatusFailed;
 @property (nonatomic, readwrite, strong) ShuttleRouteCache *cache;
 
-@property (nonatomic, readwrite, strong) NSString *title;
-@property (nonatomic, readwrite, strong) NSString *summary;
-@property (nonatomic, strong) NSString *routeID;
+@property (nonatomic, readwrite, copy) NSString *title;
+@property (nonatomic, readwrite, copy) NSString *summary;
+@property (nonatomic, copy) NSString *routeID;
 @property (nonatomic, assign) NSInteger interval;
 @property (nonatomic, assign) BOOL isSafeRide;
 @property (nonatomic, copy) NSMutableArray *stops;
