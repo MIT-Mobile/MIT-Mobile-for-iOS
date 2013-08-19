@@ -1,12 +1,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface EmergencyContactsViewController : UITableViewController {
-
-	NSArray *emergencyContacts;
-
-}
-
-@property (nonatomic, retain) NSArray *emergencyContacts;
+@interface EmergencyContactsViewController : UITableViewController
+@property (nonatomic, copy) NSArray *emergencyContacts;
 
 @end
