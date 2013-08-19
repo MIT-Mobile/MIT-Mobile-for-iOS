@@ -6,17 +6,22 @@
 #import "EmergencyModule.h"
 #import "MobileRequestOperation.h"
 
+@interface EmergencyData ()
+@property (nonatomic,copy) NSArray *allPhoneNumbers;
+@property (nonatomic, copy) NSArray *primaryPhoneNumbers;
+@property (copy) NSArray *contacts;
+@property (strong) NSManagedObject *info;
+@end
+
 @implementation EmergencyData
-
-@synthesize primaryPhoneNumbers, allPhoneNumbers;
-
-@dynamic htmlString, lastUpdated, lastFetched;
+@dynamic htmlString;
+@dynamic lastUpdated;
+@dynamic lastFetched;
 
 NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 
 #pragma mark -
 #pragma mark Singleton Boilerplate
-
 
 + (EmergencyData *)sharedData {
     static EmergencyData *sharedEmergencyData = nil;
@@ -29,17 +34,16 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 }
 #pragma mark -
 #pragma mark Initialization
-
 - (id) init {
     self = [super init];
     if (self != nil) {
         // TODO: get primary numbers from m.mit.edu (it's unlikely, but numbers might change)
-        primaryPhoneNumbers = @[@{@"title" : @"Campus Police",
-                                  @"phone" : @"617.253.1212"},
-                                @{@"title" : @"MIT Medical",
-                                  @"phone" : @"617.253.1311"},
-                                @{@"title" : @"Emergency Status",
-                                  @"phone" : @"617.253.7669"}];
+        self.primaryPhoneNumbers = @[@{@"title" : @"Campus Police",
+                                       @"phone" : @"617.253.1212"},
+                                     @{@"title" : @"MIT Medical",
+                                       @"phone" : @"617.253.1311"},
+                                     @{@"title" : @"Emergency Status",
+                                       @"phone" : @"617.253.7669"}];
         [self fetchEmergencyInfo];
         [self fetchContacts];
         
@@ -50,25 +54,22 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 }
 
 - (void)fetchEmergencyInfo {
-    info = [[CoreDataManager fetchDataForAttribute:EmergencyInfoEntityName] lastObject];
+    self.info = [[CoreDataManager fetchDataForAttribute:EmergencyInfoEntityName] lastObject];
     
-    if (!info) {
-        info = [CoreDataManager insertNewObjectForEntityForName:EmergencyInfoEntityName];
-        [info setValue:@"" forKey:@"htmlString"];
-        [info setValue:[NSDate distantPast] forKey:@"lastUpdated"];
-        [info setValue:[NSDate distantPast] forKey:@"lastFetched"];
+    if (!self.info) {
+        self.info = [CoreDataManager insertNewObjectForEntityForName:EmergencyInfoEntityName];
+        [self.info setValue:@"" forKey:@"htmlString"];
+        [self.info setValue:[NSDate distantPast] forKey:@"lastUpdated"];
+        [self.info setValue:[NSDate distantPast] forKey:@"lastFetched"];
     }
 }
 
 - (void)fetchContacts {
     NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ordinality" ascending:YES];
-    allPhoneNumbers = [CoreDataManager objectsForEntity:EmergencyContactEntityName
+    self.allPhoneNumbers = [CoreDataManager objectsForEntity:EmergencyContactEntityName
                                       matchingPredicate:predicate
                                         sortDescriptors:@[sortDescriptor]];
-    if (!allPhoneNumbers) {
-        allPhoneNumbers = [[NSArray alloc] init];
-    }
 }
 
 
@@ -96,19 +97,19 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 }
 
 - (BOOL) hasNeverLoaded {
-	return ([[info valueForKey:@"htmlString"] length] == 0);
+	return ([[self.info valueForKey:@"htmlString"] length] == 0);
 }
 
 - (NSDate *)lastUpdated {
-    return [info valueForKey:@"lastUpdated"];
+    return [self.info valueForKey:@"lastUpdated"];
 }
 
 - (NSDate *)lastFetched {
-    return [info valueForKey:@"lastFetched"];
+    return [self.info valueForKey:@"lastFetched"];
 }
 
 - (NSString *)htmlString {
-    NSDate *lastUpdated = [info valueForKey:@"lastUpdated"];
+    NSDate *lastUpdated = [self.info valueForKey:@"lastUpdated"];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"M/d/y h:mm a zz"];
     [formatter setTimeZone:[NSTimeZone localTimeZone]];
@@ -124,11 +125,9 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
         return nil;
     }
     
-    NSArray *keys = [NSArray arrayWithObjects:@"__BODY__", @"__POST_DATE__", nil];
-    
-    NSArray *values = [NSArray arrayWithObjects:[info valueForKey:@"htmlString"], lastUpdatedString, nil];
-    
-    [htmlString replaceOccurrencesOfStrings:keys withStrings:values options:NSLiteralSearch];
+    NSDictionary *templates = @{@"__BODY__" : [self.info valueForKey:@"htmlString"],
+                                @"__POST_DATE__" : lastUpdatedString};
+    [htmlString replaceOccurrencesOfStrings:[templates allKeys] withStrings:[templates allValues] options:NSLiteralSearch];
     
     return htmlString;
 }
@@ -150,16 +149,16 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
                 NSDictionary *response = [(NSArray *)jsonResult lastObject];
                 
                 NSDate *lastUpdated = [NSDate dateWithTimeIntervalSince1970:[[response objectForKey:@"unixtime"] doubleValue]];
-                NSDate *previouslyUpdated = [info valueForKey:@"lastUpdated"];
+                NSDate *previouslyUpdated = [self.info valueForKey:@"lastUpdated"];
                 
                 if (!previouslyUpdated) { // user has never opened the app, set a baseline date
                     [self setLastRead:[NSDate date]];
                 }
                 
                 if (!previouslyUpdated || [lastUpdated timeIntervalSinceDate:previouslyUpdated] > 0) {
-                    [info setValue:lastUpdated forKey:@"lastUpdated"];
-                    [info setValue:[NSDate date] forKey:@"lastFetched"];
-                    [info setValue:[response objectForKey:@"text"] forKey:@"htmlString"];
+                    [self.info setValue:lastUpdated forKey:@"lastUpdated"];
+                    [self.info setValue:[NSDate date] forKey:@"lastFetched"];
+                    [self.info setValue:[response objectForKey:@"text"] forKey:@"htmlString"];
                     [CoreDataManager saveData];
                     
                     [self fetchEmergencyInfo];
@@ -178,38 +177,32 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 // request contacts
 - (void)reloadContacts {
     MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"emergency"
-                                                                              command:@"contacts"
-                                                                           parameters:nil];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
-                NSArray *contactsArray = (NSArray *)jsonResult;
-                
-                // delete all of the old numbers
-                NSArray *oldContacts = [CoreDataManager fetchDataForAttribute:EmergencyContactEntityName];
-                if ([oldContacts count] > 0) {
-                    [CoreDataManager deleteObjects:oldContacts];
-                }
-                
-                // create new entry for each contact in contacts
-                NSInteger i = 0;
-                for (NSDictionary *contactDict in contactsArray) {
-                    NSManagedObject *contact = [CoreDataManager insertNewObjectForEntityForName:EmergencyContactEntityName];
-                    [contact setValue:[contactDict objectForKey:@"contact"] forKey:@"title"];
-                    [contact setValue:[contactDict objectForKey:@"description"] forKey:@"summary"];
-                    [contact setValue:[contactDict objectForKey:@"phone"] forKey:@"phone"];
-                    [contact setValue:[NSNumber numberWithInteger:i] forKey:@"ordinality"];
-                    i++;
-                }
-                [CoreDataManager saveData];
-                [self fetchContacts];
-                
-                // notify listeners that contacts have finished loading
-                [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
-        } else {
+                                                                             command:@"contacts"
+                                                                          parameters:nil];
+    request.completeBlock = ^(MobileRequestOperation *operation, NSArray *contacts, NSString *contentType, NSError *error) {
+        if (!error) {
+            // delete all of the old numbers
+            NSArray *oldContacts = [CoreDataManager fetchDataForAttribute:EmergencyContactEntityName];
+            if ([oldContacts count]) {
+                [CoreDataManager deleteObjects:oldContacts];
+            }
             
+            [contacts enumerateObjectsUsingBlock:^(NSDictionary *contact, NSUInteger idx, BOOL *stop) {
+                NSManagedObject *contactObject = [CoreDataManager insertNewObjectForEntityForName:EmergencyContactEntityName];
+                [contactObject setValue:contact[@"contact"] forKey:@"title"];
+                [contactObject setValue:contact[@"description"] forKey:@"summary"];
+                [contactObject setValue:contact[@"phone"] forKey:@"phone"];
+                [contactObject setValue:@(idx) forKey:@"ordinality"];
+            }];
+            
+            [CoreDataManager saveData];
+            [self fetchContacts];
+            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
+        } else {
+            DDLogError(@"request failed for 'emergency' contacts: %@", error);
         }
     };
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[MobileRequestOperation defaultQueue] addOperation:request];
 
 }
 

@@ -1,13 +1,13 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@interface EmergencyData : NSObject {
-    NSManagedObject *info;
-    NSArray *contacts;
-    
-    NSArray *primaryPhoneNumbers;
-    NSArray *allPhoneNumbers;
-}
+@interface EmergencyData : NSObject
+@property (nonatomic, readonly) NSString *htmlString;
+@property (nonatomic, readonly) NSDate *lastUpdated;
+@property (nonatomic, readonly) NSDate *lastFetched;
+@property (nonatomic, strong) NSDate *lastRead;
+@property (nonatomic, copy, readonly) NSArray *primaryPhoneNumbers;
+@property (nonatomic, copy, readonly) NSArray *allPhoneNumbers;
 
 + (EmergencyData *)sharedData;
 
@@ -19,12 +19,5 @@
 
 - (BOOL)hasNeverLoaded;
 - (BOOL)didReadMessage;
-
-@property (nonatomic, readonly) NSString *htmlString;
-@property (nonatomic, readonly) NSDate *lastUpdated;
-@property (nonatomic, readonly) NSDate *lastFetched;
-@property (nonatomic, strong) NSDate *lastRead;
-@property (nonatomic, readonly) NSArray *primaryPhoneNumbers;
-@property (nonatomic, readonly) NSArray *allPhoneNumbers;
 
 @end
