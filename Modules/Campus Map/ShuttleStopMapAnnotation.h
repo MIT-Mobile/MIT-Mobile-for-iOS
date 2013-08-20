@@ -5,16 +5,8 @@
 #import "ShuttleStop.h"
 
 @interface ShuttleStopMapAnnotation : NSObject <MKAnnotation>
-{
-	ShuttleStop* _shuttleStop;
-	
-	NSString* _subtitle;
-}
-
--(id) initWithShuttleStop:(ShuttleStop*)shuttleStop;
-
 @property (readonly) ShuttleStop* shuttleStop;
+@property (nonatomic,copy) NSString *subtitle;
 
--(void) setSubtitle:(NSString*) subtitle;
-
+- (id)initWithShuttleStop:(ShuttleStop*)shuttleStop;
 @end
