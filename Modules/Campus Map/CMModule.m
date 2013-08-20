@@ -65,8 +65,8 @@
 		regionDictionary = [NSDictionary dictionaryWithContentsOfFile:regionFilename];
 	}
 	
-    NSNumber *centerLatNumber = [regionDictionary objectForKey:@"centerLat"];
-    NSNumber *centerLongNumber = [regionDictionary objectForKey:@"centerLong"];
+    NSNumber *centerLatNumber = regionDictionary[@"centerLat"];
+    NSNumber *centerLongNumber = regionDictionary[@"centerLong"];
     CLLocationDegrees centerLat = 0.0;
     CLLocationDegrees centerLong = 0.0;
 	if (centerLatNumber && centerLongNumber) {
@@ -75,8 +75,8 @@
 	}
     CLLocationCoordinate2D center = CLLocationCoordinate2DMake(centerLat, centerLong);
 
-    NSNumber *spanLatNumber = [regionDictionary objectForKey:@"spanLat"];
-    NSNumber *spanLongNumber = [regionDictionary objectForKey:@"spanLong"];
+    NSNumber *spanLatNumber = regionDictionary[@"spanLat"];
+    NSNumber *spanLongNumber = regionDictionary[@"spanLong"];
     CLLocationDegrees spanLat = 0.0;
     CLLocationDegrees spanLong = 0.0;
 	if (spanLatNumber && spanLongNumber) {
@@ -95,10 +95,9 @@
 			self.campusMapVC.mapView.region = region;
 		}
 		return YES;
-	}
-    else {
+	} else {
         NSMutableArray *components = [NSMutableArray arrayWithArray:[localPath componentsSeparatedByString:@"/"]];
-        NSString *pathRoot = [components objectAtIndex:0];
+        NSString *pathRoot = components[0];
         
         if ([pathRoot isEqualToString:@"search"] || [pathRoot isEqualToString:@"list"] || [pathRoot isEqualToString:@"detail"]) {
             // make sure the map is the active bar
@@ -119,13 +118,13 @@
                 }
         
             
-                NSMutableArray* searchResultsArr = [NSMutableArray arrayWithCapacity:searchResultsArray.count];
+                NSMutableArray* searchResultsArr = [NSMutableArray arrayWithCapacity:[searchResultsArray count]];
             
-                for (NSDictionary* info in searchResultsArray)
-                {
+                for (NSDictionary* info in searchResultsArray) {
                     MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:info];
                     [searchResultsArr addObject:annotation];
                 }
+
                 // this will remove old annotations and add the new ones. 
                 [self.campusMapVC setSearchResultsWithoutRecentering:searchResultsArr];
             } else {
@@ -136,13 +135,13 @@
 
             MITMapSearchResultAnnotation* currentAnnotation = nil;
 
-            if (components.count > 1) {
+            if ([components count] >= 2) {
                 // if there is a building number, show callout
                 NSString* annotationUniqueID = nil;
-                if ([pathRoot isEqualToString:@"list"] && components.count > 2) {
-                    annotationUniqueID = [components objectAtIndex:2];
+                if ([pathRoot isEqualToString:@"list"] && ([components count] > 2)) {
+                    annotationUniqueID = components[2];
                 } else {
-                    annotationUniqueID = [components objectAtIndex:1];
+                    annotationUniqueID = components[1];
                 }
 
                 
@@ -160,12 +159,10 @@
             if ([pathRoot isEqualToString:@"list"]) {
                 [self.campusMapVC showListView:YES];
                 
-                if (components.count > 1) {
+                if ([components count]) {
                     [components removeObjectAtIndex:0];
                 }
-            }
-            else if ([pathRoot isEqualToString:@"detail"])
-            {	
+            } else if ([pathRoot isEqualToString:@"detail"]) {
                 // push the details page onto the stack for the item selected. 
                 detailsVC = [[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
                                                                           bundle:nil];
@@ -173,10 +170,11 @@
                 detailsVC.annotation = currentAnnotation;
                 detailsVC.title = @"Info";
                 detailsVC.campusMapVC = self.campusMapVC;
-                if (components.count > 2)
-                    detailsVC.startingTab = [[components objectAtIndex:2] intValue];
-                
-                if(self.campusMapVC.lastSearchText != nil && self.campusMapVC.lastSearchText.length > 0) {
+                if ([components count]) {
+                    detailsVC.startingTab = [components[2] intValue];
+                }
+
+                if([self.campusMapVC.lastSearchText length]) {
                     detailsVC.queryText = self.campusMapVC.lastSearchText;
                 }				
             }
