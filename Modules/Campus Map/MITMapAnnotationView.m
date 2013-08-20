@@ -23,15 +23,13 @@
 
 @implementation MITPinAnnotationView
 
-@synthesize shadowView = _shadowView;
-
 - (id)initWithAnnotation:(id <MKAnnotation>)annotation reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
     if (self) {
         self.canShowCallout = NO;
         self.backgroundColor = [UIColor clearColor];
         self.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-        self.image = [UIImage imageNamed:@"map/map_pin_complete.png"];
+        self.image = [UIImage imageNamed:@"map/map_pin_complete"];
         self.centerOffset = CGPointMake(0, -(self.image.size.height / 2.0));
         self.calloutOffset = CGPointMake(0, (self.image.size.height / 4.0));
         self.canShowCallout = YES;
@@ -44,9 +42,9 @@
     
     // TODO: separate pin drop from shadow appearing
     if (_animatesDrop) {
-        self.image = [UIImage imageNamed:@"map/map_pin_complete.png"];
+        self.image = [UIImage imageNamed:@"map/map_pin_complete"];
     } else {
-        self.image = [UIImage imageNamed:@"map/map_pin_complete.png"];
+        self.image = [UIImage imageNamed:@"map/map_pin_complete"];
     }
 }
 

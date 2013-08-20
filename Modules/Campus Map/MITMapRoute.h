@@ -22,18 +22,12 @@
 
 @end
 
-@interface MITGenericMapRoute : NSObject <MITMapRoute> {
-    NSArray *pathLocations;
-    UIColor *fillColor;
-    UIColor *strokeColor;
-    CGFloat lineWidth;
-    NSArray *lineDashPattern;
-}
+@interface MITGenericMapRoute : NSObject <MITMapRoute>
 
-@property (nonatomic, retain) NSArray *pathLocations;
-@property (nonatomic, retain) UIColor *fillColor;
-@property (nonatomic, retain) UIColor *strokeColor;
-@property (nonatomic, retain) NSArray *lineDashPattern;
+@property (nonatomic, copy) NSArray *pathLocations;
+@property (nonatomic, strong) UIColor *fillColor;
+@property (nonatomic, strong) UIColor *strokeColor;
+@property (nonatomic, copy) NSArray *lineDashPattern;
 @property (nonatomic) CGFloat lineWidth;
 
 @end

@@ -6,5 +6,5 @@
 @interface BookmarksTableViewController : UITableViewController
 @property (nonatomic, weak) MapSelectionController* mapSelectionController;
 
--(id) initWithMapSelectionController:(MapSelectionController*)mapSelectionController;
+- (id)initWithMapSelectionController:(MapSelectionController*)mapSelectionController;
 @end

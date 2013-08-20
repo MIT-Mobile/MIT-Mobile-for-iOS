@@ -7,13 +7,13 @@
 #define kAPICategoryTitles	@"CategoryTitles"
 #define kAPICategory		@"Category"
 
-@implementation CategoriesTableViewController
-{
-	MITLoadingActivityView* _loadingView;
-}
+@interface CategoriesTableViewController ()
+@property (nonatomic,weak) MITLoadingActivityView *loadingView;
+@end
 
-#pragma mark -
-#pragma mark Initialization
+@implementation CategoriesTableViewController
+
+#pragma mark - Initialization
 
 
 -(id) initWithMapSelectionController:(MapSelectionController*)mapSelectionController
@@ -49,11 +49,9 @@
     self.title = @"Browse";
 	self.navigationItem.leftBarButtonItem.title = @"Back";
 	self.navigationItem.rightBarButtonItem = self.mapSelectionController.cancelButton;
-    
-    CGRect loadingFrame = [MITAppDelegate() rootNavigationController].view.bounds;
 	
-	if (_topLevel) {
-		_headerText = @"Browse map by:";
+	if (self.topLevel) {
+		self.headerText = @"Browse map by:";
         
         MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"map"
                                                                                 command:@"categorytitles"
@@ -68,21 +66,21 @@
         
         [[NSOperationQueue mainQueue] addOperation:operation];
 
-		if (!_loadingView)
-		{
+		if (!self.loadingView) {
 			self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-			_loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
-			[self.view addSubview:_loadingView];
+			MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
+			[self.view addSubview:loadingView];
+            self.loadingView = loadingView;
 		}
 	}
 	
-	if(_leafLevel)
+	if(self.leafLevel)
 	{
-		if (!_loadingView) 
-		{
+		if (!self.loadingView) {
 			self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-			_loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingFrame];
-			[self.view addSubview:_loadingView];
+			MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:self.view.bounds];
+			[self.view addSubview:loadingView];
+            self.loadingView = loadingView;
 		}
 	}
 	
@@ -112,7 +110,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return self.itemsInTable.count;
+    return [self.itemsInTable count];
 }
 
 
@@ -127,24 +125,16 @@
 		cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
 		cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
     }
-    
-	if ([[self.itemsInTable objectAtIndex:indexPath.row] objectForKey:@"categoryName"]) {
-		cell.textLabel.text = self.itemsInTable[indexPath.row][@"categoryName"];
-	} 
-	else
-	{
-		NSString* displayName = [[self.itemsInTable objectAtIndex:indexPath.row] objectForKey:@"displayName"];
-		if ([displayName isKindOfClass:[NSString class]]) {
-			cell.textLabel.text = displayName;
-		}
-		else
-			cell.textLabel.text = nil;
 
+    NSDictionary *item = self.itemsInTable[indexPath.row];
+
+	if (item[@"categoryName"]) {
+		cell.textLabel.text = [NSString stringWithFormat:@"%@",item[@"categoryName"]];
+	} else {
+		cell.textLabel.text = [NSString stringWithFormat:@"%@",item[@"displayName"]];
 	}
 
-
-	if (!_leafLevel) 
-	{
+	if (!self.leafLevel) {
 		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		cell.backgroundColor = [UIColor whiteColor];
 	}
@@ -153,16 +143,15 @@
 }
 
 
-#pragma mark -
-#pragma mark Table view delegate
+#pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	
-	NSDictionary* thisItem = [self.itemsInTable objectAtIndex:indexPath.row];
+	NSDictionary* item = self.itemsInTable[indexPath.row];
 	
-	if (_leafLevel) {
+	if (self.leafLevel) {
 		
 		// make sure the map is showing. 
 		[self.mapSelectionController.mapVC showListView:NO];
@@ -173,7 +162,7 @@
 		
 		NSMutableArray* searchResultsArray = [NSMutableArray array];
 
-		MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:thisItem];
+		MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:item];
 		[searchResultsArray addObject:annotation];
 		
 		// this will remove any old annotations and add the new ones. 
@@ -187,23 +176,22 @@
 	
 		CategoriesTableViewController* newCategoriesTVC = nil;
 		
-		if ([thisItem objectForKey:@"subcategories"]) 
-		{
+		if (item[@"subcategories"]) {
 			newCategoriesTVC = [[CategoriesTableViewController alloc] initWithMapSelectionController:self.mapSelectionController];
-			newCategoriesTVC.itemsInTable = [thisItem objectForKey:@"subcategories"];
+			newCategoriesTVC.itemsInTable = item[@"subcategories"];
+
 			NSString *formatString = @"Buildings by %@:";
-            if ([thisItem[@"categoryName"] isEqual:@"Building name"]) {
+            if ([item[@"categoryName"] isEqual:@"Building name"]) {
                 newCategoriesTVC.headerText = [NSString stringWithFormat:formatString,@"name"];
             } else {
                 newCategoriesTVC.headerText = [NSString stringWithFormat:formatString,@"number"];
             }
-		} else 
-		{
+		} else {
 			newCategoriesTVC = [[CategoriesTableViewController alloc] initWithMapSelectionController:self.mapSelectionController
                                                                                             andStyle:UITableViewStylePlain];
-			[newCategoriesTVC executeServerCategoryRequestWithQuery:thisItem[@"categoryId"]];
+			[newCategoriesTVC executeServerCategoryRequestWithQuery:item[@"categoryId"]];
 			newCategoriesTVC.leafLevel = YES;
-			newCategoriesTVC.headerText = [NSString stringWithFormat:@"%@:", thisItem[@"categoryName"]];
+			newCategoriesTVC.headerText = [NSString stringWithFormat:@"%@:", item[@"categoryName"]];
 		}
 		
 		newCategoriesTVC.topLevel = NO;
@@ -268,22 +256,6 @@
 	[self dismissModalViewControllerAnimated:YES];
 }
 
-
-#pragma mark -
-#pragma mark Memory management
-
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Relinquish ownership any cached data, images, etc that aren't in use.
-}
-
-- (void)viewDidUnload {
-    // Relinquish ownership of anything that can be recreated in viewDidLoad or on demand.
-    // For example: self.myOutlet = nil;
-}
-
 #pragma mark JSONLoadedDelegate
 - (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject
 {
@@ -291,14 +263,13 @@
 	
 	self.itemsInTable = [NSMutableArray arrayWithArray:categoryResults];
 	
-	if (_loadingView) {
+	if (self.loadingView) {
 		self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-		[_loadingView removeFromSuperview];
-		_loadingView = nil;
+		[self.loadingView removeFromSuperview];
 		
-		if(_leafLevel)
+		if(self.leafLevel) {
 			self.tableView.backgroundColor = [UIColor whiteColor];
-		
+		}
 	}
 	
 	[self.tableView reloadData];
@@ -306,10 +277,8 @@
 
 - (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
 {
-	if (_loadingView) {
-		//self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-		[_loadingView removeFromSuperview];
-		_loadingView = nil;
+	if (self.loadingView) {
+		[self.loadingView removeFromSuperview];
 	}
 }
 
@@ -334,7 +303,7 @@
                   error:error];
     };
     
-    [[NSOperationQueue mainQueue] addOperation:operation];
+    [[MobileRequestOperation defaultQueue] addOperation:operation];
 }
 
 - (void)operation:(MobileRequestOperation*)operation didFinishWithContent:(id)content
@@ -345,21 +314,19 @@
         
         self.itemsInTable = [NSMutableArray arrayWithArray:categoryResults];
         
-        if (_loadingView) {
+        if (self.loadingView) {
             self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-            [_loadingView removeFromSuperview];
-            _loadingView = nil;
+            [self.loadingView removeFromSuperview];
             
-            if(_leafLevel)
+            if(self.leafLevel) {
                 self.tableView.backgroundColor = [UIColor whiteColor];
-            
+            }
         }
         
         [self.tableView reloadData];
     } else {
-        if (_loadingView) {
-            [_loadingView removeFromSuperview];
-            _loadingView = nil;
+        if (self.loadingView) {
+            [self.loadingView removeFromSuperview];
         }
         
         [[UIAlertView alertViewForError:error
@@ -367,6 +334,5 @@
                       alertViewDelegate:nil] show];
     }
 }
-
 
 @end

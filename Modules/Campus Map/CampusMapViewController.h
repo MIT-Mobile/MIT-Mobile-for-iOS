@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "MITMapView.h"
 #import "ShuttleDataManager.h"
-#import "CampusMapToolbar.h"
 #import "MITMobileWebAPI.h"
 #import "MITModuleURL.h"
 #import "CMModule.h"

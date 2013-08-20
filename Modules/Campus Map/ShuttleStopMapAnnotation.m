@@ -1,11 +1,7 @@
-
 #import "ShuttleStopMapAnnotation.h"
 
-
 @implementation ShuttleStopMapAnnotation
-@synthesize shuttleStop = _shuttleStop;
-
--(id) initWithShuttleStop:(ShuttleStop*)shuttleStop
+- (id)initWithShuttleStop:(ShuttleStop*)shuttleStop
 {
 	self = [super init];
 	if (self) {
@@ -16,28 +12,18 @@
 }
 
 
--(CLLocationCoordinate2D) coordinate
+- (CLLocationCoordinate2D)coordinate
 {
 	CLLocationCoordinate2D coordinate;
-	coordinate.latitude = _shuttleStop.latitude;
-	coordinate.longitude = _shuttleStop.longitude;
+	coordinate.latitude = self.shuttleStop.latitude;
+	coordinate.longitude = self.shuttleStop.longitude;
 	
 	return coordinate;
 }
 
--(NSString*) title
+- (NSString*)title
 {
-	return _shuttleStop.title;
-}
-
--(NSString*) subtitle
-{
-	return _subtitle;
-}
-
--(void) setSubtitle:(NSString*)subtitle
-{
-	_subtitle = subtitle;
+	return self.shuttleStop.title;
 }
 
 @end

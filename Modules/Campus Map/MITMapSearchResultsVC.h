@@ -8,8 +8,8 @@
 																UITableViewDataSource, 
 																UISearchBarDelegate> 
 
-@property (nonatomic, retain) NSArray* searchResults;
-@property (nonatomic, assign) CampusMapViewController* campusMapVC;
+@property (nonatomic, copy) NSArray* searchResults;
+@property (nonatomic, weak) CampusMapViewController* campusMapVC;
 
 @property BOOL isCategory;
 
