@@ -342,11 +342,10 @@
 -(void) addAnnotationsForShuttleStops:(NSArray*)shuttleStops
 {
 	if (self.shuttleAnnotations == nil) {
-		self.shuttleAnnotations = [[NSMutableArray alloc] initWithCapacity:shuttleStops.count];
+		self.shuttleAnnotations = [[NSMutableArray alloc] init];
 	}
 
-	for (ShuttleStop* shuttleStop in shuttleStops)
-	{
+	for (ShuttleStop* shuttleStop in shuttleStops) {
 		ShuttleStopMapAnnotation* annotation = [[ShuttleStopMapAnnotation alloc] initWithShuttleStop:shuttleStop];
 		[self.mapView addAnnotation:annotation];
 		[self.shuttleAnnotations addObject:annotation];
@@ -510,16 +509,15 @@
 -(void) receivedNewSearchResults:(NSArray*)searchResults forQuery:(NSString *)searchQuery
 {
 
-	NSMutableArray* searchResultsArr = [NSMutableArray arrayWithCapacity:searchResults.count];
+	NSMutableArray* resultAnnotations = [[NSMutableArray alloc] init];
 
-	for (NSDictionary* info in searchResults)
-	{
+	for (NSDictionary* info in searchResults) {
 		MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:info];
-		[searchResultsArr addObject:annotation];
+		[resultAnnotations addObject:annotation];
 	}
 
 	// this will remove old annotations and add the new ones.
-	self.searchResults = searchResultsArr;
+	self.searchResults = resultAnnotations;
 
 	NSString* docsFolder = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
 	NSString* searchResultsFilename = [docsFolder stringByAppendingPathComponent:@"searchResults.plist"];

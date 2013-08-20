@@ -130,8 +130,8 @@
 }
 
 - (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	return [UITableView ungroupedSectionHeaderWithTitle:
-			[NSString stringWithFormat:@"%d found", self.searchResults.count]];
+    NSString *title = [NSString stringWithFormat:@"%d found", [self.searchResults count]];
+	return [UITableView ungroupedSectionHeaderWithTitle:title];
 }
 
 - (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
