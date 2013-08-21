@@ -6,17 +6,10 @@
 @interface PeopleDetailsViewController : UITableViewController 
 	<ABPeoplePickerNavigationControllerDelegate, 
 	 ABNewPersonViewControllerDelegate, 
-	 ABPersonViewControllerDelegate> 
-{
+	 ABPersonViewControllerDelegate>
 
-	PersonDetails *personDetails;
-	NSMutableArray *sectionArray;
-	NSString *fullname;
-}
-
-@property (nonatomic, retain) PersonDetails *personDetails;
-@property (nonatomic, retain) NSMutableArray *sectionArray;
-@property (nonatomic, retain) NSString *fullname;
+@property (nonatomic, strong) PersonDetails *personDetails;
+@property (nonatomic, copy) NSString *fullname;
 
 - (void)mapIconTapped:(NSString *)room;
 - (void)phoneIconTapped:(NSString *)phone;
