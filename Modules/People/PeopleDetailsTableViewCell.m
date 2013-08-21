@@ -22,11 +22,5 @@
 	self.detailTextLabel.numberOfLines = 0;
 }
 
-#pragma mark -
-
-- (void)dealloc {
-    [super dealloc];
-}
-
 
 @end

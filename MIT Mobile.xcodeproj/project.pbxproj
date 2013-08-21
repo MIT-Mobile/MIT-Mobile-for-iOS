@@ -393,7 +393,7 @@
 		EB676032114A9316004596BB /* ShuttleRouteCache.m in Sources */ = {isa = PBXBuildFile; fileRef = EB67602F114A9316004596BB /* ShuttleRouteCache.m */; };
 		EB676033114A9316004596BB /* ShuttleStopLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = EB676031114A9316004596BB /* ShuttleStopLocation.m */; };
 		EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		EB6F2B6D10E9026200A29A2A /* PeopleDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6F2B6C10E9026200A29A2A /* PeopleDetailsTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		EB6F2B6D10E9026200A29A2A /* PeopleDetailsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6F2B6C10E9026200A29A2A /* PeopleDetailsTableViewCell.m */; };
 		EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB74ED2F11924E7C006673F9 /* ShareDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB74ED2D11924E7C006673F9 /* ShareDetailViewController.m */; };
 		EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EB7F326A10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld */; };
