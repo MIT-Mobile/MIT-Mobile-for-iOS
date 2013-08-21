@@ -77,15 +77,15 @@
 	self.shareDelegate = self;
 	
 	// setup nav bar
-	if (self.events.count > 1) {
-		_eventPager = [[UISegmentedControl alloc] initWithItems:@[[UIImage imageNamed:MITImageNameUpArrow],
+	if ([self.events count] > 1) {
+		self.eventPager = [[UISegmentedControl alloc] initWithItems:@[[UIImage imageNamed:MITImageNameUpArrow],
                                                                   [UIImage imageNamed:MITImageNameDownArrow]]];
-		[_eventPager setMomentary:YES];
-		[_eventPager addTarget:self action:@selector(showNextEvent:) forControlEvents:UIControlEventValueChanged];
-		_eventPager.segmentedControlStyle = UISegmentedControlStyleBar;
-		_eventPager.frame = CGRectMake(0, 0, 80.0, _eventPager.frame.size.height);
+		[self.eventPager setMomentary:YES];
+		[self.eventPager addTarget:self action:@selector(showNextEvent:) forControlEvents:UIControlEventValueChanged];
+		self.eventPager.segmentedControlStyle = UISegmentedControlStyleBar;
+		self.eventPager.frame = CGRectMake(0, 0, 80.0, self.eventPager.frame.size.height);
 		
-        UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:_eventPager];
+        UIBarButtonItem * segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.eventPager];
 		self.navigationItem.rightBarButtonItem = segmentBarItem;
 	}
     
@@ -104,7 +104,7 @@
 - (void)showNextEvent:(id)sender
 {
 	if ([sender isKindOfClass:[UISegmentedControl class]]) {
-        NSInteger i = _eventPager.selectedSegmentIndex;
+        NSInteger i = self.eventPager.selectedSegmentIndex;
 		NSInteger currentEventIndex = [self.events indexOfObject:self.event];
 		if (i == 0) { // previous
             if (currentEventIndex > 0) {
