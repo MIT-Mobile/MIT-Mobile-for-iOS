@@ -14,17 +14,21 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
-@interface PeopleSearchViewController ()
-@property (nonatomic,strong) NSURL *directoryPhoneURL;
+@interface PeopleSearchViewController () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MITSearchDisplayDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
+
+@property (nonatomic,strong) UITableView *tableView;
+@property (nonatomic,strong) UITableView *searchResultsTableView;
+@property (nonatomic,strong) UIView *loadingView;
+@property (nonatomic,strong) UIView *recentlyViewedHeader;
+
+@property (nonatomic,copy) NSString *searchTerms;
+@property (nonatomic,copy) NSArray *searchTokens;
+
+@property (strong) NSURL *directoryPhoneURL;
+@property BOOL searchCancelled;
 @end
 
 @implementation PeopleSearchViewController
-
-@synthesize searchTerms, searchTokens, searchResults, searchController,
-loadingView, searchBar = theSearchBar, tableView = theTableView;
-
-#pragma mark - View
-
 - (id)initWithNibName:(NSString *)nibNameOrNil
                bundle:(NSBundle *)nibBundleOrNil
 {
@@ -38,9 +42,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
     return self;
 }
 
-// Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
     return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
 
@@ -52,8 +54,11 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 - (void)loadView
 {
     UIView *view = [self defaultApplicationView];
-    view.backgroundColor = [UIColor clearColor];
-    
+    view.backgroundColor = [UIColor colorWithRed:0.784
+                                           green:0.792
+                                            blue:0.812
+                                           alpha:1.0];
+
     self.view = view;
 }
 
@@ -62,37 +67,55 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
     self.title = @"People Directory";
     
 	// set up search bar
-	theSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, NAVIGATION_BAR_HEIGHT)];
-    theSearchBar.tintColor = SEARCH_BAR_TINT_COLOR;
-	
-	//theSearchBar.delegate = self;
-	theSearchBar.placeholder = @"Search";
-	if ([self.searchTerms length] > 0)
-		theSearchBar.text = self.searchTerms;
-    
+    {
+        UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0f, 0., self.view.frame.size.width, NAVIGATION_BAR_HEIGHT)];
+        searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
+        searchBar.placeholder = @"Search";
+
+        if ([self.searchTerms length]) {
+            searchBar.text = self.searchTerms;
+        }
+
+        [self.view addSubview:searchBar];
+        self.searchBar = searchBar;
+    }
+
     // set up search controller
-    self.searchController = [[[MITSearchDisplayController alloc] initWithSearchBar:theSearchBar contentsController:self] autorelease];
+    self.searchController = [[MITSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
 	self.searchController.delegate = self;
+
+    CGRect tablesFrame = CGRectMake(0.0,
+                                    CGRectGetMaxY(self.searchBar.frame),
+                                    self.searchBar.frame.size.width,
+                                    self.view.frame.size.height - CGRectGetMaxY(self.searchBar.frame));
+    UITableView *searchTableView = [[UITableView alloc] initWithFrame:tablesFrame style:UITableViewStylePlain];
+	searchTableView.backgroundView = nil;
+    searchTableView.backgroundColor = [UIColor colorWithRed:0.784
+                                                      green:0.792
+                                                       blue:0.812
+                                                      alpha:1.0];
     
-    CGRect frame = CGRectMake(0.0, theSearchBar.frame.size.height, theSearchBar.frame.size.width, self.view.frame.size.height - theSearchBar.frame.size.height);
-    searchResultsTableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain];
-    self.searchController.searchResultsTableView = searchResultsTableView;
+    self.searchController.searchResultsTableView = searchTableView;
     self.searchController.searchResultsDelegate = self;
     self.searchController.searchResultsDataSource = self;
-    
-    // set up tableview
-    self.tableView = [[[UITableView alloc] initWithFrame:frame style:UITableViewStyleGrouped] autorelease];
-    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-	
-	[self.tableView applyStandardColors];
-	
-	static NSString *searchHints = @"Sample searches:\nName: 'william barton rogers', 'rogers'\nEmail: 'wbrogers', 'wbrogers@mit.edu'\nPhone: '6172531000', '31000'";
+    self.searchResultsTableView = searchTableView;
 
+    // set up tableview
+    UITableView *tableView = [[UITableView alloc] initWithFrame:tablesFrame style:UITableViewStyleGrouped];
+    tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    tableView.delegate = self;
+    tableView.dataSource = self;
+	//[tableView applyStandardColors];
+	tableView.backgroundView = nil;
+    tableView.backgroundColor = [UIColor colorWithRed:0.784
+                                                green:0.792
+                                                 blue:0.812
+                                                alpha:1.0];
+	
+    NSString *searchHints = @"Sample searches:\nName: 'william barton rogers', 'rogers'\nEmail: 'wbrogers', 'wbrogers@mit.edu'\nPhone: '6172531000', '31000'";
 	UIFont *hintsFont = [UIFont systemFontOfSize:[UIFont systemFontSize]];
 	CGSize labelSize = [searchHints sizeWithFont:hintsFont
-									constrainedToSize:self.tableView.frame.size
+									constrainedToSize:tableView.frame.size
 										lineBreakMode:UILineBreakModeWordWrap];
 	
 	UILabel *hintsLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 5.0, labelSize.width, labelSize.height + 5.0)];
@@ -103,38 +126,32 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 	hintsLabel.text = searchHints;	
 	UIView *hintsContainer = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, labelSize.width, labelSize.height + 10.0)];
 	[hintsContainer addSubview:hintsLabel];
-	[hintsLabel release];
-    
-	self.tableView.tableHeaderView = [[[UIView alloc] initWithFrame:hintsContainer.frame] autorelease];
-	[self.tableView.tableHeaderView addSubview:hintsContainer];
-	[hintsContainer release];
-
-	// set up screen for when there are no results
-	recentlyViewedHeader = nil;
+	tableView.tableHeaderView = hintsContainer;
 	
 	// set up table footer
-	UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-	[button setFrame:CGRectMake(10.0, 0.0, self.tableView.frame.size.width - 20.0, 44.0)];
-	button.titleLabel.font = [UIFont boldSystemFontOfSize:20.0];
-	button.titleLabel.shadowOffset = CGSizeMake(0.0, -1.0);
-	button.titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.3];
-	[button setTitle:@"Clear Recents" forState:UIControlStateNormal];
+    {
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        [button setFrame:CGRectMake(10.0, 0.0, tableView.frame.size.width - 20.0, 44.0)];
+        button.titleLabel.font = [UIFont boldSystemFontOfSize:20.0];
+        button.titleLabel.shadowOffset = CGSizeMake(0.0, -1.0);
+        button.titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.3];
+        [button setTitle:@"Clear Recents" forState:UIControlStateNormal];
+        
+        // based on code from stackoverflow.com/questions/1427818/iphone-sdk-creating-a-big-red-uibutton
+        [button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
+                          forState:UIControlStateNormal];
+        [button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2highlighted.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
+                          forState:UIControlStateHighlighted];
+        
+        [button addTarget:self action:@selector(showActionSheet) forControlEvents:UIControlEventTouchUpInside];	
+        
+        UIView *buttonContainer = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 44.0)];
+        [buttonContainer addSubview:button];
+        tableView.tableFooterView = buttonContainer;
+    }
 	
-	// based on code from stackoverflow.com/questions/1427818/iphone-sdk-creating-a-big-red-uibutton
-	[button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
-					  forState:UIControlStateNormal];
-	[button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2highlighted.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
-					  forState:UIControlStateHighlighted];
-	
-	[button addTarget:self action:@selector(showActionSheet) forControlEvents:UIControlEventTouchUpInside];	
-	
-	UIView *buttonContainer = [[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.tableView.frame.size.width, 44.0)] autorelease];
-	[buttonContainer addSubview:button];
-	
-	self.tableView.tableFooterView = buttonContainer;
-    
-    [self.view addSubview:self.searchBar];
-    [self.view addSubview:self.tableView];
+    [self.view addSubview:tableView];
+    self.tableView = tableView;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -143,26 +160,9 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
     if (![self.searchController isActive]) {
         [self.tableView reloadData];
     } else {
-        [searchResultsTableView deselectRowAtIndexPath:[searchResultsTableView indexPathForSelectedRow] animated:YES];
+        [self.searchResultsTableView deselectRowAtIndexPath:[self.searchResultsTableView indexPathForSelectedRow] animated:YES];
     }
     self.tableView.tableFooterView.hidden = ([[[PeopleRecentsData sharedData] recents] count] == 0);
-}
-
-#pragma mark memory
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-	[recentlyViewedHeader release];
-	[searchResults release];
-	[searchTerms release];
-	[searchTokens release];
-	[searchController release];
-    [theTableView release];
-	[loadingView release];
-    [super dealloc];
 }
 
 #pragma mark -
@@ -170,7 +170,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 
 - (void)beginExternalSearch:(NSString *)externalSearchTerms {
 	self.searchTerms = externalSearchTerms;
-	theSearchBar.text = self.searchTerms;
+	self.searchBar.text = self.searchTerms;
 	
 	[self performSearch];
 }
@@ -178,7 +178,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
 	self.searchResults = nil;
-    _searchCancelled = YES;
+    self.searchCancelled = YES;
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -192,21 +192,14 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 	// save search tokens for drawing table cells
 	NSMutableArray *tempTokens = [NSMutableArray arrayWithArray:[[self.searchTerms lowercaseString] componentsSeparatedByString:@" "]];
 	[tempTokens sortUsingComparator:^NSComparisonResult(NSString *string1, NSString *string2) {
-        if ([string2 length] > [string2 length])
-            return NSOrderedAscending;
-        else if ([string2 length] < [string2 length])
-            return NSOrderedDescending;
-        else
-            return NSOrderedSame;
+        return [@([string1 length]) compare:@([string2 length])];
     }];
     
-	self.searchTokens = [NSArray arrayWithArray:tempTokens];
+	self.searchTokens = tempTokens;
 
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:self.searchTerms, @"q", nil];
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"people"
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"people"
                                                                               command:nil
-                                                                           parameters:params] autorelease];
-
+                                                                          parameters:@{@"q" : self.searchTerms}];
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (_searchCancelled) {
             return;
@@ -274,7 +267,7 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 			
 			SecondaryGroupedTableViewCell *cell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:secondaryCellID];
 			if (cell == nil) {
-				cell = [[[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:secondaryCellID] autorelease];
+				cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:secondaryCellID];
 			}
             
             if (indexPath.row == 0) {
@@ -293,76 +286,64 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 			
 			UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:recentCellID];
 			if (cell == nil) {
-				cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:recentCellID] autorelease];
+				cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:recentCellID];
+                [cell applyStandardFonts];
 			}
-			
-			[cell applyStandardFonts];
+
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-			PersonDetails *recent = [[[PeopleRecentsData sharedData] recents] objectAtIndex:indexPath.row];
+			PersonDetails *recent = [[PeopleRecentsData sharedData] recents][indexPath.row];
 			cell.textLabel.text = [recent displayName];
             
 			// show person's title, dept, or email as cell's subtitle text
-			cell.detailTextLabel.text = @" "; // put something there so other cells' contents won't get drawn here
-			NSArray *displayPriority = [NSArray arrayWithObjects:@"title", @"dept", nil];
-			NSString *displayText;
-			for (NSString *tag in displayPriority) {
+			cell.detailTextLabel.text = @" ";
+			NSString *displayText = nil;
+			for (NSString *tag in @[@"title", @"dept"]) {
 				displayText = [recent valueForKey:tag];
 				if (displayText) {
 					cell.detailTextLabel.text = displayText;
 					break;
 				}
 			}
-			
 			return cell;
 		}
-		
 	} else { // search results
-		
 		PartialHighlightTableViewCell *cell = (PartialHighlightTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"ResultCell"];
-		if (cell == nil) {
-			cell = [[[PartialHighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ResultCell"] autorelease];
+		if (!cell) {
+			cell = [[PartialHighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ResultCell"];
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
 			
-		NSDictionary *searchResult = [self.searchResults objectAtIndex:indexPath.row];
-		NSString *fullname = [[searchResult objectForKey:@"name"] objectAtIndex:0];
-		
-		// figure out which field (if any) to display as subtitle
-		// display priority: title, dept
-		cell.detailTextLabel.text = @" "; // if this is empty textlabel will be bottom aligned
-		NSArray *detailAttribute = nil;
-		if ((detailAttribute = [searchResult objectForKey:@"title"]) != nil) {
-			cell.detailTextLabel.text = [detailAttribute objectAtIndex:0];
-		} else if ((detailAttribute = [searchResult objectForKey:@"dept"]) != nil) {
-			cell.detailTextLabel.text = [detailAttribute objectAtIndex:0];
-		}
+		NSDictionary *searchResult = self.searchResults[indexPath.row];
+		NSString *fullname = searchResult[@"name"][0];
+
+		if (searchResult[@"title"]) {
+			cell.detailTextLabel.text = searchResult[@"title"];
+		} else if (searchResult[@"dept"]) {
+			cell.detailTextLabel.text = searchResult[@"dept"][0];
+		} else {
+            cell.detailTextLabel.text = @" "; // if this is empty textlabel will be bottom aligned
+        }
 		
 		// in this section we try to highlight the parts of the results that match the search terms
 		// temporarily place "normal[bold] [bold]normal" as textlabel
-		// PartialHightlightTableViewCell will change bracketed text to bold text		
-		NSString *preformatString = [NSString stringWithString:fullname];
-		NSRange boldRange;
-		NSInteger tokenIndex = 0; // if this is the first token we don't need to do the [ vs ] comparison
-		for (NSString *token in self.searchTokens) {
-			boldRange = [[preformatString lowercaseString] rangeOfString:token];
+		// PartialHightlightTableViewCell will change bracketed text to bold text
+		__block NSString *preformatString = [NSString stringWithString:fullname];
+        [self.searchTokens enumerateObjectsUsingBlock:^(NSString *token, NSUInteger idx, BOOL *stop) {
+            NSRange boldRange = [[preformatString lowercaseString] rangeOfString:token];
 			if (boldRange.location != NSNotFound) {
 				// if range is already bracketed don't create another pair inside
 				NSString *leftString = [preformatString substringWithRange:NSMakeRange(0, boldRange.location)];
-				if ((tokenIndex > 0) && [[leftString componentsSeparatedByString:@"["] count] > [[leftString componentsSeparatedByString:@"]"] count])
-						continue;
-				
-				preformatString = [NSString stringWithFormat:@"%@[%@]%@",
-								   leftString,
-								   [preformatString substringWithRange:boldRange],
-								   [preformatString substringFromIndex:(boldRange.location + boldRange.length)]];
+				if (!((idx > 0) && [[leftString componentsSeparatedByString:@"["] count] > [[leftString componentsSeparatedByString:@"]"] count])) {
+                    preformatString = [NSString stringWithFormat:@"%@[%@]%@",
+                                       leftString,
+                                       [preformatString substringWithRange:boldRange],
+                                       [preformatString substringFromIndex:(boldRange.location + boldRange.length)]];
+                }
 			}
-			tokenIndex++;
-		}
+        }];
 		
 		cell.textLabel.text = preformatString;
-
-		
 		return cell;
 	}
 	
@@ -388,76 +369,65 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *titleView = nil;
-	
 	if (section == 1) {
-		if (recentlyViewedHeader == nil) {
-			recentlyViewedHeader = [[UITableView groupedSectionHeaderWithTitle:@"Recently Viewed"] retain];
-		}
-		titleView = recentlyViewedHeader;
+		return [UITableView groupedSectionHeaderWithTitle:@"Recently Viewed"];
 	} else if (tableView == self.searchController.searchResultsTableView) {
 		NSUInteger numResults = [self.searchResults count];
 		switch (numResults) {
 			case 0:
 				break;
 			case 100:
-				titleView = [UITableView ungroupedSectionHeaderWithTitle:@"Many found, showing 100"];
+				return [UITableView ungroupedSectionHeaderWithTitle:@"Many found, showing 100"];
 				break;
 			default:
-				titleView = [UITableView ungroupedSectionHeaderWithTitle:[NSString stringWithFormat:@"%d found", numResults]];
+				return [UITableView ungroupedSectionHeaderWithTitle:[NSString stringWithFormat:@"%d found", numResults]];
 				break;
 		}
 	}
 	
-    return titleView;
-
+    return nil;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	
 	if (tableView == self.searchController.searchResultsTableView || indexPath.section == 1) { // user selected search result or recently viewed
-
-		PersonDetails *personDetails;
+		PersonDetails *personDetails = nil;
+        
 		PeopleDetailsViewController *detailView = [[PeopleDetailsViewController alloc] initWithStyle:UITableViewStyleGrouped];
 		if (tableView == self.searchController.searchResultsTableView) {
-			NSDictionary *selectedResult = [self.searchResults objectAtIndex:indexPath.row];
-			personDetails = [PersonDetails retrieveOrCreate:selectedResult];
+			personDetails = [PersonDetails retrieveOrCreate:self.searchResults[indexPath.row]];
 		} else {
-			personDetails = [[[PeopleRecentsData sharedData] recents] objectAtIndex:indexPath.row];
+			personDetails = [[PeopleRecentsData sharedData] recents][indexPath.row];
 		}
+
 		detailView.personDetails = personDetails;
 		[self.navigationController pushViewController:detailView animated:YES];
-		[detailView release];
-        
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-		
 	} else { // we are on home screen and user selected phone or emergency contacts
-		
 		switch (indexPath.row) {
 			case 0:
 				[self phoneIconTapped];				
 				[self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 				break;
-			case 1: // push emergency contacts
-			{
+			case 1:
                 [[UIApplication sharedApplication] openURL:[NSURL internalURLWithModuleTag:EmergencyTag path:@"contacts"]];
 				[self.tableView deselectRowAtIndexPath:indexPath animated:NO];
 				break;
-			}
 		}
 	}
 }
 
-#pragma mark -
-#pragma mark Connection methods
+#pragma mark - Connection methods
 
 - (void)showLoadingView {
-	if (self.loadingView == nil) {
-        CGRect frame = CGRectMake(0.0, self.searchBar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.searchBar.frame.size.height);
-		self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:frame] autorelease];
+	if (!self.loadingView) {
+        CGRect frame = self.searchBar.frame;
+        frame.origin.x = 0.0;
+        frame.size.height = CGRectGetHeight(self.view.frame) - CGRectGetHeight(self.searchBar.frame);
+
+		MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:frame];
+        [self.view addSubview:loadingView];
+        self.loadingView = loadingView;
 	}
-	
-	[self.view addSubview:self.loadingView];
 }
 
 #pragma mark -
@@ -471,7 +441,6 @@ loadingView, searchBar = theSearchBar, tableView = theTableView;
                                          destructiveButtonTitle:@"Clear"
                                               otherButtonTitles:nil];
     [sheet showFromAppDelegate];
-    [sheet release];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex

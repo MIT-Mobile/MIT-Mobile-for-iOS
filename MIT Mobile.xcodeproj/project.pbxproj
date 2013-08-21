@@ -416,7 +416,7 @@
 		EB976D1C116CF6A10036A18E /* EventCategoriesTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB976D1A116CF6A10036A18E /* EventCategoriesTableView.m */; };
 		EB9FF4A6145A1D7500028A18 /* BookDetailTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9FF4A5145A1D7500028A18 /* BookDetailTableViewCell.m */; };
 		EB9FF4E2145F495A00028A18 /* WorldCatHoldingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9FF4E1145F495900028A18 /* WorldCatHoldingsViewController.m */; };
-		EBA2865610E07E140003BA01 /* PeopleSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		EBA2865610E07E140003BA01 /* PeopleSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */; };
 		EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2867810E082010003BA01 /* MITLoadingActivityView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB15C211BE970900D481B5 /* DatePickerViewController.m */; };
 		EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
