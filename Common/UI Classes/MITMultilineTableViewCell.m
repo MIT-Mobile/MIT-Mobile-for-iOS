@@ -100,13 +100,11 @@
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-    CGRect bounds = self.bounds;
-    CGRect contentFrame = self.contentView.frame;
+    // Make sure everything is layed out before we start asking things
+    // about their frames.
+    [self layoutIfNeeded];
     
-    CGFloat accessoryWidth =  fabs(CGRectGetMinX(contentFrame) - CGRectGetMinX(bounds));
-    accessoryWidth += fabs(CGRectGetMaxX(bounds) - CGRectGetMaxX(contentFrame));
-    
-    CGFloat textWidth = MIN(CGRectGetWidth(self.contentView.bounds), CGRectGetWidth(bounds) - accessoryWidth);
+    CGFloat textWidth = size.width - fabs(self.contentView.frame.size.width - self.bounds.size.width);
     textWidth -= self.contentInset.top + self.contentInset.bottom;
     
     CGSize headlineSize = [self.headlineLabel.text sizeWithFont:self.headlineLabel.font
