@@ -1,6 +1,7 @@
 #import "EmergencyContactsViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MultiLineTableViewCell.h"
+#import "MITMultilineTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 #import "EmergencyData.h"
 #import "MIT_MobileAppDelegate+ModuleList.h"
@@ -61,30 +62,51 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
-	NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
-    return [MultiLineTableViewCell cellHeightForTableView:tableView
-                                                     text:[contactInfo valueForKey:@"title"]
-                                               detailText:[self detailText:contactInfo] 
-                                            accessoryType:UITableViewCellAccessoryDetailDisclosureButton];
+	static MITMultilineTableViewCell *templateCell = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        templateCell = [[MITMultilineTableViewCell alloc] init];
+    });
+    
+    [templateCell prepareForReuse];
+    [self configureCell:templateCell
+            atIndexPath:indexPath
+           forTableView:tableView];
+    
+    // This table does not allow editing so we don't need to set
+    // the editing property on the cell.
+    //
+    // If editing was allowed, the current state of the editing flag
+    // should passed on to the cell before trying to size it
+    // templateCell.editing = tableView.isEditing;
+    
+    // Get the cells ideal size for its content.
+    CGSize cellSize = [templateCell sizeThatFits:CGSizeMake(CGRectGetWidth(tableView.bounds),
+                                                            CGFLOAT_MAX)];
+    return cellSize.height;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     static NSString *CellIdentifier = @"Cell";
-    MultiLineTableViewCell *cell = (MultiLineTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[MultiLineTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
-        // Required by the MultiLineTableViewCell. If the accessoryType is not set, MultiLineTableViewCell
-        // will enter an infinite loop.
-        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-        cell.accessoryView =  [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-		[cell applyStandardFonts];
+    MITMultilineTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (!cell) {
+        cell = [[MITMultilineTableViewCell alloc] init];
     }
-
-	NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
-	cell.textLabel.text = [contactInfo valueForKey:@"title"];
-	cell.detailTextLabel.text = [self detailText:contactInfo];
+    
+    [self configureCell:cell
+            atIndexPath:indexPath
+           forTableView:tableView];
     return cell;
+}
+
+- (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
+{
+    MITMultilineTableViewCell *multilineCell = (MITMultilineTableViewCell*)cell;
+    
+	NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
+	multilineCell.headlineLabel.text = [contactInfo valueForKey:@"title"];
+	multilineCell.bodyLabel.text = [self detailText:contactInfo];
+    multilineCell.accessoryView =  [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
 }
 
 - (NSString *)detailText:(NSManagedObject*)contactInfo {
@@ -110,8 +132,9 @@
 	
 	// phone numbers that aren't purely numbers should be converted
 	NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", [contactInfo valueForKey:@"phone"]]];
-	if ([[UIApplication sharedApplication] canOpenURL:phoneURL])
+	if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
 		[[UIApplication sharedApplication] openURL:phoneURL];
+    }
 
 }
 
