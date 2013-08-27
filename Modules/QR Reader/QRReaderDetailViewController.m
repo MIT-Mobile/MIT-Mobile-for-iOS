@@ -8,21 +8,21 @@
 #import "UIKit+MITAdditions.h"
 
 @interface QRReaderDetailViewController () <ShareItemDelegate,UITableViewDataSource,UITableViewDelegate>
-@property (retain) NSString *resultText;
-@property (retain) NSOperation *urlMappingOperation;
-@property (assign) MITLoadingActivityView *loadingView;
+@property (strong) NSString *resultText;
+@property (strong) NSOperation *urlMappingOperation;
+@property (weak) MITLoadingActivityView *loadingView;
 
 #pragma mark - Public Properties
-@property (retain) QRReaderResult *scanResult;
+@property (strong) QRReaderResult *scanResult;
 
-#pragma mark - Public IBOutlets
-@property (assign) IBOutlet UIScrollView *scrollView;
-@property (assign) IBOutlet UIImageView *qrImageView;
-@property (assign) IBOutlet UIImageView *backgroundImageView;
-@property (assign) IBOutlet UILabel *textTitleLabel;
-@property (assign) IBOutlet UILabel *textView;
-@property (assign) IBOutlet UILabel *dateLabel;
-@property (assign) IBOutlet UITableView *scanActionTable;
+#pragma mark - IBOutlets
+@property (weak) IBOutlet UIScrollView *scrollView;
+@property (weak) IBOutlet UIImageView *qrImageView;
+@property (weak) IBOutlet UIImageView *backgroundImageView;
+@property (weak) IBOutlet UILabel *textTitleLabel;
+@property (weak) IBOutlet UILabel *textView;
+@property (weak) IBOutlet UILabel *dateLabel;
+@property (weak) IBOutlet UITableView *scanActionTable;
 @property (strong) NSMutableArray *scanActions;
 @property (strong) NSDictionary *scanShareDetails;
 @property (strong) NSString *scanType;
@@ -30,24 +30,11 @@
 @end
 
 @implementation QRReaderDetailViewController
-@synthesize scanResult = _scanResult;
-@synthesize qrImageView = _qrImageView;
-@synthesize backgroundImageView = _backgroundImageView;
-@synthesize loadingView = _loadingView;
-@synthesize resultText = _resultText;
-@synthesize urlMappingOperation = _urlMappingOperation;
-@synthesize textView = _textView;
-@synthesize dateLabel = _dateLabel;
-@synthesize textTitleLabel = _textTitleLabel;
-@synthesize scanActionTable = scanActionTable;
-@synthesize scanActions = _scanActions;
-@synthesize scanShareDetails = _scanShareDetails;
-
 + (QRReaderDetailViewController*)detailViewControllerForResult:(QRReaderResult*)result {
     QRReaderDetailViewController *reader = [[self alloc] initWithNibName:@"QRReaderDetailViewController"
                                                                   bundle:nil];
     reader.scanResult = result;
-    return [reader autorelease];
+    return reader;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -59,15 +46,6 @@
         self.urlMappingOperation = nil;
     }
     return self;
-}
-
-- (void)dealloc
-{
-    self.resultText = nil;
-    self.urlMappingOperation = nil;
-    self.scanResult = nil;
-    self.scanActions = nil;
-    [super dealloc];
 }
 
 
@@ -91,9 +69,10 @@
         loadingViewBounds.origin.y += CGRectGetHeight(self.qrImageView.frame);
         loadingViewBounds.size.height -= CGRectGetHeight(self.qrImageView.frame);
         
-        self.loadingView = [[[MITLoadingActivityView alloc] initWithFrame:loadingViewBounds] autorelease];
-        self.loadingView.hidden = NO;
-        [self.view addSubview:self.loadingView];
+        MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:loadingViewBounds];
+        loadingView.hidden = NO;
+        [self.view addSubview:loadingView];
+        self.loadingView = loadingView;
     }
 }
 
@@ -150,33 +129,27 @@
 
 - (void)handleScanInfoResponse:(NSDictionary*)codeInfo error:(NSError*)error
 {
-    BOOL success = (error == nil) && [[codeInfo objectForKey:@"success"] boolValue];
+    BOOL success = (error == nil) && [codeInfo[@"success"] boolValue];
     
-    NSArray *actions = [codeInfo objectForKey:@"actions"];
+    NSArray *actions = codeInfo[@"actions"];
     BOOL validResponse = actions && [actions isKindOfClass:[NSArray class]];
     
-    if (success && validResponse)
-    {
+    if (success && validResponse) {
         [self.scanActions removeAllObjects];
-        for (NSDictionary *action in actions)
-        {
-            if ([action isKindOfClass:[NSDictionary class]] == NO)
-            {
+        for (NSDictionary *action in actions) {
+            if ([action isKindOfClass:[NSDictionary class]] == NO) {
                 validResponse = NO;
                 break;
-            }
-            else
-            {
+            } else {
                 [self.scanActions addObject:action];
             }
         }
         
-        if (validResponse)
-        {
-            self.scanShareDetails = [codeInfo objectForKey:@"share"];
-            self.textTitleLabel.text = [codeInfo objectForKey:@"displayType"];
-            self.textView.text = [codeInfo objectForKey:@"displayName"];
-            self.scanType = [codeInfo objectForKey:@"type"];
+        if (validResponse) {
+            self.scanShareDetails = codeInfo[@"share"];
+            self.textTitleLabel.text = codeInfo[@"displayType"];
+            self.textView.text = codeInfo[@"displayName"];
+            self.scanType = codeInfo[@"type"];
         }
     }
     
@@ -186,25 +159,23 @@
         
         [self.scanActions removeAllObjects];
         NSURL *url = [NSURL URLWithString:self.scanResult.text];
-        if ([[UIApplication sharedApplication] canOpenURL:url])
-        {
-            self.scanShareDetails = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Share URL", self.scanResult.text, nil]
-                                                            forKeys:[NSArray arrayWithObjects:@"title",@"data", nil]];
-            [self.scanActions addObject:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Open URL", self.scanResult.text, nil]
-                                                                    forKeys:[NSArray arrayWithObjects:@"title",@"url", nil]]];
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            self.scanShareDetails = @{@"title" : @"Share URL",
+                                      @"data" : self.scanResult.text};
+            [self.scanActions addObject:@{@"title" : @"Open URL",
+                                          @"url" : self.scanResult.text}];
             self.scanType = @"url";
             self.textTitleLabel.text = @"URL";
             self.textView.text = self.scanResult.text;
-        }
-        else
-        {
-            self.scanShareDetails = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Share data", self.scanResult.text, nil]
-                                                                forKeys:[NSArray arrayWithObjects:@"title",@"data", nil]];
+        } else {
+            self.scanShareDetails = @{@"title" : @"Share data",
+                                      @"data" : self.scanResult.text};
             self.scanType = @"other";
             self.textTitleLabel.text = @"Other";
             self.textView.text = self.scanResult.text;
         }
     }
+
     CGSize boundingSize = CGSizeMake(CGRectGetWidth(self.textView.frame), CGFLOAT_MAX);
     CGSize requiredSize = [self.textView.text sizeWithFont:self.textView.font
                                                 constrainedToSize:boundingSize
@@ -227,8 +198,7 @@
     self.scrollView.contentSize = CGSizeMake(self.view.frame.size.width, CGRectGetMaxY(self.scanActionTable.frame) + padding);
 }
 
-#pragma mark -
-#pragma mark IBAction methods
+#pragma mark - IBAction methods
 - (IBAction)pressedShareButton:(id)sender {
     if (self.scanShareDetails)
     {
@@ -238,14 +208,13 @@
 }
 
 - (IBAction)pressedActionButton:(id)sender {
-    NSString *altURL = self.resultText;
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:altURL]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.resultText]];
 }
 
 #pragma mark -
 #pragma mark ShareItemDelegate (MIT)
 - (NSString *)actionSheetTitle {
-	return [self.scanShareDetails objectForKey:@"data"];
+	return self.scanShareDetails[@"data"];
 }
 
 - (NSString *)emailSubject {
@@ -284,18 +253,14 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    if (indexPath.row < [self.scanActions count])
-    {
-        NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
-        NSURL *url = [NSURL URLWithString:[cellDetails objectForKey:@"url"]];
+    if (indexPath.row < [self.scanActions count]) {
+        NSDictionary *cellDetails = self.scanActions[indexPath.row];
+        NSURL *url = [NSURL URLWithString:cellDetails[@"url"]];
         
-        if ([[UIApplication sharedApplication] canOpenURL:url])
-        {
+        if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url];
         }
-    }
-    else if (self.scanShareDetails)
-    {
+    } else if (self.scanShareDetails) {
         self.shareDelegate = self;
         [self share:self];
     }
@@ -312,25 +277,21 @@
     NSString *actionCellIdentifier = @"ActionCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:actionCellIdentifier];
     
-    if (cell == nil)
-    {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                      reuseIdentifier:actionCellIdentifier] autorelease];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                      reuseIdentifier:actionCellIdentifier];
     }
     
     
-    if (indexPath.row < [self.scanActions count])
-    {
+    if (indexPath.row < [self.scanActions count]) {
         NSDictionary *cellDetails = [self.scanActions objectAtIndex:indexPath.row];
         
-        cell.textLabel.text = [cellDetails objectForKey:@"title"];
-        cell.accessoryView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-external"]
-                                               highlightedImage:[UIImage imageNamed:@"global/action-external-highlight"]] autorelease];
-    }
-    else
-    {
-        cell.textLabel.text = [self.scanShareDetails objectForKey:@"title"];
-        cell.accessoryView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-share"]] autorelease];
+        cell.textLabel.text = cellDetails[@"title"];
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-external"]
+                                               highlightedImage:[UIImage imageNamed:@"global/action-external-highlight"]];
+    } else {
+        cell.textLabel.text = self.scanShareDetails[@"title"];
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-share"]];
     }
     
     return cell;
@@ -342,4 +303,5 @@
     count += [self.scanShareDetails count] ? 1 : 0;
     return count;
 }
+
 @end

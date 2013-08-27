@@ -4,6 +4,6 @@
 
 @interface MITScannerImage : NSManagedObject
 
-@property (nonatomic, retain) UIImage * image;
+@property (nonatomic, strong) UIImage * image;
 
 @end

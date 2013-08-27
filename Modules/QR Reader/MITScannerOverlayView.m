@@ -3,19 +3,10 @@
 #import "UIKit+MITAdditions.h"
 
 @interface MITScannerOverlayView ()
-@property (retain) UILabel *helpLabel;
+@property (weak) UILabel *helpLabel;
 @end
 
 @implementation MITScannerOverlayView
-{
-    UIInterfaceOrientation _interfaceOrientation;
-}
-
-@synthesize highlighted = _highlighted;
-@synthesize highlightColor = _highlightColor;
-@synthesize outlineColor = _outlineColor;
-@synthesize overlayColor = _overlayColor;
-@synthesize helpLabel = _helpLabel;
 @dynamic helpText;
 
 - (id)init
@@ -36,7 +27,7 @@
                                               alpha:0.5];
         
         {
-            UILabel *helpLabel = [[[UILabel alloc] init] autorelease];
+            UILabel *helpLabel = [[UILabel alloc] init];
             helpLabel.backgroundColor = [UIColor clearColor];
             helpLabel.textColor = [UIColor whiteColor];
             helpLabel.textAlignment = UITextAlignmentCenter;
@@ -50,15 +41,7 @@
     }
     return self;
 }
-
-- (void)dealloc
-{
-    self.outlineColor = nil;
-    self.overlayColor = nil;
-    self.highlightColor = nil;
-    [super dealloc];
-}
-
+ 
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
@@ -76,15 +59,16 @@
     switch(orient)
     {
         case UIInterfaceOrientationLandscapeLeft:
-            return(M_PI_2);
+            return M_PI_2;
         case UIInterfaceOrientationPortraitUpsideDown:
-            return(M_PI);
+            return M_PI;
         case UIInterfaceOrientationLandscapeRight:
-            return(3 * M_PI_2);
+            return 3. * M_PI_2;
         case UIInterfaceOrientationPortrait:
-            return(2 * M_PI);
+            return 2. * M_PI;
     }
-    return(0);
+
+    return 0;
 }
 
 - (void)layoutSubviews
@@ -115,20 +99,12 @@
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGRect bds = CGRectZero;
-    if (!UIInterfaceOrientationIsLandscape(_interfaceOrientation))
-	{
-		bds = [self bounds];
-	} else {
-        CGContextRotateCTM(context,[self rotationForInterfaceOrientation:_interfaceOrientation]);
-		bds = CGRectMake(0., 0., [self bounds].size.height, [self bounds].size.width);
-	}
-    
+    CGRect bounds = [self bounds];
     CGRect qrRect = [self qrRect];
     
     {
         CGContextBeginPath(context);
-        CGContextAddRect(context, bds);
+        CGContextAddRect(context, bounds);
         CGContextAddRect(context, qrRect);
         CGContextClosePath(context);
         
@@ -191,13 +167,6 @@
     static CGFloat kRectScalingFactor = 0.75;
 
     CGRect qrRect = self.bounds;
-    CGSize boundSize;
-    if(UIInterfaceOrientationIsLandscape(_interfaceOrientation)) {
-        boundSize = CGSizeMake(qrRect.size.height, qrRect.size.width);
-    } else {
-        boundSize = qrRect.size;
-    }
-    qrRect.size = boundSize;
     CGFloat minRect = MIN(qrRect.size.width, qrRect.size.height) * kRectScalingFactor;
     qrRect.origin.x = (qrRect.size.width - minRect) / 2.0;
     qrRect.origin.y = (qrRect.size.height - minRect) / 2.0;
@@ -210,27 +179,24 @@
     if (![self.highlightColor isEqual:highlightColor]) {
         [self setNeedsDisplay];
     }
-    
-    [_highlightColor release];
-    _highlightColor = [highlightColor retain];
+
+    _highlightColor = highlightColor;
 }
 
 - (void)setOutlineColor:(UIColor *)outlineColor {
     if (![self.outlineColor isEqual:outlineColor]) {
         [self setNeedsDisplay];
     }
-    
-    [_outlineColor release];
-    _outlineColor = [outlineColor retain];
+
+    _outlineColor = outlineColor;
 }
 
 - (void)setOverlayColor:(UIColor *)overlayColor {
     if (![self.overlayColor isEqual:overlayColor]) {
         [self setNeedsDisplay];
     }
-    
-    [_overlayColor release];
-    _overlayColor = [overlayColor retain];
+
+    _overlayColor = overlayColor;
 }
 
 - (void)setHelpText:(NSString *)helpText
@@ -241,11 +207,6 @@
 - (NSString*)helpText
 {
     return self.helpLabel.text;
-}
-
-- (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) orient
-                                 duration: (NSTimeInterval) duration {
-    [self setNeedsLayout];
 }
 
 @end

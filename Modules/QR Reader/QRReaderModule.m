@@ -17,13 +17,9 @@
     return self;
 }
 
-- (void)dealloc {
-    [super dealloc];
-}
-
 - (void)loadModuleHomeController
 {
-    self.moduleHomeController = [[[MITScannerViewController alloc] init] autorelease];
+    self.moduleHomeController = [[MITScannerViewController alloc] init];
 }
 
 #pragma mark Handle Url

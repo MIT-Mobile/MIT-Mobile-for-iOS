@@ -4,7 +4,7 @@
 @implementation QRReaderImageTransformer
 + (void)initialize
 {
-    [NSValueTransformer setValueTransformer:[[[QRReaderImageTransformer alloc] init] autorelease]
+    [NSValueTransformer setValueTransformer:[[QRReaderImageTransformer alloc] init]
                                     forName:@"QRReaderImageTransformer"];
 }
 
