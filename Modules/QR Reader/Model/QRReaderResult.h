@@ -5,13 +5,13 @@
 
 @interface QRReaderResult : NSManagedObject
 
-@property (nonatomic, retain) NSDate * date;
-@property (nonatomic, retain) UIImage * thumbnail;
-@property (nonatomic, retain) NSString * text;
-@property (nonatomic, retain, readonly) UIImage * image;
+@property (nonatomic, strong) NSDate * date;
+@property (nonatomic, strong) UIImage * thumbnail;
+@property (nonatomic, copy) NSString * text;
+@property (nonatomic, strong, readonly) UIImage * image;
 
-@property (nonatomic, readonly, retain) MITScannerImage *imageData;
-@property (nonatomic, retain) UIImage *scanImage;
+@property (nonatomic, strong, readonly) MITScannerImage *imageData;
+@property (nonatomic, strong) UIImage *scanImage;
 
 + (CGSize)defaultThumbnailSize;
 @end

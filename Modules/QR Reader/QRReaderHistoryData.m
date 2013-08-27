@@ -5,12 +5,9 @@
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 
-@interface QRReaderHistoryData ()
-@end
-
 @implementation QRReaderHistoryData
 - (id)init {
-    NSManagedObjectContext *context = [[[NSManagedObjectContext alloc] init] autorelease];
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
     context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
     
     return [self initWithManagedContext:context];
@@ -25,11 +22,6 @@
     }
     
     return self;
-}
-
-- (void)dealloc {
-    self.context = nil;
-    [super dealloc];
 }
 
 - (void)deleteScanResult:(QRReaderResult*)result {

@@ -25,7 +25,7 @@
 		2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */; };
 		2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09824B13A8F21D00778B53 /* ModuleVersions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
 		2C0CE20C1663FFA80020E70D /* MGSLayerAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */; };
 		2C101A801653F054000E40E3 /* MGSLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A751653F054000E40E3 /* MGSLayer.m */; };
 		2C101A821653F054000E40E3 /* MGSRouteLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C101A7A1653F054000E40E3 /* MGSRouteLayer.m */; };
@@ -107,12 +107,12 @@
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
 		2CDA8ABB1762445F001F011F /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDA8AB71762445F001F011F /* libTestFlight.a */; };
 		2CDA8AC117624C63001F011F /* MITTestFlightLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDA8AC017624C63001F011F /* MITTestFlightLogger.m */; };
-		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB024D15D0403500436B59 /* QRReaderResult.m */; };
+		2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB025015D0404500436B59 /* MITScannerImage.m */; };
 		2CDE4EFD17A305BD00F40598 /* NSTimer+MITBlockTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE4EFC17A305BD00F40598 /* NSTimer+MITBlockTimer.m */; };
 		2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE951814EAAA4D000271BD /* TouchstoneResponse.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CDF301F134DF504007C6813 /* qrreader in Resources */ = {isa = PBXBuildFile; fileRef = 2CDF301E134DF504007C6813 /* qrreader */; };
-		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2CDF3022134E05EE007C6813 /* QRReaderHistoryData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDF3021134E05ED007C6813 /* QRReaderHistoryData.m */; };
 		2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE4431916DFAB54005A01B2 /* MapKit+MITAdditions.m */; };
 		2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6631D13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6513BDFB2C0043CFBE /* FacilitiesPropertyOwner.m */; };
