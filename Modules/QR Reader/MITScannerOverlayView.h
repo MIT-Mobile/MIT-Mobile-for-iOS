@@ -13,7 +13,4 @@
 // Returns the rect in pixels. This rect is in this view's
 // coordinate system
 - (CGRect)qrRect;
-
-- (void)willRotateToInterfaceOrientation: (UIInterfaceOrientation) orient
-                                 duration: (NSTimeInterval) duration;
 @end

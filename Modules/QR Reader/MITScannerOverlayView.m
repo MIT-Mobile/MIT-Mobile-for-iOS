@@ -7,9 +7,6 @@
 @end
 
 @implementation MITScannerOverlayView
-{
-    UIInterfaceOrientation _interfaceOrientation;
-}
 @dynamic helpText;
 
 - (id)init
@@ -102,20 +99,12 @@
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGRect bds = CGRectZero;
-    if (!UIInterfaceOrientationIsLandscape(_interfaceOrientation))
-	{
-		bds = [self bounds];
-	} else {
-        CGContextRotateCTM(context,[self rotationForInterfaceOrientation:_interfaceOrientation]);
-		bds = CGRectMake(0., 0., [self bounds].size.height, [self bounds].size.width);
-	}
-    
+    CGRect bounds = [self bounds];
     CGRect qrRect = [self qrRect];
     
     {
         CGContextBeginPath(context);
-        CGContextAddRect(context, bds);
+        CGContextAddRect(context, bounds);
         CGContextAddRect(context, qrRect);
         CGContextClosePath(context);
         
@@ -178,13 +167,6 @@
     static CGFloat kRectScalingFactor = 0.75;
 
     CGRect qrRect = self.bounds;
-    CGSize boundSize;
-    if(UIInterfaceOrientationIsLandscape(_interfaceOrientation)) {
-        boundSize = CGSizeMake(qrRect.size.height, qrRect.size.width);
-    } else {
-        boundSize = qrRect.size;
-    }
-    qrRect.size = boundSize;
     CGFloat minRect = MIN(qrRect.size.width, qrRect.size.height) * kRectScalingFactor;
     qrRect.origin.x = (qrRect.size.width - minRect) / 2.0;
     qrRect.origin.y = (qrRect.size.height - minRect) / 2.0;
@@ -225,11 +207,6 @@
 - (NSString*)helpText
 {
     return self.helpLabel.text;
-}
-
-- (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) orient
-                                 duration: (NSTimeInterval) duration {
-    [self setNeedsLayout];
 }
 
 @end
