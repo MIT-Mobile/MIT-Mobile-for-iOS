@@ -1,15 +1,7 @@
 #import "MITScannerHelpViewController.h"
 #import "UIKit+MITAdditions.h"
 
-@interface MITScannerHelpViewController ()
-
-@end
-
 @implementation MITScannerHelpViewController
-@synthesize helpTextView = _helpTextView;
-@synthesize backgroundImage = _backgroundImage;
-@synthesize doneButton = _doneButton;
-
 - (id)init
 {
     return [self initWithNibName:nil
@@ -24,11 +16,6 @@
         // Custom initialization
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [super dealloc];
 }
 
 - (void)viewDidLoad
