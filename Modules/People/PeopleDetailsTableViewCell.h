@@ -1,7 +1,5 @@
 #import <UIKit/UIKit.h>
 
-@interface PeopleDetailsTableViewCell : UITableViewCell {
-
-}
+@interface PeopleDetailsTableViewCell : UITableViewCell
 
 @end

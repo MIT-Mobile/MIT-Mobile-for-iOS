@@ -2,10 +2,6 @@
 #import "CoreDataManager.h"
 
 @implementation PeopleRecentsData
-@synthesize recents;
-
-
-#pragma mark Singleton Boilerplate
 + (PeopleRecentsData *)sharedData
 {
     static PeopleRecentsData *sharedData = nil;
@@ -18,20 +14,19 @@
 }
 
 
-#pragma mark -
-#pragma mark Core data interface
+#pragma mark - CoreData interface
 
 + (PersonDetails *)personWithUID:(NSString *)uid
 {
-	PersonDetails *person = [CoreDataManager getObjectForEntity:PersonDetailsEntityName attribute:@"uid" value:uid];
-	return person;
+	return [CoreDataManager getObjectForEntity:PersonDetailsEntityName attribute:@"uid" value:uid];
 }
 
 - (id)init
 {
     self = [super init];
     if (self) {
-        recents = [[NSMutableArray alloc] initWithCapacity:0];
+        NSMutableArray *recentPersons = [[NSMutableArray alloc] init];
+
         NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lastUpdate" ascending:NO];
         for (PersonDetails *person in [CoreDataManager fetchDataForAttribute:PersonDetailsEntityName 
                                                               sortDescriptor:sortDescriptor]) {
@@ -39,12 +34,14 @@
             if ([[person valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -1500000) {
                 [CoreDataManager deleteObject:person]; // this invokes saveData
             } else {
-                [recents addObject:person]; // store in memory
+                [recentPersons addObject:person]; // store in memory
             }
         }
+
         [CoreDataManager saveData];
-        [sortDescriptor release];
+        _recents = recentPersons;
     }
+
 	return self;
 }
 
@@ -52,7 +49,8 @@
 {
     [CoreDataManager deleteObjects:[[self sharedData] recents]];
     [CoreDataManager saveData];
-	[[[self sharedData] recents] removeAllObjects];
+
+    [self sharedData].recents = [[NSArray alloc] init];
 }
 
 + (PersonDetails *)updatePerson:(PersonDetails *)personDetails withSearchResult:(NSDictionary *)searchResult
@@ -61,47 +59,47 @@
 	// common) or something derived from another field (ldap "dn"), the
 	// former has an 8 char limit but until proven otherwise let's assume
 	// we can truncate the latter to 8 chars without sacrificing uniqueness
-	NSString *uid = [searchResult objectForKey:@"id"];
-	if (uid.length > 8)
+	NSString *uid = searchResult[@"id"];
+	if ([uid length] > 8) {
 		uid = [uid substringToIndex:8];
-	
+    }
+
 	[personDetails setValue:uid forKey:@"uid"];
 	[personDetails setValue:[NSDate date] forKey:@"lastUpdate"];
 	
-	NSArray *fetchTags = [NSArray arrayWithObjects:
-						  @"givenname", @"surname", @"title", @"dept", @"email", @"phone", // @"homephone", 
-						  @"fax", @"office", //@"room", @"address", @"city", @"state", 
-						  nil];
-	
+	NSArray *fetchTags = @[@"givenname", @"surname", @"title", @"dept", @"email", @"phone", @"fax", @"office"];
+
 	for (NSString *key in fetchTags) {
-		NSArray *values = [searchResult objectForKey:key];
-		if (values != nil) {
+		if (searchResult[key]) {
 			// if someone has multiple emails/phones join them into a string
 			// we need to figure out which fields return multiple values
-			[personDetails setValue:[values componentsJoinedByString:@","] forKey:key];
+			[personDetails setValue:[searchResult[key] componentsJoinedByString:@","]
+                             forKey:key];
 		}
 	}
 	
 	// put latest person on top; remove if the person is already there
-	NSMutableArray *recentsData = [[self sharedData] recents];
-	for (NSInteger i = 0; i < [recentsData count]; i++) {
-		PersonDetails *oldPerson = [recentsData objectAtIndex:i];
-		if ([[oldPerson valueForKey:@"uid"] isEqualToString:[personDetails valueForKey:@"uid"]]) {
-			[recentsData removeObjectAtIndex:i];
-			break;
+	NSMutableArray *updatedRecents = [[self sharedData].recents mutableCopy];
+
+    [[self sharedData].recents enumerateObjectsUsingBlock:^(PersonDetails *person, NSUInteger idx, BOOL *stop) {
+        if ([[person valueForKey:@"uid"] isEqualToString:[personDetails valueForKey:@"uid"]]) {
+			[updatedRecents removeObjectAtIndex:idx];
+			(*stop) = YES;
 		}
-	}
-	[recentsData insertObject:personDetails atIndex:0];
-	
+    }];
+
+	[updatedRecents insertObject:personDetails
+                         atIndex:0];
 	[CoreDataManager saveData];
-	
+
+    [self sharedData].recents = updatedRecents;
+
 	return personDetails;
 }
 
 
 + (PersonDetails *)createFromSearchResult:(NSDictionary *)searchResult 
 {
-	
 	PersonDetails *personDetails = (PersonDetails *)[CoreDataManager insertNewObjectForEntityForName:PersonDetailsEntityName];
 	
 	[self updatePerson:personDetails withSearchResult:searchResult];

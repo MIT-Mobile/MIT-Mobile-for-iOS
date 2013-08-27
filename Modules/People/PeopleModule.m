@@ -12,9 +12,6 @@ static NSString * const PeopleStateSearchComplete = @"search-complete";
 static NSString * const PeopleStateSearchExternal = @"search";
 static NSString * const PeopleStateDetail = @"detail";
 
-@interface PeopleModule ()
-@property (nonatomic,readonly) PeopleSearchViewController *peopleController;
-@end
 
 @implementation PeopleModule
 @dynamic peopleController;
@@ -33,7 +30,7 @@ static NSString * const PeopleStateDetail = @"detail";
 
 - (void)loadModuleHomeController
 {
-    PeopleSearchViewController *controller = [[[PeopleSearchViewController alloc] init] autorelease];
+    PeopleSearchViewController *controller = [[PeopleSearchViewController alloc] init];
     self.moduleHomeController = controller;
 }
 
@@ -63,7 +60,6 @@ static NSString * const PeopleStateDetail = @"detail";
 	}
 	
 	[url setAsModulePath];
-	[url release];
 }
 
 
@@ -83,6 +79,7 @@ static NSString * const PeopleStateDetail = @"detail";
 		if (query != nil) {
 			self.peopleController.searchBar.text = query;
 		}
+
         [self.peopleController.searchController setActive:YES animated:NO];
         didHandle = YES;
 	} else if (!query || [query length] == 0) {
@@ -92,42 +89,29 @@ static NSString * const PeopleStateDetail = @"detail";
 	} else if ([localPath isEqualToString:PeopleStateSearchComplete]) {
         [self.peopleController beginExternalSearch:query];
 		didHandle = YES;
-		
 	} else if ([localPath isEqualToString:PeopleStateSearchExternal]) {
 		// this path is reserved for calling from other modules
 		// do not save state with this path       
         [self.peopleController beginExternalSearch:query];
         didHandle = YES;
-	}
-	else if ([localPath isEqualToString:PeopleStateDetail])
-    {
+	} else if ([localPath isEqualToString:PeopleStateDetail]) {
 		PersonDetails *person = [PeopleRecentsData personWithUID:query];
 		if (person != nil) {
 			PeopleDetailsViewController *detailVC = [[PeopleDetailsViewController alloc] initWithStyle:UITableViewStyleGrouped];
 			detailVC.personDetails = person;
 			[[MITAppDelegate() rootNavigationController] pushViewController:detailVC
                                                                    animated:NO];
-			[detailVC release];
 			didHandle = YES;
             pushHomeController = NO;
 		}
 	}
     
-    if (didHandle && pushHomeController) 
-    {
+    if (didHandle && pushHomeController) {
         [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
     }
 	
     return didHandle;
 }
-
-
-- (void)dealloc
-{
-    [viewController release];
-	[super dealloc];
-}
-
 
 @end
 

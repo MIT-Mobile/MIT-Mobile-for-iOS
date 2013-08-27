@@ -3,8 +3,6 @@
 #import <UIKit/UIKit.h>
 
 
-@interface PartialHighlightTableViewCell : UITableViewCell {
-
-}
+@interface PartialHighlightTableViewCell : UITableViewCell
 
 @end

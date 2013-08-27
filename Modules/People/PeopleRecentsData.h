@@ -2,11 +2,8 @@
 #import "PersonDetails.h"
 
 
-@interface PeopleRecentsData : NSObject {
-	
-}
-
-@property (nonatomic, retain) NSMutableArray *recents;
+@interface PeopleRecentsData : NSObject
+@property (copy) NSArray *recents;
 
 + (PersonDetails *)personWithUID:(NSString *)uid;
 + (PeopleRecentsData *)sharedData;

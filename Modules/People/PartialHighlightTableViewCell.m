@@ -6,10 +6,10 @@
 @implementation PartialHighlightTableViewCell
 
 - (void)prepareForReuse {
-	// clean up extra views we added before
-	UIView *view = nil;
-	while ((view = [self viewWithTag:REPLACED_TEXTLABEL_TAG])) {
+	UIView *view = [self viewWithTag:REPLACED_TEXTLABEL_TAG];
+	while (view) {
 		[view removeFromSuperview];
+        view = [self viewWithTag:REPLACED_TEXTLABEL_TAG];
 	}
 	
 	[super prepareForReuse];
@@ -22,25 +22,21 @@
 	UIView *replaceTextLabel = [self viewWithTag:REPLACED_TEXTLABEL_TAG];
 	
 	if (replaceTextLabel == nil) {
-		
-		CGRect frame = CGRectMake(self.textLabel.frame.origin.x, 
-								  4.0, 
-								  self.textLabel.frame.size.width, 
-								  self.textLabel.frame.size.height);
-		
+		CGRect frame = self.textLabel.frame;
+        frame.origin.y = 4.;
+
 		replaceTextLabel = [[UIView alloc] initWithFrame:frame];
 		replaceTextLabel.tag = REPLACED_TEXTLABEL_TAG;
 		replaceTextLabel.backgroundColor = [UIColor clearColor];
 		UIFont *regularFont = [UIFont systemFontOfSize:CELL_STANDARD_FONT_SIZE];
 		UIFont *boldFont = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
 		
-		CGSize labelSize;
+		CGSize labelSize = CGSizeZero;
 		CGFloat x = 0.0;
 		
 		NSArray *tails = [self.textLabel.text componentsSeparatedByString:@"["];
 		
 		for (NSString *tail in tails) {
-			
 			// label used for bold substrings
 			UILabel *left = [[UILabel alloc] initWithFrame:CGRectZero];
 			left.backgroundColor = [UIColor clearColor];
@@ -57,22 +53,22 @@
 			
 			NSArray *parts = [tail componentsSeparatedByString:@"]"];
 			if ([parts count] == 1) {
-				labelSize = [[parts objectAtIndex:0] sizeWithFont:regularFont];
+				labelSize = [parts[0] sizeWithFont:regularFont];
 				right.frame = CGRectMake(x, frame.origin.y, labelSize.width, labelSize.height);
-				right.text = [parts objectAtIndex:0];
+				right.text = parts[0];
 				[replaceTextLabel addSubview:right];
 				x += labelSize.width;
 				
 			} else {
-				labelSize = [[parts objectAtIndex:0] sizeWithFont:boldFont];
+				labelSize = [parts[0] sizeWithFont:boldFont];
 				left.frame = CGRectMake(x, frame.origin.y, labelSize.width, labelSize.height);
-				left.text = [parts objectAtIndex:0];
+				left.text = parts[0];
 				[replaceTextLabel addSubview:left];
 				x += labelSize.width;
 				
-				labelSize = [[parts objectAtIndex:1] sizeWithFont:regularFont];
+				labelSize = [parts[1] sizeWithFont:regularFont];
 				right.frame = CGRectMake(x, frame.origin.y, labelSize.width, labelSize.height);
-				right.text = [parts objectAtIndex:1];
+				right.text = parts[1];
 				[replaceTextLabel addSubview:right];
 				x += labelSize.width;
 				
@@ -84,8 +80,8 @@
 				x -= right.frame.size.width;
 				
 				// truncate last non-bold label first
-				while (right.text.length > 0) {
-					right.text = [right.text substringToIndex:right.text.length-1];
+				while ([right.text length] > 0) {
+					right.text = [right.text substringToIndex:[right.text length] - 1];
 					labelSize = [[right.text stringByAppendingString:@"..."] sizeWithFont:regularFont];
 					if (x + labelSize.width < frame.size.width) {
 						break;
@@ -99,8 +95,8 @@
 				if (x + right.frame.size.width >= frame.size.width) {
 					[left removeFromSuperview];
 					x -= left.frame.size.width;
-					while (left.text.length > 0) {
-						left.text = [left.text substringToIndex:left.text.length-1];
+					while ([left.text length] > 0) {
+						left.text = [left.text substringToIndex:[left.text length] - 1];
 						labelSize = [left.text sizeWithFont:boldFont];
 						if (x + labelSize.width + right.frame.size.width < frame.size.width) {
 							break;
@@ -114,19 +110,11 @@
 				}
 				
 				[replaceTextLabel addSubview:right];
-				
-				[left release];
-				[right release];
 				break;
 			}
-			
-			[left release];
-			[right release];
 		}
 		
 		[self addSubview:replaceTextLabel];
-		[replaceTextLabel release];
-		
 	} else {
 		for (UIView *view in [replaceTextLabel subviews]) {
 			UILabel *label = (UILabel *)view;
@@ -136,10 +124,5 @@
 
 	[self.textLabel removeFromSuperview];
 }
-
-- (void)dealloc {
-    [super dealloc];
-}
-
 
 @end

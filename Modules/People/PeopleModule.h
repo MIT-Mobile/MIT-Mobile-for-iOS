@@ -2,11 +2,8 @@
 
 @class PeopleSearchViewController;
 
-@interface PeopleModule : MITModule {
-	
-	PeopleSearchViewController *viewController;
-
-}
+@interface PeopleModule : MITModule
+@property (nonatomic,readonly) PeopleSearchViewController *peopleController;
 
 @end
 
