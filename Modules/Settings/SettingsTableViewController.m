@@ -12,91 +12,67 @@
 #import "SettingsTouchstoneViewController.h"
 #import "MobileRequestOperation.h"
 
-NSString * const SettingsTitleString = @"Notifications";
-NSString * const SettingsSubtitleString = @"Turn off Notifications to disable alerts for that module.";
-
-NSString * const TouchstoneTitleString = @"MIT Touchstone";
-NSString * const TouchstoneSubtitleString = @"Touchstone is MIT's single sign-on authentication service.";
-
-NSString * const ServersTitleString = @"API Server";
-
-#define TITLE_HEIGHT 20.0
-#define SUBTITLE_HEIGHT NAVIGATION_BAR_HEIGHT
-#define PADDING 10.0
-#define PADDED_WIDTH(x) (floorf(x - PADDING))
+NSString * const MITSettingsSectionTitleKey = @"MITSettingsSectionTitle";
+NSString * const MITSettingsSectionDetailKey = @"MITSettingsSectionDetail";
+NSString * const MITSettingsCellIdentifierKey = @"MITSettingsCellIdentifier";
 
 enum {
-    kSettingsNotificationSection = 0,
-    kSettingsTouchstoneSection = 1,
-    kSettingsServerSection = 2,
-    kSettingsSectionCount
+    MITSettingsSectionNotifications = 0,
+    MITSettingsSectionTouchstone,
+    MITSettingsSectionServers
 };
 
 @interface SettingsTableViewController ()
-@property (nonatomic,retain) UIGestureRecognizer* showServerListGesture;
-@property (nonatomic,retain) UIGestureRecognizer* hideServerListGesture;
+@property (copy) NSArray *sectionsMetadata;
+@property BOOL advancedSettingsAreVisible;
 
-@property (nonatomic,retain) UITextField *touchstoneUsernameField;
-@property (nonatomic,retain) UITextField *touchstonePasswordField;
-
-- (void)gestureWasRecognized:(UIGestureRecognizer*)gesture;
+- (void)didRecognizeAdvancedSettingsGesture:(UIGestureRecognizer*)gesture;
 - (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled;
-- (void)serverSelectionDidChangeFrom:(NSInteger)old to:(NSInteger)new;
-
+- (void)switchDidToggle:(id)sender;
 @end
 
 @implementation SettingsTableViewController
 
-@synthesize notifications = _notifications;
-@synthesize apiRequests = _apiRequests;
-@synthesize showServerListGesture = _showAdvancedGesture;
-@synthesize hideServerListGesture = _hideAdvancedGesture;
-
-@synthesize touchstoneUsernameField = _touchstoneUsernameField,
-            touchstonePasswordField = _touchstonePasswordField;
-
-
-- (void)dealloc {
-    self.notifications = nil;
-    self.showServerListGesture = nil;
-    self.hideServerListGesture = nil;
-    
-    [super dealloc];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Settings";
-    
-    [self.tableView applyStandardColors];
+
+    self.tableView.backgroundView = nil;
+    self.tableView.backgroundColor = [UIColor colorWithRed:0.784
+                                                     green:0.792
+                                                      blue:0.812
+                                                     alpha:1.0];
 
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
     self.notifications = [appDelegate.modules filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"pushNotificationSupported == TRUE"]];
-    
-    UISwipeGestureRecognizer *gesture = nil;
-    
-    gesture = [[[UISwipeGestureRecognizer alloc] initWithTarget:self
-                                                         action:@selector(gestureWasRecognized:)] autorelease];
-    gesture.direction = UISwipeGestureRecognizerDirectionLeft;
-    gesture.numberOfTouchesRequired = 2;
-    self.showServerListGesture = gesture;
-    [self.view addGestureRecognizer:gesture];
 
-    gesture = [[[UISwipeGestureRecognizer alloc] initWithTarget:self
-                                                        action:@selector(gestureWasRecognized:)] autorelease];
-    gesture.direction = UISwipeGestureRecognizerDirectionRight;
-    gesture.numberOfTouchesRequired = 2;
-    self.hideServerListGesture = gesture;
-    
-    _selectedRow = NSUIntegerMax;
-    _advancedOptionsVisible = NO;
+    UISwipeGestureRecognizer *showGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                                                      action:@selector(didRecognizeAdvancedSettingsGesture:)];
+    showGesture.direction = UISwipeGestureRecognizerDirectionLeft;
+    showGesture.numberOfTouchesRequired = 2;
+    [self.tableView addGestureRecognizer:showGesture];
+
+    self.sectionsMetadata = @[@{MITSettingsSectionTitleKey : @"Notifications",
+                                MITSettingsSectionDetailKey : @"Turn off Notifications to disable alerts for that module.",
+                                MITSettingsCellIdentifierKey : @"MITSettingsCellIdentifierNotifications"},
+                              @{MITSettingsSectionTitleKey : @"Touchstone",
+                                MITSettingsSectionDetailKey : @"Touchstone is MIT's single sign-on authentication service.",
+                                MITSettingsCellIdentifierKey : @"MITSettingsCellIdentifierTouchstone"},
+                              @{MITSettingsSectionTitleKey : @"Application Server",
+                                MITSettingsCellIdentifierKey : @"MITSettingsCellIdentifierAPIServer"}];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:kSettingsTouchstoneSection]
-                  withRowAnimation:UITableViewRowAnimationFade];
+
+    if (self.advancedSettingsAreVisible) {
+    // Reload the server table just in case it was changed outside the settings
+    // module
+        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITSettingsSectionServers]
+                      withRowAnimation:UITableViewRowAnimationRight];
+    }
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -110,369 +86,260 @@ enum {
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	// Release any cached data, images, etc that aren't in use.
-}
-
 - (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
     [super viewDidUnload];
-    self.notifications = nil;
-    self.showServerListGesture = nil;
-    self.hideServerListGesture = nil;
-    _advancedOptionsVisible = NO;
+    self.advancedSettingsAreVisible = NO;
 }
 
 #pragma mark Advanced view methods
-- (void)gestureWasRecognized:(UIGestureRecognizer*)gesture
+- (void)didRecognizeAdvancedSettingsGesture:(UIGestureRecognizer*)gesture
 {
-    if (gesture == self.showServerListGesture) {
-        [self.view removeGestureRecognizer:self.showServerListGesture];
-        [self.view addGestureRecognizer:self.hideServerListGesture];
-        _advancedOptionsVisible = YES;
-        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:kSettingsServerSection]
-                      withRowAnimation:UITableViewRowAnimationFade];
-    } else if (gesture == self.hideServerListGesture) {
-        _advancedOptionsVisible = NO;
-        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:kSettingsServerSection]
-                      withRowAnimation:UITableViewRowAnimationFade];
-        [self.view removeGestureRecognizer:self.hideServerListGesture];
-        [self.view addGestureRecognizer:self.showServerListGesture];
+    UISwipeGestureRecognizer *swipeGesture = (UISwipeGestureRecognizer*)gesture;
+
+    if (self.advancedSettingsAreVisible) {
+        swipeGesture.direction = UISwipeGestureRecognizerDirectionLeft;
+        self.advancedSettingsAreVisible = NO;
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:MITSettingsSectionServers]
+                      withRowAnimation:UITableViewRowAnimationRight];
+    } else {
+        swipeGesture.direction = UISwipeGestureRecognizerDirectionRight;
+        self.advancedSettingsAreVisible = YES;
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:MITSettingsSectionServers]
+                      withRowAnimation:UITableViewRowAnimationRight];
     }
 }
 
 
 #pragma mark Table view methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (_advancedOptionsVisible) {
-        return kSettingsSectionCount;
+    if (self.advancedSettingsAreVisible) {
+        return 3;
     } else {
-        return kSettingsSectionCount - 1;
+        return 2; // Notifications & Touchstone
     }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSInteger rows = 0;
-    
     switch (section) {
-        case kSettingsNotificationSection:
-            rows = [self.notifications count];
-            break;
+        case MITSettingsSectionNotifications:
+            return [self.notifications count];
         
-        case kSettingsTouchstoneSection:
-            rows = 1;
-            break;
+        case MITSettingsSectionTouchstone:
+            return 1;
             
-        case kSettingsServerSection:
-            rows = (_advancedOptionsVisible) ? [MITMobileWebGetAPIServerList() count] : 0;
-            break;
+        case MITSettingsSectionServers:
+            return [MITMobileWebGetAPIServerList() count];
         
         default:
-            break;
+            return 0;
     }
-    
-    return rows;
 }
 
-- (UIView *) tableView: (UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    UIView *result = nil;
-    NSString *titleText = nil;
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    NSString *text = self.sectionsMetadata[section][MITSettingsSectionTitleKey];
     
-    switch(section) {
-        case kSettingsNotificationSection:
-            titleText = SettingsTitleString;
-            break;
-            
-        case kSettingsTouchstoneSection:
-            titleText = TouchstoneTitleString;
-            break;
-            
-        case kSettingsServerSection: {
-            if (_advancedOptionsVisible) {
-                titleText = ServersTitleString;
-            }
-            break;
-        }
+    if ([text length]) {
+        return [UITableView groupedSectionHeaderWithTitle:text];
+    } else {
+        return nil;
     }
-    
-    if (titleText) {
-        result = [UITableView groupedSectionHeaderWithTitle:titleText];
-    }
-    
-    return result;
 }
 
-- (CGFloat)tableView: (UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    CGFloat height = 0;
-    
-    switch(section) {
-        case kSettingsNotificationSection:
-        case kSettingsTouchstoneSection:
-            height = GROUPED_SECTION_HEADER_HEIGHT;
-            break;
-            
-        case kSettingsServerSection: {
-            if (_advancedOptionsVisible) {
-                height = GROUPED_SECTION_HEADER_HEIGHT;
-            }
-            break;
-        }
-    }
-    
-    return height;
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return GROUPED_SECTION_HEADER_HEIGHT;
 }
 
-- (UIView *) tableView: (UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    UIView *result = nil;
-    NSString *subtitleText = nil;
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    NSString *text = self.sectionsMetadata[section][MITSettingsSectionDetailKey];
     
-    switch(section) {
-        case kSettingsNotificationSection:
-            subtitleText = SettingsSubtitleString;
-            break;
-        case kSettingsTouchstoneSection:
-            subtitleText = TouchstoneSubtitleString;
-            break;
+    if ([text length]) {
+        ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
+        footerLabel.text = text;
+        return footerLabel;
+    } else {
+        return nil;
     }
-    
-    if (subtitleText) {
-        ExplanatorySectionLabel *footerLabel = [[[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter] autorelease];
-        footerLabel.text = subtitleText;
-        result = footerLabel;
-    }
-    
-    return result;
 }
 
 - (CGFloat)tableView: (UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    CGFloat height = 0;
-    
-    NSString *subtitleText = nil;
-    
-    switch(section) {
-        case kSettingsNotificationSection:
-            subtitleText = SettingsSubtitleString;
-            break;
-        case kSettingsTouchstoneSection:
-            subtitleText = TouchstoneSubtitleString;
-            break;
+    NSString *text = self.sectionsMetadata[section][MITSettingsSectionDetailKey];
+
+    if ([text length]) {
+        return [ExplanatorySectionLabel heightWithText:text
+                                                 width:CGRectGetWidth(self.tableView.bounds)
+                                                  type:ExplanatorySectionFooter];
+    } else {
+        return 0;
     }
-    
-    if (subtitleText) {
-        height = [ExplanatorySectionLabel heightWithText:subtitleText 
-                                                   width:self.view.frame.size.width 
-                                                    type:ExplanatorySectionFooter];
-    }
-    
-    return height;
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"Cell";
-    static NSString *AdvancedCellIdentifier = @"AdvancedCell";
-    static NSString *TouchstoneUsernameCellIdentifier = @"TouchstoneUsernameCell";
-    
-    UITableViewCell *cell = nil;
-    
-    switch (indexPath.section) {
-        case kSettingsNotificationSection:
-        {
-            cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-            if (cell == nil) {
-                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
+    NSString *cellIdentifier = self.sectionsMetadata[indexPath.section][MITSettingsCellIdentifierKey];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+
+    if (!cell) {
+        switch (indexPath.section) {
+            case MITSettingsSectionNotifications: {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
-                
-                UISwitch *aSwitch = [[[UISwitch alloc] initWithFrame:CGRectZero] autorelease];
+
+                cell.accessoryType = UITableViewCellAccessoryNone;
+                UISwitch *aSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
                 [aSwitch addTarget:self action:@selector(switchDidToggle:) forControlEvents:UIControlEventValueChanged];
                 cell.accessoryView = aSwitch;
+
+                cell.textLabel.backgroundColor = [UIColor clearColor];
+                cell.detailTextLabel.backgroundColor = [UIColor clearColor];
+                break;
             }
-            
-            MITModule *aModule = [self.notifications objectAtIndex:indexPath.row];
-            cell.textLabel.text = aModule.longName;
-            cell.textLabel.backgroundColor = [UIColor clearColor];
-            cell.detailTextLabel.text = nil;
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            cell.accessoryView.tag = indexPath.row;
-            [((UISwitch *)(cell.accessoryView)) setOn:aModule.pushNotificationEnabled];
-            
-            break;
-        }
-            
-        case kSettingsTouchstoneSection:
-        {
-            switch (indexPath.row)
-            {
-                case 0:
-                {
-                    cell = [tableView dequeueReusableCellWithIdentifier:TouchstoneUsernameCellIdentifier];
-                    if (cell == nil)
-                    {
-                        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                       reuseIdentifier:TouchstoneUsernameCellIdentifier] autorelease];
-                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                        cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
-                        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-                        
-                        cell.textLabel.backgroundColor = [UIColor clearColor];
-                    }
-                    
-                    cell.textLabel.text = @"Touchstone Settings";
-                    break;
-                }
-            }
-            break;
-        }
-            
-        case kSettingsServerSection:
-        {
-            cell = [tableView dequeueReusableCellWithIdentifier:AdvancedCellIdentifier];
-            if (cell == nil) {
-                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                               reuseIdentifier:AdvancedCellIdentifier] autorelease];
+                
+            case MITSettingsSectionTouchstone: {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
+                cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+                cell.textLabel.backgroundColor = [UIColor clearColor];
+
+                break;
             }
-            
-            NSArray *serverNames = MITMobileWebGetAPIServerList();
-            cell.textLabel.text = [[serverNames objectAtIndex:indexPath.row] host];
-            cell.textLabel.backgroundColor = [UIColor clearColor];
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            
-            if (_selectedRow == NSUIntegerMax) {
-                NSURL *server = MITMobileWebGetCurrentServerURL();
-                NSArray *serverList = MITMobileWebGetAPIServerList();
-                _selectedRow = [serverList indexOfObject:server];
+                
+            case MITSettingsSectionServers: {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+                cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                cell.textLabel.backgroundColor = [UIColor clearColor];
+
+                break;
             }
-            
-            cell.accessoryType = (_selectedRow == indexPath.row) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-            
-            break;
+                
+            default:
+                return nil;
         }
-            
-        default:
-            cell = nil;
     }
-    
-    return cell;    
+
+    [self configureCell:cell
+            atIndexPath:indexPath
+           forTableView:tableView];
+
+    return cell;
+}
+
+- (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
+{
+    if (MITSettingsSectionNotifications == indexPath.section) {
+        MITModule *aModule = self.notifications[indexPath.row];
+
+        cell.textLabel.text = aModule.longName;
+
+        UISwitch *switchView = (UISwitch*)cell.accessoryView;
+        switchView.tag = indexPath.row;
+
+        if (![MITDeviceRegistration identity]) {
+            switchView.enabled = NO;
+            aModule.pushNotificationEnabled = NO;
+        } else {
+            [switchView setOn:aModule.pushNotificationEnabled
+                     animated:YES];
+        }
+    } else if (MITSettingsSectionTouchstone == indexPath.section) {
+        cell.textLabel.text = @"Touchstone Settings";
+    } else if (MITSettingsSectionServers == indexPath.section) {
+        NSURL *currentServer = MITMobileWebGetCurrentServerURL();
+        NSArray *servers = MITMobileWebGetAPIServerList();
+
+        cell.textLabel.text = [servers[indexPath.row] host];
+
+        if ([servers indexOfObject:currentServer] == indexPath.row) {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == kSettingsServerSection)
-    {
-        if (indexPath.row != _selectedRow)
-        {
-            NSUInteger oldRow = _selectedRow;
-            _selectedRow = indexPath.row;
-            [tableView reloadSections:[NSIndexSet indexSetWithIndex:kSettingsServerSection]
-                     withRowAnimation:UITableViewRowAnimationNone];
-            [self serverSelectionDidChangeFrom:oldRow
-                                            to:_selectedRow];
-        }
-    }
-    else if (indexPath.section == kSettingsTouchstoneSection)
-    {
-        SettingsTouchstoneViewController *vc = [[[SettingsTouchstoneViewController alloc] init] autorelease];
-        [self.navigationController pushViewController:vc
-                                                     animated:YES];
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-}
+    if (MITSettingsSectionTouchstone == indexPath.section) {
+        SettingsTouchstoneViewController *touchstoneSettings = [[SettingsTouchstoneViewController alloc] init];
+        [self.navigationController pushViewController:touchstoneSettings
+                                             animated:YES];
+        [tableView deselectRowAtIndexPath:indexPath
+                                 animated:YES];
+    } else if (MITSettingsSectionServers == indexPath.section) {
+        NSMutableDictionary *notificationStates = [[NSMutableDictionary alloc] init];
+        NSArray *serverURLs = MITMobileWebGetAPIServerList();
+        NSURL *serverURL = serverURLs[indexPath.row];
 
-/*!
- @method serverSelectionDidChangeFrom:to:
- @abstract Changes the server that push notifications are recieved from
- @param old the name of the old server. Should be a key in [MITMobileWebAPI APIServers].
- @param new the ID of the new server for push notifications. Should be a key in [MITMobileWebAPI APIServers].
-*/
-- (void)serverSelectionDidChangeFrom:(NSInteger)old to:(NSInteger)new {
-    // Disable any active notifications on the first pass.
-    // The entire process could 
-    for (MITModule *module in self.notifications) {
-        if (module.pushNotificationEnabled) {
+        [self.notifications enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+            notificationStates[module.tag] = @(module.pushNotificationEnabled);
             [self performPushConfigurationForModule:module.tag
                                             enabled:NO];
-        }
-    }
-    
-    /* bskinner
-    * ToDo: See if there is a better way to do this.
-    * At the moment, if multiple requests for a single module are
-    *  sent, then any in-flight requests will be aborted before
-    *  sending a new request. This forces the code to wait
-    *  until ALL requests to the current server have completed
-    *  before sending registration requests to the new server.
-    */
-    //while([self numberOfActiveRequests] > 0) {
-    //    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate date]];
-    //}
-    
-    NSArray *server = MITMobileWebGetAPIServerList();
-    
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITDeviceIdKey];
-    [[UIApplication sharedApplication] unregisterForRemoteNotifications];
-    
-    MITMobileWebSetCurrentServerURL([server objectAtIndex:new]);
-    
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
-    
-    for (MITModule *module in self.notifications) {
-        if (module.pushNotificationEnabled) {
+        }];
+
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITDeviceIdKey];
+        MITMobileWebSetCurrentServerURL(serverURL);
+
+        [self.notifications enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
             [self performPushConfigurationForModule:module.tag
-                                            enabled:YES];
-        }
+                                            enabled:[notificationStates[module.tag] boolValue]];
+
+        }];
+
+        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section]
+                      withRowAnimation:UITableViewRowAnimationNone];
     }
 }
 
 - (void)switchDidToggle:(id)sender {
     UISwitch *aSwitch = sender;
-    MITModule *aModule = [self.notifications objectAtIndex:aSwitch.tag];
+    MITModule *aModule = self.notifications[aSwitch.tag];
     
     [self performPushConfigurationForModule:aModule.tag
-                                    enabled:aSwitch.isOn];
+                                    enabled:[aSwitch isOn]];
 }
 
 - (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled
 {
-    NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
-    [parameters setObject:tag
-                   forKey:@"module_name"];
-    [parameters setObject:(enabled) ? @"1" : @"0"
-                   forKey:@"enabled"];
-    
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                              command:@"moduleSetting"
-                                                                           parameters:parameters] autorelease];
+    // If we don't have an identity, don't even try to enable (or disable) notifications,
+    // just leave everything as-is
+    if (![MITDeviceRegistration identity]) {
+        return;
+    } else {
+        __weak MITModule *module = [MITAppDelegate() moduleForTag:tag];
+        NSUInteger moduleIndex = [self.notifications indexOfObject:module];
 
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (error) {
-            [UIAlertView alertViewForError:error withTitle:@"Settings" alertViewDelegate:nil];
-            [self reloadSettings];
-            
-        } else if ([jsonResult isKindOfClass:[NSDictionary class]] && [jsonResult objectForKey:@"success"]) {
-            MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-            MITModule *module = [appDelegate moduleForTag:tag];
-            
-            NSUInteger index = [self.notifications indexOfObject:module];
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-            //[indexPath indexPathByAddingIndex:index];
-            
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            UISwitch *aSwitch = (UISwitch *)cell.accessoryView;
-            [module setPushNotificationEnabled: aSwitch.isOn];
-        }
-    };
-    
-    [[NSOperationQueue mainQueue] addOperation:request];
-}
+        NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
+        parameters[@"module_name"] = tag;
+        parameters[@"enabled"] = (enabled ? @"1" : @"0");
+        
+        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"push"
+                                                                                 command:@"moduleSetting"
+                                                                              parameters:parameters];
+        request.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *jsonResult, NSString *contentType, NSError *error) {
+            if ([jsonResult[@"success"] boolValue]) {
+                module.pushNotificationEnabled = [jsonResult[@"enabled"] boolValue];
+            } else {
+                if (error) {
+                    [UIAlertView alertViewForError:error withTitle:@"Settings" alertViewDelegate:nil];
+                } else if (jsonResult[@"error"]) {
+                    DDLogError(@"%@ notifications change request failed: %@",tag,error);
+                }
+            }
 
-- (void) reloadSettings {
-	[self.tableView reloadData];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:moduleIndex inSection:MITSettingsSectionNotifications];
+            [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                                  withRowAnimation:UITableViewRowAnimationNone];
+        };
+        
+        [[MobileRequestOperation defaultQueue] addOperation:request];
+    }
 }
 
 @end
+
 
