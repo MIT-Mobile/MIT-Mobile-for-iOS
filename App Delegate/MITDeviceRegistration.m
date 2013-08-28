@@ -95,7 +95,16 @@
     };
     [[NSOperationQueue mainQueue] addOperation:request];
 }
-	
+
++ (void)clearIdentity
+{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults removeObjectForKey:MITDeviceIdKey];
+    [userDefaults removeObjectForKey:MITPassCodeKey];
+    [userDefaults removeObjectForKey:DeviceTokenKey];
+    [userDefaults synchronize];
+}
+
 + (MITIdentity *) identity {
 	NSString *deviceId = [[[NSUserDefaults standardUserDefaults] objectForKey:MITDeviceIdKey] description];
 	NSString *passKey = [[[NSUserDefaults standardUserDefaults] objectForKey:MITPassCodeKey] description];

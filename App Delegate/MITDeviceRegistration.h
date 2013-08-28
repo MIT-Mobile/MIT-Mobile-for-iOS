@@ -22,6 +22,7 @@
 
 + (void) registerNewDeviceWithToken: (NSData *)deviceToken;
 + (void) newDeviceToken: (NSData *)deviceToken;
-+ (MITIdentity *) identity;
++ (MITIdentity *)identity;
++ (void)clearIdentity;
 @end
 
