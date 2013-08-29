@@ -51,14 +51,6 @@ enum {
     [self.authOperation cancel];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
-}
-
 #pragma mark - View lifecycle
 - (void)loadView
 {
@@ -263,10 +255,8 @@ enum {
     [self.passwordField resignFirstResponder];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     
-    if ([username length])
-    {
-        if (self.authenticationFailed)
-        {
+    if ([username length]) {
+        if (self.authenticationFailed) {
             UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"You may not be able to login to Touchstone using the provided credentials. Are you sure you want to continue?"
                                                                 delegate:self
                                                        cancelButtonTitle:@"Edit"
@@ -274,29 +264,25 @@ enum {
                                                        otherButtonTitles:@"Save",nil];
             [sheet showInView:self.view];
             self.navigationItem.rightBarButtonItem.enabled = YES;
-        }
-        else if ([password length] == 0)
-        {
+        } else if ([password length] == 0) {
             [self saveWithUsername:username
                           password:password];
-        }
-        else if (self.authOperation == nil)
-        {
+        } else if (!self.authOperation) {
             [self clearTouchstoneLogin:nil];
 
             MITNavigationActivityView *activityView = [[MITNavigationActivityView alloc] init];
             self.navigationItem.titleView = activityView;
             [activityView startActivityWithTitle:@"Verifying..."];
             
-            self.authOperation = [MobileRequestOperation operationWithModule:@"libraries"
-                                                                     command:@"getUserIdentity"
-                                                                  parameters:nil];
+            MobileRequestOperation *operation = [MobileRequestOperation operationWithModule:@"libraries"
+                                                                                    command:@"getUserIdentity"
+                                                                                 parameters:nil];
             
-            [self.authOperation authenticateUsingUsername:username
-                                                 password:password];
+            [operation authenticateUsingUsername:username
+                                        password:password];
 
             __weak SettingsTouchstoneViewController *weakSelf = self;
-            self.authOperation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
+            operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
                 SettingsTouchstoneViewController *blockSelf = weakSelf;
                 blockSelf.authOperation = nil;
                 blockSelf.navigationItem.titleView = nil;
@@ -316,12 +302,11 @@ enum {
                                   password:password];
                 }
             };
-            
-            [self.authOperation start];
+
+            self.authOperation = operation;
+            [[MobileRequestOperation defaultQueue] addOperation:operation];
         }
-    }
-    else
-    {
+    } else {
         DDLogVerbose(@"Saved Touchstone password has been cleared");
         [self saveWithUsername:nil
                       password:nil];
@@ -330,11 +315,7 @@ enum {
 
 - (void)cancel:(id)sender
 {
-    if (self.authOperation)
-    {
-        [self.authOperation cancel];
-    }
-    
+    [self.authOperation cancel];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -356,7 +337,7 @@ enum {
 - (UITableViewCell*)tableView:(UITableView *)tableView
         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [self.tableCells objectForKey:indexPath];
+    return self.tableCells[indexPath];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
