@@ -354,6 +354,10 @@ enum {
     // If we don't have an identity, don't even try to enable (or disable) notifications,
     // just leave everything as-is
     if (!self.canRegisterForNotifications) {
+        if (block) {
+            block();
+        }
+
         return;
     } else {
         MITModule *module = [MITAppDelegate() moduleForTag:tag];
