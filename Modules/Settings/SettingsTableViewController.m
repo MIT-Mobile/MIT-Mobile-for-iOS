@@ -25,9 +25,11 @@ enum {
 @interface SettingsTableViewController ()
 @property (copy) NSArray *sectionsMetadata;
 @property BOOL advancedSettingsAreVisible;
+@property (nonatomic) BOOL canRegisterForNotifications;
 
 - (void)didRecognizeAdvancedSettingsGesture:(UIGestureRecognizer*)gesture;
 - (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled;
+- (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled completed:(void (^)(void))block;
 - (void)switchDidToggle:(id)sender;
 @end
 
@@ -58,7 +60,7 @@ enum {
                               @{MITSettingsSectionTitleKey : @"Touchstone",
                                 MITSettingsSectionDetailKey : @"Touchstone is MIT's single sign-on authentication service.",
                                 MITSettingsCellIdentifierKey : @"MITSettingsCellIdentifierTouchstone"},
-                              @{MITSettingsSectionTitleKey : @"Application Server",
+                              @{MITSettingsSectionTitleKey : @"API Server",
                                 MITSettingsCellIdentifierKey : @"MITSettingsCellIdentifierAPIServer"}];
 
 }
@@ -67,9 +69,13 @@ enum {
 {
     [super viewWillAppear:animated];
 
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey]) {
+        self.canRegisterForNotifications = YES;
+    }
+
     if (self.advancedSettingsAreVisible) {
-    // Reload the server table just in case it was changed outside the settings
-    // module
+        // Reload the server table just in case it was changed outside the settings
+        // module
         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITSettingsSectionServers]
                       withRowAnimation:UITableViewRowAnimationRight];
     }
@@ -89,6 +95,7 @@ enum {
 - (void)viewDidUnload {
     [super viewDidUnload];
     self.advancedSettingsAreVisible = NO;
+    self.canRegisterForNotifications = NO;
 }
 
 #pragma mark Advanced view methods
@@ -123,13 +130,13 @@ enum {
     switch (section) {
         case MITSettingsSectionNotifications:
             return [self.notifications count];
-        
+
         case MITSettingsSectionTouchstone:
             return 1;
-            
+
         case MITSettingsSectionServers:
             return [MITMobileWebGetAPIServerList() count];
-        
+
         default:
             return 0;
     }
@@ -138,7 +145,7 @@ enum {
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     NSString *text = self.sectionsMetadata[section][MITSettingsSectionTitleKey];
-    
+
     if ([text length]) {
         return [UITableView groupedSectionHeaderWithTitle:text];
     } else {
@@ -154,7 +161,7 @@ enum {
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
     NSString *text = self.sectionsMetadata[section][MITSettingsSectionDetailKey];
-    
+
     if ([text length]) {
         ExplanatorySectionLabel *footerLabel = [[ExplanatorySectionLabel alloc] initWithType:ExplanatorySectionFooter];
         footerLabel.text = text;
@@ -197,7 +204,7 @@ enum {
                 cell.detailTextLabel.backgroundColor = [UIColor clearColor];
                 break;
             }
-                
+
             case MITSettingsSectionTouchstone: {
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -207,7 +214,7 @@ enum {
 
                 break;
             }
-                
+
             case MITSettingsSectionServers: {
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
                 cell.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.65];
@@ -216,7 +223,7 @@ enum {
 
                 break;
             }
-                
+
             default:
                 return nil;
         }
@@ -239,26 +246,35 @@ enum {
         UISwitch *switchView = (UISwitch*)cell.accessoryView;
         switchView.tag = indexPath.row;
 
-        if (![MITDeviceRegistration identity]) {
+        if (self.canRegisterForNotifications) {
+            [switchView setOn:aModule.pushNotificationEnabled
+                     animated:NO];
+        } else {
             switchView.enabled = NO;
             aModule.pushNotificationEnabled = NO;
-        } else {
-            [switchView setOn:aModule.pushNotificationEnabled
-                     animated:YES];
         }
     } else if (MITSettingsSectionTouchstone == indexPath.section) {
         cell.textLabel.text = @"Touchstone Settings";
     } else if (MITSettingsSectionServers == indexPath.section) {
-        NSURL *currentServer = MITMobileWebGetCurrentServerURL();
         NSArray *servers = MITMobileWebGetAPIServerList();
-
         cell.textLabel.text = [servers[indexPath.row] host];
 
+        NSURL *currentServer = MITMobileWebGetCurrentServerURL();
+        cell.accessoryView = nil;
         if ([servers indexOfObject:currentServer] == indexPath.row) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         } else {
             cell.accessoryType = UITableViewCellAccessoryNone;
         }
+    }
+}
+
+- (void)setCanRegisterForNotifications:(BOOL)canRegisterForNotifications
+{
+    if (_canRegisterForNotifications != canRegisterForNotifications) {
+        _canRegisterForNotifications = canRegisterForNotifications;
+        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITSettingsSectionNotifications]
+                      withRowAnimation:UITableViewRowAnimationNone];
     }
 }
 
@@ -271,57 +287,87 @@ enum {
         [tableView deselectRowAtIndexPath:indexPath
                                  animated:YES];
     } else if (MITSettingsSectionServers == indexPath.section) {
-        NSMutableDictionary *notificationStates = [[NSMutableDictionary alloc] init];
-        NSArray *serverURLs = MITMobileWebGetAPIServerList();
-        NSURL *serverURL = serverURLs[indexPath.row];
+        // TODO: re-evaluate where this functionality belongs. It doesn't feel right
+        // to be handling the low-level notification config in a view controller
 
+        if ([[tableView visibleCells] containsObject:indexPath]) {
+            UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+            if (cell.accessoryType != UITableViewCellAccessoryCheckmark) {
+                UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                [indicatorView startAnimating];
+
+                cell.accessoryView = indicatorView;
+            }
+        }
+
+        NSMutableDictionary *notificationStates = [[NSMutableDictionary alloc] init];
         [self.notifications enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+            // Save the currently enabled state for the module. We will be using this data
+            // to reset the state after switching the API server
             notificationStates[module.tag] = @(module.pushNotificationEnabled);
             [self performPushConfigurationForModule:module.tag
                                             enabled:NO];
         }];
 
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITDeviceIdKey];
-        MITMobileWebSetCurrentServerURL(serverURL);
+        NSArray *serverURLs = MITMobileWebGetAPIServerList();
+        MITMobileWebSetCurrentServerURL(serverURLs[indexPath.row]);
 
-        [self.notifications enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
-            [self performPushConfigurationForModule:module.tag
-                                            enabled:[notificationStates[module.tag] boolValue]];
-
-        }];
-
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section]
-                      withRowAnimation:UITableViewRowAnimationNone];
+        NSData *deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
+        [MITDeviceRegistration registerDeviceWithToken:deviceToken
+                                            registered:^(MITIdentity *identity, NSError *error) {
+                                                if (error || !identity) {
+                                                    self.canRegisterForNotifications = NO;
+                                                } else {
+                                                    [notificationStates enumerateKeysAndObjectsUsingBlock:^(NSString *moduleTag, NSNumber *enabled, BOOL *stop) {
+                                                        [self performPushConfigurationForModule:moduleTag
+                                                                                        enabled:[enabled boolValue]
+                                                                                      completed:^{
+                                                                                          [self.tableView beginUpdates];
+                                                                                          [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                                                                                                                withRowAnimation:UITableViewRowAnimationNone];
+                                                                                          [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITSettingsSectionServers]
+                                                                                                        withRowAnimation:UITableViewRowAnimationNone];
+                                                                                          [self.tableView endUpdates];
+                                                                                      }];
+                                                    }];
+                                                }
+                                            }];
     }
 }
 
 - (void)switchDidToggle:(id)sender {
     UISwitch *aSwitch = sender;
     MITModule *aModule = self.notifications[aSwitch.tag];
-    
+
     [self performPushConfigurationForModule:aModule.tag
                                     enabled:[aSwitch isOn]];
 }
 
+
 - (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled
+{
+    [self performPushConfigurationForModule:tag enabled:enabled completed:nil];
+}
+
+- (void)performPushConfigurationForModule:(NSString*)tag enabled:(BOOL)enabled completed:(void (^)(void))block
 {
     // If we don't have an identity, don't even try to enable (or disable) notifications,
     // just leave everything as-is
-    if (![MITDeviceRegistration identity]) {
+    if (!self.canRegisterForNotifications) {
         return;
     } else {
-        __weak MITModule *module = [MITAppDelegate() moduleForTag:tag];
-        NSUInteger moduleIndex = [self.notifications indexOfObject:module];
-
+        MITModule *module = [MITAppDelegate() moduleForTag:tag];
         NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
         parameters[@"module_name"] = tag;
         parameters[@"enabled"] = (enabled ? @"1" : @"0");
-        
+
         MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"push"
                                                                                  command:@"moduleSetting"
                                                                               parameters:parameters];
         request.completeBlock = ^(MobileRequestOperation *operation, NSDictionary *jsonResult, NSString *contentType, NSError *error) {
-            if ([jsonResult[@"success"] boolValue]) {
+            if (![jsonResult isKindOfClass:[NSDictionary class]]) {
+                DDLogError(@"fatal error: invalid response for push configuration");
+            } else if ([jsonResult[@"success"] boolValue]) {
                 module.pushNotificationEnabled = [jsonResult[@"enabled"] boolValue];
             } else {
                 if (error) {
@@ -331,9 +377,9 @@ enum {
                 }
             }
 
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:moduleIndex inSection:MITSettingsSectionNotifications];
-            [self.tableView reloadRowsAtIndexPaths:@[indexPath]
-                                  withRowAnimation:UITableViewRowAnimationNone];
+            if (block) {
+                block();
+            }
         };
         
         [[MobileRequestOperation defaultQueue] addOperation:request];
@@ -341,5 +387,3 @@ enum {
 }
 
 @end
-
-
