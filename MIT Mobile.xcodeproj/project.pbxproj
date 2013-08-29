@@ -14,7 +14,7 @@
 		29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C19118E401C009D6863 /* libxml2.dylib */; };
 		29366C1E118E4151009D6863 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29366C1D118E4151009D6863 /* Security.framework */; };
 		296F9EDD110A0F5400EC8FCA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */; };
-		2978864510F03656002670CC /* MITDeviceRegistration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2978864210F03656002670CC /* MITDeviceRegistration.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2978864510F03656002670CC /* MITDeviceRegistration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2978864210F03656002670CC /* MITDeviceRegistration.m */; };
 		2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 2978864410F03656002670CC /* MITUnreadNotifications.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		29974B711160F1DA009D03B9 /* URLShortener.m in Sources */ = {isa = PBXBuildFile; fileRef = 29974B701160F1DA009D03B9 /* URLShortener.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -67,7 +67,7 @@
 		2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */; };
 		2C5DECDC13E9BEF400F9C089 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5DECDB13E9BEF400F9C089 /* libz.dylib */; };
 		2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C603011139EA21700D34F1B /* FacilitiesRepairType.m */; };
-		2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */; };
 		2C6528F217906DBD00BED0DF /* Secret.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6528F117906DBD00BED0DF /* Secret.m */; };
 		2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6FE84813B2717700AFD8B8 /* FacilitiesContent.m */; };
@@ -299,7 +299,7 @@
 		DE6D32F610346D02008A5823 /* ShuttleModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D32F510346D02008A5823 /* ShuttleModule.m */; };
 		DE6D332B10346F6D008A5823 /* ShuttleRoutes.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D332A10346F6D008A5823 /* ShuttleRoutes.m */; };
 		DE6D570610F05C59006431A8 /* TabScrollerBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D570510F05C59006431A8 /* TabScrollerBackgroundView.m */; };
-		DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE6D9401110AD1ED00DAF213 /* SettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6D9319110A8EFA00DAF213 /* SettingsTableViewController.m */; };
 		DE705493103FB792003B5F41 /* ShuttleRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705491103FB792003B5F41 /* ShuttleRoute.m */; };
 		DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705496103FB79D003B5F41 /* EmergencyData.m */; };
 		DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705498103FB79D003B5F41 /* EmergencyModule.m */; };
@@ -308,9 +308,9 @@
 		DE71537C102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71537B102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE71F6E3104234F900661DED /* ShuttleRouteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */; };
 		DE71F7D510424E3400661DED /* ShuttleStop.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F7D410424E3400661DED /* ShuttleStop.m */; };
+		DE728E6C10D6FF4700BFED37 /* StoryThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E4610D6FF4700BFED37 /* StoryThumbnailView.m */; };
 		DE728E7B10D6FF4700BFED37 /* StoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6510D6FF4700BFED37 /* StoryDetailViewController.m */; };
 		DE728E7C10D6FF4700BFED37 /* StoryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6710D6FF4700BFED37 /* StoryListViewController.m */; };
-		DE728E6C10D6FF4700BFED37 /* StoryThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E4610D6FF4700BFED37 /* StoryThumbnailView.m */; };
 		DE728E7E10D6FF4700BFED37 /* StoryXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E6B10D6FF4700BFED37 /* StoryXMLParser.m */; };
 		DE7720D910C57DBC00620A7D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE7720D810C57DBC00620A7D /* CoreGraphics.framework */; };
 		DE7720E010C57E1C00620A7D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE7720DF10C57E1C00620A7D /* QuartzCore.framework */; };
@@ -324,7 +324,7 @@
 		DE952E6816295EBA007E7356 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE952E6716295EBA007E7356 /* Default-568h@2x.png */; };
 		DE952E6C1629BFAB007E7356 /* MITRotationForwardingNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE952E6B1629BFAB007E7356 /* MITRotationForwardingNavigationController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE98C6651741B8E500319AA3 /* RetailVenue.m in Sources */ = {isa = PBXBuildFile; fileRef = DE98C6641741B8E500319AA3 /* RetailVenue.m */; };
-		DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */; };
 		DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B48C10C9BB7300BDA774 /* AboutModule.m */; };
 		DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B6F710CB126200BDA774 /* MITConstants.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };

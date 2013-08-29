@@ -54,7 +54,7 @@
 	
 	[[ShuttleDataManager sharedDataManager] registerDelegate:self];
 
-	_shuttleStopSchedules = [[NSMutableArray alloc] initWithCapacity:[self.shuttleStop.routeStops count]];
+	_shuttleStopSchedules = [[NSMutableArray alloc] init];
     // make sure selected route is sorted first
 	for (ShuttleRouteStop *routeStop in self.shuttleStop.routeStops) {
         NSError *error = nil;
@@ -485,7 +485,7 @@
 		// need to make sure the main route is first
 		for(ShuttleStop *routeStopSchedule in shuttleStopSchedules) {
 			if([routeStopSchedule.routeID isEqualToString:self.shuttleStop.routeID]) {
-				self.shuttleStopSchedules = [@[routeStopSchedule] mutableCopy];
+				self.shuttleStopSchedules = [NSMutableArray arrayWithObject:routeStopSchedule];
 			} else {
 				[otherSchedules addObject:routeStopSchedule];
 			}

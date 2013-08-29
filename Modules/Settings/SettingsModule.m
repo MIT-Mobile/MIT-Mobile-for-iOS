@@ -19,7 +19,7 @@
 
 - (void)loadModuleHomeController
 {
-    self.moduleHomeController = [[[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+    self.moduleHomeController = [[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
 }
 
 - (BOOL)handleLocalPath:(NSString *)localPath

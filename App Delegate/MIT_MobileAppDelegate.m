@@ -308,10 +308,19 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 - (void)application:(UIApplication *)application 
 didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     DDLogWarn(@"%@", [error localizedDescription]);
-	MITIdentity *identity = [MITDeviceRegistration identity];
-	if(!identity) {
-		[MITDeviceRegistration registerNewDeviceWithToken:nil];
-	}
+
+    if ([error code] == 3010) {
+        // Running the simulator and, since the simulator can't register for notifications
+        // just kill our device ID so a nil identity is returned whenever we are asked
+        [MITDeviceRegistration clearIdentity];
+    } else {
+        // Something odd happened but create a new identity anyway (if needed) and register it with the
+        // notification server just in case.
+        MITIdentity *identity = [MITDeviceRegistration identity];
+        if(!identity) {
+            [MITDeviceRegistration registerNewDeviceWithToken:nil];
+        }
+    }
 }
 
 @end
