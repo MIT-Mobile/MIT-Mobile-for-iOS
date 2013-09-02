@@ -287,17 +287,22 @@ enum {
         [tableView deselectRowAtIndexPath:indexPath
                                  animated:YES];
     } else if (MITSettingsSectionServers == indexPath.section) {
+        NSArray *serverURLs = MITMobileWebGetAPIServerList();
+        
+        if ([serverURLs[indexPath.row] isEqual:MITMobileWebGetCurrentServerURL()]) {
+            // If the URL is already set to the correct one, just return
+            return;
+        }
+        
         // TODO: re-evaluate where this functionality belongs. It doesn't feel right
         // to be handling the low-level notification config in a view controller
 
-        if ([[tableView visibleCells] containsObject:indexPath]) {
-            UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-            if (cell.accessoryType != UITableViewCellAccessoryCheckmark) {
-                UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                [indicatorView startAnimating];
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        if (cell.accessoryType != UITableViewCellAccessoryCheckmark) {
+            UIActivityIndicatorView *indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            [indicatorView startAnimating];
 
-                cell.accessoryView = indicatorView;
-            }
+            cell.accessoryView = indicatorView;
         }
 
         NSMutableDictionary *notificationStates = [[NSMutableDictionary alloc] init];
@@ -309,7 +314,7 @@ enum {
                                             enabled:NO];
         }];
 
-        NSArray *serverURLs = MITMobileWebGetAPIServerList();
+        NSUInteger previousServerIndex = [serverURLs indexOfObject:MITMobileWebGetCurrentServerURL()];
         MITMobileWebSetCurrentServerURL(serverURLs[indexPath.row]);
 
         NSData *deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
@@ -318,17 +323,21 @@ enum {
                                                 if (error || !identity) {
                                                     self.canRegisterForNotifications = NO;
                                                 } else {
-                                                    [notificationStates enumerateKeysAndObjectsUsingBlock:^(NSString *moduleTag, NSNumber *enabled, BOOL *stop) {
+                                                    NSArray *moduleTags = [notificationStates allKeys];
+                                                    [moduleTags enumerateObjectsUsingBlock:^(NSString *moduleTag, NSUInteger idx, BOOL *stop) {
+                                                        BOOL enabled = [notificationStates[moduleTag] boolValue];
+                                                        
                                                         [self performPushConfigurationForModule:moduleTag
-                                                                                        enabled:[enabled boolValue]
+                                                                                        enabled:enabled
                                                                                       completed:^{
-                                                                                          [self.tableView beginUpdates];
-                                                                                          [self.tableView reloadRowsAtIndexPaths:@[indexPath]
-                                                                                                                withRowAnimation:UITableViewRowAnimationNone];
-                                                                                          [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITSettingsSectionServers]
-                                                                                                        withRowAnimation:UITableViewRowAnimationNone];
-                                                                                          [self.tableView endUpdates];
+                                                                                          // If we are sending out the last request, refresh the whole section
+                                                                                          if (idx == ([moduleTags count] - 1)) {
+                                                                                              NSIndexPath *previousIndexPath = [NSIndexPath indexPathForRow:previousServerIndex inSection:MITSettingsSectionServers];
+                                                                                              [tableView reloadRowsAtIndexPaths:@[previousIndexPath,indexPath]
+                                                                                                               withRowAnimation:UITableViewRowAnimationNone];
+                                                                                          }
                                                                                       }];
+                                                        
                                                     }];
                                                 }
                                             }];
