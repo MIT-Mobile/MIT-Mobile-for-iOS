@@ -53,19 +53,14 @@
 			badgeCountInt = 1;
 		}
 		
-		[modulesBadgeString setObject:[NSNumber numberWithInt:badgeCountInt] forKey:notification.moduleName];
+		[modulesBadgeString setObject:@(badgeCountInt) forKey:notification.moduleName];
 	}
 	
 
 	// update the badge values for each tab item
 	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 	for(MITModule *module in appDelegate.modules) {
-		NSNumber *badgeValue = [modulesBadgeString objectForKey:module.tag];
-		NSString *badgeString = nil;
-		if (badgeValue) {
-			badgeString = [badgeValue stringValue];
-		}
-		[module setBadgeValue:badgeString];
+		[module setBadgeValue:[modulesBadgeString[module.tag] stringValue]];
 	}
 	
 	// update the total badge value for the application
