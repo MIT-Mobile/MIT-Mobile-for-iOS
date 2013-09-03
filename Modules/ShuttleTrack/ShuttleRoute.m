@@ -21,7 +21,6 @@
 @dynamic summary;
 @dynamic interval;
 @dynamic isSafeRide;
-//@dynamic stops;
 @dynamic routeID;
 @dynamic sortOrder;
 
@@ -85,7 +84,7 @@
 	BOOL pathShouldUpdate = NO;
 	
 	if (_stopAnnotations == nil) {
-		_stopAnnotations = [[NSMutableArray alloc] initWithCapacity:stops.count];
+		_stopAnnotations = [[NSMutableArray alloc] initWithCapacity:[stops count]];
 		pathShouldUpdate = YES;
 	}
 	
@@ -208,7 +207,7 @@
 	{
 		self.vehicleLocations = nil;
 		
-		NSMutableArray* formattedVehicleLocations = [[NSMutableArray alloc] initWithCapacity:vehicleLocations.count];
+		NSMutableArray* formattedVehicleLocations = [[NSMutableArray alloc] initWithCapacity:[vehicleLocations count]];
 		for (NSDictionary* dictionary in vehicleLocations) {
 			ShuttleLocation* shuttleLocation = [[ShuttleLocation alloc] initWithDictionary:dictionary];
 			[formattedVehicleLocations addObject:shuttleLocation];
@@ -313,7 +312,7 @@
 	
 	ShuttleStop *aStop = [self.stops lastObject];
 	if (aStop.nextScheduled) { // we have something from the server
-		if (self.vehicleLocations && self.vehicleLocations.count > 0) {
+		if (self.vehicleLocations && [self.vehicleLocations count] > 0) {
 			summaryString = @"Real time bus tracking online.";
 		} else if (self.isRunning) {
 			summaryString = @"Tracking offline. Following schedule.";

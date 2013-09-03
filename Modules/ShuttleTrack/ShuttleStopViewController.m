@@ -19,7 +19,7 @@
 #define kHeaderTag 837402
 
 @interface ShuttleStopViewController () <UIAlertViewDelegate>
-@property (nonatomic, copy) NSMutableArray* shuttleStopSchedules;
+@property (nonatomic, strong) NSMutableArray* shuttleStopSchedules;
 @property (nonatomic, copy) NSMutableDictionary* subscriptions;
 @property (nonatomic, copy) NSMutableArray* loadingSubscriptionRequests;
 
@@ -54,15 +54,15 @@
 	
 	[[ShuttleDataManager sharedDataManager] registerDelegate:self];
 
-	_shuttleStopSchedules = [[NSMutableArray alloc] init];
+	self.shuttleStopSchedules = [[NSMutableArray alloc] init];
     // make sure selected route is sorted first
 	for (ShuttleRouteStop *routeStop in self.shuttleStop.routeStops) {
         NSError *error = nil;
         ShuttleStop *aStop = [ShuttleDataManager stopWithRoute:routeStop.routeID stopID:[routeStop stopID] error:&error];
         if ([routeStop.routeID isEqualToString:self.shuttleStop.routeID]) {
-            [_shuttleStopSchedules insertObject:aStop atIndex:0];
+            [self.shuttleStopSchedules insertObject:aStop atIndex:0];
         } else {
-            [_shuttleStopSchedules addObject:aStop];
+            [self.shuttleStopSchedules addObject:aStop];
         }
 	}
 	
@@ -222,20 +222,20 @@
 #pragma mark Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return self.shuttleStopSchedules.count;
+    return [self.shuttleStopSchedules count];
 }
 
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     	
-	if (section < self.shuttleStopSchedules.count) 
+	if (section < [self.shuttleStopSchedules count])
 	{
 		// determine the route schedule
 		ShuttleStop* schedule = self.shuttleStopSchedules[section];
 		
         // if nextScheduled is not defined, the first row will be negative
-		return (schedule.nextScheduled != 0) ? schedule.predictions.count + 1 : 0;
+		return (schedule.nextScheduled != 0) ? [schedule.predictions count] + 1 : 0;
         
 	}
 	
@@ -253,7 +253,7 @@
 		[cell applyStandardFonts];		
     }
     
-    if (indexPath.section < self.shuttleStopSchedules.count) 
+    if (indexPath.section < [self.shuttleStopSchedules count])
 	{
 		// determine the route schedule
 		ShuttleStop* schedule = self.shuttleStopSchedules[indexPath.section];
@@ -300,7 +300,7 @@
 	ShuttleStop *stop = self.shuttleStopSchedules[section];
 	NSString *headerTitle = nil;
 	
-	if (section < self.shuttleStopSchedules.count) {
+	if (section < [self.shuttleStopSchedules count]) {
 		headerTitle = [NSString stringWithFormat:@"%@:", [(ShuttleRouteCache *)[stop.routeStop route] title]];
 	} else {
 		if(section == 0) {
@@ -491,7 +491,7 @@
 			}
 		}
         
-		[self.shuttleStopSchedules addObject:otherSchedules];
+		[self.shuttleStopSchedules addObjectsFromArray:otherSchedules];
         
 		_tableFooterLabel.text = [NSString stringWithFormat:@"Last updated at %@", [_timeFormatter stringFromDate:[NSDate date]]];
 		

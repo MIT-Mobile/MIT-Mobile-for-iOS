@@ -160,7 +160,7 @@
 
 -(void) setRouteInfo:(ShuttleRoute *) shuttleRoute
 {
-	NSMutableDictionary *routeStops = [NSMutableDictionary dictionaryWithCapacity:shuttleRoute.stops.count];
+	NSMutableDictionary *routeStops = [NSMutableDictionary dictionaryWithCapacity:[shuttleRoute.stops count]];
 	for (ShuttleStop* stop in shuttleRoute.stops) {
 		[routeStops setObject:stop
                        forKey:stop.stopID];
@@ -230,13 +230,13 @@
 
 -(void)narrowRegion {
     
-    if ([self.mapView.routes count] && self.route.pathLocations.count > 1) {
+    if ([self.mapView.routes count] && [self.route.pathLocations count] > 1) {
         self.mapView.region = [self.mapView regionForRoute:self.route];
         
-    } else if (self.route.vehicleLocations.count) {
+    } else if ([self.route.vehicleLocations count]) {
         self.mapView.region = [self.mapView regionForAnnotations:self.route.vehicleLocations];
         
-    } else if (self.route.annotations.count) {
+    } else if ([self.route.annotations count]) {
         self.mapView.region = [self.mapView regionForAnnotations:self.route.annotations];
     }
 }

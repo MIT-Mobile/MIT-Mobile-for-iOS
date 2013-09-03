@@ -265,7 +265,7 @@ NSString * const shuttlePathExtension = @"shuttles/";
             
             NSArray* routesAtStop = jsonResult[@"stops"]; // the api should've called this "routes", this is confusing
             
-            NSMutableArray* schedules = [NSMutableArray arrayWithCapacity:routesAtStop.count];
+            NSMutableArray* schedules = [NSMutableArray arrayWithCapacity:[routesAtStop count]];
             
             for (NSDictionary* routeAtStop in routesAtStop) 
             {

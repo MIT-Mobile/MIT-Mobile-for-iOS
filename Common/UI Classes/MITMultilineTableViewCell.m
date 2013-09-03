@@ -1,3 +1,4 @@
+#import <QuartzCore/QuartzCore.h>
 #import "MITMultilineTableViewCell.h"
 #import "MITUIConstants.h"
 

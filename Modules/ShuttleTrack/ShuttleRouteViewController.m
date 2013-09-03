@@ -148,7 +148,7 @@
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
 {
-    return self.route.stops.count;
+    return [self.route.stops count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -176,7 +176,7 @@
 	
     // Set up the cell...
     ShuttleStop *aStop = nil;
-	if(nil != self.route && self.route.stops.count > indexPath.row) {
+	if(nil != self.route && [self.route.stops count] > indexPath.row) {
 		aStop = self.route.stops[indexPath.row];
 	}
 	
@@ -317,7 +317,7 @@
 			self.showedError = NO;
 		
 			self.route = shuttleRoute;
-            if (self.route.annotations.count <= 0) {
+            if ([self.route.annotations count] <= 0) {
                 self.route = shuttleRoute;
             }
 

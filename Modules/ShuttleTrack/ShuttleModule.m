@@ -71,7 +71,7 @@
         [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
     }
     
-    if (localPath.length == 0) {
+    if ([localPath length] == 0) {
 		return YES;
 	}
 	
@@ -90,7 +90,7 @@
 			
 			ShuttleStop *stop = nil;
 			ShuttleStopMapAnnotation *annotation = nil;
-			if (components.count > 2) {
+			if ([components count] > 2) {
 				NSString *stopID = components[2];
                 NSError *error = nil;
 				stop = [ShuttleDataManager stopWithRoute:routeID stopID:stopID error:&error];
@@ -122,7 +122,7 @@
                                          animated:NO];
 				}
 				
-				if (components.count > 3 && 
+				if ([components count] > 3 && 
 					[@"stops" isEqualToString:components[3]]) {
 						[routeViewController pushStopViewControllerWithStop:stop
                                                                  annotation:annotation
