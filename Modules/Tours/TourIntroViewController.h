@@ -3,7 +3,7 @@
 
 @interface TourIntroViewController : UIViewController <UIWebViewDelegate> {
     
-    UIView *loadingIndicator;
+    UIView *_loadingIndicator;
 
 }
 

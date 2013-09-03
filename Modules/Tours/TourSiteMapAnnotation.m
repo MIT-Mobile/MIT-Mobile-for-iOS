@@ -4,20 +4,10 @@
 @implementation TourSiteMapAnnotation
 
 - (void)setSite:(TourSiteOrRoute *)aSite {
-    [site release];
-    site = nil;
-    site = [aSite retain];
-    self.component = site;
+    _site = nil;
+    _site = aSite;
+    self.component = self.site;
     self.tourGeoLocation = aSite;
-}
-
-- (TourSiteOrRoute *)site {
-    return site;
-}
-
-- (void)dealloc {
-    site = nil;
-    [super dealloc];
 }
 
 @end

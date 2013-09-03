@@ -5,19 +5,9 @@
 
 
 - (void)setSideTrip:(CampusTourSideTrip *)aSidetrip {
-    [sidetrip release];
-    sidetrip = [aSidetrip retain];
-    self.component = sidetrip;
-    self.tourGeoLocation  = sidetrip;
-}
-
-- (CampusTourSideTrip *)sideTrip {
-    return sidetrip;
-}
-
-- (void)dealloc {
-    self.sideTrip = nil;
-    [super dealloc];
+    _sideTrip = aSidetrip;
+    self.component = self.sideTrip;
+    self.tourGeoLocation  = self.sideTrip;
 }
 
 @end

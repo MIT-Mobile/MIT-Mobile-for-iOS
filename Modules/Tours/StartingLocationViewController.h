@@ -6,15 +6,11 @@
 @class TourOverviewViewController;
 
 @interface StartingLocationViewController : UIViewController <UIWebViewDelegate, ConnectionWrapperDelegate> {
-
-    NSArray *startingLocations;
-    TourOverviewViewController *overviewController;
-    UIWebView *_webView;
-    NSMutableArray *connections;
+    NSMutableArray *_connections;
 }
 
-@property (nonatomic, retain) UIWebView *webView;
-@property (nonatomic, retain) NSArray *startingLocations;
+@property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, copy) NSArray *startingLocations;
 @property (nonatomic, assign) TourOverviewViewController *overviewController;
 
 @end

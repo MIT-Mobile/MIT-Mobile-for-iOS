@@ -3,8 +3,6 @@
 
 @implementation SuperThinProgressBar
 
-@synthesize numberOfSegments, currentPosition, vertical;
-
 - (id)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
 
@@ -13,7 +11,7 @@
 }
 
 - (void)markAsDone {
-    self.currentPosition = numberOfSegments;
+    self.currentPosition = self.numberOfSegments;
 }
 
 // Only override drawRect: if you perform custom drawing.
@@ -32,10 +30,10 @@
     
     [background drawAsPatternInRect:rect];
     
-    if (numberOfSegments && currentPosition < numberOfSegments + 1) {
+    if (self.numberOfSegments && self.currentPosition < self.numberOfSegments + 1) {
 
-        CGFloat segmentLength = (rect.size.width - 4) / numberOfSegments;
-        CGFloat passedLength = round(segmentLength * currentPosition);
+        CGFloat segmentLength = (rect.size.width - 4) / self.numberOfSegments;
+        CGFloat passedLength = round(segmentLength * self.currentPosition);
         CGRect currentRect = CGRectMake(rect.origin.x + 2, rect.origin.y + 1, passedLength, rect.size.height - 1);
         [passedImage drawAsPatternInRect:currentRect];
         
@@ -45,19 +43,15 @@
         
         CGFloat currentX = 0;
         currentRect = CGRectMake(currentX, 1, 2, 3);
-        for (int i = 0; i <= numberOfSegments; i++) {
+        for (int i = 0; i <= self.numberOfSegments; i++) {
             [dividerImage drawInRect:currentRect];
-            if (i == numberOfSegments - 1)
+            if (i == self.numberOfSegments - 1)
                 currentX = rect.size.width - 2;
             else
                 currentX += segmentLength;
             currentRect.origin.x = round(currentX);
         }
     }
-}
-
-- (void)dealloc {
-    [super dealloc];
 }
 
 @end

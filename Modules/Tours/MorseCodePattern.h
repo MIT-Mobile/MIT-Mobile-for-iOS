@@ -2,7 +2,7 @@
 
 
 @interface MorseCodePattern : NSObject {
-    NSMutableArray *lineDashPattern;
+    NSMutableArray *_lineDashPattern;
 }
 
 - (NSArray *)lineDashPattern;

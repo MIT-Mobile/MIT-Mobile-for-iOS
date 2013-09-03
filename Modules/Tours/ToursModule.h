@@ -2,12 +2,8 @@
 
 @class CampusTourHomeController;
 
-@interface ToursModule : MITModule {
-    
-    CampusTourHomeController *homeController;
+@interface ToursModule : MITModule
 
-}
-
-@property (nonatomic, retain) CampusTourHomeController *homeController;
+@property (nonatomic, strong) CampusTourHomeController *homeController;
 
 @end

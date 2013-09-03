@@ -7,6 +7,6 @@
 - (void)tourInfoLoaded:(NSNotification *)aNotification;
 - (void)tourInfoFailedToLoad:(NSNotification *)aNotification;
 
-@property (nonatomic, strong) NSArray *tours;
+@property (nonatomic, copy) NSArray *tours;
 
 @end

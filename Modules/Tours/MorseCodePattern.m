@@ -7,35 +7,30 @@
 - (id)init {
     self = [super init];
     if(self) {
-        lineDashPattern = [NSMutableArray new];
+        _lineDashPattern = [NSMutableArray new];
     }
     return self;
 }
 
 - (MorseCodePattern *)dash {
-    [lineDashPattern addObjectsFromArray:[NSArray arrayWithObjects:[NSNumber numberWithInt:6], [NSNumber numberWithInt:PAUSE], nil]];
+    [_lineDashPattern addObjectsFromArray:[NSArray arrayWithObjects:[NSNumber numberWithInt:6], [NSNumber numberWithInt:PAUSE], nil]];
     return self;
 }
     
 - (MorseCodePattern *)dot {
-    [lineDashPattern addObjectsFromArray:[NSArray arrayWithObjects:[NSNumber numberWithInt:0], [NSNumber numberWithInt:PAUSE], nil]];
+    [_lineDashPattern addObjectsFromArray:[NSArray arrayWithObjects:[NSNumber numberWithInt:0], [NSNumber numberWithInt:PAUSE], nil]];
     return self;
 }
 
 - (MorseCodePattern *)pause {
-    NSInteger lastGap = [(NSNumber *)[lineDashPattern lastObject] intValue];
+    NSInteger lastGap = [(NSNumber *)[_lineDashPattern lastObject] intValue];
     lastGap += PAUSE;
-    [lineDashPattern replaceObjectAtIndex:([lineDashPattern count] - 1) withObject:[NSNumber numberWithInt:lastGap]];
+    [_lineDashPattern replaceObjectAtIndex:([_lineDashPattern count] - 1) withObject:[NSNumber numberWithInt:lastGap]];
     return self;
 }
      
 - (NSArray *)lineDashPattern {
-    return lineDashPattern;
-}
-
-- (void)dealloc {
-    [lineDashPattern release];
-    [super dealloc];
+    return _lineDashPattern;
 }
 
 @end

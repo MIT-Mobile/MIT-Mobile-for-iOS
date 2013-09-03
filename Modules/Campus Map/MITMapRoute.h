@@ -29,5 +29,6 @@
 @property (nonatomic, strong) UIColor *strokeColor;
 @property (nonatomic, copy) NSArray *lineDashPattern;
 @property (nonatomic) CGFloat lineWidth;
+@property (nonatomic, copy) NSArray * annotations;
 
 @end

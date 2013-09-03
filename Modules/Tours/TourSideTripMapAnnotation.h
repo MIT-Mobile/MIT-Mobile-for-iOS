@@ -2,12 +2,8 @@
 
 @class CampusTourSideTrip;
 
-@interface TourSideTripMapAnnotation : TourMapAnnotation {
+@interface TourSideTripMapAnnotation : TourMapAnnotation
 
-    CampusTourSideTrip *sidetrip;
-
-}
-
-@property (nonatomic, retain) CampusTourSideTrip *sideTrip;
+@property (nonatomic, strong) CampusTourSideTrip *sideTrip;
 
 @end

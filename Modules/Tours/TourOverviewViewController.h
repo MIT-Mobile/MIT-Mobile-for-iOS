@@ -37,13 +37,9 @@ UITableViewDelegate, MITMapViewDelegate, UIAlertViewDelegate>
 @class TourSiteOrRoute;
 
 @interface TourOverviewTableViewCell : UITableViewCell <MITThumbnailDelegate>
-{
-    TourComponent *tourComponent; // Either a TourSiteOrRoute or a CampusTourSideTrip.
-    TourSiteVisitStatus visitStatus;
-}
 
 @property (nonatomic, assign) TourSiteVisitStatus visitStatus;
-@property (nonatomic, retain) TourComponent *tourComponent;
+@property (nonatomic, strong) TourComponent *tourComponent;
 
 @end
 

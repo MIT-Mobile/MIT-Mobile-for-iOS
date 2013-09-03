@@ -2,13 +2,13 @@
 
 
 @interface ScrollFadeImageView : UIView {
-    BOOL animating;
-    NSInteger currentPosition;
+    BOOL _animating;
+    NSInteger _currentPosition;
 
     // animation queue
-    UIImageView *outgoingImage;
-    UIImageView *centerImage;
-    UIImageView *incomingImage;
+    UIImageView *_outgoingImage;
+    UIImageView *_centerImage;
+    UIImageView *_incomingImage;
 }
 
 - (void)startAnimating;
@@ -16,7 +16,7 @@
 - (BOOL)isAnimating;
 
 @property (nonatomic) CGFloat scrollDistance;
-@property (nonatomic, strong) NSArray *animationImages;
+@property (nonatomic, copy) NSArray *animationImages;
 @property (nonatomic, assign) NSTimeInterval animationDuration;
 @property (nonatomic, assign) NSTimeInterval animationDelay;
 

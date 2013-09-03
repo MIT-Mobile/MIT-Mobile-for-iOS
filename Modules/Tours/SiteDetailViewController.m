@@ -71,7 +71,7 @@
 #pragma mark Actions
 
 - (void)feedbackButtonPressed:(id)sender {
-    NSString *email = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"MITFeedbackAddress"];
+    NSString *email = [[NSBundle mainBundle] infoDictionary][@"MITFeedbackAddress"];
     NSString *subject = [[ToursDataManager sharedManager] activeTour].feedbackSubject;
     [MITMailComposeController presentMailControllerWithRecipient:email subject:subject body:nil];
 }
@@ -102,7 +102,7 @@
     TourOverviewViewController *vc = [[TourOverviewViewController alloc] init];
     
     NSInteger indexOfTopVC = [self.navigationController.viewControllers indexOfObject:self];
-    UIViewController *callingVC = [self.navigationController.viewControllers objectAtIndex:indexOfTopVC-1];
+    UIViewController *callingVC = self.navigationController.viewControllers[indexOfTopVC-1];
     if([callingVC isKindOfClass:[SiteDetailViewController class]]) {
         vc.callingViewController = callingVC;
     } else {
@@ -687,7 +687,7 @@
 }
 
 - (void)jumpToSite:(NSInteger)siteIndex {
-    TourSiteOrRoute *site = [self.sites objectAtIndex:siteIndex];
+    TourSiteOrRoute *site = self.sites[siteIndex];
     
     // TODO: clean up so we're not doing the same thing here and in TourOverviewViewController
     NSInteger currentSiteIndex;
@@ -881,7 +881,7 @@
     } else {
         NSSet *tourLinks = [[ToursDataManager sharedManager] activeTour].links;
         NSArray *sortedLinks = [tourLinks sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES]]];
-        TourLink *link = [sortedLinks objectAtIndex:indexPath.row - 1];
+        TourLink *link = sortedLinks[indexPath.row - 1];
         cell.textLabel.text = link.title;
         if ([link.url rangeOfString:@"http"].location == 0) {
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
@@ -901,7 +901,7 @@
     } else {
         NSSet *tourLinks = [[ToursDataManager sharedManager] activeTour].links;
         NSArray *sortedLinks = [tourLinks sortedArrayUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"sortOrder" ascending:YES]]];
-        TourLink *link = [sortedLinks objectAtIndex:indexPath.row - 1];
+        TourLink *link = sortedLinks[indexPath.row - 1];
         NSURL *url = [NSURL URLWithString:link.url];
         
         if (url && [[UIApplication sharedApplication] canOpenURL:url]) {

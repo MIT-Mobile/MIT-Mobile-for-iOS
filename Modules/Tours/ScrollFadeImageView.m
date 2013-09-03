@@ -58,29 +58,29 @@
 }
 
 - (void)startAnimating {
-    if (animating || ([self.animationImages count] == 0)) return;
-    animating = YES;
+    if (_animating || ([self.animationImages count] == 0)) return;
+    _animating = YES;
     
-    incomingImage = [self.animationImages objectAtIndex:currentPosition];
+    _incomingImage = self.animationImages[_currentPosition];
     [self animateSlide];
 }
 
 - (void)stopAnimating {
-    if (!animating || ([self.animationImages count] == 0)) return;
-    animating = NO;
+    if (!_animating || ([self.animationImages count] == 0)) return;
+    _animating = NO;
 }
 
 - (BOOL)isAnimating {
-    return animating;
+    return _animating;
 }
 
 - (void)animateSlide {
-    if (!animating) return;
+    if (!_animating) return;
     
-    CGRect inFrame = incomingImage.frame;
+    CGRect inFrame = _incomingImage.frame;
     inFrame.origin.x = 0;
-    incomingImage.frame = inFrame;
-    [self addSubview:incomingImage];
+    _incomingImage.frame = inFrame;
+    [self addSubview:_incomingImage];
     
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:round(self.animationDuration * (1 - CROSSFADE_PROPORTION))];
@@ -89,17 +89,17 @@
     [UIView setAnimationDidStopSelector:@selector(animateCrossfade)];
     
     inFrame.origin.x = round(-(self.scrollDistance) * (1 - CROSSFADE_PROPORTION));
-    incomingImage.frame = inFrame;
+    _incomingImage.frame = inFrame;
 
-    inFrame = centerImage.frame;
-    inFrame.origin.x = incomingImage.frame.origin.x - self.scrollDistance;
-    centerImage.frame = inFrame;
+    inFrame = _centerImage.frame;
+    inFrame.origin.x = _incomingImage.frame.origin.x - self.scrollDistance;
+    _centerImage.frame = inFrame;
     
     [UIView commitAnimations];
 }
 
 - (void)animateCrossfade {
-    CGRect inFrame = incomingImage.frame;
+    CGRect inFrame = _incomingImage.frame;
     
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:round(self.animationDuration * CROSSFADE_PROPORTION)];
@@ -108,28 +108,28 @@
     [UIView setAnimationDidStopSelector:@selector(cleanupAnimation)];
     
     inFrame.origin.x = -(self.scrollDistance);
-    incomingImage.frame = inFrame;
-    incomingImage.alpha = 1;
+    _incomingImage.frame = inFrame;
+    _incomingImage.alpha = 1;
     
-    inFrame = centerImage.frame;
-    inFrame.origin.x = incomingImage.frame.origin.x - self.scrollDistance;
-    centerImage.frame = inFrame;
+    inFrame = _centerImage.frame;
+    inFrame.origin.x = _incomingImage.frame.origin.x - self.scrollDistance;
+    _centerImage.frame = inFrame;
     
     [UIView commitAnimations];
 }
 
 - (void)cleanupAnimation {
-    if (outgoingImage)
-        [outgoingImage removeFromSuperview];
+    if (_outgoingImage)
+        [_outgoingImage removeFromSuperview];
     
-    currentPosition++;
-    if (currentPosition == [self.animationImages count])
-        currentPosition = 0;
+    _currentPosition++;
+    if (_currentPosition == [self.animationImages count])
+        _currentPosition = 0;
     
-    outgoingImage = centerImage;
-    centerImage = incomingImage;
-    incomingImage = [self.animationImages objectAtIndex:currentPosition];
-    incomingImage.alpha = 0;
+    _outgoingImage = _centerImage;
+    _centerImage = _incomingImage;
+    _incomingImage = self.animationImages[_currentPosition];
+    _incomingImage.alpha = 0;
 
     [self performSelector:@selector(animateSlide) withObject:nil afterDelay:self.animationDelay];
 }
@@ -142,10 +142,6 @@
         self.scrollDistance = 30.0;
     }
     return self;
-}
-
-- (void)dealloc {
-    self.animationImages = nil;
 }
 
 

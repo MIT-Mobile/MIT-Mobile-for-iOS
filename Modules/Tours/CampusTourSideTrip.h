@@ -8,11 +8,11 @@
 {
 }
 
-@property (nonatomic, retain) TourSiteOrRoute * component;
-@property (nonatomic, retain) NSNumber * longitude;
-@property (nonatomic, retain) NSNumber * latitude;
+@property (nonatomic, strong) TourSiteOrRoute * component;
+@property (nonatomic, strong) NSNumber * longitude;
+@property (nonatomic, strong) NSNumber * latitude;
 
-@property (readonly) TourSiteOrRoute * site;
+@property (nonatomic, strong, readonly) TourSiteOrRoute * site;
 
 
 @end

@@ -155,12 +155,6 @@ enum {
     self.mapView = nil;
 }
 
-
-- (void)dealloc {
-    self.mapView.delegate = nil;
-    self.mapView = nil;
-}
-
 #pragma mark User actions
 
 - (IBAction)locateUserPressed:(id)sender {
@@ -434,13 +428,13 @@ enum {
         CGRect frame = CGRectZero;
         frame.origin.x = keyPadding;
         for (NSInteger i = 0; i < images.count; i++) {
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:[images objectAtIndex:i]];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:images[i]];
             frame.size = imageView.frame.size;
             imageView.frame = frame;
             [legend addSubview:imageView];
             
             frame.origin.x += imageView.frame.size.width + markerSpacing;
-            NSString *labelText = [labels objectAtIndex:i];
+            NSString *labelText = labels[i];
             CGSize labelSize = [labelText sizeWithFont:labelFont];
             frame.size.width = labelSize.width;
             
@@ -627,7 +621,7 @@ enum {
         cell = [[TourOverviewTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }    
 
-    cell.tourComponent = [self.components objectAtIndex:indexPath.row];
+    cell.tourComponent = self.components[indexPath.row];
     cell.accessoryView = [self thumbnailViewForCell:cell];
 
     TourSiteOrRoute *site = [[self class] siteForTourComponent:cell.tourComponent];
@@ -664,9 +658,9 @@ enum {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    TourComponent *component = [self.components objectAtIndex:indexPath.row];
+    TourComponent *component = self.components[indexPath.row];
     TourSiteOrRoute *site = 
-    [[self class] siteForTourComponent:[self.components objectAtIndex:indexPath.row]];
+    [[self class] siteForTourComponent:self.components[indexPath.row]];
 
     if (site) {
         [self selectTourComponent:component];
@@ -742,7 +736,7 @@ enum {
 }
 
 - (NSString *)textForDistance:(CLLocationDistance)meters {
-    NSString *measureSystem = [[NSLocale currentLocale] objectForKey:NSLocaleMeasurementSystem];
+    NSString *measureSystem = [NSLocale currentLocale][NSLocaleMeasurementSystem];
     BOOL isMetric = ![measureSystem isEqualToString:@"U.S."];
     
     CGFloat smoots = meters / METERS_PER_SMOOT;
@@ -984,14 +978,8 @@ enum {
 
 @implementation TourOverviewTableViewCell
 
-@synthesize tourComponent;
-
-- (TourSiteVisitStatus)visitStatus {
-    return visitStatus;
-}
-
 - (void)setVisitStatus:(TourSiteVisitStatus)status {
-    visitStatus = status;
+    _visitStatus = status;
     
     //self.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
     UIImage *statusImage = [ToursDataManager imageForVisitStatus:status];
@@ -1074,10 +1062,6 @@ enum {
     if ([thumbnail.imageURL isEqualToString:self.tourComponent.photoURL]) {
         [self.tourComponent setPhoto:data];
     }
-}
-
-- (void)dealloc {
-    self.tourComponent = nil;
 }
 
 @end

@@ -233,7 +233,7 @@
             
             if (self.tours) {
                 cell.textLabel.text = @"Begin Self-Guided Tour";
-                //CampusTour *tour = [self.tours objectAtIndex:indexPath.row];
+                //CampusTour *tour = self.tours[indexPath.row];
                 //cell.textLabel.text = tour.title;
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"global/action-arrow-white.png"]];
@@ -284,7 +284,7 @@
     switch (indexPath.section) {
         case 0:
             if (self.tours) {
-                CampusTour *tour = [self.tours objectAtIndex:indexPath.row];
+                CampusTour *tour = self.tours[indexPath.row];
                 [[ToursDataManager sharedManager] setActiveTourID:tour.tourID];
                 
                 TourIntroViewController *introController = [[TourIntroViewController alloc] init];

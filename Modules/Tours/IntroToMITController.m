@@ -20,7 +20,6 @@
     webview.backgroundColor = [UIColor clearColor];
     [self.view addSubview:webview];
     [webview loadHTMLString:htmlString baseURL:baseURL];
-    [webview release];
 }
 
 // Override to allow orientations other than the default portrait orientation.

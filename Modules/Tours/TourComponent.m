@@ -38,7 +38,7 @@
 
 - (NSString *)photoFile {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentPath = [paths objectAtIndex:0];
+	NSString *documentPath = paths[0];
     NSString *photoDir = [documentPath stringByAppendingPathComponent:@"photos"];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:photoDir]) {
@@ -55,7 +55,7 @@
 
 - (NSString *)audioFile {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentPath = [paths objectAtIndex:0];
+	NSString *documentPath = paths[0];
     NSString *audioDir = [documentPath stringByAppendingPathComponent:@"audio"];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:audioDir]) {

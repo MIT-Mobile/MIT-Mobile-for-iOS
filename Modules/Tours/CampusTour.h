@@ -7,15 +7,15 @@
 {
 }
 
-@property (nonatomic, retain) NSString * tourID;
-@property (nonatomic, retain) NSString * summary;
-@property (nonatomic, retain) NSString * moreInfo;
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSString * feedbackSubject;
-@property (nonatomic, retain) NSDate * lastModified;
-@property (nonatomic, retain) NSSet* components;
-@property (nonatomic, retain) NSSet* links;
-@property (nonatomic, retain) NSString * startLocationHeader;
+@property (nonatomic, copy) NSString * tourID;
+@property (nonatomic, copy) NSString * summary;
+@property (nonatomic, copy) NSString * moreInfo;
+@property (nonatomic, copy) NSString * title;
+@property (nonatomic, copy) NSString * feedbackSubject;
+@property (nonatomic, strong) NSDate * lastModified;
+@property (nonatomic, copy) NSSet* components;
+@property (nonatomic, copy) NSSet* links;
+@property (nonatomic, copy) NSString * startLocationHeader;
 
 - (void)deleteCachedMedia;
 

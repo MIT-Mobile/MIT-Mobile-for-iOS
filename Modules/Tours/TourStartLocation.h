@@ -4,10 +4,8 @@
 @class TourSiteOrRoute;
 
 @interface TourStartLocation :  TourComponent  
-{
-}
 
-@property (nonatomic, retain) TourSiteOrRoute * startSite;
+@property (nonatomic, strong) TourSiteOrRoute * startSite;
 
 @end
 

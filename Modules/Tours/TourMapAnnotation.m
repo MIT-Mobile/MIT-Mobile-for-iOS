@@ -4,8 +4,6 @@
 
 @implementation TourMapAnnotation
 
-@synthesize component, subtitle, transform, tourGeoLocation;
-
 - (id)init {
     self = [super init];
     
@@ -18,19 +16,13 @@
 
 - (CLLocationCoordinate2D)coordinate {
     return CLLocationCoordinate2DMake(
-        [[tourGeoLocation latitude] floatValue],
-        [[tourGeoLocation longitude] floatValue]);
+        [[self.tourGeoLocation latitude] floatValue],
+        [[self.tourGeoLocation longitude] floatValue]);
 }
 
 
 - (NSString *) title {
     return self.component.title;
-}
-
-- (void)dealloc {
-    self.component = nil;
-    self.subtitle = nil;
-    [super dealloc];
 }
 
 @end

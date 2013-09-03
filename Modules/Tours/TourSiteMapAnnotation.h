@@ -2,10 +2,8 @@
 
 @class TourSiteOrRoute;
 
-@interface TourSiteMapAnnotation : TourMapAnnotation {
-    TourSiteOrRoute *site;
-}
+@interface TourSiteMapAnnotation : TourMapAnnotation
 
-@property (nonatomic, retain) TourSiteOrRoute *site;
+@property (nonatomic, strong) TourSiteOrRoute *site;
 
 @end

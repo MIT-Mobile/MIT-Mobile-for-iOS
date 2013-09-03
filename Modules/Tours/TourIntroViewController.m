@@ -26,7 +26,7 @@
 }
 
 - (void)selectStartingLocation {
-    TourOverviewViewController *controller = [[[TourOverviewViewController alloc] init] autorelease];
+    TourOverviewViewController *controller = [[TourOverviewViewController alloc] init];
     controller.callingViewController = self;
 
     [self.navigationController pushViewController:controller animated:YES];
@@ -38,10 +38,10 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationItem.title = [[ToursDataManager sharedManager] activeTour].title;
     
-	[[self navigationItem] setBackBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:@"Intro"
+	[[self navigationItem] setBackBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@"Intro"
                                                                                   style:UIBarButtonItemStyleBordered
                                                                                  target:nil
-                                                                                 action:nil] autorelease]];
+                                                                                 action:nil]];
     
     [self loadTourInfo];
 }
@@ -77,7 +77,7 @@
     [self hideLoadingView];
     [self.view removeAllSubviews];
     
-    UIWebView *webView = [[[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)] autorelease];
+    UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     webView.delegate = self;
     [self.view addSubview:webView];
@@ -97,7 +97,7 @@
     [self hideLoadingView];
     [self.view removeAllSubviews];
 
-    UILabel *label = [[[UILabel alloc] initWithFrame:CGRectMake(10, 10, 300, 330)] autorelease];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 300, 330)];
     label.numberOfLines = 0;
     label.lineBreakMode = UILineBreakModeWordWrap;
     label.text = @"Failed to load tour data.";
@@ -116,7 +116,7 @@
 // TODO: consolidate similar loading views into Common
 - (void)showLoadingView
 {
-	if (loadingIndicator == nil) {
+	if (_loadingIndicator == nil) {
 		static NSString *loadingString = @"Loading...";
 		UIFont *loadingFont = [UIFont fontWithName:STANDARD_FONT size:17.0];
 		CGSize stringSize = [loadingString sizeWithFont:loadingFont];
@@ -136,26 +136,23 @@
 		label.font = loadingFont;
 		label.backgroundColor = [UIColor clearColor];
         
-		loadingIndicator = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, stringSize.width + spinny.frame.size.width + horizontalPadding * 2, stringSize.height + verticalPadding * 2)];
-        loadingIndicator.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        loadingIndicator.backgroundColor = [UIColor clearColor];
-		[loadingIndicator addSubview:spinny];
-		[spinny release];
-		[loadingIndicator addSubview:label];
-		[label release];
+		_loadingIndicator = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, stringSize.width + spinny.frame.size.width + horizontalPadding * 2, stringSize.height + verticalPadding * 2)];
+        _loadingIndicator.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        _loadingIndicator.backgroundColor = [UIColor clearColor];
+		[_loadingIndicator addSubview:spinny];
+		[_loadingIndicator addSubview:label];
 	}
     
-	loadingIndicator.center = self.view.center;
+	_loadingIndicator.center = self.view.center;
 	
-	[self.view addSubview:loadingIndicator];
+	[self.view addSubview:_loadingIndicator];
 }
 
 - (void)hideLoadingView
 {
-    if (loadingIndicator) {
-        [loadingIndicator removeFromSuperview];
-        [loadingIndicator release];
-        loadingIndicator = nil;
+    if (_loadingIndicator) {
+        [_loadingIndicator removeFromSuperview];
+        _loadingIndicator = nil;
     }
 }
 
@@ -201,9 +198,7 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self hideLoadingView]; // also releases loading view
-    
-    [super dealloc];
+    [self hideLoadingView]; // also dismisses loading view
 }
 
 

@@ -5,8 +5,6 @@
 
 @implementation ToursModule
 
-@synthesize homeController;
-
 - (id) init {
     self = [super init];
     if (self != nil) {
@@ -20,7 +18,7 @@
 
 - (void)loadModuleHomeController
 {
-    CampusTourHomeController *controller = [[[CampusTourHomeController alloc] init] autorelease];
+    CampusTourHomeController *controller = [[CampusTourHomeController alloc] init];
     
     self.homeController = controller;
     self.moduleHomeController = controller;

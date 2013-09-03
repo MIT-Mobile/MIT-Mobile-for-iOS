@@ -14,8 +14,6 @@
 
 @implementation StartingLocationViewController
 
-@synthesize startingLocations, overviewController, webView = _webView;
-
 - (void)cancelButtonTapped:(id)sender {
     [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] dismissAppModalViewControllerAnimated:YES];
 }
@@ -38,9 +36,9 @@
     
     self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
     self.navigationItem.title = @"Suggested Points";
-    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered target:self action:@selector(cancelButtonTapped:)] autorelease];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered target:self action:@selector(cancelButtonTapped:)];
     
-    self.webView = [[[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)] autorelease];
+    self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.delegate = self;
     
@@ -48,7 +46,7 @@
     NSURL *fileURL = [NSURL URLWithString:@"tours/suggested.html" relativeToURL:baseURL];
     
     NSError *error = nil;
-    NSMutableString *htmlString = [[[NSMutableString alloc] initWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error] autorelease];
+    NSMutableString *htmlString = [[NSMutableString alloc] initWithContentsOfURL:fileURL encoding:NSUTF8StringEncoding error:&error];
     if (!htmlString) {
         DDLogError(@"failed to load template: %@", [error description]);
     }
@@ -59,7 +57,7 @@
     BOOL floatLeft = YES;
     NSInteger count = 0;
     
-    connections = [[NSMutableArray alloc] init];
+    _connections = [[NSMutableArray alloc] init];
     for (TourStartLocation *startLocation in self.startingLocations) {
         
         NSString *photoString = @"";
@@ -68,8 +66,8 @@
             if (![[NSFileManager defaultManager] fileExistsAtPath:photoFile]) {
                 photoFile = @"tours/tour_photo_loading_animation.gif";
                 [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] showNetworkActivityIndicator];
-                ConnectionWrapper *connection = [[[ConnectionWrapper alloc] initWithDelegate:self] autorelease];
-                [connections addObject:connection];
+                ConnectionWrapper *connection = [[ConnectionWrapper alloc] initWithDelegate:self];
+                [_connections addObject:connection];
                 [connection requestDataFromURL:[NSURL URLWithString:startLocation.photoURL]];
             }
             NSString *altText = [[startLocation.componentID componentsSeparatedByString:@"-"] lastObject];
@@ -110,12 +108,12 @@
     }
     
     [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    [connections removeObject:wrapper];
+    [_connections removeObject:wrapper];
 }
 
 - (void)connection:(ConnectionWrapper *)wrapper handleConnectionFailureWithError:(NSError *)error {
     [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] hideNetworkActivityIndicator];
-    [connections removeObject:wrapper];
+    [_connections removeObject:wrapper];
 }
 
 #pragma mark -
@@ -132,7 +130,7 @@
     }
 
     if (location) {
-        [overviewController selectAnnotationForSite:location.startSite];
+        [self.overviewController selectAnnotationForSite:location.startSite];
         [(MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate] dismissAppModalViewControllerAnimated:YES];
     }
     
@@ -155,14 +153,12 @@
 
 
 - (void)dealloc {
-    for (ConnectionWrapper *wrapper in connections) {
+    for (ConnectionWrapper *wrapper in _connections) {
         wrapper.delegate = nil;
     }
-    [connections release];
     self.webView = nil;
     self.startingLocations = nil;
     self.overviewController = nil;
-    [super dealloc];
 }
 
 @end

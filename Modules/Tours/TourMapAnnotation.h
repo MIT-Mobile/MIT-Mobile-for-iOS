@@ -4,21 +4,14 @@
 
 @class  TourComponent;
 
-@interface TourMapAnnotation : NSObject <MKAnnotation> {
-
-    TourComponent *component;
-    NSString *subtitle;
-    CGAffineTransform transform;
-    id<TourGeoLocation> tourGeoLocation;
-
-}
+@interface TourMapAnnotation : NSObject <MKAnnotation>
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 @property (nonatomic, readonly, copy) NSString *title;
-@property (nonatomic, retain) TourComponent *component;
+@property (nonatomic, strong) TourComponent *component;
 @property (nonatomic, copy) NSString *subtitle;
-@property (nonatomic) BOOL hasTransform;
-@property (nonatomic) CGAffineTransform transform;
-@property (nonatomic, retain) id<TourGeoLocation> tourGeoLocation;
+@property (nonatomic, assign) BOOL hasTransform;
+@property (nonatomic, assign) CGAffineTransform transform;
+@property (nonatomic, strong) id<TourGeoLocation> tourGeoLocation;
 
 @end

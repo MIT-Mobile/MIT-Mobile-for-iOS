@@ -17,7 +17,7 @@
 
 - (void)deleteCachedMedia {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentPath = [paths objectAtIndex:0];
+	NSString *documentPath = paths[0];
     NSError *error = nil;
 
     for (NSString *pathComponent in [NSArray arrayWithObjects:@"photos", @"audio", nil]) {

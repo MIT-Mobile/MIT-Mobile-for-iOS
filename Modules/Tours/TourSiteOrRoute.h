@@ -15,17 +15,17 @@
 - (void)saveArrayToPath:(NSArray *)array;
 - (void)updateRouteWithInfo:(NSDictionary *)routeInfo;
 
-@property (nonatomic, retain) NSNumber * longitude;
-@property (nonatomic, retain) NSNumber * latitude;
-@property (nonatomic, retain) NSData * path;
-@property (nonatomic, retain) NSString * type;
-@property (nonatomic, retain) NSSet* sideTrips;
-@property (nonatomic, retain) TourSiteOrRoute * nextComponent;
-@property (nonatomic, retain) TourSiteOrRoute * previousComponent;
-@property (nonatomic, retain) CampusTour * tour;
-@property (nonatomic, retain) NSNumber * zoom;
-@property (nonatomic, retain) NSSet* startLocations;
-@property (nonatomic, retain) NSNumber * sortOrder;
+@property (nonatomic, strong) NSNumber * longitude;
+@property (nonatomic, strong) NSNumber * latitude;
+@property (nonatomic, copy) NSData * path;
+@property (nonatomic, copy) NSString * type;
+@property (nonatomic, copy) NSSet* sideTrips;
+@property (nonatomic, strong) TourSiteOrRoute * nextComponent;
+@property (nonatomic, strong) TourSiteOrRoute * previousComponent;
+@property (nonatomic, strong) CampusTour * tour;
+@property (nonatomic, strong) NSNumber * zoom;
+@property (nonatomic, copy) NSSet* startLocations;
+@property (nonatomic, strong) NSNumber * sortOrder;
 
 @end
 
