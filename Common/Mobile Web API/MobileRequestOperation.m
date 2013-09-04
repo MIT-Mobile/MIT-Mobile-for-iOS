@@ -479,8 +479,6 @@ typedef enum
         self.isExecuting = NO;
         self.isFinished = YES;
     });
-    
-    dispatch_release(parseQueue);
 }
 
 - (void)cancel

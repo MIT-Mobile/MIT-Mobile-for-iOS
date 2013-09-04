@@ -95,6 +95,11 @@
     return self;
 }
 
+- (BOOL)wantsFullScreenLayout
+{
+    return YES;
+}
+
 - (void)dealloc
 {
     [self.renderingQueue cancelAllOperations];
@@ -250,8 +255,6 @@
     if (self.historyTableView) {
         [self.historyTableView deselectRowAtIndexPath:[self.historyTableView indexPathForSelectedRow] animated:YES];
     }
-    self.navigationController.navigationBar.translucent = YES;
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -265,17 +268,10 @@
         [self.historyTableView reloadData];
     }
     
-    self.navigationController.navigationBar.translucent = YES;
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    if (self.navigationController.modalViewController == nil)
-    {
-        self.navigationController.navigationBar.translucent = NO;
-    }
-    
     [self.renderingQueue cancelAllOperations];
     NSError *saveError = nil;
     [self.fetchContext save:&saveError];

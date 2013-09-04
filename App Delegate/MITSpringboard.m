@@ -27,7 +27,8 @@
 {
     self = [super init];
     if (self) {
-        
+        UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo"];
+        self.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
     }
     
     return self;
@@ -38,7 +39,8 @@
     self = [super initWithNibName:nibNameOrNil
                            bundle:nibBundleOrNil];
     if (self) {
-        
+        UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo"];
+        self.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
     }
     
     return self;
@@ -150,7 +152,7 @@
         if (!image) return;
         
         CGFloat bannerWidth = [[self.bannerInfo objectForKey:@"width"] floatValue];
-        if (!bannerWidth)  bannerWidth = self.view.frame.size.width;
+        if (!bannerWidth)  bannerWidth = self.view.bounds.size.width;
         CGFloat bannerHeight = [[self.bannerInfo objectForKey:@"height"] floatValue];
         if (!bannerHeight) bannerHeight = 72;
         
@@ -159,7 +161,7 @@
             [bannerButton removeFromSuperview];
         }
         bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        bannerButton.frame = CGRectMake(0, self.view.frame.size.height - bannerHeight, bannerWidth, bannerHeight);
+        bannerButton.frame = CGRectMake(0, self.view.bounds.size.height - bannerHeight, bannerWidth, bannerHeight);
         bannerButton.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
         bannerButton.tag = BANNER_CONTROL_TAG;
         [bannerButton setImage:image forState:UIControlStateNormal];
@@ -169,7 +171,7 @@
         
         // will trigger a relayout of grid if the frame is different
         CGRect newGridFrame = _grid.frame;
-        newGridFrame.size.height = self.view.frame.size.height - bannerButton.frame.size.height;
+        newGridFrame.size.height = self.view.bounds.size.height - bannerButton.bounds.size.height;
         _grid.frame = newGridFrame;
 	}
 }
@@ -187,19 +189,8 @@
 
     for (MITModule *module in self.primaryModules) {
         if ([[module tag] isEqualToString:tag]) {
-            if ([self.delegate respondsToSelector:@selector(springboard:willPushModule:)]) {
-                [self.delegate springboard:self
-                            willPushModule:module];
-            }
-            
             [self.navigationController pushViewController:module.moduleHomeController
                                                  animated:YES];
-            
-            if ([self.delegate respondsToSelector:@selector(springboard:didPushModule:)]) {
-                [self.delegate springboard:self
-                             didPushModule:module];
-            }
-            
             module.hasLaunchedBegun = YES;
             [module didAppear];
         }
@@ -233,17 +224,36 @@
 }
 
 #pragma mark -
+- (BOOL)wantsFullScreenLayout
+{
+    return  YES;
+}
+
+- (void)loadView
+{
+    UIView *view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    view.autoresizesSubviews = YES;
+    view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                             UIViewAutoresizingFlexibleWidth);
+    view.backgroundColor = [UIColor colorWithRed:0.78
+                                           green:0.78
+                                            blue:0.80
+                                           alpha:1.0];
+    self.view = view;
+}
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.navigationItem.title = @"Home";
-    UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo.png"];
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
 
-    self.grid = [[IconGrid alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    self.grid.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    CGRect gridFrame = CGRectMake(CGRectGetMinX(self.view.bounds),
+                                  CGRectGetMinY(self.view.bounds),
+                                  CGRectGetWidth(self.view.bounds),
+                                  CGRectGetHeight(self.view.bounds));
+
+    self.grid = [[IconGrid alloc] initWithFrame:gridFrame];
+    self.grid.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                  UIViewAutoresizingFlexibleHeight);
     [self.grid setHorizontalMargin:5.0 vertical:10.0];
     [self.grid setHorizontalPadding:5.0 vertical:10.0];
     [self.grid setMinimumColumns:4 maximum:4];
@@ -318,7 +328,7 @@
         
         if (!badgeView) {
             UIImage *image = [UIImage imageNamed:@"global/icon-badge.png"];
-            UIImage *stretchableImage = [image stretchableImageWithLeftCapWidth:(NSUInteger)(floor(image.size.width / 2) - 1)
+            UIImage *stretchableImage = [image stretchableImageWithLeftCapWidth:(NSUInteger)(floor(image.size.width / 2.) - 1)
                                                                    topCapHeight:0];
             
             badgeView = [[UIImageView alloc] initWithImage:stretchableImage];

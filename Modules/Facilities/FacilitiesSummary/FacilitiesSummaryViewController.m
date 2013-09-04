@@ -496,7 +496,6 @@
         dispatch_async(tempQueue, ^(void) {
             updateBlock(image, imageProperties);
         });
-        dispatch_release(tempQueue);
     } else if ([picker sourceType] == UIImagePickerControllerSourceTypePhotoLibrary) {
         if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 4.1) {
             NSURL *assetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
@@ -515,7 +514,6 @@
             dispatch_async(tempQueue, ^(void) {
                 updateBlock(image, nil);
             });
-            dispatch_release(tempQueue);
         }
     }
     

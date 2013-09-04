@@ -1,5 +1,6 @@
+#import <FacebookSDK/FacebookSDK.h>
+
 #import "MIT_MobileAppDelegate.h"
-#import "MIT_MobileAppDelegate+Private.h"
 #import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MITModule.h"
 #import "MITDeviceRegistration.h"
@@ -7,31 +8,34 @@
 #import "AudioToolbox/AudioToolbox.h"
 #import "MITSpringboard.h"
 #import "ModuleVersions.h"
-#import "MITRotationForwardingNavigationController.h"
-#import <FacebookSDK/FacebookSDK.h>
 #import "MITLogging.h"
 #import "Secret.h"
 #import "SDImageCache.h"
+#import "Foundation+MITAdditions.h"
+
+@interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
+@property (nonatomic,strong) NSDictionary *apnsDictionary;
+@property (nonatomic,weak) MIT_MobileAppDelegate *appDelegate;
+
+- (id)initWithApnsDictionary:(NSDictionary *)apns appDelegate:(MIT_MobileAppDelegate *)delegate;
+@end
+
+@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate>
+@property NSInteger networkActivityCounter;
+
+- (void)loadWindow;
+- (void)updateBasicServerInfo;
+@end
 
 @implementation MIT_MobileAppDelegate
-@synthesize window,
-            rootNavigationController = _rootNavigationController,
-            modules;
-
-@synthesize deviceToken = devicePushToken;
-
-@synthesize springboardController = _springboardController,
-            moduleStack = _moduleStack;
-
-+ (void)initialize {
++ (void)initialize
+{
     [NSTimeZone setDefaultTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
 }
 
 #pragma mark -
 #pragma mark Application lifecycle
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [FBSession setDefaultAppID:FacebookAppId];
-    
 #if defined(TESTFLIGHT)
     if ([MITApplicationTestFlightToken length]) {
         #pragma clang diagnostic push
@@ -44,64 +48,33 @@
         [TestFlight takeOff:MITApplicationTestFlightToken];
     }
 #endif
-    
-    networkActivityRefCount = 0;
-    
-    [[SDImageCache sharedImageCache] setMaxCacheAge:60 * 60 * 24];
+    [FBSession setDefaultAppID:FacebookAppId];
+
+    // Default the cache expiration to 1d
+    [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
     
     [self updateBasicServerInfo];
     
     // Initialize all modules
-    self.modules = [self createModules]; // -createModules defined in ModuleListAdditions category
-    
-    [self registerDefaultModuleOrder];
-    [self loadSavedModuleOrder];
+    [self loadModules];
 
-
-    MITSpringboard *springboard = [[[MITSpringboard alloc] initWithNibName:nil bundle:nil] autorelease];
-    springboard.primaryModules = [NSArray arrayWithArray:self.modules];
-    springboard.delegate = self;
-    
-    MITRotationForwardingNavigationController *rootController = [[MITRotationForwardingNavigationController alloc] initWithRootViewController:springboard];
-    rootController.delegate = springboard;
-    rootController.navigationBar.barStyle = UIBarStyleBlack;
-    
-    self.springboardController = springboard;
-    self.rootNavigationController = rootController;
-    
     // TODO: don't store state like this when we're using a springboard.
 	// set modules state
 	NSDictionary *modulesState = [[NSUserDefaults standardUserDefaults] objectForKey:MITModulesSavedStateKey];
 	for (MITModule *aModule in self.modules) {
-		NSDictionary *pathAndQuery = [modulesState objectForKey:aModule.tag];
-		aModule.currentPath = [pathAndQuery objectForKey:@"path"];
-		aModule.currentQuery = [pathAndQuery objectForKey:@"query"];
+		NSDictionary *pathAndQuery = modulesState[aModule.tag];
+		aModule.currentPath = pathAndQuery[@"path"];
+		aModule.currentQuery = pathAndQuery[@"query"];
 	}
     
+    [self loadWindow];
     DDLogVerbose(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
-    
-    if (self.window == nil)
-    {
-        self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
-        [self.window addSubview:self.rootNavigationController.view];
-        self.window.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                        UIViewAutoresizingFlexibleWidth);
-    }
-    else
-    {
-        self.window.frame = [[UIScreen mainScreen] bounds];
-    }
-    
-    DDLogVerbose(@"Main screen size: %@ [%@]", NSStringFromCGRect([[UIScreen mainScreen] bounds]), self.window);
-    [self.window setRootViewController:self.rootNavigationController];
-    self.window.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
-    [self.window makeKeyAndVisible];
 
     // Override point for customization after view hierarchy is set
     for (MITModule *aModule in self.modules) {
         [aModule applicationDidFinishLaunching];
     }
-
+    
     // Register for push notifications
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
     // get deviceToken if it exists
@@ -111,7 +84,7 @@
 	[MITUnreadNotifications synchronizeWithMIT];
 	
 	//APNS dictionary generated from the json of a push notificaton
-	NSDictionary *apnsDict = [launchOptions objectForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
+	NSDictionary *apnsDict = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     
 	// check if application was opened in response to a notofication
 	if(apnsDict) {
@@ -120,6 +93,7 @@
 		DDLogVerbose(@"Application opened in response to notification=%@", notification);
 	}
     
+    [self.window makeKeyAndVisible];
     return YES;
 }
 
@@ -133,9 +107,9 @@
     {
         NSString *scheme = [url scheme];
         NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-        NSArray *urlTypes = [infoDict objectForKey:@"CFBundleURLTypes"];
+        NSArray *urlTypes = infoDict[@"CFBundleURLTypes"];
         for (NSDictionary *type in urlTypes) {
-            NSArray *schemes = [type objectForKey:@"CFBundleURLSchemes"];
+            NSArray *schemes = type[@"CFBundleURLSchemes"];
             for (NSString *supportedScheme in schemes) {
                 if ([supportedScheme isEqualToString:scheme]) {
                     canHandle = YES;
@@ -210,41 +184,57 @@
     [FBSession.activeSession handleDidBecomeActive];
 }
 
-#pragma mark -
-#pragma mark Memory management
-
-- (void)dealloc {
-    self.springboardController = nil;
-    self.deviceToken = nil;
-    self.modules = nil;
-	[window release];
-	[super dealloc];
-}
-
-#pragma mark -
-#pragma mark Shared resources
-
+#pragma mark - Shared resources
 - (void)showNetworkActivityIndicator {
-    networkActivityRefCount++;
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    DDLogVerbose(@"network indicator ++ %d", networkActivityRefCount);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSInteger count = self.networkActivityCounter + 1;
+        
+        if (count < 1) {
+            DDLogWarn(@"unmatched number of calls to showNetworkActivityIndicator: %d",count);
+        }
+        
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        self.networkActivityCounter = count;
+    });
 }
 
 - (void)hideNetworkActivityIndicator {
-    if (networkActivityRefCount > 0) {
-        networkActivityRefCount--;
-        DDLogVerbose(@"network indicator -- %d", networkActivityRefCount);
-    }
-    if (networkActivityRefCount == 0) {
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-        DDLogVerbose(@"network indicator off");
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSInteger count = self.networkActivityCounter - 1;
+        
+        if (count < 1) {
+            count = 0;
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+            self.networkActivityCounter = count;
+        }
+    });
 }
 
-#pragma mark -
-#pragma mark This should probably go in another place 
-- (void)updateBasicServerInfo {
+#pragma mark - Class Extension Methods
+// TODO: This may not belong here.
+- (void)updateBasicServerInfo
+{
     [[ModuleVersions sharedVersions] updateVersionInformation];
+}
+
+- (void)loadWindow
+{
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    DDLogVerbose(@"Root window size is %@", NSStringFromCGRect([self.window bounds]));
+
+    MITSpringboard *springboard = [[MITSpringboard alloc] init];
+    springboard.primaryModules = self.modules;
+    self.springboardController = springboard;
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:springboard];
+    navigationController.navigationBarHidden = NO;
+    navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    navigationController.navigationBar.translucent = NO;
+    navigationController.delegate = self;
+    self.rootNavigationController = navigationController;
+    
+    self.window.rootViewController = navigationController;
 }
 
 #pragma mark -
@@ -278,14 +268,12 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
 	
 	// display the notification in an alert
-	UIAlertView *notificationView =[[UIAlertView alloc]
-		initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]  
-		message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
-		delegate:[[[APNSUIDelegate alloc] initWithApnsDictionary:userInfo appDelegate:self] autorelease]
-		cancelButtonTitle:@"Close"
-		otherButtonTitles:@"View", nil];
+	UIAlertView *notificationView =[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+                                                              message:userInfo[@"aps"][@"alert"]
+                                                             delegate:[[APNSUIDelegate alloc] initWithApnsDictionary:userInfo appDelegate:self]
+                                                    cancelButtonTitle:@"Close"
+                                                    otherButtonTitles:@"View", nil];
 	[notificationView show];
-	[notificationView release];
 }
 
 - (void)application:(UIApplication *)application 
@@ -326,37 +314,28 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 @end
 
 
-
 @implementation APNSUIDelegate
-
 - (id) initWithApnsDictionary: (NSDictionary *)apns appDelegate: (MIT_MobileAppDelegate *)delegate;
 {
 	self = [super init];
 	if (self != nil) {
-		apnsDictionary = [apns retain];
-		appDelegate = [delegate retain];
-		[self retain]; // releases when delegate method called
+		_apnsDictionary = apns;
+		_appDelegate = delegate;
 	}
+    
 	return self;
-}
-
-- (void) dealloc {
-	[apnsDictionary release];
-	[super dealloc];
 }
 
 // this is the delegate method for responding to the push notification UIAlertView
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	
-	MITNotification *notification = [MITUnreadNotifications addNotification:apnsDictionary];
+	MITNotification *notification = [MITUnreadNotifications addNotification:self.apnsDictionary];
 	BOOL shouldOpen = (buttonIndex == 1);
 	if (shouldOpen) {
-		[appDelegate dismissAppModalViewControllerAnimated:YES];
+		[self.appDelegate dismissAppModalViewControllerAnimated:YES];
 	}
 
-	[[appDelegate moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:(buttonIndex == 1)];
-	
-	[self release];
+	[[self.appDelegate moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:(buttonIndex == 1)];
 }
 
 @end

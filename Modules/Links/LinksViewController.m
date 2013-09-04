@@ -46,13 +46,11 @@ static NSString* const MITLinksDataTitleKey = @"name";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
     
-    [self.tableView applyStandardColors];
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.tableView.bounds];
-    imageView.image = [UIImage imageNamed:@"global/body-background"];
-    self.tableView.backgroundView = imageView;
-
+    self.tableView.backgroundView.backgroundColor = [UIColor colorWithRed:0.784
+                                                                    green:0.792
+                                                                     blue:0.812
+                                                                    alpha:1.0];
     self.linkResults = [self cachedLinks];
 }
 
@@ -74,8 +72,6 @@ static NSString* const MITLinksDataTitleKey = @"name";
     [super viewDidUnload];
     self.tableView.delegate = nil;
     self.tableView.dataSource = nil;
-    self.tableView = nil;
-    // Release any retained subviews of the main view.
 }
 
 // Override to allow orientations other than the default portrait orientation.
