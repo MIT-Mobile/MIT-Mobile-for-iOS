@@ -3409,13 +3409,13 @@
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Debug;
@@ -3439,13 +3439,13 @@
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -3552,13 +3552,13 @@
 					"\"Facebook Connect\"",
 				);
 				INFOPLIST_FILE = "MIT_Mobile-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/External/ZBarSDK\"",
 					"\"$(SRCROOT)/External/TestFlight\"",
 				);
 				PRODUCT_NAME = MITMobile;
-				PROVISIONING_PROFILE = "";
 			};
 			name = TestFlight;
 		};
