@@ -6,6 +6,7 @@
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
+#import "MobileRequestOperation.h"
 
 #define SCROLL_TAB_HORIZONTAL_PADDING 5.0
 #define SCROLL_TAB_HORIZONTAL_MARGIN  5.0
@@ -49,6 +50,7 @@
 @synthesize categories = _categories;
 @synthesize activeCategoryId;
 @synthesize xmlParser;
+@synthesize storyParser;
 
 NSString *const NewsCategoryTopNews = @"Top News";
 NSString *const NewsCategoryCampus = @"Campus";
@@ -230,6 +232,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     self.searchResults = nil;
     self.categories = nil;
     self.xmlParser = nil;
+    self.storyParser = nil;
     [super dealloc];
 }
 
@@ -454,6 +457,10 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         [self.xmlParser abort]; // cancel previous category's request if it's still going
         self.xmlParser = nil;
     }
+    if (self.storyParser)
+    {
+        self.storyParser = nil;
+    }
 
     // hide search interface
     [self hideSearchBar];
@@ -555,6 +562,10 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         {
             [self.xmlParser abort]; // cancel previous category's request if it's still going
             self.xmlParser = nil;
+        }
+        
+        if (self.storyParser) {
+            self.storyParser = nil;
         }
         self.activeCategoryId = category;
         self.stories = nil;
@@ -671,11 +682,11 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         [self.xmlParser abort];
     }
     
-    self.xmlParser = [[[StoryXMLParser alloc] init] autorelease];
-    xmlParser.delegate = self;
-    [xmlParser loadStoriesForCategory:self.activeCategoryId
-                         afterStoryId:lastStoryId
-                                count:10]; // count doesn't do anything at the moment (no server support)
+    storyParser = [[StoryParser alloc] init];
+    storyParser.delegate = self;
+    [storyParser loadStoriesForCategory:self.activeCategoryId
+                    afterStoryId:lastStoryId
+                           count:10]; // count doesn't do anything at the moment (no server support)
 }
 
 - (void)loadSearchResultsFromCache
@@ -725,14 +736,79 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
 - (void)loadSearchResultsFromServer:(BOOL)loadMore forQuery:(NSString *)query
 {
-    if (self.xmlParser)
-    {
-        [self.xmlParser abort];
-    }
-    self.xmlParser = [[[StoryXMLParser alloc] init] autorelease];
-    xmlParser.delegate = self;
+    self.storyParser = [[StoryParser alloc] init];
+    storyParser.delegate = self;
+    [storyParser loadStoriesforQuery:query afterIndex:((loadMore) ? [self.searchResults count] : 0) count:10];
+}
 
-    [xmlParser loadStoriesforQuery:query afterIndex:((loadMore) ? [self.searchResults count] : 0) count:10];
+#pragma mark -
+#pragma mark StoryParser delegation
+- (void)parserStories:(StoryParser *)parser didFailDownload:(NSError *)error {
+    if (parser == self.storyParser)
+    {
+        // TODO: communicate download failure to user
+        if ([error code] == NSURLErrorNotConnectedToInternet)
+        {
+            DDLogError(@"News download failed because there's no net connection");
+        }
+        else
+        {
+            DDLogError(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
+        }
+        [self setStatusText:@"Update failed"];
+        
+        [UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
+        if ([self.stories count] > 0) {
+            [storyTable deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0] animated:YES];
+        }
+    }
+}
+
+- (void) didFinishParsing:(StoryParser *)parser {
+    if (parser == self.storyParser) {
+        // basic category request
+        if (!parser.isSearch)
+        {
+            NSManagedObject *aCategory = [[self.categories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"category_id == %d", self.activeCategoryId]] lastObject];
+            NSInteger length = [[aCategory valueForKey:@"expectedCount"] integerValue];
+            if (length == 0)
+            { // fresh load of category, set its updated date
+                [aCategory setValue:[NSDate date] forKey:@"lastUpdated"];
+            }
+            length += [self.storyParser.addedStories count];
+            [aCategory setValue:[NSNumber numberWithInteger:length] forKey:@"expectedCount"];
+            if (!parser.loadingMore && [self.stories count] > 0)
+            {
+                [storyTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+            }
+            self.storyParser = nil;
+            
+            if (parser.loadingMore == NO)
+            {
+                [self pruneStories:NO];
+            }
+            
+            [self loadFromCache];
+        }
+        // result of a search request
+        else
+        {
+//            searchTotalAvailableResults = self.storyParser.totalAvailableResults;
+            if (!parser.loadingMore && [self.stories count] > 0)
+            {
+                [storyTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+            }
+            self.storyParser = nil;
+            [self loadSearchResultsFromCache];
+        }
+    }
+}
+
+- (void)parserStories:(StoryParser *)parser didMakeProgress:(CGFloat)percentDone {
+    if (parser == self.storyParser)
+    {
+        [self setProgress:0.3 + 0.7 * percentDone * 0.01];
+    }
 }
 
 #pragma mark -
