@@ -6,15 +6,12 @@
 + (MITModule *)moduleForTag:(NSString *)aTag;
 
 #pragma mark Basics
-- (NSMutableArray *)createModules;
+- (void)loadModules;
 - (MITModule *)moduleForTag:(NSString *)aTag;
 
 - (void)showModuleForTag:(NSString *)tag;
 
 #pragma mark Preferences
-- (NSArray *)defaultModuleOrder;
-- (void)registerDefaultModuleOrder;
-- (void)loadSavedModuleOrder;
 - (void)saveModulesState;
 
 @end
