@@ -62,27 +62,18 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
-	static MITMultilineTableViewCell *templateCell = nil;
+    static UITableViewCell *templateCell = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        templateCell = [[MITMultilineTableViewCell alloc] init];
+        templateCell = [self tableView:nil cellForRowAtIndexPath:indexPath];
     });
-    
-    [templateCell prepareForReuse];
+
     [self configureCell:templateCell
             atIndexPath:indexPath
            forTableView:tableView];
     
-    // This table does not allow editing so we don't need to set
-    // the editing property on the cell.
-    //
-    // If editing was allowed, the current state of the editing flag
-    // should passed on to the cell before trying to size it
-    // templateCell.editing = tableView.isEditing;
-    
     // Get the cells ideal size for its content.
-    CGSize cellSize = [templateCell sizeThatFits:CGSizeMake(CGRectGetWidth(tableView.bounds),
-                                                            CGFLOAT_MAX)];
+    CGSize cellSize = [templateCell sizeThatFits:CGSizeMake(CGRectGetWidth(tableView.bounds), CGFLOAT_MAX)];
     return cellSize.height;
 }
 
@@ -96,13 +87,14 @@
     [self configureCell:cell
             atIndexPath:indexPath
            forTableView:tableView];
+
     return cell;
 }
 
 - (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
 {
     MITMultilineTableViewCell *multilineCell = (MITMultilineTableViewCell*)cell;
-    
+
 	NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
 	multilineCell.headlineLabel.text = [contactInfo valueForKey:@"title"];
 	multilineCell.bodyLabel.text = [self detailText:contactInfo];
@@ -118,7 +110,7 @@
 	
     NSString *descriptionString = [contactInfo valueForKey:@"summary"];
     
-	if (descriptionString && [descriptionString length] > 0) {
+	if ([descriptionString length]) {
 		return [NSString stringWithFormat:@"%@ %@", descriptionString, phoneString];
 	} else {
 		return phoneString;
