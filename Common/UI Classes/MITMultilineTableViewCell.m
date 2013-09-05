@@ -13,9 +13,7 @@
 {
     self = [super init];
     if (self) {
-        self.contentInsets = UIEdgeInsetsMake(4, 10, 4, 4);
-        self.contentView.autoresizesSubviews = YES;
-        [self setNeedsUpdateConstraints];
+        self.contentInsets = UIEdgeInsetsMake(4, 10, 4, 10);
     }
     return self;
 }
@@ -24,9 +22,7 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        self.contentInsets = UIEdgeInsetsMake(4, 10, 4, 8);
-        self.contentView.autoresizesSubviews = YES;
-        [self setNeedsUpdateConstraints];
+        self.contentInsets = UIEdgeInsetsMake(4, 10, 4, 10);
     }
     return self;
 }
@@ -50,6 +46,8 @@
         headlineLabel.lineBreakMode = NSLineBreakByWordWrapping;
         headlineLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:headlineLabel];
+        [self.contentView setNeedsUpdateConstraints];
+
         self.headlineLabel = headlineLabel;
     }
 
@@ -68,6 +66,8 @@
         bodyLabel.lineBreakMode = NSLineBreakByWordWrapping;
         bodyLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:bodyLabel];
+        [self.contentView setNeedsUpdateConstraints];
+
         self.bodyLabel = bodyLabel;
     }
     
@@ -78,9 +78,9 @@
 {
     [super updateConstraints];
 
-    CGFloat contentViewWidth = CGRectGetWidth(self.contentView.bounds);
-    self.headlineLabel.preferredMaxLayoutWidth = contentViewWidth;
-    self.bodyLabel.preferredMaxLayoutWidth = contentViewWidth;
+    CGFloat preferredTextWidth = CGRectGetWidth(self.contentView.bounds) - self.contentInsets.left - self.contentInsets.right;
+    self.headlineLabel.preferredMaxLayoutWidth = preferredTextWidth;
+    self.bodyLabel.preferredMaxLayoutWidth = preferredTextWidth;
 
     NSDictionary *constraintViews = @{@"headlineLabel" : self.headlineLabel,
                                       @"bodyLabel" : self.bodyLabel};
@@ -89,18 +89,21 @@
                                         @"bottom" : @(self.contentInsets.bottom),
                                         @"right" : @(self.contentInsets.right)};
 
-    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(left)-[headlineLabel(>=0@250)]-(right@500)-|"
+    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-left-[headlineLabel]-(>=right@250)-|"
                                                                              options:0
                                                                              metrics:constraintMetrics
                                                                                views:constraintViews]];
-    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(left)-[bodyLabel(>=0@250)]-(right@500)-|"
+
+    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-left-[bodyLabel]-(>=right@250)-|"
                                                                              options:0
                                                                              metrics:constraintMetrics
                                                                                views:constraintViews]];
-    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(top)-[headlineLabel][bodyLabel]-(>=bottom@250)-|"
-                                                                             options:NSLayoutFormatAlignAllLeft
+
+    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-top-[headlineLabel(>=0)][bodyLabel(>=0)]"
+                                                                             options:0
                                                                              metrics:constraintMetrics
                                                                                views:constraintViews]];
+    [self.contentView exerciseAmbiguityInLayout];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -112,20 +115,14 @@
 - (CGSize)sizeThatFits:(CGSize)size
 {
     // TODO: Make sure that checking the accessory view here is kosher.
-    CGFloat textWidth = size.width - self.contentInsets.left - self.contentInsets.right;
+    [self layoutIfNeeded];
 
-    if (self.accessoryType != UITableViewCellAccessoryNone) {
-        textWidth -= 20.; // *should* work for most cases (increase if needed). Worst case scenario, we should
-                          // overestimate and end up with a bit more whitespace.
-    } else if (self.accessoryView) {
-        textWidth -= CGRectGetWidth(self.accessoryView.frame);
-    }
+    CGFloat textWidth = MIN(CGRectGetWidth(self.contentView.bounds), size.width) - self.contentInsets.left - self.contentInsets.right;
 
     NSString *headlineText = self.headlineLabel.text;
-    CGSize headlineTextSize = [headlineText sizeWithFont:self.headlineLabel.font
-                                                  constrainedToSize:CGSizeMake(textWidth,CGFLOAT_MAX)
-                                                      lineBreakMode:self.headlineLabel.lineBreakMode];
-    CGSize headlineLabelSize = [self.headlineLabel sizeThatFits:headlineTextSize];
+    CGSize headlineLabelSize = [self.headlineLabel sizeThatFits:[headlineText sizeWithFont:self.headlineLabel.font
+                                                                         constrainedToSize:CGSizeMake(textWidth,CGFLOAT_MAX)
+                                                                             lineBreakMode:self.headlineLabel.lineBreakMode]];
 
 
     NSString *bodyText = self.bodyLabel.text;
