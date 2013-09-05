@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "StoryXMLParser.h"
 #import "MITSearchDisplayController.h"
 #import "NavScrollerView.h"
 #import "StoryParser.h"
@@ -16,11 +15,10 @@ typedef enum {
 
 @class NewsStory;
 
-@interface StoryListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, MITSearchDisplayDelegate, StoryXMLParserDelegate, NavScrollerDelegate, StoryParserDelegate> {
+@interface StoryListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, MITSearchDisplayDelegate, NavScrollerDelegate, StoryParserDelegate> {
 	UITableView *storyTable;
     NSArray *_categories;
     NSInteger activeCategoryId;
-	StoryXMLParser *xmlParser;
     StoryParser *storyParser;
     
     NSArray *navButtons;
@@ -52,7 +50,6 @@ typedef enum {
 @property (nonatomic, retain) NSArray *searchResults;
 @property (nonatomic, retain) NSArray *categories;
 @property (nonatomic, assign) NSInteger activeCategoryId;
-@property (nonatomic, retain) StoryXMLParser *xmlParser;
 @property (nonatomic, retain) StoryParser *storyParser;
 
 - (void)pruneStories;

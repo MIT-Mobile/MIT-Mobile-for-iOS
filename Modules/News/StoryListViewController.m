@@ -49,7 +49,6 @@
 @synthesize searchQuery;
 @synthesize categories = _categories;
 @synthesize activeCategoryId;
-@synthesize xmlParser;
 @synthesize storyParser;
 
 NSString *const NewsCategoryTopNews = @"Top News";
@@ -231,7 +230,6 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     self.searchQuery = nil;
     self.searchResults = nil;
     self.categories = nil;
-    self.xmlParser = nil;
     self.storyParser = nil;
     [super dealloc];
 }
@@ -452,11 +450,6 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     // cancel any outstanding search
-    if (self.xmlParser)
-    {
-        [self.xmlParser abort]; // cancel previous category's request if it's still going
-        self.xmlParser = nil;
-    }
     if (self.storyParser)
     {
         self.storyParser = nil;
@@ -558,12 +551,6 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 {
     if (category != self.activeCategoryId)
     {
-        if (self.xmlParser)
-        {
-            [self.xmlParser abort]; // cancel previous category's request if it's still going
-            self.xmlParser = nil;
-        }
-        
         if (self.storyParser) {
             self.storyParser = nil;
         }
@@ -678,9 +665,6 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     // start new request
     NewsStory *lastStory = [self.stories lastObject];
     NSInteger lastStoryId = (loadMore) ? [lastStory.story_id integerValue] : 0;
-    if (self.xmlParser) {
-        [self.xmlParser abort];
-    }
     
     storyParser = [[StoryParser alloc] init];
     storyParser.delegate = self;
@@ -754,8 +738,11 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         else
         {
             DDLogError(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
+            if (parser.isSearch) 
+                [self loadSearchResultsFromCache];
         }
-        [self setStatusText:@"Update failed"];
+        if (!parser.isSearch)
+            [self setStatusText:@"Update failed"];
         
         [UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
         if ([self.stories count] > 0) {
@@ -808,111 +795,6 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     if (parser == self.storyParser)
     {
         [self setProgress:0.3 + 0.7 * percentDone * 0.01];
-    }
-}
-
-#pragma mark -
-#pragma mark StoryXMLParser delegation
-
-- (void)parserDidStartDownloading:(StoryXMLParser *)parser
-{
-    if (parser == self.xmlParser)
-    {
-        [self setProgress:0.1];
-        [storyTable reloadData];
-    }
-}
-
-- (void)parserDidStartParsing:(StoryXMLParser *)parser
-{
-    if (parser == self.xmlParser)
-    {
-        [self setProgress:0.3];
-    }
-}
-
-- (void)parser:(StoryXMLParser *)parser didMakeProgress:(CGFloat)percentDone
-{
-    if (parser == self.xmlParser)
-    {
-        [self setProgress:0.3 + 0.7 * percentDone * 0.01];
-    }
-}
-
-- (void)parser:(StoryXMLParser *)parser didFailWithDownloadError:(NSError *)error
-{
-    if (parser == self.xmlParser)
-    {
-        // TODO: communicate download failure to user
-        if ([error code] == NSURLErrorNotConnectedToInternet)
-        {
-            DDLogError(@"News download failed because there's no net connection");
-        }
-        else
-        {
-            DDLogError(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
-        }
-        [self setStatusText:@"Update failed"];
-
-        [UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
-        if ([self.stories count] > 0) {
-            [storyTable deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0] animated:YES];
-        }
-    }
-}
-
-- (void)parser:(StoryXMLParser *)parser didFailWithParseError:(NSError *)error
-{
-    if (parser == self.xmlParser)
-    {
-        // TODO: communicate parse failure to user
-        [self setStatusText:@"Update failed"];
-		[UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
-        if ([self.stories count] > 0) {
-            [storyTable deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0] animated:YES];
-        }
-    }
-}
-
-- (void)parserDidFinishParsing:(StoryXMLParser *)parser
-{
-    if (parser == self.xmlParser)
-    {
-        // basic category request
-        if (!parser.isSearch)
-        {
-            NSManagedObject *aCategory = [[self.categories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"category_id == %d", self.activeCategoryId]] lastObject];
-            NSInteger length = [[aCategory valueForKey:@"expectedCount"] integerValue];
-            if (length == 0)
-            { // fresh load of category, set its updated date
-                [aCategory setValue:[NSDate date] forKey:@"lastUpdated"];
-            }
-            length += [self.xmlParser.addedStories count];
-            [aCategory setValue:[NSNumber numberWithInteger:length] forKey:@"expectedCount"];
-            if (!parser.loadingMore && [self.stories count] > 0)
-            {
-                [storyTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
-            }
-            self.xmlParser = nil;
-            
-            if (parser.loadingMore == NO)
-            {
-                [self pruneStories:NO];
-            }
-            
-            [self loadFromCache];
-        }
-                // result of a search request
-        else
-        {
-            searchTotalAvailableResults = self.xmlParser.totalAvailableResults;
-            if (!parser.loadingMore && [self.stories count] > 0)
-            {
-                [storyTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
-            }
-            self.xmlParser = nil;
-            [self loadSearchResultsFromCache];
-        }
     }
 }
 
@@ -1156,7 +1038,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
                 {
                     NSInteger remainingArticlesToLoad = (!searchResults) ? (200 - [self.stories count]) : (searchTotalAvailableResults - [self.stories count]);
                     moreArticlesLabel.text = [NSString stringWithFormat:@"Load %d more articles...", (remainingArticlesToLoad > 10) ? 10 : remainingArticlesToLoad];
-                    if (!self.xmlParser)
+                    if (!self.storyParser)
                     { // disable when a load is already in progress
                         moreArticlesLabel.textColor = [UIColor colorWithHexString:@"#990000"]; // enable
                     }
@@ -1185,7 +1067,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 {
     if (indexPath.row == self.stories.count)
     {
-        if (!self.xmlParser)
+        if (!self.storyParser)
         { // only "load x more..." if no other load is going on
             if (!self.searchResults)
             {

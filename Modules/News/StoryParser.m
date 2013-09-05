@@ -248,8 +248,8 @@ NSString * const NewsStoryTagImageURL                = @"url";
 	}
     
     NSURL *mobileServer = MITMobileWebGetCurrentServerURL();
-    NSString *relativeString = [NSString stringWithFormat:@"%@/news/stories?q=%@&limit=%d",
-                                [mobileServer absoluteString], [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], count];
+    NSString *relativeString = [NSString stringWithFormat:@"%@/%@?q=%@&limit=%d",
+                                [mobileServer absoluteString], NewsStoryTagPath, [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], count];
     
     NSURL *fullURL = [NSURL URLWithString:relativeString];
     
