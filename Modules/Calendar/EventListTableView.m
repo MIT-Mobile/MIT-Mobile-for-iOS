@@ -83,14 +83,13 @@ static NSInteger MITEventListCellLocationLabelTag = 0xBAFF;
         [cell.contentView addSubview:shortLocationLabel];
 
         NSDictionary *constraintViews = @{@"bodyLabel" : cell.bodyLabel,
-                                          @"headlineLabel" : cell.headlineLabel,
                                           @"locationLabel" : shortLocationLabel};
 
-        [cell.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[bodyLabel]-[locationLabel(<=112.)]-(4)-|"
+        [cell.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[bodyLabel]-[locationLabel]"
                                                                                  options:NSLayoutFormatAlignAllCenterY
                                                                                  metrics:nil
                                                                                    views:constraintViews]];
-        [cell.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[headlineLabel][locationLabel]"
+        [cell.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[locationLabel(<=112.)]-10-|"
                                                                                  options:0
                                                                                  metrics:nil
                                                                                    views:constraintViews]];
@@ -116,10 +115,6 @@ static NSInteger MITEventListCellLocationLabelTag = 0xBAFF;
                                                                      forward:YES];
 
     NSMutableString *bodyText = [[NSMutableString alloc] init];
-    //if ([event.shortloc length]) {
-    //    [bodyText appendFormat:@"%@\n",event.shortloc];
-    //}
-
     if (!self.searchResults && (eventInterval == 86400.0)) {
         [bodyText appendString:[event dateStringWithDateStyle:NSDateFormatterNoStyle
                                                     timeStyle:NSDateFormatterShortStyle
