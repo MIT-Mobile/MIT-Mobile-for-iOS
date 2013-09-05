@@ -82,6 +82,8 @@
     MITMultilineTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell) {
         cell = [[MITMultilineTableViewCell alloc] init];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
     }
     
     [self configureCell:cell
@@ -98,7 +100,6 @@
 	NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
 	multilineCell.headlineLabel.text = [contactInfo valueForKey:@"title"];
 	multilineCell.bodyLabel.text = [self detailText:contactInfo];
-    multilineCell.accessoryView =  [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
 }
 
 - (NSString *)detailText:(NSManagedObject*)contactInfo {
