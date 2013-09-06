@@ -67,6 +67,13 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 @end
 
 @implementation UIColor (MITUIAdditions)
++ (UIColor*)mit_backgroundColor
+{
+    return [UIColor colorWithRed:0.784
+                           green:0.792
+                            blue:0.816
+                           alpha:1.0];
+}
 
 // snagged from http://arstechnica.com/apple/guides/2009/02/iphone-development-accessing-uicolor-components.ars
 // color must be either of the format @"0099FF" or @"#0099FF" or @"0x0099FF"
