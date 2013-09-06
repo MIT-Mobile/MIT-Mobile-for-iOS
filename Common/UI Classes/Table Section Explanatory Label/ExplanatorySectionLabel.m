@@ -144,7 +144,7 @@ NSString * const labelText = @"Some Text";
     CGFloat labelWidth = tableWidth - (insets.left + imageWidth + insets.right);
     CGSize fittedSize = [self.text sizeWithFont:self.font
                               constrainedToSize:CGSizeMake(labelWidth, 2000.0)
-                                  lineBreakMode:UILineBreakModeWordWrap];
+                                  lineBreakMode:NSLineBreakByWordWrapping];
     
     // raise the label's origin.y so the text starts at padding.height and not just the view itself
     self.label.frame = CGRectMake(
@@ -155,11 +155,11 @@ NSString * const labelText = @"Some Text";
     self.label.text = self.text;
     self.label.font = self.font;
     self.label.backgroundColor = [UIColor clearColor];
-    self.label.textAlignment = (!self.accessoryView) ? UITextAlignmentCenter : UITextAlignmentLeft;
+    self.label.textAlignment = (!self.accessoryView) ? NSTextAlignmentCenter : NSTextAlignmentLeft;
     self.label.textColor = [UIColor colorWithWhite:0.22 alpha:1.0];
     self.label.shadowColor = [UIColor whiteColor];
     self.label.shadowOffset = CGSizeMake(0, 1);
-    self.label.lineBreakMode = UILineBreakModeWordWrap;
+    self.label.lineBreakMode = NSLineBreakByWordWrapping;
     self.label.numberOfLines = 0;
 }
 
@@ -228,7 +228,7 @@ NSString * const labelText = @"Some Text";
     UIFont *labelFont = [UIFont fontWithName:[[self labelFont] fontName] size:fontSize];
     CGSize fittedSize = [text sizeWithFont:labelFont
                               constrainedToSize:CGSizeMake(labelWidth, 2000.0)
-                                  lineBreakMode:UILineBreakModeWordWrap];
+                                  lineBreakMode:NSLineBreakByWordWrapping];
 
     return fittedSize.height + insets.top + insets.bottom;
 }

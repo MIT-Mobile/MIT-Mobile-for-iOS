@@ -83,7 +83,7 @@
         case 0: {
             CGSize messageSize =  [self.message  sizeWithFont:[UIFont systemFontOfSize:15.]
                                             constrainedToSize:CGSizeMake(280, 1000)
-                                                lineBreakMode:UILineBreakModeWordWrap];
+                                                lineBreakMode:NSLineBreakByWordWrapping];
             return messageSize.height + 20;
             break;
         }
@@ -106,7 +106,7 @@
         cell.backgroundColor = [UIColor whiteColor];
         cell.textLabel.backgroundColor = [UIColor clearColor];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+        cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
         cell.textLabel.numberOfLines = 0;
     }
     
@@ -121,7 +121,7 @@
         cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0f];
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.textLabel.text = @"Return to Libraries";
-        cell.textLabel.textAlignment = UITextAlignmentCenter;
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
     }
 	
     return cell;

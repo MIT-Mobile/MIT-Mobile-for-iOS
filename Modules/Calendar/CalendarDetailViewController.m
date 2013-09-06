@@ -253,7 +253,7 @@
 	CGSize titleSize = [self.event.title sizeWithFont:titleFont
 									constrainedToSize:CGSizeMake(titleWidth, 2010.0)];
 	UILabel *titleView = [[UILabel alloc] initWithFrame:CGRectMake(titlePadding, titlePadding, titleSize.width, titleSize.height)];
-	titleView.lineBreakMode = UILineBreakModeWordWrap;
+	titleView.lineBreakMode = NSLineBreakByWordWrapping;
 	titleView.numberOfLines = 0;
 	titleView.font = titleFont;
 	titleView.text = self.event.title;
@@ -491,7 +491,7 @@
 
 	CGSize textSize = [cellText sizeWithFont:cellFont
 						   constrainedToSize:CGSizeMake(constraintWidth, 2010.0)
-							   lineBreakMode:UILineBreakModeWordWrap];
+							   lineBreakMode:NSLineBreakByWordWrapping];
 	
 	// constant defined in MultiLineTableViewcell.h
 	return textSize.height + CELL_VERTICAL_PADDING * 2;

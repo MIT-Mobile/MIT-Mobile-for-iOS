@@ -479,7 +479,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     [activityView addSubview:loadingLabel];
     loadingLabel.hidden = YES;
 
-    CGSize labelSize = [loadingLabel.text sizeWithFont:loadingLabel.font forWidth:self.view.bounds.size.width lineBreakMode:UILineBreakModeTailTruncation];
+    CGSize labelSize = [loadingLabel.text sizeWithFont:loadingLabel.font forWidth:self.view.bounds.size.width lineBreakMode:NSLineBreakByTruncatingTail];
 
     [self.view addSubview:activityView];
 
@@ -502,7 +502,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     updatedLabel.text = @"";
     updatedLabel.textColor = [UIColor colorWithHexString:@"#DDDDDD"];
     updatedLabel.font = [UIFont boldSystemFontOfSize:14.0];
-    updatedLabel.textAlignment = UITextAlignmentRight;
+    updatedLabel.textAlignment = NSTextAlignmentRight;
     updatedLabel.backgroundColor = [UIColor blackColor];
     updatedLabel.opaque = YES;
     [activityView addSubview:updatedLabel];
@@ -936,7 +936,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                     titleLabel.tag = 1;
                     titleLabel.font = [UIFont boldSystemFontOfSize:STORY_TITLE_FONT_SIZE];
                     titleLabel.numberOfLines = 0;
-                    titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+                    titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                     [cell.contentView addSubview:titleLabel];
 
                     // Summary View
@@ -946,7 +946,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                     dekLabel.textColor = [UIColor colorWithHexString:@"#0D0D0D"];
                     dekLabel.highlightedTextColor = [UIColor whiteColor];
                     dekLabel.numberOfLines = 0;
-                    dekLabel.lineBreakMode = UILineBreakModeTailTruncation;
+                    dekLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                     [cell.contentView addSubview:dekLabel];
 
                     thumbnailView = [[StoryThumbnailView alloc] initWithFrame:CGRectMake(0, 0, THUMBNAIL_WIDTH, THUMBNAIL_WIDTH)];
@@ -969,14 +969,14 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
                 // Calculate height
                 CGFloat availableHeight = STORY_TEXT_HEIGHT;
-                CGSize titleDimensions = [titleLabel.text sizeWithFont:titleLabel.font constrainedToSize:CGSizeMake(STORY_TEXT_WIDTH, availableHeight) lineBreakMode:UILineBreakModeTailTruncation];
+                CGSize titleDimensions = [titleLabel.text sizeWithFont:titleLabel.font constrainedToSize:CGSizeMake(STORY_TEXT_WIDTH, availableHeight) lineBreakMode:NSLineBreakByTruncatingTail];
                 availableHeight -= titleDimensions.height;
 
                 CGSize dekDimensions = CGSizeZero;
                 // if not even one line will fit, don't show the deck at all
                 if (availableHeight > dekLabel.font.leading)
                 {
-                    dekDimensions = [dekLabel.text sizeWithFont:dekLabel.font constrainedToSize:CGSizeMake(STORY_TEXT_WIDTH, availableHeight) lineBreakMode:UILineBreakModeTailTruncation];
+                    dekDimensions = [dekLabel.text sizeWithFont:dekLabel.font constrainedToSize:CGSizeMake(STORY_TEXT_WIDTH, availableHeight) lineBreakMode:NSLineBreakByTruncatingTail];
                 }
 
 

@@ -59,8 +59,8 @@
                                        250.0);
         
         self.statusLabel = [[UILabel alloc] initWithFrame:labelFrame];
-        self.statusLabel.textAlignment = UITextAlignmentCenter;
-        self.statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+        self.statusLabel.textAlignment = NSTextAlignmentCenter;
+        self.statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.statusLabel.numberOfLines = 0;
         self.statusLabel.backgroundColor = [UIColor clearColor];
         [self.view addSubview:self.statusLabel];

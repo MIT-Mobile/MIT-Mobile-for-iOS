@@ -41,7 +41,7 @@ enum {
         UILabel *labelView = [[UILabel alloc] initWithFrame:labelFrame];
         labelView.backgroundColor = [UIColor clearColor];
         labelView.userInteractionEnabled = NO;
-        labelView.lineBreakMode = UILineBreakModeWordWrap;
+        labelView.lineBreakMode = NSLineBreakByWordWrapping;
         labelView.numberOfLines = 0;
         labelView.text = [NSString stringWithFormat:@"The Department of Facilities is not responsible for the maintenance of %@. Please contact %@ to report any issues.", [self.location displayString], self.location.propertyOwner.name];
         

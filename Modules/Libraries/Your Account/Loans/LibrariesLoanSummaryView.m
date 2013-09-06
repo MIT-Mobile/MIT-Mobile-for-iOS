@@ -20,7 +20,7 @@ static NSString* kLibrariesLoanOverdueFormatString = @"%lu %@ overdue.";
         infoLabel.text = @"";
         infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
         infoLabel.font = [UIFont systemFontOfSize:14.0];
-        infoLabel.lineBreakMode = UILineBreakModeWordWrap;
+        infoLabel.lineBreakMode = NSLineBreakByWordWrapping;
         infoLabel.numberOfLines = 2;
         [self addSubview:infoLabel];
         self.infoLabel = infoLabel;

@@ -99,7 +99,7 @@
 
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 300, 330)];
     label.numberOfLines = 0;
-    label.lineBreakMode = UILineBreakModeWordWrap;
+    label.lineBreakMode = NSLineBreakByWordWrapping;
     label.text = @"Failed to load tour data.";
     label.font = [UIFont systemFontOfSize:15];
     [self.view addSubview:label];

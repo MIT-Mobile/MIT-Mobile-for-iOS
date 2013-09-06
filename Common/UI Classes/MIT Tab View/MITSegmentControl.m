@@ -82,7 +82,7 @@ static CGFloat const kMITSegmentMinimumHeight = 28.0;
     
     {
         self.textLabel = [[[UILabel alloc] init] autorelease];
-        self.textLabel.textAlignment = UITextAlignmentCenter;
+        self.textLabel.textAlignment = NSTextAlignmentCenter;
         self.textLabel.lineBreakMode = UILineBreakModeMiddleTruncation;
         self.textLabel.numberOfLines = 1;
         self.textLabel.adjustsFontSizeToFitWidth = YES;

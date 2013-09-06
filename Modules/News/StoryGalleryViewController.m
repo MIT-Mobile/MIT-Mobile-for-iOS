@@ -32,7 +32,7 @@
     captionLabel.textColor = [UIColor colorWithHexString:@"#202020"];
     captionLabel.font = [UIFont systemFontOfSize:13.0];
     captionLabel.numberOfLines = 0;
-    captionLabel.lineBreakMode = UILineBreakModeWordWrap;
+    captionLabel.lineBreakMode = NSLineBreakByWordWrapping;
     captionLabel.backgroundColor = [UIColor whiteColor];
     captionLabel.opaque = YES;
     self.captionLabel = captionLabel;
@@ -41,7 +41,7 @@
     creditLabel.textColor = [UIColor colorWithHexString:@"#505050"];
     creditLabel.font = [UIFont systemFontOfSize:11.0];
     creditLabel.numberOfLines = 0;
-    creditLabel.lineBreakMode = UILineBreakModeWordWrap;
+    creditLabel.lineBreakMode = NSLineBreakByWordWrapping;
     creditLabel.backgroundColor = [UIColor whiteColor];
     creditLabel.opaque = YES;
     self.creditLabel = creditLabel;

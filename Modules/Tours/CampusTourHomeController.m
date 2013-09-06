@@ -62,7 +62,7 @@
                                                                    CGRectGetWidth(viewBounds) - 12,
                                                                    0)];
         label.backgroundColor = [UIColor clearColor];
-        label.lineBreakMode = UILineBreakModeWordWrap;
+        label.lineBreakMode = NSLineBreakByWordWrapping;
         label.numberOfLines = 0;
         label.font = [UIFont systemFontOfSize:16];
         label.text = NSLocalizedString(@"TOUR_INTRO_TEXT", nil);

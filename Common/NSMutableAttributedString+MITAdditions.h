@@ -19,7 +19,7 @@
             forRange:(NSRange)attrRange;
 
 - (void)setLineBreakStyle:(UILineBreakMode)lineBreakMode
-            textAlignment:(UITextAlignment)textAlignment
+            textAlignment:(NSTextAlignment)textAlignment
                  forRange:(NSRange)attrRange;
 
 @end

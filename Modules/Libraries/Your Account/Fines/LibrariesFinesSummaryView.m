@@ -15,13 +15,13 @@
         UILabel *balanceLabel = [[UILabel alloc] init];
         balanceLabel.font = [UIFont boldSystemFontOfSize:17.0];
         balanceLabel.backgroundColor = [UIColor clearColor];
-        balanceLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        balanceLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         balanceLabel.text = @"";
         [self addSubview:balanceLabel];
         self.balanceLabel = balanceLabel;
         
         UILabel *infoLabel = [[UILabel alloc] init];
-        infoLabel.lineBreakMode = UILineBreakModeWordWrap;
+        infoLabel.lineBreakMode = NSLineBreakByWordWrapping;
         infoLabel.numberOfLines = 2;
         infoLabel.backgroundColor = [UIColor clearColor];
         infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];

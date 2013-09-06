@@ -63,12 +63,12 @@
 	// create header
 	CGSize labelSize = [self.fullname sizeWithFont:[UIFont boldSystemFontOfSize:20.0]
 								 constrainedToSize:CGSizeMake(self.tableView.frame.size.width - 20.0, 2000.0)
-									 lineBreakMode:UILineBreakModeWordWrap];
+									 lineBreakMode:NSLineBreakByWordWrapping];
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 10.0, labelSize.width, labelSize.height)];
 	UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.tableView.frame.size.width, labelSize.height + 14.0)];
 	nameLabel.text = self.fullname;
 	nameLabel.numberOfLines = 0;
-	nameLabel.lineBreakMode = UILineBreakModeWordWrap;
+	nameLabel.lineBreakMode = NSLineBreakByWordWrapping;
 	nameLabel.font = [UIFont boldSystemFontOfSize:20.0];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	[header addSubview:nameLabel];
@@ -149,7 +149,7 @@
 		
 		if (!cell) {
 			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
-            cell.textLabel.textAlignment = UITextAlignmentCenter;
+            cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.textLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
             cell.textLabel.textColor = STANDARD_CONTENT_FONT_COLOR;
         }
@@ -208,7 +208,7 @@
         
         CGSize labelSize = [data sizeWithFont:[UIFont boldSystemFontOfSize:15.0]
                             constrainedToSize:CGSizeMake(labelWidth, 2009.0f)
-                                lineBreakMode:UILineBreakModeWordWrap];
+                                lineBreakMode:NSLineBreakByWordWrapping];
         return labelSize.height + 26.0;
     }
 

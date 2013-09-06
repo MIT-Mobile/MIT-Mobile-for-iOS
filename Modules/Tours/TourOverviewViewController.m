@@ -1042,11 +1042,11 @@ enum {
     UIFont *font = [UIFont boldSystemFontOfSize:17];
     self.textLabel.text = [self.tourComponent title];
 	self.textLabel.numberOfLines = 2;
-	self.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
+	self.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 	CGSize labelSize = 
     [self.textLabel.text sizeWithFont:font constrainedToSize:
      CGSizeMake(mainTextLabelWidth, TOUR_SITE_ROW_HEIGHT * 0.6) 
-                        lineBreakMode:UILineBreakModeTailTruncation];
+                        lineBreakMode:NSLineBreakByTruncatingTail];
 	self.textLabel.font = font;
     self.textLabel.frame = CGRectMake(mainTextLabelX, mainTextLabelY, 
                                       mainTextLabelWidth, labelSize.height);

@@ -32,7 +32,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     self.shouldIndentWhileEditing = NO;
     
     UILabel *titleLabel = [[UILabel alloc] init];
-    titleLabel.lineBreakMode = UILineBreakModeWordWrap;
+    titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     titleLabel.numberOfLines = 0;
     titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
     titleLabel.highlightedTextColor = [UIColor whiteColor];
@@ -41,7 +41,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     self.titleLabel = titleLabel;
     
     UILabel *infoLabel = [[UILabel alloc] init];
-    infoLabel.lineBreakMode = UILineBreakModeTailTruncation;
+    infoLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     infoLabel.numberOfLines = 1;
     infoLabel.font = [UIFont systemFontOfSize:14.0];
     infoLabel.textColor = [UIColor colorWithHexString:@"#404649"];
@@ -52,7 +52,7 @@ const CGFloat kLibrariesTableCellDefaultWidth = 290;
     self.infoLabel = infoLabel;
     
     UILabel *statusLabel = [[UILabel alloc] init];
-    statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+    statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
     statusLabel.numberOfLines = 0;
     statusLabel.font = [UIFont systemFontOfSize:14.0];
     statusLabel.textColor = [UIColor colorWithHexString:@"#404649"];

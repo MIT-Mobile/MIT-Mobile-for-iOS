@@ -9,7 +9,7 @@
     self = [super initWithReuseIdentifier:reuseIdentifier];
     if (self) {
         UILabel *fineLabel = [[UILabel alloc] init];
-        fineLabel.lineBreakMode = UILineBreakModeWordWrap;
+        fineLabel.lineBreakMode = NSLineBreakByWordWrapping;
         fineLabel.numberOfLines = 1;
         fineLabel.font = [UIFont systemFontOfSize:17.0];
         fineLabel.textColor = [UIColor blackColor];

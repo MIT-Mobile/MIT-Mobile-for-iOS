@@ -113,7 +113,7 @@
 	
 	CGSize labelSize = [annotation.name sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
 								   constrainedToSize:CGSizeMake(width, self.view.frame.size.height)
-									   lineBreakMode:UILineBreakModeWordWrap];
+									   lineBreakMode:NSLineBreakByWordWrapping];
 	
 	CGFloat height = labelSize.height;
 
@@ -121,7 +121,7 @@
 	
 	labelSize = [detailString sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
 						 constrainedToSize:CGSizeMake(width, 200.0)
-							 lineBreakMode:UILineBreakModeWordWrap];
+							 lineBreakMode:NSLineBreakByWordWrapping];
 	
 	CGFloat cellheight = round((height + labelSize.height) * 1.2 + 12.0);
 	

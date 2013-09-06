@@ -295,11 +295,11 @@ typedef enum {
                     
                     cell.textLabel.text = location;
                     cell.textLabel.numberOfLines = 0;
-                    cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+                    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
                     
                     cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu of %lu available", (unsigned long)available, (unsigned long)total];
                     cell.detailTextLabel.numberOfLines = 1;
-                    cell.detailTextLabel.lineBreakMode = UILineBreakModeTailTruncation;
+                    cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                     
                     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                     cell.selectionStyle = UITableViewCellSelectionStyleBlue;
@@ -343,11 +343,11 @@ typedef enum {
                 
                 CGSize titleSize = [location sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
                                      constrainedToSize:CGSizeMake(tableView.frame.size.width, 2000.0) 
-                                         lineBreakMode:UILineBreakModeWordWrap];
+                                         lineBreakMode:NSLineBreakByWordWrapping];
                 
                 CGSize detailSize = [detail sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
                                        constrainedToSize:CGSizeMake(tableView.frame.size.width, 2000.0) 
-                                           lineBreakMode:UILineBreakModeWordWrap];
+                                           lineBreakMode:NSLineBreakByWordWrapping];
                 
                 height = titleSize.height + detailSize.height + 2.0 * 10.0;
             }

@@ -56,7 +56,7 @@
         NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
         NSString *aboutText = infoDictionary[@"MITAboutAppText"];
         UIFont *aboutFont = [UIFont systemFontOfSize:14.0];
-        CGSize aboutSize = [aboutText sizeWithFont:aboutFont constrainedToSize:CGSizeMake(270, 2000) lineBreakMode:UILineBreakModeWordWrap];
+        CGSize aboutSize = [aboutText sizeWithFont:aboutFont constrainedToSize:CGSizeMake(270, 2000) lineBreakMode:NSLineBreakByWordWrapping];
         return aboutSize.height + 20;
     }
     else {
@@ -84,7 +84,7 @@
                     cell.accessoryType = UITableViewCellAccessoryNone;
                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     cell.backgroundColor = [UIColor whiteColor];
-                    cell.textLabel.textAlignment = UITextAlignmentCenter;
+                    cell.textLabel.textAlignment = NSTextAlignmentCenter;
                     cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0];
         			cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
                     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
@@ -110,7 +110,7 @@
                 {
                     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
                     cell.textLabel.text = infoDict[@"MITAboutAppText"];
-                    cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+                    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
                     cell.textLabel.numberOfLines = 0;
                     cell.textLabel.font = [UIFont systemFontOfSize:15.0];
         			cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;

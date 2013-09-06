@@ -47,7 +47,7 @@ const NSInteger kSubtitleWidth = 160;
 - (void) formatLabel:(UILabel *) label withFont:(UIFont *) font
 {
     label.numberOfLines     = 0;
-    label.lineBreakMode     = UILineBreakModeWordWrap;
+    label.lineBreakMode     = NSLineBreakByWordWrapping;
     label.font              = font;
 }
 
@@ -132,9 +132,9 @@ const NSInteger kSubtitleWidth = 160;
     CGSize maximumTitleSize         = CGSizeMake(titleWidth, CGFLOAT_MAX);
     CGSize maximumSubtitleSize      = CGSizeMake(subtitleWidth, CGFLOAT_MAX);
     
-    CGSize necessaryStationLabelSize        = [station sizeWithFont:[self primaryFont] constrainedToSize:maximumStationSize lineBreakMode:UILineBreakModeWordWrap];
-    CGSize necessaryTitleLabelSize          = [title sizeWithFont:[self primaryFont] constrainedToSize:maximumTitleSize lineBreakMode:UILineBreakModeWordWrap];
-    CGSize necessarySubtitleLabelSize    = [subtitle sizeWithFont:[self secondaryFont] constrainedToSize:maximumSubtitleSize lineBreakMode:UILineBreakModeWordWrap];
+    CGSize necessaryStationLabelSize        = [station sizeWithFont:[self primaryFont] constrainedToSize:maximumStationSize lineBreakMode:NSLineBreakByWordWrapping];
+    CGSize necessaryTitleLabelSize          = [title sizeWithFont:[self primaryFont] constrainedToSize:maximumTitleSize lineBreakMode:NSLineBreakByWordWrapping];
+    CGSize necessarySubtitleLabelSize    = [subtitle sizeWithFont:[self secondaryFont] constrainedToSize:maximumSubtitleSize lineBreakMode:NSLineBreakByWordWrapping];
     
     CGFloat stationHeight   = 30 + necessaryStationLabelSize.height;
     CGFloat dataHeight      = 30 + necessaryTitleLabelSize.height + TITLE_DESCRIPTION_PADDING + necessarySubtitleLabelSize.height;

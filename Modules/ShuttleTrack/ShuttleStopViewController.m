@@ -78,14 +78,14 @@
 	int titleWidth = headerView.frame.size.width - mapSize - mapBuffer * 3;
 	CGSize titleSize = [self.shuttleStop.title sizeWithFont:titleFont
                                           constrainedToSize:CGSizeMake(titleWidth, 300)
-                                              lineBreakMode:UILineBreakModeWordWrap];
+                                              lineBreakMode:NSLineBreakByWordWrapping];
     
 	UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(mapSize + mapBuffer * 2, mapBuffer, titleWidth, titleSize.height)];
 	titleLabel.text = self.shuttleStop.title;
 	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.textAlignment = UITextAlignmentLeft;
+	titleLabel.textAlignment = NSTextAlignmentLeft;
 	titleLabel.font = [UIFont boldSystemFontOfSize:20];
-	titleLabel.lineBreakMode = UILineBreakModeWordWrap;
+	titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
 	titleLabel.numberOfLines = 0;
 	
 	[headerView addSubview:titleLabel];
@@ -123,7 +123,7 @@
                                                           headerView.frame.size.width - alertHeaderIcon.frame.size.width - PADDING - 2 * MARGIN, 
                                                           30)];
 	alertHeaderText.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
-	alertHeaderText.lineBreakMode = UILineBreakModeWordWrap;
+	alertHeaderText.lineBreakMode = NSLineBreakByWordWrapping;
 	alertHeaderText.backgroundColor = [UIColor clearColor];
 	alertHeaderText.text = @"Tap the 'Alert Me' icon to be notified 5 minutes before the estimated arrival time.";
 	alertHeaderText.numberOfLines = 0;
@@ -135,7 +135,7 @@
 	
 	_tableFooterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 50)];
 	_tableFooterLabel.font = [UIFont systemFontOfSize:14];
-	_tableFooterLabel.textAlignment = UITextAlignmentCenter;
+	_tableFooterLabel.textAlignment = NSTextAlignmentCenter;
 	_tableFooterLabel.backgroundColor = [UIColor clearColor];
 	
 	[self.tableView setTableFooterView:_tableFooterLabel];

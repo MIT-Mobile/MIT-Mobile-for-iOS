@@ -22,34 +22,34 @@ FOUNDATION_STATIC_INLINE UIFont *UIFontForCTFont(CTFontRef ctFont) {
                            size:ptSize];
 }
 
-FOUNDATION_STATIC_INLINE CTLineBreakMode CTLineBreakFromUILineBreak(UILineBreakMode lineBreakMode) {
+FOUNDATION_STATIC_INLINE CTLineBreakMode CTLineBreakFromUILineBreak(NSLineBreakMode lineBreakMode) {
     switch (lineBreakMode)
     {
-        case UILineBreakModeWordWrap:
+        case NSLineBreakByWordWrapping:
             return kCTLineBreakByWordWrapping;
-        case UILineBreakModeCharacterWrap:
+        case NSLineBreakByCharWrapping:
             return kCTLineBreakByCharWrapping;
-        case UILineBreakModeClip:
+        case NSLineBreakByClipping:
             return kCTLineBreakByClipping;
-        case UILineBreakModeHeadTruncation:
+        case NSLineBreakByTruncatingHead:
             return kCTLineBreakByTruncatingHead;
-        case UILineBreakModeTailTruncation:
+        case NSLineBreakByTruncatingTail:
             return kCTLineBreakByTruncatingTail;
-        case UILineBreakModeMiddleTruncation:
+        case NSLineBreakByTruncatingMiddle:
             return kCTLineBreakByTruncatingMiddle;
         default:
             return kCTLineBreakByWordWrapping;
     }
 }
 
-FOUNDATION_STATIC_INLINE CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment textAlignment) {
+FOUNDATION_STATIC_INLINE CTTextAlignment CTTextAlignmentFromNSTextAlignment(NSTextAlignment textAlignment) {
     switch (textAlignment)
     {
-        case UITextAlignmentLeft:
+        case NSTextAlignmentLeft:
             return kCTLeftTextAlignment;
-        case UITextAlignmentRight:
+        case NSTextAlignmentRight:
             return kCTRightTextAlignment;
-        case UITextAlignmentCenter:
+        case NSTextAlignmentCenter:
             return kCTCenterTextAlignment;
         default:
             return kCTLeftTextAlignment;
@@ -148,7 +148,7 @@ FOUNDATION_STATIC_INLINE CTTextAlignment CTTextAlignmentFromUITextAlignment(UITe
 
 
 - (void)setLineBreakStyle:(UILineBreakMode)lineBreakMode
-            textAlignment:(UITextAlignment)textAlignment
+            textAlignment:(NSTextAlignment)textAlignment
                  forRange:(NSRange)attrRange
 {
     CTParagraphStyleSetting styleSettings[2];
@@ -163,7 +163,7 @@ FOUNDATION_STATIC_INLINE CTTextAlignment CTTextAlignmentFromUITextAlignment(UITe
     }
 
 
-    CTTextAlignment ctAlignment = CTTextAlignmentFromUITextAlignment(textAlignment);
+    CTTextAlignment ctAlignment = CTTextAlignmentFromNSTextAlignment(textAlignment);
     pssPtr = &(styleSettings[1]);
     {
         pssPtr->spec = kCTParagraphStyleSpecifierAlignment;

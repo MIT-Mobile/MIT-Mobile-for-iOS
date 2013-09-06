@@ -434,7 +434,7 @@
     
     cell.textLabel.text = result.text;
     cell.textLabel.numberOfLines = 2;
-    cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
+    cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date
                                                                      toDate:[NSDate date]];
     

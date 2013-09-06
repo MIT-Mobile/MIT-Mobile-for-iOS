@@ -24,12 +24,12 @@ static NSInteger s_numberOfCells = 0;
 - (void) layoutLabel: (UILabel *)label atHeight: (CGFloat)height {
     CGSize labelSize = [label.text sizeWithFont:label.font 
                               constrainedToSize:CGSizeMake(label.frame.size.width, 600.0) 
-                                  lineBreakMode:UILineBreakModeWordWrap];
+                                  lineBreakMode:NSLineBreakByWordWrapping];
     
-    if (label == self.textLabel && textLabelLineBreakMode == UILineBreakModeTailTruncation) {
+    if (label == self.textLabel && textLabelLineBreakMode == NSLineBreakByTruncatingTail) {
         CGSize oneLineSize = [label.text sizeWithFont:label.font];
         labelSize.height = (labelSize.height > oneLineSize.height) ? oneLineSize.height * textLabelNumberOfLines : oneLineSize.height;
-    } else if (label == self.detailTextLabel && detailTextLabelLineBreakMode == UILineBreakModeTailTruncation) {
+    } else if (label == self.detailTextLabel && detailTextLabelLineBreakMode == NSLineBreakByTruncatingTail) {
         CGSize oneLineSize = [label.text sizeWithFont:label.font];
         labelSize.height = (labelSize.height > oneLineSize.height) ? oneLineSize.height * detailTextLabelNumberOfLines : oneLineSize.height;
     }
@@ -89,10 +89,10 @@ static NSInteger s_numberOfCells = 0;
 		topPadding = DEFAULT_TOP_PADDING;
 		bottomPadding = DEFAULT_BOTTOM_PADDING;
         
-        textLabelLineBreakMode = UILineBreakModeWordWrap;
+        textLabelLineBreakMode = NSLineBreakByWordWrapping;
         textLabelNumberOfLines = 0;
         
-        detailTextLabelLineBreakMode = UILineBreakModeWordWrap;
+        detailTextLabelLineBreakMode = NSLineBreakByWordWrapping;
         detailTextLabelNumberOfLines = 0;
     }
     return self;
@@ -199,11 +199,11 @@ static NSInteger s_numberOfCells = 0;
     
 	CGFloat mainHeight = [text sizeWithFont:textFont
                           constrainedToSize:CGSizeMake(*cellWidth, 600.0)
-                              lineBreakMode:UILineBreakModeWordWrap].height;
+                              lineBreakMode:NSLineBreakByWordWrapping].height;
     
 	CGFloat detailHeight = (detailText) ? [detailText sizeWithFont:detailFont
                                                  constrainedToSize:CGSizeMake(*cellWidth, 600.0)
-                                                     lineBreakMode:UILineBreakModeWordWrap].height : 0;
+                                                     lineBreakMode:NSLineBreakByWordWrapping].height : 0;
     
 	return mainHeight + detailHeight + CELL_VERTICAL_PADDING * 2;
 }

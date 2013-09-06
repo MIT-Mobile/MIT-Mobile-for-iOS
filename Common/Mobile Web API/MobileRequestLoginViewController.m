@@ -95,7 +95,7 @@
         userField.minimumFontSize = 10.0;
         userField.placeholder = @"Username or Email";
         userField.returnKeyType = UIReturnKeyNext;
-        userField.textAlignment = UITextAlignmentLeft;
+        userField.textAlignment = NSTextAlignmentLeft;
         
         if ([self.username length]) {
             userField.text = self.username;

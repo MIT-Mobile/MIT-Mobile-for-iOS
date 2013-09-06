@@ -30,8 +30,8 @@
             UILabel *helpLabel = [[UILabel alloc] init];
             helpLabel.backgroundColor = [UIColor clearColor];
             helpLabel.textColor = [UIColor whiteColor];
-            helpLabel.textAlignment = UITextAlignmentCenter;
-            helpLabel.lineBreakMode = UILineBreakModeWordWrap;
+            helpLabel.textAlignment = NSTextAlignmentCenter;
+            helpLabel.lineBreakMode = NSLineBreakByWordWrapping;
             helpLabel.numberOfLines = 0;
             [self addSubview:helpLabel];
             self.helpLabel = helpLabel;

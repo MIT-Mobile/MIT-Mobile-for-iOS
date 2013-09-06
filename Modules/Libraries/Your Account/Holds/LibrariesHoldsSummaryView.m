@@ -15,7 +15,7 @@ static NSString* kLibrariesHoldsPickupText = @"\n%ld %@ ready for pickup.";
     self = [super initWithFrame:frame];
     if (self) {
         UILabel *infoLabel = [[UILabel alloc] init];
-        infoLabel.lineBreakMode = UILineBreakModeWordWrap;
+        infoLabel.lineBreakMode = NSLineBreakByWordWrapping;
         infoLabel.numberOfLines = 2;
         infoLabel.backgroundColor = [UIColor clearColor];
         infoLabel.font = [UIFont systemFontOfSize:14.0];

@@ -100,7 +100,7 @@
         label.backgroundColor = [UIColor clearColor];
         label.textColor = [UIColor colorWithHexString:@"#404649"];
         label.font = [UIFont systemFontOfSize:14.0];
-        label.lineBreakMode = UILineBreakModeTailTruncation;
+        label.lineBreakMode = NSLineBreakByTruncatingTail;
         label.text = text;
         
         CGRect labelFrame = label.frame;

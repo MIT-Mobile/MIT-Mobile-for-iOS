@@ -156,7 +156,7 @@
 	CGSize constraintSize = CGSizeMake(280.0f, 2009.0f);
 	NSString* cellText = @"A"; // just something to guarantee one line
 	UIFont* cellFont = [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]];
-	CGSize labelSize = [cellText sizeWithFont:cellFont constrainedToSize:constraintSize lineBreakMode:UILineBreakModeWordWrap];
+	CGSize labelSize = [cellText sizeWithFont:cellFont constrainedToSize:constraintSize lineBreakMode:NSLineBreakByWordWrapping];
 	return labelSize.height + 20.0f;
 }
 

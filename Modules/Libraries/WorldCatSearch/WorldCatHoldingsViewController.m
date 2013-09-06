@@ -107,7 +107,7 @@ typedef enum {
             if (cell == nil) {
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:DefaultCellIdentifier];
                 cell.textLabel.numberOfLines = 0;
-                cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+                cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
             }
             break;
         }

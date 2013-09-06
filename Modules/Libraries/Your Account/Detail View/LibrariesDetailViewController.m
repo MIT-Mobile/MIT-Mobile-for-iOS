@@ -123,7 +123,7 @@
 
         UILabel *statusLabel = [[UILabel alloc] init];
         statusLabel.numberOfLines = 0;
-        statusLabel.lineBreakMode = UILineBreakModeWordWrap;
+        statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
         statusLabel.font = [UIFont systemFontOfSize:14.0];
 
         NSMutableString *statusText = [NSMutableString string];

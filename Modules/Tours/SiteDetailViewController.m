@@ -368,7 +368,7 @@
                           forState:UIControlStateNormal];
         
         button.titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
-        button.titleLabel.textAlignment = UITextAlignmentCenter;
+        button.titleLabel.textAlignment = NSTextAlignmentCenter;
         [button setTitle:buttonTitle
                 forState:UIControlStateNormal];
         [button addTarget:self
@@ -393,11 +393,11 @@
         NSString *text = NSLocalizedString(@"End of tour text", nil);
         CGSize size = [text sizeWithFont:font
                        constrainedToSize:CGSizeMake(tableFrame.size.width - 20, headerHeight - 20)
-                           lineBreakMode:UILineBreakModeWordWrap];
+                           lineBreakMode:NSLineBreakByWordWrapping];
         
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, tableFrame.size.width - 20, size.height)];
         label.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
-        label.lineBreakMode = UILineBreakModeWordWrap;
+        label.lineBreakMode = NSLineBreakByWordWrapping;
         label.numberOfLines = 0;
         label.text = text;
         label.textColor = [UIColor colorWithHexString:@"#202020"];

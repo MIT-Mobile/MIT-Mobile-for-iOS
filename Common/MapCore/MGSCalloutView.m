@@ -37,7 +37,7 @@
     textLabel.backgroundColor = [UIColor clearColor];
     textLabel.textColor = [UIColor whiteColor];
     textLabel.font = [UIFont boldSystemFontOfSize:[UIFont labelFontSize]];
-    textLabel.lineBreakMode = UILineBreakModeWordWrap;
+    textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.titleLabel = textLabel;
     [self addSubview:textLabel];
     
@@ -46,7 +46,7 @@
     detailTextLabel.backgroundColor = [UIColor clearColor];
     detailTextLabel.textColor = [UIColor whiteColor];
     detailTextLabel.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
-    detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
+    detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.detailLabel = detailTextLabel;
     [self addSubview:detailTextLabel];
     

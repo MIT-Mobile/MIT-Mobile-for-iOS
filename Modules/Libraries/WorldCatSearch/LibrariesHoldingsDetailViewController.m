@@ -65,14 +65,14 @@
     NSDictionary *holding = self.holdings[indexPath.row];
     cell.textLabel.text = holding[@"call-no"];
     cell.textLabel.numberOfLines = 0;
-    cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
     
     BOOL available = [holding[@"available"] boolValue];
 
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%@\n%@",holding[@"collection"], holding[@"status"]];
     cell.detailTextLabel.numberOfLines = 0;
-    cell.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
+    cell.detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
     cell.detailTextLabel.font = (available) ?
                                  [UIFont boldSystemFontOfSize:CELL_DETAIL_FONT_SIZE] :
                                  [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
@@ -87,7 +87,7 @@
     NSDictionary *holding = self.holdings[indexPath.row];
     CGSize labelSize = [holding[@"call-no"] sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
                                                      constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - (CELL_HORIZONTAL_PADDING * 2.0), CGFLOAT_MAX)
-                                                         lineBreakMode:UILineBreakModeWordWrap];
+                                                         lineBreakMode:NSLineBreakByWordWrapping];
     
     NSString *detailString = [NSString stringWithFormat:@"%@\n%@",holding[@"collection"], holding[@"status"]];
     UIFont *detailFont = ([holding[@"available"] boolValue]) ?
@@ -96,7 +96,7 @@
 
     CGSize detailSize = [detailString sizeWithFont:detailFont
                                  constrainedToSize:CGSizeMake(CGRectGetWidth(tableView.bounds) - (CELL_HORIZONTAL_PADDING * 2.0), CGFLOAT_MAX)
-                                     lineBreakMode:UILineBreakModeWordWrap];
+                                     lineBreakMode:NSLineBreakByWordWrapping];
     
     return (labelSize.height + detailSize.height + (CELL_VERTICAL_PADDING * 2.0));
 }

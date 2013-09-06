@@ -21,7 +21,7 @@
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     NSString *aboutText = infoDictionary[@"MITAboutMITText"];
     UIFont *aboutFont = [UIFont systemFontOfSize:15.0];
-    CGSize aboutSize = [aboutText sizeWithFont:aboutFont constrainedToSize:CGSizeMake(270, 2000) lineBreakMode:UILineBreakModeWordWrap];
+    CGSize aboutSize = [aboutText sizeWithFont:aboutFont constrainedToSize:CGSizeMake(270, 2000) lineBreakMode:NSLineBreakByWordWrapping];
     return aboutSize.height;
 }
 
@@ -43,7 +43,7 @@
     cell.textLabel.text = infoDictionary[@"MITAboutMITText"];
     cell.textLabel.font = [UIFont systemFontOfSize:15.0];
     cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
-    cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     cell.textLabel.numberOfLines = 0;
 	
     return cell;

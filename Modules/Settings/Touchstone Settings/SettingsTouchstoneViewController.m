@@ -156,7 +156,7 @@ enum {
         userField.minimumFontSize = 10.0;
         userField.placeholder = @"Username or Email";
         userField.returnKeyType = UIReturnKeyNext;
-        userField.textAlignment = UITextAlignmentLeft;
+        userField.textAlignment = NSTextAlignmentLeft;
         
         NSString *username = credentials[(__bridge id)kSecAttrAccount];
         if ([username length]) {

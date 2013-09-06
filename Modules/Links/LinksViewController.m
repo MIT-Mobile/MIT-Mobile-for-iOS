@@ -158,11 +158,11 @@ static NSString* const MITLinksDataTitleKey = @"name";
     errorLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     errorLabel.backgroundColor = [UIColor clearColor];
     errorLabel.text = @"There was a problem loading the links. Please try again later.";
-    errorLabel.textAlignment = UITextAlignmentCenter;
+    errorLabel.textAlignment = NSTextAlignmentCenter;
     errorLabel.shadowColor = [UIColor whiteColor];
     errorLabel.shadowOffset = CGSizeMake(0, 1);
     errorLabel.numberOfLines = 0;
-    errorLabel.lineBreakMode = UILineBreakModeWordWrap;
+    errorLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
     self.errorLabel = errorLabel;
     [self.tableView addSubview:errorLabel];
@@ -235,9 +235,9 @@ static NSString* const MITLinksDataTitleKey = @"name";
 
     CGFloat padding = 10.0f;
     CGFloat linkTitleWidth = CGRectGetWidth(tableView.bounds) - (3 * padding + 39); // padding on each side due to being a grouped tableview + padding on left + 39px of accessory view on right
-    CGSize titleSize = [title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:UILineBreakModeWordWrap];
+    CGSize titleSize = [title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
     
-    CGSize urlSize = [url sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:UILineBreakModeTailTruncation];
+    CGSize urlSize = [url sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
 
     return MAX(titleSize.height + urlSize.height + 2 * padding, tableView.rowHeight);
 }

@@ -187,7 +187,7 @@
             CGSize textConstraints = CGSizeMake(CGRectGetWidth(self.whatsHereView.frame) - bulletWidth - 2. * padding, 400.0);
 			CGSize textSize = [content sizeWithFont:whatsHereFont 
 								  constrainedToSize:textConstraints
-									  lineBreakMode:UILineBreakModeWordWrap];
+									  lineBreakMode:NSLineBreakByWordWrapping];
 
 			UILabel *bullet = [[UILabel alloc] initWithFrame:CGRectMake(padding, currentHeight, bulletWidth - padding, 20.0)];
 			bullet.text = @"•";
@@ -195,7 +195,7 @@
 			
 			UILabel *listItem = [[UILabel alloc] initWithFrame:CGRectMake(bulletWidth, currentHeight, textSize.width, textSize.height)];
 			listItem.text = content;
-			listItem.lineBreakMode = UILineBreakModeWordWrap;
+			listItem.lineBreakMode = NSLineBreakByWordWrapping;
 			listItem.numberOfLines = 0;
 			[self.whatsHereView addSubview:listItem];
 			
@@ -275,7 +275,7 @@
 	self.nameLabel.numberOfLines = 0;
 	CGSize stringSize = [self.annotation.title sizeWithFont:self.nameLabel.font
                                           constrainedToSize:CGSizeMake(CGRectGetWidth(self.nameLabel.frame), 200.0)
-                                              lineBreakMode:UILineBreakModeWordWrap];
+                                              lineBreakMode:NSLineBreakByWordWrapping];
 
     CGRect nameFrame = self.nameLabel.frame;
     nameFrame.size.height = stringSize.height;
@@ -284,7 +284,7 @@
 	self.locationLabel.text = self.annotationDetails.street;
 	CGSize addressSize = [self.annotationDetails.street sizeWithFont:self.locationLabel.font
 										  constrainedToSize:CGSizeMake(CGRectGetWidth(self.locationLabel.frame),200.)
-											  lineBreakMode:UILineBreakModeWordWrap];
+											  lineBreakMode:NSLineBreakByWordWrapping];
     
     CGRect frame = self.locationLabel.frame;
     frame.origin.y = CGRectGetHeight(self.nameLabel.frame) + CGRectGetMinY(self.nameLabel.frame) + 1.;

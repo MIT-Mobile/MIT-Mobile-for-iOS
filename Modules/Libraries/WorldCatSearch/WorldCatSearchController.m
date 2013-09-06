@@ -278,11 +278,11 @@ typedef enum {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
         cell.textLabel.numberOfLines = 0;
-        cell.textLabel.lineBreakMode = UILineBreakModeWordWrap;
+        cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
         cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
         cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
         cell.detailTextLabel.numberOfLines = 1;
-        cell.detailTextLabel.lineBreakMode = UILineBreakModeTailTruncation;
+        cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         cell.detailTextLabel.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
         cell.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -302,11 +302,11 @@ typedef enum {
         
         CGSize titleSize = [book.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
                                   constrainedToSize:CGSizeMake(availableWidth, 2000.0)
-                                      lineBreakMode:UILineBreakModeWordWrap];
+                                      lineBreakMode:NSLineBreakByWordWrapping];
         
         CGSize detailSize = [[book yearWithAuthors] sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
                                                         forWidth:availableWidth
-                                                   lineBreakMode:UILineBreakModeTailTruncation];
+                                                   lineBreakMode:NSLineBreakByTruncatingTail];
         
         return titleSize.height + detailSize.height + margins.top + margins.bottom;
     } else {

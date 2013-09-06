@@ -116,12 +116,12 @@
 	UIFont *hintsFont = [UIFont systemFontOfSize:[UIFont systemFontSize]];
 	CGSize labelSize = [searchHints sizeWithFont:hintsFont
 									constrainedToSize:tableView.frame.size
-										lineBreakMode:UILineBreakModeWordWrap];
+										lineBreakMode:NSLineBreakByWordWrapping];
 	
 	UILabel *hintsLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 5.0, labelSize.width, labelSize.height + 5.0)];
 	hintsLabel.numberOfLines = 0;
 	hintsLabel.backgroundColor = [UIColor clearColor];
-	hintsLabel.lineBreakMode = UILineBreakModeWordWrap;
+	hintsLabel.lineBreakMode = NSLineBreakByWordWrapping;
 	hintsLabel.font = hintsFont;
 	hintsLabel.text = searchHints;	
 	UIView *hintsContainer = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, labelSize.width, labelSize.height + 10.0)];

@@ -178,7 +178,7 @@
     CGSize boundingSize = CGSizeMake(CGRectGetWidth(self.textView.frame), CGFLOAT_MAX);
     CGSize requiredSize = [self.textView.text sizeWithFont:self.textView.font
                                                 constrainedToSize:boundingSize
-                                                lineBreakMode:UILineBreakModeWordWrap];
+                                                lineBreakMode:NSLineBreakByWordWrapping];
     CGFloat requiredHeight = requiredSize.height;
     
     CGFloat padding = 15.0;
