@@ -47,8 +47,8 @@ NSString * const shuttlePathExtension = @"shuttles/";
         _stopLocationsByID = nil;
         
         // populate route cache in memory
-        _shuttleRoutes = [[NSMutableArray alloc] init];	
-        _shuttleRoutesByID = [[NSMutableDictionary alloc] init];
+        _shuttleRoutes = [[NSArray alloc] init];
+        _shuttleRoutesByID = [[NSDictionary alloc] init];
         
         NSPredicate *matchAll = [NSPredicate predicateWithFormat:@"TRUEPREDICATE"];
         NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"sortOrder" ascending:YES];
@@ -57,13 +57,18 @@ NSString * const shuttlePathExtension = @"shuttles/";
                                                   sortDescriptors:[NSArray arrayWithObject:sort]];
         DDLogVerbose(@"%d routes cached", [cachedRoutes count]);
         
+        NSMutableArray *shuttleRoutes = [NSMutableArray array];
+        NSMutableDictionary *shuttleRoutesByID = [NSMutableDictionary dictionary];
         for (ShuttleRouteCache *cachedRoute in cachedRoutes) {
             NSString *routeID = cachedRoute.routeID;
             ShuttleRoute *route = [[ShuttleRoute alloc] initWithCache:cachedRoute];
             DDLogVerbose(@"fetched route %@ from core data", route.routeID);
-            [_shuttleRoutes addObject:route];
-            [_shuttleRoutesByID setValue:route forKey:routeID];
+            [shuttleRoutes addObject:route];
+            [shuttleRoutesByID setValue:route forKey:routeID];
         }
+        
+        _shuttleRoutes = shuttleRoutes;
+        _shuttleRoutesByID = shuttleRoutesByID;
     }
 	return self;
 }
@@ -157,25 +162,35 @@ NSString * const shuttlePathExtension = @"shuttles/";
 	if (_stopLocations == nil) {
 		// populate stop cache in memory
 		
-		_stopLocations = [[NSMutableArray alloc] init];
-		_stopLocationsByID = [[NSMutableDictionary alloc] init];
 		NSPredicate *matchAll = [NSPredicate predicateWithFormat:@"TRUEPREDICATE"];
 		NSArray *stopLocations = [CoreDataManager objectsForEntity:ShuttleStopEntityName matchingPredicate:matchAll];
 		
+        NSMutableArray *stops = [[NSMutableArray alloc] init];
+		NSMutableDictionary *stopsByID = [[NSMutableDictionary alloc] init];
+        
 		for (ShuttleStopLocation *stopLocation in stopLocations) {
 			NSString *stopID = [stopLocation stopID];
-			[_stopLocations addObject:stopLocation];
-			[_stopLocationsByID setObject:stopLocation forKey:stopID];
+			[stops addObject:stopLocation];
+			stopsByID[stopID] = stopLocation;
 		}
+        
+        _stopLocations = stops;
+        _stopLocationsByID = stopsByID;
 	}
 	
 	ShuttleStopLocation *stopLocation = _stopLocationsByID[stopID];
 	if (stopLocation == nil) {
 		NSManagedObject *newStopLocation = [CoreDataManager insertNewObjectForEntityForName:ShuttleStopEntityName];
 		[newStopLocation setValue:stopID forKey:@"stopID"];
-		stopLocation = (ShuttleStopLocation *)newStopLocation;	
-		[_stopLocations addObject:stopLocation];
-		[_stopLocationsByID setObject:stopLocation forKey:stopID];
+		stopLocation = (ShuttleStopLocation *)newStopLocation;
+        
+        NSMutableArray *stops = [_stopLocations mutableCopy];
+		NSMutableDictionary *stopsByID = [_stopLocationsByID mutableCopy];
+		[stops addObject:stopLocation];
+		[stopsByID setObject:stopLocation forKey:stopID];
+        
+        _stopLocations = stops;
+        _stopLocationsByID = stopsByID;
 	}
 	return stopLocation;
 }
@@ -197,20 +212,21 @@ NSString * const shuttlePathExtension = @"shuttles/";
             NSMutableArray *routeIDs = [[NSMutableArray alloc] initWithCapacity:[jsonResult count]];
             NSInteger sortOrder = 0;
             
+            NSMutableArray *shuttleRoutes = [_shuttleRoutes mutableCopy];
+            NSMutableDictionary *shuttleRoutesByID = [_shuttleRoutesByID mutableCopy];
             for (NSDictionary *routeInfo in jsonResult) {
                 NSString *routeID = routeInfo[@"route_id"];
                 
                 if ([routeID length]) {
                     [routeIDs addObject:routeID];
                     
-                    ShuttleRoute *route = _shuttleRoutesByID[routeID];
+                    ShuttleRoute *route = shuttleRoutesByID[routeID];
                     if (route == nil) {
                         route = [[ShuttleRoute alloc] initWithDictionary:routeInfo];
                         
                         if (route) {
-                            [_shuttleRoutes addObject:route];
-                            [_shuttleRoutesByID setObject:route
-                                                   forKey:routeID];
+                            [shuttleRoutes addObject:route];
+                            shuttleRoutesByID[routeID] = route;
                             routesChanged = YES;
                         }
                     }
@@ -228,15 +244,18 @@ NSString * const shuttlePathExtension = @"shuttles/";
             
             // prune routes that don't exist anymore
             NSPredicate *missing = [NSPredicate predicateWithFormat:@"NOT (routeID IN %@)", routeIDs];
-            NSArray *missingRoutes = [_shuttleRoutes filteredArrayUsingPredicate:missing];
+            NSArray *missingRoutes = [shuttleRoutes filteredArrayUsingPredicate:missing];
             
             for (ShuttleRoute *route in missingRoutes) {
                 NSString *routeID = route.routeID;
                 [CoreDataManager deleteObject:route.cache];
-                [_shuttleRoutesByID removeObjectForKey:routeID];
-                [_shuttleRoutes removeObject:route];
+                [shuttleRoutesByID removeObjectForKey:routeID];
+                [shuttleRoutes removeObject:route];
                 routesChanged = YES;
             }
+            
+            _shuttleRoutes = shuttleRoutes;
+            _shuttleRoutesByID = shuttleRoutesByID;
             
             if (routesChanged) {
                 [CoreDataManager saveData];
@@ -314,11 +333,16 @@ NSString * const shuttlePathExtension = @"shuttles/";
             NSString *routeID = jsonResult[@"route_id"];
             
             ShuttleRoute *route = _shuttleRoutesByID[routeID];
+            NSMutableArray *shuttleRoutes = [_shuttleRoutes mutableCopy];
+            NSMutableDictionary *shuttleRoutesByID = [_shuttleRoutesByID mutableCopy];
             if (route == nil) {
                 ShuttleRoute *route = [[ShuttleRoute alloc] init];
-                [_shuttleRoutes addObject:route];
-                [_shuttleRoutesByID setValue:route forKey:routeID];
+                [shuttleRoutes addObject:route];
+                [shuttleRoutesByID setValue:route forKey:routeID];
             }
+            _shuttleRoutes = shuttleRoutes;
+            _shuttleRoutesByID = shuttleRoutesByID;
+            
             [route updateInfo:jsonResult];
             
             [self sendRouteToDelegates:route forRouteID:route.routeID];

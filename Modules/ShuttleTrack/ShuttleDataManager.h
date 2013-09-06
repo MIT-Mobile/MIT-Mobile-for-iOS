@@ -30,10 +30,10 @@
 	NSMutableArray* _registeredDelegates;
 }
 
-@property (nonatomic, readonly, copy) NSMutableArray* shuttleRoutes;               // cached shuttle routes.
-@property (nonatomic, readonly, copy) NSMutableDictionary* shuttleRoutesByID;      // cached shuttle routes sorted by route ID
-@property (nonatomic, readonly, copy) NSMutableArray* stopLocations;               // cached shuttle stops locations.
-@property (nonatomic, readonly, copy) NSMutableDictionary *stopLocationsByID;      // cached shuttle stops sorted by ID
+@property (nonatomic, readonly, copy) NSArray* shuttleRoutes;               // cached shuttle routes.
+@property (nonatomic, readonly, copy) NSDictionary* shuttleRoutesByID;      // cached shuttle routes sorted by route ID
+@property (nonatomic, readonly, copy) NSArray* stopLocations;               // cached shuttle stops locations.
+@property (nonatomic, readonly, copy) NSDictionary *stopLocationsByID;      // cached shuttle stops sorted by ID
 
 // get the signleton data manager
 +(ShuttleDataManager*) sharedDataManager;
