@@ -88,8 +88,8 @@
         [items appendString:filledItem];
     }
     
-    [htmlString replaceOccurrencesOfString:@"__INTRO__" withString:header options:NSLiteralSearch range:NSMakeRange(0, htmlString.length)];
-    [htmlString replaceOccurrencesOfString:@"__ITEMS__" withString:items options:NSLiteralSearch range:NSMakeRange(0, htmlString.length)];
+    [htmlString replaceOccurrencesOfString:@"__INTRO__" withString:header options:NSLiteralSearch range:NSMakeRange(0, [htmlString length])];
+    [htmlString replaceOccurrencesOfString:@"__ITEMS__" withString:items options:NSLiteralSearch range:NSMakeRange(0, [htmlString length])];
     
     [self.view addSubview:self.webView];
     [self.webView loadHTMLString:htmlString baseURL:baseURL];

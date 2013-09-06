@@ -298,7 +298,7 @@
         frame.size.height = self.fakeToolbarHeightFromNIB;
         self.fakeToolbar.frame = frame;
         
-        self.progressbar.numberOfSegments = self.sites.count;
+        self.progressbar.numberOfSegments = [self.sites count];
         [self.progressbar setNeedsDisplay];
         
         self.progressbar.hidden = NO;
@@ -385,7 +385,7 @@
     // table header
     {
         NSSet *tourLinks = [[ToursDataManager sharedManager] activeTour].links;
-        NSInteger numRows = tourLinks.count + 1;
+        NSInteger numRows = [tourLinks count] + 1;
         CGFloat currentTableHeight = tableView.rowHeight * numRows + CGRectGetHeight(tableView.tableFooterView.frame) + 10;
         CGFloat headerHeight = tableFrame.size.height - currentTableHeight - 10;
         
@@ -616,10 +616,10 @@
     
     NSMutableString *html = [NSMutableString stringWithString:self.siteTemplate];
     NSString *maxWidth = [NSString stringWithFormat:@"%.0f", webView.frame.size.width];
-    [html replaceOccurrencesOfString:@"__WIDTH__" withString:maxWidth options:NSLiteralSearch range:NSMakeRange(0, html.length)];
-    [html replaceOccurrencesOfString:@"__TITLE__" withString:component.title options:NSLiteralSearch range:NSMakeRange(0, html.length)];
-    [html replaceOccurrencesOfString:@"__PHOTO__" withString:nextStopPhoto options:NSLiteralSearch range:NSMakeRange(0, html.length)];
-    [html replaceOccurrencesOfString:@"__BODY__" withString:body options:NSLiteralSearch range:NSMakeRange(0, html.length)];
+    [html replaceOccurrencesOfString:@"__WIDTH__" withString:maxWidth options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+    [html replaceOccurrencesOfString:@"__TITLE__" withString:component.title options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+    [html replaceOccurrencesOfString:@"__PHOTO__" withString:nextStopPhoto options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+    [html replaceOccurrencesOfString:@"__BODY__" withString:body options:NSLiteralSearch range:NSMakeRange(0, [html length])];
     
 	NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     
@@ -786,7 +786,7 @@
 
 - (TourComponent *)tripForRequest:(NSURLRequest *)request {
     NSArray *pathComponents = [[request.URL path] pathComponents];
-    if (pathComponents.count) {
+    if ([pathComponents count]) {
         NSString *maybeTripID = [pathComponents lastObject];
         for (CampusTourSideTrip *aTrip in self.siteOrRoute.sideTrips) {
             if ([maybeTripID isEqualToString:aTrip.componentID]) {
@@ -861,7 +861,7 @@
 
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
     NSSet *tourLinks = [[ToursDataManager sharedManager] activeTour].links;
-    return tourLinks.count + 1;
+    return [tourLinks count] + 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

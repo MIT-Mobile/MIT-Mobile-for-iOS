@@ -186,9 +186,9 @@ enum {
     @autoreleasepool {
         if (self.hideSideTrips) {
             NSMutableArray *indexPathsToDelete = 
-            [NSMutableArray arrayWithCapacity:self.components.count];
+            [NSMutableArray arrayWithCapacity:[self.components count]];
             NSMutableArray *componentsToRemove = 
-            [NSMutableArray arrayWithCapacity:self.components.count];
+            [NSMutableArray arrayWithCapacity:[self.components count]];
             
             [self.components enumerateObjectsUsingBlock:
              ^(id obj, NSUInteger idx, BOOL *stop) {
@@ -210,7 +210,7 @@ enum {
             self.sideTripsItem.title = @"Show side trips";
         } else {
             NSMutableArray *indexPathsToAdd = 
-            [NSMutableArray arrayWithCapacity:self.components.count];
+            [NSMutableArray arrayWithCapacity:[self.components count]];
             NSArray *currentlyShowingComponents = [self.components copy];
             [self updateTourComponents];
             [self.components enumerateObjectsUsingBlock:
@@ -427,7 +427,7 @@ enum {
         
         CGRect frame = CGRectZero;
         frame.origin.x = keyPadding;
-        for (NSInteger i = 0; i < images.count; i++) {
+        for (NSInteger i = 0; i < [images count]; i++) {
             UIImageView *imageView = [[UIImageView alloc] initWithImage:images[i]];
             frame.size = imageView.frame.size;
             imageView.frame = frame;
@@ -608,7 +608,7 @@ enum {
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.components.count;
+    return [self.components count];
 }
 
 
