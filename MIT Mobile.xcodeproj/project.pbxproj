@@ -268,7 +268,6 @@
 		A6930566144CEBFC0012EEFA /* ThankYouViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6930564144CEBFC0012EEFA /* ThankYouViewController.m */; };
 		A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69826E41354A488004A8258 /* EventKitUI.framework */; };
 		A6A82E38145624F20075EB28 /* LibraryTextElementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */; };
-		B64B47081288502E002E2F1D /* DummyRotatingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B64B47061288502E002E2F1D /* DummyRotatingViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		BD1E9309103B5D60004429AA /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92F6103B5D60004429AA /* NSObject+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		BD1E930A103B5D60004429AA /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92F8103B5D60004429AA /* NSString+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		BD1E930B103B5D60004429AA /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BD1E92FA103B5D60004429AA /* SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -322,7 +321,6 @@
 		DE936CA6161CD28300B69F7C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA5161CD28300B69F7C /* Default@2x.png */; };
 		DE94998317450C800066F6CF /* RetailDay.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94998217450C800066F6CF /* RetailDay.m */; };
 		DE952E6816295EBA007E7356 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE952E6716295EBA007E7356 /* Default-568h@2x.png */; };
-		DE952E6C1629BFAB007E7356 /* MITRotationForwardingNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE952E6B1629BFAB007E7356 /* MITRotationForwardingNavigationController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE98C6651741B8E500319AA3 /* RetailVenue.m in Sources */ = {isa = PBXBuildFile; fileRef = DE98C6641741B8E500319AA3 /* RetailVenue.m */; };
 		DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */; };
 		DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B48C10C9BB7300BDA774 /* AboutModule.m */; };
@@ -927,8 +925,6 @@
 		A69826E41354A488004A8258 /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
 		A6A82E36145624F20075EB28 /* LibraryTextElementViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryTextElementViewController.h; sourceTree = "<group>"; };
 		A6A82E37145624F20075EB28 /* LibraryTextElementViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibraryTextElementViewController.m; sourceTree = "<group>"; };
-		B64B47051288502E002E2F1D /* DummyRotatingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummyRotatingViewController.h; sourceTree = "<group>"; };
-		B64B47061288502E002E2F1D /* DummyRotatingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DummyRotatingViewController.m; sourceTree = "<group>"; };
 		BD1E92F4103B5D60004429AA /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		BD1E92F5103B5D60004429AA /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
 		BD1E92F6103B5D60004429AA /* NSObject+SBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJSON.m"; sourceTree = "<group>"; };
@@ -1050,8 +1046,6 @@
 		DE94998117450C800066F6CF /* RetailDay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetailDay.h; path = Dining/Model/RetailDay.h; sourceTree = "<group>"; };
 		DE94998217450C800066F6CF /* RetailDay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RetailDay.m; path = Dining/Model/RetailDay.m; sourceTree = "<group>"; };
 		DE952E6716295EBA007E7356 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		DE952E6A1629BFAB007E7356 /* MITRotationForwardingNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITRotationForwardingNavigationController.h; path = "Container Views/MITRotationForwardingNavigationController.h"; sourceTree = "<group>"; };
-		DE952E6B1629BFAB007E7356 /* MITRotationForwardingNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITRotationForwardingNavigationController.m; path = "Container Views/MITRotationForwardingNavigationController.m"; sourceTree = "<group>"; };
 		DE98C6631741B8E500319AA3 /* RetailVenue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetailVenue.h; path = Dining/Model/RetailVenue.h; sourceTree = "<group>"; };
 		DE98C6641741B8E500319AA3 /* RetailVenue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RetailVenue.m; path = Dining/Model/RetailVenue.m; sourceTree = "<group>"; };
 		DE9EFBD010FE7D8900F5F07E /* SettingsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsModule.h; path = Settings/SettingsModule.h; sourceTree = "<group>"; };
@@ -1314,10 +1308,7 @@
 				2C101A451653E931000E40E3 /* MapCore */,
 				2C3C9D7314CDC0B2005646F7 /* Categories */,
 				3AA21C481039DDBA00DB7637 /* Connection */,
-				DE952E691629BF59007E7356 /* Container Views */,
 				3AA21C491039DDBD00DB7637 /* Core Data */,
-				B64B47051288502E002E2F1D /* DummyRotatingViewController.h */,
-				B64B47061288502E002E2F1D /* DummyRotatingViewController.m */,
 				2C99DCAD1370508D00114A9A /* HighlightLabel.h */,
 				2C99DCAE1370508D00114A9A /* HighlightLabel.m */,
 				2C03C6D2137C66100005F1FC /* HighlightTableViewCell.h */,
@@ -2567,15 +2558,6 @@
 			path = News;
 			sourceTree = "<group>";
 		};
-		DE952E691629BF59007E7356 /* Container Views */ = {
-			isa = PBXGroup;
-			children = (
-				DE952E6A1629BFAB007E7356 /* MITRotationForwardingNavigationController.h */,
-				DE952E6B1629BFAB007E7356 /* MITRotationForwardingNavigationController.m */,
-			);
-			name = "Container Views";
-			sourceTree = "<group>";
-		};
 		DE9EFBCE10FE7D3200F5F07E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -3069,7 +3051,6 @@
 				EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */,
 				1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */,
 				EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */,
-				B64B47081288502E002E2F1D /* DummyRotatingViewController.m in Sources */,
 				EBCB4DEE10D30AA2001219FD /* EmergencyContactsViewController.m in Sources */,
 				DE70549B103FB79D003B5F41 /* EmergencyData.m in Sources */,
 				DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */,
@@ -3270,7 +3251,6 @@
 				2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */,
 				48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
-				DE952E6C1629BFAB007E7356 /* MITRotationForwardingNavigationController.m in Sources */,
 				2C91944C1631CBA700ED97F6 /* NSData+MGTwitterBase64.m in Sources */,
 				2CEBBF841635A68500441252 /* DEFacebookComposeViewController.m in Sources */,
 				2CEBBF851635A68500441252 /* DEFacebookGradientView.m in Sources */,

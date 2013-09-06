@@ -2,7 +2,6 @@
 #import "IconGrid.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
-#import "DummyRotatingViewController.h"
 #import "ScrollFadeImageView.h"
 #import "MITMobileServerConfiguration.h"
 #import "MobileRequestOperation.h"
