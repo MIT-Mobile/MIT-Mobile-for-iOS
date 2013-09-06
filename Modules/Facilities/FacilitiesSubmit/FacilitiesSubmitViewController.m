@@ -78,38 +78,37 @@
     [super viewDidAppear:animated];
 
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:8];
-    [params setObject:@"" forKey:@"name"];
-    [params setObject:[self.reportDictionary objectForKey:FacilitiesRequestUserEmailKey] forKey:@"email"];
+    params[@"name"] = @"";
+    params[@"email"] = self.reportDictionary[FacilitiesRequestUserEmailKey];
     
-    FacilitiesLocation *location = [self.reportDictionary objectForKey:FacilitiesRequestLocationBuildingKey];
-    FacilitiesRoom *room = [self.reportDictionary objectForKey:FacilitiesRequestLocationRoomKey];
-    FacilitiesRepairType *type = [self.reportDictionary objectForKey:FacilitiesRequestRepairTypeKey];
-    NSString *customLocation = [self.reportDictionary objectForKey:FacilitiesRequestLocationUserBuildingKey];
-    NSString *customRoom = [self.reportDictionary objectForKey:FacilitiesRequestLocationUserRoomKey];
+    FacilitiesLocation *location = self.reportDictionary[FacilitiesRequestLocationBuildingKey];
+    FacilitiesRoom *room = self.reportDictionary[FacilitiesRequestLocationRoomKey];
+    FacilitiesRepairType *type = self.reportDictionary[FacilitiesRequestRepairTypeKey];
+    NSString *customLocation = self.reportDictionary[FacilitiesRequestLocationUserBuildingKey];
+    NSString *customRoom = self.reportDictionary[FacilitiesRequestLocationUserRoomKey];
     
     if (location) {
-        [params setObject:location.name forKey:@"locationName"];
-        [params setObject:location.number forKey:@"buildingNumber"];
-        [params setObject:location.uid forKey:@"location"];
+        params[@"locationName"] = location.name;
+        params[@"buildingNumber"] = location.number;
+        params[@"location"] = location.uid;
     } else {
-        [params setObject:customLocation forKey:@"locationNameByUser"];
+        params[@"locationNameByUser"] = customLocation;
     }
     
     if (room) {
-        [params setObject:room.number forKey:@"roomName"];
+        params[@"roomName"] = room.number;
     } else {
-        [params setObject:customRoom forKey:@"roomNameByUser"];
+        params[@"roomNameByUser"] = customRoom;
     }
     
-    [params setObject:type.name forKey:@"problemType"];
+    params[@"problemType"] = type.name;
     
-    [params setObject:[self.reportDictionary objectForKey:FacilitiesRequestUserDescriptionKey] 
-               forKey:@"message"];
+    params[@"message"] = self.reportDictionary[FacilitiesRequestUserDescriptionKey];
     
     NSData *pictureData = [self.reportDictionary objectForKey:FacilitiesRequestImageDataKey];
     if (pictureData) {
-        [params setObject:[pictureData base64EncodingWithLineLength:64] forKey:@"image"];
-        [params setObject:@"image/jpeg" forKey:@"imageFormat"];
+        params[@"image"] = [pictureData base64EncodingWithLineLength:64];
+        params[@"imageFormat"] = @"image/jpeg";
     }
     
     MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"facilities"
