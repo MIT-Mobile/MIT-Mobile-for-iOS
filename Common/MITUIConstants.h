@@ -1,14 +1,4 @@
 #import "UIKit+MITAdditions.h"
-
-/*** universal font constants ***/
-
-// Note: we need to stop using these.
-// Devices with Retina displays use Helvetica Neue instead of Helvetica.
-// Use systemFontOfSize and boldSystemFontOfSize instead.
-
-#define STANDARD_FONT @"Helvetica"
-#define BOLD_FONT @"Helvetica-Bold"
-
 /*** search bar ***/
 
 #define SEARCH_BAR_TINT_COLOR [UIColor colorWithRed:0.6 green:0.0 blue:0.0 alpha:1.0] /* just a guess */
@@ -16,7 +6,6 @@
 /*** table view constants ***/
 
 #define TABLE_HEADER_FONT_SIZE 20.0
-
 #define TABLE_SEPARATOR_COLOR [UIColor colorWithWhite:0.8 alpha:1.0] /* #BBBBBB */
 
 #define PRIMARY_GROUP_BACKGROUND_COLOR [UIColor whiteColor]

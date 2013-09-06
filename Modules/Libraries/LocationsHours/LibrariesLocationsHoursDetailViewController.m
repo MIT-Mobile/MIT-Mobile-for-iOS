@@ -125,7 +125,7 @@ LocationsHoursTableRows;
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, TITLE_WIDTH, 0)];
         titleLabel.tag = TITLE_ROW_TAG;
-        titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+        titleLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
         titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
         titleLabel.backgroundColor = [UIColor clearColor];
         titleLabel.numberOfLines = 0;
@@ -154,7 +154,7 @@ LocationsHoursTableRows;
         cell = [self titleRowWithTable:tableView];
         UILabel *titleLabel = (UILabel *)[cell viewWithTag:TITLE_ROW_TAG];
         titleLabel.text = self.library.title;
-        CGSize titleSize = [self.library.title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] 
+        CGSize titleSize = [self.library.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
                                           constrainedToSize:CGSizeMake(TITLE_WIDTH, 500)];
         titleLabel.frame = CGRectMake(PADDING, PADDING, TITLE_WIDTH, titleSize.height);
     } else {
@@ -234,7 +234,7 @@ LocationsHoursTableRows;
     if (indexPath.row == CONTENT_ROW) {
         return self.contentRowHeight;
     } if (indexPath.row == TITLE_ROW) {
-        CGSize titleSize = [self.library.title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] 
+        CGSize titleSize = [self.library.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE] 
                                           constrainedToSize:CGSizeMake(TITLE_WIDTH, 500)];
         return titleSize.height + 2*PADDING;
     } else {

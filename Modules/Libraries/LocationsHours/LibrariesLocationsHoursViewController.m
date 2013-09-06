@@ -135,13 +135,13 @@
         UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, CELL_LABEL_WIDTH, 0)];
         titleLabel.tag = CELL_TITLE_TAG;
         titleLabel.backgroundColor = [UIColor clearColor];
-        titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+        titleLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
         titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
         titleLabel.highlightedTextColor = [UIColor whiteColor];
         titleLabel.tag = CELL_TITLE_TAG;
         titleLabel.numberOfLines = 0;
         
-        UIFont *subtitleFont = [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE];
+        UIFont *subtitleFont = [UIFont boldSystemFontOfSize:CELL_DETAIL_FONT_SIZE];
         UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, PADDING, CELL_LABEL_WIDTH, subtitleFont.lineHeight)];
         subtitleLabel.backgroundColor = [UIColor clearColor];
         subtitleLabel.font = subtitleFont;
@@ -161,7 +161,7 @@
     subtitleLabel.text = library.status;
     
     CGRect titleFrame = titleLabel.frame;
-    titleFrame.size.height = [library.title sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE]
+    titleFrame.size.height = [library.title sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
                                        constrainedToSize:CGSizeMake(CELL_LABEL_WIDTH, 500)].height;
     titleLabel.frame = titleFrame;
     CGRect subtitleFrame = subtitleLabel.frame;

@@ -55,8 +55,7 @@
 
 
 - (CGFloat)heightForText:(NSString *)text {
-    CGSize textSize = [text sizeWithFont:[UIFont fontWithName:BOLD_FONT
-                                                         size:CELL_STANDARD_FONT_SIZE]
+    CGSize textSize = [text sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
                        constrainedToSize:CGSizeMake(260, 100)];
     return textSize.height;
 }

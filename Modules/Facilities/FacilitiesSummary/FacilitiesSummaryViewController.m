@@ -104,7 +104,7 @@
     {
         self.imageView.adjustsImageWhenHighlighted = NO;
         self.imageView.imageView.contentMode = UIViewContentModeScaleAspectFill;
-        self.imageButton.titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+        self.imageButton.titleLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
         self.imageButton.titleLabel.textColor = CELL_STANDARD_FONT_COLOR;
     }
     

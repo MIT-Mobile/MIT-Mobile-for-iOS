@@ -105,7 +105,7 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
                            green:((float) g / 255.0f)
                             blue:((float) b / 255.0f)
                            alpha:1.0f];
-}  
+}
 
 @end
 
@@ -215,11 +215,11 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 @implementation UITableViewCell (MITUIAdditions)
 
 - (void)applyStandardFonts {
-	self.textLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+	self.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
 	self.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
     
 	if (self.detailTextLabel != nil) {
-		self.detailTextLabel.font = [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE];
+		self.detailTextLabel.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
 		self.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
 	}
 }

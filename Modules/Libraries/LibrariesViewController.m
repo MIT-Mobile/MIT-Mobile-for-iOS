@@ -94,7 +94,7 @@
 }
 
 - (CGFloat)heightForLinkTitle:(NSString *)aTitle {
-    CGSize titleSize = [aTitle sizeWithFont:[UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(LINK_TITLE_WIDTH, 100)];
+    CGSize titleSize = [aTitle sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE] constrainedToSize:CGSizeMake(LINK_TITLE_WIDTH, 100)];
     return titleSize.height;
 }
 

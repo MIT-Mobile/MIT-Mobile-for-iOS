@@ -40,7 +40,7 @@
         self.completeButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         self.completeButton.frame = buttonFrame;
         self.completeButton.hidden = YES;
-        self.completeButton.titleLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+        self.completeButton.titleLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
         [self.completeButton setTitleColor:CELL_STANDARD_FONT_COLOR forState:UIControlStateNormal];
 
         [self.completeButton setTitle:@"Return to Start"

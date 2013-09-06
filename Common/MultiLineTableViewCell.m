@@ -2,8 +2,6 @@
 #import "MITUIConstants.h"
 #define DEFAULT_TOP_PADDING CELL_VERTICAL_PADDING
 #define DEFAULT_BOTTOM_PADDING CELL_VERTICAL_PADDING
-#define DEFAULT_MAIN_FONT [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE]
-#define DEFAULT_DETAIL_FONT [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE]
 
 @implementation MultiLineTableViewCell
 @synthesize topPadding, bottomPadding;
@@ -218,8 +216,8 @@ static NSInteger s_numberOfCells = 0;
     return [MultiLineTableViewCell cellHeightForTableView:tableView
                                                      text:text
                                                detailText:detailText
-                                                 textFont:DEFAULT_MAIN_FONT
-                                               detailFont:DEFAULT_DETAIL_FONT
+                                                 textFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
+                                               detailFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
                                             accessoryType:accessoryType];
 }
 @end

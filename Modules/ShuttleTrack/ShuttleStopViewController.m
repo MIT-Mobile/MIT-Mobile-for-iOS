@@ -122,7 +122,7 @@
                                                           alertHeaderIcon.frame.origin.y,
                                                           headerView.frame.size.width - alertHeaderIcon.frame.size.width - PADDING - 2 * MARGIN, 
                                                           30)];
-	alertHeaderText.font = [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE];
+	alertHeaderText.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
 	alertHeaderText.lineBreakMode = UILineBreakModeWordWrap;
 	alertHeaderText.backgroundColor = [UIColor clearColor];
 	alertHeaderText.text = @"Tap the 'Alert Me' icon to be notified 5 minutes before the estimated arrival time.";

@@ -249,7 +249,7 @@
         titleWidth = tableFrame.size.width - titlePadding * 2;
         self.tableView.separatorColor = [UIColor whiteColor];
     }
-	UIFont *titleFont = [UIFont fontWithName:BOLD_FONT size:20.0];
+	UIFont *titleFont = [UIFont boldSystemFontOfSize:20.0];
 	CGSize titleSize = [self.event.title sizeWithFont:titleFont
 									constrainedToSize:CGSizeMake(titleWidth, 2010.0)];
 	UILabel *titleView = [[UILabel alloc] initWithFrame:CGRectMake(titlePadding, titlePadding, titleSize.width, titleSize.height)];

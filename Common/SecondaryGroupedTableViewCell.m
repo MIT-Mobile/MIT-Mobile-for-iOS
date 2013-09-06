@@ -24,12 +24,12 @@
 	
 	self.backgroundColor = SECONDARY_GROUP_BACKGROUND_COLOR;
 	
-	self.textLabel.font = [UIFont fontWithName:BOLD_FONT size:CELL_STANDARD_FONT_SIZE];
+	self.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
 	self.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
 	self.textLabel.backgroundColor = [UIColor clearColor];
 	
 	if (self.secondaryTextLabel.text != nil) {
-		self.secondaryTextLabel.font = [UIFont fontWithName:STANDARD_FONT size:CELL_DETAIL_FONT_SIZE];
+		self.secondaryTextLabel.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
 		self.secondaryTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
         self.secondaryTextLabel.highlightedTextColor = [UIColor whiteColor];
 		self.secondaryTextLabel.backgroundColor = [UIColor clearColor];		
