@@ -18,6 +18,8 @@
 
 - (void)viewDidLoad {
     [self.tableView applyStandardColors];
+    self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+
     self.title = @"About";
     
     self.showBuildNumber = NO;

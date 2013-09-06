@@ -26,21 +26,6 @@
 @end
 
 @implementation FacilitiesSummaryViewController
-@synthesize scrollView = _scrollView;
-@synthesize submitButton = _submitButton;
-@synthesize problemLabel = _problemLabel;
-@synthesize shiftingContainingView = _shiftingContainingView;
-@synthesize descriptionContainingView = _descriptionContainingView;
-@synthesize descriptionTextView = _descriptionTextView;
-@synthesize imageView = _imageView;
-@synthesize imageButton = _imageButton;
-@synthesize emailField = _emailField;
-@synthesize reportData = _reportData;
-@synthesize imageData = _imageData;
-@synthesize imageActivityView = _imageActivityView;
-@synthesize firstResponder = _firstResponder;
-
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -86,6 +71,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
     
     self.submitButton = [[UIBarButtonItem alloc] initWithTitle:@"Submit"
                                                           style:UIBarButtonItemStyleDone

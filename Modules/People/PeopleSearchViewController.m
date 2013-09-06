@@ -54,10 +54,7 @@
 - (void)loadView
 {
     UIView *view = [self defaultApplicationView];
-    view.backgroundColor = [UIColor colorWithRed:0.784
-                                           green:0.792
-                                            blue:0.812
-                                           alpha:1.0];
+    view.backgroundColor = [UIColor mit_backgroundColor];
 
     self.view = view;
 }
@@ -89,11 +86,7 @@
                                     self.searchBar.frame.size.width,
                                     self.view.frame.size.height - CGRectGetMaxY(self.searchBar.frame));
     UITableView *searchTableView = [[UITableView alloc] initWithFrame:tablesFrame style:UITableViewStylePlain];
-	searchTableView.backgroundView = nil;
-    searchTableView.backgroundColor = [UIColor colorWithRed:0.784
-                                                      green:0.792
-                                                       blue:0.812
-                                                      alpha:1.0];
+	searchTableView.backgroundView.backgroundColor = [UIColor mit_backgroundColor];
     
     self.searchController.searchResultsTableView = searchTableView;
     self.searchController.searchResultsDelegate = self;
@@ -105,13 +98,8 @@
     tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     tableView.delegate = self;
     tableView.dataSource = self;
-	//[tableView applyStandardColors];
-	tableView.backgroundView = nil;
-    tableView.backgroundColor = [UIColor colorWithRed:0.784
-                                                green:0.792
-                                                 blue:0.812
-                                                alpha:1.0];
-	
+	tableView.backgroundView.backgroundColor = [UIColor mit_backgroundColor];
+
     NSString *searchHints = @"Sample searches:\nName: 'william barton rogers', 'rogers'\nEmail: 'wbrogers', 'wbrogers@mit.edu'\nPhone: '6172531000', '31000'";
 	UIFont *hintsFont = [UIFont systemFontOfSize:[UIFont systemFontSize]];
 	CGSize labelSize = [searchHints sizeWithFont:hintsFont

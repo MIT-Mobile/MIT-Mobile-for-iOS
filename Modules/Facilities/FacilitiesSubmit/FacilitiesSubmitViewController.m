@@ -18,7 +18,8 @@
 #pragma mark - View lifecycle
 - (void)viewDidLoad {
     self.title = @"Submit Report";
-
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
+    
     CGRect frame = self.view.frame;
     CGFloat margin = 20.0;
     

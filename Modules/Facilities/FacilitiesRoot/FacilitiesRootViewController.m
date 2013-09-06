@@ -22,7 +22,7 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
     self.textView.backgroundColor = [UIColor clearColor];
     [self.tableView applyStandardColors];
 }

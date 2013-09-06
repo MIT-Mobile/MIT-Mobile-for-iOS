@@ -59,10 +59,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.view.backgroundColor = [UIColor colorWithRed:0.784
-                                                green:0.792
-                                                 blue:0.812
-                                                alpha:1.0];
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
 	
 	self.tabViews = [[NSMutableArray alloc] init];
 	

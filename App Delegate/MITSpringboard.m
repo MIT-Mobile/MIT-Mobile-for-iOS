@@ -5,6 +5,7 @@
 #import "ScrollFadeImageView.h"
 #import "MITMobileServerConfiguration.h"
 #import "MobileRequestOperation.h"
+#import "MITAdditions.h"
 
 @interface MITSpringboard ()
 @property (nonatomic, strong) NSMutableDictionary *bannerInfo;
@@ -234,10 +235,7 @@
     view.autoresizesSubviews = YES;
     view.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                              UIViewAutoresizingFlexibleWidth);
-    view.backgroundColor = [UIColor colorWithRed:0.78
-                                           green:0.78
-                                            blue:0.80
-                                           alpha:1.0];
+    view.backgroundColor = [UIColor mit_backgroundColor];
     self.view = view;
 }
 

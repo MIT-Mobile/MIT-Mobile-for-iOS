@@ -80,7 +80,7 @@
     [super viewDidLoad];
     self.title = @"Dining";
 
-    self.view.backgroundColor = [UIColor colorWithHexString:@"#c8cacf"];
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
     
     UIBarButtonItem *mapListToggle = [[UIBarButtonItem alloc] initWithTitle:@"Map" style:UIBarButtonItemStylePlain target:self action:@selector(toggleMapList:)];
     self.navigationItem.rightBarButtonItem = mapListToggle;

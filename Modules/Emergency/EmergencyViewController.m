@@ -37,11 +37,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshInfo:)];
-	self.tableView.backgroundView = nil;
-    self.tableView.backgroundColor = [UIColor colorWithRed:0.784
-                                                     green:0.792
-                                                      blue:0.812
-                                                     alpha:1.0];
+	self.tableView.backgroundView.backgroundColor = [UIColor mit_backgroundColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

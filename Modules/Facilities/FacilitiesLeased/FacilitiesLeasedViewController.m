@@ -33,7 +33,7 @@ enum {
     mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                  UIViewAutoresizingFlexibleWidth);
     mainView.autoresizesSubviews = YES;
-    mainView.backgroundColor = [UIColor clearColor];
+    mainView.backgroundColor = [UIColor mit_backgroundColor];
 
     {
         CGFloat margin = 20.0;
