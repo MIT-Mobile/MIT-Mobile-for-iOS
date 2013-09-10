@@ -417,7 +417,7 @@
 		EBA2865610E07E140003BA01 /* PeopleSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */; };
 		EBA2867910E082010003BA01 /* MITLoadingActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBA2867810E082010003BA01 /* MITLoadingActivityView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EBAB15C411BE970900D481B5 /* DatePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB15C211BE970900D481B5 /* DatePickerViewController.m */; };
-		EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB164011BEC3E800D481B5 /* MITSearchDisplayController.m */; };
 		EBBFABB0129461C3009AAEE0 /* ScrollFadeImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFABAE129461C3009AAEE0 /* ScrollFadeImageView.m */; };
 		EBBFAF96129C2A23009AAEE0 /* TabViewControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFAF94129C2A23009AAEE0 /* TabViewControl.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EBBFB233129C7DED009AAEE0 /* TourSiteMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBFB231129C7DED009AAEE0 /* TourSiteMapAnnotation.m */; };

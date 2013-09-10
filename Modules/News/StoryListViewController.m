@@ -24,7 +24,7 @@
 #define SEARCH_BUTTON_TAG 7947
 #define BOOKMARK_BUTTON_TAG 7948
 
-@interface StoryListViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, MITSearchDisplayDelegate, StoryXMLParserDelegate, NavScrollerDelegate>
+@interface StoryListViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, StoryXMLParserDelegate, NavScrollerDelegate>
 @property (nonatomic,weak) NavScrollerView *navigationScroller;
 @property (nonatomic,weak) UITableView *tableView;
 @property (nonatomic,weak) UISearchBar *searchBar;

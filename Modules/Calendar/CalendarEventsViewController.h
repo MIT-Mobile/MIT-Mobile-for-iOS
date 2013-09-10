@@ -16,7 +16,7 @@
 @class MITEventList;
 
 @interface CalendarEventsViewController : UIViewController <UIScrollViewDelegate, UISearchBarDelegate,
-MITMapViewDelegate, MITSearchDisplayDelegate, NavScrollerDelegate,
+MITMapViewDelegate, NavScrollerDelegate,
 DatePickerViewControllerDelegate, CalendarDataManagerDelegate>
 
 

@@ -14,7 +14,7 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
-@interface PeopleSearchViewController () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MITSearchDisplayDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
+@interface PeopleSearchViewController () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
 
 @property (nonatomic,strong) UITableView *tableView;
 @property (nonatomic,strong) UITableView *searchResultsTableView;
