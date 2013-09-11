@@ -1,12 +1,12 @@
 #import "MITScrollingNavigationBar.h"
+#import "MITScrollingNavigationBarCell.h"
 #import "MITAdditions.h"
 
 static NSString* const MITScrollingNavigationItemReuseIdentifier = @"MITScrollingNavigationItem";
-static NSString* const MITScrollingNavigationSearchIconReuseIdentifier = @"MITScrollingNavigationSearchIcon";
+static NSString* const MITScrollingNavigationAccessoryReuseIdentifier = @"MITScrollingNavigationAccessory";
 
 typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
-    MITScrollingNavigationItemTagLabel = 0xFAD0,
-    MITScrollingNavigationItemTagIcon = 0xFAD1
+    MITScrollingNavigationItemTagAccessory = 0xFAD1
 };
 
 @interface MITScrollingNavigationBar () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
@@ -18,6 +18,10 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
 {
     self = [super initWithFrame:frame];
     if (self) {
+        self.backgroundColor = [UIColor colorWithRed:0.6
+                                               green:0.2
+                                                blue:0.2
+                                               alpha:1.0];
 
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
         layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
@@ -29,10 +33,7 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
                                                               collectionViewLayout:layout];
         collectionView.allowsMultipleSelection = NO;
         collectionView.allowsSelection = YES;
-        collectionView.backgroundColor = [UIColor colorWithRed:0.6
-                                                         green:0.2
-                                                          blue:0.2
-                                                         alpha:1.0];
+        collectionView.backgroundColor = [UIColor clearColor];
         collectionView.showsHorizontalScrollIndicator = NO;
         collectionView.showsVerticalScrollIndicator = NO;
         collectionView.bounces = YES;
@@ -40,54 +41,55 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
         collectionView.dataSource = self;
         collectionView.delegate = self;
         collectionView.translatesAutoresizingMaskIntoConstraints = NO;
-        [collectionView registerClass:[UICollectionViewCell class]
+        [collectionView registerClass:[MITScrollingNavigationBarCell class]
            forCellWithReuseIdentifier:MITScrollingNavigationItemReuseIdentifier];
 
         [collectionView registerClass:[UICollectionReusableView class]
            forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                  withReuseIdentifier:MITScrollingNavigationSearchIconReuseIdentifier];
+                  withReuseIdentifier:MITScrollingNavigationAccessoryReuseIdentifier];
 
         [self addSubview:collectionView];
+
+        NSDictionary *views = @{@"collectionView" : collectionView};
+
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[collectionView]|"
                                                                      options:0
                                                                      metrics:0
-                                                                       views:@{@"collectionView" : collectionView}]];
+                                                                       views:views]];
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[collectionView]|"
                                                                      options:0
                                                                      metrics:0
-                                                                       views:@{@"collectionView" : collectionView}]];
+                                                                       views:views]];
+
+        _selectedIndex = 0;
     }
 
     return self;
 }
 
-- (NSDictionary*)textAttributesForSelectedTitle
+- (void)setSelectedIndex:(NSInteger)selectedIndex
 {
-    return @{UITextAttributeFont : [UIFont boldSystemFontOfSize:[UIFont labelFontSize]],
-             UITextAttributeTextColor : [UIColor redColor]};
-}
+    if (_selectedIndex != selectedIndex) {
+        _selectedIndex = selectedIndex;
 
-- (NSDictionary*)textAttributesForTitle
-{
-    return @{UITextAttributeFont : [UIFont boldSystemFontOfSize:[UIFont labelFontSize]],
-             UITextAttributeTextColor : [UIColor blackColor]};
-}
-
-- (IBAction)searchButtonWasTapped:(id)sender
-{
-    if ([self.delegate respondsToSelector:@selector(didSelectSearchItemInNavigationBar:)]) {
-        [self.delegate didSelectSearchItemInNavigationBar:self];
+        if (_selectedIndex != NSNotFound) {
+            [self.collectionView selectItemAtIndexPath:[NSIndexPath indexPathForItem:_selectedIndex inSection:0]
+                                              animated:YES
+                                        scrollPosition:UICollectionViewScrollPositionCenteredHorizontally];
+        }
     }
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSDictionary *textAttributes = [self textAttributesForTitle];
+    // The selected text may be larger so use the selected format
+    // for sizing the cell so we don't have to resize things once
+    // the selection starts changing
+    NSDictionary *textAttributes = [MITScrollingNavigationBarCell textAttributesForSelectedTitle];
 
     NSString *title = [self.dataSource navigationBar:self
-                             titleForItemAtIndexPath:indexPath];
-
+                                 titleForItemAtIndex:indexPath.item];
 
     CGSize cellSize = [title sizeWithFont:textAttributes[UITextAttributeFont]
                                  forWidth:CGFLOAT_MAX
@@ -99,13 +101,13 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
-    BOOL shouldShowSearchIcon = NO;
-    if ([self.delegate respondsToSelector:@selector(shouldShowSearchItemInNavigationBar:)]) {
-        shouldShowSearchIcon = [self.delegate shouldShowSearchItemInNavigationBar:self];
+    CGFloat accessoryWidth = CGFLOAT_MIN;
+    if ([self.delegate respondsToSelector:@selector(widthForAccessoryViewInNavigationBar:)]) {
+        accessoryWidth = [self.delegate widthForAccessoryViewInNavigationBar:self];
     }
 
-    if (shouldShowSearchIcon) {
-        return CGSizeMake(CGRectGetHeight(collectionView.bounds), CGRectGetHeight(collectionView.bounds));
+    if (accessoryWidth >= 1.) {
+        return CGSizeMake(accessoryWidth, CGRectGetHeight(collectionView.bounds));
     } else {
         return CGSizeZero;
     }
@@ -121,28 +123,23 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
 {
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         UICollectionReusableView *header = [collectionView dequeueReusableSupplementaryViewOfKind:kind
-                                                                              withReuseIdentifier:MITScrollingNavigationSearchIconReuseIdentifier
+                                                                              withReuseIdentifier:MITScrollingNavigationAccessoryReuseIdentifier
                                                                                      forIndexPath:indexPath];
-        UIButton *searchButton = (UIButton*)[header viewWithTag:MITScrollingNavigationItemTagIcon];
-        if (!searchButton) {
-            searchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            searchButton.tag = MITScrollingNavigationItemTagIcon;
-            searchButton.translatesAutoresizingMaskIntoConstraints = NO;
+        if (![header viewWithTag:MITScrollingNavigationItemTagAccessory]) {
+            UIView *accessoryView = nil;
+            if ([self.delegate respondsToSelector:@selector(accessoryViewForNavigationBar:)]) {
+                accessoryView = [self.delegate accessoryViewForNavigationBar:self];
+            }
 
-            [searchButton setImage:[UIImage imageNamed:@"global/search"]
-                          forState:UIControlStateNormal];
-            [searchButton addTarget:self
-                             action:@selector(searchButtonWasTapped:)
-                   forControlEvents:UIControlEventTouchUpInside];
+            [header addSubview:accessoryView];
+            accessoryView.translatesAutoresizingMaskIntoConstraints = NO;
 
-            [header addSubview:searchButton];
-
-            NSDictionary *views = @{@"searchButton" : searchButton};
-            [header addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[searchButton(>=0)]|"
+            NSDictionary *views = @{@"accessoryView" : accessoryView};
+            [header addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[accessoryView(>=0)]|"
                                                                            options:0
                                                                            metrics:0
-                                                                           views:views]];
-            [header addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[searchButton(>=0)]|"
+                                                                             views:views]];
+            [header addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[accessoryView(>=0)]|"
                                                                            options:0
                                                                            metrics:0
                                                                              views:views]];
@@ -156,59 +153,44 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
 
 - (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:MITScrollingNavigationItemReuseIdentifier
+    MITScrollingNavigationBarCell *cell = (MITScrollingNavigationBarCell*)[collectionView dequeueReusableCellWithReuseIdentifier:MITScrollingNavigationItemReuseIdentifier
                                                                            forIndexPath:indexPath];
-    cell.layer.cornerRadius = 8.;
-
-    UILabel *titleLabel = (UILabel*)[cell viewWithTag:MITScrollingNavigationItemTagLabel];
-    if (!titleLabel) {
-        titleLabel = [[UILabel alloc] init];
-        titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        titleLabel.tag = MITScrollingNavigationItemTagLabel;
-
-        [cell addSubview:titleLabel];
-        [cell addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[title]|"
-                                                                     options:0
-                                                                     metrics:0
-                                                                       views:@{@"title" : titleLabel}]];
-        [cell addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[title]|"
-                                                                     options:0
-                                                                     metrics:0
-                                                                       views:@{@"title" : titleLabel}]];
+    
+    if (_selectedIndex == indexPath.item) {
+        cell.selected = YES;
+        [collectionView selectItemAtIndexPath:indexPath
+                                     animated:NO
+                               scrollPosition:UICollectionViewScrollPositionNone];
     }
 
-    NSDictionary *textAttributes = [self textAttributesForTitle];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.font = textAttributes[UITextAttributeFont];
-    titleLabel.textColor = textAttributes[UITextAttributeTextColor];
-    titleLabel.highlightedTextColor = [UIColor whiteColor];
-    titleLabel.text = [self.dataSource navigationBar:self
-                             titleForItemAtIndexPath:indexPath];
+    cell.titleLabel.text = [self.dataSource navigationBar:self
+                                      titleForItemAtIndex:indexPath.item];
 
     return cell;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.delegate respondsToSelector:@selector(navigationBar:didSelectItemAtIndexPath:)]) {
-        [self.delegate navigationBar:self
-            didSelectItemAtIndexPath:indexPath];
-    }
-
-    [collectionView selectItemAtIndexPath:indexPath
-                                 animated:YES
-                           scrollPosition:UICollectionViewScrollPositionCenteredHorizontally];
-    UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
-    cell.backgroundColor = [UIColor colorWithWhite:0.25
-                                             alpha:0.25];
-}
-
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [collectionView deselectItemAtIndexPath:indexPath animated:YES];
-    UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
+    _selectedIndex = NSNotFound;
+    [collectionView deselectItemAtIndexPath:indexPath
+                                   animated:YES];
+}
 
-    cell.backgroundColor = [UIColor clearColor];
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (_selectedIndex != indexPath.item) {
+        _selectedIndex = indexPath.item;
+
+        [collectionView selectItemAtIndexPath:indexPath
+                                     animated:YES
+                               scrollPosition:UICollectionViewScrollPositionCenteredHorizontally];
+
+        if ([self.delegate respondsToSelector:@selector(navigationBar:didSelectItemAtIndex:)]) {
+            [self.delegate navigationBar:self
+                    didSelectItemAtIndex:indexPath.item];
+        }
+    }
 }
 
 @end
+

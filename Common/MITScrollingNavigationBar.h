@@ -4,19 +4,21 @@
 @protocol MITScrollingNavigationBarDelegate;
 
 @interface MITScrollingNavigationBar : UIView
+@property (nonatomic) NSInteger selectedIndex;
 @property (nonatomic,weak) id<MITScrollingNavigationBarDataSource> dataSource;
 @property (nonatomic,weak) id<MITScrollingNavigationBarDelegate> delegate;
 
+- (void)reloadData;
 @end
 
 @protocol MITScrollingNavigationBarDataSource <NSObject>
 - (NSUInteger)numberOfItemsInNavigationBar:(MITScrollingNavigationBar*)navigationBar;
-- (NSString*)navigationBar:(MITScrollingNavigationBar*)navigationBar titleForItemAtIndexPath:(NSIndexPath*)indexPath;
+- (NSString*)navigationBar:(MITScrollingNavigationBar*)navigationBar titleForItemAtIndex:(NSInteger)index;
 @end
 
 @protocol MITScrollingNavigationBarDelegate <NSObject>
 @optional
-- (BOOL)shouldShowSearchItemInNavigationBar:(MITScrollingNavigationBar*)navigationBar;
-- (void)didSelectSearchItemInNavigationBar:(MITScrollingNavigationBar*)navigationBar;
-- (void)navigationBar:(MITScrollingNavigationBar*)navigationBar didSelectItemAtIndexPath:(NSIndexPath*)indexPath;
+- (CGFloat)widthForAccessoryViewInNavigationBar:(MITScrollingNavigationBar*)navigationBar;
+- (UIView*)accessoryViewForNavigationBar:(MITScrollingNavigationBar*)navigationBar;
+- (void)navigationBar:(MITScrollingNavigationBar*)navigationBar didSelectItemAtIndex:(NSInteger)index;
 @end
