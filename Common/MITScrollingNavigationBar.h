@@ -11,17 +11,12 @@
 
 @protocol MITScrollingNavigationBarDataSource <NSObject>
 - (NSUInteger)numberOfItemsInNavigationBar:(MITScrollingNavigationBar*)navigationBar;
-- (NSAttributedString*)navigationBar:(MITScrollingNavigationBar*)navigationBar
-             titleForItemAtIndexPath:(NSIndexPath*)indexPath;
-- (NSAttributedString*)navigationBar:(MITScrollingNavigationBar *)navigationBar
-  highlightedTitleForItemAtIndexPath:(NSIndexPath *)indexPath;
-- (NSAttributedString*)navigationBar:(MITScrollingNavigationBar *)navigationBar
-     selectedTitleForItemAtIndexPath:(NSIndexPath *)indexPath;
+- (NSString*)navigationBar:(MITScrollingNavigationBar*)navigationBar titleForItemAtIndexPath:(NSIndexPath*)indexPath;
 @end
 
 @protocol MITScrollingNavigationBarDelegate <NSObject>
 @optional
 - (BOOL)shouldShowSearchItemInNavigationBar:(MITScrollingNavigationBar*)navigationBar;
 - (void)didSelectSearchItemInNavigationBar:(MITScrollingNavigationBar*)navigationBar;
-- (void)didSelectItemAtIndexPath:(NSIndexPath*)indexPath;
+- (void)navigationBar:(MITScrollingNavigationBar*)navigationBar didSelectItemAtIndexPath:(NSIndexPath*)indexPath;
 @end
