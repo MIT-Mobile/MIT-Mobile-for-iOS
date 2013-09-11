@@ -6,6 +6,7 @@
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
+#import "MITScrollingNavigationBar.h"
 
 #define SCROLL_TAB_HORIZONTAL_PADDING 5.0
 #define SCROLL_TAB_HORIZONTAL_MARGIN  5.0
@@ -24,7 +25,7 @@
 #define SEARCH_BUTTON_TAG 7947
 #define BOOKMARK_BUTTON_TAG 7948
 
-@interface StoryListViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, StoryXMLParserDelegate, NavScrollerDelegate>
+@interface StoryListViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, StoryXMLParserDelegate, NavScrollerDelegate, MITScrollingNavigationBarDataSource, MITScrollingNavigationBarDelegate>
 @property (nonatomic,weak) NavScrollerView *navigationScroller;
 @property (nonatomic,weak) UITableView *tableView;
 @property (nonatomic,weak) UISearchBar *searchBar;
@@ -318,10 +319,13 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 {
     if (!self.navigationScroller) {
         // Nav Scroller View
-        NavScrollerView *navigationScroller = [[NavScrollerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44.0)];
-        navigationScroller.navScrollerDelegate = self;
-        [self.view addSubview:navigationScroller];
-        self.navigationScroller = navigationScroller;
+        //NavScrollerView *navigationScroller = [[NavScrollerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44.0)];
+        //navigationScroller.navScrollerDelegate = self;
+        MITScrollingNavigationBar *navigationBar = [[MITScrollingNavigationBar alloc] init];
+        navigationBar.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44.0);
+        navigationBar.dataSource = self;
+        [self.view addSubview:navigationBar];
+        //self.navigationScroller = navigationScroller;
     }
 }
 
@@ -415,8 +419,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     // cancel any outstanding search
-    if (self.xmlParser)
-    {
+    if (self.xmlParser) {
         [self.xmlParser abort]; // cancel previous category's request if it's still going
         self.xmlParser = nil;
     }
@@ -435,8 +438,6 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    //[self unfocusSearchBar];
-
     self.searchQuery = searchBar.text;
     [self loadSearchResultsFromServer:NO forQuery:self.searchQuery];
 }
@@ -1117,4 +1118,18 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     return nextStory;
 }
 
+
+#pragma mark - MITScrollingNavigationBarDataSource
+- (NSUInteger)numberOfItemsInNavigationBar:(MITScrollingNavigationBar*)navigationBar
+{
+    return [[StoryListViewController orderedCategories] count];
+}
+
+- (NSString*)navigationBar:(MITScrollingNavigationBar*)navigationBar titleForItemAtIndexPath:(NSIndexPath*)indexPath
+{
+    NSArray *categories = [StoryListViewController orderedCategories];
+    return [StoryListViewController titleForCategoryWithID:categories[indexPath.item]];
+}
+
+#pragma mark - MITScrollingNavigationBarDelegate
 @end
