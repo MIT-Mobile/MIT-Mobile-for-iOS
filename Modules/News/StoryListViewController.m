@@ -7,6 +7,7 @@
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 #import "MITScrollingNavigationBar.h"
+#import "UIScrollView+SVPullToRefresh.h"
 
 #define SCROLL_TAB_HORIZONTAL_PADDING 5.0
 #define SCROLL_TAB_HORIZONTAL_MARGIN  5.0
@@ -25,8 +26,8 @@
 #define SEARCH_BUTTON_TAG 7947
 #define BOOKMARK_BUTTON_TAG 7948
 
-@interface StoryListViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, StoryXMLParserDelegate, NavScrollerDelegate, MITScrollingNavigationBarDataSource, MITScrollingNavigationBarDelegate>
-@property (nonatomic,weak) NavScrollerView *navigationScroller;
+@interface StoryListViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, StoryXMLParserDelegate, MITScrollingNavigationBarDataSource, MITScrollingNavigationBarDelegate>
+@property (nonatomic,weak) MITScrollingNavigationBar *navigationScroller;
 @property (nonatomic,weak) UITableView *tableView;
 @property (nonatomic,weak) UISearchBar *searchBar;
 @property (nonatomic,weak) UIView *activityView;
@@ -50,14 +51,10 @@
 + (NSArray*)orderedCategories;
 + (NSString*)titleForCategoryWithID:(NSNumber*)categoryID;
 
-- (void)setupNavScroller;
-- (void)setupNavScrollButtons;
 - (void)buttonPressed:(id)sender;
 
-- (void)setupActivityIndicator;
 - (void)setStatusText:(NSString *)text;
 - (void)setLastUpdated:(NSDate *)date;
-- (void)setProgress:(CGFloat)value;
 
 - (void)showSearchBar;
 
@@ -108,8 +105,6 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
     self.navigationItem.title = @"MIT News";
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Headlines" style:UIBarButtonItemStylePlain target:nil action:nil];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh:)];
-
 
     NSMutableArray *newCategories = [NSMutableArray array];
     NSManagedObjectContext *context = [[CoreDataManager coreDataManager] managedObjectContext];
@@ -139,30 +134,44 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                                                  name:@"UIApplicationWillTerminateNotification"
                                                object:nil];
 
+
+    MITScrollingNavigationBar *navigationBar = [[MITScrollingNavigationBar alloc] init];
+    navigationBar.frame = CGRectMake(CGRectGetMinX(self.view.bounds),
+                                     CGRectGetMinY(self.view.bounds),
+                                     CGRectGetWidth(self.view.bounds),
+                                     44.0);
+    navigationBar.dataSource = self;
+    navigationBar.delegate = self;
+    self.navigationScroller = navigationBar;
+    [self.view addSubview:navigationBar];
+
+
     // Story Table view
-    UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds];
+    CGRect tableFrame = self.view.bounds;
+    tableFrame.origin.x = CGRectGetMinX(self.view.bounds);
+    tableFrame.origin.y = CGRectGetMaxY(navigationBar.frame);
+    tableFrame.size.height = CGRectGetHeight(self.view.bounds) - CGRectGetHeight(navigationBar.frame);
+
+    UITableView *tableView = [[UITableView alloc] initWithFrame:tableFrame];
     tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     tableView.delegate = self;
     tableView.dataSource = self;
     tableView.separatorColor = [UIColor colorWithWhite:0.5 alpha:1.0];
     [self.view addSubview:tableView];
     self.tableView = tableView;
+
+    [tableView addPullToRefreshWithActionHandler:^{
+        [self refresh:nil];
+    }];
+
+    [tableView.pullToRefreshView setTitle:@"Pull to refresh" forState:SVPullToRefreshStateStopped];
+    [tableView.pullToRefreshView setTitle:@"Release to refresh" forState:SVPullToRefreshStateTriggered];
+    [tableView.pullToRefreshView setTitle:@"Loading..." forState:SVPullToRefreshStateLoading];
 }
 
 - (void)viewDidLoad
 {
-    [self setupNavScroller];
-
-    CGRect tableFrame = CGRectMake(CGRectGetMinX(self.view.bounds),
-                                   CGRectGetHeight(self.navigationScroller.frame),
-                                   CGRectGetWidth(self.view.bounds),
-                                   CGRectGetHeight(self.view.bounds) - CGRectGetHeight(self.navigationScroller.frame));
-    self.tableView.frame = tableFrame;
-
-    [self setupActivityIndicator];
-
     [self loadFromCache];
-
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -177,12 +186,11 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     NSUInteger bookmarkCount = [context countForFetchRequest:fetchRequest
                                                        error:nil];
     self.hasBookmarks = (bookmarkCount != NSNotFound) && (bookmarkCount > 0);
-    
-    [self setupNavScrollButtons];
+
     if (self.showingBookmarks) {
         [self loadFromCache];
         if (!self.hasBookmarks) {
-            [self buttonPressed:self.navigationButtons[0]];
+            [self switchToCategory:NewsCategoryIdTopNews];
         }
     }
     
@@ -315,20 +323,8 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
 
 #pragma mark - Category selector
-- (void)setupNavScroller
-{
-    if (!self.navigationScroller) {
-        // Nav Scroller View
-        //NavScrollerView *navigationScroller = [[NavScrollerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44.0)];
-        //navigationScroller.navScrollerDelegate = self;
-        MITScrollingNavigationBar *navigationBar = [[MITScrollingNavigationBar alloc] init];
-        navigationBar.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44.0);
-        navigationBar.dataSource = self;
-        [self.view addSubview:navigationBar];
-        //self.navigationScroller = navigationScroller;
-    }
-}
 
+/*
 - (void)setupNavScrollButtons
 {
     [self.navigationScroller removeAllButtons];
@@ -365,6 +361,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     UIButton *homeButton = [self.navigationScroller buttonWithTag:self.activeCategoryId];
     [self.navigationScroller buttonPressed:homeButton];
 }
+ */
 
 - (void)buttonPressed:(id)sender
 {
@@ -459,63 +456,6 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 }
 
 #pragma mark -
-#pragma mark News activity indicator
-
-- (void)setupActivityIndicator
-{
-    UIView *activityView = [[UIView alloc] initWithFrame:CGRectZero];
-    activityView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-    activityView.tag = 9;
-    activityView.backgroundColor = [UIColor blackColor];
-    activityView.userInteractionEnabled = NO;
-
-    UILabel *loadingLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, 0, 0, 0)];
-    loadingLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    loadingLabel.tag = 10;
-    loadingLabel.text = @"Loading...";
-    loadingLabel.textColor = [UIColor colorWithHexString:@"#DDDDDD"];
-    loadingLabel.font = [UIFont boldSystemFontOfSize:14.0];
-    loadingLabel.backgroundColor = [UIColor blackColor];
-    loadingLabel.opaque = YES;
-    [activityView addSubview:loadingLabel];
-    loadingLabel.hidden = YES;
-
-    CGSize labelSize = [loadingLabel.text sizeWithFont:loadingLabel.font forWidth:self.view.bounds.size.width lineBreakMode:NSLineBreakByTruncatingTail];
-
-    [self.view addSubview:activityView];
-
-    CGFloat bottom = CGRectGetMaxY(self.tableView.frame);
-    CGFloat height = labelSize.height + 8;
-    activityView.frame = CGRectMake(0, bottom - height, self.view.bounds.size.width, height);
-
-    UIProgressView *progressBar = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
-    progressBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-    progressBar.tag = 11;
-    progressBar.frame = CGRectMake((8 + (NSInteger)labelSize.width) + 5, 0, activityView.frame.size.width - (8 + (NSInteger)labelSize.width) - 13, progressBar.frame.size.height);
-    progressBar.center = CGPointMake(progressBar.center.x, (NSInteger)(activityView.frame.size.height / 2) + 1);
-    [activityView addSubview:progressBar];
-    progressBar.progress = 0.0;
-    progressBar.hidden = YES;
-
-    UILabel *updatedLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, 0, activityView.frame.size.width - 16, activityView.frame.size.height)];
-    updatedLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    updatedLabel.tag = 12;
-    updatedLabel.text = @"";
-    updatedLabel.textColor = [UIColor colorWithHexString:@"#DDDDDD"];
-    updatedLabel.font = [UIFont boldSystemFontOfSize:14.0];
-    updatedLabel.textAlignment = NSTextAlignmentRight;
-    updatedLabel.backgroundColor = [UIColor blackColor];
-    updatedLabel.opaque = YES;
-    [activityView addSubview:updatedLabel];
-
-    // shrink table down to accomodate
-    CGRect frame = self.tableView.frame;
-    frame.size.height = frame.size.height - height;
-    self.tableView.frame = frame;
-    self.activityView = activityView;
-}
-
-#pragma mark -
 #pragma mark Story loading
 
 // TODO break off all of the story loading and paging mechanics into a separate NewsDataManager
@@ -524,10 +464,16 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
 - (void)switchToCategory:(NewsCategoryId)category
 {
+    NSAssert(category != 4, @"BOOM!");
     if (category != self.activeCategoryId) {
         if (self.xmlParser) {
             [self.xmlParser abort]; // cancel previous category's request if it's still going
             self.xmlParser = nil;
+        }
+
+        NSInteger categoryIndex = [[StoryListViewController orderedCategories] indexOfObject:@(category)];
+        if (categoryIndex != self.navigationScroller.selectedIndex) {
+            self.navigationScroller.selectedIndex = categoryIndex;
         }
 
         self.activeCategoryId = category;
@@ -694,29 +640,6 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
 #pragma mark -
 #pragma mark StoryXMLParser delegation
-
-- (void)parserDidStartDownloading:(StoryXMLParser *)parser
-{
-    if (parser == self.xmlParser) {
-        [self setProgress:0.1];
-        [self.tableView reloadData];
-    }
-}
-
-- (void)parserDidStartParsing:(StoryXMLParser *)parser
-{
-    if (parser == self.xmlParser) {
-        [self setProgress:0.3];
-    }
-}
-
-- (void)parser:(StoryXMLParser *)parser didMakeProgress:(CGFloat)percentDone
-{
-    if (parser == self.xmlParser) {
-        [self setProgress:0.3 + 0.7 * percentDone * 0.01];
-    }
-}
-
 - (void)parser:(StoryXMLParser *)parser didFailWithDownloadError:(NSError *)error
 {
     if (parser == self.xmlParser) {
@@ -727,7 +650,9 @@ NSString *const NewsCategoryHumanities = @"Humanities";
             DDLogError(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
         }
 
-        [self setStatusText:@"Update failed"];
+        [self.tableView.pullToRefreshView setSubtitle:@"Update failed"
+                                             forState:SVPullToRefreshStateAll];
+        [self.tableView.pullToRefreshView stopAnimating];
 
         [UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
         if ([self.stories count]) {
@@ -739,9 +664,10 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 - (void)parser:(StoryXMLParser *)parser didFailWithParseError:(NSError *)error
 {
     if (parser == self.xmlParser) {
-        // TODO: communicate parse failure to user
-        [self setStatusText:@"Update failed"];
-		[UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
+        [self.tableView.pullToRefreshView setSubtitle:@"Update failed"
+                                             forState:SVPullToRefreshStateAll];
+        [self.tableView.pullToRefreshView stopAnimating];
+
         if ([self.stories count]) {
             [self.tableView deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0]
                                           animated:YES];
@@ -787,6 +713,8 @@ NSString *const NewsCategoryHumanities = @"Humanities";
             self.xmlParser = nil;
             [self loadSearchResultsFromCache];
         }
+
+        [self.tableView.pullToRefreshView stopAnimating];
     }
 }
 
@@ -795,13 +723,8 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
 - (void)setStatusText:(NSString *)text
 {
-    UILabel *loadingLabel = (UILabel *)[self.activityView viewWithTag:10];
-    UIProgressView *progressBar = (UIProgressView *)[self.activityView viewWithTag:11];
-    UILabel *updatedLabel = (UILabel *)[self.activityView viewWithTag:12];
-    loadingLabel.hidden = YES;
-    progressBar.hidden = YES;
-    updatedLabel.hidden = NO;
-    updatedLabel.text = text;
+    [self.tableView.pullToRefreshView setTitle:text
+                                      forState:SVPullToRefreshStateAll];
 }
 
 - (void)setLastUpdated:(NSDate *)date
@@ -809,18 +732,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateStyle:NSDateFormatterMediumStyle];
     [formatter setTimeStyle:NSDateFormatterShortStyle];
-    [self setStatusText:(date) ? [NSString stringWithFormat:@"Last updated %@", [formatter stringFromDate:date]] : nil];
-}
-
-- (void)setProgress:(CGFloat)value
-{
-    UILabel *loadingLabel = (UILabel *)[self.activityView viewWithTag:10];
-    UIProgressView *progressBar = (UIProgressView *)[self.activityView viewWithTag:11];
-    UILabel *updatedLabel = (UILabel *)[self.activityView viewWithTag:12];
-    loadingLabel.hidden = NO;
-    progressBar.hidden = NO;
-    updatedLabel.hidden = YES;
-    progressBar.progress = value;
+    [self setStatusText:(date) ? [NSString stringWithFormat:@"Updated %@", [formatter stringFromDate:date]] : nil];
 }
 
 #pragma mark -
@@ -860,13 +772,14 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if (section == 0 && self.searchResults)
-    {
-        return UNGROUPED_SECTION_HEADER_HEIGHT;
-    }
-    else
-    {
-        return 0.0;
+    if (section == 0) {
+        if (self.searchResults) {
+            return UNGROUPED_SECTION_HEADER_HEIGHT;
+        } else {
+            return 0.;
+        }
+    } else {
+        return 0.;
     }
 }
 
@@ -1065,9 +978,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                 [self loadSearchResultsFromServer:YES forQuery:self.searchQuery];
             }
         }
-    }
-    else
-    {
+    } else {
         StoryDetailViewController *detailViewController = [[StoryDetailViewController alloc] init];
         detailViewController.newsController = self;
         NewsStory *story = self.stories[indexPath.row];
@@ -1125,11 +1036,32 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     return [[StoryListViewController orderedCategories] count];
 }
 
-- (NSString*)navigationBar:(MITScrollingNavigationBar*)navigationBar titleForItemAtIndexPath:(NSIndexPath*)indexPath
+- (NSString*)navigationBar:(MITScrollingNavigationBar*)navigationBar titleForItemAtIndex:(NSInteger)index
 {
     NSArray *categories = [StoryListViewController orderedCategories];
-    return [StoryListViewController titleForCategoryWithID:categories[indexPath.item]];
+    return [StoryListViewController titleForCategoryWithID:categories[index]];
 }
 
 #pragma mark - MITScrollingNavigationBarDelegate
+- (void)navigationBar:(MITScrollingNavigationBar *)navigationBar didSelectItemAtIndex:(NSInteger)index
+{
+    NSArray *categoryIds = [StoryListViewController orderedCategories];
+    [self switchToCategory:[categoryIds[index] integerValue]];
+}
+
+- (CGFloat)widthForAccessoryViewInNavigationBar:(MITScrollingNavigationBar *)navigationBar
+{
+    return CGRectGetHeight(navigationBar.bounds);
+}
+
+- (UIView*)accessoryViewForNavigationBar:(MITScrollingNavigationBar *)navigationBar
+{
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    [button setImage:[UIImage imageNamed:@"global/search"]
+            forState:UIControlStateNormal];
+    button.showsTouchWhenHighlighted = NO;
+
+    return button;
+}
+
 @end
