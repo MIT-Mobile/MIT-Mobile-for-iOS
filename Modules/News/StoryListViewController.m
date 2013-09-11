@@ -30,7 +30,6 @@
 @property (nonatomic,weak) MITScrollingNavigationBar *navigationScroller;
 @property (nonatomic,weak) UITableView *tableView;
 @property (nonatomic,weak) UISearchBar *searchBar;
-@property (nonatomic,weak) UIView *activityView;
 
 @property (strong) MITSearchDisplayController *searchController;
 @property (strong) NSIndexPath *tempTableSelection;
@@ -382,7 +381,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 - (void)showSearchBar
 {
     if (!self.searchBar) {
-        UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, 44.0)];
+        UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:self.navigationScroller.frame];
         searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
         searchBar.alpha = 0.0;
         [self.view addSubview:searchBar];
@@ -390,11 +389,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     }
 
     if (!self.searchController) {
-        CGRect frame = CGRectMake(0.0,
-                                  CGRectGetHeight(self.searchBar.frame),
-                                  CGRectGetWidth(self.view.bounds),
-                                  CGRectGetHeight(self.view.bounds) - (CGRectGetHeight(self.searchBar.frame) + CGRectGetHeight(self.activityView.bounds)));
-        self.searchController = [[MITSearchDisplayController alloc] initWithFrame:frame searchBar:self.searchBar contentsController:self];
+        self.searchController = [[MITSearchDisplayController alloc] initWithFrame:self.tableView.frame searchBar:self.searchBar contentsController:self];
         self.searchController.delegate = self;
     }
 
@@ -1059,7 +1054,11 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setImage:[UIImage imageNamed:@"global/search"]
             forState:UIControlStateNormal];
-    button.showsTouchWhenHighlighted = NO;
+    button.showsTouchWhenHighlighted = YES;
+
+    [button addTarget:self
+               action:@selector(showSearchBar)
+     forControlEvents:UIControlEventTouchUpInside];
 
     return button;
 }
