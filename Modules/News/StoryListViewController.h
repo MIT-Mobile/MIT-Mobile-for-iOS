@@ -3,13 +3,15 @@
 #import "MITSearchDisplayController.h"
 #import "NavScrollerView.h"
 
+// TODO: Get this out of here! We should be getting this
+// data from the news API, not hardcoding it.
 typedef enum {
     NewsCategoryIdTopNews = 0,
-    NewsCategoryIdEngineering,
-    NewsCategoryIdScience,
-    NewsCategoryIdManagement,
-    NewsCategoryIdArchitecture,
-    NewsCategoryIdHumanities,
+    NewsCategoryIdEngineering = 1,
+    NewsCategoryIdScience = 2,
+    NewsCategoryIdManagement = 3,
+    NewsCategoryIdArchitecture = 5,
+    NewsCategoryIdHumanities = 6,
     NewsCategoryIdCampus = 99
 } NewsCategoryId;
 
