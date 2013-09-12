@@ -80,6 +80,11 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
     }
 }
 
+- (void)reloadData
+{
+    [self.collectionView reloadData];
+}
+
 #pragma mark - UICollectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
