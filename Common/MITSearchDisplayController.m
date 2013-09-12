@@ -41,10 +41,10 @@
         _searchResultsTableView = tableView;
     }
 
-    if (!tableView.delegate) {
+    if (tableView.delegate) {
         _searchResultsDelegate = tableView.delegate;
     }
-    if (!tableView.dataSource) {
+    if (tableView.dataSource) {
         _searchResultsDataSource = tableView.dataSource;
     }
 }
