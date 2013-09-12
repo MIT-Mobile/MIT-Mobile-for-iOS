@@ -18,10 +18,7 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor colorWithRed:0.6
-                                               green:0.2
-                                                blue:0.2
-                                               alpha:1.0];
+        self.backgroundColor = [UIColor whiteColor];
 
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
         layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
@@ -106,7 +103,7 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
-    CGFloat accessoryWidth = CGFLOAT_MIN;
+    CGFloat accessoryWidth = 0;
     if ([self.delegate respondsToSelector:@selector(widthForAccessoryViewInNavigationBar:)]) {
         accessoryWidth = [self.delegate widthForAccessoryViewInNavigationBar:self];
     }

@@ -4,13 +4,19 @@
 + (NSDictionary*)textAttributesForSelectedTitle
 {
     return @{UITextAttributeFont : [UIFont boldSystemFontOfSize:[UIFont labelFontSize]],
-             UITextAttributeTextColor : [UIColor whiteColor]};
+             UITextAttributeTextColor : [UIColor colorWithRed:0.6
+                                                        green:0.2
+                                                         blue:0.2
+                                                        alpha:1.0]}; //[UIColor whiteColor]
 }
 
 + (NSDictionary*)textAttributesForTitle
 {
     return @{UITextAttributeFont : [UIFont systemFontOfSize:[UIFont labelFontSize] - 1.],
-             UITextAttributeTextColor : [UIColor whiteColor]};
+             UITextAttributeTextColor : [UIColor colorWithRed:0.6
+                                                        green:0.2
+                                                         blue:0.2
+                                                        alpha:1.0]}; //[UIColor whiteColor]
 }
 
 - (UILabel*)titleLabel
