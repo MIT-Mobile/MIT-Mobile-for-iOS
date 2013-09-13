@@ -3,17 +3,17 @@
 #import "MITSearchDisplayController.h"
 #import "NavScrollerView.h"
 
-// TODO: Get this out of here! We should be getting this
-// data from the news API, not hardcoding it.
-typedef enum {
+DEPRECATED_ATTRIBUTE
+typedef NS_ENUM(NSInteger, NewsCategoryId) {
     NewsCategoryIdTopNews = 0,
     NewsCategoryIdEngineering = 1,
     NewsCategoryIdScience = 2,
     NewsCategoryIdManagement = 3,
     NewsCategoryIdArchitecture = 5,
     NewsCategoryIdHumanities = 6,
-    NewsCategoryIdCampus = 99
-} NewsCategoryId;
+    NewsCategoryIdCampus = 99,
+    NewsCategoryIdInvalid = 1024
+};
 
 @class NewsStory;
 
