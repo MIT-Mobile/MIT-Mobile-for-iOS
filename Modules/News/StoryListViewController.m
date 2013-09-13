@@ -27,7 +27,7 @@
 #define SEARCH_BUTTON_TAG 7947
 #define BOOKMARK_BUTTON_TAG 7948
 
-@interface StoryListViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, StoryXMLParserDelegate, MITScrollingNavigationBarDataSource, MITScrollingNavigationBarDelegate>
+@interface StoryListViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, StoryDetailPagingDelegate, StoryXMLParserDelegate, MITScrollingNavigationBarDataSource, MITScrollingNavigationBarDelegate>
 @property (nonatomic,weak) MITScrollingNavigationBar *navigationScroller;
 @property (nonatomic,weak) UITableView *tableView;
 @property (nonatomic,weak) UISearchBar *searchBar;
@@ -396,6 +396,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                              [self.searchController.searchResultsTableView removeFromSuperview];
                              [self.searchBar removeFromSuperview];
                              self.searchResults = nil;
+                             self.searchController = nil;
                          }];
     }
 }
@@ -738,15 +739,15 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
     if (tableView == self.tableView) {
         numberOfRows = [self.stories count];
-        if (!self.showingBookmarks && numberOfRows < 200) {
+        if (!self.showingBookmarks && numberOfRows < 200 && numberOfRows > 0) {
             // The MIT API server only returns up to, at most, 200 stories.
-            // If there are less than 200 stories cached, add 1 to the count
-            // so the 'Load more articles' row will be added
+            // If there are less than 200 stories cached (but there are more than 0),
+            // increment the count so the 'Load more articles' row will be added
             ++numberOfRows;
         }
     } else if (tableView == self.searchController.searchResultsTableView) {
         numberOfRows = [self.searchResults count];
-        if (numberOfRows < self.searchTotalAvailableResults) {
+        if (numberOfRows < self.searchTotalAvailableResults && numberOfRows > 0) {
             // We aren't displaying all of the available search results yet.
             // Add the extra row to show the 'Load more articles'
             ++numberOfRows;
@@ -962,9 +963,8 @@ NSString *const NewsCategoryHumanities = @"Humanities";
         }
     } else {
         StoryDetailViewController *detailViewController = [[StoryDetailViewController alloc] init];
-        detailViewController.newsController = self;
-        NewsStory *story = dataSource[indexPath.row];
-        detailViewController.story = story;
+        detailViewController.pagingDelegate = self;
+        detailViewController.story = dataSource[indexPath.row];
 
         [self.navigationController pushViewController:detailViewController animated:YES];
     }
@@ -972,44 +972,104 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
 #pragma mark -
 #pragma mark Browsing hooks
-- (BOOL)canSelectPreviousStory
+- (BOOL)storyDetailView:(StoryDetailViewController*)storyDetailController canSelectPreviousStory:(NewsStory*)currentStory
 {
-    NSIndexPath *currentIndexPath = [self.tableView indexPathForSelectedRow];
-    return (currentIndexPath.row > 0);
-}
-
-- (BOOL)canSelectNextStory
-{
-    NSIndexPath *currentIndexPath = [self.tableView indexPathForSelectedRow];
-    return ((currentIndexPath.row + 1) < [self.stories count]);
-}
-
-- (NewsStory *)selectPreviousStory
-{
-    NewsStory *prevStory = nil;
-    if ([self canSelectPreviousStory]) {
-        NSIndexPath *currentIndexPath = [self.tableView indexPathForSelectedRow];
-        NSIndexPath *prevIndexPath = [NSIndexPath indexPathForRow:currentIndexPath.row - 1 inSection:currentIndexPath.section];
-        prevStory = self.stories[prevIndexPath.row];
-        [self.tableView selectRowAtIndexPath:prevIndexPath animated:NO scrollPosition:UITableViewScrollPositionMiddle];
+    NSArray *storyDataSource = self.searchResults;
+    if (!self.searchResults) {
+        // The searchResults array should be nil unless are in searching mode
+        // so it should be safe to use as a guard
+        // @see searchBarCancelButtonClicked:
+        storyDataSource = self.stories;
     }
-
-    return prevStory;
-}
-
-- (NewsStory *)selectNextStory
-{
-    NewsStory *nextStory = nil;
-    if ([self canSelectNextStory])
-    {
-        NSIndexPath *currentIndexPath = [self.tableView indexPathForSelectedRow];
-        NSIndexPath *nextIndexPath = [NSIndexPath indexPathForRow:currentIndexPath.row + 1 inSection:currentIndexPath.section];
-        nextStory = self.stories[nextIndexPath.row];
-        [self.tableView selectRowAtIndexPath:nextIndexPath animated:NO scrollPosition:UITableViewScrollPositionMiddle];
+    
+    NSUInteger storyIndex = [storyDataSource indexOfObject:currentStory];
+    if (storyIndex != NSNotFound) {
+        return (storyIndex > 0);
+    } else {
+        return false;
     }
-    return nextStory;
 }
 
+- (NewsStory*)storyDetailView:(StoryDetailViewController*)storyDetailController selectPreviousStory:(NewsStory*)currentStory
+{
+    // searchController should only be non-nil if we are currently searching
+    // TODO: replace this with an isSearching boolean
+    if (self.searchController) {
+        NSUInteger storyIndex = [self.searchResults indexOfObject:currentStory];
+        
+        if ((storyIndex != NSNotFound) && (storyIndex > 0)) {
+            --storyIndex;
+            
+            NSIndexPath *storyIndexPath = [NSIndexPath indexPathForRow:storyIndex inSection:0];
+            [self.searchController.searchResultsTableView selectRowAtIndexPath:storyIndexPath
+                                                                      animated:NO
+                                                                scrollPosition:UITableViewScrollPositionMiddle];
+            return self.searchResults[storyIndex];
+        }
+    } else {
+        NSUInteger storyIndex = [self.stories indexOfObject:currentStory];
+        
+        if ((storyIndex != NSNotFound) && (storyIndex > 0)) {
+            --storyIndex;
+            
+            NSIndexPath *storyIndexPath = [NSIndexPath indexPathForRow:storyIndex inSection:0];
+            [self.tableView selectRowAtIndexPath:storyIndexPath
+                                        animated:NO
+                                  scrollPosition:UITableViewScrollPositionMiddle];
+            return self.stories[storyIndex];
+        }
+    }
+    
+    return nil;
+}
+
+- (BOOL)storyDetailView:(StoryDetailViewController*)storyDetailController canSelectNextStory:(NewsStory*)currentStory
+{
+    NSArray *storyDataSource = self.searchResults;
+    if (!self.searchResults) {
+        storyDataSource = self.stories;
+    }
+    
+    NSUInteger storyIndex = [storyDataSource indexOfObject:currentStory];
+    if (storyIndex != NSNotFound) {
+        return (storyIndex < [storyDataSource count]);
+    } else {
+        return false;
+    }
+}
+
+- (NewsStory*)storyDetailView:(StoryDetailViewController*)storyDetailController selectNextStory:(NewsStory*)currentStory
+{
+    // searchController should only be non-nil if we are currently searching
+    // TODO: replace this with an isSearching boolean
+    if (self.searchController) {
+        NSUInteger storyIndex = [self.searchResults indexOfObject:currentStory];
+        
+        if ((storyIndex != NSNotFound) && (storyIndex < [self.searchResults count])) {
+            ++storyIndex;
+            
+            NSIndexPath *storyIndexPath = [NSIndexPath indexPathForRow:storyIndex inSection:0];
+            [self.searchController.searchResultsTableView selectRowAtIndexPath:storyIndexPath
+                                                                      animated:NO
+                                                                scrollPosition:UITableViewScrollPositionMiddle];
+            return self.searchResults[storyIndex];
+        }
+    } else {
+        NSUInteger storyIndex = [self.stories indexOfObject:currentStory];
+        
+        if ((storyIndex != NSNotFound) && (storyIndex < [self.stories count])) {
+            ++storyIndex;
+            
+            NSIndexPath *storyIndexPath = [NSIndexPath indexPathForRow:storyIndex inSection:0];
+            [self.tableView selectRowAtIndexPath:storyIndexPath
+                                        animated:NO
+                                  scrollPosition:UITableViewScrollPositionMiddle];
+            return self.stories[storyIndex];
+        }
+    }
+    
+    return nil;
+}
 
 #pragma mark - MITScrollingNavigationBarDataSource
 - (NSUInteger)numberOfItemsInNavigationBar:(MITScrollingNavigationBar*)navigationBar

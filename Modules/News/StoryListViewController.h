@@ -25,8 +25,4 @@ typedef enum {
 - (void)loadFromServer:(BOOL)loadMore;
 - (void)loadSearchResultsFromCache;
 - (void)loadSearchResultsFromServer:(BOOL)loadMore forQuery:(NSString *)query;
-- (BOOL)canSelectPreviousStory;
-- (BOOL)canSelectNextStory;
-- (NewsStory *)selectPreviousStory;
-- (NewsStory *)selectNextStory;
 @end

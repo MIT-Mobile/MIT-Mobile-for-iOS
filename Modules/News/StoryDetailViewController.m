@@ -89,8 +89,8 @@
 }
 
 - (void)displayStory:(NewsStory *)aStory {
-	[self.storyPager setEnabled:[self.newsController canSelectPreviousStory] forSegmentAtIndex:0];
-	[self.storyPager setEnabled:[self.newsController canSelectNextStory] forSegmentAtIndex:1];
+	[self.storyPager setEnabled:[self canSelectPreviousStory:aStory] forSegmentAtIndex:0];
+	[self.storyPager setEnabled:[self canSelectNextStory:aStory] forSegmentAtIndex:1];
 
 	NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     NSURL *fileURL = [NSURL URLWithString:@"news/news_story_template.html" relativeToURL:baseURL];
@@ -156,9 +156,9 @@
         NSInteger i = theControl.selectedSegmentIndex;
 		NewsStory *newStory = nil;
         if (i == 0) { // previous
-			newStory = [self.newsController selectPreviousStory];
+			newStory = [self selectPreviousStory:self.story];
         } else { // next
-			newStory = [self.newsController selectNextStory];
+			newStory = [self selectNextStory:self.story];
         }
 		if (newStory) {
 			self.story = newStory;
@@ -178,7 +178,9 @@
             if ([MFMailComposeViewController canSendMail]) {
                 MFMailComposeViewController *mailController = [[MFMailComposeViewController alloc] initWithMailToURL:url];
                 mailController.mailComposeDelegate = self;
-                [self presentModalViewController:mailController animated:YES];
+                [self presentViewController:mailController
+                                   animated:YES
+                                 completion:nil];
             }
         } else if ([[url path] rangeOfString:[baseURL path] options:NSAnchoredSearch].location == NSNotFound) {
             [[UIApplication sharedApplication] openURL:url];
@@ -245,6 +247,49 @@
           didFinishWithResult:(MFMailComposeResult)result
                         error:(NSError*)error
 {
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
 }
+
+#pragma mark - StoryDetailPagingDelegate wrappers
+- (BOOL)canSelectNextStory:(NewsStory*)currentStory
+{
+    if ([self.pagingDelegate respondsToSelector:@selector(storyDetailView:canSelectNextStory:)]) {
+        return [self.pagingDelegate storyDetailView:self
+                                 canSelectNextStory:currentStory];
+    } else {
+        return NO;
+    }
+}
+
+- (NewsStory*)selectNextStory:(NewsStory*)currentStory
+{
+    if ([self.pagingDelegate respondsToSelector:@selector(storyDetailView:selectNextStory:)]) {
+        return [self.pagingDelegate storyDetailView:self
+                                    selectNextStory:currentStory];
+    } else {
+        return nil;
+    }
+}
+
+- (BOOL)canSelectPreviousStory:(NewsStory*)currentStory
+{
+    if ([self.pagingDelegate respondsToSelector:@selector(storyDetailView:canSelectPreviousStory:)]) {
+        return [self.pagingDelegate storyDetailView:self
+                             canSelectPreviousStory:currentStory];
+    } else {
+        return NO;
+    }
+}
+
+- (NewsStory*)selectPreviousStory:(NewsStory*)currentStory
+{
+    if ([self.pagingDelegate respondsToSelector:@selector(storyDetailView:selectPreviousStory:)]) {
+        return [self.pagingDelegate storyDetailView:self
+                                selectPreviousStory:currentStory];
+    } else {
+        return nil;
+    }
+}
+
 @end
