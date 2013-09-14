@@ -26,7 +26,6 @@
     self = [super init];
     if (self) {
         _searchBar = searchBar;
-        _searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
         _searchBar.delegate = self;
         _searchContentsController = viewController;
         self.searchResultsTableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain];
@@ -131,14 +130,11 @@
 }
 
 - (void)focusSearchBarAnimated:(BOOL)animated {
-    [self.searchBar setShowsCancelButton:YES animated:animated];
     [self.searchBar becomeFirstResponder];
 }
 
 - (void)unfocusSearchBarAnimated:(BOOL)animated {
-    [self.searchBar setShowsCancelButton:NO animated:animated];
     [self.searchBar resignFirstResponder];
-    self.active = NO;
 }
 
 #pragma mark UISearchBarDelegate forwarding
@@ -214,6 +210,7 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
     [self setActive:YES animated:YES];
+    [searchBar setShowsCancelButton:YES animated:YES];
     
     if ([self.delegate respondsToSelector:@selector(searchBarTextDidBeginEditing:)]) {
         [self.delegate searchBarTextDidBeginEditing:searchBar];
@@ -221,6 +218,8 @@
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
+    [searchBar setShowsCancelButton:NO animated:YES];
+    
     if ([self.delegate respondsToSelector:@selector(searchBarTextDidEndEditing:)]) {
         [self.delegate searchBarTextDidEndEditing:searchBar];
     }
