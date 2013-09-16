@@ -18,11 +18,5 @@ typedef NS_ENUM(NSInteger, NewsCategoryId) {
 @class NewsStory;
 
 @interface StoryListViewController : UIViewController
-
-- (void)pruneStories;
 - (void)switchToCategory:(NewsCategoryId)category;
-- (void)loadFromCache;
-- (void)loadFromServer:(BOOL)loadMore;
-- (void)loadSearchResultsFromCache;
-- (void)loadSearchResultsFromServer:(BOOL)loadMore forQuery:(NSString *)query;
 @end

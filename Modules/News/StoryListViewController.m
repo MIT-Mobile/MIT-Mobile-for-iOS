@@ -72,15 +72,21 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 - (void)setStatusTitle:(NSString*)title subtitle:(NSString*)subtitle;
 - (void)setLastUpdated:(NSDate *)date asSubtitle:(BOOL)asSubtitle;
 
-- (void)pruneStories:(BOOL)asyncPrune;
+- (void)pruneStories DEPRECATED_ATTRIBUTE;
+
+
+- (void)pruneStories:(BOOL)asyncPrune DEPRECATED_ATTRIBUTE;
+
+- (void)loadFromServer:(BOOL)loadMore;
+- (void)loadSearchResultsFromCache;
+- (void)loadSearchResultsFromServer:(BOOL)loadMore forQuery:(NSString *)query;
+
 
 /* Bookmark handling */
 - (IBAction)showBookmarks:(id)sender;
 - (IBAction)hideBookmarks:(id)sender;
-- (void)willShowBookmarks:(BOOL)animated;
-- (void)didShowBookmarks:(BOOL)animated;
-- (void)willHideBookmarks:(BOOL)animated;
-- (void)didHideBookmarks:(BOOL)animated;
+- (void)showBookmarksAnimated:(BOOL)animated;
+- (void)hideBookmarksAnimated:(BOOL)animated;
 @end
 
 @implementation StoryListViewController
@@ -120,21 +126,19 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     
     self.navigationItem.title = @"MIT News";
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Headlines" style:UIBarButtonItemStylePlain target:nil action:nil];
-    self.navigationItem.rightBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
-                                                                                          target:self
-                                                                                          action:@selector(showSearchBar:)];
-    self.navigationItem.rightBarButtonItem.tag = MITNewsStoryViewTagSearchItem;
     
     CGRect channelNavigationFrame = CGRectMake(CGRectGetMinX(self.view.bounds),
                                                CGRectGetMinY(self.view.bounds),
                                                CGRectGetWidth(self.view.bounds),
                                                44.0);
     MITScrollingNavigationBar *navigationBar = [[MITScrollingNavigationBar alloc] initWithFrame:channelNavigationFrame];
-    navigationBar.autoresizingMask = UIViewAutoresizingNone;
     navigationBar.dataSource = self;
     navigationBar.delegate = self;
+
+    navigationBar.autoresizingMask = UIViewAutoresizingNone;
     navigationBar.backgroundColor = [UIColor colorWithWhite:0.95
                                                       alpha:1.0];
+    navigationBar.layer.shadowOpacity = 1.0;
     self.navigationScroller = navigationBar;
     [self.view addSubview:navigationBar];
     
@@ -161,7 +165,8 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     [tableView.pullToRefreshView setTitle:@"Release to refresh" forState:SVPullToRefreshStateTriggered];
     [tableView.pullToRefreshView setTitle:@"Loading..." forState:SVPullToRefreshStateLoading];
     
-    [self.view addSubview:tableView];
+    [self.view insertSubview:tableView
+                belowSubview:self.navigationScroller];
     self.tableView = tableView;
     
 }
@@ -213,6 +218,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self updateNavigationItemBarButtonsAnimated:animated];
     
     if (self.activeCategoryId == NewsCategoryIdInvalid) {
         // First time appearing, make sure the Top news category is selected
@@ -231,7 +237,8 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
         tableView = self.tableView;
     }
     
-    [tableView beginUpdates]; {
+    [tableView beginUpdates];
+    {
         NSIndexPath *selectedIndexPath = [tableView indexPathForSelectedRow];
         [tableView deselectRowAtIndexPath:selectedIndexPath
                                  animated:YES];
@@ -240,41 +247,13 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
             [tableView reloadRowsAtIndexPaths:[tableView indexPathsForVisibleRows]
                              withRowAnimation:UITableViewRowAnimationNone];
         }
-    } [tableView endUpdates];
+    }
+    [tableView endUpdates];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    if (!self.isShowingBookmarks) {
-        BOOL hasBookmarks = [self hasBookmarks];
-        __block UIBarButtonItem *bookmarksBarButtonItem = NO;
-        [self.navigationItem.rightBarButtonItems enumerateObjectsUsingBlock:^(UIBarButtonItem *barButtonItem, NSUInteger idx, BOOL *stop) {
-            if (barButtonItem.tag == MITNewsStoryViewTagBookmarksItem) {
-                bookmarksBarButtonItem = barButtonItem;
-                (*stop) = YES;
-            }
-        }];
-        
-        // If there are bookmarks available and we aren't showing the bookmark item
-        // in the toolbar, insert it
-        NSMutableArray *toolbarItems = [NSMutableArray arrayWithArray:[self.navigationItem rightBarButtonItems]];
-        if (hasBookmarks && !bookmarksBarButtonItem) {
-            UIBarButtonItem *bookmarksButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
-                                                                                                 target:self
-                                                                                                 action:@selector(showBookmarks:)];
-            bookmarksButtonItem.tag = MITNewsStoryViewTagBookmarksItem;
-            [toolbarItems insertObject:bookmarksButtonItem
-                               atIndex:0];
-            [self.navigationItem setRightBarButtonItems:toolbarItems
-                                               animated:animated];
-        } else if (!hasBookmarks && bookmarksBarButtonItem) {
-            [toolbarItems removeObject:bookmarksBarButtonItem];
-            [self.navigationItem setRightBarButtonItems:toolbarItems
-                                               animated:animated];
-        }
-    }
     
     if (!self.isSearching) {
         [self loadFromCacheAnimated:animated];
@@ -433,7 +412,6 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 #pragma mark - Bookmark UI
 - (BOOL)hasBookmarks
 {
-    // show / hide the bookmarks category
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:NewsStoryEntityName];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"bookmarked == YES"];
     fetchRequest.resultType = NSCountResultType;
@@ -452,105 +430,121 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 
 - (IBAction)showBookmarks:(id)sender
 {
-    if (!self.isShowingBookmarks) {
-        self.showingBookmarks = YES;
-        [self willShowBookmarks:YES];
-    }
+    [self showBookmarksAnimated:YES];
 }
 
 - (IBAction)hideBookmarks:(id)sender
 {
-    if (self.isShowingBookmarks) {
-        self.showingBookmarks = NO;
-        [self willHideBookmarks:YES];
+    [self hideBookmarksAnimated:YES];
+}
+
+- (void)showBookmarksAnimated:(BOOL)animated
+{
+    if (!self.isShowingBookmarks) {
+        self.showingBookmarks = YES;
+        [self updateNavigationItemBarButtonsAnimated:YES];
+        [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0)
+                              delay:0
+                            options:UIViewAnimationCurveEaseOut
+                         animations:^{
+                             CGRect frame = self.navigationScroller.frame;
+                             frame.origin.y = CGRectGetMinY(self.view.bounds) - CGRectGetHeight(frame);
+                             self.navigationScroller.frame = frame;
+                             self.tableView.frame = self.view.bounds;
+                         }
+                         completion:^(BOOL finished) {
+                             [self loadFromCacheAnimated:NO];
+                         }];
     }
 }
 
-- (void)willShowBookmarks:(BOOL)animated
+- (void)hideBookmarksAnimated:(BOOL)animated
 {
-    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                              target:self
-                                                                              action:@selector(hideBookmarks:)];
-    [self.navigationItem setRightBarButtonItems:@[doneItem]
-                                       animated:animated];
-    
-    [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0)
-                          delay:0
-                        options:UIViewAnimationCurveEaseOut
-                     animations:^{
-                         CGRect frame = self.navigationScroller.frame;
-                         frame.origin.y = CGRectGetMinY(self.view.bounds) - CGRectGetHeight(frame);
-                         self.navigationScroller.frame = frame;
-                         
-                         self.tableView.frame = self.view.bounds;
-                         [self loadFromCacheAnimated:NO];
-                     }
-                     completion:nil];
-}
+    if (self.isShowingBookmarks) {
+        self.showingBookmarks = NO;
+        [self updateNavigationItemBarButtonsAnimated:YES];
+        [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0)
+                         animations:^{
+                             CGRect frame = self.navigationScroller.frame;
+                             frame.origin.y = CGRectGetMinY(self.view.bounds);
+                             self.navigationScroller.frame = frame;
 
-- (void)willHideBookmarks:(BOOL)animated
-{
-    UIBarButtonItem *bookmarksButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
-                                                                                         target:self
-                                                                                         action:@selector(showBookmarks:)];
-    bookmarksButtonItem.tag = MITNewsStoryViewTagBookmarksItem;
-    
-    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
-                                                                                target:self
-                                                                                action:@selector(showSearchBar:)];
-    searchItem.tag = MITNewsStoryViewTagSearchItem;
-    
-    [self.navigationItem setRightBarButtonItems:@[bookmarksButtonItem,searchItem]
-                                       animated:animated];
-    
-    [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0)
-                     animations:^{
-                         CGRect frame = self.navigationScroller.frame;
-                         frame.origin.y = CGRectGetMinY(self.view.bounds);
-                         self.navigationScroller.frame = frame;
-                         
-                         CGRect tableFrame = self.tableView.frame;
-                         tableFrame.origin.y = CGRectGetMaxY(frame);
-                         self.tableView.frame = tableFrame;
-                         
-                         [self loadFromCacheAnimated:animated];
-                     } completion:nil];
+                             CGRect tableFrame = self.tableView.frame;
+                             tableFrame.origin.y = CGRectGetMaxY(frame);
+                             self.tableView.frame = tableFrame;
+
+                             [self loadFromCacheAnimated:animated];
+                         } completion:nil];
+    }
 }
 
 #pragma mark - Search UI
 - (IBAction)showSearchBar:(id)sender;
 {
+    [self showSearchAnimated:YES];
+}
+
+- (void)showSearchAnimated:(BOOL)animated
+{
     if (!self.isSearching) {
         self.searching = YES;
-        
+
         if (!self.searchBar) {
-            UISearchBar *searchBar = searchBar = [[UISearchBar alloc] initWithFrame:self.navigationScroller.frame];
+            CGRect searchBarFrame = self.navigationScroller.frame;
+            searchBarFrame.origin.x = CGRectGetMaxX(self.view.frame) + CGRectGetWidth(searchBarFrame);
+
+            UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:searchBarFrame];
             searchBar.tintColor = [UIColor colorWithRed:0.6
                                                   green:0.2
                                                    blue:0.2
                                                   alpha:1.0];
             searchBar.backgroundColor = self.navigationScroller.backgroundColor;
-            searchBar.alpha = 0.0;
+            searchBar.alpha = 1.;
             [self.view addSubview:searchBar];
             self.searchBar = searchBar;
         }
-        
-        MITSearchDisplayController *searchController = [[MITSearchDisplayController alloc] initWithFrame:self.tableView.frame
-                                                                                               searchBar:self.searchBar
-                                                                                      contentsController:self];
-        searchController.searchResultsDataSource = self;
-        searchController.searchResultsDelegate = self;
-        searchController.delegate = self;
-        self.searchController = searchController;
 
-        self.searching = YES;
-        [UIView animateWithDuration:0.4
+        if (!self.searchController) {
+            MITSearchDisplayController *searchController = [[MITSearchDisplayController alloc] initWithFrame:self.tableView.frame
+                                                                                                   searchBar:self.searchBar
+                                                                                          contentsController:self];
+            searchController.searchResultsDataSource = self;
+            searchController.searchResultsDelegate = self;
+            searchController.delegate = self;
+            self.searchController = searchController;
+        }
+
+        [self updateNavigationItemBarButtonsAnimated:animated];
+        [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0.)
                          animations:^{
-                             self.searchBar.alpha = 1.;
+                             self.searchBar.frame = self.navigationScroller.frame;
                          }
                          completion:^(BOOL finished) {
-                             [searchController setActive:YES
-                                                animated:YES];
+                             [self.searchController setActive:YES
+                                                     animated:NO];
+                         }];
+    }
+}
+
+- (void)hideSearchAnimated:(BOOL)animated
+{
+    if (self.isSearching) {
+        self.searching = NO;
+
+        [self updateNavigationItemBarButtonsAnimated:animated];
+
+        [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0.)
+                         animations:^{
+                             CGRect searchBarFrame = self.searchBar.frame;
+                             searchBarFrame.origin.x = CGRectGetMaxX(self.view.frame) + CGRectGetWidth(searchBarFrame);
+                             self.searchBar.frame = searchBarFrame;
+                         }
+                         completion:^(BOOL finished) {
+                             [self.searchBar removeFromSuperview];
+                             [self.searchController setActive:NO
+                                                     animated:animated];
+                             self.searchController = nil;
+                             self.searchResults = nil;
                          }];
     }
 }
@@ -650,8 +644,6 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     
     if (![self.stories isEqualToArray:oldStories]) {
         [self.tableView reloadData];
-        //[self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0]
-        //              withRowAnimation:(animated ? UITableViewRowAnimationFade : UITableViewRowAnimationNone)];
     }
 }
 
@@ -1192,21 +1184,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 {
     [searchBar resignFirstResponder];
     
-    [UIView animateWithDuration:0.4
-                     animations:^{
-                         self.searchBar.alpha = 0.;
-                         self.searchController.searchResultsTableView.alpha = 0.;
-                         [self.searchController setActive:NO
-                                                 animated:NO];
-                     }
-                     completion:^(BOOL finished) {
-                         [self.searchBar removeFromSuperview];
-                         
-                         [self.searchController.searchResultsTableView removeFromSuperview];
-                         self.searchController = nil;
-                         self.searchResults = nil;
-                         self.searching = NO;
-                     }];
+    [self hideSearchAnimated:YES];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
