@@ -392,6 +392,44 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     dispatch_async(dispatch_get_main_queue(), pruningBlock);
 }
 
+#pragma mark - Navigation Bar Updating
+- (void)updateNavigationItemBarButtonsAnimated:(BOOL)animated
+{
+    if (!self.isSearching) {
+        if (self.isShowingBookmarks) {
+            // If we are currently showing the bookmarks, the navigation item should only have a 'Done' item available
+            UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                      target:self
+                                                                                      action:@selector(hideBookmarks:)];
+            [self.navigationItem setRightBarButtonItems:@[doneItem] animated:animated];
+        } else {
+            // If we are not searching and not showing bookmarks, use the default navigation item config
+            // for this controller (a search icon with an optional bookmarks icon)
+            NSMutableArray *items = [[NSMutableArray alloc] init];
+            if ([self hasBookmarks]) {
+                UIBarButtonItem *bookmarksButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
+                                                                                                     target:self
+                                                                                                     action:@selector(showBookmarks:)];
+                bookmarksButtonItem.tag = MITNewsStoryViewTagBookmarksItem;
+                [items addObject:bookmarksButtonItem];
+            }
+
+            UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                                                                                        target:self
+                                                                                        action:@selector(showSearchBar:)];
+            searchItem.tag = MITNewsStoryViewTagSearchItem;
+            [items addObject:searchItem];
+
+            [self.navigationItem setRightBarButtonItems:items
+                                               animated:animated];
+        }
+    } else {
+        // If we are searching, don't display anything. The user needs to press the 'cancel' button in order
+        // to get out of search mode
+        [self.navigationItem setRightBarButtonItems:nil animated:animated];
+    }
+}
+
 #pragma mark - Bookmark UI
 - (BOOL)hasBookmarks
 {
