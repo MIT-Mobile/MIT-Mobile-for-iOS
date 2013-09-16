@@ -67,9 +67,9 @@
 	}
 	
 	self.title = NSLocalizedString(@"Shuttle Stop", nil);
-	
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
+
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 135)];
-	headerView.backgroundColor = [UIColor clearColor];
 	
 	int mapBuffer = 15;
 	int mapSize = 66;
@@ -116,8 +116,7 @@
 	alertHeaderIcon.frame = alertHeaderIconFrame;
 	[headerView addSubview:alertHeaderIcon];
 	
-	UILabel *alertHeaderText = [[UILabel alloc] 
-                                 initWithFrame:CGRectMake(
+	UILabel *alertHeaderText = [[UILabel alloc] initWithFrame:CGRectMake(
                                                           alertHeaderIcon.frame.origin.x + alertHeaderIcon.frame.size.width + PADDING, 
                                                           alertHeaderIcon.frame.origin.y,
                                                           headerView.frame.size.width - alertHeaderIcon.frame.size.width - PADDING - 2 * MARGIN, 
@@ -133,7 +132,7 @@
 	[self.tableView setTableHeaderView:headerView];
 	
 	
-	_tableFooterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 50)];
+	_tableFooterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 50)];
 	_tableFooterLabel.font = [UIFont systemFontOfSize:14];
 	_tableFooterLabel.textAlignment = NSTextAlignmentCenter;
 	_tableFooterLabel.backgroundColor = [UIColor clearColor];
@@ -141,7 +140,8 @@
 	[self.tableView setTableFooterView:_tableFooterLabel];
 	
 	[self.tableView applyStandardColors];
-	
+	self.tableView.backgroundColor = [UIColor mit_backgroundColor];
+
 	[self requestStop];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadSubscriptions) name:ShuttleAlertRemoved object:nil];

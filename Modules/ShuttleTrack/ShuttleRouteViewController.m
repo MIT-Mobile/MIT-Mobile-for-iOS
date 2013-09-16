@@ -59,7 +59,6 @@
 	}
     
     self.title = @"Route";
-	
 	self.viewTypeButton = [[UIBarButtonItem alloc] initWithTitle:@"Map"
                                                            style:UIBarButtonItemStylePlain 
                                                           target:self
@@ -82,6 +81,7 @@
     self.titleCell.frame = titleFrame;
     self.tableView.frame = tableFrame;
     [self.titleCell setRouteInfo:self.route];
+    self.titleCell.backgroundColor = [UIColor mit_backgroundColor];
 }
 
 - (void)viewDidUnload

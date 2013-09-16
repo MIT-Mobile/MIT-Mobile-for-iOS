@@ -68,20 +68,12 @@
     UIGraphicsBeginImageContext(CGSizeMake(18, 19));
     _shuttleLoadingImage = UIGraphicsGetImageFromCurrentImageContext();
 	
-    [self.tableView applyStandardColors];
+    self.tableView.backgroundColor = [UIColor mit_backgroundColor];
 
 	ShuttleDataManager* dataManager = [ShuttleDataManager sharedDataManager];
 	[dataManager registerDelegate:self];
     
 	[self setShuttleRoutes:[dataManager shuttleRoutes]];
-	
-	/*
-	if (nil == _shuttleRoutes) {
-		// when setting isLoading, will tell the tableview to show loading cell
-		self.isLoading = YES;
-		[self.tableView reloadData];
-	}
-	 */
 	self.isLoading = YES;
 	[dataManager requestRoutes];
 
