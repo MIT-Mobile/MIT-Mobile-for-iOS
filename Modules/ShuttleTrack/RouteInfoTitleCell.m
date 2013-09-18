@@ -17,14 +17,7 @@
     }
     return self;
 }
-/*
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
 
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-}
-*/
 - (void)layoutSubviews {
     [super layoutSubviews];
     _backgroundImage.image = [UIImage imageNamed:@"shuttle/shuttle_routelist_header.png"];
