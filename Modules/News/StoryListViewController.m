@@ -673,12 +673,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
                                          sortDescriptors:@[postDateSortDescriptor, storyIdSortDescriptor]];
     [self setStatusTitle:nil
                 subtitle:nil];
-    
-    NSArray *oldSearchResults = self.searchResults;
     self.searchResults = results;
-    if (oldSearchResults == nil) {
-         [self loadSearchResultsFromServer:NO forQuery:self.searchQuery];
-    }
     
     UITableView *tableView = self.searchController.searchResultsTableView;
     if ([tableView numberOfSections]) {
@@ -697,6 +692,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     
     self.xmlParser = [[StoryXMLParser alloc] init];
     self.xmlParser.delegate = self;
+    self.loadingMoreStories = loadMore;
     
     [self.xmlParser loadStoriesforQuery:query
                              afterIndex:((loadMore) ? [self.searchResults count] : 0)
@@ -757,7 +753,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
         } else {
             self.searchTotalAvailableResults = self.xmlParser.totalAvailableResults;
             
-            if (!self.isLoadingMoreStories && [self.searchResults count]) {
+            if (!isLoadingMoreStories && [self.searchResults count]) {
                 [self.searchController.searchResultsTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                                                     atScrollPosition:UITableViewScrollPositionTop
                                                                             animated:NO];
