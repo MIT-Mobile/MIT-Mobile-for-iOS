@@ -1,22 +1,19 @@
 #import "MITScrollingNavigationBarCell.h"
+#import "UIKit+MITAdditions.h"
 
 @implementation MITScrollingNavigationBarCell
 + (NSDictionary*)textAttributesForSelectedTitle
 {
-    return @{UITextAttributeFont : [UIFont boldSystemFontOfSize:[UIFont labelFontSize]],
-             UITextAttributeTextColor : [UIColor colorWithRed:0.6
-                                                        green:0.2
-                                                         blue:0.2
-                                                        alpha:1.0]}; //[UIColor whiteColor]
+    return @{UITextAttributeFont : [UIFont boldSystemFontOfSize:[UIFont labelFontSize]]};
 }
 
 + (NSDictionary*)textAttributesForTitle
 {
-    return @{UITextAttributeFont : [UIFont systemFontOfSize:[UIFont labelFontSize] - 1.],
-             UITextAttributeTextColor : [UIColor colorWithRed:0.6
-                                                        green:0.2
-                                                         blue:0.2
-                                                        alpha:1.0]}; //[UIColor whiteColor]
+    return @{UITextAttributeFont : [UIFont systemFontOfSize:[UIFont labelFontSize] - 1.]};
+}
+
+- (void)tintColorDidChange {
+    self.titleLabel.textColor = self.tintColor;
 }
 
 - (UILabel*)titleLabel
@@ -34,7 +31,12 @@
             textAttributes = [MITScrollingNavigationBarCell textAttributesForTitle];
         }
 
-        titleLabel.textColor = textAttributes[UITextAttributeTextColor];
+        // hardcode color on iOS 6 for now
+        if ([self respondsToSelector:@selector(setTintColor:)]) {
+            titleLabel.textColor = self.tintColor;
+        } else {
+            titleLabel.textColor = [UIColor colorWithHexString:@"a90533"];
+        }
         titleLabel.font = textAttributes[UITextAttributeFont];
 
         [self addSubview:titleLabel];
@@ -70,7 +72,6 @@
 
     [UIView animateWithDuration:(animated ? 0.4 : 0.)
                      animations:^{
-                         self.titleLabel.textColor = textAttributes[UITextAttributeTextColor];
                          self.titleLabel.font = textAttributes[UITextAttributeFont];
                      }];
 }
