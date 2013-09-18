@@ -25,15 +25,8 @@
 #define STORY_TITLE_FONT_SIZE 15.0
 #define STORY_DEK_FONT_SIZE 12.0
 
-#define SEARCH_BUTTON_TAG 7947
-#define BOOKMARK_BUTTON_TAG 7948
-typedef  NS_ENUM(NSInteger, MITNewsStoryViewTag) {
-    MITNewsStoryViewTagBookmarksItem = BOOKMARK_BUTTON_TAG,
-    MITNewsStoryViewTagSearchItem = SEARCH_BUTTON_TAG
-};
-
 static NSUInteger const MITNewsStoryFetchBatchSize = 10;
-static NSTimeInterval const MITNewsStoryAnimationDurationBookmarks = 0.5;
+static NSTimeInterval const MITNewsStoryDefaultAnimationDuration = 0.5;
 
 static NSString *const NewsCategoryTopNews = @"Top News";
 static NSString *const NewsCategoryCampus = @"Campus";
@@ -73,8 +66,6 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 - (void)setLastUpdated:(NSDate *)date asSubtitle:(BOOL)asSubtitle;
 
 - (void)pruneStories DEPRECATED_ATTRIBUTE;
-
-
 - (void)pruneStories:(BOOL)asyncPrune DEPRECATED_ATTRIBUTE;
 
 - (void)loadFromServer:(BOOL)loadMore;
@@ -211,7 +202,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     // reduce number of saved stories to 10 when app quits
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(pruneStories)
-                                                 name:@"UIApplicationWillTerminateNotification"
+                                                 name:UIApplicationWillTerminateNotification
                                                object:nil];
 }
 
@@ -241,7 +232,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     {
         NSIndexPath *selectedIndexPath = [tableView indexPathForSelectedRow];
         [tableView deselectRowAtIndexPath:selectedIndexPath
-                                 animated:YES];
+                                 animated:animated];
         
         if ([[tableView indexPathsForVisibleRows] containsObject:selectedIndexPath]) {
             [tableView reloadRowsAtIndexPaths:[tableView indexPathsForVisibleRows]
@@ -389,14 +380,12 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
                 UIBarButtonItem *bookmarksButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
                                                                                                      target:self
                                                                                                      action:@selector(showBookmarks:)];
-                bookmarksButtonItem.tag = MITNewsStoryViewTagBookmarksItem;
                 [items addObject:bookmarksButtonItem];
             }
 
             UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
                                                                                         target:self
                                                                                         action:@selector(showSearchBar:)];
-            searchItem.tag = MITNewsStoryViewTagSearchItem;
             [items addObject:searchItem];
 
             [self.navigationItem setRightBarButtonItems:items
@@ -443,7 +432,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     if (!self.isShowingBookmarks) {
         self.showingBookmarks = YES;
         [self updateNavigationItemBarButtonsAnimated:YES];
-        [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0)
+        [UIView animateWithDuration:(animated ? MITNewsStoryDefaultAnimationDuration : 0)
                               delay:0
                             options:UIViewAnimationCurveEaseOut
                          animations:^{
@@ -463,7 +452,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     if (self.isShowingBookmarks) {
         self.showingBookmarks = NO;
         [self updateNavigationItemBarButtonsAnimated:YES];
-        [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0)
+        [UIView animateWithDuration:(animated ? MITNewsStoryDefaultAnimationDuration : 0)
                          animations:^{
                              CGRect frame = self.navigationScroller.frame;
                              frame.origin.y = CGRectGetMinY(self.view.bounds);
@@ -515,7 +504,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
         }
 
         [self updateNavigationItemBarButtonsAnimated:animated];
-        [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0.)
+        [UIView animateWithDuration:(animated ? MITNewsStoryDefaultAnimationDuration : 0.)
                          animations:^{
                              self.searchBar.frame = self.navigationScroller.frame;
                          }
@@ -533,7 +522,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 
         [self updateNavigationItemBarButtonsAnimated:animated];
 
-        [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0.)
+        [UIView animateWithDuration:(animated ? MITNewsStoryDefaultAnimationDuration : 0.)
                          animations:^{
                              CGRect searchBarFrame = self.searchBar.frame;
                              searchBarFrame.origin.x = CGRectGetMaxX(self.view.frame) + CGRectGetWidth(searchBarFrame);
