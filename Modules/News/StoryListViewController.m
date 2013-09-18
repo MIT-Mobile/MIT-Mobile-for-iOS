@@ -3,6 +3,7 @@
 #import "StoryDetailViewController.h"
 #import "StoryThumbnailView.h"
 #import "NewsStory.h"
+#import "NewsCategory.h"
 #import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
@@ -26,14 +27,31 @@
 
 #define SEARCH_BUTTON_TAG 7947
 #define BOOKMARK_BUTTON_TAG 7948
+typedef  NS_ENUM(NSInteger, MITNewsStoryViewTag) {
+    MITNewsStoryViewTagBookmarksItem = BOOKMARK_BUTTON_TAG,
+    MITNewsStoryViewTagSearchItem = SEARCH_BUTTON_TAG
+};
 
-@interface StoryListViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, StoryDetailPagingDelegate, StoryXMLParserDelegate, MITScrollingNavigationBarDataSource, MITScrollingNavigationBarDelegate>
+static NSUInteger const MITNewsStoryFetchBatchSize = 10;
+static NSTimeInterval const MITNewsStoryAnimationDurationBookmarks = 0.5;
+
+static NSString *const NewsCategoryTopNews = @"Top News";
+static NSString *const NewsCategoryCampus = @"Campus";
+static NSString *const NewsCategoryEngineering = @"Engineering";
+static NSString *const NewsCategoryScience = @"Science";
+static NSString *const NewsCategoryManagement = @"Management";
+static NSString *const NewsCategoryArchitecture = @"Architecture";
+static NSString *const NewsCategoryHumanities = @"Humanities";
+
+@interface StoryListViewController () <UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate,
+                                        UISearchBarDelegate, StoryDetailPagingDelegate, StoryXMLParserDelegate,
+                                        MITScrollingNavigationBarDataSource, MITScrollingNavigationBarDelegate>
 @property (nonatomic,weak) MITScrollingNavigationBar *navigationScroller;
 @property (nonatomic,weak) UITableView *tableView;
 @property (nonatomic,weak) UISearchBar *searchBar;
+@property (nonatomic,strong) MITSearchDisplayController *searchController;
 
-@property (strong) MITSearchDisplayController *searchController;
-@property (strong) NSIndexPath *tempTableSelection;
+@property (getter=isSearching) BOOL searching;
 
 @property (copy) NSArray *stories;
 @property (copy) NSString *searchQuery;
@@ -41,34 +59,31 @@
 @property (copy) NSArray *categories;
 
 @property (strong) StoryXMLParser *xmlParser;
+@property (getter=isLoadingMoreStories) BOOL loadingMoreStories;
+
 @property NSInteger activeCategoryId;
 @property NSInteger searchTotalAvailableResults;
-@property BOOL showingBookmarks;
-@property BOOL hasBookmarks;
-
-@property (copy) NSArray *navigationButtons;
+@property (getter=isShowingBookmarks) BOOL showingBookmarks;
 
 + (NSArray*)orderedCategories;
-+ (NSString*)titleForCategoryWithID:(NSNumber*)categoryID;
++ (NSString*)titleForCategoryWithID:(NewsCategoryId)categoryID;
 
-- (void)setStatusText:(NSString *)text;
-- (void)setLastUpdated:(NSDate *)date;
-
-- (void)showSearchBar;
+- (BOOL)hasBookmarks;
+- (void)setStatusTitle:(NSString*)title subtitle:(NSString*)subtitle;
+- (void)setLastUpdated:(NSDate *)date asSubtitle:(BOOL)asSubtitle;
 
 - (void)pruneStories:(BOOL)asyncPrune;
+
+/* Bookmark handling */
+- (IBAction)showBookmarks:(id)sender;
+- (IBAction)hideBookmarks:(id)sender;
+- (void)willShowBookmarks:(BOOL)animated;
+- (void)didShowBookmarks:(BOOL)animated;
+- (void)willHideBookmarks:(BOOL)animated;
+- (void)didHideBookmarks:(BOOL)animated;
 @end
 
 @implementation StoryListViewController
-
-NSString *const NewsCategoryTopNews = @"Top News";
-NSString *const NewsCategoryCampus = @"Campus";
-NSString *const NewsCategoryEngineering = @"Engineering";
-NSString *const NewsCategoryScience = @"Science";
-NSString *const NewsCategoryManagement = @"Management";
-NSString *const NewsCategoryArchitecture = @"Architecture";
-NSString *const NewsCategoryHumanities = @"Humanities";
-
 + (NSArray*)orderedCategories
 {
     return @[@(NewsCategoryIdTopNews),
@@ -80,7 +95,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
              @(NewsCategoryIdHumanities)];
 }
 
-+ (NSString*)titleForCategoryWithID:(NSNumber*)categoryID
++ (NSString*)titleForCategoryWithID:(NewsCategoryId)categoryID
 {
     static NSDictionary *defaultCategories = nil;
     static dispatch_once_t onceToken;
@@ -93,152 +108,189 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                               @(NewsCategoryIdArchitecture) : NewsCategoryArchitecture,
                               @(NewsCategoryIdHumanities) : NewsCategoryHumanities};
     });
-
-    return defaultCategories[categoryID];
+    
+    return defaultCategories[@(categoryID)];
 }
 
 - (void)loadView
 {
-    [super loadView];
-
+    UIView *view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
+    view.layer.masksToBounds = YES;
+    self.view = view;
+    
     self.navigationItem.title = @"MIT News";
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Headlines" style:UIBarButtonItemStylePlain target:nil action:nil];
-    self.navigationItem.rightBarButtonItems = @[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
-                                                                                              target:self
-                                                                                              action:@selector(showSearchBar)],
-                                                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
-                                                                                              target:nil
-                                                                                              action:nil]];
-
-    NSMutableArray *newCategories = [NSMutableArray array];
-    NSManagedObjectContext *context = [[CoreDataManager coreDataManager] managedObjectContext];
-    NSPredicate *categoryPredicate = [NSPredicate predicateWithFormat:@"category_id = $CATEGORY_ID"];
-
-    [[StoryListViewController orderedCategories] enumerateObjectsUsingBlock:^(NSString *categoryID, NSUInteger idx, BOOL *stop) {
-        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:NewsCategoryEntityName];
-        fetchRequest.predicate = [categoryPredicate predicateWithSubstitutionVariables:@{@"CATEGORY_ID" : @([categoryID integerValue])}];
-
-        NSManagedObject *categoryObject = [[context executeFetchRequest:fetchRequest error:nil] lastObject];
-        if (!categoryObject) {
-            categoryObject = [NSEntityDescription insertNewObjectForEntityForName:NewsCategoryEntityName
-                                                           inManagedObjectContext:context];
-        }
-
-        [categoryObject setValuesForKeysWithDictionary:@{@"category_id" : @([categoryID integerValue]),
-                                                         @"expectedCount" : @(0)}];
-        [newCategories addObject:categoryObject];
-    }];
+    self.navigationItem.rightBarButtonItem =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                                                                                          target:self
+                                                                                          action:@selector(showSearchBar:)];
+    self.navigationItem.rightBarButtonItem.tag = MITNewsStoryViewTagSearchItem;
     
-    self.categories = newCategories;
-
-    [self pruneStories];
-    // reduce number of saved stories to 10 when app quits
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(pruneStories)
-                                                 name:@"UIApplicationWillTerminateNotification"
-                                               object:nil];
-
-
-    MITScrollingNavigationBar *navigationBar = [[MITScrollingNavigationBar alloc] init];
-    navigationBar.frame = CGRectMake(CGRectGetMinX(self.view.bounds),
-                                     CGRectGetMinY(self.view.bounds),
-                                     CGRectGetWidth(self.view.bounds),
-                                     44.0);
+    CGRect channelNavigationFrame = CGRectMake(CGRectGetMinX(self.view.bounds),
+                                               CGRectGetMinY(self.view.bounds),
+                                               CGRectGetWidth(self.view.bounds),
+                                               44.0);
+    MITScrollingNavigationBar *navigationBar = [[MITScrollingNavigationBar alloc] initWithFrame:channelNavigationFrame];
+    navigationBar.autoresizingMask = UIViewAutoresizingNone;
     navigationBar.dataSource = self;
     navigationBar.delegate = self;
     navigationBar.backgroundColor = [UIColor colorWithWhite:0.95
                                                       alpha:1.0];
     self.navigationScroller = navigationBar;
     [self.view addSubview:navigationBar];
-
-
+    
+    
     // Story Table view
     CGRect tableFrame = self.view.bounds;
     tableFrame.origin.x = CGRectGetMinX(self.view.bounds);
     tableFrame.origin.y = CGRectGetMaxY(navigationBar.frame);
     tableFrame.size.height = CGRectGetHeight(self.view.bounds) - CGRectGetHeight(navigationBar.frame);
-
-    UITableView *tableView = [[UITableView alloc] initWithFrame:tableFrame];
-    tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
+    UITableView *tableView = [[UITableView alloc] initWithFrame:tableFrame style:UITableViewStylePlain];
+    tableView.frame = tableFrame;
+    tableView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                  UIViewAutoresizingFlexibleHeight |
+                                  UIViewAutoresizingFlexibleTopMargin);
     tableView.delegate = self;
     tableView.dataSource = self;
     tableView.separatorColor = [UIColor colorWithWhite:0.5 alpha:1.0];
-    [self.view addSubview:tableView];
-    self.tableView = tableView;
-
     [tableView addPullToRefreshWithActionHandler:^{
         [self refresh:nil];
     }];
-
+    
     [tableView.pullToRefreshView setTitle:@"Pull to refresh" forState:SVPullToRefreshStateStopped];
     [tableView.pullToRefreshView setTitle:@"Release to refresh" forState:SVPullToRefreshStateTriggered];
     [tableView.pullToRefreshView setTitle:@"Loading..." forState:SVPullToRefreshStateLoading];
-
-    self.activeCategoryId = NSNotFound;
+    
+    [self.view addSubview:tableView];
+    self.tableView = tableView;
+    
 }
 
 - (void)viewDidLoad
 {
-    [self loadFromCache];
+    self.activeCategoryId = NewsCategoryIdInvalid;
+    
+    NSManagedObjectContext *context = [[CoreDataManager coreDataManager] managedObjectContext];
+    NSPredicate *categoryPredicate = [NSPredicate predicateWithFormat:@"category_id = $CATEGORY_ID"];
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:NewsCategoryEntityName];
+    NSArray *categoriesFetchResults = [context executeFetchRequest:fetchRequest
+                                                             error:nil];
+    NSMutableOrderedSet *categories = [NSMutableOrderedSet orderedSetWithArray:categoriesFetchResults];
+    
+    [[StoryListViewController orderedCategories] enumerateObjectsUsingBlock:^(NSString *categoryID, NSUInteger idx, BOOL *stop) {
+        NSPredicate *predicate = [categoryPredicate predicateWithSubstitutionVariables:@{@"CATEGORY_ID" : @([categoryID integerValue])}];
+        
+        NewsCategory *category = [[categories filteredOrderedSetUsingPredicate:predicate] lastObject];
+        if (!category) {
+            category = [NSEntityDescription insertNewObjectForEntityForName:NewsCategoryEntityName
+                                                     inManagedObjectContext:context];
+        }
+        
+        category.category_id = @([categoryID integerValue]);
+        [categories addObject:category];
+    }];
+    
+    NSArray *orderedCategoryIDs = [StoryListViewController orderedCategories];
+    [categories sortUsingComparator:^NSComparisonResult(NewsCategory *category1, NewsCategory *category2) {
+        NSUInteger index1 = [orderedCategoryIDs indexOfObject:category1.category_id];
+        NSUInteger index2 = [orderedCategoryIDs indexOfObject:category2.category_id];
+        
+        return [@(index1) compare:@(index2)];
+    }];
+    
+    self.categories = [categories array];
+    [self.navigationScroller reloadData];
+    
+    [self pruneStories];
+    // reduce number of saved stories to 10 when app quits
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(pruneStories)
+                                                 name:@"UIApplicationWillTerminateNotification"
+                                               object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
-    // show / hide the bookmarks category
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:NewsStoryEntityName];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"bookmarked == YES"];
-    fetchRequest.resultType = NSCountResultType;
     
-    NSManagedObjectContext *context = [[CoreDataManager coreDataManager] managedObjectContext];
-    NSUInteger bookmarkCount = [context countForFetchRequest:fetchRequest
-                                                       error:nil];
-    self.hasBookmarks = (bookmarkCount != NSNotFound) && (bookmarkCount > 0);
-
-    // Check to see if we were showing bookmarks from the last time
-    // the view was visible
-    if (self.showingBookmarks) {
-        // Ensure we have the latest data available from CoreData
-        [self loadFromCache];
-
-        if (!self.hasBookmarks) {
-            // If we no longer have any bookmarks available make sure reload the
-            // available items in the navigation scroller and switch back to the Top News
-            // category
-            [self.navigationScroller reloadData];
-            [self switchToCategory:NewsCategoryIdTopNews];
-        }
-    } else if (self.activeCategoryId == NSNotFound) {
+    if (self.activeCategoryId == NewsCategoryIdInvalid) {
         // First time appearing, make sure the Top news category is selected
         [self switchToCategory:NewsCategoryIdTopNews];
     }
     
-    // Unselect the selected row
-    self.tempTableSelection = [self.tableView indexPathForSelectedRow];
-    if (self.tempTableSelection) {
-        [self.tableView deselectRowAtIndexPath:self.tempTableSelection animated:YES];
+    
+    // The selection is left alone when the StoryDetailViewController
+    // is pushed onto the stack because, due to the pagingDelegate,
+    // the currently selected story may change and we want to give the user
+    // a hint that they aren't where they started
+    UITableView *tableView = nil;
+    if (self.isSearching) {
+        tableView = self.searchController.searchResultsTableView;
+    } else {
+        tableView = self.tableView;
     }
+    
+    [tableView beginUpdates]; {
+        NSIndexPath *selectedIndexPath = [tableView indexPathForSelectedRow];
+        [tableView deselectRowAtIndexPath:selectedIndexPath
+                                 animated:YES];
+        
+        if ([[tableView indexPathsForVisibleRows] containsObject:selectedIndexPath]) {
+            [tableView reloadRowsAtIndexPaths:[tableView indexPathsForVisibleRows]
+                             withRowAnimation:UITableViewRowAnimationNone];
+        }
+    } [tableView endUpdates];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if (self.tempTableSelection) {
-        [self.tableView reloadRowsAtIndexPaths:@[self.tempTableSelection]
-                              withRowAnimation:UITableViewRowAnimationNone];
-        self.tempTableSelection = nil;
+    
+    if (!self.isShowingBookmarks) {
+        BOOL hasBookmarks = [self hasBookmarks];
+        __block UIBarButtonItem *bookmarksBarButtonItem = NO;
+        [self.navigationItem.rightBarButtonItems enumerateObjectsUsingBlock:^(UIBarButtonItem *barButtonItem, NSUInteger idx, BOOL *stop) {
+            if (barButtonItem.tag == MITNewsStoryViewTagBookmarksItem) {
+                bookmarksBarButtonItem = barButtonItem;
+                (*stop) = YES;
+            }
+        }];
+        
+        // If there are bookmarks available and we aren't showing the bookmark item
+        // in the toolbar, insert it
+        NSMutableArray *toolbarItems = [NSMutableArray arrayWithArray:[self.navigationItem rightBarButtonItems]];
+        if (hasBookmarks && !bookmarksBarButtonItem) {
+            UIBarButtonItem *bookmarksButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
+                                                                                                 target:self
+                                                                                                 action:@selector(showBookmarks:)];
+            bookmarksButtonItem.tag = MITNewsStoryViewTagBookmarksItem;
+            [toolbarItems insertObject:bookmarksButtonItem
+                               atIndex:0];
+            [self.navigationItem setRightBarButtonItems:toolbarItems
+                                               animated:animated];
+        } else if (!hasBookmarks && bookmarksBarButtonItem) {
+            [toolbarItems removeObject:bookmarksBarButtonItem];
+            [self.navigationItem setRightBarButtonItems:toolbarItems
+                                               animated:animated];
+        }
+    }
+    
+    if (!self.isSearching) {
+        [self loadFromCacheAnimated:animated];
     }
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-
-    self.navigationButtons = nil;
+    
+    [self.xmlParser abort];
+    self.xmlParser = nil;
+    
     self.searchQuery = nil;
     self.searchResults = nil;
-    self.tempTableSelection = nil;
+    self.stories = nil;
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -301,14 +353,14 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                         savedArticles[categoryID] = categoryStories;
                     }
                     
-                    BOOL shouldSave = storySaved = (([categoryStories count] < 10) &&
+                    BOOL shouldSave = storySaved = (([categoryStories count] < MITNewsStoryFetchBatchSize) &&
                                                     (story.postDate != nil) &&
                                                     ([story.postDate compare:[NSDate date]] != NSOrderedDescending));
                     if (shouldSave) {
                         [categoryStories addObject:story];
                     }
                 }
-            
+                
                 if (storySaved == NO) {
                     [context deleteObject:story];
                 }
@@ -326,7 +378,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
             DDLogError(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
         }
         
-        [self loadFromCache];
+        [self loadFromCacheAnimated:NO];
     };
     
     
@@ -340,269 +392,282 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     dispatch_async(dispatch_get_main_queue(), pruningBlock);
 }
 
-#pragma mark - Search UI
-
-- (void)showSearchBar
+#pragma mark - Bookmark UI
+- (BOOL)hasBookmarks
 {
-    if (!self.searchBar) {
-        UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:self.navigationScroller.frame];
-        searchBar.tintColor = [UIColor colorWithRed:0.6
-                                              green:0.2
-                                               blue:0.2
-                                              alpha:1.0];
-        searchBar.backgroundColor = self.navigationScroller.backgroundColor;
-        searchBar.alpha = 0.0;
-        [self.view addSubview:searchBar];
-        self.searchBar = searchBar;
+    // show / hide the bookmarks category
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:NewsStoryEntityName];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"bookmarked == YES"];
+    fetchRequest.resultType = NSCountResultType;
+    
+    NSManagedObjectContext *context = [[CoreDataManager coreDataManager] managedObjectContext];
+    NSError *error = nil;
+    NSUInteger bookmarkCount = [context countForFetchRequest:fetchRequest
+                                                       error:&error];
+    
+    if (error) {
+        DDLogWarn(@"failed to fetch News bookmarks: %@",error);
     }
-
-    if (!self.searchController) {
-        self.searchController = [[MITSearchDisplayController alloc] initWithFrame:self.tableView.frame searchBar:self.searchBar contentsController:self];
-        self.searchController.delegate = self;
-        self.searchController.searchResultsDataSource = self;
-        self.searchController.searchResultsDelegate = self;
-    }
-
-    [UIView animateWithDuration:0.4
-                     animations:^{
-                         [self.view bringSubviewToFront:self.searchBar];
-                         self.searchBar.alpha = 1.0;
-                     }
-                     completion:^(BOOL finished) {
-                         if (finished) {
-                             [self.searchController setActive:YES
-                                                     animated:YES];
-                         }
-                     }];
+    
+    return (!error && (bookmarkCount > 0));
 }
 
-#pragma mark UISearchBar delegation
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+- (IBAction)showBookmarks:(id)sender
 {
-    // cancel any outstanding search
-    if (self.xmlParser) {
-        [self.xmlParser abort]; // cancel previous category's request if it's still going
-        self.xmlParser = nil;
+    if (!self.isShowingBookmarks) {
+        self.showingBookmarks = YES;
+        [self willShowBookmarks:YES];
     }
+}
 
-    // hide search interface
-    if (self.searchBar) {
+- (IBAction)hideBookmarks:(id)sender
+{
+    if (self.isShowingBookmarks) {
+        self.showingBookmarks = NO;
+        [self willHideBookmarks:YES];
+    }
+}
+
+- (void)willShowBookmarks:(BOOL)animated
+{
+    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                              target:self
+                                                                              action:@selector(hideBookmarks:)];
+    [self.navigationItem setRightBarButtonItems:@[doneItem]
+                                       animated:animated];
+    
+    [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0)
+                          delay:0
+                        options:UIViewAnimationCurveEaseOut
+                     animations:^{
+                         CGRect frame = self.navigationScroller.frame;
+                         frame.origin.y = CGRectGetMinY(self.view.bounds) - CGRectGetHeight(frame);
+                         self.navigationScroller.frame = frame;
+                         
+                         self.tableView.frame = self.view.bounds;
+                         [self loadFromCacheAnimated:NO];
+                     }
+                     completion:nil];
+}
+
+- (void)willHideBookmarks:(BOOL)animated
+{
+    UIBarButtonItem *bookmarksButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
+                                                                                         target:self
+                                                                                         action:@selector(showBookmarks:)];
+    bookmarksButtonItem.tag = MITNewsStoryViewTagBookmarksItem;
+    
+    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                                                                                target:self
+                                                                                action:@selector(showSearchBar:)];
+    searchItem.tag = MITNewsStoryViewTagSearchItem;
+    
+    [self.navigationItem setRightBarButtonItems:@[bookmarksButtonItem,searchItem]
+                                       animated:animated];
+    
+    [UIView animateWithDuration:(animated ? MITNewsStoryAnimationDurationBookmarks : 0)
+                     animations:^{
+                         CGRect frame = self.navigationScroller.frame;
+                         frame.origin.y = CGRectGetMinY(self.view.bounds);
+                         self.navigationScroller.frame = frame;
+                         
+                         CGRect tableFrame = self.tableView.frame;
+                         tableFrame.origin.y = CGRectGetMaxY(frame);
+                         self.tableView.frame = tableFrame;
+                         
+                         [self loadFromCacheAnimated:animated];
+                     } completion:nil];
+}
+
+#pragma mark - Search UI
+- (IBAction)showSearchBar:(id)sender;
+{
+    if (!self.isSearching) {
+        self.searching = YES;
+        
+        if (!self.searchBar) {
+            UISearchBar *searchBar = searchBar = [[UISearchBar alloc] initWithFrame:self.navigationScroller.frame];
+            searchBar.tintColor = [UIColor colorWithRed:0.6
+                                                  green:0.2
+                                                   blue:0.2
+                                                  alpha:1.0];
+            searchBar.backgroundColor = self.navigationScroller.backgroundColor;
+            searchBar.alpha = 0.0;
+            [self.view addSubview:searchBar];
+            self.searchBar = searchBar;
+        }
+        
+        MITSearchDisplayController *searchController = [[MITSearchDisplayController alloc] initWithFrame:self.tableView.frame
+                                                                                               searchBar:self.searchBar
+                                                                                      contentsController:self];
+        searchController.searchResultsDataSource = self;
+        searchController.searchResultsDelegate = self;
+        searchController.delegate = self;
+        self.searchController = searchController;
+
+        self.searching = YES;
         [UIView animateWithDuration:0.4
                          animations:^{
-                             self.searchBar.alpha = 0.0;
+                             self.searchBar.alpha = 1.;
                          }
                          completion:^(BOOL finished) {
-                             [self.searchController.searchResultsTableView removeFromSuperview];
-                             [self.searchBar removeFromSuperview];
-                             self.searchResults = nil;
-                             self.searchController = nil;
+                             [searchController setActive:YES
+                                                animated:YES];
                          }];
     }
 }
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    self.searchQuery = searchBar.text;
-    [self loadSearchResultsFromServer:NO forQuery:self.searchQuery];
-
-    if (![self.searchController.searchResultsTableView isDescendantOfView:self.view]) {
-        [self.view addSubview:self.searchController.searchResultsTableView];
-    }
-}
-
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    // when query is cleared, clear search result and show category instead
-    if ([searchText length] == 0)
-    {
-        if ([self.searchResults count]) {
-            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                                  atScrollPosition:UITableViewScrollPositionTop
-                                          animated:NO];
-        }
-
-        self.searchResults = nil;
-        [self loadFromCache];
-    }
-}
-
-#pragma mark -
-#pragma mark Story loading
+#pragma mark - Story loading
 
 // TODO break off all of the story loading and paging mechanics into a separate NewsDataManager
 // Having all of the CoreData logic stuffed into here makes for ugly connections from story views back to this list view
 // It also forces odd behavior of the paging controls when a memory warning occurs while looking at a story
-
-- (void)switchToCategory:(NewsCategoryId)category
+- (void)switchToCategory:(NewsCategoryId)categoryId
 {
-    NSAssert(category != 4, @"BOOM!");
-    if (category != self.activeCategoryId) {
+    if (categoryId != self.activeCategoryId) {
         if (self.xmlParser) {
             [self.xmlParser abort]; // cancel previous category's request if it's still going
             self.xmlParser = nil;
         }
+        
+        [self.categories enumerateObjectsUsingBlock:^(NewsCategory *category, NSUInteger idx, BOOL *stop) {
+            if ([category.category_id isEqualToNumber:@(categoryId)]) {
+                if (idx != self.navigationScroller.selectedIndex) {
+                    self.navigationScroller.selectedIndex = idx;
+                }
 
-
-        self.showingBookmarks = (category == BOOKMARK_BUTTON_TAG);
-        if (self.showingBookmarks) {
-            self.navigationScroller.selectedIndex = 0;
-        } else {
-            NSInteger categoryIndex = [[StoryListViewController orderedCategories] indexOfObject:@(category)];
-            if (self.hasBookmarks) {
-                // If we have bookmarks, the item at index 0 in the nav scroller will be the
-                // Bookmarks category, so increment the index by 1 to match.
-                ++categoryIndex;
+                CGPoint offset = self.tableView.contentOffset;
+                offset.y = 0.;
+                self.tableView.contentOffset = offset;
+                self.activeCategoryId = categoryId;
+                [self loadFromServer:NO];
+                (*stop) = YES;
             }
-
-            if (categoryIndex != self.navigationScroller.selectedIndex) {
-                self.navigationScroller.selectedIndex = categoryIndex;
-            }
-        }
-
-        self.activeCategoryId = category;
-        self.stories = nil;
-        if ([self.stories count]) {
-            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                                  atScrollPosition:UITableViewScrollPositionTop
-                                          animated:NO];
-        }
-
-        [self.tableView reloadData];
-        [self loadFromCache]; // makes request to server if no request has been made this session
+        }];
     }
 }
 
 - (void)refresh:(id)sender
 {
-    if (!self.searchResults) {
-        // get active category
-        NSManagedObject *aCategory = [[self.categories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"category_id == %d", self.activeCategoryId]] lastObject];
-
-        // set its expectedCount to 0
-        [aCategory setValue:@(0) forKey:@"expectedCount"];
-
-        // reload
-        [self loadFromCache];
+    // The search controller should be nil unless we are
+    // currently in the middle of a search
+    if (!self.isSearching) {
+        [self loadFromServer:NO];
     } else {
         [self loadSearchResultsFromServer:NO forQuery:self.searchQuery];
     }
 }
 
-
-- (void)loadFromCache
+- (void)loadFromCacheAnimated:(BOOL)animated
 {
+    NSArray *oldStories = self.stories;
+    
     // if showing bookmarks, show those instead
-    if (self.showingBookmarks) {
-        [self setStatusText:@""];
+    if (self.isShowingBookmarks) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bookmarked == YES"];
-        self.stories = [[CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate] mutableCopy];
+        self.stories = [CoreDataManager objectsForEntity:NewsStoryEntityName matchingPredicate:predicate];
     } else {
         // load what's in CoreData, up to categoryCount
         NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"postDate" ascending:NO],
-                                     //[NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:NO],
+                                     [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:NO],
                                      [NSSortDescriptor sortDescriptorWithKey:@"story_id" ascending:NO]];
         
         NSPredicate *predicate = nil;
         if (self.activeCategoryId == NewsCategoryIdTopNews) {
             predicate = [NSPredicate predicateWithFormat:@"(topStory != nil) && (topStory == YES)"];
-        }
-        else {
+        } else {
             predicate = [NSPredicate predicateWithFormat:@"ANY categories.category_id == %d", self.activeCategoryId];
         }
-
-        // if maxLength == 0, nothing's been loaded from the server this session -- show up to 10 results from core data
-        // else show up to maxLength
+        
         NSMutableArray *results = [NSMutableArray arrayWithArray:[CoreDataManager objectsForEntity:NewsStoryEntityName
                                                                                  matchingPredicate:predicate
                                                                                    sortDescriptors:sortDescriptors]];
-        if ([results count] && ([[results[0] featured] boolValue] == NO))
-        {
-            [results enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                NewsStory *story = (NewsStory*)obj;
-                
-                if ([story.featured boolValue] == YES)
-                {
-                    [results exchangeObjectAtIndex:0
-                                 withObjectAtIndex:idx];
-                    (*stop) = YES;
-                }
-            }];
+        __block NSUInteger newZerothStoryIndex = NSNotFound;
+        [results enumerateObjectsUsingBlock:^(NewsStory *story, NSUInteger idx, BOOL *stop) {
+            BOOL featured = [story featured];
+            
+            if (idx == 0 && featured) {
+                (*stop) = YES;
+            } else if (featured) {
+                newZerothStoryIndex = idx;
+                (*stop) = YES;
+            }
+        }];
+        
+        if (newZerothStoryIndex != NSNotFound) {
+            NewsStory *featuredStory = results[newZerothStoryIndex];
+            [results removeObjectAtIndex:newZerothStoryIndex];
+            [results insertObject:featuredStory atIndex:0];
         }
-
-        NSPredicate *categoryIdPredicate = [NSPredicate predicateWithFormat:@"category_id == %d", self.activeCategoryId];
-        NSManagedObject *aCategory = [[self.categories filteredArrayUsingPredicate:categoryIdPredicate] lastObject];
-        NSDate *lastUpdatedDate = [aCategory valueForKey:@"lastUpdated"];
-
-        [self setLastUpdated:lastUpdatedDate];
-
-        NSInteger maxLength = [[aCategory valueForKey:@"expectedCount"] integerValue];
-        NSInteger resultsCount = [results count];
-        if (maxLength == 0) {
-            [self loadFromServer:NO]; // this creates a loop which will keep trying until there is at least something in this category
-            // TODO: make sure this doesn't become an infinite loop.
-            maxLength = 10;
+        
+        if (!self.stories) {
+            // If the stories is currently nil, then this is the first time
+            // that we are loading this view controller. Use this as a hint to
+            // refresh the current articles from the server
+            [self loadFromServer:NO];
         }
-
-        if (maxLength > resultsCount) {
-            maxLength = resultsCount;
-        }
-        self.stories = [results subarrayWithRange:NSMakeRange(0, maxLength)];
+        
+        self.stories = results;
     }
-
-    [self.tableView reloadData];
-    [self.tableView flashScrollIndicators];
+    
+    if (![self.stories isEqualToArray:oldStories]) {
+        [self.tableView reloadData];
+        //[self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0]
+        //              withRowAnimation:(animated ? UITableViewRowAnimationFade : UITableViewRowAnimationNone)];
+    }
 }
 
-- (void)loadFromServer:(BOOL)loadMore
+- (void)loadFromServer:(BOOL)loadingMoreStories
 {
-    // make an asynchronous call for more stories
-
     // start new request
     NewsStory *lastStory = [self.stories lastObject];
-    NSInteger lastStoryId = (loadMore) ? [lastStory.story_id integerValue] : 0;
+    
+    // If we are loading more stories, we'll need the id of the last story we have
+    // cached locally. Otherwise, use '0' as the field is ignored.
+    NSInteger lastStoryId = (loadingMoreStories) ? [lastStory.story_id integerValue] : 0;
     if (self.xmlParser) {
         [self.xmlParser abort];
     }
     
+    self.loadingMoreStories = loadingMoreStories;
     self.xmlParser = [[StoryXMLParser alloc] init];
     self.xmlParser.delegate = self;
     [self.xmlParser loadStoriesForCategory:self.activeCategoryId
                               afterStoryId:lastStoryId
-                                     count:10]; // count doesn't do anything at the moment (no server support)
+                                     count:MITNewsStoryFetchBatchSize]; // count doesn't do anything at the moment (no server support)
 }
 
 - (void)loadSearchResultsFromCache
 {
+    [self loadSearchResultsFromCacheAnimated:YES];
+}
+
+- (void)loadSearchResultsFromCacheAnimated:(BOOL)animated
+{
     // make a predicate for everything with the search flag
     NSSortDescriptor *postDateSortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"postDate" ascending:NO];
     NSSortDescriptor *storyIdSortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"story_id" ascending:NO];
+    
     // show everything that comes back
     NSArray *results = [CoreDataManager objectsForEntity:NewsStoryEntityName
                                        matchingPredicate:[NSPredicate predicateWithFormat:@"searchResult == YES"]
                                          sortDescriptors:@[postDateSortDescriptor, storyIdSortDescriptor]];
-    [self setStatusText:@""];
-    if ([results count]) {
-        self.searchResults = results;
-        //self.stories = results;
-
-        // hide translucent overlay
-        [self.searchController hideSearchOverlayAnimated:YES];
-
-        // show results
-        [self.searchController.searchResultsTableView reloadData];
-        [self.searchController.searchResultsTableView flashScrollIndicators];
-    } else {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"No matching articles found." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alertView show];
-        self.searchResults = nil;
-        [self.searchController.searchResultsTableView reloadData];
+    [self setStatusTitle:nil
+                subtitle:nil];
+    
+    NSArray *oldSearchResults = self.searchResults;
+    self.searchResults = results;
+    if (oldSearchResults == nil) {
+         [self loadSearchResultsFromServer:NO forQuery:self.searchQuery];
     }
-}
-
-- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-    DDLogVerbose(@"make sure search bar is first responder right now");
+    
+    UITableView *tableView = self.searchController.searchResultsTableView;
+    if ([tableView numberOfSections]) {
+        [tableView reloadSections:[NSIndexSet indexSetWithIndex:0]
+                 withRowAnimation:(animated ? UITableViewRowAnimationAutomatic : UITableViewRowAnimationNone)];
+    } else {
+        [tableView reloadData];
+    }
 }
 
 - (void)loadSearchResultsFromServer:(BOOL)loadMore forQuery:(NSString *)query
@@ -610,31 +675,32 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     if (self.xmlParser) {
         [self.xmlParser abort];
     }
-
+    
     self.xmlParser = [[StoryXMLParser alloc] init];
     self.xmlParser.delegate = self;
-
+    
     [self.xmlParser loadStoriesforQuery:query
                              afterIndex:((loadMore) ? [self.searchResults count] : 0)
                                   count:10];
 }
 
-#pragma mark -
-#pragma mark StoryXMLParser delegation
+#pragma mark - Delegate Methods
+#pragma mark StoryXMLParserDelegate
 - (void)parser:(StoryXMLParser *)parser didFailWithDownloadError:(NSError *)error
 {
     if (parser == self.xmlParser) {
-        // TODO: communicate download failure to user
         if ([error code] == NSURLErrorNotConnectedToInternet) {
             DDLogError(@"News download failed because there's no net connection");
         } else {
             DDLogError(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
         }
-
+        
         [self.tableView.pullToRefreshView setTitle:@"Update failed"
                                           forState:SVPullToRefreshStateAll];
+        [self.tableView.pullToRefreshView setSubtitle:[error localizedDescription]
+                                             forState:SVPullToRefreshStateAll];
         [self.tableView.pullToRefreshView stopAnimating];
-
+        
         [UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
         if ([self.stories count]) {
             [self.tableView deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0] animated:YES];
@@ -647,54 +713,42 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     if (parser == self.xmlParser) {
         [self.tableView.pullToRefreshView setTitle:@"Update failed"
                                           forState:SVPullToRefreshStateAll];
+        [self.tableView.pullToRefreshView setSubtitle:[error localizedDescription]
+                                             forState:SVPullToRefreshStateAll];
         [self.tableView.pullToRefreshView stopAnimating];
-
-        if ([self.stories count]) {
-            [self.tableView deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0]
-                                          animated:YES];
-        }
     }
 }
 
 - (void)parserDidFinishParsing:(StoryXMLParser *)parser
 {
     if (parser == self.xmlParser) {
-        // basic category request
-        if (!parser.isSearch) {
-            NSManagedObject *aCategory = [[self.categories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"category_id == %d", self.activeCategoryId]] lastObject];
-            NSInteger length = [[aCategory valueForKey:@"expectedCount"] integerValue];
-            if (length == 0) { // fresh load of category, set its updated date
-                [aCategory setValue:[NSDate date] forKey:@"lastUpdated"];
-            }
-
-            length += [self.xmlParser.addedStories count];
-            [aCategory setValue:@(length) forKey:@"expectedCount"];
-            if (!parser.loadingMore && [self.stories count]) {
-                [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                                      atScrollPosition:UITableViewScrollPositionTop
-                                              animated:NO];
-            }
-
-            self.xmlParser = nil;
+        BOOL isLoadingMoreStories = self.isLoadingMoreStories;
+        
+        if (!self.isSearching) {
+            // Looks like a search is not active, this is just a regular category request.
             
-            if (parser.loadingMore == NO) {
-                [self pruneStories:NO];
+            NSPredicate *categoryPredicate = [NSPredicate predicateWithFormat:@"category_id == %d", self.activeCategoryId];
+            NewsCategory *category = [[self.categories filteredArrayUsingPredicate:categoryPredicate] lastObject];
+            if (!isLoadingMoreStories) {
+                category.lastUpdated = [NSDate date];
+                [self setLastUpdated:category.lastUpdated asSubtitle:NO];
             }
             
-            [self loadFromCache];
+            [self loadFromCacheAnimated:YES];
         } else {
             self.searchTotalAvailableResults = self.xmlParser.totalAvailableResults;
-            [self loadSearchResultsFromCache];
-
-            if (!parser.loadingMore && [self.searchResults count]) {
+            
+            if (!self.isLoadingMoreStories && [self.searchResults count]) {
                 [self.searchController.searchResultsTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                                                     atScrollPosition:UITableViewScrollPositionTop
                                                                             animated:NO];
             }
-
-            self.xmlParser = nil;
+            
+            [self loadSearchResultsFromCacheAnimated:NO];
         }
-
+        
+        self.loadingMoreStories = NO;
+        self.xmlParser = nil;
         [self.tableView.pullToRefreshView stopAnimating];
     }
 }
@@ -702,20 +756,30 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 #pragma mark -
 #pragma mark Bottom status bar
 
-- (void)setStatusText:(NSString *)text
+- (void)setStatusTitle:(NSString *)title subtitle:(NSString*)subtitle
 {
-    [self.tableView.pullToRefreshView setTitle:text
+    [self.tableView.pullToRefreshView setTitle:title
                                       forState:SVPullToRefreshStateAll];
-    [self.tableView.pullToRefreshView setSubtitle:@""
-                                         forState:SVPullToRefreshStateAll];
 }
 
-- (void)setLastUpdated:(NSDate *)date
+- (void)setLastUpdated:(NSDate *)date asSubtitle:(BOOL)asSubtitle
 {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateStyle:NSDateFormatterMediumStyle];
     [formatter setTimeStyle:NSDateFormatterShortStyle];
-    [self setStatusText:(date) ? [NSString stringWithFormat:@"Updated %@", [formatter stringFromDate:date]] : nil];
+    
+    NSString *dateString = nil;
+    if (date) {
+        dateString = [NSString stringWithFormat:@"Updated %@", [formatter stringFromDate:date]];
+    }
+    
+    if (asSubtitle) {
+        [self.tableView.pullToRefreshView setSubtitle:dateString
+                                             forState:SVPullToRefreshStateAll];
+    } else {
+        [self.tableView.pullToRefreshView setTitle:dateString
+                                          forState:SVPullToRefreshStateAll];
+    }
 }
 
 #pragma mark -
@@ -726,20 +790,14 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 }
 
 
-#pragma mark -
-#pragma mark UITableViewDataSource and UITableViewDelegate
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
+#pragma mark - UITableViewDataSource and UITableViewDelegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSInteger numberOfRows = 0;
-
+    
     if (tableView == self.tableView) {
         numberOfRows = [self.stories count];
-        if (!self.showingBookmarks && numberOfRows < 200 && numberOfRows > 0) {
+        if (!self.isShowingBookmarks && numberOfRows < 200 && numberOfRows > 0) {
             // The MIT API server only returns up to, at most, 200 stories.
             // If there are less than 200 stories cached (but there are more than 0),
             // increment the count so the 'Load more articles' row will be added
@@ -753,7 +811,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
             ++numberOfRows;
         }
     }
-
+    
     return numberOfRows;
 }
 
@@ -770,9 +828,16 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if (tableView == self.searchController.searchResultsTableView) {
-        return [UITableView ungroupedSectionHeaderWithTitle:[NSString stringWithFormat:@"%d found", self.searchTotalAvailableResults]];
+        NSString *headerText = nil;
+        if (!self.isSearching) {
+            headerText = @"Loading...";
+        } else {
+            headerText = [NSString stringWithFormat:@"%d found", self.searchTotalAvailableResults];
+        }
+        
+        return [UITableView ungroupedSectionHeaderWithTitle:headerText];
     }
-
+    
     return nil;
 }
 
@@ -785,7 +850,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     } else if (tableView == self.searchController.searchResultsTableView) {
         dataSource = self.searchResults;
     }
-
+    
     if (indexPath.row == [dataSource count]) {
         // Height of the 'Load more articles' row
         return 50.;
@@ -799,16 +864,16 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 {
     static NSString *StoryCellReuseIdentifier = @"StoryCellReuseIdentifier";
     static NSString *MoreArticlesReuseIdentifier = @"MoreArticlesReuseIdentifier";
-
+    
     NSArray *dataSource = nil;
     if (tableView == self.tableView) {
         dataSource = self.stories;
     } else if (tableView == self.searchController.searchResultsTableView) {
         dataSource = self.searchResults;
     }
-
+    
     UITableViewCell *cell = nil;
-
+    
     // Both tables use the same exact cell structure so we don't need to check
     // to see which table view is asking us for data here.
     switch (indexPath.section)
@@ -817,17 +882,17 @@ NSString *const NewsCategoryHumanities = @"Humanities";
         {
             if (indexPath.row < [dataSource count]) {
                 NewsStory *story = dataSource[indexPath.row];
-
+                
                 cell = [tableView dequeueReusableCellWithIdentifier:StoryCellReuseIdentifier];
-
+                
                 UILabel *titleLabel = nil;
                 UILabel *dekLabel = nil;
                 UIImageView *thumbnailView = nil;
-
+                
                 if (cell == nil) {
                     // Set up the cell
                     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:StoryCellReuseIdentifier];
-
+                    
                     // Title View
                     titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
                     titleLabel.tag = 1;
@@ -835,7 +900,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                     titleLabel.numberOfLines = 0;
                     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                     [cell.contentView addSubview:titleLabel];
-
+                    
                     // Summary View
                     dekLabel = [[UILabel alloc] initWithFrame:CGRectZero];
                     dekLabel.tag = 2;
@@ -845,7 +910,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                     dekLabel.numberOfLines = 0;
                     dekLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                     [cell.contentView addSubview:dekLabel];
-
+                    
                     thumbnailView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, THUMBNAIL_WIDTH, THUMBNAIL_WIDTH)];
                     thumbnailView.tag = 3;
                     [cell.contentView addSubview:thumbnailView];
@@ -853,24 +918,24 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                     [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
                     cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 }
-
+                
                 titleLabel = (UILabel *)[cell viewWithTag:1];
                 dekLabel = (UILabel *)[cell viewWithTag:2];
                 thumbnailView = (UIImageView *)[cell viewWithTag:3];
-
+                
                 titleLabel.text = story.title;
                 dekLabel.text = story.summary;
-
+                
                 titleLabel.textColor = ([story.read boolValue]) ? [UIColor colorWithHexString:@"#666666"] : [UIColor blackColor];
                 titleLabel.highlightedTextColor = [UIColor whiteColor];
-
+                
                 // Calculate height
                 CGFloat availableHeight = STORY_TEXT_HEIGHT;
                 CGSize titleDimensions = [titleLabel.text sizeWithFont:titleLabel.font
                                                      constrainedToSize:CGSizeMake(STORY_TEXT_WIDTH, availableHeight)
                                                          lineBreakMode:NSLineBreakByTruncatingTail];
                 availableHeight -= titleDimensions.height;
-
+                
                 CGSize dekDimensions = CGSizeZero;
                 // if not even one line will fit, don't show the deck at all
                 if (availableHeight > dekLabel.font.leading) {
@@ -878,8 +943,8 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                                               constrainedToSize:CGSizeMake(STORY_TEXT_WIDTH, availableHeight)
                                                   lineBreakMode:NSLineBreakByTruncatingTail];
                 }
-
-
+                
+                
                 titleLabel.frame = CGRectMake(THUMBNAIL_WIDTH + STORY_TEXT_PADDING_LEFT,
                                               STORY_TEXT_PADDING_TOP,
                                               STORY_TEXT_WIDTH,
@@ -888,18 +953,18 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                                             ceil(CGRectGetMaxY(titleLabel.frame)),
                                             STORY_TEXT_WIDTH,
                                             dekDimensions.height);
-
+                
                 NSURL *imageURL = [NSURL URLWithString:story.inlineImage.thumbImage.url];
                 [thumbnailView setImageWithURL:imageURL
                               placeholderImage:[UIImage imageNamed:@"news/news-placeholder"]];
             } else if (indexPath.row == [dataSource count]) {
                 cell = [tableView dequeueReusableCellWithIdentifier:MoreArticlesReuseIdentifier];
-
+                
                 if (cell == nil) {
                     // Set up the cell
                     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:MoreArticlesReuseIdentifier];
                     cell.selectionStyle = UITableViewCellSelectionStyleGray;
-
+                    
                     UILabel *moreArticlesLabel = [[UILabel alloc] initWithFrame:cell.frame];
                     moreArticlesLabel.font = [UIFont boldSystemFontOfSize:16];
                     moreArticlesLabel.numberOfLines = 1;
@@ -911,13 +976,13 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                     frame.origin.x = 10;
                     frame.origin.y = ((NSInteger)(50.0 - moreArticlesLabel.frame.size.height)) / 2;
                     moreArticlesLabel.frame = frame;
-
+                    
                     [cell.contentView addSubview:moreArticlesLabel];
                 }
-
+                
                 UILabel *moreArticlesLabel = (UILabel *)[cell viewWithTag:1234];
                 if (moreArticlesLabel) {
-                    NSInteger remainingArticlesToLoad = (!self.searchResults) ? (200 - [dataSource count]) : (self.searchTotalAvailableResults - [dataSource count]);
+                    NSInteger remainingArticlesToLoad = (!self.isSearching) ? (200 - [dataSource count]) : (self.searchTotalAvailableResults - [dataSource count]);
                     moreArticlesLabel.text = [NSString stringWithFormat:@"Load %d more articles...", (remainingArticlesToLoad > 10) ? 10 : remainingArticlesToLoad];
                     if (!self.xmlParser)
                     { // disable when a load is already in progress
@@ -927,8 +992,8 @@ NSString *const NewsCategoryHumanities = @"Humanities";
                     {
                         moreArticlesLabel.textColor = [UIColor colorWithHexString:@"#999999"]; // disable
                     }
-
-
+                    
+                    
                     [moreArticlesLabel sizeToFit];
                 }
             } else {
@@ -951,8 +1016,8 @@ NSString *const NewsCategoryHumanities = @"Humanities";
         dataSource = self.searchResults;
         isSearchResults = YES;
     }
-
-
+    
+    
     if (indexPath.row == [dataSource count]) {
         if (!self.xmlParser) { // only "load x more..." if no other load is going on
             if (isSearchResults) {
@@ -965,21 +1030,17 @@ NSString *const NewsCategoryHumanities = @"Humanities";
         StoryDetailViewController *detailViewController = [[StoryDetailViewController alloc] init];
         detailViewController.pagingDelegate = self;
         detailViewController.story = dataSource[indexPath.row];
-
+        
         [self.navigationController pushViewController:detailViewController animated:YES];
     }
 }
 
-#pragma mark -
-#pragma mark Browsing hooks
+#pragma mark StoryDetailPagingDelegate
 - (BOOL)storyDetailView:(StoryDetailViewController*)storyDetailController canSelectPreviousStory:(NewsStory*)currentStory
 {
-    NSArray *storyDataSource = self.searchResults;
-    if (!self.searchResults) {
-        // The searchResults array should be nil unless are in searching mode
-        // so it should be safe to use as a guard
-        // @see searchBarCancelButtonClicked:
-        storyDataSource = self.stories;
+    NSArray *storyDataSource = self.stories;
+    if (self.isSearching) {
+        storyDataSource = self.searchResults;
     }
     
     NSUInteger storyIndex = [storyDataSource indexOfObject:currentStory];
@@ -992,9 +1053,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
 - (NewsStory*)storyDetailView:(StoryDetailViewController*)storyDetailController selectPreviousStory:(NewsStory*)currentStory
 {
-    // searchController should only be non-nil if we are currently searching
-    // TODO: replace this with an isSearching boolean
-    if (self.searchController) {
+    if (self.isSearching) {
         NSUInteger storyIndex = [self.searchResults indexOfObject:currentStory];
         
         if ((storyIndex != NSNotFound) && (storyIndex > 0)) {
@@ -1025,9 +1084,9 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 
 - (BOOL)storyDetailView:(StoryDetailViewController*)storyDetailController canSelectNextStory:(NewsStory*)currentStory
 {
-    NSArray *storyDataSource = self.searchResults;
-    if (!self.searchResults) {
-        storyDataSource = self.stories;
+    NSArray *storyDataSource = self.stories;
+    if (self.isSearching) {
+        storyDataSource = self.searchResults;
     }
     
     NSUInteger storyIndex = [storyDataSource indexOfObject:currentStory];
@@ -1042,7 +1101,7 @@ NSString *const NewsCategoryHumanities = @"Humanities";
 {
     // searchController should only be non-nil if we are currently searching
     // TODO: replace this with an isSearching boolean
-    if (self.searchController) {
+    if (self.isSearching) {
         NSUInteger storyIndex = [self.searchResults indexOfObject:currentStory];
         
         if ((storyIndex != NSNotFound) && (storyIndex < [self.searchResults count])) {
@@ -1071,64 +1130,77 @@ NSString *const NewsCategoryHumanities = @"Humanities";
     return nil;
 }
 
-#pragma mark - MITScrollingNavigationBarDataSource
+#pragma mark MITScrollingNavigationBarDataSource
 - (NSUInteger)numberOfItemsInNavigationBar:(MITScrollingNavigationBar*)navigationBar
 {
-    NSUInteger count = [[StoryListViewController orderedCategories] count];
-    if (self.hasBookmarks) {
-        ++count;
-    }
-
-    return count;
+    return [self.categories count];
 }
 
 - (NSString*)navigationBar:(MITScrollingNavigationBar*)navigationBar titleForItemAtIndex:(NSInteger)index
 {
-    if (self.hasBookmarks) {
-        if (index == 0) {
-            return @"Bookmarks";
-        } else {
-            --index;
-        }
-    }
-
-    NSArray *categories = [StoryListViewController orderedCategories];
-    return [StoryListViewController titleForCategoryWithID:categories[index]];
+    NSNumber *categoryID = [self.categories[index] valueForKey:@"category_id"];
+    return [StoryListViewController titleForCategoryWithID:(NewsCategoryId)[categoryID integerValue]];
 }
 
-#pragma mark - MITScrollingNavigationBarDelegate
+#pragma mark MITScrollingNavigationBarDelegate
 - (void)navigationBar:(MITScrollingNavigationBar *)navigationBar didSelectItemAtIndex:(NSInteger)index
 {
-    if (self.hasBookmarks) {
-        if (index == 0) {
-            [self switchToCategory:BOOKMARK_BUTTON_TAG];
-            return;
-        } else {
-            --index;
-        }
+    NSNumber *categoryID = [self.categories[index] valueForKey:@"category_id"];
+    [self switchToCategory:(NewsCategoryId)[categoryID integerValue]];
+}
+
+#pragma mark UISearchBar delegation
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
+    
+    [UIView animateWithDuration:0.4
+                     animations:^{
+                         self.searchBar.alpha = 0.;
+                         self.searchController.searchResultsTableView.alpha = 0.;
+                         [self.searchController setActive:NO
+                                                 animated:NO];
+                     }
+                     completion:^(BOOL finished) {
+                         [self.searchBar removeFromSuperview];
+                         
+                         [self.searchController.searchResultsTableView removeFromSuperview];
+                         self.searchController = nil;
+                         self.searchResults = nil;
+                         self.searching = NO;
+                     }];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    if (![self.searchQuery isEqualToString:searchBar.text]) {
+        self.searchResults = nil;
+        [self.searchController.searchResultsTableView reloadData];
     }
-
-    NSArray *categoryIds = [StoryListViewController orderedCategories];
-    [self switchToCategory:[categoryIds[index] integerValue]];
+    
+    self.searchQuery = searchBar.text;
+    [self loadSearchResultsFromServer:NO forQuery:self.searchQuery];
+    
+    // TODO: Get this out of here! It belongs in the MITSearchDisplayController implementation
+    if (self.searchController.searchResultsTableView.superview != self.view) {
+        self.searchController.searchResultsTableView.alpha = 0.;
+        self.searchController.searchResultsTableView.frame = self.tableView.frame;
+        [self.view addSubview:self.searchController.searchResultsTableView];
+        
+        [UIView animateWithDuration:0.4
+                         animations:^{
+                             self.searchController.searchResultsTableView.alpha = 1.;
+                         } completion:^(BOOL finished) {
+                             
+                         }];
+    }
 }
 
-- (CGFloat)widthForAccessoryViewInNavigationBar:(MITScrollingNavigationBar *)navigationBar
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-    return 0.;
-}
-
-- (UIView*)accessoryViewForNavigationBar:(MITScrollingNavigationBar *)navigationBar
-{
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button setImage:[UIImage imageNamed:@"global/search"]
-            forState:UIControlStateNormal];
-    button.showsTouchWhenHighlighted = YES;
-
-    [button addTarget:self
-               action:@selector(showSearchBar)
-     forControlEvents:UIControlEventTouchUpInside];
-
-    return button;
+    if ([searchBar.text length] == 0) {
+        [self.searchController.searchResultsTableView removeFromSuperview];
+    }
 }
 
 @end
