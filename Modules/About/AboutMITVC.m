@@ -7,6 +7,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.tableView applyStandardColors];
+
+    self.tableView.backgroundView = nil;
+    self.tableView.backgroundColor = [UIColor mit_backgroundColor];
     self.navigationItem.title = @"About MIT";
 }
 

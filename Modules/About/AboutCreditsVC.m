@@ -1,10 +1,12 @@
 #import "AboutCreditsVC.h"
+#import "MITAdditions.h"
 
 @implementation AboutCreditsVC
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor clearColor];
+
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
     self.navigationItem.title = @"Credits";
     
     NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
