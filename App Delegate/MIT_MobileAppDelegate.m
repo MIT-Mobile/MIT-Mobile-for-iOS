@@ -12,6 +12,7 @@
 #import "Secret.h"
 #import "SDImageCache.h"
 #import "Foundation+MITAdditions.h"
+#import "UIKit+MITAdditions.h"
 
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
 @property (nonatomic,strong) NSDictionary *apnsDictionary;
@@ -220,7 +221,12 @@
 - (void)loadWindow
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    
+
+    // iOS 6's UIWindow doesn't do tintColor
+    if ([self.window respondsToSelector:@selector(setTintColor:)]) {
+        self.window.tintColor = [UIColor colorWithHexString:@"a90533"]; // MIT Red, aka Pantone 201
+    }
+
     DDLogVerbose(@"Root window size is %@", NSStringFromCGRect([self.window bounds]));
 
     MITSpringboard *springboard = [[MITSpringboard alloc] init];
