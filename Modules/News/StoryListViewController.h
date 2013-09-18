@@ -18,5 +18,8 @@ typedef NS_ENUM(NSInteger, NewsCategoryId) {
 @class NewsStory;
 
 @interface StoryListViewController : UIViewController
+@property (nonatomic,getter=isSearching) BOOL searching;
+@property (nonatomic,getter=isShowingBookmarks) BOOL showingBookmarks;
+
 - (void)switchToCategory:(NewsCategoryId)category;
 @end

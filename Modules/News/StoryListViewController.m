@@ -44,7 +44,6 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 @property (nonatomic,weak) UISearchBar *searchBar;
 @property (nonatomic,strong) MITSearchDisplayController *searchController;
 
-@property (getter=isSearching) BOOL searching;
 
 @property (copy) NSArray *stories;
 @property (copy) NSString *searchQuery;
@@ -56,7 +55,6 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 
 @property NSInteger activeCategoryId;
 @property NSInteger searchTotalAvailableResults;
-@property (getter=isShowingBookmarks) BOOL showingBookmarks;
 
 + (NSArray*)orderedCategories;
 + (NSString*)titleForCategoryWithID:(NewsCategoryId)categoryID;
@@ -427,10 +425,30 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     [self hideBookmarksAnimated:YES];
 }
 
+
+- (void)setShowingBookmarks:(BOOL)showingBookmarks
+{
+    [self setShowingBookmarks:showingBookmarks animated:YES];
+}
+
+- (void)setShowingBookmarks:(BOOL)showingBookmarks animated:(BOOL)animated
+{
+    if (self.isSearching) {
+        return;
+    } else if (_showingBookmarks != showingBookmarks) {
+        _showingBookmarks = showingBookmarks;
+
+        if (_showingBookmarks) {
+            [self showBookmarksAnimated:animated];
+        } else {
+            [self hideBookmarksAnimated:animated];
+        }
+    }
+}
+
 - (void)showBookmarksAnimated:(BOOL)animated
 {
-    if (!self.isShowingBookmarks) {
-        self.showingBookmarks = YES;
+    if (!(self.isSearching || self.isShowingBookmarks)) {
         [self updateNavigationItemBarButtonsAnimated:YES];
         [UIView animateWithDuration:(animated ? MITNewsStoryDefaultAnimationDuration : 0)
                               delay:0
@@ -450,7 +468,6 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 - (void)hideBookmarksAnimated:(BOOL)animated
 {
     if (self.isShowingBookmarks) {
-        self.showingBookmarks = NO;
         [self updateNavigationItemBarButtonsAnimated:YES];
         [UIView animateWithDuration:(animated ? MITNewsStoryDefaultAnimationDuration : 0)
                          animations:^{
