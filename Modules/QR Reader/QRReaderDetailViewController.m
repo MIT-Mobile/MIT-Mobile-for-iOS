@@ -50,11 +50,13 @@
 
 
 #pragma mark - View lifecycle
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.backgroundImageView.image = [UIImage imageNamed:@"global/body-background"];
+    [self.backgroundImageView removeFromSuperview];
+    self.backgroundImageView = nil;
+
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
     
     if (self.scanResult.scanImage) {
         self.qrImageView.image = self.scanResult.scanImage;
