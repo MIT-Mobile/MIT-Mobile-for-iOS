@@ -39,7 +39,8 @@ enum {
     [super viewDidLoad];
     self.title = @"Settings";
 
-    self.tableView.backgroundView.backgroundColor = [UIColor mit_backgroundColor];
+    self.tableView.backgroundView = nil;
+    self.tableView.backgroundColor = [UIColor mit_backgroundColor];
 
     MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
     self.notifications = [appDelegate.modules filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"pushNotificationSupported == TRUE"]];
