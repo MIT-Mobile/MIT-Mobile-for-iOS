@@ -22,21 +22,20 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
 
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
         layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        layout.sectionInset = UIEdgeInsetsMake(0, 8, 0, 20.);
-        layout.minimumInteritemSpacing = 16.;
+        layout.sectionInset = UIEdgeInsetsMake(0, 20., 0, 8.);  // Hand-tuned, no specific reason for these values. Tweak as needed
+        layout.minimumInteritemSpacing = 16.; // Hand-tuned, no specific reason for these values. Tweak as needed
         layout.minimumLineSpacing = 21.; // Roughly one line of text
 
         UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:frame
                                                               collectionViewLayout:layout];
-        collectionView.allowsMultipleSelection = NO;
-        collectionView.allowsSelection = YES;
+        collectionView.dataSource = self;
+        collectionView.delegate = self;
+
         collectionView.backgroundColor = [UIColor clearColor];
         collectionView.showsHorizontalScrollIndicator = NO;
         collectionView.showsVerticalScrollIndicator = NO;
-        collectionView.bounces = YES;
-        collectionView.alwaysBounceHorizontal = NO;
-        collectionView.dataSource = self;
-        collectionView.delegate = self;
+        collectionView.alwaysBounceHorizontal = YES;
+        collectionView.alwaysBounceVertical = NO;
         collectionView.translatesAutoresizingMaskIntoConstraints = NO;
         [collectionView registerClass:[MITScrollingNavigationBarCell class]
            forCellWithReuseIdentifier:MITScrollingNavigationItemReuseIdentifier];
