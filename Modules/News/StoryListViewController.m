@@ -727,10 +727,8 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
             DDLogError(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
         }
         
-        [self.tableView.pullToRefreshView setTitle:@"Update failed"
+        [self.tableView.pullToRefreshView setSubtitle:@"Update failed"
                                           forState:SVPullToRefreshStateAll];
-        [self.tableView.pullToRefreshView setSubtitle:[error localizedDescription]
-                                             forState:SVPullToRefreshStateAll];
         [self.tableView.pullToRefreshView stopAnimating];
         
         [UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
@@ -743,10 +741,8 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 - (void)parser:(StoryXMLParser *)parser didFailWithParseError:(NSError *)error
 {
     if (parser == self.xmlParser) {
-        [self.tableView.pullToRefreshView setTitle:@"Update failed"
+        [self.tableView.pullToRefreshView setSubtitle:@"Update failed"
                                           forState:SVPullToRefreshStateAll];
-        [self.tableView.pullToRefreshView setSubtitle:[error localizedDescription]
-                                             forState:SVPullToRefreshStateAll];
         [self.tableView.pullToRefreshView stopAnimating];
     }
 }
@@ -763,7 +759,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
             NewsCategory *category = [[self.categories filteredArrayUsingPredicate:categoryPredicate] lastObject];
             if (!isLoadingMoreStories) {
                 category.lastUpdated = [NSDate date];
-                [self setLastUpdated:category.lastUpdated asSubtitle:NO];
+                [self setLastUpdated:category.lastUpdated asSubtitle:YES];
             }
             
             [self loadFromCacheAnimated:YES];
