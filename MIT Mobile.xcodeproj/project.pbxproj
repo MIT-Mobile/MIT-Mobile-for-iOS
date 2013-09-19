@@ -286,6 +286,7 @@
 		DE277695177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277693177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m */; };
 		DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4AB0B310ED5148007476D9 /* NewsStory.m */; };
 		DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DE516255147889D1002415DE /* ExplanatorySectionLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DE574C3117E7B7DA001B153E /* Icon-iOS-7@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE574C3017E7B7DA001B153E /* Icon-iOS-7@2x.png */; };
 		DE5E99D31124B57C00498760 /* emergency_template.html in Resources */ = {isa = PBXBuildFile; fileRef = DE5E99D21124B57C00498760 /* emergency_template.html */; };
 		DE65451B173D90A900562C20 /* MKAnnotationView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DE654507173D90A900562C20 /* MKAnnotationView+WebCache.m */; };
 		DE65451C173D90A900562C20 /* SDImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DE654509173D90A900562C20 /* SDImageCache.m */; };
@@ -986,6 +987,7 @@
 		DE4AB0B310ED5148007476D9 /* NewsStory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsStory.m; sourceTree = "<group>"; };
 		DE516254147889D1002415DE /* ExplanatorySectionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExplanatorySectionLabel.h; sourceTree = "<group>"; };
 		DE516255147889D1002415DE /* ExplanatorySectionLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExplanatorySectionLabel.m; sourceTree = "<group>"; };
+		DE574C3017E7B7DA001B153E /* Icon-iOS-7@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-iOS-7@2x.png"; sourceTree = "<group>"; };
 		DE5E99D21124B57C00498760 /* emergency_template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = emergency_template.html; path = Resources/emergency_template.html; sourceTree = "<group>"; };
 		DE654506173D90A900562C20 /* MKAnnotationView+WebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKAnnotationView+WebCache.h"; sourceTree = "<group>"; };
 		DE654507173D90A900562C20 /* MKAnnotationView+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKAnnotationView+WebCache.m"; sourceTree = "<group>"; };
@@ -1383,6 +1385,7 @@
 				DE952E6716295EBA007E7356 /* Default-568h@2x.png */,
 				DE936CA5161CD28300B69F7C /* Default@2x.png */,
 				DE936CA3161CD28100B69F7C /* Default.png */,
+				DE574C3017E7B7DA001B153E /* Icon-iOS-7@2x.png */,
 				DE936CA1161CD1FF00B69F7C /* Icon@2x.png */,
 				DE936C9F161CD1FB00B69F7C /* Icon.png */,
 				4B83721C157E5B19004CBC49 /* External */,
@@ -2965,6 +2968,7 @@
 				2CEBBF8D1635A68500441252 /* DEFacebookCancelButtonPortrait.png in Resources */,
 				2CEBBF8E1635A68500441252 /* DEFacebookCancelButtonPortrait@2x.png in Resources */,
 				2CEBBF8F1635A68500441252 /* DEFacebookCardAccountLine.png in Resources */,
+				DE574C3117E7B7DA001B153E /* Icon-iOS-7@2x.png in Resources */,
 				2CEBBF901635A68500441252 /* DEFacebookCardAccountLine@2x.png in Resources */,
 				2CEBBF911635A68500441252 /* DEFacebookCardBackground.png in Resources */,
 				2CEBBF921635A68500441252 /* DEFacebookCardBackground@2x.png in Resources */,
