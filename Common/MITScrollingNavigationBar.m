@@ -36,6 +36,7 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
         collectionView.showsVerticalScrollIndicator = NO;
         collectionView.alwaysBounceHorizontal = YES;
         collectionView.alwaysBounceVertical = NO;
+        collectionView.scrollsToTop = NO;
         collectionView.translatesAutoresizingMaskIntoConstraints = NO;
         [collectionView registerClass:[MITScrollingNavigationBarCell class]
            forCellWithReuseIdentifier:MITScrollingNavigationItemReuseIdentifier];
