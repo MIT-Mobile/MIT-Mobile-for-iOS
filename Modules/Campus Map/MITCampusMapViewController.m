@@ -61,8 +61,6 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    self.searchBar.barStyle = self.navigationController.navigationBar.barStyle;
-    self.navigationController.toolbar.barStyle = self.navigationController.navigationBar.barStyle;
     [self.navigationController setToolbarHidden:NO animated:animated];
 }
 
@@ -167,6 +165,12 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
             self.searchController = nil;
         }
     }
+}
+
+#pragma mark - Browse Handling
+- (IBAction)browseButtonTapped:(id)sender
+{
+
 }
 
 #pragma mark - Delegate Methods
