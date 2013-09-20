@@ -24,6 +24,7 @@
 		2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6CD137C4C2C0005F1FC /* FacilitiesCategoryViewController.m */; };
 		2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */; };
 		2C03C6D4137C66100005F1FC /* HighlightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2C040E1617EBA20A00A603A6 /* MITCampusMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C040E1517EBA20A00A603A6 /* MITCampusMapViewController.m */; };
 		2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09824B13A8F21D00778B53 /* ModuleVersions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
 		2C0CE20C1663FFA80020E70D /* MGSLayerAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0CE20B1663FFA80020E70D /* MGSLayerAnnotation.m */; };
@@ -472,6 +473,8 @@
 		2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationViewController.m; sourceTree = "<group>"; };
 		2C03C6D2137C66100005F1FC /* HighlightTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HighlightTableViewCell.h; path = ../HighlightTableViewCell.h; sourceTree = "<group>"; };
 		2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HighlightTableViewCell.m; path = ../HighlightTableViewCell.m; sourceTree = "<group>"; };
+		2C040E1417EBA20A00A603A6 /* MITCampusMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCampusMapViewController.h; sourceTree = "<group>"; };
+		2C040E1517EBA20A00A603A6 /* MITCampusMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCampusMapViewController.m; sourceTree = "<group>"; };
 		2C09824A13A8F21D00778B53 /* ModuleVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModuleVersions.h; sourceTree = "<group>"; };
 		2C09824B13A8F21D00778B53 /* ModuleVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModuleVersions.m; sourceTree = "<group>"; };
 		2C0A33691355CEF300786493 /* QRReaderImageTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderImageTransformer.h; sourceTree = "<group>"; };
@@ -2464,6 +2467,8 @@
 				4463CC8810D6F4A50048CA83 /* CMModule.m */,
 				4463CC7910D6F4A50048CA83 /* CampusMapViewController.h */,
 				4463CC7A10D6F4A50048CA83 /* CampusMapViewController.m */,
+				2C040E1417EBA20A00A603A6 /* MITCampusMapViewController.h */,
+				2C040E1517EBA20A00A603A6 /* MITCampusMapViewController.m */,
 				4463CC8F10D6F4A50048CA83 /* MITMapAnnotationView.h */,
 				4463CC9010D6F4A50048CA83 /* MITMapAnnotationView.m */,
 				4463D09110D92CB00048CA83 /* MITMapDetailViewController.h */,
@@ -3276,6 +3281,7 @@
 				2CDE951914EAAA4D000271BD /* TouchstoneResponse.m in Sources */,
 				2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */,
 				EF3B3B15103F072400E8AA13 /* NSMutableAttributedString+MITAdditions.m in Sources */,
+				2C040E1617EBA20A00A603A6 /* MITCampusMapViewController.m in Sources */,
 				2CA91F9915CB03BB00C03732 /* MITScannerHelpViewController.m in Sources */,
 				2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */,
 				2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */,
