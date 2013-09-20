@@ -137,6 +137,10 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     tableFrame.origin.x = CGRectGetMinX(self.view.bounds);
     tableFrame.origin.y = CGRectGetMaxY(navigationBar.frame);
     tableFrame.size.height = CGRectGetHeight(self.view.bounds) - CGRectGetHeight(navigationBar.frame);
+
+    if (navigationBar.layer.shadowOpacity > 0.) {
+        tableFrame.origin.y += floor(navigationBar.layer.shadowRadius);
+    }
     
     UITableView *tableView = [[UITableView alloc] initWithFrame:tableFrame style:UITableViewStylePlain];
     tableView.frame = tableFrame;
@@ -146,6 +150,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
     tableView.delegate = self;
     tableView.dataSource = self;
     tableView.separatorColor = [UIColor colorWithWhite:0.5 alpha:1.0];
+    tableView.scrollsToTop = YES;
     [tableView addPullToRefreshWithActionHandler:^{
         [self refresh:nil];
     }];
@@ -528,6 +533,8 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
                          completion:^(BOOL finished) {
                              [self.searchController setActive:YES
                                                      animated:NO];
+                             self.tableView.scrollsToTop = NO;
+                             self.searchController.searchResultsTableView.scrollsToTop = YES;
                          }];
     }
 }
@@ -549,6 +556,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
                              [self.searchBar removeFromSuperview];
                              [self.searchController setActive:NO
                                                      animated:animated];
+                             self.tableView.scrollsToTop = YES;
                              self.searchController = nil;
                              self.searchResults = nil;
                          }];
@@ -1205,9 +1213,14 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
                          animations:^{
                              self.searchController.searchResultsTableView.alpha = 1.;
                          } completion:^(BOOL finished) {
-                             
                          }];
     }
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    self.tableView.scrollsToTop = NO;
+    self.searchController.searchResultsTableView.scrollsToTop = YES;
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
