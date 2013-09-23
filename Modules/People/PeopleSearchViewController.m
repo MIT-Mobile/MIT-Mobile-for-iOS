@@ -86,7 +86,8 @@
                                     self.searchBar.frame.size.width,
                                     self.view.frame.size.height - CGRectGetMaxY(self.searchBar.frame));
     UITableView *searchTableView = [[UITableView alloc] initWithFrame:tablesFrame style:UITableViewStylePlain];
-	searchTableView.backgroundView.backgroundColor = [UIColor mit_backgroundColor];
+    searchTableView.backgroundView = nil;
+	searchTableView.backgroundColor = [UIColor clearColor];
     
     self.searchController.searchResultsTableView = searchTableView;
     self.searchController.searchResultsDelegate = self;
@@ -98,7 +99,8 @@
     tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     tableView.delegate = self;
     tableView.dataSource = self;
-	tableView.backgroundView.backgroundColor = [UIColor mit_backgroundColor];
+    tableView.backgroundView = nil;
+	tableView.backgroundColor = [UIColor clearColor];
 
     NSString *searchHints = @"Sample searches:\nName: 'william barton rogers', 'rogers'\nEmail: 'wbrogers', 'wbrogers@mit.edu'\nPhone: '6172531000', '31000'";
 	UIFont *hintsFont = [UIFont systemFontOfSize:[UIFont systemFontSize]];
