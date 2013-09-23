@@ -1,6 +1,6 @@
-#import "PSTCollectionViewCell.h"
+#import <UIKit/UIKit.h>
 
-@interface DiningHallMenuComparisonSectionHeaderView : PSTCollectionReusableView
+@interface DiningHallMenuComparisonSectionHeaderView : UICollectionReusableView
 
 @property (nonatomic, readonly, strong) UILabel * titleLabel;
 @property (nonatomic, readonly, strong) UILabel * timeLabel;

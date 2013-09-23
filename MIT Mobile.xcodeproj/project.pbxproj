@@ -200,19 +200,6 @@
 		483C86631725956A00A054F1 /* DiningHallMenuCompareLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 483C86621725956A00A054F1 /* DiningHallMenuCompareLayout.m */; };
 		483C86661725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 483C86651725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m */; };
 		484748BF173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 484748BE173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.m */; };
-		4869CE4E17037F8600A3662B /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDA417037F8500A3662B /* NSIndexPath+PSTCollectionViewAdditions.m */; };
-		4869CE4F17037F8600A3662B /* PSTCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDA617037F8500A3662B /* PSTCollectionView.m */; };
-		4869CE5017037F8600A3662B /* PSTCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDA817037F8500A3662B /* PSTCollectionViewCell.m */; };
-		4869CE5117037F8600A3662B /* PSTCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDAB17037F8500A3662B /* PSTCollectionViewController.m */; };
-		4869CE5217037F8600A3662B /* PSTCollectionViewData.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDAD17037F8500A3662B /* PSTCollectionViewData.m */; };
-		4869CE5317037F8600A3662B /* PSTCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDAF17037F8500A3662B /* PSTCollectionViewFlowLayout.m */; };
-		4869CE5417037F8600A3662B /* PSTCollectionViewItemKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDB117037F8500A3662B /* PSTCollectionViewItemKey.m */; };
-		4869CE5517037F8600A3662B /* PSTCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDB417037F8500A3662B /* PSTCollectionViewLayout.m */; };
-		4869CE5617037F8600A3662B /* PSTCollectionViewUpdateItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDB617037F8500A3662B /* PSTCollectionViewUpdateItem.m */; };
-		4869CE5717037F8600A3662B /* PSTGridLayoutInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDB817037F8500A3662B /* PSTGridLayoutInfo.m */; };
-		4869CE5817037F8600A3662B /* PSTGridLayoutItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDBA17037F8500A3662B /* PSTGridLayoutItem.m */; };
-		4869CE5917037F8600A3662B /* PSTGridLayoutRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDBC17037F8500A3662B /* PSTGridLayoutRow.m */; };
-		4869CE5A17037F8600A3662B /* PSTGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CDBE17037F8500A3662B /* PSTGridLayoutSection.m */; };
 		4869CE77170380D800A3662B /* DiningMenuCompareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */; };
 		486B1E70170E24C900A75563 /* DiningHallMenuFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 486B1E6F170E24C900A75563 /* DiningHallMenuFooterView.m */; };
 		48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48873E561727159A009C22F3 /* DiningHallMenuComparisonCell.m */; };
@@ -786,34 +773,6 @@
 		483C86651725D9C900A054F1 /* DiningHallMenuComparisonSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuComparisonSectionHeaderView.m; path = Dining/DiningHallMenuComparisonSectionHeaderView.m; sourceTree = "<group>"; };
 		484748BD173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITSingleWebViewCellTableViewController.h; sourceTree = "<group>"; };
 		484748BE173C2B8F00101EDF /* MITSingleWebViewCellTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITSingleWebViewCellTableViewController.m; sourceTree = "<group>"; };
-		4869CDA317037F8500A3662B /* NSIndexPath+PSTCollectionViewAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexPath+PSTCollectionViewAdditions.h"; sourceTree = "<group>"; };
-		4869CDA417037F8500A3662B /* NSIndexPath+PSTCollectionViewAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexPath+PSTCollectionViewAdditions.m"; sourceTree = "<group>"; };
-		4869CDA517037F8500A3662B /* PSTCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionView.h; sourceTree = "<group>"; };
-		4869CDA617037F8500A3662B /* PSTCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionView.m; sourceTree = "<group>"; };
-		4869CDA717037F8500A3662B /* PSTCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewCell.h; sourceTree = "<group>"; };
-		4869CDA817037F8500A3662B /* PSTCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewCell.m; sourceTree = "<group>"; };
-		4869CDA917037F8500A3662B /* PSTCollectionViewCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewCommon.h; sourceTree = "<group>"; };
-		4869CDAA17037F8500A3662B /* PSTCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewController.h; sourceTree = "<group>"; };
-		4869CDAB17037F8500A3662B /* PSTCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewController.m; sourceTree = "<group>"; };
-		4869CDAC17037F8500A3662B /* PSTCollectionViewData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewData.h; sourceTree = "<group>"; };
-		4869CDAD17037F8500A3662B /* PSTCollectionViewData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewData.m; sourceTree = "<group>"; };
-		4869CDAE17037F8500A3662B /* PSTCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewFlowLayout.h; sourceTree = "<group>"; };
-		4869CDAF17037F8500A3662B /* PSTCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewFlowLayout.m; sourceTree = "<group>"; };
-		4869CDB017037F8500A3662B /* PSTCollectionViewItemKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewItemKey.h; sourceTree = "<group>"; };
-		4869CDB117037F8500A3662B /* PSTCollectionViewItemKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewItemKey.m; sourceTree = "<group>"; };
-		4869CDB217037F8500A3662B /* PSTCollectionViewLayout+Internals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PSTCollectionViewLayout+Internals.h"; sourceTree = "<group>"; };
-		4869CDB317037F8500A3662B /* PSTCollectionViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewLayout.h; sourceTree = "<group>"; };
-		4869CDB417037F8500A3662B /* PSTCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewLayout.m; sourceTree = "<group>"; };
-		4869CDB517037F8500A3662B /* PSTCollectionViewUpdateItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCollectionViewUpdateItem.h; sourceTree = "<group>"; };
-		4869CDB617037F8500A3662B /* PSTCollectionViewUpdateItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCollectionViewUpdateItem.m; sourceTree = "<group>"; };
-		4869CDB717037F8500A3662B /* PSTGridLayoutInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTGridLayoutInfo.h; sourceTree = "<group>"; };
-		4869CDB817037F8500A3662B /* PSTGridLayoutInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTGridLayoutInfo.m; sourceTree = "<group>"; };
-		4869CDB917037F8500A3662B /* PSTGridLayoutItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTGridLayoutItem.h; sourceTree = "<group>"; };
-		4869CDBA17037F8500A3662B /* PSTGridLayoutItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTGridLayoutItem.m; sourceTree = "<group>"; };
-		4869CDBB17037F8500A3662B /* PSTGridLayoutRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTGridLayoutRow.h; sourceTree = "<group>"; };
-		4869CDBC17037F8500A3662B /* PSTGridLayoutRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTGridLayoutRow.m; sourceTree = "<group>"; };
-		4869CDBD17037F8500A3662B /* PSTGridLayoutSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTGridLayoutSection.h; sourceTree = "<group>"; };
-		4869CDBE17037F8500A3662B /* PSTGridLayoutSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTGridLayoutSection.m; sourceTree = "<group>"; };
 		4869CE75170380D800A3662B /* DiningMenuCompareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningMenuCompareViewController.h; path = Dining/DiningMenuCompareViewController.h; sourceTree = "<group>"; };
 		4869CE76170380D800A3662B /* DiningMenuCompareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningMenuCompareViewController.m; path = Dining/DiningMenuCompareViewController.m; sourceTree = "<group>"; };
 		486B1E6E170E24C900A75563 /* DiningHallMenuFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuFooterView.h; path = Dining/DiningHallMenuFooterView.h; sourceTree = "<group>"; };
@@ -2060,42 +2019,6 @@
 			name = Dining;
 			sourceTree = "<group>";
 		};
-		4869CDA217037F8500A3662B /* PSTCollectionView */ = {
-			isa = PBXGroup;
-			children = (
-				4869CDA317037F8500A3662B /* NSIndexPath+PSTCollectionViewAdditions.h */,
-				4869CDA417037F8500A3662B /* NSIndexPath+PSTCollectionViewAdditions.m */,
-				4869CDA517037F8500A3662B /* PSTCollectionView.h */,
-				4869CDA617037F8500A3662B /* PSTCollectionView.m */,
-				4869CDA717037F8500A3662B /* PSTCollectionViewCell.h */,
-				4869CDA817037F8500A3662B /* PSTCollectionViewCell.m */,
-				4869CDA917037F8500A3662B /* PSTCollectionViewCommon.h */,
-				4869CDAA17037F8500A3662B /* PSTCollectionViewController.h */,
-				4869CDAB17037F8500A3662B /* PSTCollectionViewController.m */,
-				4869CDAC17037F8500A3662B /* PSTCollectionViewData.h */,
-				4869CDAD17037F8500A3662B /* PSTCollectionViewData.m */,
-				4869CDAE17037F8500A3662B /* PSTCollectionViewFlowLayout.h */,
-				4869CDAF17037F8500A3662B /* PSTCollectionViewFlowLayout.m */,
-				4869CDB017037F8500A3662B /* PSTCollectionViewItemKey.h */,
-				4869CDB117037F8500A3662B /* PSTCollectionViewItemKey.m */,
-				4869CDB217037F8500A3662B /* PSTCollectionViewLayout+Internals.h */,
-				4869CDB317037F8500A3662B /* PSTCollectionViewLayout.h */,
-				4869CDB417037F8500A3662B /* PSTCollectionViewLayout.m */,
-				4869CDB517037F8500A3662B /* PSTCollectionViewUpdateItem.h */,
-				4869CDB617037F8500A3662B /* PSTCollectionViewUpdateItem.m */,
-				4869CDB717037F8500A3662B /* PSTGridLayoutInfo.h */,
-				4869CDB817037F8500A3662B /* PSTGridLayoutInfo.m */,
-				4869CDB917037F8500A3662B /* PSTGridLayoutItem.h */,
-				4869CDBA17037F8500A3662B /* PSTGridLayoutItem.m */,
-				4869CDBB17037F8500A3662B /* PSTGridLayoutRow.h */,
-				4869CDBC17037F8500A3662B /* PSTGridLayoutRow.m */,
-				4869CDBD17037F8500A3662B /* PSTGridLayoutSection.h */,
-				4869CDBE17037F8500A3662B /* PSTGridLayoutSection.m */,
-			);
-			name = PSTCollectionView;
-			path = External/PSTCollectionView/PSTCollectionView;
-			sourceTree = "<group>";
-		};
 		48A6E4D8170B91E9004DED46 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -2249,7 +2172,6 @@
 				2C7EDD8F1656CD2E001684E1 /* GDataXML */,
 				2CCF813F1636F69900DE273F /* Lumberjack */,
 				2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */,
-				4869CDA217037F8500A3662B /* PSTCollectionView */,
 				DE654505173D90A900562C20 /* SDWebImage */,
 				DE27768E177E7A3900CF46FF /* SVPullToRefresh */,
 				2CDA8AB61762445F001F011F /* TestFlight */,
@@ -3324,19 +3246,6 @@
 				2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */,
 				48327CE016F74F19003A2F23 /* DiningModule.m in Sources */,
 				48327CE416F75017003A2F23 /* DiningMapListViewController.m in Sources */,
-				4869CE4E17037F8600A3662B /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */,
-				4869CE4F17037F8600A3662B /* PSTCollectionView.m in Sources */,
-				4869CE5017037F8600A3662B /* PSTCollectionViewCell.m in Sources */,
-				4869CE5117037F8600A3662B /* PSTCollectionViewController.m in Sources */,
-				4869CE5217037F8600A3662B /* PSTCollectionViewData.m in Sources */,
-				4869CE5317037F8600A3662B /* PSTCollectionViewFlowLayout.m in Sources */,
-				4869CE5417037F8600A3662B /* PSTCollectionViewItemKey.m in Sources */,
-				4869CE5517037F8600A3662B /* PSTCollectionViewLayout.m in Sources */,
-				4869CE5617037F8600A3662B /* PSTCollectionViewUpdateItem.m in Sources */,
-				4869CE5717037F8600A3662B /* PSTGridLayoutInfo.m in Sources */,
-				4869CE5817037F8600A3662B /* PSTGridLayoutItem.m in Sources */,
-				4869CE5917037F8600A3662B /* PSTGridLayoutRow.m in Sources */,
-				4869CE5A17037F8600A3662B /* PSTGridLayoutSection.m in Sources */,
 				4869CE77170380D800A3662B /* DiningMenuCompareViewController.m in Sources */,
 				48A372ED170F47B800C95573 /* MGSLayerController.m in Sources */,
 				48A6E4D7170B89C2004DED46 /* DiningHallMenuViewController.m in Sources */,

@@ -1,6 +1,6 @@
-#import "PSTCollectionViewCell.h"
+#import <UIKit/UIKit.h>
 
-@interface DiningHallMenuComparisonCell : PSTCollectionViewCell
+@interface DiningHallMenuComparisonCell : UICollectionViewCell
 
 @property (nonatomic, readonly, strong) UILabel   * primaryLabel;
 @property (nonatomic, readonly, strong) UILabel   * secondaryLabel;
