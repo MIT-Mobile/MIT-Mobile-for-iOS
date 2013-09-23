@@ -74,8 +74,6 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 /* Bookmark handling */
 - (IBAction)showBookmarks:(id)sender;
 - (IBAction)hideBookmarks:(id)sender;
-- (void)showBookmarksAnimated:(BOOL)animated;
-- (void)hideBookmarksAnimated:(BOOL)animated;
 @end
 
 @implementation StoryListViewController
@@ -422,12 +420,14 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 
 - (IBAction)showBookmarks:(id)sender
 {
-    [self showBookmarksAnimated:YES];
+    [self setShowingBookmarks:YES
+                     animated:YES];
 }
 
 - (IBAction)hideBookmarks:(id)sender
 {
-    [self hideBookmarksAnimated:YES];
+    [self setShowingBookmarks:NO
+                     animated:YES];
 }
 
 
@@ -442,50 +442,35 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
         return;
     } else if (_showingBookmarks != showingBookmarks) {
         _showingBookmarks = showingBookmarks;
+        [self updateNavigationItemBarButtonsAnimated:animated];
 
         if (_showingBookmarks) {
-            [self showBookmarksAnimated:animated];
+            [UIView animateWithDuration:(animated ? MITNewsStoryDefaultAnimationDuration : 0)
+                                  delay:0
+                                options:UIViewAnimationCurveEaseOut
+                             animations:^{
+                                 CGRect frame = self.navigationScroller.frame;
+                                 frame.origin.y = CGRectGetMinY(self.view.bounds) - CGRectGetHeight(frame);
+                                 self.navigationScroller.frame = frame;
+                                 self.tableView.frame = self.view.bounds;
+                             }
+                             completion:^(BOOL finished) {
+                                 [self loadFromCacheAnimated:NO];
+                             }];
         } else {
-            [self hideBookmarksAnimated:animated];
+            [UIView animateWithDuration:(animated ? MITNewsStoryDefaultAnimationDuration : 0)
+                             animations:^{
+                                 CGRect frame = self.navigationScroller.frame;
+                                 frame.origin.y = CGRectGetMinY(self.view.bounds);
+                                 self.navigationScroller.frame = frame;
+                                 
+                                 CGRect tableFrame = self.tableView.frame;
+                                 tableFrame.origin.y = CGRectGetMaxY(frame);
+                                 self.tableView.frame = tableFrame;
+                                 
+                                 [self loadFromCacheAnimated:animated];
+                             } completion:nil];
         }
-    }
-}
-
-- (void)showBookmarksAnimated:(BOOL)animated
-{
-    if (!(self.isSearching || self.isShowingBookmarks)) {
-        [self updateNavigationItemBarButtonsAnimated:YES];
-        [UIView animateWithDuration:(animated ? MITNewsStoryDefaultAnimationDuration : 0)
-                              delay:0
-                            options:UIViewAnimationCurveEaseOut
-                         animations:^{
-                             CGRect frame = self.navigationScroller.frame;
-                             frame.origin.y = CGRectGetMinY(self.view.bounds) - CGRectGetHeight(frame);
-                             self.navigationScroller.frame = frame;
-                             self.tableView.frame = self.view.bounds;
-                         }
-                         completion:^(BOOL finished) {
-                             [self loadFromCacheAnimated:NO];
-                         }];
-    }
-}
-
-- (void)hideBookmarksAnimated:(BOOL)animated
-{
-    if (self.isShowingBookmarks) {
-        [self updateNavigationItemBarButtonsAnimated:YES];
-        [UIView animateWithDuration:(animated ? MITNewsStoryDefaultAnimationDuration : 0)
-                         animations:^{
-                             CGRect frame = self.navigationScroller.frame;
-                             frame.origin.y = CGRectGetMinY(self.view.bounds);
-                             self.navigationScroller.frame = frame;
-
-                             CGRect tableFrame = self.tableView.frame;
-                             tableFrame.origin.y = CGRectGetMaxY(frame);
-                             self.tableView.frame = tableFrame;
-
-                             [self loadFromCacheAnimated:animated];
-                         } completion:nil];
     }
 }
 
