@@ -19,6 +19,17 @@
     showBuildNumber = NO;
 }
 
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 #pragma mark - UITableView Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -72,9 +83,7 @@
                     cell.textLabel.font = [UIFont boldSystemFontOfSize:17.0];
         			cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
                     NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-                    if (!showBuildNumber) {
-                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", [infoDict objectForKey:@"CFBundleDisplayName"], [infoDict objectForKey:@"CFBundleVersion"]];
-                    } else {
+                    if (showBuildNumber && [[MITBuildInfo description] length]) {
                         cell.textLabel.text = [MITBuildInfo description];
                         
                         CGImageRef hashImage = [MITBuildInfo newHashImage];
@@ -83,11 +92,13 @@
                         [[cell.imageView layer] setMagnificationFilter:kCAFilterNearest];
                         CGFloat imageWidth = (CGFloat)CGImageGetWidth(hashImage);
                         CGFloat desiredWidth = 30.0;
-                        cell.imageView.image = [UIImage imageWithCGImage:hashImage 
-                                                                   scale:imageWidth / desiredWidth 
+                        cell.imageView.image = [UIImage imageWithCGImage:hashImage
+                                                                   scale:imageWidth / desiredWidth
                                                              orientation:UIImageOrientationUp];
                         CGImageRelease(hashImage);
-                    }
+                    } else {
+                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", [infoDict objectForKey:@"CFBundleDisplayName"], [infoDict objectForKey:@"CFBundleVersion"]];
+                    } 
                 }
                     break;
                 case 1:

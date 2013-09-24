@@ -1,6 +1,5 @@
 
 #import <Foundation/Foundation.h>
-#import "MITMobileWebAPI.h"
 
 @interface MITIdentity : NSObject
 {
@@ -26,11 +25,3 @@
 + (MITIdentity *) identity;
 @end
 
-@interface MITIdentityLoadedDelegate : NSObject <JSONLoadedDelegate> {
-	NSData *deviceToken;
-}
-
-@property (nonatomic, retain) NSData *deviceToken;
-
-+ (MITIdentityLoadedDelegate *) withDeviceToken: (NSData *)deviceToken;
-@end

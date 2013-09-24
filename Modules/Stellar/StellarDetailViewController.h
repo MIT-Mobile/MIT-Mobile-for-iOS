@@ -13,18 +13,6 @@
 @property (nonatomic, assign) StellarDetailViewController *viewController;
 @end
 
-@interface MyStellarStatusDelegate : NSObject <JSONLoadedDelegate>
-{
-	StellarDetailViewController *viewController;
-	BOOL status;
-	StellarClass *stellarClass;
-}
-
-@property (nonatomic, assign) StellarDetailViewController *viewController;
-
-- (id) initWithClass: (StellarClass *)class status: (BOOL)newStatus viewController: (StellarDetailViewController *)controller;
-@end
-
 typedef enum {
 	StellarNewsLoadingInProcess,
 	StellarNewsLoadingSucceeded,
@@ -33,7 +21,6 @@ typedef enum {
 	
 @interface StellarDetailViewController : UITableViewController <TabViewControlDelegate> {
 	ClassInfoLoader *currentClassInfoLoader;
-	MyStellarStatusDelegate *myStellarStatusDelegate;
 	
 	StellarClass *stellarClass;
 	
@@ -60,7 +47,6 @@ typedef enum {
 }
 
 @property (nonatomic, retain) ClassInfoLoader *currentClassInfoLoader;
-@property (nonatomic, retain) MyStellarStatusDelegate *myStellarStatusDelegate;
 
 @property (nonatomic, retain) StellarClass *stellarClass;
 

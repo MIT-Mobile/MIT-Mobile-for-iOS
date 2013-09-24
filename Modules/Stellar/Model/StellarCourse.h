@@ -14,6 +14,8 @@
 @property (nonatomic, retain) NSSet* stellarClasses;
 @property (nonatomic, retain) NSString * term;
 
+- (void)markAsNew;
+
 @end
 
 

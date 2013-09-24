@@ -8,7 +8,6 @@
 
     TourComponent *component;
     NSString *subtitle;
-    BOOL hasTransform;
     CGAffineTransform transform;
     id<TourGeoLocation> tourGeoLocation;
 

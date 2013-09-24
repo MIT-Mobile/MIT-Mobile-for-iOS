@@ -7,11 +7,12 @@
 #warning "This project uses features only available in iPhone SDK 4.0 and later."
 #endif
 
+#import "MITLogging.h"
 
 #ifdef __OBJC__
     #import <Foundation/Foundation.h>
     #import <UIKit/UIKit.h>
     #import "MITConstants.h" // shared constants (common URLs, NSUserDefaults keys, etc)
-    #import "MITLogging.h" // DLog(), WLog(), ELog()
-    #import "ZBarSDK.h"
+    #import "TestFlight.h"
 #endif
+

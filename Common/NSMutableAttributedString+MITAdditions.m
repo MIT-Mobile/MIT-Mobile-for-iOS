@@ -1,13 +1,7 @@
 #import "NSMutableAttributedString+MITAdditions.h"
+#import <Foundation/Foundation.h>
 
-static inline CTFontRef createCTFontFromUIFont(UIFont *uiFont);
-
-static inline UIFont *UIFontForCTFont(CTFontRef ctFont);
-
-static inline CTLineBreakMode CTLineBreakFromUILineBreak(UILineBreakMode lineBreakMode);
-
-
-static inline CTFontRef createCTFontFromUIFont(UIFont *uiFont) {
+FOUNDATION_STATIC_INLINE CTFontRef createCTFontFromUIFont(UIFont *uiFont) {
     CTFontRef ctFont = NULL;
 
     if (uiFont)
@@ -20,7 +14,7 @@ static inline CTFontRef createCTFontFromUIFont(UIFont *uiFont) {
     return ctFont;
 }
 
-static inline UIFont *UIFontForCTFont(CTFontRef ctFont) {
+FOUNDATION_STATIC_INLINE UIFont *UIFontForCTFont(CTFontRef ctFont) {
     NSString *psFontName = [(NSString *)CTFontCopyName(ctFont, kCTFontPostScriptNameKey) autorelease];
     CGFloat ptSize = CTFontGetSize(ctFont);
 
@@ -28,7 +22,7 @@ static inline UIFont *UIFontForCTFont(CTFontRef ctFont) {
                            size:ptSize];
 }
 
-static inline CTLineBreakMode CTLineBreakFromUILineBreak(UILineBreakMode lineBreakMode) {
+FOUNDATION_STATIC_INLINE CTLineBreakMode CTLineBreakFromUILineBreak(UILineBreakMode lineBreakMode) {
     switch (lineBreakMode)
     {
         case UILineBreakModeWordWrap:
@@ -48,7 +42,7 @@ static inline CTLineBreakMode CTLineBreakFromUILineBreak(UILineBreakMode lineBre
     }
 }
 
-static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment textAlignment) {
+FOUNDATION_STATIC_INLINE CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment textAlignment) {
     switch (textAlignment)
     {
         case UITextAlignmentLeft:
@@ -93,13 +87,12 @@ static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment
     CTFontRef ctFont = createCTFontFromUIFont(font);
     CTFontRef styledFont = CTFontCreateCopyWithSymbolicTraits(ctFont,
                                                               0.0,
-            NULL,
+                                                              NULL,
                                                               traits,
                                                               traits);
 
-    if (styledFont == NULL)
-    {
-        ELog(@"Error: Unable to create font '%@' with traits 0x%x", [font fontName], traits);
+    if (styledFont == NULL) {
+        DDLogError(@"Error: Unable to create font '%@' with traits 0x%x", [font fontName], traits);
 
         if (ctFont) CFRelease(ctFont);
         ctFont = styledFont;
@@ -110,8 +103,13 @@ static inline CTTextAlignment CTTextAlignmentFromUITextAlignment(UITextAlignment
                  value:(NSString *)kCTFontAttributeName
                  range:attrRange];
 
-    if (ctFont)
+    if (ctFont) {
         CFRelease(ctFont);
+    }
+    
+    if (styledFont) {
+        CFRelease(styledFont);
+    }
 }
 
 

@@ -1,20 +1,10 @@
 #import "CalendarCategoriesViewController.h"
-
+#import "MobileRequestOperation.h"
+#import "UIKit+MITAdditions.h"
 
 @implementation CalendarCategoriesViewController
 
 @synthesize categories;
-
-/*
-- (id)initWithStyle:(UITableViewStyle)style {
-    // Override initWithStyle: if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-    self = [super initWithStyle:style];
-    if (self) {
-    }
-    return self;
-}
-*/
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -23,44 +13,35 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 
 	self.categories = nil;
-	
-	MITMobileWebAPI *apiRequest = [MITMobileWebAPI jsonLoadedDelegate:self];
-	
-	[apiRequest requestObjectFromModule:@"calendar" 
-								command:@"categories" 
-							 parameters:nil];
-	
+    
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"calendar"
+                                                                              command:@"categories"
+                                                                           parameters:nil] autorelease];
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        if (error)
+        {
+            DDLogVerbose(@"request failed");
+        }
+        else if ([jsonResult isKindOfClass:[NSArray class]])
+        {
+            self.categories = jsonResult;
+            [self.tableView reloadData];
+        }
+    };
+    
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
-
-/*
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-*/
-/*
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-}
-*/
-/*
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-*/
-/*
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-*/
-
-/*
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
-*/
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -159,24 +140,6 @@
 
 - (void)dealloc {
     [super dealloc];
-}
-
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)result {
-	
-	if (result && [result isKindOfClass:[NSArray class]]) {
-		self.categories = result;
-		[self.tableView reloadData];
-	}
-}
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request
-{
-	DLog(@"request failed");
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    return YES;
 }
 
 @end

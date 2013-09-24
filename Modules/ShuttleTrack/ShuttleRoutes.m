@@ -1,10 +1,11 @@
 #import "ShuttleRoutes.h"
+#import "ShuttleRoute.h"
 #import "ShuttleRouteViewController.h"
-#import "RouteMapViewController.h"
 #import "SecondaryGroupedTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate+ModuleList.h"
+
 
 @implementation ShuttleRoutes
 
@@ -71,7 +72,9 @@
     
 	_shuttleRunningImage = [[UIImage imageNamed:@"shuttle/shuttle.png"] retain];
 	_shuttleNotRunningImage = [[UIImage imageNamed:@"shuttle/shuttle-off.png"] retain];
-	_shuttleLoadingImage = [[UIImage imageNamed:@"shuttle/shuttle-blank.png"] retain];
+    
+    UIGraphicsBeginImageContext(CGSizeMake(18, 19));
+    _shuttleLoadingImage = [UIGraphicsGetImageFromCurrentImageContext() retain];
 	
     [self.tableView applyStandardColors];
 
@@ -359,7 +362,7 @@
 	self.shuttleRoutes = routes;
 	
 	if (nil == routes) {
-		[MITMobileWebAPI showErrorWithHeader:@"Shuttles"];
+        [UIAlertView alertViewForError:nil withTitle:@"Shuttles" alertViewDelegate:nil];
 		self.shuttleRoutes = oldRoutes;
 	}
 }

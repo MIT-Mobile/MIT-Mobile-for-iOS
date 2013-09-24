@@ -64,18 +64,20 @@
     [scanner setCaseSensitive:NO];
     
     if (![scanner scanString:@"mailto:" intoString:NULL]) {
-        WLog(@"URL '%@' is malformed", [url absoluteString]);
+        DDLogWarn(@"URL '%@' is malformed", [url absoluteString]);
         fields = nil;
     } else if (![scanner isAtEnd]) {
         // Don't care if this fails. Some malformed mailto urls
         // are used in the app and this should (slightly) clean
         // it up.
-        [scanner scanString:@"//" intoString:NULL];
-        NSArray *toField = [self scanToFieldWithScanner:scanner];
+        [scanner scanString:@"//"
+                 intoString:NULL];
+        NSMutableArray *toField = [NSMutableArray arrayWithArray:[self scanToFieldWithScanner:scanner]];
         fields = [NSMutableDictionary dictionaryWithDictionary:[self scanHeadersWithScanner:scanner]];
         
         if ([fields objectForKey:@"to"]) {
-            [fields setObject:[toField arrayByAddingObjectsFromArray:[fields objectForKey:@"to"]]
+            [toField addObject:fields[@"to"]];
+            [fields setObject:toField
                        forKey:@"to"];
         } else {
             [fields setObject:toField
@@ -93,7 +95,7 @@
     self = [super init];
     
     if (self) {
-        DLog(@"Processing URL: %@",[mailtoUrl absoluteString]);
+        DDLogVerbose(@"Processing URL: %@",[mailtoUrl absoluteString]);
         NSDictionary *fields = [self scanURL:mailtoUrl];
         
         if ([fields objectForKey:@"to"]) {

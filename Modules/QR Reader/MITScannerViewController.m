@@ -119,6 +119,10 @@
     mainView.backgroundColor = [UIColor blackColor];
     self.view = mainView;
     
+    mainView.autoresizesSubviews = YES;
+    mainView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleBottomMargin);
+    
     self.scanView = [self loadScannerViewWithFrame:mainView.bounds];
     [mainView addSubview:self.scanView];
     
@@ -146,8 +150,9 @@
     //      UIBarStyleBlack and the 'translucent' property
     //      should be YES
     UIView *scanView = [[[UIView alloc] initWithFrame:viewFrame] autorelease];
-    
     scanView.backgroundColor = [UIColor blackColor];
+    scanView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                 UIViewAutoresizingFlexibleBottomMargin);
     
     // View hierarchy for the scanView
     // This should be in the order (top-most view first):
@@ -165,6 +170,8 @@
         
         MITScannerOverlayView *overlay = [[[MITScannerOverlayView alloc] initWithFrame:overlayFrame] autorelease];
         overlay.userInteractionEnabled = NO;
+        overlay.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                    UIViewAutoresizingFlexibleBottomMargin);
         if (scanningSupported)
         {
             overlay.helpText = @"To scan a QR code or barcode, frame it below.\nAvoid glare and shadows.";
@@ -214,6 +221,8 @@
     {
         UIImageView *unsupportedView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"qrreader/camera-unsupported"]] autorelease];
         unsupportedView.backgroundColor = [UIColor clearColor];
+        unsupportedView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                            UIViewAutoresizingFlexibleBottomMargin);
         CGRect cropRect = [scanView convertRect:self.overlayView.qrRect
                                        fromView:self.overlayView];
         CGRect frame = CGRectInset(cropRect,
@@ -282,7 +291,7 @@
     [self.fetchContext save:&saveError];
     if (saveError)
     {
-        NSLog(@"Error saving: %@", [saveError localizedDescription]);
+        DDLogError(@"Error saving scan: %@", [saveError localizedDescription]);
     }
     
     [self stopCapture];
@@ -308,9 +317,15 @@
     // Release any retained subviews of the main view.
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
 {
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (IBAction)showHistory:(id)sender

@@ -79,9 +79,15 @@ static NSString * kLinksKeyLinkTitle    = @"name";
     // Release any retained subviews of the main view.
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
 {
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - Loading View
@@ -130,7 +136,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
                                                                             command:nil
                                                                          parameters:nil];
     
-    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error)
+    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error)
     {
         if (!error && jsonResult && [jsonResult isKindOfClass:[NSArray class]]) {
             [self updateLinksIfNeeded:(NSArray *)jsonResult];
@@ -302,7 +308,7 @@ static NSString * kLinksKeyLinkTitle    = @"name";
                                    appendComponent:executableName
                                              error:&error];
     if (error) {
-        ELog(@"Unable to find or create application caches directory:\n%@", error);
+        DDLogError(@"Unable to find or create application caches directory:\n%@", error);
     }
     return result;
 }

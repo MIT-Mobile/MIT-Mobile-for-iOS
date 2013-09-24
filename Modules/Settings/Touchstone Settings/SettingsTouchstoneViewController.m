@@ -91,6 +91,8 @@ enum {
         tableView.allowsSelection = NO;
         tableView.scrollEnabled = NO;
         tableView.backgroundColor = [UIColor clearColor];
+        tableView.backgroundView = nil;
+        tableView.opaque = NO;
         
         viewBounds.origin.y += tableFrame.size.height;
         [mainView addSubview:tableView];
@@ -139,10 +141,15 @@ enum {
     // e.g. self.myOutlet = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - Private Methods
@@ -300,7 +307,7 @@ enum {
             
             [self.authOperation authenticateUsingUsername:username
                                                  password:password];
-            self.authOperation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error)
+            self.authOperation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error)
             {
                 self.authOperation = nil;
                 self.navigationItem.titleView = nil;
@@ -329,7 +336,7 @@ enum {
     }
     else
     {
-        DLog(@"Saved Touchstone password has been cleared");
+        DDLogVerbose(@"Saved Touchstone password has been cleared");
         [self saveWithUsername:nil
                       password:nil];
     }

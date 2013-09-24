@@ -13,6 +13,7 @@
 #import "StoryListViewController.h"
 #import "StoryGalleryViewController.h"
 #import "URLShortener.h"
+#import "UIKit+MITAdditions.h"
 
 @interface StoryDetailViewController ()
 @property (strong) UISegmentedControl *storyPager;
@@ -87,9 +88,15 @@
     [self setView:mainView];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
 {
-    return YES;
+    return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 - (void)viewDidLoad {

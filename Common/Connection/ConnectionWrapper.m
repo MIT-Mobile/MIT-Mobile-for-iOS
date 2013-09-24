@@ -181,7 +181,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 		return NO;		// notify of failure
 	}
 	
-    VLog(@"Requesting URL %@ %@", url, ((shouldCache) ? @"allowing cached responses" : @"ignoring cache"));
+    DDLogVerbose(@"Requesting URL %@ %@", url, ((shouldCache) ? @"allowing cached responses" : @"ignoring cache"));
     
 	// prep the variables for incoming data
 	[self resetObjects];

@@ -6,6 +6,7 @@
 #import "FacilitiesRoomViewController.h"
 #import "MITLoadingActivityView.h"
 #import "MITLogging.h"
+#import "UIKit+MITAdditions.h"
 
 static const NSUInteger kMaxResultCount = 10;
 
@@ -13,6 +14,8 @@ static const NSUInteger kMaxResultCount = 10;
 @property (nonatomic,retain) NSArray* filteredData;
 @property (nonatomic,retain) CLLocation *currentLocation;
 @property (nonatomic,retain) NSTimer *locationTimeout;
+@property (nonatomic,retain) id observerToken;
+
 - (void)displayTableForCurrentLocation;
 - (void)startUpdatingLocation;
 - (void)stopUpdatingLocation;
@@ -113,14 +116,15 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [[FacilitiesLocationData sharedData] addObserver:self
-                                           withBlock:^(NSString *name, BOOL dataUpdated, id userData) {
-                                               BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey]);
-                                               if (commandMatch && dataUpdated) {
-                                                   self.filteredData = nil;
-                                                   [self displayTableForCurrentLocation];
-                                               }
-                                           }];
+    if (self.observerToken == nil) {
+        self.observerToken = [[FacilitiesLocationData sharedData] addUpdateObserver:^(NSString *name, BOOL dataUpdated, id userData) {
+                                                   BOOL commandMatch = ([userData isEqualToString:FacilitiesLocationsKey]);
+                                                   if (commandMatch && dataUpdated) {
+                                                       self.filteredData = nil;
+                                                       [self displayTableForCurrentLocation];
+                                                   }
+                                               }];
+    }
     
     [self startUpdatingLocation];
 }
@@ -128,7 +132,11 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    [[FacilitiesLocationData sharedData] removeObserver:self];
+    if (self.observerToken) {
+        [[FacilitiesLocationData sharedData] removeUpdateObserver:self.observerToken];
+        self.observerToken = nil;
+    }
+    
     [self stopUpdatingLocation];
 }
 
@@ -138,10 +146,15 @@ static const NSUInteger kMaxResultCount = 10;
     [self stopUpdatingLocation];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark - Private Methods
@@ -199,7 +212,7 @@ static const NSUInteger kMaxResultCount = 10;
 }
 
 - (void)locationUpdateTimedOut {
-    DLog(@"Timeout triggered at accuracy of %f meters", [self.currentLocation horizontalAccuracy]);
+    DDLogVerbose(@"Timeout triggered at accuracy of %f meters", [self.currentLocation horizontalAccuracy]);
     [self displayTableForCurrentLocation];
     [self stopUpdatingLocation];
 }
@@ -256,7 +269,7 @@ static const NSUInteger kMaxResultCount = 10;
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     [self stopUpdatingLocation];
     
-    ELog(@"%@",[error localizedDescription]);
+    DDLogError(@"%@",[error localizedDescription]);
     
     switch([error code])
     {

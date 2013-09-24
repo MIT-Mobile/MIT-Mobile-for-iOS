@@ -17,7 +17,7 @@ NSDictionary* MobileKeychainFindItem(NSString *itemIdentifier, BOOL returnData) 
     OSStatus error = SecItemCopyMatching((CFDictionaryRef)searchDictionary, (CFTypeRef*)&itemAttrs);
     
     if ((error != noErr) && (error != errSecItemNotFound)) {
-        ELog(@"SecItemCopyMatching failed with error %ld", error);
+        DDLogCError(@"SecItemCopyMatching failed with error %ld", error);
     } else if (returnData) {
         [searchDictionary setObject:(id)kCFBooleanTrue
                              forKey:(id)kSecReturnData];
@@ -40,7 +40,7 @@ NSDictionary* MobileKeychainFindItem(NSString *itemIdentifier, BOOL returnData) 
     }
     
     if ((error != noErr) && (error != errSecItemNotFound)) {
-        ELog(@"SecItemCopyMatching failed with error %ld", error);
+        DDLogCError(@"SecItemCopyMatching failed with error %ld", error);
     }
     
     return [itemAttrs autorelease];
@@ -62,7 +62,7 @@ NSDictionary* MobileKeychainAttributesForItem(NSString *itemIdentifier) {
     OSStatus error = SecItemCopyMatching((CFDictionaryRef)searchDictionary, (CFTypeRef*)&result);
     
     if (error != noErr) {
-        ELog(@"SecItemCopyMatching failed with error %ld", error);
+        DDLogCError(@"SecItemCopyMatching failed with error %ld", error);
         return nil;
     } else {
         return [result autorelease];
@@ -115,7 +115,7 @@ BOOL MobileKeychainSetItem(NSString *itemIdentifier, NSString *username, NSStrin
     }
     
     if (error != noErr) {
-        ELog(@"Item add failed with error %ld", error);
+        DDLogCError(@"Item add failed with error %ld", error);
     }
     
     return (error == noErr);

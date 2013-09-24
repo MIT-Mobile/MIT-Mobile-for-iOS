@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
-#import "FBConnect.h"
 
-@protocol ShareItemDelegate
+@protocol ShareItemDelegate <NSObject>
 
 - (NSString *)actionSheetTitle;
 
@@ -20,23 +19,12 @@
 - (NSString *)twitterTitle;
 
 @optional
+- (UIImage*)postImage;
 
 @end
 
 
-@interface ShareDetailViewController : UIViewController <UIActionSheetDelegate, FBSessionDelegate, FBDialogDelegate> {
-
-	FBSession *fbSession;
-	id<ShareItemDelegate> shareDelegate;
-
-}
-
-@property (nonatomic, retain) FBSession *fbSession;
-@property (nonatomic, retain) id<ShareItemDelegate> shareDelegate;
-
+@interface ShareDetailViewController : UIViewController <UIActionSheetDelegate>
+@property (nonatomic, weak) id<ShareItemDelegate> shareDelegate;
 - (void)share:(id)sender;
-- (void)showTwitterView;
-- (void)showFacebookDialog;
-- (void)postItemToFacebook;
-
 @end

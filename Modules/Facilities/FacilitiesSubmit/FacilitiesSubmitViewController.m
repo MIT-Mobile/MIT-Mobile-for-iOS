@@ -1,15 +1,14 @@
 #import "FacilitiesSubmitViewController.h"
 #import "FacilitiesRootViewController.h"
 #import "FacilitiesConstants.h"
-
+#import "NSData+MGTwitterBase64.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesRoom.h"
 #import "FacilitiesRepairType.h"
-#import "NSData+MGTwitterBase64.h"
 #import "MITUIConstants.h"
+#import "MobileRequestOperation.h"
 
 @interface FacilitiesSubmitViewController ()
-@property (retain) MITMobileWebAPI *request;
 @property BOOL abortRequest;
 
 - (void)setStatusText:(NSString *)string;
@@ -24,7 +23,6 @@
 @synthesize completeButton = _completeButton;
 @synthesize abortRequest = _abortRequest;
 @synthesize reportDictionary = _reportDictionary;
-@synthesize request = _request;
 
 - (void)dealloc {
     self.statusLabel = nil;
@@ -99,16 +97,10 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    self.request = [[[MITMobileWebAPI alloc] initWithModule:@"facilities"
-                                                    command:@"upload"
-                                                 parameters:nil] autorelease];
-    self.request.jsonDelegate = self;
-    self.request.usePOSTMethod = YES;
-    [self.request setValue:@""
-              forParameter:@"name"];
-    [self.request setValue:[self.reportDictionary objectForKey:FacilitiesRequestUserEmailKey]
-              forParameter:@"email"];
+
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:8];
+    [params setObject:@"" forKey:@"name"];
+    [params setObject:[self.reportDictionary objectForKey:FacilitiesRequestUserEmailKey] forKey:@"email"];
     
     FacilitiesLocation *location = [self.reportDictionary objectForKey:FacilitiesRequestLocationBuildingKey];
     FacilitiesRoom *room = [self.reportDictionary objectForKey:FacilitiesRequestLocationRoomKey];
@@ -117,51 +109,55 @@
     NSString *customRoom = [self.reportDictionary objectForKey:FacilitiesRequestLocationUserRoomKey];
     
     if (location) {
-        [self.request setValue:location.name
-                  forParameter:@"locationName"];
-        [self.request setValue:location.number
-                  forParameter:@"buildingNumber"];
-        [self.request setValue:location.uid
-                  forParameter:@"location"];
+        [params setObject:location.name forKey:@"locationName"];
+        [params setObject:location.number forKey:@"buildingNumber"];
+        [params setObject:location.uid forKey:@"location"];
     } else {
-        [self.request setValue:customLocation
-                  forParameter:@"locationNameByUser"];
+        [params setObject:customLocation forKey:@"locationNameByUser"];
     }
     
     if (room) {
-        [self.request setValue:room.number
-                  forParameter:@"roomName"];
+        [params setObject:room.number forKey:@"roomName"];
     } else {
-        [self.request setValue:customRoom
-                  forParameter:@"roomNameByUser"];
+        [params setObject:customRoom forKey:@"roomNameByUser"];
     }
     
-    [self.request setValue:type.name
-              forParameter:@"problemType"];
+    [params setObject:type.name forKey:@"problemType"];
     
-    [self.request setValue:[self.reportDictionary objectForKey:FacilitiesRequestUserDescriptionKey]
-              forParameter:@"message"];
+    [params setObject:[self.reportDictionary objectForKey:FacilitiesRequestUserDescriptionKey] 
+               forKey:@"message"];
     
     NSData *pictureData = [self.reportDictionary objectForKey:FacilitiesRequestImageDataKey];
     if (pictureData) {
-        [self.request setValue:[pictureData base64EncodingWithLineLength:64]
-                  forParameter:@"image"];
-        [self.request setValue:@"image/jpeg"
-                  forParameter:@"imageFormat"];
+        [params setObject:[pictureData base64EncodingWithLineLength:64] forKey:@"image"];
+        [params setObject:@"image/jpeg" forKey:@"imageFormat"];
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^(void) {
-        [self.progressView setProgress:0.0];
-        self.progressView.hidden = NO;
-        self.completeButton.hidden = YES;
-        [self setStatusText:@"Uploading report..."];
-        [self.request start];
-    });
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"facilities"
+                                                                              command:@"upload"
+                                                                           parameters:params] autorelease];
+    request.usePOST = YES;
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        if (!error && 
+            [jsonResult respondsToSelector:@selector(objectForKey:)] &&
+            [[jsonResult objectForKey:@"success"] boolValue] == YES)
+        {
+            [self showSuccess];
+        } else {
+            [self showFailure];
+        }
+    };
+    
+    [self.progressView setProgress:0.0];
+    self.progressView.hidden = NO;
+    self.completeButton.hidden = YES;
+    [self setStatusText:@"Uploading report..."];
+
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self.request cancel];
 }
 
 - (void)viewDidUnload {
@@ -171,8 +167,15 @@
     [super viewDidUnload];    
 }
 
+// Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (IBAction)reportCompleted:(id)sender {
@@ -205,27 +208,6 @@
     self.progressView.hidden = YES;
     self.completeButton.hidden = NO;
     [self setStatusText:@"Unable to submit report. Please try again later."];
-}
-
-#pragma mark - JSONDelegate Methods
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
-    self.request = nil;
-    if ([JSONObject respondsToSelector:@selector(objectForKey:)] &&
-        [[JSONObject objectForKey:@"success"] boolValue] == YES) {
-        [self showSuccess];
-    } else {
-        [self showFailure];
-    }
-}
-
-- (void)request:(MITMobileWebAPI *)request totalBytesWritten:(NSInteger)bytesWritten totalBytesExpected:(NSInteger)bytesExpected {
-    [self.progressView setProgress:(double)bytesWritten/(double)bytesExpected];
-}
-
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    self.request = nil;
-    [self showFailure];
-    return NO;
 }
 
 @end

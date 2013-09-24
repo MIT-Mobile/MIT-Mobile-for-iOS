@@ -43,7 +43,10 @@
         self.canShowCallout = NO;
         self.backgroundColor = [UIColor clearColor];
         self.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-        self.layer.anchorPoint = CGPointMake(0.5, 1.0);
+        self.image = [UIImage imageNamed:@"map/map_pin_complete.png"];
+        self.centerOffset = CGPointMake(0, -(self.image.size.height / 2.0));
+        self.calloutOffset = CGPointMake(0, (self.image.size.height / 4.0));
+        self.canShowCallout = YES;
     }
     return self;
 }

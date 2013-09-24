@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "MITCalendarEvent.h"
 #import "EventCategory.h"
-#import "MITMobileWebAPI.h"
 
 #define kCalendarTopLevelCategoryID -1
 #define kCalendarEventTimeoutSeconds 900
@@ -28,7 +27,7 @@ extern NSString * const CalendarEventAPISearch;
 
 @class MITEventList;
 
-@interface CalendarDataManager : NSObject <JSONLoadedDelegate> {
+@interface CalendarDataManager : NSObject {
 	
 	id <CalendarDataManagerDelegate> _delegate;
 	NSArray *_eventLists;

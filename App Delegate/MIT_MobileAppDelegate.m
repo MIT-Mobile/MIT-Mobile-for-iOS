@@ -7,6 +7,11 @@
 #import "AudioToolbox/AudioToolbox.h"
 #import "MITSpringboard.h"
 #import "ModuleVersions.h"
+#import "MITRotationForwardingNavigationController.h"
+#import <FacebookSDK/FacebookSDK.h>
+#import "MITLogging.h"
+#import "Secret.h"
+#import "SDImageCache.h"
 
 @implementation MIT_MobileAppDelegate
 @synthesize window,
@@ -18,11 +23,31 @@
 @synthesize springboardController = _springboardController,
             moduleStack = _moduleStack;
 
++ (void)initialize {
+    [NSTimeZone setDefaultTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
+}
+
 #pragma mark -
 #pragma mark Application lifecycle
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [FBSession setDefaultAppID:FacebookAppId];
+    
+#if defined(TESTFLIGHT)
+    if ([MITApplicationTestFlightToken length]) {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+        #pragma clang diagnostic pop
+        
+        [TestFlight setOptions:@{@"logToConsole" : @NO,
+                                 @"logToSTDERR"  : @NO}];
+        [TestFlight takeOff:MITApplicationTestFlightToken];
+    }
+#endif
     
     networkActivityRefCount = 0;
+    
+    [[SDImageCache sharedImageCache] setMaxCacheAge:60 * 60 * 24];
     
     [self updateBasicServerInfo];
     
@@ -37,7 +62,7 @@
     springboard.primaryModules = [NSArray arrayWithArray:self.modules];
     springboard.delegate = self;
     
-    UINavigationController *rootController = [[UINavigationController alloc] initWithRootViewController:springboard];
+    MITRotationForwardingNavigationController *rootController = [[MITRotationForwardingNavigationController alloc] initWithRootViewController:springboard];
     rootController.delegate = springboard;
     rootController.navigationBar.barStyle = UIBarStyleBlack;
     
@@ -52,7 +77,22 @@
 		aModule.currentPath = [pathAndQuery objectForKey:@"path"];
 		aModule.currentQuery = [pathAndQuery objectForKey:@"query"];
 	}
-
+    
+    DDLogVerbose(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
+    
+    if (self.window == nil)
+    {
+        self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
+        [self.window addSubview:self.rootNavigationController.view];
+        self.window.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                        UIViewAutoresizingFlexibleWidth);
+    }
+    else
+    {
+        self.window.frame = [[UIScreen mainScreen] bounds];
+    }
+    
+    DDLogVerbose(@"Main screen size: %@ [%@]", NSStringFromCGRect([[UIScreen mainScreen] bounds]), self.window);
     [self.window setRootViewController:self.rootNavigationController];
     self.window.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
     [self.window makeKeyAndVisible];
@@ -77,7 +117,7 @@
 	if(apnsDict) {
 		MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
 		[[self moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:YES];
-		DLog(@"Application opened in response to notification=%@", notification);
+		DDLogVerbose(@"Application opened in response to notification=%@", notification);
 	}
     
     return YES;
@@ -87,41 +127,46 @@
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     BOOL canHandle = NO;
     
-    NSString *scheme = [url scheme];
-    NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-    NSArray *urlTypes = [infoDict objectForKey:@"CFBundleURLTypes"];
-    for (NSDictionary *type in urlTypes) {
-        NSArray *schemes = [type objectForKey:@"CFBundleURLSchemes"];
-        for (NSString *supportedScheme in schemes) {
-            if ([supportedScheme isEqualToString:scheme]) {
-                canHandle = YES;
+    canHandle = [[FBSession activeSession] handleOpenURL:url];
+    
+    if (canHandle == NO)
+    {
+        NSString *scheme = [url scheme];
+        NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+        NSArray *urlTypes = [infoDict objectForKey:@"CFBundleURLTypes"];
+        for (NSDictionary *type in urlTypes) {
+            NSArray *schemes = [type objectForKey:@"CFBundleURLSchemes"];
+            for (NSString *supportedScheme in schemes) {
+                if ([supportedScheme isEqualToString:scheme]) {
+                    canHandle = YES;
+                    break;
+                }
+            }
+            if (canHandle) {
                 break;
             }
         }
+        
         if (canHandle) {
-            break;
+            NSString *path = [url path];
+            NSString *moduleTag = [url host];
+            MITModule *module = [self moduleForTag:moduleTag];
+            if ([path rangeOfString:@"/"].location == 0) {
+                path = [path substringFromIndex:1];
+            }
+            
+            // right now expecting URLs like mitmobile://people/search?Some%20Guy
+            NSString *query = [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            
+            if (!module.hasLaunchedBegun) {
+                module.hasLaunchedBegun = YES;
+            }
+            
+            DDLogVerbose(@"handling internal url: %@", url);
+            canHandle = [module handleLocalPath:path query:query];
+        } else {
+            DDLogWarn(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
         }
-    }
-    
-    if (canHandle) {
-        NSString *path = [url path];
-        NSString *moduleTag = [url host];
-        MITModule *module = [self moduleForTag:moduleTag];
-        if ([path rangeOfString:@"/"].location == 0) {
-            path = [path substringFromIndex:1];
-        }
-        
-        // right now expecting URLs like mitmobile://people/search?Some%20Guy
-        NSString *query = [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
-        if (!module.hasLaunchedBegun) {
-            module.hasLaunchedBegun = YES;
-        }
-        
-        DLog(@"handling internal url: %@", url);
-        canHandle = [module handleLocalPath:path query:query];
-    } else {
-        WLog(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
     }
 
     return canHandle;
@@ -153,7 +198,16 @@
     for (MITModule *aModule in self.modules) {
         [aModule applicationWillEnterForeground];
     }
+    
     [MITUnreadNotifications updateUI];
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    // (https://developers.facebook.com/docs/tutorials/ios-sdk-tutorial/authenticate - 2013.07.17)
+    // We need to properly handle activation of the application with regards to Facebook Login
+    // (e.g., returning from iOS 6.0 Login Dialog or from fast app switching).
+    [FBSession.activeSession handleDidBecomeActive];
 }
 
 #pragma mark -
@@ -173,35 +227,22 @@
 - (void)showNetworkActivityIndicator {
     networkActivityRefCount++;
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    VLog(@"network indicator ++ %d", networkActivityRefCount);
+    DDLogVerbose(@"network indicator ++ %d", networkActivityRefCount);
 }
 
 - (void)hideNetworkActivityIndicator {
     if (networkActivityRefCount > 0) {
         networkActivityRefCount--;
-        VLog(@"network indicator -- %d", networkActivityRefCount);
+        DDLogVerbose(@"network indicator -- %d", networkActivityRefCount);
     }
     if (networkActivityRefCount == 0) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-        VLog(@"network indicator off");
+        DDLogVerbose(@"network indicator off");
     }
 }
 
 #pragma mark -
-#pragma mark This should probably go in another place
-/*
- * The MIT150 module and all things related to it should suddenly 
- * disappear about two weeks after the Open House on April 30th.
- *
- * If we want it to disappear sooner for some reason, we can flip 
- * the "should_show_mit150" bit on http://m.mit.edu/?module=general.
- */
-
-- (BOOL)shouldShowOpenHouseContent {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return ([defaults boolForKey:@"ShouldHideOpenHouse"] == NO);
-}
-
+#pragma mark This should probably go in another place 
 - (void)updateBasicServerInfo {
     [[ModuleVersions sharedVersions] updateVersionInformation];
 }
@@ -249,7 +290,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo {
 
 - (void)application:(UIApplication *)application 
 didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-	VLog(@"Registered for push notifications. deviceToken == %@", deviceToken);
+	DDLogVerbose(@"Registered for push notifications. deviceToken == %@", deviceToken);
     self.deviceToken = deviceToken;
     
 	MITIdentity *identity = [MITDeviceRegistration identity];
@@ -266,7 +307,7 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 
 - (void)application:(UIApplication *)application 
 didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-    WLog(@"%@", [error localizedDescription]);
+    DDLogWarn(@"%@", [error localizedDescription]);
 	MITIdentity *identity = [MITDeviceRegistration identity];
 	if(!identity) {
 		[MITDeviceRegistration registerNewDeviceWithToken:nil];

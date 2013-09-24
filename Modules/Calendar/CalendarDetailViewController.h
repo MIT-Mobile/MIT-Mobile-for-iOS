@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "MITMobileWebAPI.h"
 #import "ShareDetailViewController.h"
 #import <EventKitUI/EventKitUI.h>
 
@@ -15,33 +14,12 @@ typedef enum {
 } CalendarDetailRowType;
 
 @interface CalendarDetailViewController : ShareDetailViewController <
-UITableViewDelegate, UITableViewDataSource, JSONLoadedDelegate, ShareItemDelegate, 
-UIWebViewDelegate, EKEventEditViewDelegate> {
-	
-    MITMobileWebAPI *apiRequest;
-    BOOL isLoading;
-    
-	MITCalendarEvent *event;
-	CalendarDetailRowType* rowTypes;
-	NSInteger numRows;
-	
-	UITableView *_tableView;
-	UIButton *shareButton;
-    UISegmentedControl *eventPager;
-	
-    CGFloat descriptionHeight;
-	NSString *descriptionString;
-	
-    CGFloat categoriesHeight;
-	NSString *categoriesString;
+UITableViewDelegate, UITableViewDataSource, ShareItemDelegate, 
+UIWebViewDelegate, EKEventEditViewDelegate>
 
-	// list of events to scroll through for previous/next buttons
-	NSArray *events;
-}
-
-@property (nonatomic, retain) MITCalendarEvent *event;
-@property (nonatomic, retain) UITableView *tableView;
-@property (nonatomic, retain) NSArray *events;
+@property (nonatomic, strong) MITCalendarEvent *event;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSArray *events;
 
 - (void)reloadEvent;
 - (void)setupHeader;

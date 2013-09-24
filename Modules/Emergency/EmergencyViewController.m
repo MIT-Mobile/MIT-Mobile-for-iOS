@@ -31,10 +31,11 @@
 	infoWebView.delegate = self;
 	infoWebView.dataDetectorTypes = UIDataDetectorTypeAll;
 	infoWebView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    infoWebView.scrollView.scrollsToTop = NO;
 	htmlFormatString = [@"<html>"
 						"<head>"
 						"<style type=\"text/css\" media=\"screen\">"
-						"body { margin: 0; padding: 0; font-family: Helvetica; font-size: 17px; } "
+						"body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 17px; } "
 						"</style>"
 						"</head>"
 						"<body>"
@@ -67,24 +68,16 @@
 	[emergencyModule resetURL];
 }
 
-/*
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-*/
-/*
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-*/
-
-/*
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
-*/
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -235,7 +228,8 @@
                 existingWebView = [[UIWebView alloc] initWithFrame:infoWebView.frame];
                 existingWebView.delegate = self;
                 existingWebView.tag = 42;
-                infoWebView.dataDetectorTypes = UIDataDetectorTypeAll;
+                existingWebView.dataDetectorTypes = UIDataDetectorTypeAll;
+                existingWebView.scrollView.scrollsToTop = NO;
                 [cell.contentView addSubview:existingWebView];
                 [existingWebView release];
             }
@@ -356,7 +350,8 @@
 
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidLoadNotification object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidFailToLoadNotification object:nil];
 	[htmlFormatString release];
 	self.htmlString = nil;
 	self.infoWebView = nil;

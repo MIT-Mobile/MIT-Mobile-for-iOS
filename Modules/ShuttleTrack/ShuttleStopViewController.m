@@ -9,13 +9,15 @@
 #import "ShuttleDataManager.h"
 #import "RouteMapViewController.h"
 #import "ShuttleRouteViewController.h"
+#import "MITMapAnnotationView.h"
+#import "Foundation+MITAdditions.h"
 
 #define NOTIFICATION_MINUTES 5
 #define MARGIN 10
 #define PADDING 4
 #define kHeaderTag 837402
 
-@interface ShuttleStopViewController(Private)
+@interface ShuttleStopViewController () <UIAlertViewDelegate>
 
 //-(void) loadRouteData;
 
@@ -68,6 +70,17 @@
 	self.tableView.dataSource = nil;
 	
  	[super dealloc];
+}
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)viewDidLoad {
@@ -371,7 +384,7 @@
         // Shuttle alerts don't do anything with badges.
 		UIAlertView *alertView = [[UIAlertView alloc] 
                                   initWithTitle:@"Notifications Disabled"
-                                  message:@"All notifications for MIT Mobile have been disabled. Quit this application and go to Settings > Notifications to enable them."
+                                  message:@"All notifications for MIT Mobile are disabled. Quit this application and go to Settings > Notifications to enable them."
                                   delegate:nil 
                                   cancelButtonTitle:@"OK" 
                                   otherButtonTitles:nil];
@@ -408,11 +421,11 @@
 		// user opted out of notifications in Settings module
 		// just show an alert and exit this handler
 		UIAlertView *alertView = [[UIAlertView alloc] 
-                                  initWithTitle:@"Notifications Disabled"
-                                  message:@"Shuttle notifications have been disabled. Go to More > Settings to enable them."
-                                  delegate:nil 
-                                  cancelButtonTitle:@"OK" 
-                                  otherButtonTitles:nil];
+                                  initWithTitle:@"Turn on shuttle notifications to set shuttle alerts."
+                                  message:nil
+                                  delegate:self
+                                  cancelButtonTitle:@"Cancel"
+                                  otherButtonTitles:@"Settings",nil];
 		
         // TODO: If settings are disabled in the Settings module, we should add a button in this dialogue to switch the user to the Settings module.
         
@@ -478,9 +491,9 @@
         annotationView.image = [UIImage imageNamed:@"shuttle/map_pin_shuttle_stop_complete.png"];
 		annotationView.showsCustomCallout = NO;
 		annotationView.backgroundColor = [UIColor clearColor];
-		annotationView.centeredVertically = YES;
-		//annotationView.alreadyOnMap = YES;
-		//annotationView.layer.anchorPoint = CGPointMake(0.5, 0.5);
+        annotationView.centerOffset = CGPointMake(0,-(annotationView.image.size.height / 2.0));
+        annotationView.canShowCallout = NO;
+        
 	}
 	
 	return annotationView;
@@ -602,6 +615,21 @@
 		}
 	}
 }
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSString *buttonText = [alertView buttonTitleAtIndex:buttonIndex];
+    
+    if ([buttonText isEqualToString:@"Settings"]) {
+        NSURL *localURL = [NSURL internalURLWithModuleTag:SettingsTag
+                                                path:@"/"];
+        
+        if ([[UIApplication sharedApplication] canOpenURL:localURL]) {
+            [[UIApplication sharedApplication] openURL:localURL];
+        }
+    }
+}
+
 @end
 
 @implementation ShuttlePredictionTableViewCell

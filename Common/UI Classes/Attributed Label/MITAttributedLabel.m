@@ -152,7 +152,9 @@
     {
         CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)self.visibleAttributedString);
         self.framesetter = framesetter;
-        CFRelease(framesetter);
+        if (framesetter) {
+            CFRelease(framesetter);
+        }
     }
 
     return _framesetter;

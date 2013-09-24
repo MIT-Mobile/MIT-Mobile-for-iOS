@@ -4,6 +4,11 @@
 #include <mach/machine.h>
 #import "Foundation+MITAdditions.h"
 
+inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
+{
+    return (fabs(((double)f0) - ((double)f1)) <= epsilon);
+}
+
 @implementation NSURL (MITAdditions)
 
 + (NSURL *)internalURLWithModuleTag:(NSString *)tag path:(NSString *)path {
@@ -14,11 +19,38 @@
     if ([path rangeOfString:@"/"].location != 0) {
         path = [NSString stringWithFormat:@"/%@", path];
     }
+    
     if ([query length] > 0) {
         path = [path stringByAppendingFormat:@"?%@", query];
     }
-    NSURL *url = [[NSURL alloc] initWithScheme:MITInternalURLScheme host:tag path:path];
-    return [url autorelease];
+    
+    return [[NSURL alloc] initWithScheme:MITInternalURLScheme
+                                    host:tag
+                                    path:path];
+}
+
+@end
+
+@implementation NSArray (MITAdditions)
+
+- (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block {
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
+    [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [result addObject:block(obj, idx)];
+    }];
+    return result;
+}
+
+@end
+
+@implementation NSSet (MITAdditions)
+
+- (NSSet *)mapObjectsUsingBlock:(id (^)(id obj))block {
+    NSMutableSet *result = [NSMutableSet setWithCapacity:[self count]];
+    [self enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+        [result addObject:block(obj)];
+    }];
+    return result;
 }
 
 @end
@@ -37,7 +69,6 @@
 @end
 
 @implementation NSString (MITAdditions)
-
 - (NSString *)substringToMaxIndex:(NSUInteger)to {
 	NSUInteger maxLength = [self length] - 1;
 	return [self substringToIndex:(to > maxLength) ? maxLength : to];
@@ -50,7 +81,6 @@
     
     return (substringRange.location != NSNotFound);
 }
-
 @end
 
 
@@ -74,12 +104,11 @@ static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
                                                     withTemplate:@"\x0D\x0A"];
     }
     
-    NSString *encodedString =  (NSString*)CFURLCreateStringByAddingPercentEscapes(NULL,
+    NSString *encodedString =  (NSString*)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
                                                                                   (CFStringRef)stringToEncode,
                                                                                   (formUrlEncoded ? CFSTR(" ") : NULL),
                                                                                   (CFStringRef)forceEscapedCharacters,
-                                                                                  CFStringConvertNSStringEncodingToEncoding(encoding));
-    [encodedString autorelease];
+                                                                                  CFStringConvertNSStringEncodingToEncoding(encoding)));
     
     if (formUrlEncoded) {
         encodedString = [encodedString stringByReplacingOccurrencesOfString:@" "
@@ -94,11 +123,10 @@ static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
 }
 
 - (NSString*)urlDecodeUsingEncoding:(NSStringEncoding)encoding {
-    NSString *decodedString = (NSString*)CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
-                                                                                                 (CFStringRef)self,
-                                                                                                 NULL,
-                                                                                                 CFStringConvertNSStringEncodingToEncoding(encoding));
-    return [decodedString autorelease];
+    return (NSString*)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
+                                                                                                (CFStringRef)self,
+                                                                                                NULL,
+                                                                                                CFStringConvertNSStringEncodingToEncoding(encoding)));
 }
 @end
 
@@ -209,7 +237,7 @@ typedef struct {
                                                                range:NSMakeRange(0, [replString length])];
         
         if (entities > 0) {
-            DLog(@"Replaced %lu of %s -> %s", (unsigned long)entities, entity->entityName, entity->entityCode);
+            DDLogVerbose(@"Replaced %lu of %s -> %s", (unsigned long)entities, entity->entityName, entity->entityCode);
         }
         
         ++entity;
@@ -247,6 +275,38 @@ typedef struct {
     
     return result;
 }
+
+/** String representation with HTML tags removed.
+ 
+ Replaces all angle bracketed text with spaces, collapses all spaces down to a single space, and trims leading and trailing whitespace and newlines.
+ 
+ @return A plain text string suitable for display in a UILabel.
+ */
+
+- (NSString *)stringByStrippingTags {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"<[^>]*>"
+                                                                           options:NSRegularExpressionDotMatchesLineSeparators
+                                                                             error:&error];
+    NSString *stripped = [regex stringByReplacingMatchesInString:self
+                                                         options:0
+                                                           range:NSMakeRange(0, [self length])
+                                                    withTemplate:@" "];
+    if (!error) {
+        regex = [NSRegularExpression regularExpressionWithPattern:@"\\s{2,}"
+                                                          options:0 error:&error];
+        stripped = [regex stringByReplacingMatchesInString:stripped
+                                                   options:NSRegularExpressionDotMatchesLineSeparators
+                                                     range:NSMakeRange(0, [stripped length])
+                                              withTemplate:@" "];
+    } else {
+        DDLogError(@"%@", error);
+        // In case of a problem, return the string as is.
+        return self;
+    }
+    return [stripped stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
 @end
 
 @implementation UIDevice (MITAdditions)
@@ -257,7 +317,7 @@ typedef struct {
     int status = sysctlbyname(typeString, NULL, &size, NULL, 0);
 
     if (status) {
-        ELog(@"sysctl '%@' failed: %s", typeSpecifier, strerror(status));
+        DDLogError(@"sysctl '%@' failed: %s", typeSpecifier, strerror(status));
         return nil;
     }
     
@@ -265,7 +325,7 @@ typedef struct {
     memset(result, 0, size);
     status = sysctlbyname(typeString, result, &size, NULL, 0);
     if (status) {
-        ELog(@"sysctl '%@' failed: %s", typeSpecifier, (const char*)strerror(status));
+        DDLogError(@"sysctl '%@' failed: %s", typeSpecifier, (const char*)strerror(status));
         free(result);
         return nil;
     }
@@ -321,4 +381,244 @@ typedef struct {
         return @"Unknown";
     }
 }
+@end
+
+
+@implementation NSDate (MITAdditions)
+
++ (NSDate *)fakeDateForDining {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterShortStyle];
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    [calendar setTimeZone:[NSTimeZone defaultTimeZone]];
+    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
+    components.hour = 20;
+    components.year = 2013;
+    components.month = 5;
+    components.day = 3;
+    
+    return [calendar dateFromComponents:components];
+}
+
++ (NSDate *) dateForTodayFromTimeString:(NSString *)time
+{
+    // takes date string of format hh:mm and returns an NSDate with today's date at the specified time.
+    
+    NSCalendar *cal = [NSCalendar cachedCurrentCalendar];
+    NSDateComponents *comp = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSTimeZoneCalendarUnit fromDate:[NSDate date]];
+    
+    NSArray *timeComponents = [time componentsSeparatedByString:@":"];
+    comp.hour = [[timeComponents objectAtIndex:0] integerValue];
+    comp.minute = [[timeComponents objectAtIndex:1] integerValue];
+    
+    return [cal dateFromComponents:comp];
+}
+
+#pragma mark Comparing Dates
+- (BOOL) isEqualToDateIgnoringTime:(NSDate *)aDate
+{
+    return [self isEqualToDate:aDate
+                    components:(NSYearCalendarUnit |
+                                NSMonthCalendarUnit |
+                                NSDayCalendarUnit)];
+}
+
+- (BOOL) isEqualToDate:(NSDate*)otherDate
+            components:(NSCalendarUnit)components
+{
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    
+    NSDate *date1 = [calendar dateFromComponents:[calendar components:components
+                                                             fromDate:self]];
+    NSDate *date2 = [calendar dateFromComponents:[calendar components:components
+                                                             fromDate:otherDate]];
+    
+	return [date1 isEqual:date2];
+}
+
+- (BOOL) isToday
+{
+	return [self isEqualToDateIgnoringTime:[NSDate date]];
+}
+
+- (BOOL) isTomorrow
+{
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
+                                                             NSMonthCalendarUnit |
+                                                             NSDayCalendarUnit)
+                                                   fromDate:self];
+    
+    NSDate *compareDate = [calendar dateFromComponents:selfComponents];
+    
+    NSDateComponents *tomorrowComponents = [[NSDateComponents alloc] init];
+    [tomorrowComponents setDay:1];
+    
+    return [compareDate isEqual:[calendar dateByAddingComponents:tomorrowComponents
+                                                          toDate:compareDate
+                                                         options:0]];
+}
+
+
+- (BOOL) isYesterday
+{
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
+                                                             NSMonthCalendarUnit |
+                                                             NSDayCalendarUnit)
+                                                   fromDate:self];
+    
+    NSDate *compareDate = [calendar dateFromComponents:selfComponents];
+    
+    NSDateComponents *yesterdayComponents = [[NSDateComponents alloc] init];
+    [yesterdayComponents setDay:-1];
+    
+    return [compareDate isEqual:[calendar dateByAddingComponents:yesterdayComponents
+                                                          toDate:compareDate
+                                                         options:0]];
+}
+
+- (NSDate *) startOfDay
+{
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    return [calendar dateFromComponents:[calendar components:(NSYearCalendarUnit |
+                                                              NSMonthCalendarUnit |
+                                                              NSDayCalendarUnit)
+                                                    fromDate:self]];
+}
+
+- (NSDate *) endOfDay
+{
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    
+    NSDate *dayStart = nil;
+    NSTimeInterval dayInterval = 0;
+    [calendar rangeOfUnit:NSDayCalendarUnit
+                startDate:&dayStart
+                 interval:&dayInterval
+                  forDate:self];
+    
+    // Subtracting 1 second from the dayInterval since
+    // the -endOfDay caller expects an inclusive end date,
+    // not an exclusive one
+    --dayInterval;
+    
+    return [dayStart dateByAddingTimeInterval:dayInterval];
+}
+
+- (NSDate *) dayBefore
+{
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    
+    NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+    [dateComponents setDay:-1];
+    
+    // Strip off the time so we return a date that is at the
+    // start of the previous day
+    NSDateComponents *strippedComponents = [calendar components:(NSYearCalendarUnit |
+                                                                     NSMonthCalendarUnit |
+                                                                     NSDayCalendarUnit)
+                                                           fromDate:self];
+    
+    return [[NSCalendar cachedCurrentCalendar] dateByAddingComponents:dateComponents
+                                                               toDate:[calendar dateFromComponents:strippedComponents]
+                                                              options:0];
+}
+
+- (NSDate *) dayAfter
+{
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    
+    NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+    [dateComponents setDay:1];
+    
+    // Strip off the time so we return a date that is at the
+    // start of the next day
+    NSDateComponents *strippedComponents = [calendar components:(NSYearCalendarUnit |
+                                                                     NSMonthCalendarUnit |
+                                                                     NSDayCalendarUnit)
+                                                           fromDate:self];
+    return [calendar dateByAddingComponents:dateComponents
+                                     toDate:[calendar dateFromComponents:strippedComponents]
+                                    options:0];
+}
+
+/** Extra compact string representation of the date's time components.
+ 
+ This returns only the time of day for the date. The format is similar to "h:mma", but with the minute component only included when non-zero, e.g. "9pm", "10:30am", "4:01pm".
+ 
+ @return A compact string representation of the date's time components.
+ */
+- (NSString *) MITShortTimeOfDayString {
+    NSDateComponents *components = [[NSCalendar cachedCurrentCalendar] components:NSMinuteCalendarUnit
+                                                                         fromDate:self];
+    
+    // (bskinner,TODO)
+    // Profile this method in the wild. These NSDateFormatter allocs are expensive
+    // but I'm not sure if we're calling this method enough for it to require caching.
+    // Possible add in a thread-local cached copy if we need to.
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    
+    
+    // If the minute value is not zero, use an alternate format
+    // that includes the minutes. Otherwise, just ignore them and
+    // only include the hour and period. NSDateFormatter will alter
+    // the format strings if the user has either 24h time enabled
+    // or has disabled display of the current period.
+    if ([components minute]) {
+        [formatter setDateFormat:@"h:mma"];
+    } else {
+        [formatter setDateFormat:@"ha"];
+    }
+    
+    return [formatter stringFromDate:self];
+}
+
+- (NSDateComponents *)dayComponents {
+    return [[NSCalendar cachedCurrentCalendar] components:(NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:self];
+}
+
+- (NSDateComponents *)timeComponents {
+    return [[NSCalendar cachedCurrentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:self];
+}
+
+/** Returns a date with its time components changed to match the input date.
+
+ @param date The date from which to pull the new time of day.
+ @return An NSDate with the receiver's year, month, and day but date's hours, minutes, and seconds.
+ */
+
+- (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date {
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    
+    NSDateComponents *components = [calendar components:(NSYearCalendarUnit |
+                                                         NSMonthCalendarUnit |
+                                                         NSDayCalendarUnit)
+                                               fromDate:self];
+    
+    NSDateComponents *timeComponents = [calendar components:(NSHourCalendarUnit |
+                                                             NSMinuteCalendarUnit |
+                                                             NSSecondCalendarUnit)
+                                                   fromDate:date];
+    
+   return [calendar dateByAddingComponents:timeComponents
+                                    toDate:[calendar dateFromComponents:components]
+                                   options:0];
+}
+
+@end
+
+@implementation NSCalendar (MITAdditions)
+
+/** Returns a copy of the current calendar. This method uses CFCalendarCopyCurrent so a
+ cached copy may be returned if one is available. Do not assume that multiple calls to this
+ method will return the same reference.
+ 
+ @return The logical calendar for the current user.
+ @see CFCalendarCopyCurrent
+*/
++ (NSCalendar *)cachedCurrentCalendar {
+    return (NSCalendar*)CFBridgingRelease(CFCalendarCopyCurrent());
+}
+
 @end

@@ -18,10 +18,10 @@ NSArray* MITMobileWebGetAPIServerList( void ) {
         for (int i = 0; MobileAPIServers[i] != nil; ++i) {
             NSURL *url = [NSURL URLWithString:MobileAPIServers[i]];
             if (url != nil) {
-                DLog( @"Got %@", [url absoluteString]);
+                DDLogCVerbose( @"Got %@", [url absoluteString]);
                 [array addObject:url];
             } else {
-                ELog(@"API URL '%@' is malformed", url);
+                DDLogCError(@"API URL '%@' is malformed", url);
             }
         }
         

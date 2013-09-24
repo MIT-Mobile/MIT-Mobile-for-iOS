@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
-#import "MITMobileWebAPI.h"
 
-@interface CalendarCategoriesViewController : UITableViewController <JSONLoadedDelegate> {
+@interface CalendarCategoriesViewController : UITableViewController {
 
 	NSArray *categories;
 	

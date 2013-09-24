@@ -7,6 +7,7 @@
 #import "MorseCodePattern.h"
 #import "TourStartLocation.h"
 #import "TourLink.h"
+#import "MobileRequestOperation.h"
 
 @interface ToursDataManager (Private)
 
@@ -330,30 +331,15 @@ static ToursDataManager *s_toursDataManager = nil;
 #pragma mark API Requests
 
 - (void)requestTourList {
-    MITMobileWebAPI *api = [[[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self] autorelease];
-    api.userData = @"toursList";
-    [api requestObjectFromModule:@"tours" command:@"toursList" parameters:nil];
-}
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"tours"
+                                                                              command:@"toursList"
+                                                                           parameters:nil] autorelease];
 
-- (void)requestTour:(NSString *)tourID {
-    MITMobileWebAPI *api = [[[MITMobileWebAPI alloc] initWithJSONLoadedDelegate:self] autorelease];
-    api.userData = @"tourDetails";
-    [api requestObjectFromModule:@"tours" command:@"tourDetails" parameters:[NSDictionary dictionaryWithObjectsAndKeys:tourID, @"tourId", nil]];
-}
-
-#pragma mark JSONLoadedDelegate
-
-- (void)request:(MITMobileWebAPI *)request jsonLoaded:(id)JSONObject {
-    NSString *command = [request.params objectForKey:@"command"];
-    
-    // TODO: sanity check all inputs
-    
-    if ([command isEqualToString:@"toursList"]
-        && [JSONObject isKindOfClass:[NSArray class]])
-    {
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
         NSMutableSet *oldTourKeys = [NSMutableSet setWithArray:[_tours allKeys]];
         
-        for (NSDictionary *tourData in JSONObject) {
+            for (NSDictionary *tourData in jsonResult) {
             NSString *tourID = [tourData objectForKey:@"id"];
             CampusTour *aTour = [self tourWithID:tourID];
 
@@ -362,13 +348,13 @@ static ToursDataManager *s_toursDataManager = nil;
             if (lastModified) {
                 NSDate *localModified = aTour.lastModified;
                 if (!localModified || [remoteModified compare:localModified] == NSOrderedDescending) {
-                    DLog(@"local: %@ remote: %@", localModified, remoteModified);
+                    DDLogVerbose(@"local: %@ remote: %@", localModified, remoteModified);
 
                     aTour.title = [tourData objectForKey:@"title"];
                     aTour.summary = [tourData objectForKey:@"description"];
                     aTour.lastModified = remoteModified;
 
-                    DLog(@"deleting old data for tour %@ (%@)", aTour.title, aTour.tourID);
+                    DDLogVerbose(@"deleting old data for tour %@ (%@)", aTour.title, aTour.tourID);
                     for (TourSiteOrRoute *aComponent in aTour.components) {
                         [aComponent deleteCachedMedia];
                         [CoreDataManager deleteObject:aComponent];
@@ -385,31 +371,47 @@ static ToursDataManager *s_toursDataManager = nil;
         
         for (NSString *oldTourKey in oldTourKeys) {
             CampusTour *aTour = [self tourWithID:oldTourKey];
-            DLog(@"deleting old tour %@ (%@)", aTour.title, aTour.tourID);
+            DDLogVerbose(@"deleting old tour %@ (%@)", aTour.title, aTour.tourID);
             [_tours removeObjectForKey:aTour.tourID];
             [aTour deleteCachedMedia];
             [CoreDataManager deleteObject:aTour];
         }
         [CoreDataManager saveData];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:TourInfoLoadedNotification 
-                                                            object:self 
-                                                          userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:TourInfoLoadedNotification 
+                                                                object:self 
+                                                              userInfo:nil];
 
+        } else {
+            [[NSNotificationCenter defaultCenter] postNotificationName:TourInfoFailedToLoadNotification 
+                                                                object:self 
+                                                              userInfo:nil];
     }
+    };
     
-    else if ([command isEqualToString:@"tourDetails"]
-             &&[JSONObject isKindOfClass:[NSDictionary class]])
-    {
-        NSString *tourID = [request.params objectForKey:@"tourId"];
+    [[NSOperationQueue mainQueue] addOperation:request];
+}
+
+- (void)requestTour:(NSString *)tourID {
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:tourID, @"tourId", nil];
+    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"tours"
+                                                                              command:@"tourDetails"
+                                                                           parameters:params] autorelease];
+    
+    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+        if (error) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:TourDetailsFailedToLoadNotification 
+                                                            object:self 
+                                                          userInfo:[NSDictionary dictionaryWithObjectsAndKeys:tourID, @"tourID", nil]];
+        } else {
         CampusTour *aTour = [self tourWithID:tourID];
-        aTour.title = [JSONObject objectForKey:@"title"];
-        aTour.summary = [JSONObject objectForKey:@"description-top"];
-        aTour.moreInfo = [JSONObject objectForKey:@"description-bottom"];
-        aTour.feedbackSubject = [[JSONObject objectForKey:@"feedback"] objectForKey:@"subject"];
+            aTour.title = [jsonResult objectForKey:@"title"];
+            aTour.summary = [jsonResult objectForKey:@"description-top"];
+            aTour.moreInfo = [jsonResult objectForKey:@"description-bottom"];
+            aTour.feedbackSubject = [[jsonResult objectForKey:@"feedback"] objectForKey:@"subject"];
         
         NSInteger sortOrder = 0;
-        for (NSDictionary *linkInfo in [JSONObject objectForKey:@"links"]) {
+            for (NSDictionary *linkInfo in [jsonResult objectForKey:@"links"]) {
             TourLink *aLink = [CoreDataManager insertNewObjectForEntityForName:@"TourLink"];
             aLink.title = [linkInfo objectForKey:@"title"];
             aLink.url = [linkInfo objectForKey:@"url"];
@@ -422,7 +424,7 @@ static ToursDataManager *s_toursDataManager = nil;
         TourSiteOrRoute *lastRoute = nil;
         
         sortOrder = 0;
-        for (NSDictionary *siteInfo in [JSONObject objectForKey:@"sites"]) {
+            for (NSDictionary *siteInfo in [jsonResult objectForKey:@"sites"]) {
             NSString *siteID = [siteInfo objectForKey:@"id"];
             TourSiteOrRoute *aSite = [self tourSiteWithID:siteID];
             aSite.title = [siteInfo objectForKey:@"title"];
@@ -456,7 +458,7 @@ static ToursDataManager *s_toursDataManager = nil;
         firstSite.previousComponent = lastRoute;
         [CoreDataManager saveData];
         
-        NSDictionary *startInfo = [JSONObject objectForKey:@"start-locations"];
+            NSDictionary *startInfo = [jsonResult objectForKey:@"start-locations"];
         aTour.startLocationHeader = [startInfo objectForKey:@"header"];
         NSArray *startLocations = [startInfo objectForKey:@"items"];
         
@@ -477,27 +479,10 @@ static ToursDataManager *s_toursDataManager = nil;
                                                             object:self 
                                                           userInfo:[NSDictionary dictionaryWithObjectsAndKeys:tourID, @"tourID", nil]];
     }
-}
+    };
 
-- (BOOL)request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-    return YES;
+    [[NSOperationQueue mainQueue] addOperation:request];
 }
-
-- (void)handleConnectionFailureForRequest:(MITMobileWebAPI *)request {
-    if ([request.userData isEqualToString:@"toursList"]) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:TourInfoFailedToLoadNotification object:self userInfo:nil];
-    } else {
-        NSString *tourID = [request.params objectForKey:@"tourId"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:TourDetailsFailedToLoadNotification 
-                                                            object:self 
-                                                          userInfo:[NSDictionary dictionaryWithObjectsAndKeys:tourID, @"tourID", nil]];
-    }
-}
-
-/*
- - (id<UIAlertViewDelegate>)request:(MITMobileWebAPI *)request alertViewDelegateForError:(NSError *)error
- - (NSString *)request:(MITMobileWebAPI *)request displayHeaderForError: (NSError *)error;
- */
 
 #pragma mark -
 

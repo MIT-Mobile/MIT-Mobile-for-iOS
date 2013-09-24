@@ -24,8 +24,7 @@
 #define SEARCH_BUTTON_TAG 7947
 #define BOOKMARK_BUTTON_TAG 7948
 
-@interface StoryListViewController (Private)
-
+@interface StoryListViewController ()
 - (void)setupNavScroller;
 - (void)setupNavScrollButtons;
 - (void)buttonPressed:(id)sender;
@@ -40,7 +39,6 @@
 - (void)releaseSearchBar;
 
 - (void)pruneStories:(BOOL)asyncPrune;
-
 @end
 
 @implementation StoryListViewController
@@ -206,6 +204,17 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     activityView = nil;
 }
 
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -213,7 +222,9 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"UIApplicationWillTerminateNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:@"UIApplicationWillTerminateNotification"
+                                                  object:nil];
     self.stories = nil;
     self.searchQuery = nil;
     self.searchResults = nil;
@@ -230,49 +241,12 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
 - (void)pruneStories:(BOOL)asyncPrune
 {
-    
-    void (*dispatch_func)(dispatch_queue_t,dispatch_block_t) = NULL;
-    
-    if (asyncPrune)
-    {
-        dispatch_func = &dispatch_async;
-    }
-    else
-    {
-        dispatch_func = &dispatch_sync;
-    }
-    
-    (*dispatch_func)(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        NSManagedObjectContext *context = [[NSManagedObjectContext alloc] init];
+    dispatch_block_t pruningBlock = ^{
+        NSManagedObjectContext *context = [[[NSManagedObjectContext alloc] init] autorelease];
         context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-        context.undoManager = nil;
-        context.mergePolicy = NSOverwriteMergePolicy;
-        [context lock];
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;
         
         NSPredicate *notBookmarkedPredicate = [NSPredicate predicateWithFormat:@"(bookmarked == nil) || (bookmarked == NO)"];
-        
-        // bskinner (note): This is legacy code from 1.x. It was added to clean up
-        //  duplicate, un-bookmarked articles when upgrading from 1.x to 2.x.
-        //  On all new installs this ends up being a NOOP.
-        if (![[NSUserDefaults standardUserDefaults] boolForKey:MITNewsTwoFirstRunKey])
-        {
-            NSEntityDescription *newsStoryEntity = [NSEntityDescription entityForName:NewsStoryEntityName
-                                                               inManagedObjectContext:context];
-            
-            NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
-            fetchRequest.entity = newsStoryEntity;
-            fetchRequest.predicate = notBookmarkedPredicate;
-            
-            NSArray *results = [context executeFetchRequest:fetchRequest
-                                                      error:NULL];
-            for (NSManagedObject *result in results)
-            {
-                [context deleteObject:result];
-            }
-            [[NSUserDefaults standardUserDefaults] setBool:YES
-                                                    forKey:MITNewsTwoFirstRunKey];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-        }
         
         {
             NSEntityDescription *newsStoryEntity = [NSEntityDescription entityForName:NewsStoryEntityName
@@ -319,25 +293,29 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
             }
             
             [savedArticles enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-                NSLog(@"Category %@ has %d articles after pruning", key, [obj count]);
+                DDLogVerbose(@"Category %@ has %d articles after pruning", key, [obj count]);
             }];
         }
         
         NSError *error = nil;
         [context save:&error];
         
-        if (error)
-        {
-            ELog(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
+        if (error) {
+            DDLogError(@"[News] Failed to save pruning context: %@", [error localizedDescription]);
         }
         
-        [context unlock];
-        [context release];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self loadFromCache];
-        });
-    });
+        [self loadFromCache];
+    };
+    
+    
+    // (bskinner,6/6/2013)
+    // TODO: Fix news to support asynchronous operation a bit better
+    //  At the moment, news is *very* unhappy if things are happening
+    // asynchronously on the main thread. Rework News to use a
+    // NSFetchedResultsController for managing it's data and bump
+    // the data updates either to a general data controller or at least
+    // NSOperation-sized chunks.
+    dispatch_async(dispatch_get_main_queue(), pruningBlock);
 }
 
 
@@ -689,10 +667,10 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     // start new request
     NewsStory *lastStory = [self.stories lastObject];
     NSInteger lastStoryId = (loadMore) ? [lastStory.story_id integerValue] : 0;
-    if (self.xmlParser)
-    {
+    if (self.xmlParser) {
         [self.xmlParser abort];
     }
+    
     self.xmlParser = [[[StoryXMLParser alloc] init] autorelease];
     xmlParser.delegate = self;
     [xmlParser loadStoriesForCategory:self.activeCategoryId
@@ -742,7 +720,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
 
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    DLog(@"make sure search bar is first responder right now");
+    DDLogVerbose(@"make sure search bar is first responder right now");
 }
 
 - (void)loadSearchResultsFromServer:(BOOL)loadMore forQuery:(NSString *)query
@@ -792,17 +770,16 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         // TODO: communicate download failure to user
         if ([error code] == NSURLErrorNotConnectedToInternet)
         {
-            ELog(@"News download failed because there's no net connection");
+            DDLogError(@"News download failed because there's no net connection");
         }
         else
         {
-            ELog(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
+            DDLogError(@"Download failed for parser %@ with error %@", parser, [error userInfo]);
         }
         [self setStatusText:@"Update failed"];
 
-        [MITMobileWebAPI showErrorWithHeader:@"News"];
-        if ([self.stories count] > 0)
-        {
+        [UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
+        if ([self.stories count] > 0) {
             [storyTable deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0] animated:YES];
         }
     }
@@ -814,9 +791,8 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     {
         // TODO: communicate parse failure to user
         [self setStatusText:@"Update failed"];
-        [MITMobileWebAPI showErrorWithHeader:@"News"];
-        if ([self.stories count] > 0)
-        {
+		[UIAlertView alertViewForError:error withTitle:@"News" alertViewDelegate:nil];
+        if ([self.stories count] > 0) {
             [storyTable deselectRowAtIndexPath:[NSIndexPath indexPathForRow:[self.stories count] inSection:0] animated:YES];
         }
     }
@@ -897,6 +873,14 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
     updatedLabel.hidden = YES;
     progressBar.progress = value;
 }
+
+#pragma mark -
+#pragma mark UIViewController
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
 
 #pragma mark -
 #pragma mark UITableViewDataSource and UITableViewDelegate
@@ -1113,7 +1097,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
             }
             else
             {
-                ELog(@"%@ attempted to show non-existent row (%d) with actual count of %d", NSStringFromSelector(_cmd), indexPath.row, self.stories.count);
+                DDLogError(@"%@ attempted to show non-existent row (%d) with actual count of %d", NSStringFromSelector(_cmd), indexPath.row, self.stories.count);
             }
         }
             break;

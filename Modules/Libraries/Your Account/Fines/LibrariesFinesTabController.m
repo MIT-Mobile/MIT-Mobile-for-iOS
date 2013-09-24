@@ -4,6 +4,7 @@
 #import "LibrariesFinesTableViewCell.h"
 #import "LibrariesDetailViewController.h"
 #import "LibrariesAccountViewController.h"
+#import "UIKit+MITAdditions.h"
 
 @interface LibrariesFinesTabController ()
 @property (nonatomic,retain) MITLoadingActivityView *loadingView;
@@ -44,6 +45,17 @@
     self.loanData = nil;
 
     [super dealloc];
+}
+
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)setupTableView
@@ -133,7 +145,7 @@
                                                                             command:@"fines"
                                                                          parameters:[NSDictionary dictionaryWithObject:[[NSNumber numberWithInteger:NSIntegerMax] stringValue]
                                                                                                                 forKey:@"limit"]];
-    operation.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSError *error) {
+    operation.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
         if ([self.loadingView isDescendantOfView:self.tableView]) {
             [self.loadingView removeFromSuperview];
             self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
@@ -143,7 +155,7 @@
             [self.parentController reportError:error
                                        fromTab:self];
         } else {
-            self.loanData = (NSDictionary*)jsonResult;
+            self.loanData = (NSDictionary*)content;
             self.headerView.accountDetails = (NSDictionary *)self.loanData;
             [self.headerView sizeToFit];
             [self.tableView reloadData];

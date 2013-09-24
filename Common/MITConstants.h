@@ -1,17 +1,5 @@
 #import <Foundation/Foundation.h>
 
-typedef enum {
-    MITNavigationParadigmTabBar,
-    MITNavigationParadigmSpringboard
-} MITNavigationParadigm;
-
-// common URLs
-// Deprecated due to MITMobileServerConfiguration functions
-/*
-extern NSString * const MITMobileWebDomainString;
-extern NSString * const MITMobileWebAPIURLString;
- */
-
 // keys for NSUserDefaults dictionary go here (app preferences)
 extern NSString * const MITModuleTabOrderKey;
 extern NSString * const MITActiveModuleKey;
@@ -39,12 +27,12 @@ extern NSString * const MITInternalURLScheme;
 extern NSString * const CalendarTag;
 extern NSString * const EmergencyTag;
 extern NSString * const CampusMapTag;
+extern NSString * const DiningTag;
 extern NSString * const NewsOfficeTag;
 extern NSString * const DirectoryTag;
 extern NSString * const StellarTag;
 extern NSString * const ShuttleTag;
 extern NSString * const ToursTag;
-extern NSString * const AnniversaryTag;
 extern NSString * const MobileWebTag;
 extern NSString * const SettingsTag;
 extern NSString * const AboutTag;

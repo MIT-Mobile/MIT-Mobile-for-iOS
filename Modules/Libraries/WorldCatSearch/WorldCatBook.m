@@ -24,6 +24,7 @@ static NSString * const WCHoldingAvailableKey = @"available";
 @synthesize address;
 @synthesize url;
 @synthesize library;
+@synthesize collection;
 @synthesize code;
 @synthesize count;
 @synthesize availability = _availability;
@@ -186,6 +187,7 @@ static NSString * const WCHoldingAvailableKey = @"available";
         WorldCatHolding *holding = [[[WorldCatHolding alloc] init] autorelease];
         holding.address = [self stringFromDict:holdingDict key:@"address"];
         holding.library = [self stringFromDict:holdingDict key:@"library"];
+        holding.collection = [self stringFromDict:holdingDict key:@"collection"];
         if ([holdingDict objectForKey:@"url"]) {
             holding.url = [self stringFromDict:holdingDict key:@"url"];
         }
@@ -208,7 +210,7 @@ static NSString * const WCHoldingAvailableKey = @"available";
         NSArray *array = object;
         for (id item in array) {
             if (![item isKindOfClass:[NSString class]]) {
-                WLog(@"key %@ has invalid data format",key);
+                DDLogWarn(@"key %@ has invalid data format",key);
                 self.parseFailure = YES;
                 return nil;
             }
@@ -217,13 +219,18 @@ static NSString * const WCHoldingAvailableKey = @"available";
     return object;
 }
 
-- (NSString *)stringFromDict:(NSDictionary *)dict key:(NSString *)key {
-    id object = [dict objectForKey:key];
-    if (![object isKindOfClass:[NSString class]]) {
-        WLog(@"key %@ key not string", key);
+- (NSString *)stringFromDict:(NSDictionary *)dict key:(NSString *)key
+{
+    id object = dict[key];
+    
+    if (object == nil) {
+        object = nil;
+    } else if (![object isKindOfClass:[NSString class]]) {
+        DDLogWarn(@"object for key '%@' is a '%@', expected a string", key, [object class]);
         self.parseFailure = YES;
-        return nil;
+        object = nil;
     }
+    
     return object;
 }
 
@@ -253,7 +260,7 @@ static NSString * const WCHoldingAvailableKey = @"available";
     NSArray *rawAddresses = self.addresses;
     NSArray *output = rawPublishers;
     if ([rawPublishers count] != [rawAddresses count]) {
-        WLog(@"%@ mismatch between number of publishers and addresses for OCLC ID %@", NSStringFromSelector(_cmd), self.identifier);
+        DDLogWarn(@"%@ mismatch between number of publishers and addresses for OCLC ID %@", NSStringFromSelector(_cmd), self.identifier);
     } else {
         NSMutableArray *composedPublishers = [NSMutableArray array];
         for (NSInteger i = 0; i < [rawPublishers count]; i++) {

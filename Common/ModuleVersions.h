@@ -1,9 +1,7 @@
 #import <Foundation/Foundation.h>
-#import "MITMobileWebAPI.h"
 
-@interface ModuleVersions : NSObject <JSONLoadedDelegate> {
+@interface ModuleVersions : NSObject {
     NSDictionary *_moduleDates;
-    MITMobileWebAPI *_apiRequest;
 }
 
 @property (nonatomic, readonly, retain) NSDictionary *moduleDates;

@@ -72,7 +72,7 @@ static NSString * const PeopleStateDetail = @"detail";
     BOOL pushHomeController = YES;
     
     if (self.peopleController.view == nil) {
-        ELog(@"Failed to load view controller for tag %@ in '%@'", self.tag, NSStringFromSelector(_cmd));
+        DDLogError(@"Failed to load view controller for tag %@ in '%@'", self.tag, NSStringFromSelector(_cmd));
     }
  
 	if (localPath == nil) {

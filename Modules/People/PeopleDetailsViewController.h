@@ -2,14 +2,11 @@
 #import <AddressBook/AddressBook.h>
 #import <AddressBookUI/AddressBookUI.h>
 #import "PersonDetails.h"
-#import "MITMobileWebAPI.h"
 
 @interface PeopleDetailsViewController : UITableViewController 
 	<ABPeoplePickerNavigationControllerDelegate, 
 	 ABNewPersonViewControllerDelegate, 
-	 ABPersonViewControllerDelegate, 
-	 //UIAlertViewDelegate, 
-     JSONLoadedDelegate> 
+	 ABPersonViewControllerDelegate> 
 {
 
 	PersonDetails *personDetails;

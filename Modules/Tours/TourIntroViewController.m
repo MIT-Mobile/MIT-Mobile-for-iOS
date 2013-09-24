@@ -5,7 +5,7 @@
 #import "MITLoadingActivityView.h"
 #import "MITUIConstants.h"
 
-@interface TourIntroViewController (Private)
+@interface TourIntroViewController ()
 
 - (void)loadTourInfo;
 - (void)showLoadingView;
@@ -14,6 +14,16 @@
 @end
 
 @implementation TourIntroViewController
+// Override to allow orientations other than the default portrait orientation.
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 - (void)selectStartingLocation {
     TourOverviewViewController *controller = [[[TourOverviewViewController alloc] init] autorelease];
@@ -21,22 +31,6 @@
 
     [self.navigationController pushViewController:controller animated:YES];
 }
-
-/*
- // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
-        // Custom initialization
-    }
-    return self;
-}
-*/
-
-/*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
-}
-*/
 
 - (void)viewDidLoad {
     [super viewDidLoad];
