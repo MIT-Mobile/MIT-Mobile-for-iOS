@@ -13,6 +13,9 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 @property (nonatomic,copy) NSArray *searchResults;
 
 @property (nonatomic,getter=isShowingList) BOOL showingList;
+@property (nonatomic,getter = isGeotrackingEnabled) BOOL geotrackingEnabled;
+
+@property (nonatomic,getter = isInterfaceHidden) BOOL interfaceHidden;
 
 @end
 
@@ -62,35 +65,17 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 - (void)viewWillAppear:(BOOL)animated
 {
     [self.navigationController setToolbarHidden:NO animated:animated];
+    [self updateToolbarItems:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
 
-    UIBarButtonItem *locationItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/location"]
-                                                                     style:UIBarButtonItemStylePlain
-                                                                    target:nil
-                                                                    action:nil];
-
-    UIBarButtonItem *bookmarksItems = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:nil action:nil];
-    UIBarButtonItem *leftSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    leftSpace.width = 20.;
-    UIBarButtonItem *rightSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    rightSpace.width = 20.;
-
-    NSArray *toolbarItems = @[leftSpace,
-                              locationItem,
-                              [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                              bookmarksItems,
-                              rightSpace];
-
-    [self setToolbarItems:toolbarItems animated:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     self.navigationController.toolbarHidden = YES;
-
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -169,9 +154,135 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 }
 
 #pragma mark - Browse Handling
-- (IBAction)browseButtonTapped:(id)sender
+- (IBAction)bookmarksItemWasTapped:(UIBarButtonItem*)sender
 {
 
+}
+
+- (IBAction)favoritesItemWasTapped:(UIBarButtonItem*)sender
+{
+
+}
+
+- (IBAction)listItemWasTapped:(UIBarButtonItem*)sender
+{
+
+}
+
+- (IBAction)geotrackingItemWasTapped:(UIBarButtonItem*)sender
+{
+    self.geotrackingEnabled = !self.isGeotrackingEnabled;
+}
+
+#pragma mark - Dynamic Properties
+- (BOOL)canShowList
+{
+    return YES;
+}
+
+- (BOOL)hasFavorites
+{
+    return YES;
+}
+
+- (void)setGeotrackingEnabled:(BOOL)geotrackingEnabled
+{
+    if (self.geotrackingEnabled != geotrackingEnabled) {
+        _geotrackingEnabled = geotrackingEnabled;
+        self.mapView.trackUserLocation = _geotrackingEnabled;
+
+        [self updateToolbarItems:YES];
+    }
+}
+
+- (void)setInterfaceHidden:(BOOL)interfaceHidden
+{
+    if (self.interfaceHidden != interfaceHidden) {
+        _interfaceHidden = interfaceHidden;
+
+        if (_interfaceHidden) {
+            [UIView animateWithDuration:0.25
+                                  delay:0
+                                options:(UIViewAnimationOptionAllowAnimatedContent |
+                                         UIViewAnimationOptionLayoutSubviews)
+                             animations:^{
+                                 CGRect searchBarFrame = self.searchBar.frame;
+                                 searchBarFrame.origin.y = CGRectGetMinY(self.view.bounds) - CGRectGetHeight(searchBarFrame);
+                                 self.searchBar.frame = searchBarFrame;
+
+                                 [self.navigationController setToolbarHidden:YES
+                                                                    animated:YES];
+                             }
+                             completion:^(BOOL finished) {
+                                 self.searchBar.hidden = YES;
+                             }];
+        } else {
+            self.searchBar.hidden = NO;
+
+            [UIView animateWithDuration:0.25
+                                  delay:0
+                                options:(UIViewAnimationOptionAllowAnimatedContent |
+                                         UIViewAnimationOptionLayoutSubviews)
+                             animations:^{
+                                 CGRect searchBarFrame = self.searchBar.frame;
+                                 searchBarFrame.origin.y = CGRectGetMinY(self.view.bounds);
+                                 self.searchBar.frame = searchBarFrame;
+
+                                 [self.navigationController setToolbarHidden:NO
+                                                                    animated:YES];
+                             }
+                             completion:^(BOOL finished) {
+
+                             }];
+
+        }
+    }
+}
+
+#pragma mark - UI State management
+- (void)updateToolbarItems:(BOOL)animated
+{
+    NSMutableArray *toolbarItems = [[NSMutableArray alloc] init];
+    [toolbarItems addObject:[UIBarButtonItem fixedSpaceWithWidth:20.]];
+
+    if (self.isGeotrackingEnabled) {
+        [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/location-filled.png"]
+                                                                 style:UIBarButtonItemStylePlain
+                                                                target:self
+                                                                action:@selector(geotrackingItemWasTapped:)]];
+    } else {
+        [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/location.png"]
+                                                                 style:UIBarButtonItemStylePlain
+                                                                target:self
+                                                                action:@selector(geotrackingItemWasTapped:)]];
+    }
+
+    [toolbarItems addObject:[UIBarButtonItem flexibleSpace]];
+
+    if ([self hasFavorites]) {
+        [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/bookmark"]
+                                                                 style:UIBarButtonItemStylePlain
+                                                                target:self
+                                                                action:@selector(favoritesItemWasTapped:)]];
+        [toolbarItems addObject:[UIBarButtonItem flexibleSpace]];
+    }
+
+    if ([self canShowList]) {
+        [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/list"]
+                                                                 style:UIBarButtonItemStylePlain
+                                                                target:self
+                                                                action:@selector(listItemWasTapped:)]];
+        [toolbarItems addObject:[UIBarButtonItem flexibleSpace]];
+    }
+
+    [toolbarItems addObject:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
+                                                                          target:self
+                                                                          action:@selector(bookmarksItemWasTapped:)]];
+
+    [toolbarItems addObject:[UIBarButtonItem fixedSpaceWithWidth:20.]];
+
+    [self setToolbarItems:toolbarItems
+                 animated:animated];
 }
 
 #pragma mark - Delegate Methods
@@ -258,4 +369,22 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 
 #pragma mark UITableViewDelegate
 
+
+#pragma mark MGSMapViewDelegate
+- (void)mapView:(MGSMapView *)mapView userLocationUpdateFailedWithError:(NSError *)error
+{
+    self.geotrackingEnabled = NO;
+}
+
+- (void)mapView:(MGSMapView *)mapView didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate screenPoint:(CGPoint)screenPoint
+{
+    self.interfaceHidden = !self.isInterfaceHidden;
+}
+
+- (void)mapViewRegionDidChange:(MGSMapView *)mapView
+{
+    if (!self.isInterfaceHidden && !self.isSearching) {
+        self.interfaceHidden = YES;
+    }
+}
 @end
