@@ -4,7 +4,7 @@
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
-@interface MITCampusMapViewController () <UISearchDisplayDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface MITCampusMapViewController () <UISearchDisplayDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, MGSMapViewDelegate>
 @property (nonatomic,weak) IBOutlet UISearchBar *searchBar; // Lazy instantiation
 @property (nonatomic,weak) IBOutlet MGSMapView *mapView;    // Lazy instantiation
 @property (nonatomic,strong) UISearchDisplayController *searchController;
@@ -112,6 +112,7 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
     MGSMapView *mapView = _mapView;
     if (!mapView) {
         mapView = [[MGSMapView alloc] init];
+        mapView.delegate = self;
         self.mapView = mapView;
     }
 
