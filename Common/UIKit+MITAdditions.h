@@ -64,3 +64,8 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 @interface UIAlertView (MITUIAdditions)
 + (UIAlertView*)alertViewForError:(NSError*)error withTitle:(NSString*)title alertViewDelegate:(id<UIAlertViewDelegate>)delegate;
 @end
+
+@interface UIBarButtonItem (MITUIAdditions)
++ (UIBarButtonItem*)fixedSpaceWithWidth:(CGFloat)width;
++ (UIBarButtonItem*)flexibleSpace;
+@end

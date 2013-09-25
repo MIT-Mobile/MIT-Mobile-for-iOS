@@ -329,3 +329,18 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 }
 @end
 
+
+@implementation UIBarButtonItem (MITUIAdditions)
++ (UIBarButtonItem*)fixedSpaceWithWidth:(CGFloat)width
+{
+    UIBarButtonItem *item = [[self alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    item.width = width;
+
+    return item;
+}
+
++ (UIBarButtonItem*)flexibleSpace
+{
+    return [[self alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+}
+@end
