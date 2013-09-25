@@ -854,6 +854,10 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                 wself.pendingCalloutBlock = nil;
             }
         }
+
+        if ([wself.delegate respondsToSelector:@selector(mapViewRegionDidChange:)]) {
+            [wself.delegate mapViewRegionDidChange:wself];
+        }
     };
     
     id observerToken = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
