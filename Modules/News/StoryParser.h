@@ -29,5 +29,6 @@
 @property BOOL isSearch;
 @property (nonatomic, assign) BOOL loadingMore;
 @property (nonatomic, assign) NSMutableArray *addedStories;
+@property (nonatomic, assign) NSInteger totalAvailableResults;
 
 @end

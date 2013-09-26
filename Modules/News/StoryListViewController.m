@@ -780,7 +780,7 @@ NSString *titleForCategoryId(NewsCategoryId category_id) {
         // result of a search request
         else
         {
-//            searchTotalAvailableResults = self.storyParser.totalAvailableResults;
+            searchTotalAvailableResults = self.storyParser.totalAvailableResults;
             if (!parser.loadingMore && [self.stories count] > 0)
             {
                 [storyTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];

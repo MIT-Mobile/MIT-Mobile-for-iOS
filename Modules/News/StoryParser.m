@@ -13,6 +13,7 @@
 @synthesize loadingMore;
 @synthesize delegate;
 @synthesize addedStories;
+@synthesize totalAvailableResults;
 
 NSString * const NewsStoryTagPath                    = @"news/stories";
 NSString * const NewsStoryTagTitle                   = @"title";
@@ -45,6 +46,7 @@ NSString * const NewsStoryTagImageURL                = @"url";
     if (self != nil) {
         delegate = nil;
         expectedStoryCount = 0;
+        totalAvailableResults = 0;
         parseTopStories = NO;
         addedStories = nil;
 		isSearch = NO;
@@ -73,7 +75,7 @@ NSString * const NewsStoryTagImageURL                = @"url";
     }
 	self.loadingMore = NO;
     if (storyId != 0) {
-//        self.loadingMore = YES; // TODO: This can be useful later
+        self.loadingMore = YES;
         [baseURLString appendString:[NSString stringWithFormat:@"/%i", storyId]];
     }
     if ([params count] > 0) {
@@ -88,14 +90,21 @@ NSString * const NewsStoryTagImageURL                = @"url";
 }
 
 - (void)downloadAndParseURL:(NSURL *)url {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:url parameters:nil];    
+    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithURL:url parameters:nil];
     request.completeBlock = ^(MobileRequestOperation *request, id jsonResult, NSString *contentType, NSError *error) {
-        if (error || [jsonResult isKindOfClass:[NSDictionary class]]) {
+        if (error || ([jsonResult isKindOfClass:[NSDictionary class]] && !isSearch)) {
             if (self.delegate != nil && [self.delegate respondsToSelector:@selector(parserStories:didFailDownload:)]) {
                 [self.delegate parserStories:self didFailDownload:error];
             }
         } else {
             self.addedStories = [NSMutableArray array];
+            if (isSearch) {
+                NSNumber *totalResults = [jsonResult objectForKey:@"totalResult"];
+                if (totalResults) {
+                    self.totalAvailableResults = [totalResults integerValue];
+                }
+                jsonResult = [jsonResult objectForKey:@"items"];
+            }
             for (NSDictionary *storyInfo in jsonResult)
             {
                 [self updateInfo:storyInfo];
@@ -248,8 +257,8 @@ NSString * const NewsStoryTagImageURL                = @"url";
 	}
     
     NSURL *mobileServer = MITMobileWebGetCurrentServerURL();
-    NSString *relativeString = [NSString stringWithFormat:@"%@/%@?q=%@&limit=%d",
-                                [mobileServer absoluteString], NewsStoryTagPath, [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], count];
+    NSString *relativeString = [NSString stringWithFormat:@"%@/%@?q=%@&limit=%d&offset=%i",
+                                [mobileServer absoluteString], NewsStoryTagPath, [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], count, start];
     
     NSURL *fullURL = [NSURL URLWithString:relativeString];
     
