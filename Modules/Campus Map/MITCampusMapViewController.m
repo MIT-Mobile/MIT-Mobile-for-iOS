@@ -1,13 +1,26 @@
 #import "MITCampusMapViewController.h"
+#import "MITMapCategoriesViewController.h"
 #import "MITAdditions.h"
 #import "MGSMapView.h"
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
-@interface MITCampusMapViewController () <UISearchDisplayDelegate, UISearchBarDelegate, UITableViewDataSource, UITableViewDelegate, MGSMapViewDelegate>
+// Used in the updateToolbarItems: method to determine
+// the sorted order of the bar items. There starting value
+// was picked at random and has no significance.
+typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
+    MITCampusMapItemTagGeotrackingItem = 0xFF00,
+    MITCampusMapItemTagFavoritesItem,
+    MITCampusMapItemTagBrowseItem,
+    MITCampusMapItemTagListItem
+};
+
+@interface MITCampusMapViewController () <UISearchDisplayDelegate, UISearchBarDelegate,
+                                            UITableViewDataSource, UITableViewDelegate,
+                                            MGSMapViewDelegate, MITMapPlaceSelectionDelegate>
 @property (nonatomic,weak) IBOutlet UISearchBar *searchBar; // Lazy instantiation
 @property (nonatomic,weak) IBOutlet MGSMapView *mapView;    // Lazy instantiation
-@property (nonatomic,strong) UISearchDisplayController *searchController;
+@property (nonatomic,strong) UISearchDisplayController *searchController; // Lazy instantiation
 
 @property (nonatomic,getter=isSearching) BOOL searching;
 @property (nonatomic,copy) NSArray *searchResults;
@@ -41,8 +54,7 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 
     MGSMapView *mapView = self.mapView;
     mapView.frame = controllerView.bounds;
-    mapView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                UIViewAutoresizingFlexibleWidth);
+    mapView.autoresizingMask = UIViewAutoresizingNone;
     [controllerView addSubview:mapView];
 
     UISearchBar *searchBar = self.searchBar;
@@ -117,46 +129,45 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
     return searchBar;
 }
 
-- (UISearchDisplayController*)searchController
-{
-    UISearchDisplayController *searchController = _searchController;
-
-    if (!searchController) {
-        searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar
-                                                             contentsController:self];
-        searchController.delegate = self;
-        searchController.searchResultsDataSource = self;
-        searchController.searchResultsDelegate = self;
-        self.searchController = searchController;
-    }
-
-    return searchController;
-}
-
 #pragma mark - Search Handling
 - (void)setSearching:(BOOL)searching
 {
-    [self setSearching:searching animated:YES];
+    [self setSearching:searching animated:NO];
 }
 
 - (void)setSearching:(BOOL)searching animated:(BOOL)animated
 {
     if (_searching != searching) {
         _searching = searching;
-
+        
         if (_searching) {
+            UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar
+                                                                                            contentsController:self];
+            searchController.delegate = self;
+            searchController.searchResultsDataSource = self;
+            searchController.searchResultsDelegate = self;
+            self.searchController = searchController;
+            
             [self.searchController setActive:YES animated:animated];
         } else {
             [self.searchController setActive:NO animated:animated];
+            [self.navigationController setToolbarHidden:NO animated:animated];
             self.searchController = nil;
         }
     }
 }
 
 #pragma mark - Browse Handling
-- (IBAction)bookmarksItemWasTapped:(UIBarButtonItem*)sender
+- (IBAction)browseItemWasTapped:(UIBarButtonItem*)sender
 {
-
+    MITMapCategoriesViewController *categoryBrowseController = [[MITMapCategoriesViewController alloc] init];
+    categoryBrowseController.placeSelectionDelegate = self;
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:categoryBrowseController];
+    navigationController.navigationBarHidden = NO;
+    [self presentViewController:navigationController
+                       animated:YES
+                     completion:nil];
 }
 
 - (IBAction)favoritesItemWasTapped:(UIBarButtonItem*)sender
@@ -243,42 +254,63 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 - (void)updateToolbarItems:(BOOL)animated
 {
     NSMutableArray *toolbarItems = [[NSMutableArray alloc] init];
-    [toolbarItems addObject:[UIBarButtonItem fixedSpaceWithWidth:20.]];
 
+    UIBarButtonItem *geotrackingItem = nil;
     if (self.isGeotrackingEnabled) {
-        [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/location-filled.png"]
-                                                                 style:UIBarButtonItemStylePlain
-                                                                target:self
-                                                                action:@selector(geotrackingItemWasTapped:)]];
+        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/location-filled.png"]
+                                                           style:UIBarButtonItemStylePlain
+                                                          target:self
+                                                          action:@selector(geotrackingItemWasTapped:)];
     } else {
-        [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/location.png"]
-                                                                 style:UIBarButtonItemStylePlain
-                                                                target:self
-                                                                action:@selector(geotrackingItemWasTapped:)]];
+        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/location.png"]
+                                                           style:UIBarButtonItemStylePlain
+                                                          target:self
+                                                          action:@selector(geotrackingItemWasTapped:)];
     }
-
-    [toolbarItems addObject:[UIBarButtonItem flexibleSpace]];
+    geotrackingItem.tag = MITCampusMapItemTagGeotrackingItem;
+    [toolbarItems addObject:geotrackingItem];
 
     if ([self hasFavorites]) {
-        [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/bookmark"]
-                                                                 style:UIBarButtonItemStylePlain
-                                                                target:self
-                                                                action:@selector(favoritesItemWasTapped:)]];
-        [toolbarItems addObject:[UIBarButtonItem flexibleSpace]];
+        UIBarButtonItem *favoritesItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"global/bookmark"]
+                                                                          style:UIBarButtonItemStylePlain
+                                                                         target:self
+                                                                         action:@selector(favoritesItemWasTapped:)];
+        favoritesItem.tag = MITCampusMapItemTagFavoritesItem;
+        [toolbarItems addObject:favoritesItem];
     }
 
     if ([self canShowList]) {
-        [toolbarItems addObject:[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/list"]
-                                                                 style:UIBarButtonItemStylePlain
-                                                                target:self
-                                                                action:@selector(listItemWasTapped:)]];
-        [toolbarItems addObject:[UIBarButtonItem flexibleSpace]];
+        UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/list"]
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(listItemWasTapped:)];
+        listItem.tag = MITCampusMapItemTagListItem;
+        [toolbarItems addObject:listItem];
     }
 
-    [toolbarItems addObject:[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
-                                                                          target:self
-                                                                          action:@selector(bookmarksItemWasTapped:)]];
+    
+    UIBarButtonItem *browseItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks
+                                                                                target:self
+                                                                                action:@selector(browseItemWasTapped:)];
+    browseItem.tag = MITCampusMapItemTagBrowseItem;
+    [toolbarItems addObject:browseItem];
+    
+    // Sort the toolbar items into their proper order
+    // This uses the assigned tags for the sorted order
+    // of the items and then inserts spaces as needed between them
+    [toolbarItems sortUsingComparator:^NSComparisonResult(UIView *view1, UIView *view2) {
+        return [@(view1.tag) compare:@(view2.tag)];
+    }];
 
+    NSUInteger maxIndex = [toolbarItems count] - 1;
+    [[toolbarItems copy] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if (idx < maxIndex) {
+            [toolbarItems insertObject:[UIBarButtonItem flexibleSpace]
+                               atIndex:((2 * idx) + 1)];
+        }
+    }];
+    
+    [toolbarItems insertObject:[UIBarButtonItem fixedSpaceWithWidth:20.] atIndex:0];
     [toolbarItems addObject:[UIBarButtonItem fixedSpaceWithWidth:20.]];
 
     [self setToolbarItems:toolbarItems
@@ -290,16 +322,16 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 - (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
 {
     DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
-
-    UISearchBar *searchBar = controller.searchBar;
-    searchBar.autoresizingMask = (UIViewAutoresizingFlexibleHeight);
-
-    [UIView animateWithDuration:0.5 animations:^{
-        CGRect frame = searchBar.frame;
-        frame.origin.y = 20.;
-        searchBar.frame = frame;
-    }];
-
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         CGRect frame = controller.searchBar.frame;
+                         frame.origin.y = CGRectGetMaxY([[UIApplication sharedApplication] statusBarFrame]);
+                         controller.searchBar.frame = frame;
+                     }
+                     completion:^(BOOL finished) {
+                            [self.navigationController setToolbarHidden:YES animated:NO];
+                     }];
 }
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
@@ -310,16 +342,20 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 - (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
 {
     DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
-    [controller.searchBar becomeFirstResponder];
 }
 
 - (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
 {
     DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
-
-    CGRect frame = controller.searchBar.frame;
-    frame.origin = self.view.bounds.origin;
-    controller.searchBar.frame = frame;
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         CGRect frame = controller.searchBar.frame;
+                         frame.origin.y = CGRectGetMinY(self.view.bounds);
+                         controller.searchBar.frame = frame;
+                     }
+                     completion:^(BOOL finished) {
+                         [self.navigationController setToolbarHidden:NO animated:YES];
+                     }];
 }
 
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
@@ -335,9 +371,10 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 {
     DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
     if (!self.isSearching) {
-        self.searching = YES;
+        [self setSearching:YES animated:YES];
     }
 }
+
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
@@ -347,7 +384,7 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
-    self.searching = NO;
+    [self setSearching:NO animated:YES];
 }
 
 
@@ -381,10 +418,10 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
     self.interfaceHidden = !self.isInterfaceHidden;
 }
 
-- (void)mapViewRegionDidChange:(MGSMapView *)mapView
+#pragma mark MITMapPlaceSelectionDelegate
+- (void)mapCategoriesPicker:(MITMapCategoriesViewController *)controller didSelectPlace:(id)place
 {
-    if (!self.isInterfaceHidden && !self.isSearching) {
-        self.interfaceHidden = YES;
-    }
+    DDLogVerbose(@"Selected %@", place);
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 @end
