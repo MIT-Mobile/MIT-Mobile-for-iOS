@@ -1,16 +1,18 @@
-//
-//  MITMapCategoriesViewController.h
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 2013/09/20.
-//
-//
-
 #import <UIKit/UIKit.h>
 
+@class MITMapCategory;
+@protocol MITMapPlaceSelectionDelegate;
+
 @interface MITMapCategoriesViewController : UITableViewController
-@property (nonatomic,copy) NSDictionary *categories;
+@property (nonatomic,copy) NSOrderedSet *categories;
+@property (nonatomic,weak) id<MITMapPlaceSelectionDelegate> placeSelectionDelegate;
 
 - (id)init;
-- (id)initWithCategories:(NSDictionary*)categories;
+- (id)initWithSubcategoriesOfCategory:(MITMapCategory*)category;
+
+- (void)setCategories:(NSOrderedSet *)categories animated:(BOOL)animated;
+@end
+
+@protocol MITMapPlaceSelectionDelegate <NSObject>
+- (void)mapCategoriesPicker:(MITMapCategoriesViewController*)controller didSelectPlace:(id)place;
 @end
