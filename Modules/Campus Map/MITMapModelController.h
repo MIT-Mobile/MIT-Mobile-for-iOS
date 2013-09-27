@@ -13,5 +13,8 @@ typedef void (^MITMapResponse)(NSOrderedSet *objects, NSDate *lastUpdated, BOOL 
 + (MITMapModelController*)sharedController;
 
 - (void)searchMapWithQuery:(NSString*)queryText loaded:(MITMapResponse)block;
+- (void)placeCategories:(MITMapResponse)block;
+- (void)places:(MITMapResponse)block;
+- (void)placesInCategory:(NSString*)categoryId loaded:(MITMapResponse)block;
 
 @end
