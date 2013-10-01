@@ -415,7 +415,18 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (void)mapView:(MGSMapView *)mapView didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate screenPoint:(CGPoint)screenPoint
 {
-    self.interfaceHidden = !self.isInterfaceHidden;
+    if (self.isInterfaceHidden) {
+        self.interfaceHidden = NO;
+    }
+}
+
+- (void)mapViewRegionDidChange:(MGSMapView *)mapView byUserInteraction:(BOOL)userInteration
+{
+    if (userInteration) {
+        if (!self.isInterfaceHidden) {
+            self.interfaceHidden = YES;
+        }
+    }
 }
 
 #pragma mark MITMapPlaceSelectionDelegate
