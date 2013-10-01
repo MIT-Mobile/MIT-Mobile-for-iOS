@@ -855,8 +855,8 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
             }
         }
 
-        if ([wself.delegate respondsToSelector:@selector(mapViewRegionDidChange:)]) {
-            [wself.delegate mapViewRegionDidChange:wself];
+        if ([wself.delegate respondsToSelector:@selector(mapViewRegionDidChange:byUserInteraction:)]) {
+            [wself.delegate mapViewRegionDidChange:wself byUserInteraction:wself.mapView.lastChangeFromInteraction];
         }
     };
     
