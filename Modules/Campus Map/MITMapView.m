@@ -364,10 +364,12 @@
         NSValue *coordinateValue = [NSValue valueWithMKCoordinate:[pathLocation coordinate]];
         [coordinateSet addObject:coordinateValue];
     }
-    
-    for (id<MKAnnotation> annotation in [route annotations]) {
-        NSValue *coordinateValue = [NSValue valueWithMKCoordinate:[annotation coordinate]];
-        [coordinateSet addObject:coordinateValue];
+
+    if ([route respondsToSelector:@selector(annotations)]) {
+        for (id<MKAnnotation> annotation in [route annotations]) {
+            NSValue *coordinateValue = [NSValue valueWithMKCoordinate:[annotation coordinate]];
+            [coordinateSet addObject:coordinateValue];
+        }
     }
     
     return MKCoordinateRegionForCoordinates(coordinateSet);
