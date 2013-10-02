@@ -20,6 +20,7 @@
 		29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		29E308871176018C005211A7 /* MITModuleURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E308851176018C005211A7 /* MITModuleURL.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		29EB610B10FE47220085D32B /* ShuttleSubscriptionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */; };
+		2C0023A617FB7AC800E8E0E5 /* MITMapPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0023A517FB7AC800E8E0E5 /* MITMapPlace.m */; };
 		2C014A8B16CC828B00B4BB7D /* MGSSafeAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */; };
 		2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6CD137C4C2C0005F1FC /* FacilitiesCategoryViewController.m */; };
 		2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */; };
@@ -454,6 +455,8 @@
 		29E308851176018C005211A7 /* MITModuleURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITModuleURL.m; sourceTree = "<group>"; };
 		29EB610910FE47220085D32B /* ShuttleSubscriptionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleSubscriptionManager.h; sourceTree = "<group>"; };
 		29EB610A10FE47220085D32B /* ShuttleSubscriptionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleSubscriptionManager.m; sourceTree = "<group>"; };
+		2C0023A417FB7AC800E8E0E5 /* MITMapPlace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMapPlace.h; path = Model/MITMapPlace.h; sourceTree = "<group>"; };
+		2C0023A517FB7AC800E8E0E5 /* MITMapPlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMapPlace.m; path = Model/MITMapPlace.m; sourceTree = "<group>"; };
 		2C014A8916CC828A00B4BB7D /* MGSSafeAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSSafeAnnotation.h; sourceTree = "<group>"; };
 		2C014A8A16CC828A00B4BB7D /* MGSSafeAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSSafeAnnotation.m; sourceTree = "<group>"; };
 		2C03C6CC137C4C2B0005F1FC /* FacilitiesCategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesCategoryViewController.h; sourceTree = "<group>"; };
@@ -1976,6 +1979,8 @@
 				2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */,
 				2C9B8B2D17F5E2F6000701CA /* MITMapCategory.h */,
 				2C9B8B2E17F5E2F6000701CA /* MITMapCategory.m */,
+				2C0023A417FB7AC800E8E0E5 /* MITMapPlace.h */,
+				2C0023A517FB7AC800E8E0E5 /* MITMapPlace.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -3151,6 +3156,7 @@
 				2C18073C1382C32D000CCB6F /* FacilitiesTypeViewController.m in Sources */,
 				2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */,
 				2CFBF916138EC2610080883D /* FacilitiesSubmitViewController.m in Sources */,
+				2C0023A617FB7AC800E8E0E5 /* MITMapPlace.m in Sources */,
 				2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */,
 				2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */,
 				2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */,
