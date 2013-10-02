@@ -1,8 +1,8 @@
 #import "MITMapCategory.h"
 
-static NSString* const MITMapPlaceIdentifierKey = @"categoryId";
-static NSString* const MITMapPlaceNameKey = @"categoryName";
-static NSString* const MITMapPlaceSubcategoriesKey = @"subcategories";
+static NSString* const MITMapCategoryIdentifierKey = @"categoryId";
+static NSString* const MITMapCategoryNameKey = @"categoryName";
+static NSString* const MITMapCategorySubcategoriesKey = @"subcategories";
 
 @implementation MITMapCategory
 + (BOOL)supportsSecureCoding
@@ -24,9 +24,9 @@ static NSString* const MITMapPlaceSubcategoriesKey = @"subcategories";
 {
     self = [self init];
     if (self) {
-        self.identifier = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceIdentifierKey];
-        self.name = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceNameKey];
-        self.subcategories = [aDecoder decodeObjectOfClass:[NSOrderedSet class] forKey:MITMapPlaceSubcategoriesKey];
+        self.identifier = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapCategoryIdentifierKey];
+        self.name = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapCategoryNameKey];
+        self.subcategories = [aDecoder decodeObjectOfClass:[NSOrderedSet class] forKey:MITMapCategorySubcategoriesKey];
     }
     
     return self;
@@ -36,12 +36,12 @@ static NSString* const MITMapPlaceSubcategoriesKey = @"subcategories";
 {
     self = [self init];
     if (self) {
-        self.name = placeDictionary[MITMapPlaceNameKey];
-        self.identifier = placeDictionary[MITMapPlaceIdentifierKey];
+        self.name = placeDictionary[MITMapCategoryNameKey];
+        self.identifier = placeDictionary[MITMapCategoryIdentifierKey];
         
-        if (placeDictionary[MITMapPlaceSubcategoriesKey]) {
+        if (placeDictionary[MITMapCategorySubcategoriesKey]) {
             NSMutableOrderedSet *subcategories = [[NSMutableOrderedSet alloc] init];
-            for (NSDictionary *placeData in placeDictionary[MITMapPlaceSubcategoriesKey]) {
+            for (NSDictionary *placeData in placeDictionary[MITMapCategorySubcategoriesKey]) {
                 MITMapCategory *place = [[MITMapCategory alloc] initWithDictionary:placeData];
                 [subcategories addObject:place];
             }
@@ -65,9 +65,9 @@ static NSString* const MITMapPlaceSubcategoriesKey = @"subcategories";
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    [aCoder encodeObject:self.name forKey:MITMapPlaceNameKey];
-    [aCoder encodeObject:self.identifier forKey:MITMapPlaceIdentifierKey];
-    [aCoder encodeObject:self.subcategories forKey:MITMapPlaceSubcategoriesKey];
+    [aCoder encodeObject:self.name forKey:MITMapCategoryNameKey];
+    [aCoder encodeObject:self.identifier forKey:MITMapCategoryIdentifierKey];
+    [aCoder encodeObject:self.subcategories forKey:MITMapCategorySubcategoriesKey];
 }
 
 - (BOOL)hasSubcategories
