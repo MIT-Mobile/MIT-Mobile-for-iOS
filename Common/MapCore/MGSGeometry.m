@@ -14,7 +14,7 @@ MKCoordinateRegion MKCoordinateRegionForMGSAnnotations(NSSet *annotations)
         switch (safeAnnotation.annotationType) {
             case MGSAnnotationMarker:
             case MGSAnnotationPointOfInterest: {
-                [coordinates addObject:[NSValue valueWithCLLocationCoordinate:safeAnnotation.coordinate]];
+                [coordinates addObject:[NSValue valueWithMKCoordinate:safeAnnotation.coordinate]];
             }
                 break;
                 
@@ -43,7 +43,7 @@ MKCoordinateRegion MKCoordinateRegionForMGSAnnotationsWithPadding(NSSet *annotat
         switch (safeAnnotation.annotationType) {
             case MGSAnnotationMarker:
             case MGSAnnotationPointOfInterest: {
-                [coordinates addObject:[NSValue valueWithCLLocationCoordinate:safeAnnotation.coordinate]];
+                [coordinates addObject:[NSValue valueWithMKCoordinate:safeAnnotation.coordinate]];
             }
                 break;
                 

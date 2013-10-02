@@ -10,8 +10,6 @@
 #define OUT_OF_BOUNDS_DISTANCE 1609
 #define WAY_OUT_OF_BOUNDS_DISTANCE 3218
 
-FOUNDATION_EXTERN const CLLocationCoordinate2D CLLocationCoordinate2DInvalid;
-
 FOUNDATION_STATIC_INLINE NSString* NSStringFromCLLocationCoordinate2D(CLLocationCoordinate2D coordinate) {
     return [NSString stringWithFormat:@"{ x: %lf, y: %lf }", coordinate.longitude, coordinate.latitude];
 }
@@ -24,9 +22,4 @@ FOUNDATION_EXTERN NSString* NSStringFromCLLocationCoordinate2DAsDMS(CLLocationCo
 - (BOOL)isOnCampus;
 - (BOOL)isNearCampus;
 
-@end
-
-@interface NSValue (CL_MITAdditions)
-+ (NSValue *)valueWithCLLocationCoordinate:(CLLocationCoordinate2D)coordinate;
-- (CLLocationCoordinate2D)CLLocationCoordinateValue;
 @end

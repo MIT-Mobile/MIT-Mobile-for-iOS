@@ -327,7 +327,7 @@
     NSMutableArray *pathCoordinates = [NSMutableArray array];
     for (CLLocation *location in [route pathLocations])
     {
-        NSValue *locationValue = [NSValue valueWithCLLocationCoordinate:[location coordinate]];
+        NSValue *locationValue = [NSValue valueWithMKCoordinate:[location coordinate]];
         [pathCoordinates addObject:locationValue];
     }
     

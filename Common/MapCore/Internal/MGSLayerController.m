@@ -283,7 +283,7 @@
                 [polyline addPathToPolyline];
                 
                 for (NSValue* pointValue in [annotation points]) {
-                    CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
+                    CLLocationCoordinate2D point = [pointValue MKCoordinateValue];
                     
                     if (CLLocationCoordinate2DIsValid(point)) {
                         AGSPoint* agsPoint = AGSPointFromCLLocationCoordinate2D(point);
@@ -325,7 +325,7 @@
                 [polygon addRingToPolygon];
                 
                 for (NSValue* pointValue in [annotation points]) {
-                    CLLocationCoordinate2D point = [pointValue CLLocationCoordinateValue];
+                    CLLocationCoordinate2D point = [pointValue MKCoordinateValue];
                     
                     if (CLLocationCoordinate2DIsValid(point)) {
                         AGSPoint* agsPoint = AGSPointFromCLLocationCoordinate2D(point);

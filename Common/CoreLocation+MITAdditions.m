@@ -1,7 +1,5 @@
 #import "CoreLocation+MITAdditions.h"
 
-const CLLocationCoordinate2D CLLocationCoordinate2DInvalid = {.longitude = CGFLOAT_MAX, .latitude = CGFLOAT_MAX};
-
 FOUNDATION_EXTERN NSString* NSStringFromCLLocationCoordinate2DAsDMS(CLLocationCoordinate2D coordinate) {
     if (!CLLocationCoordinate2DIsValid(coordinate)) {
         return nil;
@@ -46,30 +44,6 @@ FOUNDATION_EXTERN NSString* NSStringFromCLLocationCoordinate2DAsDMS(CLLocationCo
 
 - (BOOL)isNearCampus {
     return [self distanceFromCenterOfCampus] <= WAY_OUT_OF_BOUNDS_DISTANCE;
-}
-
-@end
-
-
-@implementation NSValue (CL_MITAdditions)
-
-+ (NSValue *)valueWithCLLocationCoordinate:(CLLocationCoordinate2D)coordinate
-{
-    return [NSValue valueWithBytes:(const void*)(&coordinate)
-                          objCType:@encode(CLLocationCoordinate2D)];
-}
-
-- (CLLocationCoordinate2D)CLLocationCoordinateValue
-{
-    if (strcmp([self objCType], @encode(CLLocationCoordinate2D)) == 0)
-    {
-        CLLocationCoordinate2D coordinate;
-        [self getValue:&coordinate];
-        
-        return coordinate;
-    }
-    
-    return CLLocationCoordinate2DInvalid;
 }
 
 @end
