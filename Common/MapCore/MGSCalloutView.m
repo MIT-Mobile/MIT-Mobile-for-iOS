@@ -142,7 +142,7 @@ static UIEdgeInsets const MGSCalloutContentInsets = {.top = 0, .left = 0., .bott
                                                                              lineBreakMode:self.detailLabel.lineBreakMode]];
 
     calculatedSize.width += MAX(titleSize.width, detailSize.width);
-    calculatedSize.height = MAX(calculatedSize.height,MAX(titleSize.height, detailSize.height));
+    calculatedSize.height = MAX(calculatedSize.height,titleSize.height + detailSize.height);
 
     calculatedSize.width += MGSCalloutContentInsets.left + MGSCalloutContentInsets.right;
     calculatedSize.height += MGSCalloutContentInsets.top + MGSCalloutContentInsets.bottom;
