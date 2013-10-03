@@ -211,7 +211,17 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
             for (MITMapPlace *place in selectedPlaces) {
                 MGSSimpleAnnotation *mapAnnotation = [[MGSSimpleAnnotation alloc] init];
-                mapAnnotation.title = place.name;
+
+                if (place.buildingNumber) {
+                    mapAnnotation.title = [NSString stringWithFormat:@"Building %@", place.buildingNumber];
+
+                    if (place.name && ![place.name isEqualToString:mapAnnotation.title]) {
+                        mapAnnotation.detail = place.name;
+                    }
+                } else {
+                    mapAnnotation.title = place.name;
+                }
+
                 mapAnnotation.coordinate = place.coordinate;
                 [annotations addObject:mapAnnotation];
             }
