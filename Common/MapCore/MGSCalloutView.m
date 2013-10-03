@@ -27,6 +27,10 @@ static UIEdgeInsets const MGSCalloutContentInsets = {.top = 0, .left = 0., .bott
 
 - (void)initSubviews
 {
+    if ([self respondsToSelector:@selector(setTintColor:)]) {
+        [self performSelector:@selector(setTintColor:) withObject:[UIColor whiteColor]];
+    }
+
     UILabel *textLabel = [[UILabel alloc] init];
     textLabel.numberOfLines = 0;
     textLabel.backgroundColor = [UIColor clearColor];
