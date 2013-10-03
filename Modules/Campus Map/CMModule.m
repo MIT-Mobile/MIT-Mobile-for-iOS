@@ -2,6 +2,7 @@
 #import "CampusMapViewController.h"
 #import "MITMapDetailViewController.h"
 #import "MITMapSearchResultAnnotation.h"
+#import "MITCampusMapViewController.h"
 
 #import "MITModule+Protected.h"
 
@@ -23,15 +24,18 @@
 
 - (void)loadModuleHomeController
 {
-    CampusMapViewController *controller = [[CampusMapViewController alloc] init];
-    controller.campusMapModule = self;
+    MITCampusMapViewController *controller = [[MITCampusMapViewController alloc] init];
     
     self.moduleHomeController = controller;
 }
 
-- (CampusMapViewController*)campusMapVC
+- (MITCampusMapViewController*)campusMapVC
 {
-    return ((CampusMapViewController*)self.moduleHomeController);
+    if ([self.moduleHomeController isKindOfClass:[MITCampusMapViewController class]]) {
+        return ((MITCampusMapViewController*)self.moduleHomeController);
+    } else {
+        return nil;
+    }
 }
 
 - (void)applicationDidEnterBackground {
