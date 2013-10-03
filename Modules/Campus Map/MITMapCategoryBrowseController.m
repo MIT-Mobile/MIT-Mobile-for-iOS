@@ -185,34 +185,4 @@
     }
 }
 
-#pragma mark - Dynamic Property Setters
-- (void)animateTableUpdateFromCategories:(NSOrderedSet*)oldCategories to:(NSOrderedSet*)newCategories
-{
-    NSMutableArray *updatedRows = [[NSMutableArray alloc] init];
-    // Run through all of the old category objects and make a list of each one which
-    //  has changed in the latest update (where a change is either an addition, deletion or move).
-    // The list of NSIndexPaths generated here will be used to refresh the data later on
-    [oldCategories enumerateObjectsUsingBlock:^(MITMapCategory *category, NSUInteger idx, BOOL *stop) {
-        if (idx < [newCategories count]) {
-            MITMapCategory *newCategory = oldCategories[idx];
-            if (![category isEqual:newCategory]) {
-                [updatedRows addObject:[NSIndexPath indexPathForRow:idx inSection:0]];
-            }
-        } else {
-            (*stop) = YES;
-        }
-    }];
-
-    // If we have more
-    if ([oldCategories count] < [newCategories count]) {
-        NSRange reloadRange = NSMakeRange([oldCategories count], [newCategories count] - [oldCategories count]);
-        [[NSIndexSet indexSetWithIndexesInRange:reloadRange] enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
-            [updatedRows addObject:[NSIndexPath indexPathForRow:idx inSection:0]];
-        }];
-    }
-    
-    [self.tableView reloadRowsAtIndexPaths:updatedRows withRowAnimation:UITableViewRowAnimationAutomatic];
-}
-
-
 @end
