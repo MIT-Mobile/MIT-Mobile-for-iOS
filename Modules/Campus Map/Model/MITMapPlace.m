@@ -25,6 +25,24 @@ static NSString* const MITMapPlaceContentNameKey = @"name";
 
 static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 
+@interface MITMapPlace ()
+@property CLLocationCoordinate2D coordinate;
+
+@property (copy) NSString* identifier;
+@property (copy) NSString* buildingNumber;
+@property (copy) NSString* name;
+
+@property (copy) NSString* viewAngle;
+@property (copy) NSURL* imageURL;
+
+@property (copy) NSString* mailingAddress;
+@property (copy) NSString* streetAddress;
+@property (copy) NSString* city;
+
+@property (copy) NSString* architect;
+@property (copy) NSOrderedSet* contents;
+@property (copy) NSOrderedSet* snippets;
+@end
 
 @implementation MITMapPlace
 + (BOOL)supportsSecureCoding
@@ -102,6 +120,29 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 
     return self;
 
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (![super isEqual:object]) {
+        if ([object isKindOfClass:[self class]]) {
+            return [self isEqualToPlace:(MITMapPlace*)object];
+        } else {
+            return NO;
+        }
+    } else {
+        return YES;
+    }
+}
+
+- (BOOL)isEqualToPlace:(MITMapPlace*)otherPlace
+{
+    return [self.identifier isEqualToString:otherPlace.identifier];
+}
+
+- (NSUInteger)hash
+{
+    return [self.identifier hash];
 }
 
 - (id)copyWithZone:(NSZone *)zone

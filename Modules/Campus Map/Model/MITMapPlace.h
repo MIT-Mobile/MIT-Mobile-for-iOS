@@ -2,25 +2,23 @@
 #import <CoreLocation/CoreLocation.h>
 
 @interface MITMapPlace : NSObject <NSSecureCoding,NSCopying>
-@property CLLocationCoordinate2D coordinate;
+@property (readonly) CLLocationCoordinate2D coordinate;
 
-@property (copy) NSString* identifier;
-@property (copy) NSString* buildingNumber;
-@property (copy) NSString* name;
+@property (readonly,copy) NSString* identifier;
+@property (readonly,copy) NSString* buildingNumber;
+@property (readonly,copy) NSString* name;
 
-@property (copy) NSString* viewAngle;
-@property (copy) NSURL* imageURL;
+@property (readonly,copy) NSString* viewAngle;
+@property (readonly,copy) NSURL* imageURL;
 
-@property (copy) NSString* mailingAddress;
-@property (copy) NSString* streetAddress;
-@property (copy) NSString* city;
+@property (readonly,copy) NSString* mailingAddress;
+@property (readonly,copy) NSString* streetAddress;
+@property (readonly,copy) NSString* city;
 
-@property (copy) NSString* architect;
-@property (copy) NSOrderedSet* contents;
-@property (copy) NSOrderedSet* snippets;
+@property (readonly,copy) NSString* architect;
+@property (readonly,copy) NSOrderedSet* contents;
+@property (readonly,copy) NSOrderedSet* snippets;
 
-- (id)init;
 - (id)initWithDictionary:(NSDictionary*)dictionary;
-
 - (NSDictionary*)dictionaryValue;
 @end
