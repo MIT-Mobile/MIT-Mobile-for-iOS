@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+@class MITMapCategory;
+
 /** The callback handler for any data requests.
  *
  *  @param objects A sorted set of the fetched objects
@@ -12,9 +14,10 @@ typedef void (^MITMapResponse)(NSOrderedSet *objects, NSDate *lastUpdated, BOOL 
 @interface MITMapModelController : NSObject
 + (MITMapModelController*)sharedController;
 
+- (void)recentSearches:(MITMapResponse)block;
 - (void)searchMapWithQuery:(NSString*)queryText loaded:(MITMapResponse)block;
-- (void)placeCategories:(MITMapResponse)block;
+- (void)categories:(MITMapResponse)block;
 - (void)places:(MITMapResponse)block;
-- (void)placesInCategory:(NSString*)categoryId loaded:(MITMapResponse)block;
+- (void)placesInCategory:(MITMapCategory*)categoryId loaded:(MITMapResponse)block;
 
 @end

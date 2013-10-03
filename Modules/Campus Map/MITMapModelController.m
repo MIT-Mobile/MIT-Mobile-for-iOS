@@ -1,6 +1,7 @@
 #import "MITMapModelController.h"
 #import "MobileRequestOperation.h"
 #import "MITMapCategory.h"
+#import "MITMapPlace.h"
 
 static NSString* const MITMapResourceCategoryTitles = @"categorytitles";
 static NSString* const MITMapResourceCategory = @"category";
@@ -33,6 +34,13 @@ static NSString* const MITMapResourceCategory = @"category";
     return self;
 }
 
+- (void)recentSearches:(MITMapResponse)block
+{
+    if (block) {
+
+    }
+}
+
 - (void)searchMapWithQuery:(NSString*)queryString loaded:(MITMapResponse)block
 {
     if (block) {
@@ -46,7 +54,14 @@ static NSString* const MITMapResourceCategory = @"category";
                                                                                  parameters:parameters];
         
         apiRequest.completeBlock = ^(MobileRequestOperation *operation, NSArray* content, NSString *mimeType, NSError *error) {
-            block([NSOrderedSet orderedSetWithArray:content],[NSDate date],YES,error);
+            NSMutableOrderedSet *places = [[NSMutableOrderedSet alloc] init];
+
+            for (NSDictionary *placeData in content) {
+                MITMapPlace *place = [[MITMapPlace alloc] initWithDictionary:placeData];
+                [places addObject:place];
+            }
+
+            block(places,[NSDate date],YES,error);
         };
         
         [[MobileRequestOperation defaultQueue] addOperation:apiRequest];
@@ -54,7 +69,7 @@ static NSString* const MITMapResourceCategory = @"category";
 }
 
 
-- (void)placeCategories:(MITMapResponse)block
+- (void)categories:(MITMapResponse)block
 {
     if (block) {
         MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithModule:@"map"
@@ -78,12 +93,36 @@ static NSString* const MITMapResourceCategory = @"category";
 
 - (void)places:(MITMapResponse)block
 {
-    
+    // The v2 API does not support getting a list of all
+    // the available 'places' back (a subcategory is required)
+    block(nil,[NSDate date], YES, nil);
 }
 
-- (void)placesInCategory:(NSString*)categoryId loaded:(MITMapResponse)block
+- (void)placesInCategory:(MITMapCategory*)category loaded:(MITMapResponse)block
 {
+    if (block) {
+        NSDictionary *requestParameters = nil;
+        if (category) {
+            requestParameters = @{@"id" : category.identifier};
+        }
 
+        MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithModule:@"map"
+                                                                                    command:@"category"
+                                                                                 parameters:requestParameters];
+
+        apiRequest.completeBlock = ^(MobileRequestOperation *operation, NSArray* content, NSString *mimeType, NSError *error) {
+            NSMutableOrderedSet *places = [[NSMutableOrderedSet alloc] init];
+
+            for (NSDictionary *placeData in content) {
+                MITMapPlace *place = [[MITMapPlace alloc] initWithDictionary:placeData];
+                [places addObject:place];
+            }
+
+            block(places,[NSDate date],YES,error);
+        };
+
+        [[MobileRequestOperation defaultQueue] addOperation:apiRequest];
+    }
 }
 
 @end
