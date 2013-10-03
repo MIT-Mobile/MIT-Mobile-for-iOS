@@ -1,7 +1,9 @@
 #import "MITCampusMapViewController.h"
-#import "MITMapCategoriesViewController.h"
+#import "MITMapCategoryBrowseController.h"
 #import "MITAdditions.h"
 #import "MGSMapView.h"
+#import "MGSLayer.h"
+#import "MGSSimpleAnnotation.h"
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
@@ -11,23 +13,21 @@ static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReu
 typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     MITCampusMapItemTagGeotrackingItem = 0xFF00,
     MITCampusMapItemTagFavoritesItem,
-    MITCampusMapItemTagBrowseItem,
-    MITCampusMapItemTagListItem
+    MITCampusMapItemTagBrowseItem
 };
 
 @interface MITCampusMapViewController () <UISearchDisplayDelegate, UISearchBarDelegate,
                                             UITableViewDataSource, UITableViewDelegate,
-                                            MGSMapViewDelegate, MITMapPlaceSelectionDelegate>
+                                            MGSMapViewDelegate>
 @property (nonatomic,weak) IBOutlet UISearchBar *searchBar; // Lazy instantiation
 @property (nonatomic,weak) IBOutlet MGSMapView *mapView;    // Lazy instantiation
 @property (nonatomic,strong) UISearchDisplayController *searchController; // Lazy instantiation
 
 @property (nonatomic,getter=isSearching) BOOL searching;
-@property (nonatomic,copy) NSArray *searchResults;
+@property (nonatomic,copy) NSOrderedSet *selectedPlaces;
 
-@property (nonatomic,getter=isShowingList) BOOL showingList;
+@property (nonatomic,getter = isShowingList) BOOL showingList;
 @property (nonatomic,getter = isGeotrackingEnabled) BOOL geotrackingEnabled;
-
 @property (nonatomic,getter = isInterfaceHidden) BOOL interfaceHidden;
 
 @end
@@ -160,8 +160,12 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 #pragma mark - Browse Handling
 - (IBAction)browseItemWasTapped:(UIBarButtonItem*)sender
 {
-    MITMapCategoriesViewController *categoryBrowseController = [[MITMapCategoriesViewController alloc] init];
-    categoryBrowseController.placeSelectionDelegate = self;
+    MITMapCategoryBrowseController *categoryBrowseController = [[MITMapCategoryBrowseController alloc] init:^(NSOrderedSet *selectedPlaces, NSError *error) {
+        DDLogVerbose(@"Selected %d places", [selectedPlaces count]);
+        [self dismissViewControllerAnimated:YES completion:^{
+            self.selectedPlaces = selectedPlaces;
+        }];
+    }];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:categoryBrowseController];
     navigationController.navigationBarHidden = NO;
@@ -193,7 +197,37 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (BOOL)hasFavorites
 {
-    return YES;
+    return NO;
+}
+
+- (void)setSelectedPlaces:(NSOrderedSet *)selectedPlaces
+{
+    if (![_selectedPlaces isEqualToOrderedSet:selectedPlaces]) {
+        _selectedPlaces = selectedPlaces;
+
+        NSMutableOrderedSet *annotations = nil;
+        if ([self.selectedPlaces count]) {
+            annotations = [[NSMutableOrderedSet alloc] init];
+
+            for (MITMapPlace *place in selectedPlaces) {
+                MGSSimpleAnnotation *mapAnnotation = [[MGSSimpleAnnotation alloc] init];
+                mapAnnotation.title = place.name;
+                mapAnnotation.coordinate = place.coordinate;
+                [annotations addObject:mapAnnotation];
+            }
+
+
+            UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_list"]
+                                                                         style:UIBarButtonItemStylePlain
+                                                                        target:self
+                                                                        action:@selector(listItemWasTapped:)];
+            self.navigationItem.rightBarButtonItem = listItem;
+            [self.navigationItem setRightBarButtonItem:listItem animated:YES];
+        }
+
+        [self.mapView defaultLayer].annotations = annotations;
+        self.mapView.mapRegion = MKCoordinateRegionForMGSAnnotations([annotations set]);
+    }
 }
 
 - (void)setGeotrackingEnabled:(BOOL)geotrackingEnabled
@@ -257,12 +291,12 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
     UIBarButtonItem *geotrackingItem = nil;
     if (self.isGeotrackingEnabled) {
-        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/location-filled.png"]
+        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_location-filled"]
                                                            style:UIBarButtonItemStylePlain
                                                           target:self
                                                           action:@selector(geotrackingItemWasTapped:)];
     } else {
-        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/location.png"]
+        geotrackingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_location"]
                                                            style:UIBarButtonItemStylePlain
                                                           target:self
                                                           action:@selector(geotrackingItemWasTapped:)];
@@ -277,15 +311,6 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
                                                                          action:@selector(favoritesItemWasTapped:)];
         favoritesItem.tag = MITCampusMapItemTagFavoritesItem;
         [toolbarItems addObject:favoritesItem];
-    }
-
-    if ([self canShowList]) {
-        UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/toolbar/list"]
-                                                                     style:UIBarButtonItemStylePlain
-                                                                    target:self
-                                                                    action:@selector(listItemWasTapped:)];
-        listItem.tag = MITCampusMapItemTagListItem;
-        [toolbarItems addObject:listItem];
     }
 
     
@@ -415,24 +440,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (void)mapView:(MGSMapView *)mapView didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate screenPoint:(CGPoint)screenPoint
 {
-    if (self.isInterfaceHidden) {
-        self.interfaceHidden = NO;
-    }
+    self.interfaceHidden = !self.interfaceHidden;
 }
 
-- (void)mapViewRegionDidChange:(MGSMapView *)mapView byUserInteraction:(BOOL)userInteration
-{
-    if (userInteration) {
-        if (!self.isInterfaceHidden) {
-            self.interfaceHidden = YES;
-        }
-    }
-}
-
-#pragma mark MITMapPlaceSelectionDelegate
-- (void)mapCategoriesPicker:(MITMapCategoriesViewController *)controller didSelectPlace:(id)place
-{
-    DDLogVerbose(@"Selected %@", place);
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
 @end
