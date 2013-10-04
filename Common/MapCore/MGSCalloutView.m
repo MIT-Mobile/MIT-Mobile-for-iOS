@@ -1,7 +1,6 @@
 #import "MGSCalloutView.h"
 
-#define MAX_CALLOUT_WIDTH (240)
-
+static CGFloat const MGSCalloutMaximumWidth = 240.;
 static UIEdgeInsets const MGSCalloutContentInsets = {.top = 0, .left = 0., .bottom = 0., .right = 0.};
 
 @implementation MGSCalloutView
@@ -48,9 +47,10 @@ static UIEdgeInsets const MGSCalloutContentInsets = {.top = 0, .left = 0., .bott
     detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.detailLabel = detailTextLabel;
     [self addSubview:detailTextLabel];
-    
+
     UIImageView *imageView = [[UIImageView alloc] init];
     imageView.backgroundColor = [UIColor clearColor];
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
     self.imageView = imageView;
     [self addSubview:imageView];
     
@@ -82,7 +82,6 @@ static UIEdgeInsets const MGSCalloutContentInsets = {.top = 0, .left = 0., .bott
         CGRectDivide(layoutFrame, &imageFrame, &layoutFrame, imageWidth, CGRectMinXEdge);
 
         self.imageView.frame = imageFrame;
-        self.imageView.center = CGPointMake(self.imageView.center.x, CGRectGetMidY(self.bounds));
 
         if (hasImage) {
             // Add in 8px of horizontal spacing between the image view and its sibling
@@ -96,7 +95,6 @@ static UIEdgeInsets const MGSCalloutContentInsets = {.top = 0, .left = 0., .bott
         CGRectDivide(layoutFrame, &accessoryFrame, &layoutFrame, CGRectGetWidth(self.accessoryView.frame), CGRectMaxXEdge);
 
         self.accessoryView.frame = accessoryFrame;
-        self.accessoryView.center = CGPointMake(self.accessoryView.center.x, CGRectGetMidY(self.bounds));
 
         if (self.accessoryView) {
             // Make sure there is at least 8px of horizontal spacing between
@@ -136,7 +134,7 @@ static UIEdgeInsets const MGSCalloutContentInsets = {.top = 0, .left = 0., .bott
         calculatedSize.height = MAX(calculatedSize.height,CGRectGetHeight(self.accessoryView.frame));
     }
     
-    CGFloat textWidth = MAX_CALLOUT_WIDTH - calculatedSize.width;
+    CGFloat textWidth = MGSCalloutMaximumWidth - calculatedSize.width;
     CGSize titleSize = [self.titleLabel sizeThatFits:[self.titleLabel.text sizeWithFont:self.titleLabel.font
                                                                       constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
                                                                           lineBreakMode:self.titleLabel.lineBreakMode]];
