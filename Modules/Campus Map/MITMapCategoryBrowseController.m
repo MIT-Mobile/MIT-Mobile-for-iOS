@@ -1,6 +1,8 @@
 #import "MITMapCategoryBrowseController.h"
 #import "MITMapModel.h"
 
+static NSString* const MITMapCategoryViewAllText = @"View all on map";
+
 @interface MITMapCategoryBrowseController ()
 @property (nonatomic,copy) MITMapCategorySelectionHandler selectionBlock;
 @property (nonatomic,strong) MITMapCategory *category;
@@ -82,7 +84,6 @@
                                                                         if (![self.dataSource isEqualToOrderedSet:objects]) {
                                                                             self.dataSource = objects;
                                                                             [self.tableView reloadData];
-                                                                            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
                                                                         }
                                                                     } else {
                                                                         DDLogWarn(@"Failed to retreive category listing: %@",error);
@@ -118,17 +119,53 @@
     return (self.category && ![self.category hasSubcategories]);
 }
 
-#pragma mark - Table view data source
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (IBAction)showAllButtonTouched:(UIButton*)showAllButton
 {
-    NSInteger numberOfRows = [self.dataSource count];
+    if ([self isShowingPlaces] && self.selectionBlock) {
+        self.selectionBlock(self.dataSource,nil);
+    }
+}
 
+#pragma mark - Table view data source
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
     if ([self isShowingPlaces]) {
-        // Increase the number of rows by 1 so we can display the 'Show all the things!' cell
-        numberOfRows += 1;
+        UIButton *showAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        showAllButton.frame = CGRectMake(0, 0, CGRectGetWidth(tableView.bounds), 0);
+        showAllButton.titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont smallSystemFontSize]];
+        showAllButton.backgroundColor = [UIColor colorWithWhite:0.95 alpha:0.95];
+        showAllButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        showAllButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        showAllButton.contentEdgeInsets = UIEdgeInsetsMake(4, 8, 4, 8);
+
+        [showAllButton setImage:[UIImage imageNamed:@"global/action-map"] forState:UIControlStateNormal];
+
+        [showAllButton setTitle:MITMapCategoryViewAllText forState:UIControlStateNormal];
+        [showAllButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        showAllButton.titleEdgeInsets = UIEdgeInsetsMake(0, 8., 0, 0.);
+
+        [showAllButton addTarget:self
+                          action:@selector(showAllButtonTouched:)
+                forControlEvents:UIControlEventTouchUpInside];
+
+        return showAllButton;
     }
 
-    return numberOfRows;
+    return nil;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if (self.dataSource && [self isShowingPlaces]) {
+        return [UIImage imageNamed:@"global/action-map"].size.height + 16.; // 8px inset on top and bottom of view
+    } else {
+        return 0.;
+    }
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.dataSource count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -149,14 +186,10 @@
         cell.textLabel.text = category.name;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     } else {
-        if (indexPath.row == 0) {
-            cell.textLabel.text = @"View all on map";
-        } else {
-            NSInteger dataIndex = indexPath.row - 1;
-            // Otherwise, we are showing a category's places
-            MITMapPlace *place = self.dataSource[dataIndex];
-            cell.textLabel.text = place.name;
-        }
+        NSInteger dataIndex = indexPath.row;
+        // Otherwise, we are showing a category's places
+        MITMapPlace *place = self.dataSource[dataIndex];
+        cell.textLabel.text = place.name;
     }
 
     return cell;
@@ -173,15 +206,8 @@
 
         [self.navigationController pushViewController:categoriesViewController animated:YES];
     } else if (self.selectionBlock) {
-        NSOrderedSet *selectedObjects = nil;
-        if (indexPath.row == 0) {
-            selectedObjects = self.dataSource;
-        } else {
-            MITMapPlace *place = self.dataSource[indexPath.row - 1];
-            selectedObjects = [NSOrderedSet orderedSetWithObject:place];
-        }
-
-        self.selectionBlock(selectedObjects,nil);
+        MITMapPlace *place = self.dataSource[indexPath.row];
+        self.selectionBlock([NSOrderedSet orderedSetWithObject:place],nil);
     }
 }
 
