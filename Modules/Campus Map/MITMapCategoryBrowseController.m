@@ -2,7 +2,7 @@
 #import "MITMapModel.h"
 
 @interface MITMapCategoryBrowseController ()
-@property (nonatomic,copy) MITMapPlaceSelectionHandler selectionBlock;
+@property (nonatomic,copy) MITMapCategorySelectionHandler selectionBlock;
 @property (nonatomic,strong) MITMapCategory *category;
 @property (nonatomic,copy) NSOrderedSet *dataSource;
 
@@ -22,7 +22,7 @@
     return self;
 }
 
-- (id)init:(MITMapPlaceSelectionHandler)placesSelected
+- (id)init:(MITMapCategorySelectionHandler)placesSelected
 {
     self = [self init];
     if (self) {

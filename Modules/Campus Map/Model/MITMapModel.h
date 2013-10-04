@@ -9,6 +9,4 @@
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
 
-typedef void (^MITMapPlaceSelectionHandler)(NSOrderedSet *selectedPlaces, NSError *error);
-
 #endif
