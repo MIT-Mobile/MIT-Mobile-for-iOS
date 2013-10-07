@@ -19,7 +19,7 @@
 @property (nonatomic) UIColor* fillColor;
 @property (nonatomic) CGFloat lineWidth;
 
-@property (nonatomic, strong) id<NSObject> userData;
+@property (nonatomic, strong) id<NSObject> representedObject;
 
 - (id)init;
 - (id)initWithAnnotationType:(MGSAnnotationType)type;
