@@ -20,8 +20,8 @@ static NSString* const MITMapPlaceCoordinateKey = @"coordinate"; // Used when en
                                                                  //  by any API calls (as of APIv2)
 
 static NSString* const MITMapPlaceContentsKey = @"contents";
-static NSString* const MITMapPlaceContentURLKey = @"url";
-static NSString* const MITMapPlaceContentNameKey = @"name";
+NSString* const MITMapPlaceContentURLKey = @"url";
+NSString* const MITMapPlaceContentNameKey = @"name";
 
 static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 

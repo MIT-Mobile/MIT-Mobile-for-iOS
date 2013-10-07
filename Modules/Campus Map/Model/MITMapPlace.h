@@ -1,6 +1,9 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
+extern NSString* const MITMapPlaceContentURLKey;
+extern NSString* const MITMapPlaceContentNameKey;
+
 @interface MITMapPlace : NSObject <NSSecureCoding,NSCopying>
 @property (readonly) CLLocationCoordinate2D coordinate;
 
