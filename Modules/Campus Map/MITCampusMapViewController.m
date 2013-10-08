@@ -5,6 +5,7 @@
 #import "MGSLayer.h"
 #import "MGSSimpleAnnotation.h"
 #import "MapBookmarkManager.h"
+#import "MITMapDetailViewController.h"
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
@@ -224,6 +225,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
                 }
 
                 mapAnnotation.coordinate = place.coordinate;
+                mapAnnotation.representedObject = place;
                 [annotations addObject:mapAnnotation];
             }
 
@@ -432,6 +434,9 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if (self.searchDisplayController.searchResultsTableView == tableView) {
+    
+    }
     return 0;
 }
 
@@ -454,4 +459,12 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     self.interfaceHidden = !self.interfaceHidden;
 }
 
+- (void)mapView:(MGSMapView *)mapView calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
+{
+    MGSSimpleAnnotation *simpleAnnotation = (MGSSimpleAnnotation*)annotation;
+    MITMapDetailViewController *detailController = [[MITMapDetailViewController alloc] init];
+    detailController.place = (MITMapPlace*)simpleAnnotation.representedObject;
+
+    [self.navigationController pushViewController:detailController animated:YES];
+}
 @end
