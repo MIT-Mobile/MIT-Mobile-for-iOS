@@ -49,7 +49,7 @@
                                                           create:NO
                                                            error:nil];
 
-    return [NSURL URLWithString:@"mapBookmarks-new.plist"
+    return [NSURL URLWithString:@"mapBookmarks-v2.plist"
                   relativeToURL:url];
 }
 
