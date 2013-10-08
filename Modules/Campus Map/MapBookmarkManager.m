@@ -27,7 +27,9 @@
 	self = [super init];
 	if (self) {
 		// see if we can load the bookmarks from disk.
-        _bookmarkSet = [[NSMutableOrderedSet alloc] init];
+        NSArray *existingBookmarks = [NSArray arrayWithContentsOfURL:[self bookmarksURL]];
+        _bookmarkSet = [[NSMutableOrderedSet alloc] initWithArray:existingBookmarks];
+
 	}
 	
 	return self;
