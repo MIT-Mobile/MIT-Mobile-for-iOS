@@ -30,9 +30,36 @@
         NSArray *existingBookmarks = [NSArray arrayWithContentsOfURL:[self bookmarksURL]];
         _bookmarkSet = [[NSMutableOrderedSet alloc] initWithArray:existingBookmarks];
 
+        [self migrateBookmarks];
 	}
 	
 	return self;
+}
+
+- (void)migrateBookmarks
+{
+    NSURL *userDocumentsURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory
+                                                                     inDomain:NSUserDomainMask
+                                                            appropriateForURL:nil
+                                                                       create:NO
+                                                                        error:nil];
+
+    NSURL *bookmarksURL = [NSURL URLWithString:@"mapBookmarks.plist"
+                                   relativeToURL:userDocumentsURL];
+    NSArray *bookmarksV1 = [NSArray arrayWithContentsOfURL:bookmarksURL];
+    if (bookmarksV1) {
+        // Migrate the bookmarks from the original version of the app
+        // The format of the saved bookmarks changed in the 3.5 release
+        for (NSDictionary *savedBookmark in bookmarksV1) {
+            MITMapPlace *place = [[MITMapPlace alloc] initWithDictionary:savedBookmark[@"data"]];
+            if (place) {
+                [self.bookmarkSet addObject:place];
+            }
+        }
+
+        //[[NSFileManager defaultManager] removeItemAtURL:bookmarksURL
+        //                                          error:nil];
+    }
 }
 
 - (NSArray*)bookmarks
