@@ -5,6 +5,7 @@
 #import "MITCampusMapViewController.h"
 
 #import "MITModule+Protected.h"
+#import "MITMapPlace.h"
 
 @implementation CMModule
 @dynamic campusMapVC;
@@ -125,7 +126,8 @@
                 NSMutableArray* searchResultsArr = [NSMutableArray arrayWithCapacity:[searchResultsArray count]];
             
                 for (NSDictionary* info in searchResultsArray) {
-                    MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:info];
+                    MITMapPlace *mapPlace = [[MITMapPlace alloc] initWithDictionary:info];
+                    MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithPlace:mapPlace];
                     [searchResultsArr addObject:annotation];
                 }
 
@@ -151,9 +153,9 @@
                 
                 // look for the selected annotation among the array of annotations
                 for (MITMapSearchResultAnnotation* annotation in self.campusMapVC.mapView.annotations) {
-                    if([[(MITMapSearchResultAnnotation*)annotation uniqueID] isEqualToString:annotationUniqueID]) {
+                    if([annotation.place.identifier isEqualToString:annotationUniqueID]) {
                         [self.campusMapVC.mapView selectAnnotation:annotation animated:NO withRecenter:NO];
-                        currentAnnotation = (MITMapSearchResultAnnotation*)annotation;
+                        currentAnnotation = annotation;
                     }
                 }
             }
@@ -170,8 +172,8 @@
                 // push the details page onto the stack for the item selected. 
                 detailsVC = [[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
                                                                           bundle:nil];
-                
-                detailsVC.annotation = currentAnnotation;
+
+                detailsVC.place = currentAnnotation.place;
                 detailsVC.title = @"Info";
                 detailsVC.campusMapVC = self.campusMapVC;
                 if ([components count]) {

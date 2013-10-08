@@ -5,6 +5,7 @@
 #import "TouchableTableView.h"
 #import "MITUIConstants.h"
 #import "MultiLineTableViewCell.h"
+#import "MITMapPlace.h"
 
 @interface MITMapSearchResultsVC ()
 @property (nonatomic,weak) IBOutlet UITableView* tableView;
@@ -61,10 +62,10 @@
     
 	// get the annotation for this index
 	MITMapSearchResultAnnotation* annotation = self.searchResults[indexPath.row];
-	cell.textLabel.text = annotation.name;
+	cell.textLabel.text = annotation.place.name;
 	
-	if(nil != annotation.bldgnum)
-		cell.detailTextLabel.text = [NSString stringWithFormat:@"Building %@", annotation.bldgnum];
+	if(nil != annotation.place.buildingNumber)
+		cell.detailTextLabel.text = [NSString stringWithFormat:@"Building %@", annotation.place.buildingNumber];
 	else
 		cell.detailTextLabel.text = nil;
 	
@@ -82,15 +83,15 @@
 																						  bundle:nil];
 	
 	MITMapSearchResultAnnotation* annotation = self.searchResults[indexPath.row];
-	detailsVC.annotation = annotation;
+	detailsVC.place = annotation.place;
 	detailsVC.title = @"Info";
 	detailsVC.campusMapVC = self.campusMapVC;
 
 	if (self.isCategory) {
-		detailsVC.queryText = detailsVC.annotation.name;
+		detailsVC.queryText = detailsVC.place.name;
 	} else if([self.campusMapVC.lastSearchText length]) {
 		detailsVC.queryText = self.campusMapVC.lastSearchText;
-		[self.campusMapVC.url setPath:[NSString stringWithFormat:@"detail/%@", annotation.uniqueID]
+		[self.campusMapVC.url setPath:[NSString stringWithFormat:@"detail/%@", annotation.place.buildingNumber]
                                 query:self.campusMapVC.lastSearchText];
 		[self.campusMapVC.url setAsModulePath];
 		[self.campusMapVC setURLPathUserLocation];
@@ -111,13 +112,13 @@
 	
 	CGFloat width = self.view.frame.size.width - 33.0;
 	
-	CGSize labelSize = [annotation.name sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
+	CGSize labelSize = [annotation.place.name sizeWithFont:[UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE]
 								   constrainedToSize:CGSizeMake(width, self.view.frame.size.height)
 									   lineBreakMode:NSLineBreakByWordWrapping];
 	
 	CGFloat height = labelSize.height;
 
-	NSString *detailString = [NSString stringWithFormat:@"Building %@", annotation.bldgnum];
+	NSString *detailString = [NSString stringWithFormat:@"Building %@", annotation.place.buildingNumber];
 	
 	labelSize = [detailString sizeWithFont:[UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE]
 						 constrainedToSize:CGSizeMake(width, 200.0)

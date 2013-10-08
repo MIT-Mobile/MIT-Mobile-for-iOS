@@ -4,6 +4,7 @@
 #import "CampusMapViewController.h"
 #import "MITUIConstants.h"
 #import "MapSelectionController.h"
+#import "MITMapPlace.h"
 
 @implementation BookmarksTableViewController
 
@@ -133,10 +134,9 @@
 	// get the bookmark that was selected.
 
     NSArray *bookmarks = [[MapBookmarkManager defaultManager] bookmarks];
-    NSDictionary* bookmark = bookmarks[indexPath.row];
+    MITMapPlace* bookmark = bookmarks[indexPath.row];
 
-    NSDictionary* data = bookmark[@"data"];
-    MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:data];
+    MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithPlace:bookmark];
 	annotation.bookmark = YES;
 
 	[self.mapSelectionController.mapVC.mapView removeAnnotations:self.mapSelectionController.mapVC.mapView.annotations];
