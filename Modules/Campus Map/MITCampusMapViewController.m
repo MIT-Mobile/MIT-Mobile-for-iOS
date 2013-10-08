@@ -240,6 +240,10 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
         [self.mapView defaultLayer].annotations = annotations;
         self.mapView.mapRegion = MKCoordinateRegionForMGSAnnotations([annotations set]);
+
+        if ([annotations count] == 1) {
+            [self.mapView showCalloutForAnnotation:annotations[0]];
+        }
     }
 }
 
