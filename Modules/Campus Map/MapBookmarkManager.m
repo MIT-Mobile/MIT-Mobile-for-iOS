@@ -80,15 +80,28 @@
                   relativeToURL:url];
 }
 
+- (void)synchronizeWithBackingStore
+{
+    // This should maintain the same behavior as the older version of the
+    // code (for now). When any change is made to the bookmarks (add/remove/reorder)
+    // the backing ordered set is flushed to disk. Since performing any changes to
+    // the bookmarks is relatively rare and non-performance dependent, take the
+    // naive approach for now.
+    [self.bookmarks writeToURL:[self bookmarksURL]
+                    atomically:YES];
+}
+
 #pragma mark Bookmark Management
 - (void)addBookmark:(MITMapPlace*)place
 {
     [self.bookmarkSet addObject:place];
+    [self synchronizeWithBackingStore];
 }
 
 - (void)removeBookmark:(MITMapPlace*)place
 {
     [self.bookmarkSet removeObject:place];
+    [self synchronizeWithBackingStore];
 }
 
 - (BOOL)isBookmarked:(MITMapPlace*)place
@@ -99,6 +112,7 @@
 - (void)moveBookmarkFromRow:(NSInteger)from toRow:(NSInteger)to
 {
     [self.bookmarkSet moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:from] toIndex:to];
+    [self synchronizeWithBackingStore];
 }
 
 @end
