@@ -1,13 +1,12 @@
 
 #import <UIKit/UIKit.h>
 
-@class MITMapSearchResultAnnotation;
+@class MITMapPlace;
 @class CampusMapViewController;
 
 @interface MITMapDetailViewController : UIViewController
 
-@property (nonatomic, strong) MITMapSearchResultAnnotation* annotation;
-@property (nonatomic, strong) MITMapSearchResultAnnotation* annotationDetails;
+@property (nonatomic, strong) MITMapPlace* place;
 @property (nonatomic, weak) CampusMapViewController* campusMapVC;
 @property (nonatomic, copy) NSString* queryText;
 @property int startingTab;
