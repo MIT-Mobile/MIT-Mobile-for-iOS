@@ -132,7 +132,12 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     MITMapCategoryBrowseController *categoryBrowseController = [[MITMapCategoryBrowseController alloc] init:^(NSOrderedSet *selectedPlaces) {
         DDLogVerbose(@"Selected %d places (from categories)", [selectedPlaces count]);
         [self dismissViewControllerAnimated:YES completion:^{
-            self.selectedPlaces = selectedPlaces;
+            // At the moment, assume that a 'nil' value means the operation
+            // was canceled. Should probably go back to the two parameters
+            // (selectedPlaces and error) to indicate cancellation.
+            if (selectedPlaces) {
+                self.selectedPlaces = selectedPlaces;
+            }
         }];
     }];
     
@@ -148,7 +153,12 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     BookmarksTableViewController *bookmarksViewController = [[BookmarksTableViewController alloc] init:^(NSOrderedSet *selectedPlaces) {
         DDLogVerbose(@"Selected %d places (from bookmarks)", [selectedPlaces count]);
         [self dismissViewControllerAnimated:YES completion:^{
-            self.selectedPlaces = selectedPlaces;
+            // At the moment, assume that a 'nil' value means the operation
+            // was canceled. Should probably go back to the two parameters
+            // (selectedPlaces and error) to indicate cancellation.
+            if (selectedPlaces) {
+                self.selectedPlaces = selectedPlaces;
+            }
         }];
     }];
 
