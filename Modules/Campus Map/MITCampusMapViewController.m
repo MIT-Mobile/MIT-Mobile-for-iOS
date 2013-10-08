@@ -6,6 +6,7 @@
 #import "MGSSimpleAnnotation.h"
 #import "MapBookmarkManager.h"
 #import "MITMapDetailViewController.h"
+#import "BookmarksTableViewController.h"
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
@@ -103,8 +104,6 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark 0
-
 #pragma mark - Lazy properties
 - (MGSMapView*)mapView
 {
@@ -163,7 +162,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (IBAction)browseItemWasTapped:(UIBarButtonItem*)sender
 {
     MITMapCategoryBrowseController *categoryBrowseController = [[MITMapCategoryBrowseController alloc] init:^(NSOrderedSet *selectedPlaces) {
-        DDLogVerbose(@"Selected %d places", [selectedPlaces count]);
+        DDLogVerbose(@"Selected %d places (from categories)", [selectedPlaces count]);
         [self dismissViewControllerAnimated:YES completion:^{
             self.selectedPlaces = selectedPlaces;
         }];
@@ -178,7 +177,18 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (IBAction)favoritesItemWasTapped:(UIBarButtonItem*)sender
 {
+    BookmarksTableViewController *bookmarksViewController = [[BookmarksTableViewController alloc] init:^(NSOrderedSet *selectedPlaces) {
+        DDLogVerbose(@"Selected %d places (from bookmarks)", [selectedPlaces count]);
+        [self dismissViewControllerAnimated:YES completion:^{
+            self.selectedPlaces = selectedPlaces;
+        }];
+    }];
 
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:bookmarksViewController];
+    navigationController.navigationBarHidden = NO;
+    [self presentViewController:navigationController
+                       animated:YES
+                     completion:nil];
 }
 
 - (IBAction)listItemWasTapped:(UIBarButtonItem*)sender
