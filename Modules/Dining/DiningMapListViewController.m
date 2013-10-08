@@ -57,19 +57,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         
-        bool hasAnnouncement = true;
-        
-        if (hasAnnouncement) {
-            _announcementSectionIndex = 0;
-            _venuesSectionIndex = 1;
-            _resourcesSectionIndex = 2;
-            _houseSectionCount = 3;
-        } else {
-            _announcementSectionIndex = -1;
-            _venuesSectionIndex = 0;
-            _resourcesSectionIndex = 1;
-            _houseSectionCount = 2;
-        }
+        [self updateTableViewSectionIndices];
         
     }
     return self;
@@ -112,6 +100,7 @@
         [[DiningData sharedData] reloadAndCompleteWithBlock:^ (NSError *error) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                 weakSelf.favoritedRetailVenues = nil;
+                [weakSelf updateTableViewSectionIndices];
                 
                 [weakSelf refreshSelectedTypeOfVenues];
                 
@@ -159,6 +148,23 @@
     } else {
         [self.listView.pullToRefreshView setSubtitle:nil
                                             forState:SVPullToRefreshStateAll];
+    }
+}
+
+- (void) updateTableViewSectionIndices
+{
+    BOOL hasAnnouncement = [[DiningData sharedData] announcementsHTML];
+    
+    if (hasAnnouncement) {
+        _announcementSectionIndex = 0;
+        _venuesSectionIndex = 1;
+        _resourcesSectionIndex = 2;
+        _houseSectionCount = 3;
+    } else {
+        _announcementSectionIndex = -1;
+        _venuesSectionIndex = 0;
+        _resourcesSectionIndex = 1;
+        _houseSectionCount = 2;
     }
 }
 
@@ -656,6 +662,7 @@
 - (NSString *) titleForHeaderInSection:(NSInteger)section // not the UITableViewDataSource method.
 {
     if (!self.isShowingHouseDining) {
+        // showing Retail Dining data
         if ([self.favoritedRetailVenues count] && section == 0) {
             return @"Favorites";
         }
@@ -667,17 +674,17 @@
             building = [building stringByAppendingFormat:@" - %@", ((FacilitiesLocation *)matches[0]).name];
         }
         return building;
+    } else {
+        // showing House Dining data
+        NSString *announcement = [[DiningData sharedData] announcementsHTML];
+        if ([announcement length] && section == 0) {
+            return nil;
+        } else if((![announcement length] && section == 0) || (announcement && section == 1)) {
+            return @"Venues";
+        } else if ((![announcement length] && section == 1)|| (announcement && section == 2)) {
+            return @"Resources";
+        }
     }
-    
-    NSString *announcement = [[DiningData sharedData] announcementsHTML];
-    if (announcement && section == 0) {
-        return nil;
-    } else if((!announcement && section == 0) || (announcement && section == 1)) {
-        return @"Venues";
-    } else if ((!announcement && section == 1)|| section == 2) {
-        return @"Resources";
-    }
-    
     return nil;
 }
 
