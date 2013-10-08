@@ -89,10 +89,15 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 
     NSArray *bookmarks = [[MapBookmarkManager defaultManager] bookmarks];
 	MITMapPlace* bookmark = bookmarks[indexPath.row];
-	cell.textLabel.text = [NSString stringWithFormat:@"Building %@", bookmark.buildingNumber];
 
-    if (![cell.textLabel.text isEqualToString:bookmark.name]) {
-        cell.detailTextLabel.text = bookmark.name;
+    if ([bookmark.buildingNumber length]) {
+        cell.textLabel.text = [NSString stringWithFormat:@"Building %@", bookmark.buildingNumber];
+
+        if (![cell.textLabel.text isEqualToString:bookmark.name]) {
+            cell.detailTextLabel.text = bookmark.name;
+        }
+    } else {
+        cell.textLabel.text = bookmark.name;
     }
 
     return cell;
