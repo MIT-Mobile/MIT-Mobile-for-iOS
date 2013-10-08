@@ -748,8 +748,6 @@
 		448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShuttleRouteViewController.xib; sourceTree = "<group>"; };
 		4499332B11A371CE00A7041B /* RecentSearchesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentSearchesViewController.h; sourceTree = "<group>"; };
 		4499332C11A371CF00A7041B /* RecentSearchesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentSearchesViewController.m; sourceTree = "<group>"; };
-		4499341C11A5E53D00A7041B /* CategoriesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategoriesTableViewController.h; sourceTree = "<group>"; };
-		4499341D11A5E53D00A7041B /* CategoriesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoriesTableViewController.m; sourceTree = "<group>"; };
 		44ACF7681187884300F1F4B2 /* BookmarksTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarksTableViewController.h; sourceTree = "<group>"; };
 		44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarksTableViewController.m; sourceTree = "<group>"; };
 		44ACF76A1187884300F1F4B2 /* MapBookmarkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapBookmarkManager.m; sourceTree = "<group>"; };
@@ -760,8 +758,6 @@
 		44BF601F11050AC000E150D5 /* ShuttleStopCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleStopCell.m; sourceTree = "<group>"; };
 		44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShuttleStopCell.xib; sourceTree = "<group>"; };
 		44C1A26E11A2EA04000FD653 /* CampusMap.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = CampusMap.xcdatamodel; sourceTree = "<group>"; };
-		44C1A3CC11A33905000FD653 /* MapSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapSelectionController.h; sourceTree = "<group>"; };
-		44C1A3CD11A33905000FD653 /* MapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSelectionController.m; sourceTree = "<group>"; };
 		44C1A4C211A412E2000FD653 /* MapSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapSearch.h; sourceTree = "<group>"; };
 		44C1A4C311A412E2000FD653 /* MapSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapSearch.m; sourceTree = "<group>"; };
 		48327CDE16F74F19003A2F23 /* DiningModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningModule.h; path = Dining/DiningModule.h; sourceTree = "<group>"; };
@@ -1993,10 +1989,6 @@
 				44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */,
 				4499332B11A371CE00A7041B /* RecentSearchesViewController.h */,
 				4499332C11A371CF00A7041B /* RecentSearchesViewController.m */,
-				44C1A3CC11A33905000FD653 /* MapSelectionController.h */,
-				44C1A3CD11A33905000FD653 /* MapSelectionController.m */,
-				4499341C11A5E53D00A7041B /* CategoriesTableViewController.h */,
-				4499341D11A5E53D00A7041B /* CategoriesTableViewController.m */,
 				2C9146F317ECFFAC007130D8 /* MITMapCategoryBrowseController.h */,
 				2C9146F417ECFFAC007130D8 /* MITMapCategoryBrowseController.m */,
 			);

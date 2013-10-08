@@ -3,7 +3,6 @@
 #import "MITMapSearchResultAnnotation.h"
 #import "CampusMapViewController.h"
 #import "MITUIConstants.h"
-#import "MapSelectionController.h"
 #import "MITMapPlace.h"
 
 
