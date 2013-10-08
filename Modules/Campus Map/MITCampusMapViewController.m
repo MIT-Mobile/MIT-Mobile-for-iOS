@@ -4,6 +4,7 @@
 #import "MGSMapView.h"
 #import "MGSLayer.h"
 #import "MGSSimpleAnnotation.h"
+#import "MapBookmarkManager.h"
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
@@ -197,7 +198,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (BOOL)hasFavorites
 {
-    return NO;
+    return ([[[MapBookmarkManager defaultManager] bookmarks] count] > 0);
 }
 
 - (void)setSelectedPlaces:(NSOrderedSet *)selectedPlaces
