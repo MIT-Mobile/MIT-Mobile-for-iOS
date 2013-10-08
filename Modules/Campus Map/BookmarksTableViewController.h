@@ -4,7 +4,10 @@
 @class MapSelectionController;
 
 @interface BookmarksTableViewController : UITableViewController
-@property (nonatomic, weak) MapSelectionController* mapSelectionController;
 
-- (id)initWithMapSelectionController:(MapSelectionController*)mapSelectionController;
+/** Initializes an instance of the bookmarks browser using
+ *  the 'placesSelected' handler block. The 'selectedPlaces' block
+ *  parameter will contain instances of the 'MITMapPlace' class
+ */
+- (id)init:(void (^)(NSOrderedSet* selectedPlaces))placesSelected;
 @end

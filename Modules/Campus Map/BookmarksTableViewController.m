@@ -6,39 +6,41 @@
 #import "MapSelectionController.h"
 #import "MITMapPlace.h"
 
+
+typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
+
+@interface BookmarksTableViewController ()
+@property (nonatomic,copy) MITMapBookmarksSelectionHandler selectionBlock;
+@end
+
 @implementation BookmarksTableViewController
 
 #pragma mark - View lifecycle
-
--(id) initWithMapSelectionController:(MapSelectionController*)mapSelectionController
+- (id)init:(void (^)(NSOrderedSet* selectedPlaces))placesSelected
 {
-	self = [super init];
-	if (self) {
-		self.mapSelectionController = mapSelectionController;
-	}
+    self = [super initWithStyle:UITableViewStylePlain];
+    if (self) {
+	    self.title = @"Bookmarks";
+        self.selectionBlock = placesSelected;
+    }
 
-	return self;
-
+    return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+}
 
-    self.hidesBottomBarWhenPushed = YES;
-
-	self.navigationItem.rightBarButtonItem = self.mapSelectionController.cancelButton;
-	self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
+- (void)viewWillAppear:(BOOL)animated
+{
 	if (![[[MapBookmarkManager defaultManager] bookmarks] count]) {
 		self.editButtonItem.enabled = NO;
 	}
 
-
-	[self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
-	self.title = @"Bookmarks";
-
-
-	[self setToolbarItems:self.mapSelectionController.toolbarButtonItems];
+    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonItemStyleDone
+                                                                                           target:self
+                                                                                           action:@selector(doneButtonPressed:)];
+	[self.navigationItem setRightBarButtonItems:@[self.editButtonItem,doneItem] animated:animated];
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -52,6 +54,15 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
+- (IBAction)doneButtonPressed:(UIBarButtonItem*)doneItem
+{
+    [self dismissViewControllerAnimated:YES
+                             completion:^{
+                                 if (self.selectionBlock) {
+                                     self.selectionBlock(nil);
+                                 }
+                             }];
+}
 
 #pragma mark -
 #pragma mark Table view data source
@@ -76,9 +87,12 @@
     }
 
     NSArray *bookmarks = [[MapBookmarkManager defaultManager] bookmarks];
-	NSDictionary* bookmark = bookmarks[indexPath.row];
-	cell.textLabel.text = bookmark[@"title"];
-	cell.detailTextLabel.text = bookmark[@"subtitle"];
+	MITMapPlace* bookmark = bookmarks[indexPath.row];
+	cell.textLabel.text = [NSString stringWithFormat:@"Building %@", bookmark.buildingNumber];
+
+    if (![cell.textLabel.text isEqualToString:bookmark.name]) {
+        cell.detailTextLabel.text = bookmark.name;
+    }
 
     return cell;
 }
@@ -89,8 +103,8 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
 		// Delete the row from the data source
         NSArray *bookmarks = [[MapBookmarkManager defaultManager] bookmarks];
-        NSDictionary* bookmark = bookmarks[indexPath.row];
-		[[MapBookmarkManager defaultManager] removeBookmark:bookmark[@"id"]];
+        MITMapPlace* bookmark = bookmarks[indexPath.row];
+		[[MapBookmarkManager defaultManager] removeBookmark:bookmark];
 
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
 
@@ -101,8 +115,6 @@
 		}
     }
 }
-
-
 
 
 // Override to support rearranging the table view.
@@ -136,15 +148,9 @@
     NSArray *bookmarks = [[MapBookmarkManager defaultManager] bookmarks];
     MITMapPlace* bookmark = bookmarks[indexPath.row];
 
-    MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithPlace:bookmark];
-	annotation.bookmark = YES;
-
-	[self.mapSelectionController.mapVC.mapView removeAnnotations:self.mapSelectionController.mapVC.mapView.annotations];
-	[self.mapSelectionController.mapVC.mapView addAnnotation:annotation];
-	[self.mapSelectionController.mapVC.mapView selectAnnotation:annotation];
-	[self.mapSelectionController.mapVC pushAnnotationDetails:annotation animated:NO];
-    
-	[self dismissModalViewControllerAnimated:YES];
+    if (self.selectionBlock) {
+        self.selectionBlock([NSOrderedSet orderedSetWithObject:bookmark]);
+    }
 }
 
 @end
