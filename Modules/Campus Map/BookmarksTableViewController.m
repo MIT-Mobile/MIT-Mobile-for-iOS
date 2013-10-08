@@ -61,6 +61,19 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
         self.selectionBlock(nil);
     }
 }
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated
+{
+    [super setEditing:editing animated:animated];
+
+    if (editing) {
+        [self.navigationItem setRightBarButtonItem:nil animated:animated];
+    } else {
+        UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                  target:self
+                                                                                  action:@selector(doneButtonPressed:)];
+        [self.navigationItem setRightBarButtonItem:doneItem animated:animated];
+    }
 }
 
 #pragma mark -
