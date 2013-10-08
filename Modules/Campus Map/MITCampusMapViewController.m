@@ -55,12 +55,16 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
                                        UIViewAutoresizingFlexibleWidth);
     self.view = controllerView;
 
-    MGSMapView *mapView = self.mapView;
+    MGSMapView *mapView = [[MGSMapView alloc] init];
+    mapView.delegate = self;;
     mapView.frame = controllerView.bounds;
     mapView.autoresizingMask = UIViewAutoresizingNone;
     [controllerView addSubview:mapView];
+    self.mapView = mapView;
 
-    UISearchBar *searchBar = self.searchBar;
+    UISearchBar *searchBar = [[UISearchBar alloc] init];
+    searchBar.placeholder = @"Search MIT Campus";
+    searchBar.translucent = YES;;
     searchBar.delegate = self;
     [searchBar sizeToFit];
 
@@ -70,6 +74,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     searchBarFrame.size = CGSizeMake(CGRectGetWidth(controllerView.bounds), CGRectGetHeight(searchBarFrame));
     searchBar.frame = searchBarFrame;
     [controllerView addSubview:searchBar];
+    self.searchBar = searchBar;
 }
 
 - (void)viewDidLoad
@@ -101,33 +106,6 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-#pragma mark - Lazy properties
-- (MGSMapView*)mapView
-{
-    MGSMapView *mapView = _mapView;
-    if (!mapView) {
-        mapView = [[MGSMapView alloc] init];
-        mapView.delegate = self;
-        self.mapView = mapView;
-    }
-
-    return mapView;
-}
-
-- (UISearchBar*)searchBar
-{
-    UISearchBar *searchBar = _searchBar;
-    if (!searchBar) {
-        searchBar = [[UISearchBar alloc] init];
-        searchBar.placeholder = @"Search MIT Campus";
-        searchBar.translucent = YES;
-        self.searchBar = searchBar;
-    }
-
-    return searchBar;
 }
 
 #pragma mark - Search Handling
