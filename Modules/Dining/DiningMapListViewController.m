@@ -226,6 +226,7 @@
             if (!self.mapView) {
                 self.mapView = [[MGSMapView alloc] initWithFrame:self.mapContainer.bounds];
                 self.mapView.delegate = self;
+                self.mapView.showUserLocation = YES;
                 [self.mapContainer addSubview:self.mapView];
             }
             [self annotateVenues];
