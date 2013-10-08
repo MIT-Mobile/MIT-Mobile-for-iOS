@@ -57,12 +57,10 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 
 - (IBAction)doneButtonPressed:(UIBarButtonItem*)doneItem
 {
-    [self dismissViewControllerAnimated:YES
-                             completion:^{
-                                 if (self.selectionBlock) {
-                                     self.selectionBlock(nil);
-                                 }
-                             }];
+    if (self.selectionBlock) {
+        self.selectionBlock(nil);
+    }
+}
 }
 
 #pragma mark -
