@@ -2,6 +2,9 @@
 
 @class MITMapPlace;
 
+// This class is *not* thread-safe under mutation.
+// If this class is called from any thread other
+// than the main thread, the behavior will be undetermined.
 @interface MapBookmarkManager : NSObject
 @property (nonatomic,copy,readonly) NSArray* bookmarks;
 + (MapBookmarkManager*)defaultManager;
