@@ -77,11 +77,6 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     self.searchBar = searchBar;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -92,20 +87,10 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     [self updateToolbarItems:animated];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-
-}
-
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-
 }
 
 - (void)didReceiveMemoryWarning
