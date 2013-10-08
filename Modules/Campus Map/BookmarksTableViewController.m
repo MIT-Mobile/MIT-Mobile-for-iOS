@@ -36,10 +36,12 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 		self.editButtonItem.enabled = NO;
 	}
 
-    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonItemStyleDone
-                                                                                           target:self
-                                                                                           action:@selector(doneButtonPressed:)];
-	[self.navigationItem setRightBarButtonItems:@[self.editButtonItem,doneItem] animated:animated];
+    [self.navigationItem setLeftBarButtonItem:self.editButtonItem animated:animated];
+
+    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                              target:self
+                                                                              action:@selector(doneButtonPressed:)];
+	[self.navigationItem setRightBarButtonItem:doneItem animated:animated];
 }
 
 // Override to allow orientations other than the default portrait orientation.
