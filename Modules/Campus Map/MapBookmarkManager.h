@@ -1,13 +1,14 @@
 #import <Foundation/Foundation.h>
 
+@class MITMapPlace;
 
 @interface MapBookmarkManager : NSObject
 @property (nonatomic,copy,readonly) NSArray* bookmarks;
 + (MapBookmarkManager*)defaultManager;
 
-- (void)addBookmark:(NSString*)bookmarkID title:(NSString*)title subtitle:(NSString*)subtitle data:(NSDictionary*)data;
-- (void)removeBookmark:(NSString*)bookmarkID;
-- (BOOL)isBookmarked:(NSString*)bookmarkID;
+- (void)addBookmark:(MITMapPlace*)place;
+- (void)removeBookmark:(MITMapPlace*)place;
+- (BOOL)isBookmarked:(MITMapPlace*)place;
 - (void)moveBookmarkFromRow:(NSInteger)from toRow:(NSInteger)to;
 
 @end

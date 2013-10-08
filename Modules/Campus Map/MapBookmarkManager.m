@@ -1,7 +1,8 @@
 #import "MapBookmarkManager.h"
+#import "MITMapPlace.h"
 
 @interface MapBookmarkManager ()
-@property (nonatomic,copy) NSArray *bookmarks;
+@property (nonatomic,copy) NSMutableOrderedSet *bookmarkSet;
 
 - (NSURL*)bookmarksURL;
 @end
@@ -26,10 +27,15 @@
 	self = [super init];
 	if (self) {
 		// see if we can load the bookmarks from disk.
-        _bookmarks = [[NSArray alloc] initWithContentsOfURL:[self bookmarksURL]];
+        _bookmarkSet = [[NSMutableOrderedSet alloc] init];
 	}
 	
 	return self;
+}
+
+- (NSArray*)bookmarks
+{
+    return [self.bookmarkSet array];
 }
 
 #pragma mark Private category
@@ -41,70 +47,29 @@
                                                           create:NO
                                                            error:nil];
 
-    return [NSURL URLWithString:@"mapBookmarks.plist"
+    return [NSURL URLWithString:@"mapBookmarks-new.plist"
                   relativeToURL:url];
 }
 
-- (void)setBookmarks:(NSArray *)bookmarks
-{
-    if (![_bookmarks isEqualToArray:bookmarks]) {
-        _bookmarks = [bookmarks copy];
-
-        [_bookmarks writeToURL:[self bookmarksURL]
-                    atomically:YES];
-    }
-}
-
 #pragma mark Bookmark Management
-- (void)addBookmark:(NSString*)bookmarkID title:(NSString*)title subtitle:(NSString*)subtitle data:(NSDictionary*) data
+- (void)addBookmark:(MITMapPlace*)place
 {
-	NSMutableDictionary* dictionary = [@{@"id" : bookmarkID,
-                                         @"title" : title} mutableCopy];
-
-	if (subtitle) {
-		dictionary[@"subtitle"] = subtitle;
-    }
-	
-	if (data) {
-		dictionary[@"data"] = data;
-	}
-
-    NSMutableArray *newBookmarks = [[NSMutableArray alloc] initWithArray:self.bookmarks];
-	[newBookmarks addObject:dictionary];
-    self.bookmarks = newBookmarks;
+    [self.bookmarkSet addObject:place];
 }
 
-- (void)removeBookmark:(NSString*)bookmarkID
+- (void)removeBookmark:(MITMapPlace*)place
 {
-    NSMutableArray *newBookmarks = [self.bookmarks mutableCopy];
-    [newBookmarks enumerateObjectsUsingBlock:^(NSDictionary *bookmark, NSUInteger idx, BOOL *stop) {
-        if ([bookmark[@"id"] isEqualToString:bookmarkID]) {
-            [newBookmarks removeObjectAtIndex:idx];
-            (*stop) = YES;
-        }
-    }];
-
-    self.bookmarks = newBookmarks;
+    [self.bookmarkSet removeObject:place];
 }
 
-- (BOOL)isBookmarked:(NSString*)bookmarkID
+- (BOOL)isBookmarked:(MITMapPlace*)place
 {
-    NSArray *matchingBookmarks = [self.bookmarks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id = %@", bookmarkID]];
-    return ([matchingBookmarks count] > 0);
+    return [self.bookmarkSet containsObject:place];
 }
 
 - (void)moveBookmarkFromRow:(NSInteger)from toRow:(NSInteger)to
 {
-    if (to != from) {
-        NSMutableArray *newBookmarks = [self.bookmarks mutableCopy];
-        NSDictionary *bookmark = newBookmarks[from];
-        [newBookmarks removeObjectAtIndex:from];
-
-        // Decrement the 'to' since we just removed the 'from'
-        // bookmark.
-        to = MIN(--to,[newBookmarks count]);
-        newBookmarks[to] = bookmark;
-    }
+    [self.bookmarkSet moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:from] toIndex:to];
 }
 
 @end
