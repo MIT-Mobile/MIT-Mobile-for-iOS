@@ -84,6 +84,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     if (!self.interfaceHidden) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     }
@@ -98,6 +99,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
 }
 
