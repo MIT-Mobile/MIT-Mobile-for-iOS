@@ -197,37 +197,41 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 {
     if (![_selectedPlaces isEqualToOrderedSet:selectedPlaces]) {
         _selectedPlaces = selectedPlaces;
+        [self didChangeSelectedPlaces];
+    }
+}
 
-        NSMutableOrderedSet *annotations = nil;
-        if ([self.selectedPlaces count]) {
-            annotations = [[NSMutableOrderedSet alloc] init];
+- (void)didChangeSelectedPlaces
+{
+    NSMutableOrderedSet *annotations = nil;
+    if ([self.selectedPlaces count]) {
+        annotations = [[NSMutableOrderedSet alloc] init];
 
-            for (MITMapPlace *place in selectedPlaces) {
-                MGSSimpleAnnotation *mapAnnotation = [[MGSSimpleAnnotation alloc] init];
+        for (MITMapPlace *place in self.selectedPlaces) {
+            MGSSimpleAnnotation *mapAnnotation = [[MGSSimpleAnnotation alloc] init];
 
-                if (place.buildingNumber) {
-                    mapAnnotation.title = [NSString stringWithFormat:@"Building %@", place.buildingNumber];
+            if (place.buildingNumber) {
+                mapAnnotation.title = [NSString stringWithFormat:@"Building %@", place.buildingNumber];
 
-                    if (place.name && ![place.name isEqualToString:mapAnnotation.title]) {
-                        mapAnnotation.detail = place.name;
-                    }
-                } else {
-                    mapAnnotation.title = place.name;
+                if (place.name && ![place.name isEqualToString:mapAnnotation.title]) {
+                    mapAnnotation.detail = place.name;
                 }
-
-                mapAnnotation.coordinate = place.coordinate;
-                mapAnnotation.representedObject = place;
-                [annotations addObject:mapAnnotation];
+            } else {
+                mapAnnotation.title = place.name;
             }
 
-
-            UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_list"]
-                                                                         style:UIBarButtonItemStylePlain
-                                                                        target:self
-                                                                        action:@selector(listItemWasTapped:)];
-            self.navigationItem.rightBarButtonItem = listItem;
-            [self.navigationItem setRightBarButtonItem:listItem animated:YES];
+            mapAnnotation.coordinate = place.coordinate;
+            mapAnnotation.representedObject = place;
+            [annotations addObject:mapAnnotation];
         }
+
+
+        UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_list"]
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(listItemWasTapped:)];
+        [self.navigationItem setRightBarButtonItem:listItem animated:YES];
+
 
         [self.mapView defaultLayer].annotations = annotations;
         self.mapView.mapRegion = MKCoordinateRegionForMGSAnnotations([annotations set]);
@@ -235,6 +239,8 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
         if ([annotations count] == 1) {
             [self.mapView showCalloutForAnnotation:annotations[0]];
         }
+    } else {
+        [self.navigationItem setRightBarButtonItem:nil animated:YES];
     }
 }
 
