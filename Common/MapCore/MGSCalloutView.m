@@ -69,7 +69,8 @@ static UIEdgeInsets const MGSCalloutContentInsets = {.top = 0, .left = 0., .bott
 
 - (void)layoutSubviews
 {
-    CGRect layoutFrame = UIEdgeInsetsInsetRect(self.bounds, MGSCalloutContentInsets);
+    CGRect insetBounds = UIEdgeInsetsInsetRect(self.bounds, MGSCalloutContentInsets);
+    CGRect layoutFrame = insetBounds;
 
     {
         BOOL hasImage = (self.imageView.image != nil);
@@ -111,9 +112,21 @@ static UIEdgeInsets const MGSCalloutContentInsets = {.top = 0, .left = 0., .bott
     CGSize detailSize = [self.detailLabel sizeThatFits:[self.detailLabel.text sizeWithFont:self.detailLabel.font
                                                                         constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
                                                                              lineBreakMode:self.detailLabel.lineBreakMode]];
-    CGRect detailLabelFrame = CGRectZero;
-    CGRectDivide(layoutFrame, &detailLabelFrame, &layoutFrame, detailSize.height, CGRectMaxYEdge);
-    self.detailLabel.frame = detailLabelFrame;
+    // Comparing a float to zero can end very badly. Since
+    // sizeThatFits: should be giving us pixel unit sizes,
+    // assuming anything less than 0.5 pixels is effectively zero
+    //
+    // Also, this correction is only made if there is no detail text.
+    // If you provide no title but set the detail text, you're on your own.
+    if (detailSize.height > 0.5) {
+        CGRect detailLabelFrame = CGRectZero;
+        CGRectDivide(layoutFrame, &detailLabelFrame, &layoutFrame, detailSize.height, CGRectMaxYEdge);
+        self.detailLabel.frame = detailLabelFrame;
+    } else {
+        CGPoint titleCenter = self.titleLabel.center;
+        titleCenter.y = CGRectGetMidY(insetBounds);
+        self.titleLabel.center = titleCenter;
+    }
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
