@@ -153,7 +153,7 @@
 
 - (void) updateTableViewSectionIndices
 {
-    BOOL hasAnnouncement = [[DiningData sharedData] announcementsHTML];
+    BOOL hasAnnouncement = [[[DiningData sharedData] announcementsHTML] length];
     
     if (hasAnnouncement) {
         _announcementSectionIndex = 0;
