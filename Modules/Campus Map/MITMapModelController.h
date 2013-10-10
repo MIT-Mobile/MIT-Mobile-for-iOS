@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+extern NSString* const MITMapSearchEntityName;
+
 @class MITMapCategory;
 
 /** The callback handler for any data requests.
@@ -15,6 +17,7 @@ typedef void (^MITMapResponse)(NSOrderedSet *objects, NSDate *lastUpdated, BOOL 
 + (MITMapModelController*)sharedController;
 
 - (void)recentSearches:(MITMapResponse)block;
+
 - (void)searchMapWithQuery:(NSString*)queryText loaded:(MITMapResponse)block;
 - (void)categories:(MITMapResponse)block;
 - (void)places:(MITMapResponse)block;
