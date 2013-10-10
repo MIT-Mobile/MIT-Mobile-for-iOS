@@ -52,16 +52,19 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                              target:self
-                                                                              action:@selector(doneItemTouched:)];
-    self.navigationItem.rightBarButtonItem = doneItem;
-
-    if (!self.dataSource) {
-        if (!self.category) {
-            // No category given so display the top-level list of all the categories.
-            self.navigationItem.title = @"Browse";
-
+    [super viewWillAppear:animated];
+    
+    if (!self.category) {
+        // We are about to appear and no parent category has been set.
+        // Assume this mean we are the top-level object and show a list of
+        // all categories.
+        UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                    target:self
+                                                                                    action:@selector(cancelItemTouched:)];
+        self.navigationItem.leftBarButtonItem = cancelItem;
+        self.navigationItem.title = @"Browse";
+        
+        if (!self.dataSource) {
             [[MITMapModelController sharedController] categories:^(NSOrderedSet *objects, NSDate *lastUpdated, BOOL finished, NSError *error) {
                 if (!error) {
                     if (![self.dataSource isEqualToOrderedSet:objects]) {
@@ -72,42 +75,38 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
                     DDLogWarn(@"Failed to retreive category listing: %@",error);
                 }
             }];
-        } else if ([self.category hasSubcategories]) {
-            self.navigationItem.title = self.category.name;
-            self.dataSource = self.category.subcategories;
-        } else {
-            self.navigationItem.title = self.category.name;
-            // We were provided with a category but it has no subcategories; pull the list of
-            // places for the category from the server and dislpay
-            [[MITMapModelController sharedController] placesInCategory:self.category
-                                                                loaded:^(NSOrderedSet *objects, NSDate *lastUpdated, BOOL finished, NSError *error) {
-                                                                    if (!error) {
-                                                                        if (![self.dataSource isEqualToOrderedSet:objects]) {
-                                                                            self.dataSource = objects;
-                                                                            [self.tableView reloadData];
+        }
+    } else {
+        // A category was set. If the category has subcategories, we should
+        // show the subcategories, otherwise, grab the list of places which belong to the
+        // assigned category and show them.
+        self.navigationItem.title = self.category.name;
+        
+        if (!self.dataSource) {
+            if ([self.category hasSubcategories]) {
+                self.dataSource = self.category.subcategories;
+            } else {
+                [[MITMapModelController sharedController] placesInCategory:self.category
+                                                                    loaded:^(NSOrderedSet *objects, NSDate *lastUpdated, BOOL finished, NSError *error) {
+                                                                        if (!error) {
+                                                                            if (![self.dataSource isEqualToOrderedSet:objects]) {
+                                                                                self.dataSource = objects;
+                                                                                [self.tableView reloadData];
+                                                                            }
+                                                                        } else {
+                                                                            DDLogWarn(@"Failed to retreive category listing: %@",error);
                                                                         }
-                                                                    } else {
-                                                                        DDLogWarn(@"Failed to retreive category listing: %@",error);
-                                                                    }
-                                                                }];
+                                                                    }];
+            }
         }
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (IBAction)cancelItemTouched:(UIBarButtonItem*)doneItem
 {
-    [super viewDidAppear:animated];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (IBAction)doneItemTouched:(UIBarButtonItem*)doneItem
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if (self.selectionBlock) {
+        self.selectionBlock(nil);
+    }
 }
 
 - (BOOL)isShowingCategories
