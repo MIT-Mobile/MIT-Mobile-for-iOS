@@ -211,11 +211,9 @@ NSString * const shuttleStopPath = @"/stops/";
     MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithRelativePath:shuttlePathExtension parameters:nil] autorelease];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
+        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
             
             BOOL routesChanged = NO;
-            
-            jsonResult = [jsonResult objectForKey:@"routes"];
             
             NSMutableArray *routeIDs = [[NSMutableArray alloc] initWithCapacity:[jsonResult count]];
             NSInteger sortOrder = 0;
@@ -314,10 +312,8 @@ NSString * const shuttleStopPath = @"/stops/";
                                                                                  parameters:nil] autorelease];
     
     request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
-            
-            jsonResult = [jsonResult objectAtIndex:0];
-            
+        if (!error && [jsonResult isKindOfClass:[NSDictionary class]]) {
+                        
             NSString *routeID = [jsonResult objectForKey:@"id"];
             
             ShuttleRoute *route = [_shuttleRoutesByID objectForKey:routeID];
