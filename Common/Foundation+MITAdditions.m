@@ -76,17 +76,27 @@ inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
 @end
 
 @implementation NSString (MITAdditions)
-- (NSString *)substringToMaxIndex:(NSUInteger)to {
-	NSUInteger maxLength = [self length] - 1;
-	return [self substringToIndex:(to > maxLength) ? maxLength : to];
-}
-
 - (BOOL)containsSubstring:(NSString*)string options:(NSStringCompareOptions)mask
 {
     NSRange substringRange = [self rangeOfString:string
                                          options:mask];
     
     return (substringRange.location != NSNotFound);
+}
+
+- (NSString*)stringBySearchNormalization {
+    NSMutableCharacterSet *characterSet = [[NSMutableCharacterSet alloc] init];
+    [characterSet formUnionWithCharacterSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    [characterSet formUnionWithCharacterSet:[NSCharacterSet punctuationCharacterSet]];
+
+    NSString *kdNormalizedString = [[self lowercaseString] decomposedStringWithCompatibilityMapping];
+    NSArray *tokens = [kdNormalizedString componentsSeparatedByCharactersInSet:characterSet];
+    return [tokens componentsJoinedByString:@""];
+}
+
+- (NSString *)substringToMaxIndex:(NSUInteger)to {
+	NSUInteger maxLength = [self length] - 1;
+	return [self substringToIndex:(to > maxLength) ? maxLength : to];
 }
 @end
 

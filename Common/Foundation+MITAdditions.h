@@ -29,8 +29,13 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 @end
 
 @interface NSString (MITAdditions)
-- (NSString *)substringToMaxIndex:(NSUInteger)to;
 - (BOOL)containsSubstring:(NSString*)string options:(NSStringCompareOptions)mask;
+
+/** Returns a copy of the receiver which has whitespace
+ *  and punctuation removed and normalized using NFKD form.
+ */
+- (NSString*)stringBySearchNormalization;
+- (NSString *)substringToMaxIndex:(NSUInteger)to;
 @end
 
 @interface NSString (MITAdditions_URLEncoding)
