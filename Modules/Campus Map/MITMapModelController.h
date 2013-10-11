@@ -14,9 +14,12 @@ extern NSString* const MITMapSearchEntityName;
 typedef void (^MITMapResponse)(NSOrderedSet *objects, NSDate *lastUpdated, BOOL finished, NSError *error);
 
 @interface MITMapModelController : NSObject
+@property NSTimeInterval searchExpiry;
+
 + (MITMapModelController*)sharedController;
 
 - (void)recentSearches:(MITMapResponse)block;
+- (void)recentSearchesForPartialString:(NSString*)string loaded:(MITMapResponse)block;
 
 - (void)searchMapWithQuery:(NSString*)queryText loaded:(MITMapResponse)block;
 - (void)categories:(MITMapResponse)block;

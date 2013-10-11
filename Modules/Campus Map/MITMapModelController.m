@@ -6,6 +6,7 @@
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
 #import "MapSearch.h"
+#import "MITAdditions.h"
 
 static NSString* const MITMapResourceCategoryTitles = @"categorytitles";
 static NSString* const MITMapResourceCategory = @"category";
@@ -37,6 +38,8 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
     if (self) {
         _requestQueue = [[NSOperationQueue alloc] init];
         _requestQueue.maxConcurrentOperationCount = 1;
+
+        _searchExpiry = (60. * 60. * 24. * 7); // Default to 1 week expiration interval for recent searches
     }
     
     return self;
@@ -44,45 +47,45 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
 
 - (void)recentSearches:(MITMapResponse)block
 {
+    [self recentSearchesForPartialString:nil loaded:block];
+}
+
+- (void)recentSearchesForPartialString:(NSString*)string loaded:(MITMapResponse)block
+{
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-    
+
     [context performBlock:^{
         NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:MITMapSearchEntityName];
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO],
                                     [NSSortDescriptor sortDescriptorWithKey:@"searchTerm" ascending:YES]];
-        
+
+        if (string) {
+            request.predicate = [NSPredicate predicateWithFormat:@"token BEGINSWITH[d] %@", [string stringBySearchNormalization]];
+        }
+
         NSError *fetchError = nil;
         NSArray *searches = [context executeFetchRequest:request
                                                    error:&fetchError];
-        
+
         NSMutableOrderedSet *searchObjectIDs = nil;
-        if (fetchError) {
+        if (!fetchError) {
             searchObjectIDs = [[NSMutableOrderedSet alloc] init];
-            
-            // Used to keep track the normalized variant of each search query
-            // to ensure that we only have one of each.
-            NSMutableOrderedSet *normalizedTerms = [[NSMutableOrderedSet alloc] init];
-            NSMutableArray *duplicateSearches = [[NSMutableArray alloc] init];
-            
+
             // Run through all the search objects and unique them based
             // on their normalized form (same-cased & whitespace and punctuation removed)
-            [[searches copy] enumerateObjectsUsingBlock:^(MapSearch *search, NSUInteger idx, BOOL *stop) {
-                if ([normalizedTerms containsObject:[search normalizedSearchTerm]]) {
-                    [duplicateSearches addObject:search];
+            [searches enumerateObjectsUsingBlock:^(MapSearch *search, NSUInteger idx, BOOL *stop) {
+                NSTimeInterval searchInterval = [search.date timeIntervalSinceNow];
+                if (searchInterval < (-self.searchExpiry)) {
+                    [context deleteObject:search];
                 } else {
-                    [normalizedTerms addObject:[search normalizedSearchTerm]];
                     [searchObjectIDs addObject:[search objectID]];
                 }
             }];
-            
-            [duplicateSearches enumerateObjectsUsingBlock:^(NSManagedObject *object, NSUInteger idx, BOOL *stop) {
-                [context deleteObject:object];
-            }];
-            
+
             [context save:nil];
         }
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             if (block) {
                 block(searchObjectIDs,[NSDate date],YES,fetchError);
@@ -96,12 +99,25 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
     
-    [context performBlock:^{
-        MapSearch *mapSearch = [NSEntityDescription insertNewObjectForEntityForName:MITMapSearchEntityName
-                                                             inManagedObjectContext:context];
+    [context performBlockAndWait:^{
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapSearchEntityName];
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"searchTerm == %@", queryString];
+
+        MapSearch *mapSearch = [[context executeFetchRequest:fetchRequest error:nil] lastObject];
+        if (!mapSearch) {
+            mapSearch = [NSEntityDescription insertNewObjectForEntityForName:MITMapSearchEntityName
+                                                      inManagedObjectContext:context];
+        }
+
         mapSearch.searchTerm = queryString;
         mapSearch.date = [NSDate date];
-        [context save:nil];
+
+        NSError *error = nil;
+        [context save:&error];
+
+        if (error) {
+            DDLogError(@"Failed to save search: %@", error);
+        }
     }];
 }
 
@@ -117,11 +133,17 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
                                                                              parameters:parameters];
     
     apiRequest.completeBlock = ^(MobileRequestOperation *operation, NSArray* content, NSString *mimeType, NSError *error) {
-        NSMutableOrderedSet *places = [[NSMutableOrderedSet alloc] init];
+        NSMutableOrderedSet *places = nil;
 
-        for (NSDictionary *placeData in content) {
-            MITMapPlace *place = [[MITMapPlace alloc] initWithDictionary:placeData];
-            [places addObject:place];
+        [self addRecentSearch:queryString];
+
+        if (!error) {
+            places = [[NSMutableOrderedSet alloc] init];
+
+            for (NSDictionary *placeData in content) {
+                MITMapPlace *place = [[MITMapPlace alloc] initWithDictionary:placeData];
+                [places addObject:place];
+            }
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
