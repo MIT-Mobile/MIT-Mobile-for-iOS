@@ -43,6 +43,7 @@ static NSString* const MITMapCategorySubcategoriesKey = @"subcategories";
             NSMutableOrderedSet *subcategories = [[NSMutableOrderedSet alloc] init];
             for (NSDictionary *placeData in placeDictionary[MITMapCategorySubcategoriesKey]) {
                 MITMapCategory *place = [[MITMapCategory alloc] initWithDictionary:placeData];
+                place.parent = self;
                 [subcategories addObject:place];
             }
             
