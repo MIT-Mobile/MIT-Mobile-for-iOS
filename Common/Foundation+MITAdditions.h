@@ -46,11 +46,6 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 
 @end
 
-@interface UIDevice (MITAdditions)
-- (NSString*)sysInfoByName:(NSString*)typeSpecifier;
-- (NSString*)cpuType;
-@end
-
 @interface NSDate (MITAdditions)
 + (NSDate *)fakeDateForDining;
 + (NSDate *) dateForTodayFromTimeString:(NSString *)time;

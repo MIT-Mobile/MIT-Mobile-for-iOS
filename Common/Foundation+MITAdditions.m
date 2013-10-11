@@ -1,7 +1,5 @@
 #include <libxml/parserInternals.h>
 #include <libxml/HTMLparser.h>
-#include <sys/sysctl.h>
-#include <mach/machine.h>
 #import "Foundation+MITAdditions.h"
 
 inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
@@ -316,80 +314,6 @@ typedef struct {
     return [stripped stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
-@end
-
-@implementation UIDevice (MITAdditions)
-- (NSString*)sysInfoByName:(NSString*)typeSpecifier
-{
-    const char *typeString = [typeSpecifier UTF8String];
-    size_t size = 0;
-    int status = sysctlbyname(typeString, NULL, &size, NULL, 0);
-
-    if (status) {
-        DDLogError(@"sysctl '%@' failed: %s", typeSpecifier, strerror(status));
-        return nil;
-    }
-    
-    char *result = malloc(size);
-    memset(result, 0, size);
-    status = sysctlbyname(typeString, result, &size, NULL, 0);
-    if (status) {
-        DDLogError(@"sysctl '%@' failed: %s", typeSpecifier, (const char*)strerror(status));
-        free(result);
-        return nil;
-    }
-    
-    NSString *resultString = [NSString stringWithCString:result
-                                                encoding:NSUTF8StringEncoding];
-    free(result);
-    return resultString;
-}
-
-- (NSString*)cpuType
-{
-    cpu_type_t cpuType = CPU_TYPE_ANY;
-    cpu_subtype_t cpuSubtype = CPU_SUBTYPE_MULTIPLE;
-    
-    size_t size = sizeof(cpu_type_t);
-    sysctlbyname("hw.cputype", &cpuType, &size, NULL, 0);
-    
-    size = sizeof(cpu_subtype_t);
-    sysctlbyname("hw.cpusubtype", &cpuSubtype, &size, NULL, 0);
-    
-    
-    if (cpuType == CPU_TYPE_ARM) {
-        NSMutableString *cpuString = [NSMutableString stringWithString:@"armv"];
-        switch (cpuSubtype)
-        {
-            case CPU_SUBTYPE_ARM_V4T:
-                [cpuString appendString:@"4t"];
-                break;
-            case CPU_SUBTYPE_ARM_V5TEJ:
-                [cpuString appendString:@"5tej"];
-                break;
-            case CPU_SUBTYPE_ARM_V6:
-                [cpuString appendString:@"6"];
-                break;
-            case CPU_SUBTYPE_ARM_V7:
-                [cpuString appendString:@"7"];
-                break;
-            case CPU_SUBTYPE_ARM_V7F:
-                [cpuString appendString:@"7f"];
-                break;
-            case CPU_SUBTYPE_ARM_V7K:
-                [cpuString appendString:@"7k"];
-                break;
-        }
-        
-        return cpuString;
-    } else if (cpuType == CPU_TYPE_X86_64) {
-        return @"x86_64";
-    } else if (cpuType == CPU_TYPE_X86) {
-        return @"i386";
-    } else {
-        return @"Unknown";
-    }
-}
 @end
 
 
