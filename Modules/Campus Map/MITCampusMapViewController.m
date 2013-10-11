@@ -7,6 +7,8 @@
 #import "MapBookmarkManager.h"
 #import "MITMapDetailViewController.h"
 #import "BookmarksTableViewController.h"
+#import "MapSearch.h"
+#import "CoreDataManager.h"
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
@@ -22,12 +24,15 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 @interface MITCampusMapViewController () <UISearchDisplayDelegate, UISearchBarDelegate,
                                             UITableViewDataSource, UITableViewDelegate,
                                             MGSMapViewDelegate>
-@property (nonatomic,weak) IBOutlet UISearchBar *searchBar; // Lazy instantiation
-@property (nonatomic,weak) IBOutlet MGSMapView *mapView;    // Lazy instantiation
+@property (nonatomic,weak) IBOutlet UISearchBar *searchBar;
+@property (nonatomic,weak) IBOutlet MGSMapView *mapView;
 @property (nonatomic,strong) UISearchDisplayController *searchController; // Lazy instantiation
 
 @property (nonatomic,getter=isSearching) BOOL searching;
 @property (nonatomic,copy) NSOrderedSet *selectedPlaces;
+
+@property (nonatomic,strong) NSManagedObjectContext *searchContext;
+@property (nonatomic,copy) NSOrderedSet *recentSearches;
 
 @property (nonatomic,getter = isShowingList) BOOL showingList;
 @property (nonatomic,getter = isGeotrackingEnabled) BOOL geotrackingEnabled;
@@ -42,7 +47,12 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.hidesBottomBarWhenPushed = NO;
+
+        if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
+            self.edgesForExtendedLayout = UIRectEdgeNone;
+        }
     }
+
     return self;
 }
 
@@ -56,7 +66,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     self.view = controllerView;
 
     MGSMapView *mapView = [[MGSMapView alloc] init];
-    mapView.delegate = self;;
+    mapView.delegate = self;
     mapView.frame = controllerView.bounds;
     mapView.autoresizingMask = UIViewAutoresizingNone;
     [controllerView addSubview:mapView];
@@ -64,7 +74,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
     UISearchBar *searchBar = [[UISearchBar alloc] init];
     searchBar.placeholder = @"Search MIT Campus";
-    searchBar.translucent = YES;;
+    searchBar.translucent = YES;
     searchBar.delegate = self;
     [searchBar sizeToFit];
 
@@ -110,6 +120,10 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
         _searching = searching;
         
         if (_searching) {
+            NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+            context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+            self.searchContext = context;
+
             UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar
                                                                                             contentsController:self];
             searchController.delegate = self;
@@ -120,7 +134,9 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
             [self.searchController setActive:YES animated:animated];
         } else {
             [self.searchController setActive:NO animated:animated];
-            [self.navigationController setToolbarHidden:NO animated:animated];
+
+            self.recentSearches = nil;
+            self.searchContext = nil;
             self.searchController = nil;
         }
     }
@@ -180,11 +196,6 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 }
 
 #pragma mark - Dynamic Properties
-- (BOOL)canShowList
-{
-    return YES;
-}
-
 - (BOOL)hasFavorites
 {
     return ([[[MapBookmarkManager defaultManager] bookmarks] count] > 0);
@@ -201,7 +212,11 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (void)didChangeSelectedPlaces
 {
     NSMutableOrderedSet *annotations = nil;
-    if ([self.selectedPlaces count]) {
+    // Update the map with the latest list of selectedPlace or,
+    // if there are none, nuke any existing annotations on the
+    // map.
+    // TODO: MITMapPlace object should implement the proper annotation protocols
+    if (self.selectedPlaces) {
         annotations = [[NSMutableOrderedSet alloc] init];
 
         for (MITMapPlace *place in self.selectedPlaces) {
@@ -222,20 +237,26 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
             [annotations addObject:mapAnnotation];
         }
 
+        [self.mapView defaultLayer].annotations = annotations;
 
+        if ([annotations count]) {
+            self.mapView.mapRegion = MKCoordinateRegionForMGSAnnotations([annotations set]);
+
+            if ([annotations count] == 1) {
+                [self.mapView showCalloutForAnnotation:annotations[0]];
+            }
+        }
+    } else {
+        [self.mapView defaultLayer].annotations = nil;
+    }
+
+
+    if ([self.selectedPlaces count]) {
         UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_list"]
                                                                      style:UIBarButtonItemStylePlain
                                                                     target:self
                                                                     action:@selector(listItemWasTapped:)];
         [self.navigationItem setRightBarButtonItem:listItem animated:YES];
-
-
-        [self.mapView defaultLayer].annotations = annotations;
-        self.mapView.mapRegion = MKCoordinateRegionForMGSAnnotations([annotations set]);
-
-        if ([annotations count] == 1) {
-            [self.mapView showCalloutForAnnotation:annotations[0]];
-        }
     } else {
         [self.navigationItem setRightBarButtonItem:nil animated:YES];
     }
@@ -262,9 +283,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
                                 options:(UIViewAnimationOptionAllowAnimatedContent |
                                          UIViewAnimationOptionLayoutSubviews)
                              animations:^{
-                                 CGRect searchBarFrame = self.searchBar.frame;
-                                 searchBarFrame.origin.y = CGRectGetMinY(self.view.bounds) - CGRectGetHeight(searchBarFrame);
-                                 self.searchBar.frame = searchBarFrame;
+                                 self.searchBar.transform = CGAffineTransformMakeTranslation(0., -CGRectGetHeight(self.searchBar.frame));
 
                                  [self.navigationController setToolbarHidden:YES
                                                                     animated:YES];
@@ -273,19 +292,15 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
                                  self.searchBar.hidden = YES;
                              }];
         } else {
-            self.searchBar.hidden = NO;
 
             [UIView animateWithDuration:0.25
                                   delay:0
-                                options:(UIViewAnimationOptionAllowAnimatedContent |
-                                         UIViewAnimationOptionLayoutSubviews)
+                                options:0//UIViewAnimationOptionLayoutSubviews
                              animations:^{
-                                 CGRect searchBarFrame = self.searchBar.frame;
-                                 searchBarFrame.origin.y = CGRectGetMinY(self.view.bounds);
-                                 self.searchBar.frame = searchBarFrame;
-
+                                 self.searchBar.hidden = NO;
+                                 self.searchBar.transform = CGAffineTransformIdentity;
                                  [self.navigationController setToolbarHidden:NO
-                                                                    animated:YES];
+                                                                    animated:NO];
                              }
                              completion:^(BOOL finished) {
 
@@ -355,48 +370,35 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 #pragma mark - Delegate Methods
 #pragma mark UISearchDisplayDelegate
-- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
-{
-    DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
-    
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         CGRect frame = controller.searchBar.frame;
-                         frame.origin.y = CGRectGetMaxY([[UIApplication sharedApplication] statusBarFrame]);
-                         controller.searchBar.frame = frame;
-                     }
-                     completion:^(BOOL finished) {
-                            [self.navigationController setToolbarHidden:YES animated:NO];
-                     }];
-}
-
 - (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
 {
     [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITCampusMapReuseIdentifierSearchCell];
 }
 
-- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
-    DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
-}
+    [[MITMapModelController sharedController] recentSearchesForPartialString:searchString
+                                                                      loaded:^(NSOrderedSet *objectIDs, NSDate *lastUpdated, BOOL finished, NSError *error) {
+        if (error) {
+            self.recentSearches = nil;
+        } else {
+            NSMutableOrderedSet *recentSearches = [[NSMutableOrderedSet alloc] init];
+            [objectIDs enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
+                MapSearch *search = (MapSearch*)[self.searchContext objectWithID:objectID];
+                [recentSearches addObject:search];
+            }];
 
-- (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
-{
-    DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         CGRect frame = controller.searchBar.frame;
-                         frame.origin.y = CGRectGetMinY(self.view.bounds);
-                         controller.searchBar.frame = frame;
-                     }
-                     completion:^(BOOL finished) {
-                         [self.navigationController setToolbarHidden:NO animated:YES];
-                     }];
+            self.recentSearches = recentSearches;
+        }
+
+        [controller.searchResultsTableView reloadData];
+    }];
+    
+    return NO;
 }
 
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
 {
-    DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
     [controller.searchBar resignFirstResponder];
     self.searching = NO;
 }
@@ -405,21 +407,27 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 #pragma mark UISearchBarDelegate
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
     if (!self.isSearching) {
         [self setSearching:YES animated:YES];
     }
 }
 
-
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
+    [[MITMapModelController sharedController] searchMapWithQuery:searchBar.text
+                                                          loaded:^(NSOrderedSet *objects, NSDate *lastUpdated, BOOL finished, NSError *error) {
+                                                              if (!error) {
+                                                                  self.selectedPlaces = objects;
+                                                              } else {
+                                                                  DDLogVerbose(@"Failed to perform search '%@', %@",searchBar.text,error);
+                                                              }
+                                                          }];
+    [searchBar resignFirstResponder];
+    [self setSearching:NO animated:YES];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    DDLogVerbose(@"%@", NSStringFromSelector(_cmd));
     [self setSearching:NO animated:YES];
 }
 
@@ -427,20 +435,51 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    if (self.searchDisplayController.searchResultsTableView == tableView) {
+        if (self.recentSearches) {
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        return 0;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (self.searchDisplayController.searchResultsTableView == tableView) {
-    
+        return [self.recentSearches count];
     }
+    
     return 0;
 }
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return nil;
+    static NSDateFormatter *cachedFormatter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        cachedFormatter = [[NSDateFormatter alloc] init];
+        [cachedFormatter setDoesRelativeDateFormatting:YES];
+        [cachedFormatter setTimeStyle:NSDateFormatterShortStyle];
+        [cachedFormatter setDateStyle:NSDateFormatterMediumStyle];
+    });
+
+    if (self.searchDisplayController.searchResultsTableView == tableView) {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MITCampusMapReuseIdentifierSearchCell
+                                                                forIndexPath:indexPath];
+        
+        MapSearch *search = self.recentSearches[indexPath.row];
+        cell.textLabel.text = search.searchTerm;
+        
+        [cachedFormatter setDefaultDate:[NSDate date]];
+        cell.detailTextLabel.text = [cachedFormatter stringFromDate:search.date];
+        
+        return cell;
+    } else {
+        return nil;
+    }
 }
 
 #pragma mark UITableViewDelegate
