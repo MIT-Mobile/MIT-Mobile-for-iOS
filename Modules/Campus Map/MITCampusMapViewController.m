@@ -220,15 +220,18 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     return ([[[MapBookmarkManager defaultManager] bookmarks] count] > 0);
 }
 
-- (void)setSelectedPlaces:(NSOrderedSet *)selectedPlaces
-{
-    if (![_selectedPlaces isEqualToOrderedSet:selectedPlaces]) {
-        _selectedPlaces = selectedPlaces;
-        [self didChangeSelectedPlaces];
-    }
+- (void)setSelectedPlaces:(NSOrderedSet *)selectedPlaces {
+    [self setSelectedPlaces:selectedPlaces
+                   animated:YES];
 }
 
-- (void)didChangeSelectedPlaces
+- (void)setSelectedPlaces:(NSOrderedSet *)selectedPlaces animated:(BOOL)animated
+{
+    _selectedPlaces = [selectedPlaces copy];
+    [self didChangeSelectedPlaces:animated];
+}
+
+- (void)didChangeSelectedPlaces:(BOOL)animated
 {
     NSMutableOrderedSet *annotations = nil;
     // Update the map with the latest list of selectedPlace or,
@@ -275,9 +278,9 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
                                                                      style:UIBarButtonItemStylePlain
                                                                     target:self
                                                                     action:@selector(listItemWasTapped:)];
-        [self.navigationItem setRightBarButtonItem:listItem animated:YES];
+        [self.navigationItem setRightBarButtonItem:listItem animated:animated];
     } else {
-        [self.navigationItem setRightBarButtonItem:nil animated:YES];
+        [self.navigationItem setRightBarButtonItem:nil animated:animated];
     }
 }
 
