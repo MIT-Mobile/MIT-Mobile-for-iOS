@@ -38,6 +38,8 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 @property (nonatomic,getter = isGeotrackingEnabled) BOOL geotrackingEnabled;
 @property (nonatomic,getter = isInterfaceHidden) BOOL interfaceHidden;
 
+
+- (void)setInterfaceHidden:(BOOL)interfaceHidden animated:(BOOL)animated;
 @end
 
 @implementation MITCampusMapViewController
@@ -291,37 +293,38 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (void)setInterfaceHidden:(BOOL)interfaceHidden
 {
+    [self setInterfaceHidden:interfaceHidden animated:YES];
+}
+
+- (void)setInterfaceHidden:(BOOL)interfaceHidden animated:(BOOL)animated
+{
     if (self.interfaceHidden != interfaceHidden) {
         _interfaceHidden = interfaceHidden;
 
         if (_interfaceHidden) {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:(animated ? 0.25 : 0.)
                                   delay:0
-                                options:(UIViewAnimationOptionAllowAnimatedContent |
-                                         UIViewAnimationOptionLayoutSubviews)
+                                options:0
                              animations:^{
-                                 self.searchBar.transform = CGAffineTransformMakeTranslation(0., -CGRectGetHeight(self.searchBar.frame));
+                                 self.searchBar.layer.affineTransform = CGAffineTransformMakeTranslation(0., -CGRectGetMaxY(self.searchBar.frame));
 
                                  [self.navigationController setToolbarHidden:YES
-                                                                    animated:YES];
+                                                                    animated:animated];
+
                              }
                              completion:^(BOOL finished) {
                                  self.searchBar.hidden = YES;
                              }];
         } else {
 
-            [UIView animateWithDuration:0.25
-                                  delay:0
-                                options:0//UIViewAnimationOptionLayoutSubviews
+            [UIView animateWithDuration:(animated ? 0.20 : 0.)
                              animations:^{
                                  self.searchBar.hidden = NO;
-                                 self.searchBar.transform = CGAffineTransformIdentity;
+                                 self.searchBar.layer.affineTransform = CGAffineTransformIdentity;
                                  [self.navigationController setToolbarHidden:NO
-                                                                    animated:NO];
-                             }
-                             completion:^(BOOL finished) {
-
+                                                                    animated:animated];
                              }];
+
 
         }
     }
