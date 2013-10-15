@@ -26,9 +26,12 @@
 {
 	self = [super init];
 	if (self) {
-		// see if we can load the bookmarks from disk.
-        NSArray *existingBookmarks = [NSArray arrayWithContentsOfURL:[self bookmarksURL]];
-        _bookmarkSet = [[NSMutableOrderedSet alloc] initWithArray:existingBookmarks];
+        _bookmarkSet = [[NSMutableOrderedSet alloc] init];
+
+		// Try and load the bookmarks from disk.
+        NSData *encodedBookmarks = [[NSData alloc] initWithContentsOfURL:[self bookmarksURL]];
+        NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:encodedBookmarks];
+        [_bookmarkSet unionOrderedSet:[decoder decodeObject]];
 
         [self migrateBookmarks];
 	}
@@ -87,8 +90,19 @@
     // the backing ordered set is flushed to disk. Since performing any changes to
     // the bookmarks is relatively rare and non-performance dependent, take the
     // naive approach for now.
-    [self.bookmarks writeToURL:[self bookmarksURL]
-                    atomically:YES];
+    NSMutableData *encodedData = [[NSMutableData alloc] init];
+    NSKeyedArchiver *coder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:encodedData];
+    [coder encodeRootObject:self.bookmarkSet];
+    [coder finishEncoding];
+
+    NSError *error = nil;
+    [encodedData writeToURL:[self bookmarksURL]
+                    options:NSDataWritingAtomic
+                      error:&error];
+
+    if (error) {
+        DDLogWarn(@"Failed to flush saved bookmarks to store: %@", error);
+    }
 }
 
 #pragma mark Bookmark Management
