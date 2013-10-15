@@ -16,8 +16,6 @@ static NSString* const MITMapPlaceCityKey = @"city";
 
 static NSString* const MITMapPlaceLatitudeCoordinateKey = @"lat_wgs84";
 static NSString* const MITMapPlaceLongitudeCoordinateKey = @"long_wgs84";
-static NSString* const MITMapPlaceCoordinateKey = @"coordinate"; // Used when encoding/decoding objects, not returned
-                                                                 //  by any API calls (as of APIv2)
 
 static NSString* const MITMapPlaceContentsKey = @"contents";
 NSString* const MITMapPlaceContentURLKey = @"url";
@@ -111,8 +109,10 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
         self.streetAddress = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceStreetAddressKey];
         self.viewAngle = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceImageViewAngleKey];
 
-        NSValue *coordinateValue = [aDecoder decodeObjectOfClass:[NSValue class] forKey:MITMapPlaceCoordinateKey];
-        self.coordinate = [coordinateValue MKCoordinateValue];
+        CLLocationCoordinate2D coordinate = kCLLocationCoordinate2DInvalid;
+        coordinate.latitude = [aDecoder decodeDoubleForKey:MITMapPlaceLatitudeCoordinateKey];
+        coordinate.longitude = [aDecoder decodeDoubleForKey:MITMapPlaceLongitudeCoordinateKey];
+        self.coordinate = coordinate;
 
         self.contents = [aDecoder decodeObjectOfClass:[NSOrderedSet class] forKey:MITMapPlaceContentsKey];
         self.snippets = [aDecoder decodeObjectOfClass:[NSOrderedSet class] forKey:MITMapPlaceSnippetsKey];
@@ -164,7 +164,8 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
     [aCoder encodeObject:self.streetAddress forKey:MITMapPlaceStreetAddressKey];
     [aCoder encodeObject:self.viewAngle forKey:MITMapPlaceImageViewAngleKey];
 
-    [aCoder encodeObject:[NSValue valueWithMKCoordinate:self.coordinate] forKey:MITMapPlaceCoordinateKey];
+    [aCoder encodeDouble:self.coordinate.latitude forKey:MITMapPlaceLatitudeCoordinateKey];
+    [aCoder encodeDouble:self.coordinate.longitude forKey:MITMapPlaceLongitudeCoordinateKey];
     [aCoder encodeObject:self.contents forKey:MITMapPlaceContentsKey];
     [aCoder encodeObject:self.snippets forKey:MITMapPlaceSnippetsKey];
 }
