@@ -7,5 +7,5 @@
  *  the 'placesSelected' handler block. The 'selectedPlaces' block
  *  parameter will contain instances of the 'MITMapPlace' class
  */
-- (id)init:(void (^)(NSOrderedSet* selectedPlaces))placesSelected;
+- (id)init:(void (^)(MITMapCategory *category, NSOrderedSet* selectedPlaces))placesSelected;
 @end

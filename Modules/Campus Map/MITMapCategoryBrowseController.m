@@ -1,7 +1,7 @@
 #import "MITMapCategoryBrowseController.h"
 #import "MITMapModel.h"
 
-typedef void (^MITMapCategorySelectionHandler)(NSOrderedSet *selectedPlaces);
+typedef void (^MITMapCategorySelectionHandler)(MITMapCategory *category, NSOrderedSet *selectedPlaces);
 static NSString* const MITMapCategoryViewAllText = @"View all on map";
 
 @interface MITMapCategoryBrowseController ()
@@ -105,7 +105,7 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 - (IBAction)cancelItemTouched:(UIBarButtonItem*)doneItem
 {
     if (self.selectionBlock) {
-        self.selectionBlock(nil);
+        self.selectionBlock(nil,nil);
     }
 }
 
@@ -122,7 +122,7 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 - (IBAction)showAllButtonTouched:(UIButton*)showAllButton
 {
     if ([self isShowingPlaces] && self.selectionBlock) {
-        self.selectionBlock(self.dataSource);
+        self.selectionBlock(self.category,self.dataSource);
     }
 }
 
@@ -207,7 +207,7 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
         [self.navigationController pushViewController:categoriesViewController animated:YES];
     } else if (self.selectionBlock) {
         MITMapPlace *place = self.dataSource[indexPath.row];
-        self.selectionBlock([NSOrderedSet orderedSetWithObject:place]);
+        self.selectionBlock(self.category,[NSOrderedSet orderedSetWithObject:place]);
     }
 }
 

@@ -145,7 +145,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 #pragma mark - Browse Handling
 - (IBAction)browseItemWasTapped:(UIBarButtonItem*)sender
 {
-    MITMapCategoryBrowseController *categoryBrowseController = [[MITMapCategoryBrowseController alloc] init:^(NSOrderedSet *selectedPlaces) {
+    MITMapCategoryBrowseController *categoryBrowseController = [[MITMapCategoryBrowseController alloc] init:^(MITMapCategory *category, NSOrderedSet *selectedPlaces) {
         DDLogVerbose(@"Selected %d places (from categories)", [selectedPlaces count]);
         [self dismissViewControllerAnimated:YES completion:^{
             // At the moment, assume that a 'nil' value means the operation
