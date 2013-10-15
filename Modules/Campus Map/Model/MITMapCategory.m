@@ -76,4 +76,18 @@ static NSString* const MITMapCategorySubcategoriesKey = @"subcategories";
     return (self.subcategories && [self.subcategories count]);
 }
 
+- (NSArray*)pathComponents
+{
+    NSMutableArray *components = [[NSMutableArray alloc] init];
+    MITMapCategory *category = self;
+
+    while (category) {
+        [components insertObject:category.name
+                         atIndex:0];
+        category = category.parent;
+    }
+
+    return components;
+}
+
 @end
