@@ -69,8 +69,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
     MGSMapView *mapView = [[MGSMapView alloc] init];
     mapView.delegate = self;
-    mapView.frame = controllerView.bounds;
-    mapView.autoresizingMask = UIViewAutoresizingNone;
+    mapView.translatesAutoresizingMaskIntoConstraints = NO;
     [controllerView addSubview:mapView];
     self.mapView = mapView;
 
@@ -78,15 +77,31 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     searchBar.placeholder = @"Search MIT Campus";
     searchBar.translucent = YES;
     searchBar.delegate = self;
-    [searchBar sizeToFit];
+    searchBar.translatesAutoresizingMaskIntoConstraints = NO;
 
-    CGRect searchBarFrame = searchBar.frame;
-    searchBarFrame.origin = CGPointMake(CGRectGetMinX(controllerView.bounds),
-                                        CGRectGetMinY(controllerView.bounds));
-    searchBarFrame.size = CGSizeMake(CGRectGetWidth(controllerView.bounds), CGRectGetHeight(searchBarFrame));
-    searchBar.frame = searchBarFrame;
     [controllerView addSubview:searchBar];
     self.searchBar = searchBar;
+
+    NSDictionary *views = @{@"mapView" : mapView,
+                            @"searchBar" : searchBar};
+    [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[mapView]|"
+                                                                           options:0
+                                                                           metrics:nil
+                                                                             views:views]];
+    [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[mapView]|"
+                                                                           options:0
+                                                                           metrics:nil
+                                                                             views:views]];
+
+    [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[searchBar]|"
+                                                                           options:0
+                                                                           metrics:nil
+                                                                             views:views]];
+    [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[searchBar]-(>=0)-|"
+                                                                           options:0
+                                                                           metrics:nil
+                                                                             views:views]];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
