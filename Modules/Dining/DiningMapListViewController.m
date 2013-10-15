@@ -522,7 +522,7 @@
 }
 
 - (void)configureAnnouncementCell:(UITableViewCell *)cell {
-    cell.textLabel.text = [[[DiningData sharedData] announcementsHTML] stringByStrippingTags];
+    cell.textLabel.text = [[[[DiningData sharedData] announcementsHTML] stringByStrippingTags] stringByDecodingXMLEntities];
     cell.textLabel.font = [UIFont systemFontOfSize:14];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }
