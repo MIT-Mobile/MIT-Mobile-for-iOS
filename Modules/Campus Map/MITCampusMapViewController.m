@@ -49,7 +49,9 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
         self.hidesBottomBarWhenPushed = NO;
 
         if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
-            self.edgesForExtendedLayout = UIRectEdgeNone;
+            // Make sure that the map view extends all the way under the toolbar in
+            // iOS 7
+            self.edgesForExtendedLayout = UIRectEdgeBottom;
         }
     }
 
