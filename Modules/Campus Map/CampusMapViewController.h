@@ -26,6 +26,8 @@
 @property (nonatomic, copy) NSString* lastSearchText;
 @property (nonatomic) BOOL hasSearchResults;
 @property (nonatomic) BOOL displayingList;
+@property (nonatomic,getter = isTrackingUserLocation) BOOL trackingUserLocation;
+
 @property (nonatomic, readonly, strong) MITModuleURL* url;
 
 @property (nonatomic, strong) IBOutlet UISearchBar* searchBar;

@@ -50,7 +50,6 @@
 @property (nonatomic, assign) SEL searchFilter;
 @property (nonatomic, assign) BOOL displayShuttles;
 
-@property (nonatomic) BOOL trackingUserLocation;
 
 - (void)updateMapListButton;
 - (void)addAnnotationsForShuttleStops:(NSArray*)shuttleStops;
