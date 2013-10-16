@@ -17,15 +17,15 @@
 														ShuttleDataManagerDelegate, 
 														UIAlertViewDelegate>
 
-@property (nonatomic, retain) UIBarButtonItem* geoButton;
-@property (nonatomic, retain) NSArray* searchResults;
+@property (nonatomic, strong) UIBarButtonItem* geoButton;
+@property (nonatomic, strong) NSArray* searchResults;
 @property (nonatomic, assign) CMModule* campusMapModule;
 
-@property (nonatomic, retain) CLLocation *userLocation;
+@property (nonatomic, strong) CLLocation *userLocation;
 @property (nonatomic, readonly, strong) MITMapView* mapView;
-@property (nonatomic, retain) NSString* lastSearchText;
-@property (nonatomic, assign) BOOL hasSearchResults;
-@property (nonatomic, assign) BOOL displayingList;
+@property (nonatomic, copy) NSString* lastSearchText;
+@property (nonatomic) BOOL hasSearchResults;
+@property (nonatomic) BOOL displayingList;
 @property (nonatomic, readonly, strong) MITModuleURL* url;
 
 @property (nonatomic, strong) IBOutlet UISearchBar* searchBar;
