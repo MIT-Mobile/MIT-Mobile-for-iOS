@@ -28,15 +28,20 @@
 
 - (void)updateInfo:(NSDictionary *)pathInfo
 {
-    NSArray *bbox = [pathInfo objectForKey:@"bbox"];
     self.segments = [[NSMutableArray alloc] init];
+    
     NSArray *jSegments = [pathInfo  objectForKey:@"segments"];
     for (NSArray *segment in jSegments)
     {
-        CLLocation *location = [[CLLocation alloc] initWithLatitude:[[segment objectAtIndex:1] doubleValue] longitude:[[segment objectAtIndex:0] doubleValue]];
-        [self.segments addObject:location];
+        NSMutableArray *coords = [[NSMutableArray alloc] init];
+        for (NSArray *locationArray in segment) {
+            CLLocation *location = [[CLLocation alloc] initWithLatitude:[[locationArray objectAtIndex:1] doubleValue] longitude:[[locationArray objectAtIndex:0] doubleValue]];
+            [coords addObject:location];
+        }
+        [self.segments addObject:coords];
     }
     
+    NSArray *bbox = [pathInfo objectForKey:@"bbox"];
     if([bbox count] == 4)
     {
         _minLat = [[bbox objectAtIndex:1]doubleValue];

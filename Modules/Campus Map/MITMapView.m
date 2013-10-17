@@ -360,13 +360,6 @@
         return;
     }
     
-    NSMutableArray *pathCoordinates = [NSMutableArray array];
-    for (CLLocation *location in [route pathLocations])
-    {
-        NSValue *locationValue = [NSValue valueWithCLLocationCoordinate:[location coordinate]];
-        [pathCoordinates addObject:locationValue];
-    }
-    
     NSMutableArray *stops = [NSMutableArray array];
     if ([route respondsToSelector:@selector(annotations)])
     {
@@ -382,12 +375,32 @@
     NSString *identifier = [NSString stringWithFormat:@"edu.mit.mobile.map.routes.%d",[self.routeLayers count]];
     MGSRouteLayer *layer = [[MGSRouteLayer alloc] initWithName:identifier
                                                      withStops:[NSOrderedSet orderedSetWithArray:stops]
-                                               pathCoordinates:pathCoordinates];
+                                               pathCoordinates:nil];
+    
     [self.legacyRoutes addObject:route];
     [self.routeLayers addObject:layer];
-    
+
     [self.mapView insertLayer:layer
                   behindLayer:self.annotationLayer];
+    
+    // Put every path segment on the separate layer
+    int i = 0;
+    for (NSMutableArray *segment in [route pathLocations]) {
+        NSMutableArray *coords = [[NSMutableArray alloc] init];
+        for (CLLocation *location in segment) {
+            NSValue *locationValue = [NSValue valueWithCLLocationCoordinate:[location coordinate]];
+            [coords addObject:locationValue];
+        }
+        
+        identifier = [NSString stringWithFormat:@"edu.mit.mobile.map.routes.lines.%d", i];
+        MGSRouteLayer *pathLayer = [[MGSRouteLayer alloc] initWithName:identifier
+                                                             withStops:nil
+                                                       pathCoordinates:coords];
+        [self.routeLayers addObject:pathLayer];
+        [self.mapView insertLayer:pathLayer
+                      behindLayer:self.annotationLayer];
+        i++;
+    }
     
     [self refreshLayers];
 }
@@ -406,23 +419,7 @@
         maxLon = [route maxLon];
     }
     
-    for (CLLocation *aLocation in route.pathLocations) {
-        CLLocationCoordinate2D coordinate = aLocation.coordinate;
-		if (coordinate.latitude < minLat) {
-			minLat = coordinate.latitude;
-		}
-		if (coordinate.latitude > maxLat) {
-			maxLat = coordinate.latitude;
-		}
-		if(coordinate.longitude < minLon) {
-			minLon = coordinate.longitude;
-		}
-		if (coordinate.longitude > maxLon) {
-			maxLon = coordinate.longitude;
-		}
-    }
-    
-	CLLocationCoordinate2D center;
+    CLLocationCoordinate2D center;
 	center.latitude = minLat + (maxLat - minLat) / 2;
 	center.longitude = minLon + (maxLon - minLon) / 2;
     

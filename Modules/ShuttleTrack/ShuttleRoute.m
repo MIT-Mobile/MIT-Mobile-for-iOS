@@ -371,7 +371,7 @@
 
 - (NSString *)fullSummary 
 {
-	NSString* summaryString = [NSString stringWithFormat:@"Route loop repeats every %d minutes.", self.interval]; //self.interval];
+	NSString* summaryString = self.interval != 0 ? [NSString stringWithFormat:@"Route loop repeats every %d minutes.", self.interval] : @"";
 	if (nil != self.summary) {
 		summaryString = [NSString stringWithFormat:@"%@ %@", self.description, summaryString];
 	}
