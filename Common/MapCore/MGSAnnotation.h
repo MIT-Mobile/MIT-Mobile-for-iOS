@@ -24,5 +24,5 @@
 @property (nonatomic, readonly) UIColor* fillColor;
 @property (nonatomic, readonly) CGFloat lineWidth;
 
-@property (nonatomic, readonly, strong) id<NSObject> userData;
+@property (nonatomic, readonly, strong) id representedObject;
 @end
