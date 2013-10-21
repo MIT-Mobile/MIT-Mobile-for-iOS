@@ -241,7 +241,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
         if ([self.selectedPlaces count] == 1) {
             [self.mapView showCalloutForAnnotation:self.selectedPlaces[0]];
         }
-        
+
         UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_list"]
                                                                      style:UIBarButtonItemStylePlain
                                                                     target:self
@@ -489,9 +489,9 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (void)mapView:(MGSMapView *)mapView calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
 {
-    MGSSimpleAnnotation *simpleAnnotation = (MGSSimpleAnnotation*)annotation;
+    MITMapPlace *tappedPlace = (MITMapPlace*)annotation;
     MITMapDetailViewController *detailController = [[MITMapDetailViewController alloc] init];
-    detailController.place = (MITMapPlace*)simpleAnnotation.representedObject;
+    detailController.place = tappedPlace;
 
     [self.navigationController pushViewController:detailController animated:YES];
 }
