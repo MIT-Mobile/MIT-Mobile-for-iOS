@@ -4,6 +4,13 @@ static NSString* const MITMapCategoryIdentifierKey = @"categoryId";
 static NSString* const MITMapCategoryNameKey = @"categoryName";
 static NSString* const MITMapCategorySubcategoriesKey = @"subcategories";
 
+@interface MITMapCategory ()
+@property (copy) NSString *name;
+@property (copy) NSString *identifier;
+@property (copy) NSOrderedSet *subcategories;
+@property (copy) MITMapCategory *parent;
+@end
+
 @implementation MITMapCategory
 + (BOOL)supportsSecureCoding
 {
