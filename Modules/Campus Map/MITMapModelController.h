@@ -14,7 +14,8 @@ extern NSString* const MITMapSearchEntityName;
 typedef void (^MITMapResponse)(NSOrderedSet *objects, NSDate *lastUpdated, BOOL finished, NSError *error);
 
 @interface MITMapModelController : NSObject
-@property NSTimeInterval searchExpiry;
+@property NSTimeInterval searchExpiryInterval;
+@property NSTimeInterval placeExpiryInterval;
 
 + (MITMapModelController*)sharedController;
 
