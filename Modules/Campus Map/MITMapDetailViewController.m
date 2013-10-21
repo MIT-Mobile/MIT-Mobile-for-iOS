@@ -1,7 +1,6 @@
 #import <MapKit/MapKit.h>
 #import "MITMapDetailViewController.h"
 #import "TabViewControl.h"
-#import "MITMapSearchResultAnnotation.h"
 #import "CampusMapViewController.h"
 #import "NSString+SBJSON.h"
 #import "MITUIConstants.h"
@@ -81,11 +80,10 @@
 	self.mapView.layer.cornerRadius = 6.0;
 	self.mapViewContainer.layer.cornerRadius = 8.0;
 
-    MITMapSearchResultAnnotation *annotation = [[MITMapSearchResultAnnotation alloc] initWithPlace:self.place];
-	[self.mapView addAnnotation:annotation];
-    [self.mapView setRegion:[self.mapView regionForAnnotations:@[annotation]]];
+	[self.mapView addAnnotation:self.place];
+    [self.mapView setRegion:[self.mapView regionForAnnotations:@[self.place]]];
 
-	[self.mapView deselectAnnotation:annotation animated:NO];
+	[self.mapView deselectAnnotation:self.place animated:NO];
 	
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Google Map"
 																			   style:UIBarButtonItemStylePlain
@@ -166,8 +164,8 @@
 		CGFloat currentHeight = padding;
 		CGFloat bulletWidth = 24.0;
 		UIFont *whatsHereFont = [UIFont systemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
-		for (NSDictionary* content in self.place.contents) {
-            NSString *contentName = content[MITMapPlaceContentNameKey];
+		for (MITMapPlace *place in self.place.contents) {
+            NSString *contentName = place.name;
             
             CGSize textConstraints = CGSizeMake(CGRectGetWidth(self.whatsHereView.frame) - bulletWidth - 2. * padding, 400.0);
 			CGSize textSize = [contentName sizeWithFont:whatsHereFont
@@ -219,7 +217,8 @@
 	if (self.place.imageURL) {
         __weak MITMapDetailViewController *weakSelf = self;
         [self.buildingImageView cancelCurrentImageLoad];
-        [self.buildingImageView setImageWithURL:self.place.imageURL
+        NSURL *imageURL = [NSURL URLWithString:self.place.imageURL];
+        [self.buildingImageView setImageWithURL:imageURL
                                       completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
                                           MITMapDetailViewController *blockSelf = weakSelf;
                                           blockSelf.loadingImageView.hidden = YES;
@@ -231,11 +230,7 @@
                                           }
                                       }];
 
-        if ([self.place.viewAngle length]) {
-            self.buildingImageDescriptionLabel.text = [NSString stringWithFormat:@"View from: %@", self.place.viewAngle];
-        } else {
-            self.buildingImageDescriptionLabel.text = nil;
-        }
+        self.buildingImageDescriptionLabel.text = self.place.imageCaption;
 		
 		[self.tabViewControl addTab:@"Photo"];
 		[self.tabViews addObject:self.buildingView];

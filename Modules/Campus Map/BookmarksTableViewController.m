@@ -1,6 +1,5 @@
 #import "BookmarksTableViewController.h"
 #import "MapBookmarkManager.h"
-#import "MITMapSearchResultAnnotation.h"
 #import "CampusMapViewController.h"
 #import "MITUIConstants.h"
 #import "MITMapPlace.h"

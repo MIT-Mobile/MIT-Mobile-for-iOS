@@ -1,7 +1,6 @@
 #import "CMModule.h"
 #import "CampusMapViewController.h"
 #import "MITMapDetailViewController.h"
-#import "MITMapSearchResultAnnotation.h"
 #import "MITCampusMapViewController.h"
 
 #import "MITModule+Protected.h"
@@ -101,9 +100,11 @@
 		}
 		return YES;
 	} else {
+        DDLogWarn(@"Ignoring URL request for %@", localPath);
+        
+        /*
         NSMutableArray *components = [NSMutableArray arrayWithArray:[localPath componentsSeparatedByString:@"/"]];
         NSString *pathRoot = components[0];
-        
         if ([pathRoot isEqualToString:@"search"] || [pathRoot isEqualToString:@"list"] || [pathRoot isEqualToString:@"detail"]) {
             // make sure the map is the active bar
             [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
@@ -203,7 +204,7 @@
             }
             
             return YES;
-        }
+        }*/
 	}
 	
 	return NO;

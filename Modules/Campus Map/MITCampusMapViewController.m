@@ -3,7 +3,6 @@
 #import "MITAdditions.h"
 #import "MGSMapView.h"
 #import "MGSLayer.h"
-#import "MGSSimpleAnnotation.h"
 #import "MapBookmarkManager.h"
 #import "MITMapDetailViewController.h"
 #import "BookmarksTableViewController.h"
@@ -233,47 +232,16 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (void)didChangeSelectedPlaces:(BOOL)animated
 {
-    NSMutableOrderedSet *annotations = nil;
-    // Update the map with the latest list of selectedPlace or,
-    // if there are none, nuke any existing annotations on the
-    // map.
-    // TODO: MITMapPlace object should implement the proper annotation protocols
-    if (self.selectedPlaces) {
-        annotations = [[NSMutableOrderedSet alloc] init];
-
-        for (MITMapPlace *place in self.selectedPlaces) {
-            MGSSimpleAnnotation *mapAnnotation = [[MGSSimpleAnnotation alloc] init];
-
-            if (place.buildingNumber) {
-                mapAnnotation.title = [NSString stringWithFormat:@"Building %@", place.buildingNumber];
-
-                if (place.name && ![place.name isEqualToString:mapAnnotation.title]) {
-                    mapAnnotation.detail = place.name;
-                }
-            } else {
-                mapAnnotation.title = place.name;
-            }
-
-            mapAnnotation.coordinate = place.coordinate;
-            mapAnnotation.representedObject = place;
-            [annotations addObject:mapAnnotation];
-        }
-
-        [self.mapView defaultLayer].annotations = annotations;
-
-        if ([annotations count]) {
-            self.mapView.mapRegion = MKCoordinateRegionForMGSAnnotations([annotations set]);
-
-            if ([annotations count] == 1) {
-                [self.mapView showCalloutForAnnotation:annotations[0]];
-            }
-        }
-    } else {
-        [self.mapView defaultLayer].annotations = nil;
-    }
-
+    // Update the map with the latest list of selectedPlaces
+    [self.mapView defaultLayer].annotations = self.selectedPlaces;
 
     if ([self.selectedPlaces count]) {
+        self.mapView.mapRegion = MKCoordinateRegionForMGSAnnotations([self.selectedPlaces set]);
+
+        if ([self.selectedPlaces count] == 1) {
+            [self.mapView showCalloutForAnnotation:self.selectedPlaces[0]];
+        }
+        
         UIBarButtonItem *listItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"map/item_list"]
                                                                      style:UIBarButtonItemStylePlain
                                                                     target:self
