@@ -1,27 +1,37 @@
 #import <Foundation/Foundation.h>
-#import <CoreLocation/CoreLocation.h>
+#import <MapKit/MapKit.h>
+#import <CoreData/CoreData.h>
+#import "MGSAnnotation.h"
 
-extern NSString* const MITMapPlaceContentURLKey;
-extern NSString* const MITMapPlaceContentNameKey;
+@class MITMapPlace;
 
-@interface MITMapPlace : NSObject <NSSecureCoding,NSCopying>
-@property (readonly) CLLocationCoordinate2D coordinate;
+@interface MITMapPlace : NSManagedObject <MKAnnotation,MGSAnnotation>
+@property (nonatomic, copy) NSString * identifier;
+@property (nonatomic, copy) NSString * buildingNumber;
+@property (nonatomic, copy) NSString * architect;
+@property (nonatomic, copy) NSString * name;
+@property (nonatomic, copy) NSString * mailingAddress;
+@property (nonatomic, copy) NSString * city;
+@property (nonatomic, copy) NSString * imageCaption;
+@property (nonatomic, copy) NSString * imageURL;
+@property (nonatomic, copy) NSString * streetAddress;
+@property (nonatomic, strong) NSNumber * longitude;
+@property (nonatomic, strong) NSNumber * latitude;
+@property (nonatomic, copy) NSString * url;
+@property (nonatomic, copy) NSOrderedSet *contents;
+@property (nonatomic, strong) MITMapPlace *building;
+@property (nonatomic, strong) NSManagedObject *bookmark;
 
-@property (readonly,copy) NSString* identifier;
-@property (readonly,copy) NSString* buildingNumber;
-@property (readonly,copy) NSString* name;
+@property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
-@property (readonly,copy) NSString* viewAngle;
-@property (readonly,copy) NSURL* imageURL;
+- (void)performUpdate:(NSDictionary*)dictionary inManagedObjectContext:(NSManagedObjectContext*)context;
+@end
 
-@property (readonly,copy) NSString* mailingAddress;
-@property (readonly,copy) NSString* streetAddress;
-@property (readonly,copy) NSString* city;
+@interface MITMapPlace (CoreDataGeneratedAccessors)
 
-@property (readonly,copy) NSString* architect;
-@property (readonly,copy) NSOrderedSet* contents;
-@property (readonly,copy) NSOrderedSet* snippets;
+- (void)addContentsObject:(MITMapPlace *)value;
+- (void)removeContentsObject:(MITMapPlace *)value;
+- (void)addContents:(NSOrderedSet *)values;
+- (void)removeContents:(NSOrderedSet *)values;
 
-- (id)initWithDictionary:(NSDictionary*)dictionary;
-- (NSDictionary*)dictionaryValue;
 @end

@@ -18,35 +18,27 @@ static NSString* const MITMapPlaceLatitudeCoordinateKey = @"lat_wgs84";
 static NSString* const MITMapPlaceLongitudeCoordinateKey = @"long_wgs84";
 
 static NSString* const MITMapPlaceContentsKey = @"contents";
-NSString* const MITMapPlaceContentURLKey = @"url";
-NSString* const MITMapPlaceContentNameKey = @"name";
+static NSString* const MITMapPlaceURLKey = @"url";
 
 static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 
-@interface MITMapPlace ()
-@property CLLocationCoordinate2D coordinate;
-
-@property (copy) NSString* identifier;
-@property (copy) NSString* buildingNumber;
-@property (copy) NSString* name;
-
-@property (copy) NSString* viewAngle;
-@property (copy) NSURL* imageURL;
-
-@property (copy) NSString* mailingAddress;
-@property (copy) NSString* streetAddress;
-@property (copy) NSString* city;
-
-@property (copy) NSString* architect;
-@property (copy) NSOrderedSet* contents;
-@property (copy) NSOrderedSet* snippets;
-@end
-
 @implementation MITMapPlace
-+ (BOOL)supportsSecureCoding
-{
-    return YES;
-}
+@synthesize coordinate = _coordinate;
+@dynamic identifier;
+@dynamic buildingNumber;
+@dynamic architect;
+@dynamic name;
+@dynamic mailingAddress;
+@dynamic city;
+@dynamic imageCaption;
+@dynamic imageURL;
+@dynamic streetAddress;
+@dynamic longitude;
+@dynamic latitude;
+@dynamic url;
+@dynamic contents;
+@dynamic building;
+@dynamic bookmark;
 
 - (id)init
 {
@@ -58,174 +50,76 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
     return self;
 }
 
-- (id)initWithDictionary:(NSDictionary *)dictionary
+- (void)performUpdate:(NSDictionary*)placeDictionary inManagedObjectContext:(NSManagedObjectContext*)context
 {
-    self = [self init];
-    if (self) {
-        self.architect = dictionary[MITMapPlaceArchitectKey];
-        self.buildingNumber = dictionary[MITMapPlaceBuildingNumberKey];
-        self.city = dictionary[MITMapPlaceCityKey];
-        self.identifier = dictionary[MITMapPlaceIdentifierKey];
-        self.imageURL = [NSURL URLWithString:dictionary[MITMapPlaceImageURLKey]];
-        self.mailingAddress = dictionary[MITMapPlaceMailingAddressKey];
-        self.name = dictionary[MITMapPlaceNameKey];
-        self.streetAddress = dictionary[MITMapPlaceStreetAddressKey];
-        self.viewAngle = dictionary[MITMapPlaceImageViewAngleKey];
+    self.architect = placeDictionary[MITMapPlaceArchitectKey];
+    self.buildingNumber = placeDictionary[MITMapPlaceBuildingNumberKey];
+    self.city = placeDictionary[MITMapPlaceCityKey];
+    self.identifier = placeDictionary[MITMapPlaceIdentifierKey];
+    self.imageURL = [NSURL URLWithString:placeDictionary[MITMapPlaceImageURLKey]];
+    self.mailingAddress = placeDictionary[MITMapPlaceMailingAddressKey];
+    self.name = placeDictionary[MITMapPlaceNameKey];
+    self.streetAddress = placeDictionary[MITMapPlaceStreetAddressKey];
+    self.imageCaption = [NSString stringWithFormat:@"View from %@",placeDictionary[MITMapPlaceImageViewAngleKey]];
+    self.url = placeDictionary[MITMapPlaceURLKey];
 
 
-        if (dictionary[MITMapPlaceLatitudeCoordinateKey] && dictionary[MITMapPlaceLongitudeCoordinateKey]) {
-            CLLocationDegrees latitude = [dictionary[MITMapPlaceLatitudeCoordinateKey] doubleValue];
-            CLLocationDegrees longitude = [dictionary[MITMapPlaceLongitudeCoordinateKey] doubleValue];
-            self.coordinate = CLLocationCoordinate2DMake(latitude, longitude);
-        } else {
-            self.coordinate = kCLLocationCoordinate2DInvalid;
-        }
-
-
-        if (dictionary[MITMapPlaceContentsKey]) {
-            self.contents = [[NSOrderedSet alloc] initWithArray:dictionary[MITMapPlaceContentsKey]];
-        }
-
-        if (dictionary[MITMapPlaceSnippetsKey]) {
-            self.snippets = [[NSOrderedSet alloc] initWithArray:dictionary[MITMapPlaceSnippetsKey]];
-        }
-    }
-
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [self init];
-
-    if (self) {
-        self.architect = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceArchitectKey];
-        self.buildingNumber = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceBuildingNumberKey];
-        self.city = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceCityKey];
-        self.identifier = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceIdentifierKey];
-        self.imageURL = [aDecoder decodeObjectOfClass:[NSURL class] forKey:MITMapPlaceImageURLKey];
-        self.mailingAddress = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceMailingAddressKey];
-        self.name = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceNameKey];
-        self.streetAddress = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceStreetAddressKey];
-        self.viewAngle = [aDecoder decodeObjectOfClass:[NSString class] forKey:MITMapPlaceImageViewAngleKey];
-
-        CLLocationCoordinate2D coordinate = kCLLocationCoordinate2DInvalid;
-        coordinate.latitude = [aDecoder decodeDoubleForKey:MITMapPlaceLatitudeCoordinateKey];
-        coordinate.longitude = [aDecoder decodeDoubleForKey:MITMapPlaceLongitudeCoordinateKey];
-        self.coordinate = coordinate;
-
-        self.contents = [aDecoder decodeObjectOfClass:[NSOrderedSet class] forKey:MITMapPlaceContentsKey];
-        self.snippets = [aDecoder decodeObjectOfClass:[NSOrderedSet class] forKey:MITMapPlaceSnippetsKey];
-    }
-
-    return self;
-
-}
-
-- (BOOL)isEqual:(id)object
-{
-    if (![super isEqual:object]) {
-        if ([object isKindOfClass:[self class]]) {
-            return [self isEqualToPlace:(MITMapPlace*)object];
-        } else {
-            return NO;
-        }
+    if (placeDictionary[MITMapPlaceLatitudeCoordinateKey] && placeDictionary[MITMapPlaceLongitudeCoordinateKey]) {
+        self.latitude = @([placeDictionary[MITMapPlaceLatitudeCoordinateKey] doubleValue]);
+        self.longitude = @([placeDictionary[MITMapPlaceLongitudeCoordinateKey] doubleValue]);
     } else {
-        return YES;
+        self.latitude = @(kCLLocationCoordinate2DInvalid.latitude);
+        self.latitude = @(kCLLocationCoordinate2DInvalid.longitude);
+    }
+
+    if (placeDictionary[MITMapPlaceContentsKey]) {
+        for (MITMapPlace *oldContent in self.contents) {
+            [context deleteObject:oldContent];
+        }
+
+        NSArray *contents = placeDictionary[MITMapPlaceContentsKey];
+        if (![[NSNull null] isEqual:contents]) {
+            for (NSDictionary *placeContent in contents) {
+                MITMapPlace *place = [NSEntityDescription insertNewObjectForEntityForName:@"MapPlace" inManagedObjectContext:context];
+                [place performUpdate:placeContent inManagedObjectContext:context];
+                place.building = self;
+            }
+        }
     }
 }
 
-- (BOOL)isEqualToPlace:(MITMapPlace*)otherPlace
+- (CLLocationCoordinate2D)coordinate
 {
-    return [self.identifier isEqualToString:otherPlace.identifier];
+    return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
 }
 
-- (NSUInteger)hash
+
+#pragma mark - Protocols
+#pragma mark MKAnnotation
+// Shared between MGSAnnotation and MKAnnotation protocols
+- (NSString*)title
 {
-    return [self.identifier hash];
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    NSDictionary *dictionaryValue = [self dictionaryValue];
-
-    return [[[self class] allocWithZone:zone] initWithDictionary:dictionaryValue];
-}
-
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
-    [aCoder encodeObject:self.architect forKey:MITMapPlaceArchitectKey];
-    [aCoder encodeObject:self.buildingNumber forKey:MITMapPlaceBuildingNumberKey];
-    [aCoder encodeObject:self.city forKey:MITMapPlaceCityKey];
-    [aCoder encodeObject:self.identifier forKey:MITMapPlaceIdentifierKey];
-    [aCoder encodeObject:self.imageURL forKey:MITMapPlaceImageURLKey];
-    [aCoder encodeObject:self.mailingAddress forKey:MITMapPlaceMailingAddressKey];
-    [aCoder encodeObject:self.name forKey:MITMapPlaceNameKey];
-    [aCoder encodeObject:self.streetAddress forKey:MITMapPlaceStreetAddressKey];
-    [aCoder encodeObject:self.viewAngle forKey:MITMapPlaceImageViewAngleKey];
-
-    [aCoder encodeDouble:self.coordinate.latitude forKey:MITMapPlaceLatitudeCoordinateKey];
-    [aCoder encodeDouble:self.coordinate.longitude forKey:MITMapPlaceLongitudeCoordinateKey];
-    [aCoder encodeObject:self.contents forKey:MITMapPlaceContentsKey];
-    [aCoder encodeObject:self.snippets forKey:MITMapPlaceSnippetsKey];
-}
-
-- (NSDictionary*)dictionaryValue
-{
-    // Be neurotic when performing the below assignments and just
-    // sanity check *everything*.
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-
-    if (self.architect) {
-        dictionary[MITMapPlaceArchitectKey] = self.architect;
-    }
-
     if (self.buildingNumber) {
-        dictionary[MITMapPlaceBuildingNumberKey] = self.buildingNumber;
+        return [NSString stringWithFormat:@"Building %@", self.buildingNumber];
+    } else {
+        return self.name;
     }
+}
 
-    if (self.city) {
-        dictionary[MITMapPlaceCityKey] = self.city;
+- (NSString*)subtitle
+{
+    if (![self.name isEqualToString:self.title]) {
+        return self.name;
+    } else {
+        return nil;
     }
+}
 
-    if (self.identifier) {
-        dictionary[MITMapPlaceIdentifierKey] = self.identifier;
-    }
 
-    if (self.imageURL) {
-        dictionary[MITMapPlaceImageURLKey] = self.imageURL;
-    }
-
-    if (self.mailingAddress) {
-        dictionary[MITMapPlaceMailingAddressKey] = self.mailingAddress;
-    }
-
-    if (self.name) {
-        dictionary[MITMapPlaceNameKey] = self.name;
-    }
-
-    if (self.streetAddress) {
-        dictionary[MITMapPlaceStreetAddressKey] = self.streetAddress;
-    }
-
-    if (self.viewAngle) {
-        dictionary[MITMapPlaceImageViewAngleKey] = self.viewAngle;
-    }
-    
-    if (self.contents) {
-        dictionary[MITMapPlaceContentsKey] = self.contents;
-    }
-    
-    if (self.snippets) {
-        dictionary[MITMapPlaceSnippetsKey] = self.snippets;
-    }
-
-    if (CLLocationCoordinate2DIsValid(self.coordinate)) {
-        dictionary[MITMapPlaceLatitudeCoordinateKey] = @(self.coordinate.latitude);
-        dictionary[MITMapPlaceLongitudeCoordinateKey] = @(self.coordinate.longitude);
-    }
-
-    return dictionary;
+#pragma mark MGSAnnotation
+- (NSString*)detail
+{
+    return [self subtitle];
 }
 
 @end
