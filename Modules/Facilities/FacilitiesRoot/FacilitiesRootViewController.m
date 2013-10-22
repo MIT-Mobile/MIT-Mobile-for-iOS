@@ -139,8 +139,7 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
                     [mailView setMailComposeDelegate:self];
                     [mailView setSubject:@"Request from Building Services"];
                     [mailView setToRecipients:[NSArray arrayWithObject:kFacilitiesEmailAddress]];
-                    [self presentModalViewController:mailView
-                                            animated:YES]; 
+                    [self presentViewController:mailView animated:YES completion:NULL];
                 }
                 break;
             }
@@ -167,6 +166,6 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
 #pragma mark - MFMailComposeViewController delegation
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error 
 {
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:NULL];
 }
 @end

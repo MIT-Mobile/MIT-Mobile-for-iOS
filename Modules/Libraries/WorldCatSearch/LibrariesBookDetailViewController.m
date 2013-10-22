@@ -370,7 +370,7 @@ typedef enum {
                 [mailView setMailComposeDelegate:self];
                 [mailView setSubject:subject];
                 [mailView setMessageBody:body isHTML:YES];
-                [self presentModalViewController:mailView animated:YES]; 
+                [self presentViewController:mailView animated:YES completion:NULL];
             }
             break;
         case kMITHoldingSection:
@@ -451,7 +451,7 @@ typedef enum {
 - (void)mailComposeController:(MFMailComposeViewController*)controller
           didFinishWithResult:(MFMailComposeResult)result
                         error:(NSError*)error {
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 @end

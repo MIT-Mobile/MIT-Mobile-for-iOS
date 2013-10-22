@@ -144,7 +144,7 @@
 	[self.mapSelectionController.mapVC.mapView selectAnnotation:annotation];
 	[self.mapSelectionController.mapVC pushAnnotationDetails:annotation animated:NO];
     
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 @end

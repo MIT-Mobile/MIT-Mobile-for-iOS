@@ -96,8 +96,7 @@ enum {
                 [mailView setMailComposeDelegate:self];
                 [mailView setSubject:@"Request from Building Services"];
                 [mailView setToRecipients:[NSArray arrayWithObject:self.location.propertyOwner.email]];
-                [self.navigationController presentModalViewController:mailView
-                                                             animated:YES]; 
+                [self.navigationController presentViewController:mailView animated:YES completion:NULL];
             }
             break;
         }
@@ -191,6 +190,6 @@ enum {
           didFinishWithResult:(MFMailComposeResult)result
                         error:(NSError *)error
 {
-    [self.navigationController dismissModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
 }
 @end

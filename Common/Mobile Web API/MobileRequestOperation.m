@@ -697,8 +697,7 @@ typedef enum
                 UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginView];
                 loginNavController.navigationBar.barStyle = UIBarStyleBlack;
                 
-                [[MITAppDelegate() rootNavigationController] presentModalViewController:loginNavController
-                                                                               animated:YES];
+                [[MITAppDelegate() rootNavigationController] presentViewController:loginNavController animated:YES completion:NULL];
                 self.loginViewController = loginView;
             }
             else

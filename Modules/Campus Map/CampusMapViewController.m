@@ -197,7 +197,7 @@
 
 	// if there is a bookmarks view controller hanging around, dismiss and release it.
 	if(self.selectionVC) {
-		[self.selectionVC dismissModalViewControllerAnimated:NO];
+		[self.selectionVC dismissViewControllerAnimated:NO completion:NULL];
 		self.selectionVC = nil;
 	}
 
@@ -492,7 +492,7 @@
 	// if there is nothing in the search bar, we are browsing categories; otherwise go to list view
 	if (!(self.displayingList || self.hasSearchResults)) {
 		if(self.selectionVC) {
-			[self.selectionVC dismissModalViewControllerAnimated:NO];
+			[self.selectionVC dismissViewControllerAnimated:NO completion:NULL];
 			self.selectionVC = nil;
 		}
 
@@ -713,7 +713,7 @@
 - (void)searchBarBookmarkButtonClicked:(UISearchBar *)searchBar
 {
 	if(self.selectionVC) {
-		[self.selectionVC dismissModalViewControllerAnimated:NO];
+		[self.selectionVC dismissViewControllerAnimated:NO completion:NULL];
 		self.selectionVC = nil;
 	}
 

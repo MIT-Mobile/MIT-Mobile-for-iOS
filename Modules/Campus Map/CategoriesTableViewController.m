@@ -171,7 +171,7 @@
 		// on the map, select the current annotation
 		//[[self.mapSelectionController.mapVC mapView] selectAnnotation:annotation animated:NO withRecenter:YES];
 		
-		[self dismissModalViewControllerAnimated:YES];
+		[self dismissViewControllerAnimated:YES completion:NULL];
 	} else {
 	
 		CategoriesTableViewController* newCategoriesTVC = nil;
@@ -253,7 +253,7 @@
 	// this will remove any old annotations and add the new ones. 
 	[self.mapSelectionController.mapVC setSearchResults:searchResultsArray];
 		
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 #pragma mark JSONLoadedDelegate

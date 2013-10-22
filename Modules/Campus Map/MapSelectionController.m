@@ -80,7 +80,7 @@
 #pragma mark User Actions
 -(void) cancelButtonTapped
 {
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 

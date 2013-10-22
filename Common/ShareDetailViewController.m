@@ -93,7 +93,7 @@ static NSString *kShareDetailTwitter = @"Twitter";
                 break;
         }
         
-        [self dismissModalViewControllerAnimated:YES];
+        [self dismissViewControllerAnimated:YES completion:NULL];
     };
     
     self.modalPresentationStyle = UIModalPresentationCurrentContext;
@@ -153,7 +153,7 @@ static NSString *kShareDetailTwitter = @"Twitter";
                         break;
                 }
                 
-                [self dismissModalViewControllerAnimated:YES];
+                [self dismissViewControllerAnimated:YES completion:NULL];
             };
             
             NSURL *sharedURL = [NSURL URLWithString:[self.shareDelegate twitterUrl]];

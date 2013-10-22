@@ -309,8 +309,7 @@
 - (IBAction)showHelp:(id)sender
 {
     MITScannerHelpViewController *vc = [[MITScannerHelpViewController alloc] init];
-    [self.navigationController presentModalViewController:vc
-                                                 animated:YES];
+    [self.navigationController presentViewController:vc animated:YES completion:NULL];
 }
 
 - (BOOL)isCaptureActive

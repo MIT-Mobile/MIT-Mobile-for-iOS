@@ -78,7 +78,7 @@
         }
     }
     
-    [controller dismissModalViewControllerAnimated:YES];
+    [controller dismissViewControllerAnimated:YES completion:NULL];
 }
 
 @end
