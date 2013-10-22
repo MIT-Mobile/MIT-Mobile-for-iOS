@@ -43,7 +43,7 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
     
     if (self) {
         _requestQueue = [[NSOperationQueue alloc] init];
-        _requestQueue.maxConcurrentOperationCount = 1;
+        _requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
 
         // Default to 1 week (measured in seconds) expiration interval for recent searches and
         // cached place data
@@ -237,11 +237,11 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
             [context save:nil];
         }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (block) {
                 block(searchObjectIDs,[NSDate date],YES,fetchError);
             }
-        });
+        }];
     }];
 }
 
@@ -290,15 +290,14 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
             [categories addObject:category];
         }
         
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (block) {
                 block(categories, [NSDate date], YES, error);
             }
-        });
+        }];
     };
     
-    [[MobileRequestOperation defaultQueue] addOperation:apiRequest];
+    [self.requestQueue addOperation:apiRequest];
 }
 
 - (void)places:(MITMapResponse)block
@@ -308,93 +307,92 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
 
 - (void)placesWithPredicate:(NSPredicate*)predicate loaded:(MITMapResponse)block
 {
-    static dispatch_queue_t requestQueue = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        const char *queueName = [NSStringFromSelector(_cmd) cStringUsingEncoding:NSUTF8StringEncoding];
-        requestQueue = dispatch_queue_create(queueName, 0);
-    });
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"MapPlace"];
+    fetchRequest.predicate = predicate;
+    [self placesWithFetchRequest:fetchRequest loaded:block];
+}
 
-    dispatch_async(requestQueue, ^{
-        NSTimeInterval lastUpdatedInterval = fabs([self.placesFetchDate timeIntervalSinceNow]);
+- (void)placesWithFetchRequest:(NSFetchRequest*)fetchRequest loaded:(MITMapResponse)block
+{
+    NSMutableArray *operations = [[NSMutableArray alloc] init];
 
-        if (lastUpdatedInterval > self.placeExpiryInterval) {
-            NSURL *serverURL = MITMobileWebGetCurrentServerURL();
-            NSURL *requestURL = [NSURL URLWithString:@"/apis/map/places" relativeToURL:serverURL];
-            MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithURL:requestURL parameters:nil];
-            apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
-                if (error) {
-                    DDLogError(@"'places' update failed with error %@", error);
+    NSBlockOperation *fetchOperation = [NSBlockOperation blockOperationWithBlock:^{
+        NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+        [context performBlockAndWait:^{
+            NSError *error = nil;
+            NSArray *places = [context executeFetchRequest:fetchRequest error:&error];
 
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (block) {
-                            block(nil,self.placesFetchDate,YES,error);
-                        }
-                    });
-                } else if ([content isKindOfClass:[NSDictionary class]]) {
-                    NSError *requestError = [NSError errorWithDomain:NSURLErrorDomain
-                                                                code:NSURLErrorResourceUnavailable
-                                                            userInfo:nil];
+            if (error) {
+                DDLogError(@"'places' fetch failed with error %@",error);
+            }
 
-                    DDLogError(@"'places' update failed with error %@", requestError);
+            NSMutableOrderedSet *objectIdentifiers = nil;
+            if (places) {
+                DDLogVerbose(@"Returning %d places for predicate: %@",[places count],fetchRequest.predicate);
 
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (block) {
-                            block(nil,self.placesFetchDate,YES,requestError);
-                        }
-                    });
-                } else if ([content isKindOfClass:[NSArray class]]) {
-                    [self updateCachedPlaces:content partialUpdate:NO];
-                    self.placesFetchDate = [NSDate date];
-
-                    // The update completed, re-add this request to any queued requests
-                    // and the next pass thru, we should get some results back!
-                    // Since we updated the placesFetchDate above, this shouldn't result
-                    // in an infinite loop.
-                    [self placesWithPredicate:predicate loaded:block];
-                }
-
-                dispatch_resume(requestQueue);
-            };
-
-            [[MobileRequestOperation defaultQueue] addOperation:apiRequest];
-            dispatch_suspend(requestQueue);
-        } else {
-            NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-            context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-            [context performBlockAndWait:^{
-                NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"MapPlace"];
-                fetchRequest.predicate = predicate;
-
-                NSError *error = nil;
-                NSArray *places = [context executeFetchRequest:fetchRequest error:&error];
-
-                if (error) {
-                    DDLogError(@"'places' fetch failed with error %@",error);
-                }
-
-                NSMutableOrderedSet *objectIdentifiers = nil;
-                if (places) {
-                    DDLogVerbose(@"Returning %d places for predicate: %@",[places count],predicate);
-
-                    objectIdentifiers = [[NSMutableOrderedSet alloc] init];
-                    [places enumerateObjectsUsingBlock:^(MITMapPlace *mapPlace, NSUInteger idx, BOOL *stop) {
-                        DDLogVerbose(@"\t%@ (%@)",mapPlace.identifier, [mapPlace title]);
-                        if (![[mapPlace objectID] isTemporaryID]) {
-                            [objectIdentifiers addObject:[mapPlace objectID]];
-                        }
-
-                    }];
-                }
-
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (block) {
-                        block(objectIdentifiers,self.placesFetchDate,YES,error);
+                objectIdentifiers = [[NSMutableOrderedSet alloc] init];
+                [places enumerateObjectsUsingBlock:^(MITMapPlace *mapPlace, NSUInteger idx, BOOL *stop) {
+                    DDLogVerbose(@"\t%@ (%@)",mapPlace.identifier, [mapPlace title]);
+                    if (![[mapPlace objectID] isTemporaryID]) {
+                        [objectIdentifiers addObject:[mapPlace objectID]];
                     }
-                });
+
+                }];
+            }
+
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block(objectIdentifiers,self.placesFetchDate,YES,error);
+                }
             }];
-        }
-    });
+        }];
+    }];
+
+    [operations addObject:fetchOperation];
+
+
+    NSTimeInterval lastUpdatedInterval = fabs([self.placesFetchDate timeIntervalSinceNow]);
+    if (lastUpdatedInterval > self.placeExpiryInterval) {
+        NSURL *serverURL = MITMobileWebGetCurrentServerURL();
+        NSURL *requestURL = [NSURL URLWithString:@"/apis/map/places" relativeToURL:serverURL];
+        MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithURL:requestURL parameters:nil];
+        apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
+            if (error) {
+                DDLogError(@"'places' update failed with error %@", error);
+
+                // Something went wrong with the API request. Make sure that
+                // the fetch operation is canceled before we go any further (we don't
+                // want that block being called twice!)
+                [fetchOperation cancel];
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(nil,self.placesFetchDate,YES,error);
+                    }
+                }];
+            } else if ([content isKindOfClass:[NSDictionary class]]) {
+                NSError *requestError = [NSError errorWithDomain:NSURLErrorDomain
+                                                            code:NSURLErrorResourceUnavailable
+                                                        userInfo:content];
+
+                DDLogError(@"'places' update failed with error %@", requestError);
+                [fetchOperation cancel];
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(nil,self.placesFetchDate,YES,error);
+                    }
+                }];
+            } else if ([content isKindOfClass:[NSArray class]]) {
+                [self updateCachedPlaces:content partialUpdate:NO];
+                self.placesFetchDate = [NSDate date];
+            }
+        };
+
+        [fetchOperation addDependency:apiRequest];
+        [operations addObject:apiRequest];
+    }
+
+    [self.requestQueue addOperations:operations waitUntilFinished:NO];
 }
 
 - (void)placesInCategory:(MITMapCategory*)category loaded:(MITMapResponse)block
@@ -421,7 +419,8 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
         }
     };
 
-    [[MobileRequestOperation defaultQueue] addOperation:apiRequest];
+    [self.requestQueue addOperation:apiRequest];
+}
 }
 
 @end
