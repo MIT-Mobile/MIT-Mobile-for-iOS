@@ -53,15 +53,15 @@
     if (bookmarksV1) {
         // Migrate the bookmarks from the original version of the app
         // The format of the saved bookmarks changed in the 3.5 release
-        for (NSDictionary *savedBookmark in bookmarksV1) {
+        /*for (NSDictionary *savedBookmark in bookmarksV1) {
             MITMapPlace *place = [[MITMapPlace alloc] initWithDictionary:savedBookmark[@"data"]];
             if (place) {
                 [self.bookmarkSet addObject:place];
             }
         }
 
-        //[[NSFileManager defaultManager] removeItemAtURL:bookmarksURL
-        //                                          error:nil];
+        [[NSFileManager defaultManager] removeItemAtURL:bookmarksURL
+                                                  error:nil];*/
     }
 }
 
