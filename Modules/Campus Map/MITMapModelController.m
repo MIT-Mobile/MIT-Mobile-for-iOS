@@ -6,6 +6,7 @@
 #import "MobileRequestOperation.h"
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
+#import "MITMapBookmark.h"
 #import "MapSearch.h"
 #import "MITAdditions.h"
 
@@ -421,6 +422,115 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
 
     [self.requestQueue addOperation:apiRequest];
 }
+
+#pragma mark - Map Bookmarks
+- (void)bookmarkedPlaces:(MITMapResponse)block
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"MapPlace"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"bookmark != NIL"];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"bookmark.order" ascending:YES]];
+
+    [self placesWithFetchRequest:fetchRequest loaded:block];
+}
+
+- (void)addBookmarkForPlace:(MITMapPlace*)place
+{
+    if (!place.bookmark) {
+        NSManagedObjectID *placeID = place.objectID;
+        NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+
+        [context performBlockAndWait:^{
+            NSFetchRequest *bookmarksRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapBookmark"];
+            bookmarksRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+
+            NSError *error = nil;
+            MITMapPlace *localPlace = (MITMapPlace*)[context objectWithID:placeID];
+            NSUInteger nextIndex = [context countForFetchRequest:bookmarksRequest error:&error];
+
+            if (error) {
+                DDLogError(@"Failed to fetch bookmark count with error %@", error);
+            } else {
+                MITMapBookmark *bookmarkObject = [NSEntityDescription insertNewObjectForEntityForName:@"MapBookmark" inManagedObjectContext:context];
+                bookmarkObject.order = @(nextIndex);
+                bookmarkObject.place = localPlace;
+
+                [context save:&error];
+
+                if (error) {
+                    DDLogError(@"Failed to add bookmark for '%@' with error %@", [localPlace identifier], error);
+                }
+            }
+        }];
+    }
+}
+
+- (void)removeBookmarkForPlace:(MITMapPlace*)place
+{
+    if (place.bookmark) {
+        NSManagedObjectID *placeID = place.objectID;
+        NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+
+        [context performBlockAndWait:^{
+            NSFetchRequest *bookmarksRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapBookmark"];
+            bookmarksRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+
+            NSError *error = nil;
+            MITMapPlace *localPlace = (MITMapPlace*)[context objectWithID:placeID];
+            NSMutableArray *bookmarks = [[context executeFetchRequest:bookmarksRequest error:&error] mutableCopy];
+
+            if (error) {
+                DDLogError(@"Failed to fetch bookmarks with error %@", error);
+            } else {
+                [bookmarks removeObject:localPlace.bookmark];
+                [context deleteObject:localPlace.bookmark];
+
+                [bookmarks enumerateObjectsUsingBlock:^(MITMapBookmark *bookmark, NSUInteger idx, BOOL *stop) {
+                    bookmark.order = @(idx);
+                }];
+
+                [context save:&error];
+
+                if (error) {
+                    DDLogError(@"Failed to remove bookmark for '%@' with error %@", [localPlace identifier], error);
+                }
+            }
+        }];
+    }
+}
+
+- (void)moveBookmarkForPlace:(MITMapPlace*)place toIndex:(NSUInteger)index
+{
+    if (place.bookmark) {
+        NSManagedObjectID *bookmarkID = [place.bookmark objectID];
+        NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+
+        [context performBlockAndWait:^{
+            NSFetchRequest *bookmarksRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapBookmark"];
+            bookmarksRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+
+            NSError *error = nil;
+            MITMapBookmark *localBookmark = (MITMapBookmark*)[context objectWithID:bookmarkID];
+            NSArray *fetchResults = [context executeFetchRequest:bookmarksRequest error:&error];
+            NSMutableOrderedSet *bookmarks = [NSMutableOrderedSet orderedSetWithArray:fetchResults];
+
+            if (error) {
+                DDLogError(@"Failed to fetch bookmarks with error %@", error);
+            } else {
+                NSUInteger bookmarkIndex = [bookmarks indexOfObject:localBookmark];
+                [bookmarks moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:bookmarkIndex] toIndex:index];
+
+                [bookmarks enumerateObjectsUsingBlock:^(MITMapBookmark *bookmark, NSUInteger idx, BOOL *stop) {
+                    bookmark.order = @(idx);
+                }];
+
+                [context save:&error];
+
+                if (error) {
+                    DDLogError(@"Failed to remove bookmark for '%@' with error %@", [localBookmark.place identifier], error);
+                }
+            }
+        }];
+    }
 }
 
 @end

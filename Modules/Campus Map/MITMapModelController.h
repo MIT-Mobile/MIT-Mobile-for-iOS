@@ -3,6 +3,7 @@
 extern NSString* const MITMapSearchEntityName;
 
 @class MITMapCategory;
+@class MITMapPlace;
 
 /** The callback handler for any data requests.
  *
@@ -27,4 +28,8 @@ typedef void (^MITMapResponse)(NSOrderedSet *objects, NSDate *lastUpdated, BOOL 
 - (void)places:(MITMapResponse)block;
 - (void)placesInCategory:(MITMapCategory*)categoryId loaded:(MITMapResponse)block;
 
+- (void)bookmarkedPlaces:(MITMapResponse)block;
+- (void)addBookmarkForPlace:(MITMapPlace*)place;
+- (void)removeBookmarkForPlace:(MITMapPlace*)place;
+- (void)moveBookmarkForPlace:(MITMapPlace*)place toIndex:(NSUInteger)index;
 @end
