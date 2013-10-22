@@ -3316,8 +3316,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/External/ZBarSDK\"",
-					"\"$(SRCROOT)/External/TestFlight\"",
+					"$(SRCROOT)/External/ZBarSDK",
+					"$(SRCROOT)/External/TestFlight",
+					"$(SDKROOT)/usr/lib/system",
 				);
 				PRODUCT_NAME = MITMobile;
 				WARNING_CFLAGS = "-Wall";
@@ -3346,8 +3347,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/External/ZBarSDK\"",
-					"\"$(SRCROOT)/External/TestFlight\"",
+					"$(SRCROOT)/External/ZBarSDK",
+					"$(SRCROOT)/External/TestFlight",
+					"$(SDKROOT)/usr/lib/system",
 				);
 				PRODUCT_NAME = MITMobile;
 			};
@@ -3459,8 +3461,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/External/ZBarSDK\"",
-					"\"$(SRCROOT)/External/TestFlight\"",
+					"$(SRCROOT)/External/ZBarSDK",
+					"$(SRCROOT)/External/TestFlight",
+					"$(SDKROOT)/usr/lib/system",
 				);
 				PRODUCT_NAME = MITMobile;
 			};
