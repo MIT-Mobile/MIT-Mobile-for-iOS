@@ -4,6 +4,7 @@
 #import "MGSAnnotation.h"
 
 @class MITMapPlace;
+@class MITMapBookmark;
 
 @interface MITMapPlace : NSManagedObject <MKAnnotation,MGSAnnotation>
 @property (nonatomic, copy) NSString * identifier;
@@ -20,7 +21,7 @@
 @property (nonatomic, copy) NSString * url;
 @property (nonatomic, copy) NSOrderedSet *contents;
 @property (nonatomic, strong) MITMapPlace *building;
-@property (nonatomic, strong) NSManagedObject *bookmark;
+@property (nonatomic, strong) MITMapBookmark *bookmark;
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 

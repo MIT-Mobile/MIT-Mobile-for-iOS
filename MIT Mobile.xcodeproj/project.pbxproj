@@ -91,6 +91,7 @@
 		2C9B8B2F17F5E2F6000701CA /* MITMapCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C9B8B2E17F5E2F6000701CA /* MITMapCategory.m */; };
 		2CA010BE1694A7CC00B87CF0 /* MGSSimpleAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA010BD1694A7CC00B87CF0 /* MGSSimpleAnnotation.m */; };
 		2CA454F213C7468F00891428 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA454F113C7468F00891428 /* AssetsLibrary.framework */; };
+		2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA73ECE18171AFD00A42D03 /* MITMapBookmark.m */; };
 		2CA91F9915CB03BB00C03732 /* MITScannerHelpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA91F9715CB03BB00C03732 /* MITScannerHelpViewController.m */; };
 		2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CA91F9815CB03BB00C03732 /* MITScannerHelpViewController.xib */; };
 		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
@@ -583,6 +584,8 @@
 		2CA010BC1694A7CC00B87CF0 /* MGSSimpleAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSSimpleAnnotation.h; sourceTree = "<group>"; };
 		2CA010BD1694A7CC00B87CF0 /* MGSSimpleAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSSimpleAnnotation.m; sourceTree = "<group>"; };
 		2CA454F113C7468F00891428 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		2CA73ECD18171AFD00A42D03 /* MITMapBookmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMapBookmark.h; path = Model/MITMapBookmark.h; sourceTree = "<group>"; };
+		2CA73ECE18171AFD00A42D03 /* MITMapBookmark.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMapBookmark.m; path = Model/MITMapBookmark.m; sourceTree = "<group>"; };
 		2CA91F9615CB03BB00C03732 /* MITScannerHelpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerHelpViewController.h; sourceTree = "<group>"; };
 		2CA91F9715CB03BB00C03732 /* MITScannerHelpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerHelpViewController.m; sourceTree = "<group>"; };
 		2CA91F9815CB03BB00C03732 /* MITScannerHelpViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITScannerHelpViewController.xib; sourceTree = "<group>"; };
@@ -1967,6 +1970,8 @@
 				44C1A4C211A412E2000FD653 /* MapSearch.h */,
 				44C1A4C311A412E2000FD653 /* MapSearch.m */,
 				44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */,
+				2CA73ECD18171AFD00A42D03 /* MITMapBookmark.h */,
+				2CA73ECE18171AFD00A42D03 /* MITMapBookmark.m */,
 				2C49DBB017E8AB9400ABA319 /* MITMapModelController.h */,
 				2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */,
 				2C9B8B2D17F5E2F6000701CA /* MITMapCategory.h */,
@@ -2975,6 +2980,7 @@
 			files = (
 				2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */,
 				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
+				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
 				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
 				EB8392A01163FD6E0067C0A3 /* Calendar.xcdatamodeld in Sources */,
 				DED41FD517381D180048376F /* Dining.xcdatamodeld in Sources */,
