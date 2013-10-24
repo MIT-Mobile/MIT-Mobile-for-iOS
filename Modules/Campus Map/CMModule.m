@@ -187,8 +187,7 @@
             }
             
             if ([[components lastObject] isEqualToString:@"userLoc"]) {
-                self.campusMapVC.mapView.stayCenteredOnUserLocation = YES;
-                self.campusMapVC.geoButton.style = UIBarButtonItemStyleDone;
+                self.campusMapVC.trackingUserLocation = YES;
             } else {
                 if (regionDictionary != nil) {
                     self.campusMapVC.mapView.region = region;

@@ -104,8 +104,15 @@ static NSString * sHomePageURLKey       = @"homepageURL";
         self.headerView.timeLabel.textColor = [UIColor colorWithHexString:@"#d20000"];
     }
     
-    RetailDay *currentDay = [self.venue dayForDate:[NSDate date]];
-    self.headerView.timeLabel.text = [currentDay statusStringRelativeToDate:[NSDate date]];
+    NSDate *date = [NSDate date];
+    RetailDay *yesterday = [self.venue dayForDate:[date dayBefore]];
+    RetailDay *currentDay = [self.venue dayForDate:date];
+    if ([yesterday.endTime compare:date] == NSOrderedDescending) {
+        // yesterday's hours end today and are still valid
+        self.headerView.timeLabel.text = [yesterday statusStringRelativeToDate:date];
+    } else {
+        self.headerView.timeLabel.text = [currentDay statusStringRelativeToDate:date];
+    }
     
     self.tableView.tableHeaderView = self.headerView;
     

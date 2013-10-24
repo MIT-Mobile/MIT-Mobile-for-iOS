@@ -182,7 +182,7 @@
     NSMutableSet *coordinateSet = [[NSMutableSet alloc] init];
     
     for (id<MKAnnotation> annotation in annotations) {
-        NSValue *coordinateValue = [NSValue valueWithMKCoordinate:[annotation coordinate]];
+        NSValue *coordinateValue = [NSValue valueWithCLLocationCoordinate:[annotation coordinate]];
         [coordinateSet addObject:coordinateValue];
     }
     
@@ -361,13 +361,15 @@
     NSMutableSet *coordinateSet = [[NSMutableSet alloc] init];
     
     for (CLLocation *pathLocation in [route pathLocations]) {
-        NSValue *coordinateValue = [NSValue valueWithMKCoordinate:[pathLocation coordinate]];
+        NSValue *coordinateValue = [NSValue valueWithCLLocationCoordinate:[pathLocation coordinate]];
         [coordinateSet addObject:coordinateValue];
     }
-    
-    for (id<MKAnnotation> annotation in [route annotations]) {
-        NSValue *coordinateValue = [NSValue valueWithMKCoordinate:[annotation coordinate]];
-        [coordinateSet addObject:coordinateValue];
+
+    if ([route respondsToSelector:@selector(annotations)]) {
+        for (id<MKAnnotation> annotation in [route annotations]) {
+            NSValue *coordinateValue = [NSValue valueWithCLLocationCoordinate:[annotation coordinate]];
+            [coordinateSet addObject:coordinateValue];
+        }
     }
     
     return MKCoordinateRegionForCoordinates(coordinateSet);

@@ -34,10 +34,10 @@
 @property (nonatomic, strong) IBOutlet UIButton * mapRetailButton;
 @property (nonatomic, strong) IBOutlet UIView *mapContainer;
 @property (nonatomic, strong) MGSMapView *mapView;
-@property (nonatomic, assign) BOOL isAnimating;
-@property (nonatomic, assign) BOOL isShowingMap;
-@property (nonatomic, assign) BOOL isShowingHouseDining;
-@property (nonatomic, assign, getter = isLoading) BOOL loading;
+@property (nonatomic, getter = isAnimating) BOOL animating;
+@property (nonatomic, getter = isShowingMap) BOOL showingMap;
+@property (nonatomic, getter = isShowingHouseDining) BOOL showingHouseDining;
+@property (nonatomic, getter = isLoading) BOOL loading;
 
 @property (nonatomic, assign) NSInteger announcementSectionIndex;
 @property (nonatomic, assign) NSInteger venuesSectionIndex;
@@ -57,19 +57,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         
-        bool hasAnnouncement = true;
-        
-        if (hasAnnouncement) {
-            _announcementSectionIndex = 0;
-            _venuesSectionIndex = 1;
-            _resourcesSectionIndex = 2;
-            _houseSectionCount = 3;
-        } else {
-            _announcementSectionIndex = -1;
-            _venuesSectionIndex = 0;
-            _resourcesSectionIndex = 1;
-            _houseSectionCount = 2;
-        }
+        [self updateTableViewSectionIndices];
         
     }
     return self;
@@ -111,6 +99,9 @@
         
         [[DiningData sharedData] reloadAndCompleteWithBlock:^ (NSError *error) {
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                weakSelf.favoritedRetailVenues = nil;
+                [weakSelf updateTableViewSectionIndices];
+                
                 [weakSelf refreshSelectedTypeOfVenues];
                 
                 if (error) {
@@ -160,23 +151,40 @@
     }
 }
 
+- (void) updateTableViewSectionIndices
+{
+    BOOL hasAnnouncement = [[[DiningData sharedData] announcementsHTML] length];
+    
+    if (hasAnnouncement) {
+        _announcementSectionIndex = 0;
+        _venuesSectionIndex = 1;
+        _resourcesSectionIndex = 2;
+        _houseSectionCount = 3;
+    } else {
+        _announcementSectionIndex = -1;
+        _venuesSectionIndex = 0;
+        _resourcesSectionIndex = 1;
+        _houseSectionCount = 2;
+    }
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     NSIndexPath *selectedIndexPath = [self.listView indexPathForSelectedRow];
     [self.listView deselectRowAtIndexPath:selectedIndexPath animated:animated];
-    self.favoritedRetailVenues = [CoreDataManager objectsForEntity:@"RetailVenue" matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"] sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
+    self.favoritedRetailVenues = nil;
     [self.listView reloadData];
 }
 
 - (void)showHouse:(id)sender {
     if (!self.isLoading  && !self.isShowingHouseDining) {
-        self.isShowingHouseDining = YES;
+        self.showingHouseDining = YES;
         [self tabBarDidChange:sender];
     }
 }
 
 - (void)showRetail:(id)sender {
     if (!self.isLoading && self.isShowingHouseDining) {
-        self.isShowingHouseDining = NO;
+        self.showingHouseDining = NO;
         [self tabBarDidChange:sender];
     }
 }
@@ -215,35 +223,44 @@
             // animate to the list
             [UIView animateWithDuration:0.4f animations:^{
                 [self layoutListState];
-                self.isAnimating = YES;
+                self.animating = YES;
             } completion:^(BOOL finished) {
-                self.isAnimating = NO;
+                self.animating = NO;
             }];
             
         } else {
             if (!self.mapView) {
                 self.mapView = [[MGSMapView alloc] initWithFrame:self.mapContainer.bounds];
                 self.mapView.delegate = self;
+                self.mapView.showUserLocation = YES;
                 [self.mapContainer addSubview:self.mapView];
             }
             [self annotateVenues];
             // animate to the map
             [UIView animateWithDuration:0.4f animations:^{
                 [self layoutMapState];
-                self.isAnimating = YES;
+                self.animating = YES;
             } completion:^(BOOL finished) {
-                self.isAnimating = NO;
+                self.animating = NO;
             }];
         }
         // toggle boolean flag 
-        self.isShowingMap = !self.isShowingMap;
+        self.showingMap = !self.isShowingMap;
     }
 }
 
-- (BOOL) showingHouseDining
+#pragma mark - Dynamic Properties
+- (NSArray*)favoritedRetailVenues
 {
-    return self.isShowingHouseDining;
+    if (_favoritedRetailVenues == nil) {
+        _favoritedRetailVenues = [CoreDataManager objectsForEntity:@"RetailVenue"
+                                                 matchingPredicate:[NSPredicate predicateWithFormat:@"favorite == YES"]
+                                                   sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]]];
+    }
+    
+    return _favoritedRetailVenues;
 }
+
 
 #pragma mark - View layout
 
@@ -339,7 +356,7 @@
     } else {
         [self fetchRetailVenues];
     }
-    if ([self isShowingMap]) {
+    if (self.isShowingMap) {
         [self annotateVenues];
     } else {
         [self.listView reloadData];
@@ -410,7 +427,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (![self showingHouseDining]) {
+    if (!self.isShowingHouseDining) {
         if ([self.favoritedRetailVenues count] && section == 0) {
             return [self.favoritedRetailVenues count];
         } else if ([self.favoritedRetailVenues count]) {
@@ -435,7 +452,7 @@
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if ([self showingHouseDining]) {
+    if (self.isShowingHouseDining) {
         return _houseSectionCount;
     } else {
         NSInteger sectionCount = [[self.fetchedResultsController sections] count];
@@ -445,7 +462,7 @@
 
 - (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath
 {
-    if ([self showingHouseDining]) {
+    if (self.isShowingHouseDining) {
         if (indexPath.section == _announcementSectionIndex) {
             [self configureAnnouncementCell:cell];
         } else if (indexPath.section == _resourcesSectionIndex) {
@@ -466,7 +483,7 @@
 {
     UITableViewCell *cell;
     
-    if ([self showingHouseDining] && indexPath.section != _venuesSectionIndex) {
+    if (self.isShowingHouseDining && indexPath.section != _venuesSectionIndex) {
         if (indexPath.section != _resourcesSectionIndex && indexPath.row == 0) {
             cell = [tableView dequeueReusableCellWithIdentifier:@"subtitleCell"];
             if (!cell) {
@@ -496,7 +513,7 @@
 
 - (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self showingHouseDining] && indexPath.section == _announcementSectionIndex) {
+    if (self.isShowingHouseDining && indexPath.section == _announcementSectionIndex) {
         // set announcement background color to yellow color
         cell.backgroundColor = [UIColor colorWithHexString:@"#FFEF8A"];
     } else {
@@ -505,7 +522,7 @@
 }
 
 - (void)configureAnnouncementCell:(UITableViewCell *)cell {
-    cell.textLabel.text = [[[DiningData sharedData] announcementsHTML] stringByStrippingTags];
+    cell.textLabel.text = [[[[DiningData sharedData] announcementsHTML] stringByStrippingTags] stringByDecodingXMLEntities];
     cell.textLabel.font = [UIFont systemFontOfSize:14];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }
@@ -563,7 +580,7 @@
         return;
     }
     
-    if (![self showingHouseDining]) {
+    if (!self.isShowingHouseDining) {
         RetailVenue *venue = [self retailVenueAtIndexPath:indexPath];
         
         DiningRetailInfoViewController *detailVC = [[DiningRetailInfoViewController alloc] init];
@@ -603,7 +620,7 @@
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (![self showingHouseDining]) {
+    if (!self.isShowingHouseDining) {
         RetailVenue *venue = [self retailVenueAtIndexPath:indexPath];
         return [DiningLocationCell heightForRowWithTitle:venue.name subtitle:[venue hoursToday]];
     }
@@ -644,7 +661,8 @@
 
 - (NSString *) titleForHeaderInSection:(NSInteger)section // not the UITableViewDataSource method.
 {
-    if (![self showingHouseDining]) {
+    if (!self.isShowingHouseDining) {
+        // showing Retail Dining data
         if ([self.favoritedRetailVenues count] && section == 0) {
             return @"Favorites";
         }
@@ -656,23 +674,23 @@
             building = [building stringByAppendingFormat:@" - %@", ((FacilitiesLocation *)matches[0]).name];
         }
         return building;
+    } else {
+        // showing House Dining data
+        NSString *announcement = [[DiningData sharedData] announcementsHTML];
+        if ([announcement length] && section == 0) {
+            return nil;
+        } else if((![announcement length] && section == 0) || (announcement && section == 1)) {
+            return @"Venues";
+        } else if ((![announcement length] && section == 1)|| (announcement && section == 2)) {
+            return @"Resources";
+        }
     }
-    
-    NSString *announcement = [[DiningData sharedData] announcementsHTML];
-    if (announcement && section == 0) {
-        return nil;
-    } else if((!announcement && section == 0) || (announcement && section == 1)) {
-        return @"Venues";
-    } else if ((!announcement && section == 1)|| section == 2) {
-        return @"Resources";
-    }
-    
     return nil;
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if ([self showingHouseDining] && [[DiningData sharedData] announcementsHTML] && section == 0) {
+    if (self.isShowingHouseDining && [[DiningData sharedData] announcementsHTML] && section == 0) {
         return 0;
     }
     

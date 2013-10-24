@@ -1,13 +1,9 @@
 #import "MGSCalloutView.h"
 
-#define MAX_CALLOUT_WIDTH (240)
+static CGFloat const MGSCalloutMaximumWidth = 240.;
+static UIEdgeInsets const MGSCalloutContentInsets = {.top = 0, .left = 0., .bottom = 0., .right = 0.};
 
 @implementation MGSCalloutView
-{
-    UIEdgeInsets _borderInsets;
-}
-
-
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super initWithCoder:aDecoder];
@@ -30,8 +26,6 @@
 
 - (void)initSubviews
 {
-    _borderInsets = UIEdgeInsetsMake(2, 2, 2, 2);
-    
     UILabel *textLabel = [[UILabel alloc] init];
     textLabel.numberOfLines = 0;
     textLabel.backgroundColor = [UIColor clearColor];
@@ -49,10 +43,10 @@
     detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
     self.detailLabel = detailTextLabel;
     [self addSubview:detailTextLabel];
-    
+
     UIImageView *imageView = [[UIImageView alloc] init];
     imageView.backgroundColor = [UIColor clearColor];
-    imageView.hidden = YES;
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
     self.imageView = imageView;
     [self addSubview:imageView];
     
@@ -73,53 +67,66 @@
     [self setNeedsLayout];
 }
 
-- (CGRect)bounds
-{
-    return UIEdgeInsetsInsetRect(self.frame, _borderInsets);
-}
-
 - (void)layoutSubviews
 {
-    CGRect bounds = self.bounds;
-    CGRect imageFrame = CGRectZero;
-    CGRect titleFrame = CGRectZero;
-    CGRect detailFrame = CGRectZero;
-    CGRect accessoryFrame = self.accessoryView.frame;
-    
-    if (self.imageView.image) {
-        self.imageView.hidden = NO;
-        self.imageView.frame = CGRectMake(CGRectGetMinX(bounds), 0, 40, 40);
-        self.imageView.center = CGPointMake(self.imageView.center.x,
-                                            CGRectGetMidY(bounds));
-        imageFrame = self.imageView.frame;
+    CGRect insetBounds = UIEdgeInsetsInsetRect(self.bounds, MGSCalloutContentInsets);
+    CGRect layoutFrame = insetBounds;
+
+    {
+        BOOL hasImage = (self.imageView.image != nil);
+        CGRect imageFrame = CGRectZero;
+        CGFloat imageWidth = (hasImage ? 40. : 0.);
+        CGRectDivide(layoutFrame, &imageFrame, &layoutFrame, imageWidth, CGRectMinXEdge);
+
+        self.imageView.frame = imageFrame;
+
+        if (hasImage) {
+            // Add in 8px of horizontal spacing between the image view and its sibling
+            layoutFrame.origin.x += 8.;
+            layoutFrame.size.width -= 8.;
+        }
     }
-    
-    if (self.accessoryView) {
-        accessoryFrame.origin.x = CGRectGetMaxX(bounds) - CGRectGetWidth(accessoryFrame);
+
+    {
+        CGRect accessoryFrame = CGRectZero;
+        CGRectDivide(layoutFrame, &accessoryFrame, &layoutFrame, CGRectGetWidth(self.accessoryView.frame), CGRectMaxXEdge);
+
         self.accessoryView.frame = accessoryFrame;
-        self.accessoryView.center = CGPointMake(self.accessoryView.center.x,
-                                                CGRectGetMidY(bounds));
-        accessoryFrame = self.accessoryView.frame;
+
+        if (self.accessoryView) {
+            // Make sure there is at least 8px of horizontal spacing between
+            //  the accessory view and its siblings
+            layoutFrame.size.width -= 8.;
+        }
     }
     
-    if (self.imageView.image) {
-        titleFrame.origin = CGPointMake(CGRectGetMaxX(imageFrame) + 10, CGRectGetMinY(bounds));
+    CGFloat textWidth = CGRectGetWidth(layoutFrame);
+    CGSize titleSize = [self.titleLabel sizeThatFits:[self.titleLabel.text sizeWithFont:self.titleLabel.font
+                                                                      constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
+                                                                          lineBreakMode:self.titleLabel.lineBreakMode]];
+    CGRect titleLabelFrame = CGRectZero;
+    CGRectDivide(layoutFrame, &titleLabelFrame, &layoutFrame, titleSize.height, CGRectMinYEdge);
+    self.titleLabel.frame = titleLabelFrame;
+
+
+    CGSize detailSize = [self.detailLabel sizeThatFits:[self.detailLabel.text sizeWithFont:self.detailLabel.font
+                                                                        constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
+                                                                             lineBreakMode:self.detailLabel.lineBreakMode]];
+    // Comparing a float to zero can end very badly. Since
+    // sizeThatFits: should be giving us pixel unit sizes,
+    // assuming anything less than 0.5 pixels is effectively zero
+    //
+    // Also, this correction is only made if there is no detail text.
+    // If you provide no title but set the detail text, you're on your own.
+    if (detailSize.height > 0.5) {
+        CGRect detailLabelFrame = CGRectZero;
+        CGRectDivide(layoutFrame, &detailLabelFrame, &layoutFrame, detailSize.height, CGRectMaxYEdge);
+        self.detailLabel.frame = detailLabelFrame;
     } else {
-        titleFrame.origin = CGPointMake(CGRectGetMinY(bounds), CGRectGetMinY(bounds));
+        CGPoint titleCenter = self.titleLabel.center;
+        titleCenter.y = CGRectGetMidY(insetBounds);
+        self.titleLabel.center = titleCenter;
     }
-    
-    CGFloat textWidth = CGRectGetMinX(accessoryFrame) - titleFrame.origin.x;
-    titleFrame.size = [self.titleLabel.text sizeWithFont:self.titleLabel.font
-                                       constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
-                                           lineBreakMode:self.titleLabel.lineBreakMode];
-    
-    detailFrame.origin = CGPointMake(titleFrame.origin.x, CGRectGetMaxY(titleFrame));
-    detailFrame.size = [self.detailLabel.text sizeWithFont:self.detailLabel.font
-                                         constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
-                                             lineBreakMode:self.detailLabel.lineBreakMode];
-    
-    self.titleLabel.frame = titleFrame;
-    self.detailLabel.frame = detailFrame;
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
@@ -127,29 +134,29 @@
     CGSize calculatedSize = CGSizeZero;
     
     if (self.imageView.image) {
-        calculatedSize.width += 40 + 10;
-        calculatedSize.height += 40;
+        calculatedSize.height = 40.;
+        calculatedSize.width = 48.;
     }
     
     if (self.accessoryView) {
-        calculatedSize.width += CGRectGetWidth(self.accessoryView.frame);
+        calculatedSize.width += CGRectGetWidth(self.accessoryView.frame) + 8.;
         calculatedSize.height = MAX(calculatedSize.height,CGRectGetHeight(self.accessoryView.frame));
     }
     
-    CGFloat textWidth = MAX_CALLOUT_WIDTH - calculatedSize.width;
-    CGSize titleSize = [self.titleLabel.text sizeWithFont:self.titleLabel.font
-                                        constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
-                                            lineBreakMode:self.titleLabel.lineBreakMode];
+    CGFloat textWidth = MGSCalloutMaximumWidth - calculatedSize.width;
+    CGSize titleSize = [self.titleLabel sizeThatFits:[self.titleLabel.text sizeWithFont:self.titleLabel.font
+                                                                      constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
+                                                                          lineBreakMode:self.titleLabel.lineBreakMode]];
     
-    CGSize detailSize = [self.detailLabel.text sizeWithFont:self.detailLabel.font
-                                         constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
-                                             lineBreakMode:self.detailLabel.lineBreakMode];
-    
-    textWidth = MIN(textWidth,MAX(titleSize.width,detailSize.width));
-    calculatedSize.height = MAX(calculatedSize.height,titleSize.height + detailSize.height);
-    
-    calculatedSize.width += textWidth + _borderInsets.left + _borderInsets.right;
-    calculatedSize.height += _borderInsets.top + _borderInsets.bottom;
+    CGSize detailSize = [self.detailLabel sizeThatFits:[self.detailLabel.text sizeWithFont:self.detailLabel.font
+                                                                         constrainedToSize:CGSizeMake(textWidth, CGFLOAT_MAX)
+                                                                             lineBreakMode:self.detailLabel.lineBreakMode]];
+
+    calculatedSize.width += MAX(titleSize.width, detailSize.width);
+    calculatedSize.height = MAX(calculatedSize.height,MAX(titleSize.height, detailSize.height));
+
+    calculatedSize.width += MGSCalloutContentInsets.left + MGSCalloutContentInsets.right;
+    calculatedSize.height += MGSCalloutContentInsets.top + MGSCalloutContentInsets.bottom;
     
     return calculatedSize;
 }
