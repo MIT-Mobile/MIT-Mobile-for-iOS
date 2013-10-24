@@ -1,5 +1,5 @@
 #include "NSTimer+MITBlockTimer.h"
-typedef void (^MITTimerFireBlock)(NSTimer *timer);
+typedef void (^MITTimerFireBlock)(void);
 
 @interface MITBlockTimer : NSObject
 @property (nonatomic,weak) NSTimer *timer;
@@ -29,7 +29,13 @@ typedef void (^MITTimerFireBlock)(NSTimer *timer);
 - (void)timerFired:(NSTimer*)theTimer
 {
     if (self.fireBlock) {
-        self.fireBlock(theTimer);
+        if ([NSThread isMainThread]) {
+            self.fireBlock();
+        } else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                self.fireBlock();
+            });
+        }
     }
 }
 @end
@@ -44,7 +50,7 @@ typedef void (^MITTimerFireBlock)(NSTimer *timer);
     
     if (blockTimer) {
         NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:seconds
-                                                          target:self
+                                                          target:blockTimer
                                                         selector:@selector(timerFired:)
                                                         userInfo:nil
                                                          repeats:repeats];
@@ -64,7 +70,7 @@ typedef void (^MITTimerFireBlock)(NSTimer *timer);
     
     if (blockTimer) {
         NSTimer *timer = [NSTimer timerWithTimeInterval:seconds
-                                                 target:self
+                                                 target:blockTimer
                                                selector:@selector(timerFired:)
                                                userInfo:nil
                                                 repeats:repeats];

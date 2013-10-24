@@ -5,6 +5,6 @@
  */
 @interface NSTimer (MITBlockTimer)
 
-+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)seconds repeats:(BOOL)repeats fired:(void (^)(NSTimer *timer))firedBlock;
-+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)seconds repeats:(BOOL)repeats fired:(void (^)(NSTimer *timer))firedBlock;
++ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)seconds repeats:(BOOL)repeats fired:(void (^)(void))firedBlock;
++ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)seconds repeats:(BOOL)repeats fired:(void (^)(void))firedBlock;
 @end
