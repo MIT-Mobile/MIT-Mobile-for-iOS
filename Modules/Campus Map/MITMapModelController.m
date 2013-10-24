@@ -50,6 +50,8 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
         // cached place data
         _searchExpiryInterval = (60. * 60. * 24. * 7);
         _placeExpiryInterval = (60. * 60. * 24. * 7);
+
+        [self migrateBookmarks];
     }
     
     return self;
@@ -531,6 +533,40 @@ NSString* const MITMapSearchEntityName = @"MapSearch";
             }
         }];
     }
+}
+
+- (void)migrateBookmarks
+{
+        NSURL *userDocumentsURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory
+                                                                         inDomain:NSUserDomainMask
+                                                                appropriateForURL:nil
+                                                                           create:NO
+                                                                            error:nil];
+
+        NSURL *bookmarksURL = [NSURL URLWithString:@"mapBookmarks.plist"
+                                     relativeToURL:userDocumentsURL];
+
+        NSArray *bookmarksV1 = [NSArray arrayWithContentsOfURL:bookmarksURL];
+        if (bookmarksV1) {
+            // Migrate the bookmarks from the original version of the app
+            // The format of the saved bookmarks changed in the 3.5 release
+            NSMutableOrderedSet *bookmarkedIdentifiers = [[NSMutableOrderedSet alloc] init];
+            for (NSDictionary *savedBookmark in bookmarksV1) {
+                [bookmarkedIdentifiers addObject:savedBookmark[@"id"]];
+            }
+
+            NSPredicate *migratedBookmarkPredicate = [NSPredicate predicateWithFormat:@"(bookmark == NIL) AND (identifier IN %@)", bookmarkedIdentifiers];
+            [self placesWithPredicate:migratedBookmarkPredicate loaded:^(NSOrderedSet *places, NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+                if (!error) {
+                    for (MITMapPlace *place in places) {
+                        [self addBookmarkForPlace:place];
+                    }
+
+                    //[[NSFileManager defaultManager] removeItemAtURL:bookmarksURL
+                    //                                          error:nil];
+                }
+            }];
+        }
 }
 
 @end

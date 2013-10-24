@@ -183,7 +183,6 @@
 		4463D09510D92CB00048CA83 /* MITMapDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4463D09310D92CB00048CA83 /* MITMapDetailViewController.xib */; };
 		448FF58F10FA4BDE00850BC0 /* ShuttleRouteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */; };
 		44ACF76D1187884300F1F4B2 /* BookmarksTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */; };
-		44ACF76E1187884300F1F4B2 /* MapBookmarkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44ACF76A1187884300F1F4B2 /* MapBookmarkManager.m */; };
 		44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BF5B421100A75C00E150D5 /* RouteInfoTitleCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		44BF602011050AC000E150D5 /* ShuttleStopCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BF601F11050AC000E150D5 /* ShuttleStopCell.m */; };
 		44BF602211050ACE00E150D5 /* ShuttleStopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */; };
@@ -745,8 +744,6 @@
 		4499332C11A371CF00A7041B /* RecentSearchesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentSearchesViewController.m; sourceTree = "<group>"; };
 		44ACF7681187884300F1F4B2 /* BookmarksTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarksTableViewController.h; sourceTree = "<group>"; };
 		44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarksTableViewController.m; sourceTree = "<group>"; };
-		44ACF76A1187884300F1F4B2 /* MapBookmarkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapBookmarkManager.m; sourceTree = "<group>"; };
-		44ACF76B1187884300F1F4B2 /* MapBookmarkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapBookmarkManager.h; sourceTree = "<group>"; };
 		44BF5B411100A75C00E150D5 /* RouteInfoTitleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouteInfoTitleCell.h; sourceTree = "<group>"; };
 		44BF5B421100A75C00E150D5 /* RouteInfoTitleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouteInfoTitleCell.m; sourceTree = "<group>"; };
 		44BF601E11050ABF00E150D5 /* ShuttleStopCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleStopCell.h; sourceTree = "<group>"; };
@@ -1980,8 +1977,6 @@
 		44C1A3C511A3388A000FD653 /* Selection */ = {
 			isa = PBXGroup;
 			children = (
-				44ACF76B1187884300F1F4B2 /* MapBookmarkManager.h */,
-				44ACF76A1187884300F1F4B2 /* MapBookmarkManager.m */,
 				44ACF7681187884300F1F4B2 /* BookmarksTableViewController.h */,
 				44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */,
 				4499332B11A371CE00A7041B /* RecentSearchesViewController.h */,
@@ -3044,7 +3039,6 @@
 				EB4C2525127A0E8F00058748 /* MITThumbnailView.m in Sources */,
 				2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */,
 				2CBA186E17E3A45D006293DB /* NewsCategory.m in Sources */,
-				44ACF76E1187884300F1F4B2 /* MapBookmarkManager.m in Sources */,
 				44C1A4C511A412E2000FD653 /* MapSearch.m in Sources */,
 				4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */,
 				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
