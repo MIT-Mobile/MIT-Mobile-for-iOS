@@ -252,7 +252,7 @@
     MGSSafeAnnotation* safeAnnotation = [[MGSSafeAnnotation alloc] initWithAnnotation:annotation];
     AGSGraphic* annotationGraphic = nil;
     
-    switch (annotation.annotationType) {
+    switch (safeAnnotation.annotationType) {
         case MGSAnnotationMarker: {
             UIImage* markerImage = safeAnnotation.markerImage;
             MGSMarkerOptions options;
