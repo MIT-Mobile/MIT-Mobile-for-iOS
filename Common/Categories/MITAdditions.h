@@ -10,5 +10,6 @@
 #import "NSData+MGTwitterBase64.h"
 #import "NSMutableAttributedString+MITAdditions.h"
 #import "NSTimer+MITBlockTimer.h"
+#import "CoreData+MITAdditions.h"
 
 #endif
