@@ -3,11 +3,11 @@
 #import "MITAdditions.h"
 #import "MGSMapView.h"
 #import "MGSLayer.h"
-#import "MapBookmarkManager.h"
 #import "MITMapDetailViewController.h"
 #import "BookmarksTableViewController.h"
 #import "MapSearch.h"
-#import "CoreDataManager.h"
+#import "MIT_MobileAppDelegate.h"
+#import "MITCoreDataController.h"
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
@@ -25,14 +25,13 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
                                             MGSMapViewDelegate>
 @property (nonatomic,weak) IBOutlet UISearchBar *searchBar;
 @property (nonatomic,weak) IBOutlet MGSMapView *mapView;
-@property (nonatomic,strong) UISearchDisplayController *searchController; // Lazy instantiation
+@property (nonatomic,strong) IBOutlet UISearchDisplayController *searchController;
 
-@property (nonatomic,getter=isSearching) BOOL searching;
+@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic,copy) NSOrderedSet *recentSearches;
 @property (nonatomic,copy) NSOrderedSet *selectedPlaces;
 
-@property (nonatomic,strong) NSManagedObjectContext *searchContext;
-@property (nonatomic,copy) NSOrderedSet *recentSearches;
-
+@property (nonatomic,getter = isSearching) BOOL searching;
 @property (nonatomic,getter = isShowingList) BOOL showingList;
 @property (nonatomic,getter = isGeotrackingEnabled) BOOL geotrackingEnabled;
 @property (nonatomic,getter = isInterfaceHidden) BOOL interfaceHidden;
@@ -138,24 +137,19 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
         _searching = searching;
         
         if (_searching) {
-            NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-            context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-            self.searchContext = context;
-
-            UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar
-                                                                                            contentsController:self];
-            searchController.delegate = self;
-            searchController.searchResultsDataSource = self;
-            searchController.searchResultsDelegate = self;
-            self.searchController = searchController;
+            if (!self.searchDisplayController) {
+                UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar
+                                                                                                contentsController:self];
+                searchController.delegate = self;
+                searchController.searchResultsDataSource = self;
+                searchController.searchResultsDelegate = self;
+                self.searchController = searchController;
+            }
             
             [self.searchController setActive:YES animated:animated];
         } else {
             [self.searchController setActive:NO animated:animated];
-
             self.recentSearches = nil;
-            self.searchContext = nil;
-            self.searchController = nil;
         }
     }
 }
@@ -165,14 +159,11 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 {
     MITMapCategoryBrowseController *categoryBrowseController = [[MITMapCategoryBrowseController alloc] init:^(MITMapCategory *category, NSOrderedSet *selectedPlaces) {
         DDLogVerbose(@"Selected %d places (from categories)", [selectedPlaces count]);
-        [self dismissViewControllerAnimated:YES completion:^{
-            // At the moment, assume that a 'nil' value means the operation
-            // was canceled. Should probably go back to the two parameters
-            // (selectedPlaces and error) to indicate cancellation.
-            if (selectedPlaces) {
-                self.selectedPlaces = selectedPlaces;
-            }
-        }];
+        if (selectedPlaces) {
+            self.selectedPlaces = selectedPlaces;
+        }
+
+        [self dismissViewControllerAnimated:YES completion:nil];
     }];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:categoryBrowseController];
@@ -186,10 +177,8 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 {
     BookmarksTableViewController *bookmarksViewController = [[BookmarksTableViewController alloc] init:^(NSOrderedSet *selectedPlaces) {
         DDLogVerbose(@"Selected %d places (from bookmarks)", [selectedPlaces count]);
+
         [self dismissViewControllerAnimated:YES completion:^{
-            // At the moment, assume that a 'nil' value means the operation
-            // was canceled. Should probably go back to the two parameters
-            // (selectedPlaces and error) to indicate cancellation.
             if (selectedPlaces) {
                 self.selectedPlaces = selectedPlaces;
             }
@@ -216,7 +205,9 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 #pragma mark - Dynamic Properties
 - (BOOL)hasFavorites
 {
-    return ([[[MapBookmarkManager defaultManager] bookmarks] count] > 0);
+    NSUInteger numberOfBookmarks = [[MITMapModelController sharedController] numberOfBookmarks];
+
+    return ((numberOfBookmarks != NSNotFound) && (numberOfBookmarks > 0));
 }
 
 - (void)setSelectedPlaces:(NSOrderedSet *)selectedPlaces {
@@ -301,6 +292,18 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     }
 }
 
+// TODO: Think of alternate ways to do this. Maybe in viewWillAppear: instead?
+// Potential issue: Assignment! If MOC is changed and either searchResults or
+// selectedPlaces is set then ReallyBadThings may happen.
+- (NSManagedObjectContext*)managedObjectContext
+{
+    if (!_managedObjectContext) {
+        _managedObjectContext = [[[MIT_MobileAppDelegate applicationDelegate] coreDataController] mainQueueContext];
+    }
+
+    return _managedObjectContext;
+}
+
 #pragma mark - UI State management
 - (void)updateToolbarItems:(BOOL)animated
 {
@@ -369,17 +372,11 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
     [[MITMapModelController sharedController] recentSearchesForPartialString:searchString
-                                                                      loaded:^(NSOrderedSet *objectIDs, NSDate *lastUpdated, BOOL finished, NSError *error) {
+                                                                      loaded:^(NSOrderedSet *mapSearches, NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
         if (error) {
             self.recentSearches = nil;
         } else {
-            NSMutableOrderedSet *recentSearches = [[NSMutableOrderedSet alloc] init];
-            [objectIDs enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
-                MapSearch *search = (MapSearch*)[self.searchContext objectWithID:objectID];
-                [recentSearches addObject:search];
-            }];
-
-            self.recentSearches = recentSearches;
+            self.recentSearches = mapSearches;
         }
 
         [controller.searchResultsTableView reloadData];
@@ -398,15 +395,13 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 #pragma mark UISearchBarDelegate
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    if (!self.isSearching) {
-        [self setSearching:YES animated:YES];
-    }
+    [self setSearching:YES animated:YES];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [[MITMapModelController sharedController] searchMapWithQuery:searchBar.text
-                                                          loaded:^(NSOrderedSet *objects, NSDate *lastUpdated, BOOL finished, NSError *error) {
+                                                          loaded:^(NSOrderedSet *objects, NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
                                                               if (!error) {
                                                                   self.selectedPlaces = objects;
                                                               } else {
