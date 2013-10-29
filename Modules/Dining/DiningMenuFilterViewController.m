@@ -31,7 +31,7 @@
 
 -(void) cancelPressed:(id)sender
 {
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 - (void) commitChanges:(id)sender

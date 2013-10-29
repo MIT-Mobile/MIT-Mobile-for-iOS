@@ -98,7 +98,7 @@
 	self.mapSelectionController.mapVC.searchBar.text = search.searchTerm;
 	[self.mapSelectionController.mapVC search:search.searchTerm];
 	
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 @end

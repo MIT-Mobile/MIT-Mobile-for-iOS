@@ -381,8 +381,7 @@
             controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         }
         controller.delegate = self;
-        [self.navigationController presentModalViewController:controller
-                                                     animated:YES];
+        [self.navigationController presentViewController:controller animated:YES completion:NULL];
     }
 }
 
@@ -503,7 +502,7 @@
         }
     }
     
-    [self.navigationController dismissModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
 }
 
 #pragma mark - Notification Methods

@@ -182,9 +182,9 @@
                     [mailView setMailComposeDelegate:self];
                     [mailView setSubject:subject];
                     [mailView setToRecipients:@[email]];
-                    [self presentModalViewController:mailView
-                                            animated:YES]; 
-                }            
+                    [self presentViewController:mailView
+                                         animated:YES completion:NULL];
+                }
             }
         }
     }
@@ -217,7 +217,7 @@
 #pragma mark - MFMailComposeViewController delegation
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error 
 {
-	[self dismissModalViewControllerAnimated:YES];
+	[self dismissViewControllerAnimated:YES completion:NULL];
     [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow]
                                   animated:YES];
 }

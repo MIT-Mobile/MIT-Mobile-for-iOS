@@ -220,7 +220,7 @@
     
     [self.usernameField resignFirstResponder];
     [self.passwordField resignFirstResponder];
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 - (IBAction)loginButtonPressed:(id)sender {
@@ -310,7 +310,7 @@
 - (void)authenticationDidSucceed
 {
     self.showActivityView = NO;
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 
@@ -355,7 +355,7 @@
 {
     if (self.dismissAfterAlert)
     {
-        [self dismissModalViewControllerAnimated:YES];
+        [self dismissViewControllerAnimated:YES completion:NULL];
     }
 }
 

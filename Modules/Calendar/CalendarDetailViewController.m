@@ -653,7 +653,7 @@
 #pragma mark EKEventEditViewDelegate
 - (void)eventEditViewController:(EKEventEditViewController *)controller 
           didCompleteWithAction:(EKEventEditViewAction)action {
-    [controller dismissModalViewControllerAnimated:YES];
+    [controller dismissViewControllerAnimated:YES completion:NULL];
 }
 
 - (void)presentEditorForEvent:(MITCalendarEvent*)calendarEvent
@@ -669,8 +669,7 @@
     eventViewController.event = event;
     eventViewController.eventStore = eventStore;
     eventViewController.editViewDelegate = self;
-    [self presentModalViewController:eventViewController
-                            animated:YES];
+    [self presentViewController:eventViewController animated:YES completion:NULL];
 }
 
 @end

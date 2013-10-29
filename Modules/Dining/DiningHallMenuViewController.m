@@ -229,7 +229,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
         if (UIDeviceOrientationIsLandscape(orientation)) {
             [self showComparisonView];
-        } else if (orientation == UIDeviceOrientationPortrait && [self.modalViewController isKindOfClass:[DiningMenuCompareViewController class]]) {
+        } else if (orientation == UIDeviceOrientationPortrait && [self.presentedViewController isKindOfClass:[DiningMenuCompareViewController class]]) {
             [self dismissViewControllerAnimated:YES completion:NULL];
             self.mealRef = [self.comparisonVC visibleMealReference];
             [self reloadMealInfo];
@@ -243,7 +243,7 @@ static NSString * DiningFiltersUserDefaultKey = @"dining.filters";
         self.comparisonVC = [[DiningMenuCompareViewController alloc] init];
     }
     
-    if (!self.modalViewController) {
+    if (!self.presentedViewController) {
         // don't present comparison view over itself
         self.comparisonVC.filtersApplied = self.filtersApplied;
         self.comparisonVC.mealRef = self.mealRef;
