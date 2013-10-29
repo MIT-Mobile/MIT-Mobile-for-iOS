@@ -1,13 +1,12 @@
 #import "BookmarksTableViewController.h"
-#import "MapBookmarkManager.h"
 #import "CampusMapViewController.h"
 #import "MITUIConstants.h"
-#import "MITMapPlace.h"
-
+#import "MITMapModel.h"
+#import "MITCoreDataController.h"
 
 typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 
-@interface BookmarksTableViewController ()
+@interface BookmarksTableViewController () <NSFetchedResultsControllerDelegate>
 @property (nonatomic,copy) MITMapBookmarksSelectionHandler selectionBlock;
 @end
 
@@ -31,8 +30,10 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 
 - (void)viewWillAppear:(BOOL)animated
 {
-	if (![[[MapBookmarkManager defaultManager] bookmarks] count]) {
-		self.editButtonItem.enabled = NO;
+    [super viewWillAppear:animated];
+
+	if ([[MITMapModelController sharedController] numberOfBookmarks]) {
+		self.editButtonItem.enabled = YES;
 	}
 
     [self.navigationItem setLeftBarButtonItem:self.editButtonItem animated:animated];
@@ -41,6 +42,15 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
                                                                               target:self
                                                                               action:@selector(doneButtonPressed:)];
 	[self.navigationItem setRightBarButtonItem:doneItem animated:animated];
+
+    __weak BookmarksTableViewController *weakSelf = self;
+    [[MITMapModelController sharedController] bookmarkedPlaces:^(NSOrderedSet *places, NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+        BookmarksTableViewController *blockSelf = weakSelf;
+
+        if (blockSelf) {
+            self.fetchRequest = fetchRequest;
+        }
+    }];
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -75,14 +85,8 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
     }
 }
 
-#pragma mark -
-#pragma mark Table view data source
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [[[MapBookmarkManager defaultManager] bookmarks] count];
-}
-
-
+#pragma mark - Delegate Protocols
+#pragma mark UITableViewDataSource
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -97,38 +101,24 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 		cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
     }
 
-    NSArray *bookmarks = [[MapBookmarkManager defaultManager] bookmarks];
-	MITMapPlace* bookmark = bookmarks[indexPath.row];
-
-    if ([bookmark.buildingNumber length]) {
-        cell.textLabel.text = [NSString stringWithFormat:@"Building %@", bookmark.buildingNumber];
-
-        if (![cell.textLabel.text isEqualToString:bookmark.name]) {
-            cell.detailTextLabel.text = bookmark.name;
-        }
-    } else {
-        cell.textLabel.text = bookmark.name;
-    }
+    [self configureCell:cell atIndexPath:indexPath];
 
     return cell;
+}
+
+- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
+{
+	MITMapPlace* bookmarkedPlace = (MITMapPlace*)[self.fetchedResultsController objectAtIndexPath:indexPath];
+    cell.textLabel.text = [bookmarkedPlace title];
+    cell.detailTextLabel.text = [bookmarkedPlace subtitle];
 }
 
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-		// Delete the row from the data source
-        NSArray *bookmarks = [[MapBookmarkManager defaultManager] bookmarks];
-        MITMapPlace* bookmark = bookmarks[indexPath.row];
-		[[MapBookmarkManager defaultManager] removeBookmark:bookmark];
-
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
-
-		if(![bookmarks count]) {
-			// turn off edit mode
-			[self.tableView setEditing:NO animated:YES];
-			self.editButtonItem.enabled = NO;
-		}
+        MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        [[MITMapModelController sharedController] removeBookmarkForPlace:place];
     }
 }
 
@@ -136,36 +126,28 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 // Override to support rearranging the table view.
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
-	[[MapBookmarkManager defaultManager] moveBookmarkFromRow:fromIndexPath.row
-                                                       toRow:toIndexPath.row];
+    MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:fromIndexPath];
+    [[MITMapModelController sharedController] moveBookmarkForPlace:place toIndex:toIndexPath.row];
 }
 
 
 // Override to support conditional rearranging of the table view.
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Return NO if you do not want the item to be re-orderable.
     return YES;
 }
 
 #pragma mark - Table view delegate
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	UITableViewCell* cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
-	return cell.frame.size.height + 10;
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 
 	// get the bookmark that was selected.
 
-    NSArray *bookmarks = [[MapBookmarkManager defaultManager] bookmarks];
-    MITMapPlace* bookmark = bookmarks[indexPath.row];
+    MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:indexPath];
 
     if (self.selectionBlock) {
-        self.selectionBlock([NSOrderedSet orderedSetWithObject:bookmark]);
+        self.selectionBlock([NSOrderedSet orderedSetWithObject:place]);
     }
 }
 
