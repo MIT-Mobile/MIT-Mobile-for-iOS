@@ -34,6 +34,17 @@
     [NSTimeZone setDefaultTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
 }
 
++ (MIT_MobileAppDelegate*)applicationDelegate
+{
+    id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
+
+    if ([appDelegate isKindOfClass:[MIT_MobileAppDelegate class]]) {
+        return (MIT_MobileAppDelegate*)appDelegate;
+    } else {
+        return nil;
+    }
+}
+
 #pragma mark -
 #pragma mark Application lifecycle
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
