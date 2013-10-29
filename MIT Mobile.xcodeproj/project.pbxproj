@@ -160,6 +160,7 @@
 		2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */; };
 		2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */; };
 		2CF8B37C17DF7C3B00C608A2 /* MITScrollingNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CF8B37B17DF7C3B00C608A2 /* MITScrollingNavigationBar.m */; };
+		2CF9F90A181ABC3800EDB359 /* MITFetchedResultsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CF9F909181ABC3800EDB359 /* MITFetchedResultsTableViewController.m */; };
 		2CFB87D71416B1AC0014E141 /* MITSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CFB87D81416B1AC0014E141 /* MITTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D41416B1AC0014E141 /* MITTabBar.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CFB87D91416B1AC0014E141 /* MITTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFB87D61416B1AC0014E141 /* MITTabView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -700,6 +701,8 @@
 		2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerOverlayView.m; sourceTree = "<group>"; };
 		2CF8B37A17DF7C3B00C608A2 /* MITScrollingNavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScrollingNavigationBar.h; sourceTree = "<group>"; };
 		2CF8B37B17DF7C3B00C608A2 /* MITScrollingNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScrollingNavigationBar.m; sourceTree = "<group>"; };
+		2CF9F908181ABC3800EDB359 /* MITFetchedResultsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITFetchedResultsTableViewController.h; sourceTree = "<group>"; };
+		2CF9F909181ABC3800EDB359 /* MITFetchedResultsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITFetchedResultsTableViewController.m; sourceTree = "<group>"; };
 		2CF9F90B181ABE5F00EDB359 /* MITCoreData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITCoreData.h; sourceTree = "<group>"; };
 		2CFB87D11416B1AC0014E141 /* MITSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITSegmentControl.h; sourceTree = "<group>"; };
 		2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITSegmentControl.m; sourceTree = "<group>"; };
@@ -1963,6 +1966,8 @@
 				3AA21C551039DDEA00DB7637 /* CoreDataManager.m */,
 				2C189A91181970B700653DF6 /* MITCoreDataController.h */,
 				2C189A92181970B700653DF6 /* MITCoreDataController.m */,
+				2CF9F908181ABC3800EDB359 /* MITFetchedResultsTableViewController.h */,
+				2CF9F909181ABC3800EDB359 /* MITFetchedResultsTableViewController.m */,
 			);
 			path = "Core Data";
 			sourceTree = "<group>";
@@ -3031,6 +3036,7 @@
 				EB4C2914127B224800058748 /* IconGrid.m in Sources */,
 				EBF8B5F412B5CAF600D39AE6 /* IntroToMITController.m in Sources */,
 				2CE6631E13144D4F00ED2A25 /* MFMailComposeViewController+RFC2368.m in Sources */,
+				2CF9F90A181ABC3800EDB359 /* MITFetchedResultsTableViewController.m in Sources */,
 				DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */,
 				EB8392471163EF340067C0A3 /* MITCalendarEvent.m in Sources */,
 				DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */,
