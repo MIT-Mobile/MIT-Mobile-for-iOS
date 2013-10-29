@@ -14,9 +14,13 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
+#import "MITCoreDataController.h"
+#import "CoreDataManager.h"
+
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
 @property (nonatomic,strong) NSDictionary *apnsDictionary;
 @property (nonatomic,weak) MIT_MobileAppDelegate *appDelegate;
+@property (nonatomic, readonly, strong) MITCoreDataController *coreDataController;
 
 - (id)initWithApnsDictionary:(NSDictionary *)apns appDelegate:(MIT_MobileAppDelegate *)delegate;
 @end
@@ -26,6 +30,10 @@
 
 - (void)loadWindow;
 - (void)updateBasicServerInfo;
+@end
+
+@interface MIT_MobileAppDelegate ()
+@property (nonatomic, strong) MITCoreDataController *coreDataController;
 @end
 
 @implementation MIT_MobileAppDelegate
@@ -60,6 +68,11 @@
         [TestFlight takeOff:MITApplicationTestFlightToken];
     }
 #endif
+
+    NSPersistentStoreCoordinator *storeCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+    MITCoreDataController *coreDataController = [[MITCoreDataController alloc] initWithPersistentStoreCoodinator:storeCoordinator];
+    self.coreDataController = coreDataController;
+
     [FBSession setDefaultAppID:FacebookAppId];
 
     // Default the cache expiration to 1d

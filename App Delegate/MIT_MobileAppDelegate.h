@@ -2,6 +2,7 @@
 
 @class MITModule;
 @class MIT_MobileAppDelegate;
+@class MITCoreDataController;
 
 #define MITAppDelegate() ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate])
 
@@ -11,6 +12,7 @@
 @property (nonatomic, weak) MITSpringboard *springboardController;
 @property (nonatomic, copy) NSArray *modules;
 @property (nonatomic, strong) NSData *deviceToken;
+@property (nonatomic, readonly, strong) MITCoreDataController *coreDataController;
 
 + (MIT_MobileAppDelegate*)applicationDelegate;
 
