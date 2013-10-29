@@ -306,7 +306,7 @@
 		NSString *fullname = searchResult[@"name"][0];
 
 		if (searchResult[@"title"]) {
-			cell.detailTextLabel.text = searchResult[@"title"];
+			cell.detailTextLabel.text = searchResult[@"title"][0];
 		} else if (searchResult[@"dept"]) {
 			cell.detailTextLabel.text = searchResult[@"dept"][0];
 		} else {
