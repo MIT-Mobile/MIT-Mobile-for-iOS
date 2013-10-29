@@ -5,12 +5,12 @@
 #import "NSString+SBJSON.h"
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
-#import "MapBookmarkManager.h"
 #import "MITMapAnnotationView.h"
 #import "UIImageView+WebCache.h"
 #import "MITMapView.h"
 #import "TabViewControl.h"
 #import "MITMapPlace.h"
+#import "MITMapModelController.h"
 
 @interface MITMapDetailViewController () <MITMapViewDelegate,TabViewControlDelegate>
 // Main View subviews
@@ -64,8 +64,7 @@
 	self.tabViews = [[NSMutableArray alloc] init];
 	
 	// check if this item is already bookmarked
-	MapBookmarkManager* bookmarkManager = [MapBookmarkManager defaultManager];
-	if ([bookmarkManager isBookmarked:self.place]) {
+	if (self.place.bookmark) {
 		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on"]
                              forState:UIControlStateNormal];
 		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on_pressed"]
@@ -337,22 +336,16 @@
 
 - (IBAction)bookmarkButtonTapped
 {
-	MapBookmarkManager* bookmarkManager = [MapBookmarkManager defaultManager];
-	if ([bookmarkManager isBookmarked:self.place]) {
+	if (self.place.bookmark) {
 		// remove the bookmark and set the images
-		[bookmarkManager removeBookmark:self.place];
+		[[MITMapModelController sharedController] removeBookmarkForPlace:self.place];
 		
 		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off"]
                              forState:UIControlStateNormal];
 		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off_pressed"]
                              forState:UIControlStateHighlighted];
 	} else {
-		NSString* subTitle = nil;
-		if (self.place.buildingNumber) {
-			subTitle = [NSString stringWithFormat:@"Building %@", self.place.buildingNumber];
-		}
-
-		[bookmarkManager addBookmark:self.place];
+		[[MITMapModelController sharedController] addBookmarkForPlace:self.place];
 		
 		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on"]
                              forState:UIControlStateNormal];
