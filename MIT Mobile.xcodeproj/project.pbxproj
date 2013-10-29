@@ -40,6 +40,7 @@
 		2C15FCD017C5868A00DC934C /* MITMultilineTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C15FCCF17C5868A00DC934C /* MITMultilineTableViewCell.m */; };
 		2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */; };
 		2C18073C1382C32D000CCB6F /* FacilitiesTypeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C18073B1382C32D000CCB6F /* FacilitiesTypeViewController.m */; };
+		2C189A93181970B700653DF6 /* MITCoreDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C189A92181970B700653DF6 /* MITCoreDataController.m */; };
 		2C189A991819D26900653DF6 /* CoreData+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C189A981819D26900653DF6 /* CoreData+MITAdditions.m */; };
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
@@ -488,6 +489,8 @@
 		2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRoom.m; sourceTree = "<group>"; };
 		2C18073A1382C32D000CCB6F /* FacilitiesTypeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesTypeViewController.h; sourceTree = "<group>"; };
 		2C18073B1382C32D000CCB6F /* FacilitiesTypeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesTypeViewController.m; sourceTree = "<group>"; };
+		2C189A91181970B700653DF6 /* MITCoreDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCoreDataController.h; sourceTree = "<group>"; };
+		2C189A92181970B700653DF6 /* MITCoreDataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCoreDataController.m; sourceTree = "<group>"; };
 		2C189A971819D26900653DF6 /* CoreData+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreData+MITAdditions.h"; path = "Categories/CoreData+MITAdditions.h"; sourceTree = "<group>"; };
 		2C189A981819D26900653DF6 /* CoreData+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CoreData+MITAdditions.m"; path = "Categories/CoreData+MITAdditions.m"; sourceTree = "<group>"; };
 		2C1A45E7135DD146006A2EE4 /* FacilitiesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesModule.h; sourceTree = "<group>"; };
@@ -697,6 +700,7 @@
 		2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerOverlayView.m; sourceTree = "<group>"; };
 		2CF8B37A17DF7C3B00C608A2 /* MITScrollingNavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScrollingNavigationBar.h; sourceTree = "<group>"; };
 		2CF8B37B17DF7C3B00C608A2 /* MITScrollingNavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScrollingNavigationBar.m; sourceTree = "<group>"; };
+		2CF9F90B181ABE5F00EDB359 /* MITCoreData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITCoreData.h; sourceTree = "<group>"; };
 		2CFB87D11416B1AC0014E141 /* MITSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITSegmentControl.h; sourceTree = "<group>"; };
 		2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITSegmentControl.m; sourceTree = "<group>"; };
 		2CFB87D31416B1AC0014E141 /* MITTabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabBar.h; sourceTree = "<group>"; };
@@ -1955,7 +1959,10 @@
 			isa = PBXGroup;
 			children = (
 				3AA21C541039DDEA00DB7637 /* CoreDataManager.h */,
+				2CF9F90B181ABE5F00EDB359 /* MITCoreData.h */,
 				3AA21C551039DDEA00DB7637 /* CoreDataManager.m */,
+				2C189A91181970B700653DF6 /* MITCoreDataController.h */,
+				2C189A92181970B700653DF6 /* MITCoreDataController.m */,
 			);
 			path = "Core Data";
 			sourceTree = "<group>";
@@ -3202,6 +3209,7 @@
 				2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */,
 				2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */,
 				48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */,
+				2C189A93181970B700653DF6 /* MITCoreDataController.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
 				2C91944C1631CBA700ED97F6 /* NSData+MGTwitterBase64.m in Sources */,
 				2CEBBF841635A68500441252 /* DEFacebookComposeViewController.m in Sources */,
