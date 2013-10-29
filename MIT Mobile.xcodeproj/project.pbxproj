@@ -1970,16 +1970,16 @@
 		44C1A26011A2E865000FD653 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				2C5CE69917FDC1BE009B850D /* MITMapModel.h */,
+				44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */,
 				44C1A4C211A412E2000FD653 /* MapSearch.h */,
 				44C1A4C311A412E2000FD653 /* MapSearch.m */,
-				44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */,
 				2CA73ECD18171AFD00A42D03 /* MITMapBookmark.h */,
 				2CA73ECE18171AFD00A42D03 /* MITMapBookmark.m */,
-				2C49DBB017E8AB9400ABA319 /* MITMapModelController.h */,
-				2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */,
 				2C9B8B2D17F5E2F6000701CA /* MITMapCategory.h */,
 				2C9B8B2E17F5E2F6000701CA /* MITMapCategory.m */,
+				2C5CE69917FDC1BE009B850D /* MITMapModel.h */,
+				2C49DBB017E8AB9400ABA319 /* MITMapModelController.h */,
+				2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */,
 				2C0023A417FB7AC800E8E0E5 /* MITMapPlace.h */,
 				2C0023A517FB7AC800E8E0E5 /* MITMapPlace.m */,
 			);
