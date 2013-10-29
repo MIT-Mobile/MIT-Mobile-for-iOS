@@ -53,7 +53,12 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 - (void)performUpdate:(NSDictionary*)placeDictionary inManagedObjectContext:(NSManagedObjectContext*)context
 {
     self.architect = placeDictionary[MITMapPlaceArchitectKey];
-    self.buildingNumber = placeDictionary[MITMapPlaceBuildingNumberKey];
+
+    NSString *buildingNumber = placeDictionary[MITMapPlaceBuildingNumberKey];
+    if ([buildingNumber length]) {
+        self.buildingNumber = buildingNumber;
+    }
+
     self.city = placeDictionary[MITMapPlaceCityKey];
     self.identifier = placeDictionary[MITMapPlaceIdentifierKey];
     self.imageURL = [NSURL URLWithString:placeDictionary[MITMapPlaceImageURLKey]];
@@ -99,7 +104,7 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 // Shared between MGSAnnotation and MKAnnotation protocols
 - (NSString*)title
 {
-    if (self.buildingNumber) {
+    if ([self.buildingNumber length]) {
         return [NSString stringWithFormat:@"Building %@", self.buildingNumber];
     } else {
         return self.name;
