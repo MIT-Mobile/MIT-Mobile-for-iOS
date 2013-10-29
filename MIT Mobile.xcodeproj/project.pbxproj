@@ -185,7 +185,7 @@
 		4463D09410D92CB00048CA83 /* MITMapDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4463D09210D92CB00048CA83 /* MITMapDetailViewController.m */; };
 		4463D09510D92CB00048CA83 /* MITMapDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4463D09310D92CB00048CA83 /* MITMapDetailViewController.xib */; };
 		448FF58F10FA4BDE00850BC0 /* ShuttleRouteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */; };
-		44ACF76D1187884300F1F4B2 /* BookmarksTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */; };
+		44ACF76D1187884300F1F4B2 /* MITMapBookmarksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44ACF7691187884300F1F4B2 /* MITMapBookmarksViewController.m */; };
 		44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BF5B421100A75C00E150D5 /* RouteInfoTitleCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		44BF602011050AC000E150D5 /* ShuttleStopCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BF601F11050AC000E150D5 /* ShuttleStopCell.m */; };
 		44BF602211050ACE00E150D5 /* ShuttleStopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */; };
@@ -752,8 +752,8 @@
 		448FF58E10FA4BDE00850BC0 /* ShuttleRouteViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShuttleRouteViewController.xib; sourceTree = "<group>"; };
 		4499332B11A371CE00A7041B /* RecentSearchesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentSearchesViewController.h; sourceTree = "<group>"; };
 		4499332C11A371CF00A7041B /* RecentSearchesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentSearchesViewController.m; sourceTree = "<group>"; };
-		44ACF7681187884300F1F4B2 /* BookmarksTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarksTableViewController.h; sourceTree = "<group>"; };
-		44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarksTableViewController.m; sourceTree = "<group>"; };
+		44ACF7681187884300F1F4B2 /* MITMapBookmarksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapBookmarksViewController.h; sourceTree = "<group>"; };
+		44ACF7691187884300F1F4B2 /* MITMapBookmarksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapBookmarksViewController.m; sourceTree = "<group>"; };
 		44BF5B411100A75C00E150D5 /* RouteInfoTitleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RouteInfoTitleCell.h; sourceTree = "<group>"; };
 		44BF5B421100A75C00E150D5 /* RouteInfoTitleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RouteInfoTitleCell.m; sourceTree = "<group>"; };
 		44BF601E11050ABF00E150D5 /* ShuttleStopCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleStopCell.h; sourceTree = "<group>"; };
@@ -1994,8 +1994,8 @@
 		44C1A3C511A3388A000FD653 /* Selection */ = {
 			isa = PBXGroup;
 			children = (
-				44ACF7681187884300F1F4B2 /* BookmarksTableViewController.h */,
-				44ACF7691187884300F1F4B2 /* BookmarksTableViewController.m */,
+				44ACF7681187884300F1F4B2 /* MITMapBookmarksViewController.h */,
+				44ACF7691187884300F1F4B2 /* MITMapBookmarksViewController.m */,
 				4499332B11A371CE00A7041B /* RecentSearchesViewController.h */,
 				4499332C11A371CF00A7041B /* RecentSearchesViewController.m */,
 				2C9146F317ECFFAC007130D8 /* MITMapCategoryBrowseController.h */,
@@ -2994,7 +2994,7 @@
 				DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */,
 				DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */,
 				DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */,
-				44ACF76D1187884300F1F4B2 /* BookmarksTableViewController.m in Sources */,
+				44ACF76D1187884300F1F4B2 /* MITMapBookmarksViewController.m in Sources */,
 				4463CC9810D6F4A50048CA83 /* CMModule.m in Sources */,
 				4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */,
 				EB83926C1163F7B00067C0A3 /* CalendarDataManager.m in Sources */,

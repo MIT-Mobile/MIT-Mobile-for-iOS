@@ -4,7 +4,7 @@
 #import "MGSMapView.h"
 #import "MGSLayer.h"
 #import "MITMapDetailViewController.h"
-#import "BookmarksTableViewController.h"
+#import "MITMapBookmarksViewController.h"
 #import "MapSearch.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITCoreDataController.h"
@@ -175,7 +175,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (IBAction)favoritesItemWasTapped:(UIBarButtonItem*)sender
 {
-    BookmarksTableViewController *bookmarksViewController = [[BookmarksTableViewController alloc] init:^(NSOrderedSet *selectedPlaces) {
+    MITMapBookmarksViewController *bookmarksViewController = [[MITMapBookmarksViewController alloc] init:^(NSOrderedSet *selectedPlaces) {
         DDLogVerbose(@"Selected %d places (from bookmarks)", [selectedPlaces count]);
 
         [self dismissViewControllerAnimated:YES completion:^{

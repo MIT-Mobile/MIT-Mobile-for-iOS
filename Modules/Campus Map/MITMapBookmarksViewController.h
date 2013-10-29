@@ -4,7 +4,7 @@
 @class CampusMapViewController;
 @class MapSelectionController;
 
-@interface BookmarksTableViewController : MITFetchedResultsTableViewController
+@interface MITMapBookmarksViewController : MITFetchedResultsTableViewController
 
 /** Initializes an instance of the bookmarks browser using
  *  the 'placesSelected' handler block. The 'selectedPlaces' block

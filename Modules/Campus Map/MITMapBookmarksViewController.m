@@ -1,4 +1,4 @@
-#import "BookmarksTableViewController.h"
+#import "MITMapBookmarksViewController.h"
 #import "CampusMapViewController.h"
 #import "MITUIConstants.h"
 #import "MITMapModel.h"
@@ -6,11 +6,11 @@
 
 typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 
-@interface BookmarksTableViewController () <NSFetchedResultsControllerDelegate>
+@interface MITMapBookmarksViewController () <NSFetchedResultsControllerDelegate>
 @property (nonatomic,copy) MITMapBookmarksSelectionHandler selectionBlock;
 @end
 
-@implementation BookmarksTableViewController
+@implementation MITMapBookmarksViewController
 
 #pragma mark - View lifecycle
 - (id)init:(void (^)(NSOrderedSet* selectedPlaces))placesSelected
@@ -43,9 +43,9 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
                                                                               action:@selector(doneButtonPressed:)];
 	[self.navigationItem setRightBarButtonItem:doneItem animated:animated];
 
-    __weak BookmarksTableViewController *weakSelf = self;
+    __weak MITMapBookmarksViewController *weakSelf = self;
     [[MITMapModelController sharedController] bookmarkedPlaces:^(NSOrderedSet *places, NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
-        BookmarksTableViewController *blockSelf = weakSelf;
+        MITMapBookmarksViewController *blockSelf = weakSelf;
 
         if (blockSelf) {
             self.fetchRequest = fetchRequest;
