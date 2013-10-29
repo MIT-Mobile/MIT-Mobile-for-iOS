@@ -4,5 +4,5 @@ FOUNDATION_EXPORT NSArray* NSManagedObjectIDsForNSManagedObjects(NSArray *object
 
 @interface NSManagedObjectContext (MITAdditions)
 - (NSArray*)objectsWithIDs:(NSArray*)objectIDs;
-- (NSArray*)objectsWithIDs:(NSArray*)objectIDs class:(Class)objectClass;
+- (NSArray*)transferManagedObjects:(NSArray*)objects;
 @end
