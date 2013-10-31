@@ -2,7 +2,9 @@
 #import <CoreData/CoreData.h>
 
 @interface MITCoreDataController : NSObject
-- (id)initWithPersistentStoreCoodinator:(NSPersistentStoreCoordinator*)coordinator;
++ (instancetype)defaultController;
+
+- (instancetype)initWithPersistentStoreCoodinator:(NSPersistentStoreCoordinator*)coordinator;
 
 /** Returns a shared NSManagedObjectContext for use on the main queue. Objects managed
  *  by this context should not be modified; a background queue should be used instead.
@@ -12,29 +14,38 @@
  */
 - (NSManagedObjectContext*)mainQueueContext;
 
-/** Creates a new NSManagedObjectContext for background updates and calls the
- * passed block asynchronously. The block is guaranteed to be called on the
- * same queue as the NSManagedObjectContext.
+/** Executes fetchRequest on a background context and
+ *  returns the ordered set of IDs to the caller. Any changes
+ *  made to registered objects will not be persisted.
+ *
+ */
+- (void)performBackgroundFetch:(NSFetchRequest*)fetchRequest completion:(void (^)(NSOrderedSet *fetchedObjectIDs, NSError *error))block;
+
+/** Creates a new NSManagedObjectContext for a background update and calls the
+ *  passed block asynchronously. This method should only be called to kick off 
+ *  a single, atomic CoreData operation. Calling this method recursively will result in strange and
+ *  undefined behavior. The block is guaranteed to be called on the context's queue.
  *
  * Onces the block completes, any saved changes will be persisted and synched with
  *  the main queue context. If the block's context is not saved prior to returning
- *  from the block, its changes will be discarded.
+ *  its changes will be discarded.
  */
 - (void)performBackgroundUpdate:(void (^)(NSManagedObjectContext *context))block;
 
-/** Creates a new NSManagedObjectContext for background updates and calls the
- * passed block synchronously. The block is guaranteed to be called on the
- * same queue as the NSManagedObjectContext.
+/** Creates a new NSManagedObjectContext for a background update and calls the
+ *  passed block synchronously. This method should only be called to kick off
+ *  a single, atomic CoreData operation. Calling this method recursively will
+ *  result in strange and undefined behavior. The block is guaranteed to be
+ *  called on the context's queue.
  *
  * Onces the block completes, any saved changes will be persisted and synched with
  *  the main queue context. If the block's context is not saved prior to returning
- *  from the block, its changes will be discarded.
+ *  its changes will be discarded.
  */
 - (void)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context))block;
 
-/** Flushes any un-persisted data to the persistent store.
- *  Once the save is completed, the passed block will be called.
- *  The block is guaranteed to be called on the main queue.
+/** Flushes any un-persisted data in the background context to the persistent store.
+ *  Once the save is completed, the passed block will be called on the main queue.
  *
  *  @param saved
  */

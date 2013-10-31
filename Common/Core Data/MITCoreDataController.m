@@ -1,5 +1,6 @@
 #import "MITCoreDataController.h"
 #import "MITAdditions.h"
+#import "MIT_MobileAppDelegate.h"
 
 @interface MITCoreDataController ()
 @property (strong) NSPersistentStoreCoordinator *storeCoordinator;
@@ -13,7 +14,12 @@
 
 
 @implementation MITCoreDataController
-- (id)initWithPersistentStoreCoodinator:(NSPersistentStoreCoordinator*)coordinator
++ (instancetype)defaultController
+{
+    return [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
+}
+
+- (instancetype)initWithPersistentStoreCoodinator:(NSPersistentStoreCoordinator*)coordinator
 {
     self = [super init];
 
@@ -78,8 +84,26 @@
     }];
 }
 
+- (void)performBackgroundFetch:(NSFetchRequest*)fetchRequest completion:(void (^)(NSOrderedSet *fetchedObjectIDs, NSError *error))block
+{
+    NSManagedObjectContext *backgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    backgroundContext.parentContext = self.mainQueueContext;
+    backgroundContext.retainsRegisteredObjects = YES;
 
-- (void)performBackgroundUpdate:(void (^)(NSManagedObjectContext *context))block
+    [backgroundContext performBlock:^{
+        NSError *error = nil;
+        NSArray *fetchResults = [backgroundContext executeFetchRequest:fetchRequest error:&error];
+
+        NSOrderedSet *fetchedIDs = [NSOrderedSet orderedSetWithArray:NSManagedObjectIDsForNSManagedObjects(fetchResults)];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            if (block) {
+                block(fetchedIDs, error);
+            }
+        });
+    }];
+}
+
+- (void)performBackgroundUpdate:(void (^)(NSManagedObjectContext *))block
 {
     NSManagedObjectContext *backgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     backgroundContext.parentContext = self.backgroundContext;
@@ -89,9 +113,9 @@
             block(backgroundContext);
         }
 
-        [self.backgroundContext performBlockAndWait:^{
+        [backgroundContext.parentContext performBlock:^{
             NSError *error = nil;
-            [self.backgroundContext save:&error];
+            [backgroundContext.parentContext save:&error];
 
             if (error) {
                 DDLogError(@"Failed to save background context: %@", error);
@@ -110,9 +134,9 @@
             block(backgroundContext);
         }
 
-        [self.backgroundContext performBlock:^{
+        [backgroundContext.parentContext performBlock:^{
             NSError *error = nil;
-            [self.backgroundContext save:&error];
+            [backgroundContext.parentContext save:&error];
 
             if (error) {
                 DDLogError(@"Failed to save background context: %@", error);
