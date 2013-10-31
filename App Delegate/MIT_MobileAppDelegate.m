@@ -20,7 +20,6 @@
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
 @property (nonatomic,strong) NSDictionary *apnsDictionary;
 @property (nonatomic,weak) MIT_MobileAppDelegate *appDelegate;
-@property (nonatomic, readonly, strong) MITCoreDataController *coreDataController;
 
 - (id)initWithApnsDictionary:(NSDictionary *)apns appDelegate:(MIT_MobileAppDelegate *)delegate;
 @end
@@ -33,10 +32,12 @@
 @end
 
 @interface MIT_MobileAppDelegate ()
-@property (nonatomic, strong) MITCoreDataController *coreDataController;
+
 @end
 
 @implementation MIT_MobileAppDelegate
+@synthesize coreDataController = _coreDataController;
+
 + (void)initialize
 {
     [NSTimeZone setDefaultTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
@@ -68,10 +69,6 @@
         [TestFlight takeOff:MITApplicationTestFlightToken];
     }
 #endif
-
-    NSPersistentStoreCoordinator *storeCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-    MITCoreDataController *coreDataController = [[MITCoreDataController alloc] initWithPersistentStoreCoodinator:storeCoordinator];
-    self.coreDataController = coreDataController;
 
     [FBSession setDefaultAppID:FacebookAppId];
 
@@ -338,6 +335,20 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
             [MITDeviceRegistration registerNewDeviceWithToken:nil];
         }
     }
+}
+
+#pragma mark -
+#pragma mark Dynamic Accessors
+- (MITCoreDataController*)coreDataController
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSPersistentStoreCoordinator *storeCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+        MITCoreDataController *coreDataController = [[MITCoreDataController alloc] initWithPersistentStoreCoodinator:storeCoordinator];
+        self->_coreDataController = coreDataController;
+    });
+
+    return _coreDataController;
 }
 
 @end
