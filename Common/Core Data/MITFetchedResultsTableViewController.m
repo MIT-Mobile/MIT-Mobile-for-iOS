@@ -8,9 +8,10 @@
 @implementation MITFetchedResultsTableViewController
 - (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest
 {
-    self = [self initWithStyle:UITableViewStylePlain];
+    self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
         _fetchRequest = fetchRequest;
+        _updateTableOnResultsChange = YES;
     }
 
     return self;
@@ -20,7 +21,7 @@
 {
     self = [super initWithStyle:style];
     if (self) {
-        // Custom initialization
+        _updateTableOnResultsChange = YES;
     }
     return self;
 }
@@ -28,21 +29,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    self.updateTableOnResultsChange = YES;
 }
-
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+}
 
-    NSError *error = nil;
-    [self.fetchedResultsController performFetch:&error];
-
-    if (error) {
-        DDLogError(@"Fetch for entity name '%@' failed: %@",[self.fetchRequest entityName], error);
-    }
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    self.fetchedResultsController = nil;
 }
 
 - (void)didReceiveMemoryWarning
@@ -51,7 +48,8 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Lazy Fetch Controller impl.
+#pragma mark - Properties
+#pragma mark Accessors/Loading
 - (NSFetchedResultsController*)fetchedResultsController
 {
     if (!_fetchedResultsController) {
@@ -65,44 +63,32 @@
 
 - (void)loadFetchedResultsController
 {
-    NSManagedObjectContext *context = [[[MIT_MobileAppDelegate applicationDelegate] coreDataController] mainQueueContext];
-    if (self.managedObjectContext) {
-        context = self.managedObjectContext;
-    }
-
+    NSManagedObjectContext *mainContext = [[MITCoreDataController defaultController] mainQueueContext];
     NSFetchedResultsController *controller = [[NSFetchedResultsController alloc] initWithFetchRequest:self.fetchRequest
-                                                                                 managedObjectContext:context
+                                                                                 managedObjectContext:mainContext
                                                                                    sectionNameKeyPath:nil
                                                                                             cacheName:nil];
     controller.delegate = self;
+    _fetchedResultsController = controller;
 
     NSError *error = nil;
-    [controller performFetch:&error];
+    [_fetchedResultsController performFetch:&error];
 
     if (error) {
         DDLogError(@"Failed to execute fetch %@: %@",self.fetchRequest,error);
-        self->_fetchedResultsController = nil;
-    } else {
-        self->_fetchedResultsController = controller;
     }
+
 }
 
+#pragma mark Mutators
 - (void)setFetchRequest:(NSFetchRequest *)fetchRequest
 {
     if (![self.fetchRequest isEqual:fetchRequest]) {
         _fetchRequest = fetchRequest;
 
-        // Nil out the fetchedResultController so it will be
-        // re-created for the performFetch:
         self.fetchedResultsController = nil;
         [self.tableView reloadData];
     }
-}
-
-
-- (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath
-{
-    /* Does nothing by default */
 }
 
 #pragma mark - Delegate Methods
@@ -193,8 +179,8 @@
                 break;
 
             case NSFetchedResultsChangeUpdate:
-                [self configureCell:[tableView cellForRowAtIndexPath:indexPath]
-                        atIndexPath:indexPath];
+                [tableView reloadRowsAtIndexPaths:@[indexPath]
+                                 withRowAnimation:UITableViewRowAnimationNone];
                 break;
 
             case NSFetchedResultsChangeMove:
