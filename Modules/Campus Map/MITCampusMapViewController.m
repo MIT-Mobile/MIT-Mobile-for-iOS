@@ -62,9 +62,6 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 {
     UIView *controllerView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
     controllerView.backgroundColor = [UIColor mit_backgroundColor];
-    controllerView.autoresizesSubviews = YES;
-    controllerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                       UIViewAutoresizingFlexibleWidth);
     self.view = controllerView;
 
     MGSMapView *mapView = [[MGSMapView alloc] init];
@@ -78,6 +75,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     searchBar.translucent = YES;
     searchBar.delegate = self;
     searchBar.translatesAutoresizingMaskIntoConstraints = NO;
+    [searchBar sizeToFit];
 
     [controllerView addSubview:searchBar];
     self.searchBar = searchBar;
@@ -88,17 +86,14 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
                                                                            options:0
                                                                            metrics:nil
                                                                              views:views]];
+
     [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[mapView]|"
                                                                            options:0
                                                                            metrics:nil
                                                                              views:views]];
 
     [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[searchBar]|"
-                                                                           options:0
-                                                                           metrics:nil
-                                                                             views:views]];
-    [controllerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[searchBar]-(>=0)-|"
-                                                                           options:0
+                                                                           options:NSLayoutFormatAlignAllTop
                                                                            metrics:nil
                                                                              views:views]];
 
