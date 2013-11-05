@@ -4,18 +4,20 @@
 #import "MITMapModel.h"
 #import "MITCoreDataController.h"
 
-typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
+typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *mapPlaceIDs);
 
-@interface MITMapBookmarksViewController () <NSFetchedResultsControllerDelegate>
+@interface MITMapBookmarksViewController ()
 @property (nonatomic,copy) MITMapBookmarksSelectionHandler selectionBlock;
+
+- (void)didCompleteSelectionWithPlaces:(NSOrderedSet*)mapPlaces;
 @end
 
 @implementation MITMapBookmarksViewController
 
 #pragma mark - View lifecycle
-- (id)init:(void (^)(NSOrderedSet* selectedPlaces))placesSelected
+- (id)init:(void (^)(NSOrderedSet* mapPlaceIDs))placesSelected
 {
-    self = [super initWithStyle:UITableViewStylePlain];
+    self = [super initWithFetchRequest:nil];
     if (self) {
 	    self.title = @"Bookmarks";
         self.selectionBlock = placesSelected;
@@ -44,7 +46,7 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 	[self.navigationItem setRightBarButtonItem:doneItem animated:animated];
 
     __weak MITMapBookmarksViewController *weakSelf = self;
-    [[MITMapModelController sharedController] bookmarkedPlaces:^(NSOrderedSet *places, NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+    [[MITMapModelController sharedController] bookmarkedPlaces:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
         MITMapBookmarksViewController *blockSelf = weakSelf;
 
         if (blockSelf) {
@@ -85,6 +87,16 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
     }
 }
 
+
+- (void)didCompleteSelectionWithPlaces:(NSOrderedSet*)mapPlaces
+{
+    if (self.selectionBlock) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            self.selectionBlock(mapPlaces);
+        }];
+    }
+}
+
 #pragma mark - Delegate Protocols
 #pragma mark UITableViewDataSource
 // Customize the appearance of table view cells.
@@ -95,22 +107,13 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
-		cell.detailTextLabel.textColor = CELL_DETAIL_FONT_COLOR;
-		cell.detailTextLabel.font = [UIFont systemFontOfSize:CELL_DETAIL_FONT_SIZE];
-		cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
-		cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
     }
 
-    [self configureCell:cell atIndexPath:indexPath];
-
-    return cell;
-}
-
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
-{
 	MITMapPlace* bookmarkedPlace = (MITMapPlace*)[self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = [bookmarkedPlace title];
     cell.detailTextLabel.text = [bookmarkedPlace subtitle];
+
+    return cell;
 }
 
 // Override to support editing the table view.
@@ -118,7 +121,7 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        [[MITMapModelController sharedController] removeBookmarkForPlace:place];
+        [[MITMapModelController sharedController] removeBookmarkForPlace:place completion:nil];
     }
 }
 
@@ -127,7 +130,7 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
     MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:fromIndexPath];
-    [[MITMapModelController sharedController] moveBookmarkForPlace:place toIndex:toIndexPath.row];
+    [[MITMapModelController sharedController] moveBookmarkForPlace:place toIndex:toIndexPath.row completion:nil];
 }
 
 
@@ -143,12 +146,8 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *selectedPlaces);
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 
 	// get the bookmark that was selected.
-
     MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:indexPath];
-
-    if (self.selectionBlock) {
-        self.selectionBlock([NSOrderedSet orderedSetWithObject:place]);
-    }
+    [self didCompleteSelectionWithPlaces:[NSOrderedSet orderedSetWithObject:[place objectID]]];
 }
 
 @end

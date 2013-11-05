@@ -1,14 +1,18 @@
 #import <UIKit/UIKit.h>
 #import "MITFetchedResultsTableViewController.h"
 
-@class CampusMapViewController;
 @class MapSelectionController;
 
 @interface MITMapBookmarksViewController : MITFetchedResultsTableViewController
 
-/** Initializes an instance of the bookmarks browser using
- *  the 'placesSelected' handler block. The 'selectedPlaces' block
- *  parameter will contain instances of the 'MITMapPlace' class
+/** Created a view controller for browsing the user's saved bookmarks.
+ *  Once one or more placed is selected the passed block will be called
+ *  with the current category and an ordered set of NSManagedObjectIDs.
+ *
+ *  The managed objects IDs returned by the selection block resolve to instances of
+ *  the MapPlace entity.
+ *
+ *  @related MITMapPlace
  */
-- (id)init:(void (^)(NSOrderedSet* selectedPlaces))placesSelected;
+- (id)init:(void (^)(NSOrderedSet* mapPlaceIDs))placesSelected;
 @end

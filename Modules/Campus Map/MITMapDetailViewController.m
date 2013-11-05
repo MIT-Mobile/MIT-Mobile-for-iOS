@@ -9,8 +9,8 @@
 #import "UIImageView+WebCache.h"
 #import "MITMapView.h"
 #import "TabViewControl.h"
-#import "MITMapPlace.h"
-#import "MITMapModelController.h"
+
+#import "MITMapModel.h"
 
 @interface MITMapDetailViewController () <MITMapViewDelegate,TabViewControlDelegate>
 // Main View subviews
@@ -338,21 +338,35 @@
 {
 	if (self.place.bookmark) {
 		// remove the bookmark and set the images
-		[[MITMapModelController sharedController] removeBookmarkForPlace:self.place];
-		
-		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off"]
-                             forState:UIControlStateNormal];
-		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off_pressed"]
-                             forState:UIControlStateHighlighted];
+		[[MITMapModelController sharedController] removeBookmarkForPlace:self.place completion:^(NSError *error) {
+            [[[MITCoreDataController defaultController] mainQueueContext] refreshObject:self.place mergeChanges:NO];
+
+            if (!error) {
+                [self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off"]
+                                     forState:UIControlStateNormal];
+                [self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off_pressed"]
+                                     forState:UIControlStateHighlighted];
+            }
+
+            self.bookmarkButton.enabled = YES;
+        }];
 	} else {
-		[[MITMapModelController sharedController] addBookmarkForPlace:self.place];
-		
-		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on"]
-                             forState:UIControlStateNormal];
-		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on_pressed"]
-                             forState:UIControlStateHighlighted];
+		[[MITMapModelController sharedController] bookmarkPlaces:@[self.place] completion:^(NSError *error) {
+            [[[MITCoreDataController defaultController] mainQueueContext] refreshObject:self.place mergeChanges:NO];
+
+            if (!error) {
+                [self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on"]
+                                     forState:UIControlStateNormal];
+                [self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on_pressed"]
+                                     forState:UIControlStateHighlighted];
+            }
+
+
+            self.bookmarkButton.enabled = YES;
+        }];
 	}
-	
+
+    self.bookmarkButton.enabled = NO;
 }
 
 #pragma mark TabViewControlDelegate
@@ -366,19 +380,6 @@
                                              CGRectGetMinY(self.tabViewContainer.frame) + CGRectGetHeight(viewToAdd.frame));
 	
 	[self.tabViewContainer addSubview:viewToAdd];
-	
-	if (self.campusMapVC.displayingList) {
-        NSString *urlPath = [NSString stringWithFormat:@"list/detail/%@/%d", self.place.identifier, tabIndex];
-        [self.campusMapVC.url setPath:urlPath
-                                query:self.campusMapVC.lastSearchText];
-    } else {
-        NSString *urlPath = [NSString stringWithFormat:@"detail/%@/%d", self.place.identifier, tabIndex];
-		[self.campusMapVC.url setPath:urlPath
-                                query:self.campusMapVC.lastSearchText];
-    }
-
-	[self.campusMapVC.url setAsModulePath];
-	[self.campusMapVC setURLPathUserLocation];
 }
 
 @end

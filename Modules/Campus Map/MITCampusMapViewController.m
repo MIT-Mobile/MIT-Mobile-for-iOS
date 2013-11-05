@@ -1,13 +1,12 @@
 #import "MITCampusMapViewController.h"
-#import "MITMapCategoryBrowseController.h"
+#import "MITMapCategoriesViewController.h"
 #import "MITAdditions.h"
+#import "MITMapModel.h"
+
 #import "MGSMapView.h"
 #import "MGSLayer.h"
 #import "MITMapDetailViewController.h"
 #import "MITMapBookmarksViewController.h"
-#import "MapSearch.h"
-#import "MIT_MobileAppDelegate.h"
-#import "MITCoreDataController.h"
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
@@ -28,8 +27,8 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 @property (nonatomic,strong) IBOutlet UISearchDisplayController *searchController;
 
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic,copy) NSOrderedSet *recentSearches;
-@property (nonatomic,copy) NSOrderedSet *selectedPlaces;
+@property (nonatomic,copy) NSArray *recentSearches;
+@property (nonatomic,copy) NSArray *selectedPlaces;
 
 @property (nonatomic,getter = isSearching) BOOL searching;
 @property (nonatomic,getter = isShowingList) BOOL showingList;
@@ -102,6 +101,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     if (!self.interfaceHidden) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     }
@@ -152,10 +152,10 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 #pragma mark - Browse Handling
 - (IBAction)browseItemWasTapped:(UIBarButtonItem*)sender
 {
-    MITMapCategoryBrowseController *categoryBrowseController = [[MITMapCategoryBrowseController alloc] init:^(MITMapCategory *category, NSOrderedSet *selectedPlaces) {
-        DDLogVerbose(@"Selected %d places (from categories)", [selectedPlaces count]);
-        if (selectedPlaces) {
-            self.selectedPlaces = selectedPlaces;
+    MITMapCategoriesViewController *categoryBrowseController = [[MITMapCategoriesViewController alloc] init:^(MITMapCategory *category, NSOrderedSet *mapPlaceIDs) {
+        DDLogVerbose(@"Selected %d places (from categories)", [mapPlaceIDs count]);
+        if (mapPlaceIDs) {
+            self.selectedPlaces = [self.managedObjectContext objectsWithIDs:[mapPlaceIDs array]];
         }
 
         [self dismissViewControllerAnimated:YES completion:nil];
@@ -170,14 +170,13 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (IBAction)favoritesItemWasTapped:(UIBarButtonItem*)sender
 {
-    MITMapBookmarksViewController *bookmarksViewController = [[MITMapBookmarksViewController alloc] init:^(NSOrderedSet *selectedPlaces) {
-        DDLogVerbose(@"Selected %d places (from bookmarks)", [selectedPlaces count]);
+    MITMapBookmarksViewController *bookmarksViewController = [[MITMapBookmarksViewController alloc] init:^(NSOrderedSet *mapPlaceIDs) {
+        DDLogVerbose(@"Selected %d places (from bookmarks)", [mapPlaceIDs count]);
+        if (mapPlaceIDs) {
+            self.selectedPlaces = [self.managedObjectContext objectsWithIDs:[mapPlaceIDs array]];
+        }
 
-        [self dismissViewControllerAnimated:YES completion:^{
-            if (selectedPlaces) {
-                self.selectedPlaces = selectedPlaces;
-            }
-        }];
+        [self dismissViewControllerAnimated:YES completion:nil];
     }];
 
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:bookmarksViewController];
@@ -219,10 +218,10 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (void)didChangeSelectedPlaces:(BOOL)animated
 {
     // Update the map with the latest list of selectedPlaces
-    [self.mapView defaultLayer].annotations = self.selectedPlaces;
+    [self.mapView defaultLayer].annotations = [NSOrderedSet orderedSetWithArray:self.selectedPlaces];
 
     if ([self.selectedPlaces count]) {
-        self.mapView.mapRegion = MKCoordinateRegionForMGSAnnotations([self.selectedPlaces set]);
+        self.mapView.mapRegion = MKCoordinateRegionForMGSAnnotations([NSSet setWithArray:self.selectedPlaces]);
 
         if ([self.selectedPlaces count] == 1) {
             [self.mapView showCalloutForAnnotation:self.selectedPlaces[0]];
@@ -273,7 +272,6 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
                                  self.searchBar.hidden = YES;
                              }];
         } else {
-
             [UIView animateWithDuration:(animated ? 0.20 : 0.)
                              animations:^{
                                  self.searchBar.hidden = NO;
@@ -367,11 +365,14 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
     [[MITMapModelController sharedController] recentSearchesForPartialString:searchString
-                                                                      loaded:^(NSOrderedSet *mapSearches, NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+                                                                      loaded:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
         if (error) {
             self.recentSearches = nil;
         } else {
-            self.recentSearches = mapSearches;
+            [[MITCoreDataController defaultController] performBackgroundFetch:fetchRequest
+                                                                   completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
+                                                                       self.recentSearches = [self.managedObjectContext objectsWithIDs:[fetchedObjectIDs array]];
+                                                                   }];
         }
 
         [controller.searchResultsTableView reloadData];
@@ -396,9 +397,12 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [[MITMapModelController sharedController] searchMapWithQuery:searchBar.text
-                                                          loaded:^(NSOrderedSet *objects, NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+                                                          loaded:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
                                                               if (!error) {
-                                                                  self.selectedPlaces = objects;
+                                                                  [[MITCoreDataController defaultController] performBackgroundFetch:fetchRequest
+                                                                                                                         completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
+                                                                                                                             self.selectedPlaces = [self.managedObjectContext objectsWithIDs:[fetchedObjectIDs array]];
+                                                                                                                         }];
                                                               } else {
                                                                   DDLogVerbose(@"Failed to perform search '%@', %@",searchBar.text,error);
                                                               }
