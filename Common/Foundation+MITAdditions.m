@@ -31,10 +31,12 @@ inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
 
 @implementation NSArray (MITAdditions)
 - (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block {
+    
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
     [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         [result addObject:block(obj, idx)];
     }];
+
     return result;
 }
 @end
@@ -52,15 +54,6 @@ inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
 @end
 
 @implementation NSMutableString (MITAdditions)
-/** Replace all the occurrences of the strings in targets with the
- *  values in replacements.
- *
- *  @param targets The strings to replace. Raises an NSInvalidArgumentException if targets and replacements do not have the same number of strings.
- *  @param replacements The strings with which to replace target. Raises an NSInvalidArgumentException if targets and replacements do not have the same number of strings.
- *  @param opts See replaceOccurrencesOfString:withString:options:range:
- *
- *  @see replaceOccurrencesOfString:withString:options:range:
- */
 - (void)replaceOccurrencesOfStrings:(NSArray *)targets withStrings:(NSArray *)replacements options:(NSStringCompareOptions)opts {
     if ([targets count] != [replacements count]) {
         @throw NSInvalidArgumentException;
@@ -293,12 +286,6 @@ typedef struct {
     return result;
 }
 
-/** String representation with HTML tags removed.
- 
- Replaces all angle bracketed text with spaces, collapses all spaces down to a single space, and trims leading and trailing whitespace and newlines.
- 
- @return A plain text string suitable for display in a UILabel.
- */
 
 - (NSString *)stringByStrippingTags {
     NSError *error = nil;
