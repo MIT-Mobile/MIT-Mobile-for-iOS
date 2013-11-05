@@ -94,7 +94,8 @@
         NSError *error = nil;
         NSArray *fetchResults = [backgroundContext executeFetchRequest:fetchRequest error:&error];
 
-        NSOrderedSet *fetchedIDs = [NSOrderedSet orderedSetWithArray:NSManagedObjectIDsForNSManagedObjects(fetchResults)];
+        NSArray *objectIDs = [NSManagedObjectContext objectIDsForManagedObjects:fetchResults];
+        NSOrderedSet *fetchedIDs = [NSOrderedSet orderedSetWithArray:objectIDs];
         dispatch_sync(dispatch_get_main_queue(), ^{
             if (block) {
                 block(fetchedIDs, error);
@@ -103,45 +104,79 @@
     }];
 }
 
-- (void)performBackgroundUpdate:(void (^)(NSManagedObjectContext *))block
+- (void)performBackgroundUpdate:(void (^)(NSManagedObjectContext *context, NSError **error))update completion:(void (^)(NSError *error))complete;
 {
     NSManagedObjectContext *backgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     backgroundContext.parentContext = self.backgroundContext;
 
     [backgroundContext performBlock:^{
-        if (block) {
-            block(backgroundContext);
+        NSError *error = nil;
+
+        if (update) {
+            update(backgroundContext, &error);
         }
 
-        [backgroundContext.parentContext performBlock:^{
-            NSError *error = nil;
-            [backgroundContext.parentContext save:&error];
+        if (error) {
+            DDLogError(@"Failed to complete update to context: %@",error);
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (complete) {
+                    complete(error);
+                }
+            }];
+        } else {
+            [backgroundContext.parentContext performBlock:^{
+                NSError *parentSaveError = nil;
+                [backgroundContext.parentContext save:&parentSaveError];
 
-            if (error) {
-                DDLogError(@"Failed to save background context: %@", error);
-            }
-        }];
+                if (parentSaveError) {
+                    DDLogError(@"Failed to save root background context: %@", parentSaveError);
+                }
+
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (complete) {
+                        complete(parentSaveError);
+                    }
+                }];
+            }];
+        }
     }];
 }
 
-- (void)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context))block
+- (void)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context, NSError **error))update completion:(void (^)(NSError *error))complete;
 {
     NSManagedObjectContext *backgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     backgroundContext.parentContext = self.backgroundContext;
 
     [backgroundContext performBlockAndWait:^{
-        if (block) {
-            block(backgroundContext);
+        NSError *error = nil;
+
+        if (update) {
+            update(backgroundContext, &error);
         }
 
-        [backgroundContext.parentContext performBlock:^{
-            NSError *error = nil;
-            [backgroundContext.parentContext save:&error];
+        if (error) {
+            DDLogError(@"Failed to complete update to context: %@",error);
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (complete) {
+                    complete(error);
+                }
+            }];
+        } else {
+            [backgroundContext.parentContext performBlock:^{
+                NSError *parentSaveError = nil;
+                [backgroundContext.parentContext save:&parentSaveError];
 
-            if (error) {
-                DDLogError(@"Failed to save background context: %@", error);
-            }
-        }];
+                if (parentSaveError) {
+                    DDLogError(@"Failed to save root background context: %@", parentSaveError);
+                }
+
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (complete) {
+                        complete(parentSaveError);
+                    }
+                }];
+            }];
+        }
     }];
 }
 

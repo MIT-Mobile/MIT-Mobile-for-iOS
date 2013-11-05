@@ -30,7 +30,7 @@
  *  the main queue context. If the block's context is not saved prior to returning
  *  its changes will be discarded.
  */
-- (void)performBackgroundUpdate:(void (^)(NSManagedObjectContext *context))block;
+- (void)performBackgroundUpdate:(void (^)(NSManagedObjectContext *context, NSError **error))updateBlock completion:(void (^)(NSError *error))savedBlock;
 
 /** Creates a new NSManagedObjectContext for a background update and calls the
  *  passed block synchronously. This method should only be called to kick off
@@ -42,7 +42,7 @@
  *  the main queue context. If the block's context is not saved prior to returning
  *  its changes will be discarded.
  */
-- (void)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context))block;
+- (void)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context, NSError **error))updateBlock completion:(void (^)(NSError *error))savedBlock;
 
 /** Flushes any un-persisted data in the background context to the persistent store.
  *  Once the save is completed, the passed block will be called on the main queue.
