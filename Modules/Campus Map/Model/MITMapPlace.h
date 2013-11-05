@@ -25,7 +25,7 @@
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
-- (void)performUpdate:(NSDictionary*)dictionary inManagedObjectContext:(NSManagedObjectContext*)context;
+- (void)performUpdate:(NSDictionary*)dictionary;
 @end
 
 @interface MITMapPlace (CoreDataGeneratedAccessors)

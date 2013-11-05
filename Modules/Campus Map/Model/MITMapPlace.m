@@ -50,7 +50,7 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
     return self;
 }
 
-- (void)performUpdate:(NSDictionary*)placeDictionary inManagedObjectContext:(NSManagedObjectContext*)context
+- (void)performUpdate:(NSDictionary*)placeDictionary
 {
     self.architect = placeDictionary[MITMapPlaceArchitectKey];
 
@@ -61,7 +61,7 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 
     self.city = placeDictionary[MITMapPlaceCityKey];
     self.identifier = placeDictionary[MITMapPlaceIdentifierKey];
-    self.imageURL = [NSURL URLWithString:placeDictionary[MITMapPlaceImageURLKey]];
+    self.imageURL = placeDictionary[MITMapPlaceImageURLKey];
     self.mailingAddress = placeDictionary[MITMapPlaceMailingAddressKey];
     self.name = placeDictionary[MITMapPlaceNameKey];
     self.streetAddress = placeDictionary[MITMapPlaceStreetAddressKey];
@@ -76,7 +76,8 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
         self.latitude = @(kCLLocationCoordinate2DInvalid.latitude);
         self.latitude = @(kCLLocationCoordinate2DInvalid.longitude);
     }
-
+    
+    NSManagedObjectContext *context = self.managedObjectContext;
     if (placeDictionary[MITMapPlaceContentsKey]) {
         for (MITMapPlace *oldContent in self.contents) {
             [context deleteObject:oldContent];
@@ -86,7 +87,7 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
         if (![[NSNull null] isEqual:contents]) {
             for (NSDictionary *placeContent in contents) {
                 MITMapPlace *place = [NSEntityDescription insertNewObjectForEntityForName:@"MapPlace" inManagedObjectContext:context];
-                [place performUpdate:placeContent inManagedObjectContext:context];
+                [place performUpdate:placeContent];
                 place.building = self;
             }
         }
