@@ -1,8 +1,10 @@
 #import <UIKit/UIKit.h>
-@class MapSelectionController;
+#import "MITFetchedResultsTableViewController.h"
 
-@interface RecentSearchesViewController : UITableViewController
-@property (nonatomic, weak) MapSelectionController* mapSelectionController;
-- (id)initWithMapSelectionController:(MapSelectionController*)mapSelectionController;
+@class MITMapPlace;
 
+@interface MITMapPlacesViewController : MITFetchedResultsTableViewController
+- (instancetype)initWithPredicate:(NSPredicate*)predicate
+                  sortDescriptors:(NSArray*)sortDescriptors
+                        selection:(void (^)(NSOrderedSet *mapPlaces))block;
 @end

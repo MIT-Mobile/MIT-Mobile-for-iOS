@@ -1,55 +1,77 @@
-#import "RecentSearchesViewController.h"
-#import "CoreDataManager.h"
+#import "MITMapPlacesViewController.h"
+
+#import "MITAdditions.h"
+#import "MITMapModel.h"
 #import "MITConstants.h"
 #import "MITUIConstants.h"
-#import "MapSelectionController.h"
-#import "MapSearch.h"
-#import "CampusMapViewController.h"
+#import "MITMapDetailViewController.h"
 
-@interface RecentSearchesViewController ()
-@property (nonatomic,copy) NSArray *searches;
+static NSString* const MITMapCategoryViewAllText = @"View all on map";
+
+@interface MITMapPlacesViewController ()
+@property (nonatomic,strong) NSFetchRequest *fetchRequest;
+@property (nonatomic,strong) void (^selectionBlock)(NSOrderedSet *mapPlaceIDs);
 @end
 
-@implementation RecentSearchesViewController
+@implementation MITMapPlacesViewController
 #pragma mark - Initialization
-- (id)initWithMapSelectionController:(MapSelectionController*)mapSelectionController
+- (instancetype)initWithPredicate:(NSPredicate*)predicate
+                  sortDescriptors:(NSArray*)sortDescriptors
+                        selection:(void (^)(NSOrderedSet *mapPlaces))block
 {
-	self = [super init];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:MITMapPlaceEntityName];
+    fetchRequest.predicate = predicate;
+    fetchRequest.sortDescriptors = sortDescriptors;
 
-	if (self) {
-		self.mapSelectionController = mapSelectionController;
-		[self setToolbarItems:self.mapSelectionController.toolbarButtonItems];
-	}
-	
-	return self;
+    self = [super initWithFetchRequest:fetchRequest];
+    if (self) {
+        _selectionBlock = block;
+    }
+
+    return self;
 }
 
-
 #pragma mark - View lifecycle
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
 
-	NSSortDescriptor* sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
-	self.searches = [CoreDataManager fetchDataForAttribute:CampusMapSearchEntityName sortDescriptor:sortDescriptor];
-	self.title = @"Recent Searches";
-	
-	self.navigationItem.rightBarButtonItem = self.mapSelectionController.cancelButton;
+    UIEdgeInsets insets = UIEdgeInsetsMake(0, 8, 0, 0);
+    UIImage *buttonImage =[UIImage imageNamed:@"global/action-map"];
+    CGFloat buttonHeight = 24. + buttonImage.size.height;
+
+    UIButton *showAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    showAllButton.frame = CGRectMake(0, 0, CGRectGetWidth(self.tableView.bounds), buttonHeight);
+    showAllButton.titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont smallSystemFontSize]];
+    showAllButton.backgroundColor = [UIColor colorWithWhite:0.95 alpha:0.95];
+    showAllButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    showAllButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    showAllButton.contentEdgeInsets = insets;
+
+    [showAllButton setImage:buttonImage forState:UIControlStateNormal];
+
+    [showAllButton setTitle:MITMapCategoryViewAllText forState:UIControlStateNormal];
+    [showAllButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    showAllButton.titleEdgeInsets = insets;
+
+    [showAllButton addTarget:self
+                      action:@selector(showAllPressed:)
+            forControlEvents:UIControlEventTouchUpInside];
+    UIView *view = [[UIView alloc] initWithFrame:showAllButton.frame];
+    [view addSubview:showAllButton];
+    
+    self.tableView.tableHeaderView = view;
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-	[self.tableView reloadData];
-}
-
-- (void)viewDidUnload {
-	self.searches = nil;
-}
-
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
+    [super viewWillAppear:animated];
+    
+    self.clearsSelectionOnViewWillAppear = YES;
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                           target:self
+                                                                                           action:@selector(donePressed:)];
 }
 
 - (NSUInteger)supportedInterfaceOrientations
@@ -57,15 +79,31 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
-#pragma mark -
-#pragma mark Table view data source
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+#pragma  mark -
+- (IBAction)showAllPressed:(UIButton*)showAllButton
 {
-    // Return the number of rows in the section.
-    return [self.searches count];
+    [self didSelectPlaces:[self.fetchedResultsController fetchedObjects]];
 }
 
+- (IBAction)donePressed:(UIBarButtonItem*)doneItem
+{
+    [self didSelectPlaces:nil];
+}
 
+- (void)didSelectPlaces:(NSArray*)places
+{
+    if (self.selectionBlock) {
+        if (places) {
+            NSArray *objectIDs = [NSManagedObjectContext objectIDsForManagedObjects:places];
+            self.selectionBlock([NSOrderedSet orderedSetWithArray:objectIDs]);
+        } else {
+            self.selectionBlock(nil);
+        }
+    }
+}
+
+#pragma mark -
+#pragma mark Table view data source
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -74,32 +112,43 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-		cell.textLabel.textColor = CELL_STANDARD_FONT_COLOR;
-		cell.textLabel.font = [UIFont boldSystemFontOfSize:CELL_STANDARD_FONT_SIZE];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
 
-    MapSearch* search = self.searches[indexPath.row];
-    cell.textLabel.text = search.searchTerm;
+    MITMapPlace *place = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    cell.textLabel.text = [place title];
+    cell.detailTextLabel.text = [place subtitle];
+
+    if ([UIDevice isIOS7]) {
+        cell.accessoryType = UITableViewCellAccessoryDetailButton;
+    } else {
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
 	
     return cell;
 }
 
-
 #pragma mark - Table view delegate
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-	
-	// determine the search term they selected. 
-	MapSearch* search = self.searches[indexPath.row];
-	
-	self.mapSelectionController.mapVC.searchBar.text = search.searchTerm;
-	[self.mapSelectionController.mapVC search:search.searchTerm];
-	
-	[self dismissViewControllerAnimated:YES completion:NULL];
+    [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+
+    MITMapPlace *place = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    [self didSelectPlaces:@[place]];
 }
+
+
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    if (self.navigationController) {
+        MITMapPlace *place = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        MITMapDetailViewController *detailViewController = [[MITMapDetailViewController alloc] init];
+        detailViewController.place = place;
+        [self.navigationController pushViewController:detailViewController animated:YES];
+    }
+}
+
 
 @end
 
