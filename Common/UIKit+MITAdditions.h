@@ -40,8 +40,9 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 @end
 
 @interface UIDevice (MITAdditions)
-- (NSString*)sysInfoByName:(NSString*)typeSpecifier;
++ (BOOL)isIOS7;
 - (NSString*)cpuType;
+- (NSString*)sysInfoByName:(NSString*)typeSpecifier;
 @end
 
 @interface UITableViewCell (MITUIAdditions)

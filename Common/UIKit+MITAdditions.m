@@ -225,6 +225,14 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 
 @implementation UIDevice (MITAdditions)
++ (BOOL)isIOS7
+{
+    NSString *reqSysVer = @"7.0";
+    NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
+
+    return ([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending);
+}
+
 - (NSString*)sysInfoByName:(NSString*)typeSpecifier
 {
     const char *typeString = [typeSpecifier UTF8String];
