@@ -23,6 +23,7 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
 @property (nonatomic,strong) NSOperationQueue *requestQueue;
 @property (nonatomic,strong) NSDate *placesFetchDate;
 
++ (NSFetchRequest*)fetchRequestForMapPlacesWithPredicate:(NSPredicate*)predicate sortDescriptors:(NSArray*)sortDescriptors;
 - (void)addRecentSearch:(NSString*)queryString;
 @end
 
@@ -38,6 +39,31 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
     });
 
     return sharedController;
+}
+
+// TODO: Think a bit about the placement here. Should this go into
+// MITMapPlace instead?
++ (NSFetchRequest*)fetchRequestForMapPlacesWithPredicate:(NSPredicate*)predicate
+                                         sortDescriptors:(NSArray*)sortDescriptors
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"MapPlace"];
+
+    NSMutableArray *predicates = [[NSMutableArray alloc] init];
+    NSPredicate *defaultPredicate = [NSPredicate predicateWithFormat:@"identifier != NIL"];
+    [predicates addObject:defaultPredicate];
+    if (predicate) {
+        [predicates addObject:predicate];
+    }
+
+    fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
+
+    if (![sortDescriptors count]) {
+        sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+    }
+
+    fetchRequest.sortDescriptors = sortDescriptors;
+
+    return fetchRequest;
 }
 
 - (id)init
@@ -92,7 +118,7 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
 - (void)addRecentSearch:(NSString*)queryString
 {
     MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
-    [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context) {
+    [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **error) {
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapSearchEntityName];
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"searchTerm == %@", queryString];
 
@@ -105,57 +131,64 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
         mapSearch.searchTerm = queryString;
         mapSearch.date = [NSDate date];
 
-        NSError *error = nil;
-        [context save:&error];
+        [context save:error];
 
         if (error) {
-            DDLogWarn(@"Failed to save search: %@", error);
+            DDLogWarn(@"Failed to save search: %@", (*error));
         }
-    }];
+    }
+                                        completion:nil];
 }
 
 /** Synchronously updates cached MapPlace entities in the CoreData model.
  *
  *  @param placesData The array of 'place' dictionaries.
- *  @param partialUpdate If NO, delete any cached entities which do not have any associated data in placesData
- *  @see MITMapPlace
+ *  @param incrementalUpdate If NO, delete any cached entities which do not have any associated data in placesData
+ *  @related MITMapPlace
  */
-- (void)updateCachedPlaces:(NSArray*)placesData partialUpdate:(BOOL)partialUpdate
+- (void)updatePlacesWithData:(NSArray*)placesData incrementalUpdate:(BOOL)incremental completion:(void (^)(NSError *error))block
 {
     MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
-    [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context) {
+    [dataController performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
+        // Create a mapping of {identifier => object} for each of the objects in the
+        // response. This will make it easier later on to figure out all the objects
+        // we need to update/insert/delete
         NSMutableDictionary *placesByIdentifier = [[NSMutableDictionary alloc] init];
         for (NSDictionary *placeDictionary in placesData) {
             placesByIdentifier[placeDictionary[@"id"]] = placeDictionary;
         }
-
 
         // Fetch any existing cached objects and massage them into a dictionary (by identifier)
         // so it's a bit easier to figure out adds/deletes/updates
         NSMutableDictionary *fetchedPlaces = [[NSMutableDictionary alloc] init];
         {
             NSFetchRequest *placesFetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapPlaceEntityName];
-            if (partialUpdate) {
+            if (incremental) {
                 // If we are performing a partial update, don't delete anything
                 // Just get any existing cached objects (matching in the 'id' key)
                 // and update/insert any new ones
                 placesFetchRequest.predicate = [NSPredicate predicateWithFormat:@"(identifier != nil) AND (identifier IN %@)", [placesByIdentifier allKeys]];
+            } else {
+                // Make sure we filter out anything that lacks an identifier.
+                // Places which do not have an identifier should be children of
+                // places which do have an identifier. When the parent places are updated
+                // *all* of their children which lack an identifier should be deleted
+                // and then re-created from the data.
+                placesFetchRequest.predicate = [NSPredicate predicateWithFormat:@"identifier != nil"];
             }
 
-            NSError *error = nil;
-            NSArray *places = [context executeFetchRequest:placesFetchRequest error:&error];
+            NSArray *places = [context executeFetchRequest:placesFetchRequest error:error];
 
-            // If the fetch failed, don't even try to update the database with what we have;
-            // Something seriously bad happened so just abort the whole thing.
-            if (error) {
-                DDLogWarn(@"'places' update failed on fetch: %@", error);
-                return;
-            }
-
-            for (MITMapPlace *place in places) {
-                if (place.identifier) {
-                    fetchedPlaces[place.identifier] = place;
+            if (places) {
+                for (MITMapPlace *place in places) {
+                    if (place.identifier) {
+                        fetchedPlaces[place.identifier] = place;
+                    }
                 }
+            } else {
+                // Something went wrong with the fetch.
+                // The error should be set at this point so just return
+                return;
             }
         }
 
@@ -167,7 +200,7 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
         [modifiedIdentifiers intersectSet:newIdentifiers];
         [modifiedIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, BOOL *stop) {
             MITMapPlace *place = fetchedPlaces[identifier];
-            [place performUpdate:placesByIdentifier[identifier] inManagedObjectContext:context];
+            [place performUpdate:placesByIdentifier[identifier]];
 
         }];
 
@@ -175,10 +208,10 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
         [insertedIdentifiers minusSet:fetchedIdentifiers];
         [insertedIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, BOOL *stop) {
             MITMapPlace *place = [NSEntityDescription insertNewObjectForEntityForName:MITMapPlaceEntityName inManagedObjectContext:context];
-            [place performUpdate:placesByIdentifier[identifier] inManagedObjectContext:context];
+            [place performUpdate:placesByIdentifier[identifier]];
         }];
 
-        if (!partialUpdate) {
+        if (!incremental) {
             NSMutableSet *deletedIdentifiers = [[NSMutableSet alloc] initWithSet:fetchedIdentifiers];
             [deletedIdentifiers minusSet:newIdentifiers];
             [deletedIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, BOOL *stop) {
@@ -186,13 +219,17 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
             }];
         }
 
-        NSError *error = nil;
-        [context save:&error];
+        [context save:error];
+    }
+                                 completion:^(NSError *error) {
+                                     if (error) {
+                                         DDLogWarn(@"Failed to save 'place' update: %@", error);
+                                     }
 
-        if (error) {
-            DDLogWarn(@"Failed to save 'place' update: %@", error);
-        }
-    }];
+                                     if (block) {
+                                         block(error);
+                                     }
+                                 }];
 }
 
 #pragma mark Asynchronous
@@ -203,48 +240,43 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
 
 - (void)recentSearchesForPartialString:(NSString*)string loaded:(MITMapFetchedResult)block
 {
-    MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapSearchEntityName];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO],
+                                     [NSSortDescriptor sortDescriptorWithKey:@"searchTerm" ascending:YES]];
+    if (string) {
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"token BEGINSWITH[d] %@", [string stringBySearchNormalization]];
+    }
 
-    [dataController performBackgroundUpdate:^(NSManagedObjectContext *context) {
-        NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:MITMapSearchEntityName];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO],
-                                    [NSSortDescriptor sortDescriptorWithKey:@"searchTerm" ascending:YES]];
+    [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
 
-        if (string) {
-            request.predicate = [NSPredicate predicateWithFormat:@"token BEGINSWITH[d] %@", [string stringBySearchNormalization]];
-        }
+        NSArray *searches = [context executeFetchRequest:fetchRequest
+                                                   error:error];
 
-        NSError *fetchError = nil;
-        NSArray *searches = [context executeFetchRequest:request
-                                                   error:&fetchError];
-
-        NSMutableOrderedSet *searchObjects = nil;
-        if (!fetchError) {
-            searchObjects = [[NSMutableOrderedSet alloc] init];
-
-            // Run through all the search objects and unique them based
-            // on their normalized form (same-cased & whitespace and punctuation removed)
+        if (!error) {
             [searches enumerateObjectsUsingBlock:^(MapSearch *search, NSUInteger idx, BOOL *stop) {
                 NSTimeInterval searchInterval = fabs([search.date timeIntervalSinceNow]);
                 if (searchInterval > self.searchExpiryInterval) {
                     [context deleteObject:search];
-                } else {
-                    [searchObjects addObject:search];
                 }
             }];
 
-            [context save:nil];
-        }
+            [context save:error];
 
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            NSManagedObjectContext *mainContext = [[[MIT_MobileAppDelegate applicationDelegate] coreDataController] mainQueueContext];
-            NSArray *results = [mainContext transferManagedObjects:[searchObjects array]];
-
-            if (block) {
-                block([NSOrderedSet orderedSetWithArray:results],request,self.placesFetchDate,fetchError);
+            if ((*error)) {
+                DDLogWarn(@"Failed to save search results: %@", *error);
             }
-        }];
-    }];
+        }
+    }
+
+                                                            completion:^(NSError *error) {
+                                                                if (block) {
+                                                                    if (error) {
+                                                                        block(nil,self.placesFetchDate,error);
+                                                                    } else {
+                                                                        block(fetchRequest,self.placesFetchDate,nil);
+                                                                    }
+                                                                }
+                                                            }];
 }
 
 
@@ -259,18 +291,62 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
                                                                                 command:@"search"
                                                                              parameters:parameters];
 
-    apiRequest.completeBlock = ^(MobileRequestOperation *operation, NSArray* content, NSString *mimeType, NSError *error) {
+    apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
         [self addRecentSearch:queryString];
-        [self updateCachedPlaces:content partialUpdate:YES];
 
         if (!error) {
-            NSMutableOrderedSet *identifiers = [[NSMutableOrderedSet alloc] init];
-            for (NSDictionary *placeData in content) {
-                [identifiers addObject:placeData[@"id"]];
-            }
+            if ([content isKindOfClass:[NSArray class]]) {
+                [self updatePlacesWithData:content incrementalUpdate:YES completion:^(NSError *error) {
+                    NSFetchRequest *fetchRequest = nil;
 
-            NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"(identifier != nil) AND (identifier IN %@)", identifiers];
-            [self placesWithPredicate:fetchPredicate loaded:block];
+                    if (error) {
+                        DDLogWarn(@"failed to perform incremental place update for query '%@': %@", queryString, error);
+                    } else {
+                        // TODO: This may need to be changed once we start using the MIT Mobile v3 API
+                        // since it may be returning a bunch of identifiers instead of the complete
+                        // data for each place in the result.
+                        NSMutableOrderedSet *identifiers = [[NSMutableOrderedSet alloc] init];
+                        for (NSDictionary *placeData in content) {
+                            [identifiers addObject:placeData[@"id"]];
+                        }
+
+                        NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"(identifier != nil) AND (identifier IN %@)", identifiers];
+                        fetchRequest = [MITMapModelController fetchRequestForMapPlacesWithPredicate:fetchPredicate sortDescriptors:nil];
+                    }
+
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        if (block) {
+                            block(fetchRequest,self.placesFetchDate,error);
+                        }
+                    }];
+                }];
+            } else {
+                NSError *remoteError = nil;
+
+                if ([content isKindOfClass:[NSDictionary class]]) {
+                    remoteError = [NSError errorWithDomain:NSURLErrorDomain
+                                                      code:NSURLErrorResourceUnavailable
+                                                  userInfo:content];
+                } else {
+                    remoteError = [NSError errorWithDomain:NSURLErrorDomain
+                                                      code:NSURLErrorBadServerResponse
+                                                  userInfo:nil];
+                }
+
+                DDLogWarn(@"'places' update failed with error %@", remoteError);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(nil,self.placesFetchDate,remoteError);
+                    }
+                }];
+            }
+        } else {
+            DDLogWarn(@"'places' contents request failed with error %@", error);
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block(nil,self.placesFetchDate,error);
+                }
+            }];
         }
     };
 
@@ -284,19 +360,41 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
                                                                                 command:@"categorytitles"
                                                                              parameters:nil];
 
-    apiRequest.completeBlock = ^(MobileRequestOperation *operation, NSArray* content, NSString *mimeType, NSError *error) {
-        NSMutableOrderedSet *categories = [[NSMutableOrderedSet alloc] init];
+    apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
+        if (!error) {
+            if ([content isKindOfClass:[NSArray class]]) {
+                NSMutableOrderedSet *categories = [[NSMutableOrderedSet alloc] init];
 
-        for (NSDictionary *categoryData in content) {
-            MITMapCategory *category = [[MITMapCategory alloc] initWithDictionary:categoryData];
-            [categories addObject:category];
-        }
+                for (NSDictionary *categoryData in content) {
+                    MITMapCategory *category = [[MITMapCategory alloc] initWithDictionary:categoryData];
+                    [categories addObject:category];
+                }
 
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (block) {
-                block(categories, error);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(categories, error);
+                    }
+                }];
+            } else if ([content isKindOfClass:[NSDictionary class]]) {
+                NSDictionary *serverErrorInfo = (NSDictionary*)content;
+                NSError *serverError = [NSError errorWithDomain:NSURLErrorDomain
+                                                           code:NSURLErrorResourceUnavailable
+                                                       userInfo:serverErrorInfo];
+
+                DDLogWarn(@"[categories] 'places' update failed with error %@", serverError);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(nil,serverError);
+                    }
+                }];
             }
-        }];
+        } else {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block(nil,error);
+                }
+            }];
+        }
     };
 
     [self.requestQueue addOperation:apiRequest];
@@ -304,127 +402,72 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
 
 - (void)places:(MITMapFetchedResult)block
 {
-    [self placesWithPredicate:nil loaded:block];
-}
-
-- (void)placesWithPredicate:(NSPredicate*)predicate loaded:(MITMapFetchedResult)block
-{
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapPlaceEntityName];
-    fetchRequest.predicate = predicate;
-    [self placesWithFetchRequest:fetchRequest loaded:block];
-}
-
-- (void)placesWithFetchRequest:(NSFetchRequest*)fetchRequest loaded:(MITMapFetchedResult)block
-{
-    NSMutableArray *operations = [[NSMutableArray alloc] init];
-
-    void (^performAsynchronousFetchBlock)(void) = ^{
-        MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
-
-        [dataController performBackgroundUpdate:^(NSManagedObjectContext *context) {
-            NSError *error = nil;
-            NSArray *places = [context executeFetchRequest:fetchRequest error:&error];
-
-            if (error) {
-                DDLogWarn(@"'places' fetch failed with error %@",error);
-            } else if (places) {
-                DDLogVerbose(@"Returning %d places for predicate: %@",[places count],fetchRequest.predicate);
-            }
-
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                NSManagedObjectContext *mainContext = [[[MIT_MobileAppDelegate applicationDelegate] coreDataController] mainQueueContext];
-                NSArray *mainPlaces =[mainContext transferManagedObjects:places];
-
-                if (block) {
-                    block([NSOrderedSet orderedSetWithArray:mainPlaces],fetchRequest,self.placesFetchDate,error);
-                }
-            }];
-        }];
-    };
-
-    // Known issue: Calling this method several times rapidly can lead to URL requests
-    // being added to the queue until the first one completes and the refresh date is updated
     BOOL cacheHasExpired = (fabs([self.placesFetchDate timeIntervalSinceNow]) > self.placeExpiryInterval);
+
     if (cacheHasExpired) {
-        // The data we have has either expired or it was never fetched to being with
-        // Since we need to figure out which it is, perform a quick fetch on the main
-        // context to grab the count of MapPlace entities in the DB. If it's more than zero
-        // assume there is cached data (albeit stale) available that we can respond
-        // with
-        __block BOOL dataIsAvailable = NO;
-        NSManagedObjectContext *mainContext = [[[MIT_MobileAppDelegate applicationDelegate] coreDataController] mainQueueContext];
-        [mainContext performBlockAndWait:^{
-            NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:MITMapPlaceEntityName];
-            NSUInteger count = [mainContext countForFetchRequest:request error:nil];
-            dataIsAvailable = ((count != NSNotFound) && (count > 0));
-        }];
-
-        NSBlockOperation *fetchOperation = nil;
-        if (!dataIsAvailable) {
-            // The fetch request should only go onto the queue if there is no
-            // cached data availble. This way, it forces the URL
-            // request to complete and then issues the fetch request
-            // to the DB
-            fetchOperation = [NSBlockOperation blockOperationWithBlock:^{
-                performAsynchronousFetchBlock();
-            }];
-
-            __weak NSOperation *weakFetch = fetchOperation;
-            fetchOperation.completionBlock = ^{
-                if ([weakFetch isCancelled]) {
-                    if (block) {
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                            NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain
-                                                                 code:NSUserCancelledError
-                                                             userInfo:nil];
-                            block(nil,nil,self.placesFetchDate,error);
-                        }];
-                    }
-                }
-            };
-        }
-
         NSURL *serverURL = MITMobileWebGetCurrentServerURL();
         NSURL *requestURL = [NSURL URLWithString:@"/apis/map/places" relativeToURL:serverURL];
         MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithURL:requestURL parameters:nil];
+        __weak MITMapModelController *weakSelf = self;
         apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
-            if (error) {
-                DDLogWarn(@"'places' update failed with error %@", error);
-                [fetchOperation cancel];
-            } else if ([content isKindOfClass:[NSDictionary class]]) {
-                NSError *requestError = [NSError errorWithDomain:NSURLErrorDomain
-                                                            code:NSURLErrorResourceUnavailable
-                                                        userInfo:content];
+            MITMapModelController *blockSelf = weakSelf;
+            if (!error) {
+                if ([content isKindOfClass:[NSArray class]]) {
+                    [blockSelf updatePlacesWithData:content
+                                  incrementalUpdate:NO
+                                         completion:^(NSError *error) {
+                                             if (error) {
+                                                 DDLogError(@"Failed to update entites for 'places': %@", error);
+                                             } else {
+                                                 blockSelf.placesFetchDate = [NSDate date];
+                                             }
 
-                DDLogWarn(@"'places' update failed with error %@", requestError);
-                [fetchOperation cancel];
-            } else if ([content isKindOfClass:[NSArray class]]) {
-                [self updateCachedPlaces:content partialUpdate:NO];
-                self.placesFetchDate = [NSDate date];
+                                             if (block) {
+                                                 NSFetchRequest *fetchRequest = [MITMapModelController fetchRequestForMapPlacesWithPredicate:nil
+                                                                                                                             sortDescriptors:nil];
+                                                 block(fetchRequest,blockSelf.placesFetchDate,error);
+                                             }
+                                         }];
+                } else {
+                    NSError *remoteError = nil;
+
+                    if ([content isKindOfClass:[NSDictionary class]]) {
+                        remoteError = [NSError errorWithDomain:NSURLErrorDomain
+                                                          code:NSURLErrorResourceUnavailable
+                                                      userInfo:content];
+                    } else {
+                        remoteError = [NSError errorWithDomain:NSURLErrorDomain
+                                                          code:NSURLErrorBadServerResponse
+                                                      userInfo:nil];
+                    }
+
+                    DDLogWarn(@"'places' request failed with error %@", error);
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        if (block) {
+                            block(nil,blockSelf.placesFetchDate,remoteError);
+                        }
+                    }];
+                }
+            } else {
+                DDLogWarn(@"'places' request failed with error %@", error);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(nil,blockSelf.placesFetchDate,error);
+                    }
+                }];
             }
         };
 
-        [operations addObject:apiRequest];
-
-        if (fetchOperation) {
-            [fetchOperation addDependency:apiRequest];
-            [operations addObject:fetchOperation];
-        } else {
-            // The fetch operation wasn't create so we won't be adding it to the queue
-            // The only way to get here is if we have valid cached data in the store
-            // so just perform the fetch to return what we have while the update
-            // request is doing its thing.
-            performAsynchronousFetchBlock();
-        }
-
-        [self.requestQueue addOperations:operations waitUntilFinished:NO];
-    } else {
-        // The cached data has *not* expired yet so just perform the fetch
-        // and GTFO!
-        performAsynchronousFetchBlock();
+        [self.requestQueue addOperation:apiRequest];
+    } else if (block) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            NSFetchRequest *fetchRequest = [MITMapModelController fetchRequestForMapPlacesWithPredicate:nil
+                                                                                        sortDescriptors:nil];
+            block(fetchRequest,self.placesFetchDate,nil);
+        }];
     }
-
 }
+
 
 - (void)placesInCategory:(MITMapCategory*)category loaded:(MITMapFetchedResult)block
 {
@@ -437,16 +480,57 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
                                                                                 command:@"category"
                                                                              parameters:requestParameters];
 
-    apiRequest.completeBlock = ^(MobileRequestOperation *operation, NSArray* content, NSString *mimeType, NSError *error) {
-
+    apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
         if (!error) {
-            NSMutableSet *identifiers = [[NSMutableSet alloc] init];
-            for (NSDictionary *placeData in content) {
-                [identifiers addObject:placeData[@"id"]];
-            }
+            if ([content isKindOfClass:[NSArray class]]) {
+                [self updatePlacesWithData:content incrementalUpdate:YES completion:^(NSError *error) {
+                    NSFetchRequest *fetchRequest = nil;
 
-            NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"(identifier != NIL) AND (identifier IN %@)", identifiers];
-            [self placesWithPredicate:fetchPredicate loaded:block];
+                    if (error) {
+                        DDLogWarn(@"Failed to update places for category '%@': %@",category.identifier, error);
+                    } else if (block) {
+                        NSMutableSet *identifiers = [[NSMutableSet alloc] init];
+                        for (NSDictionary *placeData in content) {
+                            [identifiers addObject:placeData[@"id"]];
+                        }
+
+                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(identifier IN %@)", identifiers];
+                        fetchRequest = [MITMapModelController fetchRequestForMapPlacesWithPredicate:predicate sortDescriptors:nil];
+                    }
+
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        if (block) {
+                            block(fetchRequest,self.placesFetchDate,error);
+                        }
+                    }];
+                }];
+            } else {
+                NSError *remoteError = nil;
+
+                if ([content isKindOfClass:[NSDictionary class]]) {
+                    remoteError = [NSError errorWithDomain:NSURLErrorDomain
+                                                      code:NSURLErrorResourceUnavailable
+                                                  userInfo:content];
+                } else {
+                    remoteError = [NSError errorWithDomain:NSURLErrorDomain
+                                                      code:NSURLErrorBadServerResponse
+                                                  userInfo:nil];
+                }
+
+                DDLogWarn(@"'places' update failed with error %@", remoteError);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(nil,self.placesFetchDate,remoteError);
+                    }
+                }];
+            }
+        } else {
+            DDLogWarn(@"category contents request failed with error %@", error);
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block(nil,self.placesFetchDate,error);
+                }
+            }];
         }
     };
 
@@ -454,6 +538,25 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
 }
 
 #pragma mark - Map Bookmarks
+- (void)bookmarkedPlaces:(MITMapFetchedResult)block
+{
+    [self places:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+        if (block) {
+            NSPredicate *bookmarkPredicate = [NSPredicate predicateWithFormat:@"bookmark != NIL"];
+            NSPredicate *andPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[bookmarkPredicate, fetchRequest.predicate]];
+            fetchRequest.predicate = andPredicate;
+
+            NSMutableArray *sortDescriptors = [[NSMutableArray alloc] initWithArray:fetchRequest.sortDescriptors];
+            [sortDescriptors insertObject:[NSSortDescriptor sortDescriptorWithKey:@"bookmark.order" ascending:YES]
+                                  atIndex:0];
+
+            fetchRequest.sortDescriptors = sortDescriptors;
+
+            block(fetchRequest,lastUpdated,error);
+        }
+    }];
+}
+
 - (NSUInteger)numberOfBookmarks
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapPlaceEntityName];
@@ -475,64 +578,73 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
     return numberOfBookmarks;
 }
 
-- (void)bookmarkedPlaces:(MITMapFetchedResult)block
+- (void)bookmarkPlaces:(NSArray*)places completion:(void (^)(NSError* error))block
 {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapPlaceEntityName];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"bookmark != NIL"];
-    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"bookmark.order" ascending:YES]];
+    NSPredicate *notBookmarked = [NSPredicate predicateWithFormat:@"bookmark == NIL"];
+    NSArray *newBookmarkedPlaces = [places filteredArrayUsingPredicate:notBookmarked];
 
-    [self placesWithFetchRequest:fetchRequest loaded:block];
-}
+    if (![newBookmarkedPlaces count]) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(nil);
+            }
+        }];
+    } else {
+        [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
+            NSArray *localPlaces = [context transferManagedObjects:newBookmarkedPlaces];
 
-- (void)addBookmarkForPlace:(MITMapPlace*)place
-{
-    if (!place.bookmark) {
-        NSManagedObjectID *placeID = place.objectID;
-        MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
-        [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context) {
+            NSMutableArray *insertedBookmarks = [[NSMutableArray alloc] init];
+            [localPlaces enumerateObjectsUsingBlock:^(MITMapPlace *mapPlace, NSUInteger idx, BOOL *stop) {
+                MITMapBookmark *bookmarkObject = [NSEntityDescription insertNewObjectForEntityForName:MITMapBookmarkEntityName inManagedObjectContext:context];
+                bookmarkObject.place = mapPlace;
+                [insertedBookmarks addObject:bookmarkObject];
+            }];
+
+
+            // Now grab all the bookmarks from the DB and update their indices. If there are
+            // repeated indicies, this may change the desired order but we will be guaranteed
+            // that each index is unique.
             NSFetchRequest *bookmarksRequest = [NSFetchRequest fetchRequestWithEntityName:MITMapBookmarkEntityName];
             bookmarksRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
 
-            NSError *error = nil;
-            MITMapPlace *localPlace = (MITMapPlace*)[context objectWithID:placeID];
-            NSArray *bookmarks = [context executeFetchRequest:bookmarksRequest error:&error];
+            NSArray *fetchedBoomarks = [context executeFetchRequest:bookmarksRequest error:error];
 
-            if (error) {
-                DDLogWarn(@"Failed to fetch bookmark count with error %@", error);
+            if (!fetchedBoomarks) {
+                DDLogWarn(@"Failed to update bookmark indices %@", (*error));
             } else {
-                MITMapBookmark *bookmarkObject = [NSEntityDescription insertNewObjectForEntityForName:MITMapBookmarkEntityName inManagedObjectContext:context];
-                bookmarkObject.order = @([bookmarks count]);
-                bookmarkObject.place = localPlace;
+                NSMutableArray *bookmarks = [NSMutableArray arrayWithArray:fetchedBoomarks];
+                [bookmarks addObjectsFromArray:insertedBookmarks];
 
-                // Just in case there were cascaded deletions (ie: a place which was bookmarked no longer
-                // exists and was deleted in a previous update), run through all the bookmarks and make sure
-                // their ordering is correct
+                // Just in case run through all the other fetched bookmarks and make sure their ordering is correct
                 [bookmarks enumerateObjectsUsingBlock:^(MITMapBookmark *bookmark, NSUInteger idx, BOOL *stop) {
                     bookmark.order = @(idx);
                 }];
-
-                [context save:&error];
-
-                if (error) {
-                    DDLogWarn(@"Failed to add bookmark for '%@' with error %@", [localPlace identifier], error);
-                }
             }
-        }];
+
+            // Will overwrite the fetch error (if one occurred).
+            // This is the desired behavior as a save error is
+            // far more critical than just failing to uniquify
+            // the ordering.
+            [context save:error];
+        }
+                                                                completion:^(NSError *error) {
+                                                                    if (block) {
+                                                                        block(error);
+                                                                    }
+                                                                }];
     }
 }
 
-- (void)removeBookmarkForPlace:(MITMapPlace*)place
+- (void)removeBookmarkForPlace:(MITMapPlace*)place completion:(void (^)(NSError* error))block
 {
-    if (place.bookmark) {
-        NSManagedObjectID *placeID = place.objectID;
-        MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
+    [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
+        MITMapPlace *localPlace = (MITMapPlace*)[context objectWithID:[place objectID]];
 
-        [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context) {
+        if (localPlace.bookmark) {
             NSFetchRequest *bookmarksRequest = [NSFetchRequest fetchRequestWithEntityName:MITMapBookmarkEntityName];
             bookmarksRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
 
             NSError *error = nil;
-            MITMapPlace *localPlace = (MITMapPlace*)[context objectWithID:placeID];
             NSMutableArray *bookmarks = [[context executeFetchRequest:bookmarksRequest error:&error] mutableCopy];
 
             if (error) {
@@ -553,29 +665,32 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
                     DDLogWarn(@"Failed to remove bookmark for '%@' with error %@", [localPlace identifier], error);
                 }
             }
-        }];
+        }
     }
+
+                                                            completion:^(NSError *error) {
+                                                                if (block) {
+                                                                    block(error);
+                                                                }
+                                                            }];
 }
 
-- (void)moveBookmarkForPlace:(MITMapPlace*)place toIndex:(NSUInteger)index
+- (void)moveBookmarkForPlace:(MITMapPlace*)place toIndex:(NSUInteger)index completion:(void (^)(NSError* error))block
 {
-    if (place.bookmark) {
-        NSManagedObjectID *bookmarkID = [place.bookmark objectID];
+    [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
+        MITMapPlace *localPlace = (MITMapPlace*)[context objectWithID:[place objectID]];
 
-        MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
-        [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context) {
+        if (localPlace.bookmark) {
             NSFetchRequest *bookmarksRequest = [NSFetchRequest fetchRequestWithEntityName:MITMapBookmarkEntityName];
             bookmarksRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
 
-            NSError *error = nil;
-            MITMapBookmark *localBookmark = (MITMapBookmark*)[context objectWithID:bookmarkID];
-            NSArray *fetchResults = [context executeFetchRequest:bookmarksRequest error:&error];
+            NSArray *fetchResults = [context executeFetchRequest:bookmarksRequest error:error];
             NSMutableOrderedSet *bookmarks = [[NSMutableOrderedSet alloc] initWithArray:fetchResults];
 
-            if (error) {
-                DDLogError(@"Failed to fetch bookmarks with error %@", error);
+            if (!fetchResults) {
+                DDLogError(@"Failed to fetch bookmarks with error %@", *error);
             } else {
-                NSUInteger fromIndex = [bookmarks indexOfObject:localBookmark];
+                NSUInteger fromIndex = [bookmarks indexOfObject:localPlace.bookmark];
 
                 [bookmarks moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndex] toIndex:index];
 
@@ -583,14 +698,19 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
                     bookmark.order = @(idx);
                 }];
 
-                [context save:&error];
+                [context save:error];
 
                 if (error) {
-                    DDLogWarn(@"Failed to move bookmark for '%@' to index %d with error %@", [localBookmark.place identifier],index,error);
+                    DDLogWarn(@"Failed to move bookmark for '%@' to index %d with error %@", localPlace.identifier,index,*error);
                 }
             }
-        }];
+        }
     }
+                                                            completion:^(NSError *error) {
+                                                                if (block) {
+                                                                    block(error);
+                                                                }
+                                                            }];
 }
 
 - (void)migrateBookmarks
@@ -612,21 +732,28 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
         for (NSDictionary *savedBookmark in bookmarksV1) {
             [bookmarkedIdentifiers addObject:savedBookmark[@"id"]];
         }
-
-        NSPredicate *migratedBookmarkPredicate = [NSPredicate predicateWithFormat:@"(bookmark == NIL) AND (identifier IN %@)", bookmarkedIdentifiers];
-        [self placesWithPredicate:migratedBookmarkPredicate
-                           loaded:^(NSOrderedSet *places, NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
-                               if (!error) {
-                                   for (MITMapPlace *place in places) {
-                                       [self addBookmarkForPlace:place];
-                                   }
-                                   
-#if !(defined(DEBUG) || defined(TESTFLIGHT))
-                                   [[NSFileManager defaultManager] removeItemAtURL:bookmarksURL
-                                                                             error:nil];
+        
+        [self places:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+            if (!error) {
+                NSPredicate *migratedBookmarks = [NSPredicate predicateWithFormat:@"identifier IN %@", bookmarkedIdentifiers];
+                fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[fetchRequest.predicate,migratedBookmarks]];
+                
+                NSManagedObjectContext *context = [[MITCoreDataController defaultController] mainQueueContext];
+                [context performBlockAndWait:^{
+                    NSArray *places = [context executeFetchRequest:fetchRequest error:nil];
+                    [self bookmarkPlaces:places completion:^(NSError *error) {
+                        if (!error) {
+#if !defined(DEBUG) || defined(TESTFLIGHT)
+                            [[NSFileManager defaultManager] removeItemAtURL:bookmarksURL
+                                                                      error:nil];
 #endif //DEBUG
-                               }
-                           }];
+                        } else {
+                            DDLogError(@"Failed to migrate bookmarks: %@", error);
+                        }
+                    }];
+                }];
+            }
+        }];
     }
 }
 

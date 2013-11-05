@@ -17,7 +17,7 @@ typedef void (^MITMapResult)(NSOrderedSet *objects, NSError *error);
  *  @param lastUpdated The date of the last successfully refresh of the cached data.
  *  @param error An error.
  */
-typedef void (^MITMapFetchedResult)(NSOrderedSet *objects, NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error);
+typedef void (^MITMapFetchedResult)(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error);
 
 @interface MITMapModelController : NSObject
 @property NSTimeInterval searchExpiryInterval;
@@ -36,7 +36,8 @@ typedef void (^MITMapFetchedResult)(NSOrderedSet *objects, NSFetchRequest *fetch
 
 - (NSUInteger)numberOfBookmarks;
 - (void)bookmarkedPlaces:(MITMapFetchedResult)block;
-- (void)addBookmarkForPlace:(MITMapPlace*)place;
-- (void)removeBookmarkForPlace:(MITMapPlace*)place;
-- (void)moveBookmarkForPlace:(MITMapPlace*)place toIndex:(NSUInteger)index;
+
+- (void)bookmarkPlaces:(NSArray*)places completion:(void (^)(NSError* error))block;
+- (void)removeBookmarkForPlace:(MITMapPlace*)place completion:(void (^)(NSError* error))block;
+- (void)moveBookmarkForPlace:(MITMapPlace*)place toIndex:(NSUInteger)index completion:(void (^)(NSError* error))block;
 @end
