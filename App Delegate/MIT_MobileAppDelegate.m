@@ -1,4 +1,3 @@
-#import <FacebookSDK/FacebookSDK.h>
 
 #import "MIT_MobileAppDelegate.h"
 #import "MIT_MobileAppDelegate+ModuleList.h"
@@ -49,8 +48,6 @@
         [TestFlight takeOff:MITApplicationTestFlightToken];
     }
 #endif
-    [FBSession setDefaultAppID:FacebookAppId];
-
     // Default the cache expiration to 1d
     [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
     
@@ -101,8 +98,6 @@
 // Because we implement -application:didFinishLaunchingWithOptions: this only gets called when an mitmobile:// URL is opened from within this app
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     BOOL canHandle = NO;
-    
-    canHandle = [[FBSession activeSession] handleOpenURL:url];
     
     if (canHandle == NO)
     {
@@ -182,7 +177,6 @@
     // (https://developers.facebook.com/docs/tutorials/ios-sdk-tutorial/authenticate - 2013.07.17)
     // We need to properly handle activation of the application with regards to Facebook Login
     // (e.g., returning from iOS 6.0 Login Dialog or from fast app switching).
-    [FBSession.activeSession handleDidBecomeActive];
 }
 
 #pragma mark - Shared resources

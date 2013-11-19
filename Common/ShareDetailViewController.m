@@ -3,8 +3,6 @@
 #import "UIKit+MITAdditions.h"
 #import "MITMailComposeController.h"
 #import "Secret.h"
-#import "DEFacebookComposeViewController.h"
-#import <FacebookSDK/FacebookSDK.h>
 #import <Twitter/Twitter.h>
 #import <Social/Social.h>
 #import <Accounts/Accounts.h>
@@ -12,11 +10,6 @@
 static NSString *kShareDetailEmail = @"Email";
 static NSString *kShareDetailFacebook = @"Facebook";
 static NSString *kShareDetailTwitter = @"Twitter";
-
-@interface ShareDetailViewController ()
-- (void)showFacebookComposeDialog;
-- (void)showTwitterComposeDialog;
-@end
 
 @implementation ShareDetailViewController
 - (void)loadView {
@@ -57,69 +50,38 @@ static NSString *kShareDetailTwitter = @"Twitter";
     }
     else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailFacebook])
     {
-        [self showFacebookComposeDialog];
+        [self composeForServiceType:SLServiceTypeFacebook];
     }
     else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:kShareDetailTwitter])
     {
-        [self showTwitterComposeDialog];
+        [self composeForServiceType:SLServiceTypeTwitter];
     }
 }
 
-- (void)showFacebookComposeDialog
+- (BOOL)composeForServiceType:(NSString*)serviceType
 {
-    BOOL newStyleSupported = NO;
-    if ([SLComposeViewController class])
+    if ([SLComposeViewController isAvailableForServiceType:serviceType])
     {
-        newStyleSupported = [self composeForServiceType:SLServiceTypeFacebook];
-    }
-    
-    if (newStyleSupported == NO) {
-        [self showLegacyFacebookDialog];
-    }
-}
-
-- (void)showLegacyFacebookDialog
-{
-    DEFacebookComposeViewController *composeController = [[DEFacebookComposeViewController alloc] init];
-    [composeController setInitialText:[self.shareDelegate twitterTitle]];
-    [composeController addURL:[self.shareDelegate twitterUrl]];
-    composeController.completionHandler = ^(DEFacebookComposeViewControllerResult result) {
-        switch (result) {
-            case DEFacebookComposeViewControllerResultCancelled:
-                DDLogVerbose(@"Facebook Result: Cancelled");
-                break;
-            case DEFacebookComposeViewControllerResultDone:
-                DDLogVerbose(@"Facebook Result: Sent");
-                break;
-        }
+        SLComposeViewController *composeView = [SLComposeViewController composeViewControllerForServiceType:serviceType];
+        [composeView setInitialText:[self.shareDelegate twitterTitle]];
+        composeView.completionHandler = ^(SLComposeViewControllerResult result) {
+            switch (result) {
+                case SLComposeViewControllerResultCancelled:
+                    DDLogVerbose(@"Compose Canceled");
+                    break;
+                    
+                case SLComposeViewControllerResultDone:
+                    DDLogVerbose(@"Compose Finished");
+                    break;
+            }
+            
+            [self dismissViewControllerAnimated:YES completion:NULL];
+        };
         
-        [self dismissViewControllerAnimated:YES completion:NULL];
-    };
-    
-    self.modalPresentationStyle = UIModalPresentationCurrentContext;
-    [self presentViewController:composeController
-                       animated:YES
-                     completion:nil];
-}
-
-- (void)showTwitterComposeDialog
-{
-    BOOL newStyleSupported = NO;
-    
-    if ([SLComposeViewController class])
-    {
-        newStyleSupported = [self composeForServiceType:SLServiceTypeTwitter];
-    }
-    
-    if (newStyleSupported == NO)
-    {
-        TWTweetComposeViewController *tweetComposer = [[TWTweetComposeViewController alloc] init];
-        [tweetComposer setInitialText:[self.shareDelegate twitterTitle]];
-        
-        NSURL *twURL = [NSURL URLWithString:[self.shareDelegate twitterUrl]];
-        if (twURL)
+        NSURL *sharedURL = [NSURL URLWithString:[self.shareDelegate twitterUrl]];
+        if (sharedURL)
         {
-            [tweetComposer addURL:twURL];
+            [composeView addURL:sharedURL];
         }
         
         if ([self.shareDelegate respondsToSelector:@selector(postImage)])
@@ -127,55 +89,14 @@ static NSString *kShareDetailTwitter = @"Twitter";
             UIImage *image = [self.shareDelegate postImage];
             if (image)
             {
-                [tweetComposer addImage:image];
+                [composeView addImage:image];
             }
         }
-    }
-    
-}
-
-- (BOOL)composeForServiceType:(NSString*)serviceType
-{
-    if ([SLComposeViewController class])
-    {
-        if ([SLComposeViewController isAvailableForServiceType:serviceType])
-        {
-            SLComposeViewController *composeView = [SLComposeViewController composeViewControllerForServiceType:serviceType];
-            [composeView setInitialText:[self.shareDelegate twitterTitle]];
-            composeView.completionHandler = ^(SLComposeViewControllerResult result) {
-                switch (result) {
-                    case SLComposeViewControllerResultCancelled:
-                        DDLogVerbose(@"Compose Canceled");
-                        break;
-                        
-                    case SLComposeViewControllerResultDone:
-                        DDLogVerbose(@"Compose Finished");
-                        break;
-                }
-                
-                [self dismissViewControllerAnimated:YES completion:NULL];
-            };
-            
-            NSURL *sharedURL = [NSURL URLWithString:[self.shareDelegate twitterUrl]];
-            if (sharedURL)
-            {
-                [composeView addURL:sharedURL];
-            }
-            
-            if ([self.shareDelegate respondsToSelector:@selector(postImage)])
-            {
-                UIImage *image = [self.shareDelegate postImage];
-                if (image)
-                {
-                    [composeView addImage:image];
-                }
-            }
-            
-            [self presentViewController:composeView
-                               animated:YES
-                             completion:nil];
-            return YES;
-        }
+        
+        [self presentViewController:composeView
+                           animated:YES
+                         completion:nil];
+        return YES;
     }
     
     return NO;
