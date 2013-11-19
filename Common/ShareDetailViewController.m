@@ -58,10 +58,8 @@ static NSString *kShareDetailTwitter = @"Twitter";
     }
 }
 
-- (BOOL)composeForServiceType:(NSString*)serviceType
+- (void)composeForServiceType:(NSString*)serviceType
 {
-    if ([SLComposeViewController isAvailableForServiceType:serviceType])
-    {
         SLComposeViewController *composeView = [SLComposeViewController composeViewControllerForServiceType:serviceType];
         [composeView setInitialText:[self.shareDelegate twitterTitle]];
         composeView.completionHandler = ^(SLComposeViewControllerResult result) {
@@ -96,10 +94,6 @@ static NSString *kShareDetailTwitter = @"Twitter";
         [self presentViewController:composeView
                            animated:YES
                          completion:nil];
-        return YES;
-    }
-    
-    return NO;
 }
 
 #pragma mark -
