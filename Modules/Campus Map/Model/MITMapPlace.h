@@ -24,8 +24,6 @@
 @property (nonatomic, strong) MITMapBookmark *bookmark;
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
-
-- (void)performUpdate:(NSDictionary*)dictionary;
 @end
 
 @interface MITMapPlace (CoreDataGeneratedAccessors)
