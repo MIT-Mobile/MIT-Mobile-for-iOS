@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#define kFPDefaultEpsilon (0.001)
+extern NSUInteger kMITFloatDefaultEpsilon;
 BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 
 @interface NSURL (MITAdditions)
