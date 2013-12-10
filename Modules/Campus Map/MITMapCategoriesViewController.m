@@ -14,9 +14,7 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 
 @interface MITMapCategoriesViewController ()
 @property (nonatomic,strong) MITMapCategorySelectionHandler selectionBlock;
-
 @property (nonatomic,strong) MITMapCategory *category;
-@property (nonatomic,strong) NSOrderedSet *categoriesContent;
 
 - (id)initWithCategory:(MITMapCategory*)category;
 @end
@@ -36,7 +34,7 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 {
     self = [super init];
     if (self) {
-        _category = category;
+        _category = (MITMapCategory*)[self.managedObjectContext objectWithID:[category objectID]];
     }
 
     return self;
@@ -63,22 +61,23 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
         self.navigationItem.leftBarButtonItem = cancelItem;
         self.navigationItem.title = @"Browse";
 
-
-        if (!self.categoriesContent) {
-            [[MITMapModelController sharedController] categories:^(NSOrderedSet *categories, NSError *error) {
+        if (self.fetchRequest == nil) {
+            [[MITMapModelController sharedController] categories:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
                 if (!error) {
-                    if (![self.categoriesContent isEqualToOrderedSet:categories]) {
-                        self.categoriesContent = categories;
-                        [self.tableView reloadData];
-                    }
+                    self.fetchRequest = fetchRequest;
                 } else {
                     DDLogWarn(@"Failed to retreive category listing: %@",error);
                 }
-            }];
+             }];
         }
     } else {
         self.navigationItem.title = self.category.name;
-        self.categoriesContent = self.category.subcategories;
+
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapCategory"];
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == %@", self.category];
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+
+        self.fetchRequest = fetchRequest;
     }
 }
 
@@ -104,16 +103,6 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 }
 
 #pragma mark - Table view data source
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [self.categoriesContent count];
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
@@ -126,7 +115,7 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
 
-    MITMapCategory *category = self.categoriesContent[indexPath.row];
+    MITMapCategory *category = self.fetchedResultsController.fetchedObjects[indexPath.row];
     cell.textLabel.text = category.name;
 
     NSIndexPath *selectedIndexPath = [tableView indexPathForSelectedRow];
@@ -157,9 +146,9 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITMapCategory *category = self.categoriesContent[indexPath.row];
+    MITMapCategory *category = self.fetchedResultsController.fetchedObjects[indexPath.row];
 
-    if ([category hasSubcategories]) {
+    if ([category.children count]) {
         MITMapCategoriesViewController *categoriesViewController = [[MITMapCategoriesViewController alloc] initWithCategory:category];
         categoriesViewController.selectionBlock = self.selectionBlock;
 
