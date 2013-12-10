@@ -88,7 +88,6 @@ static MITMobile *gMITMobileDefaultManager = nil;
         _objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://mobile-dev.mit.edu"]];
         _objectManager.managedObjectStore = store;
         
-        [self loadResources];
     }
     
     return self;
@@ -97,12 +96,6 @@ static MITMobile *gMITMobileDefaultManager = nil;
 - (instancetype)init
 {
     return [self initWithPersistentStoreCoordinator:[CoreDataManager persistentStoreCoordinator]];
-}
-
-- (void)loadResources
-{
-    [self addResource:[MITMapModelController placesResource]];
-    [self addResource:[MITMapModelController categoriesResource]];
 }
 
 - (void)addResource:(MITMobileResource *)resource

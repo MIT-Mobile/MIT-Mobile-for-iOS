@@ -16,6 +16,8 @@
 
 #import "MITCoreDataController.h"
 #import "CoreDataManager.h"
+#import "MITMobile.h"
+#import "MITMapModelController.h"
 
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
 @property (nonatomic,strong) NSDictionary *apnsDictionary;
@@ -116,6 +118,7 @@
 	}
     
     [self.window makeKeyAndVisible];
+
     return YES;
 }
 
@@ -341,14 +344,29 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 #pragma mark Dynamic Accessors
 - (MITCoreDataController*)coreDataController
 {
+    // Not sure if there is any *really* early loading code
+    // which needs the CoreData stack or not so play it safe
+    // and load the stack on demand
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSPersistentStoreCoordinator *storeCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-        MITCoreDataController *coreDataController = [[MITCoreDataController alloc] initWithPersistentStoreCoodinator:storeCoordinator];
-        self->_coreDataController = coreDataController;
+        [self loadCoreData];
     });
 
     return _coreDataController;
+}
+
+- (void)loadCoreData
+{
+    // TODO: Figure out at what level we are going to be swapping out the RK* network classes.
+    // If we just replace the various operations and use the RKObjectManager, we'll need to switch
+    // over to the RKManagedObjectStore, otherwise MITCoreDataController will be used.
+    NSPersistentStoreCoordinator *storeCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
+    MITCoreDataController *coreDataController = [[MITCoreDataController alloc] initWithPersistentStoreCoodinator:storeCoordinator];
+    self->_coreDataController = coreDataController;
+    
+    MITMobile *mobile = [[MITMobile alloc] initWithPersistentStoreCoordinator:storeCoordinator];
+    [mobile addResource:[MITMapModelController placesResource]];
+    [mobile addResource:[MITMapModelController categoriesResource]];
 }
 
 @end
