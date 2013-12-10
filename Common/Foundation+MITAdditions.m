@@ -2,6 +2,7 @@
 #include <libxml/HTMLparser.h>
 #import "Foundation+MITAdditions.h"
 
+NSUInteger kMITFloatEqualityEpsilon = 0.001;
 inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
 {
     return (fabs(((double)f0) - ((double)f1)) <= epsilon);

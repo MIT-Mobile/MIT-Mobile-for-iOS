@@ -2,33 +2,66 @@
 #import "MITCoreData.h"
 
 @interface MITFetchedResultsTableViewController ()
+@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic,strong) id contextDidSaveToken;
 @property (nonatomic,strong) NSFetchedResultsController *fetchedResultsController;
+
+- (id)initWithManagedObjectContext:(NSManagedObjectContext *)context fetchRequest:(NSFetchRequest*)fetchRequest;
 @end
 
 @implementation MITFetchedResultsTableViewController
+- (id)init
+{
+    return [self initWithManagedObjectContext:nil fetchRequest:nil];
+}
+
+- (id)initWithManagedObjectContext:(NSManagedObjectContext*)context
+{
+    return [self initWithManagedObjectContext:context fetchRequest:nil];
+}
+
 - (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest
 {
-    self = [super initWithStyle:UITableViewStylePlain];
+    return [self initWithManagedObjectContext:nil fetchRequest:fetchRequest];
+}
+
+- (id)initWithManagedObjectContext:(NSManagedObjectContext *)context fetchRequest:(NSFetchRequest*)fetchRequest
+{
+    self = [super init];
+
     if (self) {
-        _fetchRequest = fetchRequest;
-        _updateTableOnResultsChange = YES;
+        if (context) {
+            _managedObjectContext = context;
+            if (_managedObjectContext.parentContext) {
+                _contextDidSaveToken = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification
+                                                                                           object:_managedObjectContext.parentContext
+                                                                                            queue:nil
+                                                                                        usingBlock:^(NSNotification *note) {
+                                                                                            [_managedObjectContext performBlock:^{
+                                                                                                [_managedObjectContext mergeChangesFromContextDidSaveNotification:note];
+                                                                                            }];
+                                                                                        }];
+            }
+        } else {
+            _managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+        }
     }
 
     return self;
 }
 
-- (id)initWithStyle:(UITableViewStyle)style
+- (void)dealloc
 {
-    self = [super initWithStyle:style];
-    if (self) {
-        _updateTableOnResultsChange = YES;
+    if (self.contextDidSaveToken) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self.contextDidSaveToken];
+        self.contextDidSaveToken = nil;
     }
-    return self;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -53,7 +86,7 @@
 - (NSFetchedResultsController*)fetchedResultsController
 {
     if (!_fetchedResultsController) {
-        if (self.fetchRequest) {
+        if (self.fetchRequest && self.managedObjectContext) {
             [self loadFetchedResultsController];
         }
     }
@@ -63,9 +96,8 @@
 
 - (void)loadFetchedResultsController
 {
-    NSManagedObjectContext *mainContext = [[MITCoreDataController defaultController] mainQueueContext];
     NSFetchedResultsController *controller = [[NSFetchedResultsController alloc] initWithFetchRequest:self.fetchRequest
-                                                                                 managedObjectContext:mainContext
+                                                                                 managedObjectContext:self.managedObjectContext
                                                                                    sectionNameKeyPath:nil
                                                                                             cacheName:nil];
     controller.delegate = self;

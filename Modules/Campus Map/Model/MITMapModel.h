@@ -15,6 +15,6 @@
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
 #import "MITMapBookmark.h"
-#import "MapSearch.h"
+#import "MITMapSearch.h"
 
 #endif

@@ -4,8 +4,15 @@ FOUNDATION_EXTERN NSString* const MITMapSearchEntityName;
 FOUNDATION_EXTERN NSString* const MITMapPlaceEntityName;
 FOUNDATION_EXTERN NSString* const MITMapBookmarkEntityName;
 
+FOUNDATION_EXTERN NSString* const MITCoreDataErrorDomain;
+
+typedef NS_ENUM(NSUInteger, MITCoreDataErrorCode) {
+    MITCoreDataMethodNotImplementedError = 0
+};
+
 @class MITMapCategory;
 @class MITMapPlace;
+@class MITMobileResource;
 
 typedef void (^MITMapResult)(NSOrderedSet *objects, NSError *error);
 
@@ -25,7 +32,11 @@ typedef void (^MITMapFetchedResult)(NSFetchRequest *fetchRequest, NSDate *lastUp
 
 + (MITMapModelController*)sharedController;
 
-- (void)categories:(MITMapResult)block;
++ (NSManagedObjectModel*)managedObjectModel;
++ (MITMobileResource*)placesResource;
++ (MITMobileResource*)categoriesResource;
+
+- (void)categories:(MITMapFetchedResult)block;
 
 - (void)recentSearches:(MITMapFetchedResult)block;
 - (void)recentSearchesForPartialString:(NSString*)string loaded:(MITMapFetchedResult)block;

@@ -110,7 +110,7 @@
     backgroundContext.parentContext = self.backgroundContext;
 
     [backgroundContext performBlock:^{
-        NSError *error = nil;
+        __block NSError *error = nil;
 
         if (update) {
             update(backgroundContext, &error);
@@ -148,7 +148,7 @@
     backgroundContext.parentContext = self.backgroundContext;
 
     [backgroundContext performBlockAndWait:^{
-        NSError *error = nil;
+        __block NSError *error = nil;
 
         if (update) {
             update(backgroundContext, &error);

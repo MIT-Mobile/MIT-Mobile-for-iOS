@@ -1,8 +1,11 @@
 #import <UIKit/UIKit.h>
+#import <CoreData/CoreData.h>
+
+#import "MITFetchedResultsTableViewController.h"
 
 @class MITMapCategory;
 
-@interface MITMapCategoriesViewController : UITableViewController
+@interface MITMapCategoriesViewController : MITFetchedResultsTableViewController
 /** Initializes an instance of the category browser with 
  *  the 'placesSelected' handler block. Once one or more placed is selected
  *  the passed block will be called with the current category and
