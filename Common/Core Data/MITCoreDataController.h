@@ -2,6 +2,8 @@
 #import <CoreData/CoreData.h>
 
 @interface MITCoreDataController : NSObject
+@property (nonatomic,readonly) NSPersistentStoreCoordinator *storeCoordinator;
+
 + (instancetype)defaultController;
 
 - (instancetype)initWithPersistentStoreCoodinator:(NSPersistentStoreCoordinator*)coordinator;
