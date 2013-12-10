@@ -1,4 +1,5 @@
 #import <CoreData/CoreData.h>
+#import "MITAdditions.h"
 #import "MITMapModelController.h"
 
 #import "MITCoreDataController.h"
@@ -8,8 +9,10 @@
 #import "MITMapCategory.h"
 #import "MITMapPlace.h"
 #import "MITMapBookmark.h"
-#import "MapSearch.h"
+#import "MITMapSearch.h"
 #import "MITAdditions.h"
+#import "MITMobileResource.h"
+#import "MITMobile.h"
 
 static NSString* const MITMapResourceCategoryTitles = @"categorytitles";
 static NSString* const MITMapResourceCategory = @"category";
@@ -18,12 +21,12 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 NSString* const MITMapSearchEntityName = @"MapSearch";
 NSString* const MITMapPlaceEntityName = @"MapPlace";
 NSString* const MITMapBookmarkEntityName = @"MapBookmark";
+NSString* const MITCoreDataErrorDomain = @"MITCoreDataErrorDomain";
 
 @interface MITMapModelController ()
 @property (nonatomic,strong) NSOperationQueue *requestQueue;
 @property (nonatomic,strong) NSDate *placesFetchDate;
 
-+ (NSFetchRequest*)fetchRequestForMapPlacesWithPredicate:(NSPredicate*)predicate sortDescriptors:(NSArray*)sortDescriptors;
 - (void)addRecentSearch:(NSString*)queryString;
 @end
 
@@ -37,51 +40,176 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
     dispatch_once(&onceToken, ^{
         sharedController = [[MITMapModelController alloc] init];
     });
-
+    
     return sharedController;
 }
 
-// TODO: Think a bit about the placement here. Should this go into
-// MITMapPlace instead?
-+ (NSFetchRequest*)fetchRequestForMapPlacesWithPredicate:(NSPredicate*)predicate
-                                         sortDescriptors:(NSArray*)sortDescriptors
++ (NSManagedObjectModel*)managedObjectModel
 {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"MapPlace"];
+    static NSManagedObjectModel *managedObjectModel = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSURL *dataModelURL = [[NSBundle mainBundle] URLForResource:@"CampusMap" withExtension:@"momd"];
+        managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:dataModelURL];
+    });
+    
+    return managedObjectModel;
+}
 
-    NSMutableArray *predicates = [[NSMutableArray alloc] init];
-    NSPredicate *defaultPredicate = [NSPredicate predicateWithFormat:@"identifier != NIL"];
-    [predicates addObject:defaultPredicate];
-    if (predicate) {
-        [predicates addObject:predicate];
-    }
++ (MITMobileResource*)placesResource
+{
+    static MITMobileResource *placesResource = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSEntityDescription *entity = [[self managedObjectModel] entitiesByName][@"MapPlace"];
+        NSAssert1(entity,@"Entity %@ does not exist in the managed object model", @"MapPlace");
+        
+        MITMobileResource *resource = [[MITMobileResource alloc] initWithName:MITMobileMapPlaces pathPattern:MITMobileMapPlaces];
+        RKEntityMapping *placeMapping = [[RKEntityMapping alloc] initWithEntity:entity];
+        placeMapping.identificationAttributes = @[@"identifier"]; // RKEntityMapping converts this to an NSAttributeDescription internally
+        placeMapping.assignsNilForMissingRelationships = YES;
+        
+        NSDictionary *placeAttributeMappings = @{@"id" : @"identifier",
+                                                 @"name" : @"name",
+                                                 @"bldgimg" : @"imageURL",
+                                                 @"bldgnum" : @"buildingNumber",
+                                                 @"viewangle" : @"imageCaption",
+                                                 @"architect" : @"architect",
+                                                 @"mailing" : @"mailingAddress",
+                                                 @"street" : @"streetAddress",
+                                                 @"city" : @"city",
+                                                 @"lat_wgs84" : @"latitude",
+                                                 @"long_wgs84" : @"longitude",
+                                                 @"url" : @"url"};
+        
+        [placeMapping addAttributeMappingsFromDictionary:placeAttributeMappings];
+        
+        RKEntityMapping *placeContentsMapping = [[RKEntityMapping alloc] initWithEntity:entity];
+        [placeContentsMapping addAttributeMappingsFromDictionary:placeAttributeMappings];
+        placeContentsMapping.assignsNilForMissingRelationships = YES;
+        
+        RKRelationshipMapping *contentsRelationship = [RKRelationshipMapping relationshipMappingFromKeyPath:@"contents"
+                                                                                                  toKeyPath:@"contents"
+                                                                                                withMapping:placeContentsMapping];
+        contentsRelationship.assignmentPolicy = RKAssignmentPolicyReplace;
+        [placeMapping addPropertyMapping:contentsRelationship];
+        
+        [resource addMapping:placeMapping atKeyPath:nil forRequestMethod:RKRequestMethodGET];
+        
+        
+        // Use of typecasts below is to make the auto-detection of the return type
+        // work nicely. Without it, Clang complains that void* is not a NSFetchRequest*,
+        // which is technically correct (the worst type of correct).
+        __weak MITMobileResource *weakResource = resource;
+        resource.fetchGenerator = ^(NSURL*url) {
+            MITMobileResource *blockResource = weakResource;
+            
+            if (!blockResource) {
+                return (NSFetchRequest*)nil;
+            } else if (!url) {
+                return (NSFetchRequest*)nil;
+            }
+            
+            RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[url relativePath]];
+            
+            NSDictionary *parameters = nil;
+            BOOL matches = [pathMatcher matchesPattern:blockResource.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
+            
+            if (matches) {
+                if (parameters[@"q"]) {
+                    // Can't calculate a fetch request for search queries. This completely
+                    // depends on the server's response, not the URL of the request.
+                    return (NSFetchRequest*)nil;
+                } else if (parameters[@"category"]) {
+                    // Can't build a fetch request for this either (at the moment).
+                    // As of 2013.12.04, the categories returned by the place_categories
+                    // resource and the categories at a MapPlace's 'categories' subkey do
+                    // not match up.
+                    return (NSFetchRequest*)nil;
+                } else {
+                    // Ok, we can *probably* build some sort of a fetch request!
+                    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapPlaces"];
+                    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"identifier != nil"];
+                    return fetchRequest;
+                }
+            }
+            
+            return (NSFetchRequest*)nil;
+        };
 
-    fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
+        placesResource = resource;
+    });
+    
+    return placesResource;
+}
 
-    if (![sortDescriptors count]) {
-        sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
-    }
-
-    fetchRequest.sortDescriptors = sortDescriptors;
-
-    return fetchRequest;
++ (MITMobileResource*)categoriesResource
+{
+    static MITMobileResource *categoriesResource = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSEntityDescription *entity = [[self managedObjectModel] entitiesByName][@"MapCategory"];
+        NSAssert(entity,@"Entity %@ does not exist in the managed object model", @"MapCategory");
+        
+        MITMobileResource *resource = [[MITMobileResource alloc] initWithName:MITMobileMapCategories pathPattern:MITMobileMapCategories];
+        RKEntityMapping *categoryMapping = [[RKEntityMapping alloc] initWithEntity:entity];
+        [categoryMapping addAttributeMappingsFromDictionary:@{@"categoryId": @"identifier",
+                                                              @"url" : @"url",
+                                                              @"categoryName" : @"name",
+                                                              @"@metadata.mapping.collectionIndex" : @"order"}];
+        
+        RKRelationshipMapping *subcategories = [RKRelationshipMapping relationshipMappingFromKeyPath:@"subcategories"
+                                                                                           toKeyPath:@"children"
+                                                                                         withMapping:categoryMapping];
+        [categoryMapping addPropertyMapping:subcategories];
+        
+        [resource addMapping:categoryMapping atKeyPath:nil forRequestMethod:RKRequestMethodGET];
+        
+        __weak MITMobileResource *weakResource = resource;
+        resource.fetchGenerator = ^(NSURL*url) {
+            MITMobileResource *blockResource = weakResource;
+            
+            if (!blockResource) {
+                return (NSFetchRequest*)nil;
+            } else if (!url) {
+                return (NSFetchRequest*)nil;
+            }
+            
+            RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[url relativePath]];
+            BOOL matches = [pathMatcher matchesPattern:blockResource.pathPattern tokenizeQueryStrings:NO parsedArguments:nil];
+            
+            if (matches) {
+                NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapCategory"];
+                fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == nil"];
+                fetchRequest.sortDescriptors = [NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES];
+                return fetchRequest;
+            } else {
+                return (NSFetchRequest*)nil;
+            }
+        };
+        
+        categoriesResource = resource;
+    });
+    
+    return categoriesResource;
 }
 
 - (id)init
 {
     self = [super init];
-
+    
     if (self) {
         _requestQueue = [[NSOperationQueue alloc] init];
         _requestQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
-
+        
         // Default to 1 week (measured in seconds) expiration interval for recent searches and
         // cached place data
         _searchExpiryInterval = (60. * 60. * 24. * 7);
         _placeExpiryInterval = (60. * 60. * 24. * 7);
-
+        
         [self migrateBookmarks];
     }
-
+    
     return self;
 }
 
@@ -99,7 +227,7 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
     if (!_placesFetchDate) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSDate *fetchDate = [defaults objectForKey:MITMapDefaultsPlacesFetchDateKey];
-
+        
         if (fetchDate) {
             // Directly assign to the ivar so we don't trigger the setter's side effect
             // of writing the date to the user defaults
@@ -108,10 +236,9 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
             _placesFetchDate = [NSDate distantPast];
         }
     }
-
+    
     return _placesFetchDate;
 }
-
 
 #pragma mark - Search, Create, Read methods
 #pragma mark Synchronous
@@ -121,115 +248,23 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
     [dataController performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **error) {
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapSearchEntityName];
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"searchTerm == %@", queryString];
-
-        MapSearch *mapSearch = [[context executeFetchRequest:fetchRequest error:nil] lastObject];
+        
+        MITMapSearch *mapSearch = [[context executeFetchRequest:fetchRequest error:nil] lastObject];
         if (!mapSearch) {
             mapSearch = [NSEntityDescription insertNewObjectForEntityForName:MITMapSearchEntityName
                                                       inManagedObjectContext:context];
         }
-
+        
         mapSearch.searchTerm = queryString;
         mapSearch.date = [NSDate date];
-
+        
         [context save:error];
-
+        
         if (error) {
             DDLogWarn(@"Failed to save search: %@", (*error));
         }
     }
                                         completion:nil];
-}
-
-/** Synchronously updates cached MapPlace entities in the CoreData model.
- *
- *  @param placesData The array of 'place' dictionaries.
- *  @param incrementalUpdate If NO, delete any cached entities which do not have any associated data in placesData
- *  @related MITMapPlace
- */
-- (void)updatePlacesWithData:(NSArray*)placesData incrementalUpdate:(BOOL)incremental completion:(void (^)(NSError *error))block
-{
-    MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
-    [dataController performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
-        // Create a mapping of {identifier => object} for each of the objects in the
-        // response. This will make it easier later on to figure out all the objects
-        // we need to update/insert/delete
-        NSMutableDictionary *placesByIdentifier = [[NSMutableDictionary alloc] init];
-        for (NSDictionary *placeDictionary in placesData) {
-            placesByIdentifier[placeDictionary[@"id"]] = placeDictionary;
-        }
-
-        // Fetch any existing cached objects and massage them into a dictionary (by identifier)
-        // so it's a bit easier to figure out adds/deletes/updates
-        NSMutableDictionary *fetchedPlaces = [[NSMutableDictionary alloc] init];
-        {
-            NSFetchRequest *placesFetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapPlaceEntityName];
-            if (incremental) {
-                // If we are performing a partial update, don't delete anything
-                // Just get any existing cached objects (matching in the 'id' key)
-                // and update/insert any new ones
-                placesFetchRequest.predicate = [NSPredicate predicateWithFormat:@"(identifier != nil) AND (identifier IN %@)", [placesByIdentifier allKeys]];
-            } else {
-                // Make sure we filter out anything that lacks an identifier.
-                // Places which do not have an identifier should be children of
-                // places which do have an identifier. When the parent places are updated
-                // *all* of their children which lack an identifier should be deleted
-                // and then re-created from the data.
-                placesFetchRequest.predicate = [NSPredicate predicateWithFormat:@"identifier != nil"];
-            }
-
-            NSArray *places = [context executeFetchRequest:placesFetchRequest error:error];
-
-            if (places) {
-                for (MITMapPlace *place in places) {
-                    if (place.identifier) {
-                        fetchedPlaces[place.identifier] = place;
-                    }
-                }
-            } else {
-                // Something went wrong with the fetch.
-                // The error should be set at this point so just return
-                return;
-            }
-        }
-
-
-        NSSet *fetchedIdentifiers = [NSSet setWithArray:[fetchedPlaces allKeys]];
-        NSSet *newIdentifiers =  [NSSet setWithArray:[placesByIdentifier allKeys]];
-
-        NSMutableSet *modifiedIdentifiers = [[NSMutableSet alloc] initWithSet:fetchedIdentifiers];
-        [modifiedIdentifiers intersectSet:newIdentifiers];
-        [modifiedIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, BOOL *stop) {
-            MITMapPlace *place = fetchedPlaces[identifier];
-            [place performUpdate:placesByIdentifier[identifier]];
-
-        }];
-
-        NSMutableSet *insertedIdentifiers = [[NSMutableSet alloc] initWithSet:newIdentifiers];
-        [insertedIdentifiers minusSet:fetchedIdentifiers];
-        [insertedIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, BOOL *stop) {
-            MITMapPlace *place = [NSEntityDescription insertNewObjectForEntityForName:MITMapPlaceEntityName inManagedObjectContext:context];
-            [place performUpdate:placesByIdentifier[identifier]];
-        }];
-
-        if (!incremental) {
-            NSMutableSet *deletedIdentifiers = [[NSMutableSet alloc] initWithSet:fetchedIdentifiers];
-            [deletedIdentifiers minusSet:newIdentifiers];
-            [deletedIdentifiers enumerateObjectsUsingBlock:^(NSString *identifier, BOOL *stop) {
-                [context deleteObject:fetchedPlaces[identifier]];
-            }];
-        }
-
-        [context save:error];
-    }
-                                 completion:^(NSError *error) {
-                                     if (error) {
-                                         DDLogWarn(@"Failed to save 'place' update: %@", error);
-                                     }
-
-                                     if (block) {
-                                         block(error);
-                                     }
-                                 }];
 }
 
 #pragma mark Asynchronous
@@ -246,295 +281,142 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
     if (string) {
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"token BEGINSWITH[d] %@", [string stringBySearchNormalization]];
     }
-
+    
     [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
-
         NSArray *searches = [context executeFetchRequest:fetchRequest
                                                    error:error];
-
+        
         if (!error) {
-            [searches enumerateObjectsUsingBlock:^(MapSearch *search, NSUInteger idx, BOOL *stop) {
+            [searches enumerateObjectsUsingBlock:^(MITMapSearch *search, NSUInteger idx, BOOL *stop) {
                 NSTimeInterval searchInterval = fabs([search.date timeIntervalSinceNow]);
                 if (searchInterval > self.searchExpiryInterval) {
                     [context deleteObject:search];
                 }
             }];
-
+            
             [context save:error];
-
+            
             if ((*error)) {
                 DDLogWarn(@"Failed to save search results: %@", *error);
             }
         }
-    }
-
-                                                            completion:^(NSError *error) {
-                                                                if (block) {
-                                                                    if (error) {
-                                                                        block(nil,self.placesFetchDate,error);
-                                                                    } else {
-                                                                        block(fetchRequest,self.placesFetchDate,nil);
-                                                                    }
-                                                                }
-                                                            }];
+    } completion:^(NSError *error) {
+        if (block) {
+            if (!error) {
+                block(fetchRequest,self.placesFetchDate,nil);
+            } else {
+                block(nil,self.placesFetchDate,error);
+            }
+        }
+    }];
 }
-
 
 - (void)searchMapWithQuery:(NSString*)queryString loaded:(MITMapFetchedResult)block
 {
-    NSDictionary *parameters = nil;
-    if (queryString) {
-        parameters = @{@"q" : queryString};
-    }
-
-    MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithModule:@"map"
-                                                                                command:@"search"
-                                                                             parameters:parameters];
-
-    apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
-        [self addRecentSearch:queryString];
-
-        if (!error) {
-            if ([content isKindOfClass:[NSArray class]]) {
-                [self updatePlacesWithData:content incrementalUpdate:YES completion:^(NSError *error) {
-                    NSFetchRequest *fetchRequest = nil;
-
-                    if (error) {
-                        DDLogWarn(@"failed to perform incremental place update for query '%@': %@", queryString, error);
-                    } else {
-                        // TODO: This may need to be changed once we start using the MIT Mobile v3 API
-                        // since it may be returning a bunch of identifiers instead of the complete
-                        // data for each place in the result.
-                        NSMutableOrderedSet *identifiers = [[NSMutableOrderedSet alloc] init];
-                        for (NSDictionary *placeData in content) {
-                            [identifiers addObject:placeData[@"id"]];
-                        }
-
-                        NSPredicate *fetchPredicate = [NSPredicate predicateWithFormat:@"(identifier != nil) AND (identifier IN %@)", identifiers];
-                        fetchRequest = [MITMapModelController fetchRequestForMapPlacesWithPredicate:fetchPredicate sortDescriptors:nil];
-                    }
-
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        if (block) {
-                            block(fetchRequest,self.placesFetchDate,error);
-                        }
-                    }];
-                }];
-            } else {
-                NSError *remoteError = nil;
-
-                if ([content isKindOfClass:[NSDictionary class]]) {
-                    remoteError = [NSError errorWithDomain:NSURLErrorDomain
-                                                      code:NSURLErrorResourceUnavailable
-                                                  userInfo:content];
-                } else {
-                    remoteError = [NSError errorWithDomain:NSURLErrorDomain
-                                                      code:NSURLErrorBadServerResponse
-                                                  userInfo:nil];
-                }
-
-                DDLogWarn(@"'places' update failed with error %@", remoteError);
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    if (block) {
-                        block(nil,self.placesFetchDate,remoteError);
-                    }
-                }];
-            }
-        } else {
-            DDLogWarn(@"'places' contents request failed with error %@", error);
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (block) {
-                    block(nil,self.placesFetchDate,error);
-                }
-            }];
-        }
-    };
-
-    [self.requestQueue addOperation:apiRequest];
+    NSParameterAssert([queryString length]);
+    NSParameterAssert(block);
+    
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITMobileMapPlaces
+                                                    object:nil
+                                                parameters:@{@"q" : queryString}
+                                                completion:^(RKMappingResult *result, NSError *error) {
+                                                    [self addRecentSearch:queryString];
+                                                    
+                                                    if (!error) {
+                                                        self.placesFetchDate = [NSDate date];
+                                                        
+                                                        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapPlace"];
+                                                        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"(SELF IN %@) AND (identifier != NIL) AND (building == nil)",[result array]];
+                                                        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+                                                        
+                                                        block(fetchRequest,self.placesFetchDate,nil);
+                                                    } else {
+                                                        block(nil,self.placesFetchDate,error);
+                                                    }
+                                                    
+                                                }];
 }
 
 
-- (void)categories:(MITMapResult)block
+- (void)categories:(MITMapFetchedResult)block
 {
-    MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithModule:@"map"
-                                                                                command:@"categorytitles"
-                                                                             parameters:nil];
-
-    apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
-        if (!error) {
-            if ([content isKindOfClass:[NSArray class]]) {
-                NSMutableOrderedSet *categories = [[NSMutableOrderedSet alloc] init];
-
-                for (NSDictionary *categoryData in content) {
-                    MITMapCategory *category = [[MITMapCategory alloc] initWithDictionary:categoryData];
-                    [categories addObject:category];
-                }
-
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    if (block) {
-                        block(categories, error);
-                    }
-                }];
-            } else if ([content isKindOfClass:[NSDictionary class]]) {
-                NSDictionary *serverErrorInfo = (NSDictionary*)content;
-                NSError *serverError = [NSError errorWithDomain:NSURLErrorDomain
-                                                           code:NSURLErrorResourceUnavailable
-                                                       userInfo:serverErrorInfo];
-
-                DDLogWarn(@"[categories] 'places' update failed with error %@", serverError);
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    if (block) {
-                        block(nil,serverError);
-                    }
-                }];
-            }
-        } else {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (block) {
-                    block(nil,error);
-                }
-            }];
-        }
-    };
-
-    [self.requestQueue addOperation:apiRequest];
+    NSParameterAssert(block);
+    
+    MITMobile *defaultManager = [MITMobile defaultManager];
+    [defaultManager getObjectsForResourceNamed:MITMobileMapCategories
+                                        object:nil
+                                    parameters:nil
+                                    completion:^(RKMappingResult *result, NSError *error) {
+                                        if (!error) {
+                                            NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapCategory"];
+                                            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == nil"];
+                                            
+                                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                block(fetchRequest,[NSDate date],nil);
+                                            }];
+                                        } else {
+                                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                block(nil,nil,error);
+                                            }];
+                                        }
+                                    }];
 }
 
 - (void)places:(MITMapFetchedResult)block
 {
-    BOOL cacheHasExpired = (fabs([self.placesFetchDate timeIntervalSinceNow]) > self.placeExpiryInterval);
-
-    if (cacheHasExpired) {
-        NSURL *serverURL = MITMobileWebGetCurrentServerURL();
-        NSURL *requestURL = [NSURL URLWithString:@"/apis/map/places" relativeToURL:serverURL];
-        MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithURL:requestURL parameters:nil];
-        __weak MITMapModelController *weakSelf = self;
-        apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
-            MITMapModelController *blockSelf = weakSelf;
-            if (!error) {
-                if ([content isKindOfClass:[NSArray class]]) {
-                    [blockSelf updatePlacesWithData:content
-                                  incrementalUpdate:NO
-                                         completion:^(NSError *error) {
-                                             if (error) {
-                                                 DDLogError(@"Failed to update entites for 'places': %@", error);
-                                             } else {
-                                                 blockSelf.placesFetchDate = [NSDate date];
-                                             }
-
-                                             if (block) {
-                                                 NSFetchRequest *fetchRequest = [MITMapModelController fetchRequestForMapPlacesWithPredicate:nil
-                                                                                                                             sortDescriptors:nil];
-                                                 block(fetchRequest,blockSelf.placesFetchDate,error);
-                                             }
-                                         }];
-                } else {
-                    NSError *remoteError = nil;
-
-                    if ([content isKindOfClass:[NSDictionary class]]) {
-                        remoteError = [NSError errorWithDomain:NSURLErrorDomain
-                                                          code:NSURLErrorResourceUnavailable
-                                                      userInfo:content];
-                    } else {
-                        remoteError = [NSError errorWithDomain:NSURLErrorDomain
-                                                          code:NSURLErrorBadServerResponse
-                                                      userInfo:nil];
-                    }
-
-                    DDLogWarn(@"'places' request failed with error %@", error);
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        if (block) {
-                            block(nil,blockSelf.placesFetchDate,remoteError);
-                        }
-                    }];
-                }
-            } else {
-                DDLogWarn(@"'places' request failed with error %@", error);
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    if (block) {
-                        block(nil,blockSelf.placesFetchDate,error);
-                    }
-                }];
-            }
-        };
-
-        [self.requestQueue addOperation:apiRequest];
-    } else if (block) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            NSFetchRequest *fetchRequest = [MITMapModelController fetchRequestForMapPlacesWithPredicate:nil
-                                                                                        sortDescriptors:nil];
-            block(fetchRequest,self.placesFetchDate,nil);
-        }];
-    }
+    NSParameterAssert(block);
+    
+    MITMobile *defaultManager = [MITMobile defaultManager];
+    [defaultManager getObjectsForResourceNamed:MITMobileMapCategories
+                                        object:nil
+                                    parameters:nil
+                                    completion:^(RKMappingResult *result, NSError *error) {
+                                        if (!error) {
+                                            NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapPlaces"];
+                                            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"(identifier != nil) AND (building == nil)"];
+                                            
+                                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                block(fetchRequest,[NSDate date],nil);
+                                            }];
+                                        } else {
+                                            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                block(nil,nil,error);
+                                            }];
+                                        }
+                                    }];
 }
 
 
 - (void)placesInCategory:(MITMapCategory*)category loaded:(MITMapFetchedResult)block
 {
-    NSDictionary *requestParameters = nil;
-    if (category) {
-        requestParameters = @{@"id" : category.identifier};
-    }
-
-    MobileRequestOperation *apiRequest = [[MobileRequestOperation alloc] initWithModule:@"map"
-                                                                                command:@"category"
-                                                                             parameters:requestParameters];
-
-    apiRequest.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *mimeType, NSError *error) {
-        if (!error) {
-            if ([content isKindOfClass:[NSArray class]]) {
-                [self updatePlacesWithData:content incrementalUpdate:YES completion:^(NSError *error) {
-                    NSFetchRequest *fetchRequest = nil;
-
-                    if (error) {
-                        DDLogWarn(@"Failed to update places for category '%@': %@",category.identifier, error);
-                    } else if (block) {
-                        NSMutableSet *identifiers = [[NSMutableSet alloc] init];
-                        for (NSDictionary *placeData in content) {
-                            [identifiers addObject:placeData[@"id"]];
-                        }
-
-                        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(identifier IN %@)", identifiers];
-                        fetchRequest = [MITMapModelController fetchRequestForMapPlacesWithPredicate:predicate sortDescriptors:nil];
-                    }
-
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        if (block) {
-                            block(fetchRequest,self.placesFetchDate,error);
-                        }
-                    }];
-                }];
-            } else {
-                NSError *remoteError = nil;
-
-                if ([content isKindOfClass:[NSDictionary class]]) {
-                    remoteError = [NSError errorWithDomain:NSURLErrorDomain
-                                                      code:NSURLErrorResourceUnavailable
-                                                  userInfo:content];
-                } else {
-                    remoteError = [NSError errorWithDomain:NSURLErrorDomain
-                                                      code:NSURLErrorBadServerResponse
-                                                  userInfo:nil];
-                }
-
-                DDLogWarn(@"'places' update failed with error %@", remoteError);
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    if (block) {
-                        block(nil,self.placesFetchDate,remoteError);
-                    }
-                }];
-            }
-        } else {
-            DDLogWarn(@"category contents request failed with error %@", error);
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (block) {
-                    block(nil,self.placesFetchDate,error);
-                }
-            }];
-        }
-    };
-
-    [self.requestQueue addOperation:apiRequest];
+    NSParameterAssert(category);
+    NSParameterAssert(block);
+    
+    // This is fairly messy at the moment since there is no foreign key between the map places
+    // and the categories. What we need to do is fire off a request to the category's content URL, parse
+    // out the parameters and then GET the places
+    NSString *pathPattern = [MITMapModelController placesResource].pathPattern;
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
+    NSDictionary *parameters = nil;
+    BOOL pathMatches = [pathMatcher matchesPath:[[category.url absoluteURL] path] tokenizeQueryStrings:YES parsedArguments:&parameters];
+    
+    NSAssert(pathMatches, @"fatal error: category url '%@' does not match path pattern '%@'",category.url,pathPattern);
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITMobileMapPlaces
+                                                    object:nil
+                                                parameters:parameters
+                                                completion:^(RKMappingResult *result, NSError *error) {
+                                                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                        if (!error) {
+                                                            NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"MapPlace"];
+                                                            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"(SELF IN %@)",[result array]];
+                                                            fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+                                                            
+                                                            block(fetchRequest,self.placesFetchDate,nil);
+                                                        } else {
+                                                            block(nil,nil,error);
+                                                        }
+                                                    }];
+                                                }];
 }
 
 #pragma mark - Map Bookmarks
@@ -545,13 +427,13 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
             NSPredicate *bookmarkPredicate = [NSPredicate predicateWithFormat:@"bookmark != NIL"];
             NSPredicate *andPredicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[bookmarkPredicate, fetchRequest.predicate]];
             fetchRequest.predicate = andPredicate;
-
+            
             NSMutableArray *sortDescriptors = [[NSMutableArray alloc] initWithArray:fetchRequest.sortDescriptors];
             [sortDescriptors insertObject:[NSSortDescriptor sortDescriptorWithKey:@"bookmark.order" ascending:YES]
                                   atIndex:0];
-
+            
             fetchRequest.sortDescriptors = sortDescriptors;
-
+            
             block(fetchRequest,lastUpdated,error);
         }
     }];
@@ -561,20 +443,20 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapPlaceEntityName];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"bookmark != NIL"];
-
+    
     MITCoreDataController *dataController = [[MIT_MobileAppDelegate applicationDelegate] coreDataController];
     NSManagedObjectContext *context = [dataController mainQueueContext];
-
+    
     __block NSUInteger numberOfBookmarks = NSNotFound;
     [context performBlockAndWait:^{
         NSError *error = nil;
         numberOfBookmarks = [context countForFetchRequest:fetchRequest error:&error];
-
+        
         if (error) {
             DDLogWarn(@"Failed to fetch bookmark count with error %@", error);
         }
     }];
-
+    
     return numberOfBookmarks;
 }
 
@@ -582,7 +464,7 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
 {
     NSPredicate *notBookmarked = [NSPredicate predicateWithFormat:@"bookmark == NIL"];
     NSArray *newBookmarkedPlaces = [places filteredArrayUsingPredicate:notBookmarked];
-
+    
     if (![newBookmarkedPlaces count]) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (block) {
@@ -592,35 +474,35 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
     } else {
         [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
             NSArray *localPlaces = [context transferManagedObjects:newBookmarkedPlaces];
-
+            
             NSMutableArray *insertedBookmarks = [[NSMutableArray alloc] init];
             [localPlaces enumerateObjectsUsingBlock:^(MITMapPlace *mapPlace, NSUInteger idx, BOOL *stop) {
                 MITMapBookmark *bookmarkObject = [NSEntityDescription insertNewObjectForEntityForName:MITMapBookmarkEntityName inManagedObjectContext:context];
                 bookmarkObject.place = mapPlace;
                 [insertedBookmarks addObject:bookmarkObject];
             }];
-
-
+            
+            
             // Now grab all the bookmarks from the DB and update their indices. If there are
             // repeated indicies, this may change the desired order but we will be guaranteed
             // that each index is unique.
             NSFetchRequest *bookmarksRequest = [NSFetchRequest fetchRequestWithEntityName:MITMapBookmarkEntityName];
             bookmarksRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
-
+            
             NSArray *fetchedBoomarks = [context executeFetchRequest:bookmarksRequest error:error];
-
+            
             if (!fetchedBoomarks) {
                 DDLogWarn(@"Failed to update bookmark indices %@", (*error));
             } else {
                 NSMutableArray *bookmarks = [NSMutableArray arrayWithArray:fetchedBoomarks];
                 [bookmarks addObjectsFromArray:insertedBookmarks];
-
+                
                 // Just in case run through all the other fetched bookmarks and make sure their ordering is correct
                 [bookmarks enumerateObjectsUsingBlock:^(MITMapBookmark *bookmark, NSUInteger idx, BOOL *stop) {
                     bookmark.order = @(idx);
                 }];
             }
-
+            
             // Will overwrite the fetch error (if one occurred).
             // This is the desired behavior as a save error is
             // far more critical than just failing to uniquify
@@ -639,35 +521,35 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
 {
     [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
         MITMapPlace *localPlace = (MITMapPlace*)[context objectWithID:[place objectID]];
-
+        
         if (localPlace.bookmark) {
             NSFetchRequest *bookmarksRequest = [NSFetchRequest fetchRequestWithEntityName:MITMapBookmarkEntityName];
             bookmarksRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
-
+            
             NSError *error = nil;
             NSMutableArray *bookmarks = [[context executeFetchRequest:bookmarksRequest error:&error] mutableCopy];
-
+            
             if (error) {
                 DDLogWarn(@"Failed to fetch bookmarks with error %@", error);
             } else {
                 [bookmarks removeObject:localPlace.bookmark];
                 [context deleteObject:localPlace.bookmark];
-
+                
                 // Run through all the bookmarks and make sure their ordering is correct (taking into account
                 // the deletion)
                 [bookmarks enumerateObjectsUsingBlock:^(MITMapBookmark *bookmark, NSUInteger idx, BOOL *stop) {
                     bookmark.order = @(idx);
                 }];
-
+                
                 [context save:&error];
-
+                
                 if (error) {
                     DDLogWarn(@"Failed to remove bookmark for '%@' with error %@", [localPlace identifier], error);
                 }
             }
         }
     }
-
+     
                                                             completion:^(NSError *error) {
                                                                 if (block) {
                                                                     block(error);
@@ -679,27 +561,27 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
 {
     [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
         MITMapPlace *localPlace = (MITMapPlace*)[context objectWithID:[place objectID]];
-
+        
         if (localPlace.bookmark) {
             NSFetchRequest *bookmarksRequest = [NSFetchRequest fetchRequestWithEntityName:MITMapBookmarkEntityName];
             bookmarksRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
-
+            
             NSArray *fetchResults = [context executeFetchRequest:bookmarksRequest error:error];
             NSMutableOrderedSet *bookmarks = [[NSMutableOrderedSet alloc] initWithArray:fetchResults];
-
+            
             if (!fetchResults) {
                 DDLogError(@"Failed to fetch bookmarks with error %@", *error);
             } else {
                 NSUInteger fromIndex = [bookmarks indexOfObject:localPlace.bookmark];
-
+                
                 [bookmarks moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:fromIndex] toIndex:index];
-
+                
                 [bookmarks enumerateObjectsUsingBlock:^(MITMapBookmark *bookmark, NSUInteger idx, BOOL *stop) {
                     bookmark.order = @(idx);
                 }];
-
+                
                 [context save:error];
-
+                
                 if (error) {
                     DDLogWarn(@"Failed to move bookmark for '%@' to index %d with error %@", localPlace.identifier,index,*error);
                 }
@@ -720,10 +602,10 @@ NSString* const MITMapBookmarkEntityName = @"MapBookmark";
                                                             appropriateForURL:nil
                                                                        create:NO
                                                                         error:nil];
-
+    
     NSURL *bookmarksURL = [NSURL URLWithString:@"mapBookmarks.plist"
                                  relativeToURL:userDocumentsURL];
-
+    
     NSArray *bookmarksV1 = [NSArray arrayWithContentsOfURL:bookmarksURL];
     if (bookmarksV1) {
         // Migrate the bookmarks from the original version of the app
