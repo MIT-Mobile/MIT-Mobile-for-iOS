@@ -455,7 +455,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MITCampusMapReuseIdentifierSearchCell
                                                                 forIndexPath:indexPath];
         
-        MapSearch *search = self.recentSearches[indexPath.row];
+        MITMapSearch *search = self.recentSearches[indexPath.row];
         cell.textLabel.text = search.searchTerm;
         
         [cachedFormatter setDefaultDate:[NSDate date]];
