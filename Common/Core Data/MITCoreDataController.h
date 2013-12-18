@@ -1,12 +1,13 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
+@class MITMobile;
+@class RKManagedObjectStore;
+
 @interface MITCoreDataController : NSObject
-@property (nonatomic,readonly) NSPersistentStoreCoordinator *storeCoordinator;
-
-+ (instancetype)defaultController;
-
-- (instancetype)initWithPersistentStoreCoodinator:(NSPersistentStoreCoordinator*)coordinator;
+@property (nonatomic,readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic,readonly) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic,readonly) RKManagedObjectStore *managedObjectStore;
 
 /** Returns a shared NSManagedObjectContext for use on the main queue. Objects managed
  *  by this context should not be modified; a background queue should be used instead.
@@ -14,7 +15,13 @@
  *  @related performBackgroundUpdate:
  *  @related performBackgroundUpdateAndWait:
  */
-- (NSManagedObjectContext*)mainQueueContext;
+@property (nonatomic,readonly) NSManagedObjectContext *mainQueueContext;
+
++ (instancetype)defaultController;
+
+- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel*)managedObjectModel;
+
+- (NSManagedObjectContext*)newManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType trackChanges:(BOOL)track;
 
 /** Executes fetchRequest on a background context and
  *  returns the ordered set of IDs to the caller. Any changes
