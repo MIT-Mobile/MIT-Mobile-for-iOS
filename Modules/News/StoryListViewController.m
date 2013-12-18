@@ -1028,7 +1028,7 @@ static NSString *const NewsCategoryHumanities = @"Humanities";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    BOOL isSearchResults;
+    BOOL isSearchResults = NO;
     NSArray *dataSource = nil;
     if (tableView == self.tableView) {
         dataSource = self.stories;
