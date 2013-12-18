@@ -12,8 +12,9 @@
 
 - (void)awakeFromFetch {
     [super awakeFromFetch];
-
-    self.token = [self.searchTerm stringBySearchNormalization];
+    if (self.token == nil) {
+        self.token = [self.searchTerm stringBySearchNormalization];
+    }
 }
 
 - (void)didChangeValueForKey:(NSString*)key
@@ -28,7 +29,6 @@
 - (void)didTurnIntoFault
 {
     [super didTurnIntoFault];
-    self.token = nil;
 }
 
 @end

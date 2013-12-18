@@ -14,13 +14,12 @@
 @property (nonatomic, copy) NSString * mailingAddress;
 @property (nonatomic, copy) NSString * city;
 @property (nonatomic, copy) NSString * imageCaption;
-@property (nonatomic, copy) NSString * imageURL;
+@property (nonatomic, copy) NSURL * imageURL;
 @property (nonatomic, copy) NSString * streetAddress;
 @property (nonatomic, strong) NSNumber * longitude;
 @property (nonatomic, strong) NSNumber * latitude;
-@property (nonatomic, copy) NSString * url;
+@property (nonatomic, copy) NSURL * url;
 @property (nonatomic, copy) NSOrderedSet *contents;
-@property (nonatomic, strong) MITMapPlace *building;
 @property (nonatomic, strong) MITMapBookmark *bookmark;
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;

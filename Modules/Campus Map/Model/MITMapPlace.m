@@ -38,7 +38,6 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 @dynamic latitude;
 @dynamic url;
 @dynamic contents;
-@dynamic building;
 @dynamic bookmark;
 
 - (id)init
