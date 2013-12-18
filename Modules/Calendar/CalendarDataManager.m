@@ -2,8 +2,6 @@
 #import "MITConstants.h"
 #import "CoreDataManager.h"
 #import "MITEventList.h"
-#import "MIT_MobileAppDelegate.h"
-#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MobileRequestOperation.h"
 
 NSString * const CalendarStateEventList = @"events";

@@ -1,6 +1,5 @@
 #import "MITModule.h"
 #import "MITModule+Protected.h"
-#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "Foundation+MITAdditions.h"
 
 @implementation MITModule

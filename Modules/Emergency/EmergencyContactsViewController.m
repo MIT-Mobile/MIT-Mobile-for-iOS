@@ -4,7 +4,6 @@
 #import "MITMultilineTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 #import "EmergencyData.h"
-#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MITModule.h"
 
 @interface EmergencyContactsViewController ()

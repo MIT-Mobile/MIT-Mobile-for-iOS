@@ -299,7 +299,6 @@
 		DE70549C103FB79D003B5F41 /* EmergencyModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE705498103FB79D003B5F41 /* EmergencyModule.m */; };
 		DE70549D103FB79D003B5F41 /* EmergencyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE70549A103FB79D003B5F41 /* EmergencyViewController.m */; };
 		DE715349102FC897005E6111 /* MITModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE715348102FC897005E6111 /* MITModule.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DE71537C102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71537B102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m */; };
 		DE71F6E3104234F900661DED /* ShuttleRouteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */; };
 		DE71F7D510424E3400661DED /* ShuttleStop.m in Sources */ = {isa = PBXBuildFile; fileRef = DE71F7D410424E3400661DED /* ShuttleStop.m */; };
 		DE728E6C10D6FF4700BFED37 /* StoryThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE728E4610D6FF4700BFED37 /* StoryThumbnailView.m */; };
@@ -1044,8 +1043,6 @@
 		DE70549A103FB79D003B5F41 /* EmergencyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmergencyViewController.m; sourceTree = "<group>"; };
 		DE715347102FC897005E6111 /* MITModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITModule.h; sourceTree = "<group>"; };
 		DE715348102FC897005E6111 /* MITModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITModule.m; sourceTree = "<group>"; };
-		DE71537A102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MIT_MobileAppDelegate+ModuleList.h"; path = "App Delegate/MIT_MobileAppDelegate+ModuleList.h"; sourceTree = "<group>"; };
-		DE71537B102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MIT_MobileAppDelegate+ModuleList.m"; path = "App Delegate/MIT_MobileAppDelegate+ModuleList.m"; sourceTree = "<group>"; };
 		DE71F6E1104234F900661DED /* ShuttleRouteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleRouteViewController.h; sourceTree = "<group>"; };
 		DE71F6E2104234F900661DED /* ShuttleRouteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleRouteViewController.m; sourceTree = "<group>"; };
 		DE71F7D310424E3400661DED /* ShuttleStop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShuttleStop.h; sourceTree = "<group>"; };
@@ -2557,8 +2554,6 @@
 				2978864410F03656002670CC /* MITUnreadNotifications.m */,
 				1D3623240D0F684500981E51 /* MIT_MobileAppDelegate.h */,
 				1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */,
-				DE71537A102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.h */,
-				DE71537B102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m */,
 			);
 			name = "App Delegate";
 			sourceTree = "<group>";
@@ -3160,7 +3155,6 @@
 				EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */,
 				2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */,
 				DE715349102FC897005E6111 /* MITModule.m in Sources */,
-				DE71537C102FD66A005E6111 /* MIT_MobileAppDelegate+ModuleList.m in Sources */,
 				29E308871176018C005211A7 /* MITModuleURL.m in Sources */,
 				2C8E2B4B18206989002752F0 /* MITMapPlacesViewController.m in Sources */,
 				EBAB164211BEC3E800D481B5 /* MITSearchDisplayController.m in Sources */,
@@ -3501,8 +3495,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = (
-					"-all_load",
 					"-ObjC",
+					"-all_load",
 				);
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -3527,8 +3521,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
-					"-all_load",
 					"-ObjC",
+					"-all_load",
 				);
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -3557,8 +3551,8 @@
 					"-DTESTFLIGHT",
 				);
 				OTHER_LDFLAGS = (
-					"-all_load",
 					"-ObjC",
+					"-all_load",
 				);
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;

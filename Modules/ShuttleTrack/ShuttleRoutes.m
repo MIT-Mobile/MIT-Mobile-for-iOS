@@ -1,10 +1,10 @@
 #import "ShuttleRoutes.h"
+
 #import "ShuttleRoute.h"
 #import "ShuttleRouteViewController.h"
 #import "SecondaryGroupedTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
-#import "MIT_MobileAppDelegate+ModuleList.h"
 
 @interface ShuttleRoutes ()
 {

@@ -1,5 +1,4 @@
 #import "MITModuleURL.h"
-#import "MIT_MobileAppDelegate+ModuleList.h"
 
 @implementation MITModuleURL
 @synthesize path, query;
