@@ -4,15 +4,10 @@
 
 FOUNDATION_EXTERN NSString * const MITCoreDataThreadLocalContextKey;
 
-@interface CoreDataManager : NSObject {
-	NSManagedObjectModel *managedObjectModel;
-    NSManagedObjectContext *managedObjectContext;	    
-    NSPersistentStoreCoordinator *persistentStoreCoordinator;
-}
-
-@property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@interface CoreDataManager : NSObject
+@property (nonatomic, readonly) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, readonly, strong) NSSet *modelNames;
 
 @property (nonatomic, readonly) NSString *applicationDocumentsDirectory;
@@ -33,7 +28,6 @@ FOUNDATION_EXTERN NSString * const MITCoreDataThreadLocalContextKey;
 + (void)deleteObject:(NSManagedObject *)object;
 + (void)saveData;
 + (void)saveDataWithTemporaryMergePolicy:(id)temporaryMergePolicy;
-+ (BOOL)wipeData;
 
 + (NSManagedObjectModel *)managedObjectModel;
 + (NSManagedObjectContext *)managedObjectContext;
@@ -53,7 +47,6 @@ FOUNDATION_EXTERN NSString * const MITCoreDataThreadLocalContextKey;
 - (void)deleteObject:(NSManagedObject *)object;
 - (void)deleteObjectsForEntity:(NSString*)entityName;
 - (void)saveData;
-- (BOOL)wipeData;
 
 // added for migrating store
 -(NSString *)storeFileName;
