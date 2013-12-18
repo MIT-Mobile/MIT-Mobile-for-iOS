@@ -18,7 +18,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 
 // TODO: Find a better place for these, maybe a class method on the NSManagedObject subclasses?
 NSString* const MITMapSearchEntityName = @"MapSearch";
-NSString* const MITMapCategoryEntityName = @"MapPlace";
+NSString* const MITMapCategoryEntityName = @"MapCategory";
 NSString* const MITMapPlaceEntityName = @"MapPlace";
 NSString* const MITMapPlaceContentEntityName = @"MapPlaceContent";
 NSString* const MITMapBookmarkEntityName = @"MapBookmark";
