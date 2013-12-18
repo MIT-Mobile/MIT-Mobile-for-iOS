@@ -2,10 +2,11 @@
 #define MIT_Mobile_MITCoreData_h
 
 #import <CoreData/CoreData.h>
-#import "MIT_MobileAppDelegate.h"
+#import <RestKit/RestKit.h>
 
+#import "MITMobile.h"
 #import "CoreDataManager.h"
 #import "MITCoreDataController.h"
-#import "CoreData+MITAdditions.h"
+#import "MITMobileResources.h"
 
 #endif

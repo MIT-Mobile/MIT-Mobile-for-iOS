@@ -68,6 +68,7 @@
 		2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */; };
+		2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5D6ABD1861374300182C19 /* MITMapPlaceContent.m */; };
 		2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5DECD613E9BABB00F9C089 /* MobileRequestLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCC13E9BABB00F9C089 /* MobileRequestLoginViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5DECCE13E9BABB00F9C089 /* MobileRequestOperation.m */; };
@@ -99,6 +100,8 @@
 		2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA73ECE18171AFD00A42D03 /* MITMapBookmark.m */; };
 		2CA91F9915CB03BB00C03732 /* MITScannerHelpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA91F9715CB03BB00C03732 /* MITScannerHelpViewController.m */; };
 		2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CA91F9815CB03BB00C03732 /* MITScannerHelpViewController.xib */; };
+		2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA9AFBA185F92E00005D5DA /* MITMapPlacesResource.m */; };
+		2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */; };
 		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */; };
@@ -583,6 +586,8 @@
 		2C5B30461371D54500870E6D /* FacilitiesUserLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesUserLocationViewController.h; sourceTree = "<group>"; };
 		2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesUserLocationViewController.m; sourceTree = "<group>"; };
 		2C5CE69917FDC1BE009B850D /* MITMapModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MITMapModel.h; path = Model/MITMapModel.h; sourceTree = "<group>"; };
+		2C5D6ABC1861374300182C19 /* MITMapPlaceContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMapPlaceContent.h; path = Model/MITMapPlaceContent.h; sourceTree = "<group>"; };
+		2C5D6ABD1861374300182C19 /* MITMapPlaceContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMapPlaceContent.m; path = Model/MITMapPlaceContent.m; sourceTree = "<group>"; };
 		2C5DECC913E9BABB00F9C089 /* MobileKeychainServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileKeychainServices.h; sourceTree = "<group>"; };
 		2C5DECCA13E9BABB00F9C089 /* MobileKeychainServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileKeychainServices.m; sourceTree = "<group>"; };
 		2C5DECCB13E9BABB00F9C089 /* MobileRequestLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileRequestLoginViewController.h; sourceTree = "<group>"; };
@@ -637,6 +642,10 @@
 		2CA91F9615CB03BB00C03732 /* MITScannerHelpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerHelpViewController.h; sourceTree = "<group>"; };
 		2CA91F9715CB03BB00C03732 /* MITScannerHelpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerHelpViewController.m; sourceTree = "<group>"; };
 		2CA91F9815CB03BB00C03732 /* MITScannerHelpViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITScannerHelpViewController.xib; sourceTree = "<group>"; };
+		2CA9AFB9185F92E00005D5DA /* MITMapPlacesResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlacesResource.h; sourceTree = "<group>"; };
+		2CA9AFBA185F92E00005D5DA /* MITMapPlacesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlacesResource.m; sourceTree = "<group>"; };
+		2CA9AFBC185F9A4B0005D5DA /* MITMapCategoriesResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapCategoriesResource.h; sourceTree = "<group>"; };
+		2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesResource.m; sourceTree = "<group>"; };
 		2CB383341486A01600D4B168 /* LibrariesHoldingsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibrariesHoldingsDetailViewController.h; path = WorldCatSearch/LibrariesHoldingsDetailViewController.h; sourceTree = "<group>"; };
 		2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LibrariesHoldingsDetailViewController.m; path = WorldCatSearch/LibrariesHoldingsDetailViewController.m; sourceTree = "<group>"; };
 		2CB6459D134CAF1A00E85E64 /* QRReaderModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderModule.h; sourceTree = "<group>"; };
@@ -750,6 +759,7 @@
 		2CF9F908181ABC3800EDB359 /* MITFetchedResultsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITFetchedResultsTableViewController.h; sourceTree = "<group>"; };
 		2CF9F909181ABC3800EDB359 /* MITFetchedResultsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITFetchedResultsTableViewController.m; sourceTree = "<group>"; };
 		2CF9F90B181ABE5F00EDB359 /* MITCoreData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITCoreData.h; sourceTree = "<group>"; };
+		2CFAE1E81861F9BE00A0970C /* MITMobileResources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MITMobileResources.h; sourceTree = "<group>"; };
 		2CFB87D11416B1AC0014E141 /* MITSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITSegmentControl.h; sourceTree = "<group>"; };
 		2CFB87D21416B1AC0014E141 /* MITSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITSegmentControl.m; sourceTree = "<group>"; };
 		2CFB87D31416B1AC0014E141 /* MITTabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabBar.h; sourceTree = "<group>"; };
@@ -1654,15 +1664,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2C5123111843DB4000902BB4 /* Routing */ = {
+		2C5123111843DB4000902BB4 /* Mobile API */ = {
 			isa = PBXGroup;
 			children = (
 				2C99DB061846867200277B25 /* MITMobile.h */,
 				2C99DB071846867200277B25 /* MITMobile.m */,
-				2C276711184CC90E00E53E9F /* MITMobileResource.h */,
-				2C276712184CC90E00E53E9F /* MITMobileResource.m */,
+				2CA9AFB7185F929B0005D5DA /* Resources */,
 			);
-			name = Routing;
+			name = "Mobile API";
 			sourceTree = "<group>";
 		};
 		2C5B30451371D47000870E6D /* FacilitiesUserLocation */ = {
@@ -1747,6 +1756,20 @@
 				2C95A1D7137DB24D0025B28D /* FacilitiesSummaryViewController.xib */,
 			);
 			path = FacilitiesSummary;
+			sourceTree = "<group>";
+		};
+		2CA9AFB7185F929B0005D5DA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2CFAE1E81861F9BE00A0970C /* MITMobileResources.h */,
+				2C276711184CC90E00E53E9F /* MITMobileResource.h */,
+				2C276712184CC90E00E53E9F /* MITMobileResource.m */,
+				2CA9AFB9185F92E00005D5DA /* MITMapPlacesResource.h */,
+				2CA9AFBA185F92E00005D5DA /* MITMapPlacesResource.m */,
+				2CA9AFBC185F9A4B0005D5DA /* MITMapCategoriesResource.h */,
+				2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		2CB6459C134CAF1A00E85E64 /* Scanner */ = {
@@ -2029,8 +2052,8 @@
 		3AA21C491039DDBD00DB7637 /* Core Data */ = {
 			isa = PBXGroup;
 			children = (
-				2C5123111843DB4000902BB4 /* Routing */,
 				2CF9F90B181ABE5F00EDB359 /* MITCoreData.h */,
+				2C5123111843DB4000902BB4 /* Mobile API */,
 				3AA21C541039DDEA00DB7637 /* CoreDataManager.h */,
 				3AA21C551039DDEA00DB7637 /* CoreDataManager.m */,
 				2C189A91181970B700653DF6 /* MITCoreDataController.h */,
@@ -2045,17 +2068,19 @@
 			isa = PBXGroup;
 			children = (
 				44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */,
-				2CE6BE37182AE1D5005C5047 /* MITMapCategory.h */,
-				2CE6BE38182AE1D5005C5047 /* MITMapCategory.m */,
-				44C1A4C211A412E2000FD653 /* MITMapSearch.h */,
-				44C1A4C311A412E2000FD653 /* MITMapSearch.m */,
 				2CA73ECD18171AFD00A42D03 /* MITMapBookmark.h */,
 				2CA73ECE18171AFD00A42D03 /* MITMapBookmark.m */,
+				2CE6BE37182AE1D5005C5047 /* MITMapCategory.h */,
+				2CE6BE38182AE1D5005C5047 /* MITMapCategory.m */,
 				2C5CE69917FDC1BE009B850D /* MITMapModel.h */,
 				2C49DBB017E8AB9400ABA319 /* MITMapModelController.h */,
 				2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */,
 				2C0023A417FB7AC800E8E0E5 /* MITMapPlace.h */,
 				2C0023A517FB7AC800E8E0E5 /* MITMapPlace.m */,
+				2C5D6ABC1861374300182C19 /* MITMapPlaceContent.h */,
+				2C5D6ABD1861374300182C19 /* MITMapPlaceContent.m */,
+				44C1A4C211A412E2000FD653 /* MITMapSearch.h */,
+				44C1A4C311A412E2000FD653 /* MITMapSearch.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -3189,6 +3214,7 @@
 				2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */,
 				2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */,
 				2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */,
+				2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */,
 				3A827081103DAA0500BB4109 /* Reachability.m in Sources */,
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */,
@@ -3224,6 +3250,7 @@
 				EB4C23AE1279E89A00058748 /* SiteDetailViewController.m in Sources */,
 				EB4C21DA12777C8D00058748 /* StartingLocationViewController.m in Sources */,
 				DE728E7B10D6FF4700BFED37 /* StoryDetailViewController.m in Sources */,
+				2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */,
 				2C249ECA17AC0B1C003C41FE /* LibraryFormElement.m in Sources */,
 				DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */,
 				DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */,
@@ -3334,6 +3361,7 @@
 				2CCF81511636F69900DE273F /* DDASLLogger.m in Sources */,
 				2CCF81521636F69900DE273F /* DDFileLogger.m in Sources */,
 				2CCF81531636F69900DE273F /* DDLog.m in Sources */,
+				2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */,
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
 				2CCF81551636F69900DE273F /* ContextFilterLogFormatter.m in Sources */,
 				2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */,
