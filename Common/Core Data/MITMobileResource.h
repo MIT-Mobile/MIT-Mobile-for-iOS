@@ -1,25 +1,27 @@
 #import <Foundation/Foundation.h>
-
-// Order is important here. If the CoreData headers
-// are not imported *before* the RestKit headers,
-// the CoreData portions will be skipped by the preprocessor
-#import <CoreData/CoreData.h>
+#import <CoreData/CoreData.h> // Must be imported before RestKit 
 #import <RestKit/RestKit.h>
 
 @class MITMappingSet;
 @class RKMapping;
 
 @interface MITMobileResource : NSObject
-@property (nonatomic,strong) NSString *name;
-@property (nonatomic,strong) NSString *pathPattern;
-@property (nonatomic,strong) NSFetchRequest* (^fetchGenerator)(NSURL *url);
+@property (nonatomic,readonly) NSString *pathPattern;
+@property (nonatomic,readonly) RKRequestMethod requestMethods;
+
+@property (nonatomic,strong) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic,strong) NSDate *refreshedDate;
+@property (nonatomic) NSTimeInterval expiryInterval;
 
 // Shorthand for creating a resource with a single mapping. The RKRequestMethod
 // can be a bitmask and all the set methods will be assigned
-+ (instancetype)resourceWithName:(NSString*)name pathPattern:(NSString*)path mapping:(RKMapping*)mapping method:(RKRequestMethod)method;
-- (instancetype)initWithName:(NSString*)name pathPattern:(NSString*)pathPattern;
++ (instancetype)resourceWithPathPattern:(NSString*)path mapping:(RKMapping*)mapping method:(RKRequestMethod)method;
+- (instancetype)initWithPathPattern:(NSString*)pathPattern;
 
+- (void)loadMappings;
 - (void)addMapping:(RKMapping*)mapping atKeyPath:(NSString*)keyPath forRequestMethod:(RKRequestMethod)method;
 - (void)enumerateMappingsByRequestMethodUsingBlock:(void (^)(RKRequestMethod method, NSDictionary *mappings))block;
 - (void)enumerateMappingsForRequestMethod:(RKRequestMethod)method usingBlock:(void (^)(NSString *keyPath, RKMapping *mapping))block;
+
+- (NSFetchRequest*)fetchRequestForURL:(NSURL*)url;
 @end

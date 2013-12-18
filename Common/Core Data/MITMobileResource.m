@@ -20,18 +20,20 @@ static inline void MITMobileEnumerateRequestMethodsUsingBlock(RKRequestMethod me
     }];
 }
 
+typedef NSFetchRequest* (^MITMobileFetchGenerator)(NSURL *url);
+
 #pragma mark -
 @interface MITMobileResource ()
 @property (nonatomic,strong) NSMutableDictionary *registeredMappings;
 @end
 
 @implementation MITMobileResource
-+ (instancetype)resourceWithName:(NSString*)name
-                     pathPattern:(NSString*)path
-                         mapping:(RKMapping*)mapping
-                          method:(RKRequestMethod)method
+
++ (instancetype)resourceWithPathPattern:(NSString*)path
+                                mapping:(RKMapping*)mapping
+                                 method:(RKRequestMethod)method
 {
-    MITMobileResource *resource = [[MITMobileResource alloc] initWithName:name pathPattern:path];
+    MITMobileResource *resource = [[MITMobileResource alloc] initWithPathPattern:path];
     [resource addMapping:mapping
                atKeyPath:nil
         forRequestMethod:method];
@@ -45,25 +47,39 @@ static inline void MITMobileEnumerateRequestMethodsUsingBlock(RKRequestMethod me
                                  userInfo:nil];
 }
 
-- (instancetype)initWithName:(NSString *)name pathPattern:(NSString *)pathPattern
+- (instancetype)initWithPathPattern:(NSString *)pathPattern
 {
-    NSParameterAssert(name);
     NSParameterAssert(pathPattern);
 
     self = [super init];
     if (self) {
-        _name = [name copy];
         _pathPattern = [pathPattern copy];
-        _registeredMappings = [[NSMutableDictionary alloc] init];
     }
 
     return self;
 }
 
+- (NSMutableDictionary*)registeredMappings
+{
+    if (!_registeredMappings) {
+        [self loadMappings];
+    }
+
+    return _registeredMappings;
+}
+
+- (void)loadMappings
+{
+    return;
+}
 
 - (void)addMapping:(RKMapping*)mapping atKeyPath:(NSString*)keyPath forRequestMethod:(RKRequestMethod)method
 {
     NSParameterAssert(mapping);
+
+    if (_registeredMappings == nil) {
+        _registeredMappings = [[NSMutableDictionary alloc] init];
+    }
 
     MITMobileEnumerateRequestMethodsUsingBlock(method, ^(RKRequestMethod requestMethod) {
         NSString *key = RKStringFromRequestMethod(requestMethod);
@@ -124,4 +140,21 @@ static inline void MITMobileEnumerateRequestMethodsUsingBlock(RKRequestMethod me
     });
 }
 
+- (RKRequestMethod)requestMethods
+{
+    __block RKRequestMethod methods = 0;
+    [self.registeredMappings enumerateKeysAndObjectsUsingBlock:^(NSString *method, id obj, BOOL *stop) {
+        RKRequestMethod requestMethod = RKRequestMethodFromString(method);
+        methods |= requestMethod;
+    }];
+
+    return methods;
+}
+
+
+#pragma mark - Dynamic Properties
+- (NSFetchRequest*)fetchRequestForURL:(NSURL *)url
+{
+    return nil;
+}
 @end
