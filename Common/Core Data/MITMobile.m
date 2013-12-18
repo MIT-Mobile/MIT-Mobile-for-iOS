@@ -8,26 +8,26 @@
 
 #pragma mark - Route Definitions
 #pragma mark /calendars
-NSString* const MITMobileCalendars = @"/calendars";
-NSString* const MITMobileCalendar = @"/calendars/:calendar";
-NSString* const MITMobileCalendarEvents = @"/calendars/:calendar/events";
-NSString* const MITMobileCalendarEvent = @"/calendars/:calendar/events/:event";
+NSString* const MITMobileCalendars = @"apis/calendars";
+NSString* const MITMobileCalendar = @"apis/calendars/:calendar";
+NSString* const MITMobileCalendarEvents = @"apis/calendars/:calendar/events";
+NSString* const MITMobileCalendarEvent = @"apis/calendars/:calendar/events/:event";
 
 #pragma mark /dining
-NSString* const MITMobileDining = @"/dining";
-NSString* const MITMobileDiningVenueIcon = @"/dining/venues/:type/:venue/icon";
-NSString* const MITMobileDiningHouseVenues = @"/dining/venues/house";
-NSString* const MITMobileDiningRetailVenues = @"/dining/venues/retail";
+NSString* const MITMobileDining = @"apis/dining";
+NSString* const MITMobileDiningVenueIcon = @"apis/dining/venues/:type/:venue/icon";
+NSString* const MITMobileDiningHouseVenues = @"apis/dining/venues/house";
+NSString* const MITMobileDiningRetailVenues = @"apis/dining/venues/retail";
 
 #pragma mark /links
-NSString* const MITMobileLinks = @"/links";
+NSString* const MITMobileLinks = @"apis/links";
 
 #pragma mark /maps
-NSString* const MITMobileMapBootstrap = @"/apis/map/bootstrap";
-NSString* const MITMobileMapCategories = @"/apis/map/place_categories";
-NSString* const MITMobileMapPlaces = @"/apis/map/places";
-NSString* const MITMobileMapRooms = @"/apis/map/rooms";
-NSString* const MITMobileMapBuilding = @"/apis/map/rooms/:building";
+NSString* const MITMobileMapBootstrap = @"apis/map/bootstrap";
+NSString* const MITMobileMapCategories = @"apis/map/place_categories";
+NSString* const MITMobileMapPlaces = @"apis/map/places";
+NSString* const MITMobileMapRooms = @"apis/map/rooms";
+NSString* const MITMobileMapBuilding = @"apis/map/rooms/:building";
 
 #pragma mark /news
 NSString* const MITMobileNewsCategories = @"/news/categories";
