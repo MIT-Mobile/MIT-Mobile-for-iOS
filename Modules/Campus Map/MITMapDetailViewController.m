@@ -216,7 +216,7 @@
 	if (self.place.imageURL) {
         __weak MITMapDetailViewController *weakSelf = self;
         [self.buildingImageView cancelCurrentImageLoad];
-        NSURL *imageURL = [NSURL URLWithString:self.place.imageURL];
+        NSURL *imageURL = self.place.imageURL;
         [self.buildingImageView setImageWithURL:imageURL
                                       completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
                                           MITMapDetailViewController *blockSelf = weakSelf;

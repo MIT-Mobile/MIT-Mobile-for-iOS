@@ -46,11 +46,11 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *mapPlaceIDs);
 	[self.navigationItem setRightBarButtonItem:doneItem animated:animated];
 
     __weak MITMapBookmarksViewController *weakSelf = self;
-    [[MITMapModelController sharedController] bookmarkedPlaces:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+    self.fetchRequest = [[MITMapModelController sharedController] bookmarkedPlaces:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
         MITMapBookmarksViewController *blockSelf = weakSelf;
 
         if (blockSelf) {
-            self.fetchRequest = fetchRequest;
+            [blockSelf.tableView reloadData];
         }
     }];
 }
