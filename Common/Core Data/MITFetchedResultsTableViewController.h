@@ -2,12 +2,12 @@
 #import <CoreData/CoreData.h>
 
 @interface MITFetchedResultsTableViewController : UITableViewController <NSFetchedResultsControllerDelegate>
-@property (nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic,readonly,strong) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSFetchRequest *fetchRequest;
+
+@property (nonatomic,readonly,strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic,getter = shouldUpdateTableOnResultsChange) BOOL updateTableOnResultsChange;
 
-- (id)init;
-- (id)initWithManagedObjectContext:(NSManagedObjectContext*)context;
-- (id)initWithFetchRequest:(NSFetchRequest*)fetchRequest;
+- (instancetype)init;
+- (instancetype)initWithFetchRequest:(NSFetchRequest*)fetchRequest;
 @end

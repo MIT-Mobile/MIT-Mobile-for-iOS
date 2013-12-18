@@ -2,60 +2,24 @@
 #import "MITCoreData.h"
 
 @interface MITFetchedResultsTableViewController ()
-@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic,strong) id contextDidSaveToken;
 @property (nonatomic,strong) NSFetchedResultsController *fetchedResultsController;
 
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)context fetchRequest:(NSFetchRequest*)fetchRequest;
 @end
 
 @implementation MITFetchedResultsTableViewController
-- (id)init
+- (instancetype)init
 {
-    return [self initWithManagedObjectContext:nil fetchRequest:nil];
+    return [self initWithFetchRequest:nil];
 }
 
-- (id)initWithManagedObjectContext:(NSManagedObjectContext*)context
-{
-    return [self initWithManagedObjectContext:context fetchRequest:nil];
-}
-
-- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest
-{
-    return [self initWithManagedObjectContext:nil fetchRequest:fetchRequest];
-}
-
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)context fetchRequest:(NSFetchRequest*)fetchRequest
+- (instancetype)initWithFetchRequest:(NSFetchRequest *)fetchRequest
 {
     self = [super init];
-
     if (self) {
-        if (context) {
-            _managedObjectContext = context;
-            if (_managedObjectContext.parentContext) {
-                _contextDidSaveToken = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification
-                                                                                           object:_managedObjectContext.parentContext
-                                                                                            queue:nil
-                                                                                        usingBlock:^(NSNotification *note) {
-                                                                                            [_managedObjectContext performBlock:^{
-                                                                                                [_managedObjectContext mergeChangesFromContextDidSaveNotification:note];
-                                                                                            }];
-                                                                                        }];
-            }
-        } else {
-            _managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-        }
+        _fetchRequest = [fetchRequest copy];
     }
-
+    
     return self;
-}
-
-- (void)dealloc
-{
-    if (self.contextDidSaveToken) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self.contextDidSaveToken];
-        self.contextDidSaveToken = nil;
-    }
 }
 
 - (void)viewDidLoad
@@ -67,6 +31,11 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [self.fetchedResultsController performFetch:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -86,8 +55,15 @@
 - (NSFetchedResultsController*)fetchedResultsController
 {
     if (!_fetchedResultsController) {
-        if (self.fetchRequest && self.managedObjectContext) {
+        if (self.fetchRequest) {
             [self loadFetchedResultsController];
+            
+            NSError *error = nil;
+            [_fetchedResultsController performFetch:&error];
+            
+            if (error) {
+                DDLogError(@"Failed to execute fetch %@: %@",self.fetchRequest,error);
+            }
         }
     }
 
@@ -103,13 +79,6 @@
     controller.delegate = self;
     _fetchedResultsController = controller;
 
-    NSError *error = nil;
-    [_fetchedResultsController performFetch:&error];
-
-    if (error) {
-        DDLogError(@"Failed to execute fetch %@: %@",self.fetchRequest,error);
-    }
-
 }
 
 #pragma mark Mutators
@@ -121,6 +90,15 @@
         self.fetchedResultsController = nil;
         [self.tableView reloadData];
     }
+}
+
+- (NSManagedObjectContext*)managedObjectContext
+{
+    if (!_managedObjectContext) {
+        _managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+    }
+    
+    return _managedObjectContext;
 }
 
 #pragma mark - Delegate Methods
