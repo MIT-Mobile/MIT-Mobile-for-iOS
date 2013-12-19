@@ -40,12 +40,24 @@
 
 
 @implementation MITMapDetailViewController
+@synthesize managedObjectContext = _managedObjectContext;
+
 - (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
 	if (self) {
 
 	}
 	return self;
+}
+
+- (instancetype)initWithPlace:(MITMapPlace*)mapPlace
+{
+    self = [super init];
+    if (self) {
+        _place = mapPlace;
+    }
+
+    return self;
 }
 
 - (void)dealloc 
@@ -326,6 +338,28 @@
 
 - (void)viewDidUnload {
 	self.tabViews = nil;
+}
+
+- (NSManagedObjectContext*)managedObjectContext
+{
+    if (!_managedObjectContext) {
+        // This is used to trigger the setter since, if a place has been assigned,
+        // it will need to be transferred into the new context
+        self.managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+    }
+
+    return _managedObjectContext;
+}
+
+- (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+{
+    if (_managedObjectContext != managedObjectContext) {
+        _managedObjectContext = managedObjectContext;
+
+        if (self.place && _managedObjectContext) {
+            self.place = (MITMapPlace*)[_managedObjectContext objectWithID:[self.place objectID]];
+        }
+    }
 }
 
 #pragma mark User Actions
