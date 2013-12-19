@@ -4,23 +4,16 @@
 #import "MITMapModel.h"
 #import "MITCoreDataController.h"
 
-typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *mapPlaceIDs);
-
-@interface MITMapBookmarksViewController ()
-@property (nonatomic,copy) MITMapBookmarksSelectionHandler selectionBlock;
-
-- (void)didCompleteSelectionWithPlaces:(NSOrderedSet*)mapPlaces;
-@end
-
 @implementation MITMapBookmarksViewController
 
 #pragma mark - View lifecycle
-- (id)init:(void (^)(NSOrderedSet* mapPlaceIDs))placesSelected
+- (id)init
 {
-    self = [super initWithFetchRequest:nil];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bookmark != nil"];
+    
+    self = [super initWithPredicate:predicate sortDescriptors:nil];
     if (self) {
 	    self.title = @"Bookmarks";
-        self.selectionBlock = placesSelected;
     }
 
     return self;
@@ -68,9 +61,7 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *mapPlaceIDs);
 
 - (IBAction)doneButtonPressed:(UIBarButtonItem*)doneItem
 {
-    if (self.selectionBlock) {
-        self.selectionBlock(nil);
-    }
+    [self didSelectPlaces:nil];
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated
@@ -84,16 +75,6 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *mapPlaceIDs);
                                                                                   target:self
                                                                                   action:@selector(doneButtonPressed:)];
         [self.navigationItem setRightBarButtonItem:doneItem animated:animated];
-    }
-}
-
-
-- (void)didCompleteSelectionWithPlaces:(NSOrderedSet*)mapPlaces
-{
-    if (self.selectionBlock) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            self.selectionBlock(mapPlaces);
-        }];
     }
 }
 
@@ -147,7 +128,7 @@ typedef void (^MITMapBookmarksSelectionHandler)(NSOrderedSet *mapPlaceIDs);
 
 	// get the bookmark that was selected.
     MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [self didCompleteSelectionWithPlaces:[NSOrderedSet orderedSetWithObject:[place objectID]]];
+    [self didSelectPlaces:@[[place objectID]]];
 }
 
 @end

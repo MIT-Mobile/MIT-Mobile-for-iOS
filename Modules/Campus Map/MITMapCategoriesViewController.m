@@ -1,30 +1,27 @@
 #import "MITMapCategoriesViewController.h"
+
 #import "MITAdditions.h"
-
 #import "MITMapModel.h"
-#import "CoreData+MITAdditions.h"
-
-#import "MIT_MobileAppDelegate.h"
-#import "MITCoreDataController.h"
 #import "MITMapPlacesViewController.h"
-
-typedef void (^MITMapCategorySelectionHandler)(MITMapCategory *category, NSOrderedSet *selectedPlaces);
 
 static NSString* const MITMapCategoryViewAllText = @"View all on map";
 
-@interface MITMapCategoriesViewController ()
-@property (nonatomic,strong) MITMapCategorySelectionHandler selectionBlock;
+@interface MITMapCategoriesViewController () <MITMapCategoriesDelegate,MITMapPlaceSelectionDelegate>
 @property (nonatomic,strong) MITMapCategory *category;
 
 - (id)initWithCategory:(MITMapCategory*)category;
 @end
 
 @implementation MITMapCategoriesViewController
-- (id)init:(MITMapCategorySelectionHandler)placesSelected
+- (id)init
 {
-    self = [super init];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapCategoryEntityName];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == nil"];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+
+    self = [super initWithFetchRequest:fetchRequest];
     if (self) {
-        _selectionBlock = placesSelected;
+        
     }
 
     return self;
@@ -32,7 +29,13 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 
 - (id)initWithCategory:(MITMapCategory*)category
 {
-    self = [super init];
+    NSParameterAssert(category);
+
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapCategoryEntityName];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == %@",category];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+
+    self = [super initWithFetchRequest:fetchRequest];
     if (self) {
         _category = (MITMapCategory*)[self.managedObjectContext objectWithID:[category objectID]];
     }
@@ -60,40 +63,31 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
                                                                                     action:@selector(cancelItemTouched:)];
         self.navigationItem.leftBarButtonItem = cancelItem;
         self.navigationItem.title = @"Browse";
-
-        if (self.fetchRequest == nil) {
-            [[MITMapModelController sharedController] categories:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
-                if (!error) {
-                    self.fetchRequest = fetchRequest;
-                } else {
-                    DDLogWarn(@"Failed to retreive category listing: %@",error);
-                }
-             }];
-        }
     } else {
         self.navigationItem.title = self.category.name;
-
-        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapCategory"];
-        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == %@", self.category];
-        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
-
-        self.fetchRequest = fetchRequest;
     }
-}
 
-- (void)didCompleteSelectionWithObjects:(NSOrderedSet*)selection inCategory:(MITMapCategory*)category
-{
-    NSMutableOrderedSet *objectIDs = [[NSMutableOrderedSet alloc] init];
-    [selection enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if ([obj isKindOfClass:[NSManagedObjectID class]]) {
-            [objectIDs addObject:obj];
-        } else if ([obj isKindOfClass:[NSManagedObject class]]) {
-            [objectIDs addObject:[obj objectID]];
+    // Update the available categories
+    [[MITMapModelController sharedController] categories:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+        if (!error) {
+            [self.fetchedResultsController performFetch:nil];
+            [self.tableView reloadData];
+        } else {
+            DDLogWarn(@"Failed to retreive category listing: %@",error);
         }
     }];
+}
 
-    if (self.selectionBlock) {
-        self.selectionBlock(category,objectIDs);
+- (void)didCompleteSelectionWithObjects:(NSArray*)selection inCategory:(MITMapCategory*)category
+{
+    if (self.delegate) {
+        if (selection) {
+            [self.delegate controller:self didSelectObjects:selection inCategory:category];
+        } else if (category) {
+            [self.delegate controller:self didSelectCategory:category];
+        } else {
+            [self.delegate controllerDidCancelSelection:self];
+        }
     }
 }
 
@@ -150,7 +144,7 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 
     if ([category.children count]) {
         MITMapCategoriesViewController *categoriesViewController = [[MITMapCategoriesViewController alloc] initWithCategory:category];
-        categoriesViewController.selectionBlock = self.selectionBlock;
+        categoriesViewController.delegate = self;
 
         [self.navigationController pushViewController:categoriesViewController animated:YES];
     } else {
@@ -173,14 +167,9 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
                                        if (!error) {
                                            NSIndexPath *selectedRow = [tableView indexPathForSelectedRow];
                                            if ([selectedRow isEqual:indexPath]) {
-                                               void (^selectionBlock)(NSOrderedSet*) = ^(NSOrderedSet *mapPlaces) {
-                                                   MITMapCategoriesViewController *blockSelf = weakSelf;
-                                                   [blockSelf didCompleteSelectionWithObjects:mapPlaces inCategory:category];
-                                               };
-
                                                MITMapPlacesViewController *viewController = [[MITMapPlacesViewController alloc] initWithPredicate:fetchRequest.predicate
-                                                                                                                                  sortDescriptors:fetchRequest.sortDescriptors
-                                                                                                                                        selection:selectionBlock];
+                                                                                                                                  sortDescriptors:fetchRequest.sortDescriptors];
+                                               viewController.delegate = self;
                                                [blockSelf.navigationController pushViewController:viewController animated:YES];
                                            }
                                        } else {
@@ -190,6 +179,34 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
                                        [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                                    }];
     }
+}
+
+
+#pragma mark MITMapCategoriesDelegate
+- (void)controller:(MITMapCategoriesViewController *)controller didSelectObjects:(NSArray *)objects inCategory:(MITMapCategory *)category
+{
+    [self didCompleteSelectionWithObjects:objects inCategory:category];
+}
+
+- (void)controller:(MITMapCategoriesViewController *)controller didSelectCategory:(MITMapCategory *)category
+{
+    [self didCompleteSelectionWithObjects:nil inCategory:category];
+}
+
+- (void)controllerDidCancelSelection:(MITMapCategoriesViewController *)controller
+{
+    [self didCompleteSelectionWithObjects:nil inCategory:nil];
+}
+
+#pragma mark MITMapPlaceSelectionDelegate
+- (void)placesController:(MITMapPlacesViewController *)controller didSelectPlaces:(NSArray *)objects
+{
+    [self didCompleteSelectionWithObjects:objects inCategory:self.category];
+}
+
+- (void)placesControllerDidCancelSelection:(MITMapPlacesViewController *)controller
+{
+    [self didCompleteSelectionWithObjects:nil inCategory:nil];
 }
 
 @end

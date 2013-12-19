@@ -1,10 +1,8 @@
 #import <UIKit/UIKit.h>
 #import "MITFetchedResultsTableViewController.h"
+#import "MITMapPlacesViewController.h"
 
-@class MapSelectionController;
-
-@interface MITMapBookmarksViewController : MITFetchedResultsTableViewController
-
+@interface MITMapBookmarksViewController : MITMapPlacesViewController
 /** Created a view controller for browsing the user's saved bookmarks.
  *  Once one or more placed is selected the passed block will be called
  *  with the current category and an ordered set of NSManagedObjectIDs.
@@ -14,5 +12,5 @@
  *
  *  @related MITMapPlace
  */
-- (id)init:(void (^)(NSOrderedSet* mapPlaceIDs))placesSelected;
+- (id)init;
 @end

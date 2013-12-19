@@ -1,12 +1,13 @@
 #import "MITCampusMapViewController.h"
-#import "MITMapCategoriesViewController.h"
 #import "MITAdditions.h"
 #import "MITMapModel.h"
 
 #import "MGSMapView.h"
 #import "MGSLayer.h"
-#import "MITMapDetailViewController.h"
+
+#import "MITMapCategoriesViewController.h"
 #import "MITMapBookmarksViewController.h"
+#import "MITMapDetailViewController.h"
 
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
@@ -21,7 +22,8 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 @interface MITCampusMapViewController () <UISearchDisplayDelegate, UISearchBarDelegate,
                                             UITableViewDataSource, UITableViewDelegate,
-                                            MGSMapViewDelegate>
+                                            MGSMapViewDelegate, MITMapCategoriesDelegate,
+                                            MITMapPlaceSelectionDelegate>
 @property (nonatomic,weak) IBOutlet UISearchBar *searchBar;
 @property (nonatomic,weak) IBOutlet MGSMapView *mapView;
 @property (nonatomic,strong) IBOutlet UISearchDisplayController *searchController;
@@ -152,14 +154,17 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 #pragma mark - Browse Handling
 - (IBAction)browseItemWasTapped:(UIBarButtonItem*)sender
 {
-    MITMapCategoriesViewController *categoryBrowseController = [[MITMapCategoriesViewController alloc] init:^(MITMapCategory *category, NSOrderedSet *mapPlaceIDs) {
-        DDLogVerbose(@"Selected %d places (from categories)", [mapPlaceIDs count]);
-        if (mapPlaceIDs) {
-            self.selectedPlaces = [self.managedObjectContext objectsWithIDs:[mapPlaceIDs array]];
-        }
+    MITMapCategoriesViewController *categoryBrowseController = [[MITMapCategoriesViewController alloc] init];
+    categoryBrowseController.delegate = self;
 
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }];
+    //:^(MITMapCategory *category, NSOrderedSet *mapPlaceIDs) {
+    //    DDLogVerbose(@"Selected %d places (from categories)", [mapPlaceIDs count]);
+    //    if (mapPlaceIDs) {
+    //        self.selectedPlaces = [self.managedObjectContext objectsWithIDs:[mapPlaceIDs array]];
+    //    }
+    //
+    //    [self dismissViewControllerAnimated:YES completion:nil];
+    //}];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:categoryBrowseController];
     navigationController.navigationBarHidden = NO;
@@ -170,14 +175,16 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 
 - (IBAction)favoritesItemWasTapped:(UIBarButtonItem*)sender
 {
-    MITMapBookmarksViewController *bookmarksViewController = [[MITMapBookmarksViewController alloc] init:^(NSOrderedSet *mapPlaceIDs) {
-        DDLogVerbose(@"Selected %d places (from bookmarks)", [mapPlaceIDs count]);
-        if (mapPlaceIDs) {
-            self.selectedPlaces = [self.managedObjectContext objectsWithIDs:[mapPlaceIDs array]];
-        }
+    MITMapBookmarksViewController *bookmarksViewController = [[MITMapBookmarksViewController alloc] init];
+    bookmarksViewController.delegate = self;
 
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }];
+    //:^(NSOrderedSet *mapPlaceIDs) {
+    //    DDLogVerbose(@"Selected %d places (from bookmarks)", [mapPlaceIDs count]);
+    //    if (mapPlaceIDs) {
+    //        self.selectedPlaces = [self.managedObjectContext objectsWithIDs:[mapPlaceIDs array]];
+    //    }
+    //    [self dismissViewControllerAnimated:YES completion:nil];
+    //}];
 
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:bookmarksViewController];
     navigationController.navigationBarHidden = NO;
@@ -484,9 +491,50 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (void)mapView:(MGSMapView *)mapView calloutDidReceiveTapForAnnotation:(id<MGSAnnotation>)annotation
 {
     MITMapPlace *tappedPlace = (MITMapPlace*)annotation;
-    MITMapDetailViewController *detailController = [[MITMapDetailViewController alloc] init];
-    detailController.place = tappedPlace;
+    MITMapDetailViewController *detailController = [[MITMapDetailViewController alloc] initWithPlace:tappedPlace];
 
     [self.navigationController pushViewController:detailController animated:YES];
 }
+
+#pragma mark MITMapPlaceSelectionDelegate
+- (void)placesController:(MITMapPlacesViewController *)controller didSelectPlaces:(NSArray *)objects
+{
+    self.selectedPlaces = objects;
+    [self dismissViewControllerAnimated:YES completion:^{
+        DDLogVerbose(@"'places' action completed with %d results", [objects count]);
+    }];
+}
+
+- (void)placesControllerDidCancelSelection:(MITMapPlacesViewController *)controller
+{
+    [self dismissViewControllerAnimated:YES completion:^{
+        DDLogVerbose(@"'places' action canceled by user");
+    }];
+}
+
+#pragma mark MITMapCategoriesDelegate
+- (void)controller:(MITMapCategoriesViewController *)controller didSelectCategory:(MITMapCategory *)category
+{
+    NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+    self.selectedPlaces = [[category.places allObjects] sortedArrayUsingDescriptors:sortDescriptors];
+    [self dismissViewControllerAnimated:YES completion:^{
+        DDLogVerbose(@"'browse' action completed with category '%@'",category.name);
+    }];
+}
+
+- (void)controller:(MITMapCategoriesViewController *)controller didSelectObjects:(NSArray *)objects inCategory:(MITMapCategory *)category
+{
+    self.selectedPlaces = objects;
+    [self dismissViewControllerAnimated:YES completion:^{
+        DDLogVerbose(@"'browse' action completed with %d results in category '%@'",[objects count],category.name);
+    }];
+}
+
+- (void)controllerDidCancelSelection:(MITMapCategoriesViewController *)controller
+{
+    [self dismissViewControllerAnimated:YES completion:^{
+        DDLogVerbose(@"'browse' action canceled by user");
+    }];
+}
+
 @end

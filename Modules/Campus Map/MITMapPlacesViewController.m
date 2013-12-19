@@ -10,22 +10,25 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 
 @interface MITMapPlacesViewController ()
 @property (nonatomic,strong) NSFetchRequest *fetchRequest;
-@property (nonatomic,strong) void (^selectionBlock)(NSOrderedSet *mapPlaceIDs);
 @end
 
 @implementation MITMapPlacesViewController
 #pragma mark - Initialization
 - (instancetype)initWithPredicate:(NSPredicate*)predicate
                   sortDescriptors:(NSArray*)sortDescriptors
-                        selection:(void (^)(NSOrderedSet *mapPlaces))block
 {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:MITMapPlaceEntityName];
     fetchRequest.predicate = predicate;
-    fetchRequest.sortDescriptors = sortDescriptors;
+
+    if (sortDescriptors) {
+        fetchRequest.sortDescriptors = sortDescriptors;
+    } else {
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+    }
 
     self = [super initWithFetchRequest:fetchRequest];
     if (self) {
-        _selectionBlock = block;
+
     }
 
     return self;
@@ -92,12 +95,11 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 
 - (void)didSelectPlaces:(NSArray*)places
 {
-    if (self.selectionBlock) {
+    if (self.delegate) {
         if (places) {
-            NSArray *objectIDs = [NSManagedObjectContext objectIDsForManagedObjects:places];
-            self.selectionBlock([NSOrderedSet orderedSetWithArray:objectIDs]);
+            [self.delegate placesController:self didSelectPlaces:places];
         } else {
-            self.selectionBlock(nil);
+            [self.delegate placesControllerDidCancelSelection:self];
         }
     }
 }
