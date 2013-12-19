@@ -163,7 +163,7 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
     UIImage *image = [UIImage imageNamed:imageName];
     UIImage *highlightedImage = [UIImage imageNamed:highlightedImageName];
     UIImageView *accessoryView = [[UIImageView alloc] initWithImage:image highlightedImage:highlightedImage];
-    return [accessoryView autorelease];
+    return accessoryView;
 }
 
 + (UIImageView *)accessoryViewForInternalURL:(NSString *)url {
@@ -202,7 +202,7 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
     mainView.autoresizesSubviews = YES;
     mainView.backgroundColor = [UIColor mit_backgroundColor];
     
-    return [mainView autorelease];
+    return mainView;
 }
 
 @end
@@ -317,7 +317,6 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 - (void)addAccessoryImage:(UIImage *)image {
 	UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
 	self.accessoryView = imageView;
-	[imageView release];
 }
 
 @end
@@ -346,11 +345,10 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 	label.font = font;
 	label.backgroundColor = [UIColor clearColor];
 	
-	UIView *labelContainer = [[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, appFrame.size.width, GROUPED_SECTION_HEADER_HEIGHT)] autorelease];
+	UIView *labelContainer = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, appFrame.size.width, GROUPED_SECTION_HEADER_HEIGHT)];
 	labelContainer.backgroundColor = [UIColor clearColor];
 	
 	[labelContainer addSubview:label];
-	[label release];
 	
 	return labelContainer;
 }
@@ -366,11 +364,10 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 	label.font = font;
 	label.backgroundColor = [UIColor clearColor];
 	
-	UIView *labelContainer = [[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, appFrame.size.width, UNGROUPED_SECTION_HEADER_HEIGHT)] autorelease];
+	UIView *labelContainer = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, appFrame.size.width, UNGROUPED_SECTION_HEADER_HEIGHT)];
 	labelContainer.backgroundColor = UNGROUPED_SECTION_BACKGROUND_COLOR;
 	
-	[labelContainer addSubview:label];	
-	[label release];
+	[labelContainer addSubview:label];
 	
 	return labelContainer;
 }
@@ -407,7 +404,7 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 											  cancelButtonTitle:@"OK"
 											  otherButtonTitles:nil];
     
-    return [alertView autorelease];
+    return alertView;
 }
 @end
 
