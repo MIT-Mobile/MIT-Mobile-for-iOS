@@ -31,7 +31,7 @@ MKCoordinateRegion MKCoordinateRegionForCoordinatesWithPadding(NSSet *coordinate
     }
     
     for (NSValue *value in coordinateValues) {
-        CLLocationCoordinate2D coordinate = [value CLLocationCoordinateValue];
+        CLLocationCoordinate2D coordinate = [value MKCoordinateValue];
         if (CLLocationCoordinate2DIsValid(coordinate)) {
             [longitudes addObject:@(coordinate.longitude)];
             [latitudes addObject:@(coordinate.latitude)];

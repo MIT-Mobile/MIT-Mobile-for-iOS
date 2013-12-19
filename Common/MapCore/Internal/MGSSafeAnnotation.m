@@ -105,11 +105,11 @@
     return MGSAnnotationMarker;
 }
 
-- (id<NSObject>)userData
+- (id)representedObject
 {
     if ([self.annotation respondsToSelector:_cmd])
     {
-        return [self.annotation userData];
+        return [self.annotation representedObject];
     }
     
     return nil;

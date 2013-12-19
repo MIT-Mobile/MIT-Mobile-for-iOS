@@ -19,6 +19,7 @@
 
 - (void)mapView:(MGSMapView*)mapView didReceiveTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     screenPoint:(CGPoint)screenPoint;
+- (void)mapViewRegionDidChange:(MGSMapView*)mapView byUserInteraction:(BOOL)userInteration;
 
 - (void)mapView:(MGSMapView*)mapView willAddLayer:(MGSLayer*)layer;
 - (void)mapView:(MGSMapView*)mapView didAddLayer:(MGSLayer*)layer;

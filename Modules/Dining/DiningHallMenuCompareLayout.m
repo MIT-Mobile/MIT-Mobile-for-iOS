@@ -1,7 +1,7 @@
+#import <UIKit/UIKit.h>
 #import "DiningHallMenuCompareLayout.h"
-#import "PSTCollectionView.h"
 
-@interface SectionDividerView : PSTCollectionReusableView
+@interface SectionDividerView : UICollectionReusableView
 @end
 
 @implementation SectionDividerView
@@ -89,7 +89,7 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
             indexPath = [NSIndexPath indexPathForRow:item inSection:section];
             
             // Menu Item Cells
-            PSTCollectionViewLayoutAttributes *itemAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+            UICollectionViewLayoutAttributes *itemAttributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
             itemAttributes.frame = [self frameForMenuItemAtIndexPath:indexPath inLayoutSet:newLayoutInfo];
             cellLayoutInfo[indexPath] = itemAttributes;
             newLayoutInfo[MITDiningMenuComparisonCellKind] = cellLayoutInfo;
@@ -97,19 +97,19 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
             if (indexPath.row == 0) {
                 // only need to do these once per section
                 // Section Header
-                PSTCollectionViewLayoutAttributes *headerAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITDiningMenuComparisonSectionHeaderKind withIndexPath:indexPath];
+                UICollectionViewLayoutAttributes *headerAttributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:MITDiningMenuComparisonSectionHeaderKind withIndexPath:indexPath];
                 headerAttributes.frame = [self frameForHeaderAtIndexPath:indexPath];
                 headerLayoutInfo[indexPath] = headerAttributes;
                 newLayoutInfo[MITDiningMenuComparisonSectionHeaderKind] = headerLayoutInfo;
                 
                 // Section Dividers
-                PSTCollectionViewLayoutAttributes *dividerAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind withIndexPath:indexPath];
+                UICollectionViewLayoutAttributes *dividerAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind withIndexPath:indexPath];
                 dividerAttributes.frame = [self frameForDividerAtIndexPath:indexPath];
                 dividerLayoutInfo[indexPath] = dividerAttributes;
                 if (indexPath.section == sectionCount - 1) {
                     // need to add section divider at right edge of collectionview
                     indexPath = [NSIndexPath indexPathForRow:item inSection:section + 1];
-                    PSTCollectionViewLayoutAttributes *dividerAttributes = [PSTCollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind withIndexPath:indexPath];
+                    UICollectionViewLayoutAttributes *dividerAttributes = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind withIndexPath:indexPath];
                     dividerAttributes.frame = [self frameForDividerAtIndexPath:indexPath];
                     dividerLayoutInfo[indexPath] = dividerAttributes;
                 }
@@ -133,7 +133,7 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
         // not first item in section. need to look back and place directly below previous frame
         NSDictionary *cellLayoutInfo = layoutDictionary[MITDiningMenuComparisonCellKind];
         NSIndexPath *previousIndexPath = [NSIndexPath indexPathForItem:indexPath.row - 1 inSection:indexPath.section];
-        PSTCollectionViewLayoutAttributes *previousItemAttributes = cellLayoutInfo[previousIndexPath];
+        UICollectionViewLayoutAttributes *previousItemAttributes = cellLayoutInfo[previousIndexPath];
         CGRect previousFrame = previousItemAttributes.frame;
         
         return CGRectMake(previousFrame.origin.x, previousFrame.origin.y + previousFrame.size.height, self.columnWidth, itemHeight);
@@ -163,7 +163,7 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
     
     [self.layoutInfo enumerateKeysAndObjectsUsingBlock:^(NSString *elementsIdentifier, NSDictionary *elementsInfo, BOOL *stop) {
         
-        [elementsInfo enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *indexPath, PSTCollectionViewLayoutAttributes *attributes, BOOL *innerstop) {
+        [elementsInfo enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *indexPath, UICollectionViewLayoutAttributes *attributes, BOOL *innerstop) {
             if (CGRectIntersectsRect(rect, attributes.frame)) {
                 if ([attributes.representedElementKind isEqualToString:MITDiningMenuComparisonSectionHeaderKind]) {
                     attributes.frame = [self frameForHeaderAtIndexPath:indexPath];
@@ -180,17 +180,17 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
     return allAttributes;
 }
 
-- (PSTCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
+- (UICollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     return self.layoutInfo[MITDiningMenuComparisonCellKind][indexPath];
 }
 
-- (PSTCollectionViewLayoutAttributes *) layoutAttributesForSupplementaryViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+- (UICollectionViewLayoutAttributes *) layoutAttributesForSupplementaryViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     return self.layoutInfo[MITDiningMenuComparisonSectionHeaderKind][indexPath];
 }
 
-- (PSTCollectionViewLayoutAttributes *) layoutAttributesForDecorationViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+- (UICollectionViewLayoutAttributes *) layoutAttributesForDecorationViewOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     return self.layoutInfo[MITDiningMenuComparisonSectionDividerKind][indexPath];
 }
@@ -202,10 +202,10 @@ NSString * const MITDiningMenuComparisonSectionDividerKind = @"DiningMenuSection
     
     // get max Y for the tallest column. return collectionView width and calculated height
     [self.layoutInfo enumerateKeysAndObjectsUsingBlock:^(NSString *elementsIdentifier, NSDictionary *elementsInfo, BOOL *stop) {
-        [elementsInfo enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *indexPath, PSTCollectionViewLayoutAttributes *attributes, BOOL *innerstop) {
+        [elementsInfo enumerateKeysAndObjectsUsingBlock:^(NSIndexPath *indexPath, UICollectionViewLayoutAttributes *attributes, BOOL *innerstop) {
             if (![attributes.representedElementKind isEqualToString:MITDiningMenuComparisonSectionDividerKind]) {                 
                 // don't take the SectionDividers into account, except for width of final divider
-                PSTCollectionViewLayoutAttributes *divattr = [self layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind atIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+                UICollectionViewLayoutAttributes *divattr = [self layoutAttributesForDecorationViewOfKind:MITDiningMenuComparisonSectionDividerKind atIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
                 CGFloat dividerWidth = divattr.frame.size.width;
                 
                 CGFloat tempHeight = CGRectGetMaxY(attributes.frame);

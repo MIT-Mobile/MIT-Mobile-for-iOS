@@ -512,7 +512,7 @@ typedef enum {
     }
 }
 
-- (PSTCollectionViewCell *) compareView:(DiningHallMenuCompareView *)compareView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UICollectionViewCell *) compareView:(DiningHallMenuCompareView *)compareView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSFetchedResultsController *controller = [self resultsControllerForCompareView:compareView];
     NSInteger cSectionIndex = [self indexOfSectionInController:controller withCompareViewSection:indexPath.section];

@@ -278,15 +278,15 @@ static const NSUInteger kMaxResultCount = 10;
             self.currentLocation = newLocation;
             
             __weak FacilitiesUserLocationViewController *weakSelf = self;
-            self.locationTimer = [NSTimer timerWithTimeInterval:5.0
-                                                        repeats:NO
-                                                          fired:^(NSTimer *timer) {
-                                                              DDLogVerbose(@"Timeout triggered at accuracy of %f meters", [weakSelf.currentLocation horizontalAccuracy]);
-                                                              [weakSelf displayTableForCurrentLocation];
-                                                              [weakSelf stopUpdatingLocation];
-                                                              weakSelf.locationTimer = nil;
-                                                          }];
-            
+            self.locationTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
+                                                                 repeats:NO
+                                                                   fired:^{
+                                                                       DDLogVerbose(@"Timeout triggered at accuracy of %f meters", [weakSelf.currentLocation horizontalAccuracy]);
+                                                                       [weakSelf displayTableForCurrentLocation];
+                                                                       [weakSelf stopUpdatingLocation];
+                                                                       weakSelf.locationTimer = nil;
+                                                                   }];
+
         } else if ([self.currentLocation horizontalAccuracy] > horizontalAccuracy) {
             self.currentLocation = newLocation;
         }

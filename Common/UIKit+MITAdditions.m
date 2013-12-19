@@ -1,3 +1,6 @@
+#include <sys/sysctl.h>
+#include <mach/machine.h>
+
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
@@ -192,31 +195,110 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 @end
 
 @implementation UIViewController (MITUIAdditions)
-
 - (UIView*)defaultApplicationView {
     CGRect mainFrame = [[UIScreen mainScreen] applicationFrame];
     
-    if (self.navigationController)
-    {
-        if (self.navigationController.isNavigationBarHidden == NO)
-        {
-            mainFrame.origin.y += CGRectGetHeight(self.navigationController.navigationBar.frame);
-            mainFrame.size.height -= CGRectGetHeight(self.navigationController.navigationBar.frame);
-        }
-        
-        if (self.navigationController.isToolbarHidden == NO)
-        {
-            mainFrame.size.height -= CGRectGetHeight(self.navigationController.toolbar.frame);
-        }
-    }
-    
     UIView *mainView = [[UIView alloc] initWithFrame:mainFrame];
     mainView.autoresizesSubviews = YES;
-    mainView.backgroundColor = [UIColor clearColor];
+    mainView.backgroundColor = [UIColor mit_backgroundColor];
     
     return [mainView autorelease];
 }
 
+@end
+
+
+
+@implementation UIDevice (MITAdditions)
++ (BOOL)isIOS7
+{
+    NSString *reqSysVer = @"7.0";
+    NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
+
+    return ([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending);
+}
+
+- (NSString*)sysInfoByName:(NSString*)typeSpecifier
+{
+    const char *typeString = [typeSpecifier UTF8String];
+    size_t size = 0;
+    int status = sysctlbyname(typeString, NULL, &size, NULL, 0);
+
+    if (status) {
+        DDLogError(@"sysctl '%@' failed: %s", typeSpecifier, strerror(status));
+        return nil;
+    }
+
+    char *result = malloc(size);
+    memset(result, 0, size);
+    status = sysctlbyname(typeString, result, &size, NULL, 0);
+    if (status) {
+        DDLogError(@"sysctl '%@' failed: %s", typeSpecifier, (const char*)strerror(status));
+        free(result);
+        return nil;
+    }
+
+    NSString *resultString = [NSString stringWithCString:result
+                                                encoding:NSUTF8StringEncoding];
+    free(result);
+    return resultString;
+}
+
+- (NSString*)cpuType
+{
+    cpu_type_t cpuType = CPU_TYPE_ANY;
+    cpu_subtype_t cpuSubtype = CPU_SUBTYPE_MULTIPLE;
+
+    size_t size = sizeof(cpu_type_t);
+    sysctlbyname("hw.cputype", &cpuType, &size, NULL, 0);
+
+    size = sizeof(cpu_subtype_t);
+    sysctlbyname("hw.cpusubtype", &cpuSubtype, &size, NULL, 0);
+    if (cpuType == CPU_TYPE_ARM) {
+        NSMutableString *cpuString = [NSMutableString stringWithString:@"armv"];
+        switch (cpuSubtype)
+        {
+            case CPU_SUBTYPE_ARM_V4T:
+                [cpuString appendString:@"4t"];
+                break;
+            case CPU_SUBTYPE_ARM_V5TEJ:
+                [cpuString appendString:@"5tej"];
+                break;
+            case CPU_SUBTYPE_ARM_V6:
+                [cpuString appendString:@"6"];
+                break;
+            case CPU_SUBTYPE_ARM_V6M:
+                [cpuString appendString:@"6m"];
+                break;
+            case CPU_SUBTYPE_ARM_V7:
+                [cpuString appendString:@"7"];
+                break;
+            case CPU_SUBTYPE_ARM_V7EM:
+                [cpuString appendString:@"7s"];
+                break;
+            case CPU_SUBTYPE_ARM_V7F:
+                [cpuString appendString:@"7f"];
+                break;
+            case CPU_SUBTYPE_ARM_V7K:
+                [cpuString appendString:@"7k"];
+                break;
+            case CPU_SUBTYPE_ARM_V7M:
+                [cpuString appendString:@"7s"];
+                break;
+            case CPU_SUBTYPE_ARM_V7S:
+                [cpuString appendString:@"7s"];
+                break;
+        }
+
+        return cpuString;
+    } else if (cpuType == CPU_TYPE_X86_64) {
+        return @"x86_64";
+    } else if (cpuType == CPU_TYPE_X86) {
+        return @"i386";
+    } else {
+        return @"Unknown";
+    }
+}
 @end
 
 @implementation UITableViewCell (MITUIAdditions)
@@ -329,3 +411,18 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 }
 @end
 
+
+@implementation UIBarButtonItem (MITUIAdditions)
++ (UIBarButtonItem*)fixedSpaceWithWidth:(CGFloat)width
+{
+    UIBarButtonItem *item = [[self alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    item.width = width;
+
+    return item;
+}
+
++ (UIBarButtonItem*)flexibleSpace
+{
+    return [[self alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+}
+@end

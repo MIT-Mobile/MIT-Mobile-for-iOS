@@ -32,7 +32,7 @@
         copy.points = self.points;
         copy.strokeColor = self.strokeColor;
         copy.title = self.title;
-        copy.userData = self.userData;
+        copy.representedObject = self.representedObject;
     }
     
     return copy;

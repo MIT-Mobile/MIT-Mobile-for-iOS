@@ -1,9 +1,10 @@
 #import "CMModule.h"
+
 #import "CampusMapViewController.h"
 #import "MITMapDetailViewController.h"
-#import "MITMapSearchResultAnnotation.h"
-
+#import "MITCampusMapViewController.h"
 #import "MITModule+Protected.h"
+#import "MITMapPlace.h"
 
 @implementation CMModule
 @dynamic campusMapVC;
@@ -23,15 +24,18 @@
 
 - (void)loadModuleHomeController
 {
-    CampusMapViewController *controller = [[CampusMapViewController alloc] init];
-    controller.campusMapModule = self;
+    MITCampusMapViewController *controller = [[MITCampusMapViewController alloc] init];
     
     self.moduleHomeController = controller;
 }
 
-- (CampusMapViewController*)campusMapVC
+- (MITCampusMapViewController*)campusMapVC
 {
-    return ((CampusMapViewController*)self.moduleHomeController);
+    if ([self.moduleHomeController isKindOfClass:[MITCampusMapViewController class]]) {
+        return ((MITCampusMapViewController*)self.moduleHomeController);
+    } else {
+        return nil;
+    }
 }
 
 - (void)applicationDidEnterBackground {
@@ -96,9 +100,11 @@
 		}
 		return YES;
 	} else {
+        DDLogWarn(@"Ignoring URL request for %@", localPath);
+        
+        /*
         NSMutableArray *components = [NSMutableArray arrayWithArray:[localPath componentsSeparatedByString:@"/"]];
         NSString *pathRoot = components[0];
-        
         if ([pathRoot isEqualToString:@"search"] || [pathRoot isEqualToString:@"list"] || [pathRoot isEqualToString:@"detail"]) {
             // make sure the map is the active bar
             [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
@@ -121,7 +127,8 @@
                 NSMutableArray* searchResultsArr = [NSMutableArray arrayWithCapacity:[searchResultsArray count]];
             
                 for (NSDictionary* info in searchResultsArray) {
-                    MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:info];
+                    MITMapPlace *mapPlace = [[MITMapPlace alloc] initWithDictionary:info];
+                    MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithPlace:mapPlace];
                     [searchResultsArr addObject:annotation];
                 }
 
@@ -147,9 +154,9 @@
                 
                 // look for the selected annotation among the array of annotations
                 for (MITMapSearchResultAnnotation* annotation in self.campusMapVC.mapView.annotations) {
-                    if([[(MITMapSearchResultAnnotation*)annotation uniqueID] isEqualToString:annotationUniqueID]) {
+                    if([annotation.place.identifier isEqualToString:annotationUniqueID]) {
                         [self.campusMapVC.mapView selectAnnotation:annotation animated:NO withRecenter:NO];
-                        currentAnnotation = (MITMapSearchResultAnnotation*)annotation;
+                        currentAnnotation = annotation;
                     }
                 }
             }
@@ -166,8 +173,8 @@
                 // push the details page onto the stack for the item selected. 
                 detailsVC = [[MITMapDetailViewController alloc] initWithNibName:@"MITMapDetailViewController"
                                                                           bundle:nil];
-                
-                detailsVC.annotation = currentAnnotation;
+
+                detailsVC.place = currentAnnotation.place;
                 detailsVC.title = @"Info";
                 detailsVC.campusMapVC = self.campusMapVC;
                 if ([components count]) {
@@ -197,7 +204,7 @@
             }
             
             return YES;
-        }
+        }*/
 	}
 	
 	return NO;

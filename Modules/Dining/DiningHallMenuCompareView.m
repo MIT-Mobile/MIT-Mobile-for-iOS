@@ -1,15 +1,13 @@
-#import <Foundation/Foundation.h>
 #import "DiningHallMenuCompareView.h"
-#import "PSTCollectionView.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "DiningHallMenuCompareLayout.h"
 #import "DiningHallMenuComparisonSectionHeaderView.h"
 
-@interface DiningHallMenuCompareView () <PSTCollectionViewDataSource, CollectionViewDelegateMenuCompareLayout>
+@interface DiningHallMenuCompareView () <UICollectionViewDataSource, CollectionViewDelegateMenuCompareLayout>
 
 @property (nonatomic, strong) UILabel * headerView;
-@property (nonatomic, strong) PSTCollectionView * collectionView;
+@property (nonatomic, strong) UICollectionView * collectionView;
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 
 @end
@@ -37,7 +35,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
         DiningHallMenuCompareLayout *layout = [[DiningHallMenuCompareLayout alloc] init];
         
         CGFloat headerHeight = CGRectGetHeight(self.headerView.frame);
-        self.collectionView = [[PSTCollectionView alloc] initWithFrame:CGRectMake(0, headerHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - headerHeight) collectionViewLayout:layout];
+        self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, headerHeight, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - headerHeight) collectionViewLayout:layout];
         self.columnWidth = DEFAULT_COLUMN_WIDTH;
         self.collectionView.dataSource = self;
         self.collectionView.delegate = self;
@@ -89,19 +87,19 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
     return [self.collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
 }
 
-#pragma mark - PSTCollectionViewDatasource
+#pragma mark - UICollectionViewDatasource
 
-- (NSInteger)numberOfSectionsInCollectionView:(PSTCollectionView *)collectionView
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     return [self.delegate numberOfSectionsInCompareView:self];
 }
 
-- (NSInteger)collectionView:(PSTCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     return [self.delegate compareView:self numberOfItemsInSection:section];
 }
 
-- (PSTCollectionReusableView *)collectionView:(PSTCollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     DiningHallMenuComparisonSectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:SectionHeaderIdentifier forIndexPath:indexPath];
     headerView.titleLabel.text = [self.delegate compareView:self titleForSection:indexPath.section];
@@ -111,7 +109,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 }
 
 // The cell that is returned must be retrieved from a call to -dequeueReusableCellWithReuseIdentifier:forIndexPath:
-- (PSTCollectionViewCell *)collectionView:(PSTCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     return [self.delegate compareView:self cellForRowAtIndexPath:indexPath];
 }
@@ -125,7 +123,7 @@ static NSString * const SectionHeaderIdentifier = @"DiningHallSectionHeader";
 
 
 #pragma mark - CollectionViewDelegateMenuCompareLayout
-- (CGFloat)collectionView:(PSTCollectionView *)collectionView layout:(PSTCollectionViewLayout*)collectionViewLayout heightForItemAtIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout heightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     return [self.delegate compareView:self heightForRowAtIndexPath:indexPath];
 }

@@ -4,12 +4,12 @@
 [submodule "External/MIT-Mobile-for-iPhone-Private"]
 	path = External/MIT-Mobile-for-iPhone-Private
 	url = git@github.com:MIT-Mobile/MIT-Mobile-for-iPhone-Private.git
-[submodule "External/PSTCollectionView"]
-	path = External/PSTCollectionView
-	url = git://github.com/MIT-Mobile/PSTCollectionView.git
 [submodule "External/SDWebImage"]
 	path = External/SDWebImage
 	url = git@github.com:MIT-Mobile/SDWebImage.git
 [submodule "External/SVPullToRefresh"]
 	path = External/SVPullToRefresh
 	url = git@github.com:MIT-Mobile/SVPullToRefresh.git
+[submodule "External/RestKit"]
+	path = External/RestKit
+	url = git@github.com:RestKit/RestKit.git

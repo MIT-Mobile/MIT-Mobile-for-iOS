@@ -133,18 +133,20 @@ typedef NS_ENUM(NSUInteger, MITScrollingNavigationItemTag) {
                 accessoryView = [self.delegate accessoryViewForNavigationBar:self];
             }
 
-            [header addSubview:accessoryView];
-            accessoryView.translatesAutoresizingMaskIntoConstraints = NO;
+            if (accessoryView) {
+                [header addSubview:accessoryView];
+                accessoryView.translatesAutoresizingMaskIntoConstraints = NO;
 
-            NSDictionary *views = @{@"accessoryView" : accessoryView};
-            [header addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[accessoryView(>=0)]|"
-                                                                           options:0
-                                                                           metrics:0
-                                                                             views:views]];
-            [header addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[accessoryView(>=0)]|"
-                                                                           options:0
-                                                                           metrics:0
-                                                                             views:views]];
+                NSDictionary *views = @{@"accessoryView" : accessoryView};
+                [header addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[accessoryView(>=0)]|"
+                                                                               options:0
+                                                                               metrics:0
+                                                                                 views:views]];
+                [header addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[accessoryView(>=0)]|"
+                                                                               options:0
+                                                                               metrics:0
+                                                                                 views:views]];
+            }
         }
 
         return header;

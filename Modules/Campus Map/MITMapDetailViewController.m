@@ -1,18 +1,18 @@
-
+#import <MapKit/MapKit.h>
 #import "MITMapDetailViewController.h"
 #import "TabViewControl.h"
-#import "MITMapSearchResultAnnotation.h"
 #import "CampusMapViewController.h"
 #import "NSString+SBJSON.h"
 #import "MITUIConstants.h"
 #import "MIT_MobileAppDelegate.h"
-#import "MapBookmarkManager.h"
 #import "MITMapAnnotationView.h"
 #import "UIImageView+WebCache.h"
 #import "MITMapView.h"
 #import "TabViewControl.h"
 
-@interface MITMapDetailViewController () <MITMapViewDelegate,TabViewControlDelegate,JSONLoadedDelegate>
+#import "MITMapModel.h"
+
+@interface MITMapDetailViewController () <MITMapViewDelegate,TabViewControlDelegate>
 // Main View subviews
 @property (nonatomic,weak) IBOutlet UIScrollView *scrollView;
 @property (nonatomic,weak) IBOutlet UILabel *nameLabel;
@@ -64,8 +64,7 @@
 	self.tabViews = [[NSMutableArray alloc] init];
 	
 	// check if this item is already bookmarked
-	MapBookmarkManager* bookmarkManager = [MapBookmarkManager defaultManager];
-	if ([bookmarkManager isBookmarked:self.annotation.uniqueID]) {
+	if (self.place.bookmark) {
 		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on"]
                              forState:UIControlStateNormal];
 		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on_pressed"]
@@ -80,10 +79,10 @@
 	self.mapView.layer.cornerRadius = 6.0;
 	self.mapViewContainer.layer.cornerRadius = 8.0;
 
-	[self.mapView addAnnotation:self.annotation];
-    [self.mapView setRegion:[self.mapView regionForAnnotations:@[self.annotation]]];
+	[self.mapView addAnnotation:self.place];
+    [self.mapView setRegion:[self.mapView regionForAnnotations:@[self.place]]];
 
-	[self.mapView deselectAnnotation:self.annotation animated:NO];
+	[self.mapView deselectAnnotation:self.place animated:NO];
 	
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Google Map"
 																			   style:UIBarButtonItemStylePlain
@@ -108,23 +107,7 @@
                                               self.locationLabel.frame.size.height);
 	}
 	
-	// if the annotation was not fully loaded, go get the rest of the data. 
-	if (!self.annotation.dataPopulated) {
-		// show the loading result view and hide the rest
-		self.nameLabel.hidden = YES;
-		self.locationLabel.hidden = YES;
-		self.tabViewControl.hidden = YES;
-		self.tabViewContainer.hidden = YES;
-		
-		[self.scrollView addSubview:self.loadingResultView];
-		
-		[MITMapSearchResultAnnotation executeServerSearchWithQuery:self.annotation.bldgnum
-                                                      jsonDelegate:self
-                                                            object:nil];
-	} else {
-		self.annotationDetails = self.annotation;
-		[self loadAnnotationContent];
-	}
+    [self loadAnnotationContent];
 
 	if (self.startingTab) {
 		self.tabViewControl.selectedTab = self.startingTab;
@@ -135,16 +118,16 @@
 {
 	NSString *search = nil;
 	
-	if (self.annotation.street) {
-		NSString* desc = self.annotation.name;
+	if (self.place.streetAddress) {
+		NSString* desc = self.place.name;
 		
-		if (self.annotation.bldgnum) {
-			desc = [desc stringByAppendingFormat:@" - Building %@", self.annotation.bldgnum];
+		if (self.place.buildingNumber) {
+			desc = [desc stringByAppendingFormat:@" - Building %@", self.place.buildingNumber];
 		}
 
-		search = [NSString stringWithFormat:@"%lf,%lf(%@)", self.annotation.coordinate.latitude, self.annotation.coordinate.longitude, desc];
+		search = [NSString stringWithFormat:@"%lf,%lf(%@)", self.place.coordinate.latitude, self.place.coordinate.longitude, desc];
 	} else {
-		search = self.annotation.street;
+		search = self.place.streetAddress;
 	
 		// clean up the string
 		NSRange parenRange = [search rangeOfString:@"("];
@@ -157,10 +140,10 @@
 			search = [search substringFromIndex:accessViaRange.length];
 		}
 		
-		if (self.annotation.city) {
+		if (!self.place.city) {
 			search = [search stringByAppendingString:@", Cambridge, MA"];
 		} else {
-			search = [search stringByAppendingFormat:@", %@", self.annotation.city];
+			search = [search stringByAppendingFormat:@", %@", self.place.city];
 		}
 	}
 	
@@ -175,23 +158,25 @@
 	self.nameLabel.hidden = NO;
 	self.locationLabel.hidden = NO;
 	
-	if ([self.annotationDetails.contents count]) {
+	if ([self.place.contents count]) {
 		CGFloat padding = 10.0;
 		CGFloat currentHeight = padding;
 		CGFloat bulletWidth = 24.0;
 		UIFont *whatsHereFont = [UIFont systemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
-		for (NSString* content in self.annotationDetails.contents) {
+		for (MITMapPlace *place in self.place.contents) {
+            NSString *contentName = place.name;
+            
             CGSize textConstraints = CGSizeMake(CGRectGetWidth(self.whatsHereView.frame) - bulletWidth - 2. * padding, 400.0);
-			CGSize textSize = [content sizeWithFont:whatsHereFont 
-								  constrainedToSize:textConstraints
-									  lineBreakMode:NSLineBreakByWordWrapping];
+			CGSize textSize = [contentName sizeWithFont:whatsHereFont
+                                      constrainedToSize:textConstraints
+                                          lineBreakMode:NSLineBreakByWordWrapping];
 
 			UILabel *bullet = [[UILabel alloc] initWithFrame:CGRectMake(padding, currentHeight, bulletWidth - padding, 20.0)];
 			bullet.text = @"•";
 			[self.whatsHereView addSubview:bullet];
 			
 			UILabel *listItem = [[UILabel alloc] initWithFrame:CGRectMake(bulletWidth, currentHeight, textSize.width, textSize.height)];
-			listItem.text = content;
+			listItem.text = contentName;
 			listItem.lineBreakMode = NSLineBreakByWordWrapping;
 			listItem.numberOfLines = 0;
 			[self.whatsHereView addSubview:listItem];
@@ -228,10 +213,10 @@
 	[self.tabViewControl addTab:@"What's Here"];
 	[self.tabViews addObject:self.whatsHereView];
 	
-	if (self.annotationDetails.bldgimg) {
-        NSURL *imageURL = [NSURL URLWithString:self.annotationDetails.bldgimg];
+	if (self.place.imageURL) {
         __weak MITMapDetailViewController *weakSelf = self;
         [self.buildingImageView cancelCurrentImageLoad];
+        NSURL *imageURL = self.place.imageURL;
         [self.buildingImageView setImageWithURL:imageURL
                                       completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
                                           MITMapDetailViewController *blockSelf = weakSelf;
@@ -244,11 +229,7 @@
                                           }
                                       }];
 
-        if ([self.annotationDetails.viewAngle length]) {
-            self.buildingImageDescriptionLabel.text = [NSString stringWithFormat:@"View from: %@", self.annotationDetails.viewAngle];
-        } else {
-            self.buildingImageDescriptionLabel.text = nil;
-        }
+        self.buildingImageDescriptionLabel.text = self.place.imageCaption;
 		
 		[self.tabViewControl addTab:@"Photo"];
 		[self.tabViews addObject:self.buildingView];
@@ -268,20 +249,35 @@
 	
 	
 	// set the labels
-	self.nameLabel.text = self.annotation.title;
+    NSString *title = nil;
+    if (self.place.name && self.place.buildingNumber) {
+		NSString* buildingName = [NSString stringWithFormat:@"Building %@", self.place.buildingNumber];
+		if ([buildingName isEqualToString:self.place.name]) {
+			title = self.place.name;
+		} else {
+            title = [NSString stringWithFormat:@"%@ (%@)", buildingName, self.place.name];
+        }
+    } else if (self.place.name) {
+		title = self.place.name;
+    } else {
+		title = [NSString stringWithFormat:@"Building %@", self.place.buildingNumber];
+    }
+
+
+	self.nameLabel.text = title;
 	self.nameLabel.numberOfLines = 0;
-	CGSize stringSize = [self.annotation.title sizeWithFont:self.nameLabel.font
-                                          constrainedToSize:CGSizeMake(CGRectGetWidth(self.nameLabel.frame), 200.0)
-                                              lineBreakMode:NSLineBreakByWordWrapping];
+	CGSize stringSize = [title sizeWithFont:self.nameLabel.font
+                          constrainedToSize:CGSizeMake(CGRectGetWidth(self.nameLabel.frame), 200.0)
+                              lineBreakMode:NSLineBreakByWordWrapping];
 
     CGRect nameFrame = self.nameLabel.frame;
     nameFrame.size.height = stringSize.height;
     self.nameLabel.frame = nameFrame;
 	
-	self.locationLabel.text = self.annotationDetails.street;
-	CGSize addressSize = [self.annotationDetails.street sizeWithFont:self.locationLabel.font
-										  constrainedToSize:CGSizeMake(CGRectGetWidth(self.locationLabel.frame),200.)
-											  lineBreakMode:NSLineBreakByWordWrapping];
+	self.locationLabel.text = self.place.streetAddress;
+	CGSize addressSize = [self.place.streetAddress sizeWithFont:self.locationLabel.font
+                                              constrainedToSize:CGSizeMake(CGRectGetWidth(self.locationLabel.frame),200.)
+                                                  lineBreakMode:NSLineBreakByWordWrapping];
     
     CGRect frame = self.locationLabel.frame;
     frame.origin.y = CGRectGetHeight(self.nameLabel.frame) + CGRectGetMinY(self.nameLabel.frame) + 1.;
@@ -305,7 +301,7 @@
 	
 	// force the correct tab to load
 	if([self.tabViews count]) {
-		if (![self.annotationDetails.contents count] && [self.tabViews count]) {
+		if (![self.place.contents count] && [self.tabViews count]) {
 			self.tabViewControl.selectedTab = 1;
 			[self tabControl:self.tabViewControl changedToIndex:1 tabText:nil];
 		}
@@ -335,45 +331,42 @@
 #pragma mark User Actions
 - (IBAction)mapThumbnailPressed:(id)sender
 {
-	// on the map, select the current annotation
-	[self.campusMapVC.mapView selectAnnotation:self.annotation animated:NO withRecenter:YES];
-	
-	// make sure the map is showing. 
-	[self.campusMapVC showListView:NO];
-	
-	// pop back to the map view. 
-	[self.navigationController popToViewController:self.campusMapVC animated:YES];
-	
+    // Do nothing!
 }
 
 - (IBAction)bookmarkButtonTapped
 {
-	MapBookmarkManager* bookmarkManager = [MapBookmarkManager defaultManager];
-	if ([bookmarkManager isBookmarked:self.annotation.uniqueID]) {
+	if (self.place.bookmark) {
 		// remove the bookmark and set the images
-		[bookmarkManager removeBookmark:self.annotation.uniqueID];
-		
-		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off"]
-                             forState:UIControlStateNormal];
-		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off_pressed"]
-                             forState:UIControlStateHighlighted];
-	} else {
-		NSString* subTitle = nil;
-		if (self.annotation.bldgnum) {
-			subTitle = [NSString stringWithFormat:@"Building %@", self.annotation.bldgnum];
-		}
+		[[MITMapModelController sharedController] removeBookmarkForPlace:self.place completion:^(NSError *error) {
+            [[[MITCoreDataController defaultController] mainQueueContext] refreshObject:self.place mergeChanges:NO];
 
-		[bookmarkManager addBookmark:self.annotation.uniqueID
-                               title:self.annotation.name
-                            subtitle:subTitle
-                                data:self.annotation.info];
-		
-		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on"]
-                             forState:UIControlStateNormal];
-		[self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on_pressed"]
-                             forState:UIControlStateHighlighted];
+            if (!error) {
+                [self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off"]
+                                     forState:UIControlStateNormal];
+                [self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_off_pressed"]
+                                     forState:UIControlStateHighlighted];
+            }
+
+            self.bookmarkButton.enabled = YES;
+        }];
+	} else {
+		[[MITMapModelController sharedController] bookmarkPlaces:@[self.place] completion:^(NSError *error) {
+            [[[MITCoreDataController defaultController] mainQueueContext] refreshObject:self.place mergeChanges:NO];
+
+            if (!error) {
+                [self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on"]
+                                     forState:UIControlStateNormal];
+                [self.bookmarkButton setImage:[UIImage imageNamed:@"global/bookmark_on_pressed"]
+                                     forState:UIControlStateHighlighted];
+            }
+
+
+            self.bookmarkButton.enabled = YES;
+        }];
 	}
-	
+
+    self.bookmarkButton.enabled = NO;
 }
 
 #pragma mark TabViewControlDelegate
@@ -387,47 +380,6 @@
                                              CGRectGetMinY(self.tabViewContainer.frame) + CGRectGetHeight(viewToAdd.frame));
 	
 	[self.tabViewContainer addSubview:viewToAdd];
-	
-	if (self.campusMapVC.displayingList) {
-        NSString *urlPath = [NSString stringWithFormat:@"list/detail/%@/%d", self.annotation.uniqueID, tabIndex];
-        [self.campusMapVC.url setPath:urlPath
-                                query:self.campusMapVC.lastSearchText];
-    } else {
-        NSString *urlPath = [NSString stringWithFormat:@"detail/%@/%d", self.annotation.uniqueID, tabIndex];
-		[self.campusMapVC.url setPath:urlPath
-                                query:self.campusMapVC.lastSearchText];
-    }
-
-	[self.campusMapVC.url setAsModulePath];
-	[self.campusMapVC setURLPathUserLocation];
-}
-
-
-#pragma mark JSONLoadedDelegate
-// data was received from the MITMobileWeb request. 
-- (void)request:request jsonLoaded:(NSArray*)results {
-	if ([results count]) {
-		MITMapSearchResultAnnotation* annotation = [[MITMapSearchResultAnnotation alloc] initWithInfo:results[0]];
-		self.annotationDetails = annotation;
-		
-		// load the new contents. 
-		[self loadAnnotationContent];
-	}
-}
-
-- (BOOL) request:(MITMobileWebAPI *)request shouldDisplayStandardAlertForError:(NSError *)error {
-	return NO;
-}
-
-#pragma mark MITMapViewDelegate
-- (MITMapAnnotationView *)mapView:(MITMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
-{
-	if ([annotation isKindOfClass:[MITMapSearchResultAnnotation class]]) {
-        return [[MITPinAnnotationView alloc] initWithAnnotation:annotation
-                                                reuseIdentifier:@"pin"];
-    }
-	
-	return nil;
 }
 
 @end

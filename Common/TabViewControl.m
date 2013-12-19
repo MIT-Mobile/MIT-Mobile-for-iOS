@@ -260,15 +260,17 @@
 
 - (void)setSelectedTab:(int)selectedTab
 {
-	int oldSelectedTab = _selectedTab;
-	
-	_selectedTab = selectedTab;
-	
-	if (oldSelectedTab != _selectedTab) {
-		[self.delegate tabControl:self changedToIndex:_selectedTab tabText:[self.tabs objectAtIndex:_selectedTab]];
-	}
-	
-	[self setNeedsDisplay];
+    if (_selectedTab != selectedTab) {
+        _selectedTab = selectedTab;
+
+        if ([self.delegate respondsToSelector:@selector(tabControl:changedToIndex:tabText:)]) {
+            [self.delegate tabControl:self
+                       changedToIndex:_selectedTab
+                              tabText:self.tabs[_selectedTab]];
+        }
+
+        [self setNeedsDisplay];
+    }
 }
 
 - (void)dealloc {

@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MITDeviceRegistration.h"
 
 @interface MITNotification : NSObject

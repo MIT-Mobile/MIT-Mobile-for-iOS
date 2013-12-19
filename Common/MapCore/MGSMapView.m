@@ -854,6 +854,10 @@ shoulNotifyDelegate:(BOOL)notifyDelegate
                 wself.pendingCalloutBlock = nil;
             }
         }
+
+        if ([wself.delegate respondsToSelector:@selector(mapViewRegionDidChange:byUserInteraction:)]) {
+            [wself.delegate mapViewRegionDidChange:wself byUserInteraction:wself.mapView.lastChangeFromInteraction];
+        }
     };
     
     id observerToken = [[NSNotificationCenter defaultCenter] addObserverForName:AGSMapViewDidEndZoomingNotification
@@ -1000,8 +1004,6 @@ shouldProcessClickAtPoint:(CGPoint)screen
     if (self.calloutAnnotation) {
         if ((self.mapView.callout.hidden == NO) && CGRectContainsPoint(self.mapView.callout.frame, viewPoint)) {
             return NO;
-        } else {
-            [self dismissCallout];
         }
     }
     
@@ -1013,11 +1015,16 @@ didClickAtPoint:(CGPoint)screen
        mapPoint:(AGSPoint*)mappoint
        graphics:(NSDictionary*)graphics
 {
+    if (self.calloutAnnotation) {
+        [self dismissCallout];
+    }
+
     NSMutableArray* tappedGraphics = [NSMutableArray array];
     [graphics enumerateKeysAndObjectsUsingBlock:^(id key, NSArray* layerGraphics, BOOL* stop) {
         [tappedGraphics addObjectsFromArray:layerGraphics];
     }];
-    
+
+    __block BOOL annotationWasTapped = NO;
     if ([tappedGraphics count]) {
         [tappedGraphics sortUsingComparator:^NSComparisonResult(AGSGraphic* graphic1, AGSGraphic* graphic2) {
             NSRange layerRange = NSMakeRange([self.baseLayers count], [self.mapView.mapLayers count] - [self.baseLayers count]);
@@ -1037,32 +1044,32 @@ didClickAtPoint:(CGPoint)screen
         }];
         
         for (AGSGraphic *graphic in tappedGraphics) {
-            __block BOOL foundCallout = NO;
-            
             [self.externalLayerManagers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
                 MGSLayerController *controller = (MGSLayerController*)obj;
                 MGSLayerAnnotation *layerAnnotation = [controller layerAnnotationForGraphic:graphic];
                 id<MGSAnnotation> annotation = layerAnnotation.annotation;
-                
+
                 if (annotation) {
                     if ([self shouldShowCalloutForAnnotation:annotation]) {
                         [self showCalloutForAnnotation:annotation];
-                        foundCallout = YES;
+                        annotationWasTapped = YES;
                         (*stop) = YES;
                     }
                 }
             }];
             
-            if (foundCallout) {
+            if (annotationWasTapped) {
                 break;
             }
         }
     }
-    
-    if ([self.delegate respondsToSelector:@selector(mapView:didReceiveTapAtCoordinate:screenPoint:)]) {
-        [self.delegate mapView:self
-     didReceiveTapAtCoordinate:CLLocationCoordinate2DFromAGSPoint(mappoint)
-                   screenPoint:screen];
+
+    if (!annotationWasTapped) {
+        if ([self.delegate respondsToSelector:@selector(mapView:didReceiveTapAtCoordinate:screenPoint:)]) {
+            [self.delegate mapView:self
+         didReceiveTapAtCoordinate:CLLocationCoordinate2DFromAGSPoint(mappoint)
+                       screenPoint:screen];
+        }
     }
 }
 

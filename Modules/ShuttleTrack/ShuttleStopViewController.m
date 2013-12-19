@@ -1,17 +1,18 @@
 #import "ShuttleStopViewController.h"
+
+#import "MITAdditions.h"
+#import "MITUIConstants.h"
+#import "MITModule.h"
+
 #import "ShuttleStop.h"
 #import "ShuttleRoute.h"
 #import "ShuttleRouteStop.h"
 #import "ShuttleSubscriptionManager.h"
-#import "UIKit+MITAdditions.h"
-#import "MITUIConstants.h"
-#import "MITModule.h"
 #import "ShuttleStopMapAnnotation.h"
 #import "ShuttleDataManager.h"
 #import "RouteMapViewController.h"
 #import "ShuttleRouteViewController.h"
 #import "MITMapAnnotationView.h"
-#import "Foundation+MITAdditions.h"
 
 #define NOTIFICATION_MINUTES 5
 #define MARGIN 10

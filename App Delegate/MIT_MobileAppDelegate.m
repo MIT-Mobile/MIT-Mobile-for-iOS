@@ -1,6 +1,5 @@
 
 #import "MIT_MobileAppDelegate.h"
-#import "MIT_MobileAppDelegate+ModuleList.h"
 #import "MITModule.h"
 #import "MITDeviceRegistration.h"
 #import "MITUnreadNotifications.h"
@@ -13,6 +12,30 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
+// CoreData persistence and Mobile API access
+#import "MITCoreDataController.h"
+#import "CoreDataManager.h"
+#import "MITMobile.h"
+#import "MITMapPlacesResource.h"
+#import "MITMapCategoriesResource.h"
+
+// Module headers
+#import "AboutModule.h"
+#import "CalendarModule.h"
+#import "CMModule.h"
+#import "DiningModule.h"
+#import "EmergencyModule.h"
+#import "FacilitiesModule.h"
+#import "LibrariesModule.h"
+#import "LinksModule.h"
+#import "MITMobileServerConfiguration.h"
+#import "NewsModule.h"
+#import "PeopleModule.h"
+#import "QRReaderModule.h"
+#import "SettingsModule.h"
+#import "ShuttleModule.h"
+#import "ToursModule.h"
+
 @interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
 @property (nonatomic,strong) NSDictionary *apnsDictionary;
 @property (nonatomic,weak) MIT_MobileAppDelegate *appDelegate;
@@ -23,14 +46,37 @@
 @interface MIT_MobileAppDelegate () <UINavigationControllerDelegate>
 @property NSInteger networkActivityCounter;
 
-- (void)loadWindow;
 - (void)updateBasicServerInfo;
 @end
 
-@implementation MIT_MobileAppDelegate
+@implementation MIT_MobileAppDelegate {
+    MITCoreDataController *_coreDataController;
+    NSManagedObjectModel *_managedObjectModel;
+    NSArray *_modules;
+    MITMobile *_remoteObjectManager;
+}
+
+@dynamic coreDataController,managedObjectModel,modules,remoteObjectManager;
+
 + (void)initialize
 {
     [NSTimeZone setDefaultTimeZone:[NSTimeZone timeZoneWithName:@"America/New_York"]];
+}
+
++ (MIT_MobileAppDelegate*)applicationDelegate
+{
+    id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
+
+    if ([appDelegate isKindOfClass:[MIT_MobileAppDelegate class]]) {
+        return (MIT_MobileAppDelegate*)appDelegate;
+    } else {
+        return nil;
+    }
+}
+
++ (MITModule*)moduleForTag:(NSString *)aTag
+{
+    return [[self applicationDelegate] moduleForTag:aTag];
 }
 
 #pragma mark -
@@ -48,6 +94,14 @@
         [TestFlight takeOff:MITApplicationTestFlightToken];
     }
 #endif
+    // The below load* methods called here are not necessary.
+    //  The property getters are lazy and will load in the proper order.
+    //  This is done to clearly illustrate the order in which they
+    //  should be setup.
+    [self loadManagedObjectModel];
+    [self loadCoreDataController];
+    [self loadRemoteObjectManager];
+
     // Default the cache expiration to 1d
     [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
     
@@ -92,6 +146,7 @@
 	}
     
     [self.window makeKeyAndVisible];
+
     return YES;
 }
 
@@ -212,31 +267,6 @@
     [[ModuleVersions sharedVersions] updateVersionInformation];
 }
 
-- (void)loadWindow
-{
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-
-    // iOS 6's UIWindow doesn't do tintColor
-    if ([self.window respondsToSelector:@selector(setTintColor:)]) {
-        self.window.tintColor = [UIColor colorWithHexString:@"a90533"]; // MIT Red, aka Pantone 201
-    }
-
-    DDLogVerbose(@"Root window size is %@", NSStringFromCGRect([self.window bounds]));
-
-    MITSpringboard *springboard = [[MITSpringboard alloc] init];
-    springboard.primaryModules = self.modules;
-    self.springboardController = springboard;
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:springboard];
-    navigationController.navigationBarHidden = NO;
-    navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    navigationController.navigationBar.translucent = NO;
-    navigationController.delegate = self;
-    self.rootNavigationController = navigationController;
-    
-    self.window.rootViewController = navigationController;
-}
-
 #pragma mark -
 #pragma mark App-modal view controllers
 
@@ -310,6 +340,176 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     }
 }
 
+#pragma mark - Lazy property getters
+- (MITMobile*)remoteObjectManager
+{
+    if (!_remoteObjectManager) {
+        [self loadRemoteObjectManager];
+        NSAssert(_remoteObjectManager, @"failed to initalize the persitence stack");
+    }
+
+    return _remoteObjectManager;
+}
+
+- (NSManagedObjectModel*)managedObjectModel
+{
+    if (!_managedObjectModel) {
+        [self loadManagedObjectModel];
+        NSAssert(_managedObjectModel, @"failed to create the managed object model");
+    }
+
+    return _managedObjectModel;
+}
+
+- (MITCoreDataController*)coreDataController
+{
+    if (!_coreDataController) {
+        [self loadCoreDataController];
+        NSAssert(_coreDataController, @"failed to load CoreData store controller");
+    }
+
+    return _coreDataController;
+}
+
+- (UIWindow*)window
+{
+    if (!_window) {
+        [self loadWindow];
+        NSAssert(_window, @"failed to load main window");
+    }
+    
+    return _window;
+}
+
+- (NSArray*)modules
+{
+    if (!_modules) {
+        [self loadModules];
+        NSAssert(_modules,@"failed to load application modules");
+    }
+    
+    return _modules;
+}
+
+#pragma mark Property load methods
+- (void)loadCoreDataController
+{
+    _coreDataController = [[MITCoreDataController alloc] initWithManagedObjectModel:self.managedObjectModel];
+}
+
+- (void)loadManagedObjectModel
+{
+    NSArray *modelNames = @[@"Calendar",
+                            @"CampusMap",
+                            @"Dining",
+                            @"Emergency",
+                            @"FacilitiesLocations",
+                            @"LibrariesLocationsHours",
+                            @"News",
+                            @"QRReaderResult",
+                            @"ShuttleTrack",
+                            @"Tours",
+                            @"PeopleDataModel"];
+    
+    NSMutableArray *managedObjectModels = [[NSMutableArray alloc] init];
+    [modelNames enumerateObjectsUsingBlock:^(NSString *modelName, NSUInteger idx, BOOL *stop) {
+        NSURL *modelURL = [[NSBundle mainBundle] URLForResource:modelName withExtension:@"momd"];
+        NSManagedObjectModel *objectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+        NSAssert(objectModel, @"managed object model '%@' at URL '%@' could not be loaded",modelName,modelURL);
+        
+        [managedObjectModels addObject:objectModel];
+    }];
+    
+    _managedObjectModel = [NSManagedObjectModel modelByMergingModels:managedObjectModels];
+}
+
+- (void)loadModules {
+    // add your MITModule subclass here by adding it to the below
+    _modules = @[[[NewsModule alloc] init],
+                 [[ShuttleModule alloc] init],
+                 [[CMModule alloc] init],
+                 [[CalendarModule alloc] init],
+                 [[PeopleModule alloc] init],
+                 [[ToursModule alloc] init],
+                 [[EmergencyModule alloc] init],
+                 [[LibrariesModule alloc] init],
+                 [[FacilitiesModule alloc] init],
+                 [[DiningModule alloc] init],
+                 [[QRReaderModule alloc] init],
+                 [[LinksModule alloc] init],
+                 [[SettingsModule alloc] init],
+                 [[AboutModule alloc] init]];
+}
+
+- (void)loadRemoteObjectManager
+{
+    MITMobile *remoteObjectManager = [[MITMobile alloc] init];
+    [remoteObjectManager setManagedObjectStore:self.coreDataController.managedObjectStore];
+    
+    MITMobileResource *mapPlaces = [[MITMapPlacesResource alloc] initWithPathPattern:MITMobileMapPlaces managedObjectModel:self.managedObjectModel];
+    [remoteObjectManager setResource:mapPlaces forName:MITMobileMapPlaces];
+    
+    MITMobileResource *mapCategories = [[MITMapCategoriesResource alloc] initWithPathPattern:MITMobileMapCategories managedObjectModel:self.managedObjectModel];
+    [remoteObjectManager setResource:mapCategories forName:MITMobileMapCategories];
+    
+    _remoteObjectManager = remoteObjectManager;
+}
+
+- (void)loadWindow
+{
+    UIWindow *window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    window.backgroundColor = [UIColor mit_backgroundColor];
+    
+    // iOS 6's UIWindow doesn't do tintColor
+    if ([window respondsToSelector:@selector(setTintColor:)]) {
+        window.tintColor = [UIColor colorWithHexString:@"a90533"]; // MIT Red, aka Pantone 201
+    }
+    
+    DDLogVerbose(@"Root window size is %@", NSStringFromCGRect([window bounds]));
+    
+    MITSpringboard *springboard = [[MITSpringboard alloc] init];
+    springboard.primaryModules = self.modules;
+    self.springboardController = springboard;
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:springboard];
+    navigationController.navigationBarHidden = NO;
+    navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    navigationController.navigationBar.translucent = NO;
+    navigationController.delegate = self;
+    self.rootNavigationController = navigationController;
+    
+    window.rootViewController = navigationController;
+    self.window = window;
+}
+
+#pragma mark Application modules helper methods
+- (MITModule *)moduleForTag:(NSString *)aTag {
+    for (MITModule *aModule in self.modules) {
+        if ([aModule.tag isEqual:aTag]) {
+            return aModule;
+        }
+    }
+    return nil;
+}
+
+- (void)showModuleForTag:(NSString *)tag {
+    [self.springboardController pushModuleWithTag:tag];
+}
+
+#pragma mark Preferences
+- (void)saveModulesState {
+	NSMutableDictionary *modulesSavedState = [NSMutableDictionary dictionary];
+    for (MITModule *aModule in self.modules) {
+		if (aModule.currentPath && aModule.currentQuery) {
+            NSDictionary *moduleState = @{@"path" : aModule.currentPath,
+                                          @"query" : aModule.currentQuery};
+            [modulesSavedState setObject:moduleState
+                                  forKey:aModule.tag];
+		}
+	}
+    
+	[[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
+}
 @end
 
 

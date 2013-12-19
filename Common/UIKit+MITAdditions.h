@@ -39,6 +39,12 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 - (UIView*)defaultApplicationView;
 @end
 
+@interface UIDevice (MITAdditions)
++ (BOOL)isIOS7;
+- (NSString*)cpuType;
+- (NSString*)sysInfoByName:(NSString*)typeSpecifier;
+@end
+
 @interface UITableViewCell (MITUIAdditions)
 
 - (void)applyStandardFonts;
@@ -63,4 +69,9 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 
 @interface UIAlertView (MITUIAdditions)
 + (UIAlertView*)alertViewForError:(NSError*)error withTitle:(NSString*)title alertViewDelegate:(id<UIAlertViewDelegate>)delegate;
+@end
+
+@interface UIBarButtonItem (MITUIAdditions)
++ (UIBarButtonItem*)fixedSpaceWithWidth:(CGFloat)width;
++ (UIBarButtonItem*)flexibleSpace;
 @end
