@@ -7,47 +7,6 @@
 #import "MITMobileResource.h"
 #import "MITMobileServerConfiguration.h"
 
-#pragma mark - Route Definitions
-#pragma mark /calendars
-NSString* const MITMobileCalendars = @"apis/calendars";
-NSString* const MITMobileCalendar = @"apis/calendars/:calendar";
-NSString* const MITMobileCalendarEvents = @"apis/calendars/:calendar/events";
-NSString* const MITMobileCalendarEvent = @"apis/calendars/:calendar/events/:event";
-
-#pragma mark /dining
-NSString* const MITMobileDining = @"apis/dining";
-NSString* const MITMobileDiningVenueIcon = @"apis/dining/venues/:type/:venue/icon";
-NSString* const MITMobileDiningHouseVenues = @"apis/dining/venues/house";
-NSString* const MITMobileDiningRetailVenues = @"apis/dining/venues/retail";
-
-#pragma mark /links
-NSString* const MITMobileLinks = @"apis/links";
-
-#pragma mark /maps
-NSString* const MITMobileMapBootstrap = @"apis/map/bootstrap";
-NSString* const MITMobileMapCategories = @"apis/map/place_categories";
-NSString* const MITMobileMapPlaces = @"apis/map/places";
-NSString* const MITMobileMapRooms = @"apis/map/rooms";
-NSString* const MITMobileMapBuilding = @"apis/map/rooms/:building";
-
-#pragma mark /news
-NSString* const MITMobileNewsCategories = @"/news/categories";
-NSString* const MITMobileNewsStories = @"/news/stories";
-
-#pragma mark /people
-NSString* const MITMobilePeople = @"/people";
-NSString* const MITMobilePerson = @"/people/:id";
-
-#pragma mark /shuttles
-NSString* const MITMobileShuttlesRoutes = @"/shuttles/routes";
-NSString* const MITMobileShuttlesRoute = @"/shuttles/routes/:route";
-NSString* const MITMobileShuttlesStop = @"/shuttles/routes/:route/stops/:stop";
-
-#pragma mark /techccash
-NSString* const MITMobileTechcash = @"/techcash";
-NSString* const MITMobileTechcashAccounts = @"/techcash/accounts";
-NSString* const MITMobileTechcashAccount = @"/techcash/accounts/:id";
-
 typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSError *error);
 
 #pragma mark - MITMobile

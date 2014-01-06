@@ -16,8 +16,7 @@
 #import "MITCoreDataController.h"
 #import "CoreDataManager.h"
 #import "MITMobile.h"
-#import "MITMapPlacesResource.h"
-#import "MITMapCategoriesResource.h"
+#import "MITMobileResources.h"
 
 // Module headers
 #import "AboutModule.h"
