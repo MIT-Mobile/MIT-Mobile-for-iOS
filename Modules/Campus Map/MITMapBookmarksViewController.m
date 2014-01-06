@@ -10,8 +10,9 @@
 - (id)init
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bookmark != nil"];
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"bookmark.order" ascending:YES];
     
-    self = [super initWithPredicate:predicate sortDescriptors:nil];
+    self = [super initWithPredicate:predicate sortDescriptors:@[sortDescriptor]];
     if (self) {
 	    self.title = @"Bookmarks";
     }
@@ -39,10 +40,12 @@
 	[self.navigationItem setRightBarButtonItem:doneItem animated:animated];
 
     __weak MITMapBookmarksViewController *weakSelf = self;
-    self.fetchRequest = [[MITMapModelController sharedController] bookmarkedPlaces:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+    [[MITMapModelController sharedController] bookmarkedPlaces:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
         MITMapBookmarksViewController *blockSelf = weakSelf;
 
         if (blockSelf) {
+            blockSelf.fetchRequest = fetchRequest;
+            [blockSelf.fetchedResultsController performFetch:nil];
             [blockSelf.tableView reloadData];
         }
     }];
