@@ -82,11 +82,13 @@
 		2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */; };
 		2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6FE84813B2717700AFD8B8 /* FacilitiesContent.m */; };
 		2C70B81E170DBFFA00746EB9 /* MITLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C70B81D170DBFFA00746EB9 /* MITLogFormatter.m */; };
+		2C72F100186895690082040C /* MITNewsStoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C72F0FF186895690082040C /* MITNewsStoriesResource.m */; };
 		2C74240E165A9583000020FC /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C742406165A9354000020FC /* libstdc++.dylib */; };
 		2C75D20A16C975D100DD5350 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C75D20916C975D100DD5350 /* libc++.dylib */; };
 		2C7661D41369C466000CA2B0 /* FacilitiesCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7661D31369C466000CA2B0 /* FacilitiesCategory.m */; };
 		2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2C7EEAFC1871B00E009ED73D /* MITNewsCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */; };
 		2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */; };
 		2C82DDAA13BCCA9C0055D96D /* FacilitiesLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C82DDA913BCCA9C0055D96D /* FacilitiesLocation.m */; };
 		2C8E2B4B18206989002752F0 /* MITMapPlacesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4499332C11A371CF00A7041B /* MITMapPlacesViewController.m */; };
@@ -590,6 +592,8 @@
 		2C6FE84813B2717700AFD8B8 /* FacilitiesContent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesContent.m; sourceTree = "<group>"; };
 		2C70B81C170DBFFA00746EB9 /* MITLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLogFormatter.h; sourceTree = "<group>"; };
 		2C70B81D170DBFFA00746EB9 /* MITLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLogFormatter.m; sourceTree = "<group>"; };
+		2C72F0FE186895690082040C /* MITNewsStoriesResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsStoriesResource.h; path = ../../Modules/News/Model/MITNewsStoriesResource.h; sourceTree = "<group>"; };
+		2C72F0FF186895690082040C /* MITNewsStoriesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsStoriesResource.m; path = ../../Modules/News/Model/MITNewsStoriesResource.m; sourceTree = "<group>"; };
 		2C742406165A9354000020FC /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		2C75D20916C975D100DD5350 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		2C7661D21369C466000CA2B0 /* FacilitiesCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesCategory.h; sourceTree = "<group>"; };
@@ -598,6 +602,8 @@
 		2C7EDD911656CD2E001684E1 /* GDataHTMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataHTMLDocument.m; sourceTree = "<group>"; };
 		2C7EDD921656CD2E001684E1 /* GDataXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataXMLNode.h; sourceTree = "<group>"; };
 		2C7EDD931656CD2E001684E1 /* GDataXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataXMLNode.m; sourceTree = "<group>"; };
+		2C7EEAFA1871B00E009ED73D /* MITNewsCategoriesResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsCategoriesResource.h; sourceTree = "<group>"; };
+		2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCategoriesResource.m; sourceTree = "<group>"; };
 		2C7EEB001871C811009ED73D /* MITMobileRouteConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileRouteConstants.h; sourceTree = "<group>"; };
 		2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileRouteConstants.m; sourceTree = "<group>"; };
 		2C82DDA813BCCA9C0055D96D /* FacilitiesLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocation.h; sourceTree = "<group>"; };
@@ -1740,6 +1746,10 @@
 				2CA9AFBA185F92E00005D5DA /* MITMapPlacesResource.m */,
 				2CA9AFBC185F9A4B0005D5DA /* MITMapCategoriesResource.h */,
 				2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */,
+				2C72F0FE186895690082040C /* MITNewsStoriesResource.h */,
+				2C72F0FF186895690082040C /* MITNewsStoriesResource.m */,
+				2C7EEAFA1871B00E009ED73D /* MITNewsCategoriesResource.h */,
+				2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -2003,11 +2013,11 @@
 		44C1A26011A2E865000FD653 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				2CB7A24018634342007274A3 /* Entities */,
 				2C5CE69917FDC1BE009B850D /* MITMapModel.h */,
-				44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */,
 				2C49DBB017E8AB9400ABA319 /* MITMapModelController.h */,
 				2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */,
+				44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */,
+				2CB7A24018634342007274A3 /* Entities */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -3006,6 +3016,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */,
+				2C7EEAFC1871B00E009ED73D /* MITNewsCategoriesResource.m in Sources */,
 				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
 				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
 				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
@@ -3298,6 +3309,7 @@
 				48873E571727159A009C22F3 /* DiningHallMenuComparisonCell.m in Sources */,
 				48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */,
 				DED41FD8173849500048376F /* DiningData.m in Sources */,
+				2C72F100186895690082040C /* MITNewsStoriesResource.m in Sources */,
 				DED41FDB173850960048376F /* HouseVenue.m in Sources */,
 				DED41FDE173858BA0048376F /* VenueLocation.m in Sources */,
 				DED41FE117385A730048376F /* DiningDay.m in Sources */,

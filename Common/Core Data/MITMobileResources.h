@@ -9,3 +9,5 @@
 #import "MITMapCategoriesResource.h"
 #import "MITMapPlacesResource.h"
 
+#import "MITNewsCategoriesResource.h"
+#import "MITNewsStoriesResource.h"
