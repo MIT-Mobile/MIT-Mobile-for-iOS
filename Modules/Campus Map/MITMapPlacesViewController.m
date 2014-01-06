@@ -9,7 +9,7 @@
 static NSString* const MITMapCategoryViewAllText = @"View all on map";
 
 @interface MITMapPlacesViewController ()
-@property (nonatomic,strong) NSFetchRequest *fetchRequest;
+
 @end
 
 @implementation MITMapPlacesViewController
@@ -17,7 +17,7 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 - (instancetype)initWithPredicate:(NSPredicate*)predicate
                   sortDescriptors:(NSArray*)sortDescriptors
 {
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:MITMapPlaceEntityName];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMapPlace entityName]];
     fetchRequest.predicate = predicate;
 
     if (sortDescriptors) {

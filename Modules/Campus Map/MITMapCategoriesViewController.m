@@ -15,29 +15,22 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 @implementation MITMapCategoriesViewController
 - (id)init
 {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapCategoryEntityName];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == nil"];
-    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
-
-    self = [super initWithFetchRequest:fetchRequest];
-    if (self) {
-        
-    }
-
-    return self;
+    return [self initWithCategory:nil];
 }
 
 - (id)initWithCategory:(MITMapCategory*)category
 {
-    NSParameterAssert(category);
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITMapCategory entityName]];
 
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:MITMapCategoryEntityName];
-    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == %@",category];
+    if (category) {
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parent == %@",category];
+    }
+
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
 
     self = [super initWithFetchRequest:fetchRequest];
     if (self) {
-        _category = (MITMapCategory*)[self.managedObjectContext objectWithID:[category objectID]];
+        _category = category;
     }
 
     return self;
@@ -51,6 +44,12 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
+
+    // Make sure the category object we have is in the right mananged object context.
+    // This assumes that, if an NSManagedObjectContext (other than main) is desired,
+    //  it was assigned before adding the view controller to the hierarchy
+    self.category = (MITMapCategory*)[self.managedObjectContext objectWithID:[self.category objectID]];
     
     [self.tableView reloadRowsAtIndexPaths:[self.tableView indexPathsForSelectedRows] withRowAnimation:UITableViewRowAnimationNone];
 
