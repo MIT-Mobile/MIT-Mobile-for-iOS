@@ -86,7 +86,6 @@
         _fetchRequest = fetchRequest;
 
         self.fetchedResultsController = nil;
-        [self loadFetchedResultsController];
     }
 }
 
