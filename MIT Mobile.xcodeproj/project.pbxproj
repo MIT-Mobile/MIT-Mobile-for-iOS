@@ -136,6 +136,7 @@
 		2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6513BDFB2C0043CFBE /* FacilitiesPropertyOwner.m */; };
 		2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */; };
 		2CE6BE39182AE1D5005C5047 /* MITMapCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6BE38182AE1D5005C5047 /* MITMapCategory.m */; };
+		2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE7A2FF186A0AF900DF455F /* MITMobileManagedResource.m */; };
 		2CED98F413534B5C0034F6F1 /* QRReaderDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */; };
 		2CED98F513534B5C0034F6F1 /* QRReaderDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CED98F313534B5C0034F6F1 /* QRReaderDetailViewController.xib */; };
 		2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */; };
@@ -691,6 +692,8 @@
 		2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLeasedViewController.m; sourceTree = "<group>"; };
 		2CE6BE37182AE1D5005C5047 /* MITMapCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMapCategory.h; path = Model/MITMapCategory.h; sourceTree = "<group>"; };
 		2CE6BE38182AE1D5005C5047 /* MITMapCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMapCategory.m; path = Model/MITMapCategory.m; sourceTree = "<group>"; };
+		2CE7A2FE186A0AF900DF455F /* MITMobileManagedResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileManagedResource.h; sourceTree = "<group>"; };
+		2CE7A2FF186A0AF900DF455F /* MITMobileManagedResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileManagedResource.m; sourceTree = "<group>"; };
 		2CEBBFA31635C7D900441252 /* Secret.m.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secret.m.in; sourceTree = "<group>"; };
 		2CED98F113534B5C0034F6F1 /* QRReaderDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderDetailViewController.h; sourceTree = "<group>"; };
 		2CED98F213534B5C0034F6F1 /* QRReaderDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderDetailViewController.m; sourceTree = "<group>"; };
@@ -1726,6 +1729,8 @@
 				2CFAE1E81861F9BE00A0970C /* MITMobileResources.h */,
 				2C276711184CC90E00E53E9F /* MITMobileResource.h */,
 				2C276712184CC90E00E53E9F /* MITMobileResource.m */,
+				2CE7A2FE186A0AF900DF455F /* MITMobileManagedResource.h */,
+				2CE7A2FF186A0AF900DF455F /* MITMobileManagedResource.m */,
 				2CA9AFB9185F92E00005D5DA /* MITMapPlacesResource.h */,
 				2CA9AFBA185F92E00005D5DA /* MITMapPlacesResource.m */,
 				2CA9AFBC185F9A4B0005D5DA /* MITMapCategoriesResource.h */,
@@ -3233,6 +3238,7 @@
 				2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */,
 				48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */,
 				2C189A93181970B700653DF6 /* MITCoreDataController.m in Sources */,
+				2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */,
 				2C698F4418650A870010B0C0 /* MITNewsCategory.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
 				2C91944C1631CBA700ED97F6 /* NSData+MGTwitterBase64.m in Sources */,
