@@ -48,14 +48,13 @@ typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSError *error);
     }
 }
 
-- (void)setResource:(MITMobileResource*)resource forName:(NSString*)name
+- (void)addResource:(MITMobileResource *)resource
 {
     NSParameterAssert(resource);
     NSAssert([resource isKindOfClass:[MITMobileResource class]], @"resource is not descended from MITMobileResource");
-    NSAssert(!(self.mutableResources[name]), @"resource with name '%@' already exists",name);
-    NSAssert([self.objectManagers count] == 0, @"resources can not be added after requests have been made");
+    NSAssert(!(self.mutableResources[resource.name]), @"resource with name '%@' already exists",resource.name);
 
-    self.mutableResources[name] = resource;
+    self.mutableResources[resource.name] = resource;
 }
 
 - (MITMobileResource*)resourceForName:(NSString *)name
@@ -68,17 +67,16 @@ typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSError *error);
     return [self.mutableResources copy];
 }
 
-- (NSFetchRequest*)getObjectsForResourceNamed:(NSString *)routeName object:(id)object parameters:(NSDictionary *)parameters completion:(MITResourceLoadedBlock)block;
+- (void)getObjectsForResourceNamed:(NSString *)routeName object:(id)object parameters:(NSDictionary *)parameters completion:(MITResourceLoadedBlock)block;
 {
     // Trim off any additional paths. Right now, the API prefix (for the Mobile v3, '/apis')
-    // is included in the route name but the current server URL uses '/api'.
+    // is included in the route name but the current server URL defaults to a path of '/api'.
     // Passing the current server URL directly into the routing subsystem confuses it.
     NSURL *serverURL = [[NSURL URLWithString:@"/"
                               relativeToURL:MITMobileWebGetCurrentServerURL()] absoluteURL];
+
     RKObjectManager *objectManager = [self objectManagerForURL:serverURL];
-    
     NSString *uniquedRouteName = [NSString stringWithFormat:@"%@ %@",RKStringFromRequestMethod(RKRequestMethodGET),routeName];
-    NSURL *url = [objectManager.router URLForRouteNamed:uniquedRouteName method:NULL object:nil];
 
     [objectManager getObjectsAtPathForRouteNamed:uniquedRouteName
                                                object:nil
@@ -93,9 +91,6 @@ typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSError *error);
                                                       block(nil,error);
                                                   }
                                               }];
-
-    MITMobileResource *requestedResource = self.resources[routeName];
-    return [requestedResource fetchRequestForURL:url];
 }
 
 - (RKObjectManager*)objectManagerForURL:(NSURL *)url
@@ -129,13 +124,17 @@ typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSError *error);
                 [objectManager.router.routeSet addRoute:route];
             }];
             
-            
-            // Setup the fetch request generators so we can have nice things (like
-            // killing orphans) for resources that provide the support
-            __weak MITMobileResource *weakResource = resource;
-            [objectManager addFetchRequestBlock:^(NSURL *URL) {
-                return [weakResource fetchRequestForURL:URL];
-            }];
+
+            if ([resource isKindOfClass:[MITMobileManagedResource class]]) {
+                MITMobileManagedResource *managedResource = (MITMobileManagedResource*)resource;
+
+                // Setup the fetch request generators so we can have nice things like orphaned object
+                // deletion.
+                __weak MITMobileManagedResource *weakResource = managedResource;
+                [objectManager addFetchRequestBlock:^(NSURL *URL) {
+                    return [weakResource fetchRequestForURL:URL];
+                }];
+            }
         }];
         
         self.objectManagers[url] = objectManager;

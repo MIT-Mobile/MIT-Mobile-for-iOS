@@ -445,11 +445,11 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     MITMobile *remoteObjectManager = [[MITMobile alloc] init];
     [remoteObjectManager setManagedObjectStore:self.coreDataController.managedObjectStore];
     
-    MITMobileResource *mapPlaces = [[MITMapPlacesResource alloc] initWithPathPattern:MITMobileMapPlaces managedObjectModel:self.managedObjectModel];
-    [remoteObjectManager setResource:mapPlaces forName:MITMobileMapPlaces];
+    MITMobileResource *mapPlaces = [[MITMapPlacesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:mapPlaces];
     
-    MITMobileResource *mapCategories = [[MITMapCategoriesResource alloc] initWithPathPattern:MITMobileMapCategories managedObjectModel:self.managedObjectModel];
-    [remoteObjectManager setResource:mapCategories forName:MITMobileMapCategories];
+    MITMobileResource *mapCategories = [[MITMapCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:mapCategories];
     
     _remoteObjectManager = remoteObjectManager;
 }

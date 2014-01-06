@@ -13,7 +13,7 @@
 - (void)setManagedObjectStore:(RKManagedObjectStore *)managedObjectStore;
 
 - (MITMobileResource*)resourceForName:(NSString*)name;
-- (void)setResource:(MITMobileResource*)resource forName:(NSString*)name;
+- (void)addResource:(MITMobileResource*)resource;
 
-- (NSFetchRequest*)getObjectsForResourceNamed:(NSString *)routeName object:(id)object parameters:(NSDictionary *)parameters completion:(void (^)(RKMappingResult *result, NSError *error))loaded;
+- (void)getObjectsForResourceNamed:(NSString *)routeName object:(id)object parameters:(NSDictionary *)parameters completion:(void (^)(RKMappingResult *result, NSError *error))loaded;
 @end
