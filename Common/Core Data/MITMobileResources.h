@@ -4,8 +4,8 @@
 #import "MITMobileRouteConstants.h"
 
 #import "MITMobileResource.h"
-#import "MITMapPlacesResource.h"
 #import "MITMobileManagedResource.h"
 
 #import "MITMapCategoriesResource.h"
+#import "MITMapPlacesResource.h"
 

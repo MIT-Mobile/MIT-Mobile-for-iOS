@@ -1,11 +1,6 @@
 #import <Foundation/Foundation.h>
-#import "MITMobile.h"
-
-FOUNDATION_EXTERN NSString* const MITMapSearchEntityName;
-FOUNDATION_EXTERN NSString* const MITMapCategoryEntityName;
-FOUNDATION_EXTERN NSString* const MITMapPlaceEntityName;
-FOUNDATION_EXTERN NSString* const MITMapPlaceContentEntityName;
-FOUNDATION_EXTERN NSString* const MITMapBookmarkEntityName;
+#import "MITMapModel.h"
+#import "MITMobileResources.h"
 
 FOUNDATION_EXTERN NSString* const MITCoreDataErrorDomain;
 
@@ -24,10 +19,11 @@ typedef NS_ENUM(NSUInteger, MITCoreDataErrorCode) {
 
 - (NSFetchRequest*)categories:(MITMobileManagedResult)block;
 
+- (void)addRecentSearch:(NSString*)queryString;
 - (NSFetchRequest*)recentSearches:(MITMobileManagedResult)block;
 - (NSFetchRequest*)recentSearchesForPartialString:(NSString*)string loaded:(MITMobileManagedResult)block;
 
-- (void)searchMapWithQuery:(NSString*)queryText loaded:(MITMobileManagedResult)block;
+- (void)searchMapWithQuery:(NSString*)queryText loaded:(MITMobileResult)block;
 - (NSFetchRequest*)places:(MITMobileManagedResult)block;
 - (void)placesInCategory:(MITMapCategory*)categoryId loaded:(MITMobileManagedResult)block;
 

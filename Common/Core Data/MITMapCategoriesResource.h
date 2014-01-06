@@ -1,6 +1,8 @@
 #import "MITMobileResources.h"
 
-@interface MITMapCategoriesResource : MITMobileResource
-- (instancetype)initWithPathPattern:(NSString*)pathPattern managedObjectModel:(NSManagedObjectModel*)managedObjectModel;
+@interface MITMapCategoriesResource : MITMobileManagedResource
++ (NSFetchRequest*)categories:(MITMobileManagedResult)block;
+
+- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel*)managedObjectModel;
 
 @end
