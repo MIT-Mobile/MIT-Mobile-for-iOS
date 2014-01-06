@@ -35,13 +35,19 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [self.fetchedResultsController performFetch:nil];
+    NSError *error = nil;
+    [self.fetchedResultsController performFetch:&error];
+    
+    if (error) {
+        DDLogWarn(@"[%@] FRC fetch failed: %@", NSStringFromClass([self class]),error);
+    } else {
+        [self.tableView reloadData];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    self.fetchedResultsController = nil;
 }
 
 - (void)didReceiveMemoryWarning
@@ -57,13 +63,6 @@
     if (!_fetchedResultsController) {
         if (self.fetchRequest) {
             [self loadFetchedResultsController];
-            
-            NSError *error = nil;
-            [_fetchedResultsController performFetch:&error];
-            
-            if (error) {
-                DDLogError(@"Failed to execute fetch %@: %@",self.fetchRequest,error);
-            }
         }
     }
 
@@ -78,7 +77,6 @@
                                                                                             cacheName:nil];
     controller.delegate = self;
     _fetchedResultsController = controller;
-
 }
 
 #pragma mark Mutators
@@ -88,7 +86,7 @@
         _fetchRequest = fetchRequest;
 
         self.fetchedResultsController = nil;
-        [self.tableView reloadData];
+        [self loadFetchedResultsController];
     }
 }
 
