@@ -304,11 +304,10 @@
 	
 	// force the correct tab to load
 	if([self.tabViews count]) {
-		if (![self.place.contents count] && [self.tabViews count]) {
+		if (![self.place.contents count] && ([self.tabViews count] > 1)) {
 			self.tabViewControl.selectedTab = 1;
 			[self tabControl:self.tabViewControl changedToIndex:1 tabText:nil];
-		}
-		else {
+		} else {
 			self.tabViewControl.selectedTab = 0;
 			[self tabControl:self.tabViewControl changedToIndex:0 tabText:nil];
 		}
