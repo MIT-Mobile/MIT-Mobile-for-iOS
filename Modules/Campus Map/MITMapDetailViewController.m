@@ -261,18 +261,9 @@
 	
 	
 	// set the labels
-    NSString *title = nil;
-    if (self.place.name && self.place.buildingNumber) {
-		NSString* buildingName = [NSString stringWithFormat:@"Building %@", self.place.buildingNumber];
-		if ([buildingName isEqualToString:self.place.name]) {
-			title = self.place.name;
-		} else {
-            title = [NSString stringWithFormat:@"%@ (%@)", buildingName, self.place.name];
-        }
-    } else if (self.place.name) {
-		title = self.place.name;
-    } else {
-		title = [NSString stringWithFormat:@"Building %@", self.place.buildingNumber];
+    NSString *title = [self.place title];
+    if ([self.place.subtitle length]) {
+        title = [NSString stringWithFormat:@"%@ (%@)",title,self.place.subtitle];
     }
 
 
