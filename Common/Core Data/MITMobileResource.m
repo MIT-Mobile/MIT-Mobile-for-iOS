@@ -20,8 +20,6 @@ static inline void MITMobileEnumerateRequestMethodsUsingBlock(RKRequestMethod me
     }];
 }
 
-typedef NSFetchRequest* (^MITMobileFetchGenerator)(NSURL *url);
-
 #pragma mark -
 @interface MITMobileResource ()
 @property (nonatomic,strong) NSMutableDictionary *registeredMappings;
@@ -29,11 +27,12 @@ typedef NSFetchRequest* (^MITMobileFetchGenerator)(NSURL *url);
 
 @implementation MITMobileResource
 
-+ (instancetype)resourceWithPathPattern:(NSString*)path
++ (instancetype)resourceWithName:(NSString*)name
+                     pathPattern:(NSString*)path
                                 mapping:(RKMapping*)mapping
                                  method:(RKRequestMethod)method
 {
-    MITMobileResource *resource = [[MITMobileResource alloc] initWithPathPattern:path];
+    MITMobileResource *resource = [[MITMobileResource alloc] initWithName:name pathPattern:path];
     [resource addMapping:mapping
                atKeyPath:nil
         forRequestMethod:method];
@@ -43,17 +42,18 @@ typedef NSFetchRequest* (^MITMobileFetchGenerator)(NSURL *url);
 - (instancetype)init
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"-init is not supported; use initWithName:pathPattern: instead"
+                                   reason:@"failed to call designated initializer. Invoke -initWithName:pathPattern: instead"
                                  userInfo:nil];
 }
 
-- (instancetype)initWithPathPattern:(NSString *)pathPattern
+- (instancetype)initWithName:(NSString*)name pathPattern:(NSString *)pathPattern
 {
     NSParameterAssert(pathPattern);
 
     self = [super init];
     if (self) {
         _pathPattern = [pathPattern copy];
+        _name = [name copy];
     }
 
     return self;
@@ -153,8 +153,4 @@ typedef NSFetchRequest* (^MITMobileFetchGenerator)(NSURL *url);
 
 
 #pragma mark - Dynamic Properties
-- (NSFetchRequest*)fetchRequestForURL:(NSURL *)url
-{
-    return nil;
-}
 @end
