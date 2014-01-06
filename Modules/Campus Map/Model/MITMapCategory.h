@@ -11,6 +11,7 @@
 @property (nonatomic, copy) NSOrderedSet *children;
 @property (nonatomic, strong) MITMapCategory *parent;
 
++ (NSString*)entityName;
 - (NSString*)canonicalName;
 @end
 

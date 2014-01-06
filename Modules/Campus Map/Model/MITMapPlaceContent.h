@@ -9,4 +9,5 @@
 @property (nonatomic, copy) NSString * name;
 @property (nonatomic, strong) MITMapPlace *building;
 
++ (NSString*)entityName;
 @end

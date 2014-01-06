@@ -10,6 +10,11 @@
 @dynamic date;
 @dynamic token;
 
++ (NSString*)entityName
+{
+    return @"MapSearch";
+}
+
 - (void)awakeFromFetch {
     [super awakeFromFetch];
     if (self.token == nil) {

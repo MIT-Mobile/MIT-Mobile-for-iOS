@@ -8,4 +8,5 @@
 @property (nonatomic, strong) NSNumber * order;
 @property (nonatomic, strong) MITMapPlace *place;
 
++ (NSString*)entityName;
 @end

@@ -6,4 +6,5 @@
 @property (nonatomic, copy) NSString * searchTerm;
 @property (nonatomic, strong) NSDate * date;
 
++ (NSString*)entityName;
 @end

@@ -11,6 +11,11 @@
 @dynamic children;
 @dynamic parent;
 
++ (NSString*)entityName
+{
+    return @"MapCategory";
+}
+
 - (NSString*)canonicalName
 {
     NSMutableArray *components = [[NSMutableArray alloc] init];

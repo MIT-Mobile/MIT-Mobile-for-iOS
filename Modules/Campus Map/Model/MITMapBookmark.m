@@ -7,4 +7,9 @@
 @dynamic order;
 @dynamic place;
 
++ (NSString*)entityName
+{
+    return @"MapBookmark";
+}
+
 @end
