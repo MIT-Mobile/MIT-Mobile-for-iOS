@@ -36,13 +36,13 @@
     <entity name="MapSearch" representedClassName="MITMapSearch" syncable="YES">
         <attribute name="date" attributeType="Date" syncable="YES"/>
         <attribute name="searchTerm" attributeType="String" syncable="YES"/>
-        <attribute name="token" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
+        <attribute name="token" attributeType="String" indexed="YES" syncable="YES"/>
     </entity>
     <elements>
-        <element name="MapPlaceContent" positionX="0" positionY="0" width="0" height="0"/>
         <element name="MapBookmark" positionX="0" positionY="0" width="0" height="0"/>
         <element name="MapCategory" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="MapSearch" positionX="1" positionY="1" width="128" height="75"/>
         <element name="MapPlace" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="MapPlaceContent" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="MapSearch" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>
