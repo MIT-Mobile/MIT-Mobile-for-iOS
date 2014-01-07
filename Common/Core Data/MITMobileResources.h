@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 
+#import "MITCoreData.h"
+
 #import "MITMobile.h"
 #import "MITMobileRouteConstants.h"
 

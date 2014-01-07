@@ -12,7 +12,7 @@
 static NSString* const MITCampusMapReuseIdentifierSearchCell = @"MITCampusMapReuseIdentifierSearchCell";
 
 // Used in the updateToolbarItems: method to determine
-// the sorted order of the bar items. There starting value
+// the sorted order of the bar items. The starting value
 // was picked at random and has no significance.
 typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
     MITCampusMapItemTagGeotrackingItem = 0xFF00,
@@ -298,7 +298,7 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (NSManagedObjectContext*)managedObjectContext
 {
     if (!_managedObjectContext) {
-        _managedObjectContext = [[[MIT_MobileAppDelegate applicationDelegate] coreDataController] mainQueueContext];
+        _managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
     }
 
     return _managedObjectContext;
@@ -373,18 +373,18 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 {
     [[MITMapModelController sharedController] recentSearchesForPartialString:searchString
                                                                       loaded:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
-        if (error) {
-            self.recentSearches = nil;
-        } else {
-            [[MITCoreDataController defaultController] performBackgroundFetch:fetchRequest
-                                                                   completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
-                                                                       self.recentSearches = [self.managedObjectContext objectsWithIDs:[fetchedObjectIDs array]];
-                                                                   }];
-        }
+                                                                          if (error) {
+                                                                              self.recentSearches = nil;
+                                                                          } else {
+                                                                              [[MITCoreDataController defaultController] performBackgroundFetch:fetchRequest
+                                                                                                                                     completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
+                                                                                                                                         self.recentSearches = [self.managedObjectContext objectsWithIDs:[fetchedObjectIDs array]];
+                                                                                                                                     }];
+                                                                          }
 
-        [controller.searchResultsTableView reloadData];
-    }];
-    
+                                                                          [controller.searchResultsTableView reloadData];
+                                                                      }];
+
     return NO;
 }
 
@@ -404,12 +404,9 @@ typedef NS_ENUM(NSInteger, MITCampusMapItemTag) {
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [[MITMapModelController sharedController] searchMapWithQuery:searchBar.text
-                                                          loaded:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
+                                                          loaded:^(NSArray *objects, NSError *error) {
                                                               if (!error) {
-                                                                  [[MITCoreDataController defaultController] performBackgroundFetch:fetchRequest
-                                                                                                                         completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
-                                                                                                                             self.selectedPlaces = [self.managedObjectContext objectsWithIDs:[fetchedObjectIDs array]];
-                                                                                                                         }];
+                                                                  self.selectedPlaces = objects;
                                                               } else {
                                                                   DDLogVerbose(@"Failed to perform search '%@', %@",searchBar.text,error);
                                                               }
