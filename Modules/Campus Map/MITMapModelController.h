@@ -2,12 +2,6 @@
 #import "MITMapModel.h"
 #import "MITMobileResources.h"
 
-FOUNDATION_EXTERN NSString* const MITCoreDataErrorDomain;
-
-typedef NS_ENUM(NSUInteger, MITCoreDataErrorCode) {
-    MITCoreDataMethodNotImplementedError = 0
-};
-
 @class MITMapCategory;
 @class MITMapPlace;
 @class MITMobileResource;

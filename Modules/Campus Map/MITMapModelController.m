@@ -3,7 +3,6 @@
 #import "MITMapModelController.h"
 
 #import "MITMobileServerConfiguration.h"
-
 #import "MITCoreData.h"
 
 #import "MITMapPlace.h"
@@ -12,7 +11,6 @@
 
 static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlacesFetchDate";
 
-NSString* const MITCoreDataErrorDomain = @"MITCoreDataErrorDomain";
 
 @interface MITMapModelController ()
 @property (nonatomic,strong) NSDate *placesFetchDate;
