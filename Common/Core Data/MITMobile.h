@@ -7,12 +7,27 @@
 @interface MITMobile : NSObject
 @property (nonatomic,readonly) NSDictionary *resources;
 
+/** Returns the default object manager instance
+
+ @return The default object manager instance.
+ */
 + (MITMobile*)defaultManager;
 
 - (instancetype)init;
+
+/** Sets the managed object store to use for CoreData-backed resources.
+    If this is not set, any mappings requiring CoreData will be not be performed.
+
+ @related RKManagedObjectStore
+ */
 - (void)setManagedObjectStore:(RKManagedObjectStore *)managedObjectStore;
 
+/** Returns the resource registered for a specific route name or nil is one has not been added.
+ 
+ @return The resource for the named route or nil
+ */
 - (MITMobileResource*)resourceForName:(NSString*)name;
+
 - (void)addResource:(MITMobileResource*)resource;
 
 - (void)getObjectsForResourceNamed:(NSString *)routeName object:(id)object parameters:(NSDictionary *)parameters completion:(void (^)(RKMappingResult *result, NSError *error))loaded;
