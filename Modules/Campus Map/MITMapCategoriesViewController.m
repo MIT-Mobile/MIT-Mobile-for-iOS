@@ -46,10 +46,6 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
     [super viewWillAppear:animated];
 
 
-    // Make sure the category object we have is in the right mananged object context.
-    // This assumes that, if an NSManagedObjectContext (other than main) is desired,
-    //  it was assigned before adding the view controller to the hierarchy
-    self.category = (MITMapCategory*)[self.managedObjectContext objectWithID:[self.category objectID]];
     
     [self.tableView reloadRowsAtIndexPaths:[self.tableView indexPathsForSelectedRows] withRowAnimation:UITableViewRowAnimationNone];
 
@@ -63,6 +59,11 @@ static NSString* const MITMapCategoryViewAllText = @"View all on map";
         self.navigationItem.leftBarButtonItem = cancelItem;
         self.navigationItem.title = @"Browse";
     } else {
+        // Make sure the category object we have is in the right mananged object context.
+        // This assumes that, if an NSManagedObjectContext (other than main) is desired,
+        //  it was assigned before adding the view controller to the hierarchy
+        self.category = (MITMapCategory*)[self.managedObjectContext objectWithID:[self.category objectID]];
+
         self.navigationItem.title = self.category.name;
     }
 
