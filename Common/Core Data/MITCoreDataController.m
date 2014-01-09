@@ -289,7 +289,7 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
 
 - (void)performBackgroundUpdate:(void (^)(NSManagedObjectContext *context, NSError **error))update completion:(void (^)(NSError *error))complete;
 {
-    NSManagedObjectContext *backgroundContext = [self.managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
+    NSManagedObjectContext *backgroundContext = [self newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:NO];
 
     [backgroundContext performBlock:^{
         __block NSError *error = nil;
@@ -324,41 +324,36 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
     }];
 }
 
-- (void)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context, NSError **error))update completion:(void (^)(NSError *error))complete;
+- (BOOL)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context, NSError **error))update error:(NSError *__autoreleasing *)error
 {
     NSManagedObjectContext *backgroundContext = [self.managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
 
+    __block NSError *localError = nil;
     [backgroundContext performBlockAndWait:^{
-        __block NSError *error = nil;
-
         if (update) {
-            update(backgroundContext, &error);
+            update(backgroundContext, &localError);
         }
 
-        if (error) {
-            DDLogError(@"Failed to complete update to context: %@",error);
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (complete) {
-                    complete(error);
-                }
-            }];
+        if (localError) {
+            DDLogError(@"Failed to complete update to context: %@",localError);
         } else {
-            [backgroundContext.parentContext performBlock:^{
-                NSError *parentSaveError = nil;
-                [backgroundContext.parentContext save:&parentSaveError];
+            if ([backgroundContext save:&localError]) {
+                [backgroundContext.parentContext performBlock:^{
+                    [backgroundContext.parentContext save:&localError];
 
-                if (parentSaveError) {
-                    DDLogError(@"Failed to save root background context: %@", parentSaveError);
-                }
-                
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    if (complete) {
-                        complete(parentSaveError);
+                    if (localError) {
+                        DDLogError(@"Failed to save root background context: %@", localError);
                     }
                 }];
-            }];
+            }
         }
     }];
+
+    if (localError && error) {
+        (*error) = localError;
+    }
+
+    return !(localError);
 }
 
 @end
