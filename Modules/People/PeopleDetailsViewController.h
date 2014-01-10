@@ -9,7 +9,6 @@
 	 ABPersonViewControllerDelegate>
 
 @property (nonatomic, strong) PersonDetails *personDetails;
-@property (nonatomic, copy) NSString *fullname;
 
 - (void)mapIconTapped:(NSString *)room;
 - (void)phoneIconTapped:(NSString *)phone;

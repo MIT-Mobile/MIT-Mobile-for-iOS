@@ -204,6 +204,9 @@
 		48EDC97417175C3100376BCF /* dining in Resources */ = {isa = PBXBuildFile; fileRef = 48EDC97317175C3100376BCF /* dining */; };
 		48EDC995171764BD00376BCF /* DiningMenuFilterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC994171764BD00376BCF /* DiningMenuFilterViewController.m */; };
 		48EDC99B1718652900376BCF /* DiningHallMenuSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC99A1718652800376BCF /* DiningHallMenuSectionHeaderView.m */; };
+		48EFBC701880A6B200161A3D /* PeopleDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 48EFBC6F1880A6B200161A3D /* PeopleDetailsTableViewCell.xib */; };
+		48EFBC771880ABF900161A3D /* PeopleDetailsHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EFBC761880ABF900161A3D /* PeopleDetailsHeaderView.m */; };
+		48EFBC791880ACC400161A3D /* PeopleDetailsHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 48EFBC781880ACC400161A3D /* PeopleDetailsHeaderView.xib */; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; };
 		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; };
 		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; };
@@ -828,6 +831,10 @@
 		48EDC994171764BD00376BCF /* DiningMenuFilterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningMenuFilterViewController.m; path = Dining/DiningMenuFilterViewController.m; sourceTree = "<group>"; };
 		48EDC9991718652800376BCF /* DiningHallMenuSectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuSectionHeaderView.h; path = Dining/DiningHallMenuSectionHeaderView.h; sourceTree = "<group>"; };
 		48EDC99A1718652800376BCF /* DiningHallMenuSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuSectionHeaderView.m; path = Dining/DiningHallMenuSectionHeaderView.m; sourceTree = "<group>"; };
+		48EFBC6F1880A6B200161A3D /* PeopleDetailsTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PeopleDetailsTableViewCell.xib; path = View/PeopleDetailsTableViewCell.xib; sourceTree = "<group>"; };
+		48EFBC751880ABF900161A3D /* PeopleDetailsHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PeopleDetailsHeaderView.h; path = View/PeopleDetailsHeaderView.h; sourceTree = "<group>"; };
+		48EFBC761880ABF900161A3D /* PeopleDetailsHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PeopleDetailsHeaderView.m; path = View/PeopleDetailsHeaderView.m; sourceTree = "<group>"; };
+		48EFBC781880ACC400161A3D /* PeopleDetailsHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PeopleDetailsHeaderView.xib; path = View/PeopleDetailsHeaderView.xib; sourceTree = "<group>"; };
 		4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAskUsViewController.h; sourceTree = "<group>"; };
 		4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAskUsViewController.m; sourceTree = "<group>"; };
 		4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryEmailFormViewController.h; sourceTree = "<group>"; };
@@ -1157,8 +1164,8 @@
 		EB6DEE3E11D246EA00B65CE3 /* MultiLineTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MultiLineTableViewCell.h; path = ../MultiLineTableViewCell.h; sourceTree = "<group>"; };
 		EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MultiLineTableViewCell.m; path = ../MultiLineTableViewCell.m; sourceTree = "<group>"; };
 		EB6F2B6910E9023300A29A2A /* MITUIConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITUIConstants.h; sourceTree = "<group>"; };
-		EB6F2B6B10E9026200A29A2A /* PeopleDetailsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleDetailsTableViewCell.h; sourceTree = "<group>"; };
-		EB6F2B6C10E9026200A29A2A /* PeopleDetailsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleDetailsTableViewCell.m; sourceTree = "<group>"; };
+		EB6F2B6B10E9026200A29A2A /* PeopleDetailsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PeopleDetailsTableViewCell.h; path = View/PeopleDetailsTableViewCell.h; sourceTree = "<group>"; };
+		EB6F2B6C10E9026200A29A2A /* PeopleDetailsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PeopleDetailsTableViewCell.m; path = View/PeopleDetailsTableViewCell.m; sourceTree = "<group>"; };
 		EB6FD1F710E19D7900D56BE1 /* SecondaryGroupedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SecondaryGroupedTableViewCell.h; path = ../SecondaryGroupedTableViewCell.h; sourceTree = "<group>"; };
 		EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SecondaryGroupedTableViewCell.m; path = ../SecondaryGroupedTableViewCell.m; sourceTree = "<group>"; };
 		EB74ED2C11924E7C006673F9 /* ShareDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareDetailViewController.h; sourceTree = "<group>"; };
@@ -2126,6 +2133,19 @@
 			path = "External/UIImage+PDF";
 			sourceTree = "<group>";
 		};
+		48EFBC741880ABD600161A3D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				48EFBC751880ABF900161A3D /* PeopleDetailsHeaderView.h */,
+				48EFBC761880ABF900161A3D /* PeopleDetailsHeaderView.m */,
+				48EFBC781880ACC400161A3D /* PeopleDetailsHeaderView.xib */,
+				EB6F2B6B10E9026200A29A2A /* PeopleDetailsTableViewCell.h */,
+				EB6F2B6C10E9026200A29A2A /* PeopleDetailsTableViewCell.m */,
+				48EFBC6F1880A6B200161A3D /* PeopleDetailsTableViewCell.xib */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
 		4B0D8A55142CF8430083AC66 /* WorldCatSearch */ = {
 			isa = PBXGroup;
 			children = (
@@ -2726,6 +2746,7 @@
 		EB7F326610CD6C5B00188BCD /* People */ = {
 			isa = PBXGroup;
 			children = (
+				48EFBC741880ABD600161A3D /* View */,
 				EB7F326910CD6C5B00188BCD /* Model */,
 				EB7F327410CD6C5B00188BCD /* PeopleModule.h */,
 				EB7F327510CD6C5B00188BCD /* PeopleModule.m */,
@@ -2735,8 +2756,6 @@
 				EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */,
 				EB7F327210CD6C5B00188BCD /* PeopleDetailsViewController.h */,
 				EB7F327310CD6C5B00188BCD /* PeopleDetailsViewController.m */,
-				EB6F2B6B10E9026200A29A2A /* PeopleDetailsTableViewCell.h */,
-				EB6F2B6C10E9026200A29A2A /* PeopleDetailsTableViewCell.m */,
 				EB7F327010CD6C5B00188BCD /* PartialHighlightTableViewCell.h */,
 				EB7F327110CD6C5B00188BCD /* PartialHighlightTableViewCell.m */,
 			);
@@ -2922,8 +2941,10 @@
 				EBF1120712A495170002D751 /* en.lproj in Resources */,
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
 				2CD12D4F1360584F00A73ACA /* facilities in Resources */,
+				48EFBC791880ACC400161A3D /* PeopleDetailsHeaderView.xib in Resources */,
 				EB54947310DFF7E200B708B3 /* global in Resources */,
 				EB54943810DFF03600B708B3 /* icons in Resources */,
+				48EFBC701880A6B200161A3D /* PeopleDetailsTableViewCell.xib in Resources */,
 				EB5C621E1201D92E00805EBE /* map in Resources */,
 				EB5C625A1201D93A00805EBE /* news in Resources */,
 				EB5C625B1201D93A00805EBE /* people in Resources */,
@@ -3198,6 +3219,7 @@
 				4B667067140330CD00714C6A /* LibrariesModule.m in Sources */,
 				4B66706E1404019300714C6A /* LibrariesLocationsHoursViewController.m in Sources */,
 				2C5DECD513E9BABB00F9C089 /* MobileKeychainServices.m in Sources */,
+				48EFBC771880ABF900161A3D /* PeopleDetailsHeaderView.m in Sources */,
 				2C5DECD613E9BABB00F9C089 /* MobileRequestLoginViewController.m in Sources */,
 				2C5DECD713E9BABB00F9C089 /* MobileRequestOperation.m in Sources */,
 				2CFF6C2A17E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.m in Sources */,

@@ -9,28 +9,31 @@
 #import "MITMailComposeController.h"
 #import "MobileRequestOperation.h"
 
+#import "PeopleDetailsHeaderView.h"
+
 @interface PeopleDetailsViewController ()
 @property (nonatomic, strong) NSMutableArray *sections;
 @end
+
+static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
 
 @implementation PeopleDetailsViewController
 - (void)viewDidLoad
 {
 	self.title = @"Info";
 	[self.tableView applyStandardColors];
-    
-    // get fullname for header
-    self.fullname = [self.personDetails displayName];
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
+    [self registerNibsForTableViewCells];
 	
 	// populate remaining contents to be displayed
 	self.sections = [[NSMutableArray alloc] init];
 	
-	NSArray *jobSection = @[@"title", @"dept"];
+//	NSArray *jobSection = @[@"title", @"dept"];
 	NSArray *phoneSection = @[@"phone", @"fax"];
 	NSArray *emailSection = @[@"email"];
 	NSArray *officeSection = @[@"office"];
 	
-	NSArray *sectionCandidates = @[jobSection, emailSection, phoneSection, officeSection];
+	NSArray *sectionCandidates = @[emailSection, phoneSection, officeSection];
 
 	for (NSArray *section in sectionCandidates) {
 		// each element of currentSection will be a 2-array of NSString *tag and NSString *value
@@ -59,33 +62,21 @@
 			[self.sections addObject:currentSection];
         }
 	}
-	
-	// create header
-	CGSize labelSize = [self.fullname sizeWithFont:[UIFont boldSystemFontOfSize:20.0]
-								 constrainedToSize:CGSizeMake(self.tableView.frame.size.width - 20.0, 2000.0)
-									 lineBreakMode:NSLineBreakByWordWrapping];
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 10.0, labelSize.width, labelSize.height)];
-	UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.tableView.frame.size.width, labelSize.height + 14.0)];
-	nameLabel.text = self.fullname;
-	nameLabel.numberOfLines = 0;
-	nameLabel.lineBreakMode = NSLineBreakByWordWrapping;
-	nameLabel.font = [UIFont boldSystemFontOfSize:20.0];
-	nameLabel.backgroundColor = [UIColor clearColor];
-	[header addSubview:nameLabel];
-
-	self.tableView.tableHeaderView = header;
+    
+    [self updateTableViewHeaderView];
 	
 	// if lastUpdate is sufficiently long ago, issue a background search
 	// TODO: change this time interval to something more reasonable
 	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300) { // 5 mins for testing
         MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"people"
                                                                                   command:nil
-                                                                               parameters:@{@"q" : self.fullname}];
+                                                                               parameters:@{@"q" : self.personDetails.displayName}];
         request.completeBlock = ^(MobileRequestOperation *operation, NSArray *contactResults, NSString *contentType, NSError *error) {
             if (!error) {
                 [contactResults enumerateObjectsUsingBlock:^(NSDictionary *entry, NSUInteger idx, BOOL *stop) {
                     if ([entry[@"id"] isEqualToString:[self.personDetails valueForKey:@"uid"]]) {
                         self.personDetails = [PeopleRecentsData updatePerson:self.personDetails withSearchResult:entry];
+                        [self updateTableViewHeaderView];
                         [self.tableView reloadData];
                         (*stop) = YES;
                     }
@@ -95,7 +86,27 @@
         
         [[MobileRequestOperation defaultQueue] addOperation:request];
 	}
-	
+}
+
+- (void) updateTableViewHeaderView
+{
+    PeopleDetailsHeaderView *headerView = [[[NSBundle mainBundle] loadNibNamed:@"PeopleDetailsHeaderView" owner:self options:nil] firstObject];
+    headerView.primaryLabel.text = self.personDetails.displayName;
+    
+    NSString *secondaryLabel = @"";
+    if ([self.personDetails.title length] && [self.personDetails.dept length]) {
+        secondaryLabel = [NSString stringWithFormat:@"%@\n%@", self.personDetails.title, self.personDetails.dept];
+    } else if ([self.personDetails.title length] || [self.personDetails.dept length]) {
+        secondaryLabel = ([self.personDetails.title length]) ? self.personDetails.title : self.personDetails.dept;
+    }
+    
+    headerView.secondaryLabel.text = secondaryLabel;
+    self.tableView.tableHeaderView = headerView;
+}
+
+- (void) registerNibsForTableViewCells
+{
+    [self.tableView registerNib:[UINib nibWithNibName:@"PeopleDetailsTableViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:PeopleDetailCellReuseIdentifier];
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -163,18 +174,14 @@
 		return cell;
 		
 	} else { // cells for displaying person details
-		PeopleDetailsTableViewCell *cell = (PeopleDetailsTableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellID];
-		
-		if (!cell) {
-			cell = [[PeopleDetailsTableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:cellID];
-        }
+		PeopleDetailsTableViewCell *cell = (PeopleDetailsTableViewCell *)[tableView dequeueReusableCellWithIdentifier:PeopleDetailCellReuseIdentifier];
 
 		NSArray *personInfo = self.sections[section][row];
 		NSString *tag = personInfo[0];
 		NSString *data = personInfo[1];
 		
-		cell.textLabel.text = tag;
-		cell.detailTextLabel.text = data;
+		cell.typeLabel.text = tag;
+		cell.valueLabel.text = data;
 		
 		if ([tag isEqualToString:@"email"]) {
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
