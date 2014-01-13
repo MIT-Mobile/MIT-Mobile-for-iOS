@@ -2,7 +2,6 @@
 #import "PersonDetails.h"
 #import "PeopleDetailsViewController.h"
 #import "PeopleRecentsData.h"
-#import "PartialHighlightTableViewCell.h"
 #import "MIT_MobileAppDelegate.h"
 #import "ConnectionDetector.h"
 #import "MobileRequestOperation.h"
@@ -298,9 +297,9 @@
 			return cell;
 		}
 	} else { // search results
-		PartialHighlightTableViewCell *cell = (PartialHighlightTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"ResultCell"];
+		UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"ResultCell"];
 		if (!cell) {
-			cell = [[PartialHighlightTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ResultCell"];
+			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ResultCell"];
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
 			
@@ -315,25 +314,19 @@
             cell.detailTextLabel.text = @" "; // if this is empty textlabel will be bottom aligned
         }
 		
+        
 		// in this section we try to highlight the parts of the results that match the search terms
-		// temporarily place "normal[bold] [bold]normal" as textlabel
-		// PartialHightlightTableViewCell will change bracketed text to bold text
-		__block NSString *preformatString = [NSString stringWithString:fullname];
+        UIFont *labelFont = cell.textLabel.font;
+        UIFont *boldFont = [UIFont boldSystemFontOfSize:labelFont.pointSize];   // This assumes labelFont will be using the systemFont
+        __block NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:fullname];
         [self.searchTokens enumerateObjectsUsingBlock:^(NSString *token, NSUInteger idx, BOOL *stop) {
-            NSRange boldRange = [[preformatString lowercaseString] rangeOfString:token];
+            NSRange boldRange = [[fullname lowercaseString] rangeOfString:token];
 			if (boldRange.location != NSNotFound) {
-				// if range is already bracketed don't create another pair inside
-				NSString *leftString = [preformatString substringWithRange:NSMakeRange(0, boldRange.location)];
-				if (!((idx > 0) && [[leftString componentsSeparatedByString:@"["] count] > [[leftString componentsSeparatedByString:@"]"] count])) {
-                    preformatString = [NSString stringWithFormat:@"%@[%@]%@",
-                                       leftString,
-                                       [preformatString substringWithRange:boldRange],
-                                       [preformatString substringFromIndex:(boldRange.location + boldRange.length)]];
-                }
+				[attributeString addAttribute:NSFontAttributeName value:boldFont range:boldRange];
 			}
         }];
 		
-		cell.textLabel.text = preformatString;
+		cell.textLabel.attributedText = attributeString;
 		return cell;
 	}
 	
