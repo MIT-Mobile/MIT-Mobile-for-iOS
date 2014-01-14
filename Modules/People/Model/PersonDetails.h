@@ -8,16 +8,25 @@
 
 
 @interface PersonDetails : NSManagedObject
+
 @property (nonatomic,copy) NSString *uid;
+@property (nonatomic,copy) NSString *affiliation;
+@property (nonatomic,copy) NSString *city;
 @property (nonatomic,copy) NSString *dept;
-@property (nonatomic,copy) NSString *email;
-@property (nonatomic,copy) NSString *fax;
+@property (nonatomic,copy) NSArray  *email;
+@property (nonatomic,copy) NSArray  *fax;
 @property (nonatomic,copy) NSString *givenname;
-@property (nonatomic,copy) NSString *office;
+@property (nonatomic,copy) NSString *name;
+@property (nonatomic,copy) NSArray  *office;
+@property (nonatomic,copy) NSArray  *phone;
+@property (nonatomic,copy) NSArray  *homephone;
+@property (nonatomic,copy) NSString *state;
+@property (nonatomic,copy) NSString *street;
 @property (nonatomic,copy) NSString *surname;
-@property (nonatomic,copy) NSString *phone;
 @property (nonatomic,copy) NSString *title;
-@property (nonatomic,copy) NSDate *lastUpdate;
+@property (nonatomic,copy) NSString *url;
+@property (nonatomic,copy) NSArray  *website;
+@property (nonatomic,copy) NSDate   *lastUpdate;
 
 + (PersonDetails *)retrieveOrCreate:(NSDictionary *)selectedResult;
 - (NSString*)displayName;

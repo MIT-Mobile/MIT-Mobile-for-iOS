@@ -4,14 +4,11 @@
 
 @implementation PersonDetails
 @dynamic uid;
-@dynamic dept;
-@dynamic email;
-@dynamic fax;
-@dynamic givenname;
-@dynamic office;
-@dynamic surname;
-@dynamic phone;
-@dynamic title;
+@dynamic affiliation, dept, title;
+@dynamic name, givenname, surname;
+@dynamic office, phone, homephone, fax, email;
+@dynamic street, city, state;
+@dynamic url, website;
 @dynamic lastUpdate;
 
 + (PersonDetails *)retrieveOrCreate:(NSDictionary *)selectedResult

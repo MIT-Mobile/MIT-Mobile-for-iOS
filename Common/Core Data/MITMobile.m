@@ -79,7 +79,7 @@ typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSError *error);
     NSString *uniquedRouteName = [NSString stringWithFormat:@"%@ %@",RKStringFromRequestMethod(RKRequestMethodGET),routeName];
 
     [objectManager getObjectsAtPathForRouteNamed:uniquedRouteName
-                                               object:nil
+                                               object:object
                                            parameters:parameters
                                               success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
                                                   if (block) {

@@ -193,6 +193,7 @@
 		48B4ADE41713572300EF426F /* DiningHallMenuCompareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B4ADE31713572300EF426F /* DiningHallMenuCompareView.m */; };
 		48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129615E4295D00E791F9 /* LinksViewController.m */; };
 		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; };
+		48BB1A3F1884B3C000852645 /* MITPersonResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 48BB1A3E1884B3C000852645 /* MITPersonResource.m */; };
 		48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C2D2881729D41900F39DB5 /* DiningRetailInfoViewController.m */; };
 		48C572CF174BC68100CF6C16 /* DiningHallInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C572CE174BC68100CF6C16 /* DiningHallInfoScheduleCell.m */; };
 		48DF79E21714A14E00BCF59F /* DiningHallMenuItemTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48DF79E11714A14E00BCF59F /* DiningHallMenuItemTableCell.m */; };
@@ -808,6 +809,8 @@
 		48B8129615E4295D00E791F9 /* LinksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LinksViewController.m; path = Links/LinksViewController.m; sourceTree = "<group>"; };
 		48B8129815E42B1700E791F9 /* LinksModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinksModule.h; path = Links/LinksModule.h; sourceTree = "<group>"; };
 		48B8129915E42B1700E791F9 /* LinksModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LinksModule.m; path = Links/LinksModule.m; sourceTree = "<group>"; };
+		48BB1A3D1884B3C000852645 /* MITPersonResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPersonResource.h; sourceTree = "<group>"; };
+		48BB1A3E1884B3C000852645 /* MITPersonResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPersonResource.m; sourceTree = "<group>"; };
 		48C2D2871729D41900F39DB5 /* DiningRetailInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningRetailInfoViewController.h; path = Dining/DiningRetailInfoViewController.h; sourceTree = "<group>"; };
 		48C2D2881729D41900F39DB5 /* DiningRetailInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningRetailInfoViewController.m; path = Dining/DiningRetailInfoViewController.m; sourceTree = "<group>"; };
 		48C572CD174BC68100CF6C16 /* DiningHallInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallInfoScheduleCell.h; path = Dining/DiningHallInfoScheduleCell.h; sourceTree = "<group>"; };
@@ -1205,7 +1208,7 @@
 		EBA2865510E07E140003BA01 /* PeopleSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleSearchViewController.m; sourceTree = "<group>"; };
 		EBA2867710E082010003BA01 /* MITLoadingActivityView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLoadingActivityView.h; sourceTree = "<group>"; };
 		EBA2867810E082010003BA01 /* MITLoadingActivityView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLoadingActivityView.m; sourceTree = "<group>"; };
-		EBAA9F6210FFAB8B003379A5 /* PeopleDataModel 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PeopleDataModel 5.xcdatamodel"; sourceTree = "<group>"; };
+		EBAA9F6210FFAB8B003379A5 /* PeopleDataModel 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PeopleDataModel 6.xcdatamodel"; sourceTree = "<group>"; };
 		EBAB15C111BE970900D481B5 /* DatePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatePickerViewController.h; sourceTree = "<group>"; };
 		EBAB15C211BE970900D481B5 /* DatePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatePickerViewController.m; sourceTree = "<group>"; };
 		EBAB163F11BEC3E800D481B5 /* MITSearchDisplayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITSearchDisplayController.h; sourceTree = "<group>"; };
@@ -1754,6 +1757,8 @@
 				2C72F0FF186895690082040C /* MITNewsStoriesResource.m */,
 				2C7EEAFA1871B00E009ED73D /* MITNewsCategoriesResource.h */,
 				2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */,
+				48BB1A3D1884B3C000852645 /* MITPersonResource.h */,
+				48BB1A3E1884B3C000852645 /* MITPersonResource.m */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -3273,6 +3278,7 @@
 				2C189A93181970B700653DF6 /* MITCoreDataController.m in Sources */,
 				2CE7A300186A0AF900DF455F /* MITMobileManagedResource.m in Sources */,
 				2C698F4418650A870010B0C0 /* MITNewsCategory.m in Sources */,
+				48BB1A3F1884B3C000852645 /* MITPersonResource.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
 				2C91944C1631CBA700ED97F6 /* NSData+MGTwitterBase64.m in Sources */,
 				2CCF81501636F69900DE273F /* DDAbstractDatabaseLogger.m in Sources */,
@@ -3646,9 +3652,9 @@
 		EB7F326A10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				EBAA9F6210FFAB8B003379A5 /* PeopleDataModel 5.xcdatamodel */,
+				EBAA9F6210FFAB8B003379A5 /* PeopleDataModel 6.xcdatamodel */,
 			);
-			currentVersion = EBAA9F6210FFAB8B003379A5 /* PeopleDataModel 5.xcdatamodel */;
+			currentVersion = EBAA9F6210FFAB8B003379A5 /* PeopleDataModel 6.xcdatamodel */;
 			path = PeopleDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
