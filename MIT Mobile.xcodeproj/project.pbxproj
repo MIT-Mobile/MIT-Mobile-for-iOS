@@ -260,6 +260,8 @@
 		DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1B4D7110CE17B30073BABC /* MITJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE277694177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277691177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m */; };
 		DE277695177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277693177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m */; };
+		DE2A45851885AF72002DE0EA /* CategoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2A45821885AF72002DE0EA /* CategoryCell.m */; };
+		DE2A45861885AF72002DE0EA /* StoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2A45841885AF72002DE0EA /* StoryCell.m */; };
 		DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4AB0B310ED5148007476D9 /* NewsStory.m */; };
 		DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DE516255147889D1002415DE /* ExplanatorySectionLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE574C3117E7B7DA001B153E /* Icon-iOS-7@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE574C3017E7B7DA001B153E /* Icon-iOS-7@2x.png */; };
@@ -973,6 +975,10 @@
 		DE277691177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+SVInfiniteScrolling.m"; sourceTree = "<group>"; };
 		DE277692177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+SVPullToRefresh.h"; sourceTree = "<group>"; };
 		DE277693177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+SVPullToRefresh.m"; sourceTree = "<group>"; };
+		DE2A45811885AF71002DE0EA /* CategoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategoryCell.h; sourceTree = "<group>"; };
+		DE2A45821885AF72002DE0EA /* CategoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoryCell.m; sourceTree = "<group>"; };
+		DE2A45831885AF72002DE0EA /* StoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryCell.h; sourceTree = "<group>"; };
+		DE2A45841885AF72002DE0EA /* StoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryCell.m; sourceTree = "<group>"; };
 		DE4AB0B210ED5148007476D9 /* NewsStory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsStory.h; sourceTree = "<group>"; };
 		DE4AB0B310ED5148007476D9 /* NewsStory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsStory.m; sourceTree = "<group>"; };
 		DE516254147889D1002415DE /* ExplanatorySectionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExplanatorySectionLabel.h; sourceTree = "<group>"; };
@@ -2376,6 +2382,17 @@
 			path = External/SVPullToRefresh/SVPullToRefresh;
 			sourceTree = "<group>";
 		};
+		DE2A458A1885AF83002DE0EA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				DE2A45811885AF71002DE0EA /* CategoryCell.h */,
+				DE2A45821885AF72002DE0EA /* CategoryCell.m */,
+				DE2A45831885AF72002DE0EA /* StoryCell.h */,
+				DE2A45841885AF72002DE0EA /* StoryCell.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		DE4AAFAC10ED4E63007476D9 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -2557,6 +2574,7 @@
 		DE81CF5F10C6BC390085573D /* News */ = {
 			isa = PBXGroup;
 			children = (
+				DE2A458A1885AF83002DE0EA /* Views */,
 				DE81CF6010C6BC390085573D /* NewsModule.h */,
 				DE81CF6110C6BC390085573D /* NewsModule.m */,
 				DE4AAFAC10ED4E63007476D9 /* Model */,
@@ -3090,6 +3108,7 @@
 				2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */,
 				2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */,
 				2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */,
+				DE2A45861885AF72002DE0EA /* StoryCell.m in Sources */,
 				2C95A1D8137DB24D0025B28D /* FacilitiesSummaryViewController.m in Sources */,
 				2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */,
 				DE6AFDC710D99C4D00B48BA7 /* Foundation+MITAdditions.m in Sources */,
@@ -3136,6 +3155,7 @@
 				EB7F328310CD6C5B00188BCD /* PeopleDetailsViewController.m in Sources */,
 				2CF8B37C17DF7C3B00C608A2 /* MITScrollingNavigationBar.m in Sources */,
 				EB7F328410CD6C5B00188BCD /* PeopleModule.m in Sources */,
+				DE2A45851885AF72002DE0EA /* CategoryCell.m in Sources */,
 				2C189A991819D26900653DF6 /* CoreData+MITAdditions.m in Sources */,
 				EB7F328510CD6C5B00188BCD /* PeopleRecentsData.m in Sources */,
 				EBA2865610E07E140003BA01 /* PeopleSearchViewController.m in Sources */,
