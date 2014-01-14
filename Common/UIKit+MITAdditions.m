@@ -72,10 +72,12 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 @implementation UIColor (MITUIAdditions)
 + (UIColor*)mit_backgroundColor
 {
-    return [UIColor colorWithRed:0.784
-                           green:0.792
-                            blue:0.816
-                           alpha:1.0];
+    return [UIColor colorWithHexString:@"dcdfe5"];
+}
+
++ (UIColor *)MITTintColor
+{
+    return [UIColor colorWithHexString:@"a31f34"]; // MIT Red, aka Pantone 201
 }
 
 // snagged from http://arstechnica.com/apple/guides/2009/02/iphone-development-accessing-uicolor-components.ars

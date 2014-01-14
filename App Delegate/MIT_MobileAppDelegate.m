@@ -473,7 +473,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     // iOS 6's UIWindow doesn't do tintColor
     if ([window respondsToSelector:@selector(setTintColor:)]) {
-        window.tintColor = [UIColor colorWithHexString:@"a90533"]; // MIT Red, aka Pantone 201
+        window.tintColor = [UIColor MITTintColor];
     }
     
     DDLogVerbose(@"Root window size is %@", NSStringFromCGRect([window bounds]));
@@ -484,8 +484,15 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:springboard];
     navigationController.navigationBarHidden = NO;
-    navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    navigationController.navigationBar.translucent = NO;
+    
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        navigationController.navigationBar.barStyle = UIBarStyleDefault;
+        navigationController.navigationBar.translucent = YES;
+    } else {
+        navigationController.navigationBar.barStyle = UIBarStyleBlack;
+        navigationController.navigationBar.translucent = NO;
+    }
+    
     navigationController.delegate = self;
     self.rootNavigationController = navigationController;
     

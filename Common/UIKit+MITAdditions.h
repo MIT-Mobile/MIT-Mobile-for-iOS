@@ -17,6 +17,7 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 
 @interface UIColor (MITUIAdditions)
 + (UIColor*)mit_backgroundColor;
++ (UIColor *)MITTintColor;
 
 + (UIColor *)colorWithHexString:(NSString *)hexString;
 

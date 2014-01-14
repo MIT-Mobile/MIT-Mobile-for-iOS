@@ -27,8 +27,7 @@
 {
     self = [super init];
     if (self) {
-        UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo"];
-        self.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
+        [self setup];
     }
     
     return self;
@@ -39,11 +38,21 @@
     self = [super initWithNibName:nibNameOrNil
                            bundle:nibBundleOrNil];
     if (self) {
-        UIImage *logoView = [UIImage imageNamed:@"global/navbar_mit_logo"];
-        self.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
+        [self setup];
     }
     
     return self;
+}
+
+- (void)setup {
+    NSString *logoName;
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        logoName = @"global/navbar_mit_logo_light";
+    } else {
+        logoName = @"global/navbar_mit_logo_dark";
+    }
+    UIImage *logoView = [UIImage imageNamed:logoName];
+    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:logoView];
 }
 
 - (void)showModuleForIcon:(id)sender {
@@ -242,12 +251,18 @@
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStyleBordered target:nil action:nil];
 
     CGRect gridFrame = CGRectMake(CGRectGetMinX(self.view.bounds),
-                                  CGRectGetMinY(self.view.bounds),
+                                  CGRectGetMinY(self.view.bounds) + 64.0,
                                   CGRectGetWidth(self.view.bounds),
                                   CGRectGetHeight(self.view.bounds));
 
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        gridFrame.origin.y -= 64.;
+    }
+    
     self.grid = [[IconGrid alloc] initWithFrame:gridFrame];
     self.grid.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
                                   UIViewAutoresizingFlexibleHeight);
