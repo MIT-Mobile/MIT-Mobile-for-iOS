@@ -460,6 +460,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     MITMobileResource *personResource = [[MITPersonResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:personResource];
     
+    MITMobileResource *peopleResource = [[MITPeopleResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:peopleResource];
+    
     _remoteObjectManager = remoteObjectManager;
 }
 

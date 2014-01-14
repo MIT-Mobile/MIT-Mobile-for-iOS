@@ -67,7 +67,7 @@ NSString* const MITNewsStoriesPathPattern = @"apis/news/stories";
 
 #pragma mark people
 NSString* const MITPeopleResourceName = @"MITPeopleResourceName";
-NSString* const MITPeoplePathPattern = @"apis/people";
+NSString* const MITPeoplePathPattern = @"apis/people/";
 
 #pragma mark people/:person
 NSString* const MITPersonResourceName = @"MITPersonResourceName";

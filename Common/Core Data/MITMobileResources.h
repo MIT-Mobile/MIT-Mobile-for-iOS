@@ -15,3 +15,4 @@
 #import "MITNewsStoriesResource.h"
 
 #import "MITPersonResource.h"
+#import "MITPeopleResource.h"

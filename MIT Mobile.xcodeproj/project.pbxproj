@@ -196,6 +196,7 @@
 		48BB1A3F1884B3C000852645 /* MITPersonResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 48BB1A3E1884B3C000852645 /* MITPersonResource.m */; };
 		48C2D2891729D41900F39DB5 /* DiningRetailInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C2D2881729D41900F39DB5 /* DiningRetailInfoViewController.m */; };
 		48C572CF174BC68100CF6C16 /* DiningHallInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C572CE174BC68100CF6C16 /* DiningHallInfoScheduleCell.m */; };
+		48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 48D9C1D21885935D00CB3F15 /* MITPeopleResource.m */; };
 		48DF79E21714A14E00BCF59F /* DiningHallMenuItemTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 48DF79E11714A14E00BCF59F /* DiningHallMenuItemTableCell.m */; };
 		48E6026A173D4553008A3521 /* DiningHallInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48E60269173D4553008A3521 /* DiningHallInfoViewController.m */; };
 		48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96717175AF400376BCF /* UIImage+PDF.m */; };
@@ -815,6 +816,8 @@
 		48C2D2881729D41900F39DB5 /* DiningRetailInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningRetailInfoViewController.m; path = Dining/DiningRetailInfoViewController.m; sourceTree = "<group>"; };
 		48C572CD174BC68100CF6C16 /* DiningHallInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallInfoScheduleCell.h; path = Dining/DiningHallInfoScheduleCell.h; sourceTree = "<group>"; };
 		48C572CE174BC68100CF6C16 /* DiningHallInfoScheduleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallInfoScheduleCell.m; path = Dining/DiningHallInfoScheduleCell.m; sourceTree = "<group>"; };
+		48D9C1D11885935D00CB3F15 /* MITPeopleResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleResource.h; sourceTree = "<group>"; };
+		48D9C1D21885935D00CB3F15 /* MITPeopleResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleResource.m; sourceTree = "<group>"; };
 		48DF79E01714A14E00BCF59F /* DiningHallMenuItemTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallMenuItemTableCell.h; path = Dining/DiningHallMenuItemTableCell.h; sourceTree = "<group>"; };
 		48DF79E11714A14E00BCF59F /* DiningHallMenuItemTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningHallMenuItemTableCell.m; path = Dining/DiningHallMenuItemTableCell.m; sourceTree = "<group>"; };
 		48E60268173D4553008A3521 /* DiningHallInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningHallInfoViewController.h; path = Dining/DiningHallInfoViewController.h; sourceTree = "<group>"; };
@@ -1759,6 +1762,8 @@
 				2C7EEAFB1871B00E009ED73D /* MITNewsCategoriesResource.m */,
 				48BB1A3D1884B3C000852645 /* MITPersonResource.h */,
 				48BB1A3E1884B3C000852645 /* MITPersonResource.m */,
+				48D9C1D11885935D00CB3F15 /* MITPeopleResource.h */,
+				48D9C1D21885935D00CB3F15 /* MITPeopleResource.m */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -3261,6 +3266,7 @@
 				DEBF5FDD14886F1A00B5719A /* LibrariesHoldsSummaryView.m in Sources */,
 				DEBF5FDE14886F1A00B5719A /* LibrariesHoldsTabController.m in Sources */,
 				DEBF5FDF14886F1A00B5719A /* LibrariesHoldsTableViewCell.m in Sources */,
+				48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */,
 				DEBF5FE014886F1A00B5719A /* LibrariesAccountViewController.m in Sources */,
 				DEBF5FE114886F1A00B5719A /* LibrariesTableViewCell.m in Sources */,
 				DEBF5FE214886F1A00B5719A /* LibrariesLoanSummaryView.m in Sources */,

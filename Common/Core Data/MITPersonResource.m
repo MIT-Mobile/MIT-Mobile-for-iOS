@@ -1,7 +1,7 @@
 
 #import "MITPersonResource.h"
-#import "MITMobile.h"
 #import "MITAdditions.h"
+#import "MITMobileResources.h"
 
 @implementation MITPersonResource
 
@@ -26,18 +26,12 @@
                                                 }];
 }
 
-+ (void) peopleMatchingQuery:(NSString *)query loaded:(MITMobileResult)block
-{
-
-}
-
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel*)managedObjectModel
 {
     self = [super initWithName:MITPersonResourceName pathPattern:MITPersonPathPattern managedObjectModel:managedObjectModel];
     if (self) {
         
     }
-    
     return self;
 }
 
@@ -62,6 +56,7 @@
                                                         @"affiliation" : @"affiliation",
                                                         @"email" : @"email",
                                                         @"phone" : @"phone",
+                                                        @"homephone" : @"homephone",
                                                         @"fax" : @"fax",
                                                         @"website" : @"website",
                                                         @"office" : @"office",
