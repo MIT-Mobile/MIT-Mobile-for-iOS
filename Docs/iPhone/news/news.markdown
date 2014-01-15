@@ -8,6 +8,10 @@ News root view. Top three stories from each category.
 
 <a href="top_list_01.png"><img class="screen" src="top_list_01.png" width="160"></a> <a href="top_list_02.png"><img class="screen" src="top_list_02.png" width="160"></a>
 
+Orientations: Portrait only
+
+Storyboard ID = StoryListViewController
+
 __Navbar__
 
 Title = MIT News
@@ -58,6 +62,10 @@ Same as Top List, but with only one header-less section and an extra row at the 
 
 <a href="category_list_01.png"><img class="screen" src="category_list_01.png" width="160"></a> <a href="category_list_02.png"><img class="screen" src="category_list_02.png" width="160"></a> <a href="category_list_03.png"><img class="screen" src="category_list_03.png" width="160"></a>
 
+Orientations: Portrait only
+
+Storyboard ID = StoryListViewController
+
 Navigation bar title is the name of the category. Back button is nameless.
 
 Stories are loaded 20 at a time. More can be loaded from the "Load more..." row at the bottom of the table. Pull-to-refresh to reload the first 20.
@@ -72,7 +80,9 @@ Category List uses URLs like [http://m.mit.edu/apis/news/stories?category=1&limi
 
 Modal state of [Top List](#toplist) and [Category List](#categorylist) screens.
 
-<a href="search_01.png"><img class="screen" src="search_01.png" width="160"></a> <a href="search_02.png"><img class="screen" src="search_02.png" width="160"></a> <a href="search_03.png"><img class="screen" src="search_03.png" width="160"></a> 
+<a href="search_01.png"><img class="screen" src="search_01.png" width="160"></a> <a href="search_02.png"><img class="screen" src="search_02.png" width="160"></a> <a href="search_03.png"><img class="screen" src="search_03.png" width="160"></a>
+
+Not in storyboard. Needs to added in code.
 
 A search in Top List searches all categories at once and returns all results mixed into a single section. A search from Category List searches just that category.
 
@@ -83,6 +93,10 @@ Search uses URLs like [http://m.mit.edu/apis/news/stories?q=banana&limit=20](htt
 ###Story Detail
 
 <a href="detail_01.png"><img class="screen" src="detail_01.png" width="160"></a> 
+
+Orientations: Portrait only
+
+Storyboard ID = DetailViewController
 
 Title = blank
 
@@ -99,6 +113,10 @@ Updated web template forthcoming.
 ###External Detail
 
 Inline browser for links to external stories.
+
+Orientations: Portrait only
+
+Storyboard ID = DetailViewController
 
 Uses same Storyboard scene as [Story Detail](#storydetail), but entered via a different segue (`showExternal` instead of `showStory`).
 
@@ -117,6 +135,10 @@ Modal presentation. Slides up from bottom over Story Detail. Scroll view with ca
 > Look at Apple's [Photo Scroller](https://developer.apple.com/library/ios/samplecode/PhotoScroller/) sample UIPageViewController/UIScrollView app for how to accomplish this. Or see if there's a library on GitHub with an acceptable license that does this.
 
 <a href="gallery_01.png"><img class="screen" src="gallery_01.png" width="160"></a> <a href="gallery_02.png"><img class="screen" src="gallery_02.png" width="160"></a> <a href="gallery_03.png"><img class="screen" src="gallery_03.png" width="160"></a> 
+
+Orientations: All but upside-down.
+
+Storyboard ID = GalleryNavigationController
 
 Navigation bar title = "x of y". Done button and Action button.
 
@@ -205,7 +227,11 @@ statusLabel.text = @"Updating...";
 
     CGFloat alpha = (self.hidesUI) ? 0.0 : 1.0;
     [UIView animateWithDuration:0.33 animations:^{
-        [self setNeedsStatusBarAppearanceUpdate];
+        if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+            [self setNeedsStatusBarAppearanceUpdate];
+        } else {
+            [[UIApplication sharedApplication] setStatusBarHidden:self.hidesUI];
+        }
         self.navigationController.navigationBar.alpha = alpha;
         self.captionView.alpha = alpha;
     }];
