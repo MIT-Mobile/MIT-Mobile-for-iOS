@@ -19,7 +19,7 @@
     [remoteObjectManager getObjectsForResourceNamed:MITNewsCategoriesResourceName
                                              object:nil
                                          parameters:nil
-                                         completion:^(RKMappingResult *result, NSError *error) {
+                                         completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                              [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                  if (block) {
                                                      if (!error) {

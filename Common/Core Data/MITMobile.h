@@ -30,5 +30,5 @@
 
 - (void)addResource:(MITMobileResource*)resource;
 
-- (void)getObjectsForResourceNamed:(NSString *)routeName object:(id)object parameters:(NSDictionary *)parameters completion:(void (^)(RKMappingResult *result, NSError *error))loaded;
+- (void)getObjectsForResourceNamed:(NSString *)routeName object:(id)object parameters:(NSDictionary *)parameters completion:(void (^)(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error))loaded;
 @end

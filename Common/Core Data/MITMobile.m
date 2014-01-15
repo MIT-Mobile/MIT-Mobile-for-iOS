@@ -7,7 +7,7 @@
 #import "MITMobileResource.h"
 #import "MITMobileServerConfiguration.h"
 
-typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSError *error);
+typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error);
 
 #pragma mark - MITMobile
 #pragma mark Private Extension
@@ -83,12 +83,12 @@ typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSError *error);
                                            parameters:parameters
                                               success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
                                                   if (block) {
-                                                      block(mappingResult,nil);
+                                                      block(mappingResult,operation.HTTPRequestOperation.response,nil);
                                                   }
                                               }
                                               failure:^(RKObjectRequestOperation *operation, NSError *error) {
                                                   if (block) {
-                                                      block(nil,error);
+                                                      block(nil,operation.HTTPRequestOperation.response,error);
                                                   }
                                               }];
 }
