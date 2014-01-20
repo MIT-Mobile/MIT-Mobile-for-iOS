@@ -68,7 +68,7 @@ MIT&apos;s commitment to innovation has led to a host of scientific breakthrough
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleBlackOpaque</string>
+	<string>UIStatusBarStyleDefault</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

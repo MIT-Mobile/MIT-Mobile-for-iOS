@@ -271,7 +271,7 @@
     [self.grid setMinimumColumns:4 maximum:4];
 
     NSMutableArray *buttons = [NSMutableArray array];
-    UIFont *font = [UIFont boldSystemFontOfSize:12];
+    UIFont *font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:12];
     for (MITModule *aModule in self.primaryModules) {
         SpringboardIcon *aButton = [SpringboardIcon buttonWithType:UIButtonTypeCustom];
         [aButton setImage:aModule.springboardIcon forState:UIControlStateNormal];

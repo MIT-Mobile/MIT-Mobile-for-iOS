@@ -72,7 +72,7 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 @implementation UIColor (MITUIAdditions)
 + (UIColor*)mit_backgroundColor
 {
-    return [UIColor colorWithHexString:@"dcdfe5"];
+    return [UIColor colorWithHexString:@"d7dae0"];
 }
 
 + (UIColor *)MITTintColor
