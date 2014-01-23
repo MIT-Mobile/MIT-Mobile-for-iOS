@@ -30,8 +30,9 @@ static NSString * const PeopleStateDetail = @"detail";
 
 - (void)loadModuleHomeController
 {
-    PeopleSearchViewController *controller = [[PeopleSearchViewController alloc] init];
-    self.moduleHomeController = controller;
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
+    PeopleSearchViewController *vc = [storyboard instantiateInitialViewController];
+    self.moduleHomeController = vc;
 }
 
 - (PeopleSearchViewController*)peopleController

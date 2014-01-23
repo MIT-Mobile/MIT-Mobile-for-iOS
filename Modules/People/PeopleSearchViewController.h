@@ -1,9 +1,9 @@
 #import <UIKit/UIKit.h>
 #import "MITSearchDisplayController.h"
 
-@interface PeopleSearchViewController : UIViewController
-@property (nonatomic,strong) MITSearchDisplayController *searchController;
-@property (nonatomic,strong) UISearchBar *searchBar;
+@interface PeopleSearchViewController : UITableViewController
+@property (nonatomic,strong) IBOutlet MITSearchDisplayController *searchController;
+@property (nonatomic,strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic,copy) NSArray *searchResults;
 
 - (void)beginExternalSearch:(NSString *)externalSearchTerms;

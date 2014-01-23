@@ -19,6 +19,19 @@
     return self;
 }
 
+- (void) layoutSubviews
+{
+    [super layoutSubviews];
+    
+    CGRect frame = self.frame;
+    CGFloat topPadding = CGRectGetMinY(self.primaryLabel.frame);
+    CGFloat bottomPadding = frame.size.height - CGRectGetMaxY(self.secondaryLabel.frame);
+    if (bottomPadding < topPadding) {
+        
+    }
+    
+}
+
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

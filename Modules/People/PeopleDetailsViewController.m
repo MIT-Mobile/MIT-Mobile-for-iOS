@@ -40,7 +40,7 @@ static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
         NSMutableArray *currentSection = [[NSMutableArray alloc] init];
 
 		for (NSString *ldapTag in section) {
-			NSString *ldapValue = [self.personDetails valueForKey:ldapTag];
+			id ldapValue = [self.personDetails valueForKey:ldapTag];
 			NSString *displayTag = ldapTag;
 			
 			if (ldapValue) {
@@ -48,7 +48,13 @@ static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
                                            [ldapTag isEqualToString:@"phone"] ||
                                            [ldapTag isEqualToString:@"office"]);
 				if (shouldDisplayValue) {
-                    NSArray *ldapComponents = [ldapValue componentsSeparatedByString:@","];
+                    NSArray *ldapComponents;
+                    if ([ldapValue isKindOfClass:[NSString class]]) {
+                        ldapComponents = [ldapValue componentsSeparatedByString:@","];
+                    } else if ([ldapValue isKindOfClass:[NSArray class]]) {
+                        ldapComponents = ldapValue;
+                    }
+                    
                     for (NSString *value in ldapComponents) {
 						[currentSection addObject:@[ldapTag, value]];
 					}
@@ -178,7 +184,10 @@ static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
 
 		NSArray *personInfo = self.sections[section][row];
 		NSString *tag = personInfo[0];
-		NSString *data = personInfo[1];
+		id data = personInfo[1];
+        if ([data isKindOfClass:[NSArray class]]) {
+            data = [data componentsJoinedByString:@", "];
+        }
 		
 		cell.typeLabel.text = tag;
 		cell.valueLabel.text = data;
@@ -207,7 +216,10 @@ static NSString * PeopleDetailCellReuseIdentifier = @"people.detail.cell";
 	} else {
         NSArray *personInfo = self.sections[section][row];
         NSString *tag = personInfo[0];
-        NSString *data = personInfo[1];
+        id data = personInfo[1];
+        if ([data isKindOfClass:[NSArray class]]) {
+            data = [data componentsJoinedByString:@", "];
+        }
 
         // the following may be off by a pixel or 2 for different OS versions
         // in the future we should prepare for the general case where widths can be way different (including flipping orientation)

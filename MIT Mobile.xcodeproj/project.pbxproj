@@ -175,6 +175,7 @@
 		44BF602211050ACE00E150D5 /* ShuttleStopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44BF602111050ACE00E150D5 /* ShuttleStopCell.xib */; };
 		44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A2A711A2F49B000FD653 /* CampusMap.xcdatamodeld */; };
 		44C1A4C511A412E2000FD653 /* MITMapSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C1A4C311A412E2000FD653 /* MITMapSearch.m */; };
+		481F764E188EBA470051F444 /* People.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 481F764D188EBA470051F444 /* People.storyboard */; };
 		48327CE016F74F19003A2F23 /* DiningModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48327CDF16F74F19003A2F23 /* DiningModule.m */; };
 		48327CE416F75017003A2F23 /* DiningMapListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48327CE216F75017003A2F23 /* DiningMapListViewController.m */; };
 		48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 48327CE316F75017003A2F23 /* DiningMapListViewController.xib */; };
@@ -779,6 +780,7 @@
 		44C1A26E11A2EA04000FD653 /* CampusMap.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = CampusMap.xcdatamodel; sourceTree = "<group>"; };
 		44C1A4C211A412E2000FD653 /* MITMapSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMapSearch.h; path = Model/MITMapSearch.h; sourceTree = "<group>"; };
 		44C1A4C311A412E2000FD653 /* MITMapSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMapSearch.m; path = Model/MITMapSearch.m; sourceTree = "<group>"; };
+		481F764D188EBA470051F444 /* People.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = People.storyboard; sourceTree = "<group>"; };
 		48327CDE16F74F19003A2F23 /* DiningModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningModule.h; path = Dining/DiningModule.h; sourceTree = "<group>"; };
 		48327CDF16F74F19003A2F23 /* DiningModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningModule.m; path = Dining/DiningModule.m; sourceTree = "<group>"; };
 		48327CE116F75017003A2F23 /* DiningMapListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningMapListViewController.h; path = Dining/DiningMapListViewController.h; sourceTree = "<group>"; };
@@ -2771,6 +2773,7 @@
 		EB7F326610CD6C5B00188BCD /* People */ = {
 			isa = PBXGroup;
 			children = (
+				481F764D188EBA470051F444 /* People.storyboard */,
 				48EFBC741880ABD600161A3D /* View */,
 				EB7F326910CD6C5B00188BCD /* Model */,
 				EB7F327410CD6C5B00188BCD /* PeopleModule.h */,
@@ -2963,6 +2966,7 @@
 			files = (
 				EBF1120712A495170002D751 /* en.lproj in Resources */,
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
+				481F764E188EBA470051F444 /* People.storyboard in Resources */,
 				2CD12D4F1360584F00A73ACA /* facilities in Resources */,
 				48EFBC791880ACC400161A3D /* PeopleDetailsHeaderView.xib in Resources */,
 				EB54947310DFF7E200B708B3 /* global in Resources */,

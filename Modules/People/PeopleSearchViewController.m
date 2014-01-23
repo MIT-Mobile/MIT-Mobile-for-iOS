@@ -13,10 +13,11 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
-@interface PeopleSearchViewController () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
+#import "MITPeopleResource.h"
 
-@property (nonatomic,strong) UITableView *tableView;
-@property (nonatomic,strong) UITableView *searchResultsTableView;
+@interface PeopleSearchViewController () <UISearchBarDelegate, UIAlertViewDelegate, UIActionSheetDelegate>
+
+@property (nonatomic,strong) IBOutlet UITableView *searchResultsTableView;
 @property (nonatomic,strong) UIView *loadingView;
 @property (nonatomic,strong) UIView *recentlyViewedHeader;
 
@@ -50,40 +51,24 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void)loadView
-{
-    UIView *view = [self defaultApplicationView];
-    view.backgroundColor = [UIColor mit_backgroundColor];
-
-    self.view = view;
-}
-
 - (void)viewDidLoad {
 	[super viewDidLoad];
-    self.title = @"People Directory";
     
-	// set up search bar
-    {
-        UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0f, 0., self.view.frame.size.width, NAVIGATION_BAR_HEIGHT)];
-        searchBar.tintColor = SEARCH_BAR_TINT_COLOR;
-        searchBar.placeholder = @"Search";
-
-        if ([self.searchTerms length]) {
-            searchBar.text = self.searchTerms;
-        }
-
-        [self.view addSubview:searchBar];
-        self.searchBar = searchBar;
-    }
+    self.view.backgroundColor = [UIColor mit_backgroundColor];
+    
+//    [MITPersonResource personWithID:@"atreat" loaded:^(NSArray *objects, NSError *error) {
+//        PersonDetails *test = [objects lastObject];
+//    }];
+    
+//    [MITPeopleResource peopleMatchingQuery:@"john" loaded:^(NSArray *objects, NSError *error) {
+//        PersonDetails *test = [objects firstObject];
+//    }];
 
     // set up search controller
-    self.searchController = [[MITSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+    self.searchController.searchBar = self.searchBar;
 	self.searchController.delegate = self;
 
-    CGRect tablesFrame = CGRectMake(0.0,
-                                    CGRectGetMaxY(self.searchBar.frame),
-                                    self.searchBar.frame.size.width,
-                                    self.view.frame.size.height - CGRectGetMaxY(self.searchBar.frame));
+    CGRect tablesFrame = self.tableView.bounds;
     UITableView *searchTableView = [[UITableView alloc] initWithFrame:tablesFrame style:UITableViewStylePlain];
     searchTableView.backgroundView = nil;
 	searchTableView.backgroundColor = [UIColor clearColor];
@@ -101,46 +86,28 @@
     tableView.backgroundView = nil;
 	tableView.backgroundColor = [UIColor clearColor];
 
-    NSString *searchHints = @"Sample searches:\nName: 'william barton rogers', 'rogers'\nEmail: 'wbrogers', 'wbrogers@mit.edu'\nPhone: '6172531000', '31000'";
-	UIFont *hintsFont = [UIFont systemFontOfSize:[UIFont systemFontSize]];
-	CGSize labelSize = [searchHints sizeWithFont:hintsFont
-									constrainedToSize:tableView.frame.size
-										lineBreakMode:NSLineBreakByWordWrapping];
-	
-	UILabel *hintsLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 5.0, labelSize.width, labelSize.height + 5.0)];
-	hintsLabel.numberOfLines = 0;
-	hintsLabel.backgroundColor = [UIColor clearColor];
-	hintsLabel.lineBreakMode = NSLineBreakByWordWrapping;
-	hintsLabel.font = hintsFont;
-	hintsLabel.text = searchHints;	
-	UIView *hintsContainer = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, labelSize.width, labelSize.height + 10.0)];
-	[hintsContainer addSubview:hintsLabel];
-	tableView.tableHeaderView = hintsContainer;
-	
-	// set up table footer
-    {
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        [button setFrame:CGRectMake(10.0, 0.0, tableView.frame.size.width - 20.0, 44.0)];
-        button.titleLabel.font = [UIFont boldSystemFontOfSize:20.0];
-        button.titleLabel.shadowOffset = CGSizeMake(0.0, -1.0);
-        button.titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.3];
-        [button setTitle:@"Clear Recents" forState:UIControlStateNormal];
-        
-        // based on code from stackoverflow.com/questions/1427818/iphone-sdk-creating-a-big-red-uibutton
-        [button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
-                          forState:UIControlStateNormal];
-        [button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2highlighted.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
-                          forState:UIControlStateHighlighted];
-        
-        [button addTarget:self action:@selector(showActionSheet) forControlEvents:UIControlEventTouchUpInside];	
-        
-        UIView *buttonContainer = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 44.0)];
-        [buttonContainer addSubview:button];
-        tableView.tableFooterView = buttonContainer;
-    }
-	
-    [self.view addSubview:tableView];
-    self.tableView = tableView;
+//	
+//	// set up table footer
+//    {
+//        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+//        [button setFrame:CGRectMake(10.0, 0.0, tableView.frame.size.width - 20.0, 44.0)];
+//        button.titleLabel.font = [UIFont boldSystemFontOfSize:20.0];
+//        button.titleLabel.shadowOffset = CGSizeMake(0.0, -1.0);
+//        button.titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.3];
+//        [button setTitle:@"Clear Recents" forState:UIControlStateNormal];
+//        
+//        // based on code from stackoverflow.com/questions/1427818/iphone-sdk-creating-a-big-red-uibutton
+//        [button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
+//                          forState:UIControlStateNormal];
+//        [button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2highlighted.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
+//                          forState:UIControlStateHighlighted];
+//        
+//        [button addTarget:self action:@selector(showActionSheet) forControlEvents:UIControlEventTouchUpInside];	
+//        
+//        UIView *buttonContainer = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 44.0)];
+//        [buttonContainer addSubview:button];
+//        tableView.tableFooterView = buttonContainer;
+//    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -151,7 +118,7 @@
     } else {
         [self.searchResultsTableView deselectRowAtIndexPath:[self.searchResultsTableView indexPathForSelectedRow] animated:YES];
     }
-    self.tableView.tableFooterView.hidden = ([[[PeopleRecentsData sharedData] recents] count] == 0);
+//    self.tableView.tableFooterView.hidden = ([[[PeopleRecentsData sharedData] recents] count] == 0);
 }
 
 #pragma mark -
@@ -174,6 +141,7 @@
 {
 	self.searchTerms = searchBar.text;
 	[self performSearch];
+    [self.searchBar resignFirstResponder];
 }
 
 - (void)performSearch
@@ -246,40 +214,29 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-	static NSString *secondaryCellID = @"InfoCell";
 	static NSString *recentCellID = @"RecentCell";
+    
+    static NSString * directoryAssistanceID = @"DirectoryAssistanceCell";
 
 	if (tableView == self.tableView) { // show phone directory tel #, recents
 	
 	
 		if (indexPath.section == 0) {
 			
-			SecondaryGroupedTableViewCell *cell = (SecondaryGroupedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:secondaryCellID];
-			if (cell == nil) {
-				cell = [[SecondaryGroupedTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:secondaryCellID];
-			}
-            
+            UITableViewCell *cell;
             if (indexPath.row == 0) {
-                cell.textLabel.text = @"Phone Directory";
-                cell.secondaryTextLabel.text = [NSString stringWithFormat:@"(%@)",[self.directoryPhoneURL host]];
+                cell = [tableView dequeueReusableCellWithIdentifier:directoryAssistanceID forIndexPath:indexPath];
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
             } else {
-                cell.textLabel.text = @"Emergency Contacts";
-                cell.secondaryTextLabel.text = nil;
-                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmergency];
+                cell = [tableView dequeueReusableCellWithIdentifier:@"EmergencyContactsCell" forIndexPath:indexPath];
+//                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmergency];
             }
 			
 			return cell;
 		
 		} else { // recents
 			
-			UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:recentCellID];
-			if (cell == nil) {
-				cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:recentCellID];
-                [cell applyStandardFonts];
-			}
-
-			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+			UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:recentCellID forIndexPath:indexPath];
 
 			PersonDetails *recent = [[PeopleRecentsData sharedData] recents][indexPath.row];
 			cell.textLabel.text = [recent displayName];
