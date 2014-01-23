@@ -59,10 +59,6 @@
 //    [MITPersonResource personWithID:@"atreat" loaded:^(NSArray *objects, NSError *error) {
 //        PersonDetails *test = [objects lastObject];
 //    }];
-    
-//    [MITPeopleResource peopleMatchingQuery:@"john" loaded:^(NSArray *objects, NSError *error) {
-//        PersonDetails *test = [objects firstObject];
-//    }];
 
     // set up search controller
     self.searchController.searchBar = self.searchBar;
@@ -80,9 +76,6 @@
 
     // set up tableview
     UITableView *tableView = [[UITableView alloc] initWithFrame:tablesFrame style:UITableViewStyleGrouped];
-    tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    tableView.delegate = self;
-    tableView.dataSource = self;
     tableView.backgroundView = nil;
 	tableView.backgroundColor = [UIColor clearColor];
 
@@ -153,33 +146,25 @@
     }];
     
 	self.searchTokens = tempTokens;
-
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"people"
-                                                                              command:nil
-                                                                          parameters:@{@"q" : self.searchTerms}];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    
+    [MITPeopleResource peopleMatchingQuery:self.searchTerms loaded:^(NSArray *objects, NSError *error) {
         if (_searchCancelled) {
             return;
         }
         
-        [self.loadingView removeFromSuperview];	
+        [self.loadingView removeFromSuperview];
         if (!error) {
-            if ([jsonResult isKindOfClass:[NSArray class]]) {
-                self.searchResults = jsonResult;
-            } else {
-                self.searchResults = nil;
-            }
+            self.searchResults = objects;
             
             self.searchController.searchResultsTableView.frame = self.tableView.frame;
             [self.view addSubview:self.searchController.searchResultsTableView];
-            [self.searchController.searchResultsTableView reloadData];    
+            [self.searchController.searchResultsTableView reloadData];
         }
-    };
+    }];
 
     [self showLoadingView];
 
 	_searchCancelled = NO;
-    [[NSOperationQueue mainQueue] addOperation:request];
 }
 
 #pragma mark -
@@ -260,13 +245,13 @@
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
 			
-		NSDictionary *searchResult = self.searchResults[indexPath.row];
-		NSString *fullname = searchResult[@"name"][0];
+		PersonDetails *searchResult = self.searchResults[indexPath.row];
+		NSString *fullname = searchResult.name;
 
-		if (searchResult[@"title"]) {
-			cell.detailTextLabel.text = searchResult[@"title"][0];
-		} else if (searchResult[@"dept"]) {
-			cell.detailTextLabel.text = searchResult[@"dept"][0];
+		if (searchResult.title) {
+			cell.detailTextLabel.text = searchResult.title;
+		} else if (searchResult.dept) {
+			cell.detailTextLabel.text = searchResult.dept;
 		} else {
             cell.detailTextLabel.text = @" "; // if this is empty textlabel will be bottom aligned
         }
@@ -334,7 +319,7 @@
         
 		PeopleDetailsViewController *detailView = [[PeopleDetailsViewController alloc] initWithStyle:UITableViewStyleGrouped];
 		if (tableView == self.searchController.searchResultsTableView) {
-			personDetails = [PersonDetails retrieveOrCreate:self.searchResults[indexPath.row]];
+			personDetails = self.searchResults[indexPath.row];
 		} else {
 			personDetails = [[PeopleRecentsData sharedData] recents][indexPath.row];
 		}
@@ -342,17 +327,6 @@
 		detailView.personDetails = personDetails;
 		[self.navigationController pushViewController:detailView animated:YES];
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-	} else { // we are on home screen and user selected phone or emergency contacts
-		switch (indexPath.row) {
-			case 0:
-				[self phoneIconTapped];				
-				[self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-				break;
-			case 1:
-                [[UIApplication sharedApplication] openURL:[NSURL internalURLWithModuleTag:EmergencyTag path:@"contacts"]];
-				[self.tableView deselectRowAtIndexPath:indexPath animated:NO];
-				break;
-		}
 	}
 }
 
