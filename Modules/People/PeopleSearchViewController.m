@@ -64,20 +64,13 @@
     self.searchController.searchBar = self.searchBar;
 	self.searchController.delegate = self;
 
-    CGRect tablesFrame = self.tableView.bounds;
-    UITableView *searchTableView = [[UITableView alloc] initWithFrame:tablesFrame style:UITableViewStylePlain];
-    searchTableView.backgroundView = nil;
-	searchTableView.backgroundColor = [UIColor clearColor];
+    UITableView *searchTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+	searchTableView.backgroundColor = [UIColor mit_backgroundColor];
     
     self.searchController.searchResultsTableView = searchTableView;
     self.searchController.searchResultsDelegate = self;
     self.searchController.searchResultsDataSource = self;
     self.searchResultsTableView = searchTableView;
-
-    // set up tableview
-    UITableView *tableView = [[UITableView alloc] initWithFrame:tablesFrame style:UITableViewStyleGrouped];
-    tableView.backgroundView = nil;
-	tableView.backgroundColor = [UIColor clearColor];
 
 //	
 //	// set up table footer
@@ -117,6 +110,21 @@
 #pragma mark -
 #pragma mark Search methods
 
+- (void) searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    if ([self.searchResults count]) {
+        self.searchController.searchResultsTableView.hidden = NO;
+    }
+}
+
+- (void) searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    if (![searchBar.text length]) {
+        self.searchResults = nil;
+        [self.searchResultsTableView reloadData];
+    }
+}
+
 - (void)beginExternalSearch:(NSString *)externalSearchTerms {
 	self.searchTerms = externalSearchTerms;
 	self.searchBar.text = self.searchTerms;
@@ -128,6 +136,9 @@
 {
 	self.searchResults = nil;
     self.searchCancelled = YES;
+    [self.searchBar resignFirstResponder];
+    [self.searchController setActive:NO];
+    self.searchController.searchResultsTableView.hidden = YES;
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -156,17 +167,19 @@
         if (!error) {
             self.searchResults = objects;
             
-            self.searchController.searchResultsTableView.frame = self.tableView.frame;
-            [self.view addSubview:self.searchController.searchResultsTableView];
+            self.searchController.searchResultsTableView.frame = CGRectMake(0.0,
+                                                                            CGRectGetMaxY(self.searchBar.frame),
+                                                                            self.searchBar.frame.size.width,
+                                                                            self.view.frame.size.height - CGRectGetMaxY(self.searchBar.frame));
+            [self.tableView addSubview:self.searchController.searchResultsTableView];
             [self.searchController.searchResultsTableView reloadData];
         }
     }];
-
+    self.searchResultsTableView.hidden = NO;
     [self showLoadingView];
 
 	_searchCancelled = NO;
 }
-
 #pragma mark -
 #pragma mark Table view methods
 
