@@ -28,10 +28,8 @@
 }
 
 - (NSString*)displayName {
-    if ([self.surname length]) {
-        if ([self.givenname length]) {
+    if ([self.surname length] && [self.givenname length]) {
             return [NSString stringWithFormat:@"%@ %@",self.givenname, self.surname];
-        }
     }
 
     return self.givenname;

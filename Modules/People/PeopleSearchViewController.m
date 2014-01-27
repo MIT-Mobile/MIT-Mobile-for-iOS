@@ -170,7 +170,7 @@
             self.searchController.searchResultsTableView.frame = CGRectMake(0.0,
                                                                             CGRectGetMaxY(self.searchBar.frame),
                                                                             self.searchBar.frame.size.width,
-                                                                            self.view.frame.size.height - CGRectGetMaxY(self.searchBar.frame));
+                                                                            self.view.frame.size.height - CGRectGetMaxY(self.navigationController.navigationBar.frame) - CGRectGetMaxY(self.searchBar.frame));
             [self.tableView addSubview:self.searchController.searchResultsTableView];
             [self.searchController.searchResultsTableView reloadData];
         }
