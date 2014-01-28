@@ -1,6 +1,10 @@
 #import "MITNewsStoriesResource.h"
 
+#import "MITMobileRouteConstants.h"
+#import "MITMobile.h"
 #import "MITCoreData.h"
+#import "MITAdditions.h"
+
 #import "MITNewsStory.h"
 #import "MITNewsCategory.h"
 
@@ -10,113 +14,6 @@ NSString * const MITNewsImageRepresentationEntityName = @"NewsImageRep";
 NSString * const MITNewsCategoryEntityName = @"NewsCategory";
 
 @implementation MITNewsStoriesResource
-+ (void)storiesForQuery:(NSString*)queryString
-             afterStory:(NSString*)storyID
-                  limit:(NSUInteger)limit
-                 loaded:(MITMobileResult)block
-{
-    NSParameterAssert(queryString);
-
-    MITMobile *remoteObjectManager = [[MIT_MobileAppDelegate applicationDelegate] remoteObjectManager];
-
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-
-    parameters[@"q"] = queryString;
-
-    if (storyID) {
-        parameters[@"last_story"] = storyID;
-    }
-
-    if (limit) {
-        parameters[@"limit"] = @(limit);
-    }
-
-    [remoteObjectManager getObjectsForResourceNamed:MITNewsStoriesResourceName
-                                             object:nil
-                                         parameters:parameters
-                                         completion:^(RKMappingResult *result, NSError *error) {
-                                             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                 if (block) {
-                                                     if (!error) {
-                                                         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITNewsStory entityName]];
-                                                         fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
-                                                                                          [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:NO],
-                                                                                          [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
-                                                         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"SELF IN %@",[result array]];
-
-                                                         NSError *fetchError = nil;
-                                                         NSManagedObjectContext *mainContext = [[MITCoreDataController defaultController] mainQueueContext];
-                                                         NSArray *objects = [mainContext executeFetchRequest:fetchRequest error:&fetchError];
-                                                         if (!fetchError) {
-                                                             block(objects,nil);
-                                                         } else {
-                                                             block(nil,fetchError);
-                                                         }
-                                                     } else {
-                                                         block(nil,error);
-                                                     }
-                                                 }
-                                             }];
-                                         }];
-}
-
-+ (NSFetchRequest*)storiesInCategory:(NSString*)categoryID afterStory:(NSString*)storyID limit:(NSUInteger)limit loaded:(MITMobileManagedResult)block
-{
-    MITMobile *remoteObjectManager = [[MIT_MobileAppDelegate applicationDelegate] remoteObjectManager];
-
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITNewsStory entityName]];
-    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
-                                     [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:NO],
-                                     [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
-
-
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-
-    if (categoryID) {
-        parameters[@"category"] = categoryID;
-
-        // TODO: Add support for fetch requests when specifying a category
-        //  [2013.12.24] Support cannot be added since 'stories' does not contain any foreign keys
-        //                  to 'NewsCategory' entities
-        /*
-         NSPredicate *categoryPredicate = [NSPredicate predicateWithFormat:@"ANY categories.identifer == %@",categoryID];
-         fetchRequest.predicate = categoryPredicate;
-         */
-    }
-
-
-    // Paging by storyID is a server-side option we cannot construct an immediate fetch request
-    // for it (since the fetch depends on the results of the request)
-    if (storyID) {
-        parameters[@"last_story"] = storyID;
-    }
-
-    if (limit > 0) {
-        parameters[@"limit"] = @(limit);
-    }
-
-    [remoteObjectManager getObjectsForResourceNamed:MITNewsStoriesResourceName
-                                             object:nil
-                                         parameters:parameters
-                                         completion:^(RKMappingResult *result, NSError *error) {
-                                             if (!error) {
-                                                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                     if (block) {
-                                                         block(fetchRequest,[NSDate date],error);
-                                                     }
-                                                 }];
-                                             } else {
-                                                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                     if (block) {
-                                                         block(nil,nil,error);
-                                                     }
-                                                 }];
-                                             }
-                                         }];
-
-    return fetchRequest;
-}
-
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel*)managedObjectModel
 {
     self = [super initWithName:MITNewsStoriesResourceName pathPattern:MITNewsStoriesPathPattern managedObjectModel:managedObjectModel];
@@ -133,12 +30,23 @@ NSString * const MITNewsCategoryEntityName = @"NewsCategory";
         return (NSFetchRequest*)nil;
     }
 
-    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[url relativePath]];
-    BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:NO parsedArguments:nil];
+    NSMutableString *path = [[NSMutableString alloc] initWithString:[url relativePath]];
+    
+    if ([url query]) {
+        [path appendFormat:@"?%@",[url query]];
+    }
+    
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:path];
+    NSDictionary *parameters = nil;
+    BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
 
     if (matches) {
-        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"MapCategory"];
-        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
+        
+        if (parameters[@"category"]) {
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category.identifier == %@", parameters[@"category"]];
+        }
+        
         return fetchRequest;
     } else {
         return (NSFetchRequest*)nil;
