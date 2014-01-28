@@ -31,11 +31,6 @@
 
     [super viewWillAppear:animated];
 
-    if (!self.managedObjectContext) {
-        DDLogWarn(@"A managed object context was not before '%@' was added to the view hierarchy. Falling back to the main queue managed object context",self);
-        self.managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-    }
-
 }
 
 - (void)didReceiveMemoryWarning
@@ -48,7 +43,7 @@
 {
     if (![_category isEqual:category]) {
         if (self.managedObjectContext) {
-            _category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[self.category objectID]];
+            _category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[category objectID]];
         } else {
             _category = category;
         }
