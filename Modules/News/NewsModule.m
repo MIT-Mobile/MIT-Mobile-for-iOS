@@ -1,4 +1,6 @@
 #import "NewsModule.h"
+
+#import "MITNewsViewController.h"
 #import "StoryListViewController.h"
 
 #import "MITModule+Protected.h"
@@ -15,9 +17,9 @@
     return self;
 }
 
-- (void)loadModuleHomeController
+- (UIViewController*)moduleHomeController
 {
-    self.moduleHomeController = [[StoryListViewController alloc] init];
+    return [self instantiateRootViewController];
 }
 
 - (StoryListViewController*)storyListChannelController
@@ -28,4 +30,14 @@
     
     return nil;
 }
+
+- (UIViewController*)instantiateRootViewController
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News" bundle:nil];
+    NSAssert(storyboard, @"failed to load storyboard for %@",self);
+    
+    UIViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"StoryListViewController"];
+    return controller;
+}
+
 @end
