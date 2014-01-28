@@ -18,9 +18,4 @@
 @dynamic categories;
 @dynamic images;
 
-+ (NSString*)entityName
-{
-    return @"NewsStory";
-}
-
 @end

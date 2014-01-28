@@ -1,17 +1,16 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "MITManagedObject.h"
 
 @class MITNewsImageRepresentation, MITNewsStory;
 
-@interface MITNewsImage : NSManagedObject
+@interface MITNewsImage : MITManagedObject
 
 @property (nonatomic, retain) NSString * credits;
 @property (nonatomic, retain) NSString * caption;
 @property (nonatomic, retain) NSNumber * primary;
 @property (nonatomic, retain) NSSet *representations;
 @property (nonatomic, retain) MITNewsStory *story;
-
-+ (NSString*)entityName;
 @end
 
 @interface MITNewsImage (CoreDataGeneratedAccessors)

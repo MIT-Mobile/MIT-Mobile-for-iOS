@@ -9,9 +9,4 @@
 @dynamic url;
 @dynamic name;
 @dynamic image;
-
-+ (NSString*)entityName
-{
-    return @"NewsImageRep";
-}
 @end

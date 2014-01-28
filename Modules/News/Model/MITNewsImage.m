@@ -10,9 +10,4 @@
 @dynamic primary;
 @dynamic representations;
 @dynamic story;
-
-+ (NSString*)entityName
-{
-    return @"NewsImage";
-}
 @end

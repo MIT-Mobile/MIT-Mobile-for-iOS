@@ -10,8 +10,4 @@
 @dynamic name;
 @dynamic stories;
 
-+ (NSString*)entityName
-{
-    return @"NewsCategory";
-}
 @end

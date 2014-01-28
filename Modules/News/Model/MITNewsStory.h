@@ -1,9 +1,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "MITManagedObject.h"
 
 @class MITNewsCategory, MITNewsImage;
 
-@interface MITNewsStory : NSManagedObject
+@interface MITNewsStory : MITManagedObject
 
 @property (nonatomic, copy) NSString * body;
 @property (nonatomic, copy) NSString * author;
@@ -18,7 +19,6 @@
 @property (nonatomic, copy) NSSet *categories;
 @property (nonatomic, copy) NSSet *images;
 
-+ (NSString*)entityName;
 @end
 
 @interface MITNewsStory (CoreDataGeneratedAccessors)
