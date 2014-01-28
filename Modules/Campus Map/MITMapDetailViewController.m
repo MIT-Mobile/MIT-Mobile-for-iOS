@@ -11,6 +11,7 @@
 #import "TabViewControl.h"
 
 #import "MITMapModel.h"
+#import "MITCoreData.h"
 
 @interface MITMapDetailViewController () <MITMapViewDelegate,TabViewControlDelegate>
 // Main View subviews
