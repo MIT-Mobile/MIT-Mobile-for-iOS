@@ -300,27 +300,25 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
 
         if (error) {
             DDLogError(@"Failed to complete update to context: %@",error);
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (complete) {
-                    complete(error);
-                }
-            }];
         } else {
-            [backgroundContext.parentContext performBlock:^{
-                NSError *parentSaveError = nil;
-                [backgroundContext.parentContext save:&parentSaveError];
+            [backgroundContext save:&error];
+            
+            if (!error) {
+                [backgroundContext.parentContext performBlockAndWait:^{
+                    [backgroundContext.parentContext save:&error];
 
-                if (parentSaveError) {
-                    DDLogError(@"Failed to save root background context: %@", parentSaveError);
-                }
-
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    if (complete) {
-                        complete(parentSaveError);
+                    if (error) {
+                        DDLogError(@"Failed to save root background context: %@", error);
                     }
                 }];
-            }];
+            }
         }
+        
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (complete) {
+                complete(error);
+            }
+        }];
     }];
 }
 
