@@ -35,4 +35,12 @@
     return self.givenname;
 }
 
+- (NSString *)address
+{
+    if (self.street && self.city && self.state) {
+        return [NSString stringWithFormat:@"%@\n%@, %@", self.street, self.city, self.state];
+    }
+    return nil;
+}
+
 @end

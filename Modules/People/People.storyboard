@@ -296,9 +296,9 @@ Phone: '6172531000', '31000'</string>
                     </tableView>
                     <navigationItem key="navigationItem" id="tOP-Ql-u2d"/>
                     <connections>
-                        <outlet property="personName" destination="bbU-A2-CDr" id="FAc-Ls-bEr"/>
-                        <outlet property="personOrganization" destination="flg-EW-KeT" id="btx-9m-zdk"/>
-                        <outlet property="personTitle" destination="nl5-pf-Fri" id="Cwp-7E-LKz"/>
+                        <outlet property="personName" destination="bbU-A2-CDr" id="61S-Em-DDa"/>
+                        <outlet property="personOrganization" destination="flg-EW-KeT" id="utT-qt-5PA"/>
+                        <outlet property="personTitle" destination="nl5-pf-Fri" id="5P3-3r-5WD"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="18J-Mg-glp" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -209,7 +209,6 @@
 		48EDC99B1718652900376BCF /* DiningHallMenuSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC99A1718652800376BCF /* DiningHallMenuSectionHeaderView.m */; };
 		48EFBC701880A6B200161A3D /* PeopleDetailsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 48EFBC6F1880A6B200161A3D /* PeopleDetailsTableViewCell.xib */; };
 		48EFBC771880ABF900161A3D /* PeopleDetailsHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EFBC761880ABF900161A3D /* PeopleDetailsHeaderView.m */; };
-		48EFBC791880ACC400161A3D /* PeopleDetailsHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 48EFBC781880ACC400161A3D /* PeopleDetailsHeaderView.xib */; };
 		4B1B7E41141801D50090039F /* LibrariesAskUsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */; };
 		4B1B7E4514182B940090039F /* LibraryEmailFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1B7E4414182B930090039F /* LibraryEmailFormViewController.m */; };
 		4B33EA13141AC65300B30312 /* LibrariesAskUsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B33EA12141AC65300B30312 /* LibrariesAskUsTableViewController.m */; };
@@ -843,7 +842,6 @@
 		48EFBC6F1880A6B200161A3D /* PeopleDetailsTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PeopleDetailsTableViewCell.xib; path = View/PeopleDetailsTableViewCell.xib; sourceTree = "<group>"; };
 		48EFBC751880ABF900161A3D /* PeopleDetailsHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PeopleDetailsHeaderView.h; path = View/PeopleDetailsHeaderView.h; sourceTree = "<group>"; };
 		48EFBC761880ABF900161A3D /* PeopleDetailsHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PeopleDetailsHeaderView.m; path = View/PeopleDetailsHeaderView.m; sourceTree = "<group>"; };
-		48EFBC781880ACC400161A3D /* PeopleDetailsHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PeopleDetailsHeaderView.xib; path = View/PeopleDetailsHeaderView.xib; sourceTree = "<group>"; };
 		4B1B7E3E141801D50090039F /* LibrariesAskUsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesAskUsViewController.h; sourceTree = "<group>"; };
 		4B1B7E3F141801D50090039F /* LibrariesAskUsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesAskUsViewController.m; sourceTree = "<group>"; };
 		4B1B7E4314182B930090039F /* LibraryEmailFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibraryEmailFormViewController.h; sourceTree = "<group>"; };
@@ -2153,7 +2151,6 @@
 			children = (
 				48EFBC751880ABF900161A3D /* PeopleDetailsHeaderView.h */,
 				48EFBC761880ABF900161A3D /* PeopleDetailsHeaderView.m */,
-				48EFBC781880ACC400161A3D /* PeopleDetailsHeaderView.xib */,
 				EB6F2B6B10E9026200A29A2A /* PeopleDetailsTableViewCell.h */,
 				EB6F2B6C10E9026200A29A2A /* PeopleDetailsTableViewCell.m */,
 				48EFBC6F1880A6B200161A3D /* PeopleDetailsTableViewCell.xib */,
@@ -2968,7 +2965,6 @@
 				EB07B06C12B8971D005D6A4C /* calendar in Resources */,
 				481F764E188EBA470051F444 /* People.storyboard in Resources */,
 				2CD12D4F1360584F00A73ACA /* facilities in Resources */,
-				48EFBC791880ACC400161A3D /* PeopleDetailsHeaderView.xib in Resources */,
 				EB54947310DFF7E200B708B3 /* global in Resources */,
 				EB54943810DFF03600B708B3 /* icons in Resources */,
 				48EFBC701880A6B200161A3D /* PeopleDetailsTableViewCell.xib in Resources */,
