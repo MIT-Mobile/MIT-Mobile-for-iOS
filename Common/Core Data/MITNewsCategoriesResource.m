@@ -17,7 +17,6 @@
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
 
     [remoteObjectManager getObjectsForResourceNamed:MITNewsCategoriesResourceName
-                                             object:nil
                                          parameters:nil
                                          completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                              [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -64,13 +63,11 @@
 
 - (void)loadMappings
 {
-    NSString *categoryEntityName = [MITNewsCategory entityName];
-    NSEntityDescription *categoryEntity = [self.managedObjectModel entitiesByName][categoryEntityName];
-    NSAssert(categoryEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,categoryEntityName);
+    NSEntityDescription *categoryEntity = [MITNewsCategory entityDescription];
+    NSAssert(categoryEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,[categoryEntity name]);
     
-    NSString *storyEntityName = [MITNewsStory entityName];
-    NSEntityDescription *storyEntity = [self.managedObjectModel entitiesByName][categoryEntityName];
-    NSAssert(storyEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,storyEntityName);
+    NSEntityDescription *storyEntity = [MITNewsCategory entityDescription];
+    NSAssert(storyEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,[storyEntity name]);
 
     RKEntityMapping *categoryMapping = [[RKEntityMapping alloc] initWithEntity:categoryEntity];
     categoryMapping.identificationAttributes = @[@"identifier"];
@@ -78,8 +75,6 @@
                                                           @"url" : @"url",
                                                           @"name" : @"name",
                                                           @"@metadata.mapping.collectionIndex" : @"order"}];
-    
-    [categoryMapping addConnectionForRelationship:@"stories" connectedBy:@{@"identifier" : @"identifier"}];
 
     [self addMapping:categoryMapping atKeyPath:nil forRequestMethod:RKRequestMethodGET];
 }

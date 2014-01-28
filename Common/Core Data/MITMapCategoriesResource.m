@@ -14,9 +14,8 @@
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
 
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapCategoriesResourceName
-                                                    object:nil
                                                 parameters:nil
-                                                completion:^(RKMappingResult *result, NSError *error) {
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                                     if (!error) {
                                                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                             block(fetchRequest,[NSDate date],nil);
@@ -61,9 +60,8 @@
 
 - (void)loadMappings
 {
-    NSString *categoryEntityName = [MITMapCategory entityName];
-    NSEntityDescription *categoryEntity = [self.managedObjectModel entitiesByName][categoryEntityName];
-    NSAssert(categoryEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,categoryEntityName);
+    NSEntityDescription *categoryEntity = [MITMapCategory entityDescription];
+    NSAssert(categoryEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,[categoryEntity name]);
 
     RKEntityMapping *categoryMapping = [[RKEntityMapping alloc] initWithEntity:categoryEntity];
     [categoryMapping addAttributeMappingsFromDictionary:@{@"categoryId": @"identifier",

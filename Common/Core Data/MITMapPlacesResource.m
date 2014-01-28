@@ -14,9 +14,8 @@
     NSParameterAssert(block);
 
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapPlacesResourceName
-                                                    object:nil
                                                 parameters:@{@"q" : queryString}
-                                                completion:^(RKMappingResult *result, NSError *error) {
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                                     [[MITMapModelController sharedController] addRecentSearch:queryString];
 
                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -47,9 +46,8 @@
     }
     
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapPlacesResourceName
-                                                    object:nil
                                                 parameters:parameters
-                                                completion:^(RKMappingResult *result, NSError *error) {
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                         if (!error) {
                                                             if (categoryID) {
@@ -118,13 +116,11 @@
 
 - (void)loadMappings
 {
-    NSString *placeEntityName = [MITMapPlace entityName];
-    NSEntityDescription *placeEntity = [self.managedObjectModel entitiesByName][placeEntityName];
-    NSAssert(placeEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,placeEntityName);
+    NSEntityDescription *placeEntity = [MITMapPlace entityDescription];
+    NSAssert(placeEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,[placeEntity name]);
 
-    NSString *placeContentEntityName = [MITMapPlaceContent entityName];
-    NSEntityDescription *placeContentEntity = [self.managedObjectModel entitiesByName][placeContentEntityName];
-    NSAssert(placeContentEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,placeContentEntityName);
+    NSEntityDescription *placeContentEntity = [MITMapPlaceContent entityDescription];
+    NSAssert(placeContentEntity,@"[%@] entity %@ does not exist in the managed object model",self.name,[placeContentEntity name]);
 
     RKEntityMapping *placeMapping = [[RKEntityMapping alloc] initWithEntity:placeEntity];
     placeMapping.identificationAttributes = @[@"identifier"]; // RKEntityMapping converts this to an NSAttributeDescription internally
