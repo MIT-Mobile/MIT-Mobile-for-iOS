@@ -5,9 +5,9 @@
 @implementation MITNewsCategory
 
 @dynamic identifier;
-@dynamic lastUpdated;
-@dynamic url;
 @dynamic name;
+@dynamic order;
+@dynamic url;
 @dynamic stories;
 
 @end

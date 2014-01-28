@@ -6,10 +6,10 @@
 
 @interface MITNewsCategory : MITManagedObject
 
-@property (nonatomic, copy) NSString * identifier;
-@property (nonatomic, strong) NSDate * lastUpdated;
-@property (nonatomic, strong) NSURL * url;
+@property (nonatomic, strong) NSString * identifier;
 @property (nonatomic, copy) NSString * name;
+@property (nonatomic, strong) NSNumber * order;
+@property (nonatomic, strong) NSURL * url;
 @property (nonatomic, copy) NSSet *stories;
 @end
 

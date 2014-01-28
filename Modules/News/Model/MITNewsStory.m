@@ -5,17 +5,17 @@
 
 @implementation MITNewsStory
 
-@dynamic body;
 @dynamic author;
-@dynamic read;
+@dynamic body;
 @dynamic featured;
 @dynamic identifier;
-@dynamic sourceURL;
 @dynamic publishedAt;
+@dynamic read;
+@dynamic sourceURL;
+@dynamic dek;
 @dynamic title;
 @dynamic topStory;
-@dynamic summary;
-@dynamic categories;
+@dynamic category;
 @dynamic images;
 
 @end
