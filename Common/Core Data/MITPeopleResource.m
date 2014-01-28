@@ -14,7 +14,6 @@
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITPeopleResourceName
                                                     object:nil
                                                 parameters:params
-                                                completion:^(RKMappingResult *result, NSError *error) {
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                         if (!error) {
