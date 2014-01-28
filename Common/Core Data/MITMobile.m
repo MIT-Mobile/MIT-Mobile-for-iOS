@@ -66,7 +66,7 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
     return [self.mutableResources copy];
 }
 
-- (void)getObjectsForResourceNamed:(NSString *)routeName object:(id)object parameters:(NSDictionary *)parameters completion:(MITResourceLoadedBlock)block;
+- (void)getObjectsForResourceNamed:(NSString *)routeName parameters:(NSDictionary *)parameters completion:(MITResourceLoadedBlock)block
 {
     // Trim off any additional paths. Right now, the API prefix (for the Mobile v3, '/apis')
     // is included in the route name but the current server URL defaults to a path of '/api'.
@@ -78,7 +78,7 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
     NSString *uniquedRouteName = [NSString stringWithFormat:@"%@ %@",RKStringFromRequestMethod(RKRequestMethodGET),routeName];
 
     [objectManager getObjectsAtPathForRouteNamed:uniquedRouteName
-                                               object:object
+                                               object:nil
                                            parameters:parameters
                                               success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
                                                   if (block) {
@@ -90,6 +90,42 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
                                                       block(nil,operation.HTTPRequestOperation.response,error);
                                                   }
                                               }];
+}
+
+- (void)getObjectsForURL:(NSURL*)url completion:(MITResourceLoadedBlock)block
+{
+    __block MITMobileResource *targetResource = nil;
+    __block NSDictionary *queryParameters = nil;
+    
+    // TODO: Check to see if -[NSURL query] is URLEncoded or not
+    // bskinner - 2014.20.01
+    NSMutableString *path = [NSMutableString stringWithFormat:@"%@?%@",[url path],[url query]];
+    [path replaceOccurrencesOfString:@"/" withString:@"" options:0 range:NSMakeRange(0, 1)];
+    
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:path];
+    [self.resources enumerateKeysAndObjectsUsingBlock:^(NSString *name, MITMobileResource *resource, BOOL *stop) {
+        NSDictionary *parameters = nil;
+        
+        BOOL pathMatchesPattern = [pathMatcher matchesPattern:resource.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
+        if (pathMatchesPattern) {
+            targetResource = resource;
+            queryParameters = parameters;
+            (*stop) = YES;
+        }
+    }];
+
+    if (targetResource) {
+        [self getObjectsForResourceNamed:targetResource.name
+                              parameters:queryParameters
+                              completion:block];
+    } else {
+        NSString *reason = [NSString stringWithFormat:@"'%@' does not match any registered resources",[url path]];
+        NSError *error = [NSError errorWithDomain:MITMobileErrorDomain
+                                             code:MITMobileResourceNotFound
+                                         userInfo:@{NSLocalizedDescriptionKey : reason}];
+        DDLogWarn(@"%@",reason);
+        block(nil,nil,error);
+    }
 }
 
 - (RKObjectManager*)objectManagerForURL:(NSURL *)url
