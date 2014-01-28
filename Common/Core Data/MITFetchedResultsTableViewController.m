@@ -92,6 +92,7 @@
 - (NSManagedObjectContext*)managedObjectContext
 {
     if (!_managedObjectContext) {
+        DDLogWarn(@"[%@] A managed object context was not assigned before being added to the view hierarchy. The default main queue managed object context will be used",self);
         _managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
     }
     
