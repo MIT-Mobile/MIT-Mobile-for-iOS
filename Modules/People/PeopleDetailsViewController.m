@@ -14,9 +14,11 @@
 @interface PeopleDetailsViewController ()
 @property (nonatomic, strong) NSArray *attributeKeys;
 @property (nonatomic, strong) NSArray *attributes;
+
 @property (nonatomic, weak) IBOutlet UILabel * personName;
 @property (nonatomic, weak) IBOutlet UILabel * personTitle;
 @property (nonatomic, weak) IBOutlet UILabel * personOrganization;
+
 @end
 
 static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
@@ -24,12 +26,12 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 @implementation PeopleDetailsViewController
 - (void)viewDidLoad
 {
+    [super viewDidLoad];
 	self.title = @"Info";
 	[self.tableView applyStandardColors];
     self.view.backgroundColor = [UIColor mit_backgroundColor];
-    [self registerNibsForTableViewCells];
 
-    self.attributeKeys = @[@"email", @"phone", @"fax", @"homephone", @"office", @"address", @"website"];
+    self.attributeKeys = @[@"email", @"phone", @"fax", @"home", @"office", @"address", @"website"];
 
     [self mapPersonAttributes];
     [self updateTableViewHeaderView];
@@ -57,15 +59,52 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	}
 }
 
+static NSString * EmailAccessoryIcon    = @"email";
+static NSString * PhoneAccessoryIcon    = @"phone";
+static NSString * MapAccessoryIcon      = @"map";
+static NSString * ExternalAccessoryIcon = @"external";
+
 - (void) mapPersonAttributes
 {
+    /* key : display name : accessory icon
+     * -----------------------------------
+     * email     : email : email
+     *
+     * phone     : phone : phone
+     * fax       : fax   : phone
+     * homephone : home  : phone
+     *
+     * office            : office  : map
+     * street/city/state : address : map
+     *
+     * website   : website : external
+     */
+    
+    // The following section of code will initialize @property attributes with items structured:
+    //   @[value for key, display name, accessory icon ]
     NSMutableArray *tempAttributes = [NSMutableArray array];
     for (NSString *key in self.attributeKeys) {
         id attribute = [self.personDetails valueForKey:key];
+        
+        NSString *attrAccessoryIcon = @"";
+        if ([key isEqualToString:@"email"]) {
+            attrAccessoryIcon = EmailAccessoryIcon;
+        } else if ([@[@"phone", @"fax", @"home"] containsObject:key]) {
+            attrAccessoryIcon = PhoneAccessoryIcon;
+        } else if ([@[@"office", @"address"] containsObject:key]) {
+            attrAccessoryIcon = MapAccessoryIcon;
+        } else if ([key isEqualToString:@"website"]){
+            attrAccessoryIcon = ExternalAccessoryIcon;
+        }
+        
         if ([attribute isKindOfClass:[NSString class]]) {
-            [tempAttributes addObject:attribute];
+            NSArray * attrData = @[attribute, key, attrAccessoryIcon];
+            [tempAttributes addObject:attrData];
         } else if ([attribute isKindOfClass:[NSArray class]]) {
-            [tempAttributes addObjectsFromArray:attribute];
+            for (NSString *subAttribute in attribute) {
+                NSArray *attrData = @[subAttribute, key, attrAccessoryIcon];
+                [tempAttributes addObject:attrData];
+            }
         }
     }
     self.attributes = [tempAttributes copy];
@@ -76,11 +115,6 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     self.personName.text = self.personDetails.displayName;
     self.personTitle.text = self.personDetails.title;
     self.personOrganization.text = self.personDetails.dept;
-}
-
-- (void) registerNibsForTableViewCells
-{
-    [self.tableView registerNib:[UINib nibWithNibName:@"PeopleDetailsTableViewCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:AttributeCellReuseIdentifier];
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -134,55 +168,60 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	NSInteger section = indexPath.section;
 	NSInteger row = indexPath.row;
 
-	NSString *cellID = [NSString stringWithFormat:@"%d",section];
+	UITableViewCell * cell;
 	
 	if (section == 1) {
 		// cells for Create New / Add Existing rows at the end
-		// we are mimicking the style of UIButtonTypeRoundedRect until we find something more built-in
-		UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-		
-		if (!cell) {
-			cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
-            cell.textLabel.textAlignment = NSTextAlignmentCenter;
-            cell.textLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
-            cell.textLabel.textColor = STANDARD_CONTENT_FONT_COLOR;
-        }
+		cell = [tableView dequeueReusableCellWithIdentifier:@"ActionCell" forIndexPath:indexPath];
 
 		if (row == 0) {
 			cell.textLabel.text = @"Create New Contact";
         } else {
 			cell.textLabel.text = @"Add to Existing Contact";
 		}
-
-		return cell;
 		
-	} else { // cells for displaying person details
-		PeopleDetailsTableViewCell *cell = (PeopleDetailsTableViewCell *)[tableView dequeueReusableCellWithIdentifier:AttributeCellReuseIdentifier];
+	} else if (section == 0) { // cells for displaying person details
+		cell = [tableView dequeueReusableCellWithIdentifier:@"AttributeCell" forIndexPath:indexPath];
 
-		NSString *personInfo = self.attributes[row];
-//		NSString *tag = [personInfo firstObject];
-//		id data = personInfo[1];
-//        if ([data isKindOfClass:[NSArray class]]) {
-//            data = [data componentsJoinedByString:@", "];
-//        }
+		NSArray *personInfo = self.attributes[row]; // see mapPersonAttributes method for creation of @property attributes
+        NSString * attrValue    = personInfo[0];
+        NSString * attrType     = personInfo[1];
+        NSString * attrIcon     = personInfo[2];
 
-//		cell.typeLabel.text = tag;
-//		cell.valueLabel.text = data;
+        cell.textLabel.text = attrValue;
+        cell.detailTextLabel.text = attrType;
+        
 
-        cell.valueLabel.text = personInfo;
+		if ([attrIcon isEqualToString:EmailAccessoryIcon]) {
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
+		} else if ([attrIcon isEqualToString:PhoneAccessoryIcon]) {
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+		} else if ([attrIcon isEqualToString:MapAccessoryIcon]) {
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+		} else if ([attrIcon isEqualToString:ExternalAccessoryIcon]) {
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+        } else {
+			cell.selectionStyle = UITableViewCellSelectionStyleNone;
+		}
+        
+        if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+            // testing attributes attrType with the next attribute array
+            //  like attribute types should not display separatorInsets
+            if ([self.attributes count] > indexPath.row + 1 && [self.attributes[indexPath.row + 1][1] isEqualToString:self.attributes[indexPath.row][1]] ) {
+                cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 1000.);
+            } else {
+                cell.separatorInset = UIEdgeInsetsMake(0, 15., 0, 0);
+            }
+        }
 
-//		if ([tag isEqualToString:@"email"]) {
-//            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
-//		} else if ([tag isEqualToString:@"phone"]) {
-//            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-//		} else if ([tag isEqualToString:@"office"]) {
-//            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
-//		} else {
-//			cell.selectionStyle = UITableViewCellSelectionStyleNone;
-//		}
-
-		return cell;
-	}	
+	} else {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"BlankCell" forIndexPath:indexPath];
+        if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+            cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 1000.);
+        }
+    }
+    
+    return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{

@@ -330,15 +330,16 @@
 	if (tableView == self.searchController.searchResultsTableView || indexPath.section == 1) { // user selected search result or recently viewed
 		PersonDetails *personDetails = nil;
         
-		PeopleDetailsViewController *detailView = [[PeopleDetailsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+		UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
+        PeopleDetailsViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"PeopleDetailsVC"];
 		if (tableView == self.searchController.searchResultsTableView) {
 			personDetails = self.searchResults[indexPath.row];
 		} else {
 			personDetails = [[PeopleRecentsData sharedData] recents][indexPath.row];
 		}
 
-		detailView.personDetails = personDetails;
-		[self.navigationController pushViewController:detailView animated:YES];
+		vc.personDetails = personDetails;
+		[self.navigationController pushViewController:vc animated:YES];
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
 	}
 }

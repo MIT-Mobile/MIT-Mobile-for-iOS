@@ -19,7 +19,7 @@
 @property (nonatomic,copy) NSString *name;
 @property (nonatomic,copy) NSArray  *office;
 @property (nonatomic,copy) NSArray  *phone;
-@property (nonatomic,copy) NSArray  *homephone;
+@property (nonatomic,copy) NSArray  *home; // homephone
 @property (nonatomic,copy) NSString *state;
 @property (nonatomic,copy) NSString *street;
 @property (nonatomic,copy) NSString *surname;

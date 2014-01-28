@@ -6,7 +6,7 @@
 @dynamic uid;
 @dynamic affiliation, dept, title;
 @dynamic name, givenname, surname;
-@dynamic office, phone, homephone, fax, email;
+@dynamic office, phone, home, fax, email;
 @dynamic street, city, state;
 @dynamic url, website;
 @dynamic lastUpdate;
