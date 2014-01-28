@@ -237,7 +237,7 @@
 			UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:recentCellID forIndexPath:indexPath];
 
 			PersonDetails *recent = [[PeopleRecentsData sharedData] recents][indexPath.row];
-			cell.textLabel.text = [recent displayName];
+			cell.textLabel.text = recent.name;
             
 			// show person's title, dept, or email as cell's subtitle text
 			cell.detailTextLabel.text = @" ";

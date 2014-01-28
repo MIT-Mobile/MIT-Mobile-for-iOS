@@ -41,7 +41,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300) { // 5 mins for testing
         MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"people"
                                                                                   command:nil
-                                                                               parameters:@{@"q" : self.personDetails.displayName}];
+                                                                               parameters:@{@"q" : self.personDetails.name}];
         request.completeBlock = ^(MobileRequestOperation *operation, NSArray *contactResults, NSString *contentType, NSError *error) {
             if (!error) {
                 [contactResults enumerateObjectsUsingBlock:^(NSDictionary *entry, NSUInteger idx, BOOL *stop) {
@@ -112,7 +112,7 @@ static NSString * ExternalAccessoryIcon = @"external";
 
 - (void) updateTableViewHeaderView
 {
-    self.personName.text = self.personDetails.displayName;
+    self.personName.text = self.personDetails.name;
     self.personTitle.text = self.personDetails.title;
     self.personOrganization.text = self.personDetails.dept;
 }
@@ -188,8 +188,8 @@ static NSString * ExternalAccessoryIcon = @"external";
         NSString * attrType     = personInfo[1];
         NSString * attrIcon     = personInfo[2];
 
-        cell.textLabel.text = attrValue;
-        cell.detailTextLabel.text = attrType;
+        cell.detailTextLabel.text = attrValue;
+        cell.textLabel.text = attrType;
         
 
 		if ([attrIcon isEqualToString:EmailAccessoryIcon]) {

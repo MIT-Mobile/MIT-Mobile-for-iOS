@@ -27,14 +27,6 @@
     }
 }
 
-- (NSString*)displayName {
-    if ([self.surname length] && [self.givenname length]) {
-            return [NSString stringWithFormat:@"%@ %@",self.givenname, self.surname];
-    }
-
-    return self.givenname;
-}
-
 - (NSString *)address
 {
     if (self.street && self.city && self.state) {

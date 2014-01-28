@@ -29,7 +29,6 @@
 @property (nonatomic,copy) NSDate   *lastUpdate;
 
 + (PersonDetails *)retrieveOrCreate:(NSDictionary *)selectedResult;
-- (NSString *)displayName;
 - (NSString *)address;
 
 @end
