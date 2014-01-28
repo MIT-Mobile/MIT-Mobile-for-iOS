@@ -1,9 +1,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "MITManagedObject.h"
 
 @class MITMapPlace, MITMapCategory;
 
-@interface MITMapCategory : NSManagedObject
+@interface MITMapCategory : MITManagedObject
 @property (nonatomic, copy) NSString * name;
 @property (nonatomic, strong) NSURL * url;
 @property (nonatomic, copy) NSString * identifier;
@@ -11,7 +12,6 @@
 @property (nonatomic, copy) NSOrderedSet *children;
 @property (nonatomic, strong) MITMapCategory *parent;
 
-+ (NSString*)entityName;
 - (NSString*)canonicalName;
 @end
 

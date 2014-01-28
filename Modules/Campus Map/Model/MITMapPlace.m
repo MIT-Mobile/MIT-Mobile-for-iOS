@@ -39,12 +39,6 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 @dynamic url;
 @dynamic contents;
 @dynamic bookmark;
-
-+ (NSString*)entityName
-{
-    return @"MapPlace";
-}
-
 - (id)init
 {
     self = [super init];

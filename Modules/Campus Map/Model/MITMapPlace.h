@@ -1,12 +1,13 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 #import <CoreData/CoreData.h>
+#import "MITManagedObject.h"
 #import "MGSAnnotation.h"
 
 @class MITMapPlace;
 @class MITMapBookmark;
 
-@interface MITMapPlace : NSManagedObject <MKAnnotation,MGSAnnotation>
+@interface MITMapPlace : MITManagedObject <MKAnnotation,MGSAnnotation>
 @property (nonatomic, copy) NSString * identifier;
 @property (nonatomic, copy) NSString * buildingNumber;
 @property (nonatomic, copy) NSString * architect;
@@ -24,7 +25,6 @@
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
-+ (NSString*)entityName;
 @end
 
 @interface MITMapPlace (CoreDataGeneratedAccessors)
