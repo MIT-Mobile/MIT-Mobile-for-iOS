@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-
 #import <CoreData/CoreData.h>
 
 FOUNDATION_EXTERN NSString * const MITCoreDataThreadLocalContextKey;

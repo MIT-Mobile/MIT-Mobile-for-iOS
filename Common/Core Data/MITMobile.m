@@ -1,7 +1,5 @@
-#import "MITMobile.h"
 #import <RestKit/RKHTTPUtilities.h>
-
-#import "CoreDataManager.h"
+#import "MITMobile.h"
 
 #import "MITMapModelController.h"
 #import "MITMobileResource.h"
@@ -9,6 +7,7 @@
 
 typedef void (^MITResourceLoadedBlock)(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error);
 
+NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
 #pragma mark - MITMobile
 #pragma mark Private Extension
 @interface MITMobile ()

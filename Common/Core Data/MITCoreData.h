@@ -1,12 +1,7 @@
-#ifndef MIT_Mobile_MITCoreData_h
-#define MIT_Mobile_MITCoreData_h
+#ifndef _MIT_CORE_DATA_H_
+#define _MIT_CORE_DATA_H_
 
-#import <CoreData/CoreData.h>
-#import <RestKit/RestKit.h>
-
-#import "MITMobile.h"
 #import "CoreDataManager.h"
 #import "MITCoreDataController.h"
-#import "MITMobileResources.h"
 
-#endif
+#endif //_MIT_CORE_DATA_H_

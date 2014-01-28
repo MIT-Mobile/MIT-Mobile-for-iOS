@@ -1,5 +1,4 @@
 #import "MITMobileManagedResource.h"
-#import "MITMobile.h"
 
 @interface MITPersonResource : MITMobileManagedResource
 

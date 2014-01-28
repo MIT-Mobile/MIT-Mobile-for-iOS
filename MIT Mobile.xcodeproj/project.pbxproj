@@ -1632,8 +1632,6 @@
 			children = (
 				2C99DB061846867200277B25 /* MITMobile.h */,
 				2C99DB071846867200277B25 /* MITMobile.m */,
-				2C7EEB001871C811009ED73D /* MITMobileRouteConstants.h */,
-				2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */,
 				2CA9AFB7185F929B0005D5DA /* Resources */,
 			);
 			name = "Mobile API";
@@ -1756,7 +1754,6 @@
 		2CA9AFB7185F929B0005D5DA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				2CFAE1E81861F9BE00A0970C /* MITMobileResources.h */,
 				2C276711184CC90E00E53E9F /* MITMobileResource.h */,
 				2C276712184CC90E00E53E9F /* MITMobileResource.m */,
 				2CC45BE5187DBA1000B5571F /* MITMobilePaginator.h */,
@@ -1874,6 +1871,19 @@
 				2CCF814F1636F69900DE273F /* README.txt */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		2CD4F6A3188EE6C5003F2C46 /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				2CF9F90B181ABE5F00EDB359 /* MITCoreData.h */,
+				2CF9F908181ABC3800EDB359 /* MITFetchedResultsTableViewController.h */,
+				2CF9F909181ABC3800EDB359 /* MITFetchedResultsTableViewController.m */,
+				2CFAE1E81861F9BE00A0970C /* MITMobileResources.h */,
+				2C7EEB001871C811009ED73D /* MITMobileRouteConstants.h */,
+				2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */,
+			);
+			name = Utility;
 			sourceTree = "<group>";
 		};
 		2CDA8AB61762445F001F011F /* TestFlight */ = {
@@ -2023,8 +2033,6 @@
 		3AA21C491039DDBD00DB7637 /* Core Data */ = {
 			isa = PBXGroup;
 			children = (
-				2CF9F90B181ABE5F00EDB359 /* MITCoreData.h */,
-				2C5123111843DB4000902BB4 /* Mobile API */,
 				3AA21C541039DDEA00DB7637 /* CoreDataManager.h */,
 				3AA21C551039DDEA00DB7637 /* CoreDataManager.m */,
 				2C189A91181970B700653DF6 /* MITCoreDataController.h */,

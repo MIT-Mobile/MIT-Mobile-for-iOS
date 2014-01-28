@@ -4,6 +4,10 @@
 
 @class MITMobileResource;
 
+extern NSString* const MITMobileErrorDomain;
+typedef NS_ENUM(NSInteger, MITMobileErrorCode) {
+    MITMobileResourceNotFound = 0xFF00
+};
 @interface MITMobile : NSObject
 @property (nonatomic,readonly) NSDictionary *resources;
 

@@ -1,5 +1,4 @@
-#import "MITMobileResources.h"
-#import "MITMobile.h"
+#import "MITMobileManagedResource.h"
 
 @interface MITMapPlacesResource : MITMobileManagedResource
 + (void)placesWithQuery:(NSString*)queryString loaded:(MITMobileResult)block;

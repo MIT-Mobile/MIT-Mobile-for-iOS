@@ -1,4 +1,6 @@
 #import "MITMapCategoriesResource.h"
+
+#import "MITMobileRouteConstants.h"
 #import "MITMobile.h"
 #import "MITMapModel.h"
 
