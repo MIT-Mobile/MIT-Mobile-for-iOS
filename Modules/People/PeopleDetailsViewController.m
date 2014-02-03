@@ -61,6 +61,10 @@ static NSString * PhoneAccessoryIcon    = @"phone";
 static NSString * MapAccessoryIcon      = @"map";
 static NSString * ExternalAccessoryIcon = @"external";
 
+static NSInteger AttributeValueIndex    = 0;
+static NSInteger DisplayNameIndex       = 1;
+static NSInteger AccessoryIconIndex     = 2;
+
 - (void) mapPersonAttributes
 {
     /* key : display name : accessory icon
@@ -83,16 +87,7 @@ static NSString * ExternalAccessoryIcon = @"external";
     for (NSString *key in self.attributeKeys) {
         id attribute = [self.personDetails valueForKey:key];
         
-        NSString *attrAccessoryIcon = @"";
-        if ([key isEqualToString:@"email"]) {
-            attrAccessoryIcon = EmailAccessoryIcon;
-        } else if ([@[@"phone", @"fax", @"home"] containsObject:key]) {
-            attrAccessoryIcon = PhoneAccessoryIcon;
-        } else if ([@[@"office", @"address"] containsObject:key]) {
-            attrAccessoryIcon = MapAccessoryIcon;
-        } else if ([key isEqualToString:@"website"]){
-            attrAccessoryIcon = ExternalAccessoryIcon;
-        }
+        NSString *attrAccessoryIcon = [self accessoryIconForKey:key];
         
         if ([attribute isKindOfClass:[NSString class]]) {
             NSArray * attrData = @[attribute, key, attrAccessoryIcon];
@@ -105,6 +100,20 @@ static NSString * ExternalAccessoryIcon = @"external";
         }
     }
     self.attributes = [tempAttributes copy];
+}
+
+- (NSString *)accessoryIconForKey:(NSString *)key
+{
+    if ([key isEqualToString:@"email"]) {
+        return EmailAccessoryIcon;
+    } else if ([@[@"phone", @"fax", @"home"] containsObject:key]) {
+        return PhoneAccessoryIcon;
+    } else if ([@[@"office", @"address"] containsObject:key]) {
+        return MapAccessoryIcon;
+    } else if ([key isEqualToString:@"website"]){
+       return ExternalAccessoryIcon;
+    }
+    return @"";
 }
 
 - (void) updateTableViewHeaderView
@@ -158,6 +167,14 @@ static NSString * ExternalAccessoryIcon = @"external";
     }
 }
 
+- (BOOL) tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 2) {
+        return NO;
+    }
+    return YES;
+}
+
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -181,9 +198,9 @@ static NSString * ExternalAccessoryIcon = @"external";
 		cell = [tableView dequeueReusableCellWithIdentifier:@"AttributeCell" forIndexPath:indexPath];
 
 		NSArray *personInfo = self.attributes[row]; // see mapPersonAttributes method for creation of @property attributes
-        NSString * attrValue    = personInfo[0];
-        NSString * attrType     = personInfo[1];
-        NSString * attrIcon     = personInfo[2];
+        NSString * attrValue    = personInfo[AttributeValueIndex];
+        NSString * attrType     = personInfo[DisplayNameIndex];
+        NSString * attrIcon     = personInfo[AccessoryIconIndex];
 
         cell.detailTextLabel.text = attrValue;
         cell.textLabel.text = attrType;
@@ -202,9 +219,9 @@ static NSString * ExternalAccessoryIcon = @"external";
 		}
         
         if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-            // testing attributes attrType with the next attribute array
-            //  like attribute types should not display separatorInsets
-            if ([self.attributes count] > indexPath.row + 1 && [self.attributes[indexPath.row + 1][1] isEqualToString:self.attributes[indexPath.row][1]] ) {
+            // testing attributes accessoryIcon with the next attribute array
+            //  like accessory icons should not display separatorInsets
+            if ([self.attributes count] > indexPath.row + 1 && [self.attributes[indexPath.row + 1][AccessoryIconIndex] isEqualToString:self.attributes[indexPath.row][AccessoryIconIndex]] ) {
                 cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 1000.);
             } else {
                 cell.separatorInset = UIEdgeInsetsMake(0, 15., 0, 0);
@@ -306,18 +323,20 @@ static NSString * ExternalAccessoryIcon = @"external";
 		}
 	} else {
 		NSArray *personInfo = self.attributes[indexPath.row];
-		NSString *tag = personInfo[0];
+		NSString *actionIcon = personInfo[AccessoryIconIndex];
+        NSString * value = personInfo[AttributeValueIndex];
 		
-		if ([tag isEqualToString:@"email"]) {
-			[self emailIconTapped:personInfo[1]];
-        } else if ([tag isEqualToString:@"phone"]) {
-			[self phoneIconTapped:personInfo[1]];
-            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-        } else if ([tag isEqualToString:@"office"]) {
-			[self mapIconTapped:personInfo[1]];
+		if ([actionIcon isEqualToString:EmailAccessoryIcon]) {
+			[self emailIconTapped:value];
+        } else if ([actionIcon isEqualToString:PhoneAccessoryIcon]) {
+			[self phoneIconTapped:value];
+        } else if ([actionIcon isEqualToString:MapAccessoryIcon]) {
+			[self mapIconTapped:value];
+        } else if ([actionIcon isEqualToString:ExternalAccessoryIcon]) {
+            [self externalIconTapped:value];
         }
-
 	}
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark -
@@ -475,6 +494,13 @@ static NSString * ExternalAccessoryIcon = @"external";
     [MITMailComposeController presentMailControllerWithRecipient:email subject:nil body:nil];
 }
 
+- (void)externalIconTapped:(NSString *)urlString
+{
+    NSURL *url = [NSURL URLWithString:urlString];
+    if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
+        [[UIApplication sharedApplication] openURL:url];
+    }
+}
 
 @end
 
