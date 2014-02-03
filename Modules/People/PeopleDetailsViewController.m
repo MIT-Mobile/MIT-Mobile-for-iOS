@@ -6,10 +6,10 @@
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
 #import "MITMailComposeController.h"
-#import "MobileRequestOperation.h"
+#import "MITPeopleResource.h"
 
 @interface PeopleDetailsViewController ()
-@property (nonatomic, strong) NSArray *attributeKeys;
+
 @property (nonatomic, strong) NSArray *attributes;
 
 @property (nonatomic, weak) IBOutlet UILabel * personName;
@@ -28,32 +28,25 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	[self.tableView applyStandardColors];
     self.view.backgroundColor = [UIColor mit_backgroundColor];
 
-    self.attributeKeys = @[@"email", @"phone", @"fax", @"home", @"office", @"address", @"website"];
-
-    [self mapPersonAttributes];
     [self updateTableViewHeaderView];
 	
 	// if lastUpdate is sufficiently long ago, issue a background search
 	// TODO: change this time interval to something more reasonable
 	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300) { // 5 mins for testing
-        MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"people"
-                                                                                  command:nil
-                                                                               parameters:@{@"q" : self.personDetails.name}];
-        request.completeBlock = ^(MobileRequestOperation *operation, NSArray *contactResults, NSString *contentType, NSError *error) {
+        [MITPeopleResource personWithID:self.personDetails.uid loaded:^(NSArray *objects, NSError *error) {
             if (!error) {
-                [contactResults enumerateObjectsUsingBlock:^(NSDictionary *entry, NSUInteger idx, BOOL *stop) {
-                    if ([entry[@"id"] isEqualToString:[self.personDetails valueForKey:@"uid"]]) {
-                        self.personDetails = [PeopleRecentsData updatePerson:self.personDetails withSearchResult:entry];
-                        [self updateTableViewHeaderView];
-                        [self.tableView reloadData];
-                        (*stop) = YES;
-                    }
-                }];
+                self.personDetails = [objects lastObject];
+                [self updateTableViewHeaderView];
+                [self.tableView reloadData];
             }
-        };
-        
-        [[MobileRequestOperation defaultQueue] addOperation:request];
-	}
+        }];
+    }
+}
+
+- (void) setPersonDetails:(PersonDetails *)personDetails
+{
+    _personDetails = personDetails;
+    [self mapPersonAttributes];
 }
 
 static NSString * EmailAccessoryIcon    = @"email";
@@ -84,7 +77,8 @@ static NSInteger AccessoryIconIndex     = 2;
     // The following section of code will initialize @property attributes with items structured:
     //   @[value for key, display name, accessory icon ]
     NSMutableArray *tempAttributes = [NSMutableArray array];
-    for (NSString *key in self.attributeKeys) {
+    NSArray *attributeKeys = @[@"email", @"phone", @"fax", @"home", @"office", @"address", @"website"];
+    for (NSString *key in attributeKeys) {
         id attribute = [self.personDetails valueForKey:key];
         
         NSString *attrAccessoryIcon = [self accessoryIconForKey:key];
@@ -367,12 +361,7 @@ static NSInteger AccessoryIconIndex     = 2;
 {
 	CFErrorRef error;
 	
-	ABAddressBookRef ab = ABAddressBookCreate();
-	
-	//ABPersonViewController *personController = [[ABPersonViewController alloc] init];
-	//personController.personViewDelegate = self;
-	//personController.allowsEditing = YES;
-	//personController.displayedPerson = person;
+	ABAddressBookRef ab = ABAddressBookCreateWithOptions(NULL, &error);
 
 	NSString *ldapValue = nil;
 	ABRecordRef newPerson = ABPersonCreate();
