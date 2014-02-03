@@ -8,23 +8,29 @@
 
 @property (nonatomic, copy) NSString * author;
 @property (nonatomic, copy) NSString * body;
+@property (nonatomic, copy) NSString * dek;
 @property (nonatomic, strong) NSNumber * featured;
 @property (nonatomic, copy) NSString * identifier;
 @property (nonatomic, strong) NSDate * publishedAt;
 @property (nonatomic, strong) NSNumber * read;
 @property (nonatomic, strong) NSURL * sourceURL;
-@property (nonatomic, copy) NSString * dek;
-@property (nonatomic, copy) NSString * title;
+@property (nonatomic, strong) NSString * title;
 @property (nonatomic, strong) NSNumber * topStory;
 @property (nonatomic, strong) MITNewsCategory *category;
-@property (nonatomic, copy) NSSet *images;
+@property (nonatomic, strong) MITNewsImage *coverImage;
+@property (nonatomic, copy) NSOrderedSet *galleryImages;
 @end
 
 @interface MITNewsStory (CoreDataGeneratedAccessors)
 
-- (void)addImagesObject:(MITNewsImage *)value;
-- (void)removeImagesObject:(MITNewsImage *)value;
-- (void)addImages:(NSSet *)values;
-- (void)removeImages:(NSSet *)values;
-
+- (void)insertObject:(MITNewsImage *)value inGalleryImagesAtIndex:(NSUInteger)idx;
+- (void)removeObjectFromGalleryImagesAtIndex:(NSUInteger)idx;
+- (void)insertGalleryImages:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
+- (void)removeGalleryImagesAtIndexes:(NSIndexSet *)indexes;
+- (void)replaceObjectInGalleryImagesAtIndex:(NSUInteger)idx withObject:(MITNewsImage *)value;
+- (void)replaceGalleryImagesAtIndexes:(NSIndexSet *)indexes withGalleryImages:(NSArray *)values;
+- (void)addGalleryImagesObject:(MITNewsImage *)value;
+- (void)removeGalleryImagesObject:(MITNewsImage *)value;
+- (void)addGalleryImages:(NSOrderedSet *)values;
+- (void)removeGalleryImages:(NSOrderedSet *)values;
 @end

@@ -116,7 +116,6 @@
 		2CB383361486A01600D4B168 /* LibrariesHoldingsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB383351486A01600D4B168 /* LibrariesHoldingsDetailViewController.m */; };
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */; };
-		2CBA186E17E3A45D006293DB /* NewsCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA186D17E3A45D006293DB /* NewsCategory.m */; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CC45BE7187DBA1000B5571F /* MITMobilePaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC45BE6187DBA1000B5571F /* MITMobilePaginator.m */; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
@@ -273,7 +272,6 @@
 		DE277695177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277693177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m */; };
 		DE2A45851885AF72002DE0EA /* MITNewsCategoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2A45821885AF72002DE0EA /* MITNewsCategoryCell.m */; };
 		DE2A45861885AF72002DE0EA /* MITNewsStoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2A45841885AF72002DE0EA /* MITNewsStoryCell.m */; };
-		DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4AB0B310ED5148007476D9 /* NewsStory.m */; };
 		DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DE516255147889D1002415DE /* ExplanatorySectionLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE574C3117E7B7DA001B153E /* Icon-iOS-7@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE574C3017E7B7DA001B153E /* Icon-iOS-7@2x.png */; };
 		DE5E99D31124B57C00498760 /* emergency_template.html in Resources */ = {isa = PBXBuildFile; fileRef = DE5E99D21124B57C00498760 /* emergency_template.html */; };
@@ -336,8 +334,6 @@
 		DEBF5FE514886F1A00B5719A /* LibrariesRenewResultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF5FD714886F1A00B5719A /* LibrariesRenewResultViewController.m */; };
 		DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFF07C110001E300F0573E /* StoryImageView.m */; };
 		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; };
-		DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6A110F8F71D009FAE35 /* NewsImage.m */; };
-		DECBF6B610F8F91B009FAE35 /* NewsImageRep.m in Sources */ = {isa = PBXBuildFile; fileRef = DECBF6B510F8F91B009FAE35 /* NewsImageRep.m */; };
 		DED41FD517381D180048376F /* Dining.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DED41FD317381D180048376F /* Dining.xcdatamodeld */; };
 		DED41FD8173849500048376F /* DiningData.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FD7173849500048376F /* DiningData.m */; };
 		DED41FDB173850960048376F /* HouseVenue.m in Sources */ = {isa = PBXBuildFile; fileRef = DED41FDA173850960048376F /* HouseVenue.m */; };
@@ -664,8 +660,6 @@
 		2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderModule.m; sourceTree = "<group>"; };
 		2CB90045176B5DC3006C3C3A /* MGSCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSCalloutView.h; sourceTree = "<group>"; };
 		2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSCalloutView.m; sourceTree = "<group>"; };
-		2CBA186C17E3A45D006293DB /* NewsCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsCategory.h; sourceTree = "<group>"; };
-		2CBA186D17E3A45D006293DB /* NewsCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsCategory.m; sourceTree = "<group>"; };
 		2CBD6A0216D3CE6D002B482F /* MGSMapView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MGSMapView+Private.h"; sourceTree = "<group>"; };
 		2CBDBDE515CC1F1F0092F76F /* QRReaderResult v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "QRReaderResult v2.xcdatamodel"; sourceTree = "<group>"; };
 		2CC2E9CA144DC9B000151C71 /* MITTabHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabHeaderView.h; sourceTree = "<group>"; };
@@ -1007,8 +1001,6 @@
 		DE2A45821885AF72002DE0EA /* MITNewsCategoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCategoryCell.m; sourceTree = "<group>"; };
 		DE2A45831885AF72002DE0EA /* MITNewsStoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsStoryCell.h; sourceTree = "<group>"; };
 		DE2A45841885AF72002DE0EA /* MITNewsStoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsStoryCell.m; sourceTree = "<group>"; };
-		DE4AB0B210ED5148007476D9 /* NewsStory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsStory.h; sourceTree = "<group>"; };
-		DE4AB0B310ED5148007476D9 /* NewsStory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsStory.m; sourceTree = "<group>"; };
 		DE516254147889D1002415DE /* ExplanatorySectionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExplanatorySectionLabel.h; sourceTree = "<group>"; };
 		DE516255147889D1002415DE /* ExplanatorySectionLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExplanatorySectionLabel.m; sourceTree = "<group>"; };
 		DE574C3017E7B7DA001B153E /* Icon-iOS-7@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-iOS-7@2x.png"; sourceTree = "<group>"; };
@@ -1125,10 +1117,6 @@
 		DEBF5FD714886F1A00B5719A /* LibrariesRenewResultViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesRenewResultViewController.m; sourceTree = "<group>"; };
 		DEC02F9B110578240054BE32 /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
 		DEC02F9C110578240054BE32 /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
-		DECBF6A010F8F71D009FAE35 /* NewsImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsImage.h; sourceTree = "<group>"; };
-		DECBF6A110F8F71D009FAE35 /* NewsImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsImage.m; sourceTree = "<group>"; };
-		DECBF6B410F8F91B009FAE35 /* NewsImageRep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsImageRep.h; sourceTree = "<group>"; };
-		DECBF6B510F8F91B009FAE35 /* NewsImageRep.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsImageRep.m; sourceTree = "<group>"; };
 		DED41FD417381D180048376F /* Dining.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Dining.xcdatamodel; sourceTree = "<group>"; };
 		DED41FD6173849500048376F /* DiningData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiningData.h; path = Dining/Model/DiningData.h; sourceTree = "<group>"; };
 		DED41FD7173849500048376F /* DiningData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiningData.m; path = Dining/Model/DiningData.m; sourceTree = "<group>"; };
@@ -1758,21 +1746,6 @@
 			);
 			name = GDataXML;
 			path = External/GDataXML;
-			sourceTree = "<group>";
-		};
-		2C7EEB031871E921009ED73D /* Entities (v2) */ = {
-			isa = PBXGroup;
-			children = (
-				2CBA186C17E3A45D006293DB /* NewsCategory.h */,
-				2CBA186D17E3A45D006293DB /* NewsCategory.m */,
-				DECBF6A010F8F71D009FAE35 /* NewsImage.h */,
-				DECBF6A110F8F71D009FAE35 /* NewsImage.m */,
-				DECBF6B410F8F91B009FAE35 /* NewsImageRep.h */,
-				DECBF6B510F8F91B009FAE35 /* NewsImageRep.m */,
-				DE4AB0B210ED5148007476D9 /* NewsStory.h */,
-				DE4AB0B310ED5148007476D9 /* NewsStory.m */,
-			);
-			name = "Entities (v2)";
 			sourceTree = "<group>";
 		};
 		2C920D5F1896C35C00A60BA6 /* Table View Cell XIBs */ = {
@@ -2479,7 +2452,6 @@
 			children = (
 				DE18F9ED10F19105009A69B9 /* News.xcdatamodeld */,
 				2C698F4B18650BDD0010B0C0 /* Entities (v3) */,
-				2C7EEB031871E921009ED73D /* Entities (v2) */,
 				2CF61DC818898C7E00D43381 /* MITNewsModelController.h */,
 				2CF61DC918898C7E00D43381 /* MITNewsModelController.m */,
 			);
@@ -3230,7 +3202,6 @@
 				EB4C2525127A0E8F00058748 /* MITThumbnailView.m in Sources */,
 				2CF61DCA18898C7E00D43381 /* MITNewsModelController.m in Sources */,
 				2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */,
-				2CBA186E17E3A45D006293DB /* NewsCategory.m in Sources */,
 				44C1A4C511A412E2000FD653 /* MITMapSearch.m in Sources */,
 				4B9A4EA41355E24900E37876 /* MorseCodePattern.m in Sources */,
 				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
@@ -3239,10 +3210,7 @@
 				BD1E930A103B5D60004429AA /* NSString+SBJSON.m in Sources */,
 				EB07B06812B89440005D6A4C /* NavScrollerView.m in Sources */,
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
-				DECBF6A210F8F71D009FAE35 /* NewsImage.m in Sources */,
-				DECBF6B610F8F91B009FAE35 /* NewsImageRep.m in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
-				DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */,
 				4BB9C554134BA78200B7F135 /* OpenHouseTableView.m in Sources */,
 				EB6F2B6D10E9026200A29A2A /* PeopleDetailsTableViewCell.m in Sources */,
 				EB7F328310CD6C5B00188BCD /* PeopleDetailsViewController.m in Sources */,

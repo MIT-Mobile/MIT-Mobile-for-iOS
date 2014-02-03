@@ -7,15 +7,17 @@
 
 @dynamic author;
 @dynamic body;
+@dynamic dek;
 @dynamic featured;
 @dynamic identifier;
 @dynamic publishedAt;
 @dynamic read;
 @dynamic sourceURL;
-@dynamic dek;
 @dynamic title;
 @dynamic topStory;
 @dynamic category;
-@dynamic images;
+@dynamic coverImage;
+@dynamic galleryImages;
+
 
 @end

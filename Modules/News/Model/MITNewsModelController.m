@@ -7,6 +7,11 @@
 #import "MITNewsStory.h"
 #import "MITNewsCategory.h"
 
+#import "MITResultsPager.h"
+
+@interface MITNewsModelController ()
+- (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString featured:(BOOL)featured offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, MITResultsPager* pager, NSError *error))block;
+@end
 @implementation MITNewsModelController
 + (instancetype)sharedController
 {
@@ -38,46 +43,72 @@
                                                 }];
 }
 
-- (MITMobileResultsPaginator*)storiesInCategory:(MITNewsCategory*)category batchSize:(NSUInteger)numberOfStories completion:(void (^)(NSArray *stories, NSError *error))block
+- (void)featuredStoriesWithOffset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, MITResultsPager* pager, NSError *error))completion
 {
-    void (^localBlock)(NSArray *stories, NSError *error) = nil;
-    if (!block) {
-        localBlock = ^(NSArray *stories, NSError *error) {
-            if (error) {
-                DDLogWarn(@"failed to updates 'stories': %@", error);
-            }
-        };
-    } else {
-        localBlock = ^(NSArray *stories, NSError *error) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (!error) {
-                    NSManagedObjectContext *mainContext = [[MITCoreDataController defaultController] mainQueueContext];
-                    NSArray *mainQueueStories = [mainContext transferManagedObjects:stories];
-                    block(mainQueueStories,nil);
-                } else {
-                    block(nil,error);
-                }
-            }];
-        };
+    [self storiesInCategory:nil
+                      query:nil
+                   featured:YES
+                     offset:offset
+                      limit:limit
+                 completion:completion];
+}
+
+- (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray* stories, MITResultsPager* pager, NSError* error))completion
+{
+    [self storiesInCategory:categoryID
+                      query:queryString
+                   featured:NO
+                     offset:offset
+                      limit:limit
+                 completion:completion];
+}
+
+- (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString featured:(BOOL)featured offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, MITResultsPager* pager, NSError *error))block
+{
+    NSMutableDictionary* parameters = [[NSMutableDictionary alloc] init];
+
+    if (queryString) {
+        parameters[@"q"] = queryString;
     }
-    
-    [[MITMobile defaultManager] getObjectsForURL:category.url
-                                      completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                          if (!error) {
-                                              [[MITCoreDataController defaultController] performBackgroundUpdate:^(NSManagedObjectContext *context, NSError **error) {
-                                                  NSArray *stories = [context transferManagedObjects:[result array]];
-                                                  MITNewsCategory *blockCategory = (MITNewsCategory*)[context objectWithID:[category objectID]];
-                                                  
-                                                  [blockCategory addStories:[NSSet setWithArray:stories]];
-                                              } completion:^(NSError *error) {
-                                                  localBlock([result array],error);
-                                              }];
-                                          } else {
-                                              localBlock(nil,error);
-                                          }
-                                      }];
-    
-    return nil;
+
+    if (categoryID) {
+        parameters[@"category"] = categoryID;
+    }
+
+    if (featured) {
+        parameters[@"featured"] = @YES;
+    }
+
+    if (offset) {
+        parameters[@"offset"] = @(offset);
+    }
+
+    if (limit) {
+        parameters[@"limit"] = @(limit);
+    }
+
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITNewsStoriesResourceName
+                                                parameters:parameters
+                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    if (!error) {
+                                                        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                                            if (!error) {
+                                                                NSManagedObjectContext *mainContext = [[MITCoreDataController defaultController] mainQueueContext];
+                                                                NSArray *mainQueueStories = [mainContext transferManagedObjects:[result array]];
+                                                                MITResultsPager *pager = [MITResultsPager resultsPagerWithResponse:response];
+                                                                block(mainQueueStories,pager,nil);
+                                                            } else {
+                                                                block(nil,nil,error);
+                                                            }
+                                                        }];
+                                                    } else {
+                                                        DDLogWarn(@"failed to updates 'stories': %@", error);
+                                                        
+                                                        if (block) {
+                                                            block(nil,nil,error);
+                                                        }
+                                                    }
+                                                }];
 }
 
 @end

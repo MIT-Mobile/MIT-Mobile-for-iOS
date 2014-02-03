@@ -5,9 +5,10 @@
 
 @implementation MITNewsImage
 
-@dynamic credits;
 @dynamic caption;
-@dynamic primary;
+@dynamic credits;
+@dynamic descriptionText;
 @dynamic representations;
-@dynamic story;
+@dynamic gallery;
+@dynamic cover;
 @end

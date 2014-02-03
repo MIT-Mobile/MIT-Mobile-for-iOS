@@ -2,12 +2,13 @@
 
 @class MITNewsStory;
 @class MITNewsCategory;
-@class MITMobileResultsPaginator;
+@class MITResultsPager;
 
 @interface MITNewsModelController : NSObject
 + (instancetype)sharedController;
 
 - (void)categories:(void (^)(NSArray *categories, NSError *error))block;
-- (MITMobileResultsPaginator*)storiesInCategory:(MITNewsCategory*)category batchSize:(NSUInteger)numberOfStories completion:(void (^)(NSArray *stories, NSError *error))block;
+- (void)featuredStoriesWithOffset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, MITResultsPager* pager, NSError *error))completion;
+- (void)storiesInCategory:(NSString*)categoryID query:(NSString*)queryString offset:(NSInteger)offset limit:(NSInteger)limit completion:(void (^)(NSArray *stories, MITResultsPager* pager, NSError *error))block;
 
 @end

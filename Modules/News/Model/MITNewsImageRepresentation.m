@@ -7,6 +7,5 @@
 @dynamic height;
 @dynamic width;
 @dynamic url;
-@dynamic name;
 @dynamic image;
 @end
