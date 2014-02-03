@@ -67,17 +67,6 @@
 	[personDetails setValue:uid forKey:@"uid"];
 	[personDetails setValue:[NSDate date] forKey:@"lastUpdate"];
 	
-	NSArray *fetchTags = @[@"givenname", @"surname", @"title", @"dept", @"email", @"phone", @"fax", @"office"];
-
-	for (NSString *key in fetchTags) {
-		if (searchResult[key]) {
-			// if someone has multiple emails/phones join them into a string
-			// we need to figure out which fields return multiple values
-			[personDetails setValue:[searchResult[key] componentsJoinedByString:@","]
-                             forKey:key];
-		}
-	}
-	
 	// put latest person on top; remove if the person is already there
 	NSMutableArray *updatedRecents = [[self sharedData].recents mutableCopy];
 
