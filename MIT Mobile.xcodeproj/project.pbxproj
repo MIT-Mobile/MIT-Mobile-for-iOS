@@ -264,7 +264,6 @@
 		DE2A45861885AF72002DE0EA /* StoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2A45841885AF72002DE0EA /* StoryCell.m */; };
 		DE4AB0B410ED5148007476D9 /* NewsStory.m in Sources */ = {isa = PBXBuildFile; fileRef = DE4AB0B310ED5148007476D9 /* NewsStory.m */; };
 		DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DE516255147889D1002415DE /* ExplanatorySectionLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		DE574C3117E7B7DA001B153E /* Icon-iOS-7@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE574C3017E7B7DA001B153E /* Icon-iOS-7@2x.png */; };
 		DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DE5BE3EB188BA796008A135E /* Images.xcassets */; };
 		DE5E99D31124B57C00498760 /* emergency_template.html in Resources */ = {isa = PBXBuildFile; fileRef = DE5E99D21124B57C00498760 /* emergency_template.html */; };
 		DE65451B173D90A900562C20 /* MKAnnotationView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = DE654507173D90A900562C20 /* MKAnnotationView+WebCache.m */; };
@@ -296,12 +295,7 @@
 		DE7720E010C57E1C00620A7D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE7720DF10C57E1C00620A7D /* QuartzCore.framework */; };
 		DE81CF6210C6BC390085573D /* NewsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE81CF6110C6BC390085573D /* NewsModule.m */; };
 		DE821E8110EAB4F500B4C4C8 /* UIKit+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */; };
-		DE936CA0161CD1FB00B69F7C /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936C9F161CD1FB00B69F7C /* Icon.png */; };
-		DE936CA2161CD1FF00B69F7C /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA1161CD1FF00B69F7C /* Icon@2x.png */; };
-		DE936CA4161CD28100B69F7C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA3161CD28100B69F7C /* Default.png */; };
-		DE936CA6161CD28300B69F7C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE936CA5161CD28300B69F7C /* Default@2x.png */; };
 		DE94998317450C800066F6CF /* RetailDay.m in Sources */ = {isa = PBXBuildFile; fileRef = DE94998217450C800066F6CF /* RetailDay.m */; };
-		DE952E6816295EBA007E7356 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DE952E6716295EBA007E7356 /* Default-568h@2x.png */; };
 		DE98C6651741B8E500319AA3 /* RetailVenue.m in Sources */ = {isa = PBXBuildFile; fileRef = DE98C6641741B8E500319AA3 /* RetailVenue.m */; };
 		DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */; };
 		DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B48C10C9BB7300BDA774 /* AboutModule.m */; };
@@ -984,7 +978,6 @@
 		DE4AB0B310ED5148007476D9 /* NewsStory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsStory.m; sourceTree = "<group>"; };
 		DE516254147889D1002415DE /* ExplanatorySectionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExplanatorySectionLabel.h; sourceTree = "<group>"; };
 		DE516255147889D1002415DE /* ExplanatorySectionLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExplanatorySectionLabel.m; sourceTree = "<group>"; };
-		DE574C3017E7B7DA001B153E /* Icon-iOS-7@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-iOS-7@2x.png"; sourceTree = "<group>"; };
 		DE5BE3EB188BA796008A135E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "MIT Mobile/Images.xcassets"; sourceTree = "<group>"; };
 		DE5E99D21124B57C00498760 /* emergency_template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = emergency_template.html; path = Resources/emergency_template.html; sourceTree = "<group>"; };
 		DE654506173D90A900562C20 /* MKAnnotationView+WebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKAnnotationView+WebCache.h"; sourceTree = "<group>"; };
@@ -1044,13 +1037,8 @@
 		DE81CF6110C6BC390085573D /* NewsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsModule.m; sourceTree = "<group>"; };
 		DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIKit+MITAdditions.h"; sourceTree = "<group>"; };
 		DE821E8010EAB4F500B4C4C8 /* UIKit+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIKit+MITAdditions.m"; sourceTree = "<group>"; };
-		DE936C9F161CD1FB00B69F7C /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
-		DE936CA1161CD1FF00B69F7C /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
-		DE936CA3161CD28100B69F7C /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		DE936CA5161CD28300B69F7C /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		DE94998117450C800066F6CF /* RetailDay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetailDay.h; path = Dining/Model/RetailDay.h; sourceTree = "<group>"; };
 		DE94998217450C800066F6CF /* RetailDay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RetailDay.m; path = Dining/Model/RetailDay.m; sourceTree = "<group>"; };
-		DE952E6716295EBA007E7356 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		DE98C6631741B8E500319AA3 /* RetailVenue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetailVenue.h; path = Dining/Model/RetailVenue.h; sourceTree = "<group>"; };
 		DE98C6641741B8E500319AA3 /* RetailVenue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RetailVenue.m; path = Dining/Model/RetailVenue.m; sourceTree = "<group>"; };
 		DE9EFBD010FE7D8900F5F07E /* SettingsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsModule.h; path = Settings/SettingsModule.h; sourceTree = "<group>"; };
@@ -1399,12 +1387,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				DE952E6716295EBA007E7356 /* Default-568h@2x.png */,
-				DE936CA5161CD28300B69F7C /* Default@2x.png */,
-				DE936CA3161CD28100B69F7C /* Default.png */,
-				DE574C3017E7B7DA001B153E /* Icon-iOS-7@2x.png */,
-				DE936CA1161CD1FF00B69F7C /* Icon@2x.png */,
-				DE936C9F161CD1FB00B69F7C /* Icon.png */,
 				DE5BE3EB188BA796008A135E /* Images.xcassets */,
 				48EDC97317175C3100376BCF /* dining */,
 				2CD12D4E1360584F00A73ACA /* facilities */,
@@ -2995,13 +2977,7 @@
 				4B83723E157E5B5C004CBC49 /* zbar-helpicons.png in Resources */,
 				4B83723F157E5B5C004CBC49 /* zbar-samples.png in Resources */,
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
-				DE936CA0161CD1FB00B69F7C /* Icon.png in Resources */,
-				DE936CA2161CD1FF00B69F7C /* Icon@2x.png in Resources */,
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
-				DE936CA4161CD28100B69F7C /* Default.png in Resources */,
-				DE936CA6161CD28300B69F7C /* Default@2x.png in Resources */,
-				DE952E6816295EBA007E7356 /* Default-568h@2x.png in Resources */,
-				DE574C3117E7B7DA001B153E /* Icon-iOS-7@2x.png in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
 				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
