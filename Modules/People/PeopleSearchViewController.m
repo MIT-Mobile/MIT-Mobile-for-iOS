@@ -55,56 +55,21 @@
 	[super viewDidLoad];
     
     self.view.backgroundColor = [UIColor mit_backgroundColor];
-    
-//    [MITPersonResource personWithID:@"atreat" loaded:^(NSArray *objects, NSError *error) {
-//        PersonDetails *test = [objects lastObject];
-//    }];
-
-    // set up search controller
-    self.searchController.searchBar = self.searchBar;
-	self.searchController.delegate = self;
 
     UITableView *searchTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
 	searchTableView.backgroundColor = [UIColor mit_backgroundColor];
-    
-    self.searchController.searchResultsTableView = searchTableView;
-    self.searchController.searchResultsDelegate = self;
-    self.searchController.searchResultsDataSource = self;
     self.searchResultsTableView = searchTableView;
 
-//	
-//	// set up table footer
-//    {
-//        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-//        [button setFrame:CGRectMake(10.0, 0.0, tableView.frame.size.width - 20.0, 44.0)];
-//        button.titleLabel.font = [UIFont boldSystemFontOfSize:20.0];
-//        button.titleLabel.shadowOffset = CGSizeMake(0.0, -1.0);
-//        button.titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.3];
-//        [button setTitle:@"Clear Recents" forState:UIControlStateNormal];
-//        
-//        // based on code from stackoverflow.com/questions/1427818/iphone-sdk-creating-a-big-red-uibutton
-//        [button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
-//                          forState:UIControlStateNormal];
-//        [button setBackgroundImage:[[UIImage imageNamed:@"people/redbutton2highlighted.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0] 
-//                          forState:UIControlStateHighlighted];
-//        
-//        [button addTarget:self action:@selector(showActionSheet) forControlEvents:UIControlEventTouchUpInside];	
-//        
-//        UIView *buttonContainer = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 44.0)];
-//        [buttonContainer addSubview:button];
-//        tableView.tableFooterView = buttonContainer;
-//    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
-    if (![self.searchController isActive]) {
+    if (![self.searchDisplayController isActive]) {
         [self.tableView reloadData];
     } else {
         [self.searchResultsTableView deselectRowAtIndexPath:[self.searchResultsTableView indexPathForSelectedRow] animated:YES];
     }
-//    self.tableView.tableFooterView.hidden = ([[[PeopleRecentsData sharedData] recents] count] == 0);
 }
 
 #pragma mark -
@@ -113,7 +78,7 @@
 - (void) searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     if ([self.searchResults count]) {
-        self.searchController.searchResultsTableView.hidden = NO;
+        self.searchDisplayController.searchResultsTableView.hidden = NO;
     }
 }
 
@@ -137,8 +102,8 @@
 	self.searchResults = nil;
     self.searchCancelled = YES;
     [self.searchBar resignFirstResponder];
-    [self.searchController setActive:NO];
-    self.searchController.searchResultsTableView.hidden = YES;
+    [self.searchDisplayController setActive:NO];
+    self.searchDisplayController.searchResultsTableView.hidden = YES;
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -162,17 +127,11 @@
         if (_searchCancelled) {
             return;
         }
-        
+
         [self.loadingView removeFromSuperview];
         if (!error) {
             self.searchResults = objects;
-            
-            self.searchController.searchResultsTableView.frame = CGRectMake(0.0,
-                                                                            CGRectGetMaxY(self.searchBar.frame),
-                                                                            self.searchBar.frame.size.width,
-                                                                            self.view.frame.size.height - CGRectGetMaxY(self.navigationController.navigationBar.frame) - CGRectGetMaxY(self.searchBar.frame));
-            [self.tableView addSubview:self.searchController.searchResultsTableView];
-            [self.searchController.searchResultsTableView reloadData];
+            [self.searchDisplayController.searchResultsTableView reloadData];
         }
     }];
     self.searchResultsTableView.hidden = NO;
@@ -184,7 +143,7 @@
 #pragma mark Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	if (tableView == self.searchController.searchResultsTableView)
+	if (tableView == self.searchDisplayController.searchResultsTableView)
 		return 1;
 	else if ([[[PeopleRecentsData sharedData] recents] count] > 0)
 		return 2;
@@ -195,8 +154,8 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	if (tableView == self.tableView) {
 		switch (section) {
-			case 0: // phone directory & emergency contacts
-				return 2;
+			case 0: // sample cell, phone directory, & emergency contacts
+				return 3;
 				break;
 			case 1: // recently viewed
 				return [[[PeopleRecentsData sharedData] recents] count];
@@ -223,9 +182,11 @@
 			
             UITableViewCell *cell;
             if (indexPath.row == 0) {
+                cell = [tableView dequeueReusableCellWithIdentifier:@"SampleCell" forIndexPath:indexPath];
+            } else if (indexPath.row == 1) {
                 cell = [tableView dequeueReusableCellWithIdentifier:directoryAssistanceID forIndexPath:indexPath];
                 cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
-            } else {
+            } else if (indexPath.row == 2) {
                 cell = [tableView dequeueReusableCellWithIdentifier:@"EmergencyContactsCell" forIndexPath:indexPath];
 //                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmergency];
             }
@@ -290,6 +251,9 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	if (tableView == self.tableView && indexPath.section == 0) {
+        if (indexPath.row == 0) {
+            return 88.0;
+        }
 		return 44.0;
 	} else {
 		return CELL_TWO_LINE_HEIGHT;
@@ -299,7 +263,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
 	if (section == 1) {
 		return GROUPED_SECTION_HEADER_HEIGHT;
-	} else if (tableView == self.searchController.searchResultsTableView && [self.searchResults count] > 0) {
+	} else if (tableView == self.searchDisplayController.searchResultsTableView && [self.searchResults count] > 0) {
 		return UNGROUPED_SECTION_HEADER_HEIGHT;
 	} else {
 		return 0.0;
@@ -309,7 +273,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	if (section == 1) {
 		return [UITableView groupedSectionHeaderWithTitle:@"Recently Viewed"];
-	} else if (tableView == self.searchController.searchResultsTableView) {
+	} else if (tableView == self.searchDisplayController.searchResultsTableView) {
 		NSUInteger numResults = [self.searchResults count];
 		switch (numResults) {
 			case 0:
@@ -327,12 +291,12 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (tableView == self.searchController.searchResultsTableView) { // user selected search result
+	if (tableView == self.searchDisplayController.searchResultsTableView) { // user selected search result
 		PersonDetails *personDetails = nil;
         
 		UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
         PeopleDetailsViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"PeopleDetailsVC"];
-		if (tableView == self.searchController.searchResultsTableView) {
+		if (tableView == self.searchDisplayController.searchResultsTableView) {
 			personDetails = self.searchResults[indexPath.row];
 		} else {
 			personDetails = [[PeopleRecentsData sharedData] recents][indexPath.row];

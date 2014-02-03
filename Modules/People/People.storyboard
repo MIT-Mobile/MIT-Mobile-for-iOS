@@ -13,42 +13,46 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <view key="tableHeaderView" contentMode="scaleToFill" id="fi9-lC-e4s" userLabel="Header View">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="125"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <subviews>
-                                <searchBar contentMode="redraw" text="" placeholder="Search MIT Directory" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zKw-FW-jkh">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                    <textInputTraits key="textInputTraits"/>
-                                    <connections>
-                                        <outlet property="delegate" destination="pGg-6v-bdr" id="PPV-op-D56"/>
-                                    </connections>
-                                </searchBar>
-                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="232" translatesAutoresizingMaskIntoConstraints="NO" id="ZtI-kg-Enf">
-                                    <rect key="frame" x="44" y="52" width="232" height="63"/>
+                        <searchBar key="tableHeaderView" contentMode="redraw" showsCancelButton="YES" id="E5U-BI-S0w">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no"/>
+                            <connections>
+                                <outlet property="delegate" destination="pGg-6v-bdr" id="ZAt-6Y-J6i"/>
+                            </connections>
+                        </searchBar>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SampleCell" rowHeight="86" id="gig-oa-c2E">
+                                <rect key="frame" x="0.0" y="99" width="320" height="86"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gig-oa-c2E" id="A6c-YO-uQf">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="85"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <string key="text">Sample searches:
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="290" translatesAutoresizingMaskIntoConstraints="NO" id="rVQ-sE-ffC">
+                                            <rect key="frame" x="15" y="11" width="290" height="63"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <string key="text">Sample searches:
 Name: 'william barton rogers', 'rogers'
 Email: 'wbrogers', 'wbrogers@mit.edu'
 Phone: '6172531000', '31000'</string>
-                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                    <nil key="highlightedColor"/>
-                                    <string key="userLabel">Label - Sample searches: Name: 'william barton rogers', 'rogers' Email: 'wbrogers', 'wbrogers@mit.edu' Phone: '6172531000', '31000'</string>
-                                </label>
-                            </subviews>
-                            <constraints>
-                                <constraint firstItem="ZtI-kg-Enf" firstAttribute="top" secondItem="zKw-FW-jkh" secondAttribute="bottom" constant="8" id="61x-A3-7M4"/>
-                                <constraint firstItem="zKw-FW-jkh" firstAttribute="top" secondItem="fi9-lC-e4s" secondAttribute="top" id="CKi-Pk-e8o"/>
-                                <constraint firstAttribute="trailing" secondItem="zKw-FW-jkh" secondAttribute="trailing" id="TEC-Eq-0RI"/>
-                                <constraint firstItem="zKw-FW-jkh" firstAttribute="leading" secondItem="fi9-lC-e4s" secondAttribute="leading" id="WK2-oO-Juf"/>
-                                <constraint firstAttribute="centerX" secondItem="ZtI-kg-Enf" secondAttribute="centerX" id="i1P-Of-HNh"/>
-                            </constraints>
-                        </view>
-                        <prototypes>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="rVQ-sE-ffC" firstAttribute="leading" secondItem="A6c-YO-uQf" secondAttribute="leading" constant="15" id="8sg-Wh-fKB"/>
+                                        <constraint firstItem="rVQ-sE-ffC" firstAttribute="top" secondItem="A6c-YO-uQf" secondAttribute="top" constant="11" id="QJi-kq-S8N"/>
+                                        <constraint firstAttribute="bottom" secondItem="rVQ-sE-ffC" secondAttribute="bottom" constant="11" id="Uco-wh-vo8"/>
+                                        <constraint firstAttribute="trailing" secondItem="rVQ-sE-ffC" secondAttribute="trailing" constant="15" id="bRm-Vd-WtD"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <inset key="separatorInset" minX="1000" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DirectoryAssistanceCell" textLabel="RU6-Ab-k8C" detailTextLabel="8iw-KK-eih" rowHeight="60" style="IBUITableViewCellStyleSubtitle" id="l7x-QT-jz0">
-                                <rect key="frame" x="0.0" y="180" width="320" height="60"/>
+                                <rect key="frame" x="0.0" y="185" width="320" height="60"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="l7x-QT-jz0" id="S3v-FZ-HMp">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="59"/>
@@ -73,7 +77,7 @@ Phone: '6172531000', '31000'</string>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="EmergencyContactsCell" textLabel="vLF-Ce-mMo" rowHeight="44" style="IBUITableViewCellStyleDefault" id="Cbr-nf-08K">
-                                <rect key="frame" x="0.0" y="240" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="245" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Cbr-nf-08K" id="PXw-7j-ak4">
                                     <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
@@ -94,7 +98,7 @@ Phone: '6172531000', '31000'</string>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RecentCell" textLabel="Gj7-2R-eYQ" detailTextLabel="QTM-L6-epc" rowHeight="60" style="IBUITableViewCellStyleSubtitle" id="ql5-at-axz">
-                                <rect key="frame" x="0.0" y="284" width="320" height="60"/>
+                                <rect key="frame" x="0.0" y="289" width="320" height="60"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ql5-at-axz" id="TbU-RR-s1d">
                                     <rect key="frame" x="0.0" y="0.0" width="287" height="59"/>
@@ -130,12 +134,20 @@ Phone: '6172531000', '31000'</string>
                     </tableView>
                     <navigationItem key="navigationItem" title="People" id="tQt-TN-PWz"/>
                     <connections>
-                        <outlet property="searchBar" destination="zKw-FW-jkh" id="0gU-iN-QPF"/>
-                        <outlet property="searchController" destination="tsg-wc-FmT" id="8Ws-vi-BBm"/>
+                        <outlet property="searchBar" destination="E5U-BI-S0w" id="txm-r5-5yK"/>
+                        <outlet property="searchDisplayController" destination="uPD-xl-cEX" id="xbh-SD-04A"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Cn-md-YlS" sceneMemberID="firstResponder"/>
-                <customObject id="tsg-wc-FmT" customClass="MITSearchDisplayController"/>
+                <searchDisplayController id="uPD-xl-cEX">
+                    <connections>
+                        <outlet property="delegate" destination="pGg-6v-bdr" id="CAb-Zn-M2G"/>
+                        <outlet property="searchBar" destination="E5U-BI-S0w" id="fSx-n3-izb"/>
+                        <outlet property="searchContentsController" destination="pGg-6v-bdr" id="4we-Tj-wxu"/>
+                        <outlet property="searchResultsDataSource" destination="pGg-6v-bdr" id="GoT-9P-HbE"/>
+                        <outlet property="searchResultsDelegate" destination="pGg-6v-bdr" id="n6x-gT-Cl0"/>
+                    </connections>
+                </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="459" y="64"/>
         </scene>

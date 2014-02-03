@@ -1,5 +1,4 @@
 #import "PeopleDetailsViewController.h"
-#import "PeopleDetailsTableViewCell.h"
 #import "ConnectionDetector.h"
 #import "PeopleRecentsData.h"
 #import "MIT_MobileAppDelegate.h"
@@ -8,8 +7,6 @@
 #import "Foundation+MITAdditions.h"
 #import "MITMailComposeController.h"
 #import "MobileRequestOperation.h"
-
-#import "PeopleDetailsHeaderView.h"
 
 @interface PeopleDetailsViewController ()
 @property (nonatomic, strong) NSArray *attributeKeys;
