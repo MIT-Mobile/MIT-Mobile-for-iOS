@@ -778,6 +778,7 @@
 		442C1CA210F4FE8900CB44EC /* ShuttleLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuttleLocation.m; sourceTree = "<group>"; };
 		4431A16598A7CF09AC6AC61A /* MITAnnotationAdaptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITAnnotationAdaptor.m; sourceTree = "<group>"; };
 		4431A384646993384D06783E /* MITAnnotationAdaptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITAnnotationAdaptor.h; sourceTree = "<group>"; };
+		4431ACD52C16E08AB479048D /* MITMappedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMappedObject.h; sourceTree = "<group>"; };
 		4463CC7910D6F4A50048CA83 /* CampusMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CampusMapViewController.h; sourceTree = "<group>"; };
 		4463CC7A10D6F4A50048CA83 /* CampusMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CampusMapViewController.m; sourceTree = "<group>"; };
 		4463CC8710D6F4A50048CA83 /* CMModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMModule.h; sourceTree = "<group>"; };
@@ -1923,6 +1924,7 @@
 				2CFAE1E81861F9BE00A0970C /* MITMobileResources.h */,
 				2C7EEB001871C811009ED73D /* MITMobileRouteConstants.h */,
 				2C7EEB011871C811009ED73D /* MITMobileRouteConstants.m */,
+				4431ACD52C16E08AB479048D /* MITMappedObject.h */,
 			);
 			name = Utility;
 			sourceTree = "<group>";

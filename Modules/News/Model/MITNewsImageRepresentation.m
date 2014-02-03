@@ -8,4 +8,14 @@
 @dynamic width;
 @dynamic url;
 @dynamic image;
+
++ (RKObjectMapping*)objectMapping
+{
+    RKEntityMapping *imageRepresentationMapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
+    imageRepresentationMapping.identificationAttributes = @[@"url"] ;
+    [imageRepresentationMapping addAttributeMappingsFromDictionary:@{@"url" : @"url",
+                                                                     @"width" : @"width",
+                                                                     @"height" : @"height"}];
+    return imageRepresentationMapping;
+}
 @end

@@ -1,10 +1,11 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "MITManagedObject.h"
+#import "MITMappedObject.h"
 
 @class MITNewsStory;
 
-@interface MITNewsCategory : MITManagedObject
+@interface MITNewsCategory : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, strong) NSString * identifier;
 @property (nonatomic, copy) NSString * name;

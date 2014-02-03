@@ -10,4 +10,15 @@
 @dynamic url;
 @dynamic stories;
 
++ (RKObjectMapping*)objectMapping
+{
+    RKEntityMapping *categoryMapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
+    categoryMapping.identificationAttributes = @[@"identifier"];
+    [categoryMapping addAttributeMappingsFromDictionary:@{@"id" : @"identifier",
+                                                          @"url" : @"url",
+                                                          @"name" : @"name"}];
+
+    return categoryMapping;
+}
+
 @end

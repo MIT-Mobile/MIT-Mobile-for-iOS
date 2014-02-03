@@ -1,10 +1,11 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "MITManagedObject.h"
+#import "MITMappedObject.h"
 
 @class MITNewsImageRepresentation, MITNewsStory;
 
-@interface MITNewsImage : MITManagedObject
+@interface MITNewsImage : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, copy) NSString * credits;
 @property (nonatomic, copy) NSString * caption;
