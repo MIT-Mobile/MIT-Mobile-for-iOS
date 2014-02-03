@@ -327,7 +327,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (tableView == self.searchController.searchResultsTableView || indexPath.section == 1) { // user selected search result or recently viewed
+	if (tableView == self.searchController.searchResultsTableView) { // user selected search result
 		PersonDetails *personDetails = nil;
         
 		UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"People" bundle:nil];
@@ -356,6 +356,17 @@
         [self.view addSubview:loadingView];
         self.loadingView = loadingView;
 	}
+}
+
+#pragma mark - Storyboard Segues
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"showPerson"]) {
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+        PersonDetails *personDetails = [[PeopleRecentsData sharedData] recents][indexPath.row];
+        PeopleDetailsViewController *vc = (PeopleDetailsViewController *)segue.destinationViewController;
+        vc.personDetails = personDetails;
+    }
 }
 
 #pragma mark -
