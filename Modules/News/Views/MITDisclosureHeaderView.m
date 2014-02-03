@@ -47,6 +47,8 @@
 
 - (void)prepareForReuse
 {
+    [super prepareForReuse];
+    
     self.textLabel.text = @"";
     self.textLabel.hidden = NO;
 
