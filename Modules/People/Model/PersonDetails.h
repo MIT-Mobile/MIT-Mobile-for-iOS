@@ -28,7 +28,6 @@
 @property (nonatomic,copy) NSArray  *website;
 @property (nonatomic,copy) NSDate   *lastUpdate;
 
-+ (PersonDetails *)retrieveOrCreate:(NSDictionary *)selectedResult;
 - (NSString *)address;
 
 @end

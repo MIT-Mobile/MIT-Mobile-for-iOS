@@ -53,13 +53,13 @@
     [self sharedData].recents = [[NSArray alloc] init];
 }
 
-+ (PersonDetails *)updatePerson:(PersonDetails *)personDetails withSearchResult:(NSDictionary *)searchResult
++ (PersonDetails *)updatePerson:(PersonDetails *)personDetails
 {
 	// the "id" field we receive from mobi is either the unix uid (more
 	// common) or something derived from another field (ldap "dn"), the
 	// former has an 8 char limit but until proven otherwise let's assume
 	// we can truncate the latter to 8 chars without sacrificing uniqueness
-	NSString *uid = searchResult[@"id"];
+	NSString *uid = personDetails.uid;
 	if ([uid length] > 8) {
 		uid = [uid substringToIndex:8];
     }
@@ -83,16 +83,6 @@
 
     [self sharedData].recents = updatedRecents;
 
-	return personDetails;
-}
-
-
-+ (PersonDetails *)createFromSearchResult:(NSDictionary *)searchResult 
-{
-	PersonDetails *personDetails = (PersonDetails *)[CoreDataManager insertNewObjectForEntityForName:PersonDetailsEntityName];
-	
-	[self updatePerson:personDetails withSearchResult:searchResult];
-	
 	return personDetails;
 }
 

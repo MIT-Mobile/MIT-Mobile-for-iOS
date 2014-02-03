@@ -230,7 +230,6 @@ Phone: '6172531000', '31000'</string>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             <constraints>
-                                <constraint firstItem="nl5-pf-Fri" firstAttribute="centerY" secondItem="U1x-Zh-WlB" secondAttribute="centerY" constant="4" id="6V5-g2-DhI"/>
                                 <constraint firstItem="bbU-A2-CDr" firstAttribute="top" secondItem="U1x-Zh-WlB" secondAttribute="top" constant="15" id="71p-6r-vCE"/>
                                 <constraint firstItem="nl5-pf-Fri" firstAttribute="top" secondItem="bbU-A2-CDr" secondAttribute="bottom" constant="2" id="C39-AB-vXd"/>
                                 <constraint firstItem="nl5-pf-Fri" firstAttribute="width" secondItem="bbU-A2-CDr" secondAttribute="width" id="KDQ-co-K5f"/>

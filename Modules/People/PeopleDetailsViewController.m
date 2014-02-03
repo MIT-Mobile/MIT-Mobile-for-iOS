@@ -45,7 +45,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (void) setPersonDetails:(PersonDetails *)personDetails
 {
-    _personDetails = personDetails;
+    _personDetails = [PeopleRecentsData updatePerson:personDetails];
     [self mapPersonAttributes];
 }
 
