@@ -107,6 +107,7 @@
 		2C99DB081846867200277B25 /* MITMobile.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C99DB071846867200277B25 /* MITMobile.m */; };
 		2C99DCAF1370508D00114A9A /* HighlightLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C99DCAE1370508D00114A9A /* HighlightLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C99DCE01370782200114A9A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C99DCDF1370782200114A9A /* CoreText.framework */; };
+		2C9BAFBF189FD78B003B9AD0 /* MITResultsPager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C9BAFBE189FD78B003B9AD0 /* MITResultsPager.m */; };
 		2C9BAFC218A01D6B003B9AD0 /* MITNewsStoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C9BAFC118A01D6B003B9AD0 /* MITNewsStoryViewController.m */; };
 		2CA010BE1694A7CC00B87CF0 /* MGSSimpleAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA010BD1694A7CC00B87CF0 /* MGSSimpleAnnotation.m */; };
 		2CA454F213C7468F00891428 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA454F113C7468F00891428 /* AssetsLibrary.framework */; };
@@ -644,6 +645,8 @@
 		2C99DCAD1370508D00114A9A /* HighlightLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightLabel.h; sourceTree = "<group>"; };
 		2C99DCAE1370508D00114A9A /* HighlightLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightLabel.m; sourceTree = "<group>"; };
 		2C99DCDF1370782200114A9A /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		2C9BAFBD189FD78B003B9AD0 /* MITResultsPager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITResultsPager.h; path = Model/MITResultsPager.h; sourceTree = "<group>"; };
+		2C9BAFBE189FD78B003B9AD0 /* MITResultsPager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITResultsPager.m; path = Model/MITResultsPager.m; sourceTree = "<group>"; };
 		2C9BAFC018A01D6B003B9AD0 /* MITNewsStoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsStoryViewController.h; sourceTree = "<group>"; };
 		2C9BAFC118A01D6B003B9AD0 /* MITNewsStoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsStoryViewController.m; sourceTree = "<group>"; };
 		2CA010BC1694A7CC00B87CF0 /* MGSSimpleAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSSimpleAnnotation.h; sourceTree = "<group>"; };
@@ -2459,6 +2462,8 @@
 				2C698F4B18650BDD0010B0C0 /* Entities (v3) */,
 				2CF61DC818898C7E00D43381 /* MITNewsModelController.h */,
 				2CF61DC918898C7E00D43381 /* MITNewsModelController.m */,
+				2C9BAFBD189FD78B003B9AD0 /* MITResultsPager.h */,
+				2C9BAFBE189FD78B003B9AD0 /* MITResultsPager.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -3142,6 +3147,7 @@
 				DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */,
 				DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */,
 				44ACF76D1187884300F1F4B2 /* MITMapBookmarksViewController.m in Sources */,
+				2C9BAFBF189FD78B003B9AD0 /* MITResultsPager.m in Sources */,
 				4463CC9810D6F4A50048CA83 /* CMModule.m in Sources */,
 				2CD4F69D188ED4EB003F2C46 /* MITManagedObject.m in Sources */,
 				4BB9C553134BA78200B7F135 /* CalendarCategoriesViewController.m in Sources */,
