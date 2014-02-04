@@ -120,7 +120,6 @@
 		2CB6459F134CAF1A00E85E64 /* QRReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* QRReaderModule.m */; };
 		2CB90047176B5DC3006C3C3A /* MGSCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB90046176B5DC3006C3C3A /* MGSCalloutView.m */; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2CC45BE7187DBA1000B5571F /* MITMobilePaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC45BE6187DBA1000B5571F /* MITMobilePaginator.m */; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
 		2CC689B012F73071002B9A50 /* MITMobileServerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC689AE12F73071002B9A50 /* MITMobileServerConfiguration.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CCB85F91361F44E0024E474 /* FacilitiesLocationData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCB85F81361F44E0024E474 /* FacilitiesLocationData.m */; };
@@ -672,8 +671,6 @@
 		2CC2E9CA144DC9B000151C71 /* MITTabHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTabHeaderView.h; sourceTree = "<group>"; };
 		2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabHeaderView.m; sourceTree = "<group>"; };
 		2CC2F6BC164971AE00838337 /* MITAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MITAdditions.h; path = Categories/MITAdditions.h; sourceTree = "<group>"; };
-		2CC45BE5187DBA1000B5571F /* MITMobilePaginator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobilePaginator.h; sourceTree = "<group>"; };
-		2CC45BE6187DBA1000B5571F /* MITMobilePaginator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobilePaginator.m; sourceTree = "<group>"; };
 		2CC487CD13B3854600E58350 /* FacilitiesLocationSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLocationSearch.h; sourceTree = "<group>"; };
 		2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationSearch.m; sourceTree = "<group>"; };
 		2CC689AD12F73071002B9A50 /* MITMobileServerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileServerConfiguration.h; sourceTree = "<group>"; };
@@ -1804,8 +1801,6 @@
 			children = (
 				2C276711184CC90E00E53E9F /* MITMobileResource.h */,
 				2C276712184CC90E00E53E9F /* MITMobileResource.m */,
-				2CC45BE5187DBA1000B5571F /* MITMobilePaginator.h */,
-				2CC45BE6187DBA1000B5571F /* MITMobilePaginator.m */,
 				2CE7A2FE186A0AF900DF455F /* MITMobileManagedResource.h */,
 				2CE7A2FF186A0AF900DF455F /* MITMobileManagedResource.m */,
 				2CA9AFB9185F92E00005D5DA /* MITMapPlacesResource.h */,
@@ -3229,7 +3224,6 @@
 				2CF8B37C17DF7C3B00C608A2 /* MITScrollingNavigationBar.m in Sources */,
 				EB7F328410CD6C5B00188BCD /* PeopleModule.m in Sources */,
 				2C189A991819D26900653DF6 /* CoreData+MITAdditions.m in Sources */,
-				2CC45BE7187DBA1000B5571F /* MITMobilePaginator.m in Sources */,
 				EB7F328510CD6C5B00188BCD /* PeopleRecentsData.m in Sources */,
 				EBA2865610E07E140003BA01 /* PeopleSearchViewController.m in Sources */,
 				EB7F328110CD6C5B00188BCD /* PersonDetails.m in Sources */,
