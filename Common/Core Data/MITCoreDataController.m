@@ -1,11 +1,9 @@
 #import "MITCoreDataController.h"
 #import "MITAdditions.h"
-#import "MIT_MobileAppDelegate.h"
 #import "MITMobile.h"
 #import "MITMobileResource.h"
 #import "MITBuildInfo.h"
 #import "MITMapModelController.h"
-#import "CoreDataManager.h"
 
 static NSString * const MITPersistentStoreMetadataKey = @"MITCoreDataPersistentStoreState";
 static NSString * const MITPersistentStoreMetadataURLKey = @"MITPersistentStoreMetadataURL";
