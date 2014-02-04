@@ -104,6 +104,7 @@
     self.searchCancelled = YES;
     [self.searchBar resignFirstResponder];
     [self.searchDisplayController setActive:NO];
+    [self.tableView reloadData];
     self.searchDisplayController.searchResultsTableView.hidden = YES;
     if (self.loadingView.superview) {
         [self.loadingView removeFromSuperview];
