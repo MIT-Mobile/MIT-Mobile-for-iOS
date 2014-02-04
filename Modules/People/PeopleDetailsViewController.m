@@ -74,7 +74,7 @@ static NSInteger AccessoryIconIndex     = 2;
      * website   : website : external
      */
     
-    // The following section of code will initialize @property attributes with items structured:
+    // The following section of code will initialize @property 'attributes' with items structured:
     //   @[value for key, display name, accessory icon ]
     NSMutableArray *tempAttributes = [NSMutableArray array];
     NSArray *attributeKeys = @[@"email", @"phone", @"fax", @"home", @"office", @"address", @"website"];
@@ -112,9 +112,11 @@ static NSInteger AccessoryIconIndex     = 2;
 
 - (void) updateTableViewHeaderView
 {
-    self.personName.text = self.personDetails.name;
-    self.personTitle.text = self.personDetails.title;
-    self.personOrganization.text = self.personDetails.dept;
+    if (self.personDetails) {
+        self.personName.text = self.personDetails.name;
+        self.personTitle.text = self.personDetails.title;
+        self.personOrganization.text = self.personDetails.dept;
+    }
 }
 
 // Override to allow orientations other than the default portrait orientation.
