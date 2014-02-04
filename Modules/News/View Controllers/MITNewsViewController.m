@@ -21,6 +21,8 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 
 
 @interface MITNewsViewController () <NSFetchedResultsControllerDelegate>
+@property (nonatomic,getter = isUpdating) BOOL updating;
+
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
 
@@ -43,6 +45,9 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 @end
 
 @implementation MITNewsViewController
+#pragma mark UI Element text attributes
+// TODO: Look for an alternate spot for these. UIAppearance or a utility class maybe?
+// Figure out how much we are going to be reusing these
 + (NSDictionary*)headerTextAttributes
 {
     return @{NSFontAttributeName: [UIFont boldSystemFontOfSize:18.],
@@ -58,6 +63,12 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 + (NSDictionary*)dekTextAttributes
 {
     return @{NSFontAttributeName: [UIFont systemFontOfSize:12.],
+             NSForegroundColorAttributeName: [UIColor blackColor]};
+}
+
++ (NSDictionary*)updateItemTextAttributes
+{
+    return @{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont smallSystemFontSize]],
              NSForegroundColorAttributeName: [UIColor blackColor]};
 }
 
@@ -100,7 +111,8 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
     [super viewWillAppear:animated];
     [self loadFetchedResultsControllers];
 
-
+    
+    self.updating = YES;
     MITNewsModelController *modelController = [MITNewsModelController sharedController];
     [modelController categories:^(NSArray *categories, NSError *error) {
         [modelController featuredStoriesWithOffset:0
@@ -122,6 +134,8 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 
                                     }];
         }];
+        
+        self.updating = NO;
     }];
 }
 
@@ -196,9 +210,52 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
     return _managedObjectContext;
 }
 
-- (BOOL)hidesBottomBarWhenPushed
+- (void)setUpdating:(BOOL)updating
 {
-    return NO;
+    [self setUpdating:updating animated:YES];
+}
+
+- (void)setUpdating:(BOOL)updating animated:(BOOL)animated
+{
+    if (_updating != updating) {
+        if (updating) {
+            [self willBeginUpdating:animated];
+        }
+        
+        _updating = updating;
+        
+        if (!_updating) {
+            [self didEndUpdating:animated];
+        }
+        
+    }
+}
+
+- (void)willBeginUpdating:(BOOL)animated
+{
+    [self setUpdateText:@"Updating..." animated:animated];
+}
+
+- (void)didEndUpdating:(BOOL)animated
+{
+    NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:[NSDate date]
+                                                                        toDate:[NSDate date]];
+    NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
+    [self setUpdateText:updateText animated:animated];
+}
+
+- (void)setUpdateText:(NSString*)string animated:(BOOL)animated
+{
+    if (self.navigationController.toolbarHidden) {
+        self.navigationController.toolbarHidden = NO;
+    }
+    
+    UILabel *updatingLabel = [[UILabel alloc] init];
+    updatingLabel.attributedText = [[NSAttributedString alloc] initWithString:string attributes:[MITNewsViewController updateItemTextAttributes]];
+    [updatingLabel sizeToFit];
+    
+    UIBarButtonItem *updatingItem = [[UIBarButtonItem alloc] initWithCustomView:updatingLabel];
+    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace],updatingItem,[UIBarButtonItem flexibleSpace]] animated:animated];
 }
 
 #pragma mark UI Events
