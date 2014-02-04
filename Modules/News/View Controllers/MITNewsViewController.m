@@ -592,7 +592,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 #pragma mark UISearchDisplayDelegate
 - (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
 {
-    self.searching = NO;
+    
 }
 
 #pragma mark UISearchBarDelegate
