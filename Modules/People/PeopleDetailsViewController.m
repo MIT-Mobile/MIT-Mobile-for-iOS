@@ -233,9 +233,17 @@ static NSInteger AccessoryIconIndex     = 2;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSString * attrType = nil;
+    if (indexPath.section == 0) {
+        NSArray *personInfo = self.attributes[indexPath.row];
+        attrType = personInfo[DisplayNameIndex];
+    }
+    
 	switch (indexPath.section) {
         case 0:
-#pragma message "TODO: Need to make this dynamic"
+            if ([attrType isEqualToString:@"address"]) {
+                return 82.;
+            }
             return 62.;
 
         case 1:
