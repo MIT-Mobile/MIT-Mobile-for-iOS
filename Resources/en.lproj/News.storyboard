@@ -183,16 +183,34 @@
                     <navigationItem key="navigationItem" title="MIT News" id="tQt-TN-PWz">
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="tb4-Us-2aZ">
                             <connections>
-                                <action selector="searchButtonTapped:" destination="pGg-6v-bdr" id="xZt-f8-QSQ"/>
+                                <action selector="searchButtonTapped:" destination="pGg-6v-bdr" id="bhr-AT-Wx5"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="searchDisplayController" destination="YNE-gS-n67" id="EhO-Ef-QFo"/>
                         <segue destination="4LW-qO-0Fw" kind="push" identifier="showCategoryDetail" id="qDz-dI-qz6"/>
                         <segue destination="NZF-6D-hU8" kind="push" identifier="showStoryDetail" id="nGa-UM-Gil"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Cn-md-YlS" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="YNE-gS-n67">
+                    <connections>
+                        <outlet property="delegate" destination="pGg-6v-bdr" id="XGe-ed-cio"/>
+                        <outlet property="searchBar" destination="czt-lu-eB1" id="uwC-e3-zd8"/>
+                        <outlet property="searchContentsController" destination="pGg-6v-bdr" id="4nr-QF-gIu"/>
+                        <outlet property="searchResultsDataSource" destination="pGg-6v-bdr" id="98E-JJ-6qt"/>
+                        <outlet property="searchResultsDelegate" destination="pGg-6v-bdr" id="RWQ-D0-eVd"/>
+                    </connections>
+                </searchDisplayController>
+                <searchBar contentMode="redraw" id="czt-lu-eB1">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <outlet property="delegate" destination="pGg-6v-bdr" id="P8F-QD-RDp"/>
+                    </connections>
+                </searchBar>
             </objects>
             <point key="canvasLocation" x="656" y="186"/>
         </scene>

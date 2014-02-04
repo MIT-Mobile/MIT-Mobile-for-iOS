@@ -13,14 +13,16 @@
 
 #import "MITAdditions.h"
 
-static const NSInteger MITNewsStoryCellMinimumHeight = 86.;
-static const NSInteger MITNewsStoryCellMaximumTextWidth = 196.;
+// The below values were pulled from the News storyboard.
+// Either change them if the storyboard changes or find a way
+// to dynamically extract them.
+static const CGFloat MITNewsStoryCellMinimumHeight = 86.;
+static const CGFloat MITNewsStoryCellMaximumTextWidth = 196.;
 static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 61.};
 
-static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAssociatedObjectKey";
+static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStories";
 
-
-@interface MITNewsViewController () <NSFetchedResultsControllerDelegate>
+@interface MITNewsViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 @property (nonatomic,getter = isUpdating) BOOL updating;
 
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
@@ -30,12 +32,8 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 @property (nonatomic,strong) NSFetchedResultsController *categoriesFetchedResultsController;
 @property (nonatomic,strong) NSMutableArray *searchResults;
 
-@property (nonatomic,strong) NSHashTable *inFlightFetchedResultsUpdates;
-
-// Used to make sure that we are invoking -[UITableView reloadData] as little as possible
-// This is used in the NSFetchedResultsTableView willChange/didChange methods to
-// keep track of overlapping updates.
-@property NSUInteger tableUpdateCounter;
+@property (nonatomic,strong) NSHashTable *inFlightDataRequests;
+@property (nonatomic,strong) NSMapTable *cachedStoriesByCategory;
 
 + (NSDictionary*)headerTextAttributes;
 + (NSDictionary*)titleTextAttributes;
@@ -45,6 +43,7 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 @end
 
 @implementation MITNewsViewController
+
 #pragma mark UI Element text attributes
 // TODO: Look for an alternate spot for these. UIAppearance or a utility class maybe?
 // Figure out how much we are going to be reusing these
@@ -104,44 +103,15 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
+
+    self.tableView.tableHeaderView = self.searchDisplayController.searchBar;
+    self.tableView.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchDisplayController.searchBar.frame));
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self loadFetchedResultsControllers];
-
-    
-    self.updating = YES;
-    MITNewsModelController *modelController = [MITNewsModelController sharedController];
-    [modelController categories:^(NSArray *categories, NSError *error) {
-        [modelController featuredStoriesWithOffset:0
-                                             limit:self.numberOfStoriesPerCategory
-                                        completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
-                                            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0]
-                                                          withRowAnimation:UITableViewRowAnimationAutomatic];
-                                        }];
-
-        [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
-            [modelController storiesInCategory:category.identifier
-                                         query:nil
-                                        offset:0
-                                         limit:self.numberOfStoriesPerCategory
-                                    completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
-                                        NSInteger categorySection = [self.categoriesFetchedResultsController.fetchedObjects indexOfObject:category];
-                                        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:categorySection]
-                                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-
-                                    }];
-        }];
-        
-        self.updating = NO;
-    }];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
 
     NSError *fetchError = nil;
     [self.featuredStoriesFetchedResultsController performFetch:&fetchError];
@@ -155,7 +125,13 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
         DDLogWarn(@"[%@] error while executing fetch: %@",NSStringFromClass([self class]),fetchError);
     }
 
-    [self.tableView reloadData];
+    self.updating = YES;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self performDataUpdate];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -210,6 +186,7 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
     return _managedObjectContext;
 }
 
+#pragma mark Updating state
 - (void)setUpdating:(BOOL)updating
 {
     [self setUpdating:updating animated:YES];
@@ -270,7 +247,7 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 
 - (IBAction)searchButtonTapped:(UIBarButtonItem*)sender
 {
-    
+    [self.searchDisplayController.searchBar becomeFirstResponder];
 }
 
 #pragma mark Table data helpers
@@ -293,7 +270,7 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 
     if (!self.categoriesFetchedResultsController) {
         NSFetchRequest *categories = [NSFetchRequest fetchRequestWithEntityName:[MITNewsCategory entityName]];
-        categories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+        categories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:NO]];
 
         NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:categories
                                                                                                    managedObjectContext:self.managedObjectContext
@@ -304,35 +281,76 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
     }
 }
 
+- (void)performDataUpdate
+{
+    if ([self.inFlightDataRequests count] == 0) {
+        if (!self.inFlightDataRequests) {
+            self.inFlightDataRequests = [NSHashTable weakObjectsHashTable];
+        }
+
+        self.updating = YES;
+
+        MITNewsModelController *modelController = [MITNewsModelController sharedController];
+
+        [self.inFlightDataRequests addObject:MITNewsStoryFeaturedStoriesToken];
+        [modelController featuredStoriesWithOffset:0
+                                             limit:self.numberOfStoriesPerCategory
+                                        completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
+
+                                            [self.inFlightDataRequests removeObject:MITNewsStoryFeaturedStoriesToken];
+                                            if ([self.inFlightDataRequests count] == 0) {
+                                                [self setUpdating:NO animated:YES];
+                                            }
+                                        }];
+
+        [modelController categories:^(NSArray *categories, NSError *error) {
+            [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
+                [self.inFlightDataRequests addObject:category];
+
+                [modelController storiesInCategory:category.identifier
+                                             query:nil
+                                            offset:0
+                                             limit:self.numberOfStoriesPerCategory
+                                        completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
+                                            [self.inFlightDataRequests removeObject:category];
+                                            if ([self.inFlightDataRequests count] == 0) {
+                                                [self setUpdating:NO animated:YES];
+                                            }
+                                        }];
+            }];
+        }];
+    }
+}
+
 - (NSArray*)storiesInCategory:(MITNewsCategory*)category
 {
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
-    fetchRequest.fetchLimit = self.numberOfStoriesPerCategory;
-    fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[[NSPredicate predicateWithFormat:@"featured == NO"],
-                                                                                  [NSPredicate predicateWithFormat:@"category == %@",category]]];
-    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
-                                     [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
-
-    NSError *fetchError = nil;
-    NSArray *fetchResults = [self.managedObjectContext executeFetchRequest:fetchRequest error:&fetchError];
-
-    if (!fetchResults) {
-        DDLogWarn(@"Fetch request '%@' failed with error: %@", fetchRequest,fetchError);
+    if (!self.cachedStoriesByCategory) {
+        self.cachedStoriesByCategory = [NSMapTable weakToStrongObjectsMapTable];
     }
 
-    return fetchResults;
+    NSArray *cachedStories = [self.cachedStoriesByCategory objectForKey:category];
+
+    if (!cachedStories) {
+        NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
+                                     [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
+
+        cachedStories = [category.stories sortedArrayUsingDescriptors:sortDescriptors];
+        [self.cachedStoriesByCategory setObject:cachedStories forKey:category];
+    }
+
+    return cachedStories;
 }
 
 - (MITNewsStory*)storyAtIndexPath:(NSIndexPath*)indexPath
 {
     MITNewsStory *story = nil;
 
-    if (self.featuredStoriesFetchedResultsController && (indexPath.section == 0)) {
+    if (self.showFeaturedStoriesSection && (indexPath.section == 0)) {
         id<NSFetchedResultsSectionInfo> sectionInfo = [self.featuredStoriesFetchedResultsController sections][indexPath.section];
         story = (MITNewsStory*)[sectionInfo objects][indexPath.row];
     } else {
         NSInteger section = indexPath.section;
-        if (self.featuredStoriesFetchedResultsController) {
+        if (self.showFeaturedStoriesSection) {
             section -= 1;
         }
 
@@ -346,30 +364,29 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
     return story;
 }
 
-#pragma mark - Delegate Methods
-#pragma mark NSFetchedResultsController
+#pragma mark - NSFetchedResultsController
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    if (!self.inFlightFetchedResultsUpdates) {
-        self.inFlightFetchedResultsUpdates = [NSHashTable weakObjectsHashTable];
-    }
 
-    [self.inFlightFetchedResultsUpdates addObject:controller];
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    [self.inFlightFetchedResultsUpdates removeObject:controller];
+    if ([self.inFlightDataRequests count] == 0) {
+        if (controller == self.featuredStoriesFetchedResultsController) {
+            [self.cachedStoriesByCategory removeAllObjects];
+        }
 
-    if ([self.inFlightFetchedResultsUpdates count] == 0) {
+        [self setUpdating:NO animated:YES];
         [self.tableView reloadData];
     }
 }
 
+#pragma mark - UITableView
 #pragma mark UITableViewDelegate
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if (tableView == self.tableView) {
-        if (self.featuredStoriesFetchedResultsController && (section == 0)) {
+        if (self.showFeaturedStoriesSection && (section == 0)) {
             MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:@"NewsCategoryHeader"];
             headerView.textLabel.attributedText = [[NSAttributedString alloc] initWithString:@"Featured Stories" attributes:[MITNewsViewController headerTextAttributes]];
             headerView.accessoryView.hidden = YES;
@@ -395,7 +412,7 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 {
     if (tableView == self.tableView) {
         if ([view isKindOfClass:[UITableViewHeaderFooterView class]]) {
-            if (!(self.featuredStoriesFetchedResultsController && (section == 0))) {
+            if (!(self.showFeaturedStoriesSection && (section == 0))) {
                 UITableViewHeaderFooterView *headerView = (UITableViewHeaderFooterView*)view;
 
                 UIGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
@@ -484,7 +501,7 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
     if (tableView == self.tableView) {
         NSInteger numberOfSections = 0;
 
-        if (self.featuredStoriesFetchedResultsController) {
+        if (self.showFeaturedStoriesSection) {
             numberOfSections += 1;
         }
 
@@ -500,7 +517,7 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (tableView == self.tableView) {
-        if (self.featuredStoriesFetchedResultsController && (section == 0)) {
+        if (self.showFeaturedStoriesSection && (section == 0)) {
             id<NSFetchedResultsSectionInfo> sectionInfo = [self.featuredStoriesFetchedResultsController sections][section];
             return MIN(self.numberOfStoriesPerCategory,[sectionInfo numberOfObjects]);
         } else {
@@ -570,5 +587,14 @@ static NSString const *MITNewsCategoryAssociatedObjectKey = @"MITNewsCategoryAss
     MITNewsImageRepresentation *representation = [story.coverImage bestImageForSize:MITNewsStoryCellDefaultImageSize];
     [storyCell.storyImageView setImageWithURL:representation.url];
 }
+
+#pragma mark - UISearchDisplayController
+#pragma mark UISearchDisplayDelegate
+- (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
+{
+    self.searching = NO;
+}
+
+#pragma mark UISearchBarDelegate
 
 @end
