@@ -70,6 +70,7 @@
 		2C3C534E1896B25900D1F9B5 /* NewsStoryTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534D1896B25900D1F9B5 /* NewsStoryTableCell.xib */; };
 		2C3C53501896B47300D1F9B5 /* NewsCategoryHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534F1896B47300D1F9B5 /* NewsCategoryHeaderView.xib */; };
 		2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */; };
+		2C520D61189AEF8F00F5563B /* NewsLoadMoreFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C520D60189AEF8F00F5563B /* NewsLoadMoreFooter.xib */; };
 		2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C544B9C1358A24400685545 /* UIImage+Resize.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C5A5C171887296B0013981A /* MITNewsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A5C161887296B0013981A /* MITNewsViewController.m */; };
 		2C5B30491371D54500870E6D /* FacilitiesUserLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C5B30471371D54500870E6D /* FacilitiesUserLocationViewController.m */; };
@@ -573,6 +574,7 @@
 		2C4D799D16FB4B0F001AAC81 /* MGSLayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSLayerController.h; sourceTree = "<group>"; };
 		2C4D799E16FB4B0F001AAC81 /* MGSLayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSLayerController.m; sourceTree = "<group>"; };
 		2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = External/RestKit/RestKit.xcodeproj; sourceTree = "<group>"; };
+		2C520D60189AEF8F00F5563B /* NewsLoadMoreFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NewsLoadMoreFooter.xib; path = Views/NewsLoadMoreFooter.xib; sourceTree = "<group>"; };
 		2C544B9B1358A24400685545 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
 		2C544B9C1358A24400685545 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		2C5A5C151887296B0013981A /* MITNewsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsViewController.h; sourceTree = "<group>"; };
@@ -1753,6 +1755,7 @@
 				2C3C534B1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib */,
 				2C3C534D1896B25900D1F9B5 /* NewsStoryTableCell.xib */,
 				2C3C534F1896B47300D1F9B5 /* NewsCategoryHeaderView.xib */,
+				2C520D60189AEF8F00F5563B /* NewsLoadMoreFooter.xib */,
 			);
 			name = "Table View Cell XIBs";
 			sourceTree = "<group>";
@@ -3057,6 +3060,7 @@
 				DE952E6816295EBA007E7356 /* Default-568h@2x.png in Resources */,
 				DE574C3117E7B7DA001B153E /* Icon-iOS-7@2x.png in Resources */,
 				2C101A9A16540A5E000E40E3 /* ArcGIS.bundle in Resources */,
+				2C520D61189AEF8F00F5563B /* NewsLoadMoreFooter.xib in Resources */,
 				48327CE516F75017003A2F23 /* DiningMapListViewController.xib in Resources */,
 				48EDC97417175C3100376BCF /* dining in Resources */,
 				2C3C53451896A7D300D1F9B5 /* News.storyboard in Resources */,
