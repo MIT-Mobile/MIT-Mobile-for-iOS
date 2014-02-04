@@ -26,7 +26,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <imageView userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="news/news_chevron_small.png" translatesAutoresizingMaskIntoConstraints="NO" id="9Sr-oA-zdz">
-                            <rect key="frame" x="96" y="16" width="8" height="13"/>
+                            <rect key="frame" x="96" y="17" width="11" height="11"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </imageView>
                     </subviews>
