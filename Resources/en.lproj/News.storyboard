@@ -5,7 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <scenes>
-        <!--View Controller - x of y-->
+        <!--View Controller-->
         <scene sceneID="uau-KX-1Xy">
             <objects>
                 <viewController extendedLayoutIncludesOpaqueBars="YES" id="iDy-Gm-VsE" sceneMemberID="viewController">
@@ -54,6 +54,26 @@
                                     <constraint firstItem="R38-Zj-OFV" firstAttribute="leading" secondItem="A2e-Qq-yf8" secondAttribute="leading" constant="20" id="xaJ-Pg-KqY"/>
                                 </constraints>
                             </view>
+                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" barStyle="black" translatesAutoresizingMaskIntoConstraints="NO" id="PD2-yH-VxL">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <items>
+                                    <navigationItem title="x of y" id="8nF-a1-hss">
+                                        <barButtonItem key="leftBarButtonItem" title="Done" id="ZlE-Y2-CiE">
+                                            <color key="tintColor" red="0.85669479927007308" green="0.13768309962931449" blue="0.28046557274104433" alpha="1" colorSpace="deviceRGB"/>
+                                            <connections>
+                                                <action selector="dismissGallery:" destination="iDy-Gm-VsE" id="OoV-Xc-zpT"/>
+                                            </connections>
+                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="lCO-W6-uzA">
+                                            <color key="tintColor" red="0.8519331660583942" green="0.13691783711057337" blue="0.27890670465052464" alpha="1" colorSpace="deviceRGB"/>
+                                            <connections>
+                                                <action selector="shareImage:" destination="iDy-Gm-VsE" id="lcV-Yx-a38"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="tintColor" red="0.85983120437956206" green="0.1381871647614194" blue="0.2814923720821052" alpha="1" colorSpace="deviceRGB"/>
@@ -68,21 +88,7 @@
                             <outletCollection property="gestureRecognizers" destination="rGn-4n-87c" appends="YES" id="2Jr-Tp-Xmi"/>
                         </connections>
                     </view>
-                    <navigationItem key="navigationItem" title="x of y" id="8nF-a1-hss">
-                        <barButtonItem key="leftBarButtonItem" title="Done" id="ZlE-Y2-CiE">
-                            <color key="tintColor" red="0.85669479927007308" green="0.13768309962931449" blue="0.28046557274104433" alpha="1" colorSpace="deviceRGB"/>
-                            <connections>
-                                <action selector="dismissGallery:" destination="iDy-Gm-VsE" id="OoV-Xc-zpT"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="lCO-W6-uzA">
-                            <color key="tintColor" red="0.8519331660583942" green="0.13691783711057337" blue="0.27890670465052464" alpha="1" colorSpace="deviceRGB"/>
-                            <connections>
-                                <action selector="shareImage:" destination="iDy-Gm-VsE" id="lcV-Yx-a38"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <nil key="simulatedStatusBarMetrics"/>
                     <connections>
                         <outlet property="captionView" destination="A2e-Qq-yf8" id="em2-pQ-sVZ"/>
                         <outlet property="creditLabel" destination="oKd-zQ-w0y" id="VX4-C2-LQR"/>
@@ -101,17 +107,17 @@
         <!--View Controller-->
         <scene sceneID="5W3-pO-W4I">
             <objects>
-                <viewController storyboardIdentifier="DetailViewController" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="NZF-6D-hU8" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MITNewsStoryViewController" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="NZF-6D-hU8" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="5Rd-Gp-0aF"/>
                         <viewControllerLayoutGuide type="bottom" id="a6D-cv-E86"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="ncx-q4-JCJ">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jgh-uy-3JU">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </webView>
@@ -124,13 +130,14 @@
                             <constraint firstAttribute="bottom" secondItem="Jgh-uy-3JU" secondAttribute="bottom" id="tt7-eL-zCR"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="xZe-LF-4oV">
                         <barButtonItem key="rightBarButtonItem" systemItem="action" id="ka1-2M-9Ha"/>
                     </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <segue destination="iDy-Gm-VsE" kind="push" identifier="showStoryImageGallery" id="SqU-aV-k4C"/>
+                        <segue destination="iDy-Gm-VsE" kind="modal" identifier="showStoryImageGallery" id="SqU-aV-k4C"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cQh-4x-fOt" userLabel="First Responder" sceneMemberID="firstResponder"/>
