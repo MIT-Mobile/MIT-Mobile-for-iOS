@@ -86,6 +86,7 @@
 {
     if (![searchBar.text length]) {
         self.searchResults = nil;
+        _searchCancelled = YES;
         [self.searchResultsTableView reloadData];
     }
 }
@@ -104,6 +105,9 @@
     [self.searchBar resignFirstResponder];
     [self.searchDisplayController setActive:NO];
     self.searchDisplayController.searchResultsTableView.hidden = YES;
+    if (self.loadingView.superview) {
+        [self.loadingView removeFromSuperview];
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -124,15 +128,12 @@
 	self.searchTokens = tempTokens;
     
     [MITPeopleResource peopleMatchingQuery:self.searchTerms loaded:^(NSArray *objects, NSError *error) {
-        if (_searchCancelled) {
-            return;
-        }
-
-        [self.loadingView removeFromSuperview];
-        if (!error) {
+        if (!error && !_searchCancelled) {
+            // if there is no error and the search is not cancelled
             self.searchResults = objects;
             [self.searchDisplayController.searchResultsTableView reloadData];
         }
+        [self.loadingView removeFromSuperview];
     }];
     self.searchResultsTableView.hidden = NO;
     [self showLoadingView];
@@ -312,14 +313,14 @@
 
 - (void)showLoadingView {
 	if (!self.loadingView) {
-        CGRect frame = self.searchBar.frame;
-        frame.origin.x = 0.0;
-        frame.size.height = CGRectGetHeight(self.view.frame) - CGRectGetHeight(self.searchBar.frame);
+        CGRect frame = self.tableView.bounds;
+        frame.origin.y = CGRectGetMaxY(self.searchBar.frame);
+        frame.size.height -= frame.origin.y;
 
 		MITLoadingActivityView *loadingView = [[MITLoadingActivityView alloc] initWithFrame:frame];
-        [self.view addSubview:loadingView];
         self.loadingView = loadingView;
 	}
+    [self.view addSubview:self.loadingView];
 }
 
 #pragma mark - Storyboard Segues
