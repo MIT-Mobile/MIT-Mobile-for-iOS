@@ -31,7 +31,7 @@
                                                        @"author" : @"author",
                                                        @"dek" : @"dek",
                                                        @"featured" : @"featured",
-                                                       @"body_html" : @"body",
+                                                       @"body" : @"body",
                                                        @"type" : @"type"}];
     
     RKRelationshipMapping* categoryRelationship = [RKRelationshipMapping relationshipMappingFromKeyPath:@"category"
