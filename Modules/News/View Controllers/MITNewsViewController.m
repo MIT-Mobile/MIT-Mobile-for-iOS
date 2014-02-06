@@ -239,6 +239,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
                                                                         toDate:[NSDate date]];
     NSString *updateText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
     [self setUpdateText:updateText animated:animated];
+    [self.tableView reloadData];
 }
 
 - (void)setUpdateText:(NSString*)string animated:(BOOL)animated
@@ -312,11 +313,9 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
         [modelController featuredStoriesWithOffset:0
                                              limit:self.numberOfStoriesPerCategory
                                         completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
-
                                             [self.inFlightDataRequests removeObject:MITNewsStoryFeaturedStoriesToken];
+
                                             if ([self.inFlightDataRequests count] == 0) {
-                                                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0]
-                                                              withRowAnimation:UITableViewRowAnimationAutomatic];
                                                 [self setUpdating:NO animated:YES];
                                             }
                                         }];
@@ -333,16 +332,8 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
                                         completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
                                             MITNewsViewController *blockSelf = weakSelf;
                                             if (blockSelf) {
-                                                NSInteger sectionNumber = [[blockSelf.categoriesFetchedResultsController fetchedObjects] indexOfObject:category];
-                                                
-                                                if (self.showFeaturedStoriesSection) {
-                                                    sectionNumber += 1;
-                                                }
-                                                
-                                                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionNumber]
-                                                              withRowAnimation:UITableViewRowAnimationAutomatic];
-                                                
                                                 [blockSelf.inFlightDataRequests removeObject:category];
+
                                                 if ([blockSelf.inFlightDataRequests count] == 0) {
                                                     [self setUpdating:NO animated:YES];
                                                 }
@@ -397,19 +388,14 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 }
 
 #pragma mark - NSFetchedResultsController
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
+{
 
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    if ([self.inFlightDataRequests count] == 0) {
-        if (controller == self.categoriesFetchedResultsController) {
-            [self.cachedStoriesByCategory removeAllObjects];
-        }
 
-        [self setUpdating:NO animated:YES];
-    }
 }
 
 #pragma mark - UITableView
@@ -602,7 +588,10 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     }
     
     MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:MITNewsStoryCellDefaultImageSize];
-    [storyCell.storyImageView setImageWithURL:representation.url];
+
+    if (representation) {
+        [storyCell.storyImageView setImageWithURL:representation.url];
+    }
 }
 
 #pragma mark - UISearchDisplayController
