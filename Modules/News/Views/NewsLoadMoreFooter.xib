@@ -31,7 +31,6 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                 </view>
             </subviews>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="HcE-fb-nUc" secondAttribute="bottom" id="RLZ-lI-jM2"/>
                 <constraint firstAttribute="trailing" secondItem="HcE-fb-nUc" secondAttribute="trailing" id="gJt-99-gDi"/>
