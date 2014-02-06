@@ -14,4 +14,6 @@
 @property (nonatomic,weak) IBOutlet NSLayoutConstraint *coverImageViewHeightConstraint;
 @property (nonatomic,weak) IBOutlet NSLayoutConstraint *bodyViewHeightConstraint;
 
+- (IBAction)unwindFromImageGallery:(UIStoryboardSegue*)sender;
+
 @end

@@ -70,6 +70,11 @@
     
 }
 
+- (IBAction)unwindFromImageGallery:(UIStoryboardSegue *)sender
+{
+    DDLogVerbose(@"Unwinding from %@",[sender sourceViewController]);
+}
+
 - (NSString*)htmlBody
 {
     NSURL *templateURL = [[NSBundle mainBundle] URLForResource:@"news/news_story_template" withExtension:@"html"];
