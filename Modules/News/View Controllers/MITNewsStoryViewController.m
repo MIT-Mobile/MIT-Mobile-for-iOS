@@ -41,13 +41,20 @@
     
     CGSize imageSize = self.coverImageView.bounds.size;
     MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
-    
-    if (!imageRepresentation) {
+
+#if defined(DEBUG)
+#warning Remove this section once the news API is updated
+    NSURL *imageURL = [NSURL URLWithString:@"http://img.mit.edu/newsoffice/images/article_images/original/20140205163909-0.jpg"];
+#else
+    NSURL *imageURL = imageRepresentation.url;
+#endif
+
+    if (!imageURL) {
         self.coverImageViewHeightConstraint.constant = 0;
     } else {
-        [self.coverImageView setImageWithURL:imageRepresentation.url
+        [self.coverImageView setImageWithURL:imageURL
                                    completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-                                       self.coverImageViewHeightConstraint.constant = image.size.height;
+                                       self.coverImageViewHeightConstraint.constant = MIN(self.coverImageViewHeightConstraint.constant,image.size.height);
         }];
     }
 }
@@ -113,10 +120,9 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     self.bodyView.scrollView.scrollEnabled = NO;
+
     CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
     self.bodyViewHeightConstraint.constant = size.height;
-    
-    [self.scrollView invalidateIntrinsicContentSize];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
@@ -126,6 +132,11 @@
 
 - (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
 	return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
 }
 
 @end
