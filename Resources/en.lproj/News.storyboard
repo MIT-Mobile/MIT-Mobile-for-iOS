@@ -104,10 +104,10 @@
             </objects>
             <point key="canvasLocation" x="2357" y="186"/>
         </scene>
-        <!--View Controller-->
+        <!--Story Detail View Controller-->
         <scene sceneID="5W3-pO-W4I">
             <objects>
-                <viewController storyboardIdentifier="MITNewsStoryViewController" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="NZF-6D-hU8" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NewsStoryViewController" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="NZF-6D-hU8" userLabel="Story Detail View Controller" customClass="MITNewsStoryViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="5Rd-Gp-0aF"/>
                         <viewControllerLayoutGuide type="bottom" id="a6D-cv-E86"/>
@@ -116,18 +116,46 @@
                         <rect key="frame" x="0.0" y="64" width="320" height="504"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jgh-uy-3JU">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bZw-zT-ldn">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                            </webView>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="saG-db-2yb">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="213"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="320" id="621-j2-upP"/>
+                                            <constraint firstAttribute="height" constant="213" id="Ibn-iN-m8V"/>
+                                        </constraints>
+                                    </imageView>
+                                    <webView contentMode="top" translatesAutoresizingMaskIntoConstraints="NO" id="xV7-HD-BKY">
+                                        <rect key="frame" x="0.0" y="213" width="320" height="291"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <color key="backgroundColor" name="alternateSelectedControlColor" catalog="System" colorSpace="catalog"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="291" id="4Ef-2p-HeE"/>
+                                        </constraints>
+                                    </webView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="xV7-HD-BKY" firstAttribute="width" secondItem="saG-db-2yb" secondAttribute="width" id="7Tw-6n-dWE"/>
+                                    <constraint firstItem="xV7-HD-BKY" firstAttribute="top" secondItem="saG-db-2yb" secondAttribute="bottom" id="Ghd-UQ-QBp"/>
+                                    <constraint firstAttribute="trailing" secondItem="saG-db-2yb" secondAttribute="trailing" id="LGc-gO-5VT"/>
+                                    <constraint firstAttribute="bottom" secondItem="xV7-HD-BKY" secondAttribute="bottom" id="Lem-JR-usd"/>
+                                    <constraint firstAttribute="trailing" secondItem="xV7-HD-BKY" secondAttribute="trailing" id="jM3-Lh-ndm"/>
+                                    <constraint firstItem="xV7-HD-BKY" firstAttribute="leading" secondItem="bZw-zT-ldn" secondAttribute="leading" id="jjJ-Hj-Gmh"/>
+                                    <constraint firstItem="saG-db-2yb" firstAttribute="leading" secondItem="bZw-zT-ldn" secondAttribute="leading" id="o8F-F5-tWf"/>
+                                    <constraint firstItem="saG-db-2yb" firstAttribute="top" secondItem="bZw-zT-ldn" secondAttribute="top" id="tDc-rF-dhN"/>
+                                </constraints>
+                            </scrollView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Jgh-uy-3JU" firstAttribute="top" secondItem="ncx-q4-JCJ" secondAttribute="top" id="MQX-DC-dOh"/>
-                            <constraint firstItem="Jgh-uy-3JU" firstAttribute="leading" secondItem="ncx-q4-JCJ" secondAttribute="leading" id="lDR-ap-Fjh"/>
-                            <constraint firstAttribute="trailing" secondItem="Jgh-uy-3JU" secondAttribute="trailing" id="lGO-zm-sz3"/>
-                            <constraint firstAttribute="bottom" secondItem="Jgh-uy-3JU" secondAttribute="bottom" id="tt7-eL-zCR"/>
+                            <constraint firstItem="bZw-zT-ldn" firstAttribute="leading" secondItem="ncx-q4-JCJ" secondAttribute="leading" id="Cy8-cZ-jL4"/>
+                            <constraint firstAttribute="trailing" secondItem="bZw-zT-ldn" secondAttribute="trailing" id="a3T-lk-OhP"/>
+                            <constraint firstItem="bZw-zT-ldn" firstAttribute="top" secondItem="5Rd-Gp-0aF" secondAttribute="bottom" id="eM4-b5-2fD"/>
+                            <constraint firstItem="a6D-cv-E86" firstAttribute="top" secondItem="bZw-zT-ldn" secondAttribute="bottom" id="t7n-9b-Sqb"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
@@ -137,12 +165,17 @@
                     </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="bodyView" destination="xV7-HD-BKY" id="CKg-Mn-N12"/>
+                        <outlet property="bodyViewHeightConstraint" destination="4Ef-2p-HeE" id="Ir4-aB-wwK"/>
+                        <outlet property="coverImageView" destination="saG-db-2yb" id="OP4-1p-sAB"/>
+                        <outlet property="coverImageViewHeightConstraint" destination="Ibn-iN-m8V" id="eQ3-4t-Vmv"/>
+                        <outlet property="scrollView" destination="bZw-zT-ldn" id="Z0n-VW-c30"/>
                         <segue destination="iDy-Gm-VsE" kind="modal" identifier="showStoryImageGallery" id="SqU-aV-k4C"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cQh-4x-fOt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1712" y="186"/>
+            <point key="canvasLocation" x="1743" y="143"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="cUi-kZ-frf">
@@ -247,7 +280,13 @@
                             <outlet property="delegate" destination="4LW-qO-0Fw" id="aOB-xf-Aas"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="YZZ-bQ-JNd"/>
+                    <navigationItem key="navigationItem" id="YZZ-bQ-JNd">
+                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="jsg-Cn-66o">
+                            <connections>
+                                <action selector="searchButtonTapped:" destination="pGg-6v-bdr" id="BzD-XX-8fM"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <segue destination="NZF-6D-hU8" kind="push" identifier="showStoryDetail" id="1ee-gP-Mga"/>
                     </connections>
@@ -264,6 +303,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="nGa-UM-Gil"/>
+        <segue reference="1ee-gP-Mga"/>
     </inferredMetricsTieBreakers>
 </document>

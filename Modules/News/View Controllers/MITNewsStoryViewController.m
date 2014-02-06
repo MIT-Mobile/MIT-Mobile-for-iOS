@@ -1,7 +1,12 @@
 #import "MITNewsStoryViewController.h"
 #import "MITNewsStory.h"
+#import "MITNewsImage.h"
+#import "MITNewsImageRepresentation.h"
 
-@interface MITNewsStoryViewController ()
+#import "MITAdditions.h"
+#import "UIImageView+WebCache.h"
+
+@interface MITNewsStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate>
 
 @end
 
@@ -25,12 +30,37 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    if (self.story) {
+        self.story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
+    }
+
+    self.bodyView.delegate = self;
+    [self.bodyView loadHTMLString:[self htmlBody]
+                          baseURL:nil];
+    
+    CGSize imageSize = self.coverImageView.bounds.size;
+    MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
+    
+    if (!imageRepresentation) {
+        self.coverImageViewHeightConstraint.constant = 0;
+    } else {
+        [self.coverImageView setImageWithURL:imageRepresentation.url
+                                   completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                                       self.coverImageViewHeightConstraint.constant = image.size.height;
+        }];
+    }
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)shareButtonTapped:(id)sender
+{
+    
 }
 
 - (NSString*)htmlBody
@@ -45,36 +75,57 @@
     [dateFormatter setDateFormat:@"MMM dd, y"];
     NSString *postDate = [dateFormatter stringFromDate:self.story.publishedAt];
     
-    NSArray *templateBindings = @[@{@"__TITLE__": self.story.title},
-                                  @{@"__AUTHOR__": self.story.author},
-                                  @{@"__DATE__": postDate},
-                                  @{@"__DEK__": self.story.dek},
-                                  @{@"__BODY__": self.story.body},
-                                  @{@"__GALLERY_COUNT__": @([self.story.galleryImages count])},
-                                  @{@"__BOOKMARKED__": @""},
-                                  @{@"__THUMBNAIL_URL__": @""},
-                                  @{@"__THUMBNAIL_WIDTH__": @""},
-                                  @{@"__THUMBNAIL_HEIGHT__": @""}];
+    NSDictionary *templateBindings = @{@"__TITLE__": (self.story.title ? self.story.title : [NSNull null]),
+                                       @"__AUTHOR__": (self.story.author ? self.story.author : [NSNull null]),
+                                       @"__DATE__": (postDate ? postDate : [NSNull null]),
+                                       @"__DEK__": (self.story.dek ? self.story.dek : [NSNull null]),
+                                       @"__BODY__": (self.story.body ? self.story.body : [NSNull null]),
+                                       @"__GALLERY_COUNT__": @([self.story.galleryImages count]),
+                                       @"__BOOKMARKED__": @"",
+                                       @"__THUMBNAIL_URL__": @"",
+                                       @"__THUMBNAIL_WIDTH__": @"",
+                                       @"__THUMBNAIL_HEIGHT__": @""};
     
-    [templateBindings enumerateObjectsUsingBlock:^(NSDictionary *bindings, NSUInteger idx, BOOL *stop) {
-        [bindings enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
-            if ([value isKindOfClass:[NSString class]]) {
-                [templateString replaceOccurrencesOfString:key
-                                                withString:(NSString*)value
-                                                   options:0
-                                                     range:NSMakeRange(0, [templateString length])];
-            } else if ([value respondsToSelector:@selector(stringValue)]) {
-                [templateString replaceOccurrencesOfString:key
-                                                withString:[value stringValue]
-                                                   options:0
-                                                     range:NSMakeRange(0, [templateString length])];
-            } else if ([value isKindOfClass:[NSNull class]]) {
-                
-            }
-        }];
+    [templateBindings enumerateKeysAndObjectsUsingBlock:^(NSString *placeholder, id value, BOOL *stop) {
+        if ([value isKindOfClass:[NSString class]]) {
+            [templateString replaceOccurrencesOfString:placeholder
+                                            withString:(NSString*)value
+                                               options:0
+                                                 range:NSMakeRange(0, [templateString length])];
+        } else if ([value respondsToSelector:@selector(stringValue)]) {
+            [templateString replaceOccurrencesOfString:placeholder
+                                            withString:[value stringValue]
+                                               options:0
+                                                 range:NSMakeRange(0, [templateString length])];
+        } else if ([value isKindOfClass:[NSNull class]]) {
+            [templateString replaceOccurrencesOfString:placeholder
+                                            withString:@""
+                                               options:0
+                                                 range:NSMakeRange(0, [templateString length])];
+        }
     }];
     
     return templateString;
+}
+
+
+#pragma mark UIWebViewDelegate
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    self.bodyView.scrollView.scrollEnabled = NO;
+    CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
+    self.bodyViewHeightConstraint.constant = size.height;
+    
+    [self.scrollView invalidateIntrinsicContentSize];
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+    DDLogWarn(@"story view failed to load: %@", error);
+}
+
+- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
+	return YES;
 }
 
 @end
