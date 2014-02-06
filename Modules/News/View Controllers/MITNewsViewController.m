@@ -5,6 +5,7 @@
 #import "MITNewsImage.h"
 #import "MITNewsImageRepresentation.h"
 
+#import "MITNewsStoryViewController.h"
 #import "MITNewsStoriesViewController.h"
 #import "MITNewsModelController.h"
 #import "MITNewsStoryCell.h"
@@ -103,14 +104,10 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
-
-    self.tableView.tableHeaderView = self.searchDisplayController.searchBar;
-    self.tableView.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchDisplayController.searchBar.frame));
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
     [self loadFetchedResultsControllers];
 
     NSError *fetchError = nil;
@@ -126,6 +123,9 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     }
 
     self.updating = YES;
+    
+    [super viewWillAppear:animated];
+    [self.navigationController setToolbarHidden:NO animated:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -141,16 +141,36 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
     
     if ([segue.identifier isEqualToString:@"showStoryDetail"]) {
-        //NSAssert([destinationViewController isKindOfClass:[MITNewsStoryDetailViewController class]],@"expected view controller of type %@, got %@",NSStringFromClass([MITNewsStoryDetailViewController class]),NSStringFromClass([destinationViewController class]));
-        //MITNewsStoryDetailViewController *storyDetailViewController = (MITNewsStoryDetailViewController*)destinationViewController;
+        if ([destinationViewController isKindOfClass:[MITNewsStoryViewController class]]) {
+            MITNewsStoryViewController *storyDetailViewController = (MITNewsStoryViewController*)destinationViewController;
+            
+            NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
+            MITNewsStory *story = [self storyAtIndexPath:selectedIndexPath];
+            
+            storyDetailViewController.managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+            storyDetailViewController.story = story;
+        } else {
+            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
+                      NSStringFromClass([MITNewsStoryViewController class]),
+                      NSStringFromClass([[segue destinationViewController] class]));
+        }
     } else if ([segue.identifier isEqualToString:@"showCategoryDetail"]) {
-        NSAssert([destinationViewController isKindOfClass:[MITNewsStoriesViewController class]],@"expected view controller of type %@, got %@",NSStringFromClass([MITNewsStoriesViewController class]),NSStringFromClass([destinationViewController class]));
-        MITNewsStoriesViewController *storiesViewController = (MITNewsStoriesViewController*)destinationViewController;
-        storiesViewController.managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+        if ([destinationViewController isKindOfClass:[MITNewsStoriesViewController class]]) {
+            MITNewsStoriesViewController *storiesViewController = (MITNewsStoriesViewController*)destinationViewController;
+            storiesViewController.managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
 
-        UIGestureRecognizer *gestureRecognizer = (UIGestureRecognizer*)sender;
-        MITNewsCategory *category = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
-        storiesViewController.category = category;
+            UIGestureRecognizer *gestureRecognizer = (UIGestureRecognizer*)sender;
+            MITNewsCategory *category = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
+            
+            storiesViewController.managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+            storiesViewController.category = category;
+        } else {
+            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
+                      NSStringFromClass([MITNewsStoriesViewController class]),
+                      NSStringFromClass([[segue destinationViewController] class]));
+        }
+    } else {
+        DDLogWarn(@"[%@] unknown segue '%@'",self,segue.identifier);
     }
 }
 
@@ -223,10 +243,6 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 
 - (void)setUpdateText:(NSString*)string animated:(BOOL)animated
 {
-    if (self.navigationController.toolbarHidden) {
-        self.navigationController.toolbarHidden = NO;
-    }
-    
     UILabel *updatingLabel = [[UILabel alloc] init];
     updatingLabel.attributedText = [[NSAttributedString alloc] initWithString:string attributes:[MITNewsViewController updateItemTextAttributes]];
     [updatingLabel sizeToFit];
@@ -247,7 +263,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 
 - (IBAction)searchButtonTapped:(UIBarButtonItem*)sender
 {
-    [self.searchDisplayController.searchBar becomeFirstResponder];
+    self.searchDisplayController.active = YES;
 }
 
 #pragma mark Table data helpers
@@ -256,7 +272,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     // Featured fetched results controller
     if (self.showFeaturedStoriesSection && !self.featuredStoriesFetchedResultsController) {
         NSFetchRequest *featuredStories = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
-        featuredStories.predicate = [NSPredicate predicateWithFormat:@"featured == YES"];
+        featuredStories.predicate = [NSPredicate predicateWithFormat:@"featured == NO"];
         featuredStories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
                                             [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
 
@@ -270,11 +286,11 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 
     if (!self.categoriesFetchedResultsController) {
         NSFetchRequest *categories = [NSFetchRequest fetchRequestWithEntityName:[MITNewsCategory entityName]];
-        categories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:NO]];
+        categories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
 
         NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:categories
                                                                                                    managedObjectContext:self.managedObjectContext
-                                                                                                     sectionNameKeyPath:@"name"
+                                                                                                     sectionNameKeyPath:nil
                                                                                                               cacheName:nil];
         fetchedResultsController.delegate = self;
         self.categoriesFetchedResultsController = fetchedResultsController;
@@ -299,6 +315,8 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 
                                             [self.inFlightDataRequests removeObject:MITNewsStoryFeaturedStoriesToken];
                                             if ([self.inFlightDataRequests count] == 0) {
+                                                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0]
+                                                              withRowAnimation:UITableViewRowAnimationAutomatic];
                                                 [self setUpdating:NO animated:YES];
                                             }
                                         }];
@@ -306,21 +324,35 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
         [modelController categories:^(NSArray *categories, NSError *error) {
             [categories enumerateObjectsUsingBlock:^(MITNewsCategory *category, NSUInteger idx, BOOL *stop) {
                 [self.inFlightDataRequests addObject:category];
-
+                
+                __weak MITNewsViewController *weakSelf = self;
                 [modelController storiesInCategory:category.identifier
                                              query:nil
                                             offset:0
                                              limit:self.numberOfStoriesPerCategory
                                         completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
-                                            [self.inFlightDataRequests removeObject:category];
-                                            if ([self.inFlightDataRequests count] == 0) {
-                                                [self setUpdating:NO animated:YES];
+                                            MITNewsViewController *blockSelf = weakSelf;
+                                            if (blockSelf) {
+                                                NSInteger sectionNumber = [[blockSelf.categoriesFetchedResultsController fetchedObjects] indexOfObject:category];
+                                                
+                                                if (self.showFeaturedStoriesSection) {
+                                                    sectionNumber += 1;
+                                                }
+                                                
+                                                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionNumber]
+                                                              withRowAnimation:UITableViewRowAnimationAutomatic];
+                                                
+                                                [blockSelf.inFlightDataRequests removeObject:category];
+                                                if ([blockSelf.inFlightDataRequests count] == 0) {
+                                                    [self setUpdating:NO animated:YES];
+                                                }
                                             }
                                         }];
             }];
         }];
     }
 }
+
 
 - (NSArray*)storiesInCategory:(MITNewsCategory*)category
 {
@@ -372,12 +404,11 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
     if ([self.inFlightDataRequests count] == 0) {
-        if (controller == self.featuredStoriesFetchedResultsController) {
+        if (controller == self.categoriesFetchedResultsController) {
             [self.cachedStoriesByCategory removeAllObjects];
         }
 
         [self setUpdating:NO animated:YES];
-        [self.tableView reloadData];
     }
 }
 
@@ -388,8 +419,16 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     if (tableView == self.tableView) {
         if (self.showFeaturedStoriesSection && (section == 0)) {
             MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:@"NewsCategoryHeader"];
-            headerView.textLabel.attributedText = [[NSAttributedString alloc] initWithString:@"Featured Stories" attributes:[MITNewsViewController headerTextAttributes]];
+            headerView.textLabel.attributedText = [[NSAttributedString alloc] initWithString:@"Featured Stories"
+                                                                                  attributes:[MITNewsViewController headerTextAttributes]];
             headerView.accessoryView.hidden = YES;
+            
+            UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+            if (recognizer) {
+                [self.categoriesByGestureRecognizer removeObjectForKey:recognizer];
+                [headerView removeGestureRecognizer:recognizer];
+            }
+            
             return headerView;
         } else {
             if (self.featuredStoriesFetchedResultsController) {
@@ -397,51 +436,24 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
             }
 
             MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:@"NewsCategoryHeader"];
-            id<NSFetchedResultsSectionInfo> sectionInfo = [self.categoriesFetchedResultsController sections][section];
-            headerView.textLabel.attributedText = [[NSAttributedString alloc] initWithString:[sectionInfo name] attributes:[MITNewsViewController headerTextAttributes]];
+            NSArray *categories = [self.categoriesFetchedResultsController fetchedObjects];
+            MITNewsCategory *category = categories[section];
+            headerView.textLabel.attributedText = [[NSAttributedString alloc] initWithString:category.name
+                                                                                  attributes:[MITNewsViewController headerTextAttributes]];
             headerView.accessoryView.hidden = NO;
-            return  headerView;
+            
+            UIGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
+            [headerView addGestureRecognizer:gesture];
+            
+            [self.categoriesByGestureRecognizer setObject:category forKey:gesture];
+            
+            // Keep track of the gesture recognizers we create so we can remove
+            // them later
+            [self.gestureRecognizersByView setObject:gesture forKey:headerView];
+            return headerView;
         }
     } else {
         return nil;
-    }
-}
-
-
-- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
-{
-    if (tableView == self.tableView) {
-        if ([view isKindOfClass:[UITableViewHeaderFooterView class]]) {
-            if (!(self.showFeaturedStoriesSection && (section == 0))) {
-                UITableViewHeaderFooterView *headerView = (UITableViewHeaderFooterView*)view;
-
-                UIGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
-
-                [headerView addGestureRecognizer:gesture];
-                [self.gestureRecognizersByView setObject:gesture forKey:view];
-
-                NSInteger actualSection = section;
-                if (self.featuredStoriesFetchedResultsController) {
-                    --actualSection;
-                }
-
-                MITNewsCategory *categoryObject = (MITNewsCategory*)[self.categoriesFetchedResultsController fetchedObjects][actualSection];
-                [self.categoriesByGestureRecognizer setObject:categoryObject forKey:gesture];
-            }
-        }
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didEndDisplayingHeaderView:(UIView *)view forSection:(NSInteger)section
-{
-    if (tableView == self.tableView) {
-        if ([view isKindOfClass:[UITableViewHeaderFooterView class]]) {
-            UIGestureRecognizer *gesture = [self.gestureRecognizersByView objectForKey:view];
-            
-            [view removeGestureRecognizer:gesture];
-            [self.gestureRecognizersByView removeObjectForKey:gesture];
-            [self.categoriesByGestureRecognizer removeObjectForKey:gesture];
-        }
     }
 }
 
@@ -495,6 +507,11 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     }
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self performSegueWithIdentifier:@"showStoryDetail" sender:self];
+}
+
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -505,7 +522,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
             numberOfSections += 1;
         }
 
-        numberOfSections += [[self.categoriesFetchedResultsController sections] count];
+        numberOfSections += [[self.categoriesFetchedResultsController fetchedObjects] count];
         return numberOfSections;
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
         return (self.searchResults ? 1 : 0);
@@ -518,15 +535,15 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 {
     if (tableView == self.tableView) {
         if (self.showFeaturedStoriesSection && (section == 0)) {
-            id<NSFetchedResultsSectionInfo> sectionInfo = [self.featuredStoriesFetchedResultsController sections][section];
-            return MIN(self.numberOfStoriesPerCategory,[sectionInfo numberOfObjects]);
+            NSArray *stories = [self.featuredStoriesFetchedResultsController fetchedObjects];
+            return MIN(self.numberOfStoriesPerCategory,[stories count]);
         } else {
             if (self.featuredStoriesFetchedResultsController) {
                 section -= 1;
             }
 
-            id<NSFetchedResultsSectionInfo> sectionInfo = [self.categoriesFetchedResultsController sections][section];
-            NSArray *storiesInCategory = [self storiesInCategory:[sectionInfo objects][0]];
+            MITNewsCategory *category = [self.categoriesFetchedResultsController fetchedObjects][section];
+            NSArray *storiesInCategory = [self storiesInCategory:category];
             return MIN(self.numberOfStoriesPerCategory,[storiesInCategory count]);
         }
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
@@ -584,12 +601,17 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
         storyCell.dekLabel.attributedText = [[NSAttributedString alloc] initWithString:story.dek attributes:[MITNewsViewController dekTextAttributes]];
     }
     
-    MITNewsImageRepresentation *representation = [story.coverImage bestImageForSize:MITNewsStoryCellDefaultImageSize];
+    MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:MITNewsStoryCellDefaultImageSize];
     [storyCell.storyImageView setImageWithURL:representation.url];
 }
 
 #pragma mark - UISearchDisplayController
 #pragma mark UISearchDisplayDelegate
+- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
+{
+    [self.view addSubview:controller.searchBar];
+}
+
 - (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
 {
     
