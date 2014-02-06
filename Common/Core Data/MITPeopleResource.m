@@ -12,7 +12,6 @@
     NSDictionary *params = @{@"q": query};
     
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITPeopleResourceName
-                                                    object:nil
                                                 parameters:params
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{

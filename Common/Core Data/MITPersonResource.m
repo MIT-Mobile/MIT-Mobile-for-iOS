@@ -12,9 +12,7 @@
     NSDictionary *object = @{@"person": uid};
     
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITPersonResourceName
-                                                    object:object
-                                                parameters:nil
-                                                completion:^(RKMappingResult *result, NSError *error) {
+                                                parameters:object
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                         if (!error) {
