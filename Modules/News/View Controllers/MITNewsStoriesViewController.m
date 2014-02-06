@@ -313,7 +313,7 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
         storyCell.dekLabel.attributedText = [[NSAttributedString alloc] initWithString:story.dek attributes:[MITNewsStoriesViewController dekTextAttributes]];
     }
 
-    MITNewsImageRepresentation *representation = [story.coverImage bestImageForSize:MITNewsStoryCellDefaultImageSize];
+    MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:MITNewsStoryCellDefaultImageSize];
     [storyCell.storyImageView setImageWithURL:representation.url];
 }
 

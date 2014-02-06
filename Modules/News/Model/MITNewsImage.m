@@ -26,7 +26,7 @@
     return imageMapping;
 }
 
-- (MITNewsImageRepresentation*)bestImageForSize:(CGSize)size
+- (MITNewsImageRepresentation*)bestRepresentationForSize:(CGSize)size
 {
 #warning Add logic for selecting the best fitting image (instead of just the smallest)
     NSArray *sortedRepresentations = [[self.representations allObjects] sortedArrayUsingComparator:^NSComparisonResult(MITNewsImageRepresentation *representation1,MITNewsImageRepresentation *representation2) {

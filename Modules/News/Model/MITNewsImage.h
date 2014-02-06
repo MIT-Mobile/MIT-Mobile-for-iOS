@@ -14,7 +14,7 @@
 @property (nonatomic, copy) NSSet *gallery;
 @property (nonatomic, strong) MITNewsStory *cover;
 
-- (MITNewsImageRepresentation*)bestImageForSize:(CGSize)size;
+- (MITNewsImageRepresentation*)bestRepresentationForSize:(CGSize)size;
 @end
 
 @interface MITNewsImage (CoreDataGeneratedAccessors)
