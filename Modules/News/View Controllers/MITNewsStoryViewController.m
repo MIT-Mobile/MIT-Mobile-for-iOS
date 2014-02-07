@@ -26,7 +26,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+
+    self.bodyView.scrollView.scrollEnabled = NO;
+    self.bodyView.delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -56,12 +58,10 @@
     }
 #endif
 
-    if (!imageURL) {
-        self.coverImageViewHeightConstraint.constant = 0;
-    } else {
+    if (imageURL) {
         [self.coverImageView setImageWithURL:imageURL
                                    completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-                                       self.coverImageViewHeightConstraint.constant = MIN(self.coverImageViewHeightConstraint.constant,image.size.height);
+                                       [self.view setNeedsUpdateConstraints];
         }];
     }
 }
@@ -70,6 +70,25 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)updateViewConstraints
+{
+    [super updateViewConstraints];
+
+    CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
+    self.bodyViewHeightConstraint.constant = size.height;
+
+    if (self.coverImageView.image) {
+        // Using 213 here because all the images from the News office should be around a
+        // 3:2 aspect ratio and, given a screen width of 320pt, a height of 213pt is within
+        // a point or two.
+        // TODO: If the width is going to change calculate the dimentions using the image view bounds instead of hardcoding the height
+        // (bskinner - 2014.02.07)
+        self.coverImageViewHeightConstraint.constant = MIN(213.,self.coverImageView.image.size.height);
+    } else {
+        self.coverImageViewHeightConstraint.constant = 0;
+    }
 }
 
 - (IBAction)shareButtonTapped:(id)sender
@@ -174,10 +193,7 @@
 #pragma mark UIWebViewDelegate
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-    self.bodyView.scrollView.scrollEnabled = NO;
-
-    CGSize size = [self.bodyView sizeThatFits:CGSizeMake(CGRectGetWidth(self.scrollView.frame), 0)];
-    self.bodyViewHeightConstraint.constant = size.height;
+    [self.view setNeedsUpdateConstraints];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
