@@ -202,23 +202,23 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="saG-db-2yb">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="213"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="0.0"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="320" id="621-j2-upP"/>
-                                            <constraint firstAttribute="height" constant="213" id="Ibn-iN-m8V"/>
+                                            <constraint firstAttribute="height" id="Ibn-iN-m8V"/>
                                         </constraints>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="Wbs-oX-4sa" appends="YES" id="eog-pg-HCo"/>
                                         </connections>
                                     </imageView>
                                     <webView contentMode="top" translatesAutoresizingMaskIntoConstraints="NO" id="xV7-HD-BKY">
-                                        <rect key="frame" x="0.0" y="213" width="320" height="291"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" name="alternateSelectedControlColor" catalog="System" colorSpace="catalog"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="291" id="4Ef-2p-HeE"/>
+                                            <constraint firstAttribute="height" constant="504" id="4Ef-2p-HeE"/>
                                         </constraints>
                                     </webView>
                                 </subviews>
