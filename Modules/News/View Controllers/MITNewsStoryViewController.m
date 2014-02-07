@@ -38,15 +38,20 @@
     self.bodyView.delegate = self;
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
-    
-    CGSize imageSize = self.coverImageView.bounds.size;
-    MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
+
+
+    __block NSURL *imageURL = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        CGSize imageSize = self.coverImageView.bounds.size;
+        MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
+        imageURL = imageRepresentation.url;
+    }];
 
 #if defined(DEBUG)
 #warning Remove this section once the news API is updated
-    NSURL *imageURL = [NSURL URLWithString:@"http://img.mit.edu/newsoffice/images/article_images/original/20140205163909-0.jpg"];
-#else
-    NSURL *imageURL = imageRepresentation.url;
+    if (imageURL == nil) {
+        imageURL = [NSURL URLWithString:@"http://img.mit.edu/newsoffice/images/article_images/original/20140205163909-0.jpg"];
+    }
 #endif
 
     if (!imageURL) {
@@ -82,22 +87,26 @@
     NSError *error = nil;
     NSMutableString *templateString = [NSMutableString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:&error];
     NSAssert(templateString, @"failed to load News story HTML template");
-    
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"MMM dd, y"];
-    NSString *postDate = [dateFormatter stringFromDate:self.story.publishedAt];
-    
-    NSDictionary *templateBindings = @{@"__TITLE__": (self.story.title ? self.story.title : [NSNull null]),
-                                       @"__AUTHOR__": (self.story.author ? self.story.author : [NSNull null]),
-                                       @"__DATE__": (postDate ? postDate : [NSNull null]),
-                                       @"__DEK__": (self.story.dek ? self.story.dek : [NSNull null]),
-                                       @"__BODY__": (self.story.body ? self.story.body : [NSNull null]),
-                                       @"__GALLERY_COUNT__": @([self.story.galleryImages count]),
-                                       @"__BOOKMARKED__": @"",
-                                       @"__THUMBNAIL_URL__": @"",
-                                       @"__THUMBNAIL_WIDTH__": @"",
-                                       @"__THUMBNAIL_HEIGHT__": @""};
-    
+
+    __block NSDictionary *templateBindings = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"MMM dd, y"];
+        NSString *postDate = [dateFormatter stringFromDate:self.story.publishedAt];
+
+        templateBindings = @{@"__TITLE__": (self.story.title ? self.story.title : [NSNull null]),
+                             @"__AUTHOR__": (self.story.author ? self.story.author : [NSNull null]),
+                             @"__DATE__": (postDate ? postDate : [NSNull null]),
+                             @"__DEK__": (self.story.dek ? self.story.dek : [NSNull null]),
+                             @"__BODY__": (self.story.body ? self.story.body : [NSNull null]),
+                             @"__GALLERY_COUNT__": @([self.story.galleryImages count]),
+                             @"__BOOKMARKED__": @"",
+                             @"__THUMBNAIL_URL__": @"",
+                             @"__THUMBNAIL_WIDTH__": @"",
+                             @"__THUMBNAIL_HEIGHT__": @""};
+    }];
+
+
     [templateBindings enumerateKeysAndObjectsUsingBlock:^(NSString *placeholder, id value, BOOL *stop) {
         if ([value isKindOfClass:[NSString class]]) {
             [templateString replaceOccurrencesOfString:placeholder
