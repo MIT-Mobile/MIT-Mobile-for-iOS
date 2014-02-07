@@ -2,8 +2,10 @@
 #import "MITNewsStory.h"
 #import "MITNewsImage.h"
 #import "MITNewsImageRepresentation.h"
+#import "MITNewsMediaGalleryViewController.h"
 
 #import "MITAdditions.h"
+#import "MITCoreDataController.h"
 #import "UIImageView+WebCache.h"
 
 @interface MITNewsStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate>
@@ -78,6 +80,45 @@
 - (IBAction)unwindFromImageGallery:(UIStoryboardSegue *)sender
 {
     DDLogVerbose(@"Unwinding from %@",[sender sourceViewController]);
+}
+
+- (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
+{
+    if ([identifier isEqualToString:@"showMediaGallery"]) {
+        __block NSInteger numberOfGalleryImages = 0;
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
+            numberOfGalleryImages = [story.galleryImages count];
+        }];
+
+        return (numberOfGalleryImages > 0);
+    } else {
+        return YES;
+    }
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"showMediaGallery"]) {
+        MITNewsMediaGalleryViewController *viewController = (MITNewsMediaGalleryViewController*)[segue destinationViewController];
+
+        NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        managedObjectContext.parentContext = self.managedObjectContext;
+        viewController.managedObjectContext = managedObjectContext;
+
+        NSMutableArray *newsImages = [[NSMutableArray alloc] init];
+
+        [self.managedObjectContext performBlockAndWait:^{
+            [self.story.galleryImages enumerateObjectsUsingBlock:^(MITNewsImage *image, NSUInteger idx, BOOL *stop) {
+                MITNewsImageRepresentation *representation = [image bestRepresentationForSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+                if (representation) {
+                    [newsImages addObject:representation];
+                }
+            }];
+        }];
+
+        viewController.galleryImages = newsImages;
+    }
 }
 
 - (NSString*)htmlBody
