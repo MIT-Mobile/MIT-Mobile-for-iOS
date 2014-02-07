@@ -34,20 +34,17 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    if (self.story) {
-        self.story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
-    }
 
-    self.bodyView.delegate = self;
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
 
 
     __block NSURL *imageURL = nil;
     [self.managedObjectContext performBlockAndWait:^{
+        MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
+
         CGSize imageSize = self.coverImageView.bounds.size;
-        MITNewsImageRepresentation *imageRepresentation = [self.story.coverImage bestRepresentationForSize:imageSize];
+        MITNewsImageRepresentation *imageRepresentation = [story.coverImage bestRepresentationForSize:imageSize];
         imageURL = imageRepresentation.url;
     }];
 
@@ -128,10 +125,12 @@
         NSMutableArray *newsImages = [[NSMutableArray alloc] init];
 
         [self.managedObjectContext performBlockAndWait:^{
-            [self.story.galleryImages enumerateObjectsUsingBlock:^(MITNewsImage *image, NSUInteger idx, BOOL *stop) {
+            MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
+
+            [story.galleryImages enumerateObjectsUsingBlock:^(MITNewsImage *image, NSUInteger idx, BOOL *stop) {
                 MITNewsImageRepresentation *representation = [image bestRepresentationForSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
                 if (representation) {
-                    [newsImages addObject:representation];
+                    [newsImages addObject:[managedObjectContext objectWithID:[representation objectID]]];
                 }
             }];
         }];
@@ -150,16 +149,18 @@
 
     __block NSDictionary *templateBindings = nil;
     [self.managedObjectContext performBlockAndWait:^{
+        MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
+
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"MMM dd, y"];
-        NSString *postDate = [dateFormatter stringFromDate:self.story.publishedAt];
+        NSString *postDate = [dateFormatter stringFromDate:story.publishedAt];
 
-        templateBindings = @{@"__TITLE__": (self.story.title ? self.story.title : [NSNull null]),
-                             @"__AUTHOR__": (self.story.author ? self.story.author : [NSNull null]),
+        templateBindings = @{@"__TITLE__": (story.title ? story.title : [NSNull null]),
+                             @"__AUTHOR__": (story.author ? story.author : [NSNull null]),
                              @"__DATE__": (postDate ? postDate : [NSNull null]),
-                             @"__DEK__": (self.story.dek ? self.story.dek : [NSNull null]),
-                             @"__BODY__": (self.story.body ? self.story.body : [NSNull null]),
-                             @"__GALLERY_COUNT__": @([self.story.galleryImages count]),
+                             @"__DEK__": (story.dek ? story.dek : [NSNull null]),
+                             @"__BODY__": (story.body ? story.body : [NSNull null]),
+                             @"__GALLERY_COUNT__": @([story.galleryImages count]),
                              @"__BOOKMARKED__": @"",
                              @"__THUMBNAIL_URL__": @"",
                              @"__THUMBNAIL_WIDTH__": @"",

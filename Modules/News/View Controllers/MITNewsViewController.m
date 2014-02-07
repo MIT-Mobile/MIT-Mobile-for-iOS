@@ -147,8 +147,10 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
             NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
             MITNewsStory *story = [self storyAtIndexPath:selectedIndexPath];
 
-            storyDetailViewController.managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-            storyDetailViewController.story = story;
+            NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+            managedObjectContext.parentContext = self.managedObjectContext;
+            storyDetailViewController.managedObjectContext = managedObjectContext;
+            storyDetailViewController.story = (MITNewsStory*)[managedObjectContext objectWithID:[story objectID]];
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
                       NSStringFromClass([MITNewsStoryViewController class]),
@@ -157,13 +159,13 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     } else if ([segue.identifier isEqualToString:@"showCategoryDetail"]) {
         if ([destinationViewController isKindOfClass:[MITNewsStoriesViewController class]]) {
             MITNewsStoriesViewController *storiesViewController = (MITNewsStoriesViewController*)destinationViewController;
-            storiesViewController.managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
 
             UIGestureRecognizer *gestureRecognizer = (UIGestureRecognizer*)sender;
             MITNewsCategory *category = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
 
-            storiesViewController.managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-            storiesViewController.category = category;
+            NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+            storiesViewController.managedObjectContext = managedObjectContext;
+            storiesViewController.category = (MITNewsCategory*)[managedObjectContext objectWithID:[category objectID]];
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
                       NSStringFromClass([MITNewsStoriesViewController class]),
@@ -256,10 +258,16 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 - (IBAction)tableSectionHeaderTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     MITNewsCategory *category = [self.categoriesByGestureRecognizer objectForKey:gestureRecognizer];
+
     if (category) {
-        DDLogVerbose(@"Recieved tap on section header for category with name '%@'",category.name);
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsCategory *localCategory = (MITNewsCategory*)[self.managedObjectContext objectWithID:[category objectID]];
+            DDLogVerbose(@"Recieved tap on section header for category with name '%@'",localCategory.name);
+        }];
+
         [self performSegueWithIdentifier:@"showCategoryDetail" sender:gestureRecognizer];
     }
+
 }
 
 - (IBAction)searchButtonTapped:(UIBarButtonItem*)sender
@@ -366,11 +374,17 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     NSArray *cachedStories = [self.cachedStoriesByCategory objectForKey:category];
 
     if (!cachedStories) {
+        __block NSArray *stories = nil;
         NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
                                      [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
 
-        cachedStories = [category.stories sortedArrayUsingDescriptors:sortDescriptors];
-        [self.cachedStoriesByCategory setObject:cachedStories forKey:category];
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsCategory *blockCategory = (MITNewsCategory*)[self.managedObjectContext objectWithID:[category objectID]];
+            stories = [blockCategory.stories sortedArrayUsingDescriptors:sortDescriptors];
+        }];
+
+        [self.cachedStoriesByCategory setObject:stories forKey:category];
+        cachedStories = stories;
     }
 
     return cachedStories;
@@ -415,18 +429,18 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if (tableView == self.tableView) {
+        MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:@"NewsCategoryHeader"];
+        UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
+        if (recognizer) {
+            [headerView removeGestureRecognizer:recognizer];
+            [self.categoriesByGestureRecognizer removeObjectForKey:recognizer];
+            [self.gestureRecognizersByView removeObjectForKey:headerView];
+        }
+
         if (self.showFeaturedStoriesSection && (section == 0)) {
-            MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:@"NewsCategoryHeader"];
             headerView.textLabel.attributedText = [[NSAttributedString alloc] initWithString:@"Featured Stories"
                                                                                   attributes:[MITNewsViewController headerTextAttributes]];
             headerView.accessoryView.hidden = YES;
-
-            UIGestureRecognizer *recognizer = [self.gestureRecognizersByView objectForKey:headerView];
-            if (recognizer) {
-                [headerView removeGestureRecognizer:recognizer];
-                [self.categoriesByGestureRecognizer removeObjectForKey:recognizer];
-                [self.gestureRecognizersByView removeObjectForKey:headerView];
-            }
 
             return headerView;
         } else {
@@ -434,21 +448,26 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
                 section -= 1;
             }
 
-            MITDisclosureHeaderView *headerView = (MITDisclosureHeaderView*)[tableView dequeueReusableHeaderFooterViewWithIdentifier:@"NewsCategoryHeader"];
-            NSArray *categories = [self.categoriesFetchedResultsController fetchedObjects];
-            MITNewsCategory *category = categories[section];
-            headerView.textLabel.attributedText = [[NSAttributedString alloc] initWithString:category.name
-                                                                                  attributes:[MITNewsViewController headerTextAttributes]];
-            headerView.accessoryView.hidden = NO;
-
             UIGestureRecognizer *gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tableSectionHeaderTapped:)];
             [headerView addGestureRecognizer:gesture];
-
-            [self.categoriesByGestureRecognizer setObject:category forKey:gesture];
 
             // Keep track of the gesture recognizers we create so we can remove
             // them later
             [self.gestureRecognizersByView setObject:gesture forKey:headerView];
+
+            NSArray *categories = [self.categoriesFetchedResultsController fetchedObjects];
+            [self.categoriesByGestureRecognizer setObject:categories[section] forKey:gesture];
+
+            __block NSString *categoryName = nil;
+            [self.managedObjectContext performBlockAndWait:^{
+                MITNewsCategory *category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[categories[section] objectID]];
+                categoryName = category.name;
+            }];
+
+            headerView.textLabel.attributedText = [[NSAttributedString alloc] initWithString:categoryName
+                                                                                  attributes:[MITNewsViewController headerTextAttributes]];
+
+            headerView.accessoryView.hidden = NO;
             return headerView;
         }
     } else {
@@ -474,8 +493,17 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     }
 
     if (story) {
+        __block NSString *title = nil;
+        __block NSString *dek = nil;
+
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsStory *blockStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
+            title = blockStory.title;
+            dek = blockStory.dek;
+        }];
+
         CGFloat titleHeight = 0.;
-        if ([story.title length]) {
+        if ([title length]) {
             NSAttributedString *titleString = [[NSAttributedString alloc] initWithString:story.title attributes:[MITNewsViewController titleTextAttributes]];
 
             CGRect titleRect = [titleString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
@@ -486,7 +514,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
         }
 
         CGFloat dekHeight = 0.;
-        if ([story.dek length]) {
+        if ([dek length]) {
             NSAttributedString *dekString = [[NSAttributedString alloc] initWithString:story.dek attributes:[MITNewsViewController dekTextAttributes]];
             CGRect dekRect = [dekString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
                                                      options:(NSStringDrawingUsesFontLeading |
@@ -562,18 +590,21 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     }
 
     if (story) {
-        NSString *identifier = nil;
 
         // TODO: Add logic to handle the StoryExternalCell.
         //  Right now there is no way to determine which cells are
         //  external so they'll just appear as StoryCells with
         //  no title, a dek and an image.
         // (2014.01.22 - bskinner)
-        if ([story.dek length]) {
-            identifier = @"StoryCell";
-        } else {
-            identifier = @"StoryNoDekCell";
-        }
+        __block NSString *identifier = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsStory *blockStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
+            if ([blockStory.dek length])  {
+                identifier = @"StoryCell";
+            } else {
+                identifier = @"StoryNoDekCell";
+            }
+        }];
 
         MITNewsStoryCell *cell = (MITNewsStoryCell*)[tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
         [self configureCell:cell forRowAtIndexPath:indexPath tableView:tableView];
@@ -592,18 +623,30 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
         story = self.searchResults[indexPath.row];
     }
 
+
+    __block NSString *title = nil;
+    __block NSString *dek = nil;
+    __block NSURL *imageURL = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        MITNewsStory *blockStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
+        title = blockStory.title;
+        dek = blockStory.dek;
+        MITNewsImageRepresentation *representation = [blockStory.coverImage bestRepresentationForSize:MITNewsStoryCellDefaultImageSize];
+        imageURL = representation.url;
+    }];
+
+
     MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
+    storyCell.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:title
+                                                                          attributes:[MITNewsViewController titleTextAttributes]];
 
-    storyCell.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:story.title attributes:[MITNewsViewController titleTextAttributes]];
-
-    if ([story.dek length]) {
-        storyCell.dekLabel.attributedText = [[NSAttributedString alloc] initWithString:story.dek attributes:[MITNewsViewController dekTextAttributes]];
+    if ([dek length]) {
+        storyCell.dekLabel.attributedText = [[NSAttributedString alloc] initWithString:dek
+                                                                            attributes:[MITNewsViewController dekTextAttributes]];
     }
 
-    MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:MITNewsStoryCellDefaultImageSize];
-
-    if (representation) {
-        [storyCell.storyImageView setImageWithURL:representation.url];
+    if (imageURL) {
+        [storyCell.storyImageView setImageWithURL:imageURL];
     }
 }
 

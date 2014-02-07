@@ -72,19 +72,18 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    // Make sure the category is in the correct MOC!
-    if ([self.category managedObjectContext] != self.managedObjectContext) {
-        self.category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[self.category objectID]];
-    }
-
-    if (self.category) {
-        self.title = self.category.name;
-    } else {
-        self.title = @"All Stories";
-    }
-
     [super viewWillAppear:animated];
 
+    __block NSString *title = @"Top Stories";
+
+    if (self.category) {
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsCategory *category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[self.category objectID]];
+            title = category.name;
+        }];
+    }
+
+    self.title = title;
 }
 
 - (void)didReceiveMemoryWarning
@@ -96,14 +95,8 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
 - (void)setCategory:(MITNewsCategory *)category
 {
     if (![_category isEqual:category]) {
-        if (self.managedObjectContext) {
-            _category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[category objectID]];
-        } else {
-            _category = category;
-        }
-
-
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
+
         if (_category) {
             fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category == %@",self.category];
         }
