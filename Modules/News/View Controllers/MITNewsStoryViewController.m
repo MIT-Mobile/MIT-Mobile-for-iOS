@@ -8,7 +8,7 @@
 #import "MITCoreDataController.h"
 #import "UIImageView+WebCache.h"
 
-@interface MITNewsStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate>
+@interface MITNewsStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate,UIActivityItemSource>
 
 @end
 
@@ -90,7 +90,19 @@
 
 - (IBAction)shareButtonTapped:(id)sender
 {
-    
+    NSMutableArray *items = [NSMutableArray arrayWithObject:self];
+    [self.managedObjectContext performBlockAndWait:^{
+        MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
+        [items addObject:story.sourceURL];
+    }];
+
+    UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items
+                                                                                        applicationActivities:nil];
+    sharingViewController.excludedActivityTypes = @[UIActivityTypePrint,
+                                                    UIActivityTypeAssignToContact,
+                                                    UIActivityTypeSaveToCameraRoll];
+
+    [self presentViewController:sharingViewController animated:YES completion:nil];
 }
 
 - (IBAction)unwindFromImageGallery:(UIStoryboardSegue *)sender
@@ -211,4 +223,19 @@
     return YES;
 }
 
+#pragma mark UIActivityItemSource
+- (id)activityViewControllerPlaceholderItem:(UIActivityViewController *)activityViewController
+{
+    return [NSString string];
+}
+
+- (id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(NSString *)activityType
+{
+    DDLogVerbose(@"Activity type: %@", activityType);
+    if ([activityType isEqualToString:@"com.apple.UIKit.activity.CopyToPasteboard"]) {
+        return self.story.sourceURL;
+    } else {
+        return self.story.title;
+    }
+}
 @end
