@@ -1,4 +1,4 @@
-#import "MITNewsGalleryImageViewController.h"
+#import "MITNewsImageViewController.h"
 #import "UIImageView+WebCache.h"
 
 #if CGFLOAT_IS_DOUBLE == 1
@@ -7,12 +7,11 @@
 #define CGFLOAT_EPSILON FLT_EPSILON
 #endif
 
-@interface MITNewsGalleryImageViewController () <UIScrollViewDelegate>
-@property (nonatomic) CGSize imageSize;
+@interface MITNewsImageViewController () <UIScrollViewDelegate>
 
 @end
 
-@implementation MITNewsGalleryImageViewController
+@implementation MITNewsImageViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -59,17 +58,17 @@
 }
 
 // Copied from Apple's PhotoScroller sample application
-//
 - (void)setZoomScalesForCurrentBounds
 {
     CGSize boundsSize = self.view.bounds.size;
+    CGSize imageSize = self.imageView.image.size;
 
     // calculate min/max zoomscale
-    CGFloat xScale = boundsSize.width  / _imageSize.width;    // the scale needed to perfectly fit the image width-wise
-    CGFloat yScale = boundsSize.height / _imageSize.height;   // the scale needed to perfectly fit the image height-wise
+    CGFloat xScale = boundsSize.width  / imageSize.width;    // the scale needed to perfectly fit the image width-wise
+    CGFloat yScale = boundsSize.height / imageSize.height;   // the scale needed to perfectly fit the image height-wise
 
     // fill width if the image and phone are both portrait or both landscape; otherwise take smaller scale
-    BOOL imagePortrait = _imageSize.height > _imageSize.width;
+    BOOL imagePortrait = imageSize.height > imageSize.width;
     BOOL phonePortrait = boundsSize.height > boundsSize.width;
     CGFloat minScale = imagePortrait == phonePortrait ? xScale : MIN(xScale, yScale);
 

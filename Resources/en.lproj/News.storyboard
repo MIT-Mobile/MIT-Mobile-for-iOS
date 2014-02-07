@@ -17,10 +17,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <containerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ywu-5z-mdl">
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ywu-5z-mdl">
                                 <rect key="frame" x="0.0" y="20" width="320" height="548"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <segue destination="s7x-YS-u7y" kind="embed" identifier="embedPageViewController" id="htc-Dm-RH8"/>
                                 </connections>
@@ -129,10 +129,10 @@
             </objects>
             <point key="canvasLocation" x="2864" y="186"/>
         </scene>
-        <!--News Gallery Image View Controller-->
+        <!--News Image View Controller-->
         <scene sceneID="d8m-aD-Kul">
             <objects>
-                <viewController storyboardIdentifier="NewsGalleryImageViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="lOb-PY-Ixw" customClass="MITNewsGalleryImageViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NewsGalleryImageViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="lOb-PY-Ixw" customClass="MITNewsImageViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="h8M-vr-nxs"/>
                         <viewControllerLayoutGuide type="bottom" id="ACK-of-kOs"/>
@@ -164,21 +164,19 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="sEE-Ak-VPA" secondAttribute="trailing" id="1w0-nr-ebr"/>
+                            <constraint firstItem="ACK-of-kOs" firstAttribute="top" secondItem="sEE-Ak-VPA" secondAttribute="bottom" id="Dgv-Db-3NT"/>
                             <constraint firstAttribute="centerX" secondItem="adP-dd-gzO" secondAttribute="centerX" id="NGN-nV-1iq"/>
                             <constraint firstItem="sEE-Ak-VPA" firstAttribute="leading" secondItem="nsU-Mo-T4t" secondAttribute="leading" id="NZp-tO-5ii"/>
                             <constraint firstAttribute="centerY" secondItem="adP-dd-gzO" secondAttribute="centerY" id="a1a-F1-y98"/>
-                            <constraint firstItem="sEE-Ak-VPA" firstAttribute="top" secondItem="h8M-vr-nxs" secondAttribute="bottom" id="hB5-qp-qbX"/>
-                            <constraint firstItem="ACK-of-kOs" firstAttribute="top" secondItem="sEE-Ak-VPA" secondAttribute="bottom" id="vhl-FD-ae9"/>
+                            <constraint firstItem="sEE-Ak-VPA" firstAttribute="top" secondItem="h8M-vr-nxs" secondAttribute="bottom" id="xgY-Ns-YaG"/>
                         </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
-                        <outlet property="bottomContentConstraint" destination="vhl-FD-ae9" id="NDL-8a-0pY"/>
                         <outlet property="imageLoadingIndicator" destination="adP-dd-gzO" id="UNs-QI-0ge"/>
                         <outlet property="imageView" destination="zaA-f6-cfE" id="FYo-fW-hTt"/>
                         <outlet property="leadingContentConstraint" destination="NZp-tO-5ii" id="P4z-Jd-d5P"/>
                         <outlet property="scrollView" destination="sEE-Ak-VPA" id="gbO-go-uZr"/>
-                        <outlet property="topContentConstraint" destination="hB5-qp-qbX" id="oZj-x9-f4N"/>
                         <outlet property="trailingContentConstraint" destination="1w0-nr-ebr" id="scO-uv-iR6"/>
                         <outlet property="view" destination="nsU-Mo-T4t" id="1Kv-ol-Sls"/>
                     </connections>
@@ -267,7 +265,7 @@
                 <tapGestureRecognizer id="Wbs-oX-4sa">
                     <connections>
                         <outlet property="delegate" destination="NZF-6D-hU8" id="vzT-cs-dFi"/>
-                        <segue destination="iDy-Gm-VsE" kind="modal" id="6bq-jq-8pj"/>
+                        <segue destination="iDy-Gm-VsE" kind="modal" identifier="showMediaGallery" id="6bq-jq-8pj"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

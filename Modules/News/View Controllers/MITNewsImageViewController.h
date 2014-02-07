@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface MITNewsGalleryImageViewController : UIViewController
+@interface MITNewsImageViewController : UIViewController
 @property (nonatomic,weak) IBOutlet UIActivityIndicatorView *imageLoadingIndicator;
 @property (nonatomic,weak) IBOutlet UIScrollView *scrollView;
 @property (nonatomic,weak) IBOutlet UIImageView *imageView;
