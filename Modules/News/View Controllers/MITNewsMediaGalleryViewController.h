@@ -2,7 +2,7 @@
 
 @interface MITNewsMediaGalleryViewController : UIViewController
 
-// Should be an array is MITNewsImageRepresentation objects
+// Should be an array of MITNewsImageRepresentation objects
 @property (nonatomic,strong) NSArray *galleryImages;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 

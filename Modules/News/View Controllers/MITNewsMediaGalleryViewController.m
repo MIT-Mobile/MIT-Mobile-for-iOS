@@ -1,4 +1,9 @@
 #import "MITNewsMediaGalleryViewController.h"
+#import "MITNewsImageViewController.h"
+
+#import "MITNewsImageRepresentation.h"
+
+
 #import "MITAdditions.h"
 
 @interface MITNewsMediaGalleryViewController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate>
@@ -24,7 +29,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-
+    DDLogVerbose(@"View will appear!");
 }
 
 - (void)didReceiveMemoryWarning
@@ -40,10 +45,31 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    NSAssert(self.managedObjectContext, @"parent did not assign a managed object context");
+
     if ([segue.identifier isEqualToString:@"embedPageViewController"]) {
         UIPageViewController *pageViewController = [segue destinationViewController];
-        pageViewController.dataSource = self;
-        pageViewController.delegate = self;
+        pageViewController.view.backgroundColor = [UIColor clearColor];
+
+        NSMutableArray *imageViewControllers = [[NSMutableArray alloc] init];
+        [self.managedObjectContext performBlockAndWait:^{
+            [self.galleryImages enumerateObjectsUsingBlock:^(MITNewsImageRepresentation *imageRepresentation, NSUInteger idx, BOOL *stop) {
+                MITNewsImageRepresentation *localRepresentation = imageRepresentation;
+                if (localRepresentation.managedObjectContext != self.managedObjectContext) {
+                    localRepresentation = (MITNewsImageRepresentation*)[self.managedObjectContext objectWithID:[imageRepresentation objectID]];
+                }
+
+                NSURL *url = localRepresentation.url;
+                MITNewsImageViewController *imageViewController = [[MITNewsImageViewController alloc] initWithNibName:@"MITNewsImageViewController" bundle:nil];
+                imageViewController.imageURL = url;
+                [imageViewControllers addObject:imageViewControllers];
+            }];
+
+            [pageViewController setViewControllers:imageViewControllers
+                                         direction:UIPageViewControllerNavigationDirectionForward
+                                          animated:NO
+                                        completion:nil];
+        }];
     }
 }
 
@@ -62,5 +88,11 @@
     self.navigationBar.hidden = !self.navigationBar.hidden;
     self.captionView.hidden = !self.captionView.hidden;
 }
+
+#pragma mark - UIPageViewController
+#pragma mark UIPageViewControllerDataSource
+
+
+#pragma mark UIPageViewControllerDelegate
 
 @end
