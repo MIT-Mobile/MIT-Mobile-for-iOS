@@ -253,11 +253,6 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
 {
     if (tableView == self.tableView) {
         id<NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController sections][section];
-        NSInteger numberOfRows = [sectionInfo numberOfObjects];
-
-        if (numberOfRows) {
-            return numberOfRows + 1;
-        }
         return [sectionInfo numberOfObjects];
     } else {
         return 0;
