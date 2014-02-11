@@ -2,7 +2,8 @@
 
 typedef enum {
     ExplanatorySectionHeader = 0,
-    ExplanatorySectionFooter
+    ExplanatorySectionFooter,
+    ExplanatorySectionCopyright
 } ExplanatorySectionLabelType;
 
 @interface ExplanatorySectionLabel : UIView
@@ -11,6 +12,7 @@ typedef enum {
 @property (nonatomic, retain) NSString *text;
 @property (nonatomic, assign) ExplanatorySectionLabelType type;
 @property (nonatomic, assign) CGFloat fontSize;
+@property (nonatomic, assign) NSTextAlignment textAlignment;
 
 - (id)initWithType:(ExplanatorySectionLabelType)type;
 
