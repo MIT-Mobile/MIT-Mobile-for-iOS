@@ -45,6 +45,7 @@ NSString * const labelText = @"Some Text";
 
 @property (nonatomic, retain) UILabel *label;
 @property (nonatomic, retain) UIFont *font;
+@property (nonatomic, assign, getter = hasCustomTextAlignment) BOOL customTextAlignment;
 
 + (UIFont *)labelFont;
 + (UIEdgeInsets)headerInsetsWithAccessory;
@@ -65,9 +66,9 @@ NSString * const labelText = @"Some Text";
     self = [super initWithFrame:CGRectZero];
     if (self) {
         _label = [[UILabel alloc] initWithFrame:CGRectZero];
-        _label.textAlignment = (self.accessoryView || NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? NSTextAlignmentLeft : NSTextAlignmentCenter;
         [self addSubview:self.label];
         _accessoryView = nil;
+        _customTextAlignment = NO;
         _text = nil;
         _font = [[[self class] labelFont] retain];
         _type = type;
@@ -110,12 +111,10 @@ NSString * const labelText = @"Some Text";
     }
 }
 
-- (NSTextAlignment)textAlignment {
-    return self.label.textAlignment;
-}
-
 - (void)setTextAlignment:(NSTextAlignment)textAlignment {
-    self.label.textAlignment = textAlignment;
+    _textAlignment = textAlignment;
+    self.customTextAlignment = YES;
+    [self setNeedsLayout];
 }
 
 - (void)layoutSubviews {
@@ -158,6 +157,11 @@ NSString * const labelText = @"Some Text";
     self.label.text = self.text;
     self.label.font = self.font;
     self.label.backgroundColor = [UIColor clearColor];
+    if (self.hasCustomTextAlignment) {
+        self.label.textAlignment = self.textAlignment;
+    } else {
+        self.label.textAlignment = (self.accessoryView || NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) ? NSTextAlignmentLeft : NSTextAlignmentCenter;
+    }
     self.label.lineBreakMode = NSLineBreakByWordWrapping;
     self.label.numberOfLines = 0;
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {

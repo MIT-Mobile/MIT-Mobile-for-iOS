@@ -22,19 +22,27 @@
     self = [super initWithFrame:CGRectZero];
     if (self)
     {
+        UIColor *textColor = [UIColor blackColor];
+        UIActivityIndicatorViewStyle indicatorStyle = UIActivityIndicatorViewStyleGray;
+        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+            textColor = [UIColor whiteColor];
+            indicatorStyle = UIActivityIndicatorViewStyleWhite;
+        }
+        
         self.titleView = [[[UILabel alloc] init] autorelease];
         self.titleView.backgroundColor = [UIColor clearColor];
         self.titleView.textAlignment = NSTextAlignmentCenter;
-        self.titleView.textColor = [UIColor whiteColor];
+        self.titleView.textColor = textColor;
         self.titleView.font = [UIFont boldSystemFontOfSize:20.0];
         self.titleView.adjustsFontSizeToFitWidth=YES;
-        self.titleView.minimumFontSize=15;
+        self.titleView.minimumScaleFactor = 0.75;
         self.titleView.lineBreakMode = NSLineBreakByTruncatingTail;
         self.titleView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin);
         self.titleView.numberOfLines = 1;
         [self addSubview:self.titleView];
         
-        self.activityView = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
+        
+        self.activityView = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:indicatorStyle] autorelease];
         self.activityView.backgroundColor = [UIColor clearColor];
         [self addSubview:self.activityView];
     }
