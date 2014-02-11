@@ -121,8 +121,6 @@
 		2CCF81521636F69900DE273F /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81451636F69900DE273F /* DDFileLogger.m */; };
 		2CCF81531636F69900DE273F /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81471636F69900DE273F /* DDLog.m */; };
 		2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF81491636F69900DE273F /* DDTTYLogger.m */; };
-		2CCF81551636F69900DE273F /* ContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF814C1636F69900DE273F /* ContextFilterLogFormatter.m */; };
-		2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCF814E1636F69900DE273F /* DispatchQueueLogFormatter.m */; };
 		2CD12D4F1360584F00A73ACA /* facilities in Resources */ = {isa = PBXBuildFile; fileRef = 2CD12D4E1360584F00A73ACA /* facilities */; };
 		2CD27AAB1709D3EF002E220E /* MGSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD27AAA1709D3EF002E220E /* MGSGeometry.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
@@ -298,6 +296,9 @@
 		DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9EFBD110FE7D8900F5F07E /* SettingsModule.m */; };
 		DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B48C10C9BB7300BDA774 /* AboutModule.m */; };
 		DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA3B6F710CB126200BDA774 /* MITConstants.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		DEA8767F18AAE9AD00327823 /* DDContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA8767A18AAE9AD00327823 /* DDContextFilterLogFormatter.m */; };
+		DEA8768018AAE9AD00327823 /* DDDispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA8767C18AAE9AD00327823 /* DDDispatchQueueLogFormatter.m */; };
+		DEA8768118AAE9AD00327823 /* DDMultiFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA8767E18AAE9AD00327823 /* DDMultiFormatter.m */; };
 		DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAFEFA810FFE35B00F0573E /* StoryGalleryViewController.m */; };
 		DEBF146117699977009B6089 /* DiningRoot.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBF146017699977009B6089 /* DiningRoot.m */; };
@@ -663,10 +664,6 @@
 		2CCF81471636F69900DE273F /* DDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDLog.m; sourceTree = "<group>"; };
 		2CCF81481636F69900DE273F /* DDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDTTYLogger.h; sourceTree = "<group>"; };
 		2CCF81491636F69900DE273F /* DDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDTTYLogger.m; sourceTree = "<group>"; };
-		2CCF814B1636F69900DE273F /* ContextFilterLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContextFilterLogFormatter.h; sourceTree = "<group>"; };
-		2CCF814C1636F69900DE273F /* ContextFilterLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContextFilterLogFormatter.m; sourceTree = "<group>"; };
-		2CCF814D1636F69900DE273F /* DispatchQueueLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DispatchQueueLogFormatter.h; sourceTree = "<group>"; };
-		2CCF814E1636F69900DE273F /* DispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DispatchQueueLogFormatter.m; sourceTree = "<group>"; };
 		2CCF814F1636F69900DE273F /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		2CD12D4E1360584F00A73ACA /* facilities */ = {isa = PBXFileReference; lastKnownFileType = folder; name = facilities; path = Resources/facilities; sourceTree = "<group>"; };
 		2CD27AA91709D3EF002E220E /* MGSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSGeometry.h; sourceTree = "<group>"; };
@@ -1041,6 +1038,12 @@
 		DEA3B48C10C9BB7300BDA774 /* AboutModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutModule.m; sourceTree = "<group>"; };
 		DEA3B6F610CB126200BDA774 /* MITConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITConstants.h; sourceTree = "<group>"; };
 		DEA3B6F710CB126200BDA774 /* MITConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITConstants.m; sourceTree = "<group>"; };
+		DEA8767918AAE9AD00327823 /* DDContextFilterLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDContextFilterLogFormatter.h; sourceTree = "<group>"; };
+		DEA8767A18AAE9AD00327823 /* DDContextFilterLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDContextFilterLogFormatter.m; sourceTree = "<group>"; };
+		DEA8767B18AAE9AD00327823 /* DDDispatchQueueLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDDispatchQueueLogFormatter.h; sourceTree = "<group>"; };
+		DEA8767C18AAE9AD00327823 /* DDDispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDDispatchQueueLogFormatter.m; sourceTree = "<group>"; };
+		DEA8767D18AAE9AD00327823 /* DDMultiFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDMultiFormatter.h; sourceTree = "<group>"; };
+		DEA8767E18AAE9AD00327823 /* DDMultiFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDMultiFormatter.m; sourceTree = "<group>"; };
 		DEAF6EEE13B3C7B40078AB8F /* PlaceholderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaceholderTextView.h; sourceTree = "<group>"; };
 		DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaceholderTextView.m; sourceTree = "<group>"; };
 		DEAFEFA710FFE35B00F0573E /* StoryGalleryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryGalleryViewController.h; sourceTree = "<group>"; };
@@ -1839,10 +1842,12 @@
 		2CCF814A1636F69900DE273F /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				2CCF814B1636F69900DE273F /* ContextFilterLogFormatter.h */,
-				2CCF814C1636F69900DE273F /* ContextFilterLogFormatter.m */,
-				2CCF814D1636F69900DE273F /* DispatchQueueLogFormatter.h */,
-				2CCF814E1636F69900DE273F /* DispatchQueueLogFormatter.m */,
+				DEA8767918AAE9AD00327823 /* DDContextFilterLogFormatter.h */,
+				DEA8767A18AAE9AD00327823 /* DDContextFilterLogFormatter.m */,
+				DEA8767B18AAE9AD00327823 /* DDDispatchQueueLogFormatter.h */,
+				DEA8767C18AAE9AD00327823 /* DDDispatchQueueLogFormatter.m */,
+				DEA8767D18AAE9AD00327823 /* DDMultiFormatter.h */,
+				DEA8767E18AAE9AD00327823 /* DDMultiFormatter.m */,
 				2CCF814F1636F69900DE273F /* README.txt */,
 			);
 			path = Extensions;
@@ -3020,6 +3025,7 @@
 				2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */,
 				2C7EEAFC1871B00E009ED73D /* MITNewsCategoriesResource.m in Sources */,
 				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
+				DEA8768018AAE9AD00327823 /* DDDispatchQueueLogFormatter.m in Sources */,
 				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
 				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
 				EB8392A01163FD6E0067C0A3 /* Calendar.xcdatamodeld in Sources */,
@@ -3124,6 +3130,7 @@
 				2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */,
 				2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */,
 				3A827081103DAA0500BB4109 /* Reachability.m in Sources */,
+				DEA8768118AAE9AD00327823 /* DDMultiFormatter.m in Sources */,
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				44BF5B431100A75C00E150D5 /* RouteInfoTitleCell.m in Sources */,
 				442C192A10F3AE3400CB44EC /* RouteMapViewController.m in Sources */,
@@ -3164,6 +3171,7 @@
 				DEAFEFA910FFE35B00F0573E /* StoryGalleryViewController.m in Sources */,
 				DEC02D2D11053A850054BE32 /* StoryImageView.m in Sources */,
 				2CE6BE39182AE1D5005C5047 /* MITMapCategory.m in Sources */,
+				DEA8767F18AAE9AD00327823 /* DDContextFilterLogFormatter.m in Sources */,
 				DE728E7C10D6FF4700BFED37 /* StoryListViewController.m in Sources */,
 				DE728E6C10D6FF4700BFED37 /* StoryThumbnailView.m in Sources */,
 				DE728E7E10D6FF4700BFED37 /* StoryXMLParser.m in Sources */,
@@ -3269,8 +3277,6 @@
 				2CCF81531636F69900DE273F /* DDLog.m in Sources */,
 				2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */,
 				2CCF81541636F69900DE273F /* DDTTYLogger.m in Sources */,
-				2CCF81551636F69900DE273F /* ContextFilterLogFormatter.m in Sources */,
-				2CCF81561636F69900DE273F /* DispatchQueueLogFormatter.m in Sources */,
 				2C249EDD17AC22FE003C41FE /* TextAreaLibraryFormElement.m in Sources */,
 				2C7EDD941656CD2E001684E1 /* GDataHTMLDocument.m in Sources */,
 				2C7EDD951656CD2E001684E1 /* GDataXMLNode.m in Sources */,

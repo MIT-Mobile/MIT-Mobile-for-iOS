@@ -2,7 +2,7 @@
 #import "DDASLLogger.h"
 #import "DDFileLogger.h"
 #import "DDTTYLogger.h"
-#import "DispatchQueueLogFormatter.h"
+#import "DDDispatchQueueLogFormatter.h"
 
 #if defined(TESTFLIGHT)
 static const int ddLogLevel = LOG_LEVEL_INFO;
