@@ -3,10 +3,6 @@
 #import "MITNewsImage.h"
 #import "MITNewsImageRepresentation.h"
 
-static CGSize CGSizeScale(CGSize size, CGFloat xScale,CGFloat yScale) {
-    return CGSizeMake(size.width * xScale, size.height * yScale);
-}
-
 @interface MITNewsImageViewController () <UIScrollViewDelegate>
 @property (nonatomic,readonly) BOOL needsToRecenterImage;
 
