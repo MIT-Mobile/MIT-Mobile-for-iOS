@@ -17,3 +17,11 @@
     #import "TestFlight.h"
 #endif
 
+#ifndef CGFLOAT_EPSILON
+#   if CGFLOAT_IS_DOUBLE == 1
+#       define CGFLOAT_EPSILON DBL_EPSILON
+#   else
+#       define CGFLOAT_EPSILON FLT_EPSILON
+#   endif
+#endif
+
