@@ -25,7 +25,7 @@
                                     <segue destination="s7x-YS-u7y" kind="embed" identifier="embedPageViewController" id="htc-Dm-RH8"/>
                                 </connections>
                             </containerView>
-                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A2e-Qq-yf8">
+                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A2e-Qq-yf8" userLabel="Caption View">
                                 <rect key="frame" x="0.0" y="492" width="320" height="76"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
@@ -108,7 +108,7 @@
                         <outlet property="captionView" destination="A2e-Qq-yf8" id="em2-pQ-sVZ"/>
                         <outlet property="creditLabel" destination="oKd-zQ-w0y" id="VX4-C2-LQR"/>
                         <outlet property="descriptionLabel" destination="R38-Zj-OFV" id="Ffq-5C-dSk"/>
-                        <outlet property="navigationBar" destination="PD2-yH-VxL" id="k6v-Ns-Ebm"/>
+                        <outlet property="navigationBar" destination="PD2-yH-VxL" id="GZv-tZ-eWL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Na-Fa-DcQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -124,66 +124,10 @@
         <!--Page View Controller-->
         <scene sceneID="c3H-oV-4w4">
             <objects>
-                <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="pageCurl" navigationOrientation="horizontal" spineLocation="min" id="s7x-YS-u7y" sceneMemberID="viewController"/>
+                <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" pageSpacing="20" navigationOrientation="horizontal" spineLocation="none" id="s7x-YS-u7y" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rhw-KC-y88" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2864" y="186"/>
-        </scene>
-        <!--News Image View Controller-->
-        <scene sceneID="d8m-aD-Kul">
-            <objects>
-                <viewController storyboardIdentifier="NewsGalleryImageViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="lOb-PY-Ixw" customClass="MITNewsImageViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="h8M-vr-nxs"/>
-                        <viewControllerLayoutGuide type="bottom" id="ACK-of-kOs"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="nsU-Mo-T4t">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="adP-dd-gzO">
-                                <rect key="frame" x="142" y="266" width="37" height="37"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </activityIndicatorView>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sEE-Ak-VPA">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="100" placeholderIntrinsicHeight="100" translatesAutoresizingMaskIntoConstraints="NO" id="zaA-f6-cfE">
-                                        <rect key="frame" x="110" y="234" width="100" height="100"/>
-                                    </imageView>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstItem="zaA-f6-cfE" firstAttribute="top" secondItem="sEE-Ak-VPA" secondAttribute="top" constant="234" id="fNB-tA-gH8"/>
-                                    <constraint firstItem="zaA-f6-cfE" firstAttribute="leading" secondItem="sEE-Ak-VPA" secondAttribute="leading" constant="110" id="iv7-MS-gwf"/>
-                                    <constraint firstAttribute="trailing" secondItem="zaA-f6-cfE" secondAttribute="trailing" constant="110" id="j8m-fT-h9I"/>
-                                    <constraint firstAttribute="bottom" secondItem="zaA-f6-cfE" secondAttribute="bottom" constant="234" id="kZn-fg-fyt"/>
-                                </constraints>
-                            </scrollView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="sEE-Ak-VPA" secondAttribute="trailing" id="1w0-nr-ebr"/>
-                            <constraint firstItem="ACK-of-kOs" firstAttribute="top" secondItem="sEE-Ak-VPA" secondAttribute="bottom" id="Dgv-Db-3NT"/>
-                            <constraint firstAttribute="centerX" secondItem="adP-dd-gzO" secondAttribute="centerX" id="NGN-nV-1iq"/>
-                            <constraint firstItem="sEE-Ak-VPA" firstAttribute="leading" secondItem="nsU-Mo-T4t" secondAttribute="leading" id="NZp-tO-5ii"/>
-                            <constraint firstAttribute="centerY" secondItem="adP-dd-gzO" secondAttribute="centerY" id="a1a-F1-y98"/>
-                            <constraint firstItem="sEE-Ak-VPA" firstAttribute="top" secondItem="h8M-vr-nxs" secondAttribute="bottom" id="xgY-Ns-YaG"/>
-                        </constraints>
-                    </view>
-                    <nil key="simulatedStatusBarMetrics"/>
-                    <connections>
-                        <outlet property="imageLoadingIndicator" destination="adP-dd-gzO" id="UNs-QI-0ge"/>
-                        <outlet property="imageView" destination="zaA-f6-cfE" id="FYo-fW-hTt"/>
-                        <outlet property="leadingContentConstraint" destination="NZp-tO-5ii" id="P4z-Jd-d5P"/>
-                        <outlet property="scrollView" destination="sEE-Ak-VPA" id="gbO-go-uZr"/>
-                        <outlet property="trailingContentConstraint" destination="1w0-nr-ebr" id="scO-uv-iR6"/>
-                        <outlet property="view" destination="nsU-Mo-T4t" id="1Kv-ol-Sls"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6e4-gy-cuk" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3344" y="186"/>
+            <point key="canvasLocation" x="2863" y="206"/>
         </scene>
         <!--Story Detail View Controller-->
         <scene sceneID="5W3-pO-W4I">
@@ -201,10 +145,9 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="504"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="saG-db-2yb">
+                                    <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="saG-db-2yb">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="0.0"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="320" id="621-j2-upP"/>
                                             <constraint firstAttribute="height" id="Ibn-iN-m8V"/>
