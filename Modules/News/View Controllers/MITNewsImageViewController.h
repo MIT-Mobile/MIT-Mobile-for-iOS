@@ -1,15 +1,13 @@
 #import <UIKit/UIKit.h>
 
+@class MITNewsImage;
+
 @interface MITNewsImageViewController : UIViewController
 @property (nonatomic,weak) IBOutlet UIActivityIndicatorView *imageLoadingIndicator;
 @property (nonatomic,weak) IBOutlet UIScrollView *scrollView;
 @property (nonatomic,weak) IBOutlet UIImageView *imageView;
 
-@property (nonatomic,weak) IBOutlet NSLayoutConstraint *topContentConstraint;
-@property (nonatomic,weak) IBOutlet NSLayoutConstraint *bottomContentConstraint;
-@property (nonatomic,weak) IBOutlet NSLayoutConstraint *leadingContentConstraint;
-@property (nonatomic,weak) IBOutlet NSLayoutConstraint *trailingContentConstraint;
-
-@property (nonatomic,strong) NSURL *imageURL;
+@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic,strong) MITNewsImage *image;
 
 @end

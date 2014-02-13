@@ -1,14 +1,17 @@
 #import "MITNewsImageViewController.h"
 #import "UIImageView+WebCache.h"
+#import "MITNewsImage.h"
+#import "MITNewsImageRepresentation.h"
 
-#if CGFLOAT_IS_DOUBLE == 1
-#define CGFLOAT_EPSILON DBL_EPSILON
-#else
-#define CGFLOAT_EPSILON FLT_EPSILON
-#endif
+static CGSize CGSizeScale(CGSize size, CGFloat xScale,CGFloat yScale) {
+    return CGSizeMake(size.width * xScale, size.height * yScale);
+}
 
 @interface MITNewsImageViewController () <UIScrollViewDelegate>
+@property (nonatomic,readonly) BOOL needsToRecenterImage;
 
+- (void)setNeedsToRecenterImage;
+- (void)recenterImageIfNeeded;
 @end
 
 @implementation MITNewsImageViewController
@@ -25,26 +28,44 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+    self.scrollView.bounces = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    if (self.imageURL) {
-        [self.imageView setImageWithURL:self.imageURL
+    
+    if (self.image) {
+        // Grab the highest resolution we can get from the
+        // current image.
+        __block CGSize imageSize = CGSizeZero;
+        __block NSURL *imageURL = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            MITNewsImageRepresentation *imageRepresentation = [self.image bestRepresentationForSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+            imageSize.width = [imageRepresentation.width doubleValue];
+            imageSize.height = [imageRepresentation.height doubleValue];
+            imageURL = imageRepresentation.url;
+        }];
+        
+        CGRect imageFrame = self.imageView.frame;
+        imageFrame.size = imageSize;
+        
+        self.scrollView.contentSize = imageSize;
+        [self.imageView setImageWithURL:imageURL
                               completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+                                  [self.imageView sizeToFit];
                                   self.scrollView.contentSize = image.size;
-
-                                  [self setZoomScalesForCurrentBounds];
+                                  [self updateScrollViewScales];
+                                  
+                                  [self.imageLoadingIndicator stopAnimating];
                                   self.scrollView.zoomScale = self.scrollView.minimumZoomScale;
+                                  
+                                  [self setNeedsToRecenterImage];
+                                  [self recenterImageIfNeeded];
                               }];
     }
 }
+
 
 - (void)viewWillDisappear:(BOOL)animated
 {
@@ -54,70 +75,87 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
-// Copied from Apple's PhotoScroller sample application
-- (void)setZoomScalesForCurrentBounds
+#pragma mark Properties
+- (void)setNeedsToRecenterImage
 {
-    CGSize boundsSize = self.view.bounds.size;
-    CGSize imageSize = self.imageView.image.size;
+    self->_needsToRecenterImage = YES;
+}
 
-    // calculate min/max zoomscale
-    CGFloat xScale = boundsSize.width  / imageSize.width;    // the scale needed to perfectly fit the image width-wise
-    CGFloat yScale = boundsSize.height / imageSize.height;   // the scale needed to perfectly fit the image height-wise
-
-    // fill width if the image and phone are both portrait or both landscape; otherwise take smaller scale
-    BOOL imagePortrait = imageSize.height > imageSize.width;
-    BOOL phonePortrait = boundsSize.height > boundsSize.width;
-    CGFloat minScale = imagePortrait == phonePortrait ? xScale : MIN(xScale, yScale);
-
-    // on high resolution screens we have double the pixel density, so we will be seeing every pixel if we limit the
-    // maximum zoom scale to 0.5.
-    CGFloat maxScale = 1.0 / [[UIScreen mainScreen] scale];
-
-    // don't let minScale exceed maxScale. (If the image is smaller than the screen, we don't want to force it to be zoomed.)
-    if (minScale > maxScale) {
-        minScale = maxScale;
+- (MITNewsImage*)image
+{
+    if (_image) {
+        if (_image.managedObjectContext != self.managedObjectContext) {
+            [self.managedObjectContext performBlockAndWait:^{
+                _image = (MITNewsImage*)[self.managedObjectContext objectWithID:[_image objectID]];
+            }];
+        }
     }
-
-    self.scrollView.maximumZoomScale = maxScale;
-    self.scrollView.minimumZoomScale = minScale;
+    
+    return _image;
 }
 
-- (void)updateViewConstraints
+- (void)updateScrollViewScales
 {
-    [super updateViewConstraints];
-
     CGSize imageSize = self.imageView.image.size;
     CGSize viewBoundsSize = self.view.bounds.size;
 
-    CGFloat horizontalPadding = (viewBoundsSize.width - (self.scrollView.zoomScale * imageSize.width));
-    if (horizontalPadding < (0 + CGFLOAT_EPSILON)) {
-        horizontalPadding = 0;
+    CGFloat minimumZoomScale = fmin((viewBoundsSize.width / imageSize.width),
+                                    (viewBoundsSize.height / imageSize.height));
+
+    if (minimumZoomScale > 1) {
+        self.scrollView.minimumZoomScale = 1;
+    } else {
+        self.scrollView.minimumZoomScale = minimumZoomScale;
     }
-
-    CGFloat verticalPadding = (viewBoundsSize.height - (self.scrollView.zoomScale * imageSize.width));
-    if (verticalPadding < (0 + CGFLOAT_EPSILON)) {
-        verticalPadding = 0;
-    }
-
-    self.leadingContentConstraint.constant = horizontalPadding;
-    self.trailingContentConstraint.constant = horizontalPadding;
-
-    self.topContentConstraint.constant = verticalPadding;
-    self.topContentConstraint.constant = verticalPadding;
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [self setNeedsToRecenterImage];
+}
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-    [self.scrollView setNeedsUpdateConstraints];
+    [self setNeedsToRecenterImage];
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    [self recenterImageIfNeeded];
+}
+
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
+{
+    [self recenterImageIfNeeded];
 }
 
 - (UIView*)viewForZoomingInScrollView:(UIScrollView *)scrollView
 {
     return self.imageView;
+}
+
+- (void)recenterImageIfNeeded
+{
+    if (self.needsToRecenterImage) {
+        CGSize boundsSize = self.scrollView.bounds.size;
+        CGRect contentsFrame = self.imageView.frame;
+        
+        if (contentsFrame.size.width < boundsSize.width) {
+            contentsFrame.origin.x = (boundsSize.width - contentsFrame.size.width) / 2.0f;
+        } else {
+            contentsFrame.origin.x = 0.0f;
+        }
+        
+        if (contentsFrame.size.height < boundsSize.height) {
+            contentsFrame.origin.y = (boundsSize.height - contentsFrame.size.height) / 2.0f;
+        } else {
+            contentsFrame.origin.y = 0.0f;
+        }
+        
+        self.imageView.frame = contentsFrame;
+    }
 }
 
 @end
