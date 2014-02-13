@@ -338,7 +338,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     // Featured fetched results controller
     if (self.showFeaturedStoriesSection && !self.featuredStoriesFetchedResultsController) {
         NSFetchRequest *featuredStories = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
-        featuredStories.predicate = [NSPredicate predicateWithFormat:@"featured == NO"];
+        featuredStories.predicate = [NSPredicate predicateWithFormat:@"featured == YES"];
         featuredStories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
                                             [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
 
