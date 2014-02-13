@@ -352,7 +352,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 
     if (!self.categoriesFetchedResultsController) {
         NSFetchRequest *categories = [NSFetchRequest fetchRequestWithEntityName:[MITNewsCategory entityName]];
-        categories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+        categories.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
 
         NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:categories
                                                                                                    managedObjectContext:self.managedObjectContext
