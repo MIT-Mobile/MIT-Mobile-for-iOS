@@ -17,7 +17,7 @@
     RKEntityMapping *imageMapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
     [imageMapping addAttributeMappingsFromDictionary:@{@"caption" : @"caption",
                                                        @"credits" : @"credits",
-                                                       @"description" : @"description"}];
+                                                       @"description" : @"descriptionText"}];
     
     RKRelationshipMapping* imageRepresentationMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"representations"
                                                                                                     toKeyPath:@"representations"

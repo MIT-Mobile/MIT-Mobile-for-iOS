@@ -15,6 +15,7 @@
 @dynamic sourceURL;
 @dynamic title;
 @dynamic topStory;
+@dynamic type;
 @dynamic category;
 @dynamic coverImage;
 @dynamic galleryImages;
@@ -31,7 +32,7 @@
                                                        @"author" : @"author",
                                                        @"dek" : @"dek",
                                                        @"featured" : @"featured",
-                                                       @"body" : @"body",
+                                                       @"body_html" : @"body",
                                                        @"type" : @"type"}];
     
     RKRelationshipMapping* categoryRelationship = [RKRelationshipMapping relationshipMappingFromKeyPath:@"category"

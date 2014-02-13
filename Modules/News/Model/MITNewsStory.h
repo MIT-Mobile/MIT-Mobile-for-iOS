@@ -17,6 +17,8 @@
 @property (nonatomic, strong) NSURL * sourceURL;
 @property (nonatomic, strong) NSString * title;
 @property (nonatomic, strong) NSNumber * topStory;
+@property (nonatomic, copy) NSString * type;
+
 @property (nonatomic, strong) MITNewsCategory *category;
 @property (nonatomic, strong) MITNewsImage *coverImage;
 @property (nonatomic, copy) NSOrderedSet *galleryImages;
