@@ -9,6 +9,7 @@
 #import "MITAdditions.h"
 
 @interface MITNewsMediaGalleryViewController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate>
+@property (nonatomic) BOOL shouldHideUI;
 @property (nonatomic,strong) NSMutableArray *galleryPageViewControllers;
 @property (nonatomic) NSInteger selectedIndex;
 
@@ -115,8 +116,23 @@
 
 - (IBAction)toggleUI:(id)sender
 {
-    self.navigationBar.hidden = !self.navigationBar.hidden;
-    self.captionView.hidden = !self.captionView.hidden;
+    if (self.shouldHideUI) {
+        self.shouldHideUI = NO;
+    } else {
+        self.shouldHideUI = YES;
+    }
+    
+    [UIView animateWithDuration:0.33
+                     animations:^{
+                         if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+                             [self setNeedsStatusBarAppearanceUpdate];
+                         } else {
+                             [[UIApplication sharedApplication] setStatusBarHidden:self.shouldHideUI withAnimation:UIStatusBarAnimationSlide];
+                         }
+                         
+                         self.navigationBar.hidden = !self.navigationBar.hidden;
+                         self.captionView.hidden = !self.captionView.hidden;
+                     }];
 }
 
 - (void)didChangeSelectedIndex
@@ -134,6 +150,10 @@
     
     self.descriptionLabel.text = description;
     self.creditLabel.text = credits;
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return self.shouldHideUI;
 }
 
 #pragma mark - UIPageViewController
