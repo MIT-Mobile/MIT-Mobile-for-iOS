@@ -11,7 +11,7 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 @end
 
 @interface NSArray (MITAdditions)
-
+- (NSArray*)arrayByMappingObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block;
 - (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block;
 
 @end

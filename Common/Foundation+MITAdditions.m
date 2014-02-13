@@ -31,6 +31,11 @@ inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
 @end
 
 @implementation NSArray (MITAdditions)
+- (NSArray*)arrayByMappingObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block
+{
+    return [self mapObjectsUsingBlock:block];
+}
+
 - (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block {
     
     NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
