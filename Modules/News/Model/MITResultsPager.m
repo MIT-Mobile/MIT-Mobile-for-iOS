@@ -141,7 +141,7 @@
         [[linkHeader componentsSeparatedByString:@","] enumerateObjectsUsingBlock:^(NSString *link, NSUInteger idx, BOOL *stop) {
             NSString *trimmedLink = [link stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             [linkRegExp enumerateMatchesInString:trimmedLink options:0
-                                           range:NSMakeRange(0, [linkHeader length])
+                                           range:NSMakeRange(0, [trimmedLink length])
                                       usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
                                           if ([result numberOfRanges] != 3) {
                                               NSRange fullRange = [result rangeAtIndex:0];
