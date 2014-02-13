@@ -75,11 +75,10 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
     [super viewWillAppear:animated];
 
     __block NSString *title = @"Top Stories";
-
-    if (self.category) {
+    
+    if (_category) {
         [self.managedObjectContext performBlockAndWait:^{
-            MITNewsCategory *category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[self.category objectID]];
-            title = category.name;
+            title = self.category.name;
         }];
     }
 
@@ -95,12 +94,14 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
 - (void)setCategory:(MITNewsCategory *)category
 {
     if (![_category isEqual:category]) {
+        
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITNewsStory entityName]];
-
-        if (_category) {
+        
+        if (category) {
+            _category = (MITNewsCategory*)[self.managedObjectContext objectWithID:[category objectID]];
             fetchRequest.predicate = [NSPredicate predicateWithFormat:@"category == %@",self.category];
         }
-
+        
         fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"publishedAt" ascending:NO],
                                          [NSSortDescriptor sortDescriptorWithKey:@"featured" ascending:YES],
                                          [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:NO]];
@@ -174,9 +175,14 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
                                      footerView.textLabel.enabled = NO;
                                      [self setUpdating:YES animated:NO];
                                  }];
-
+                
+                __block NSString *categoryIdentifier = nil;
+                [self.managedObjectContext performBlockAndWait:^{
+                    categoryIdentifier = self.category.identifier;
+                }];
+                
                 __weak MITNewsStoriesViewController *weakSelf = self;
-                [[MITNewsModelController sharedController] storiesInCategory:self.category.identifier
+                [[MITNewsModelController sharedController] storiesInCategory:categoryIdentifier
                                                                        query:nil
                                                                       offset:numberOfRows
                                                                        limit:20
