@@ -41,19 +41,13 @@
 
     __block NSURL *imageURL = nil;
     [self.managedObjectContext performBlockAndWait:^{
-        MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
+        MITNewsStory *story = self.story;
 
         CGSize imageSize = self.coverImageView.bounds.size;
+        imageSize.height = 213.;
         MITNewsImageRepresentation *imageRepresentation = [story.coverImage bestRepresentationForSize:imageSize];
         imageURL = imageRepresentation.url;
     }];
-
-#if defined(DEBUG)
-#warning Remove this section once the news API is updated
-    if (imageURL == nil) {
-        imageURL = [NSURL URLWithString:@"http://img.mit.edu/newsoffice/images/article_images/original/20140205163909-0.jpg"];
-    }
-#endif
 
     if (imageURL) {
         [self.coverImageView setImageWithURL:imageURL
@@ -82,7 +76,7 @@
         // a point or two.
         // TODO: If the width is going to change calculate the dimentions using the image view bounds instead of hardcoding the height
         // (bskinner - 2014.02.07)
-        self.coverImageViewHeightConstraint.constant = MIN(213.,self.coverImageView.image.size.height);
+        self.coverImageViewHeightConstraint.constant = 213.;
     } else {
         self.coverImageViewHeightConstraint.constant = 0;
     }
@@ -92,8 +86,7 @@
 {
     NSMutableArray *items = [NSMutableArray arrayWithObject:self];
     [self.managedObjectContext performBlockAndWait:^{
-        MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
-        [items addObject:story.sourceURL];
+        [items addObject:self.story.sourceURL];
     }];
 
     UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items
@@ -115,8 +108,7 @@
     if ([identifier isEqualToString:@"showMediaGallery"]) {
         __block NSInteger numberOfGalleryImages = 0;
         [self.managedObjectContext performBlockAndWait:^{
-            MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
-            numberOfGalleryImages = [story.galleryImages count];
+            numberOfGalleryImages = [self.story.galleryImages count];
         }];
 
         return (numberOfGalleryImages > 0);
@@ -134,20 +126,10 @@
         managedObjectContext.parentContext = self.managedObjectContext;
         viewController.managedObjectContext = managedObjectContext;
 
-        NSMutableArray *newsImages = [[NSMutableArray alloc] init];
-
         [self.managedObjectContext performBlockAndWait:^{
-            MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
-
-            [story.galleryImages enumerateObjectsUsingBlock:^(MITNewsImage *image, NSUInteger idx, BOOL *stop) {
-                MITNewsImageRepresentation *representation = [image bestRepresentationForSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-                if (representation) {
-                    [newsImages addObject:[managedObjectContext objectWithID:[representation objectID]]];
-                }
-            }];
+            viewController.galleryImages = [self.story.galleryImages array];
         }];
 
-        viewController.galleryImages = newsImages;
     }
 }
 
@@ -168,10 +150,8 @@
 
     __block NSDictionary *templateBindings = nil;
     [self.managedObjectContext performBlockAndWait:^{
-        MITNewsStory *story = (MITNewsStory*)[self.managedObjectContext objectWithID:[self.story objectID]];
+        MITNewsStory *story = self.story;
 
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"MMM dd, y"];
         NSString *postDate = [dateFormatter stringFromDate:story.publishedAt];
 
         templateBindings = @{@"__TITLE__": (story.title ? story.title : [NSNull null]),
@@ -207,6 +187,19 @@
     }];
     
     return templateString;
+}
+
+- (MITNewsStory*)story
+{
+    if (_story) {
+        if (_story.managedObjectContext != self.managedObjectContext) {
+            [self.managedObjectContext performBlockAndWait:^{
+                _story = (MITNewsStory*)[self.managedObjectContext objectWithID:[_story objectID]];
+            }];
+        }
+    }
+
+    return _story;
 }
 
 
