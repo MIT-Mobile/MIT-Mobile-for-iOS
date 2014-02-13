@@ -716,8 +716,10 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 
 
     MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-    storyCell.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:title
-                                                                          attributes:[MITNewsViewController titleTextAttributes]];
+    if (title) {
+        storyCell.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:title
+                                                                              attributes:[MITNewsViewController titleTextAttributes]];
+    }
 
     if ([dek length]) {
         storyCell.dekLabel.attributedText = [[NSAttributedString alloc] initWithString:dek
