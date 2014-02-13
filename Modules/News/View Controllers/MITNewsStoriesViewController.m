@@ -61,9 +61,9 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    
     self.footerGestureRecognizers = [NSMapTable weakToWeakObjectsMapTable];
-
+    
     [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryTableCell" bundle:nil] forCellReuseIdentifier:@"StoryCell"];
     [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryNoDekTableCell" bundle:nil] forCellReuseIdentifier:@"StoryNoDekCell"];
     [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryExternalTableCell" bundle:nil] forCellReuseIdentifier:@"StoryExternalCell"];
@@ -73,7 +73,7 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    
     __block NSString *title = @"Top Stories";
     
     if (_category) {
@@ -81,7 +81,7 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
             title = self.category.name;
         }];
     }
-
+    
     self.title = title;
 }
 
@@ -162,14 +162,14 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
 {
     if ([sender isKindOfClass:[UIGestureRecognizer class]]) {
         UIGestureRecognizer* gestureRecognizer = (UIGestureRecognizer*)sender;
-
+        
         if ([gestureRecognizer.view isKindOfClass:[UITableViewHeaderFooterView class]]) {
             __weak UITableViewHeaderFooterView *footerView = (UITableViewHeaderFooterView*)gestureRecognizer.view;
-
+            
             NSInteger section = footerView.tag;
             if (![self.sectionsWithActiveRequests containsIndex:section]) {
                 NSInteger numberOfRows = [self.tableView numberOfRowsInSection:section];
-
+                
                 [UIView animateWithDuration:0.25
                                  animations:^{
                                      footerView.textLabel.enabled = NO;
@@ -189,7 +189,7 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
                                                                   completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
                                                                       MITNewsStoriesViewController* blockSelf = weakSelf;
                                                                       UITableViewHeaderFooterView* blockView = footerView;
-
+                                                                      
                                                                       if (blockSelf && blockView) {
                                                                           if (blockView.tag == section) {
                                                                               [UIView animateWithDuration:0.25
@@ -198,7 +198,7 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
                                                                                                    [self setUpdating:NO animated:NO];
                                                                                                }];
                                                                           }
-
+                                                                          
                                                                           [self.sectionsWithActiveRequests removeIndex:section];
                                                                       }
                                                                   }];
@@ -212,18 +212,18 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
 {
     if (tableView == self.tableView) {
         MITNewsStory *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
-
+        
         CGFloat titleHeight = 0.;
         if ([story.title length]) {
             NSAttributedString *titleString = [[NSAttributedString alloc] initWithString:story.title attributes:[MITNewsStoriesViewController titleTextAttributes]];
-
+            
             CGRect titleRect = [titleString boundingRectWithSize:CGSizeMake(MITNewsStoryCellMaximumTextWidth, CGFLOAT_MAX)
                                                          options:(NSStringDrawingUsesFontLeading |
                                                                   NSStringDrawingUsesLineFragmentOrigin)
                                                          context:nil];
             titleHeight = ceil(CGRectGetHeight(titleRect));
         }
-
+        
         CGFloat dekHeight = 0.;
         if ([story.dek length]) {
             NSAttributedString *dekString = [[NSAttributedString alloc] initWithString:story.dek attributes:[MITNewsStoriesViewController dekTextAttributes]];
@@ -233,12 +233,12 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
                                                      context:nil];
             dekHeight = ceil(CGRectGetHeight(dekRect));
         }
-
+        
         CGFloat totalVerticalPadding = 23.;
         if ((titleHeight >= 1) && (dekHeight >= 1)) {
             totalVerticalPadding += 4.;
         }
-
+        
         return MAX(MITNewsStoryCellMinimumHeight,titleHeight + dekHeight + totalVerticalPadding);
     } else {
         return UITableViewAutomaticDimension;
@@ -271,7 +271,7 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
         id<NSFetchedResultsSectionInfo> sectionInfo = self.fetchedResultsController.sections[indexPath.section];
         if (indexPath.row < [sectionInfo numberOfObjects]) {
             MITNewsStory *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
-
+            
             // TODO: Add logic to handle the StoryExternalCell.
             //  Right now there is no way to determine which cells are
             //  external so they'll just appear as StoryCells with
@@ -283,7 +283,7 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
             } else {
                 identifier = @"StoryNoDekCell";
             }
-
+            
             MITNewsStoryCell *cell = (MITNewsStoryCell*)[tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
             [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
             return cell;
@@ -300,13 +300,13 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
 {
     MITNewsStory *story = [self.fetchedResultsController objectAtIndexPath:indexPath];
     MITNewsStoryCell *storyCell = (MITNewsStoryCell*)cell;
-
+    
     storyCell.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:story.title attributes:[MITNewsStoriesViewController titleTextAttributes]];
-
+    
     if ([story.dek length]) {
         storyCell.dekLabel.attributedText = [[NSAttributedString alloc] initWithString:story.dek attributes:[MITNewsStoriesViewController dekTextAttributes]];
     }
-
+    
     MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:MITNewsStoryCellDefaultImageSize];
     [storyCell.storyImageView setImageWithURL:representation.url];
 }
@@ -324,7 +324,7 @@ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 
     if ([view isKindOfClass:[UITableViewHeaderFooterView class]]) {
         UITableViewHeaderFooterView* headerFooterView = (UITableViewHeaderFooterView*)view;
         headerFooterView.tag = section;
-
+        
         if (![self.sectionsWithActiveRequests containsIndex:section]) {
             UIGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(loadMoreStories:)];
             [headerFooterView addGestureRecognizer:gestureRecognizer];
