@@ -455,14 +455,12 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
         id<NSFetchedResultsSectionInfo> sectionInfo = [self.featuredStoriesFetchedResultsController sections][indexPath.section];
         story = (MITNewsStory*)[sectionInfo objects][indexPath.row];
     } else {
-        NSInteger section = indexPath.section;
+        NSInteger categoryIndex = indexPath.section;
         if (self.showFeaturedStoriesSection) {
-            section -= 1;
+            categoryIndex -= 1;
         }
 
-        id<NSFetchedResultsSectionInfo> sectionInfo = [self.categoriesFetchedResultsController sections][section];
-        MITNewsCategory *sectionCategory = [sectionInfo objects][0];
-
+        MITNewsCategory *sectionCategory = self.categoriesFetchedResultsController.fetchedObjects[categoryIndex];
         NSArray *stories = [self storiesInCategory:sectionCategory];
         story = stories[indexPath.row];
     }
@@ -631,7 +629,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
             numberOfSections += 1;
         }
 
-        numberOfSections += [[self.categoriesFetchedResultsController fetchedObjects] count];
+        numberOfSections += [self.categoriesFetchedResultsController.fetchedObjects count];
         return numberOfSections;
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
         return (self.searchResults ? 1 : 0);
@@ -651,7 +649,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
                 section -= 1;
             }
 
-            MITNewsCategory *category = [self.categoriesFetchedResultsController fetchedObjects][section];
+            MITNewsCategory *category = self.categoriesFetchedResultsController.fetchedObjects[section];
             NSArray *storiesInCategory = [self storiesInCategory:category];
             return MIN(self.numberOfStoriesPerCategory,[storiesInCategory count]);
         }
