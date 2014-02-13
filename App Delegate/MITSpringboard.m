@@ -317,6 +317,12 @@
 														repeats:YES];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+}
+
 @end
 
 @implementation SpringboardIcon
