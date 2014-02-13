@@ -159,7 +159,7 @@
                              @"__DATE__": (postDate ? postDate : [NSNull null]),
                              @"__DEK__": (story.dek ? story.dek : [NSNull null]),
                              @"__BODY__": (story.body ? story.body : [NSNull null]),
-                             @"__GALLERY_COUNT__": @([story.galleryImages count]),
+                             @"__GALLERY_COUNT__": @(0),
                              @"__BOOKMARKED__": @"",
                              @"__THUMBNAIL_URL__": @"",
                              @"__THUMBNAIL_WIDTH__": @"",
