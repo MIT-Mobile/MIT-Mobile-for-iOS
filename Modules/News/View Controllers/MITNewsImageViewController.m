@@ -73,6 +73,11 @@
     [super didReceiveMemoryWarning];
 }
 
+- (void)viewWillLayoutSubviews
+{
+    [self setNeedsToRecenterImage];
+}
+
 #pragma mark Properties
 - (void)setNeedsToRecenterImage
 {
