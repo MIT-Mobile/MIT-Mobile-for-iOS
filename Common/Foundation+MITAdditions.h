@@ -2,6 +2,8 @@
 
 extern NSUInteger kMITFloatDefaultEpsilon;
 BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
+#pragma mark Error Domains
+extern NSString * const MITXMLErrorDomain;
 
 @interface NSURL (MITAdditions)
 
@@ -43,6 +45,7 @@ BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
  *  and punctuation removed and normalized using NFKD form.
  */
 - (NSString*)stringBySearchNormalization;
+- (NSString*)stringBySanitizingHTMLFragmentWithPermittedElementNames:(NSArray*)tagNames error:(NSError**)error;
 - (NSString *)substringToMaxIndex:(NSUInteger)to;
 @end
 

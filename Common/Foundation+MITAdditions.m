@@ -1,9 +1,13 @@
 #include <libxml/parserInternals.h>
 #include <libxml/HTMLparser.h>
+#include <libxml/HTMLtree.h>
+#include <libxml/xpath.h>
 #import "Foundation+MITAdditions.h"
 
 NSUInteger kMITFloatEqualityEpsilon = 0.001;
 inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
+#pragma mark Error Domains
+NSString * const MITXMLErrorDomain = @"MITXMLError";
 {
     return (fabs(((double)f0) - ((double)f1)) <= epsilon);
 }
@@ -93,10 +97,203 @@ inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
     return [tokens componentsJoinedByString:@""];
 }
 
+- (NSString*)stringBySanitizingHTMLFragmentWithPermittedElementNames:(NSArray*)tagNames error:(NSError**)error
+{
+    static NSString const *fragmentRootXpathExpression = @"/html/body/p/node()";
+
+    // variables for the final returned string
+    // and any libxml pointers which need to be cleaned up
+    // prior to returning. These are here so clang won't
+    // complain about uninitialized (or other potentially
+    // nasty issues) if/when we hit a error
+    NSString *resultString = nil;
+    xmlDocPtr document = NULL;
+    xmlXPathContextPtr xpathContext = NULL;
+    xmlXPathObjectPtr xpathResult = NULL;
+
+    // Needs to be free()'d in the cleanup section!
+    xmlChar const *xpathExpression = xmlCharStrdup([fragmentRootXpathExpression cStringUsingEncoding:NSUTF8StringEncoding]);
+
+    // Setup the LibXML HTML document. Since the string we are sanitizing
+    // should be an HTML fragment, LibXML will not happily parse it. In order
+    // to get everything to work, the fragment needs to be rooted (at a minimum)
+    // at "<html><body>$fragment...". An additional requirement is that TEXT
+    // nodes *must* have a direct parent Element so the '<p>' tag is being used
+    // as a catch-all for any TEXT (or CDATA) nodes.
+    NSString *htmlFragment = [NSString stringWithFormat:@"<html><body><p>%@</p></body></html>",self];
+    NSData *stringData = [htmlFragment dataUsingEncoding:NSUTF8StringEncoding];
+    NSInteger parserOptions = (HTML_PARSE_NONET |
+                               HTML_PARSE_RECOVER |
+                               HTML_PARSE_NOWARNING |
+                               HTML_PARSE_NODEFDTD);
+    document = htmlReadMemory([stringData bytes], [stringData length], "", NULL, parserOptions);
+    if (!document) {
+        DDLogWarn(@"failed to create xml document from HTML string");
+        goto error;
+    }
+
+    xpathContext = xmlXPathNewContext(document);
+    if (!xpathContext) {
+        DDLogWarn(@"failed to create xpath context");
+        goto error;
+    }
+
+    // Evaluate the XPath and pick out the first node we find. This is to
+    //  prevent us from causing problems by removing the <html>,<body>, and
+    //  <p> elements (they should be ignored by the tree-walker).
+    // The fragmentRootXpathExpression should drop us right at the first
+    //  child of the <p> element.
+    xpathResult = xmlXPathEvalExpression(xpathExpression, xpathContext);
+    if (!xpathResult) {
+        DDLogVerbose(@"failed to evalulate path '%@'",fragmentRootXpathExpression);
+        goto error;
+    } else if (xmlXPathNodeSetIsEmpty(xpathResult->nodesetval)) {
+        DDLogVerbose(@"no nodes found matching path '%@'",fragmentRootXpathExpression);
+        goto error;
+    } else {
+        xmlNodePtr currentNode = xmlXPathNodeSetItem(xpathResult->nodesetval,0);
+
+        while (currentNode) {
+            xmlNodePtr nextNode = NULL;
+            BOOL shouldUnlinkNode = NO;
+
+            switch (currentNode->type) {
+                case XML_ELEMENT_NODE: {
+                    NSString *nodeName = [[NSString alloc] initWithBytes:currentNode->name
+                                                                  length:xmlStrlen(currentNode->name)
+                                                                encoding:NSUTF8StringEncoding];
+                    if (![tagNames containsObject:nodeName]) {
+                        // This node is not allowed! Migrate all of it's children up one level
+                        // in order to prepare for deletion. The operation should looks something like:
+                        //  parent                      parent
+                        //    |                 -->       |
+                        //  current->s0->..->sn         current->c0->..->cn->s0->..->sn
+                        //    |
+                        //    c0->..->cn
+                        //
+                        //  We don't need to worry about unlinking anything here since xmlAddNextSibling
+                        //  should automatically handle it for us (if needed). This also sets shouldUnlinkNode
+                        //  to YES so currentNode will be unlinked at the end of this iteration
+                        //
+                        for (xmlNodePtr node = currentNode->last; node; node = node->prev) {
+                            xmlAddNextSibling(currentNode, node);
+                        }
+
+                        shouldUnlinkNode = YES;
+                    } else if (currentNode->children) {
+                        nextNode = currentNode->children;
+                    }
+                } break;
+
+                case XML_COMMENT_NODE:
+                case XML_DTD_NODE: {
+                    shouldUnlinkNode = YES;
+                } break;
+
+                case XML_TEXT_NODE:
+                case XML_CDATA_SECTION_NODE:
+                    // Do nothing
+                    break;
+                default:
+                    DDLogWarn(@"unknown node type %d",currentNode->type);
+            }
+
+            // If a next node hasn't been set yet, pick the following node.
+            if (!nextNode) {
+                BOOL stop = NO;
+
+                nextNode = currentNode;
+                while (nextNode && !stop) {
+                    if (nextNode->next) {
+                        // If our current node has a sibling, select it and
+                        // halt; we are done.
+                        nextNode = nextNode->next;
+                        stop = YES;
+                    } else {
+                        // Looks like we ran out of siblings...
+                        // Jump up to the parent node and start iterating
+                        // through its siblings.
+                        nextNode = nextNode->parent;
+                    }
+                }
+            }
+
+            // Remove the current node if it was marked for removal
+            // This should only occur to comment, DTD and element node
+            // types (and elements should only be deleted if they are not
+            // in the list of permitted names).
+            if (shouldUnlinkNode) {
+                xmlUnlinkNode(currentNode);
+                xmlFreeNode(currentNode);
+                currentNode = NULL;
+            }
+
+            currentNode = nextNode;
+        }
+
+        // Reverse the <html><body><p>...</p></body></html> elements
+        // we added on in the beginning. In order to do this, we can just
+        // use the same XPath we called earlier, dump each sibling node
+        // in the set (no need to iterate back down the tree), and append
+        // the results.
+        xmlXPathObjectPtr xpathFragmentRoot = xmlXPathEval(xpathExpression, xpathContext);
+        if (xpathFragmentRoot) {
+            xmlNodeSetPtr nodeSet = xpathFragmentRoot->nodesetval;
+
+            if (!xmlXPathNodeSetIsEmpty(nodeSet)) {
+                NSMutableString *sanitizedFragmentString = [[NSMutableString alloc] init];
+
+                for (int idx = 0; idx < xmlXPathNodeSetGetLength(nodeSet); ++idx) {
+                    xmlNodePtr node = xmlXPathNodeSetItem(nodeSet, idx);
+                    xmlBufferPtr nodeBuffer = xmlBufferCreate();
+                    htmlNodeDump(nodeBuffer, document, node);
+
+                    const xmlChar *bufferContents = xmlBufferContent(nodeBuffer);
+                    NSInteger bufferLength = xmlBufferLength(nodeBuffer);
+                    [sanitizedFragmentString appendString:[[NSString alloc] initWithBytes:bufferContents
+                                                                        length:bufferLength
+                                                                      encoding:NSUTF8StringEncoding]];
+                    xmlBufferFree(nodeBuffer);
+                }
+
+                resultString = sanitizedFragmentString;
+            }
+
+            xmlXPathFreeObject(xpathFragmentRoot);
+        }
+    }
+
+error:
+    if (error) {
+        xmlErrorPtr libxmlError = xmlGetLastError();
+
+        if (libxmlError) {
+            NSString *errorString = [[NSString alloc] initWithBytes:libxmlError->message
+                                                             length:strlen(libxmlError->message)
+                                                           encoding:NSUTF8StringEncoding];
+            (*error) = [NSError errorWithDomain:MITXMLErrorDomain
+                                           code:libxmlError->code
+                                       userInfo:@{NSLocalizedDescriptionKey : errorString}];
+
+            xmlResetError(libxmlError);
+        }
+    }
+
+    // Clean up any messes we made
+    if (xpathExpression) free((void*)xpathExpression);
+    if (xpathResult) xmlXPathFreeObject(xpathResult);
+    if (xpathContext) xmlXPathFreeContext(xpathContext);
+    if (document) xmlFreeDoc(document);
+    xmlCleanupParser();
+    
+    return resultString;
+}
+
 - (NSString *)substringToMaxIndex:(NSUInteger)to {
 	NSUInteger maxLength = [self length] - 1;
 	return [self substringToIndex:(to > maxLength) ? maxLength : to];
 }
+
 @end
 
 
