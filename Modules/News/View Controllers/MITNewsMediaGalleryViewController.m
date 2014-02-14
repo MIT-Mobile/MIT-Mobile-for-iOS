@@ -121,18 +121,16 @@
     } else {
         self.shouldHideUI = YES;
     }
-    
-    [UIView animateWithDuration:0.33
-                     animations:^{
-                         if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
-                             [self setNeedsStatusBarAppearanceUpdate];
-                         } else {
-                             [[UIApplication sharedApplication] setStatusBarHidden:self.shouldHideUI withAnimation:UIStatusBarAnimationSlide];
-                         }
-                         
-                         self.navigationBar.hidden = !self.navigationBar.hidden;
-                         self.captionView.hidden = !self.captionView.hidden;
-                     }];
+
+
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        [self setNeedsStatusBarAppearanceUpdate];
+    } else {
+        [[UIApplication sharedApplication] setStatusBarHidden:self.shouldHideUI withAnimation:UIStatusBarAnimationNone];
+    }
+
+    self.navigationBar.hidden = !self.navigationBar.hidden;
+    self.captionView.hidden = !self.captionView.hidden;
 }
 
 - (void)didChangeSelectedIndex
