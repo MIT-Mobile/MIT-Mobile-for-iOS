@@ -4,12 +4,13 @@
 #include <libxml/xpath.h>
 #import "Foundation+MITAdditions.h"
 
-NSUInteger kMITFloatEqualityEpsilon = 0.001;
-inline BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon)
 #pragma mark Error Domains
 NSString * const MITXMLErrorDomain = @"MITXMLError";
+
+#pragma mark Helper Functions
+inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
 {
-    return (fabs(((double)f0) - ((double)f1)) <= epsilon);
+    return (fabs(((double)f0) - ((double)f1)) <= CGFLOAT_EPSILON);
 }
 
 @implementation NSURL (MITAdditions)

@@ -1,9 +1,9 @@
 #import <Foundation/Foundation.h>
 
-extern NSUInteger kMITFloatDefaultEpsilon;
-BOOL CGFloatIsEqual(CGFloat f0, CGFloat f1, double epsilon);
 #pragma mark Error Domains
 extern NSString * const MITXMLErrorDomain;
+
+BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
 
 @interface NSURL (MITAdditions)
 
