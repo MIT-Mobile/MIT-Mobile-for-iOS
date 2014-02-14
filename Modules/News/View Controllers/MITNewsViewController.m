@@ -14,14 +14,41 @@
 
 #import "MITAdditions.h"
 
-// The below values were pulled from the News storyboard.
-// Either change them if the storyboard changes or find a way
-// to dynamically extract them.
+typedef NS_ENUM(NSInteger, MITScaleMode) {
+    MITScaleModeAspectFit = UIViewContentModeScaleAspectFit,
+    MITScaleModeAspectFill = UIViewContentModeScaleAspectFill,
+};
+
+static CGSize MITCGSizeBestFitForSize(CGSize source, CGSize target, MITScaleMode mode)
+{
+    
+}
+
+// StoryCell sizing constants
+// Retrieved from 'NewsStoryTableCell.xib" on 2014/02/14
+static NSString* const MITNewsStoryCellIdentifier = @"StoryCell";
 static const CGFloat MITNewsStoryCellMinimumHeight = 86.;
 static const CGFloat MITNewsStoryCellMaximumTextWidth = 196.;
+static const CGFloat MITNewsStoryCellVerticalPadding = 26.;
 static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 61.};
 
-static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStories";
+// StoryNoDekCell sizing constants
+// Retrieved from 'NewsStoryNoDekTableCell.xib' on 2014/02/14
+static NSString* const MITNewsStoryNoDekCellIdentifier = @"StoryNoDekCell";
+static const CGFloat MITNewsStoryNoDekCellMinimumHeight = 86.;
+static const CGFloat MITNewsStoryNoDekCellMaximumTextWidth = 196.;
+static const CGFloat MITNewsStoryNoDekCellVerticalPadding = 22.;
+static const CGSize MITNewsStoryNoDekCellDefaultImageSize = {.width = 86., .height = 61.};
+
+// StoryExternalCell sizing information
+// Retrieved from 'NewsStoryExternalTableCell.xib' on 2014/02/14
+static NSString* const MITNewsStoryExternalCellIdentifier = @"StoryExternalCell";
+static const CGFloat MITNewsStoryExternalCellMaximumContentWidth = 290.;
+static const CGFloat MITNewsStoryExternalCellVerticalPadding = 30.; // Sum of the top, bottom and inter-view spacings
+static const CGSize MITNewsStoryExternalCellDefaultImageSize = {.width = 290., .height = 0.};
+
+static NSString* const MITNewsCategoryHeaderIdentifier = @"MITNewsCategoryHeader";
+static NSString* const MITNewsStoryFeaturedStoriesRequestToken = @"MITNewsFeaturedStoriesRequest";
 
 @interface MITNewsViewController () <NSFetchedResultsControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 @property (nonatomic) BOOL needsNavigationItemUpdate;
@@ -94,7 +121,6 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     return self;
 }
 
-
 #pragma mark Lifecycle
 - (void)viewDidLoad
 {
@@ -103,10 +129,10 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     self.numberOfStoriesPerCategory = 3;
     self.showFeaturedStoriesSection = YES;
 
-    [self.tableView registerNib:[UINib nibWithNibName:@"NewsCategoryHeaderView" bundle:nil] forHeaderFooterViewReuseIdentifier:@"NewsCategoryHeader"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryTableCell" bundle:nil] forCellReuseIdentifier:@"StoryCell"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryNoDekTableCell" bundle:nil] forCellReuseIdentifier:@"StoryNoDekCell"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryExternalTableCell" bundle:nil] forCellReuseIdentifier:@"StoryExternalCell"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"NewsCategoryHeaderView" bundle:nil] forHeaderFooterViewReuseIdentifier:MITNewsCategoryHeaderIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryNoDekTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:@"NewsStoryExternalTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
 
     self.gestureRecognizersByView = [NSMapTable weakToWeakObjectsMapTable];
     self.categoriesByGestureRecognizer = [NSMapTable weakToStrongObjectsMapTable];
@@ -141,8 +167,11 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self performDataUpdate:^{
-        DDLogVerbose(@"Update completed!");
+    [self performDataUpdate:^(NSError *error){
+        if (error) {
+            [self setUpdateText:@"Update failed" animated:animated];
+        }
+        
         [self.tableView reloadData];
     }];
 }
@@ -285,6 +314,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 - (void)willBeginUpdating:(BOOL)animated
 {
     [self setUpdateText:@"Updating..." animated:animated];
+
 }
 
 - (void)didEndUpdating:(BOOL)animated
@@ -363,7 +393,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     }
 }
 
-- (void)performDataUpdate:(void (^)(void))completion;
+- (void)performDataUpdate:(void (^)(NSError *error))completion;
 {
     if (!self.isUpdating) {
         self.updating = YES;
@@ -372,20 +402,20 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
         __weak MITNewsViewController *weakSelf = self;
         MITNewsModelController *modelController = [MITNewsModelController sharedController];
 
-        [inFlightDataRequests addObject:MITNewsStoryFeaturedStoriesToken];
+        [inFlightDataRequests addObject:MITNewsStoryFeaturedStoriesRequestToken];
         [modelController featuredStoriesWithOffset:0
                                              limit:self.numberOfStoriesPerCategory
                                         completion:^(NSArray* stories, MITResultsPager* pager, NSError* error) {
                                             MITNewsViewController *blockSelf = weakSelf;
                                             if (blockSelf) {
                                                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                                                    [inFlightDataRequests removeObject:MITNewsStoryFeaturedStoriesToken];
+                                                    [inFlightDataRequests removeObject:MITNewsStoryFeaturedStoriesRequestToken];
 
                                                     if ([inFlightDataRequests count] == 0) {
                                                         [blockSelf setUpdating:NO animated:YES];
 
                                                         if (completion) {
-                                                            completion();
+                                                            completion(error);
                                                         }
                                                     }
                                                 }];
@@ -410,7 +440,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
                                                         [blockSelf setUpdating:NO animated:YES];
 
                                                         if (completion) {
-                                                            completion();
+                                                            completion(error);
                                                         }
                                                     }
                                                 }];
@@ -563,6 +593,31 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     }
 }
 
+/*
+ // StoryCell sizing constants
+ // Retrieved from 'NewsStoryTableCell.xib" on 2014/02/14
+ static NSString* const MITNewsStoryCellIdentifier = @"StoryCell";
+ static const CGFloat MITNewsStoryCellMinimumHeight = 86.;
+ static const CGFloat MITNewsStoryCellMaximumTextWidth = 196.;
+ static const CGFloat MITNewsStoryCellVerticalPadding = 26.;
+ static const CGSize MITNewsStoryCellDefaultImageSize = {.width = 86., .height = 61.};
+
+ // StoryNoDekCell sizing constants
+ // Retrieved from 'NewsStoryNoDekTableCell.xib' on 2014/02/14
+ static NSString* const MITNewsStoryNoDekCellIdentifier = @"StoryNoDekCell";
+ static const CGFloat MITNewsStoryNoDekCellMinimumHeight = 86.;
+ static const CGFloat MITNewsStoryNoDekCellMaximumTextWidth = 196.;
+ static const CGFloat MITNewsStoryNoDekCellVerticalPadding = 22.;
+ static const CGSize MITNewsStoryNoDekCellDefaultImageSize = {.width = 86., .height = 61.};
+
+ // StoryExternalCell sizing information
+ // Retrieved from 'NewsStoryExternalTableCell.xib' on 2014/02/14
+ static NSString* const MITNewsStoryExternalCellIdentifier = @"StoryExternalCell";
+ static const CGFloat MITNewsStoryExternalCellMaximumContentWidth = 290.;
+ static const CGFloat MITNewsStoryExternalCellVerticalPadding = 30.; // Sum of the top, bottom and inter-view spacings
+ static const CGSize MITNewsStoryExternalCellDefaultImageSize = {.width = 290., .height = 0.};
+ */
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITNewsStory *story = nil;
@@ -573,6 +628,7 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     }
 
     if (story) {
+        __block NSString *type = nil;
         __block NSString *title = nil;
         __block NSString *dek = nil;
 
@@ -580,7 +636,17 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
             MITNewsStory *blockStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
             title = blockStory.title;
             dek = blockStory.dek;
+            type = blockStory.type;
         }];
+
+        CGFloat rowHeight = 0;
+        if ([type isEqualToString:@"news_clip"]) {
+            // StoryExternalCell
+        } else if ([dek length]) {
+            // StoryCell
+        } else {
+            // StoryNoDekCell
+        }
 
         CGFloat titleHeight = 0.;
         if ([title length]) {
@@ -591,6 +657,8 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
                                                                   NSStringDrawingUsesLineFragmentOrigin)
                                                          context:nil];
             titleHeight = ceil(CGRectGetHeight(titleRect));
+        } else {
+            DDLogVerbose(@"No title here!");
         }
 
         CGFloat dekHeight = 0.;
@@ -603,8 +671,8 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
             dekHeight = ceil(CGRectGetHeight(dekRect));
         }
 
-        CGFloat totalVerticalPadding = 23.;
-        if ((titleHeight >= 1) && (dekHeight >= 1)) {
+        CGFloat totalVerticalPadding = 24.;
+        if ([dek length]) {
             totalVerticalPadding += 4.;
         }
 
@@ -679,9 +747,9 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
         [self.managedObjectContext performBlockAndWait:^{
             MITNewsStory *blockStory = (MITNewsStory*)[self.managedObjectContext objectWithID:[story objectID]];
             if ([blockStory.dek length])  {
-                identifier = @"StoryCell";
+                identifier = MITNewsStoryCellIdentifier;
             } else {
-                identifier = @"StoryNoDekCell";
+                identifier = MITNewsStoryNoDekCellIdentifier;
             }
         }];
 
@@ -702,7 +770,6 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
         story = self.searchResults[indexPath.row];
     }
 
-
     __block NSString *title = nil;
     __block NSString *dek = nil;
     __block NSURL *imageURL = nil;
@@ -719,15 +786,28 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
     if (title) {
         storyCell.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:title
                                                                               attributes:[MITNewsViewController titleTextAttributes]];
+    } else {
+        storyCell.titleLabel.text = nil;
     }
 
-    if ([dek length]) {
-        storyCell.dekLabel.attributedText = [[NSAttributedString alloc] initWithString:dek
-                                                                            attributes:[MITNewsViewController dekTextAttributes]];
+    if (dek) {
+        NSError *error = nil;
+        NSString *dekContent = [dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
+        if (error) {
+            DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
+            dekContent = dek;
+        }
+
+        storyCell.dekLabel.attributedText = [[NSAttributedString alloc] initWithString:dekContent attributes:[MITNewsViewController dekTextAttributes]];
+    } else {
+        storyCell.dekLabel.text = nil;
     }
+    
 
     if (imageURL) {
         [storyCell.storyImageView setImageWithURL:imageURL];
+    } else {
+        storyCell.storyImageView.image = nil;
     }
 }
 
@@ -741,10 +821,9 @@ static NSString* const MITNewsStoryFeaturedStoriesToken = @"MITNewsFeaturedStori
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
 {
-    [tableView registerNib:[UINib nibWithNibName:@"NewsCategoryHeaderView" bundle:nil] forHeaderFooterViewReuseIdentifier:@"NewsCategoryHeader"];
-    [tableView registerNib:[UINib nibWithNibName:@"NewsStoryTableCell" bundle:nil] forCellReuseIdentifier:@"StoryCell"];
-    [tableView registerNib:[UINib nibWithNibName:@"NewsStoryNoDekTableCell" bundle:nil] forCellReuseIdentifier:@"StoryNoDekCell"];
-    [tableView registerNib:[UINib nibWithNibName:@"NewsStoryExternalTableCell" bundle:nil] forCellReuseIdentifier:@"StoryExternalCell"];
+    [tableView registerNib:[UINib nibWithNibName:@"NewsStoryTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:@"NewsStoryNoDekTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:@"NewsStoryExternalTableCell" bundle:nil] forCellReuseIdentifier:MITNewsStoryExternalCellIdentifier];
 }
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView
