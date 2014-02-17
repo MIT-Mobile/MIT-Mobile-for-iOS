@@ -134,9 +134,13 @@ enum {
 #pragma mark - Private Methods
 - (void)setupTableCells
 {
-    UIEdgeInsets textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
     NSMutableDictionary *cells = [NSMutableDictionary dictionary];
-    
+    UIEdgeInsets textCellInsets = UIEdgeInsetsMake(0, 15, 0, 15);
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
+        textCellInsets = UIEdgeInsetsMake(5, 10, 5, 10);
+    }
+    CGRect fieldFrame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 44), textCellInsets);
+
     NSDictionary *credentials = MobileKeychainFindItem(MobileLoginKeychainIdentifier, YES);
     
     {
@@ -153,6 +157,7 @@ enum {
         userField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         userField.delegate = self;
         userField.keyboardType = UIKeyboardTypeEmailAddress;
+        userField.font = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
         userField.minimumFontSize = 10.0;
         userField.placeholder = @"Username or Email";
         userField.returnKeyType = UIReturnKeyNext;
@@ -163,7 +168,7 @@ enum {
             userField.text = username;
         }
         
-        userField.frame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 44), textCellInsets);
+        userField.frame = fieldFrame;
         self.usernameField = userField;
         [usernameCell.contentView addSubview:userField];
         
@@ -181,6 +186,7 @@ enum {
         passField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
         passField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         passField.delegate = self;
+        passField.font = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
         passField.placeholder = @"Password";
         passField.returnKeyType = UIReturnKeyDone;
         passField.secureTextEntry = YES;
@@ -190,7 +196,7 @@ enum {
             passField.text = password;
         }
         
-        passField.frame = UIEdgeInsetsInsetRect(CGRectMake(0, 0, 320, 44), textCellInsets);
+        passField.frame = fieldFrame;
         
         self.passwordField = passField;
         [passwordCell.contentView addSubview:passField];
@@ -212,18 +218,18 @@ enum {
             buttonCell.textLabel.textAlignment = NSTextAlignmentCenter;
             buttonCell.textLabel.textColor = [UIColor blackColor];
         }
-
-        buttonCell.textLabel.enabled = NO;
+        
+        self.logoutCell = buttonCell;
+        
+        [self setLogOutButtonEnabled:NO];
 
         NSHTTPCookieStorage *cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
         for (NSHTTPCookie *cookie in [cookieStore cookies]) {
             if ([MobileRequestOperation isAuthenticationCookie:cookie]) {
-                buttonCell.textLabel.enabled = YES;
+                [self setLogOutButtonEnabled:YES];
                 break;
             }
         }
-        
-        self.logoutCell = buttonCell;
         
         [cells setObject:buttonCell
                   forKey:[NSIndexPath indexPathForRow:0 inSection:1]];
@@ -319,6 +325,17 @@ enum {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (BOOL)logOutButtonEnabled
+{
+    return self.logoutCell.textLabel.enabled;
+}
+
+- (void)setLogOutButtonEnabled:(BOOL)enabled
+{
+    self.logoutCell.textLabel.enabled = enabled;
+    self.logoutCell.selectionStyle = (enabled) ? UITableViewCellSelectionStyleBlue : UITableViewCellSelectionStyleNone;
+}
+
 #pragma mark - UITableView Data Source
 - (UITableViewCell*)tableView:(UITableView *)tableView
         cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -389,7 +406,7 @@ enum {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.tableCells[indexPath] == self.logoutCell) {
+    if (self.tableCells[indexPath] == self.logoutCell && [self logOutButtonEnabled] == YES) {
         [self clearTouchstoneLogin:nil];
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
@@ -409,7 +426,7 @@ enum {
 - (IBAction)clearTouchstoneLogin:(id)sender
 {
     [MobileRequestOperation clearAuthenticatedSession];
-    self.logoutCell.textLabel.enabled = NO;
+    [self setLogOutButtonEnabled:NO];
 }
 
 #pragma mark - UITextField Delegate Methods
