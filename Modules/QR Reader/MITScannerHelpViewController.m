@@ -21,15 +21,20 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    [self.backgroundImage setImage:[UIImage imageNamed:@"global/body-background"]];
+
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
+        self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    } else {
+        self.view.backgroundColor = [UIColor mit_backgroundColor];
+    }
+    self.title = @"Scanner Help";
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissHelp:)];
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
     self.helpTextView = nil;
-    self.backgroundImage = nil;
     self.doneButton = nil;
 }
 
