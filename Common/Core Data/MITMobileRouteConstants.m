@@ -59,11 +59,11 @@ NSString* const MITMapBuildingPathPattern = @"apis/map/rooms/:building";
 
 #pragma mark news/categories
 NSString* const MITNewsCategoriesResourceName = @"MITNewsCategoriesResourceName";
-NSString* const MITNewsCategoriesPathPattern = @"apis/news/categories";
+NSString* const MITNewsCategoriesPathPattern = @"apis/news/categories/";
 
 #pragma mark news/stories
 NSString* const MITNewsStoriesResourceName = @"MITNewsStoriesResourceName";
-NSString* const MITNewsStoriesPathPattern = @"apis/news/stories";
+NSString* const MITNewsStoriesPathPattern = @"apis/news/stories/";
 
 #pragma mark people
 NSString* const MITPeopleResourceName = @"MITPeopleResourceName";
